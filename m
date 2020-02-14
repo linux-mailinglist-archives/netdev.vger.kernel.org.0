@@ -2,349 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D1515D5F0
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 11:42:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A7B15D61A
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 11:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387490AbgBNKmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 05:42:06 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:42070 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387414AbgBNKmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 05:42:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ppd3nyDOwSifb5VEQVhWqoP4CJmO/B/qw/aq0kopqgw=; b=d7hnxh1ZnKEuceuJ/nESTOv1I
-        0/5kWRRCmhdI1VXUtnfzRa7zvGkEjoAHbwgD5O+fCYGniUaVZEiVZvPPoL+8FKlh6FX9l1b1q4nOb
-        NYUVnyDYtvqAXhRhgQVdj4gU1k/hvJP7foI+TS4YZInQxb57iM6m3MGHdyc4IUXfzGsDAj0FDg/2B
-        JrWWQNllR/Q0Il9qf6kiuZjN0E6Jr84axXIAYiRQJ4xYsDTzF5Prk3i0jVdQz9oZYDIj7SHAHf/nE
-        sW7jehhQB+xWGYalBU6qwHa3kk4atZClcNhYPJweYZwOuVD3YrHnLivEkPXSogaslP0No9wWvIINM
-        JSiyf9brA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:47698)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j2YPy-0006Ox-CD; Fri, 14 Feb 2020 10:41:54 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j2YPs-0003JL-Ap; Fri, 14 Feb 2020 10:41:48 +0000
-Date:   Fri, 14 Feb 2020 10:41:48 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: Heads up: phylink changes for next merge window
-Message-ID: <20200214104148.GJ18808@shell.armlinux.org.uk>
-References: <20200213133831.GM25745@shell.armlinux.org.uk>
- <20200213144615.GH18808@shell.armlinux.org.uk>
- <20200213160004.GC31084@lunn.ch>
- <20200213171602.GO25745@shell.armlinux.org.uk>
- <20200213174500.GI18808@shell.armlinux.org.uk>
+        id S1729165AbgBNKyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 05:54:17 -0500
+Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:40519
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726220AbgBNKyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 05:54:16 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NKuMEkzZQdCcPH6ZtiWY7/U3a1yKq8FA5ztWfTe7g3K5s9uZCpPLLLlFYwEwTc+o3eDfaY/O2CqZWp6S+yThKoDzyazZRUeaKHMNdV3/pzjy+3GOKqFG1ULtFlitd+Jk9Bp0FRCWDzKo9vllAnEKEKGOZSjMhyaZ9tcmhr2gaNOLVlfUU0G/Giqs6f4ZCwTUBTu1KmJrvzD3K24sqlKKQVsbaHylyilya/gBPkF9jIuiglwWnFwfVv6KaWXyz64fFxLv2WyxM/OI/oc3v7nSv4AGFMErvAZndirxfIY2E7HdTXmOodCtMK+/TzRLtMssfCOjv8fqTZCIFbWkVP5S0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HNhLF5oDjWXwEXsCuKeXCx/rWy6qno4TePDdfGykTFo=;
+ b=UxqSsphpfN6F54ahmKECGvySX+Z0X54M8zmi0k6p10BqCq+CwpmppvlS+d9+nQpD9Vrwqquneu40gR4XFqvDyefUXl6x8rEFhEe9iqU5Mr6lyZBS5lWuJoBuLefPALfQ5svki+xVRlthS4xt8NaWHJ6XUD+2OlsW7NGSy9tNxbdIuJi80f9dwq/pDFGjanlK10fMqaq7dqA75C/J8oJJ66nJhqBHpNbK4+jHA0th1yQah7j5y8kAP8qwe8KMJDELC00LxXegrPvAaFsH+v6sU6faJ255+J9eE7ccHFwT9Z9QHEFoGUX9GU+rFtewdNRyKplvUHWSdOz6xUiCSI8USw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HNhLF5oDjWXwEXsCuKeXCx/rWy6qno4TePDdfGykTFo=;
+ b=fYqg47NZiYtm2/OH3rikJEjDzbEgEM9y2VWagGozRcoQ54lYGmvEIxfYg51zN79fNttt0q9xoS/qXUq7+uuAjnJmesTbFj0e5jMuzxi8jaNVycTPCaj7tmhxRA6pI25ULXJkO+D6oibxMvYLcvTu9rBWynBZcZ+pzH2UdE5OYnQ=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
+ HE1PR05MB3243.eurprd05.prod.outlook.com (10.170.246.156) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2729.25; Fri, 14 Feb 2020 10:54:12 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2729.025; Fri, 14 Feb 2020
+ 10:54:12 +0000
+References: <20200213094054.27993-1-liuhangbin@gmail.com> <87a75msl7i.fsf@mellanox.com> <20200214025308.GO2159@dhcp-12-139.nay.redhat.com>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Petr Machata <pmachata@gmail.com>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Peter Dawson <petedaws@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH net] selftests: forwarding: vxlan_bridge_1d: fix tos value
+In-reply-to: <20200214025308.GO2159@dhcp-12-139.nay.redhat.com>
+Date:   Fri, 14 Feb 2020 11:54:09 +0100
+Message-ID: <875zg9qw1a.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM3PR05CA0089.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::15) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200213174500.GI18808@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: from yaviefel (213.220.234.169) by AM3PR05CA0089.eurprd05.prod.outlook.com (2603:10a6:207:1::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.25 via Frontend Transport; Fri, 14 Feb 2020 10:54:11 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 189015ca-797a-4001-d62a-08d7b13c39ac
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3243:|HE1PR05MB3243:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3243859172360ECBA809D0F3DB150@HE1PR05MB3243.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03137AC81E
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(396003)(346002)(366004)(199004)(189003)(6496006)(5660300002)(86362001)(81156014)(52116002)(26005)(66556008)(6916009)(8936002)(66946007)(16526019)(186003)(66476007)(8676002)(2616005)(956004)(81166006)(36756003)(6486002)(2906002)(316002)(478600001)(966005)(4326008)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3243;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Y8ngqg247NDah1zBLWqZPAAxFGGzXs6wwq7FdmhOEGV3Bz6sM+YCR7Xtf2nbz+b2XazajWADi7u7aHL5hqsxZXBkGwDfOoMjvr9OacE2LIBmbIo047WHU0uVWdynUUyX5CcrywZqVkSmYN+c8bpvZjAm9QvYXc3x1nmiOrCQAk7mhBE8aSH6Tb81gl91TkzsvCbyGR666xXueVR6RL3HHFKbUQreAN/Wfh+icgB/KMROsmTE/fuabE07W5XLYowRswAkszE0d9rt9u+VcvW0JxVmskfQjTABuDKcHZrQgBJ+o/2hWVGkwtYDuQXBt9+MdX6c/HBD71hqU33XN7L38RNY3nl5jW7TKgtSzbzflBFU9z6kHfEwJlK8Vx8jsPDDMOwGicsKaHrJlP151ZXmb40WorGwmiZo1g4wAUtR6tKIlAj3TBi8NYZCRri4dseoal3PyeeTC1Mmv0MC6Gd6Ys2uGpj/XZGV4GgiAek+ozfNUBObCUorUuXvoHgu5e+GFEAdgTZl78VsOvNI1pK+Cg==
+X-MS-Exchange-AntiSpam-MessageData: yNicl4yV/x2UeApHEIQMl2Ff665t6ZYgBiQyn8wtTHg83mR9OJas82W7Y3zSpcR0ylNWutdwdcLZCvDMlJYahZOszjP+hUKjE54kmv5acGWVrZLQFFb7zOH+VmgreLyP3bbKcJhECaV+OS+xvr0/Sg==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 189015ca-797a-4001-d62a-08d7b13c39ac
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2020 10:54:12.2215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r2ZhnWfAYF3i/WpiMJLveFKWA9wTAY1FtZw9uk2lFEJx3kY+4G/Rm78GiLfEdZTkRXmnqrIxyDFfm37WWLFHng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3243
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 05:45:00PM +0000, Russell King - ARM Linux admin wrote:
-> On Thu, Feb 13, 2020 at 05:16:02PM +0000, Russell King - ARM Linux admin wrote:
-> > On Thu, Feb 13, 2020 at 05:00:04PM +0100, Andrew Lunn wrote:
-> > > On Thu, Feb 13, 2020 at 02:46:16PM +0000, Russell King - ARM Linux admin wrote:
-> > > > [Recipient list updated; removed addresses that bounce, added Ioana
-> > > > Ciornei for dpaa2 and DSA issue mentioned below.]
-> > > > 
-> > > > On Thu, Feb 13, 2020 at 01:38:31PM +0000, Russell King - ARM Linux admin wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > During the next round of development changes, I wish to make some
-> > > > > changes to phylink which will affect almost every user out there,
-> > > > > as it affects the interfaces to the MAC drivers.
-> > > > > 
-> > > > > The reason behind the change is to allow us to support situations
-> > > > > where the MAC is not closely coupled with its associated PCS, such
-> > > > > as is found in mvneta and mvpp2.  This is necessary to support
-> > > > > already existing hardware properly, such as Marvell DSA and Xilinx
-> > > > > AXI ethernet drivers, and there seems to be a growing need for this.
-> > > > > 
-> > > > > What I'm proposing to do is to move the MAC setup for the negotiated
-> > > > > speed, duplex and pause settings to the mac_link_up() method, out of
-> > > > > the existing mac_config() method.  I have already converted the
-> > > > > axienet, dpaa2-mac, macb, mvneta, mvpp2 and mv88e6xxx (dsa) drivers,
-> > > > > but I'm not able to test all those.  Thus far, I've tested dpaa2-mac,
-> > > > > mvneta, and mv88e6xxx.  There's a bunch of other drivers that I don't
-> > > > > know enough about the hardware to do the conversion myself.
-> > > > 
-> > > > I should also have pointed out that with mv88e6xxx, the patch
-> > > > "net: mv88e6xxx: use resolved link config in mac_link_up()" "fixes" by
-> > > > side-effect an issue that Andrew has mentioned, where inter-DSA ports
-> > > > get configured down to 10baseHD speed.  This is by no means a true fix
-> > > > for that problem - which is way deeper than this series can address.
-> > > > The reason it fixes it is because we no longer set the speed/duplex
-> > > > in mac_config() but set it in mac_link_up() - but mac_link_up() is
-> > > > never called for CPU and DSA ports.
-> > > > 
-> > > > However, I think there may be another side-effect of that - any fixed
-> > > > link declaration in DT may not be respected after this patch.
-> > > > 
-> > > > I believe the root of this goes back to this commit:
-> > > > 
-> > > >   commit 0e27921816ad99f78140e0c61ddf2bc515cc7e22
-> > > >   Author: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > > >   Date:   Tue May 28 20:38:16 2019 +0300
-> > > > 
-> > > >   net: dsa: Use PHYLINK for the CPU/DSA ports
-> > > > 
-> > > > and, in the case of no fixed-link declaration, phylink has no idea what
-> > > > the link parameters should be (and hence the initial bug, where
-> > > > mac_config gets called with speed=0 duplex=0, which gets interpreted as
-> > > > 10baseHD.)  Moreover, as far as phylink is concerned, these links never
-> > > > come up. Essentially, this commit was not fully tested with inter-DSA
-> > > > links, and probably was never tested with phylink debugging enabled.
-> > > > 
-> > > > There is currently no fix for this, and it is not an easy problem to
-> > > > resolve, irrespective of the patches I'm proposing.
-> > > 
-> > > Hi Russell
-> > > 
-> > > I've been playing around with this a bit. I have a partial fix:
-> > > 
-> > > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> > > index 9b54e5a76297..dc4da4dc44f5 100644
-> > > --- a/net/dsa/port.c
-> > > +++ b/net/dsa/port.c
-> > > @@ -629,9 +629,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
-> > >  int dsa_port_link_register_of(struct dsa_port *dp)
-> > >  {
-> > >         struct dsa_switch *ds = dp->ds;
-> > > +       struct device_node *phy_np;
-> > >  
-> > > -       if (!ds->ops->adjust_link)
-> > > -               return dsa_port_phylink_register(dp);
-> > > +       if (!ds->ops->adjust_link) {
-> > > +               phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
-> > > +               if (of_phy_is_fixed_link(dp->dn) || phy_np)
-> > > +                       return dsa_port_phylink_register(dp);
-> > > +               return 0;
-> > > +       }
-> > >  
-> > >         dev_warn(ds->dev,
-> > >                  "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
-> > > @@ -646,11 +651,12 @@ void dsa_port_link_unregister_of(struct dsa_port *dp)
-> > >  {
-> > >         struct dsa_switch *ds = dp->ds;
-> > >  
-> > > -       if (!ds->ops->adjust_link) {
-> > > +       if (!ds->ops->adjust_link && dp->pl) {
-> > >                 rtnl_lock();
-> > >                 phylink_disconnect_phy(dp->pl);
-> > >                 rtnl_unlock();
-> > >                 phylink_destroy(dp->pl);
-> > > +               dp->pl = NULL;
-> > >                 return;
-> > >         }
-> > > 
-> > > So basically only instantiate phylink if there is a fixed-link
-> > > property, or a phy-handle.
-> > > 
-> > > What i think is still broken is if there is a phy-mode property, and
-> > > nothing else. e.g. to set RGMII delays. I think that will get ignored.
-> > 
-> > Can you please verify that mac_link_up() gets called for these if
-> > there is a fixed-link property or phy-handle?
-> > 
-> > Also, there is another way around this, which is for phylink_create()
-> > to callback through the mac_ops to request the default configuration.
-> > That could be plumbed down through the various DSA layers such that
-> > the old "max speed / max link" business could be setup.  However,
-> > that brings with it a new problem: if we default to a fixed-link, then
-> > attempting to connect a phy later will be ignored.  However, deferring
-> > the default create-time configuration setup to phylink_start() would
-> > work around it, but brings with it a bit more complexity.
-> 
-> Hmm.
-> 
-> Andrew, it is possible that what I have in the ZII branch does end
-> up fixing this problem by accident without requiring any further
-> code changes in DSA.
-> 
-> If a node has no fixed-link nor PHY, phylink defaults to MLO_AN_PHY
-> mode - and without a PHY, phylink will never believe that the link
-> has come up.  Hence, mac_link_up() will never be called.
-> 
-> If a node has a fixed-link property, then phylink will parse it,
-> and by default, fixed-links without GPIOs or a callback function
-> will come up at initialisation.  Hence, we get a mac_link_up()
-> call with the fixed-link parameters.
-> 
-> If a node has a PHY, then DSA will instruct phylink to connect to
-> it, and it will behave as any other PHY-attached MAC, calling
-> mac_link_up() at the appropriate time.
-> 
-> The mv88e6xxx driver by default configures CPU and DSA ports to
-> maximum speed, which is what we get if mac_link_up() is never
-> called.  On the other hand, if there's a fixed-link or PHY, we'll
-> call mac_link_up() to program those parameters.
-> 
-> So, provided all drivers are converted to program the speed/duplex
-> etc in mac_link_up(), we might not have a problem at all - and
-> that would be an additional motivation for everyone to update to
-> the changes I've proposed!
-> 
-> What I don't like - if the above is correct - is that this is
-> merely coincidental.
-> 
-> Now, while that sounds great, something's niggling me about it.
-> If the link is forced up by the DSA driver initialisation defaulting
-> the speed to maximum speed, but phylink believes the link to be down,
-> and then we get a mac_link_up() call, with the patches as they stand
-> we end up changing the port configuration while the link is up, which
-> I'm sure I've read shouldn't be done in some of the DSA switch
-> functional specs.  Hmm.
 
-Hi Andrew,
+Hangbin Liu <liuhangbin@gmail.com> writes:
 
-Having added some additional debug into mv88e6xxx, it seems that it's
-not working as I thought it would be on the ZII dev rev C, but does on
-the ZII dev rev B.
+> On Thu, Feb 13, 2020 at 01:52:49PM +0100, Petr Machata wrote:
+>> 
+>> Hangbin Liu <liuhangbin@gmail.com> writes:
+>> 
+>> > After commit 71130f29979c ("vxlan: fix tos value before xmit") we start
+>> > strict vxlan xmit tos value by RT_TOS(), which limits the tos value less
+>> 
+>> I don't understand how it is OK to slice the TOS field like this. It
+>> could contain a DSCP value, which will be mangled.
+>
+> Thanks for this remind. I re-checked the tos definition and found a summary
+> from Peter Dawson[1].
+>
+> IPv4/6 Header:0 |0 1 2 3 |0 1 2 3 |0 1 2 3 |0 1 2 3 |
+> RFC2460(IPv6)   |Version | Traffic Class   |        |
+> RFC2474(IPv6)   |Version | DSCP        |ECN|        |
+> RFC2474(IPv4)   |Version |  IHL   |    DSCP     |ECN|
+> RFC1349(IPv4)   |Version |  IHL   | PREC |  TOS   |X|
+> RFC791 (IPv4)   |Version |  IHL   |      TOS        |
+>
+> According to this I think our current IPTOS_TOS_MASK should be updated to 0xFC
+> based on RFC2474. But I'm not sure if there will have compatibility issue.
+> What do you think?
 
-On the ZII dev rev C:
+Looking at the various uses of RT_TOS, it looks like they tend to be
+used in tunneling and routing code. I think that in both cases it makes
+sense to convert to 0xfc. But I'm not ready to vouch for this :)
 
-[   23.082294] mv88e6085 0.1:00: p0: Force link down
-[   23.095527] mv88e6085 0.1:00: p0: Force link up
-[   23.116490] mv88e6085 0.1:00: p1: Force link down
-[   23.122065] mv88e6085 0.1:00: p1: Unforce link down
-[   23.137928] mv88e6085 0.1:00: p2: Force link down
-[   23.143487] mv88e6085 0.1:00: p2: Unforce link down
-[   23.159416] mv88e6085 0.1:00: p3: Force link down
-[   23.164986] mv88e6085 0.1:00: p3: Unforce link down
-[   23.181277] mv88e6085 0.1:00: p4: Force link down
-[   23.186925] mv88e6085 0.1:00: p4: Unforce link down
-[   23.202864] mv88e6085 0.1:00: p9: Force link down
-[   23.208434] mv88e6085 0.1:00: p9: Unforce link down
-[   23.227698] mv88e6085 0.1:00: p10: Force link down
-[   23.233372] mv88e6085 0.1:00: p10: Force link up
-...
-[   24.294145] mv88e6085 0.1:00: configuring for fixed/ link mode
-[   24.300435] mv88e6085 0.1:00: phylink_mac_config: mode=fixed//100Mbps/Full adv=000,00000000,00002208 pause=00 link=0 an=1
-[   24.300474] mv88e6085 0.1:00: p0: dsa_port_phylink_mac_config()
-[   24.302905] mv88e6085 0.1:00: phylink_mac_config: mode=fixed//100Mbps/Full adv=000,00000000,00002208 pause=00 link=1 an=1
-[   24.303035] mv88e6085 0.1:00: p0: dsa_port_phylink_mac_config()
-[   24.303756] mv88e6085 0.1:00: p0: dsa_port_phylink_mac_link_up()
-[   24.303797] mv88e6085 0.1:00: Link is Up - 100Mbps/Full - flow control off
-...
-[   24.436179] mv88e6085 0.1:00: configuring for phy/xaui link mode
-[   24.442578] mv88e6085 0.1:00: phylink_mac_config: mode=phy/xaui/Unsupported (update phy-core.c)/Half adv=000,00000000,00000000 pause=00 link=0 an=0
-[   24.442615] mv88e6085 0.1:00: p10: dsa_port_phylink_mac_config()
+What is the problem that commit 71130f29979c aims to solve? It's not
+clear to me from the commit message. What issues arise if the TOS is
+copied as is?
 
-This is with:
+>
+>> >  	tc filter add dev v1 egress pref 77 prot ip \
+>> > -		flower ip_tos 0x40 action pass
+>> > -	vxlan_ping_test $h1 192.0.2.3 "-Q 0x40" v1 egress 77 10
+>> > -	vxlan_ping_test $h1 192.0.2.3 "-Q 0x30" v1 egress 77 0
+>> > +		flower ip_tos 0x11 action pass
+>> > +	vxlan_ping_test $h1 192.0.2.3 "-Q 0x11" v1 egress 77 10
+>> > +	vxlan_ping_test $h1 192.0.2.3 "-Q 0x12" v1 egress 77 0
+>> 
+>> 0x11 and 0x12 set the ECN bits, I think it would be better to avoid
+>> that. It works just as well with 0x14 and 0x18.
+>
+> Thanks, I will update it.
+>
+> [1] https://lore.kernel.org/patchwork/patch/799698/#992992
+>
+> Regards
+> Hangbin
 
-        if (reg & MV88E6XXX_PORT_MAC_CTL_FORCE_LINK &&
-            reg & MV88E6XXX_PORT_MAC_CTL_LINK_UP)
-                dev_err(chip->dev, "p%d: forcing link speed/duplex with port up\n", port);
-
-added in to mv88e6xxx_port_set_speed_duplex(), which never fires.  Yet,
-we can see from the above that port 0 and port 10 were forced up
-earlier.
-
-Hence, phylink isn't playing a part in setting the speed and duplex on
-this port, yet port 0's mac control is 0x203e and port 10's is 0x203f.
-They are both forcing link up, forced full duplex, and port 0 is forced
-to 1G and port 10 to 10G.  So, the problem you mentioned does still
-exist.
-
-This comes down to my comment in the code (in mac_link_up and
-mac_link_down):
-
-        /* Internal PHYs propagate their configuration directly to the MAC.
-         * External PHYs depend on whether the PPU is enabled for this port.
-         * FIXME: we should be using the PPU enable state here. What about
-         * an automedia port?
-         */
-        if (!mv88e6xxx_phy_is_internal(ds, port) && ops->port_set_link) {
-
-and suggests this is the wrong test to be using here.  I'm not sure
-if using the PPU PHY detect bit is correct either, but looking at
-what I have here, it seems to be _more_ correct than not.
-
-For the 88e6390, mv88e6xxx_phy_is_internal() will be true for all ports
-0 through 8, and for the 88e6352, ports 0 through 4.  So, these two
-methods will only force settings for port 9 and 10 for the 88e6390 and
-port 5 and 6 on the 88e6352.
-
-The reasoning is, if the PHY detect bit is set, the PPU should be
-polling the attached PHY and automatically updating the MAC to reflect
-the PHY status.  This seems great...
-
-On the ZII dev rev C, we have the following port status values:
-- port 0 = 0xe04
-- port 1 through 8 = 0x100f
-- port 9 = 0x49
-- port 10 = 0xcf4c
-
-On the ZII dev rev B, port 4 (which is one of the optical ports) has a
-value of 0xde09, despite being linked to the on-board serdes.  It seems
-that the PPU on the 88e6352 automatically propagates the status from the
-serdes there.
-
-So, it looks to me like using the PHY detect bit is the right solution,
-we just need access to it at this mid-layer...
-
-On the ZII dev rev B, I see what I expect:
-
-mv88e6085 0.1:00: p0: Force link down
-mv88e6085 0.1:00: p0: Unforce link down
-mv88e6085 0.1:00: p1: Force link down
-mv88e6085 0.1:00: p1: Unforce link down
-mv88e6085 0.1:00: p2: Force link down
-mv88e6085 0.1:00: p2: Unforce link down
-mv88e6085 0.1:00: p4: Force link down
-mv88e6085 0.1:00: p4: Unforce link down
-mv88e6085 0.1:00: p5: Force link down
-mv88e6085 0.1:00: p5: Force link up
-mv88e6085 0.1:00: p6: Force link down
-mv88e6085 0.1:00: p6: Force link up
-...
-mv88e6085 0.1:00: configuring for fixed/rgmii-txid link mode
-mv88e6085 0.1:00: phylink_mac_config: mode=fixed/rgmii-txid/1Gbps/Full adv=000,00000000,00002220 pause=00 link=0 an=1
-mv88e6085 0.1:00: p5: dsa_port_phylink_mac_config()
-mv88e6085 0.1:00: phylink_mac_config: mode=fixed/rgmii-txid/1Gbps/Full adv=000,00000000,00002220 pause=00 link=1 an=1
-mv88e6085 0.1:00: p5: dsa_port_phylink_mac_config()
-mv88e6085 0.1:00: p5: dsa_port_phylink_mac_link_up()
-mv88e6085 0.1:00: p5: forcing link speed/duplex with port up
-mv88e6085 0.1:00: p5: Force link up
-mv88e6085 0.1:00: Link is Up - 1Gbps/Full - flow control off
-mv88e6085 0.1:00: configuring for fixed/ link mode
-mv88e6085 0.1:00: phylink_mac_config: mode=fixed//100Mbps/Full adv=000,00000000,00002208 pause=00 link=0 an=1
-mv88e6085 0.1:00: p6: dsa_port_phylink_mac_config()
-mv88e6085 0.1:00: phylink_mac_config: mode=fixed//100Mbps/Full adv=000,00000000,00002208 pause=00 link=1 an=1
-mv88e6085 0.1:00: p6: dsa_port_phylink_mac_config()
-mv88e6085 0.1:00: p6: dsa_port_phylink_mac_link_up()
-mv88e6085 0.1:00: p6: forcing link speed/duplex with port up
-mv88e6085 0.1:00: p6: Force link up
-mv88e6085 0.1:00: Link is Up - 100Mbps/Full - flow control off
-
-which shows that we're changing the speed and duplex with the port up
-as I suspected in my reply yesterday, which the functional specs say we
-shouldn't do.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
