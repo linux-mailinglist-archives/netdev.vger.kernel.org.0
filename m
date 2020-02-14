@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE9915EA93
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 243CC15EA65
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:14:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403752AbgBNQMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:12:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39232 "EHLO mail.kernel.org"
+        id S2404693AbgBNRNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:13:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40520 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391922AbgBNQMF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:12:05 -0500
+        id S2392061AbgBNQMr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:12:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 960FC246A1;
-        Fri, 14 Feb 2020 16:12:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 059E3246BC;
+        Fri, 14 Feb 2020 16:12:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696724;
-        bh=HFXyLgZOluO4xGPVuMxvzsLOr5aDlIyiQMNmxVT5tgk=;
+        s=default; t=1581696766;
+        bh=5Fhczh3d5ACBAPgBle5laQq97KcyH5Y4JkPUrNJoFDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVP8GyY/JtWwy+4b1XrOcuj87oYhKSQQLcMxtI8TiEZ5KOmKZ7YBfcAyBmt8iFD0o
-         cv0MYdCfQUaIY0uTa++EaX+V36bxrYTmcRAEFApoen3h8F3BqB5nKCdFdC1I3Gt9pA
-         ccVAjbe8m/bcjGWizi0+Z43f8w5Bb4Je1mha7OlQ=
+        b=0LJYn/PozuIs7qp9Y3k5lkO9wP2oG4tL9FWzC8XfEBiwrTYe+ZGuIHRwzSeJ4Pxb5
+         W4lEUwTUyXGuM1h/D+t28IgKQYjNCkQVtesqalUcSxG+S/hELa1ptOeyptemmVXbRd
+         xXHR7s/GirWhtbLdAfSd5D44TErOO3TuNmUZ/RK0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 012/252] gianfar: Fix TX timestamping with a stacked DSA driver
-Date:   Fri, 14 Feb 2020 11:07:47 -0500
-Message-Id: <20200214161147.15842-12-sashal@kernel.org>
+Cc:     Rakesh Pillai <pillair@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 046/252] ath10k: Correct the DMA direction for management tx buffers
+Date:   Fri, 14 Feb 2020 11:08:21 -0500
+Message-Id: <20200214161147.15842-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
 References: <20200214161147.15842-1-sashal@kernel.org>
@@ -44,87 +44,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+From: Rakesh Pillai <pillair@codeaurora.org>
 
-[ Upstream commit c26a2c2ddc0115eb088873f5c309cf46b982f522 ]
+[ Upstream commit 6ba8b3b6bd772f575f7736c8fd893c6981fcce16 ]
 
-The driver wrongly assumes that it is the only entity that can set the
-SKBTX_IN_PROGRESS bit of the current skb. Therefore, in the
-gfar_clean_tx_ring function, where the TX timestamp is collected if
-necessary, the aforementioned bit is used to discriminate whether or not
-the TX timestamp should be delivered to the socket's error queue.
+The management packets, send to firmware via WMI, are
+mapped using the direction DMA_TO_DEVICE. Currently in
+case of wmi cleanup, these buffers are being unmapped
+using an incorrect DMA direction. This can cause unwanted
+behavior when the host driver is handling a restart
+of the wlan firmware.
 
-But a stacked driver such as a DSA switch can also set the
-SKBTX_IN_PROGRESS bit, which is actually exactly what it should do in
-order to denote that the hardware timestamping process is undergoing.
+We might see a trace like below
 
-Therefore, gianfar would misinterpret the "in progress" bit as being its
-own, and deliver a second skb clone in the socket's error queue,
-completely throwing off a PTP process which is not expecting to receive
-it, _even though_ TX timestamping is not enabled for gianfar.
+[<ffffff8008098b18>] __dma_inv_area+0x28/0x58
+[<ffffff8001176734>] ath10k_wmi_mgmt_tx_clean_up_pending+0x60/0xb0 [ath10k_core]
+[<ffffff80088c7c50>] idr_for_each+0x78/0xe4
+[<ffffff80011766a4>] ath10k_wmi_detach+0x4c/0x7c [ath10k_core]
+[<ffffff8001163d7c>] ath10k_core_stop+0x58/0x68 [ath10k_core]
+[<ffffff800114fb74>] ath10k_halt+0xec/0x13c [ath10k_core]
+[<ffffff8001165110>] ath10k_core_restart+0x11c/0x1a8 [ath10k_core]
+[<ffffff80080c36bc>] process_one_work+0x16c/0x31c
 
-There have been discussions [0] as to whether non-MAC drivers need or
-not to set SKBTX_IN_PROGRESS at all (whose purpose is to avoid sending 2
-timestamps, a sw and a hw one, to applications which only expect one).
-But as of this patch, there are at least 2 PTP drivers that would break
-in conjunction with gianfar: the sja1105 DSA switch and the felix
-switch, by way of its ocelot core driver.
+Fix the incorrect DMA direction during the wmi
+management tx buffer cleanup.
 
-So regardless of that conclusion, fix the gianfar driver to not do stuff
-based on flags set by others and not intended for it.
+Tested HW: WCN3990
+Tested FW: WLAN.HL.3.1-00784-QCAHLSWMTPLZ-1
 
-[0]: https://www.spinics.net/lists/netdev/msg619699.html
-
-Fixes: f0ee7acfcdd4 ("gianfar: Add hardware TX timestamping support")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: dc405152bb6 ("ath10k: handle mgmt tx completion event")
+Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath10k/wmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index c97c4edfa31bc..cf2d1e846a692 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -2685,13 +2685,17 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 	skb_dirtytx = tx_queue->skb_dirtytx;
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index 0f6ff7a78e49d..3372dfa0deccf 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -9193,7 +9193,7 @@ static int ath10k_wmi_mgmt_tx_clean_up_pending(int msdu_id, void *ptr,
  
- 	while ((skb = tx_queue->tx_skbuff[skb_dirtytx])) {
-+		bool do_tstamp;
-+
-+		do_tstamp = (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+			    priv->hwts_tx_en;
+ 	msdu = pkt_addr->vaddr;
+ 	dma_unmap_single(ar->dev, pkt_addr->paddr,
+-			 msdu->len, DMA_FROM_DEVICE);
++			 msdu->len, DMA_TO_DEVICE);
+ 	ieee80211_free_txskb(ar->hw, msdu);
  
- 		frags = skb_shinfo(skb)->nr_frags;
- 
- 		/* When time stamping, one additional TxBD must be freed.
- 		 * Also, we need to dma_unmap_single() the TxPAL.
- 		 */
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
-+		if (unlikely(do_tstamp))
- 			nr_txbds = frags + 2;
- 		else
- 			nr_txbds = frags + 1;
-@@ -2705,7 +2709,7 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 		    (lstatus & BD_LENGTH_MASK))
- 			break;
- 
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
-+		if (unlikely(do_tstamp)) {
- 			next = next_txbd(bdp, base, tx_ring_size);
- 			buflen = be16_to_cpu(next->length) +
- 				 GMAC_FCB_LEN + GMAC_TXPAL_LEN;
-@@ -2715,7 +2719,7 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 		dma_unmap_single(priv->dev, be32_to_cpu(bdp->bufPtr),
- 				 buflen, DMA_TO_DEVICE);
- 
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
-+		if (unlikely(do_tstamp)) {
- 			struct skb_shared_hwtstamps shhwtstamps;
- 			u64 *ns = (u64 *)(((uintptr_t)skb->data + 0x10) &
- 					  ~0x7UL);
+ 	return 0;
 -- 
 2.20.1
 
