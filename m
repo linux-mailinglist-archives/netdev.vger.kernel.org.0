@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A11E615F1FD
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:08:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5F915F167
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:03:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391611AbgBNSFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:05:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36198 "EHLO mail.kernel.org"
+        id S1731448AbgBNSCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:02:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37324 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731720AbgBNPzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:55:16 -0500
+        id S1731777AbgBNPz5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:55:57 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A64B222C4;
-        Fri, 14 Feb 2020 15:55:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C55B024682;
+        Fri, 14 Feb 2020 15:55:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695716;
-        bh=wIqsMrdKLb+D/TuHlWfbWthZCsYzOhhbmcyKf/OfsBY=;
+        s=default; t=1581695756;
+        bh=TR7zXGPKrRyVAFY0prVY1a+2it4hknv8ec1MtPqoews=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KygIdG9kFZ0vZfhvyaZiDwJwlEzpyl8OnB7EpMO57MC1Kb/eWldOKrHe4uqF8s1pB
-         ISgd88ddrMXW67z+s5RDeV3MV7WsHkqjUECKrf1XHVN9FJ+I6y/yyolabdq4cFLnRv
-         FlSljK8MVNIQIxn7fadh5awIkVrN00abpwl909lE=
+        b=MeDm6iDT553JvrY5yDfm13TB5k8nOzwb+I+8SQ/q8zIVPET5rtkGyxHP+rsLMmM8r
+         BxFvIt15YawQVqhff/gOLlraM7wCJLwoJKl9Wgdw93h+Uvc8UYi3Knv4OQIQLrEu7+
+         him20fiOkv3TL6TMvbkpKkFsWpPLJ+HRZL1Xp2Yo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 294/542] mlx5: work around high stack usage with gcc
-Date:   Fri, 14 Feb 2020 10:44:46 -0500
-Message-Id: <20200214154854.6746-294-sashal@kernel.org>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Andy Gospodarek <gospo@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 325/542] bnxt: Detach page from page pool before sending up the stack
+Date:   Fri, 14 Feb 2020 10:45:17 -0500
+Message-Id: <20200214154854.6746-325-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -45,44 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit 42ae1a5c76691928ed217c7e40269db27f5225e9 ]
+[ Upstream commit 3071c51783b39d6a676d02a9256c3b3f87804285 ]
 
-In some configurations, gcc tries too hard to optimize this code:
+When running in XDP mode, pages come from the page pool, and should
+be freed back to the same pool or specifically detached.  Currently,
+when the driver re-initializes, the page pool destruction is delayed
+forever since it thinks there are oustanding pages.
 
-drivers/net/ethernet/mellanox/mlx5/core/en_stats.c: In function 'mlx5e_grp_sw_update_stats':
-drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:302:1: error: the frame size of 1336 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
-
-As was stated in the bug report, the reason is that gcc runs into a corner
-case in the register allocator that is rather hard to fix in a good way.
-
-As there is an easy way to work around it, just add a comment and the
-barrier that stops gcc from trying to overoptimize the function.
-
-Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657
-Cc: Adhemerval Zanella <adhemerval.zanella@linaro.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 9f09253f9f466..a05158472ed11 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -297,6 +297,9 @@ static void mlx5e_grp_sw_update_stats(struct mlx5e_priv *priv)
- 			s->tx_tls_drop_bypass_req   += sq_stats->tls_drop_bypass_req;
- #endif
- 			s->tx_cqes		+= sq_stats->cqes;
-+
-+			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-+			barrier();
- 		}
- 	}
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 01b603c5e76ad..9d62200b6c335 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -944,6 +944,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
+ 	dma_addr -= bp->rx_dma_offset;
+ 	dma_unmap_page_attrs(&bp->pdev->dev, dma_addr, PAGE_SIZE, bp->rx_dir,
+ 			     DMA_ATTR_WEAK_ORDERING);
++	page_pool_release_page(rxr->page_pool, page);
+ 
+ 	if (unlikely(!payload))
+ 		payload = eth_get_headlen(bp->dev, data_ptr, len);
 -- 
 2.20.1
 
