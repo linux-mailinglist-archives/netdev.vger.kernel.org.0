@@ -2,131 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C0B15D12B
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 05:40:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0D215D1C6
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 06:50:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbgBNEkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 23:40:20 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46725 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728699AbgBNEkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 23:40:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581655214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x3yOWLF6bcHCCuN6HWm7zeGRKO0RfJCz2+K5iNwYZJc=;
-        b=Z+oxFQ6FiIGWjS4ZsRD9RNgGuHUCuR9dwgc4qnVmBVXWlSxGqgEBwA3jqW14VZ5hRxR6Y1
-        IBYG2uFWjH0mi7rQCBTojboH/CiamevXpScdlFKkbXSpsPialqo/CU4VOA8A2EojR7C54E
-        4sD9aY9L0zT58Hqs2FyEM/SRxLp3MOU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-254-o4poq0lXOLKmZXu4jaC7VQ-1; Thu, 13 Feb 2020 23:40:13 -0500
-X-MC-Unique: o4poq0lXOLKmZXu4jaC7VQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AFBC81851FC6;
-        Fri, 14 Feb 2020 04:40:10 +0000 (UTC)
-Received: from [10.72.13.213] (ovpn-13-213.pek2.redhat.com [10.72.13.213])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DB4B68AC40;
-        Fri, 14 Feb 2020 04:39:49 +0000 (UTC)
-Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        tiwei.bie@intel.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, lingshan.zhu@intel.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
-        hch@infradead.org, aadam@redhat.com, jiri@mellanox.com,
-        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com
-References: <20200211134746.GI4271@mellanox.com>
- <cf7abcc9-f8ef-1fe2-248e-9b9028788ade@redhat.com>
- <20200212125108.GS4271@mellanox.com>
- <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
- <20200213134128.GV4271@mellanox.com>
- <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
- <20200213150542.GW4271@mellanox.com>
- <20200213103714-mutt-send-email-mst@kernel.org>
- <20200213155154.GX4271@mellanox.com>
- <20200213105743-mutt-send-email-mst@kernel.org>
- <20200213161320.GY4271@mellanox.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <da994ac0-6f44-109f-962e-5df9cfbc3221@redhat.com>
-Date:   Fri, 14 Feb 2020 12:39:48 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200213161320.GY4271@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+        id S1728642AbgBNFuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 00:50:25 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:55194 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725944AbgBNFuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 00:50:25 -0500
+Received: by mail-pj1-f73.google.com with SMTP id a31so5127959pje.4
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 21:50:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VuMUvY4EPSsAnctiTbAX9//yB+fu7ADTq9BoEKb9b4E=;
+        b=Vt60nqCh04jNJlQG1C2SO+x1MYvBSBXPPEbEcdmmZmmmKoqjPAsFhaacd+Nd7oqOGm
+         Z4bjZ/y5Db6F2TRJBvIY8m4JSDryeSyDPSxUytsRbOAd2pCE6WBaS+W59dKlbxrn3pn5
+         YJtJh3MZ2hQcrAE/ndossw//e36IBAozr9DgQ/G68s3Pg8McUsupAZFayAoqrCwOlrjZ
+         VAI6XvqNEcnvHEjxd7MzuLo8ILXWiNVKX2/8JwvT1pG08d2ZV8LACpFzVRkG0wLUBfkc
+         L9HeTPklDz6O5RJqTQD7XzeFMPdliWb0xLCiwaFdxwOfcuhfJJTF82qPXmwmrjWAQnZs
+         mBWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VuMUvY4EPSsAnctiTbAX9//yB+fu7ADTq9BoEKb9b4E=;
+        b=bw3FBIJzFiuVHbA/NmJJp4npCVrNFWRfDDSx1MgFaak3Ue5nh1qkN2KSq+VA2UlZSL
+         uTJoa0zYZgfc3cjcfBYVlp52WZm6+0rET76BQZSMgkX+b00MxgS2okrx7FEy/IKHNNn9
+         gliZgCySTS6ylYsEFdWcVMYOR60uwvOMqzaG5/edBP1owU5IRx92pgR9cUdfCxBZN78W
+         H4KfoBnjFE/nRwaFHWimAihp8lAc+WN4q1OtciWDc+CoviUDPkQow52e3xuHEmFIp16F
+         d+qkSZjuAG1bSwrvhs1DYbUZBHgUlgScJDQa759DqSpamlapuG9AAXaZjZnNbyBHPVVE
+         /gWg==
+X-Gm-Message-State: APjAAAUsSTXa3I8VoWCBhjum3edZ2dLKdw7XDiXC+4N3T58aEEo3OLbI
+        BwZGikyY61I968xgtoG9bQvtp/XWGpZpdj2HsA==
+X-Google-Smtp-Source: APXvYqwPDaunmaqVlP02nijZeyJBnOWt2astdc/4cUZr4fit6ZtUhE1op6K2IAnTo+ZhrjCjgGTCnPqrWS5AK8v/MA==
+X-Received: by 2002:a63:de0b:: with SMTP id f11mr1591266pgg.89.1581659424364;
+ Thu, 13 Feb 2020 21:50:24 -0800 (PST)
+Date:   Fri, 14 Feb 2020 13:50:17 +0800
+Message-Id: <20200214134922.Bluez.v4.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [Bluez PATCH v4] bluetooth: secure bluetooth stack from bluedump attack
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Attack scenario:
+1. A Chromebook (let's call this device A) is paired to a legitimate
+   Bluetooth classic device (e.g. a speaker) (let's call this device
+   B).
+2. A malicious device (let's call this device C) pretends to be the
+   Bluetooth speaker by using the same BT address.
+3. If device A is not currently connected to device B, device A will
+   be ready to accept connection from device B in the background
+   (technically, doing Page Scan).
+4. Therefore, device C can initiate connection to device A
+   (because device A is doing Page Scan) and device A will accept the
+   connection because device A trusts device C's address which is the
+   same as device B's address.
+5. Device C won't be able to communicate at any high level Bluetooth
+   profile with device A because device A enforces that device C is
+   encrypted with their common Link Key, which device C doesn't have.
+   But device C can initiate pairing with device A with just-works
+   model without requiring user interaction (there is only pairing
+   notification). After pairing, device A now trusts device C with a
+   new different link key, common between device A and C.
+6. From now on, device A trusts device C, so device C can at anytime
+   connect to device A to do any kind of high-level hijacking, e.g.
+   speaker hijack or mouse/keyboard hijack.
 
-On 2020/2/14 =E4=B8=8A=E5=8D=8812:13, Jason Gunthorpe wrote:
-> On Thu, Feb 13, 2020 at 10:59:34AM -0500, Michael S. Tsirkin wrote:
->> On Thu, Feb 13, 2020 at 11:51:54AM -0400, Jason Gunthorpe wrote:
->>> The 'class' is supposed to provide all the library functions to remov=
-e
->>> this duplication. Instead of plugging the HW driver in via some bus
->>> scheme every subsystem has its own 'ops' that the HW driver provides
->>> to the subsystem's class via subsystem_register()
->> Hmm I'm not familiar with subsystem_register. A grep didn't find it
->> in the kernel either ...
-> I mean it is the registration function provided by the subsystem that
-> owns the class, for instance tpm_chip_register(),
-> ib_register_device(), register_netdev(), rtc_register_device() etc
->
-> So if you have some vhost (vhost net?) class then you'd have some
-> vhost_vdpa_init/alloc(); vhost_vdpa_register(), sequence
-> presumably. (vs trying to do it with a bus matcher)
->
-> I recommend to look at rtc and tpm for fairly simple easy to follow
-> patterns for creating a subsystem in the kernel. A subsystem owns a cla=
-ss,
-> allows HW drivers to plug in to it, and provides a consistent user
-> API via a cdev/sysfs/etc.
->
-> The driver model class should revolve around the char dev and sysfs
-> uABI - if you enumerate the devices on the class then they should all
-> follow the char dev and sysfs interfaces contract of that class.
->
-> Those examples show how to do all the refcounting semi-sanely,
-> introduce sysfs, cdevs, etc.
->
-> I thought the latest proposal was to use the existing vhost class and
-> largely the existing vhost API, so it probably just needs to make sure
-> the common class-wide stuff is split from the 'driver' stuff of the
-> existing vhost to netdev.
+Since we don't know whether the repairing is legitimate or not,
+leave the decision to user space if all the conditions below are met.
+- the pairing is initialized by peer
+- the authorization method is just-work
+- host already had the link key to the peer
 
+Signed-off-by: Howard Chung <howardchung@google.com>
+---
 
-Still, netdev is only one of the type we want to support. And we can not=20
-guarantee or forecast that vhost is the only API that is used.
+Changes in v4:
+- optimise the check in smp.c.
 
-Let's take virtio as an example, it is implemented through a bus which=20
-allows different subsystems on top. And it can provide a variety of=20
-different uAPIs. For best performance, VFIO could be used for userspace=20
-drivers, but it requires the bus has support from VFIO.
+Changes in v3:
+- Change confirm_hint from 2 to 1
+- Fix coding style (declaration order)
 
-For vDPA devices, it's just the same logic. A bus allows different=20
-drivers and subsystems on top. One of the subsystem could be vhost that=20
-provides a unified API for userspace driver.
+Changes in v2:
+- Remove the HCI_PERMIT_JUST_WORK_REPAIR debugfs option
+- Fix the added code in classic
+- Add a similar fix for LE
 
-Thanks
+ net/bluetooth/hci_event.c | 10 ++++++++++
+ net/bluetooth/smp.c       | 19 +++++++++++++++++++
+ 2 files changed, 29 insertions(+)
 
-
->
-> Jason
->
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 2c833dae9366..e6982f4f51ea 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4571,6 +4571,16 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
+ 			goto confirm;
+ 		}
+ 
++		/* If there already exists link key in local host, leave the
++		 * decision to user space since the remote device could be
++		 * legitimate or malicious.
++		 */
++		if (hci_find_link_key(hdev, &ev->bdaddr)) {
++			bt_dev_warn(hdev, "Local host already has link key");
++			confirm_hint = 1;
++			goto confirm;
++		}
++
+ 		BT_DBG("Auto-accept of user confirmation with %ums delay",
+ 		       hdev->auto_accept_delay);
+ 
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 2cba6e07c02b..bea64071bdd1 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -2192,6 +2192,25 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 		smp_send_cmd(conn, SMP_CMD_PAIRING_RANDOM, sizeof(smp->prnd),
+ 			     smp->prnd);
+ 		SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
++
++		/* May need further confirmation for Just-Works pairing  */
++		if (smp->method != JUST_WORKS)
++			goto mackey_and_ltk;
++
++		/* If there already exists link key in local host, leave the
++		 * decision to user space since the remote device could be
++		 * legitimate or malicious.
++		 */
++		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
++				 hcon->role)) {
++			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
++							hcon->type,
++							hcon->dst_type, passkey,
++							1);
++			if (err)
++				return SMP_UNSPECIFIED;
++			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
++		}
+ 	}
+ 
+ mackey_and_ltk:
+-- 
+2.25.0.265.gbab2e86ba0-goog
 
