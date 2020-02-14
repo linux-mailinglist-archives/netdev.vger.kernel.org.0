@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8367C15F1A4
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D76615F227
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731585AbgBNPyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:54:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34944 "EHLO mail.kernel.org"
+        id S2389036AbgBNSHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:07:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731574AbgBNPyh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:54:37 -0500
+        id S1731578AbgBNPyi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:54:38 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C1352467C;
-        Fri, 14 Feb 2020 15:54:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C1B5E24682;
+        Fri, 14 Feb 2020 15:54:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695676;
-        bh=MMvYnTh/h4R2QL5OTCI5uAa2vYTgJROedZx4TjC11Sw=;
+        s=default; t=1581695677;
+        bh=WbO+uEKXoG/iwhQ7nd5kQE3ky3wQoI1Lapj7wUubyT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oYKrDpy+k9q+7XLgrLdd2rWLSwZ2Owk9n4NZb6qWxwTI8+JCqc7CiSmB+m9Asp5W1
-         MD49zZ5pI9iIIDKCUGXwjQxsd+buKJ8VDz41D0vlFPXIrqhzzFgMKTdBLrMDpHvpHC
-         w65V/TJEDG6QHWwfrouREeX9IQmmxwRHHDWO+nwk=
+        b=aF0UVRCYrk2lBDvIoSNB1Xnuv47cA/XxrcQ5UlibtDQMUTNnPP+Y45N/i2kxKzF6Q
+         Ka9REjM7UWFhMw6kWyt3I09ZMAZ2sSN2aaocQNDzyVMOLb28fCrjSH/paQYc50NZ3R
+         qxLlA2fUXH5nhFMjMbgFkDRuGflTHfT1rTsPuFzk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hechao Li <hechaol@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 263/542] bpf: Print error message for bpftool cgroup show
-Date:   Fri, 14 Feb 2020 10:44:15 -0500
-Message-Id: <20200214154854.6746-263-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 264/542] net: phy: realtek: add logging for the RGMII TX delay configuration
+Date:   Fri, 14 Feb 2020 10:44:16 -0500
+Message-Id: <20200214154854.6746-264-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -43,138 +44,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hechao Li <hechaol@fb.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 1162f844030ac1ac7321b5e8f6c9badc7a11428f ]
+[ Upstream commit 3aec743d69822d22d4a5b60deb9518ed8be6fa67 ]
 
-Currently, when bpftool cgroup show <path> has an error, no error
-message is printed. This is confusing because the user may think the
-result is empty.
+RGMII requires a delay of 2ns between the data and the clock signal.
+There are at least three ways this can happen. One possibility is by
+having the PHY generate this delay.
+This is a common source for problems (for example with slow TX speeds or
+packet loss when sending data). The TX delay configuration of the
+RTL8211F PHY can be set either by pin-strappping the RXD1 pin (HIGH
+means enabled, LOW means disabled) or through configuring a paged
+register. The setting from the RXD1 pin is also reflected in the
+register.
 
-Before the change:
+Add debug logging to the TX delay configuration on RTL8211F so it's
+easier to spot these issues (for example if the TX delay is enabled for
+both, the RTL8211F PHY and the MAC).
+This is especially helpful because there is no public datasheet for the
+RTL8211F PHY available with all the RX/TX delay specifics.
 
-$ bpftool cgroup show /sys/fs/cgroup
-ID       AttachType      AttachFlags     Name
-$ echo $?
-255
-
-After the change:
-$ ./bpftool cgroup show /sys/fs/cgroup
-Error: can't query bpf programs attached to /sys/fs/cgroup: Operation
-not permitted
-
-v2: Rename check_query_cgroup_progs to cgroup_has_attached_progs
-
-Signed-off-by: Hechao Li <hechaol@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20191224011742.3714301-1-hechaol@fb.com
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/cgroup.c | 56 ++++++++++++++++++++++++++------------
- 1 file changed, 39 insertions(+), 17 deletions(-)
+ drivers/net/phy/realtek.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index 1ef45e55039e1..2f017caa678dc 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -117,6 +117,25 @@ static int count_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type)
- 	return prog_cnt;
- }
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 476db5345e1af..879ca37c85081 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -171,7 +171,9 @@ static int rtl8211c_config_init(struct phy_device *phydev)
  
-+static int cgroup_has_attached_progs(int cgroup_fd)
-+{
-+	enum bpf_attach_type type;
-+	bool no_prog = true;
-+
-+	for (type = 0; type < __MAX_BPF_ATTACH_TYPE; type++) {
-+		int count = count_attached_bpf_progs(cgroup_fd, type);
-+
-+		if (count < 0 && errno != EINVAL)
-+			return -1;
-+
-+		if (count > 0) {
-+			no_prog = false;
-+			break;
-+		}
-+	}
-+
-+	return no_prog ? 0 : 1;
-+}
- static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
- 				   int level)
+ static int rtl8211f_config_init(struct phy_device *phydev)
  {
-@@ -161,6 +180,7 @@ static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
- static int do_show(int argc, char **argv)
- {
- 	enum bpf_attach_type type;
-+	int has_attached_progs;
- 	const char *path;
- 	int cgroup_fd;
- 	int ret = -1;
-@@ -192,6 +212,16 @@ static int do_show(int argc, char **argv)
- 		goto exit;
- 	}
++	struct device *dev = &phydev->mdio.dev;
+ 	u16 val;
++	int ret;
  
-+	has_attached_progs = cgroup_has_attached_progs(cgroup_fd);
-+	if (has_attached_progs < 0) {
-+		p_err("can't query bpf programs attached to %s: %s",
-+		      path, strerror(errno));
-+		goto exit_cgroup;
-+	} else if (!has_attached_progs) {
-+		ret = 0;
-+		goto exit_cgroup;
-+	}
-+
- 	if (json_output)
- 		jsonw_start_array(json_wtr);
- 	else
-@@ -212,6 +242,7 @@ static int do_show(int argc, char **argv)
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
- 
-+exit_cgroup:
- 	close(cgroup_fd);
- exit:
- 	return ret;
-@@ -228,7 +259,7 @@ static int do_show_tree_fn(const char *fpath, const struct stat *sb,
- 			   int typeflag, struct FTW *ftw)
- {
- 	enum bpf_attach_type type;
--	bool skip = true;
-+	int has_attached_progs;
- 	int cgroup_fd;
- 
- 	if (typeflag != FTW_D)
-@@ -240,22 +271,13 @@ static int do_show_tree_fn(const char *fpath, const struct stat *sb,
- 		return SHOW_TREE_FN_ERR;
- 	}
- 
--	for (type = 0; type < __MAX_BPF_ATTACH_TYPE; type++) {
--		int count = count_attached_bpf_progs(cgroup_fd, type);
--
--		if (count < 0 && errno != EINVAL) {
--			p_err("can't query bpf programs attached to %s: %s",
--			      fpath, strerror(errno));
--			close(cgroup_fd);
--			return SHOW_TREE_FN_ERR;
--		}
--		if (count > 0) {
--			skip = false;
--			break;
--		}
--	}
--
--	if (skip) {
-+	has_attached_progs = cgroup_has_attached_progs(cgroup_fd);
-+	if (has_attached_progs < 0) {
-+		p_err("can't query bpf programs attached to %s: %s",
-+		      fpath, strerror(errno));
-+		close(cgroup_fd);
-+		return SHOW_TREE_FN_ERR;
-+	} else if (!has_attached_progs) {
- 		close(cgroup_fd);
+ 	/* enable TX-delay for rgmii-{id,txid}, and disable it for rgmii and
+ 	 * rgmii-rxid. The RX-delay can be enabled by the external RXDLY pin.
+@@ -189,7 +191,22 @@ static int rtl8211f_config_init(struct phy_device *phydev)
  		return 0;
  	}
+ 
+-	return phy_modify_paged(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY, val);
++	ret = phy_modify_paged_changed(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY,
++				       val);
++	if (ret < 0) {
++		dev_err(dev, "Failed to update the TX delay register\n");
++		return ret;
++	} else if (ret) {
++		dev_dbg(dev,
++			"%s 2ns TX delay (and changing the value from pin-strapping RXD1 or the bootloader)\n",
++			val ? "Enabling" : "Disabling");
++	} else {
++		dev_dbg(dev,
++			"2ns TX delay was already %s (by pin-strapping RXD1 or bootloader configuration)\n",
++			val ? "enabled" : "disabled");
++	}
++
++	return 0;
+ }
+ 
+ static int rtl8211e_config_init(struct phy_device *phydev)
 -- 
 2.20.1
 
