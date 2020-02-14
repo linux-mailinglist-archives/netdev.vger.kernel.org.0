@@ -2,163 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D6A15D66D
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 12:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DACF15D675
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 12:20:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729225AbgBNLQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 06:16:50 -0500
-Received: from mail-vs1-f73.google.com ([209.85.217.73]:35428 "EHLO
-        mail-vs1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729210AbgBNLQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 06:16:50 -0500
-Received: by mail-vs1-f73.google.com with SMTP id 123so674607vsg.2
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 03:16:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=c3okqhGXbbn+0UGnWI89nn927kUSh19dp4ivRMVKM2U=;
-        b=iQAkM9MjICHpGcWO1za9HTHfLgysGmX4AvNhv0qrE8Eyc53ngdh1T8OpbzVHWkZ0fo
-         KXNxqzuGBpFGVRu6EGDu2mxLR0mSVHjrqSUBirnlt6TtXajhTXSJzPQN561gCblVT/Bm
-         d9O2k3B5DaTnJAJp0+Uqkkj3DsaCIjuER6vwEbnL9WeFAg5PoyCzy6tVwlZ0NRSe6DXP
-         a6wDsljFgIyHhEKyFUHsfdZgua/fcyGPgCG3RcScdrCZTj6P15ukbzTPk6xjHhIjHzo/
-         +3bn0EzWxXjzTivBC5zTYDoqdIGI63+qWx2PwA0Qdm2jglKCm5R1JWJPtZISzQNrKglc
-         jexQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=c3okqhGXbbn+0UGnWI89nn927kUSh19dp4ivRMVKM2U=;
-        b=mThaRp4dLi0a2j7F7PMyM25Bm827TUaY4dhP1TE9n22+0ZIZvM9Ryq0P3h9OUUwzA7
-         kpOc/wNhugBWGSf/+hH3l9YQ4BYcIvehNU1I/RwoIgjOyQZySJwm+ftiH8ywyTtrWaLi
-         faw6WfhIOUX978Mu0kw+q9GGawqNoPvA6v8iUkZjSs05NMbILeup5hrEHeMX/x/OxG2V
-         C+pRM1vz68Kbp0aD/o4bwFQNYk1TU/A9PPtMHv/2AfeVPUu71wOFap3zFMyf3nKBfirG
-         Bewmx/WEKMe7e35H/4hLAbmWD2KPUR2n+MLJcGIRntziTsWIKNPWmTqne6kceUI2shRZ
-         Ww5A==
-X-Gm-Message-State: APjAAAXExie8uLffSkP5vOPqiSqAZ6SOCqGBbQdUTf0w/gePhwA8ZMkm
-        KQ0mdGpXPDz5LhMDaMayWaq9OXLHgwj4ddfSaw==
-X-Google-Smtp-Source: APXvYqzsIA3nUi3NBbhp5dI9jRoSYsoMZCDaMZ07OVCCBOj8uKzTu0JiMAsaZ8k19Z0h13CTZjvl3d3xNuD/pHp54g==
-X-Received: by 2002:ab0:2859:: with SMTP id c25mr1216302uaq.79.1581679007748;
- Fri, 14 Feb 2020 03:16:47 -0800 (PST)
-Date:   Fri, 14 Feb 2020 19:16:41 +0800
-Message-Id: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-Subject: [Bluez PATCH v5] bluetooth: secure bluetooth stack from bluedump attack
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Howard Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1729173AbgBNLTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 06:19:55 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:43012 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728864AbgBNLTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 06:19:55 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1j2Z0i-00BUEg-PQ; Fri, 14 Feb 2020 12:19:52 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next next-2020-02-14
+Date:   Fri, 14 Feb 2020 12:19:46 +0100
+Message-Id: <20200214111947.55727-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attack scenario:
-1. A Chromebook (let's call this device A) is paired to a legitimate
-   Bluetooth classic device (e.g. a speaker) (let's call this device
-   B).
-2. A malicious device (let's call this device C) pretends to be the
-   Bluetooth speaker by using the same BT address.
-3. If device A is not currently connected to device B, device A will
-   be ready to accept connection from device B in the background
-   (technically, doing Page Scan).
-4. Therefore, device C can initiate connection to device A
-   (because device A is doing Page Scan) and device A will accept the
-   connection because device A trusts device C's address which is the
-   same as device B's address.
-5. Device C won't be able to communicate at any high level Bluetooth
-   profile with device A because device A enforces that device C is
-   encrypted with their common Link Key, which device C doesn't have.
-   But device C can initiate pairing with device A with just-works
-   model without requiring user interaction (there is only pairing
-   notification). After pairing, device A now trusts device C with a
-   new different link key, common between device A and C.
-6. From now on, device A trusts device C, so device C can at anytime
-   connect to device A to do any kind of high-level hijacking, e.g.
-   speaker hijack or mouse/keyboard hijack.
+Hi,
 
-Since we don't know whether the repairing is legitimate or not,
-leave the decision to user space if all the conditions below are met.
-- the pairing is initialized by peer
-- the authorization method is just-work
-- host already had the link key to the peer
+And also for net-next, some updates. I have more in the
+queue, but want to get these in first, then forward my
+tree, and then get the others to avoid conflicts etc.
 
-Signed-off-by: Howard Chung <howardchung@google.com>
----
+Please pull and let me know if there's any problem.
 
-Changes in v5:
-- Rephrase the comment
+Thanks,
+johannes
 
-Changes in v4:
-- optimise the check in smp.c.
 
-Changes in v3:
-- Change confirm_hint from 2 to 1
-- Fix coding style (declaration order)
 
-Changes in v2:
-- Remove the HCI_PERMIT_JUST_WORK_REPAIR debugfs option
-- Fix the added code in classic
-- Add a similar fix for LE
+The following changes since commit fe23d63422c83cd7c8154dc7faef6af97be4b948:
 
- net/bluetooth/hci_event.c | 10 ++++++++++
- net/bluetooth/smp.c       | 19 +++++++++++++++++++
- 2 files changed, 29 insertions(+)
+  Merge branch '1GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue (2019-12-31 21:43:31 -0800)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 2c833dae9366..e6982f4f51ea 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4571,6 +4571,16 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
- 			goto confirm;
- 		}
- 
-+		/* If there already exists link key in local host, leave the
-+		 * decision to user space since the remote device could be
-+		 * legitimate or malicious.
-+		 */
-+		if (hci_find_link_key(hdev, &ev->bdaddr)) {
-+			bt_dev_warn(hdev, "Local host already has link key");
-+			confirm_hint = 1;
-+			goto confirm;
-+		}
-+
- 		BT_DBG("Auto-accept of user confirmation with %ums delay",
- 		       hdev->auto_accept_delay);
- 
-diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-index 2cba6e07c02b..25dbf77d216b 100644
---- a/net/bluetooth/smp.c
-+++ b/net/bluetooth/smp.c
-@@ -2192,6 +2192,25 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
- 		smp_send_cmd(conn, SMP_CMD_PAIRING_RANDOM, sizeof(smp->prnd),
- 			     smp->prnd);
- 		SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
-+
-+		/* Only Just-Works pairing requires extra checks */
-+		if (smp->method != JUST_WORKS)
-+			goto mackey_and_ltk;
-+
-+		/* If there already exists link key in local host, leave the
-+		 * decision to user space since the remote device could be
-+		 * legitimate or malicious.
-+		 */
-+		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
-+				 hcon->role)) {
-+			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-+							hcon->type,
-+							hcon->dst_type, passkey,
-+							1);
-+			if (err)
-+				return SMP_UNSPECIFIED;
-+			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-+		}
- 	}
- 
- mackey_and_ltk:
--- 
-2.25.0.265.gbab2e86ba0-goog
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2020-02-14
+
+for you to fetch changes up to 1f6e0baa703d31002c312c3e423c108b04325df0:
+
+  mac80211: allow setting queue_len for drivers not using wake_tx_queue (2020-02-14 09:59:35 +0100)
+
+----------------------------------------------------------------
+A few big new things:
+ * 802.11 frame encapsulation offload support
+ * more HE (802.11ax) support, including some for 6 GHz band
+ * powersave in hwsim, for better testing
+
+Of course as usual there are various cleanups and small fixes.
+
+----------------------------------------------------------------
+Aditya Pakki (1):
+      mac80211: Remove redundant assertion
+
+Andrei Otcheretianski (1):
+      mac80211: Accept broadcast probe responses on 6GHz band
+
+Ben Greear (1):
+      mac80211: Fix setting txpower to zero
+
+Daniel Gabay (1):
+      mac80211: update condition for HE disablement
+
+Haim Dreyfuss (2):
+      cfg80211: add no HE indication to the channel flag
+      mac80211: check whether HE connection is allowed by the reg domain
+
+Ilan Peer (3):
+      mac80211: Handle SMPS mode changes only in AP mode
+      mac80211: Remove support for changing AP SMPS mode
+      cfg80211/mac80211: Allow user space to register for station Rx authentication
+
+Johannes Berg (7):
+      Merge remote-tracking branch 'net-next/master' into mac80211-next
+      mac80211_hwsim: remove maximum TX power
+      mac80211: simplify and improve HT/VHT/HE disable code
+      mac80211: refactor extended element parsing
+      mac80211: allow changing TX-related netdev features
+      mac80211: remove supported channels element in 6 GHz if ECSA support
+      mac80211: set station bandwidth from HE capability
+
+John Crispin (6):
+      trivial: mac80211: fix indentation
+      mac80211: add 802.11 encapsulation offloading support
+      nl80211: add handling for BSS color
+      mac80211: add handling for BSS color
+      mac80211: fix 11w when using encapsulation offloading
+      mac80211: allow setting queue_len for drivers not using wake_tx_queue
+
+Lorenzo Bianconi (1):
+      mac80211: debugfs: improve airtime_flags handler readability
+
+Luca Coelho (1):
+      mac80211: make ieee80211_wep_init() return void
+
+Markus Theil (3):
+      mac80211: fix tx status for no ack cases
+      nl80211: add src and dst addr attributes for control port tx/rx
+      mac80211: support NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211_MAC_ADDRS
+
+Pi-Hsun Shih (1):
+      wireless: Use offsetof instead of custom macro.
+
+Sergey Matyukevich (1):
+      ieee80211: add WPA3 OWE AKM suite selector
+
+Shaul Triebitz (1):
+      mac80211: parse also the RSNXE IE
+
+Thomas Pedersen (2):
+      mac80211_hwsim: add power save support
+      mac80211: add ieee80211_is_any_nullfunc()
+
+Toke Høiland-Jørgensen (1):
+      mac80211: Always show airtime debugfs file when TXQs are enabled
+
+Tova Mussai (1):
+      mac80211: HE: set RX NSS
+
+Veerendranath Jakkam (1):
+      cfg80211: Enhance the AKM advertizement to support per interface.
+
+Zvika Yehudai (1):
+      ieee80211: fix 'the' doubling in comments
+
+ drivers/net/wireless/ath/ath10k/mac.c             |   3 +-
+ drivers/net/wireless/ath/ath9k/main.c             |   3 +
+ drivers/net/wireless/ath/ath9k/xmit.c             |   7 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c |   2 +-
+ drivers/net/wireless/mac80211_hwsim.c             |  11 +-
+ include/linux/ieee80211.h                         |  26 +++-
+ include/net/cfg80211.h                            |  63 +++++++-
+ include/net/mac80211.h                            |  40 ++++-
+ include/uapi/linux/nl80211.h                      |  80 +++++++++-
+ include/uapi/linux/wireless.h                     |   5 +-
+ net/mac80211/cfg.c                                | 106 +------------
+ net/mac80211/debugfs.c                            |  56 ++++++-
+ net/mac80211/debugfs_netdev.c                     |  13 +-
+ net/mac80211/debugfs_sta.c                        |   6 +-
+ net/mac80211/he.c                                 |   4 +
+ net/mac80211/ht.c                                 |  64 +++-----
+ net/mac80211/ieee80211_i.h                        |  28 +++-
+ net/mac80211/iface.c                              |  82 +++++++++-
+ net/mac80211/key.c                                |  19 ++-
+ net/mac80211/main.c                               |  33 ++--
+ net/mac80211/mlme.c                               | 139 +++++++++++------
+ net/mac80211/rx.c                                 |  14 +-
+ net/mac80211/sta_info.c                           |  16 +-
+ net/mac80211/status.c                             |  91 ++++++++++-
+ net/mac80211/tx.c                                 | 177 +++++++++++++++++++++-
+ net/mac80211/util.c                               |  83 ++++++----
+ net/mac80211/vht.c                                |  58 ++++++-
+ net/mac80211/wep.c                                |   4 +-
+ net/mac80211/wep.h                                |   2 +-
+ net/wireless/core.h                               |   2 +-
+ net/wireless/mlme.c                               |  33 +++-
+ net/wireless/nl80211.c                            | 109 ++++++++++++-
+ net/wireless/rdev-ops.h                           |   8 +-
+ net/wireless/reg.c                                |   2 +
+ net/wireless/trace.h                              |  27 ++--
+ 35 files changed, 1078 insertions(+), 338 deletions(-)
 
