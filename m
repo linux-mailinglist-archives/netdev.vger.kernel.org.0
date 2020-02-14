@@ -2,61 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDEB15D990
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 15:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1DF15D9D2
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 15:53:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbgBNOcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 09:32:33 -0500
-Received: from relay10.mail.gandi.net ([217.70.178.230]:36043 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728123AbgBNOcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 09:32:33 -0500
-Received: from localhost (lfbn-lyo-1-1670-129.w90-65.abo.wanadoo.fr [90.65.102.129])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id E977824000A;
-        Fri, 14 Feb 2020 14:32:29 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: cnic: fix spelling mistake "reserverd" -> "reserved"
-Date:   Fri, 14 Feb 2020 15:32:24 +0100
-Message-Id: <20200214143224.23517-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.24.1
+        id S1729430AbgBNOxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 09:53:37 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:45929 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726191AbgBNOxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 09:53:37 -0500
+Received: by mail-qv1-f67.google.com with SMTP id l14so4364948qvu.12
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 06:53:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rXX7qWQLw5iUl+Yr9TnbcnXXBJ8gV/9E4bU4j8wPzLg=;
+        b=FZFovExwaWSG+83m3KJ6VNb/3Qpj/mH1DVy8GOmh6UGHrKw0FL4gDpBvP+GDR9M0eL
+         3u974bKjaM6/dAfGSkEp1ZwypLuZOfE73IX+tcPH4umifFoaONXCNmZgVmYY8TYa8ytl
+         CHKB2lh6/9xUq0K6WQfJH8LqbKG9H9KUey7l9BxpK+Z87byIxhH1gMpFoLFFanjefkqs
+         Z2FANM+2yBa/nKGmphblSJIx/UM5153aSz6ufzASAGucstLK60SgiMtpaC8Ko/kbRX/r
+         gBAGYRPbZMn/mbGcyBiavgpmHHwlAZ7XNsajvckAmBakuAr0LE2QkCh9Fy4rZ292slcp
+         oNHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rXX7qWQLw5iUl+Yr9TnbcnXXBJ8gV/9E4bU4j8wPzLg=;
+        b=rRkdWXraUWpSfK1M1CRD/1/qFQ8zRTvnJDK38uAI7xAVbiv6Cja+vfWkYOK40bXb5K
+         qYS6vu2+/3fciWBrHAuDtZgIWSCd3dCmw4ZG/a5Ug9MURfcaJgcW3QSe+YpGZ7bD6slU
+         bbpDDbGKYPjp9GeP0BXjIBq21gjaFz075U5K7n9Tbdb2w6faq4yCe9cZkQexOjN3HaSI
+         ASVUpGlCQPxFaEhcYBMChRZU2eUSOvZnHxL2z5zKrYCC+l5fQ2doOnYaaOR8Gg3vzxke
+         XrSZZ95aGRUm1ANyVhL1opjQ+sTU23C+pVVyER8HYqaqbwJ4QLAAC79xDM7AjVvRlkl7
+         lcSw==
+X-Gm-Message-State: APjAAAX4eL96CiEPGYBIjOsYvnY668tr5PjdSXhKaGLClkstPQYA/c/J
+        4ufdlcg9S1rUWdOy8z4DbPeOVQ==
+X-Google-Smtp-Source: APXvYqzkHrLUNBZ50yV41b3XpgpOdtqCYltwJdqPIBGC27H7eH4iq9iYvMpvaEWIWp/w/lQPp8lFKg==
+X-Received: by 2002:a0c:fec3:: with SMTP id z3mr2393334qvs.111.1581692016483;
+        Fri, 14 Feb 2020 06:53:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id t55sm3648523qte.24.2020.02.14.06.53.35
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 14 Feb 2020 06:53:35 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1j2cLX-0007UE-1f; Fri, 14 Feb 2020 10:53:35 -0400
+Date:   Fri, 14 Feb 2020 10:53:35 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        "Michael J. Ruhl" <michael.j.ruhl@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Shiraz Saleem <shiraz.saleem@intel.com>
+Subject: Re: [RFC PATCH v4 22/25] RDMA/irdma: Add dynamic tracing for CM
+Message-ID: <20200214145335.GT31668@ziepe.ca>
+References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+ <20200212191424.1715577-23-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200212191424.1715577-23-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The reserved member should be named reserved3.
+On Wed, Feb 12, 2020 at 11:14:21AM -0800, Jeff Kirsher wrote:
+> From: "Michael J. Ruhl" <michael.j.ruhl@intel.com>
+> 
+> Add dynamic tracing functionality to debug connection
+> management issues.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- drivers/net/ethernet/broadcom/cnic_defs.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+We now have tracing in the core CM, why does a driver need additional
+tracing?
 
-diff --git a/drivers/net/ethernet/broadcom/cnic_defs.h b/drivers/net/ethernet/broadcom/cnic_defs.h
-index b38499774071..99e2c6d4d8c3 100644
---- a/drivers/net/ethernet/broadcom/cnic_defs.h
-+++ b/drivers/net/ethernet/broadcom/cnic_defs.h
-@@ -543,13 +543,13 @@ struct l4_kwq_update_pg {
- #define L4_KWQ_UPDATE_PG_RESERVERD2_SHIFT 2
- #endif
- #if defined(__BIG_ENDIAN)
--	u16 reserverd3;
-+	u16 reserved3;
- 	u8 da0;
- 	u8 da1;
- #elif defined(__LITTLE_ENDIAN)
- 	u8 da1;
- 	u8 da0;
--	u16 reserverd3;
-+	u16 reserved3;
- #endif
- #if defined(__BIG_ENDIAN)
- 	u8 da2;
--- 
-2.24.1
-
+Jason
