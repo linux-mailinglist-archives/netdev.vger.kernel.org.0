@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8430D15EAFE
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E1415EAE1
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394609AbgBNRRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:17:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37858 "EHLO mail.kernel.org"
+        id S2403833AbgBNRRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:17:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391748AbgBNQLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:11:16 -0500
+        id S2391794AbgBNQL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:11:29 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9CD382469D;
-        Fri, 14 Feb 2020 16:11:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B67E9222C2;
+        Fri, 14 Feb 2020 16:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696675;
-        bh=Q7eAQjp9GAiJ/dGofjdEh5xK+sfrtDdEUMzVTFqX9cc=;
+        s=default; t=1581696688;
+        bh=vCOwDC4HiMKfA9asIcQGpE8w0AH9BpB7uecmviq9Qsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kgt/EONuMD/wrxR6hVWjhJ3o9IYxHG/q3nHH0pGvujORb4HwB5HrSWm14dUSnyZMb
-         KHb4DZD4gxqz/oCC3TnwLoaN6mbpXwysx3ZYYHhPLYFWx+rzdsAenn/AW9AQW9DY0N
-         HGmynRb60VQ2KJmn1QyFxgxE3/pmwh+h7J5BsMwA=
+        b=mZE6dLUMmNUHYgS9l8DrV9xh/EocV/pq54xwKnbsE7NMykE6hd+TkcixLfYmrQUXq
+         dBZEGylGTZuc+66NRw3zzywNjM63Y3WdbeFy5S3qcwoeqTlUCI0CPLEZ6zkGBybf3m
+         M8IKqf16lrkg+DJu2FmLAyKM0bVweDdeM2yHTEHc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 444/459] iwlwifi: mvm: Check the sta is not NULL in iwl_mvm_cfg_he_sta()
-Date:   Fri, 14 Feb 2020 11:01:34 -0500
-Message-Id: <20200214160149.11681-444-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 455/459] i40e: Relax i40e_xsk_wakeup's return value when PF is busy
+Date:   Fri, 14 Feb 2020 11:01:45 -0500
+Message-Id: <20200214160149.11681-455-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,75 +47,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 12d47f0ea5e0aa63f19ba618da55a7c67850ca10 ]
+[ Upstream commit c77e9f09143822623dd71a0fdc84331129e97c3a ]
 
-Fix a kernel panic by checking that the sta is not NULL.
-This could happen during a reconfig flow, as mac80211 moves the sta
-between all the states without really checking if the previous state was
-successfully set. So, if for some reason we failed to add back the
-station, subsequent calls to sta_state() callback will be done when the
-station is NULL. This would result in a following panic:
+Return -EAGAIN instead of -ENETDOWN to provide a slightly milder
+information to user space so that an application will know to retry the
+syscall when __I40E_CONFIG_BUSY bit is set on pf->state.
 
-BUG: unable to handle kernel NULL pointer dereference at
-0000000000000040
-IP: iwl_mvm_cfg_he_sta+0xfc/0x690 [iwlmvm]
-[..]
-Call Trace:
- iwl_mvm_mac_sta_state+0x629/0x6f0 [iwlmvm]
- drv_sta_state+0xf4/0x950 [mac80211]
- ieee80211_reconfig+0xa12/0x2180 [mac80211]
- ieee80211_restart_work+0xbb/0xe0 [mac80211]
- process_one_work+0x1e2/0x610
- worker_thread+0x4d/0x3e0
-[..]
-
-Signed-off-by: Andrei Otcheretianski <andrei.otcheretianski@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: b3873a5be757 ("net/i40e: Fix concurrency issues between config flow and XSK")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
+Link: https://lore.kernel.org/bpf/20200205045834.56795-2-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 18ccc2692437f..6ca087ffd163b 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -5,10 +5,9 @@
-  *
-  * GPL LICENSE SUMMARY
-  *
-- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
-  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of version 2 of the GNU General Public License as
-@@ -28,10 +27,9 @@
-  *
-  * BSD LICENSE
-  *
-- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
-  * Copyright(c) 2013 - 2015 Intel Mobile Communications GmbH
-  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2012 - 2014, 2018 - 2020 Intel Corporation
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -2025,7 +2023,7 @@ static void iwl_mvm_cfg_he_sta(struct iwl_mvm *mvm,
- 	rcu_read_lock();
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index f73cd917c44f7..3156de786d955 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -791,7 +791,7 @@ int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
+ 	struct i40e_ring *ring;
  
- 	sta = rcu_dereference(mvm->fw_id_to_mac_id[sta_ctxt_cmd.sta_id]);
--	if (IS_ERR(sta)) {
-+	if (IS_ERR_OR_NULL(sta)) {
- 		rcu_read_unlock();
- 		WARN(1, "Can't find STA to configure HE\n");
- 		return;
+ 	if (test_bit(__I40E_CONFIG_BUSY, pf->state))
+-		return -ENETDOWN;
++		return -EAGAIN;
+ 
+ 	if (test_bit(__I40E_VSI_DOWN, vsi->state))
+ 		return -ENETDOWN;
 -- 
 2.20.1
 
