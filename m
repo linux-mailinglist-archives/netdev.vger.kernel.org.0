@@ -2,87 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6703715D741
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 13:20:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00F1415D7F0
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 14:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728864AbgBNMU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 07:20:27 -0500
-Received: from mga05.intel.com ([192.55.52.43]:30457 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728582AbgBNMU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 07:20:27 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 04:20:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,440,1574150400"; 
-   d="scan'208";a="381429286"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2020 04:20:26 -0800
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 14 Feb 2020 04:20:26 -0800
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.100]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.95]) with mapi id 14.03.0439.000;
- Fri, 14 Feb 2020 04:20:26 -0800
-From:   "Boeuf, Sebastien" <sebastien.boeuf@intel.com>
-To:     "sgarzare@redhat.com" <sgarzare@redhat.com>
-CC:     "stefanha@redhat.com" <stefanha@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH v3 0/2] Enhance virtio-vsock connection semantics
-Thread-Topic: [PATCH v3 0/2] Enhance virtio-vsock connection semantics
-Thread-Index: AQHV4yyrh/V/2txMb02EtEAkK2wIxKgbIV6AgAAAqAA=
-Date:   Fri, 14 Feb 2020 12:20:25 +0000
-Message-ID: <cdad5dee6207d8fdb667cbdc4b67d8f9b61ad23c.camel@intel.com>
-References: <20200214114802.23638-1-sebastien.boeuf@intel.com>
-         <20200214121803.kpblkpywkvwkoc7h@steredhat>
-In-Reply-To: <20200214121803.kpblkpywkvwkoc7h@steredhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.252.24.179]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <84D16CF6DECC4045BF893CADAABE2A74@intel.com>
+        id S1729156AbgBNNH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 08:07:57 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:21126 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726191AbgBNNH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 08:07:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581685675;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1832xFEQ/vqOUquw3BW7qf1Tz86S2ygW8Q27WNGEQwM=;
+        b=h3dHIGSXVXXSOZ8dG71ZePINL4PpBi9q/4EfPLEM2VDmYuMKywbewjakEtL+kBPy4EV8BX
+        eTVKA2UNvlpQ1+c9eP/SvoN98zeHLBqZlxrhEbRDJWFoDAQhoq7UNvzbKCWPDH92ot0+uI
+        wF5M6rD5SbAi3MI2gnjeL7bq4AS8HTQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-260-G1g_rkKnO5ac3d_jcJDXqQ-1; Fri, 14 Feb 2020 08:07:53 -0500
+X-MC-Unique: G1g_rkKnO5ac3d_jcJDXqQ-1
+Received: by mail-wm1-f72.google.com with SMTP id b8so833619wmj.0
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 05:07:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1832xFEQ/vqOUquw3BW7qf1Tz86S2ygW8Q27WNGEQwM=;
+        b=QM9fSgPUwd/x4KVxraCF6U+x2kb0jqTYlfhlOStZXt5QPidUmhsMgJcN9vXpw1Nd42
+         sOsmcOfSIgCn9FdQVvkAVjLM/0z44SjsV/+Mjqxa8cSNuchJO/anEyF0hHAOrvsCn/kr
+         ZOtb7pH0c/zzj4vOhJKl15fTtUILkwyvasfS/DBLp1qzPK4JHzJKH/sNuzWu2r+wqtkz
+         FMfHu8tNj1Q8NGtj8sDyalpy+tbcAjv9VUJ2QYqAJR3DKo9wGsRyoG8hiI+7pVD48Rru
+         FsI9+7Ov8+VoPGmsI73s0Kc/tPuce4UHp2zR2jstypAXPvdpS0f8BoNaed1fsrnlRteC
+         NUcg==
+X-Gm-Message-State: APjAAAUN2e8BRmGoNu+xJRn0Rs9yioPVmiMlS9XhMm2l54Z+GZdkFUrT
+        FKN1nqBXs6Ek0HWwHHzIqAepkNHDZmzl681PhZbBge+vfLeHMnJu1bFjSDf9TFwCRlqVGIKFSB7
+        SRMQ7hJgjJRoyI/nl
+X-Received: by 2002:adf:f0cb:: with SMTP id x11mr4034074wro.421.1581685672334;
+        Fri, 14 Feb 2020 05:07:52 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx1+X/LSGJbNFIQIc0zspTRiuWA1SmDcQRTsI0AIgtgMfeDii0ltH/9WQWfhAhTpVQxi8z8YA==
+X-Received: by 2002:adf:f0cb:: with SMTP id x11mr4034045wro.421.1581685672067;
+        Fri, 14 Feb 2020 05:07:52 -0800 (PST)
+Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
+        by smtp.gmail.com with ESMTPSA id g15sm6689333wro.65.2020.02.14.05.07.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Feb 2020 05:07:51 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     mtk.manpages@gmail.com
+Cc:     Jorgen Hansen <jhansen@vmware.com>, linux-man@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>, netdev@vger.kernel.org
+Subject: [PATCH v2] vsock.7: add VMADDR_CID_LOCAL description
+Date:   Fri, 14 Feb 2020 14:07:49 +0100
+Message-Id: <20200214130749.126603-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIwLTAyLTE0IGF0IDEzOjE4ICswMTAwLCBTdGVmYW5vIEdhcnphcmVsbGEgd3Jv
-dGU6DQo+IE9uIEZyaSwgRmViIDE0LCAyMDIwIGF0IDEyOjQ4OjAwUE0gKzAxMDAsIFNlYmFzdGll
-biBCb2V1ZiB3cm90ZToNCj4gPiBUaGlzIHNlcmllcyBpbXByb3ZlcyB0aGUgc2VtYW50aWNzIGJl
-aGluZCB0aGUgd2F5IHZpcnRpby12c29jaw0KPiA+IHNlcnZlcg0KPiA+IGFjY2VwdHMgY29ubmVj
-dGlvbnMgY29taW5nIGZyb20gdGhlIGNsaWVudC4gV2hlbmV2ZXIgdGhlIHNlcnZlcg0KPiA+IHJl
-Y2VpdmVzIGEgY29ubmVjdGlvbiByZXF1ZXN0IGZyb20gdGhlIGNsaWVudCwgaWYgaXQgaXMgYm91
-bmQgdG8NCj4gPiB0aGUNCj4gPiBzb2NrZXQgYnV0IG5vdCB5ZXQgbGlzdGVuaW5nLCBpdCB3aWxs
-IGFuc3dlciB3aXRoIGEgUlNUIHBhY2tldC4gVGhlDQo+ID4gcG9pbnQgaXMgdG8gZW5zdXJlIGVh
-Y2ggcmVxdWVzdCBmcm9tIHRoZSBjbGllbnQgaXMgcXVpY2tseQ0KPiA+IHByb2Nlc3NlZA0KPiA+
-IHNvIHRoYXQgdGhlIGNsaWVudCBjYW4gZGVjaWRlIGFib3V0IHRoZSBzdHJhdGVneSBvZiByZXRy
-eWluZyBvcg0KPiA+IG5vdC4NCj4gPiANCj4gPiBUaGUgc2VyaWVzIGluY2x1ZGVzIGFsb25nIHdp
-dGggdGhlIGltcHJvdmVtZW50IHBhdGNoIGEgbmV3IHRlc3QgdG8NCj4gPiBlbnN1cmUgdGhlIGJl
-aGF2aW9yIGlzIGNvbnNpc3RlbnQgYWNyb3NzIGFsbCBoeXBlcnZpc29ycyBkcml2ZXJzLg0KPiA+
-IA0KPiA+IFNlYmFzdGllbiBCb2V1ZiAoMik6DQo+ID4gICBuZXQ6IHZpcnRpb192c29jazogRW5o
-YW5jZSBjb25uZWN0aW9uIHNlbWFudGljcw0KPiA+ICAgdG9vbHM6IHRlc3Rpbmc6IHZzb2NrOiBU
-ZXN0IHdoZW4gc2VydmVyIGlzIGJvdW5kIGJ1dCBub3QNCj4gPiBsaXN0ZW5pbmcNCj4gPiANCj4g
-PiAgbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jIHwgIDEgKw0KPiA+ICB0
-b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyAgICAgICAgfCA3Nw0KPiA+ICsrKysrKysr
-KysrKysrKysrKysrKysrKysNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA3OCBpbnNlcnRpb25zKCsp
-DQo+ID4gDQo+IA0KPiBUaGFua3MsDQo+IG5vdyB0aGV5IGFwcGx5IGNsZWFubHkhDQoNCkdyZWF0
-IQ0KDQo+IA0KPiBUZXN0ZWQtYnk6IFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0
-LmNvbT4NCj4gUmV2aWV3ZWQtYnk6IFN0ZWZhbm8gR2FyemFyZWxsYSA8c2dhcnphcmVAcmVkaGF0
-LmNvbT4NCj4gDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgQ29ycG9yYXRpb24gU0FTIChGcmVuY2ggc2lt
-cGxpZmllZCBqb2ludCBzdG9jayBjb21wYW55KQpSZWdpc3RlcmVkIGhlYWRxdWFydGVyczogIkxl
-cyBNb250YWxldHMiLSAyLCBydWUgZGUgUGFyaXMsIAo5MjE5NiBNZXVkb24gQ2VkZXgsIEZyYW5j
-ZQpSZWdpc3RyYXRpb24gTnVtYmVyOiAgMzAyIDQ1NiAxOTkgUi5DLlMuIE5BTlRFUlJFCkNhcGl0
-YWw6IDQsNTcyLDAwMCBFdXJvcwoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkg
-Y29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBvZiB0aGUgaW50
-ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpieSBvdGhlcnMg
-aXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkCnJlY2lw
-aWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
+Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
+local communication.
+
+This patch explains how to use it and remove the legacy
+VMADDR_CID_RESERVED no longer available.
+
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+v2:
+    * rephrased "Local communication" description [Stefan]
+    * added a mention of previous versions that supported
+      loopback only in the guest [Stefan]
+---
+ man7/vsock.7 | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/man7/vsock.7 b/man7/vsock.7
+index c5ffcf07d..78ac22b1e 100644
+--- a/man7/vsock.7
++++ b/man7/vsock.7
+@@ -127,8 +127,8 @@ There are several special addresses:
+ means any address for binding;
+ .B VMADDR_CID_HYPERVISOR
+ (0) is reserved for services built into the hypervisor;
+-.B VMADDR_CID_RESERVED
+-(1) must not be used;
++.B VMADDR_CID_LOCAL
++(1) is the well-known address for local communication (loopback);
+ .B VMADDR_CID_HOST
+ (2)
+ is the well-known address of the host.
+@@ -164,6 +164,16 @@ Consider using
+ .B VMADDR_CID_ANY
+ when binding instead of getting the local CID with
+ .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
++.SS Local communication
++The
++.B VMADDR_CID_LOCAL
++(1) directs packets to the same host that generated them. This is useful
++for testing applications on a single host and for debugging.
++.PP
++The local CID obtained with
++.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
++can be used for the same purpose, but it is preferable to use
++.B VMADDR_CID_LOCAL .
+ .SH ERRORS
+ .TP
+ .B EACCES
+@@ -222,6 +232,11 @@ are valid.
+ Support for VMware (VMCI) has been available since Linux 3.9.
+ KVM (virtio) is supported since Linux 4.8.
+ Hyper-V is supported since Linux 4.14.
++.PP
++VMADDR_CID_LOCAL is supported since Linux 5.6.
++Local communication in the guest and on the host is available since Linux 5.6.
++Previous versions partially supported it only in the guest and only with some
++transports (VMCI and virtio).
+ .SH SEE ALSO
+ .BR bind (2),
+ .BR connect (2),
+-- 
+2.24.1
 
