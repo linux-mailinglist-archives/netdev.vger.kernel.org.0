@@ -2,228 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8D215DCA9
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D40CA15E1F6
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731380AbgBNPyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:54:02 -0500
-Received: from mail-pl1-f201.google.com ([209.85.214.201]:33057 "EHLO
-        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731377AbgBNPyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:54:01 -0500
-Received: by mail-pl1-f201.google.com with SMTP id bd7so5430775plb.0
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 07:53:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=IIt27wT5sPWzKch1gTPWYRaZBvc/KKCKHQt7WmhoH40=;
-        b=Pkp9V0Gj8RiarpOzw1dhuV5VjoCwwWTBoZiSKO6qP33Qkdm2i0kTIIqpc3J7/h6Vn1
-         /OZ42xfWeXNCmeRK/Lj7VJ0EZmfxeTSTVHsRGlk1CH/xot8n8sIJO0WFSE1oS+qGaeIe
-         UfLrE1po02scOhoKFO6pXRbuHiox5X0WB/UZLoFGf4iDyQEN6TNNAL9Botp9SlYgWxoi
-         aLkxmiLyMiBhIF2AUQkqKoqDo5CVYo2T2Gt2RF3ZS2AkfnBhZCUgs12hXD+fKJunPp/N
-         WXIVExrT80/zGfnZnol4X2gaRZiwwDjpu9hID/NmBmUPQ5dFzKsDd3GUZePVn6A19qeS
-         orFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=IIt27wT5sPWzKch1gTPWYRaZBvc/KKCKHQt7WmhoH40=;
-        b=JFImFEdd6vb3maEJONCrBsrPRktQRjb2catu5tNgdU5XZuDjUebSlBDg5LA7kh5RjO
-         kSV9JWBzX9axlPIA1ZGKOxfOCCYyXXgq92Tzg42RiaZEHqHL40BrI+VfxipuK9yN2SpE
-         9ILSVFiCTuZa++j8xfUVAY32PO2dzaXCsjPXKGoPkFI5xpMWi5GaUeBxnlFwZg6/FCVf
-         Z8sPeUWldYEzkwryFLevOz87Cg/DkM6tvUZoC8EA945nI85HPTrxPz6/bTT/3trkT/gA
-         7iJlmArDDsK5NhIX1NDj4zJwejFYwufxM6xRt0Rmbtld6JSxbx+kBXcrrl213qy/UUfT
-         pGmw==
-X-Gm-Message-State: APjAAAW8gzlWxEUnvj/ybEGVXM95quSH94TFrbbpDqbW3hBq9OG9GN1Z
-        +t1WHh0FctiAwYrB35XmxQBXgd4ar84lFQ==
-X-Google-Smtp-Source: APXvYqwrjqD/V5Tf03LHMosp6p1iYWWVqrMtY9JWrSAeseFvUlXr2tgwrg6rD0qIneDWjUplKOdz5rDpSMNHQQ==
-X-Received: by 2002:a65:420b:: with SMTP id c11mr4023054pgq.297.1581695639002;
- Fri, 14 Feb 2020 07:53:59 -0800 (PST)
-Date:   Fri, 14 Feb 2020 07:53:53 -0800
-Message-Id: <20200214155353.71062-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-Subject: [PATCH net] net: add strict checks in netdev_name_node_alt_destroy()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2392970AbgBNQVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:21:31 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:55535 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392946AbgBNQV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 11:21:29 -0500
+Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1j2diE-0003IO-0z; Fri, 14 Feb 2020 17:21:06 +0100
+Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id B2903101DF7;
+        Fri, 14 Feb 2020 17:21:05 +0100 (CET)
+Message-Id: <20200214161503.911098862@linutronix.de>
+User-Agent: quilt/0.65
+Date:   Fri, 14 Feb 2020 14:39:27 +0100
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: [RFC patch 10/19] trace/bpf: Use migrate disable in trace_call_bpf()
+References: <20200214133917.304937432@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_name_node_alt_destroy() does a lookup over all
-device names of a namespace.
+BPF does not require preemption disable. It only requires to stay on the
+same CPU while running a program. Reflect this by replacing
+preempt_disable/enable() with migrate_disable/enable() pairs.
 
-We need to make sure the name belongs to the device
-of interest, and that we do not destroy its primary
-name, since we rely on it being not deleted :
-dev->name_node would indeed point to freed memory.
+On a non-RT kernel this maps to preempt_disable/enable().
 
-syzbot report was the following :
-
-BUG: KASAN: use-after-free in dev_net include/linux/netdevice.h:2206 [inline]
-BUG: KASAN: use-after-free in mld_force_mld_version net/ipv6/mcast.c:1172 [inline]
-BUG: KASAN: use-after-free in mld_in_v2_mode_only net/ipv6/mcast.c:1180 [inline]
-BUG: KASAN: use-after-free in mld_in_v1_mode+0x203/0x230 net/ipv6/mcast.c:1190
-Read of size 8 at addr ffff88809886c588 by task swapper/1/0
-
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
- __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
- kasan_report+0x12/0x20 mm/kasan/common.c:641
- __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:135
- dev_net include/linux/netdevice.h:2206 [inline]
- mld_force_mld_version net/ipv6/mcast.c:1172 [inline]
- mld_in_v2_mode_only net/ipv6/mcast.c:1180 [inline]
- mld_in_v1_mode+0x203/0x230 net/ipv6/mcast.c:1190
- mld_send_initial_cr net/ipv6/mcast.c:2083 [inline]
- mld_dad_timer_expire+0x24/0x230 net/ipv6/mcast.c:2118
- call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1404
- expire_timers kernel/time/timer.c:1449 [inline]
- __run_timers kernel/time/timer.c:1773 [inline]
- __run_timers kernel/time/timer.c:1740 [inline]
- run_timer_softirq+0x6c3/0x1790 kernel/time/timer.c:1786
- __do_softirq+0x262/0x98c kernel/softirq.c:292
- invoke_softirq kernel/softirq.c:373 [inline]
- irq_exit+0x19b/0x1e0 kernel/softirq.c:413
- exiting_irq arch/x86/include/asm/apic.h:546 [inline]
- smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1146
- apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
- </IRQ>
-RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
-Code: 68 73 c5 f9 eb 8a cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d 94 be 59 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d 84 be 59 00 fb f4 <c3> cc 55 48 89 e5 41 57 41 56 41 55 41 54 53 e8 de 2a 74 f9 e8 09
-RSP: 0018:ffffc90000d3fd68 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-RAX: 1ffffffff136761a RBX: ffff8880a99fc340 RCX: 0000000000000000
-RDX: dffffc0000000000 RSI: 0000000000000006 RDI: ffff8880a99fcbd4
-RBP: ffffc90000d3fd98 R08: ffff8880a99fc340 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffffffff8aa5a1c0 R14: 0000000000000000 R15: 0000000000000001
- arch_cpu_idle+0xa/0x10 arch/x86/kernel/process.c:686
- default_idle_call+0x84/0xb0 kernel/sched/idle.c:94
- cpuidle_idle_call kernel/sched/idle.c:154 [inline]
- do_idle+0x3c8/0x6e0 kernel/sched/idle.c:269
- cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:361
- start_secondary+0x2f4/0x410 arch/x86/kernel/smpboot.c:264
- secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
-
-Allocated by task 10229:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:515 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:488
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:529
- __do_kmalloc_node mm/slab.c:3616 [inline]
- __kmalloc_node+0x4e/0x70 mm/slab.c:3623
- kmalloc_node include/linux/slab.h:578 [inline]
- kvmalloc_node+0x68/0x100 mm/util.c:574
- kvmalloc include/linux/mm.h:645 [inline]
- kvzalloc include/linux/mm.h:653 [inline]
- alloc_netdev_mqs+0x98/0xe40 net/core/dev.c:9797
- rtnl_create_link+0x22d/0xaf0 net/core/rtnetlink.c:3047
- __rtnl_newlink+0xf9f/0x1790 net/core/rtnetlink.c:3309
- rtnl_newlink+0x69/0xa0 net/core/rtnetlink.c:3377
- rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5438
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- __sys_sendto+0x262/0x380 net/socket.c:1998
- __do_compat_sys_socketcall net/compat.c:771 [inline]
- __se_compat_sys_socketcall net/compat.c:719 [inline]
- __ia32_compat_sys_socketcall+0x530/0x710 net/compat.c:719
- do_syscall_32_irqs_on arch/x86/entry/common.c:337 [inline]
- do_fast_syscall_32+0x27b/0xe16 arch/x86/entry/common.c:408
- entry_SYSENTER_compat+0x70/0x7f arch/x86/entry/entry_64_compat.S:139
-
-Freed by task 10229:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:337 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:476
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3757
- __netdev_name_node_alt_destroy+0x1ff/0x2a0 net/core/dev.c:322
- netdev_name_node_alt_destroy+0x57/0x80 net/core/dev.c:334
- rtnl_alt_ifname net/core/rtnetlink.c:3518 [inline]
- rtnl_linkprop.isra.0+0x575/0x6f0 net/core/rtnetlink.c:3567
- rtnl_dellinkprop+0x46/0x60 net/core/rtnetlink.c:3588
- rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5438
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5456
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __compat_sys_sendmsg net/compat.c:642 [inline]
- __do_compat_sys_sendmsg net/compat.c:649 [inline]
- __se_compat_sys_sendmsg net/compat.c:646 [inline]
- __ia32_compat_sys_sendmsg+0x7a/0xb0 net/compat.c:646
- do_syscall_32_irqs_on arch/x86/entry/common.c:337 [inline]
- do_fast_syscall_32+0x27b/0xe16 arch/x86/entry/common.c:408
- entry_SYSENTER_compat+0x70/0x7f arch/x86/entry/entry_64_compat.S:139
-
-The buggy address belongs to the object at ffff88809886c000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 1416 bytes inside of
- 4096-byte region [ffff88809886c000, ffff88809886d000)
-The buggy address belongs to the page:
-page:ffffea0002621b00 refcount:1 mapcount:0 mapping:ffff8880aa402000 index:0x0 compound_mapcount: 0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea0002610d08 ffffea0002607608 ffff8880aa402000
-raw: 0000000000000000 ffff88809886c000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88809886c480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88809886c500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88809886c580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                      ^
- ffff88809886c600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88809886c680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Fixes: 36fbf1e52bd3 ("net: rtnetlink: add linkprop commands to add and delete alternative ifnames")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- net/core/dev.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ kernel/trace/bpf_trace.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a6316b336128cdb31eea6e80f1a47620abbd0d31..b6d13f3f1e5ab4f906f4bc9611e4cb37a55f3396 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -331,6 +331,12 @@ int netdev_name_node_alt_destroy(struct net_device *dev, const char *name)
- 	name_node = netdev_name_node_lookup(net, name);
- 	if (!name_node)
- 		return -ENOENT;
-+	/* lookup might have found our primary name or a name belonging
-+	 * to another device.
-+	 */
-+	if (name_node == dev->name_node || name_node->dev != dev)
-+		return -EINVAL;
-+
- 	__netdev_name_node_alt_destroy(name_node);
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -83,7 +83,7 @@ unsigned int trace_call_bpf(struct trace
+ 	if (in_nmi()) /* not supported yet */
+ 		return 1;
  
- 	return 0;
--- 
-2.25.0.265.gbab2e86ba0-goog
+-	preempt_disable();
++	migrate_disable();
+ 
+ 	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+ 		/*
+@@ -115,7 +115,7 @@ unsigned int trace_call_bpf(struct trace
+ 
+  out:
+ 	__this_cpu_dec(bpf_prog_active);
+-	preempt_enable();
++	migrate_enable();
+ 
+ 	return ret;
+ }
 
