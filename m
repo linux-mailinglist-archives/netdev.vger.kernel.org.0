@@ -2,282 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 479FD15F239
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:09:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA71A15F1F4
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387583AbgBNSIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:08:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34482 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731521AbgBNPy1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:54:27 -0500
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0CB6D2467C;
-        Fri, 14 Feb 2020 15:54:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695666;
-        bh=GeKdTvnywdeP8MWj0VNmxO0/yB5ZrHe8bH94R5osg5I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UieYlkOWDSA5iGNGqb4TX8AldH9CFgR3ogyJ/4Kkt0vjhiq7hjB9kSwtihrFPGHKL
-         LTXuu1waz+qzRC4ZYU6xDisrdOBf2tBwsuHrx8n2H1nnjkdUFFFaJoNgKeVzWfA6IV
-         n1o/K6Y89PK3l2bxM5lZOXzf/Ri152gnYDeJI0XY=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <maz@kernel.org>)
-        id 1j2dIO-0059RP-BJ; Fri, 14 Feb 2020 15:54:24 +0000
+        id S2391516AbgBNSE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:04:59 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:38984 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388160AbgBNSE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:04:56 -0500
+Received: by mail-il1-f195.google.com with SMTP id f70so8788594ill.6
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 10:04:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=R4NN/uANES2nujn+HbpW+H7CPBzT9YuAGgfTqQSdJqA=;
+        b=W8cGW5unrL0rmbcnyYr1EGay64jiwLnOzgWkIoVc/f0nR9nqjeGOJLlLjtS5lB0McT
+         WgFavHC27m7f1Sbvi/6xVV7HumlC2S/l/vnZ5K8+PGG7o+PPjfWeVQK4Pi0aX+r9Rd+6
+         324ENck6ngNHRlJEWZK7dkBmshADywGcTp8sp2kDlrwQGf5g+3MFfBwVNM8a4V+PBr3k
+         VTXPq8FjyN69u6n9jGCc2Xu7nd1JEej/aX8Rf6o2uNx/xm7qKHU4/w+zRsQbMB5EjTZB
+         o3s0nC5iVaHdOFifMSVPz6octpBYVc192/nAWH6JgXGl+pS8sDxb89zcq009KmCCvsH8
+         SWOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=R4NN/uANES2nujn+HbpW+H7CPBzT9YuAGgfTqQSdJqA=;
+        b=nnw43VUym0wmCJryzzTF3H8sQComtXvOTmeG9TtOWnu7ClM72NlyJWMKFa/yD4Hdxl
+         EexWBXuK+cCL2BEekzosRJmQcQAZufnNUMNpTu1XRnz/mDLXBZWY4oWqIPbC1XquSjnO
+         2MgW9QhUWJDmdvwQQLonIY2tE9yfDGZVeh6p95orI5HELdb+qifWsZrAUzTbGfVgM4fU
+         iI1yWcKAfwGK5wDUflVAhQns2l0DSw7CeMcOAvqv5BC5K3zfjmVAqe2Bjqo/5YIHNslG
+         /4MPj8DS1bdrDZiklaLVtLeY1BchqCC9Ih7ReDdDPvBkov8GmUpiu8n77WGksP3v+QIO
+         0/Lg==
+X-Gm-Message-State: APjAAAV5gBQ5/Ps8edOE02iTWn0R+Gw2ipu+FQPSfijScTUmZjcVEhp7
+        vREnRLO/K+oHe3U5FzYwzZytE5S5
+X-Google-Smtp-Source: APXvYqwHekk1HPfxfeG5CRY8oEBUBVp/k27R2M+sMlP0/D8E0XvuSFz+KthaHGE0iIqTov0lgkE+DQ==
+X-Received: by 2002:a65:5a48:: with SMTP id z8mr4586256pgs.157.1581703004482;
+        Fri, 14 Feb 2020 09:56:44 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id 23sm7651152pfh.28.2020.02.14.09.56.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2020 09:56:43 -0800 (PST)
+Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>
+References: <20200214173407.52521-1-Jason@zx2c4.com>
+ <20200214173407.52521-4-Jason@zx2c4.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com>
+Date:   Fri, 14 Feb 2020 09:56:42 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <20200214173407.52521-4-Jason@zx2c4.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Fri, 14 Feb 2020 15:54:24 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Pankaj Bansal <pankaj.bansal@nxp.com>
-Cc:     Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
-        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Will Deacon <will@kernel.org>, jon@solid-run.com,
-        Russell King <linux@armlinux.org.uk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Paul Yang <Paul.Yang@arm.com>, <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-In-Reply-To: <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
-References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
- <20200128110916.GA491@e121166-lin.cambridge.arm.com>
- <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
- <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
- <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
- <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
-Message-ID: <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
-X-Sender: maz@kernel.org
-User-Agent: Roundcube Webmail/1.3.10
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: pankaj.bansal@nxp.com, ard.biesheuvel@linaro.org, lorenzo.pieralisi@arm.com, makarand.pawagi@nxp.com, calvin.johnson@nxp.com, stuyoder@gmail.com, nleeder@codeaurora.org, ioana.ciornei@nxp.com, cristian.sovaiala@nxp.com, guohanjun@huawei.com, will@kernel.org, jon@solid-run.com, linux@armlinux.org.uk, linux-acpi@vger.kernel.org, lenb@kernel.org, jason@lakedaemon.net, Andy.Wang@arm.com, V.Sethi@nxp.com, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, laurentiu.tudor@nxp.com, Paul.Yang@arm.com, netdev@vger.kernel.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com, sudeep.holla@arm.com, robin.murphy@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-02-14 15:05, Pankaj Bansal wrote:
->> -----Original Message-----
->> From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
->> Sent: Friday, January 31, 2020 5:32 PM
->> To: Marc Zyngier <maz@kernel.org>
->> Cc: Makarand Pawagi <makarand.pawagi@nxp.com>; Calvin Johnson
->> <calvin.johnson@nxp.com>; stuyoder@gmail.com; nleeder@codeaurora.org;
->> Ioana Ciornei <ioana.ciornei@nxp.com>; Cristi Sovaiala
->> <cristian.sovaiala@nxp.com>; Hanjun Guo <guohanjun@huawei.com>; Will
->> Deacon <will@kernel.org>; Lorenzo Pieralisi 
->> <lorenzo.pieralisi@arm.com>;
->> Pankaj Bansal <pankaj.bansal@nxp.com>; jon@solid-run.com; Russell King
->> <linux@armlinux.org.uk>; ACPI Devel Maling List 
->> <linux-acpi@vger.kernel.org>;
->> Len Brown <lenb@kernel.org>; Jason Cooper <jason@lakedaemon.net>; Andy
->> Wang <Andy.Wang@arm.com>; Varun Sethi <V.Sethi@nxp.com>; Thomas
->> Gleixner <tglx@linutronix.de>; linux-arm-kernel <linux-arm-
->> kernel@lists.infradead.org>; Laurentiu Tudor 
->> <laurentiu.tudor@nxp.com>; Paul
->> Yang <Paul.Yang@arm.com>; <netdev@vger.kernel.org>
->> <netdev@vger.kernel.org>; Rafael J. Wysocki <rjw@rjwysocki.net>; Linux 
->> Kernel
->> Mailing List <linux-kernel@vger.kernel.org>; Shameerali Kolothum Thodi
->> <shameerali.kolothum.thodi@huawei.com>; Sudeep Holla
->> <sudeep.holla@arm.com>; Robin Murphy <robin.murphy@arm.com>
->> Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for 
->> fsl-mc
->> 
->> On Fri, 31 Jan 2020 at 12:06, Marc Zyngier <maz@kernel.org> wrote:
->> >
->> > On 2020-01-31 10:35, Makarand Pawagi wrote:
->> > >> -----Original Message-----
->> > >> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->> > >> Sent: Tuesday, January 28, 2020 4:39 PM
->> > >> To: Makarand Pawagi <makarand.pawagi@nxp.com>
->> > >> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->> > >> linux-arm- kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
->> > >> linux@armlinux.org.uk; jon@solid-run.com; Cristi Sovaiala
->> > >> <cristian.sovaiala@nxp.com>; Laurentiu Tudor
->> > >> <laurentiu.tudor@nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
->> > >> Varun Sethi <V.Sethi@nxp.com>; Calvin Johnson
->> > >> <calvin.johnson@nxp.com>; Pankaj Bansal <pankaj.bansal@nxp.com>;
->> > >> guohanjun@huawei.com; sudeep.holla@arm.com; rjw@rjwysocki.net;
->> > >> lenb@kernel.org; stuyoder@gmail.com; tglx@linutronix.de;
->> > >> jason@lakedaemon.net; maz@kernel.org;
->> > >> shameerali.kolothum.thodi@huawei.com; will@kernel.org;
->> > >> robin.murphy@arm.com; nleeder@codeaurora.org
->> > >> Subject: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
->> > >>
->> > >> Caution: EXT Email
->> > >>
->> > >> On Tue, Jan 28, 2020 at 01:38:45PM +0530, Makarand Pawagi wrote:
->> > >> > ACPI support is added in the fsl-mc driver. Driver will parse MC
->> > >> > DSDT table to extract memory and other resorces.
->> > >> >
->> > >> > Interrupt (GIC ITS) information will be extracted from MADT table
->> > >> > by drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c.
->> > >> >
->> > >> > IORT table will be parsed to configure DMA.
->> > >> >
->> > >> > Signed-off-by: Makarand Pawagi <makarand.pawagi@nxp.com>
->> > >> > ---
->> > >> >  drivers/acpi/arm64/iort.c                   | 53 +++++++++++++++++++++
->> > >> >  drivers/bus/fsl-mc/dprc-driver.c            |  3 +-
->> > >> >  drivers/bus/fsl-mc/fsl-mc-bus.c             | 48 +++++++++++++------
->> > >> >  drivers/bus/fsl-mc/fsl-mc-msi.c             | 10 +++-
->> > >> >  drivers/bus/fsl-mc/fsl-mc-private.h         |  4 +-
->> > >> >  drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c | 71
->> > >> ++++++++++++++++++++++++++++-
->> > >> >  include/linux/acpi_iort.h                   |  5 ++
->> > >> >  7 files changed, 174 insertions(+), 20 deletions(-)
->> > >> >
->> > >> > diff --git a/drivers/acpi/arm64/iort.c
->> > >> > b/drivers/acpi/arm64/iort.c index 33f7198..beb9cd5 100644
->> > >> > --- a/drivers/acpi/arm64/iort.c
->> > >> > +++ b/drivers/acpi/arm64/iort.c
->> > >> > @@ -15,6 +15,7 @@
->> > >> >  #include <linux/kernel.h>
->> > >> >  #include <linux/list.h>
->> > >> >  #include <linux/pci.h>
->> > >> > +#include <linux/fsl/mc.h>
->> > >> >  #include <linux/platform_device.h>  #include <linux/slab.h>
->> > >> >
->> > >> > @@ -622,6 +623,29 @@ static int iort_dev_find_its_id(struct
->> > >> > device *dev, u32 req_id,  }
->> > >> >
->> > >> >  /**
->> > >> > + * iort_get_fsl_mc_device_domain() - Find MSI domain related to
->> > >> > +a device
->> > >> > + * @dev: The device.
->> > >> > + * @mc_icid: ICID for the fsl_mc device.
->> > >> > + *
->> > >> > + * Returns: the MSI domain for this device, NULL otherwise  */
->> > >> > +struct irq_domain *iort_get_fsl_mc_device_domain(struct device *dev,
->> > >> > +                                                     u32 mc_icid) {
->> > >> > +     struct fwnode_handle *handle;
->> > >> > +     int its_id;
->> > >> > +
->> > >> > +     if (iort_dev_find_its_id(dev, mc_icid, 0, &its_id))
->> > >> > +             return NULL;
->> > >> > +
->> > >> > +     handle = iort_find_domain_token(its_id);
->> > >> > +     if (!handle)
->> > >> > +             return NULL;
->> > >> > +
->> > >> > +     return irq_find_matching_fwnode(handle,
->> > >> > +DOMAIN_BUS_FSL_MC_MSI); }
->> > >>
->> > >> NAK
->> > >>
->> > >> I am not willing to take platform specific code in the generic IORT
->> > >> layer.
->> > >>
->> > >> ACPI on ARM64 works on platforms that comply with SBSA/SBBR
->> > >> guidelines:
->> > >>
->> > >>
->> > >> https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fd
->> > >> eveloper.arm.com%2Farchitectures%2Fplatform-design%2Fserver-systems
->> > >>
->> &amp;data=02%7C01%7Cpankaj.bansal%40nxp.com%7Cdb56d889d85646277ee
->> 30
->> > >>
->> 8d7a64562fa%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C6371606
->> 892
->> > >>
->> 50769265&amp;sdata=C7nCty8%2BVeuq6VhcEUXCwiAinN01rCfe12NRVnXJCIY%
->> 3D
->> > >> &amp;reserved=0
->> > >>
->> > >> Deviating from those requires butchering ACPI specifications (ie
->> > >> IORT) and related kernel code which goes totally against what ACPI
->> > >> is meant for on ARM64 systems, so there is no upstream pathway for
->> > >> this code I am afraid.
->> > >>
->> > > Reason of adding this platform specific function in the generic IORT
->> > > layer is That iort_get_device_domain() only deals with PCI bus
->> > > (DOMAIN_BUS_PCI_MSI).
->> > >
->> > > fsl-mc objects when probed, need to find irq_domain which is
->> > > associated with the fsl-mc bus (DOMAIN_BUS_FSL_MC_MSI). It will not
->> > > be possible to do that if we do not add this function because there
->> > > are no other suitable APIs exported by IORT layer to do the job.
->> >
->> > I think we all understood the patch. What both Lorenzo and myself are
->> > saying is that we do not want non-PCI support in IORT.
->> >
->> 
->> IORT supports platform devices (aka named components) as well, and
->> there is some support for platform MSIs in the GIC layer.
->> 
->> So it may be possible to hide your exotic bus from the OS entirely,
->> and make the firmware instantiate a DSDT with device objects and
->> associated IORT nodes that describe whatever lives on that bus as
->> named components.
->> 
->> That way, you will not have to change the OS at all, so your hardware
->> will not only be supported in linux v5.7+, it will also be supported
->> by OSes that commercial distro vendors are shipping today. *That* is
->> the whole point of using ACPI.
->> 
->> If you are going to bother and modify the OS, you lose this advantage,
->> and ACPI gives you no benefit over DT at all.
+
+
+On 2/14/20 9:34 AM, Jason A. Donenfeld wrote:
+> It turns out there's an easy way to get packets queued up while still
+> having an MTU of zero, and that's via persistent keep alive. This commit
+> makes sure that in whatever condition, we don't wind up dividing by
+> zero. Note that an MTU of zero for a wireguard interface is something
+> quasi-valid, so I don't think the correct fix is to limit it via
+> min_mtu. This can be reproduced easily with:
 > 
-> I am replying to old message in this conversation, because the
-> discussion got sidetracked from IORT
-> table to SFP/QSFP/devlink stuff from this point onwards, which is not
-> related to IORT.
-> I will only focus on representing the MC device in IORT and using the
-> same in linux.
-> As Ard said:
-> "IORT supports platform devices (aka named components) as well, and
-> there is some support for platform MSIs in the GIC layer."
+> ip link add wg0 type wireguard
+> ip link add wg1 type wireguard
+> ip link set wg0 up mtu 0
+> ip link set wg1 up
+> wg set wg0 private-key <(wg genkey)
+> wg set wg1 listen-port 1 private-key <(wg genkey) peer $(wg show wg0 public-key)
+> wg set wg0 peer $(wg show wg1 public-key) persistent-keepalive 1 endpoint 127.0.0.1:1
 > 
-> We can represent MC bus as named component in IORT table and use 
-> platform MSIs.
-> The only caveat is that with current implementation of platform MSIs,
-> the Input id of a device is not considered.
-> https://elixir.bootlin.com/linux/latest/source/drivers/irqchip/irq-gic-v3-its-platform-msi.c#L50
-> https://elixir.bootlin.com/linux/latest/source/drivers/acpi/arm64/iort.c#L464
-
-I don't understand what you mean. Platform MSI using IORT uses the DevID
-of end-points. How could the ITS could work without specifying a DevID?
-See for example how the SMMUv3 driver uses platform MSI.
-
-> While, IORT spec doesn't specify any such limitation.
+> However, while min_mtu=0 seems fine, it makes sense to restrict the
+> max_mtu. This commit also restricts the maximum MTU to the greatest
+> number for which rounding up to the padding multiple won't overflow a
+> signed integer. Packets this large were always rejected anyway
+> eventually, due to checks deeper in, but it seems more sound not to even
+> let the administrator configure something that won't work anyway.
 > 
-> we can easily update iort.c to remove this limitation.
-> But, I am not sure how the input id would be passed from platform MSI
-> GIC layer to IORT.
-> Most obviously, the input id should be supplied by dev itself.
+> We use this opportunity to clean up this function a bit so that it's
+> clear which paths we're expecting.
+> 
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> ---
+>  drivers/net/wireguard/device.c |  7 ++++---
+>  drivers/net/wireguard/send.c   | 16 +++++++++++-----
+>  2 files changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+> index 43db442b1373..cdc96968b0f4 100644
+> --- a/drivers/net/wireguard/device.c
+> +++ b/drivers/net/wireguard/device.c
+> @@ -258,6 +258,8 @@ static void wg_setup(struct net_device *dev)
+>  	enum { WG_NETDEV_FEATURES = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
+>  				    NETIF_F_SG | NETIF_F_GSO |
+>  				    NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA };
+> +	const int overhead = MESSAGE_MINIMUM_LENGTH + sizeof(struct udphdr) +
+> +			     max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
+>  
+>  	dev->netdev_ops = &netdev_ops;
+>  	dev->hard_header_len = 0;
+> @@ -271,9 +273,8 @@ static void wg_setup(struct net_device *dev)
+>  	dev->features |= WG_NETDEV_FEATURES;
+>  	dev->hw_features |= WG_NETDEV_FEATURES;
+>  	dev->hw_enc_features |= WG_NETDEV_FEATURES;
+> -	dev->mtu = ETH_DATA_LEN - MESSAGE_MINIMUM_LENGTH -
+> -		   sizeof(struct udphdr) -
+> -		   max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
+> +	dev->mtu = ETH_DATA_LEN - overhead;
+> +	dev->max_mtu = round_down(INT_MAX, MESSAGE_PADDING_MULTIPLE) - overhead;
+>  
+>  	SET_NETDEV_DEVTYPE(dev, &device_type);
+>  
+> diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
+> index c13260563446..2a9990ab66cd 100644
+> --- a/drivers/net/wireguard/send.c
+> +++ b/drivers/net/wireguard/send.c
+> @@ -143,16 +143,22 @@ static void keep_key_fresh(struct wg_peer *peer)
+>  
+>  static unsigned int calculate_skb_padding(struct sk_buff *skb)
+>  {
+> +	unsigned int padded_size, last_unit = skb->len;
+> +
+> +	if (unlikely(!PACKET_CB(skb)->mtu))
+> +		return -last_unit % MESSAGE_PADDING_MULTIPLE;
 
-Why should the device know about its own ID? That's a bus/interconnect
-thing. And nothing should be passed *to* IORT. IORT is the source.
+My brain hurts.
 
-> Any thoughts?
+> +
+>  	/* We do this modulo business with the MTU, just in case the networking
+>  	 * layer gives us a packet that's bigger than the MTU. In that case, we
+>  	 * wouldn't want the final subtraction to overflow in the case of the
+> -	 * padded_size being clamped.
+> +	 * padded_size being clamped. Fortunately, that's very rarely the case,
+> +	 * so we optimize for that not happening.
+>  	 */
+> -	unsigned int last_unit = skb->len % PACKET_CB(skb)->mtu;
+> -	unsigned int padded_size = ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE);
+> +	if (unlikely(last_unit > PACKET_CB(skb)->mtu))
+> +		last_unit %= PACKET_CB(skb)->mtu;
+>  
+> -	if (padded_size > PACKET_CB(skb)->mtu)
+> -		padded_size = PACKET_CB(skb)->mtu;
+> +	padded_size = min(PACKET_CB(skb)->mtu,
+> +			  ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE));
+>  	return padded_size - last_unit;
+>  }
+>  
 
-I think that in this thread, we have been fairly explicit about what our
-train of though was.
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Oh dear, can you describe what do you expect of a wireguard device with mtu == 0 or mtu == 1
+
+Why simply not allowing silly configurations, instead of convoluted tests in fast path ?
+
+We are speaking of tunnels adding quite a lot of headers, so we better not try to make them
+work on networks with tiny mtu. Just say no to syzbot.
