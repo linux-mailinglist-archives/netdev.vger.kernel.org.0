@@ -2,133 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 919DE15EE64
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7C8715EFC0
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:50:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729417AbgBNRjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:39:46 -0500
-Received: from mail-wr1-f48.google.com ([209.85.221.48]:46365 "EHLO
-        mail-wr1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729298AbgBNRjo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:39:44 -0500
-Received: by mail-wr1-f48.google.com with SMTP id z7so11830733wrl.13
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 09:39:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pYuOJLW01DzOuCLaDBQPnbbeoDpAXhJ8eRHOWxJepx8=;
-        b=JP3Vg9cacoCrHrFk85nOqvzwEVxDp7vVzICFyuHBNg6gpRjWnDxoFmQWvvwe84w50B
-         4UjBJZEXOiNZFvbmMWD105VKwNNci0hLy0yLclKxVrw3qHUznOTrVaQZGP2g8GBDDXkX
-         HGGrS5ZOMowNVv2JjDqDHMy9T+ABbS3bQe7OwTW+K/dvcZYzjx/iotS9dKRC0p+5St2k
-         6gZ2aZeSo+YGilNZ+hJN418BP1jlPJU8vGflC6q/FjeZw1bbM0zxxeznrivFqmWtcTEe
-         FRChZ/aqz2h52msbgW4iCgdXfl3nPf7czsWw3hbiWX9f+WEQdC4tj5DjO33RXEnjwMdC
-         RjJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pYuOJLW01DzOuCLaDBQPnbbeoDpAXhJ8eRHOWxJepx8=;
-        b=iz+jwzPkq+mqtN7rZQa8id0LSbeNuyd6qXDcQ7PigEtYAdn8107VnkvraRLJDKMW1i
-         rqRRNRxAYOLekSKevyYqtNy1PXxX0fgYzXHQOnlXtYN8qqGZvhZ6ED7TJ0S31JuMvCzL
-         GYy/6OBt8X6gLP5DeWwJeHBGNTEsbuKudhCanouYOBOv2LqGNddOFKMGejmKcxOr6Cuu
-         NE9lO2uOwfEN4Oeipr+H5Zn+CaxwZLdihus8dzSoj43yfsEbLdAQzGpjSltlHUsud209
-         60VGwbiFu62XSaj8+tWfT+tYw8M9vNv7hpVwoRUO/PZAYWEJ6IRBfFDBGwicl5hMKAvP
-         fGHg==
-X-Gm-Message-State: APjAAAWK+y0Vhxw1RyIiZyfjtw53aLPyuxJlRGtO7fzvVLH4KDLxRJfs
-        ArPEm6v1JxXqjiKB9NqEjfGVqjOcT9uIOr45vtKipz0U
-X-Google-Smtp-Source: APXvYqzD6D+4LImyanYPp8o7IHsMNenEEvRxMpNs4luLxus9ZkM/5l8z+TGWK1iDprQfXdxcXgBnMzQH1GHcjk5gwco=
-X-Received: by 2002:a5d:4c88:: with SMTP id z8mr5086837wrs.395.1581701981660;
- Fri, 14 Feb 2020 09:39:41 -0800 (PST)
+        id S2390003AbgBNRuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:50:00 -0500
+Received: from foss.arm.com ([217.140.110.172]:42128 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388732AbgBNRt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 12:49:58 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B8E1328;
+        Fri, 14 Feb 2020 09:49:57 -0800 (PST)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com [10.1.196.255])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 157803F68E;
+        Fri, 14 Feb 2020 09:49:53 -0800 (PST)
+Date:   Fri, 14 Feb 2020 17:49:49 +0000
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Pankaj Bansal <pankaj.bansal@nxp.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        "stuyoder@gmail.com" <stuyoder@gmail.com>,
+        "nleeder@codeaurora.org" <nleeder@codeaurora.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        "jon@solid-run.com" <jon@solid-run.com>,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Message-ID: <20200214174949.GA30484@e121166-lin.cambridge.arm.com>
+References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
+ <20200128110916.GA491@e121166-lin.cambridge.arm.com>
+ <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
+ <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
+ <VI1PR0401MB2496373E0C6D1097F22B3026F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <20200214161957.GA27513@e121166-lin.cambridge.arm.com>
+ <VI1PR0401MB2496800C88A3A2CF912959E6F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <cover.1581676056.git.lucien.xin@gmail.com> <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
- <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
- <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
- <20200214081324.48dc2090@hermes.lan>
-In-Reply-To: <20200214081324.48dc2090@hermes.lan>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 15 Feb 2020 01:40:27 +0800
-Message-ID: <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options support
- for erspan metadata
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0401MB2496800C88A3A2CF912959E6F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 15, 2020 at 12:13 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Fri, 14 Feb 2020 18:30:47 +0800
-> Xin Long <lucien.xin@gmail.com> wrote:
->
-> > +
-> > +     open_json_array(PRINT_JSON, name);
-> > +     open_json_object(NULL);
-> > +     print_uint(PRINT_JSON, "ver", NULL, ver);
-> > +     print_uint(PRINT_JSON, "index", NULL, idx);
-> > +     print_uint(PRINT_JSON, "dir", NULL, dir);
-> > +     print_uint(PRINT_JSON, "hwid", NULL, hwid);
-> > +     close_json_object();
-> > +     close_json_array(PRINT_JSON, name);
-> > +
-> > +     print_nl();
-> > +     print_string(PRINT_FP, name, "\t%s ", name);
-> > +     sprintf(strbuf, "%02x:%08x:%02x:%02x", ver, idx, dir, hwid);
-> > +     print_string(PRINT_FP, NULL, "%s ", strbuf);
-> > +}
->
-> Instead of having two sets of prints, is it possible to do this
->         print_nl();
->         print_string(PRINT_FP, NULL, "\t", NULL);
->
->         open_json_array(PRINT_ANY, name);
->         open_json_object(NULL);
->         print_0xhex(PRINT_ANY, "ver", " %02x", ver);
->         print_0xhex(PRINT_ANY, "idx", ":%08x", idx);
->         print_0xhex(PRINT_ANY, "dir", ":%02x", dir);
->         print_0xhex(PRINT_ANY, "hwid", ":%02x", hwid)
->         close_json_object();
->         close_json_array(PRINT_ANY, " ");
-Hi Stephen,
+On Fri, Feb 14, 2020 at 04:35:10PM +0000, Pankaj Bansal wrote:
 
-This's not gonna work. as the output will be:
-{"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
-instead of
-{"ver":2,"index":0,"dir":1,"hwid":2} (number)
+[...]
 
->
-> Also, you seem to not hear the request to not use opaque hex values
-> in the iproute2 interface. The version, index, etc should be distinct
-> parameter values not a hex string.
-The opts STRING, especially these like "XX:YY:ZZ" are represented
-as hex string on both adding and dumping. It is to keep consistent with
-geneve_opts in m_tunnel_key and f_flower,  see
+> > -----Original Message-----
+> > From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Sent: Friday, February 14, 2020 9:50 PM
+> > To: Pankaj Bansal <pankaj.bansal@nxp.com>
+> > Cc: Marc Zyngier <maz@kernel.org>; Ard Biesheuvel
+> > <ard.biesheuvel@linaro.org>; Makarand Pawagi <makarand.pawagi@nxp.com>;
+> > Calvin Johnson <calvin.johnson@nxp.com>; stuyoder@gmail.com;
+> > nleeder@codeaurora.org; Ioana Ciornei <ioana.ciornei@nxp.com>; Cristi
+> > Sovaiala <cristian.sovaiala@nxp.com>; Hanjun Guo <guohanjun@huawei.com>;
+> > Will Deacon <will@kernel.org>; jon@solid-run.com; Russell King
+> > <linux@armlinux.org.uk>; ACPI Devel Maling List <linux-acpi@vger.kernel.org>;
+> > Len Brown <lenb@kernel.org>; Jason Cooper <jason@lakedaemon.net>; Andy
+> > Wang <Andy.Wang@arm.com>; Varun Sethi <V.Sethi@nxp.com>; Thomas
+> > Gleixner <tglx@linutronix.de>; linux-arm-kernel <linux-arm-
+> > kernel@lists.infradead.org>; Laurentiu Tudor <laurentiu.tudor@nxp.com>; Paul
+> > Yang <Paul.Yang@arm.com>; netdev@vger.kernel.org; Rafael J. Wysocki
+> > <rjw@rjwysocki.net>; Linux Kernel Mailing List <linux-kernel@vger.kernel.org>;
+> > Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> > Sudeep Holla <sudeep.holla@arm.com>; Robin Murphy
+> > <robin.murphy@arm.com>
+> > Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Side note: would you mind removing the email headers (as above) in your
+replies please ?
 
-commit 6217917a382682d8e8a7ecdeb0c6626f701a0933
-Author: Simon Horman <simon.horman@netronome.com>
-Date:   Thu Jul 5 17:12:00 2018 -0700
+> > On Fri, Feb 14, 2020 at 03:58:14PM +0000, Pankaj Bansal wrote:
+> > 
+> > [...]
+> > 
+> > > > Why should the device know about its own ID? That's a bus/interconnect
+> > thing.
+> > > > And nothing should be passed *to* IORT. IORT is the source.
+> > >
+> > > IORT is translation between Input IDs <-> Output IDs. The Input ID is still
+> > expected to be passed to parse IORT table.
+> > 
+> > Named components use an array of single mappings (as in entries with single
+> > mapping flag set) - Input ID is irrelevant.
+> > 
+> > Not sure what your named component is though and what you want to do with
+> > it, the fact that IORT allows mapping for named components do not necessarily
+> > mean that it can describe what your system really is, on that you need to
+> > elaborate for us to be able to help.
+> 
+> Details about MC bus can be read from here:
+> https://elixir.bootlin.com/linux/latest/source/Documentation/networking/device_drivers/freescale/dpaa2/overview.rst#L324
+> 
+> As stated above, in Linux MC is a bus (just like PCI bus, AMBA bus etc)
+> There can be multiple devices attached to this bus. Moreover, we can dynamically create/destroy these devices.
+> Now, we want to represent this BUS (not individual devices connected to bus) in IORT table.
+> The only possible way right now we see is that we describe it as Named components having a pool of ID mappings.
+> As and when devices are created and attached to bus, we sift through this pool to correctly determine the output ID for the device.
+> Now the input ID that we provide, can come from device itself.
+> Then we can use the Platform MSI framework for MC bus devices.
 
-    tc: m_tunnel_key: Add tunnel option support to act_tunnel_key
+So are you asking me if that's OK ? Or there is something you can't
+describe with IORT ?
 
-and
-commit 56155d4df86d489c4207444c8a90ce4e0e22e49f
-Author: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-Date:   Fri Sep 28 16:03:39 2018 +0200
+Side note: can you explain to me please how the MSI allocation flow
+and kernel data structures/drivers are modeled in DT ? I had a quick
+look at:
 
-    tc: f_flower: add geneve option match support to flower
+drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
 
-and actually, the code type I'm using is exactly from these 2 patches.
-please take a look.
+and to start with, does that code imply that we create a
+DOMAIN_BUS_FSL_MC_MSI on ALL DT systems with an ITS device node ?
 
-I don't think this patchset should go to another type of format for opts.
+I *think* you have a specific API to allocate MSIs for MC devices:
 
-Thanks.
+fsl_mc_msi_domain_alloc_irqs()
 
->
-> I think this still needs more work before merging.
+which hook into the IRQ domain created in the file above that handles
+the cascading to an ITS domain, correct ?
+
+Thanks,
+Lorenzo
