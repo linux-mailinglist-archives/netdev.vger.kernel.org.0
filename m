@@ -2,189 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D7AE15D721
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 13:09:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB2F15D738
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 13:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbgBNMJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 07:09:53 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37275 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727754AbgBNMJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 07:09:52 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j2Zn3-0000yY-KL; Fri, 14 Feb 2020 13:09:49 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j2Zn2-0000wF-PQ; Fri, 14 Feb 2020 13:09:48 +0100
-Date:   Fri, 14 Feb 2020 13:09:48 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
-        wg@grandegger.com
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-Subject: Re: [RFC] can: can_create_echo_skb(): fix echo skb generation:
- always use skb_clone()
-Message-ID: <20200214120948.4sjnqn2jvndldphw@pengutronix.de>
-References: <20200124132656.22156-1-o.rempel@pengutronix.de>
+        id S1729032AbgBNMSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 07:18:10 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25883 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728582AbgBNMSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 07:18:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581682689;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GxW6IZnV896EyTIDav2L+lzzwUj9aa2oWUdly4vXUC0=;
+        b=N0XtH1YuRlmxzk5iXFJuyaORhUUWoVdDckw/Dy5HsNfng3L7BdqchovgH7i9qxw98jT1GL
+        7B/TInyZveMM+BnTUNmeV+x/l+Ey3wNuqVvHwqLUkyvpVXTFRExpNuLpPfDLs2aiQPeAJJ
+        uqz4gLazbErUVb4L+azGFrq6jT/9QcA=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-26-MK9NJI1dNLuSmoQWLwyTRg-1; Fri, 14 Feb 2020 07:18:07 -0500
+X-MC-Unique: MK9NJI1dNLuSmoQWLwyTRg-1
+Received: by mail-wr1-f72.google.com with SMTP id n23so3913141wra.20
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 04:18:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GxW6IZnV896EyTIDav2L+lzzwUj9aa2oWUdly4vXUC0=;
+        b=CVZcobuT+oI8dQH6trB7wSp+GANt0npmOIBGaW6uehqt1adQ5qArRSBD20PhMJ1j2/
+         eFNv8tGhEcGsQuMMjhXrK3ksw16IDdZWSo5z9HWSUFYG+gUCutYJ8eNzmoLyZ/kS04so
+         2akLXIPZm9ZQ5Ehr9KtNSGbMcvQTB8qPHCfpBuhYKo+590WIteBbhX0gjgWssCjbkaGH
+         qUZkVRBSRNaOm7BjqC+s8hv/ljdD6ycEJwz0f8RAI9I4PletB5+e6X7CXT72cEiGCi3g
+         24qa+HeHQUmchkA69agrV+BQiV0svgh6FUji00xF7xqmqoPKtwHkyN+jDwe9LNLzZOQp
+         n29A==
+X-Gm-Message-State: APjAAAVMuTkB0MtSsqCN2Ztrm0HIcUfgqILqwmj0KhF0wvCUtTlx/uay
+        tZ3IcputzEcYfSM7heuhpyij5k9BEB79FWWPI2BwXwHklok5T+jdUR+nWXk7PbyVVvIJpcgWZ64
+        1W1oRX1hHhJc+VIas
+X-Received: by 2002:a7b:c183:: with SMTP id y3mr4446309wmi.0.1581682686276;
+        Fri, 14 Feb 2020 04:18:06 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzwoB+X56u/QQ+OuiMD+r6zCO5Q/ZdH2SzDJvMsIaVp2/BPI4RW23G1odXHXaJ+AQ/de/gnRg==
+X-Received: by 2002:a7b:c183:: with SMTP id y3mr4446285wmi.0.1581682686037;
+        Fri, 14 Feb 2020 04:18:06 -0800 (PST)
+Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
+        by smtp.gmail.com with ESMTPSA id t81sm7120128wmg.6.2020.02.14.04.18.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Feb 2020 04:18:05 -0800 (PST)
+Date:   Fri, 14 Feb 2020 13:18:03 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Sebastien Boeuf <sebastien.boeuf@intel.com>
+Cc:     netdev@vger.kernel.org, stefanha@redhat.com, davem@davemloft.net
+Subject: Re: [PATCH v3 0/2] Enhance virtio-vsock connection semantics
+Message-ID: <20200214121803.kpblkpywkvwkoc7h@steredhat>
+References: <20200214114802.23638-1-sebastien.boeuf@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jb5tzhkn7olftg6f"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200124132656.22156-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 13:08:55 up 91 days,  3:27, 105 users,  load average: 0.22, 0.12,
- 0.09
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200214114802.23638-1-sebastien.boeuf@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Feb 14, 2020 at 12:48:00PM +0100, Sebastien Boeuf wrote:
+> This series improves the semantics behind the way virtio-vsock server
+> accepts connections coming from the client. Whenever the server
+> receives a connection request from the client, if it is bound to the
+> socket but not yet listening, it will answer with a RST packet. The
+> point is to ensure each request from the client is quickly processed
+> so that the client can decide about the strategy of retrying or not.
+> 
+> The series includes along with the improvement patch a new test to
+> ensure the behavior is consistent across all hypervisors drivers.
+> 
+> Sebastien Boeuf (2):
+>   net: virtio_vsock: Enhance connection semantics
+>   tools: testing: vsock: Test when server is bound but not listening
+> 
+>  net/vmw_vsock/virtio_transport_common.c |  1 +
+>  tools/testing/vsock/vsock_test.c        | 77 +++++++++++++++++++++++++
+>  2 files changed, 78 insertions(+)
+> 
 
---jb5tzhkn7olftg6f
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks,
+now they apply cleanly!
 
-Hi all,
+Tested-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-any comments on this patch?
-
-On Fri, Jan 24, 2020 at 02:26:56PM +0100, Oleksij Rempel wrote:
-> All user space generated SKBs are owned by a socket (unless injected
-> into the key via AF_PACKET). If a socket is closed, all associated skbs
-> will be cleaned up.
->=20
-> This leads to a problem when a CAN driver calls can_put_echo_skb() on a
-> unshared SKB. If the socket is closed prior to the TX complete handler,
-> can_get_echo_skb() and the subsequent delivering of the echo SKB to
-> all registered callbacks, a SKB with a refcount of 0 is delivered.
->=20
-> To avoid the problem, in can_get_echo_skb() the original SKB is now
-> always cloned, regardless of shared SKB or not. If the process exists it
-> can now safely discard its SKBs, without disturbing the delivery of the
-> echo SKB.
->=20
-> The problem shows up in the j1939 stack, when it clones the
-> incoming skb, which detects the already 0 refcount.
->=20
-> We can easily reproduce this with following example:
->=20
-> testj1939 -B -r can0: &
-> cansend can0 1823ff40#0123
->=20
-> WARNING: CPU: 0 PID: 293 at lib/refcount.c:25 refcount_warn_saturate+0x10=
-8/0x174
-> refcount_t: addition on 0; use-after-free.
-> Modules linked in: coda_vpu imx_vdoa videobuf2_vmalloc dw_hdmi_ahb_audio =
-vcan
-> CPU: 0 PID: 293 Comm: cansend Not tainted 5.5.0-rc6-00376-g9e20dcb7040d #1
-> Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-> Backtrace:
-> [<c010f570>] (dump_backtrace) from [<c010f90c>] (show_stack+0x20/0x24)
-> [<c010f8ec>] (show_stack) from [<c0c3e1a4>] (dump_stack+0x8c/0xa0)
-> [<c0c3e118>] (dump_stack) from [<c0127fec>] (__warn+0xe0/0x108)
-> [<c0127f0c>] (__warn) from [<c01283c8>] (warn_slowpath_fmt+0xa8/0xcc)
-> [<c0128324>] (warn_slowpath_fmt) from [<c0539c0c>] (refcount_warn_saturat=
-e+0x108/0x174)
-> [<c0539b04>] (refcount_warn_saturate) from [<c0ad2cac>] (j1939_can_recv+0=
-x20c/0x210)
-> [<c0ad2aa0>] (j1939_can_recv) from [<c0ac9dc8>] (can_rcv_filter+0xb4/0x26=
-8)
-> [<c0ac9d14>] (can_rcv_filter) from [<c0aca2cc>] (can_receive+0xb0/0xe4)
-> [<c0aca21c>] (can_receive) from [<c0aca348>] (can_rcv+0x48/0x98)
-> [<c0aca300>] (can_rcv) from [<c09b1fdc>] (__netif_receive_skb_one_core+0x=
-64/0x88)
-> [<c09b1f78>] (__netif_receive_skb_one_core) from [<c09b2070>] (__netif_re=
-ceive_skb+0x38/0x94)
-> [<c09b2038>] (__netif_receive_skb) from [<c09b2130>] (netif_receive_skb_i=
-nternal+0x64/0xf8)
-> [<c09b20cc>] (netif_receive_skb_internal) from [<c09b21f8>] (netif_receiv=
-e_skb+0x34/0x19c)
-> [<c09b21c4>] (netif_receive_skb) from [<c0791278>] (can_rx_offload_napi_p=
-oll+0x58/0xb4)
->=20
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  include/linux/can/skb.h | 20 ++++++++------------
->  1 file changed, 8 insertions(+), 12 deletions(-)
->=20
-> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-> index a954def26c0d..0783b0c6d9e2 100644
-> --- a/include/linux/can/skb.h
-> +++ b/include/linux/can/skb.h
-> @@ -61,21 +61,17 @@ static inline void can_skb_set_owner(struct sk_buff *=
-skb, struct sock *sk)
->   */
->  static inline struct sk_buff *can_create_echo_skb(struct sk_buff *skb)
->  {
-> -	if (skb_shared(skb)) {
-> -		struct sk_buff *nskb =3D skb_clone(skb, GFP_ATOMIC);
-> +	struct sk_buff *nskb;
-> =20
-> -		if (likely(nskb)) {
-> -			can_skb_set_owner(nskb, skb->sk);
-> -			consume_skb(skb);
-> -			return nskb;
-> -		} else {
-> -			kfree_skb(skb);
-> -			return NULL;
-> -		}
-> +	nskb =3D skb_clone(skb, GFP_ATOMIC);
-> +	if (unlikely(!nskb)) {
-> +		kfree_skb(skb);
-> +		return NULL;
->  	}
-> =20
-> -	/* we can assume to have an unshared skb with proper owner */
-> -	return skb;
-> +	can_skb_set_owner(nskb, skb->sk);
-> +	consume_skb(skb);
-> +	return nskb;
->  }
-> =20
->  #endif /* !_CAN_SKB_H */
-> --=20
-> 2.25.0
->=20
->=20
->=20
-
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---jb5tzhkn7olftg6f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl5Gjf0ACgkQ4omh9DUa
-UbONPhAArJtcoR7hzWvuvU6pF54C1/5ur0RfMEeYg1py/9uvmHOrTprHx3APk+4v
-R8xcqtqmPjGz99oXha6GhlESsP5UovY1FGiqx69Jo9NkbaIl6ibTDVR47SsgW7Fm
-PtdjozBQenP4VIf3OZpOgVOFZwYAIOZDHa77Kh2wEJIF2P6iO8/q04svA0AZ0TQE
-l7UvbcPeW+BttcKNuyC0p85wjMFE89sJpHOG8MxXT7oKLuXZLnCt2E4EcWwRdxWa
-fFFJWA9vGiouJpc//mKZxIFXeGgkubGD6Yd9ZB2XaEjVEg5qMH4IMkAUP+9+Z3sk
-OL4HHjvlXFtMb8Gm3vRZrhYkJb0mPDmuawEwjlD/lmmdX8pj/zPB5GiGk/znvnBR
-XIS6HMnNihn5wn4W22qAnl5k5i4eLntWQNaLbvSo0fatd9Nu4BTX3cMTDZHXoe+t
-pe02e4GFpxT9k+Q86lQWYl/1+dfI/Y94V5LHyFTMqn33jJFkJfDDbGBwySzUtai4
-KTmMGBcKLUqKBNYjT9WU5Rl6xAc3BYALqa93LNaR6Zq8pm8uMnZdbgM+mXsC8pPx
-aNomypXyeliEeE7y+p/pOuTytlZ581RW9sTWk+ofgkU3F0rQnL4UsYeqT9Cozl2P
-0dig22+ysjm+1VMfCs6TYfmjN7WDdxS4r+5pmWusddWFBFYe5F8=
-=1wqp
------END PGP SIGNATURE-----
-
---jb5tzhkn7olftg6f--
