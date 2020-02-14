@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10DD015FA55
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 207F215FA66
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728217AbgBNXWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:22:30 -0500
-Received: from mga02.intel.com ([134.134.136.20]:41443 "EHLO mga02.intel.com"
+        id S1728328AbgBNXXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:23:09 -0500
+Received: from mga02.intel.com ([134.134.136.20]:41445 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728146AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728173AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 14 Feb 2020 18:22:28 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:26 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:27 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629277"
+   d="scan'208";a="228629280"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:26 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -25,9 +25,9 @@ To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 04/22] ice: enable initial devlink support
-Date:   Fri, 14 Feb 2020 15:22:03 -0800
-Message-Id: <20200214232223.3442651-5-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 05/22] ice: rename variables used for Option ROM version
+Date:   Fri, 14 Feb 2020 15:22:04 -0800
+Message-Id: <20200214232223.3442651-6-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
@@ -38,308 +38,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Begin implementing support for the devlink interface with the ice
-driver.
+The function ice_get_nvm_version reports data for both the NVM map
+version and the version of the combined Option ROM. The version data for
+the option ROM uses variables with the prefix "oem".
 
-The pf structure is currently memory managed through devres, via
-a devm_alloc. To mimic this behavior, after allocating the devlink
-pointer, use devm_add_action to add a teardown action for releasing the
-devlink memory on exit.
+This causes confusion as it makes it difficult for a reviewer to
+understand what the version actually represents.
 
-The ice hardware is a multi-function PCIe device. Thus, each physical
-function will get its own devlink instance. This means that each
-function will be treated independently, with its own parameters and
-configuration. This is done because the ice driver loads a separate
-instance for each function.
-
-Due to this, the implementation does not enable devlink to manage
-device-wide resources or configuration, as each physical function will
-be treated independently. This is done for simplicity, as managing
-a devlink instance across multiple driver instances would significantly
-increase the complexity for minimal gain.
+Rename the variables to use the prefix "orom", and update the code
+comments to mention that this is the combined Option ROM version. This
+helps the code clarify what the version actually represents.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/intel/Kconfig           |   1 +
- drivers/net/ethernet/intel/ice/Makefile      |   1 +
- drivers/net/ethernet/intel/ice/ice.h         |   4 +
- drivers/net/ethernet/intel/ice/ice_devlink.c | 119 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_devlink.h |  14 +++
- drivers/net/ethernet/intel/ice/ice_main.c    |  19 ++-
- 6 files changed, 157 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.h
+ drivers/net/ethernet/intel/ice/ice_common.c  | 19 ++++++++++---------
+ drivers/net/ethernet/intel/ice/ice_common.h  |  4 ++--
+ drivers/net/ethernet/intel/ice/ice_ethtool.c |  8 ++++----
+ drivers/net/ethernet/intel/ice/ice_nvm.c     | 16 ++++++++--------
+ drivers/net/ethernet/intel/ice/ice_type.h    | 16 ++++++++--------
+ 5 files changed, 32 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 154e2e818ec6..ad34e4335df2 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -294,6 +294,7 @@ config ICE
- 	tristate "Intel(R) Ethernet Connection E800 Series Support"
- 	default n
- 	depends on PCI_MSI
-+	select NET_DEVLINK
- 	---help---
- 	  This driver supports Intel(R) Ethernet Connection E800 Series of
- 	  devices.  For more information on how to identify your adapter, go
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 59544b0fc086..e2502ff3229d 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -19,6 +19,7 @@ ice-y := ice_main.o	\
- 	 ice_txrx.o	\
- 	 ice_flex_pipe.o \
- 	 ice_flow.o	\
-+	 ice_devlink.o \
- 	 ice_ethtool.o
- ice-$(CONFIG_PCI_IOV) += ice_virtchnl_pf.o ice_sriov.o
- ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index cb10abb14e11..a195135f840f 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -36,6 +36,7 @@
- #include <linux/avf/virtchnl.h>
- #include <net/ipv6.h>
- #include <net/xdp_sock.h>
-+#include <net/devlink.h>
- #include "ice_devids.h"
- #include "ice_type.h"
- #include "ice_txrx.h"
-@@ -346,6 +347,9 @@ enum ice_pf_flags {
- struct ice_pf {
- 	struct pci_dev *pdev;
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 04d5db0a25bf..a74532520112 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -617,22 +617,23 @@ static void ice_get_itr_intrl_gran(struct ice_hw *hw)
+ /**
+  * ice_get_nvm_version - get cached NVM version data
+  * @hw: pointer to the hardware structure
+- * @oem_ver: 8 bit NVM version
+- * @oem_build: 16 bit NVM build number
+- * @oem_patch: 8 NVM patch number
++ * @orom_ver: 8 bit version of combined Option ROM
++ * @orom_build: 16 bit build number of combined Option ROM
++ * @orom_patch: 8 bit patch level of combined Option ROM
+  * @ver_hi: high 16 bits of the NVM version
+  * @ver_lo: low 16 bits of the NVM version
+  */
+ void
+-ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
+-		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo)
++ice_get_nvm_version(struct ice_hw *hw, u8 *orom_ver, u16 *orom_build,
++		    u8 *orom_patch, u8 *ver_hi, u8 *ver_lo)
+ {
+ 	struct ice_nvm_info *nvm = &hw->nvm;
  
-+	/* devlink port data */
-+	struct devlink_port devlink_port;
-+
- 	/* OS reserved IRQ details */
- 	struct msix_entry *msix_entries;
- 	struct ice_res_tracker *irq_tracker;
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-new file mode 100644
-index 000000000000..2a72857c4b26
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019, Intel Corporation. */
-+
-+#include "ice.h"
-+#include "ice_devlink.h"
-+
-+const struct devlink_ops ice_devlink_ops = {
-+};
-+
-+static void ice_devlink_free(void *devlink_ptr)
-+{
-+	devlink_free((struct devlink *)devlink_ptr);
-+}
-+
-+/**
-+ * ice_allocate_pf - Allocate devlink and return PF structure pointer
-+ * @dev: the device to allocate for
-+ *
-+ * Allocate a devlink instance for this device and return the private area as
-+ * the PF structure. The devlink memory is kept track of through devres by
-+ * adding an action to remove it when unwinding.
-+ */
-+struct ice_pf *ice_allocate_pf(struct device *dev)
-+{
-+	struct devlink *devlink;
-+
-+	devlink = devlink_alloc(&ice_devlink_ops, sizeof(struct ice_pf));
-+	if (!devlink)
-+		return NULL;
-+
-+	/* Add an action to teardown the devlink when unwinding the driver */
-+	if (devm_add_action(dev, ice_devlink_free, devlink)) {
-+		devlink_free(devlink);
-+		return NULL;
-+	}
-+
-+	return devlink_priv(devlink);
-+}
-+
-+/**
-+ * ice_devlink_register - Register devlink interface for this PF
-+ * @pf: the PF to register the devlink for.
-+ *
-+ * Register the devlink instance associated with this physical function.
-+ *
-+ * @returns zero on success or an error code on failure.
-+ */
-+int ice_devlink_register(struct ice_pf *pf)
-+{
-+	struct devlink *devlink = priv_to_devlink(pf);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	int err;
-+
-+	err = devlink_register(devlink, dev);
-+	if (err) {
-+		dev_err(dev, "devlink registration failed: %d\n", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_devlink_unregister - Unregister devlink resources for this PF.
-+ * @pf: the PF structure to cleanup
-+ *
-+ * Releases resources used by devlink and cleans up associated memory.
-+ */
-+void ice_devlink_unregister(struct ice_pf *pf)
-+{
-+	devlink_unregister(priv_to_devlink(pf));
-+}
-+
-+/**
-+ * ice_devlink_create_port - Create a devlink port for this PF
-+ * @pf: the PF to create a port for
-+ *
-+ * Create and register a devlink_port for this PF. Note that although each
-+ * physical function is connected to a separate devlink instance, the port
-+ * will still be numbered according to the physical function id.
-+ *
-+ * @returns zero on success or an error code on failure.
-+ */
-+int ice_devlink_create_port(struct ice_pf *pf)
-+{
-+	struct devlink *devlink = priv_to_devlink(pf);
-+	struct ice_vsi *vsi = ice_get_main_vsi(pf);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	int err;
-+
-+	if (!vsi) {
-+		dev_err(dev, "%s: unable to find main VSI\n", __func__);
-+		return -EIO;
-+	}
-+
-+	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-+			       pf->hw.pf_id, false, 0, NULL, 0);
-+	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
-+	if (err) {
-+		dev_err(dev, "devlink_port_register failed: %d\n", err);
-+		return err;
-+	}
-+	if (vsi->netdev)
-+		devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_devlink_destroy_port - Destroy the devlink_port for this PF
-+ * @pf: the PF to cleanup
-+ *
-+ * Unregisters the devlink_port structure associated with this PF.
-+ */
-+void ice_devlink_destroy_port(struct ice_pf *pf)
-+{
-+	devlink_port_type_clear(&pf->devlink_port);
-+	devlink_port_unregister(&pf->devlink_port);
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-new file mode 100644
-index 000000000000..f94dc93c24c5
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2019, Intel Corporation. */
-+
-+#ifndef _ICE_DEVLINK_H_
-+#define _ICE_DEVLINK_H_
-+
-+struct ice_pf *ice_allocate_pf(struct device *dev);
-+
-+int ice_devlink_register(struct ice_pf *pf);
-+void ice_devlink_unregister(struct ice_pf *pf);
-+int ice_devlink_create_port(struct ice_pf *pf);
-+void ice_devlink_destroy_port(struct ice_pf *pf);
-+
-+#endif /* _ICE_DEVLINK_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 5ef28052c0f8..f2cca810977d 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -10,6 +10,7 @@
- #include "ice_lib.h"
- #include "ice_dcb_lib.h"
- #include "ice_dcb_nl.h"
-+#include "ice_devlink.h"
- 
- #define DRV_VERSION_MAJOR 0
- #define DRV_VERSION_MINOR 8
-@@ -3166,7 +3167,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		return err;
- 	}
- 
--	pf = devm_kzalloc(dev, sizeof(*pf), GFP_KERNEL);
-+	pf = ice_allocate_pf(dev);
- 	if (!pf)
- 		return -ENOMEM;
- 
-@@ -3204,6 +3205,12 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 
- 	pf->msg_enable = netif_msg_init(debug, ICE_DFLT_NETIF_M);
- 
-+	err = ice_devlink_register(pf);
-+	if (err) {
-+		dev_err(dev, "ice_devlink_register failed: %d\n", err);
-+		goto err_exit_unroll;
-+	}
-+
- #ifndef CONFIG_DYNAMIC_DEBUG
- 	if (debug < -1)
- 		hw->debug_mask = debug;
-@@ -3295,6 +3302,11 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		goto err_alloc_sw_unroll;
- 	}
- 
-+	err = ice_devlink_create_port(pf);
-+	if (err)
-+		goto err_alloc_sw_unroll;
-+
-+
- 	clear_bit(__ICE_SERVICE_DIS, pf->state);
- 
- 	/* tell the firmware we are up */
-@@ -3336,6 +3348,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	return 0;
- 
- err_alloc_sw_unroll:
-+	ice_devlink_destroy_port(pf);
- 	set_bit(__ICE_SERVICE_DIS, pf->state);
- 	set_bit(__ICE_DOWN, pf->state);
- 	devm_kfree(dev, pf->first_sw);
-@@ -3348,6 +3361,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	ice_deinit_pf(pf);
- 	ice_deinit_hw(hw);
- err_exit_unroll:
-+	ice_devlink_unregister(pf);
- 	pci_disable_pcie_error_reporting(pdev);
- 	return err;
+-	*oem_ver = (u8)((nvm->oem_ver & ICE_OEM_VER_MASK) >> ICE_OEM_VER_SHIFT);
+-	*oem_patch = (u8)(nvm->oem_ver & ICE_OEM_VER_PATCH_MASK);
+-	*oem_build = (u16)((nvm->oem_ver & ICE_OEM_VER_BUILD_MASK) >>
+-			   ICE_OEM_VER_BUILD_SHIFT);
++	*orom_ver = (u8)((nvm->orom_ver & ICE_OROM_VER_MASK) >>
++			 ICE_OROM_VER_SHIFT);
++	*orom_patch = (u8)(nvm->orom_ver & ICE_OROM_VER_PATCH_MASK);
++	*orom_build = (u16)((nvm->orom_ver & ICE_OROM_VER_BUILD_MASK) >>
++			   ICE_OROM_VER_BUILD_SHIFT);
+ 	*ver_hi = (nvm->ver & ICE_NVM_VER_HI_MASK) >> ICE_NVM_VER_HI_SHIFT;
+ 	*ver_lo = (nvm->ver & ICE_NVM_VER_LO_MASK) >> ICE_NVM_VER_LO_SHIFT;
  }
-@@ -3375,6 +3389,7 @@ static void ice_remove(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 9d5e86c9f886..0f9aa1986cab 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -151,8 +151,8 @@ void
+ ice_stat_update32(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
+ 		  u64 *prev_stat, u64 *cur_stat);
+ void
+-ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
+-		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo);
++ice_get_nvm_version(struct ice_hw *hw, u8 *orom_ver, u16 *orom_build,
++		    u8 *orom_patch, u8 *ver_hi, u8 *ver_lo);
+ enum ice_status
+ ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
+ 		     struct ice_aqc_get_elem *buf);
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 223e8e707dcb..af5e5d6fc29c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -166,11 +166,11 @@ static void
+ ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+-	u8 oem_ver, oem_patch, nvm_ver_hi, nvm_ver_lo;
++	u8 orom_ver, orom_patch, nvm_ver_hi, nvm_ver_lo;
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+ 	struct ice_hw *hw = &pf->hw;
+-	u16 oem_build;
++	u16 orom_build;
  
- 	if (test_bit(ICE_FLAG_SRIOV_ENA, pf->flags))
- 		ice_free_vfs(pf);
-+	ice_devlink_destroy_port(pf);
- 	ice_vsi_release_all(pf);
- 	ice_free_irq_msix_misc(pf);
- 	ice_for_each_vsi(pf, i) {
-@@ -3384,6 +3399,8 @@ static void ice_remove(struct pci_dev *pdev)
+ 	strlcpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
+ 	strlcpy(drvinfo->version, ice_drv_ver, sizeof(drvinfo->version));
+@@ -178,11 +178,11 @@ ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ 	/* Display NVM version (from which the firmware version can be
+ 	 * determined) which contains more pertinent information.
+ 	 */
+-	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch,
++	ice_get_nvm_version(hw, &orom_ver, &orom_build, &orom_patch,
+ 			    &nvm_ver_hi, &nvm_ver_lo);
+ 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+ 		 "%x.%02x 0x%x %d.%d.%d", nvm_ver_hi, nvm_ver_lo,
+-		 hw->nvm.eetrack, oem_ver, oem_build, oem_patch);
++		 hw->nvm.eetrack, orom_ver, orom_build, orom_patch);
+ 
+ 	strlcpy(drvinfo->bus_info, pci_name(pf->pdev),
+ 		sizeof(drvinfo->bus_info));
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index aaf5fd064725..7d5f2a6296c9 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -195,7 +195,7 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
+  */
+ enum ice_status ice_init_nvm(struct ice_hw *hw)
+ {
+-	u16 oem_hi, oem_lo, boot_cfg_tlv, boot_cfg_tlv_len;
++	u16 orom_hi, orom_lo, boot_cfg_tlv, boot_cfg_tlv_len;
+ 	struct ice_nvm_info *nvm = &hw->nvm;
+ 	u16 eetrack_lo, eetrack_hi;
+ 	enum ice_status status;
+@@ -272,21 +272,21 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
+ 		return ICE_ERR_INVAL_SIZE;
  	}
- 	ice_deinit_pf(pf);
- 	ice_deinit_hw(&pf->hw);
-+	ice_devlink_unregister(pf);
-+
- 	/* Issue a PFR as part of the prescribed driver unload flow.  Do not
- 	 * do it via ice_schedule_reset() since there is no need to rebuild
- 	 * and the service task is already stopped.
+ 
+-	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF),
+-				  &oem_hi);
++	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF),
++				  &orom_hi);
+ 	if (status) {
+-		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER hi.\n");
++		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER hi.\n");
+ 		return status;
+ 	}
+ 
+-	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF + 1),
+-				  &oem_lo);
++	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF + 1),
++				  &orom_lo);
+ 	if (status) {
+-		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER lo.\n");
++		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER lo.\n");
+ 		return status;
+ 	}
+ 
+-	nvm->oem_ver = ((u32)oem_hi << 16) | oem_lo;
++	nvm->orom_ver = ((u32)orom_hi << 16) | orom_lo;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index db0ef6ba907f..1d9420cd53b1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -242,7 +242,7 @@ struct ice_fc_info {
+ /* NVM Information */
+ struct ice_nvm_info {
+ 	u32 eetrack;              /* NVM data version */
+-	u32 oem_ver;              /* OEM version info */
++	u32 orom_ver;             /* Combined Option ROM version info */
+ 	u16 sr_words;             /* Shadow RAM size in words */
+ 	u16 ver;                  /* NVM package version */
+ 	u8 blank_nvm_mode;        /* is NVM empty (no FW present) */
+@@ -626,7 +626,7 @@ struct ice_hw_port_stats {
+ 
+ /* Checksum and Shadow RAM pointers */
+ #define ICE_SR_BOOT_CFG_PTR		0x132
+-#define ICE_NVM_OEM_VER_OFF		0x02
++#define ICE_NVM_OROM_VER_OFF		0x02
+ #define ICE_SR_NVM_DEV_STARTER_VER	0x18
+ #define ICE_SR_NVM_EETRACK_LO		0x2D
+ #define ICE_SR_NVM_EETRACK_HI		0x2E
+@@ -634,12 +634,12 @@ struct ice_hw_port_stats {
+ #define ICE_NVM_VER_LO_MASK		(0xff << ICE_NVM_VER_LO_SHIFT)
+ #define ICE_NVM_VER_HI_SHIFT		12
+ #define ICE_NVM_VER_HI_MASK		(0xf << ICE_NVM_VER_HI_SHIFT)
+-#define ICE_OEM_VER_PATCH_SHIFT		0
+-#define ICE_OEM_VER_PATCH_MASK		(0xff << ICE_OEM_VER_PATCH_SHIFT)
+-#define ICE_OEM_VER_BUILD_SHIFT		8
+-#define ICE_OEM_VER_BUILD_MASK		(0xffff << ICE_OEM_VER_BUILD_SHIFT)
+-#define ICE_OEM_VER_SHIFT		24
+-#define ICE_OEM_VER_MASK		(0xff << ICE_OEM_VER_SHIFT)
++#define ICE_OROM_VER_PATCH_SHIFT	0
++#define ICE_OROM_VER_PATCH_MASK		(0xff << ICE_OROM_VER_PATCH_SHIFT)
++#define ICE_OROM_VER_BUILD_SHIFT	8
++#define ICE_OROM_VER_BUILD_MASK		(0xffff << ICE_OROM_VER_BUILD_SHIFT)
++#define ICE_OROM_VER_SHIFT		24
++#define ICE_OROM_VER_MASK		(0xff << ICE_OROM_VER_SHIFT)
+ #define ICE_SR_PFA_PTR			0x40
+ #define ICE_SR_SECTOR_SIZE_IN_WORDS	0x800
+ #define ICE_SR_WORDS_IN_1KB		512
 -- 
 2.25.0.368.g28a2d05eebfb
 
