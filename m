@@ -2,65 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7289015EFFE
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:52:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6DC15F02F
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:53:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389438AbgBNRvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:51:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:55798 "EHLO
+        id S2388659AbgBNRxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:53:08 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:55832 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388825AbgBNRvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:51:47 -0500
+        with ESMTP id S2388654AbgBNRxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 12:53:04 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 015F115CE62E9;
-        Fri, 14 Feb 2020 09:51:45 -0800 (PST)
-Date:   Fri, 14 Feb 2020 09:51:43 -0800 (PST)
-Message-Id: <20200214.095143.1994809335003032453.davem@davemloft.net>
-To:     hns@goldelico.com
-Cc:     andrew@lunn.ch, paul@crapouillou.net, ynezz@true.cz,
-        rfontana@redhat.com, tglx@linutronix.de, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v2] net: davicom: dm9000: allow to pass MAC address
- through mac_addr module parameter
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E44AC15CE62F5;
+        Fri, 14 Feb 2020 09:53:03 -0800 (PST)
+Date:   Fri, 14 Feb 2020 09:53:03 -0800 (PST)
+Message-Id: <20200214.095303.341559462549043464.davem@davemloft.net>
+To:     tglx@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bigeasy@linutronix.de, peterz@infradead.org, williams@redhat.com,
+        rostedt@goodmis.org, juri.lelli@redhat.com, mingo@kernel.org
+Subject: Re: [RFC patch 00/19] bpf: Make BPF and PREEMPT_RT co-exist
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
-References: <0d6b4d383bb29ed5d4710e9706e5ad6c7f92d9da.1581696454.git.hns@goldelico.com>
+In-Reply-To: <20200214133917.304937432@linutronix.de>
+References: <20200214133917.304937432@linutronix.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Feb 2020 09:51:46 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Feb 2020 09:53:04 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-Date: Fri, 14 Feb 2020 17:07:35 +0100
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 14 Feb 2020 14:39:17 +0100
 
-> The MIPS Ingenic CI20 board is shipped with a quite old u-boot
-> (ci20-v2013.10 see https://elinux.org/CI20_Dev_Zone). This passes
-> the MAC address through dm9000.mac_addr=xx:xx:xx:xx:xx:xx
-> kernel module parameter to give the board a fixed MAC address.
+> This is a follow up to the initial patch series which David posted a
+> while ago:
 > 
-> This is not processed by the dm9000 driver which assigns a random
-> MAC address on each boot, making DHCP assign a new IP address
-> each time.
+>  https://lore.kernel.org/bpf/20191207.160357.828344895192682546.davem@davemloft.net/
 > 
-> So we add a check for the mac_addr module parameter as a last
-> resort before assigning a random one. This mechanism can also
-> be used outside of u-boot to provide a value through modprobe
-> config.
-> 
-> To parse the MAC address in a new function get_mac_addr() we
-> use an copy adapted from the ksz884x.c driver which provides
-> the same functionality.
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> which was (while non-functional on RT) a good starting point for further
+> investigations.
 
-Sorry, this is not appropriate.  Module parameters in networking
-drivers never are.
+This looks really good after a cursory review, thanks for doing this week.
+
+I was personally unaware of the pre-allocation rules for MAPs used by
+tracing et al.  And that definitely shapes how this should be handled.
