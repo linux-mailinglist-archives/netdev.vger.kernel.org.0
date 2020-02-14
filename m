@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E06D15F369
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:21:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B4615F365
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404247AbgBNSLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:11:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32800 "EHLO mail.kernel.org"
+        id S2404133AbgBNSLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:11:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731156AbgBNPxb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:53:31 -0500
+        id S1731273AbgBNPxd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:53:33 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CB8424686;
-        Fri, 14 Feb 2020 15:53:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F30A24673;
+        Fri, 14 Feb 2020 15:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695611;
-        bh=k3VHynw8rDv6gnu2039yCPRNdfOZ1y2P1trvZkmC6Ss=;
+        s=default; t=1581695612;
+        bh=z70ujt1EqXAZKyx0yyjAuQe/ZW4XhB3+LwH5tlRzWqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lLsyAW1MJeP2d7DNmkao5PNRtxj+L8v4aIou9LipGmloCeYYI91T8X4RcXtvcHXP2
-         cc8cruWCuxKG9FbNaFUWofeuWtZZsJkoRQeOKyre5MMrvq0LCGvBWfV73Krq3mduvB
-         VDCXQntF2MFd8rZjBSy4uE+1aDmQeph8Rl/g1tGo=
+        b=dNm/bAQtOnmE1rvyjwqrrx2F2+w07bczEz0Tz9ACd5AiiPxUHiOUfMJQvfAhQz/ri
+         AFnx9AG4v/iUnGdBGv1YiGbT0Gceg3xcJk4aKvjrbdpoeqWNSj/0BrgJoy7uB84yPf
+         uLhd5kjCOta12A/nh6tkKbPSJ01KBfIVvThZd1dY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+Cc:     Aditya Pakki <pakki001@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 213/542] r8169: check that Realtek PHY driver module is loaded
-Date:   Fri, 14 Feb 2020 10:43:25 -0500
-Message-Id: <20200214154854.6746-213-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 214/542] fore200e: Fix incorrect checks of NULL pointer dereference
+Date:   Fri, 14 Feb 2020 10:43:26 -0500
+Message-Id: <20200214154854.6746-214-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -43,45 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Aditya Pakki <pakki001@umn.edu>
 
-[ Upstream commit f325937735498afb054a0195291bbf68d0b60be5 ]
+[ Upstream commit bbd20c939c8aa3f27fa30e86691af250bf92973a ]
 
-Some users complained about problems with r8169 and it turned out that
-the generic PHY driver was used instead instead of the dedicated one.
-In all cases reason was that r8169.ko was in initramfs, but realtek.ko
-not. Manually adding realtek.ko to initramfs fixed the issues.
-Root cause seems to be that tools like dracut and genkernel don't
-consider softdeps. Add a check for loaded Realtek PHY driver module
-and provide the user with a hint if it's not loaded.
+In fore200e_send and fore200e_close, the pointers from the arguments
+are dereferenced in the variable declaration block and then checked
+for NULL. The patch fixes these issues by avoiding NULL pointer
+dereferences.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/atm/fore200e.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 92a590154bb9f..2d2d22f86dc6f 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -6831,6 +6831,15 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int chipset, region;
- 	int jumbo_max, rc;
+diff --git a/drivers/atm/fore200e.c b/drivers/atm/fore200e.c
+index f1a5002053132..8fbd36eb89410 100644
+--- a/drivers/atm/fore200e.c
++++ b/drivers/atm/fore200e.c
+@@ -1414,12 +1414,14 @@ fore200e_open(struct atm_vcc *vcc)
+ static void
+ fore200e_close(struct atm_vcc* vcc)
+ {
+-    struct fore200e*        fore200e = FORE200E_DEV(vcc->dev);
+     struct fore200e_vcc*    fore200e_vcc;
++    struct fore200e*        fore200e;
+     struct fore200e_vc_map* vc_map;
+     unsigned long           flags;
  
-+	/* Some tools for creating an initramfs don't consider softdeps, then
-+	 * r8169.ko may be in initramfs, but realtek.ko not. Then the generic
-+	 * PHY driver is used that doesn't work with most chip versions.
-+	 */
-+	if (!driver_find("RTL8201CP Ethernet", &mdio_bus_type)) {
-+		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-+		return -ENOENT;
-+	}
+     ASSERT(vcc);
++    fore200e = FORE200E_DEV(vcc->dev);
 +
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
- 	if (!dev)
- 		return -ENOMEM;
+     ASSERT((vcc->vpi >= 0) && (vcc->vpi < 1<<FORE200E_VPI_BITS));
+     ASSERT((vcc->vci >= 0) && (vcc->vci < 1<<FORE200E_VCI_BITS));
+ 
+@@ -1464,10 +1466,10 @@ fore200e_close(struct atm_vcc* vcc)
+ static int
+ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
+ {
+-    struct fore200e*        fore200e     = FORE200E_DEV(vcc->dev);
+-    struct fore200e_vcc*    fore200e_vcc = FORE200E_VCC(vcc);
++    struct fore200e*        fore200e;
++    struct fore200e_vcc*    fore200e_vcc;
+     struct fore200e_vc_map* vc_map;
+-    struct host_txq*        txq          = &fore200e->host_txq;
++    struct host_txq*        txq;
+     struct host_txq_entry*  entry;
+     struct tpd*             tpd;
+     struct tpd_haddr        tpd_haddr;
+@@ -1480,9 +1482,18 @@ fore200e_send(struct atm_vcc *vcc, struct sk_buff *skb)
+     unsigned char*          data;
+     unsigned long           flags;
+ 
+-    ASSERT(vcc);
+-    ASSERT(fore200e);
+-    ASSERT(fore200e_vcc);
++    if (!vcc)
++        return -EINVAL;
++
++    fore200e = FORE200E_DEV(vcc->dev);
++    fore200e_vcc = FORE200E_VCC(vcc);
++
++    if (!fore200e)
++        return -EINVAL;
++
++    txq = &fore200e->host_txq;
++    if (!fore200e_vcc)
++        return -EINVAL;
+ 
+     if (!test_bit(ATM_VF_READY, &vcc->flags)) {
+ 	DPRINTK(1, "VC %d.%d.%d not ready for tx\n", vcc->itf, vcc->vpi, vcc->vpi);
 -- 
 2.20.1
 
