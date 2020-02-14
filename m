@@ -2,184 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 188A815FA4B
+	by mail.lfdr.de (Postfix) with ESMTP id ED20215FA4D
 	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbgBNXVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:21:48 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:54557 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbgBNXVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 18:21:48 -0500
+        id S1728103AbgBNXWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:22:02 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37582 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727458AbgBNXWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 18:22:02 -0500
+Received: by mail-pf1-f196.google.com with SMTP id p14so5600158pfn.4
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 15:22:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1581722508; x=1613258508;
-  h=date:from:to:subject:message-id:mime-version;
-  bh=1fLOsGyjydnuCdMIlSr0tRhTDRsX7ZRCLdT+L++drvk=;
-  b=HzGynpHx3sdhV0Bx1uOB8r4cgMQLaZJ4H9o0jHzwXvEKJw5spptBLxWR
-   Zdl81tPVzPYAQ36aX1ntyL1Z9aLVCT0LhL6BVzeGdSJ26NpD0Thvui3kv
-   5Y24jyo0nx7eofba97HYsbHCivVgOkf+XqMDRn0fpnfON7LcCLOXRMZJc
-   E=;
-IronPort-SDR: alGkphRrlsws2hadl8S9c/eZyCGO7Z01dk4t0uMbaNcrIZgDXf7iizySPNmo2aoN60Pt/CeZH3
- cqsJr0cy5oHg==
-X-IronPort-AV: E=Sophos;i="5.70,442,1574121600"; 
-   d="scan'208";a="17277260"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 14 Feb 2020 23:21:34 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 455CEA0719;
-        Fri, 14 Feb 2020 23:21:32 +0000 (UTC)
-Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 14 Feb 2020 23:21:20 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 14 Feb 2020 23:21:20 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Fri, 14 Feb 2020 23:21:20 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 003184028E; Fri, 14 Feb 2020 23:21:19 +0000 (UTC)
-Date:   Fri, 14 Feb 2020 23:21:19 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
-        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
-        <linux-mm@kvack.org>, <kamatam@amazon.com>,
-        <sstabellini@kernel.org>, <konrad.wilk@oracle.com>,
-        <roger.pau@citrix.com>, <axboe@kernel.dk>, <davem@davemloft.net>,
-        <rjw@rjwysocki.net>, <len.brown@intel.com>, <pavel@ucw.cz>,
-        <peterz@infradead.org>, <eduval@amazon.com>, <sblbir@amazon.com>,
-        <anchalag@amazon.com>, <xen-devel@lists.xenproject.org>,
-        <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
-        <fllinden@amaozn.com>, <benh@kernel.crashing.org>
-Subject: [RFC RESEND PATCH v3 00/12] Enable PM hibernation on guest VMs
-Message-ID: <cover.1581721799.git.anchalag@amazon.com>
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RD00yQTaWRQhVoIeYbivs0VjY8rWc/0oeTR8kZlaU68=;
+        b=mlhAdIpIjDpUiL0kOWdpI5r1tjMYl7/F196K4zfyta+vbun5Xg3O5EkmtLh8TBNsWC
+         4oTVN2LH8gFNrPDEqx+13PCt1svShAxekSrlAhH0ayoQ90+bZ/CbD2qy55JaoT4Jwd5y
+         gjDJf2nuzRIfg+M1nj0ytwfwgWm7gDLkX16659JOFxmdniYxbgvSSwexubtlxsfX9Whw
+         mFJIMYjSGJRf0Q0kcl9lyGOJMbtsdNKrnOCUcnNAAmW7HJTAF9q8l0fvkoqIy0rQC3Cc
+         XXP7OsrnzHTBKmVSZhhpMp5X1wDLXQCG5IsZ3AAmxpqEt5fRf4aRukXxigA8npEwvSxf
+         TnSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RD00yQTaWRQhVoIeYbivs0VjY8rWc/0oeTR8kZlaU68=;
+        b=k/DkbsZzQxa7DJjH/+p9L5hCC6KQ1TgpKzjjZKm0U4BRQEalKUUWAlzHWSqgx8Xs6U
+         A6jYBWJa4mzmaDDXu0OD4i0+sD0atWbARmon/NtAN1FTNvRmA77kexemn2kNDLGZTtMH
+         fqYFbTZI2GraQlBue5KqcggObKec/V2J8KF7SHKbDOqQbYWA0wxWiCL//9V2296vIkDS
+         sRXko8CVaB8cUUZGPIbyvG9Mtt7qevt3i5eFhSJ8ZEVbC/i9z1pgKyEcEZJFGmMsNGOV
+         pkkr3/b0M+Zpe9icVEaBbmXV5VNiciXcE0gqT/Ufw78Redk/42Ks6vpmC/37M2bbKE8b
+         lvvA==
+X-Gm-Message-State: APjAAAW6rqIKlFgck1KHmBE3Efb+mFfPVfYEdgmAJO4FY/ei9cxNbgz4
+        UMcj/ENmH9w4SHBzZhhzTgs=
+X-Google-Smtp-Source: APXvYqySnv0TxH3+yKN7nHCE5fg3MmGRak1Mbt32Otcnnq3m0H06JohkjJrOzFzt1iSsVcyfWn2jdQ==
+X-Received: by 2002:a65:5c44:: with SMTP id v4mr6216168pgr.340.1581722521487;
+        Fri, 14 Feb 2020 15:22:01 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id q8sm8289268pfs.161.2020.02.14.15.22.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2020 15:22:00 -0800 (PST)
+Subject: Re: [PATCH v3 net 4/4] wireguard: socket: remove extra call to
+ synchronize_net
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200214225723.63646-1-Jason@zx2c4.com>
+ <20200214225723.63646-5-Jason@zx2c4.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d29e7d7e-5e60-9790-4851-eaf7bc14a58c@gmail.com>
+Date:   Fri, 14 Feb 2020 15:21:59 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20200214225723.63646-5-Jason@zx2c4.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resending this in a more threaded format.
-  
-Hello,
-I am sending out a v3 version of series of patches that implements guest
-PM hibernation.
-These guests are running on xen hypervisor. The patches had been tested
-against mainstream kernel. EC2 instance hibernation feature is provided
-to the AWS EC2 customers. PM hibernation uses swap space carved out within
-the guest[or can be a separate partition], where hibernation image is
-stored and restored from.
 
-Doing guest hibernation does not involve any support from hypervisor and
-this way guest has complete control over its state. Infrastructure
-restrictions for saving up guest state can be overcome by guest initiated
-hibernation.
 
-This series includes some improvements over RFC series sent last year:
-https://lists.xenproject.org/archives/html/xen-devel/2018-06/msg00823.html
+On 2/14/20 2:57 PM, Jason A. Donenfeld wrote:
+> synchronize_net() is a wrapper around synchronize_rcu(), so there's no
+> point in having synchronize_net and synchronize_rcu back to back,
+> despite the documentation comment suggesting maybe it's somewhat useful,
+> "Wait for packets currently being received to be done." This commit
+> removes the extra call.
+> 
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
 
-Changelog v3:
-1. Feedback from V2
-2. Introduced 2 new patches for xen sched clock offset fix
-3. Fixed pirq shutdown/restore in generic irq subsystem
-4. Split save/restore steal clock patches into 2 for better readability
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Changelog v2:
-1. Removed timeout/request present on the ring in xen-blkfront during blkfront freeze
-2. Fixed restoring of PIRQs which was apparently working for 4.9 kernels but not for
-newer kernel. [Legacy irqs were no longer restored after hibernation introduced with
-this commit "020db9d3c1dc0"]
-3. Merged couple of related patches to make the code more coherent and readable
-4. Code refactoring
-5. Sched clock fix when hibernating guest is under heavy CPU load
-Note: Under very rare circumstances we see resume failures with KASLR enabled only
-on xen instances.  We are roughly seeing 3% failures [>1000 runs] when testing with
-various instance sizes and some workload running on each instance. I am currently
-investigating the issue as to confirm if its a xen issue or kernel issue.
-However, it should not hold back anyone from reviewing/accepting these patches.
-
-Testing done:
-All testing is done for multiple hibernation cycle for 5.4 kernel on EC2.
-
-Testing How to:
----------------
-Example:
-Set up a file-backed swap space. Swap file size>=Total memory on the system
-sudo dd if=/dev/zero of=/swap bs=$(( 1024 * 1024 )) count=4096 # 4096MiB
-sudo chmod 600 /swap
-sudo mkswap /swap
-sudo swapon /swap
-
-Update resume device/resume offset in grub if using swap file:
-resume=/dev/xvda1 resume_offset=200704
-
-Execute:
---------
-sudo pm-hibernate
-OR
-echo disk > /sys/power/state && echo reboot > /sys/power/disk
-
-Compute resume offset code:
-"
-#!/usr/bin/env python
-import sys
-import array
-import fcntl
-
-#swap file
-f = open(sys.argv[1], 'r')
-buf = array.array('L', [0])
-
-#FIBMAP
-ret = fcntl.ioctl(f.fileno(), 0x01, buf)
-print buf[0]
-"
-
-Aleksei Besogonov (1):
-  PM / hibernate: update the resume offset on SNAPSHOT_SET_SWAP_AREA
-
-Anchal Agarwal (4):
-  x86/xen: Introduce new function to map HYPERVISOR_shared_info on
-    Resume
-  genirq: Shutdown irq chips in suspend/resume during hibernation
-  xen: Introduce wrapper for save/restore sched clock offset
-  xen: Update sched clock offset to avoid system instability in
-    hibernation
-
-Munehisa Kamata (7):
-  xen/manage: keep track of the on-going suspend mode
-  xenbus: add freeze/thaw/restore callbacks support
-  x86/xen: add system core suspend and resume callbacks
-  xen-netfront: add callbacks for PM suspend and hibernation support
-  xen-blkfront: add callbacks for PM suspend and hibernation
-  xen/time: introduce xen_{save,restore}_steal_clock
-  x86/xen: save and restore steal clock
-
- arch/x86/xen/enlighten_hvm.c      |   8 ++
- arch/x86/xen/suspend.c            |  72 ++++++++++++++++++
- arch/x86/xen/time.c               |  18 ++++-
- arch/x86/xen/xen-ops.h            |   3 +
- drivers/block/xen-blkfront.c      | 119 ++++++++++++++++++++++++++++--
- drivers/net/xen-netfront.c        |  98 +++++++++++++++++++++++-
- drivers/xen/events/events_base.c  |   1 +
- drivers/xen/manage.c              |  73 ++++++++++++++++++
- drivers/xen/time.c                |  29 +++++++-
- drivers/xen/xenbus/xenbus_probe.c |  99 ++++++++++++++++++++-----
- include/linux/irq.h               |   2 +
- include/xen/xen-ops.h             |   8 ++
- include/xen/xenbus.h              |   3 +
- kernel/irq/chip.c                 |   2 +-
- kernel/irq/internals.h            |   1 +
- kernel/irq/pm.c                   |  31 +++++---
- kernel/power/user.c               |   6 +-
- 17 files changed, 533 insertions(+), 40 deletions(-)
-
--- 
-2.24.1.AMZN
+Thanks !
 
