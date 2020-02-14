@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC2E415ED2E
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:32:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0882D15ED2A
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390816AbgBNRcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:32:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57372 "EHLO mail.kernel.org"
+        id S2389226AbgBNRcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 12:32:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57422 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390497AbgBNQGp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:06:45 -0500
+        id S2390278AbgBNQGr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:06:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C7C5B2467D;
-        Fri, 14 Feb 2020 16:06:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27014222C2;
+        Fri, 14 Feb 2020 16:06:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696404;
-        bh=QiFOD+/nSAFN6ygp/s8ZWgKvY9OZQGoD661PrTs2uLQ=;
+        s=default; t=1581696407;
+        bh=3cBM/1b9IzQ+rW2FBSl1Y6NW3pjkQtFul9vE6i7tGoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spSSFsPq3mDK+SB+SzZR0xe50zhv3FcWJqDG8uVaOcvNPYiw0nE3PJEkkLgM0f+1Q
-         gOt3eHY8JmujyNOEq+yzaph0N403D4gpkaGJrfSZV+4QW1/Gwz2a2gJBgEzg0tpRLy
-         zdYg6w6Z8sSz5HnegPSrGUeOnj/D8OM6OiYfgCMU=
+        b=TQjxIDlcqEaaCTc7y3zinF6oRB1G4ZtNDIKE9sZXAGYv57f8eFV/7NDyFqeinffKM
+         RTUBXdGQDKpye2mwCBvDoyU/XfYnyCfvdWq6tXwU+DNh02hfiHHimSj6ost0Uy18xH
+         KqpepyqDuLvMbYm5+kWBzAJB/Dmotm5Q59Wfj0qs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Chen Zhou <chenzhou10@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 228/459] net: phy: realtek: add logging for the RGMII TX delay configuration
-Date:   Fri, 14 Feb 2020 10:57:58 -0500
-Message-Id: <20200214160149.11681-228-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.4 230/459] net/wan/fsl_ucc_hdlc: remove set but not used variables 'ut_info' and 'ret'
+Date:   Fri, 14 Feb 2020 10:58:00 -0500
+Message-Id: <20200214160149.11681-230-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
@@ -44,72 +44,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Chen Zhou <chenzhou10@huawei.com>
 
-[ Upstream commit 3aec743d69822d22d4a5b60deb9518ed8be6fa67 ]
+[ Upstream commit 270fe2ceda66b6964d4c6f261d7f562a02c1c786 ]
 
-RGMII requires a delay of 2ns between the data and the clock signal.
-There are at least three ways this can happen. One possibility is by
-having the PHY generate this delay.
-This is a common source for problems (for example with slow TX speeds or
-packet loss when sending data). The TX delay configuration of the
-RTL8211F PHY can be set either by pin-strappping the RXD1 pin (HIGH
-means enabled, LOW means disabled) or through configuring a paged
-register. The setting from the RXD1 pin is also reflected in the
-register.
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Add debug logging to the TX delay configuration on RTL8211F so it's
-easier to spot these issues (for example if the TX delay is enabled for
-both, the RTL8211F PHY and the MAC).
-This is especially helpful because there is no public datasheet for the
-RTL8211F PHY available with all the RX/TX delay specifics.
+drivers/net/wan/fsl_ucc_hdlc.c: In function ucc_hdlc_irq_handler:
+drivers/net/wan/fsl_ucc_hdlc.c:643:23:
+	warning: variable ut_info set but not used [-Wunused-but-set-variable]
+drivers/net/wan/fsl_ucc_hdlc.c: In function uhdlc_suspend:
+drivers/net/wan/fsl_ucc_hdlc.c:880:23:
+	warning: variable ut_info set but not used [-Wunused-but-set-variable]
+drivers/net/wan/fsl_ucc_hdlc.c: In function uhdlc_resume:
+drivers/net/wan/fsl_ucc_hdlc.c:925:6:
+	warning: variable ret set but not used [-Wunused-but-set-variable]
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/realtek.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/net/wan/fsl_ucc_hdlc.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 677c45985338a..c76df51dd3c51 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -171,7 +171,9 @@ static int rtl8211c_config_init(struct phy_device *phydev)
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+index 4ad0a0c33d853..607cb1edff964 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.c
++++ b/drivers/net/wan/fsl_ucc_hdlc.c
+@@ -640,11 +640,9 @@ static irqreturn_t ucc_hdlc_irq_handler(int irq, void *dev_id)
+ 	struct ucc_hdlc_private *priv = (struct ucc_hdlc_private *)dev_id;
+ 	struct net_device *dev = priv->ndev;
+ 	struct ucc_fast_private *uccf;
+-	struct ucc_tdm_info *ut_info;
+ 	u32 ucce;
+ 	u32 uccm;
  
- static int rtl8211f_config_init(struct phy_device *phydev)
+-	ut_info = priv->ut_info;
+ 	uccf = priv->uccf;
+ 
+ 	ucce = ioread32be(uccf->p_ucce);
+@@ -877,7 +875,6 @@ static void resume_clk_config(struct ucc_hdlc_private *priv)
+ static int uhdlc_suspend(struct device *dev)
  {
-+	struct device *dev = &phydev->mdio.dev;
- 	u16 val;
-+	int ret;
+ 	struct ucc_hdlc_private *priv = dev_get_drvdata(dev);
+-	struct ucc_tdm_info *ut_info;
+ 	struct ucc_fast __iomem *uf_regs;
  
- 	/* enable TX-delay for rgmii-{id,txid}, and disable it for rgmii and
- 	 * rgmii-rxid. The RX-delay can be enabled by the external RXDLY pin.
-@@ -189,7 +191,22 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- 		return 0;
- 	}
+ 	if (!priv)
+@@ -889,7 +886,6 @@ static int uhdlc_suspend(struct device *dev)
+ 	netif_device_detach(priv->ndev);
+ 	napi_disable(&priv->napi);
  
--	return phy_modify_paged(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY, val);
-+	ret = phy_modify_paged_changed(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY,
-+				       val);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to update the TX delay register\n");
-+		return ret;
-+	} else if (ret) {
-+		dev_dbg(dev,
-+			"%s 2ns TX delay (and changing the value from pin-strapping RXD1 or the bootloader)\n",
-+			val ? "Enabling" : "Disabling");
-+	} else {
-+		dev_dbg(dev,
-+			"2ns TX delay was already %s (by pin-strapping RXD1 or bootloader configuration)\n",
-+			val ? "enabled" : "disabled");
-+	}
-+
-+	return 0;
- }
+-	ut_info = priv->ut_info;
+ 	uf_regs = priv->uf_regs;
  
- static int rtl8211e_config_init(struct phy_device *phydev)
+ 	/* backup gumr guemr*/
+@@ -922,7 +918,7 @@ static int uhdlc_resume(struct device *dev)
+ 	struct ucc_fast __iomem *uf_regs;
+ 	struct ucc_fast_private *uccf;
+ 	struct ucc_fast_info *uf_info;
+-	int ret, i;
++	int i;
+ 	u32 cecr_subblock;
+ 	u16 bd_status;
+ 
+@@ -967,16 +963,16 @@ static int uhdlc_resume(struct device *dev)
+ 
+ 	/* Write to QE CECR, UCCx channel to Stop Transmission */
+ 	cecr_subblock = ucc_fast_get_qe_cr_subblock(uf_info->ucc_num);
+-	ret = qe_issue_cmd(QE_STOP_TX, cecr_subblock,
+-			   (u8)QE_CR_PROTOCOL_UNSPECIFIED, 0);
++	qe_issue_cmd(QE_STOP_TX, cecr_subblock,
++		     (u8)QE_CR_PROTOCOL_UNSPECIFIED, 0);
+ 
+ 	/* Set UPSMR normal mode */
+ 	iowrite32be(0, &uf_regs->upsmr);
+ 
+ 	/* init parameter base */
+ 	cecr_subblock = ucc_fast_get_qe_cr_subblock(uf_info->ucc_num);
+-	ret = qe_issue_cmd(QE_ASSIGN_PAGE_TO_DEVICE, cecr_subblock,
+-			   QE_CR_PROTOCOL_UNSPECIFIED, priv->ucc_pram_offset);
++	qe_issue_cmd(QE_ASSIGN_PAGE_TO_DEVICE, cecr_subblock,
++		     QE_CR_PROTOCOL_UNSPECIFIED, priv->ucc_pram_offset);
+ 
+ 	priv->ucc_pram = (struct ucc_hdlc_param __iomem *)
+ 				qe_muram_addr(priv->ucc_pram_offset);
 -- 
 2.20.1
 
