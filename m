@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 207F215FA66
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BFD815FA4F
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728328AbgBNXXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:23:09 -0500
-Received: from mga02.intel.com ([134.134.136.20]:41445 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728173AbgBNXW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728194AbgBNXW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 14 Feb 2020 18:22:28 -0500
+Received: from mga17.intel.com ([192.55.52.151]:1652 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727860AbgBNXW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 18:22:27 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:27 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:27 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629280"
+   d="scan'208";a="228629284"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:26 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -25,9 +25,9 @@ To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 05/22] ice: rename variables used for Option ROM version
-Date:   Fri, 14 Feb 2020 15:22:04 -0800
-Message-Id: <20200214232223.3442651-6-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 06/22] ice: add basic handler for devlink .info_get
+Date:   Fri, 14 Feb 2020 15:22:05 -0800
+Message-Id: <20200214232223.3442651-7-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
@@ -38,193 +38,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function ice_get_nvm_version reports data for both the NVM map
-version and the version of the combined Option ROM. The version data for
-the option ROM uses variables with the prefix "oem".
+The devlink .info_get callback allows the driver to report detailed
+version information. The following devlink versions are reported with
+this initial implementation:
 
-This causes confusion as it makes it difficult for a reviewer to
-understand what the version actually represents.
+ "fw.mgmt" -> The version of the firmware that controls PHY, link, etc
+ "fw.mgmt.api" -> API version of interface exposed over the AdminQ
+ "fw.mgmt.bundle" -> Unique identifier for the firmware bundle
+ "fw.undi.orom" -> Version of the Option ROM containing the UEFI driver
+ "nvm.psid" -> Version of the format for the NVM parameter set
+ "nvm.bundle" -> Unique identifier for the combined NVM image
 
-Rename the variables to use the prefix "orom", and update the code
-comments to mention that this is the combined Option ROM version. This
-helps the code clarify what the version actually represents.
+With this, devlink can now report at least the same information as
+reported by the older ethtool interface. Each section of the
+"firmware-version" is also reported independently so that it is easier
+to understand the meaning.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c  | 19 ++++++++++---------
- drivers/net/ethernet/intel/ice/ice_common.h  |  4 ++--
- drivers/net/ethernet/intel/ice/ice_ethtool.c |  8 ++++----
- drivers/net/ethernet/intel/ice/ice_nvm.c     | 16 ++++++++--------
- drivers/net/ethernet/intel/ice/ice_type.h    | 16 ++++++++--------
- 5 files changed, 32 insertions(+), 31 deletions(-)
+ Documentation/networking/devlink/ice.rst     | 55 +++++++++++++
+ Documentation/networking/devlink/index.rst   |  1 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 81 ++++++++++++++++++++
+ 3 files changed, 137 insertions(+)
+ create mode 100644 Documentation/networking/devlink/ice.rst
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 04d5db0a25bf..a74532520112 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -617,22 +617,23 @@ static void ice_get_itr_intrl_gran(struct ice_hw *hw)
- /**
-  * ice_get_nvm_version - get cached NVM version data
-  * @hw: pointer to the hardware structure
-- * @oem_ver: 8 bit NVM version
-- * @oem_build: 16 bit NVM build number
-- * @oem_patch: 8 NVM patch number
-+ * @orom_ver: 8 bit version of combined Option ROM
-+ * @orom_build: 16 bit build number of combined Option ROM
-+ * @orom_patch: 8 bit patch level of combined Option ROM
-  * @ver_hi: high 16 bits of the NVM version
-  * @ver_lo: low 16 bits of the NVM version
-  */
- void
--ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
--		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo)
-+ice_get_nvm_version(struct ice_hw *hw, u8 *orom_ver, u16 *orom_build,
-+		    u8 *orom_patch, u8 *ver_hi, u8 *ver_lo)
- {
- 	struct ice_nvm_info *nvm = &hw->nvm;
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+new file mode 100644
+index 000000000000..5545e708f18f
+--- /dev/null
++++ b/Documentation/networking/devlink/ice.rst
+@@ -0,0 +1,55 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++===================
++ice devlink support
++===================
++
++This document describes the devlink features implemented by the ``ice``
++device driver.
++
++Info versions
++=============
++
++The ``ice`` driver reports the following versions
++
++.. list-table:: devlink info versions implemented
++    :widths: 5 5 5 90
++
++    * - Name
++      - Type
++      - Example
++      - Description
++    * - ``fw.mgmt``
++      - running
++      - 1.16.10
++      - 3-digit version number of the management firmware that controls the
++        PHY, link, etc.
++    * - ``fw.mgmt.api``
++      - running
++      - 1.5
++      - 2-digit version number of the API exported over the AdminQ by the
++        management firmware. Used by the driver to identify what commands
++        are supported.
++    * - ``fw.mgmt.bundle``
++      - running
++      - 0xecabd066
++      - Unique identifier of the management firmware build.
++    * - ``fw.undi.orom``
++      - running
++      - 1.2186.0
++      - Version of the Option ROM containing the UEFI driver. The version is
++        reported in ``major.minor.patch`` format. The major version is
++        incremented whenever a major breaking change occurs, or when the
++        minor version would overflow. The minor version is incremented for
++        non-breaking changes and reset to 1 when the major version is
++        incremented. The patch version is normally 0 but is incremented when
++        a fix is delivered as a patch against an older base Option ROM.
++    * - ``nvm.psid``
++      - running
++      - 0.50
++      - Version describing the format of the NVM parameter set.
++    * - ``nvm.bundle``
++      - running
++      - 0x80001709
++      - Unique identifier of the NVM image contents, also known as the
++        EETRACK id.
+diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+index 087ff54d53fc..272509cd9215 100644
+--- a/Documentation/networking/devlink/index.rst
++++ b/Documentation/networking/devlink/index.rst
+@@ -32,6 +32,7 @@ parameters, info versions, and other features it supports.
  
--	*oem_ver = (u8)((nvm->oem_ver & ICE_OEM_VER_MASK) >> ICE_OEM_VER_SHIFT);
--	*oem_patch = (u8)(nvm->oem_ver & ICE_OEM_VER_PATCH_MASK);
--	*oem_build = (u16)((nvm->oem_ver & ICE_OEM_VER_BUILD_MASK) >>
--			   ICE_OEM_VER_BUILD_SHIFT);
-+	*orom_ver = (u8)((nvm->orom_ver & ICE_OROM_VER_MASK) >>
-+			 ICE_OROM_VER_SHIFT);
-+	*orom_patch = (u8)(nvm->orom_ver & ICE_OROM_VER_PATCH_MASK);
-+	*orom_build = (u16)((nvm->orom_ver & ICE_OROM_VER_BUILD_MASK) >>
-+			   ICE_OROM_VER_BUILD_SHIFT);
- 	*ver_hi = (nvm->ver & ICE_NVM_VER_HI_MASK) >> ICE_NVM_VER_HI_SHIFT;
- 	*ver_lo = (nvm->ver & ICE_NVM_VER_LO_MASK) >> ICE_NVM_VER_LO_SHIFT;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 9d5e86c9f886..0f9aa1986cab 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -151,8 +151,8 @@ void
- ice_stat_update32(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- 		  u64 *prev_stat, u64 *cur_stat);
- void
--ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
--		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo);
-+ice_get_nvm_version(struct ice_hw *hw, u8 *orom_ver, u16 *orom_build,
-+		    u8 *orom_patch, u8 *ver_hi, u8 *ver_lo);
- enum ice_status
- ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
- 		     struct ice_aqc_get_elem *buf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 223e8e707dcb..af5e5d6fc29c 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -166,11 +166,11 @@ static void
- ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
--	u8 oem_ver, oem_patch, nvm_ver_hi, nvm_ver_lo;
-+	u8 orom_ver, orom_patch, nvm_ver_hi, nvm_ver_lo;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
--	u16 oem_build;
-+	u16 orom_build;
+    bnxt
+    ionic
++   ice
+    mlx4
+    mlx5
+    mlxsw
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 2a72857c4b26..f834025d58aa 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -2,9 +2,90 @@
+ /* Copyright (c) 2019, Intel Corporation. */
  
- 	strlcpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
- 	strlcpy(drvinfo->version, ice_drv_ver, sizeof(drvinfo->version));
-@@ -178,11 +178,11 @@ ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
- 	/* Display NVM version (from which the firmware version can be
- 	 * determined) which contains more pertinent information.
- 	 */
--	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch,
-+	ice_get_nvm_version(hw, &orom_ver, &orom_build, &orom_patch,
- 			    &nvm_ver_hi, &nvm_ver_lo);
- 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
- 		 "%x.%02x 0x%x %d.%d.%d", nvm_ver_hi, nvm_ver_lo,
--		 hw->nvm.eetrack, oem_ver, oem_build, oem_patch);
-+		 hw->nvm.eetrack, orom_ver, orom_build, orom_patch);
+ #include "ice.h"
++#include "ice_lib.h"
+ #include "ice_devlink.h"
  
- 	strlcpy(drvinfo->bus_info, pci_name(pf->pdev),
- 		sizeof(drvinfo->bus_info));
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index aaf5fd064725..7d5f2a6296c9 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -195,7 +195,7 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
-  */
- enum ice_status ice_init_nvm(struct ice_hw *hw)
- {
--	u16 oem_hi, oem_lo, boot_cfg_tlv, boot_cfg_tlv_len;
-+	u16 orom_hi, orom_lo, boot_cfg_tlv, boot_cfg_tlv_len;
- 	struct ice_nvm_info *nvm = &hw->nvm;
- 	u16 eetrack_lo, eetrack_hi;
- 	enum ice_status status;
-@@ -272,21 +272,21 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
- 		return ICE_ERR_INVAL_SIZE;
- 	}
++/**
++ * ice_devlink_info_get - .info_get devlink handler
++ * @devlink: devlink instance structure
++ * @req: the devlink info request
++ * @extack: extended netdev ack structure
++ *
++ * Callback for the devlink .info_get operation. Reports information about the
++ * device.
++ *
++ * @returns zero on success or an error code on failure.
++ */
++static int ice_devlink_info_get(struct devlink *devlink,
++				struct devlink_info_req *req,
++				struct netlink_ext_ack *extack)
++{
++	u8 orom_maj, orom_patch, nvm_ver_hi, nvm_ver_lo;
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct ice_hw *hw = &pf->hw;
++	u16 orom_min;
++	char buf[32];
++	int err;
++
++	ice_get_nvm_version(hw, &orom_maj, &orom_min, &orom_patch, &nvm_ver_hi,
++			    &nvm_ver_lo);
++
++	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set driver name");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "%u.%u.%u", hw->fw_maj_ver, hw->fw_min_ver,
++		 hw->fw_patch);
++	err = devlink_info_version_running_put(req,
++					       DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
++					       buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set fw version data");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "%u.%u", hw->api_maj_ver, hw->api_min_ver);
++	err = devlink_info_version_running_put(req, "fw.mgmt.api", buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set mgmt fw API data");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "0x%08x", hw->fw_build);
++	err = devlink_info_version_running_put(req, "fw.mgmt.bundle", buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set fw bundle data");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "%u.%u.%u", orom_maj, orom_min, orom_patch);
++	err = devlink_info_version_running_put(req, "fw.undi.orom", buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set Option ROM version");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "%x.%02x", nvm_ver_hi, nvm_ver_lo);
++	err = devlink_info_version_running_put(req, "nvm.psid", buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set NVM parameter set version data");
++		return err;
++	}
++
++	snprintf(buf, sizeof(buf), "0x%0X", hw->nvm.eetrack);
++	err = devlink_info_version_running_put(req, "nvm.bundle", buf);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Unable to set NVM bundle data");
++		return err;
++	}
++
++	return 0;
++}
++
+ const struct devlink_ops ice_devlink_ops = {
++	.info_get = ice_devlink_info_get,
+ };
  
--	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF),
--				  &oem_hi);
-+	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF),
-+				  &orom_hi);
- 	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER hi.\n");
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER hi.\n");
- 		return status;
- 	}
- 
--	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF + 1),
--				  &oem_lo);
-+	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF + 1),
-+				  &orom_lo);
- 	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER lo.\n");
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER lo.\n");
- 		return status;
- 	}
- 
--	nvm->oem_ver = ((u32)oem_hi << 16) | oem_lo;
-+	nvm->orom_ver = ((u32)orom_hi << 16) | orom_lo;
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index db0ef6ba907f..1d9420cd53b1 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -242,7 +242,7 @@ struct ice_fc_info {
- /* NVM Information */
- struct ice_nvm_info {
- 	u32 eetrack;              /* NVM data version */
--	u32 oem_ver;              /* OEM version info */
-+	u32 orom_ver;             /* Combined Option ROM version info */
- 	u16 sr_words;             /* Shadow RAM size in words */
- 	u16 ver;                  /* NVM package version */
- 	u8 blank_nvm_mode;        /* is NVM empty (no FW present) */
-@@ -626,7 +626,7 @@ struct ice_hw_port_stats {
- 
- /* Checksum and Shadow RAM pointers */
- #define ICE_SR_BOOT_CFG_PTR		0x132
--#define ICE_NVM_OEM_VER_OFF		0x02
-+#define ICE_NVM_OROM_VER_OFF		0x02
- #define ICE_SR_NVM_DEV_STARTER_VER	0x18
- #define ICE_SR_NVM_EETRACK_LO		0x2D
- #define ICE_SR_NVM_EETRACK_HI		0x2E
-@@ -634,12 +634,12 @@ struct ice_hw_port_stats {
- #define ICE_NVM_VER_LO_MASK		(0xff << ICE_NVM_VER_LO_SHIFT)
- #define ICE_NVM_VER_HI_SHIFT		12
- #define ICE_NVM_VER_HI_MASK		(0xf << ICE_NVM_VER_HI_SHIFT)
--#define ICE_OEM_VER_PATCH_SHIFT		0
--#define ICE_OEM_VER_PATCH_MASK		(0xff << ICE_OEM_VER_PATCH_SHIFT)
--#define ICE_OEM_VER_BUILD_SHIFT		8
--#define ICE_OEM_VER_BUILD_MASK		(0xffff << ICE_OEM_VER_BUILD_SHIFT)
--#define ICE_OEM_VER_SHIFT		24
--#define ICE_OEM_VER_MASK		(0xff << ICE_OEM_VER_SHIFT)
-+#define ICE_OROM_VER_PATCH_SHIFT	0
-+#define ICE_OROM_VER_PATCH_MASK		(0xff << ICE_OROM_VER_PATCH_SHIFT)
-+#define ICE_OROM_VER_BUILD_SHIFT	8
-+#define ICE_OROM_VER_BUILD_MASK		(0xffff << ICE_OROM_VER_BUILD_SHIFT)
-+#define ICE_OROM_VER_SHIFT		24
-+#define ICE_OROM_VER_MASK		(0xff << ICE_OROM_VER_SHIFT)
- #define ICE_SR_PFA_PTR			0x40
- #define ICE_SR_SECTOR_SIZE_IN_WORDS	0x800
- #define ICE_SR_WORDS_IN_1KB		512
+ static void ice_devlink_free(void *devlink_ptr)
 -- 
 2.25.0.368.g28a2d05eebfb
 
