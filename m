@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C5F15DA26
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:03:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F16BA15DA29
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729486AbgBNPDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:03:15 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:39152 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729412AbgBNPDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:03:14 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01EF074A019190;
-        Fri, 14 Feb 2020 07:03:12 -0800
+        id S1729507AbgBNPDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:03:21 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:15014 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729491AbgBNPDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:03:19 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01EF15gD013950;
+        Fri, 14 Feb 2020 07:03:15 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=4bDD4n1Kiz0F55nRs8+Sc4wdfI9RUyS3wolOANB9630=;
- b=u/FIUc4jeRQF8v/S4/lzTpQIdFnQYOcr6An4xjSwswiEpMQbcB1KFrmuLsOVqDIplxn7
- tgMlBbIsdAg+hNlOYdSR0GpmYAubqIZYPsr4ZOhxzMB80Ts2K49qBcqHVvJvgwHaAJDI
- d0QWs4m8SonKhyrOO4C6UzXCIjFFcToU0v8ciDP1OKDSUjlBmelC2LwEcWq6KuZFzSSi
- 40FbScZD0N/0DE/7nlC865ZtnQOOBU7B8jrFplJITkDv38mWizbcfTprju/89Uo3lNEq
- ToGHjfxwVMfjEDiYgwNL6N1Mqk8xD1pQ7YvfGHCvP0LLxzrchryzOoRAVPUAXxB/z9Y6 iQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2y4be2n5jm-1
+ content-type; s=pfpt0818; bh=MPJ2Jc8JIu3IUHuXoKb4GJJz6+JkH21/Rg7fBYqashw=;
+ b=g46BhnvhnExTmKhHz/GaepQNLOu9KU3ACkEEtmaja+9mzaiYV2HZXgeCu2Vz+5XrCS5q
+ e5jBOmYvmcgCZ1+sjrbX+B2n+zWocydMqYs20ERDkg2LzX4c98OVL1FwpLyLPVzXf/t+
+ 1jeB0+r+NzDmymfEKRPLffrk+1cjR5vzOVO+fK1e3alyvQseLZDijiQLVlKgeMvAgd5F
+ LH8+g+XrCeRLL+HVh2+YW0xUvB33hCRQcTk21qlmQXMDqP15oSUVr/9JZP9TMQlV1FN6
+ 7d+1lUyx0XiodLhcbdLI5ULiv6kOABRpvoqxhOGaUVLWw0tbX7wQAUCBIF8hN5mzQuX2 Xg== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2y4j5k3gr5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 14 Feb 2020 07:03:11 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
- 2020 07:03:10 -0800
+        Fri, 14 Feb 2020 07:03:15 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
+ 2020 07:03:13 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 14 Feb
+ 2020 07:03:12 -0800
 Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 14 Feb 2020 07:03:10 -0800
+ Transport; Fri, 14 Feb 2020 07:03:12 -0800
 Received: from NN-LT0019.rdc.aquantia.com (unknown [10.9.16.63])
-        by maili.marvell.com (Postfix) with ESMTP id B96453F7041;
-        Fri, 14 Feb 2020 07:03:08 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id DF03F3F703F;
+        Fri, 14 Feb 2020 07:03:10 -0800 (PST)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -42,9 +45,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Dmitry Bogdanov <dbogdanov@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [RFC 01/18] net: introduce the MACSEC netdev feature
-Date:   Fri, 14 Feb 2020 18:02:41 +0300
-Message-ID: <20200214150258.390-2-irusskikh@marvell.com>
+Subject: [RFC 02/18] net: add a reference to MACsec ops in net_device
+Date:   Fri, 14 Feb 2020 18:02:42 +0300
+Message-ID: <20200214150258.390-3-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200214150258.390-1-irusskikh@marvell.com>
 References: <20200214150258.390-1-irusskikh@marvell.com>
@@ -59,50 +62,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Antoine Tenart <antoine.tenart@bootlin.com>
 
-This patch introduce a new netdev feature, which will be used by drivers
-to state they can perform MACsec transformations in hardware.
+This patch adds a reference to MACsec ops to the net_device structure,
+allowing net device drivers to implement offloading operations for
+MACsec.
 
 Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- include/linux/netdev_features.h | 3 +++
- net/ethtool/common.c            | 1 +
- 2 files changed, 4 insertions(+)
+ include/linux/netdevice.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 34d050bb1ae6..9d53c5ad272c 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -83,6 +83,8 @@ enum {
- 	NETIF_F_HW_TLS_RECORD_BIT,	/* Offload TLS record */
- 	NETIF_F_GRO_FRAGLIST_BIT,	/* Fraglist GRO */
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index a9c6b5c61d27..01b90c290779 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -53,6 +53,8 @@ struct netpoll_info;
+ struct device;
+ struct phy_device;
+ struct dsa_port;
++struct macsec_context;
++struct macsec_ops;
  
-+	NETIF_F_HW_MACSEC_BIT,		/* Offload MACsec operations */
-+
- 	/*
- 	 * Add your fresh new feature above and remember to update
- 	 * netdev_features_strings[] in net/core/ethtool.c and maybe
-@@ -154,6 +156,7 @@ enum {
- #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
- #define NETIF_F_GRO_FRAGLIST	__NETIF_F(GRO_FRAGLIST)
- #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
-+#define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
- 
- /* Finds the next feature with the highest number of the range of start till 0.
+ struct sfp_bus;
+ /* 802.11 specific */
+@@ -1802,6 +1804,8 @@ enum netdev_priv_flags {
+  *				that follow this device when it is moved
+  *				to another network namespace.
+  *
++ *	@macsec_ops:    MACsec offloading ops
++ *
+  *	FIXME: cleanup struct net_device such that network protocol info
+  *	moves out.
   */
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 636ec6d5110e..b203e6cef4f8 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -60,6 +60,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_HW_TLS_TX_BIT] =	 "tls-hw-tx-offload",
- 	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
- 	[NETIF_F_GRO_FRAGLIST_BIT] =	 "rx-gro-list",
-+	[NETIF_F_HW_MACSEC_BIT] =	 "macsec-hw-offload",
- };
+@@ -2096,6 +2100,11 @@ struct net_device {
+ 	unsigned		wol_enabled:1;
  
- const char
+ 	struct list_head	net_notifier_list;
++
++#if IS_ENABLED(CONFIG_MACSEC)
++	/* MACsec management functions */
++	const struct macsec_ops *macsec_ops;
++#endif
+ };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
+ 
 -- 
 2.17.1
 
