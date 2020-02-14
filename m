@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DC6115EBBB
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AEA315EB87
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392155AbgBNRWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 12:22:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34824 "EHLO mail.kernel.org"
+        id S2391447AbgBNQKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:10:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35706 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391291AbgBNQJw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:09:52 -0500
+        id S2391433AbgBNQKQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:10:16 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 972DC24676;
-        Fri, 14 Feb 2020 16:09:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B30B82467E;
+        Fri, 14 Feb 2020 16:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696591;
-        bh=AxKfZmAdFXCPVhMsF/7rjFQ7ZLiEFxpynnsIU06lQ8s=;
+        s=default; t=1581696615;
+        bh=j5+g+RQG+8iUqfhHmGbPWGjRcRjG8CzYFVOGHpcaMTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cby0UzXSk6AH5wccfs7GKpFXvhm28Ygr3wAMpeSo+2t82jWvPPts7VGlCsUwQk5So
-         J5l/iFme2u67cBF71aJhRjUy0NWRxv60Imp7bVYYj7PEoW2ufZ1dpNYMDooVCQuBCL
-         zdKLctkpMy0I8lSqjjkLaRIC7/3315cM066VGFIQ=
+        b=iJ9TmJByxRIXIVSdQs2zxoEv6wd3qlkEG4X+scMuV4lEAznyuo4xUxNYqslPKh7GN
+         7b2J9DIreXxVIRIGWV81AIIIELNLDHkPygzPJlTKVtvCJUrnirAjfM73B72VO40hXH
+         X8yatePeub2IpF4Wi0qCKtfwkyHyzlxLkSbW2Vcg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Trond Myklebust <trondmy@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        "J . Bruce Fields" <bfields@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 378/459] sunrpc: Fix potential leaks in sunrpc_cache_unhash()
-Date:   Fri, 14 Feb 2020 11:00:28 -0500
-Message-Id: <20200214160149.11681-378-sashal@kernel.org>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 397/459] selftests: bpf: Reset global state between reuseport test runs
+Date:   Fri, 14 Feb 2020 11:00:47 -0500
+Message-Id: <20200214160149.11681-397-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
@@ -45,34 +48,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Trond Myklebust <trondmy@gmail.com>
+From: Lorenz Bauer <lmb@cloudflare.com>
 
-[ Upstream commit 1d82163714c16ebe09c7a8c9cd3cef7abcc16208 ]
+[ Upstream commit 51bad0f05616c43d6d34b0a19bcc9bdab8e8fb39 ]
 
-When we unhash the cache entry, we need to handle any pending upcalls
-by calling cache_fresh_unlocked().
+Currently, there is a lot of false positives if a single reuseport test
+fails. This is because expected_results and the result map are not cleared.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+Zero both after individual test runs, which fixes the mentioned false
+positives.
+
+Fixes: 91134d849a0e ("bpf: Test BPF_PROG_TYPE_SK_REUSEPORT")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20200124112754.19664-5-lmb@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/cache.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../selftests/bpf/test_select_reuseport.c        | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
-index f740cb51802af..7ede1e52fd812 100644
---- a/net/sunrpc/cache.c
-+++ b/net/sunrpc/cache.c
-@@ -1888,7 +1888,9 @@ void sunrpc_cache_unhash(struct cache_detail *cd, struct cache_head *h)
- 	if (!hlist_unhashed(&h->cache_list)){
- 		hlist_del_init_rcu(&h->cache_list);
- 		cd->entries--;
-+		set_bit(CACHE_CLEANED, &h->flags);
- 		spin_unlock(&cd->hash_lock);
-+		cache_fresh_unlocked(h, cd);
- 		cache_put(h, cd);
- 	} else
- 		spin_unlock(&cd->hash_lock);
+diff --git a/tools/testing/selftests/bpf/test_select_reuseport.c b/tools/testing/selftests/bpf/test_select_reuseport.c
+index 7566c13eb51a7..079d0f5a29091 100644
+--- a/tools/testing/selftests/bpf/test_select_reuseport.c
++++ b/tools/testing/selftests/bpf/test_select_reuseport.c
+@@ -30,7 +30,7 @@
+ #define REUSEPORT_ARRAY_SIZE 32
+ 
+ static int result_map, tmp_index_ovr_map, linum_map, data_check_map;
+-static enum result expected_results[NR_RESULTS];
++static __u32 expected_results[NR_RESULTS];
+ static int sk_fds[REUSEPORT_ARRAY_SIZE];
+ static int reuseport_array, outer_map;
+ static int select_by_skb_data_prog;
+@@ -662,7 +662,19 @@ static void setup_per_test(int type, unsigned short family, bool inany)
+ 
+ static void cleanup_per_test(void)
+ {
+-	int i, err;
++	int i, err, zero = 0;
++
++	memset(expected_results, 0, sizeof(expected_results));
++
++	for (i = 0; i < NR_RESULTS; i++) {
++		err = bpf_map_update_elem(result_map, &i, &zero, BPF_ANY);
++		RET_IF(err, "reset elem in result_map",
++		       "i:%u err:%d errno:%d\n", i, err, errno);
++	}
++
++	err = bpf_map_update_elem(linum_map, &zero, &zero, BPF_ANY);
++	RET_IF(err, "reset line number in linum_map", "err:%d errno:%d\n",
++	       err, errno);
+ 
+ 	for (i = 0; i < REUSEPORT_ARRAY_SIZE; i++)
+ 		close(sk_fds[i]);
 -- 
 2.20.1
 
