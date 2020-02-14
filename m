@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA07C15FA53
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E57B315FA57
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgBNXWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:22:35 -0500
-Received: from mga06.intel.com ([134.134.136.31]:30964 "EHLO mga06.intel.com"
+        id S1728249AbgBNXWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:22:32 -0500
+Received: from mga11.intel.com ([192.55.52.93]:12666 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728229AbgBNXWb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 18:22:31 -0500
+        id S1728214AbgBNXWa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 18:22:30 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:28 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629314"
+   d="scan'208";a="228629317"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:28 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -25,9 +25,9 @@ To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 15/22] netdevsim: support taking immediate snapshot via devlink
-Date:   Fri, 14 Feb 2020 15:22:14 -0800
-Message-Id: <20200214232223.3442651-16-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 16/22] devlink: simplify arguments for read_snapshot_fill
+Date:   Fri, 14 Feb 2020 15:22:15 -0800
+Message-Id: <20200214232223.3442651-17-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
@@ -38,96 +38,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement the .snapshot region operation for the dummy data region. This
-enables a region snapshot to be taken upon request via the new
-DEVLINK_CMD_REGION_SNAPSHOT command.
+Simplify the devlink_nl_region_read_snapshot_fill function by looking up
+the snapshot pointer ahead of time and passing that instead of the
+region pointer.
+
+Check for the snapshot existence within the region_read_dumpit function
+and exit early if it does not exist.
+
+This also enables removing additionally the dump parameter and the
+netlink attrs parameter.
+
+Simply calculate the proper end_offset ahead of time before calling the
+read_snapshot_fill function.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/netdevsim/dev.c                   | 27 +++++++++++++++----
- .../drivers/net/netdevsim/devlink.sh          | 15 +++++++++++
- 2 files changed, 37 insertions(+), 5 deletions(-)
+ net/core/devlink.c | 47 +++++++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index e30bd94c3d52..a54b03d49c89 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -38,13 +38,11 @@ static struct dentry *nsim_dev_ddir;
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index b5d1b21e5178..e5bc0046f13f 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4141,30 +4141,19 @@ static int devlink_nl_cmd_region_read_chunk_fill(struct sk_buff *msg,
  
- #define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
+ #define DEVLINK_REGION_READ_CHUNK_SIZE 256
  
--static ssize_t nsim_dev_take_snapshot_write(struct file *file,
--					    const char __user *data,
--					    size_t count, loff_t *ppos)
+-static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
+-						struct devlink *devlink,
+-						struct devlink_region *region,
+-						struct nlattr **attrs,
+-						u64 start_offset,
+-						u64 end_offset,
+-						bool dump,
+-						u64 *new_offset)
 +static int
-+nsim_dev_take_snapshot(struct devlink *devlink, struct netlink_ext_ack *extack,
-+		       u8 **data)
++devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
++				     struct devlink *devlink,
++				     struct devlink_snapshot *snapshot,
++				     u64 start_offset,
++				     u64 end_offset,
++				     u64 *new_offset)
  {
--	struct nsim_dev *nsim_dev = file->private_data;
- 	void *dummy_data;
--	int err, id;
+-	struct devlink_snapshot *snapshot;
+ 	u64 curr_offset = start_offset;
+-	u32 snapshot_id;
+ 	int err = 0;
  
- 	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
- 	if (!dummy_data)
-@@ -52,6 +50,24 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+ 	*new_offset = start_offset;
  
- 	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
+-	snapshot_id = nla_get_u32(attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
+-	snapshot = devlink_region_snapshot_get_by_id(region, snapshot_id);
+-	if (!snapshot)
+-		return -EINVAL;
+-
+-	if (end_offset > region->size || dump)
+-		end_offset = region->size;
+-
+ 	while (curr_offset < end_offset) {
+ 		u32 data_size;
+ 		u8 *data;
+@@ -4194,11 +4183,12 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
+ 	u64 ret_offset, start_offset, end_offset = 0;
+ 	struct nlattr **attrs = info->attrs;
++	struct devlink_snapshot *snapshot;
+ 	struct devlink_region *region;
+ 	struct nlattr *chunks_attr;
+ 	const char *region_name;
+ 	struct devlink *devlink;
+-	bool dump = true;
++	u32 snapshot_id;
+ 	void *hdr;
+ 	int err;
  
-+	*data = dummy_data;
-+
-+	return 0;
-+}
-+
-+static ssize_t nsim_dev_take_snapshot_write(struct file *file,
-+					    const char __user *data,
-+					    size_t count, loff_t *ppos)
-+{
-+	struct nsim_dev *nsim_dev = file->private_data;
-+	u8 *dummy_data;
-+	int err, id;
-+
-+	err = nsim_dev_take_snapshot(priv_to_devlink(nsim_dev), NULL,
-+				     &dummy_data);
-+	if (err)
-+		return err;
-+
- 	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
- 	if (id < 0) {
- 		pr_err("Failed to get snapshot id\n");
-@@ -251,6 +267,7 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
- static const struct devlink_region_ops dummy_region_ops = {
- 	.name = "dummy",
- 	.destructor = &kfree,
-+	.snapshot = nsim_dev_take_snapshot,
- };
+@@ -4232,6 +4222,13 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 		goto out_unlock;
+ 	}
  
- static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 025a84c2ab5a..f23383fd108c 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -141,6 +141,21 @@ regions_test()
++	snapshot_id = nla_get_u32(attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
++	snapshot = devlink_region_snapshot_get_by_id(region, snapshot_id);
++	if (!snapshot) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
+ 			  &devlink_nl_family, NLM_F_ACK | NLM_F_MULTI,
+ 			  DEVLINK_CMD_REGION_READ);
+@@ -4262,13 +4259,15 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
  
- 	check_region_snapshot_count dummy post-first-delete 2
+ 		end_offset = nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR]);
+ 		end_offset += nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_LEN]);
+-		dump = false;
++
++		if (end_offset > region->size)
++			end_offset = region->size;
++	} else {
++		end_offset = region->size;
+ 	}
  
-+	devlink region new $DL_HANDLE/dummy
-+	check_err $? "Failed to create a new a snapshot"
-+
-+	check_region_snapshot_count dummy post-request 3
-+
-+	devlink region new $DL_HANDLE/dummy snapshot 25
-+	check_err $? "Failed to create a new snapshot with id 25"
-+
-+	check_region_snapshot_count dummy post-request 4
-+
-+	devlink region del $DL_HANDLE/dummy snapshot 25
-+	check_err $? "Failed to delete snapshot with id 25"
-+
-+	check_region_snapshot_count dummy post-request 3
-+
- 	log_test "regions test"
- }
+-	err = devlink_nl_region_read_snapshot_fill(skb, devlink,
+-						   region, attrs,
+-						   start_offset,
+-						   end_offset, dump,
++	err = devlink_nl_region_read_snapshot_fill(skb, devlink, snapshot,
++						   start_offset, end_offset,
+ 						   &ret_offset);
  
+ 	if (err && err != -EMSGSIZE)
 -- 
 2.25.0.368.g28a2d05eebfb
 
