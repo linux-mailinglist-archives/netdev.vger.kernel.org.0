@@ -2,43 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB87C15DDCB
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 194FC15DDDC
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389126AbgBNQAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:00:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45702 "EHLO mail.kernel.org"
+        id S2388971AbgBNQAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:00:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45960 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389115AbgBNQAU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:00:20 -0500
+        id S2389141AbgBNQA0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:00:26 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D57542086A;
-        Fri, 14 Feb 2020 16:00:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0738D24689;
+        Fri, 14 Feb 2020 16:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696019;
-        bh=vCOwDC4HiMKfA9asIcQGpE8w0AH9BpB7uecmviq9Qsc=;
+        s=default; t=1581696025;
+        bh=yDTaCK/ytGY8aZ97lgRFlGc4UE+I2EUoD7z51dMYExw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NoH2aBHFXcTynOX7zXn9jT6EOQOJLS+WOExD4jUvdZB5WXHY2ixuwLaJu01TtuWM4
-         WVQPXKlWKBwSaG59QRvPZGnoo4FgsZXFeO6aNn0VT6mk4vlIYKty1TCknMRn1ajYV8
-         ldeH/soZX6TXxCk9/IZN/gUpRRdplpv3eBVZbKYo=
+        b=Q4JaUh5QAx7LczYBLMKmXHXMNEhx2yO8qA6+Y86ca5FKz8lSm8qXjlrAWJGS/EynU
+         SUhTl5h4ajdrYRx+C1rjQGA6XXd3JNiezEmBc3eQ+/64ySXyRI2ytAAAn2wkTmZT4F
+         1sYZVzTP1U+N6ihOfyTh7gntD4BzUtr7nNqWejYM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 535/542] i40e: Relax i40e_xsk_wakeup's return value when PF is busy
-Date:   Fri, 14 Feb 2020 10:48:47 -0500
-Message-Id: <20200214154854.6746-535-sashal@kernel.org>
+Cc:     Vadim Pasternak <vadimp@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 540/542] mlxsw: core: Add validation of hardware device types for MGPIR register
+Date:   Fri, 14 Feb 2020 10:48:52 -0500
+Message-Id: <20200214154854.6746-540-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,37 +45,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Vadim Pasternak <vadimp@mellanox.com>
 
-[ Upstream commit c77e9f09143822623dd71a0fdc84331129e97c3a ]
+[ Upstream commit 36844c855b896f90bab51ccecf72940eb7e3cfe1 ]
 
-Return -EAGAIN instead of -ENETDOWN to provide a slightly milder
-information to user space so that an application will know to retry the
-syscall when __I40E_CONFIG_BUSY bit is set on pf->state.
+When reading the number of gearboxes from the hardware, the driver does
+not validate the returned 'device type' field. The driver can therefore
+wrongly assume that the queried devices are gearboxes.
 
-Fixes: b3873a5be757 ("net/i40e: Fix concurrency issues between config flow and XSK")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
-Link: https://lore.kernel.org/bpf/20200205045834.56795-2-maciej.fijalkowski@intel.com
+On Spectrum-3 systems that support different types of devices, this can
+prevent the driver from loading, as it will try to query the
+temperature sensors from devices which it assumes are gearboxes and in
+fact are not.
+
+For example:
+[  218.129230] mlxsw_minimal 2-0048: Reg cmd access status failed (status=7(bad parameter))
+[  218.138282] mlxsw_minimal 2-0048: Reg cmd access failed (reg_id=900a(mtmp),type=write)
+[  218.147131] mlxsw_minimal 2-0048: Failed to setup temp sensor number 256
+[  218.534480] mlxsw_minimal 2-0048: Fail to register core bus
+[  218.540714] mlxsw_minimal: probe of 2-0048 failed with error -5
+
+Fix this by validating the 'device type' field.
+
+Fixes: 2e265a8b6c094 ("mlxsw: core: Extend hwmon interface with inter-connect temperature attributes")
+Fixes: f14f4e621b1b4 ("mlxsw: core: Extend thermal core with per inter-connect device thermal zones")
+Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c   | 6 ++++--
+ drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 8 ++++++--
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index f73cd917c44f7..3156de786d955 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -791,7 +791,7 @@ int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
- 	struct i40e_ring *ring;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
+index 9bf8da5f6dafc..3fe878d7c94cb 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
+@@ -573,6 +573,7 @@ static int mlxsw_hwmon_module_init(struct mlxsw_hwmon *mlxsw_hwmon)
  
- 	if (test_bit(__I40E_CONFIG_BUSY, pf->state))
--		return -ENETDOWN;
-+		return -EAGAIN;
+ static int mlxsw_hwmon_gearbox_init(struct mlxsw_hwmon *mlxsw_hwmon)
+ {
++	enum mlxsw_reg_mgpir_device_type device_type;
+ 	int index, max_index, sensor_index;
+ 	char mgpir_pl[MLXSW_REG_MGPIR_LEN];
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+@@ -584,8 +585,9 @@ static int mlxsw_hwmon_gearbox_init(struct mlxsw_hwmon *mlxsw_hwmon)
+ 	if (err)
+ 		return err;
  
- 	if (test_bit(__I40E_VSI_DOWN, vsi->state))
- 		return -ENETDOWN;
+-	mlxsw_reg_mgpir_unpack(mgpir_pl, &gbox_num, NULL, NULL, NULL);
+-	if (!gbox_num)
++	mlxsw_reg_mgpir_unpack(mgpir_pl, &gbox_num, &device_type, NULL, NULL);
++	if (device_type != MLXSW_REG_MGPIR_DEVICE_TYPE_GEARBOX_DIE ||
++	    !gbox_num)
+ 		return 0;
+ 
+ 	index = mlxsw_hwmon->module_sensor_max;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index c721b171bd8de..ce0a6837daa32 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -895,8 +895,10 @@ static int
+ mlxsw_thermal_gearboxes_init(struct device *dev, struct mlxsw_core *core,
+ 			     struct mlxsw_thermal *thermal)
+ {
++	enum mlxsw_reg_mgpir_device_type device_type;
+ 	struct mlxsw_thermal_module *gearbox_tz;
+ 	char mgpir_pl[MLXSW_REG_MGPIR_LEN];
++	u8 gbox_num;
+ 	int i;
+ 	int err;
+ 
+@@ -908,11 +910,13 @@ mlxsw_thermal_gearboxes_init(struct device *dev, struct mlxsw_core *core,
+ 	if (err)
+ 		return err;
+ 
+-	mlxsw_reg_mgpir_unpack(mgpir_pl, &thermal->tz_gearbox_num, NULL, NULL,
++	mlxsw_reg_mgpir_unpack(mgpir_pl, &gbox_num, &device_type, NULL,
+ 			       NULL);
+-	if (!thermal->tz_gearbox_num)
++	if (device_type != MLXSW_REG_MGPIR_DEVICE_TYPE_GEARBOX_DIE ||
++	    !gbox_num)
+ 		return 0;
+ 
++	thermal->tz_gearbox_num = gbox_num;
+ 	thermal->tz_gearbox_arr = kcalloc(thermal->tz_gearbox_num,
+ 					  sizeof(*thermal->tz_gearbox_arr),
+ 					  GFP_KERNEL);
 -- 
 2.20.1
 
