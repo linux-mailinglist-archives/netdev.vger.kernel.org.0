@@ -2,108 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 629E915D033
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 03:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 095E315D065
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 04:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728154AbgBNCxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 21:53:20 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46221 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727988AbgBNCxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 21:53:20 -0500
-Received: by mail-pg1-f195.google.com with SMTP id b35so4042809pgm.13
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 18:53:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/RYmTHKDlAJmj61zB+5XESJ8Xf1mxuR1YO0mIKa2Sec=;
-        b=mFY5QO10qW6qhT5Tnkc+9lOYAyVpjASiE2OO99kNiKEVs9L+Jw/4i2WxSKwUTo914K
-         RefhgtN3dXuiAGUPq6n9azugWtW6juI8dy9gRQ4dgkT+Ii5zHmlKOYSWlvU6/tJFlG2a
-         lkA6j4o/YY8YRPd3DjnhOcGgkpEyvW3v8YEpLkvlmCq7GwSF4Iz6bO+ic6VwS7p62Txb
-         mSQbxiQIOmy75/JFpdC13ZJ3CDbKJ3c/boiTj2SbFmu0HkoQgplMoFMW/1ldAgnE7HRa
-         dtBaZ9PnHfGjzpu93+Wh3UVuPDsL2flgjH8lJakJT1Zq27fL4kA+NymTE4uNpi+T0SQ5
-         cQ7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/RYmTHKDlAJmj61zB+5XESJ8Xf1mxuR1YO0mIKa2Sec=;
-        b=T4vYrNfhQMOw5nrMRpAKZM3b6UJRh67YBe3pc7RnuBPuGPRNu3YXqTlq6B+8aHmecn
-         3eHPlNv+WkFyADVQ6jTj8W5AfqXLxIs5HrJRko3htRqKZoRq+4qB2uQNYDRVfcQRgegl
-         /axlco06BW9yXMXp2N41RVw2R2rMZybR2J4hKrZFADJRnDDBfQw+ODwff4zC7aE1mpYM
-         dBMXoLoo+64vNhvVgFHdFpA/Ij00uBQSj+MSHjpUx6JYwqV1Cqx8DyuOa8eH4GZ5++1X
-         tXdA6zXIhNG69A8IlI63XCXuPYpNzfhh2RO08e6z5aqfmhsfcI/sxNE+OT5bxofqNDoG
-         HY8w==
-X-Gm-Message-State: APjAAAVrY7hjw7MCNZAVVs0gIbFOQbjOX2tXLw3q6gvbKobigc7GXNkv
-        7tYT+rUa3o3vQEGJ1qcK8smuXTLJz7g=
-X-Google-Smtp-Source: APXvYqxmKjhle6r6I2rzFyIQvJG86jsdgiOwv7J1f6gJcr2G61HXCbzj0GuDKzi3p8zfjGB+85v3tQ==
-X-Received: by 2002:a63:504f:: with SMTP id q15mr1126048pgl.8.1581648799862;
-        Thu, 13 Feb 2020 18:53:19 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u12sm4583324pgr.3.2020.02.13.18.53.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Feb 2020 18:53:19 -0800 (PST)
-Date:   Fri, 14 Feb 2020 10:53:09 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Petr Machata <pmachata@gmail.com>
-Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Peter Dawson <petedaws@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH net] selftests: forwarding: vxlan_bridge_1d: fix tos value
-Message-ID: <20200214025308.GO2159@dhcp-12-139.nay.redhat.com>
-References: <20200213094054.27993-1-liuhangbin@gmail.com>
- <87a75msl7i.fsf@mellanox.com>
+        id S1728406AbgBNDXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 22:23:54 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21305 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728052AbgBNDXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 22:23:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581650632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WiBwyrz6cX+xE4nXs+94fQKaFw5y/aQb69mQMK4gGl0=;
+        b=W7uwClEemERc8oqUMk4qYGC2Cvjz/RryTBJnVU3EnnQVRa2yOJ6SxEKrWMy5cqe/REoQSl
+        VaoifEFf3xu4qH0nlGRJvK4khLaVdG5AVIVbqIXqsBx+QdYoauKS0PFmBqJL5Nu+ujaOva
+        36pXuM10anrv0L7OtFQJomoEyY/FK/8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-fdAi4kdyMtWwFgGd05oe8Q-1; Thu, 13 Feb 2020 22:23:51 -0500
+X-MC-Unique: fdAi4kdyMtWwFgGd05oe8Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 45C388017CC;
+        Fri, 14 Feb 2020 03:23:48 +0000 (UTC)
+Received: from [10.72.13.213] (ovpn-13-213.pek2.redhat.com [10.72.13.213])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0CD338A;
+        Fri, 14 Feb 2020 03:23:29 +0000 (UTC)
+Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        tiwei.bie@intel.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jiri@mellanox.com,
+        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com
+References: <20200210035608.10002-1-jasowang@redhat.com>
+ <20200210035608.10002-4-jasowang@redhat.com>
+ <20200211134746.GI4271@mellanox.com>
+ <cf7abcc9-f8ef-1fe2-248e-9b9028788ade@redhat.com>
+ <20200212125108.GS4271@mellanox.com>
+ <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
+ <20200213134128.GV4271@mellanox.com>
+ <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
+ <20200213150542.GW4271@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8b3e6a9c-8bfd-fb3c-12a8-2d6a3879f1ae@redhat.com>
+Date:   Fri, 14 Feb 2020 11:23:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87a75msl7i.fsf@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200213150542.GW4271@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 01:52:49PM +0100, Petr Machata wrote:
-> 
-> Hangbin Liu <liuhangbin@gmail.com> writes:
-> 
-> > After commit 71130f29979c ("vxlan: fix tos value before xmit") we start
-> > strict vxlan xmit tos value by RT_TOS(), which limits the tos value less
-> 
-> I don't understand how it is OK to slice the TOS field like this. It
-> could contain a DSCP value, which will be mangled.
 
-Thanks for this remind. I re-checked the tos definition and found a summary
-from Peter Dawson[1].
+On 2020/2/13 =E4=B8=8B=E5=8D=8811:05, Jason Gunthorpe wrote:
+> On Thu, Feb 13, 2020 at 10:58:44PM +0800, Jason Wang wrote:
+>> On 2020/2/13 =E4=B8=8B=E5=8D=889:41, Jason Gunthorpe wrote:
+>>> On Thu, Feb 13, 2020 at 11:34:10AM +0800, Jason Wang wrote:
+>>>
+>>>>>     You have dev, type or
+>>>>> class to choose from. Type is rarely used and doesn't seem to be us=
+ed
+>>>>> by vdpa, so class seems the right choice
+>>>>>
+>>>>> Jason
+>>>> Yes, but my understanding is class and bus are mutually exclusive. S=
+o we
+>>>> can't add a class to a device which is already attached on a bus.
+>>> While I suppose there are variations, typically 'class' devices are
+>>> user facing things and 'bus' devices are internal facing (ie like a
+>>> PCI device)
+>>
+>> Though all vDPA devices have the same programming interface, but the
+>> semantic is different. So it looks to me that use bus complies what
+>> class.rst said:
+>>
+>> "
+>>
+>> Each device class defines a set of semantics and a programming interfa=
+ce
+>> that devices of that class adhere to. Device drivers are the
+>> implementation of that programming interface for a particular device o=
+n
+>> a particular bus.
+>>
+>> "
+> Here we are talking about the /dev/XX node that provides the
+> programming interface.
 
-IPv4/6 Header:0 |0 1 2 3 |0 1 2 3 |0 1 2 3 |0 1 2 3 |
-RFC2460(IPv6)   |Version | Traffic Class   |        |
-RFC2474(IPv6)   |Version | DSCP        |ECN|        |
-RFC2474(IPv4)   |Version |  IHL   |    DSCP     |ECN|
-RFC1349(IPv4)   |Version |  IHL   | PREC |  TOS   |X|
-RFC791 (IPv4)   |Version |  IHL   |      TOS        |
 
-According to this I think our current IPTOS_TOS_MASK should be updated to 0xFC
-based on RFC2474. But I'm not sure if there will have compatibility issue.
+I'm confused here, are you suggesting to use class to create char device=20
+in vhost-vdpa? That's fine but the comment should go for vhost-vdpa patch=
+.
 
-What do you think?
 
-> >  	tc filter add dev v1 egress pref 77 prot ip \
-> > -		flower ip_tos 0x40 action pass
-> > -	vxlan_ping_test $h1 192.0.2.3 "-Q 0x40" v1 egress 77 10
-> > -	vxlan_ping_test $h1 192.0.2.3 "-Q 0x30" v1 egress 77 0
-> > +		flower ip_tos 0x11 action pass
-> > +	vxlan_ping_test $h1 192.0.2.3 "-Q 0x11" v1 egress 77 10
-> > +	vxlan_ping_test $h1 192.0.2.3 "-Q 0x12" v1 egress 77 0
-> 
-> 0x11 and 0x12 set the ECN bits, I think it would be better to avoid
-> that. It works just as well with 0x14 and 0x18.
+> All the vdpa devices have the same basic
+> chardev interface and discover any semantic variations 'in band'
 
-Thanks, I will update it.
 
-[1] https://lore.kernel.org/patchwork/patch/799698/#992992
+That's not true, char interface is only used for vhost. Kernel virtio=20
+driver does not need char dev but a device on the virtio bus.
 
-Regards
-Hangbin
+
+>
+>>> So why is this using a bus? VDPA is a user facing object, so the
+>>> driver should create a class vhost_vdpa device directly, and that
+>>> driver should live in the drivers/vhost/ directory.
+>>  =20
+>> This is because we want vDPA to be generic for being used by different
+>> drivers which is not limited to vhost-vdpa. E.g in this series, it all=
+ows
+>> vDPA to be used by kernel virtio drivers. And in the future, we will
+>> probably introduce more drivers in the future.
+> I don't see how that connects with using a bus.
+
+
+This is demonstrated in the virito-vdpa driver. So if you want to use=20
+kernel virito driver for vDPA device, a bus is most straight forward.
+
+
+>
+> Every class of virtio traffic is going to need a special HW driver to
+> enable VDPA, that special driver can create the correct vhost side
+> class device.
+
+
+Are you saying, e.g it's the charge of IFCVF driver to create vhost char=20
+dev and other stuffs?
+
+
+>
+>>> For the PCI VF case this driver would bind to a PCI device like
+>>> everything else
+>>>
+>>> For our future SF/ADI cases the driver would bind to some
+>>> SF/ADI/whatever device on a bus.
+>> All these driver will still be bound to their own bus (PCI or other). =
+And
+>> what the driver needs is to present a vDPA device to virtual vDPA bus =
+on
+>> top.
+> Again, I can't see any reason to inject a 'vdpa virtual bus' on
+> top. That seems like mis-using the driver core.
+
+
+I don't think so. Vhost is not the only programming interface for vDPA.=20
+We don't want a device that can only work for userspace drivers and only=20
+have a single set of userspace APIs.
+
+Thanks
+
+
+>
+> Jason
+>
+
