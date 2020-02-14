@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E6615F482
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F250E15F2A3
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730127AbgBNPtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:49:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52764 "EHLO mail.kernel.org"
+        id S1730390AbgBNPuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:50:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730038AbgBNPtj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:49:39 -0500
+        id S1730375AbgBNPuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:50:10 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A8EB217F4;
-        Fri, 14 Feb 2020 15:49:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F60824691;
+        Fri, 14 Feb 2020 15:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695379;
-        bh=fP4BNmy6YTGQ/kUrF8MftGazkbu/Bi3doDRYRXabpSA=;
+        s=default; t=1581695409;
+        bh=OHflqUrzlm8/xx/dM//1K4Fu0XHAEpTzk5pVqK1KuwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wFGbrZB3vhoFtmutzZ1e/Na6ujmLLcx9WDtN8cliFd7DO9CH1D3xvtLyFC3GnvUCU
-         W5ULOo/OvYnSNFXU55HnVAYRWA99UF5o1TjoIg7WpvWJAUcJ3ofiiV7EcKJIdtlgA2
-         Z3PDbWrqW8nmB486Pc2TaRKoNg9DCCsvpnzi73V8=
+        b=pMmuEBmu0BG4wZHgr3zBeANTv3Qfx1WAkF5JXC1qO/7wInl5427zFGC1/LjQdpcUH
+         MR/+w+v0N/F1/iIQsnS+9qm8f3wWhkHFQMCuldkoc2U1YGa1/dQXze2DXQbvJFP0aB
+         M1m4Vx7OD+zP62Y+bqPNpm2eQgcDT19K82shQs+0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 034/542] gianfar: Fix TX timestamping with a stacked DSA driver
-Date:   Fri, 14 Feb 2020 10:40:26 -0500
-Message-Id: <20200214154854.6746-34-sashal@kernel.org>
+Cc:     Baruch Siach <baruch@tkos.co.il>,
+        Denis Odintsov <d.odintsov@traviangames.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 057/542] arm64: dts: marvell: clearfog-gt-8k: fix switch cpu port node
+Date:   Fri, 14 Feb 2020 10:40:49 -0500
+Message-Id: <20200214154854.6746-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -44,87 +47,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit c26a2c2ddc0115eb088873f5c309cf46b982f522 ]
+[ Upstream commit 62bba54d99407aedfe9b0a02e72e23c06e2b0116 ]
 
-The driver wrongly assumes that it is the only entity that can set the
-SKBTX_IN_PROGRESS bit of the current skb. Therefore, in the
-gfar_clean_tx_ring function, where the TX timestamp is collected if
-necessary, the aforementioned bit is used to discriminate whether or not
-the TX timestamp should be delivered to the socket's error queue.
+Explicitly set the switch cpu (upstream) port phy-mode and managed
+properties. This fixes the Marvell 88E6141 switch serdes configuration
+with the recently enabled phylink layer.
 
-But a stacked driver such as a DSA switch can also set the
-SKBTX_IN_PROGRESS bit, which is actually exactly what it should do in
-order to denote that the hardware timestamping process is undergoing.
-
-Therefore, gianfar would misinterpret the "in progress" bit as being its
-own, and deliver a second skb clone in the socket's error queue,
-completely throwing off a PTP process which is not expecting to receive
-it, _even though_ TX timestamping is not enabled for gianfar.
-
-There have been discussions [0] as to whether non-MAC drivers need or
-not to set SKBTX_IN_PROGRESS at all (whose purpose is to avoid sending 2
-timestamps, a sw and a hw one, to applications which only expect one).
-But as of this patch, there are at least 2 PTP drivers that would break
-in conjunction with gianfar: the sja1105 DSA switch and the felix
-switch, by way of its ocelot core driver.
-
-So regardless of that conclusion, fix the gianfar driver to not do stuff
-based on flags set by others and not intended for it.
-
-[0]: https://www.spinics.net/lists/netdev/msg619699.html
-
-Fixes: f0ee7acfcdd4 ("gianfar: Add hardware TX timestamping support")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a6120833272c ("arm64: dts: add support for SolidRun Clearfog GT 8K")
+Reported-by: Denis Odintsov <d.odintsov@traviangames.com>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 72868a28b621d..7d08bf6370ae1 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -2205,13 +2205,17 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 	skb_dirtytx = tx_queue->skb_dirtytx;
+diff --git a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
+index bd881497b8729..a211a046b2f2f 100644
+--- a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
++++ b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
+@@ -408,6 +408,8 @@
+ 				reg = <5>;
+ 				label = "cpu";
+ 				ethernet = <&cp1_eth2>;
++				phy-mode = "2500base-x";
++				managed = "in-band-status";
+ 			};
+ 		};
  
- 	while ((skb = tx_queue->tx_skbuff[skb_dirtytx])) {
-+		bool do_tstamp;
-+
-+		do_tstamp = (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+			    priv->hwts_tx_en;
- 
- 		frags = skb_shinfo(skb)->nr_frags;
- 
- 		/* When time stamping, one additional TxBD must be freed.
- 		 * Also, we need to dma_unmap_single() the TxPAL.
- 		 */
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
-+		if (unlikely(do_tstamp))
- 			nr_txbds = frags + 2;
- 		else
- 			nr_txbds = frags + 1;
-@@ -2225,7 +2229,7 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 		    (lstatus & BD_LENGTH_MASK))
- 			break;
- 
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
-+		if (unlikely(do_tstamp)) {
- 			next = next_txbd(bdp, base, tx_ring_size);
- 			buflen = be16_to_cpu(next->length) +
- 				 GMAC_FCB_LEN + GMAC_TXPAL_LEN;
-@@ -2235,7 +2239,7 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
- 		dma_unmap_single(priv->dev, be32_to_cpu(bdp->bufPtr),
- 				 buflen, DMA_TO_DEVICE);
- 
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
-+		if (unlikely(do_tstamp)) {
- 			struct skb_shared_hwtstamps shhwtstamps;
- 			u64 *ns = (u64 *)(((uintptr_t)skb->data + 0x10) &
- 					  ~0x7UL);
 -- 
 2.20.1
 
