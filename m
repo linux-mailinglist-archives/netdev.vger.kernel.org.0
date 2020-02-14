@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F9915FA4E
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:22:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B1015FA6D
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 00:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728126AbgBNXW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 18:22:27 -0500
+        id S1728363AbgBNXXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 18:23:25 -0500
 Received: from mga02.intel.com ([134.134.136.20]:41443 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727458AbgBNXW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727942AbgBNXW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 14 Feb 2020 18:22:27 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,7 +17,7 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 15:22:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,442,1574150400"; 
-   d="scan'208";a="228629262"
+   d="scan'208";a="228629266"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2020 15:22:25 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -25,10 +25,12 @@ To:     netdev@vger.kernel.org
 Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
         lihong.yang@intel.com, kuba@kernel.org,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [RFC PATCH v2 00/22] devlink region updates
-Date:   Fri, 14 Feb 2020 15:21:59 -0800
-Message-Id: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+Subject: [RFC PATCH v2 01/22] ice: use __le16 types for explicitly Little Endian values
+Date:   Fri, 14 Feb 2020 15:22:00 -0800
+Message-Id: <20200214232223.3442651-2-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
+In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -36,139 +38,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a second revision of the previous RFC series I sent to enable two
-new devlink region features.
+The ice_read_sr_aq function returns words in the Little Endian format.
+Remove the need for __force and typecasting by using a local variable in
+the ice_read_sr_word_aq function.
 
-The original series can be viewed on the list archives at
+Additionally clarify explicitly that the ice_read_sr_aq function takes
+storage for __le16 values instead of using u16.
 
-https://lore.kernel.org/netdev/20200130225913.1671982-1-jacob.e.keller@intel.com/
+Being explicit about the endianness of this data helps when using tools
+like sparse to catch endian-related issues.
 
-Overall, this series can be broken into 5 phases:
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_nvm.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
- 1) implement basic devlink support in the ice driver, including .info_get
- 2) convert regions to use the new devlink_region_ops structure
- 3) implement support for DEVLINK_CMD_REGION_NEW
- 4) implement support for directly reading from a region
- 5) use these new features in the ice driver for the Shadow RAM region
-
-(1) comprises 6 patches for the ice driver that add the devlink framework
-and cleanup a few places in the code in preparation for the new region.
-
-(2) comprises 2 patches which convert regions to use the new
-devlink_region_ops structure, and additionally move the snapshot destructor
-to a region operation.
-
-(3) comprises 6 patches to enable supporting the DEVLINK_CMD_REGION_NEW
-operation. This replaces what was previously the
-DEVLINK_CMD_REGION_TAKE_SNAPSHOT, as per Jiri's suggestion. The new
-operation supports specifying the requested id for the snapshot. To make
-that possible, first snapshot id management is refactored to use an IDR.
-Note that the extra complexity of the IDR is necessary in order to maintain
-the ability for the snapshot IDs to be generated so that multiple regions
-can use the same ID if triggered at the same time.
-
-(4) comprises 6 patches for modifying DEVLINK_CMD_REGION_READ so that it
-accepts a request without a snapshot id. A new region operation is defined
-for regions to optionally support the requests. The first few patches
-refactor and simplify the functions used so that adding the new read method
-reuses logic where possible.
-
-(5) finally comprises a single patch to implement a region for the ice
-device hardware's Shadow RAM contents.
-
-Note that I plan to submit the ice patches through the Intel Wired LAN list,
-but am sending the complete set here as an RFC in case there is further
-feedback, and so that reviewers can have the correct context.
-
-I expect to get further feedback this RFC revision, and will hopefully send
-the patches as non-RFC following this, if feedback looks good. Thank you for
-the diligent review.
-
-Changes since v1:
-
-* reword some comments and variable names in the ice driver that used the
-  term "page" to use the term "sector" to avoid confusion with the PAGE_SIZE
-  of the system.
-* Fixed a bug in the ice_read_flat_nvm function due to misusing the last_cmd
-  variable
-* Remove the devlinkm* functions and just use devm_add_action in the ice
-  driver for managing the devlink memory similar to how the PF memory was
-  managed by the devm_kzalloc.
-* Fix typos in a couple of function comments in ice_devlink.c
-* use dev_err instead of dev_warn for an error case where the main VSI can't
-  be found.
-* Only call devlink_port_type_eth_set if the VSI has a netdev
-* Move where the devlink_port is created in the ice_probe flow
-* Update the new ice.rst documentation for info versions, providing more
-  clear descriptions of the parameters. Give examples for each field as
-  well. Squash the documentation additions into the relevant patches.
-* Add a new patch to the ice driver which renames some variables referring
-  to the Option ROM version.
-* keep the string constants in the mlx4 crdump.c file, converting them to
-  "const char * const" so that the compiler understands they can be used in
-  constant initializers.
-* Add a patch to convert snapshot destructors into a region operation
-* Add a patch to fix a trivial typo in a devlink function comment
-* Use __ as a prefix for static internal functions instead of a _locked
-  suffix.
-* Refactor snapshot id management to use an IDR.
-* Implement DEVLINK_CMD_REGION_NEW of DEVLINK_CMD_REGION_TAKE_SNAPSHOT
-* Add several patches which refactor devlink_nl_cmd_region_snapshot_fill
-* Use the new cb_ and cb_priv parameters to implement what was previously
-  a separate function called devlink_nl_cmd_region_direct_fill
-
-Jacob Keller (21):
-  ice: use __le16 types for explicitly Little Endian values
-  ice: create function to read a section of the NVM and Shadow RAM
-  ice: enable initial devlink support
-  ice: rename variables used for Option ROM version
-  ice: add basic handler for devlink .info_get
-  ice: add board identifier info to devlink .info_get
-  devlink: prepare to support region operations
-  devlink: convert snapshot destructor callback to region op
-  devlink: trivial: fix tab in function documentation
-  devlink: add functions to take snapshot while locked
-  devlink: convert snapshot id getter to return an error
-  devlink: track snapshot ids using an IDR and refcounts
-  devlink: implement DEVLINK_CMD_REGION_NEW
-  netdevsim: support taking immediate snapshot via devlink
-  devlink: simplify arguments for read_snapshot_fill
-  devlink: use min_t to calculate data_size
-  devlink: report extended error message in region_read_dumpit
-  devlink: remove unnecessary parameter from chunk_fill function
-  devlink: refactor region_read_snapshot_fill to use a callback function
-  devlink: support directly reading from region memory
-  ice: add a devlink region to dump shadow RAM contents
-
-Jesse Brandeburg (1):
-  ice: implement full NVM read from ETHTOOL_GEEPROM
-
- .../networking/devlink/devlink-region.rst     |  20 +-
- Documentation/networking/devlink/ice.rst      |  87 ++++
- Documentation/networking/devlink/index.rst    |   1 +
- drivers/net/ethernet/intel/Kconfig            |   1 +
- drivers/net/ethernet/intel/ice/Makefile       |   1 +
- drivers/net/ethernet/intel/ice/ice.h          |   6 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   3 +
- drivers/net/ethernet/intel/ice/ice_common.c   |  85 +---
- drivers/net/ethernet/intel/ice/ice_common.h   |  10 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  | 360 ++++++++++++++
- drivers/net/ethernet/intel/ice/ice_devlink.h  |  17 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |  44 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |  23 +-
- drivers/net/ethernet/intel/ice/ice_nvm.c      | 354 +++++++------
- drivers/net/ethernet/intel/ice/ice_nvm.h      |  12 +
- drivers/net/ethernet/intel/ice/ice_type.h     |  17 +-
- drivers/net/ethernet/mellanox/mlx4/crdump.c   |  32 +-
- drivers/net/netdevsim/dev.c                   |  41 +-
- include/net/devlink.h                         |  38 +-
- net/core/devlink.c                            | 465 ++++++++++++++----
- .../drivers/net/netdevsim/devlink.sh          |  15 +
- 21 files changed, 1257 insertions(+), 375 deletions(-)
- create mode 100644 Documentation/networking/devlink/ice.rst
- create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.h
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index 7525ac50742e..46db9bb0977f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -80,13 +80,14 @@ ice_check_sr_access_params(struct ice_hw *hw, u32 offset, u16 words)
+  * @hw: pointer to the HW structure
+  * @offset: offset in words from module start
+  * @words: number of words to read
+- * @data: buffer for words reads from Shadow RAM
++ * @data: storage for the words read from Shadow RAM (Little Endian)
+  * @last_command: tells the AdminQ that this is the last command
+  *
+- * Reads 16-bit word buffers from the Shadow RAM using the admin command.
++ * Reads 16-bit Little Endian word buffers from the Shadow RAM using the admin
++ * command.
+  */
+ static enum ice_status
+-ice_read_sr_aq(struct ice_hw *hw, u32 offset, u16 words, u16 *data,
++ice_read_sr_aq(struct ice_hw *hw, u32 offset, u16 words, __le16 *data,
+ 	       bool last_command)
+ {
+ 	enum ice_status status;
+@@ -116,10 +117,11 @@ static enum ice_status
+ ice_read_sr_word_aq(struct ice_hw *hw, u16 offset, u16 *data)
+ {
+ 	enum ice_status status;
++	__le16 data_local;
+ 
+-	status = ice_read_sr_aq(hw, offset, 1, data, true);
++	status = ice_read_sr_aq(hw, offset, 1, &data_local, true);
+ 	if (!status)
+-		*data = le16_to_cpu(*(__force __le16 *)data);
++		*data = le16_to_cpu(data_local);
+ 
+ 	return status;
+ }
 -- 
 2.25.0.368.g28a2d05eebfb
 
