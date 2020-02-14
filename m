@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF6A15E104
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3724315E130
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:17:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404284AbgBNQQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:16:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47392 "EHLO mail.kernel.org"
+        id S2404468AbgBNQR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:17:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392616AbgBNQQd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:16:33 -0500
+        id S2404451AbgBNQR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:17:27 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 93C2524676;
-        Fri, 14 Feb 2020 16:16:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D6D4246EB;
+        Fri, 14 Feb 2020 16:17:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696992;
-        bh=7P2vlFybEQGvQnGZvdak6Xt5WNMRnhmHfVS2Glgdc78=;
+        s=default; t=1581697047;
+        bh=AQplWEyobcRF4s720xyq8eoSi5AdIApMI5oGAFcpNkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cESJPItgrGwjm6V0ciDAxEe51wumZdjpHEpSzS8PiFrQRkN6SPV3CXgJJF5/GAYeh
-         oYe/tj4iACRngHtA+qOSNBzU2KLbvAHmHashW6Z31bXAJ0Wb+AUl4ILQgJLCz0Nbjp
-         G4gYKJ1NmnCEJ7Cr74ADiMKqvZ/yiun7qNVoXYhg=
+        b=LxMGn9+LGqC2fTPAuFvRaLsSSvQf/+mxjqUg0NPOYtpKIC/b2O8mtYxxVgH+f1EQv
+         C9ghWQE4IG89s7RpjIEo3WIQUjPrwhZZub0vlILKuOYd8CnWPq26RcnPBK2MLoN+he
+         eMo7K2UydtW296rONX/FyHoyfWYl3iEKb98I8IFM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasily Averin <vvs@virtuozzo.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 226/252] bpf: map_seq_next should always increase position index
-Date:   Fri, 14 Feb 2020 11:11:21 -0500
-Message-Id: <20200214161147.15842-226-sashal@kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 008/186] brcmfmac: Fix use after free in brcmf_sdio_readframes()
+Date:   Fri, 14 Feb 2020 11:14:17 -0500
+Message-Id: <20200214161715.18113-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
-References: <20200214161147.15842-1-sashal@kernel.org>
+In-Reply-To: <20200214161715.18113-1-sashal@kernel.org>
+References: <20200214161715.18113-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,46 +47,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasily Averin <vvs@virtuozzo.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 90435a7891a2259b0f74c5a1bc5600d0d64cba8f ]
+[ Upstream commit 216b44000ada87a63891a8214c347e05a4aea8fe ]
 
-If seq_file .next fuction does not change position index,
-read after some lseek can generate an unexpected output.
+The brcmu_pkt_buf_free_skb() function frees "pkt" so it leads to a
+static checker warning:
 
-See also: https://bugzilla.kernel.org/show_bug.cgi?id=206283
+    drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:1974 brcmf_sdio_readframes()
+    error: dereferencing freed memory 'pkt'
 
-v1 -> v2: removed missed increment in end of function
+It looks like there was supposed to be a continue after we free "pkt".
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/eca84fdd-c374-a154-d874-6c7b55fc3bc4@virtuozzo.com
+Fixes: 4754fceeb9a6 ("brcmfmac: streamline SDIO read frame routine")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Franky Lin <franky.lin@broadcom.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/inode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-index dc9d7ac8228db..c04815bb15cc1 100644
---- a/kernel/bpf/inode.c
-+++ b/kernel/bpf/inode.c
-@@ -198,6 +198,7 @@ static void *map_seq_next(struct seq_file *m, void *v, loff_t *pos)
- 	void *key = map_iter(m)->key;
- 	void *prev_key;
- 
-+	(*pos)++;
- 	if (map_iter(m)->done)
- 		return NULL;
- 
-@@ -210,8 +211,6 @@ static void *map_seq_next(struct seq_file *m, void *v, loff_t *pos)
- 		map_iter(m)->done = true;
- 		return NULL;
- 	}
--
--	++(*pos);
- 	return key;
- }
- 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 4c28b04ea6053..d198a8780b966 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -1932,6 +1932,7 @@ static uint brcmf_sdio_readframes(struct brcmf_sdio *bus, uint maxframes)
+ 					       BRCMF_SDIO_FT_NORMAL)) {
+ 				rd->len = 0;
+ 				brcmu_pkt_buf_free_skb(pkt);
++				continue;
+ 			}
+ 			bus->sdcnt.rx_readahead_cnt++;
+ 			if (rd->len != roundup(rd_new.len, 16)) {
 -- 
 2.20.1
 
