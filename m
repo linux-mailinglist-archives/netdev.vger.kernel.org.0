@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD7E515DFD0
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9489F15E05D
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:14:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391081AbgBNQKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:10:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36544 "EHLO mail.kernel.org"
+        id S2403795AbgBNQMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:12:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391574AbgBNQKl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:10:41 -0500
+        id S2392069AbgBNQMu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:12:50 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2B18F2468F;
-        Fri, 14 Feb 2020 16:10:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 92B14246BD;
+        Fri, 14 Feb 2020 16:12:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696639;
-        bh=KHdrEN3OtqPPD6L5YgBi2g1IZzGbO2eK07lEomwDnVc=;
+        s=default; t=1581696769;
+        bh=laid7J5sQfr4zc5dfFYayIFp5SqBhYxHplp0Qg+Sfbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v+KC2F+2RKB9SQgU3d7TZ8ILC8+Dx4tULKuidMaXuFYll/pF+U6s67X6Q1n7mE2TH
-         3ZR7Bd94SoZZmrsSBLs6+t/zYJ/nY1Es+xnLD+lMRJPSEXcyOrORGpHpaqf7NkkBEq
-         dkwh8pC48v9MJtPKEypQ4iTYh6eXObUX77O8NtUw=
+        b=IUMLRwzzBlkO3dzlfeLsJAIl+zYXXqBnf8vBirZdNPIfyfWoPdqO+3YiiGLtrSs5v
+         foLMZ7QFN1T5X3I4LlerShCFapJI5/My7apoPkUhuqnTibcjnTSlg1IDysV9zHItX7
+         Bj6KtSFpFHQjH2MN9DXWp6uOZ99T39ECWOgOmIB4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qing Xu <m1s5p6688@gmail.com>, Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Nicolai Stange <nstange@suse.de>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 417/459] mwifiex: Fix possible buffer overflows in mwifiex_ret_wmm_get_status()
-Date:   Fri, 14 Feb 2020 11:01:07 -0500
-Message-Id: <20200214160149.11681-417-sashal@kernel.org>
+        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 048/252] libertas: make lbs_ibss_join_existing() return error code on rates overflow
+Date:   Fri, 14 Feb 2020 11:08:23 -0500
+Message-Id: <20200214161147.15842-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
-References: <20200214160149.11681-1-sashal@kernel.org>
+In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
+References: <20200214161147.15842-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,38 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qing Xu <m1s5p6688@gmail.com>
+From: Nicolai Stange <nstange@suse.de>
 
-[ Upstream commit 3a9b153c5591548612c3955c9600a98150c81875 ]
+[ Upstream commit 1754c4f60aaf1e17d886afefee97e94d7f27b4cb ]
 
-mwifiex_ret_wmm_get_status() calls memcpy() without checking the
-destination size.Since the source is given from remote AP which
-contains illegal wmm elements , this may trigger a heap buffer
-overflow.
-Fix it by putting the length check before calling memcpy().
+Commit e5e884b42639 ("libertas: Fix two buffer overflows at parsing bss
+descriptor") introduced a bounds check on the number of supplied rates to
+lbs_ibss_join_existing() and made it to return on overflow.
 
-Signed-off-by: Qing Xu <m1s5p6688@gmail.com>
+However, the aforementioned commit doesn't set the return value accordingly
+and thus, lbs_ibss_join_existing() would return with zero even though it
+failed.
+
+Make lbs_ibss_join_existing return -EINVAL in case the bounds check on the
+number of supplied rates fails.
+
+Fixes: e5e884b42639 ("libertas: Fix two buffer overflows at parsing bss descriptor")
+Signed-off-by: Nicolai Stange <nstange@suse.de>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/wmm.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/marvell/libertas/cfg.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/wmm.c b/drivers/net/wireless/marvell/mwifiex/wmm.c
-index 41f0231376c01..132f9e8ed68c1 100644
---- a/drivers/net/wireless/marvell/mwifiex/wmm.c
-+++ b/drivers/net/wireless/marvell/mwifiex/wmm.c
-@@ -970,6 +970,10 @@ int mwifiex_ret_wmm_get_status(struct mwifiex_private *priv,
- 				    "WMM Parameter Set Count: %d\n",
- 				    wmm_param_ie->qos_info_bitmap & mask);
- 
-+			if (wmm_param_ie->vend_hdr.len + 2 >
-+				sizeof(struct ieee_types_wmm_parameter))
-+				break;
-+
- 			memcpy((u8 *) &priv->curr_bss_params.bss_descriptor.
- 			       wmm_ie, wmm_param_ie,
- 			       wmm_param_ie->vend_hdr.len + 2);
+diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
+index 68985d7663491..4e3de684928bf 100644
+--- a/drivers/net/wireless/marvell/libertas/cfg.c
++++ b/drivers/net/wireless/marvell/libertas/cfg.c
+@@ -1786,6 +1786,7 @@ static int lbs_ibss_join_existing(struct lbs_private *priv,
+ 		if (rates_max > MAX_RATES) {
+ 			lbs_deb_join("invalid rates");
+ 			rcu_read_unlock();
++			ret = -EINVAL;
+ 			goto out;
+ 		}
+ 		rates = cmd.bss.rates;
 -- 
 2.20.1
 
