@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D40A15E9A4
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AF315E9A9
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 18:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388532AbgBNQOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:14:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43216 "EHLO mail.kernel.org"
+        id S2404011AbgBNQOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:14:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403993AbgBNQOC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:14:02 -0500
+        id S2388168AbgBNQOD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:14:03 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 32145246CC;
-        Fri, 14 Feb 2020 16:14:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 786CC246BD;
+        Fri, 14 Feb 2020 16:14:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696841;
-        bh=CoIgWPm//MmwiWgsjrj4wp4Wsg+IhmrTqthUXsRDOQU=;
+        s=default; t=1581696842;
+        bh=o3yfZ/jJwJgO7mG0CVWrxOfRI2C8fJSUwc8Kp+NOKCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZQWz09Kr+1VqjmjnFaTCZi/EFWX9uuilGnzTy4WGf/4RU84jhajEMTlL7DkQhDZl
-         kcTc6ccdqnq6tE7LiLFTDZgEjAHA8+/fq7zp+yQmELVbM1HqoBH9OtU6VCyYSdc7eC
-         8gcR5rUOG6WlhKyi4KGUtBRRMxF/3xxI3QBRoTCk=
+        b=tT+KxzKgjX6V/7PKz/XFrDhbXw+IPIZ0iouePpxHiP2VKmetdq4gZA0Doa123E1SC
+         sRiXP7zokVn+pjXGotkKTKZo97cLvw9ioaLVwo6rxTgujPmJjEmDfckRovMz+TIyr+
+         p07E9opReo7UlLJ8WpIvdqmt+dvzwdHKs9xNjGqU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Phong Tran <tranmanphong@gmail.com>,
@@ -30,9 +30,9 @@ Cc:     Phong Tran <tranmanphong@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 104/252] ipw2x00: Fix -Wcast-function-type
-Date:   Fri, 14 Feb 2020 11:09:19 -0500
-Message-Id: <20200214161147.15842-104-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 105/252] iwlegacy: Fix -Wcast-function-type
+Date:   Fri, 14 Feb 2020 11:09:20 -0500
+Message-Id: <20200214161147.15842-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214161147.15842-1-sashal@kernel.org>
 References: <20200214161147.15842-1-sashal@kernel.org>
@@ -47,7 +47,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Phong Tran <tranmanphong@gmail.com>
 
-[ Upstream commit ebd77feb27e91bb5fe35a7818b7c13ea7435fb98 ]
+[ Upstream commit da5e57e8a6a3e69dac2937ba63fa86355628fbb2 ]
 
 correct usage prototype of callback in tasklet_init().
 Report by https://github.com/KSPP/linux/issues/20
@@ -57,67 +57,58 @@ Reviewed-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/ipw2x00/ipw2100.c | 7 ++++---
- drivers/net/wireless/intel/ipw2x00/ipw2200.c | 5 +++--
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/3945-mac.c | 5 +++--
+ drivers/net/wireless/intel/iwlegacy/4965-mac.c | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-index 910db46db6a12..a3a470976a5c7 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-@@ -3220,8 +3220,9 @@ static void ipw2100_tx_send_data(struct ipw2100_priv *priv)
- 	}
+diff --git a/drivers/net/wireless/intel/iwlegacy/3945-mac.c b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
+index 57e3b6cca2341..b536ec20eaccb 100644
+--- a/drivers/net/wireless/intel/iwlegacy/3945-mac.c
++++ b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
+@@ -1392,8 +1392,9 @@ il3945_dump_nic_error_log(struct il_priv *il)
  }
  
--static void ipw2100_irq_tasklet(struct ipw2100_priv *priv)
-+static void ipw2100_irq_tasklet(unsigned long data)
+ static void
+-il3945_irq_tasklet(struct il_priv *il)
++il3945_irq_tasklet(unsigned long data)
  {
-+	struct ipw2100_priv *priv = (struct ipw2100_priv *)data;
- 	struct net_device *dev = priv->net_dev;
++	struct il_priv *il = (struct il_priv *)data;
+ 	u32 inta, handled = 0;
+ 	u32 inta_fh;
  	unsigned long flags;
- 	u32 inta, tmp;
-@@ -6025,7 +6026,7 @@ static void ipw2100_rf_kill(struct work_struct *work)
- 	spin_unlock_irqrestore(&priv->low_lock, flags);
+@@ -3419,7 +3420,7 @@ il3945_setup_deferred_work(struct il_priv *il)
+ 	timer_setup(&il->watchdog, il_bg_watchdog, 0);
+ 
+ 	tasklet_init(&il->irq_tasklet,
+-		     (void (*)(unsigned long))il3945_irq_tasklet,
++		     il3945_irq_tasklet,
+ 		     (unsigned long)il);
  }
  
--static void ipw2100_irq_tasklet(struct ipw2100_priv *priv);
-+static void ipw2100_irq_tasklet(unsigned long data);
- 
- static const struct net_device_ops ipw2100_netdev_ops = {
- 	.ndo_open		= ipw2100_open,
-@@ -6155,7 +6156,7 @@ static struct net_device *ipw2100_alloc_device(struct pci_dev *pci_dev,
- 	INIT_DELAYED_WORK(&priv->rf_kill, ipw2100_rf_kill);
- 	INIT_DELAYED_WORK(&priv->scan_event, ipw2100_scan_event);
- 
--	tasklet_init(&priv->irq_tasklet, (void (*)(unsigned long))
-+	tasklet_init(&priv->irq_tasklet,
- 		     ipw2100_irq_tasklet, (unsigned long)priv);
- 
- 	/* NOTE:  We do not start the deferred work for status checks yet */
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-index 9644e7b93645f..04aee2fdba375 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-@@ -1959,8 +1959,9 @@ static void notify_wx_assoc_event(struct ipw_priv *priv)
- 	wireless_send_event(priv->net_dev, SIOCGIWAP, &wrqu, NULL);
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-mac.c b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+index 280cd8ae1696d..6fc51c74cdb86 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+@@ -4360,8 +4360,9 @@ il4965_synchronize_irq(struct il_priv *il)
  }
  
--static void ipw_irq_tasklet(struct ipw_priv *priv)
-+static void ipw_irq_tasklet(unsigned long data)
+ static void
+-il4965_irq_tasklet(struct il_priv *il)
++il4965_irq_tasklet(unsigned long data)
  {
-+	struct ipw_priv *priv = (struct ipw_priv *)data;
- 	u32 inta, inta_mask, handled = 0;
++	struct il_priv *il = (struct il_priv *)data;
+ 	u32 inta, handled = 0;
+ 	u32 inta_fh;
  	unsigned long flags;
- 	int rc = 0;
-@@ -10694,7 +10695,7 @@ static int ipw_setup_deferred_work(struct ipw_priv *priv)
- 	INIT_WORK(&priv->qos_activate, ipw_bg_qos_activate);
- #endif				/* CONFIG_IPW2200_QOS */
+@@ -6257,7 +6258,7 @@ il4965_setup_deferred_work(struct il_priv *il)
+ 	timer_setup(&il->watchdog, il_bg_watchdog, 0);
  
--	tasklet_init(&priv->irq_tasklet, (void (*)(unsigned long))
-+	tasklet_init(&priv->irq_tasklet,
- 		     ipw_irq_tasklet, (unsigned long)priv);
+ 	tasklet_init(&il->irq_tasklet,
+-		     (void (*)(unsigned long))il4965_irq_tasklet,
++		     il4965_irq_tasklet,
+ 		     (unsigned long)il);
+ }
  
- 	return ret;
 -- 
 2.20.1
 
