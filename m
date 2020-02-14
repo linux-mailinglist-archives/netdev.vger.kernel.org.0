@@ -2,89 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2600B15F622
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F36015F62C
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:53:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390431AbgBNSub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:50:31 -0500
-Received: from mail.efficios.com ([167.114.26.124]:58502 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388268AbgBNSub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:50:31 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 256EF23BC1F;
-        Fri, 14 Feb 2020 13:50:30 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id YYpVRuuR_C_6; Fri, 14 Feb 2020 13:50:29 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id CFC9F23B8E1;
-        Fri, 14 Feb 2020 13:50:29 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com CFC9F23B8E1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1581706229;
-        bh=VzUR9Bfe3F/JSoaq6QEVx8D9A43LNgpVZoQQa6Y285o=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=tF77J3ZG5K6RKC7QA+KvDTzXXSjI6ATvHNWQHVRnG5ZrNIXUwMsSkZdoTThDk9J4D
-         njRQaJPlXHoj6T9YwJwEbF0Vm2y/uJ5vXwKB4UtRESpcV5QqTj4vvVBMrckN+TDt1l
-         JFYJvUiaM0qOb0wJeHJ1toSz+xYZzJUOSizPOv44TZ+2feTghgbD3tEMzuyWCbrbgR
-         ZtHPNn3lwcrupb2P/Xsl4CaSCrOWAwNQXaYdUEndNGwoe+h69yQQ2wMEphKyaLVDys
-         k1ZYER6Sqk1f2Zd1ZjDnh+R5/uqhVo87ymto+ZyjQLebIZWERQfeDjp3MRl68leKRe
-         HjO+X71YSt7Bw==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id CtnvbEbnMtXo; Fri, 14 Feb 2020 13:50:29 -0500 (EST)
-Received: from localhost (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
-        by mail.efficios.com (Postfix) with ESMTPSA id 909E923B77F;
-        Fri, 14 Feb 2020 13:50:28 -0500 (EST)
-Date:   Fri, 14 Feb 2020 13:50:27 -0500
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: [RFC patch 07/19] bpf: Provide BPF_PROG_RUN_PIN_ON_CPU() macro
-Message-ID: <20200214185027.nx6enxvmghucai2d@localhost>
-References: <20200214133917.304937432@linutronix.de>
- <20200214161503.595780887@linutronix.de>
+        id S2387401AbgBNSxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:53:39 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36218 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728859AbgBNSxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:53:38 -0500
+Received: by mail-pg1-f193.google.com with SMTP id d9so5400897pgu.3
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 10:53:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YFlrJHaqVayeVyENg3WpM+zty9btr9v4Lyo7MJDfBPw=;
+        b=Gc4mMDPmorWN9VsxeEgoBOQ9SgCnwRSvJ+HLPzvbBmyw1XjKRcjw4335y8Tu1x/4qh
+         vf78Yp2zGNfPMOfS5nhOl2+6PXdzvEA0bzFY+skgvYvJS6pvrEV+ekKwgbS5ot5z43jB
+         STtEv1bOgtIqENxUhV/Bxl6BeW8TG62OPIQoT8YLCNJVHkgzgB95MPOk+lNVxv5ELRip
+         4B7IBAlr/SxpTMsxlU8wOVL2uFmHpaKbh6Z+Bv9De40Iki9pEioEAMc8elxVsGG1orjZ
+         glsgEsBeebLQ7hCZ/os8vM5TybeukTWUph0/yXAAFRZg06/AnxUxbW+L2IlwzL6NuC+q
+         6Z/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YFlrJHaqVayeVyENg3WpM+zty9btr9v4Lyo7MJDfBPw=;
+        b=d0fW5SZt6wQ1eh2eWp00G0IOgwQD1NFpsvtpsRAvG2LxOSQihhKvDlj/21j7pgC6/u
+         DQz5WppCI8kWES8rivuwfkwuQP4Y36GgwRVbnVBSk/wWBOGYsahZJ34Q0EdJvmZmLmpF
+         PEETKHC3mi/CttNVrOu+/V2iKWzio5jnV1ZfWpfsoZAteymHF3I8KFFurdESD0uFQpNM
+         T5yAK7Bq7wRwewcbObSv1UotLbwNjBkvXAS177RHEBy39dlC1cNtpyeKWnnG+qbVeXhw
+         BVWjPmdwg1t8vas1AboD0eh0zGqkHZr2lY44CHorq5sdDJsJ5J9qCfdm0He6SReo366t
+         KoYQ==
+X-Gm-Message-State: APjAAAX8j8aMdTotlSh6wdJUyTDRebFZXQKTzrdfYU98TaKwd4sFLniD
+        YgU6gJPBheoXIXGygsV4YoA=
+X-Google-Smtp-Source: APXvYqyGipnm9v99Wmub6c/0/cuG6ex7Ko/wYnvYLzHs+m4NH3inISPa0RTroRCylLG/ie4ie2YOXw==
+X-Received: by 2002:a62:878a:: with SMTP id i132mr4950972pfe.8.1581706418167;
+        Fri, 14 Feb 2020 10:53:38 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id i64sm7996084pgc.51.2020.02.14.10.53.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Feb 2020 10:53:37 -0800 (PST)
+Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20200214173407.52521-1-Jason@zx2c4.com>
+ <20200214173407.52521-4-Jason@zx2c4.com>
+ <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com>
+ <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
+ <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com>
+ <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ec52e8cb-5649-9167-bb14-7e9775c6a8be@gmail.com>
+Date:   Fri, 14 Feb 2020 10:53:27 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200214161503.595780887@linutronix.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14-Feb-2020 02:39:24 PM, Thomas Gleixner wrote:
-[...]
-> +#define BPF_PROG_RUN_PIN_ON_CPU(prog, ctx) ({				\
-> +	u32 ret;							\
-> +	migrate_disable();						\
-> +	ret = __BPF_PROG_RUN(prog, ctx, bpf_dispatcher_nopfunc);	\
-> +	migrate_enable();						\
-> +	ret; })
 
-Does it really have to be a statement expression with a local variable ?
 
-If so, we should consider renaming "ret" to "__ret" to minimize the
-chances of a caller issuing BPF_PROG_RUN_PIN_ON_CPU with "ret" as
-prog or ctx argument, which would lead to unexpected results.
+On 2/14/20 10:37 AM, Jason A. Donenfeld wrote:
+> On 2/14/20, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>> On 2/14/20 10:15 AM, Jason A. Donenfeld wrote:
+>>> On Fri, Feb 14, 2020 at 6:56 PM Eric Dumazet <eric.dumazet@gmail.com>
+>>> wrote:
+>>>> Oh dear, can you describe what do you expect of a wireguard device with
+>>>> mtu == 0 or mtu == 1
+>>>>
+>>>> Why simply not allowing silly configurations, instead of convoluted tests
+>>>> in fast path ?
+>>>>
+>>>> We are speaking of tunnels adding quite a lot of headers, so we better
+>>>> not try to make them
+>>>> work on networks with tiny mtu. Just say no to syzbot.
+>>>
+>>> The idea was that wireguard might still be useful for the persistent
+>>> keepalive stuff. This branch becomes very cold very fast, so I don't
+>>> think it makes a difference performance wise, but if you feel strongly
+>>> about it, I can get rid of it and set a non-zero min_mtu that's the
+>>> smallest thing wireguard's xmit semantics will accept. It sounds like
+>>> you'd prefer that?
+>>>
+>> Well, if you believe that wireguard in persistent keepalive
+>> has some value on its own, I guess that we will have to support this mode.
+> 
+> Alright.
+> 
+>>
+>> Some legacy devices can have arbitrary mtu, and this has caused headaches.
+>> I was hoping that for brand new devices, we could have saner limits.
+>>
+>> About setting max_mtu to ~MAX_INT, does it mean wireguard will attempt
+>> to send UDP datagrams bigger than 64K ? Where is the segmentation done ?
+> 
+> The before passings off to the udp tunnel api, we indicate that we
+> support ip segmentation, and then it gets handled and fragmented
+> deeper down. Check out socket.c. 
 
-Thanks,
+Okay. Speaking of socket.c, I found this wg_socket_reinit() snippet :
 
-Mathieu
+synchronize_rcu();
+synchronize_net();
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Which makes little sense. Please add a comment explaining why these two
+calls are needed.
+
