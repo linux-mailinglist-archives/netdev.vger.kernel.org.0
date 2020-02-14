@@ -2,174 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 208E415D661
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 12:15:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D6A15D66D
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 12:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729020AbgBNLO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 06:14:59 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:36238 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727965AbgBNLO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 06:14:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581678896;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6ocM5p8eMfKJh7s1dzfUoLzimRthVD4HZk5UGN7Sdio=;
-        b=dKFblidvKmaxDrTAmFyu+oK2BinxQ5v5gkJFLPbYiiO6EjOkgtVPda8vmw8r/nxLVShlCF
-        65tVfZ/vJVeoLjhEh7gdC2qXwYuccQ9j1sfACKpHNMYfvMVNsMYodunSr2svn0O8Hb7f6y
-        3b7q5qFadveES6kYSc5E2C44gXewyH0=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-146-V6mU9nfcORm9lbx5cgNZyw-1; Fri, 14 Feb 2020 06:14:47 -0500
-X-MC-Unique: V6mU9nfcORm9lbx5cgNZyw-1
-Received: by mail-lj1-f199.google.com with SMTP id t11so3273949ljo.13
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 03:14:47 -0800 (PST)
+        id S1729225AbgBNLQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 06:16:50 -0500
+Received: from mail-vs1-f73.google.com ([209.85.217.73]:35428 "EHLO
+        mail-vs1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729210AbgBNLQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 06:16:50 -0500
+Received: by mail-vs1-f73.google.com with SMTP id 123so674607vsg.2
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 03:16:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=c3okqhGXbbn+0UGnWI89nn927kUSh19dp4ivRMVKM2U=;
+        b=iQAkM9MjICHpGcWO1za9HTHfLgysGmX4AvNhv0qrE8Eyc53ngdh1T8OpbzVHWkZ0fo
+         KXNxqzuGBpFGVRu6EGDu2mxLR0mSVHjrqSUBirnlt6TtXajhTXSJzPQN561gCblVT/Bm
+         d9O2k3B5DaTnJAJp0+Uqkkj3DsaCIjuER6vwEbnL9WeFAg5PoyCzy6tVwlZ0NRSe6DXP
+         a6wDsljFgIyHhEKyFUHsfdZgua/fcyGPgCG3RcScdrCZTj6P15ukbzTPk6xjHhIjHzo/
+         +3bn0EzWxXjzTivBC5zTYDoqdIGI63+qWx2PwA0Qdm2jglKCm5R1JWJPtZISzQNrKglc
+         jexQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=6ocM5p8eMfKJh7s1dzfUoLzimRthVD4HZk5UGN7Sdio=;
-        b=RlRdEAxqz2aDHlgmeCz5RwB63lxnuXd4EwF2y6Ds1E1WsfxFMf6l7MI/HdvTQRTCcc
-         9YxpOxiPLMdMB+G9oLTHK9u9KGcWPiS/Bg47hYD+nPF1CJwC1Cmk8TO3lV7FMj08w7tH
-         sUK68+UxDlRGty5dGQQqR+QRp8PnHgqLGf3IEqRAxwTgVji2+JyLuxP0se3n5JSGkg44
-         v5wCsEM9GUmaGPUV72uCQ78pU6bdz/LhFa/gFUbL4rbCQJMjFVii7+2y9aZhni+NfKmn
-         zxxnFl6jqCMJH0OrU42yBWrXhGmci15w/mQeAaECGegMqeh4rTOJ9lCIWo8xhgzxMFDK
-         JOww==
-X-Gm-Message-State: APjAAAV+F2D95FUXsKnPF+cX2GdjFUkJV10XleKY6n9AtR+WLkpRKj9y
-        DO85k8/Cji4+agbCSeb7kX0ILn9AnLsNbeKjmlzp7I/f3wgEMlo7m9KLibW1RUK7UXhBAVOU4s5
-        Biir/YE9mDGohGq1B
-X-Received: by 2002:a05:651c:111a:: with SMTP id d26mr1750545ljo.153.1581678886129;
-        Fri, 14 Feb 2020 03:14:46 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyfUK4dSp4/TUbirU5/SpddXby8+Y9Cjdsvt2uBLyFZMRhFFUJVFeWiWiMC/c8FQWBL9PXfiw==
-X-Received: by 2002:a05:651c:111a:: with SMTP id d26mr1750527ljo.153.1581678885791;
-        Fri, 14 Feb 2020 03:14:45 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id j7sm2835353lfh.25.2020.02.14.03.14.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 03:14:44 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 567E8180371; Fri, 14 Feb 2020 12:14:42 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Yossi Kuperman <yossiku@mellanox.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [RFC] Hierarchical QoS Hardware Offload (HTB)
-In-Reply-To: <bbafbd41-2a3b-3abd-e57c-18175a7c9e3f@mellanox.com>
-References: <FC053E80-74C9-4884-92F1-4DBEB5F0C81A@mellanox.com> <87y2tmckyt.fsf@toke.dk> <bbafbd41-2a3b-3abd-e57c-18175a7c9e3f@mellanox.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 14 Feb 2020 12:14:42 +0100
-Message-ID: <877e0pe7z1.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=c3okqhGXbbn+0UGnWI89nn927kUSh19dp4ivRMVKM2U=;
+        b=mThaRp4dLi0a2j7F7PMyM25Bm827TUaY4dhP1TE9n22+0ZIZvM9Ryq0P3h9OUUwzA7
+         kpOc/wNhugBWGSf/+hH3l9YQ4BYcIvehNU1I/RwoIgjOyQZySJwm+ftiH8ywyTtrWaLi
+         faw6WfhIOUX978Mu0kw+q9GGawqNoPvA6v8iUkZjSs05NMbILeup5hrEHeMX/x/OxG2V
+         C+pRM1vz68Kbp0aD/o4bwFQNYk1TU/A9PPtMHv/2AfeVPUu71wOFap3zFMyf3nKBfirG
+         Bewmx/WEKMe7e35H/4hLAbmWD2KPUR2n+MLJcGIRntziTsWIKNPWmTqne6kceUI2shRZ
+         Ww5A==
+X-Gm-Message-State: APjAAAXExie8uLffSkP5vOPqiSqAZ6SOCqGBbQdUTf0w/gePhwA8ZMkm
+        KQ0mdGpXPDz5LhMDaMayWaq9OXLHgwj4ddfSaw==
+X-Google-Smtp-Source: APXvYqzsIA3nUi3NBbhp5dI9jRoSYsoMZCDaMZ07OVCCBOj8uKzTu0JiMAsaZ8k19Z0h13CTZjvl3d3xNuD/pHp54g==
+X-Received: by 2002:ab0:2859:: with SMTP id c25mr1216302uaq.79.1581679007748;
+ Fri, 14 Feb 2020 03:16:47 -0800 (PST)
+Date:   Fri, 14 Feb 2020 19:16:41 +0800
+Message-Id: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [Bluez PATCH v5] bluetooth: secure bluetooth stack from bluedump attack
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yossi Kuperman <yossiku@mellanox.com> writes:
+Attack scenario:
+1. A Chromebook (let's call this device A) is paired to a legitimate
+   Bluetooth classic device (e.g. a speaker) (let's call this device
+   B).
+2. A malicious device (let's call this device C) pretends to be the
+   Bluetooth speaker by using the same BT address.
+3. If device A is not currently connected to device B, device A will
+   be ready to accept connection from device B in the background
+   (technically, doing Page Scan).
+4. Therefore, device C can initiate connection to device A
+   (because device A is doing Page Scan) and device A will accept the
+   connection because device A trusts device C's address which is the
+   same as device B's address.
+5. Device C won't be able to communicate at any high level Bluetooth
+   profile with device A because device A enforces that device C is
+   encrypted with their common Link Key, which device C doesn't have.
+   But device C can initiate pairing with device A with just-works
+   model without requiring user interaction (there is only pairing
+   notification). After pairing, device A now trusts device C with a
+   new different link key, common between device A and C.
+6. From now on, device A trusts device C, so device C can at anytime
+   connect to device A to do any kind of high-level hijacking, e.g.
+   speaker hijack or mouse/keyboard hijack.
 
-> On 01/02/2020 18:48, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Yossi Kuperman <yossiku@mellanox.com> writes:
->>
->>> Following is an outline briefly describing our plans towards offloading=
- HTB functionality.
->>>
->>> HTB qdisc allows you to use one physical link to simulate several
->>> slower links. This is done by configuring a hierarchical QoS tree;
->>> each tree node corresponds to a class. Filters are used to classify
->>> flows to different classes. HTB is quite flexible and versatile, but
->>> it comes with a cost. HTB does not scale and consumes considerable CPU
->>> and memory. Our aim is to offload HTB functionality to hardware and
->>> provide the user with the flexibility and the conventional tools
->>> offered by TC subsystem, while scaling to thousands of traffic classes
->>> and maintaining wire-speed performance.=C2=A0
->>>
->>> Mellanox hardware can support hierarchical rate-limiting;
->>> rate-limiting is done per hardware queue. In our proposed solution,
->>> flow classification takes place in software. By moving the
->>> classification to clsact egress hook, which is thread-safe and does
->>> not require locking, we avoid the contention induced by the single
->>> qdisc lock. Furthermore, clsact filters are perform before the
->>> net-device=E2=80=99s TX queue is selected, allowing the driver a chance=
- to
->>> translate the class to the appropriate hardware queue. Please note
->>> that the user will need to configure the filters slightly different;
->>> apply them to the clsact rather than to the HTB itself, and set the
->>> priority to the desired class-id.
->>>
->>> For example, the following two filters are equivalent:
->>> 	1. tc filter add dev eth0 parent 1:0 protocol ip flower dst_port 80 cl=
-assid 1:10
->>> 	2. tc filter add dev eth0 egress protocol ip flower dst_port 80 action=
- skbedit priority 1:10
->>>
->>> Note: to support the above filter no code changes to the upstream kerne=
-l nor to iproute2 package is required.
->>>
->>> Furthermore, the most concerning aspect of the current HTB
->>> implementation is its lack of support for multi-queue. All
->>> net-device=E2=80=99s TX queues points to the same HTB instance, resulti=
-ng in
->>> high spin-lock contention. This contention (might) negates the overall
->>> performance gains expected by introducing the offload in the first
->>> place. We should modify HTB to present itself as mq qdisc does. By
->>> default, mq qdisc allocates a simple fifo qdisc per TX queue exposed
->>> by the lower layer device. This is only when hardware offload is
->>> configured, otherwise, HTB behaves as usual. There is no HTB code
->>> along the data-path; the only overhead compared to regular traffic is
->>> the classification taking place at clsact. Please note that this
->>> design induces full offload---no fallback to software; it is not
->>> trivial to partial offload the hierarchical tree considering borrowing
->>> between siblings anyway.
->>>
->>>
->>> To summaries: for each HTB leaf-class the driver will allocate a
->>> special queue and match it with a corresponding net-device TX queue
->>> (increase real_num_tx_queues). A unique fifo qdisc will be attached to
->>> any such TX queue. Classification will still take place in software,
->>> but rather at the clsact egress hook. This way we can scale to
->>> thousands of classes while maintaining wire-speed performance and
->>> reducing CPU overhead.
->>>
->>> Any feedback will be much appreciated.
->> Other than echoing Dave's concern around baking FIFO semantics into
->> hardware, maybe also consider whether implementing the required
->> functionality using EDT-based semantics instead might be better? I.e.,
->> something like this:
->> https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-an=
-d-BPF
->
-> Sorry for the long delay.
->
-> The above talk description is quite concise, I can only speculate how
-> this EDT+BPF+FQ might work. Anyway, we have a requirement from a
-> customer to provide HTB-like semantics including borrowing and
-> rate-limiting flow-aggregates. We have a working PoC, which closely
-> resembles the aforementioned description, including hardware
-> offload.=C2=A0=C2=A0
->
-> Is it possible to construct hierarchical QoS (for borrowing purposes)
-> using EDT+BPF+FQ?
+Since we don't know whether the repairing is legitimate or not,
+leave the decision to user space if all the conditions below are met.
+- the pairing is initialized by peer
+- the authorization method is just-work
+- host already had the link key to the peer
 
-I believe so. Haven't worked out the details of how to make it
-equivalent, though, but I'm hoping that is what that talk will do.
-Adding some of the speakers to Cc, maybe they can comment? :)
+Signed-off-by: Howard Chung <howardchung@google.com>
+---
 
-> Is it applicable only for TCP?
+Changes in v5:
+- Rephrase the comment
 
-No, EDT is applicable to all packets.
+Changes in v4:
+- optimise the check in smp.c.
 
--Toke
+Changes in v3:
+- Change confirm_hint from 2 to 1
+- Fix coding style (declaration order)
+
+Changes in v2:
+- Remove the HCI_PERMIT_JUST_WORK_REPAIR debugfs option
+- Fix the added code in classic
+- Add a similar fix for LE
+
+ net/bluetooth/hci_event.c | 10 ++++++++++
+ net/bluetooth/smp.c       | 19 +++++++++++++++++++
+ 2 files changed, 29 insertions(+)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 2c833dae9366..e6982f4f51ea 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4571,6 +4571,16 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
+ 			goto confirm;
+ 		}
+ 
++		/* If there already exists link key in local host, leave the
++		 * decision to user space since the remote device could be
++		 * legitimate or malicious.
++		 */
++		if (hci_find_link_key(hdev, &ev->bdaddr)) {
++			bt_dev_warn(hdev, "Local host already has link key");
++			confirm_hint = 1;
++			goto confirm;
++		}
++
+ 		BT_DBG("Auto-accept of user confirmation with %ums delay",
+ 		       hdev->auto_accept_delay);
+ 
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 2cba6e07c02b..25dbf77d216b 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -2192,6 +2192,25 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 		smp_send_cmd(conn, SMP_CMD_PAIRING_RANDOM, sizeof(smp->prnd),
+ 			     smp->prnd);
+ 		SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
++
++		/* Only Just-Works pairing requires extra checks */
++		if (smp->method != JUST_WORKS)
++			goto mackey_and_ltk;
++
++		/* If there already exists link key in local host, leave the
++		 * decision to user space since the remote device could be
++		 * legitimate or malicious.
++		 */
++		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
++				 hcon->role)) {
++			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
++							hcon->type,
++							hcon->dst_type, passkey,
++							1);
++			if (err)
++				return SMP_UNSPECIFIED;
++			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
++		}
+ 	}
+ 
+ mackey_and_ltk:
+-- 
+2.25.0.265.gbab2e86ba0-goog
 
