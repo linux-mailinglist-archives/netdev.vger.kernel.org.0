@@ -2,122 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F36015F62C
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:53:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4753615F67E
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:13:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387401AbgBNSxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:53:39 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36218 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728859AbgBNSxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 13:53:38 -0500
-Received: by mail-pg1-f193.google.com with SMTP id d9so5400897pgu.3
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 10:53:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YFlrJHaqVayeVyENg3WpM+zty9btr9v4Lyo7MJDfBPw=;
-        b=Gc4mMDPmorWN9VsxeEgoBOQ9SgCnwRSvJ+HLPzvbBmyw1XjKRcjw4335y8Tu1x/4qh
-         vf78Yp2zGNfPMOfS5nhOl2+6PXdzvEA0bzFY+skgvYvJS6pvrEV+ekKwgbS5ot5z43jB
-         STtEv1bOgtIqENxUhV/Bxl6BeW8TG62OPIQoT8YLCNJVHkgzgB95MPOk+lNVxv5ELRip
-         4B7IBAlr/SxpTMsxlU8wOVL2uFmHpaKbh6Z+Bv9De40Iki9pEioEAMc8elxVsGG1orjZ
-         glsgEsBeebLQ7hCZ/os8vM5TybeukTWUph0/yXAAFRZg06/AnxUxbW+L2IlwzL6NuC+q
-         6Z/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YFlrJHaqVayeVyENg3WpM+zty9btr9v4Lyo7MJDfBPw=;
-        b=d0fW5SZt6wQ1eh2eWp00G0IOgwQD1NFpsvtpsRAvG2LxOSQihhKvDlj/21j7pgC6/u
-         DQz5WppCI8kWES8rivuwfkwuQP4Y36GgwRVbnVBSk/wWBOGYsahZJ34Q0EdJvmZmLmpF
-         PEETKHC3mi/CttNVrOu+/V2iKWzio5jnV1ZfWpfsoZAteymHF3I8KFFurdESD0uFQpNM
-         T5yAK7Bq7wRwewcbObSv1UotLbwNjBkvXAS177RHEBy39dlC1cNtpyeKWnnG+qbVeXhw
-         BVWjPmdwg1t8vas1AboD0eh0zGqkHZr2lY44CHorq5sdDJsJ5J9qCfdm0He6SReo366t
-         KoYQ==
-X-Gm-Message-State: APjAAAX8j8aMdTotlSh6wdJUyTDRebFZXQKTzrdfYU98TaKwd4sFLniD
-        YgU6gJPBheoXIXGygsV4YoA=
-X-Google-Smtp-Source: APXvYqyGipnm9v99Wmub6c/0/cuG6ex7Ko/wYnvYLzHs+m4NH3inISPa0RTroRCylLG/ie4ie2YOXw==
-X-Received: by 2002:a62:878a:: with SMTP id i132mr4950972pfe.8.1581706418167;
-        Fri, 14 Feb 2020 10:53:38 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id i64sm7996084pgc.51.2020.02.14.10.53.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Feb 2020 10:53:37 -0800 (PST)
-Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20200214173407.52521-1-Jason@zx2c4.com>
- <20200214173407.52521-4-Jason@zx2c4.com>
- <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com>
- <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
- <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com>
- <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ec52e8cb-5649-9167-bb14-7e9775c6a8be@gmail.com>
-Date:   Fri, 14 Feb 2020 10:53:27 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S2388369AbgBNTLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 14:11:31 -0500
+Received: from mail.efficios.com ([167.114.26.124]:39954 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387499AbgBNTLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:11:30 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 680A923BC4A;
+        Fri, 14 Feb 2020 14:11:29 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id TcPM7Ry9pqIq; Fri, 14 Feb 2020 14:11:29 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id E37F523BC49;
+        Fri, 14 Feb 2020 14:11:28 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com E37F523BC49
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1581707488;
+        bh=BwocIdJ32MF6rN8SbWERs4qF83E6BOd6O3a5XNTTwUM=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=u4Y+SzgUEWqaBJAj+n5ulWl0tWeX+D6s/UV45wjSv90GM0IbqdrJGmjNO5KnxwAjI
+         v47M0ItKq4/avXufSvae+2f2pyP+ZYWq/1JnmSwgOYRgTaLU9dT+IzVcKAW8rRodNA
+         AEtR5pZQJzH9c7EZJzVm0LoygNNv21o9EfAn3UGRTOyB1zNGfs0wtqVhMQXEdJr4OL
+         GrFJ7uStC48HDYYUSFCOMNfy9P3Cu80EhznAKiSMx5YbgewFtoZJ+QWH9SI40Jw1Op
+         6c2HA0l7oaSpXyfNFhhDUAar48DZf/4tWw15PXTDnQ7wnrRR25OtFmXxRquSpW2m8G
+         kJmq7Cr7LbMyg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ixSyBUEApmFR; Fri, 14 Feb 2020 14:11:28 -0500 (EST)
+Received: from localhost (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
+        by mail.efficios.com (Postfix) with ESMTPSA id 539DD23BB53;
+        Fri, 14 Feb 2020 14:11:28 -0500 (EST)
+Date:   Fri, 14 Feb 2020 14:11:26 -0500
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [RFC patch 14/19] bpf: Use migrate_disable() in hashtab code
+Message-ID: <20200214191126.lbiusetaxecdl3of@localhost>
+References: <20200214133917.304937432@linutronix.de>
+ <20200214161504.325142160@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200214161504.325142160@linutronix.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/14/20 10:37 AM, Jason A. Donenfeld wrote:
-> On 2/14/20, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->> On 2/14/20 10:15 AM, Jason A. Donenfeld wrote:
->>> On Fri, Feb 14, 2020 at 6:56 PM Eric Dumazet <eric.dumazet@gmail.com>
->>> wrote:
->>>> Oh dear, can you describe what do you expect of a wireguard device with
->>>> mtu == 0 or mtu == 1
->>>>
->>>> Why simply not allowing silly configurations, instead of convoluted tests
->>>> in fast path ?
->>>>
->>>> We are speaking of tunnels adding quite a lot of headers, so we better
->>>> not try to make them
->>>> work on networks with tiny mtu. Just say no to syzbot.
->>>
->>> The idea was that wireguard might still be useful for the persistent
->>> keepalive stuff. This branch becomes very cold very fast, so I don't
->>> think it makes a difference performance wise, but if you feel strongly
->>> about it, I can get rid of it and set a non-zero min_mtu that's the
->>> smallest thing wireguard's xmit semantics will accept. It sounds like
->>> you'd prefer that?
->>>
->> Well, if you believe that wireguard in persistent keepalive
->> has some value on its own, I guess that we will have to support this mode.
+On 14-Feb-2020 02:39:31 PM, Thomas Gleixner wrote:
+> The required protection is that the caller cannot be migrated to a
+> different CPU as these places take either a hash bucket lock or might
+> trigger a kprobe inside the memory allocator. Both scenarios can lead to
+> deadlocks. The deadlock prevention is per CPU by incrementing a per CPU
+> variable which temporarily blocks the invocation of BPF programs from perf
+> and kprobes.
 > 
-> Alright.
+> Replace the preempt_disable/enable() pairs with migrate_disable/enable()
+> pairs to prepare BPF to work on PREEMPT_RT enabled kernels. On a non-RT
+> kernel this maps to preempt_disable/enable(), i.e. no functional change.
+
+Will that _really_ work on RT ?
+
+I'm puzzled about what will happen in the following scenario on RT:
+
+Thread A is preempted within e.g. htab_elem_free_rcu, and Thread B is
+scheduled and runs through a bunch of tracepoints. Both are on the
+same CPU's runqueue:
+
+CPU 1
+
+Thread A is scheduled
+(Thread A) htab_elem_free_rcu()
+(Thread A)   migrate disable
+(Thread A)   __this_cpu_inc(bpf_prog_active); -> per-cpu variable for
+                                               deadlock prevention.
+Thread A is preempted
+Thread B is scheduled
+(Thread B) Runs through various tracepoints:
+           trace_call_bpf()
+           if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+               -> will skip any instrumentation that happens to be on
+                  this CPU until...
+Thread B is preempted
+Thread A is scheduled
+(Thread A)  __this_cpu_dec(bpf_prog_active);
+(Thread A)  migrate enable
+
+Having all those events randomly and silently discarded might be quite
+unexpected from a user standpoint. This turns the deadlock prevention
+mechanism into a random tracepoint-dropping facility, which is
+unsettling. One alternative approach we could consider to solve this
+is to make this deadlock prevention nesting counter per-thread rather
+than per-cpu.
+
+Also, I don't think using __this_cpu_inc() without preempt-disable or
+irq off is safe. You'll probably want to move to this_cpu_inc/dec
+instead, which can be heavier on some architectures.
+
+Thanks,
+
+Mathieu
+
+
 > 
->>
->> Some legacy devices can have arbitrary mtu, and this has caused headaches.
->> I was hoping that for brand new devices, we could have saner limits.
->>
->> About setting max_mtu to ~MAX_INT, does it mean wireguard will attempt
->> to send UDP datagrams bigger than 64K ? Where is the segmentation done ?
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  kernel/bpf/hashtab.c |   12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> The before passings off to the udp tunnel api, we indicate that we
-> support ip segmentation, and then it gets handled and fragmented
-> deeper down. Check out socket.c. 
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -698,11 +698,11 @@ static void htab_elem_free_rcu(struct rc
+>  	 * we're calling kfree, otherwise deadlock is possible if kprobes
+>  	 * are placed somewhere inside of slub
+>  	 */
+> -	preempt_disable();
+> +	migrate_disable();
+>  	__this_cpu_inc(bpf_prog_active);
+>  	htab_elem_free(htab, l);
+>  	__this_cpu_dec(bpf_prog_active);
+> -	preempt_enable();
+> +	migrate_enable();
+>  }
+>  
+>  static void free_htab_elem(struct bpf_htab *htab, struct htab_elem *l)
+> @@ -1327,7 +1327,7 @@ static int
+>  	}
+>  
+>  again:
+> -	preempt_disable();
+> +	migrate_disable();
+>  	this_cpu_inc(bpf_prog_active);
+>  	rcu_read_lock();
+>  again_nocopy:
+> @@ -1347,7 +1347,7 @@ static int
+>  		raw_spin_unlock_irqrestore(&b->lock, flags);
+>  		rcu_read_unlock();
+>  		this_cpu_dec(bpf_prog_active);
+> -		preempt_enable();
+> +		migrate_enable();
+>  		goto after_loop;
+>  	}
+>  
+> @@ -1356,7 +1356,7 @@ static int
+>  		raw_spin_unlock_irqrestore(&b->lock, flags);
+>  		rcu_read_unlock();
+>  		this_cpu_dec(bpf_prog_active);
+> -		preempt_enable();
+> +		migrate_enable();
+>  		kvfree(keys);
+>  		kvfree(values);
+>  		goto alloc;
+> @@ -1406,7 +1406,7 @@ static int
+>  
+>  	rcu_read_unlock();
+>  	this_cpu_dec(bpf_prog_active);
+> -	preempt_enable();
+> +	migrate_enable();
+>  	if (bucket_cnt && (copy_to_user(ukeys + total * key_size, keys,
+>  	    key_size * bucket_cnt) ||
+>  	    copy_to_user(uvalues + total * value_size, values,
+> 
 
-Okay. Speaking of socket.c, I found this wg_socket_reinit() snippet :
-
-synchronize_rcu();
-synchronize_net();
-
-Which makes little sense. Please add a comment explaining why these two
-calls are needed.
-
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
