@@ -2,67 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA6C15D294
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 08:11:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB83715D2DD
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 08:34:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728740AbgBNHL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 02:11:29 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34179 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbgBNHL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 02:11:29 -0500
-Received: by mail-pg1-f195.google.com with SMTP id j4so4493364pgi.1
-        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 23:11:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jU2sZa1WkSUp9LtlRxlbU7ND84BNIYyPM31kgPc2EkM=;
-        b=d6yJ0jaL0KXHq60FOjaubJkaaJNOdxym9aLZ4KJNPllXU53vJMMWWIefwZTBSzt62b
-         TgTOPDhRgfaeigPxd9WSGpRQY6ITkqMC/+4HDr628tlA4gdOU6n7lvEkPyZ94qnYf/A4
-         QPeJYwVb6HrXmbEt85Y6evyRL5WaoghhJGIF87qqHLDgPbxYtnnLeG6FshP6m4YN8m/j
-         /dDYTI63Pz9TEtOiZvJRls6246hPAwVY5iAbuzrnM8wetYVt256k9q91HzaHl0nVHzI2
-         Uv+4ocv5dl3v7i/I2mANNaYh/fFJ36zSKYTtz5eNUpiPCmYU2u4oNt9Ya4nyOa04COVb
-         GQKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jU2sZa1WkSUp9LtlRxlbU7ND84BNIYyPM31kgPc2EkM=;
-        b=YbE1XLGAzH+Vz3ObOtCYJ6stowfaJX9ReM+2aPK0pPEMUKCIsTbvlHFCTYDaH8Hq87
-         /Qe7P1xZ0Qn6ErUF0fJKALybK9cl1rEv076Rn5NPCFUPw3Ns4I3UL4K62RTS0bS+E5mo
-         YHT/3+EmfXUUwFI8Kt1UwaDf88mGCN9jcTWe4w5oq/SsN5wH7pi5rGB5rIQ3LV6FE8Oh
-         KD2j01Yc+lMU+ydegpcPmUjmATRJM/hZYvwe+ljJ4IItE8vOYTlo29opWULrhHkfmWXX
-         SZEpSwgvJTd0bWzRWe9CsYbla3CUAxidUtUNV3C2HIZiKIKZpuY3uY6OTSjD0ahM9gnx
-         eA+w==
-X-Gm-Message-State: APjAAAVuDQWscUDttNAok80VLEqm656V0dEgB61vJ9bCp7WdOeTNAL/r
-        bcPGXlbGXn0Qop3qiXN0p2c=
-X-Google-Smtp-Source: APXvYqznszRQBZJ7pgVb/iUmEN3UyCmhhYJKvRaRqUIgMZ2WDdpWdDzFMkjwQiPJiUdfqc6Dj9Fusg==
-X-Received: by 2002:a63:d041:: with SMTP id s1mr1920787pgi.363.1581664288879;
-        Thu, 13 Feb 2020 23:11:28 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id s206sm5807056pfs.100.2020.02.13.23.11.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Feb 2020 23:11:27 -0800 (PST)
-Subject: Re: [PATCH net] net: rtnetlink: fix bugs in rtnl_alt_ifname()
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Jiri Pirko <jiri@resnulli.us>, Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20200213045826.181478-1-edumazet@google.com>
- <20200213064532.GD22610@nanopsycho>
- <2e122d94-89a1-f2aa-2613-2fc75ff6b4d1@gmail.com>
-Message-ID: <741c1c4e-9f83-d5bd-0100-d33cb5db7cc6@gmail.com>
-Date:   Thu, 13 Feb 2020 23:11:26 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728914AbgBNHem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 02:34:42 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59896 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728779AbgBNHel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 02:34:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581665679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1vTB07YCHquUQRM8bojAgZpjMe0UTX9SMv5SiNm5LOI=;
+        b=e8Eny1EfidtErfpAFV0MQmyCoOPlzf0MH+TbYpUjqDZV9S4t/oxqi33F/DMPswRYJMlra9
+        V9gQgdqfSy1Q3ifjxEE7xFImtxN8iOSuRh8SLQhvR8inp8xmI7lsSQoU+1z3g63sJrnN6Y
+        YTh7exEj+eXD1u/P1iUtinP8pXAGJDE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-gFvEo78qM1yO2J4hbv0WnQ-1; Fri, 14 Feb 2020 02:34:38 -0500
+X-MC-Unique: gFvEo78qM1yO2J4hbv0WnQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2CE7D18B9F80;
+        Fri, 14 Feb 2020 07:34:36 +0000 (UTC)
+Received: from [10.36.116.117] (ovpn-116-117.ams2.redhat.com [10.36.116.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2D6865DA87;
+        Fri, 14 Feb 2020 07:34:31 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Martin Lau" <kafai@fb.com>, "Song Liu" <songliubraving@fb.com>,
+        "Yonghong Song" <yhs@fb.com>, "Andrii Nakryiko" <andriin@fb.com>,
+        "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v2] libbpf: Add support for dynamic program
+ attach target
+Date:   Fri, 14 Feb 2020 08:34:28 +0100
+Message-ID: <E8D7E3C9-A0C8-4AFC-A7AE-BB6123E687C8@redhat.com>
+In-Reply-To: <CAEf4Bzb59yjEMzs=n7pmbCB-L6RfmGDQiOwDFBoh54aSps4Vsg@mail.gmail.com>
+References: <158160616195.80320.5636088335810242866.stgit@xdp-tutorial>
+ <CAEf4Bzb59yjEMzs=n7pmbCB-L6RfmGDQiOwDFBoh54aSps4Vsg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <2e122d94-89a1-f2aa-2613-2fc75ff6b4d1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -70,96 +60,148 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/12/20 10:58 PM, Eric Dumazet wrote:
-> 
-> 
-> On 2/12/20 10:45 PM, Jiri Pirko wrote:
->> Thu, Feb 13, 2020 at 05:58:26AM CET, edumazet@google.com wrote:
->>> Since IFLA_ALT_IFNAME is an NLA_STRING, we have no
->>> guarantee it is nul terminated.
->>>
->>> We should use nla_strdup() instead of kstrdup(), since this
->>> helper will make sure not accessing out-of-bounds data.
->>>
->>>
->>> Fixes: 36fbf1e52bd3 ("net: rtnetlink: add linkprop commands to add and delete alternative ifnames")
->>> Signed-off-by: Eric Dumazet <edumazet@google.com>
->>> Cc: Jiri Pirko <jiri@mellanox.com>
->>> Reported-by: syzbot <syzkaller@googlegroups.com>
->>> ---
->>> net/core/rtnetlink.c | 26 ++++++++++++--------------
->>> 1 file changed, 12 insertions(+), 14 deletions(-)
->>>
->>> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->>> index 09c44bf2e1d28842d77b4ed442ef2c051a25ad21..e1152f4ffe33efb0a69f17a1f5940baa04942e5b 100644
->>> --- a/net/core/rtnetlink.c
->>> +++ b/net/core/rtnetlink.c
->>> @@ -3504,27 +3504,25 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
->>> 	if (err)
->>> 		return err;
->>>
->>> -	alt_ifname = nla_data(attr);
->>> +	alt_ifname = nla_strdup(attr, GFP_KERNEL);
->>> +	if (!alt_ifname)
->>> +		return -ENOMEM;
->>> +
->>> 	if (cmd == RTM_NEWLINKPROP) {
->>> -		alt_ifname = kstrdup(alt_ifname, GFP_KERNEL);
->>> -		if (!alt_ifname)
->>> -			return -ENOMEM;
->>> 		err = netdev_name_node_alt_create(dev, alt_ifname);
->>> -		if (err) {
->>> -			kfree(alt_ifname);
->>> -			return err;
->>> -		}
->>> +		if (!err)
->>> +			alt_ifname = NULL;
->>> 	} else if (cmd == RTM_DELLINKPROP) {
->>> 		err = netdev_name_node_alt_destroy(dev, alt_ifname);
->>> -		if (err)
->>> -			return err;
->>> 	} else {
+On 13 Feb 2020, at 18:42, Andrii Nakryiko wrote:
+
+> On Thu, Feb 13, 2020 at 7:05 AM Eelco Chaudron <echaudro@redhat.com>=20
+> wrote:
 >>
+>> Currently when you want to attach a trace program to a bpf program
+>> the section name needs to match the tracepoint/function semantics.
 >>
->>> -		WARN_ON(1);
->>> -		return 0;
->>> +		WARN_ON_ONCE(1);
->>> +		err = -EINVAL;
+>> However the addition of the bpf_program__set_attach_target() API
+>> allows you to specify the tracepoint/function dynamically.
 >>
->> These 4 lines do not seem to be related to the rest of the patch. Should
->> it be a separate patch?
-> 
-> Well, we have to kfree(alt_ifname).
-> 
-> Generally speaking I tried to avoid return in the middle of this function.
-> 
-> The WARN_ON(1) is dead code today, making it a WARN_ON_ONCE(1) is simply
-> a matter of avoiding syslog floods if this path is ever triggered in the future.
+>> The call flow would look something like this:
+>>
+>>   xdp_fd =3D bpf_prog_get_fd_by_id(id);
+>>   trace_obj =3D bpf_object__open_file("func.o", NULL);
+>>   prog =3D bpf_object__find_program_by_title(trace_obj,
+>>                                            "fentry/myfunc");
+>>   bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
+>>   bpf_program__set_attach_target(prog, xdp_fd,
+>>                                  "xdpfilt_blk_all");
+>>   bpf_object__load(trace_obj)
+>>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> ---
+>
+> API-wise this looks good, thanks! Please address feedback below and
+> re-submit once bpf-next opens. Can you please also convert one of
+> existing selftests using open_opts's attach_prog_fd to use this API
+> instead to have a demonstration there?
 
-Also, related to this new fancy code ;)
+Yes will update the one I added for bfp2bpf testing=E2=80=A6
 
-Is there anything preventing netdev_name_node_alt_destroy() from destroying the primary
-ifname ?
+>> v1 -> v2: Remove requirement for attach type name in API
+>>
+>>  tools/lib/bpf/libbpf.c   |   33 +++++++++++++++++++++++++++++++--
+>>  tools/lib/bpf/libbpf.h   |    4 ++++
+>>  tools/lib/bpf/libbpf.map |    1 +
+>>  3 files changed, 36 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 514b1a524abb..9b8cab995580 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -4939,8 +4939,8 @@ int bpf_program__load(struct bpf_program *prog,=20
+>> char *license, __u32 kern_ver)
+>>  {
+>>         int err =3D 0, fd, i, btf_id;
+>>
+>> -       if (prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
+>> -           prog->type =3D=3D BPF_PROG_TYPE_EXT) {
+>> +       if ((prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
+>> +            prog->type =3D=3D BPF_PROG_TYPE_EXT) &&=20
+>> !prog->attach_btf_id) {
+>>                 btf_id =3D libbpf_find_attach_btf_id(prog);
+>>                 if (btf_id <=3D 0)
+>>                         return btf_id;
+>> @@ -8132,6 +8132,35 @@ void bpf_program__bpil_offs_to_addr(struct=20
+>> bpf_prog_info_linear *info_linear)
+>>         }
+>>  }
+>>
+>> +int bpf_program__set_attach_target(struct bpf_program *prog,
+>> +                                  int attach_prog_fd,
+>> +                                  const char *attach_func_name)
+>> +{
+>> +       int btf_id;
+>> +
+>> +       if (!prog || attach_prog_fd < 0 || !attach_func_name)
+>> +               return -EINVAL;
+>> +
+>> +       if (attach_prog_fd)
+>> +               btf_id =3D libbpf_find_prog_btf_id(attach_func_name,
+>> +                                                attach_prog_fd);
+>> +       else
+>> +               btf_id =3D=20
+>> __find_vmlinux_btf_id(prog->obj->btf_vmlinux,
+>> +                                              attach_func_name,
+>> +                                             =20
+>> prog->expected_attach_type);
+>> +
+>> +       if (btf_id <=3D 0) {
+>> +               if (!attach_prog_fd)
+>> +                       pr_warn("%s is not found in vmlinux BTF\n",
+>> +                               attach_func_name);
+>
+> libbpf_find_attach_btf_id's error reporting is misleading (it always
+> reports as if error happened with vmlinux BTF, even if attach_prog_fd
+> 0). Could you please fix that and add better error reporting here
+> for attach_prog_fd>0 case here?
+>
 
-netdev_name_node_lookup() should be able to find dev->name_node itself ?
+I did not add log messages for the btf_id > 0 case as they are covered=20
+in the libbpf_find_prog_btf_id() function. Please let me know if this is=20
+not enough.
 
-Then we would leave a dangling pointer in dev->name_node, and crash later.
+>> +               return btf_id;
+>> +       }
+>> +
+>> +       prog->attach_btf_id =3D btf_id;
+>> +       prog->attach_prog_fd =3D attach_prog_fd;
+>> +       return 0;
+>> +}
+>> +
+>>  int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz)
+>>  {
+>>         int err =3D 0, n, len, start, end =3D -1;
+>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>> index 3fe12c9d1f92..02fc58a21a7f 100644
+>> --- a/tools/lib/bpf/libbpf.h
+>> +++ b/tools/lib/bpf/libbpf.h
+>> @@ -334,6 +334,10 @@ LIBBPF_API void
+>>  bpf_program__set_expected_attach_type(struct bpf_program *prog,
+>>                                       enum bpf_attach_type type);
+>>
+>> +LIBBPF_API int
+>> +bpf_program__set_attach_target(struct bpf_program *prog, int=20
+>> attach_prog_fd,
+>> +                              const char *attach_func_name);
+>> +
+>>  LIBBPF_API bool bpf_program__is_socket_filter(const struct=20
+>> bpf_program *prog);
+>>  LIBBPF_API bool bpf_program__is_tracepoint(const struct bpf_program=20
+>> *prog);
+>>  LIBBPF_API bool bpf_program__is_raw_tracepoint(const struct=20
+>> bpf_program *prog);
+>> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+>> index b035122142bb..8aba5438a3f0 100644
+>> --- a/tools/lib/bpf/libbpf.map
+>> +++ b/tools/lib/bpf/libbpf.map
+>> @@ -230,6 +230,7 @@ LIBBPF_0.0.7 {
+>>                 bpf_program__name;
+>>                 bpf_program__is_extension;
+>>                 bpf_program__is_struct_ops;
+>> +               bpf_program__set_attach_target;
+>
+> This will have to go into LIBBPF_0.0.8 once bpf-next opens. Please
+> rebase and re-send then.
 
-I am thinking we need this fix :
+Will do=E2=80=A6
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a6316b336128cdb31eea6e80f1a47620abbd0d31..3fa2bc2c30ee1350b5b4b400f0552b9bf2a62697 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -331,6 +331,11 @@ int netdev_name_node_alt_destroy(struct net_device *dev, const char *name)
-        name_node = netdev_name_node_lookup(net, name);
-        if (!name_node)
-                return -ENOENT;
-+
-+       /* Do not trust users, ever ! */
-+       if (name_node == dev->name_node || name_node->dev != dev)
-+               return -EINVAL;
-+
-        __netdev_name_node_alt_destroy(name_node);
- 
-        return 0;
+>>                 bpf_program__set_extension;
+>>                 bpf_program__set_struct_ops;
+>>                 btf__align_of;
+>>
+
