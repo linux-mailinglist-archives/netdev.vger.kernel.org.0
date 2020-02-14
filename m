@@ -2,85 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD9F15E561
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:42:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B2C715E6EA
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 17:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405324AbgBNQW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 11:22:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57906 "EHLO mail.kernel.org"
+        id S2392763AbgBNQUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 11:20:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:37688 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393217AbgBNQWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:22:25 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BACF72474D;
-        Fri, 14 Feb 2020 16:22:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697344;
-        bh=UO55tRwkGBNUjjrj++FD29xVqIkGuWGsESnDe4rEb70=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=InhpFNCPOznifp4nrgSwOUceFRsCPWcCVAFkykuAmTKOb+MpIZFOUwgr7i5tUnxwf
-         SZ75ZPTys09SYH1J1IGNKZrmP6vJ46cexUr77yktQUlNlsNNUROC2HGvDZKkz2TH17
-         kQye9uyyphoHy+L9R+ntAdOto19SjS/rLf3igiBg=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Timur Tabi <timur@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Li Yang <leoyang.li@nxp.com>, Sasha Levin <sashal@kernel.org>,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.9 049/141] net/wan/fsl_ucc_hdlc: reject muram offsets above 64K
-Date:   Fri, 14 Feb 2020 11:19:49 -0500
-Message-Id: <20200214162122.19794-49-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
-References: <20200214162122.19794-1-sashal@kernel.org>
+        id S2405122AbgBNQUH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:20:07 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E7F21328;
+        Fri, 14 Feb 2020 08:20:06 -0800 (PST)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com [10.1.196.255])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9512D3F68E;
+        Fri, 14 Feb 2020 08:20:03 -0800 (PST)
+Date:   Fri, 14 Feb 2020 16:19:57 +0000
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Pankaj Bansal <pankaj.bansal@nxp.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        "stuyoder@gmail.com" <stuyoder@gmail.com>,
+        "nleeder@codeaurora.org" <nleeder@codeaurora.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        "jon@solid-run.com" <jon@solid-run.com>,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Message-ID: <20200214161957.GA27513@e121166-lin.cambridge.arm.com>
+References: <1580198925-50411-1-git-send-email-makarand.pawagi@nxp.com>
+ <20200128110916.GA491@e121166-lin.cambridge.arm.com>
+ <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
+ <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
+ <VI1PR0401MB2496373E0C6D1097F22B3026F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0401MB2496373E0C6D1097F22B3026F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+On Fri, Feb 14, 2020 at 03:58:14PM +0000, Pankaj Bansal wrote:
 
-[ Upstream commit 148587a59f6b85831695e0497d9dd1af5f0495af ]
+[...]
 
-Qiang Zhao points out that these offsets get written to 16-bit
-registers, and there are some QE platforms with more than 64K
-muram. So it is possible that qe_muram_alloc() gives us an allocation
-that can't actually be used by the hardware, so detect and reject
-that.
+> > Why should the device know about its own ID? That's a bus/interconnect thing.
+> > And nothing should be passed *to* IORT. IORT is the source.
+> 
+> IORT is translation between Input IDs <-> Output IDs. The Input ID is still expected to be passed to parse IORT table.
 
-Reported-by: Qiang Zhao <qiang.zhao@nxp.com>
-Reviewed-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Acked-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Li Yang <leoyang.li@nxp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wan/fsl_ucc_hdlc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Named components use an array of single mappings (as in entries with
+single mapping flag set) - Input ID is irrelevant.
 
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index af85a1b3135e2..87bf05a81db50 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -209,6 +209,11 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
- 		ret = -ENOMEM;
- 		goto free_riptr;
- 	}
-+	if (riptr != (u16)riptr || tiptr != (u16)tiptr) {
-+		dev_err(priv->dev, "MURAM allocation out of addressable range\n");
-+		ret = -ENOMEM;
-+		goto free_tiptr;
-+	}
- 
- 	/* Set RIPTR, TIPTR */
- 	iowrite16be(riptr, &priv->ucc_pram->riptr);
--- 
-2.20.1
+Not sure what your named component is though and what you want to do
+with it, the fact that IORT allows mapping for named components do
+not necessarily mean that it can describe what your system really is,
+on that you need to elaborate for us to be able to help.
 
+Lorenzo
