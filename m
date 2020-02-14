@@ -2,63 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 286F015DB26
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C34D315DBDB
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 16:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729475AbgBNPij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 10:38:39 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53576 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729451AbgBNPij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 10:38:39 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C250115C4F166;
-        Fri, 14 Feb 2020 07:38:38 -0800 (PST)
-Date:   Fri, 14 Feb 2020 07:38:38 -0800 (PST)
-Message-Id: <20200214.073838.883906888137648178.davem@davemloft.net>
-To:     rdunlap@infradead.org
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] netdevice.h: fix all kernel-doc and Sphinx warnings
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <eb81cbe5-c91b-4105-5a45-ddd0747ace76@infradead.org>
-References: <eb81cbe5-c91b-4105-5a45-ddd0747ace76@infradead.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 14 Feb 2020 07:38:38 -0800 (PST)
+        id S1730630AbgBNPux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 10:50:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55376 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730621AbgBNPuw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:50:52 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 409B02086A;
+        Fri, 14 Feb 2020 15:50:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581695452;
+        bh=wySVuzOAKsVfP2zWPLQgRaUCUUY7XFfw5EC5uuHR3qU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HbCY6BT7EaHU+74Z66zeWc3fvsMDztvuEn5qA4Q//pKZOuX0SnSD3qNkIorXYOafL
+         54ewvWfoIB5DzNEV49mOfeJbsxwvzDCG6k4wAaa0q9pZHfdzegFj3hCkemELKGu2ZN
+         MfHjt8fFEU2gvAXHuOlt9NGmHO1yKVM2++mhaO1w=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Martin Schiller <ms@dev.tdt.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 091/542] wan/hdlc_x25: fix skb handling
+Date:   Fri, 14 Feb 2020 10:41:23 -0500
+Message-Id: <20200214154854.6746-91-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
+References: <20200214154854.6746-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
-Date: Wed, 12 Feb 2020 22:28:20 -0800
+From: Martin Schiller <ms@dev.tdt.de>
 
-> From: Randy Dunlap <rdunlap@infradead.org>
-> 
-> Eliminate all kernel-doc and Sphinx warnings in
-> <linux/netdevice.h>.  Fixes these warnings:
-> 
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'gso_partial_features' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'l3mdev_ops' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'xfrmdev_ops' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'tlsdev_ops' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'name_assign_type' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'ieee802154_ptr' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'mpls_ptr' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'xdp_prog' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'gro_flush_timeout' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'xdp_bulkq' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'xps_cpus_map' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'xps_rxqs_map' not described in 'net_device'
-> ../include/linux/netdevice.h:2100: warning: Function parameter or member 'qdisc_hash' not described in 'net_device'
-> ../include/linux/netdevice.h:3552: WARNING: Inline emphasis start-string without end-string.
-> ../include/linux/netdevice.h:3552: WARNING: Inline emphasis start-string without end-string.
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+[ Upstream commit 953c4a08dfc9ffe763a8340ac10f459d6c6cc4eb ]
 
-Applied, thanks Randy.
+o call skb_reset_network_header() before hdlc->xmit()
+ o change skb proto to HDLC (0x0019) before hdlc->xmit()
+ o call dev_queue_xmit_nit() before hdlc->xmit()
+
+This changes make it possible to trace (tcpdump) outgoing layer2
+(ETH_P_HDLC) packets
+
+Additionally call skb_reset_network_header() after each skb_push() /
+skb_pull().
+
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wan/hdlc_x25.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index 5643675ff7241..bf78073ee7fd9 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -62,11 +62,12 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ {
+ 	unsigned char *ptr;
+ 
+-	skb_push(skb, 1);
+-
+ 	if (skb_cow(skb, 1))
+ 		return NET_RX_DROP;
+ 
++	skb_push(skb, 1);
++	skb_reset_network_header(skb);
++
+ 	ptr  = skb->data;
+ 	*ptr = X25_IFACE_DATA;
+ 
+@@ -79,6 +80,13 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
+ {
+ 	hdlc_device *hdlc = dev_to_hdlc(dev);
++
++	skb_reset_network_header(skb);
++	skb->protocol = hdlc_type_trans(skb, dev);
++
++	if (dev_nit_active(dev))
++		dev_queue_xmit_nit(skb, dev);
++
+ 	hdlc->xmit(skb, dev); /* Ignore return value :-( */
+ }
+ 
+@@ -93,6 +101,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	switch (skb->data[0]) {
+ 	case X25_IFACE_DATA:	/* Data to be transmitted */
+ 		skb_pull(skb, 1);
++		skb_reset_network_header(skb);
+ 		if ((result = lapb_data_request(dev, skb)) != LAPB_OK)
+ 			dev_kfree_skb(skb);
+ 		return NETDEV_TX_OK;
+-- 
+2.20.1
+
