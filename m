@@ -2,101 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46E1A15CF09
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 01:32:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B5715CF4D
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 01:59:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727707AbgBNAcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Feb 2020 19:32:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33960 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727594AbgBNAcY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Feb 2020 19:32:24 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [199.201.64.132])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 809312187F;
-        Fri, 14 Feb 2020 00:32:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581640343;
-        bh=AbfmmWqIcUHv0PBw02IxfkQ/1LzoyrHb9KWAABRycjg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mNWHy+MIrujS/FOuFjEJA0fNE0pLMHp58c3mQ5TkCLZpzpAtoIiB0t3PPOC7Ej1nq
-         xahF81WxlgD1ugU6sEjGfIE3677HQT86HYySjKHmdaQH/lN2+lwgPeH6NXEP7oR14b
-         a4buGZ6ZQNZF4jMA0WBf2B9lsuJjeJxrWu5Iiln4=
-Date:   Thu, 13 Feb 2020 16:32:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Or Gerlitz <ogerlitz@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] net/tls: Act on going down event
-Message-ID: <20200213163221.26bd882f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <CAJ3xEMjs0viZ6X5mkouSjcZrLNWwxVfxfffN=c1FuGK8MH8kDA@mail.gmail.com>
-References: <20200213165407.60140-1-ogerlitz@mellanox.com>
-        <20200213103228.2123025f@kicinski-fedora-PC1C0HJN>
-        <CAJ3xEMjs0viZ6X5mkouSjcZrLNWwxVfxfffN=c1FuGK8MH8kDA@mail.gmail.com>
+        id S1728121AbgBNA7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Feb 2020 19:59:34 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42792 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727707AbgBNA7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Feb 2020 19:59:34 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 4so3968731pfz.9
+        for <netdev@vger.kernel.org>; Thu, 13 Feb 2020 16:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=varpYZ4e9HN4fOkt9AtUu2Zz+YP3IR3moNk2yDZcybk=;
+        b=UgvQLtGAB7MtuSvb5VW5iX6JP4xMoRNI1OFPG2iOs+jBYmJ+WbXDLlC4AjJiw9wCv0
+         F+sqYSnaOv8wS1gVLx325xQ4ryuIrHQ+2jyPELmBAqwHTgtsnX5rdCJVJ8/inT6Vi81l
+         O+bZNZ2gn6fq/dtslTf7kEKAONzoRa30zdfjs9JMzix9yP0WsrRw6bk0ZiCqdtKTZ4qg
+         USl12yzLNmB1Y9U4NqiQI6DtrC2ulOFYhSjsJWL8BGxtdxsO5vexuc0ug5C7GRfwq5bE
+         sL+zf0Lx82VBMzHwEpo6sRl8R/fuE1E1IIYhgyjdmMhc1X4s4zhz9T6dJzcRJEl6ZoS/
+         Q6ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=varpYZ4e9HN4fOkt9AtUu2Zz+YP3IR3moNk2yDZcybk=;
+        b=HylS8xXqVdtgEKuHSAvCQcHe0IIZqFqsNYpt91riPH3yzFDahOEuVl19z6Vhrl6cTj
+         upnxQQdQEbMT8oaVf4m5N3DBM81HwCsAzkh6G9iEKx2zxFBrK1ifOYhMkd98oDM9CvZZ
+         JTBfZLb8Sm2dJRbpXV8L9vnCz3NGEYvsbvyeTA2GQSng3rkDnLyY56aTc/T2fLFnYVZa
+         L4+lXiOXXvTHZfxc3Il9d0/zTXh6+4SOekzfrrY3EyPo50sUN4fUw+04l1PB9SyUCnP8
+         YA8Vk7ijPG5rjMHUODgGt6W7nRuEY6xMIQDeWRyICM6hbqPIZWgEO6PI5fvlDiuIf7IG
+         FGsw==
+X-Gm-Message-State: APjAAAWW78uALE/SE1wCplRCxRAs0HOmKrS3HE5c+tMB/d/RYg9yy8gn
+        BDdd+ThqMuRaZ3dUT4GWuWYiHwGM
+X-Google-Smtp-Source: APXvYqwyr+txoEK8I+6o4JJ357eA8FoNm7+oeZf4aoBqqZq7gyiUnYPml18ZWdiN7zEcdkSoova6Tg==
+X-Received: by 2002:a62:8e0a:: with SMTP id k10mr636956pfe.49.1581641973348;
+        Thu, 13 Feb 2020 16:59:33 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
+        by smtp.gmail.com with ESMTPSA id e6sm4412759pfh.32.2020.02.13.16.59.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 16:59:32 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        akpm@linux-foundation.org, linux-mm@kvack.org
+Cc:     arjunroy@google.com, soheil@google.com, edumazet@google.com
+Subject: [PATCH mm, next-next] Add missing page_count() check to vm_insert_pages().
+Date:   Thu, 13 Feb 2020 16:59:29 -0800
+Message-Id: <20200214005929.104481-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Feb 2020 22:07:19 +0200 Or Gerlitz wrote:
-> On Thu, Feb 13, 2020 at 8:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Thu, 13 Feb 2020 16:54:07 +0000 Or Gerlitz wrote:  
-> > > By the time of the down event, the netdevice stop ndo was
-> > > already called and the nic driver is likely to destroy the HW
-> > > objects/constructs which are used for the tls_dev_resync op.  
-> 
-> >> @@ -1246,7 +1246,7 @@ static int tls_dev_event(struct notifier_block *this, unsigned long event,
-> > > -     case NETDEV_DOWN:
-> > > +     case NETDEV_GOING_DOWN:  
-> 
-> > Now we'll have two race conditions. 1. Traffic is still running while
-> > we remove the connection state. 2. We clean out the state and then
-> > close the device. Between the two new connections may be installed.
-> >
-> > I think it's an inherently racy to only be able to perform clean up
-> > while the device is still up.  
-> 
-> good points, I have to think on both of them and re/sync (..) with
-> the actual design details here, I came across this while working
-> on something else which is still more of a research so just throwing
-> a patch here was moving too fast.
-> 
-> Repeating myself -- by the time of the down event, the netdevice
-> stop ndo was already called and the nic driver is likely to destroy
-> HW objects/constructs which are used for the tls_dev_resync op.
-> 
-> For example suppose a NIC driver uses some QP/ring to post resync
-> request to the HW and these rings are part of the driver's channels and
-> the channels are destroyed when the stop ndo is called - the tls code
-> here uses RW synchronization between invoking the resync driver op
-> to the down event handling. But the down event comes only after these
-> resources were destroyed, too late. If we will safely/stop the offload
-> at the going down stage, we can avoid a much more complex and per nic
-> driver locking which I guess would be needed to protect against that race.
-> 
-> thoughts?
+From: Arjun Roy <arjunroy@google.com>
 
-I'm not sure what happens on the device side, so take this with
-a pinch of salt.
+Add missing page_count() check to vm_insert_pages(), specifically
+inside insert_page_in_batch_locked(). This was accidentally forgotten
+in the original patchset.
 
-The device flushing some state automatically on down sounds like 
-a pretty error prone design, I don't think you'd do that :)
+See: https://marc.info/?l=linux-mm&m=158156166403807&w=2
 
-So I think you're just using datapath components associated with a
-vNIC/function to speed up communication with the device? That does 
-get painful quite quickly if the device does not have a idea of 
-control QPs/functions/vNICs with independent state :S
+The intention of this patch-set is to reduce atomic ops for
+tcp zerocopy receives, which normally hits the same spinlock multiple
+times consecutively.
 
-We could slice the downing in the stack into one more stage where 
-device is considered down but resources (mem, irq, qps) are not freed,
-but I think that's not a complete fix, because one day you may want 
-to do BPF offloads or use QPs for devlink and those are independent of
-vNIC/function state, anyway.. 
+Signed-off-by: Arjun Roy <arjunroy@google.com>
 
-> - so here's
-> the point -- the driver resync op may use some HW
+---
+ mm/memory.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index f1d5f2264aef..3b4007a6ef7f 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1463,8 +1463,11 @@ static int insert_page_into_pte_locked(struct mm_struct *mm, pte_t *pte,
+ static int insert_page_in_batch_locked(struct mm_struct *mm, pmd_t *pmd,
+ 			unsigned long addr, struct page *page, pgprot_t prot)
+ {
+-	const int err = validate_page_before_insert(page);
++	int err;
+ 
++	if (!page_count(page))
++		return -EINVAL;
++	err = validate_page_before_insert(page);
+ 	return err ? err : insert_page_into_pte_locked(
+ 		mm, pte_offset_map(pmd, addr), addr, page, prot);
+ }
+-- 
+2.25.0.265.gbab2e86ba0-goog
+
