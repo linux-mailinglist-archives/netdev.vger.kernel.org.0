@@ -2,92 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 617AB15F70C
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:44:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA88315F715
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 20:49:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388442AbgBNTo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 14:44:28 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:35472 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729015AbgBNTo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:44:28 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01EJiGno005325;
-        Fri, 14 Feb 2020 13:44:16 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1581709456;
-        bh=IeFQzTuM1uT4IXWP1iDdK+ZHoJFomcVp/TUPe3FcUcg=;
-        h=From:To:CC:Subject:Date;
-        b=S4PAo9/d9TMiVNzT0fRaMzqmRtqImiDgUNFxtQI13QXp9cJx4hJxECYgvuVHgVLDA
-         mx66vUj2itR6HS7NApC/7PYhDWIhvigU5t3A3o9gni82Vi+NN2C06E3hENonVUXG+a
-         tdmQMdTVxg8NdVSG9hGd3CjE8BTw4e1Vkdkoyibc=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01EJiGH2043961
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 14 Feb 2020 13:44:16 -0600
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 14
- Feb 2020 13:44:15 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 14 Feb 2020 13:44:15 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01EJiEd4003237;
-        Fri, 14 Feb 2020 13:44:15 -0600
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S2388260AbgBNTtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 14:49:06 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36262 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387508AbgBNTtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 14:49:05 -0500
+Received: by mail-pg1-f196.google.com with SMTP id d9so5466211pgu.3
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 11:49:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=ZWng66Hoj7xQzhbUhm9kO2M9MQGzsOmKGEij3AJEDXU=;
+        b=ONX9OTdBNa/5a5mLeDhmt5afoWTqsbefXAjxdh/WIid2nembeEayJx0HLEs8vp++ya
+         qNSBA5/39f/Uiub0eo9h4mFy2IyRKrvLNU62KsbY2C+JbPxgLzOLkU2rAk4X2B4CzKQG
+         7vZQJzLhiUc00YnSzHTqzKKTWkjPZ/hxr9A0Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ZWng66Hoj7xQzhbUhm9kO2M9MQGzsOmKGEij3AJEDXU=;
+        b=Ysg3miF550xtD3tVx6d54564TLRfLRELq6+yzEPoH3Bnz3Ur4FG87ap1NwpLvgo8dp
+         /qE59Ar1BPsL4qW1hh51B3VCrSXo4qd+9jAinNxXussWPiVkbQbD+qJCs3emGSEfSlMQ
+         9gyWJTbZe550Ra2mVlVFbSDx59rexnkdQV8yExPN2WJnf9+GBObPyI90rI2ZyRELtq63
+         FaI0/PGRz7HJ21j2Qk3X/ytW5FqcF9g0TNDE9UxqJtiogsZUMCs8zpZLQmPwIAt5XPxQ
+         DDvanEpfXrO5q5sPWcKnRbx4NcYQnKE9SOz+oZqUSd4Wwob0v5pwn8VQ0dAgJ6stmH5C
+         q4Tw==
+X-Gm-Message-State: APjAAAUKqvyNS9xjOPPcyyRB32tS4y5hMLHH5Ri9XAwhLqUKJAxmM8eX
+        jDRcylAqgH+dP2IYGSimxflg/A==
+X-Google-Smtp-Source: APXvYqwODEoeN+gxHepqNLozmja+mZtjocOV32D//1Zb1ppvJzZVslchQzuA62bl70OctqgEcPFbtg==
+X-Received: by 2002:aa7:9808:: with SMTP id e8mr5202704pfl.32.1581709745136;
+        Fri, 14 Feb 2020 11:49:05 -0800 (PST)
+Received: from lbrmn-lnxub113.broadcom.net ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id u3sm7349815pjv.32.2020.02.14.11.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Feb 2020 11:49:04 -0800 (PST)
+From:   Scott Branden <scott.branden@broadcom.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        <devicetree@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH v2] dt-bindings: net: mdio: remove compatible string from example
-Date:   Fri, 14 Feb 2020 21:44:08 +0200
-Message-ID: <20200214194408.9308-1-grygorii.strashko@ti.com>
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ray Jui <rjui@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Scott Branden <scott.branden@broadcom.com>
+Subject: [PATCH] net: phy: restore mdio regs in the iproc mdio driver
+Date:   Fri, 14 Feb 2020 11:48:58 -0800
+Message-Id: <20200214194858.8528-1-scott.branden@broadcom.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove vendor specific compatible string from example, otherwise DT YAML
-schemas validation may trigger warnings specific to TI ti,davinci_mdio
-and not to the generic MDIO example.
+From: Arun Parameswaran <arun.parameswaran@broadcom.com>
 
-For example, the "bus_freq" is required for davinci_mdio, but not required for
-generic mdio example. As result following warning will be produced:
- mdio.example.dt.yaml: mdio@5c030000: 'bus_freq' is a required property
+The mii management register in iproc mdio block
+does not have a reention register so it is lost on suspend.
+Save and restore value of register while resuming from suspend.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Fixes: bb1a619735b4 ("net: phy: Initialize mdio clock at probe function")
+
+Signed-off-by: Arun Parameswaran <arun.parameswaran@broadcom.com>
+Signed-off-by: Scott Branden <scott.branden@broadcom.com>
 ---
-Remove compatible string from example instead of changing it.
+ drivers/net/phy/mdio-bcm-iproc.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-v1: https://patchwork.ozlabs.org/patch/1201674/
-
- Documentation/devicetree/bindings/net/mdio.yaml | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
-index 5d08d2ffd4eb..50c3397a82bc 100644
---- a/Documentation/devicetree/bindings/net/mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/mdio.yaml
-@@ -56,7 +56,6 @@ patternProperties:
- examples:
-   - |
-     davinci_mdio: mdio@5c030000 {
--        compatible = "ti,davinci_mdio";
-         reg = <0x5c030000 0x1000>;
-         #address-cells = <1>;
-         #size-cells = <0>;
+diff --git a/drivers/net/phy/mdio-bcm-iproc.c b/drivers/net/phy/mdio-bcm-iproc.c
+index 7e9975d25066..f1ded03f0229 100644
+--- a/drivers/net/phy/mdio-bcm-iproc.c
++++ b/drivers/net/phy/mdio-bcm-iproc.c
+@@ -178,6 +178,23 @@ static int iproc_mdio_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++int iproc_mdio_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct iproc_mdio_priv *priv = platform_get_drvdata(pdev);
++
++	/* restore the mii clock configuration */
++	iproc_mdio_config_clk(priv->base);
++
++	return 0;
++}
++
++static const struct dev_pm_ops iproc_mdio_pm_ops = {
++	.resume = iproc_mdio_resume
++};
++#endif /* CONFIG_PM_SLEEP */
++
+ static const struct of_device_id iproc_mdio_of_match[] = {
+ 	{ .compatible = "brcm,iproc-mdio", },
+ 	{ /* sentinel */ },
+@@ -188,6 +205,9 @@ static struct platform_driver iproc_mdio_driver = {
+ 	.driver = {
+ 		.name = "iproc-mdio",
+ 		.of_match_table = iproc_mdio_of_match,
++#ifdef CONFIG_PM_SLEEP
++		.pm = &iproc_mdio_pm_ops,
++#endif
+ 	},
+ 	.probe = iproc_mdio_probe,
+ 	.remove = iproc_mdio_remove,
 -- 
 2.17.1
 
