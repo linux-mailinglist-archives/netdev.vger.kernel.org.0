@@ -2,106 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B50E15F9C7
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD80515F9D7
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 23:43:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727756AbgBNWah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 17:30:37 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46944 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727529AbgBNWag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 17:30:36 -0500
-Received: by mail-pf1-f193.google.com with SMTP id k29so5520751pfp.13
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 14:30:36 -0800 (PST)
+        id S1727827AbgBNWnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 17:43:16 -0500
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:36635 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727566AbgBNWnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 17:43:16 -0500
+Received: by mail-pg1-f202.google.com with SMTP id i8so6974276pgs.3
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 14:43:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yCl8JYqCQ0ZRdvZ9qSFM44dK9YmNfursd24TTY4kjAM=;
-        b=AEgAfA1RzkVRS5tWEo0GR3u3zzW8Yl1qH4FzVXjRD2NzPLE86ymZxL8/zUPwcK/hr/
-         3ltWjdYuZP2vXA3S6rOTETvlPuXS+Pn9XjSZBGCco1wzjaPuuSO+TXShchKx6M197ODE
-         IJOqcpUeeNL8CXqyPRIZLjjVL+T0KdWZHvwZIdqTrZ2QZ+eGDbfxLVIn34XCCQBJrnms
-         lGUQ2mocbZ6ZpnhMb0OSRm5HoWhjQLHxHc3gXXUiPtN9m7axgaMSEMxZfJNQ/bmVZzIz
-         wxxv5pcP2vPlxqEeesFHvaYKEm9LWEQ5wuAsPS3+3lek9Ofo+RFsaLdsrnJ5xu3mXyou
-         P+jg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=uHN7vdUXj9zg5j6BFSm9FeBemrt4Oks3aUAhhkdikgA=;
+        b=IeXW9Ek8IIWzbRkroTSuaubhFbW+FB8nYXCtlIy26K7MVDvhCdpSfLETg8Si9wMve2
+         UiHxMDhpjR9Dl0QaCK8Ds1kdIqYaTlWqA+xmfPOpbrCMXauCY5Y+ai7GExkl/HfSa311
+         KOX/CueF5MxQbOZroE0U02KBQDrTdv15TAd1Cm8PjniDcK3eEOBwOAQzYCvT4NDKSpR3
+         1eH+b20qtF0OAJKVSaBsZzr3MynnY33jR1dntOVJntwWWxuPUHmeL01TxDRViqbSGhcV
+         HE1vNcxhg8Ou9tkWYURTl9jJ9ebB3ZbnuSa6UJMll1dgr5TlVS7BNVkDGlpGTQR+l1cq
+         ndAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yCl8JYqCQ0ZRdvZ9qSFM44dK9YmNfursd24TTY4kjAM=;
-        b=H+UWHSFo9GXjbXPsH88+Ub61GG5kp7AkaXTXMMS2VT10LLgskL1P2iUNhRG0hctZrs
-         HRtGhJFSa4Woj2WHH9YM3jApD4dU5WT3uQ8bg1rhF0cH479mwYH0a84SqiYdQRwnlQuC
-         8P0NJbCtV+BfJ2r744Ooajkdq8SsSlp989RwYUjpQx3GMydTA2VEcv2AMKusNIIHz5PB
-         7g3j8Mc3HsJJFIJQOcanrlrK0lVUejGrExGfuDaJ+GQl+WIyBnZyMll+CcdLa5+cS7/N
-         GlAMHPx52e6DdcZIFdWYaooQo+fPUCwbYfUfMZLw7g59kGXDZJ3lOOo9RP8sbzlwFRF6
-         VRiA==
-X-Gm-Message-State: APjAAAVK4UYxUa4iz6Tj6lXS+01JvZE6lAYPMyj2le6jqhoIx59s+nX1
-        Hbkz/k+wzTgINEIe9djilGoJRzmY
-X-Google-Smtp-Source: APXvYqyJmVlIqTUNZLdLCd8VdnVPiMCGLHigNw5a/mACvNNPqviVEvs8m2dLp7wfNlDEe7uK5+AIzA==
-X-Received: by 2002:a63:3308:: with SMTP id z8mr5645636pgz.230.1581719435752;
-        Fri, 14 Feb 2020 14:30:35 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id b3sm8001784pft.73.2020.02.14.14.30.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Feb 2020 14:30:34 -0800 (PST)
-Subject: Re: [PATCH v2 net 3/3] wireguard: send: account for mtu=0 devices
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-References: <20200214173407.52521-1-Jason@zx2c4.com>
- <20200214173407.52521-4-Jason@zx2c4.com>
- <135ffa7a-f06a-80e3-4412-17457b202c77@gmail.com>
- <CAHmME9pjLfscZ-b0YFsOoKMcENRh4Ld1rfiTTzzHmt+OxOzdjA@mail.gmail.com>
- <e20d0c52-cb83-224d-7507-b53c5c4a5b69@gmail.com>
- <CAHmME9oXfDCGmsCJJEuaPmgj7_U4yfrBoqi0wRZrOD9SdWny_w@mail.gmail.com>
- <ec52e8cb-5649-9167-bb14-7e9775c6a8be@gmail.com>
- <CAHmME9r6gTCV8cpPgyjOVMWCbRJtswzqXMYBqTQmo001AZz05Q@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1b132351-d4a7-851c-ac98-0a48c8d90797@gmail.com>
-Date:   Fri, 14 Feb 2020 14:30:34 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <CAHmME9r6gTCV8cpPgyjOVMWCbRJtswzqXMYBqTQmo001AZz05Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=uHN7vdUXj9zg5j6BFSm9FeBemrt4Oks3aUAhhkdikgA=;
+        b=VgV5vKprlrtJJdvL99YnUBa1wCac0CAv8HdJPCXBorC9poq5c9K1Dg2olUG2B79rar
+         7NGQCh9HPRBVW+oiwCkkN63NBGFGkY0YybxFmenYR4mpCWG5SHAw3Dv6imwwjKUGy9k4
+         k5wT5QiMtelqV2xpp+f1TqYCLoac8R2z7uzzFd0puq8lcP3AYXhSjoNX2bwa5wesq7Mn
+         NyUAz+kiTK06QJKHdlN5SLwtKeZuZNzJ5HL2J+z9D4JBJJFQ1lbqh2uWE0Neu4viOtmW
+         P39jRtt5BZg2cUJDLU7qgmlFjk9DaOqX3EGkrqiOn1J1uNKtDV6S2mSHlC5QCB38S5zA
+         uugQ==
+X-Gm-Message-State: APjAAAWENrVHu0+GaHqyYLKbadBPhPN6OEY84u+oKJ4aRxQrrNauXqSd
+        KSDZOMFUQODdufbc9ITvqgZuT/J9M/Cm
+X-Google-Smtp-Source: APXvYqyByT20Xf2cS83FQR4XFLJ7Tfrbx1N29R/vELEta1kYPJIR+JGWxOYQELvfk6vRtBTB8wdqez/C4cDs
+X-Received: by 2002:a63:2254:: with SMTP id t20mr5909022pgm.423.1581720194053;
+ Fri, 14 Feb 2020 14:43:14 -0800 (PST)
+Date:   Fri, 14 Feb 2020 14:43:02 -0800
+Message-Id: <20200214224302.229920-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [PATCH bpf] bpf: Do not grab the bucket spinlock by default on htab
+ batch ops
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Grabbing the spinlock for every bucket even if it's empty, was causing
+significant perfomance cost when traversing htab maps that have only a
+few entries. This patch addresses the issue by checking first the
+bucket_cnt, if the bucket has some entries then we go and grab the
+spinlock and proceed with the batching.
 
+Tested with a htab of size 50K and different value of populated entries.
 
-On 2/14/20 1:57 PM, Jason A. Donenfeld wrote:
+Before:
+  Benchmark             Time(ns)        CPU(ns)
+  ---------------------------------------------
+  BM_DumpHashMap/1       2759655        2752033
+  BM_DumpHashMap/10      2933722        2930825
+  BM_DumpHashMap/200     3171680        3170265
+  BM_DumpHashMap/500     3639607        3635511
+  BM_DumpHashMap/1000    4369008        4364981
+  BM_DumpHashMap/5k     11171919       11134028
+  BM_DumpHashMap/20k    69150080       69033496
+  BM_DumpHashMap/39k   190501036      190226162
 
-> 
-> Thanks, I appreciate your scrutiny here. Right again, you are. It
-> looks like that was added in 2017 after observing the pattern in other
-> drivers and seeing the documentation comment, "Wait for packets
-> currently being received to be done." That sounds like an important
-> thing to do before tearing down a socket. But here it makes no sense
-> at all, since synchronize_net() is just a wrapper around
-> synchronize_rcu() (and sometimes _expedited). And here, the
-> synchronize_rcu() usage makes sense to have, since this is as boring
-> of an rcu pattern as can be:
-> 
-> mutex_lock()
-> old = rcu_dereference_protected(x->y)
-> rcu_assign(x->y, new)
-> mutex_unlock()
-> synchronize_rcu()
-> free_it(old)
-> 
-> Straight out of the documentation. Having the extra synchronize_net()
-> in there adds nothing at all. I'll send a v3 of this 5.6-rc2 cleanup
-> series containing that removal.
-> 
+After:
+  Benchmark             Time(ns)        CPU(ns)
+  ---------------------------------------------
+  BM_DumpHashMap/1        202707         200109
+  BM_DumpHashMap/10       213441         210569
+  BM_DumpHashMap/200      478641         472350
+  BM_DumpHashMap/500      980061         967102
+  BM_DumpHashMap/1000    1863835        1839575
+  BM_DumpHashMap/5k      8961836        8902540
+  BM_DumpHashMap/20k    69761497       69322756
+  BM_DumpHashMap/39k   187437830      186551111
 
-Also note that UDP sockets have SOCK_RCU_FREE flag set, so core
-networking also respect one RCU grace period before freeing them.
+Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
+Cc: Yonghong Song <yhs@fb.com>
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ kernel/bpf/hashtab.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-It is possible that no extra synchronize_{net|rcu}() call is needed,
-but this is left as an exercise for future kernels :)
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 2d182c4ee9d99..fdbde28b0fe06 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1260,6 +1260,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	struct hlist_nulls_head *head;
+ 	struct hlist_nulls_node *n;
+ 	unsigned long flags;
++	bool locked = false;
+ 	struct htab_elem *l;
+ 	struct bucket *b;
+ 	int ret = 0;
+@@ -1319,15 +1320,25 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	dst_val = values;
+ 	b = &htab->buckets[batch];
+ 	head = &b->head;
+-	raw_spin_lock_irqsave(&b->lock, flags);
++	/* do not grab the lock unless need it (bucket_cnt > 0). */
++	if (locked)
++		raw_spin_lock_irqsave(&b->lock, flags);
+ 
+ 	bucket_cnt = 0;
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+ 		bucket_cnt++;
+ 
++	if (bucket_cnt && !locked) {
++		locked = true;
++		goto again_nocopy;
++	}
++
+ 	if (bucket_cnt > (max_count - total)) {
+ 		if (total == 0)
+ 			ret = -ENOSPC;
++		/* Note that since bucket_cnt > 0 here, it is implicit
++		 * that the locked was grabbed, so release it.
++		 */
+ 		raw_spin_unlock_irqrestore(&b->lock, flags);
+ 		rcu_read_unlock();
+ 		this_cpu_dec(bpf_prog_active);
+@@ -1337,6 +1348,9 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 
+ 	if (bucket_cnt > bucket_size) {
+ 		bucket_size = bucket_cnt;
++		/* Note that since bucket_cnt > 0 here, it is implicit
++		 * that the locked was grabbed, so release it.
++		 */
+ 		raw_spin_unlock_irqrestore(&b->lock, flags);
+ 		rcu_read_unlock();
+ 		this_cpu_dec(bpf_prog_active);
+@@ -1379,7 +1393,10 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 		dst_val += value_size;
+ 	}
+ 
+-	raw_spin_unlock_irqrestore(&b->lock, flags);
++	if (locked) {
++		raw_spin_unlock_irqrestore(&b->lock, flags);
++		locked = false;
++	}
+ 	/* If we are not copying data, we can go to next bucket and avoid
+ 	 * unlocking the rcu.
+ 	 */
+-- 
+2.25.0.265.gbab2e86ba0-goog
 
