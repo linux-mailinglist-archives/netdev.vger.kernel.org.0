@@ -2,45 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7050515F20C
-	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:09:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A11E615F1FD
+	for <lists+netdev@lfdr.de>; Fri, 14 Feb 2020 19:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391755AbgBNSGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 13:06:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35826 "EHLO mail.kernel.org"
+        id S2391611AbgBNSFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 13:05:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731697AbgBNPzG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:55:06 -0500
+        id S1731720AbgBNPzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:55:16 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49B8424673;
-        Fri, 14 Feb 2020 15:55:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7A64B222C4;
+        Fri, 14 Feb 2020 15:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695706;
-        bh=6tbLCWnpf1qdG/ZfEExJsIDCvHtX8M011tK0lJqgro0=;
+        s=default; t=1581695716;
+        bh=wIqsMrdKLb+D/TuHlWfbWthZCsYzOhhbmcyKf/OfsBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=teSEtjNQuDQbMpH/2USTStNV+Evg255zgdDIpw+wsEXZR90esRBEZhLekNaQyvvE2
-         2+/srGrU4WdgxuX0BshIBrs9oyO4qTQHo9XsXmtw2X04roVxtFw7et5pKwWOT9Zc8a
-         SZ/dNRqVMZCALM29rgkrrIetGzipptxd1Fxt/Y4I=
+        b=KygIdG9kFZ0vZfhvyaZiDwJwlEzpyl8OnB7EpMO57MC1Kb/eWldOKrHe4uqF8s1pB
+         ISgd88ddrMXW67z+s5RDeV3MV7WsHkqjUECKrf1XHVN9FJ+I6y/yyolabdq4cFLnRv
+         FlSljK8MVNIQIxn7fadh5awIkVrN00abpwl909lE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrey Zhizhikin <andrey.z@gmail.com>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Petr Mladek <pmladek@suse.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.5 286/542] tools lib api fs: Fix gcc9 stringop-truncation compilation error
-Date:   Fri, 14 Feb 2020 10:44:38 -0500
-Message-Id: <20200214154854.6746-286-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 294/542] mlx5: work around high stack usage with gcc
+Date:   Fri, 14 Feb 2020 10:44:46 -0500
+Message-Id: <20200214154854.6746-294-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
 References: <20200214154854.6746-1-sashal@kernel.org>
@@ -53,65 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrey Zhizhikin <andrey.z@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 6794200fa3c9c3e6759dae099145f23e4310f4f7 ]
+[ Upstream commit 42ae1a5c76691928ed217c7e40269db27f5225e9 ]
 
-GCC9 introduced string hardening mechanisms, which exhibits the error
-during fs api compilation:
+In some configurations, gcc tries too hard to optimize this code:
 
-error: '__builtin_strncpy' specified bound 4096 equals destination size
-[-Werror=stringop-truncation]
+drivers/net/ethernet/mellanox/mlx5/core/en_stats.c: In function 'mlx5e_grp_sw_update_stats':
+drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:302:1: error: the frame size of 1336 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
 
-This comes when the length of copy passed to strncpy is is equal to
-destination size, which could potentially lead to buffer overflow.
+As was stated in the bug report, the reason is that gcc runs into a corner
+case in the register allocator that is rather hard to fix in a good way.
 
-There is a need to mitigate this potential issue by limiting the size of
-destination by 1 and explicitly terminate the destination with NULL.
+As there is an easy way to work around it, just add a comment and the
+barrier that stops gcc from trying to overoptimize the function.
 
-Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191211080109.18765-1-andrey.zhizhikin@leica-geosystems.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657
+Cc: Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/api/fs/fs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
-index 11b3885e833ed..027b18f7ed8cf 100644
---- a/tools/lib/api/fs/fs.c
-+++ b/tools/lib/api/fs/fs.c
-@@ -210,6 +210,7 @@ static bool fs__env_override(struct fs *fs)
- 	size_t name_len = strlen(fs->name);
- 	/* name + "_PATH" + '\0' */
- 	char upper_name[name_len + 5 + 1];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 9f09253f9f466..a05158472ed11 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -297,6 +297,9 @@ static void mlx5e_grp_sw_update_stats(struct mlx5e_priv *priv)
+ 			s->tx_tls_drop_bypass_req   += sq_stats->tls_drop_bypass_req;
+ #endif
+ 			s->tx_cqes		+= sq_stats->cqes;
 +
- 	memcpy(upper_name, fs->name, name_len);
- 	mem_toupper(upper_name, name_len);
- 	strcpy(&upper_name[name_len], "_PATH");
-@@ -219,7 +220,8 @@ static bool fs__env_override(struct fs *fs)
- 		return false;
- 
- 	fs->found = true;
--	strncpy(fs->path, override_path, sizeof(fs->path));
-+	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
-+	fs->path[sizeof(fs->path) - 1] = '\0';
- 	return true;
++			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
++			barrier();
+ 		}
+ 	}
  }
- 
 -- 
 2.20.1
 
