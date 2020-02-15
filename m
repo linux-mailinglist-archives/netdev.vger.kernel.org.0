@@ -2,204 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1D2160114
+	by mail.lfdr.de (Postfix) with ESMTP id BE4D3160115
 	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 00:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbgBOXSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 18:18:47 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39014 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726273AbgBOXSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 18:18:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=7gv1YHXUzwWqx/cB7Iwp9BJNBUxQi/n0dWs09LeCp2Q=; b=pD4Gc0DciuZeWB/neTDxyVEC6
-        gOu9zuEp8Qy/mOORqIzkweTpTDzIe0TXJPD2IQ2YckOPy2epEf5JjRE3Zr3Na50u7QWkEpv8nRIq3
-        am3DGUQskCaTyhdJSaPRgz/9LMt+fRY3neci3t8sI4wJQmHpMU4bygLtK0kakn72Q/3PdjdjZ5MIp
-        aZmddqucxb+M0fX+cT7xm6djJMIWM9TDrIZYIH++wUSygNVBLX0UHFsW9Cg9vrWzrvlgKAORaLWti
-        9l74HphcgyrgpQOHcqXCeegQ4VEZk/qDBni+w0ghcUmPIBKH/86J/DUmpSXyHsEY7eFAxQeon8HFS
-        ezicmFHpw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:48348)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j36hs-0007ju-CG; Sat, 15 Feb 2020 23:18:40 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j36hp-0004jH-0Z; Sat, 15 Feb 2020 23:18:37 +0000
-Date:   Sat, 15 Feb 2020 23:18:36 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 02/10] net: add helpers to resolve negotiated
- flow control
-Message-ID: <20200215231836.GS25745@shell.armlinux.org.uk>
-References: <20200215154839.GR25745@shell.armlinux.org.uk>
- <E1j2zh9-0003X2-9y@rmk-PC.armlinux.org.uk>
- <20200215184932.GS31084@lunn.ch>
+        id S1726504AbgBOX1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 18:27:45 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40148 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726273AbgBOX1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 18:27:45 -0500
+Received: by mail-wr1-f66.google.com with SMTP id t3so15283328wru.7
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 15:27:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kPDXrnsJc8J+jVbL8TrOrJb6KkRoN0usgOeLYTfefm0=;
+        b=vCPICXcbcbst1zq/sBIYl5txNYYiTKIY7FJMMSOiWTSAMBIHRRytDjKMHNkDAMEI3e
+         KFCErCPLmTCzBSq86tK4GR0AqoJx/VJ26CnhVhU8ay7bbrJq/GHQn5r72632A5/eQHvz
+         aTKiHfmXHe2Q05x64uXhmTHXC5VVFRXBsqC5zHqjHohBgAE7Ftl1HmSIaa0sW7bMZLU7
+         Zfa2xKnDQTXBsJn9si6egyCDFcQkLgWJkJLu24vraEiJEP/UpE4auppWMebWmaAHLO12
+         kyS+T0y9U9yD0PKOtUIKGXwAbsuNozd/Rmqp6SU69r2sCDTZZelVpfdrvODyF+3SPnsv
+         tZ5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kPDXrnsJc8J+jVbL8TrOrJb6KkRoN0usgOeLYTfefm0=;
+        b=jN1YyyKPv2G1Zo8fQKSKvWEvbFPRBoKrRkAmZmJgBpF3PYngfAi/PHze+nAigUNH/K
+         yWsOjBScHnlPoIpb47x1n1ARozZ5QVVGr93mmpz/Bx9dioqapi/MWXIU5JYuWbLBCZn7
+         I0HDyhx13ZT7qMtn5Zg4yGHTjEivx7sE/SMHBhfR3ntKR0dysd/kOH1aNkq7xwrZwFy5
+         szEMOgxtY/VVffMQPWxtZm9asSgOMzlVK8T47rFTIcmTXf9TxdKA37IP3VsJ2hlYWJKI
+         TiSb2WK1w30aiXTH8ut12rq68ruppTz/FS8Sjh2IXeiRwITJ38sHlwq65L/Cwx0lVfIS
+         /9dA==
+X-Gm-Message-State: APjAAAXjQ02deCDhIsL6vkaAGN1kpflN9TOL4QtZZAzfEgLzVGsMGWR3
+        vCj++deEs3j5vv19HklEOl3uplA0
+X-Google-Smtp-Source: APXvYqw+ijmXbs5BkRuXOXQhdxAR7Tufk+eqR4WQk0Amn0l3YsRHiXPUBOnK+d0MShkOjmb3SVrIAA==
+X-Received: by 2002:a5d:4dc5:: with SMTP id f5mr12337102wru.114.1581809259917;
+        Sat, 15 Feb 2020 15:27:39 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:4420:246b:454a:50cd? (p200300EA8F2960004420246B454A50CD.dip0.t-ipconnect.de. [2003:ea:8f29:6000:4420:246b:454a:50cd])
+        by smtp.googlemail.com with ESMTPSA id a9sm13079487wmm.15.2020.02.15.15.27.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Feb 2020 15:27:39 -0800 (PST)
+Subject: Re: About r8169 regression 5.4
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Vincas Dargis <vindrg@gmail.com>,
+        Salvatore Bonaccorso <carnil@debian.org>
+Cc:     netdev@vger.kernel.org
+References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
+ <9e865e39-0406-d5e0-5022-9978ef4ec6ac@gmail.com>
+ <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
+ <20200215161247.GA179065@eldamar.local>
+ <269f588f-78f2-4acf-06d3-eeefaa5d8e0f@gmail.com>
+ <3ad8a76d-5da1-eb62-689e-44ea0534907f@gmail.com>
+Message-ID: <74c2d5db-3396-96c4-cbb3-744046c55c46@gmail.com>
+Date:   Sun, 16 Feb 2020 00:27:29 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200215184932.GS31084@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <3ad8a76d-5da1-eb62-689e-44ea0534907f@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 15, 2020 at 07:49:32PM +0100, Andrew Lunn wrote:
-> On Sat, Feb 15, 2020 at 03:49:27PM +0000, Russell King wrote:
-> > Add a couple of helpers to resolve negotiated flow control. Two helpers
-> > are provided:
-> > 
-> > - linkmode_resolve_pause() which takes the link partner and local
-> >   advertisements, and decodes whether we should enable TX or RX pause
-> >   at the MAC. This is useful outside of phylib, e.g. in phylink.
-> > - phy_get_pause(), which returns the TX/RX enablement status for the
-> >   current negotiation results of the PHY.
-> > 
-> > This allows us to centralise the flow control resolution, rather than
-> > spreading it around.
-> > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/phy/Makefile     |  3 ++-
-> >  drivers/net/phy/linkmode.c   | 44 ++++++++++++++++++++++++++++++++++++
-> >  drivers/net/phy/phy_device.c | 26 +++++++++++++++++++++
-> >  include/linux/linkmode.h     |  4 ++++
-> >  include/linux/phy.h          |  3 +++
-> >  5 files changed, 79 insertions(+), 1 deletion(-)
-> >  create mode 100644 drivers/net/phy/linkmode.c
-> > 
-> > diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-> > index fe5badf13b65..d523fd5670e4 100644
-> > --- a/drivers/net/phy/Makefile
-> > +++ b/drivers/net/phy/Makefile
-> > @@ -1,7 +1,8 @@
-> >  # SPDX-License-Identifier: GPL-2.0
-> >  # Makefile for Linux PHY drivers and MDIO bus drivers
-> >  
-> > -libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o
-> > +libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
-> > +				   linkmode.o
-> >  mdio-bus-y			+= mdio_bus.o mdio_device.o
-> >  
-> >  ifdef CONFIG_MDIO_DEVICE
-> > diff --git a/drivers/net/phy/linkmode.c b/drivers/net/phy/linkmode.c
-> > new file mode 100644
-> > index 000000000000..969918795228
-> > --- /dev/null
-> > +++ b/drivers/net/phy/linkmode.c
-> > @@ -0,0 +1,44 @@
-> > +// SPDX-License-Identifier: GPL-2.0+
-> > +#include <linux/linkmode.h>
-> > +
-> > +/**
-> > + * linkmode_resolve_pause - resolve the allowable pause modes
-> > + * @local_adv: local advertisement in ethtool format
-> > + * @partner_adv: partner advertisement in ethtool format
-> > + * @tx_pause: pointer to bool to indicate whether transmit pause should be
-> > + * enabled.
-> > + * @rx_pause: pointer to bool to indicate whether receive pause should be
-> > + * enabled.
-> > + *
-> > + * Flow control is resolved according to our and the link partners
-> > + * advertisements using the following drawn from the 802.3 specs:
-> > + *  Local device  Link partner
-> > + *  Pause AsymDir Pause AsymDir Result
-> > + *    0     X       0     X     Disabled
-> > + *    0     1       1     0     Disabled
-> > + *    0     1       1     1     TX
-> > + *    1     0       0     X     Disabled
-> > + *    1     X       1     X     TX+RX
-> > + *    1     1       0     1     RX
-> > + */
-> > +void linkmode_resolve_pause(const unsigned long *local_adv,
-> > +			    const unsigned long *partner_adv,
-> > +			    bool *tx_pause, bool *rx_pause)
-> > +{
-> > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(m);
-> > +
-> > +	linkmode_and(m, local_adv, partner_adv);
-> > +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, m)) {
-> > +		*tx_pause = true;
-> > +		*rx_pause = true;
-> > +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, m)) {
-> > +		*tx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> > +					      partner_adv);
-> > +		*rx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> > +					      local_adv);
-> > +	} else {
-> > +		*tx_pause = false;
-> > +		*rx_pause = false;
-> > +	}
+On 15.02.2020 23:35, Heiner Kallweit wrote:
+> On 15.02.2020 23:07, Vincas Dargis wrote:
+>> 2020-02-15 18:12, Salvatore Bonaccorso rašė:
+>>> You can generate the a7a92cf81589 revert patch, and then for simple
+>>> testing of a patch and build have a look at the Simple patching and
+>>> building[1] section of the kernel handbook.
+>>>
+>>> Hope this helps,
+>>>
+>>> Regards,
+>>> Salvatore
+>>>
+>>>   [1] https://kernel-team.pages.debian.net/kernel-handbook/ch-common-tasks.html#s4.2.2
+>>>
+>>
+>> Sadly, after running for an hour, I still got this:
+>>
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779254] ------------[ cut here ]------------
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779275] NETDEV WATCHDOG: enp5s0f1 (r8169): transmit queue 0 timed out
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779299] WARNING: CPU: 6 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x248/0x250
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779300] Modules linked in: rfcomm(E) xt_recent(E) ipt_REJECT(E) nf_reject_ipv4(E) xt_multiport(E) xt_conntrack(E) xt_hashlimit(E) xt_addrtype(E) xt_iface(OE) xt_mark(E) nft_chain_nat(E) xt_comment(E) xt_CT(E) xt_owner(E) xt_tcpudp(E) nft_compat(E) nft_counter(E) xt_NFLOG(E) nf_log_ipv4(E) nf_log_common(E) xt_LOG(E) nf_nat_tftp(E) nf_nat_snmp_basic(E) nf_conntrack_snmp(E) nf_nat_sip(E) nf_nat_pptp(E) nf_nat_irc(E) nf_nat_h323(E) nf_nat_ftp(E) nf_nat_amanda(E) ts_kmp(E) nf_conntrack_amanda(E) nf_nat(E) nf_conntrack_sane(E) nf_conntrack_tftp(E) nf_conntrack_sip(E) nf_conntrack_pptp(E) nf_conntrack_netlink(E) nf_conntrack_netbios_ns(E) nf_conntrack_broadcast(E) nf_conntrack_irc(E) nf_conntrack_h323(E) nf_conntrack_ftp(E) nf_conntrack(E) nf_defrag_ipv6(E) nf_defrag_ipv4(E) nf_tables(E) vboxnetadp(OE) vboxnetflt(OE) xfrm_user(E) xfrm_algo(E) vboxdrv(OE) l2tp_ppp(E) l2tp_netlink(E) l2tp_core(E) ip6_udp_tunnel(E) udp_tunnel(E) pppox(E)
+>> ppp_generic(E) slhc(E) nfnetlink_log(E) bnep(E)
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779353]  nfnetlink(E) bbswitch(OE) intel_rapl_msr(E) intel_rapl_common(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) kvm_intel(E) kvm(E) irqbypass(E) crct10dif_pclmul(E) ghash_clmulni_intel(E) binfmt_misc(E) btusb(E) btrtl(E) btbcm(E) btintel(E) nls_ascii(E) nls_cp437(E) bluetooth(E) snd_hda_codec_realtek(E) aesni_intel(E) uvcvideo(E) vfat(E) crypto_simd(E) videobuf2_vmalloc(E) fat(E) snd_hda_codec_generic(E) cryptd(E) videobuf2_memops(E) glue_helper(E) ledtrig_audio(E) videobuf2_v4l2(E) iwlmvm(E) intel_cstate(E) drbg(E) snd_hda_codec_hdmi(E) intel_uncore(E) videobuf2_common(E) mac80211(E) ansi_cprng(E) libarc4(E) videodev(E) efi_pstore(E) joydev(E) snd_hda_intel(E) mc(E) snd_intel_dspcfg(E) intel_rapl_perf(E) ecdh_generic(E) pcspkr(E) ecc(E) serio_raw(E) snd_hda_codec(E) asus_nb_wmi(E) iwlwifi(E) asus_wmi(E) snd_hda_core(E) efivars(E) sparse_keymap(E) snd_hwdep(E) sg(E) snd_pcm(E) cfg80211(E) snd_timer(E) iTCO_wdt(E)
+>> iTCO_vendor_support(E) snd(E) watchdog(E) rfkill(E)
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779386]  soundcore(E) ie31200_edac(E) evdev(E) asus_wireless(E) ac(E) parport_pc(E) ppdev(E) lp(E) parport(E) efivarfs(E) ip_tables(E) x_tables(E) autofs4(E) ext4(E) crc16(E) mbcache(E) jbd2(E) btrfs(E) blake2b_generic(E) xor(E) zstd_decompress(E) zstd_compress(E) raid6_pq(E) libcrc32c(E) crc32c_generic(E) sr_mod(E) sd_mod(E) cdrom(E) hid_logitech_hidpp(E) hid_logitech_dj(E) hid_generic(E) usbhid(E) hid(E) i915(E) rtsx_pci_sdmmc(E) i2c_algo_bit(E) mmc_core(E) xhci_pci(E) drm_kms_helper(E) ehci_pci(E) ahci(E) lpc_ich(E) rtsx_pci(E) ehci_hcd(E) mfd_core(E) drm(E) libahci(E) xhci_hcd(E) crc32_pclmul(E) mxm_wmi(E) libata(E) crc32c_intel(E) r8169(E) realtek(E) psmouse(E) usbcore(E) i2c_i801(E) scsi_mod(E) libphy(E) usb_common(E) wmi(E) battery(E) video(E) button(E)
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779418] CPU: 6 PID: 0 Comm: swapper/6 Tainted: G           OE     5.5.0-rc5-amd64 #1 Debian 5.5~rc5-1~exp1
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779419] Hardware name: ASUSTeK COMPUTER INC. N551JM/N551JM, BIOS N551JM.205 02/13/2015
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779422] RIP: 0010:dev_watchdog+0x248/0x250
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779425] Code: 85 c0 75 e5 eb 9f 4c 89 ef c6 05 a8 8b a6 00 01 e8 1d cc fa ff 44 89 e1 4c 89 ee 48 c7 c7 68 ca 55 a9 48 89 c2 e8 1a 67 9e ff <0f> 0b eb 80 0f 1f 40 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779426] RSP: 0018:ffffbf5dc01e0e68 EFLAGS: 00010286
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779428] RAX: 0000000000000000 RBX: ffffa0e11c031400 RCX: 000000000000083f
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779429] RDX: 0000000000000000 RSI: 00000000000000f6 RDI: 000000000000083f
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779430] RBP: ffffa0e11caee45c R08: 0000000000000471 R09: 0000000000000004
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779431] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779432] R13: ffffa0e11caee000 R14: ffffa0e11caee480 R15: 0000000000000001
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779433] FS:  0000000000000000(0000) GS:ffffa0e11ef80000(0000) knlGS:0000000000000000
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779434] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779435] CR2: 000004c3f29aba30 CR3: 000000020e80a005 CR4: 00000000001626e0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779436] Call Trace:
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779439]  <IRQ>
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779443]  ? pfifo_fast_enqueue+0x150/0x150
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779446]  call_timer_fn+0x2d/0x130
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779448]  __run_timers.part.0+0x16f/0x260
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779452]  ? tick_sched_handle+0x22/0x60
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779455]  ? tick_sched_timer+0x38/0x80
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779457]  ? tick_sched_do_timer+0x60/0x60
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779460]  run_timer_softirq+0x26/0x50
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779464]  __do_softirq+0xe6/0x2e9
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779469]  irq_exit+0xa6/0xb0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779471]  smp_apic_timer_interrupt+0x76/0x130
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779474]  apic_timer_interrupt+0xf/0x20
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779475]  </IRQ>
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779479] RIP: 0010:cpuidle_enter_state+0xc9/0x3e0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779481] Code: e8 5c ad ab ff 80 7c 24 0f 00 74 17 9c 58 0f 1f 44 00 00 f6 c4 02 0f 85 ea 02 00 00 31 ff e8 9e dc b1 ff fb 66 0f 1f 44 00 00 <45> 85 ed 0f 88 40 02 00 00 49 63 d5 4c 2b 64 24 10 48 8d 04 52 48
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779482] RSP: 0018:ffffbf5dc00c7e68 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779483] RAX: ffffa0e11efacac0 RBX: ffffdf5dbfd9e0f0 RCX: 000000000000001f
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779484] RDX: 0000000000000000 RSI: 0000000033518eeb RDI: 0000000000000000
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779485] RBP: ffffffffa96bdaa0 R08: 00000356ab7df88b R09: 000000000002c3e0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779486] R10: 0000000000001592 R11: ffffa0e11efab9a4 R12: 00000356ab7df88b
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779487] R13: 0000000000000005 R14: 0000000000000005 R15: ffffa0e11ca98000
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779490]  ? cpuidle_enter_state+0xa4/0x3e0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779493]  cpuidle_enter+0x29/0x40
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779496]  do_idle+0x1e4/0x280
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779499]  cpu_startup_entry+0x19/0x20
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779502]  start_secondary+0x15f/0x1b0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779506]  secondary_startup_64+0xa4/0xb0
+>> Feb 15 23:49:21 vinco kernel: [ 3670.779508] ---[ end trace a87faacfee854ba7 ]---
+>>
+>> Though what is strange that network does seems to be usable! I don't have to reboot to make browser and other application to continue working. Maybe other changes up to 5.5-rc5 helped?
 > 
-> Hi Russell
+> In case of a tx timeout NIC and driver parts are reset, see rtl8169_tx_timeout().
+> Depending on the root cause this may often be sufficient to make it work again.
 > 
-> It took me a while to check this. Maybe it is the way my brain works,
-> but to me, it is not obviously correct. I had to expand the table, and
-> they try all 16 combinations.
-
-The table is actually as given in 802.3, which is not expanded.
-
-> Maybe a lookup table would be more obvious?
-
-I feel that making a table of all 16 combinations is less obviously
-correct.
-
-I tend to work from the table as given, in this order:
-
- Local device  Link partner
- Pause AsymDir Pause AsymDir Result
-   1     X       1     X     TX+RX
-
-If both pause bits are set, we don't care what the asym direction bits
-say.  Transmit and receive pause are enabled.
-
-   0     1       1     1     TX
-
-If both asym direction bits are set, and the link partner pause bit is
-set, then we want transmit pause but not receive pause.
-
-   1     1       0     1     RX
-
-If both asym direction bits are set, and our pause bit is set, then
-we want receive pause but not transmit pause.
-
-These are the only three combinations that result in any pause settings
-being enabled; all other combinations must result in both disabled.
-
-So, working from that, the first test is fairly obvious - we want to
-know if both pause bits are set: adv.pause & lpa.pause.  If that
-evaluates true, we set both.
-
-The second and third have a common precondition, which is:
-adv.asymdir & lpa.asymdir.  If that is true, then to separate out
-whether we enable transmit or receive pause becomes dependent on which
-pause bit was set: lpa.pause tells us to enable transmit pause,
-adv.pause tells us to enable receive pause.  We can't get here if both
-pause bits were set due to the first.
-
-If neither pause bits are set, then neither pause gets enabled even
-if both asymdir bits are set.
-
-Otherwise, we simply force both transmit and receive pause off.
-
-This kind of thought process seems quite logical to me, but then I've
-had several years of logic design and analysis when I was young - so
-sorry if it's not obvious to others!
-
-> However, now i spent the time:
+> It's likely that the root cause for the timeout is in the driver, however we don't
+> know for sure yet. Reason could also be a net core regression. So still the best
+> would be a bisect.
+> 5.4 has been out for more than two months now, and this report is the first one
+> I see. Therefore I'd assume that the issue affects special cases (e.g. specific
+> chip versions) only.
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Helpful would be a full dmesg log of the boot.
+> 
+> And just to be on the safe side: You could try to disable EEE (ethtool --set-eee <if> eee off)
+> and see whether this helps.
+> 
+> 
+One more idea:
+Commit "r8169: enable HW csum and TSO" enables certain hardware offloading by default.
+Maybe your chip version has a hw issue with offloading. You could try:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+1. Disable TSO
+ethtool -K <if> tso off
+
+2. If this didn't help, disable all offloading.
+ethtool -K <if> tx off sg off tso off
