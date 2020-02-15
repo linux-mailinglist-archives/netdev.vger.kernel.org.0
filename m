@@ -2,81 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F201600BC
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 22:52:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F230F1600DE
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 23:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgBOVwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 16:52:03 -0500
-Received: from mail-qk1-f174.google.com ([209.85.222.174]:43545 "EHLO
-        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbgBOVwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 16:52:03 -0500
-Received: by mail-qk1-f174.google.com with SMTP id p7so12737898qkh.10
-        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 13:52:02 -0800 (PST)
+        id S1727635AbgBOWIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 17:08:13 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:33978 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726254AbgBOWIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 17:08:13 -0500
+Received: by mail-lf1-f67.google.com with SMTP id l18so9229830lfc.1
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 14:08:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=hmW9uUExBD5bXGwCqUZfBGtN7UxUxJa7T9gal2J1nMw=;
-        b=lro82BIjIt71jSDjx5dHHbzh9O7aWp2UMOhqlTodsz9vML6UAGUeWuq66gk4vMa1KM
-         wB7ttSJCtBHspGgnZPdTVXtbh9eZFi0tBEOSohR7w9BHcNOEAS9P0JocqitohUb0uj2n
-         hdDVVINV98Ki8IBwknAUb+57kO5dnP4TazBiZ7vvMdlExyyaxuF+5j33v+mXAqoSeDvk
-         I5DmHX0aLCXHGqiYXMRxF1G4Ye7Y778xR4Qg/0LMzfopYYsNXICdUhvZZrQa4E91qOV+
-         iRKVQIGb6GSQs6Y2gLetjtuksfSzS/MioAjxvOaX6XRJsXg/8XmH8IptWavD0VTLAslc
-         TUaQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Y4eLxpCT6xMz/UTH7JXv2TRqvWzlAWBrtrv0qTLFMHk=;
+        b=J2hD2s+1/CZE6/nbri2WDUEJZBExwL1JZMRwOfniTeeNmaS4ol4nZ8EpEDapdX9W/V
+         y50QyUYbECo8Z5sgJjEzxKWm5TfXMOCtEbeZID9VYxiV/ZNBoWunA5nkc/MHWIWYsntb
+         lnlYDDa9gCnfaJcKm6re41gLEDtp5UUVH6O7+JRfxqeq1gvCthuk3dFbI04iVdggVJ7W
+         x1CWkrXdrAy81GA6nkQHmB8IOZTazt7KZ7ahZdNLAuEXMOLDo4D0x1gSMVi+nmHCc74T
+         81MG6Z9DfUp+JgXb2KswJYTe1Yh8/Xl4urcxfoSRVQF2w8lig701Ace+5mq+pu2JH9Bx
+         JZDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=hmW9uUExBD5bXGwCqUZfBGtN7UxUxJa7T9gal2J1nMw=;
-        b=rTj+fYuH3TUoS40PBrpaBoroedXU2mlPPPuxT6/4vND7V6qXPJ2zQstnDjNcCFx7LM
-         rdVeEZ+KH2qxJjB0mEbSuzcKEsQIXvCNwuzNG4RoX4fd5I8UNccSOtBIJdrzCulQA+35
-         /+H5eU9OqcxrbC4KK2o615BkgDhxN9S68DkxS9HcaFLEQUyFIxhKjWXbrkyWTJJ5iCVl
-         hLtD4SfnLg7yNV9rR/2+s33e5lm+qPvImQaVHttx2d5yj4HUw943d49nUMvjcho7wVsc
-         yu7jdLEgLfY3eV3DQkVvjVZWp3vztPvNsR7UINMrLpBc4+ooPDXP3T23TG9+BMBiHiUC
-         SjXA==
-X-Gm-Message-State: APjAAAUWWXkv96m7ok2wQGmrIsLR0eiqcVJfB3KaWWtJva+b84BD7uC+
-        sAfOLShk8h12i+b9PYIrOJBAEQ==
-X-Google-Smtp-Source: APXvYqxoANsLhigIQHncTXQO+p9XZM6WRd9+aMZr6+BLHAH7am9ZHGovaz09CyjBIK2DzMSZVwOwpg==
-X-Received: by 2002:a37:3c5:: with SMTP id 188mr8428230qkd.312.1581803522429;
-        Sat, 15 Feb 2020 13:52:02 -0800 (PST)
-Received: from [192.168.43.235] ([204.48.77.136])
-        by smtp.googlemail.com with ESMTPSA id o17sm6004607qtq.93.2020.02.15.13.52.01
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Y4eLxpCT6xMz/UTH7JXv2TRqvWzlAWBrtrv0qTLFMHk=;
+        b=VDytOzZFbQqXHkGQpFsEbxZg2fIwSs6IhKhnofvz4/5R8AGjz3yC7nger7w1QPPQQj
+         jyhdjYMpfocynwu5Fhbk4pZWxnNoKU3S3bZmv1FnBYfL17DHU6guBIO+e9hnZuXCQcUZ
+         Ihr2IFv5Ui0fbuuZe0A2fH4bORqxbeLCM9YSt5rs6R7czu6ljaEAxSeEsEzP12p6WDA9
+         PTslxJt0QQmvO/sw3j9DK5f/sSJ87mqaPPhfUjihG/VFGGeMZFE7o+kaaNq4rYlHPCXh
+         8BL5JN30+qi1RgAwoSd50hlqnUJt3IJPAoCGv/PlVhRWlGbaAnVBv0vzg/zhx+SZAif2
+         AeOw==
+X-Gm-Message-State: APjAAAW+0nbjPkMzcmHtXInKC80NjBHxhYeZRe3wF8CwU+/2NppF65L7
+        +gL1mn5G7mJeXzcw5ad2cuY8oLIy
+X-Google-Smtp-Source: APXvYqz/LtY2XRwmmy173TGGY4sW4JsVLIljJpE/KOvJ2S7PHCugh11PXVgLOyFOmuBW1j+hr2aSdg==
+X-Received: by 2002:ac2:4c2b:: with SMTP id u11mr4659275lfq.46.1581804488417;
+        Sat, 15 Feb 2020 14:08:08 -0800 (PST)
+Received: from [192.168.1.10] (hst-227-49.splius.lt. [62.80.227.49])
+        by smtp.gmail.com with ESMTPSA id f26sm5651902ljn.104.2020.02.15.14.07.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Feb 2020 13:52:01 -0800 (PST)
-To:     people <people@netdevconf.info>
-Cc:     prog-committee-0x14@netdevconf.info, speakers-0x14@netdevconf.info,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, lwn@lwn.net,
-        netfilter-devel@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        lartc@vger.kernel.org, Christie Geldart <christie@ambedia.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: 0x14: Schedule out!
-Message-ID: <c8d8a7be-834e-1bab-9c6e-fa6f39ea6040@mojatatu.com>
-Date:   Sat, 15 Feb 2020 16:52:00 -0500
+        Sat, 15 Feb 2020 14:08:07 -0800 (PST)
+Subject: Re: About r8169 regression 5.4
+To:     Salvatore Bonaccorso <carnil@debian.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
+ <9e865e39-0406-d5e0-5022-9978ef4ec6ac@gmail.com>
+ <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
+ <20200215161247.GA179065@eldamar.local>
+From:   Vincas Dargis <vindrg@gmail.com>
+Message-ID: <269f588f-78f2-4acf-06d3-eeefaa5d8e0f@gmail.com>
+Date:   Sun, 16 Feb 2020 00:07:28 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+ Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <20200215161247.GA179065@eldamar.local>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2020-02-15 18:12, Salvatore Bonaccorso rašė:
+> You can generate the a7a92cf81589 revert patch, and then for simple
+> testing of a patch and build have a look at the Simple patching and
+> building[1] section of the kernel handbook.
+> 
+> Hope this helps,
+> 
+> Regards,
+> Salvatore
+> 
+>   [1] https://kernel-team.pages.debian.net/kernel-handbook/ch-common-tasks.html#s4.2.2
+> 
 
-We are pleased to announce the tentative schedule
-for 0x14. There may be some minor changes
-going forward - but the overall theme will remain.
+Sadly, after running for an hour, I still got this:
 
-For the schedule and logistics please see:
-https://netdevconf.info/0x14/news.html?schedule-up
+Feb 15 23:49:21 vinco kernel: [ 3670.779254] ------------[ cut here ]------------
+Feb 15 23:49:21 vinco kernel: [ 3670.779275] NETDEV WATCHDOG: enp5s0f1 (r8169): transmit queue 0 timed out
+Feb 15 23:49:21 vinco kernel: [ 3670.779299] WARNING: CPU: 6 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x248/0x250
+Feb 15 23:49:21 vinco kernel: [ 3670.779300] Modules linked in: rfcomm(E) xt_recent(E) ipt_REJECT(E) nf_reject_ipv4(E) xt_multiport(E) xt_conntrack(E) xt_hashlimit(E) xt_addrtype(E) xt_iface(OE) 
+xt_mark(E) nft_chain_nat(E) xt_comment(E) xt_CT(E) xt_owner(E) xt_tcpudp(E) nft_compat(E) nft_counter(E) xt_NFLOG(E) nf_log_ipv4(E) nf_log_common(E) xt_LOG(E) nf_nat_tftp(E) nf_nat_snmp_basic(E) 
+nf_conntrack_snmp(E) nf_nat_sip(E) nf_nat_pptp(E) nf_nat_irc(E) nf_nat_h323(E) nf_nat_ftp(E) nf_nat_amanda(E) ts_kmp(E) nf_conntrack_amanda(E) nf_nat(E) nf_conntrack_sane(E) nf_conntrack_tftp(E) 
+nf_conntrack_sip(E) nf_conntrack_pptp(E) nf_conntrack_netlink(E) nf_conntrack_netbios_ns(E) nf_conntrack_broadcast(E) nf_conntrack_irc(E) nf_conntrack_h323(E) nf_conntrack_ftp(E) nf_conntrack(E) 
+nf_defrag_ipv6(E) nf_defrag_ipv4(E) nf_tables(E) vboxnetadp(OE) vboxnetflt(OE) xfrm_user(E) xfrm_algo(E) vboxdrv(OE) l2tp_ppp(E) l2tp_netlink(E) l2tp_core(E) ip6_udp_tunnel(E) udp_tunnel(E) pppox(E) 
+ppp_generic(E) slhc(E) nfnetlink_log(E) bnep(E)
+Feb 15 23:49:21 vinco kernel: [ 3670.779353]  nfnetlink(E) bbswitch(OE) intel_rapl_msr(E) intel_rapl_common(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) kvm_intel(E) kvm(E) irqbypass(E) 
+crct10dif_pclmul(E) ghash_clmulni_intel(E) binfmt_misc(E) btusb(E) btrtl(E) btbcm(E) btintel(E) nls_ascii(E) nls_cp437(E) bluetooth(E) snd_hda_codec_realtek(E) aesni_intel(E) uvcvideo(E) vfat(E) 
+crypto_simd(E) videobuf2_vmalloc(E) fat(E) snd_hda_codec_generic(E) cryptd(E) videobuf2_memops(E) glue_helper(E) ledtrig_audio(E) videobuf2_v4l2(E) iwlmvm(E) intel_cstate(E) drbg(E) 
+snd_hda_codec_hdmi(E) intel_uncore(E) videobuf2_common(E) mac80211(E) ansi_cprng(E) libarc4(E) videodev(E) efi_pstore(E) joydev(E) snd_hda_intel(E) mc(E) snd_intel_dspcfg(E) intel_rapl_perf(E) 
+ecdh_generic(E) pcspkr(E) ecc(E) serio_raw(E) snd_hda_codec(E) asus_nb_wmi(E) iwlwifi(E) asus_wmi(E) snd_hda_core(E) efivars(E) sparse_keymap(E) snd_hwdep(E) sg(E) snd_pcm(E) cfg80211(E) snd_timer(E) 
+iTCO_wdt(E) iTCO_vendor_support(E) snd(E) watchdog(E) rfkill(E)
+Feb 15 23:49:21 vinco kernel: [ 3670.779386]  soundcore(E) ie31200_edac(E) evdev(E) asus_wireless(E) ac(E) parport_pc(E) ppdev(E) lp(E) parport(E) efivarfs(E) ip_tables(E) x_tables(E) autofs4(E) 
+ext4(E) crc16(E) mbcache(E) jbd2(E) btrfs(E) blake2b_generic(E) xor(E) zstd_decompress(E) zstd_compress(E) raid6_pq(E) libcrc32c(E) crc32c_generic(E) sr_mod(E) sd_mod(E) cdrom(E) hid_logitech_hidpp(E) 
+hid_logitech_dj(E) hid_generic(E) usbhid(E) hid(E) i915(E) rtsx_pci_sdmmc(E) i2c_algo_bit(E) mmc_core(E) xhci_pci(E) drm_kms_helper(E) ehci_pci(E) ahci(E) lpc_ich(E) rtsx_pci(E) ehci_hcd(E) 
+mfd_core(E) drm(E) libahci(E) xhci_hcd(E) crc32_pclmul(E) mxm_wmi(E) libata(E) crc32c_intel(E) r8169(E) realtek(E) psmouse(E) usbcore(E) i2c_i801(E) scsi_mod(E) libphy(E) usb_common(E) wmi(E) 
+battery(E) video(E) button(E)
+Feb 15 23:49:21 vinco kernel: [ 3670.779418] CPU: 6 PID: 0 Comm: swapper/6 Tainted: G           OE     5.5.0-rc5-amd64 #1 Debian 5.5~rc5-1~exp1
+Feb 15 23:49:21 vinco kernel: [ 3670.779419] Hardware name: ASUSTeK COMPUTER INC. N551JM/N551JM, BIOS N551JM.205 02/13/2015
+Feb 15 23:49:21 vinco kernel: [ 3670.779422] RIP: 0010:dev_watchdog+0x248/0x250
+Feb 15 23:49:21 vinco kernel: [ 3670.779425] Code: 85 c0 75 e5 eb 9f 4c 89 ef c6 05 a8 8b a6 00 01 e8 1d cc fa ff 44 89 e1 4c 89 ee 48 c7 c7 68 ca 55 a9 48 89 c2 e8 1a 67 9e ff <0f> 0b eb 80 0f 1f 40 
+00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55
+Feb 15 23:49:21 vinco kernel: [ 3670.779426] RSP: 0018:ffffbf5dc01e0e68 EFLAGS: 00010286
+Feb 15 23:49:21 vinco kernel: [ 3670.779428] RAX: 0000000000000000 RBX: ffffa0e11c031400 RCX: 000000000000083f
+Feb 15 23:49:21 vinco kernel: [ 3670.779429] RDX: 0000000000000000 RSI: 00000000000000f6 RDI: 000000000000083f
+Feb 15 23:49:21 vinco kernel: [ 3670.779430] RBP: ffffa0e11caee45c R08: 0000000000000471 R09: 0000000000000004
+Feb 15 23:49:21 vinco kernel: [ 3670.779431] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+Feb 15 23:49:21 vinco kernel: [ 3670.779432] R13: ffffa0e11caee000 R14: ffffa0e11caee480 R15: 0000000000000001
+Feb 15 23:49:21 vinco kernel: [ 3670.779433] FS:  0000000000000000(0000) GS:ffffa0e11ef80000(0000) knlGS:0000000000000000
+Feb 15 23:49:21 vinco kernel: [ 3670.779434] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+Feb 15 23:49:21 vinco kernel: [ 3670.779435] CR2: 000004c3f29aba30 CR3: 000000020e80a005 CR4: 00000000001626e0
+Feb 15 23:49:21 vinco kernel: [ 3670.779436] Call Trace:
+Feb 15 23:49:21 vinco kernel: [ 3670.779439]  <IRQ>
+Feb 15 23:49:21 vinco kernel: [ 3670.779443]  ? pfifo_fast_enqueue+0x150/0x150
+Feb 15 23:49:21 vinco kernel: [ 3670.779446]  call_timer_fn+0x2d/0x130
+Feb 15 23:49:21 vinco kernel: [ 3670.779448]  __run_timers.part.0+0x16f/0x260
+Feb 15 23:49:21 vinco kernel: [ 3670.779452]  ? tick_sched_handle+0x22/0x60
+Feb 15 23:49:21 vinco kernel: [ 3670.779455]  ? tick_sched_timer+0x38/0x80
+Feb 15 23:49:21 vinco kernel: [ 3670.779457]  ? tick_sched_do_timer+0x60/0x60
+Feb 15 23:49:21 vinco kernel: [ 3670.779460]  run_timer_softirq+0x26/0x50
+Feb 15 23:49:21 vinco kernel: [ 3670.779464]  __do_softirq+0xe6/0x2e9
+Feb 15 23:49:21 vinco kernel: [ 3670.779469]  irq_exit+0xa6/0xb0
+Feb 15 23:49:21 vinco kernel: [ 3670.779471]  smp_apic_timer_interrupt+0x76/0x130
+Feb 15 23:49:21 vinco kernel: [ 3670.779474]  apic_timer_interrupt+0xf/0x20
+Feb 15 23:49:21 vinco kernel: [ 3670.779475]  </IRQ>
+Feb 15 23:49:21 vinco kernel: [ 3670.779479] RIP: 0010:cpuidle_enter_state+0xc9/0x3e0
+Feb 15 23:49:21 vinco kernel: [ 3670.779481] Code: e8 5c ad ab ff 80 7c 24 0f 00 74 17 9c 58 0f 1f 44 00 00 f6 c4 02 0f 85 ea 02 00 00 31 ff e8 9e dc b1 ff fb 66 0f 1f 44 00 00 <45> 85 ed 0f 88 40 02 
+00 00 49 63 d5 4c 2b 64 24 10 48 8d 04 52 48
+Feb 15 23:49:21 vinco kernel: [ 3670.779482] RSP: 0018:ffffbf5dc00c7e68 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+Feb 15 23:49:21 vinco kernel: [ 3670.779483] RAX: ffffa0e11efacac0 RBX: ffffdf5dbfd9e0f0 RCX: 000000000000001f
+Feb 15 23:49:21 vinco kernel: [ 3670.779484] RDX: 0000000000000000 RSI: 0000000033518eeb RDI: 0000000000000000
+Feb 15 23:49:21 vinco kernel: [ 3670.779485] RBP: ffffffffa96bdaa0 R08: 00000356ab7df88b R09: 000000000002c3e0
+Feb 15 23:49:21 vinco kernel: [ 3670.779486] R10: 0000000000001592 R11: ffffa0e11efab9a4 R12: 00000356ab7df88b
+Feb 15 23:49:21 vinco kernel: [ 3670.779487] R13: 0000000000000005 R14: 0000000000000005 R15: ffffa0e11ca98000
+Feb 15 23:49:21 vinco kernel: [ 3670.779490]  ? cpuidle_enter_state+0xa4/0x3e0
+Feb 15 23:49:21 vinco kernel: [ 3670.779493]  cpuidle_enter+0x29/0x40
+Feb 15 23:49:21 vinco kernel: [ 3670.779496]  do_idle+0x1e4/0x280
+Feb 15 23:49:21 vinco kernel: [ 3670.779499]  cpu_startup_entry+0x19/0x20
+Feb 15 23:49:21 vinco kernel: [ 3670.779502]  start_secondary+0x15f/0x1b0
+Feb 15 23:49:21 vinco kernel: [ 3670.779506]  secondary_startup_64+0xa4/0xb0
+Feb 15 23:49:21 vinco kernel: [ 3670.779508] ---[ end trace a87faacfee854ba7 ]---
 
-Come one, come all!
-Again, as a reminder - 2 days to go for end of
-early bird registration. See:
-https://netdevconf.info/0x14/registration.html
-
-cheers,
-jamal
+Though what is strange that network does seems to be usable! I don't have to reboot to make browser and other application to continue working. Maybe other changes up to 5.5-rc5 helped?
