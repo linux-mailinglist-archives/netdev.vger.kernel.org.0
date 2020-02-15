@@ -2,152 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2539215FF9A
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:04:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E376B15FF9C
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbgBOSEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 13:04:23 -0500
-Received: from mail-eopbgr1310112.outbound.protection.outlook.com ([40.107.131.112]:45632
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726299AbgBOSEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Feb 2020 13:04:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gODo6Eg2bOczH3ZnCUVnAocLODBLwtdP25rav1sL8ZB0CPoJ3XKPdUO8qfdiqiUcCQccQ/w7rv8LP6sRj8Y/iaFL6JL6ePbWeS6FooryjxexSTaSDgcOMsp4PyCpzM1rC1dfTv7IT/hn1mHScz+j0pLHDPGwWyebvej9ILHFAaljGOzS35jwfK5ae0/uH1qJb9rDbwnMrmFfRvrUcvPjtUudVxvnIK7eDqYQyHymKtSLPBtm9E1+V1Z5YXPpvB61qbjGe0BLO/gZCpJgkiIk4us3kIJOtFChOwrNNTS0lrirHQErAx4Ap/pwQk0+RDLld8w40sO9d3cFGq+bnLw0jQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5IQ09c0TtSv91JazQv6A1MqL2/rQKaRFLkeXrHvLjJY=;
- b=mf/2NMRtvdNvvhERzmaMfsg1yQiUlCoAsw2mc5vDGWMo/ehba91CHtY27phkVHG3G6I+SR5NBVCOL5L6CjZ0ioNyN6vxLmrY/4m3qq2NG5+jDNl+9zpiHlRTkCt6AtobfFCCAWHQ/1NBzStZ8zbLC9belbogyBYj/hH53omehxKOaSeGtgoUlsCIsxSCiWotCjtFYjPMc1/jCLGzD6V/6k3GMpiNyDIp5yuH8VKGOQyY7Was+x/p605Y9r+JRsF12MhYNnjhj/6Rv6MwXy8FATzq0X6BAE+p9xd9CHo6WZNjRMCH24aPaLTQG9DAJylJJ14IDQw4URfTayeT0wEslw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5IQ09c0TtSv91JazQv6A1MqL2/rQKaRFLkeXrHvLjJY=;
- b=BE9oqbOYOzytTzmMOffYV9wLFy9bRFOH/Yi+VSeEhrv7dxJn96oIMVWU9ONrUOTt9CXt+Xl9lpORnZriCj7jZGkk0SMVI66Uss+ZADS+eEOLKO7uIqtdYTANTK08RAaYRg7IbdN+PdPW+4aq0ifFDk8pmYQpmklWfqQvSctxse8=
-Received: from HK0P153MB0148.APCP153.PROD.OUTLOOK.COM (52.133.156.139) by
- HK0P153MB0242.APCP153.PROD.OUTLOOK.COM (10.255.253.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2750.4; Sat, 15 Feb 2020 18:04:14 +0000
-Received: from HK0P153MB0148.APCP153.PROD.OUTLOOK.COM
- ([fe80::58ea:c6ae:4ea3:8432]) by HK0P153MB0148.APCP153.PROD.OUTLOOK.COM
- ([fe80::58ea:c6ae:4ea3:8432%5]) with mapi id 15.20.2750.014; Sat, 15 Feb 2020
- 18:04:13 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: Is it safe for a NIC driver to use all the 48 bytes of skb->cb?
-Thread-Topic: Is it safe for a NIC driver to use all the 48 bytes of skb->cb?
-Thread-Index: AdXjukH6tGicVKR8QjWZ+wsQCSffGwAV8b7gAAVVXhA=
-Date:   Sat, 15 Feb 2020 18:04:13 +0000
-Message-ID: <HK0P153MB0148861FD9AAB88A98084206BF140@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
-References: <HK0P153MB0148311C48144413792A0FBEBF140@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
- <MN2PR21MB1437345219FA1CC3A75B9875CA140@MN2PR21MB1437.namprd21.prod.outlook.com>
-In-Reply-To: <MN2PR21MB1437345219FA1CC3A75B9875CA140@MN2PR21MB1437.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-02-15T05:23:53.1818868Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=0bdb99fb-ade9-4625-91de-e48aae6b21ec;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2601:600:a280:7f70:6019:e41b:6ca1:9563]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9080d85c-e669-4b44-c2ec-08d7b2417725
-x-ms-traffictypediagnostic: HK0P153MB0242:|HK0P153MB0242:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <HK0P153MB02427222D06ACA326601D36BBF140@HK0P153MB0242.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 03142412E2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(189003)(199004)(55016002)(8676002)(10290500003)(9686003)(76116006)(6506007)(5660300002)(66946007)(33656002)(52536014)(81156014)(81166006)(86362001)(66476007)(64756008)(66446008)(186003)(478600001)(71200400001)(66556008)(8990500004)(53546011)(110136005)(4326008)(8936002)(7696005)(316002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:HK0P153MB0242;H:HK0P153MB0148.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vjr26dNI5eg04PzDHRJ1YgCrNBhwF5rwSAu95QY47+NSNkQX+vE3JT5pSixCdh5Vft/ch+xn5G4M/a73GcALe58bsdgvozx+YHmEGqmPzRw4suZpuuq132AYK4IBGyrQ874Lf9xppL/77s1jeMFMMOsJD5BVsonIAF5gmk0b1VruxZs47Nj6LhLaNM/vTqdq5VQfDu4PPXUjxHgt6RSJzPak7CzyUnMDFaFwPwf1lG9Or900ss6R7aRjTBSIlAIUaNEdaY8LUfMixZ9ZPU1mIOxl0kHRpf6dIUD/vFKyVa//dEEeGeFXyniZgCQ3WvnksPXfWSWn3H1fbcwhWQxco4xVPCNPIHc+/IXcB5Y1eYMUyyRezOdoJGDrzxsOAR6e3FCUpb/tk93707Di/Zo3RU9uZ1vxxUn9alae/fCeYL3S8OgAFhlXXc4nX8ZHFyaQ
-x-ms-exchange-antispam-messagedata: yaJCMWrNI79Pjx2nFrHAkvXDHapOWz6FJTnALxpZ1Q5BBkIGSGrZosJjj3dznQ4wkLTnPZcI7IAW4hlXWhe5uImZPKQFou2XP+anhAbligf1L8RlzmbGrS69ZNGcdOWAGoa2OsBaVZkRALTL1TcPSqaI8SH96so9GhDmfbUCIwCQQoZ0oCIdMdF5SqtCpNQi7FsueakOx9uBMUCMrNw7Bw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726565AbgBOSGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 13:06:46 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:36304 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726299AbgBOSGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 13:06:46 -0500
+Received: by mail-io1-f68.google.com with SMTP id d15so14141294iog.3;
+        Sat, 15 Feb 2020 10:06:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NsIiQwqS6cgJUXhrYokg58sE3wdZNJcLzDgH2A9wBoc=;
+        b=JUzmgHQW0ygVNxC34Ag12afliKhMOAUqzeWSF3J9lw3YnjIMrP4kbsR42OW7Yq+OSn
+         h4Q0I4WN5Em59aiqyBnT2EB9kdV04bU234kSP37eixi8T0w32JKB/ADi9udSHkqcChvs
+         Ip7p6NDxnSpq1btxmaYmLfhLnULw6hkoQhpxhFw0iuwvCqhRYv+WOCT1SP8YHLAE/xQr
+         b4rIGpvzhx9SB3qEJql9k/WliaRxmsaLUqXy/a/9ZvQVp9Zd7bbwUVgIrvLKp7g6p2hv
+         jouDcKrfpARvxanwvVG21BxEKocNUsaQvTnbSXOGr2KPPqKCjx8er3fxOGm9VRmihzIy
+         OpIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NsIiQwqS6cgJUXhrYokg58sE3wdZNJcLzDgH2A9wBoc=;
+        b=Qf9ItVjaijvc1Pc5Dy+8/uW+CteJiNPm5eZcBsZKG4gzKB70QG8gWTKS+ASbizEBf/
+         AL0Te+4z16LExOlhjiejHFQBQPLL6YayMhbj16R1XJKM9DyEZ/pAlpHk4zORxey3vqZ9
+         n+dmiSW8qac15oUdIWlSQD51Dtkk587/8Ubtw7te8aCH7rKWKN+Q159xl7CSQSRcCYf+
+         PH5m6s4bNbeikucebSD9GJi1DFMsCkDlHN05lpFiHiSKLsGWasqFF0ujxj/WQNEKJYHS
+         ym8tzBQFhwm6vy04j6vkdDl1/QWNZxXVrxvt+dvG6LNWMuttkDFvh2uQpYKIVVkJoDik
+         MAvQ==
+X-Gm-Message-State: APjAAAXWfY8AtxtWIZmNKsXePQyJArXJGc1NhL31LLgtwIO1lX+0vF3c
+        ejjltFSE1WuL2PRV04g0TKQ=
+X-Google-Smtp-Source: APXvYqw/TMuTdtEKSxM80YYuxF8GBW/gVKEKjwlvY7UdU+P7uRrVmdcJ2dOIMCbrdKjjtfL1jWrUfQ==
+X-Received: by 2002:a6b:4906:: with SMTP id u6mr6537311iob.120.1581790005139;
+        Sat, 15 Feb 2020 10:06:45 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:65d1:a3b2:d15f:79af? ([2601:282:803:7700:65d1:a3b2:d15f:79af])
+        by smtp.googlemail.com with ESMTPSA id m3sm3385454ilf.64.2020.02.15.10.06.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Feb 2020 10:06:44 -0800 (PST)
+Subject: Re: [net-next 1/2] Perform IPv4 FIB lookup in a predefined FIB table
+To:     Carmine Scarpitta <carmine.scarpitta@uniroma2.it>,
+        davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ahmed.abdelsalam@gssi.it, david.lebrun@uclouvain.be,
+        dav.lebrun@gmail.com, andrea.mayer@uniroma2.it,
+        paolo.lungaroni@cnit.it
+References: <20200213010932.11817-1-carmine.scarpitta@uniroma2.it>
+ <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7302c1f7-b6d1-90b7-5df1-3e5e0ba98f53@gmail.com>
+Date:   Sat, 15 Feb 2020 11:06:43 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.2
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9080d85c-e669-4b44-c2ec-08d7b2417725
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2020 18:04:13.3618
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D0CJdlMqCDpfVllu7M5GP0YeSkSRUmiKulsMQ0yxdIyJ9YKYFdJc24o1jI/hw4PtwsG52la7wDG7skUEBLzX2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0242
+In-Reply-To: <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Haiyang Zhang <haiyangz@microsoft.com>
-> Sent: Saturday, February 15, 2020 7:20 AM
-> To: Dexuan Cui <decui@microsoft.com>; Stephen Hemminger
->=20
-> According to the comments in skbuff.h below, it is the responsibility of =
-the
-> owning layer to make a SKB clone, if it wants to keep the data across lay=
-ers.=20
-> So, every layer can still use all of the 48 bytes.
->=20
->         /*
->          * This is the control buffer. It is free to use for every
->          * layer. Please put your private variables there. If you
->          * want to keep them across layers you have to do a skb_clone()
->          * first. This is owned by whoever has the skb queued ATM.
->          */
->         char                    cb[48] __aligned(8);
->=20
-> > Now hv_netvsc assumes it can use all of the 48-bytes, though it uses on=
-ly
-> > 20 bytes, but just in case the struct hv_netvsc_packet grows to >32 byt=
-es in
-> the
-> > future, should we change the BUILD_BUG_ON() in netvsc_start_xmit() to
-> > BUILD_BUG_ON(sizeof(struct hv_netvsc_packet) > SKB_SGO_CB_OFFSET); ?
->=20
-> Based on the explanation above, the existing hv_netvsc code is correct.
->=20
-> Thanks,
-> - Haiyang
+On 2/12/20 6:09 PM, Carmine Scarpitta wrote:
+> In IPv4, the routing subsystem is invoked by calling ip_route_input_rcu()
+> which performs the recognition logic and calls ip_route_input_slow().
+> 
+> ip_route_input_slow() initialises both "fi" and "table" members
+> of the fib_result structure to null before calling fib_lookup().
+> 
+> fib_lookup() performs fib lookup in the routing table configured
+> by the policy routing rules.
+> 
+> In this patch, we allow invoking the ip4 routing subsystem
+> with known routing table. This is useful for use-cases implementing
+> a separate routing table per tenant.
+> 
+> The patch introduces a new flag named "tbl_known" to the definition of
+> ip_route_input_rcu() and ip_route_input_slow().
+> 
+> When the flag is set, ip_route_input_slow() will call fib_table_lookup()
+> using the defined table instead of using fib_lookup().
 
-Got it. So if the upper layer saves something in the cb, it must do a skb_c=
-lone()
-and pass the new skb to hv_netvsc. hv_netvsc is the lowest layer in the net=
-work=20
-stack, so it can use all the 48 bytes without calling skb_clone().
+I do not like this change. If you want a specific table lookup, then why
+just call fib_table_lookup directly? Both it and rt_dst_alloc are
+exported for modules. Your next patch already does a fib table lookup.
 
-BTW, now I happen to have a different question: in netvsc_probe() we have=20
-net->needed_headroom =3D RNDIS_AND_PPI_SIZE;
-I think this means when the network stack (ARP, IP, ICMP, TCP, UDP,etc) pas=
-ses a=20
-skb to hv_netvsc, the skb's headroom is increased by an extra size of=20
-net->needed_headroom, right? Then in netvsc_xmit(), why do we still need to
-call skb_cow_head(skb, RNDIS_AND_PPI_SIZE)? -- this looks unnecessary to me=
-?
 
-PS, what does the "cow" here mean? Copy On Write? It looks skb_cow_head()
-just copies the data (if necessary) and it has nothing to do with the=20
-write-protection in the MMU code.
+> 
+> Signed-off-by: Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
+> Acked-by: Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
+> Acked-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> Acked-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
+> ---
+>  include/net/route.h |  2 +-
+>  net/ipv4/route.c    | 22 ++++++++++++++--------
+>  2 files changed, 15 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/net/route.h b/include/net/route.h
+> index a9c60fc68e36..4ff977bd7029 100644
+> --- a/include/net/route.h
+> +++ b/include/net/route.h
+> @@ -183,7 +183,7 @@ int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
+>  			 u8 tos, struct net_device *devin);
+>  int ip_route_input_rcu(struct sk_buff *skb, __be32 dst, __be32 src,
+>  		       u8 tos, struct net_device *devin,
+> -		       struct fib_result *res);
+> +		       struct fib_result *res, bool tbl_known);
+>  
+>  int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
+>  		      u8 tos, struct net_device *devin,
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index d5c57b3f77d5..39cec9883d6f 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -2077,7 +2077,7 @@ int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+>  
+>  static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+>  			       u8 tos, struct net_device *dev,
+> -			       struct fib_result *res)
+> +			       struct fib_result *res, bool tbl_known)
+>  {
+>  	struct in_device *in_dev = __in_dev_get_rcu(dev);
+>  	struct flow_keys *flkeys = NULL, _flkeys;
+> @@ -2109,8 +2109,6 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+>  	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
+>  		goto martian_source;
+>  
+> -	res->fi = NULL;
+> -	res->table = NULL;
+>  	if (ipv4_is_lbcast(daddr) || (saddr == 0 && daddr == 0))
+>  		goto brd_input;
 
-Thanks,
-Dexuan
+I believe this also introduces a potential bug. You remove the fi
+initialization yet do not cover the goto case.
+
+
