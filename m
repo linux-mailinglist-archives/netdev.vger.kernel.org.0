@@ -2,170 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BBD9160123
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 00:34:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8901616012B
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 00:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbgBOXeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 18:34:08 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:33606 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbgBOXeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 18:34:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=Uo7NlmOzMLt+a7yp1F+9dGT/PK5kr6Sa1Qub2GaBCgs=; b=E4XDRHe9bmr8N7DtgYek0P/C8e
-        dPopiallWMRPi5jsCE7ru07kE6yWVycKZwiUbl0wlAKlABE52im5EBrHj194y8nBl0vj4ODln5/nY
-        RqZvHcfFaPhXlaDZaS2o3gdz3Nxah+OEZBHnehaVDjja9xf2ly6rHG5rhPwQneurszJtAkO5/nbIy
-        T213v+umtcuG4vubpMsTdkVJ+5yHXEDPTLbFGt1zQosS1PsHLv64ctHzbwZw7koQcJHhfj9VrIPYL
-        IyMhw6E2CR85ltQju5vyGxAKgzq4Vq5FfOvg76wAjK4KNTjbBvqXkrAlBRo2ElRk2zWqEKIuxW8Ri
-        H33STtGA==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j36wq-0006zt-78; Sat, 15 Feb 2020 23:34:08 +0000
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH -net] skbuff.h: fix all kernel-doc warnings
-Message-ID: <ce570d32-1a3d-0438-d5fc-0e16b2d417df@infradead.org>
-Date:   Sat, 15 Feb 2020 15:34:07 -0800
+        id S1726565AbgBOXmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 18:42:45 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38748 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgBOXmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 18:42:45 -0500
+Received: by mail-wr1-f67.google.com with SMTP id y17so15286975wrh.5
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 15:42:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=QM5xcVAfeaTfSpqqkFNfyzPo7Ae2XakKgkOTJyXKvFE=;
+        b=GOQxlFpToqVvN5AItk3pZNRezizBuCefCtg9NYuFwAuMQU9CpFS2epJOF3eJpyJ/D6
+         k5IxzVqRClDNx+9l2NXjF49K6VYWvg3wr21k/asNxTHcLpKQljOx25N1fIW3ZogsDLwS
+         wo46AdgkFZ2msSgxOO/1fgIXlJrJEYJwkbIYY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QM5xcVAfeaTfSpqqkFNfyzPo7Ae2XakKgkOTJyXKvFE=;
+        b=h+1hD6k2RSTH553PUfGVXpgfL2zeQOw4vgZmD3EVKlOEhrfyszaRy5MIifoaRXyt9l
+         fsV0GzWZz7fXsszcN0Mr0XrCpniOWsZIu48cqbywIGa+rm6LG3zNNLMwJRbk6LQEHw57
+         rQY4MrwpfKEXmLN1hxe8V0jEWEIfDmCIX9gimkq0CjFqbZu8SLrasxp3W+TFa5OBu+O9
+         Ar8hXShlL4NP6aBwU2ZzDYYLOTajdb78+x7qpPHQkhml3oe4Be+3y3F0izQHYHHqP7Zh
+         VRRYU/1AQliqRre/oTLwfci0c9AQJwxvitDf7x03Ns0eZJFoLKdYd9FE6W5h+cjCnQrX
+         JwhQ==
+X-Gm-Message-State: APjAAAX/upi+J/5VwEPTgGk+2E8z/z0k3DzHHZKD66SMTuNJQ/uVHQF5
+        nG4Oa6R9Fz3Grny6tju1fHVckyqrMraAkQ==
+X-Google-Smtp-Source: APXvYqzql9k3rZuucyDqgndFIBvZDd026jRfKu45YpOkNNEz7+RRJRH1vTpGKMhWLUE24rZR+6puBA==
+X-Received: by 2002:a5d:6284:: with SMTP id k4mr12434007wru.398.1581810160888;
+        Sat, 15 Feb 2020 15:42:40 -0800 (PST)
+Received: from [10.6.5.6] (130.202.158.77.rev.sfr.net. [77.158.202.130])
+        by smtp.googlemail.com with ESMTPSA id f127sm13480204wma.4.2020.02.15.15.42.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Feb 2020 15:42:40 -0800 (PST)
+Subject: Re: [netlink_bind()] [Bug 206525] BUG: KASAN: stack-out-of-bounds in
+ test_bit+0x30/0x44 (kernel 5.6-rc1)
+To:     Christophe Leroy <christophe.leroy@c-s.fr>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <bug-206525-206035-l8GOXmwaUO@https.bugzilla.kernel.org/>
+ <4c64dd30-b742-cc54-540d-f81f6f0ecc18@c-s.fr>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <c0b3bc83-2a3a-92c4-94c5-8b92d22df948@cumulusnetworks.com>
+Date:   Sun, 16 Feb 2020 01:42:38 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4c64dd30-b742-cc54-540d-f81f6f0ecc18@c-s.fr>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On 2/15/20 7:58 PM, Christophe Leroy wrote:
+> 
+> 
+> 
+> -------- Message transféré --------
+> Sujet : [Bug 206525] BUG: KASAN: stack-out-of-bounds in test_bit+0x30/0x44 (kernel 5.6-rc1)
+> Date : Sat, 15 Feb 2020 17:52:44 +0000
+> De : bugzilla-daemon@bugzilla.kernel.org
+> Pour : linuxppc-dev@lists.ozlabs.org
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=206525
+> 
+> --- Comment #3 from Christophe Leroy (christophe.leroy@c-s.fr) ---
+> Bug introduced by commit ("cf5bddb95cbe net: bridge: vlan: add rtnetlink group
+> and notify support")
+> 
+> RTNLGRP_MAX is now 33.
+> 
+> 'unsigned long groups' is 32 bits long on PPC32
+> 
+> Following loop in netlink_bind() overflows.
+> 
+> 
+>                  for (group = 0; group < nlk->ngroups; group++) {
+>                          if (!test_bit(group, &groups))
+>                                  continue;
+>                          err = nlk->netlink_bind(net, group + 1);
+>                          if (!err)
+>                                  continue;
+>                          netlink_undo_bind(group, groups, sk);
+>                          goto unlock;
+>                  }
+> 
+> 
+> Should 'groups' be changes to 'unsigned long long' ?
+> 
 
-Fix all kernel-doc warnings in <linux/skbuff.h>.
-Fixes these warnings:
+Hi,
+I'm currently traveling and will be able to look into this properly in a few days, but
+I think we can just cap these at min(BITS_PER_TYPE(u32), nlk->ngroups) since "groups" is coming
+from sockaddr_nl's "nl_groups" which is a u32, for any groups beyond u32 one has to use
+setsockopt().
 
-../include/linux/skbuff.h:890: warning: Function parameter or member 'list' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'dev_scratch' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'ip_defrag_offset' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'skb_mstamp_ns' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member '__cloned_offset' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'head_frag' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member '__pkt_type_offset' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'encapsulation' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'encap_hdr_csum' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'csum_valid' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member '__pkt_vlan_present_offset' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'vlan_present' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'csum_complete_sw' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'csum_level' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'inner_protocol_type' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'remcsum_offload' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'sender_cpu' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'reserved_tailroom' not described in 'sk_buff'
-../include/linux/skbuff.h:890: warning: Function parameter or member 'inner_ipproto' not described in 'sk_buff'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
- include/linux/skbuff.h |   30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
---- lnx-56-rc1.orig/include/linux/skbuff.h
-+++ lnx-56-rc1/include/linux/skbuff.h
-@@ -611,9 +611,15 @@ typedef unsigned char *sk_buff_data_t;
-  *	@next: Next buffer in list
-  *	@prev: Previous buffer in list
-  *	@tstamp: Time we arrived/left
-+ *	@skb_mstamp_ns: (aka @tstamp) earliest departure time; start point
-+ *		for retransmit timer
-  *	@rbnode: RB tree node, alternative to next/prev for netem/tcp
-+ *	@list: queue head
-  *	@sk: Socket we are owned by
-+ *	@ip_defrag_offset: (aka @sk) alternate use of @sk, used in
-+ *		fragmentation management
-  *	@dev: Device we arrived on/are leaving by
-+ *	@dev_scratch: (aka @dev) alternate use of @dev when @dev would be %NULL
-  *	@cb: Control buffer. Free for use by every layer. Put private vars here
-  *	@_skb_refdst: destination entry (with norefcount bit)
-  *	@sp: the security path, used for xfrm
-@@ -632,6 +638,9 @@ typedef unsigned char *sk_buff_data_t;
-  *	@pkt_type: Packet class
-  *	@fclone: skbuff clone status
-  *	@ipvs_property: skbuff is owned by ipvs
-+ *	@inner_protocol_type: whether the inner protocol is
-+ *		ENCAP_TYPE_ETHER or ENCAP_TYPE_IPPROTO
-+ *	@remcsum_offload: remote checksum offload is enabled
-  *	@offload_fwd_mark: Packet was L2-forwarded in hardware
-  *	@offload_l3_fwd_mark: Packet was L3-forwarded in hardware
-  *	@tc_skip_classify: do not classify packet. set by IFB device
-@@ -650,6 +659,8 @@ typedef unsigned char *sk_buff_data_t;
-  *	@tc_index: Traffic control index
-  *	@hash: the packet hash
-  *	@queue_mapping: Queue mapping for multiqueue devices
-+ *	@head_frag: skb was allocated from page fragments,
-+ *		not allocated by kmalloc() or vmalloc().
-  *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves
-  *	@active_extensions: active extensions (skb_ext_id types)
-  *	@ndisc_nodetype: router type (from link layer)
-@@ -660,15 +671,28 @@ typedef unsigned char *sk_buff_data_t;
-  *	@wifi_acked_valid: wifi_acked was set
-  *	@wifi_acked: whether frame was acked on wifi or not
-  *	@no_fcs:  Request NIC to treat last 4 bytes as Ethernet FCS
-+ *	@encapsulation: indicates the inner headers in the skbuff are valid
-+ *	@encap_hdr_csum: software checksum is needed
-+ *	@csum_valid: checksum is already valid
-  *	@csum_not_inet: use CRC32c to resolve CHECKSUM_PARTIAL
-+ *	@csum_complete_sw: checksum was completed by software
-+ *	@csum_level: indicates the number of consecutive checksums found in
-+ *		the packet minus one that have been verified as
-+ *		CHECKSUM_UNNECESSARY (max 3)
-  *	@dst_pending_confirm: need to confirm neighbour
-  *	@decrypted: Decrypted SKB
-  *	@napi_id: id of the NAPI struct this skb came from
-+ *	@sender_cpu: (aka @napi_id) source CPU in XPS
-  *	@secmark: security marking
-  *	@mark: Generic packet mark
-+ *	@reserved_tailroom: (aka @mark) number of bytes of free space available
-+ *		at the tail of an sk_buff
-+ *	@vlan_present: VLAN tag is present
-  *	@vlan_proto: vlan encapsulation protocol
-  *	@vlan_tci: vlan tag control information
-  *	@inner_protocol: Protocol (encapsulation)
-+ *	@inner_ipproto: (aka @inner_protocol) stores ipproto when
-+ *		skb->inner_protocol_type == ENCAP_TYPE_IPPROTO;
-  *	@inner_transport_header: Inner transport layer header (encapsulation)
-  *	@inner_network_header: Network layer header (encapsulation)
-  *	@inner_mac_header: Link layer header (encapsulation)
-@@ -750,7 +774,9 @@ struct sk_buff {
- #endif
- #define CLONED_OFFSET()		offsetof(struct sk_buff, __cloned_offset)
- 
-+	/* private: */
- 	__u8			__cloned_offset[0];
-+	/* public: */
- 	__u8			cloned:1,
- 				nohdr:1,
- 				fclone:2,
-@@ -775,7 +801,9 @@ struct sk_buff {
- #endif
- #define PKT_TYPE_OFFSET()	offsetof(struct sk_buff, __pkt_type_offset)
- 
-+	/* private: */
- 	__u8			__pkt_type_offset[0];
-+	/* public: */
- 	__u8			pkt_type:3;
- 	__u8			ignore_df:1;
- 	__u8			nf_trace:1;
-@@ -798,7 +826,9 @@ struct sk_buff {
- #define PKT_VLAN_PRESENT_BIT	0
- #endif
- #define PKT_VLAN_PRESENT_OFFSET()	offsetof(struct sk_buff, __pkt_vlan_present_offset)
-+	/* private: */
- 	__u8			__pkt_vlan_present_offset[0];
-+	/* public: */
- 	__u8			vlan_present:1;
- 	__u8			csum_complete_sw:1;
- 	__u8			csum_level:2;
-
+Cheers,
+  Nik
 
