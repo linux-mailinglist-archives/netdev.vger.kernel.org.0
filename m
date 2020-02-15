@@ -2,126 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF43115FF0F
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 16:48:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4ECB15FF11
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 16:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgBOPsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 10:48:51 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34046 "EHLO
+        id S1726346AbgBOPte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 10:49:34 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:34070 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726137AbgBOPsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 10:48:51 -0500
+        with ESMTP id S1726137AbgBOPtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 10:49:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UjfX2AP1iMcPasH8o8JSGL+9hyYdgh0qEjcx8ALipPE=; b=Zu+vS9VQiH+fA5OpjXMEAZcvq
-        cr1iH14hnzpxv/s1lqPuaDlCwv+TKnB3IqyBYfIudV8gKrpuex0JeHaxQvi6nrT4Z6XnyVVp2x7sk
-        eWchvLdHeyMVk+Nl1uBmTjm6dm+NRD+OrBnLPxtJ5GCiXZ4U94ugLmbQl3c2gywZcaxPx5RiQHBCg
-        r9K0MeVtEiFnFebHQy9bFQlWpdR87vWEjXUDTB5LaabbGaldh8YqyTOrvXHX3fdZFNeCEHHrRJaQd
-        QebKrwgWFSkih88bXg7VwoP3kwCLCv1P6H9ox8VmLZrohXg2Zp3z9/m4K8bfXyuo5VVCVxA6VkkIw
-        dJEeuCiOw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:40708)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=uRdh10xstUsKts8l1DdYb6YWUFYXDIBYpPF52fm9EEk=; b=fzOjOFuuOtqDfWlGb+HVojQ8Pz
+        lUpEVPwckXpOHw3iT0sL1xeqN9db4SqI2qM2FwPbtEEYWjmrcwuMBvmoB4V9X/eKY3chLdp7MOxpu
+        iVQxx/eR/cI75eH+UlFmJkTjFCjNs/8m/Tnb7+djluRvc428TIf7+0i8QL8OaEb8gVrXqHP7hQUFj
+        Ymjo/rSNjk+hl1BsrW+YMbFcBs/R7/lFMFG4o/BoOmnWwFYRRZannHyANocbOX/ur75mRUoxM0oIx
+        RNXGQClRuwuwtv9p3qDtgFL4E4CNuIdcsFrUKzn92o3XeRZC4UpKtvGmAl1//7VhCusL9r05AogKm
+        FwUyFraw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:41198 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j2zgQ-0005ip-6o; Sat, 15 Feb 2020 15:48:42 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j2zgN-0004SW-He; Sat, 15 Feb 2020 15:48:39 +0000
-Date:   Sat, 15 Feb 2020 15:48:39 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j2zh9-0005jI-RV; Sat, 15 Feb 2020 15:49:27 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j2zh9-0003X2-9y; Sat, 15 Feb 2020 15:49:27 +0000
+In-Reply-To: <20200215154839.GR25745@shell.armlinux.org.uk>
+References: <20200215154839.GR25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 00/10] Pause updates for phylib and phylink
-Message-ID: <20200215154839.GR25745@shell.armlinux.org.uk>
+Subject: [PATCH net-next 02/10] net: add helpers to resolve negotiated flow
+ control
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1j2zh9-0003X2-9y@rmk-PC.armlinux.org.uk>
+Date:   Sat, 15 Feb 2020 15:49:27 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, phylib resolves the speed and duplex settings, which MAC
-drivers use directly. phylib also extracts the "Pause" and "AsymPause"
-bits from the link partner's advertisement, and stores them in struct
-phy_device's pause and asym_pause members with no further processing.
-It is left up to each MAC driver to implement decoding for this
-information.
+Add a couple of helpers to resolve negotiated flow control. Two helpers
+are provided:
 
-phylink converted drivers are able to take advantage of code therein
-which resolves the pause advertisements for the MAC driver, but this
-does nothing for unconverted drivers. It also does not allow us to
-make use of hardware-resolved pause states offered by several PHYs.
+- linkmode_resolve_pause() which takes the link partner and local
+  advertisements, and decodes whether we should enable TX or RX pause
+  at the MAC. This is useful outside of phylib, e.g. in phylink.
+- phy_get_pause(), which returns the TX/RX enablement status for the
+  current negotiation results of the PHY.
 
-This series aims to address this by:
+This allows us to centralise the flow control resolution, rather than
+spreading it around.
 
-1. Providing a generic implementation, linkmode_resolve_pause(), that
-   takes the ethtool linkmode arrays for the link partner and local
-   advertisements, decoding the result to whether pause frames should
-   be allowed to be transmitted or received and acted upon.  I call
-   this the pause enablement state.
-
-2. Providing a phylib implementation, phy_get_pause(), which allows
-   MAC drivers to request the pause enablement state from phylib.
-
-3. Providing a generic linkmode_set_pause() for setting the pause
-   advertisement according to the ethtool tx/rx flags - note that this
-   design has some shortcomings, see the comments in the kerneldoc for
-   this function.
-
-4. Remove the ability in phylink to set the pause states for fixed
-   links, which brings them into line with how we deal with the speed
-   and duplex parameters; we can reintroduce this later if anyone
-   requires it.  This could be a userspace-visible change.
-
-5. Split application of manual pause enablement state from phylink's
-   resolution of the same to allow use of phylib's new phy_get_pause()
-   interface by phylink, and make that switch.
-
-6. Resolve the fixed-link pause enablement state using the generic
-   linkmode_resolve_pause() helper introduced earlier. This, in
-   connection with the previous commits, allows us to kill the
-   MLO_PAUSE_SYM and MLO_PAUSE_ASYM flags.
-
-7. make phylink's ethtool pause setting implementation update the
-   pause advertisement in the same way that phylib does, with the
-   same caveats that are present there (as mentioned above w.r.t
-   linkmode_set_pause()).
-
-8. create a more accurate initial configuration for MACs, used when
-   phy_start() is called or a SFP is detected. In particular, this
-   ensures that the pause bits seen by MAC drivers in state->pause
-   are accurate for SGMII.
-
-9. finally, update the kerneldoc descriptions for mac_config() for
-   the above changes.
-
-This series has been build-tested against net-next; the boot tested
-patches are in my "phy" branch against v5.5 plus the queued phylink
-changes that were merged for 5.6.
-
-The next series will introduce the ability for phylib drivers to
-provide hardware resolved pause enablement state.  These patches can
-be found in my "phy" branch.
-
- drivers/net/phy/Makefile     |   3 +-
- drivers/net/phy/linkmode.c   |  95 +++++++++++++++++++++++++
- drivers/net/phy/phy_device.c |  43 +++++++-----
- drivers/net/phy/phylink.c    | 162 +++++++++++++++++++++++++++----------------
- include/linux/linkmode.h     |   8 ++-
- include/linux/phy.h          |   3 +
- include/linux/phylink.h      |  34 +++++----
- 7 files changed, 258 insertions(+), 90 deletions(-)
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/Makefile     |  3 ++-
+ drivers/net/phy/linkmode.c   | 44 ++++++++++++++++++++++++++++++++++++
+ drivers/net/phy/phy_device.c | 26 +++++++++++++++++++++
+ include/linux/linkmode.h     |  4 ++++
+ include/linux/phy.h          |  3 +++
+ 5 files changed, 79 insertions(+), 1 deletion(-)
  create mode 100644 drivers/net/phy/linkmode.c
 
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index fe5badf13b65..d523fd5670e4 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Makefile for Linux PHY drivers and MDIO bus drivers
+ 
+-libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o
++libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
++				   linkmode.o
+ mdio-bus-y			+= mdio_bus.o mdio_device.o
+ 
+ ifdef CONFIG_MDIO_DEVICE
+diff --git a/drivers/net/phy/linkmode.c b/drivers/net/phy/linkmode.c
+new file mode 100644
+index 000000000000..969918795228
+--- /dev/null
++++ b/drivers/net/phy/linkmode.c
+@@ -0,0 +1,44 @@
++// SPDX-License-Identifier: GPL-2.0+
++#include <linux/linkmode.h>
++
++/**
++ * linkmode_resolve_pause - resolve the allowable pause modes
++ * @local_adv: local advertisement in ethtool format
++ * @partner_adv: partner advertisement in ethtool format
++ * @tx_pause: pointer to bool to indicate whether transmit pause should be
++ * enabled.
++ * @rx_pause: pointer to bool to indicate whether receive pause should be
++ * enabled.
++ *
++ * Flow control is resolved according to our and the link partners
++ * advertisements using the following drawn from the 802.3 specs:
++ *  Local device  Link partner
++ *  Pause AsymDir Pause AsymDir Result
++ *    0     X       0     X     Disabled
++ *    0     1       1     0     Disabled
++ *    0     1       1     1     TX
++ *    1     0       0     X     Disabled
++ *    1     X       1     X     TX+RX
++ *    1     1       0     1     RX
++ */
++void linkmode_resolve_pause(const unsigned long *local_adv,
++			    const unsigned long *partner_adv,
++			    bool *tx_pause, bool *rx_pause)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(m);
++
++	linkmode_and(m, local_adv, partner_adv);
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, m)) {
++		*tx_pause = true;
++		*rx_pause = true;
++	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, m)) {
++		*tx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++					      partner_adv);
++		*rx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++					      local_adv);
++	} else {
++		*tx_pause = false;
++		*rx_pause = false;
++	}
++}
++EXPORT_SYMBOL_GPL(linkmode_resolve_pause);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 6a5056e0ae77..f5a7a077ec1f 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2409,6 +2409,32 @@ bool phy_validate_pause(struct phy_device *phydev,
+ }
+ EXPORT_SYMBOL(phy_validate_pause);
+ 
++/**
++ * phy_get_pause - resolve negotiated pause modes
++ * @phydev: phy_device struct
++ * @tx_pause: pointer to bool to indicate whether transmit pause should be
++ * enabled.
++ * @rx_pause: pointer to bool to indicate whether receive pause should be
++ * enabled.
++ *
++ * Resolve and return the flow control modes according to the negotiation
++ * result. This includes checking that we are operating in full duplex mode.
++ * See linkmode_resolve_pause() for further details.
++ */
++void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause)
++{
++	if (phydev->duplex != DUPLEX_FULL) {
++		*tx_pause = false;
++		*rx_pause = false;
++		return;
++	}
++
++	return linkmode_resolve_pause(phydev->advertising,
++				      phydev->lp_advertising,
++				      tx_pause, rx_pause);
++}
++EXPORT_SYMBOL(phy_get_pause);
++
+ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+ {
+ 	return phydrv->config_intr && phydrv->ack_interrupt;
+diff --git a/include/linux/linkmode.h b/include/linux/linkmode.h
+index 8e5b352e44f2..9ec210f31d06 100644
+--- a/include/linux/linkmode.h
++++ b/include/linux/linkmode.h
+@@ -88,4 +88,8 @@ static inline int linkmode_subset(const unsigned long *src1,
+ 	return bitmap_subset(src1, src2, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ }
+ 
++void linkmode_resolve_pause(const unsigned long *local_adv,
++			    const unsigned long *partner_adv,
++			    bool *tx_pause, bool *rx_pause);
++
+ #endif /* __LINKMODE_H */
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index c570e162e05e..80f8b2158271 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1257,6 +1257,9 @@ void phy_set_sym_pause(struct phy_device *phydev, bool rx, bool tx,
+ void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx);
+ bool phy_validate_pause(struct phy_device *phydev,
+ 			struct ethtool_pauseparam *pp);
++void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause);
++void phy_resolve_pause(unsigned long *local_adv, unsigned long *partner_adv,
++		       bool *tx_pause, bool *rx_pause);
+ 
+ int phy_register_fixup(const char *bus_id, u32 phy_uid, u32 phy_uid_mask,
+ 		       int (*run)(struct phy_device *));
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
