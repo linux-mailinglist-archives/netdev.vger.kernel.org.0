@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2B21600B9
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 22:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F201600BC
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 22:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgBOVlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 16:41:15 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:53326 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbgBOVlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 16:41:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Date:Message-ID:Subject:From:To:Sender:Reply-To:Cc:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=bGHqYfSInCAN/tEcnh131kwNSejoiypREgU7kcwNj+I=; b=edAg9Cnag0H5z0od8Kcpiq8rce
-        2SpbLdIwsTn0GO99zquAtYI+9UnNQyp3kz5rtOiSBSkpf7MRmLjqv6R7qLfyML9ksjnvXz3I3YHFd
-        UNYk9jbPLQdbmXfCC8PplrvuG62B4S9sMTQ4mF0cJLKwZ9vrsRVD7ERDMvX96ei3++aTGSUDiqLTD
-        JJKLmSikOSxfGses6aqp70u+eN8r8Rh5g6KlsHQDcHDmM+WmWSWNh6U+EAqsg0c4jTf3QwFaZ9aA6
-        t5lXEUC6ewsO4BRnO1nNfphwhcpoE9+ORKCmnqTsZXVc2IhCsMt93C13SaH4JyyFPol4KyFa5cvdl
-        rQg6zu8Q==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j35Ba-0006jk-3E; Sat, 15 Feb 2020 21:41:14 +0000
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH -net] skbuff: remove stale bit mask comments
-Message-ID: <677a95d0-0db9-edec-0fa5-d7d3e1b5ec11@infradead.org>
-Date:   Sat, 15 Feb 2020 13:41:12 -0800
+        id S1726641AbgBOVwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 16:52:03 -0500
+Received: from mail-qk1-f174.google.com ([209.85.222.174]:43545 "EHLO
+        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgBOVwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 16:52:03 -0500
+Received: by mail-qk1-f174.google.com with SMTP id p7so12737898qkh.10
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 13:52:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=hmW9uUExBD5bXGwCqUZfBGtN7UxUxJa7T9gal2J1nMw=;
+        b=lro82BIjIt71jSDjx5dHHbzh9O7aWp2UMOhqlTodsz9vML6UAGUeWuq66gk4vMa1KM
+         wB7ttSJCtBHspGgnZPdTVXtbh9eZFi0tBEOSohR7w9BHcNOEAS9P0JocqitohUb0uj2n
+         hdDVVINV98Ki8IBwknAUb+57kO5dnP4TazBiZ7vvMdlExyyaxuF+5j33v+mXAqoSeDvk
+         I5DmHX0aLCXHGqiYXMRxF1G4Ye7Y778xR4Qg/0LMzfopYYsNXICdUhvZZrQa4E91qOV+
+         iRKVQIGb6GSQs6Y2gLetjtuksfSzS/MioAjxvOaX6XRJsXg/8XmH8IptWavD0VTLAslc
+         TUaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=hmW9uUExBD5bXGwCqUZfBGtN7UxUxJa7T9gal2J1nMw=;
+        b=rTj+fYuH3TUoS40PBrpaBoroedXU2mlPPPuxT6/4vND7V6qXPJ2zQstnDjNcCFx7LM
+         rdVeEZ+KH2qxJjB0mEbSuzcKEsQIXvCNwuzNG4RoX4fd5I8UNccSOtBIJdrzCulQA+35
+         /+H5eU9OqcxrbC4KK2o615BkgDhxN9S68DkxS9HcaFLEQUyFIxhKjWXbrkyWTJJ5iCVl
+         hLtD4SfnLg7yNV9rR/2+s33e5lm+qPvImQaVHttx2d5yj4HUw943d49nUMvjcho7wVsc
+         yu7jdLEgLfY3eV3DQkVvjVZWp3vztPvNsR7UINMrLpBc4+ooPDXP3T23TG9+BMBiHiUC
+         SjXA==
+X-Gm-Message-State: APjAAAUWWXkv96m7ok2wQGmrIsLR0eiqcVJfB3KaWWtJva+b84BD7uC+
+        sAfOLShk8h12i+b9PYIrOJBAEQ==
+X-Google-Smtp-Source: APXvYqxoANsLhigIQHncTXQO+p9XZM6WRd9+aMZr6+BLHAH7am9ZHGovaz09CyjBIK2DzMSZVwOwpg==
+X-Received: by 2002:a37:3c5:: with SMTP id 188mr8428230qkd.312.1581803522429;
+        Sat, 15 Feb 2020 13:52:02 -0800 (PST)
+Received: from [192.168.43.235] ([204.48.77.136])
+        by smtp.googlemail.com with ESMTPSA id o17sm6004607qtq.93.2020.02.15.13.52.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Feb 2020 13:52:01 -0800 (PST)
+To:     people <people@netdevconf.info>
+Cc:     prog-committee-0x14@netdevconf.info, speakers-0x14@netdevconf.info,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, lwn@lwn.net,
+        netfilter-devel@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        lartc@vger.kernel.org, Christie Geldart <christie@ambedia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: 0x14: Schedule out!
+Message-ID: <c8d8a7be-834e-1bab-9c6e-fa6f39ea6040@mojatatu.com>
+Date:   Sat, 15 Feb 2020 16:52:00 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
 
-Remove stale comments since this flag is no longer a bit mask
-but is a bit field.
+We are pleased to announce the tentative schedule
+for 0x14. There may be some minor changes
+going forward - but the overall theme will remain.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
- net/core/skbuff.c |    2 --
- 1 file changed, 2 deletions(-)
+For the schedule and logistics please see:
+https://netdevconf.info/0x14/news.html?schedule-up
 
---- lnx-56-rc1.orig/net/core/skbuff.c
-+++ lnx-56-rc1/net/core/skbuff.c
-@@ -467,7 +467,6 @@ struct sk_buff *__netdev_alloc_skb(struc
- 		return NULL;
- 	}
- 
--	/* use OR instead of assignment to avoid clearing of bits in mask */
- 	if (pfmemalloc)
- 		skb->pfmemalloc = 1;
- 	skb->head_frag = 1;
-@@ -527,7 +526,6 @@ struct sk_buff *__napi_alloc_skb(struct
- 		return NULL;
- 	}
- 
--	/* use OR instead of assignment to avoid clearing of bits in mask */
- 	if (nc->page.pfmemalloc)
- 		skb->pfmemalloc = 1;
- 	skb->head_frag = 1;
+Come one, come all!
+Again, as a reminder - 2 days to go for end of
+early bird registration. See:
+https://netdevconf.info/0x14/registration.html
 
-
+cheers,
+jamal
