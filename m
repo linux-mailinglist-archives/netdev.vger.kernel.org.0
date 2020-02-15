@@ -2,111 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F7915FF19
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 16:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19CF715FF21
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 17:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgBOPuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 10:50:25 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34156 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726137AbgBOPuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 10:50:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=C0yOsJFMoJBAvMTz5m31IGzCQXPToqGnVUa2g7VsslQ=; b=NH/Y5fO47x22fALr/xMJbex9MJ
-        3T0FgA/nv6Q8H/cFRZhqWARVBSnRdKhqp5F5m+mcFE457bivIZR14imaOvkLDy+UyrnGsC6zcRHY9
-        lNXZ88w4msFPSNJ865j4vvw+eIha8pi45mI4g/Meo/O8Tpv3NhyIoC5/Df1D98nOkRC5/o6jQsvLB
-        se7SqeGj4BtdIne8/h1t+15BLw7wbHDz1SaeitKTu3iJhJXI7i77cyeWV/WZYbFdIzzQ+Hwm1tpNP
-        H9pbjHwsI7KvUp8yiQUeRegTQqGwDDmNvklzVLMRPXS15EgtHfPE445xDi77IcRYs7JGMrEBb9X6V
-        gOAkS3Rw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:57260 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j2zhr-0005kN-JL; Sat, 15 Feb 2020 15:50:11 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j2zhp-0003Yf-1O; Sat, 15 Feb 2020 15:50:09 +0000
-In-Reply-To: <20200215154839.GR25745@shell.armlinux.org.uk>
-References: <20200215154839.GR25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 10/10] net: phylink: clarify flow control settings in
- documentation
+        id S1726438AbgBOQIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 11:08:17 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47816 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726273AbgBOQIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Feb 2020 11:08:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/MAL/dS9+xaImPqMBu7AglUJ2inc+yODBpvhLTi/OhU=; b=m2YCxJblWgvBUHgjEiI109YDcF
+        dhnr9hZ2ojkZyF0wmbpsAD3oW1RP2dSDKreR5bioSR+sDiWn/zoQ52SclqLQE07hx6MX/jyRm46b4
+        AbVTeiCNcjC7LxUcU7btf4A9e2RbC8BxfGJcOOFEpEjzE77YAq3ieKd+yUmvvj0+5BAo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j2zzE-0004ju-B4; Sat, 15 Feb 2020 17:08:08 +0100
+Date:   Sat, 15 Feb 2020 17:08:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/3] net: phy: broadcom: Have
+ bcm54xx_adjust_rxrefclk() check for flags
+Message-ID: <20200215160808.GA8924@lunn.ch>
+References: <20200214233853.27217-1-f.fainelli@gmail.com>
+ <20200214233853.27217-3-f.fainelli@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j2zhp-0003Yf-1O@rmk-PC.armlinux.org.uk>
-Date:   Sat, 15 Feb 2020 15:50:09 +0000
+In-Reply-To: <20200214233853.27217-3-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clarify the expected flow control settings operation in the phylink
-documentation for each negotiation mode.
+On Fri, Feb 14, 2020 at 03:38:52PM -0800, Florian Fainelli wrote:
+> bcm54xx_adjust_rxrefclk() already checks for the flags and will
+> correctly reacting to the 3 different flags it check, allow it to be
+> unconditionally called.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  drivers/net/phy/broadcom.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+> index 4ad2128cc454..b4eae84a9195 100644
+> --- a/drivers/net/phy/broadcom.c
+> +++ b/drivers/net/phy/broadcom.c
+> @@ -273,10 +273,7 @@ static int bcm54xx_config_init(struct phy_device *phydev)
+>  	    (phydev->dev_flags & PHY_BRCM_CLEAR_RGMII_MODE))
+>  		bcm_phy_write_shadow(phydev, BCM54XX_SHD_RGMII_MODE, 0);
+>  
+> -	if ((phydev->dev_flags & PHY_BRCM_RX_REFCLK_UNUSED) ||
+> -	    (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) ||
+> -	    (phydev->dev_flags & PHY_BRCM_AUTO_PWRDWN_ENABLE))
+> -		bcm54xx_adjust_rxrefclk(phydev);
+> +	bcm54xx_adjust_rxrefclk(phydev);
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- include/linux/phylink.h | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+Hi Florian
 
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 0d6073c2b2b7..812357c03df4 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -152,13 +152,20 @@ void mac_pcs_get_state(struct phylink_config *config,
-  * guaranteed to be correct, and so any mac_config() implementation must
-  * never reference these fields.
-  *
-+ * In all negotiation modes, as defined by @mode, @state->pause indicates the
-+ * pause settings which should be applied as follows. If %MLO_PAUSE_AN is not
-+ * set, %MLO_PAUSE_TX and %MLO_PAUSE_RX indicate whether the MAC should send
-+ * pause frames and/or act on received pause frames respectively. Otherwise,
-+ * the results of in-band negotiation/status from the MAC PCS should be used
-+ * to control the MAC pause mode settings.
-+ *
-  * The action performed depends on the currently selected mode:
-  *
-  * %MLO_AN_FIXED, %MLO_AN_PHY:
-- *   Configure the specified @state->speed, @state->duplex and
-- *   @state->pause (%MLO_PAUSE_TX / %MLO_PAUSE_RX) modes over a link
-- *   specified by @state->interface.  @state->advertising may be used,
-- *   but is not required.  Other members of @state must be ignored.
-+ *   Configure the specified @state->speed and @state->duplex over a link
-+ *   specified by @state->interface. @state->advertising may be used, but
-+ *   is not required. Pause modes as above. Other members of @state must
-+ *   be ignored.
-  *
-  *   Valid state members: interface, speed, duplex, pause, advertising.
-  *
-@@ -170,11 +177,14 @@ void mac_pcs_get_state(struct phylink_config *config,
-  *   mac_pcs_get_state() callback. Changes in link state must be made
-  *   by calling phylink_mac_change().
-  *
-+ *   Interface mode specific details are mentioned below.
-+ *
-  *   If in 802.3z mode, the link speed is fixed, dependent on the
-- *   @state->interface. Duplex is negotiated, and pause is advertised
-- *   according to @state->an_enabled, @state->pause and
-- *   @state->advertising flags. Beware of MACs which only support full
-- *   duplex at gigabit and higher speeds.
-+ *   @state->interface. Duplex and pause modes are negotiated via
-+ *   the in-band configuration word. Advertised pause modes are set
-+ *   according to the @state->an_enabled and @state->advertising
-+ *   flags. Beware of MACs which only support full duplex at gigabit
-+ *   and higher speeds.
-  *
-  *   If in Cisco SGMII mode, the link speed and duplex mode are passed
-  *   in the serial bitstream 16-bit configuration word, and the MAC
--- 
-2.20.1
+PHY_BRCM_RX_REFCLK_UNUSED is not unconditionally checked in
+bcm54xx_adjust_rxrefclk(), where as here it is. I assume this is O.K?
+The same is tree for PHY_BRCM_AUTO_PWRDWN_ENABLE.  Maybe worth a
+comment in the commit message if you need to respin.
 
+      Andrew
