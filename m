@@ -2,145 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E376B15FF9C
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 377E115FFC7
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:50:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbgBOSGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 13:06:46 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36304 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgBOSGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 13:06:46 -0500
-Received: by mail-io1-f68.google.com with SMTP id d15so14141294iog.3;
-        Sat, 15 Feb 2020 10:06:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NsIiQwqS6cgJUXhrYokg58sE3wdZNJcLzDgH2A9wBoc=;
-        b=JUzmgHQW0ygVNxC34Ag12afliKhMOAUqzeWSF3J9lw3YnjIMrP4kbsR42OW7Yq+OSn
-         h4Q0I4WN5Em59aiqyBnT2EB9kdV04bU234kSP37eixi8T0w32JKB/ADi9udSHkqcChvs
-         Ip7p6NDxnSpq1btxmaYmLfhLnULw6hkoQhpxhFw0iuwvCqhRYv+WOCT1SP8YHLAE/xQr
-         b4rIGpvzhx9SB3qEJql9k/WliaRxmsaLUqXy/a/9ZvQVp9Zd7bbwUVgIrvLKp7g6p2hv
-         jouDcKrfpARvxanwvVG21BxEKocNUsaQvTnbSXOGr2KPPqKCjx8er3fxOGm9VRmihzIy
-         OpIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NsIiQwqS6cgJUXhrYokg58sE3wdZNJcLzDgH2A9wBoc=;
-        b=Qf9ItVjaijvc1Pc5Dy+8/uW+CteJiNPm5eZcBsZKG4gzKB70QG8gWTKS+ASbizEBf/
-         AL0Te+4z16LExOlhjiejHFQBQPLL6YayMhbj16R1XJKM9DyEZ/pAlpHk4zORxey3vqZ9
-         n+dmiSW8qac15oUdIWlSQD51Dtkk587/8Ubtw7te8aCH7rKWKN+Q159xl7CSQSRcCYf+
-         PH5m6s4bNbeikucebSD9GJi1DFMsCkDlHN05lpFiHiSKLsGWasqFF0ujxj/WQNEKJYHS
-         ym8tzBQFhwm6vy04j6vkdDl1/QWNZxXVrxvt+dvG6LNWMuttkDFvh2uQpYKIVVkJoDik
-         MAvQ==
-X-Gm-Message-State: APjAAAXWfY8AtxtWIZmNKsXePQyJArXJGc1NhL31LLgtwIO1lX+0vF3c
-        ejjltFSE1WuL2PRV04g0TKQ=
-X-Google-Smtp-Source: APXvYqw/TMuTdtEKSxM80YYuxF8GBW/gVKEKjwlvY7UdU+P7uRrVmdcJ2dOIMCbrdKjjtfL1jWrUfQ==
-X-Received: by 2002:a6b:4906:: with SMTP id u6mr6537311iob.120.1581790005139;
-        Sat, 15 Feb 2020 10:06:45 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:65d1:a3b2:d15f:79af? ([2601:282:803:7700:65d1:a3b2:d15f:79af])
-        by smtp.googlemail.com with ESMTPSA id m3sm3385454ilf.64.2020.02.15.10.06.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Feb 2020 10:06:44 -0800 (PST)
-Subject: Re: [net-next 1/2] Perform IPv4 FIB lookup in a predefined FIB table
-To:     Carmine Scarpitta <carmine.scarpitta@uniroma2.it>,
-        davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ahmed.abdelsalam@gssi.it, david.lebrun@uclouvain.be,
-        dav.lebrun@gmail.com, andrea.mayer@uniroma2.it,
-        paolo.lungaroni@cnit.it
-References: <20200213010932.11817-1-carmine.scarpitta@uniroma2.it>
- <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7302c1f7-b6d1-90b7-5df1-3e5e0ba98f53@gmail.com>
-Date:   Sat, 15 Feb 2020 11:06:43 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1726275AbgBOStj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 13:49:39 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47908 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726209AbgBOStj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Feb 2020 13:49:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=qScxe2MpGrfgcjlXIdk3h7jYPlni2oy8/z2manLMPRM=; b=XUaaZYduMmgedauYbwgwoS6Dd8
+        E9A6vUY8B6hrkLLqI1S7biw158+9FrsMjBnfcK122IGU1ZbsLe337mxsAbexuURQ34Dd8h3CQXddR
+        whW4XyBEX7k8qcxCaennZlmEcJ2mqDN3jqXI8KApCIxpaSvo9O5F4N5qyXpZL0gLJKzw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j32VQ-00058z-VG; Sat, 15 Feb 2020 19:49:32 +0100
+Date:   Sat, 15 Feb 2020 19:49:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 02/10] net: add helpers to resolve negotiated
+ flow control
+Message-ID: <20200215184932.GS31084@lunn.ch>
+References: <20200215154839.GR25745@shell.armlinux.org.uk>
+ <E1j2zh9-0003X2-9y@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1j2zh9-0003X2-9y@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/12/20 6:09 PM, Carmine Scarpitta wrote:
-> In IPv4, the routing subsystem is invoked by calling ip_route_input_rcu()
-> which performs the recognition logic and calls ip_route_input_slow().
+On Sat, Feb 15, 2020 at 03:49:27PM +0000, Russell King wrote:
+> Add a couple of helpers to resolve negotiated flow control. Two helpers
+> are provided:
 > 
-> ip_route_input_slow() initialises both "fi" and "table" members
-> of the fib_result structure to null before calling fib_lookup().
+> - linkmode_resolve_pause() which takes the link partner and local
+>   advertisements, and decodes whether we should enable TX or RX pause
+>   at the MAC. This is useful outside of phylib, e.g. in phylink.
+> - phy_get_pause(), which returns the TX/RX enablement status for the
+>   current negotiation results of the PHY.
 > 
-> fib_lookup() performs fib lookup in the routing table configured
-> by the policy routing rules.
+> This allows us to centralise the flow control resolution, rather than
+> spreading it around.
 > 
-> In this patch, we allow invoking the ip4 routing subsystem
-> with known routing table. This is useful for use-cases implementing
-> a separate routing table per tenant.
-> 
-> The patch introduces a new flag named "tbl_known" to the definition of
-> ip_route_input_rcu() and ip_route_input_slow().
-> 
-> When the flag is set, ip_route_input_slow() will call fib_table_lookup()
-> using the defined table instead of using fib_lookup().
-
-I do not like this change. If you want a specific table lookup, then why
-just call fib_table_lookup directly? Both it and rt_dst_alloc are
-exported for modules. Your next patch already does a fib table lookup.
-
-
-> 
-> Signed-off-by: Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
-> Acked-by: Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
-> Acked-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-> Acked-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > ---
->  include/net/route.h |  2 +-
->  net/ipv4/route.c    | 22 ++++++++++++++--------
->  2 files changed, 15 insertions(+), 9 deletions(-)
+>  drivers/net/phy/Makefile     |  3 ++-
+>  drivers/net/phy/linkmode.c   | 44 ++++++++++++++++++++++++++++++++++++
+>  drivers/net/phy/phy_device.c | 26 +++++++++++++++++++++
+>  include/linux/linkmode.h     |  4 ++++
+>  include/linux/phy.h          |  3 +++
+>  5 files changed, 79 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/phy/linkmode.c
 > 
-> diff --git a/include/net/route.h b/include/net/route.h
-> index a9c60fc68e36..4ff977bd7029 100644
-> --- a/include/net/route.h
-> +++ b/include/net/route.h
-> @@ -183,7 +183,7 @@ int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
->  			 u8 tos, struct net_device *devin);
->  int ip_route_input_rcu(struct sk_buff *skb, __be32 dst, __be32 src,
->  		       u8 tos, struct net_device *devin,
-> -		       struct fib_result *res);
-> +		       struct fib_result *res, bool tbl_known);
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index fe5badf13b65..d523fd5670e4 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -1,7 +1,8 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  # Makefile for Linux PHY drivers and MDIO bus drivers
 >  
->  int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
->  		      u8 tos, struct net_device *devin,
-> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> index d5c57b3f77d5..39cec9883d6f 100644
-> --- a/net/ipv4/route.c
-> +++ b/net/ipv4/route.c
-> @@ -2077,7 +2077,7 @@ int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+> -libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o
+> +libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
+> +				   linkmode.o
+>  mdio-bus-y			+= mdio_bus.o mdio_device.o
 >  
->  static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
->  			       u8 tos, struct net_device *dev,
-> -			       struct fib_result *res)
-> +			       struct fib_result *res, bool tbl_known)
->  {
->  	struct in_device *in_dev = __in_dev_get_rcu(dev);
->  	struct flow_keys *flkeys = NULL, _flkeys;
-> @@ -2109,8 +2109,6 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
->  	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
->  		goto martian_source;
->  
-> -	res->fi = NULL;
-> -	res->table = NULL;
->  	if (ipv4_is_lbcast(daddr) || (saddr == 0 && daddr == 0))
->  		goto brd_input;
+>  ifdef CONFIG_MDIO_DEVICE
+> diff --git a/drivers/net/phy/linkmode.c b/drivers/net/phy/linkmode.c
+> new file mode 100644
+> index 000000000000..969918795228
+> --- /dev/null
+> +++ b/drivers/net/phy/linkmode.c
+> @@ -0,0 +1,44 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +#include <linux/linkmode.h>
+> +
+> +/**
+> + * linkmode_resolve_pause - resolve the allowable pause modes
+> + * @local_adv: local advertisement in ethtool format
+> + * @partner_adv: partner advertisement in ethtool format
+> + * @tx_pause: pointer to bool to indicate whether transmit pause should be
+> + * enabled.
+> + * @rx_pause: pointer to bool to indicate whether receive pause should be
+> + * enabled.
+> + *
+> + * Flow control is resolved according to our and the link partners
+> + * advertisements using the following drawn from the 802.3 specs:
+> + *  Local device  Link partner
+> + *  Pause AsymDir Pause AsymDir Result
+> + *    0     X       0     X     Disabled
+> + *    0     1       1     0     Disabled
+> + *    0     1       1     1     TX
+> + *    1     0       0     X     Disabled
+> + *    1     X       1     X     TX+RX
+> + *    1     1       0     1     RX
+> + */
+> +void linkmode_resolve_pause(const unsigned long *local_adv,
+> +			    const unsigned long *partner_adv,
+> +			    bool *tx_pause, bool *rx_pause)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(m);
+> +
+> +	linkmode_and(m, local_adv, partner_adv);
+> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, m)) {
+> +		*tx_pause = true;
+> +		*rx_pause = true;
+> +	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, m)) {
+> +		*tx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +					      partner_adv);
+> +		*rx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +					      local_adv);
+> +	} else {
+> +		*tx_pause = false;
+> +		*rx_pause = false;
+> +	}
 
-I believe this also introduces a potential bug. You remove the fi
-initialization yet do not cover the goto case.
+Hi Russell
 
+It took me a while to check this. Maybe it is the way my brain works,
+but to me, it is not obviously correct. I had to expand the table, and
+they try all 16 combinations.
 
+Maybe a lookup table would be more obvious?
+
+However, now i spent the time:
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
