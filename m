@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DEAC15FB6A
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 01:21:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB57F15FB79
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 01:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727572AbgBOAVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 19:21:14 -0500
-Received: from mail-pf1-f180.google.com ([209.85.210.180]:40050 "EHLO
-        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727455AbgBOAVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 19:21:13 -0500
-Received: by mail-pf1-f180.google.com with SMTP id q8so5642902pfh.7
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 16:21:13 -0800 (PST)
+        id S1727691AbgBOAce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 19:32:34 -0500
+Received: from mail-pl1-f176.google.com ([209.85.214.176]:46846 "EHLO
+        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727529AbgBOAce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 19:32:34 -0500
+Received: by mail-pl1-f176.google.com with SMTP id y8so4308241pll.13;
+        Fri, 14 Feb 2020 16:32:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ozKrbV9YfTz6vucGT9VrMxTC/eyWscPQQFZszlSTXLs=;
-        b=ZOFKQTFdGmFsdKQdBeIk3dfWkY7p633D3i2kz0IPg+3kUZGrAsB910VlR2yo1IKexF
-         fQAKLwAENffwa8EpL4wF9qP1n8YDD3k2Tur8JDBxF/al64R7qDdIEKtnHqJGNE7eMDkn
-         9YDwkRHjGor91Fr/5APDv6BCVlDu+NGnM2xbwTwoZ6qjV0uiogCo466T9ovcrbmcPuS+
-         /1aQePqSPJZYas9KUf/WZKpWppXq63wK4WviiwoZbPgo6UskJFYiDkhtdeIkP/Okq9DG
-         E6lE6Egz/3dydTFPlrCF76o+Xo2RnSRYHkXepeZSgCGoZ8p6RsMfLjayvFtwJCYsH82g
-         /pzg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=gjic0RXEfrgy7QbCi6Q0Q7dhAgvAaIHlh+rIMSyFpZE=;
+        b=qyrC+9400c0WVFWtbhDvFVpEmlOkA7XXHFMMqFG93m2if7P86f5TAD/evJQBjAuFx1
+         GcrqI0pgw3OXgsmF2a+nKBJaxwFATBI5BAXuGkn32LMkcd2PcwlxTv6EaEIM4SiSKQ9i
+         HcqbFbdbULumwTR4iCdbZucSJ8GAqdwgN3JgyBA7OhKb4hwayPoM/m8KGd53loKGk/an
+         J2ul6FzSatcJECfNTvi2BOqvYf/8ZHpDKROIE4q/p4Jj++qSz57oZ+A2bebB9cvRTV43
+         5YRDRm/iZEafus96x5oliNv20UDK2KbJ36k401o0R1WImwbsWYWykmTAuz9vmnhxBiXt
+         s4fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ozKrbV9YfTz6vucGT9VrMxTC/eyWscPQQFZszlSTXLs=;
-        b=BrXV5Rg4ZJcWUgxoKCLlsh0K4akm/Ocjf1MmAXOOAXZf/hIBOTvIxFQXS4N2s5MYXt
-         /EecM1Tuh5jcEHYb3wCuaM4ybh+2GpsnRpbwZh6RDu41bCCRixQcjdIU7EWFYbspVElb
-         4sDGwzW3+NzUiKbDooj8PzkJhGSNYRfeMKhqqsbMhN7vFu0G8X+Gqm4qLhEdzy7ZNAAx
-         wyKmJjKoGlecED+bgXj3TSghXeAgWrCJs14TLs0CW1tYZlZTNM0OyEoqHELRlSdPeaJ0
-         1dsZ6n4WjKXCb+Q/iAkQ3yoZ/vitO14liaMMLpMOOBEiTipBlPx9DqjUG7x8a4Arp0/T
-         aR5A==
-X-Gm-Message-State: APjAAAVbMQaJJ6WWppKjCU8fb0YVwErKjV9ktYOBn0mjL3EmI8BVW0JI
-        +F72TlnN4USGIhuMIU+greNCIA==
-X-Google-Smtp-Source: APXvYqy8DTuEFHGlRtGaV0cPmjZ/m3mjtVfHuIC1GmvBhZ1emVAHuETtIJ350OSAClGfviVU3O6USQ==
-X-Received: by 2002:aa7:8ec1:: with SMTP id b1mr5918175pfr.95.1581726072996;
-        Fri, 14 Feb 2020 16:21:12 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id v8sm7970637pff.151.2020.02.14.16.21.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gjic0RXEfrgy7QbCi6Q0Q7dhAgvAaIHlh+rIMSyFpZE=;
+        b=dotSXTAzL/z845HhJlw/dMjT5DZfHwCJKGo4WEZBuMAn85vLPi83N0XENu7ks53ehU
+         YAlv6IFXpvzIpwKnAgQpgxrKvbUo+eiY4qGg9vEZmWxloxezNbzlxIpT33/ihXDt/uJj
+         mcPLFwJM5vOuV+wO2YXK+Hasv35OdDGUCRZ3S6/stjv+DA9Q9sFFRh+Bd2Uab01FRlOH
+         dnT4Z9MYKcIq49ZcFbE4nmN7R0m2CDg44M1kDcOPBlRSj582WjGgqAjw0+7xeonwin34
+         sWMK4MNZ9War8WNXKNdSAa9WBy7mx8y5vG9pGAH7snVjxf52Nz+j3hAH5Y6PMM8kkFJ8
+         bbLQ==
+X-Gm-Message-State: APjAAAUnFJ3LnZQAqtYvS3aYDfPm8CXgE3h+YnFYcy/HiWDSp7o6VK/J
+        ILnhTOdl0SVLLPFe8Fr4uSRkMMNn
+X-Google-Smtp-Source: APXvYqx/tNo0wVmaj9SiEm72H8hoxYD+DFdYzKicSjwNCWV/yThe4AOzJFCu2qM29jDMpUebt0b7nQ==
+X-Received: by 2002:a17:90a:d103:: with SMTP id l3mr6943730pju.116.1581726752408;
+        Fri, 14 Feb 2020 16:32:32 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b21sm8622622pfp.0.2020.02.14.16.32.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Feb 2020 16:21:12 -0800 (PST)
-Date:   Fri, 14 Feb 2020 16:21:04 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options
- support for erspan metadata
-Message-ID: <20200214162104.04e0bb71@hermes.lan>
-In-Reply-To: <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
-References: <cover.1581676056.git.lucien.xin@gmail.com>
-        <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
-        <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
-        <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
-        <20200214081324.48dc2090@hermes.lan>
-        <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 14 Feb 2020 16:32:31 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: bcm_sf2: Also configure Port 5 for 2Gb/sec on 7278
+Date:   Fri, 14 Feb 2020 16:32:29 -0800
+Message-Id: <20200215003230.27181-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 15 Feb 2020 01:40:27 +0800
-Xin Long <lucien.xin@gmail.com> wrote:
+Either port 5 or port 8 can be used on a 7278 device, make sure that
+port 5 also gets configured properly for 2Gb/sec in that case.
 
-> This's not gonna work. as the output will be:
-> {"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
-> instead of
-> {"ver":2,"index":0,"dir":1,"hwid":2} (number)
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/bcm_sf2.c      | 3 +++
+ drivers/net/dsa/bcm_sf2_regs.h | 1 +
+ 2 files changed, 4 insertions(+)
 
-JSON is typeless. Lots of values are already printed in hex
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index d1955543acd1..6feaf8cb0809 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -616,6 +616,9 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
+ 	if (state->duplex == DUPLEX_FULL)
+ 		reg |= DUPLX_MODE;
+ 
++	if (priv->type == BCM7278_DEVICE_ID && dsa_is_cpu_port(ds, port))
++		reg |= GMIIP_SPEED_UP_2G;
++
+ 	core_writel(priv, reg, offset);
+ }
+ 
+diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
+index d8a5e6269c0e..784478176335 100644
+--- a/drivers/net/dsa/bcm_sf2_regs.h
++++ b/drivers/net/dsa/bcm_sf2_regs.h
+@@ -178,6 +178,7 @@ enum bcm_sf2_reg_offs {
+ #define  RXFLOW_CNTL			(1 << 4)
+ #define  TXFLOW_CNTL			(1 << 5)
+ #define  SW_OVERRIDE			(1 << 6)
++#define  GMIIP_SPEED_UP_2G		(1 << 7)
+ 
+ #define CORE_WATCHDOG_CTRL		0x001e4
+ #define  SOFTWARE_RESET			(1 << 7)
+-- 
+2.17.1
+
