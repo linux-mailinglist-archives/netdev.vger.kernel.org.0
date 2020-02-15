@@ -2,105 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A00915FB51
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 01:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEAC15FB6A
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 01:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727572AbgBOAIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Feb 2020 19:08:35 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44266 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgBOAIf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 19:08:35 -0500
-Received: by mail-qt1-f194.google.com with SMTP id k7so8159196qth.11
-        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 16:08:34 -0800 (PST)
+        id S1727572AbgBOAVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Feb 2020 19:21:14 -0500
+Received: from mail-pf1-f180.google.com ([209.85.210.180]:40050 "EHLO
+        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727455AbgBOAVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Feb 2020 19:21:13 -0500
+Received: by mail-pf1-f180.google.com with SMTP id q8so5642902pfh.7
+        for <netdev@vger.kernel.org>; Fri, 14 Feb 2020 16:21:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=b17aKGGo37hlriIldcmoz+zA0kaOJNJHOAY7BkBHEEk=;
-        b=H/E8XY97zCl0Ib25evOj21LSEiM8N5LSI10j8qvatp+MzEW6YOGUFB9JUTPAKhcIvM
-         W/RbP59wGMQnZ1Dww5jFb77KfhEuFo1i0igK9qeK3S5PFBnia2Tq+8lao2771TouepQA
-         gIR9Dpxm5aPshfKWd9eFFMBMIOmiSjwoQJ+ppvFwHRe6Z7O8MY6yoT4qiKD6lQp5qNM0
-         y2ut8xvgWYj8rjobujQdcBZ6y+OE/8K2W8Ijd1LvMz7whK9t8pm0dE2ZjpNUioobz+zq
-         Ch9jYcn5M239LBLxiTqNicHIBKS2aMh9lJYtQlQTOFIgphTp6Ut9I413/hVIBVWTgqvq
-         sY7Q==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ozKrbV9YfTz6vucGT9VrMxTC/eyWscPQQFZszlSTXLs=;
+        b=ZOFKQTFdGmFsdKQdBeIk3dfWkY7p633D3i2kz0IPg+3kUZGrAsB910VlR2yo1IKexF
+         fQAKLwAENffwa8EpL4wF9qP1n8YDD3k2Tur8JDBxF/al64R7qDdIEKtnHqJGNE7eMDkn
+         9YDwkRHjGor91Fr/5APDv6BCVlDu+NGnM2xbwTwoZ6qjV0uiogCo466T9ovcrbmcPuS+
+         /1aQePqSPJZYas9KUf/WZKpWppXq63wK4WviiwoZbPgo6UskJFYiDkhtdeIkP/Okq9DG
+         E6lE6Egz/3dydTFPlrCF76o+Xo2RnSRYHkXepeZSgCGoZ8p6RsMfLjayvFtwJCYsH82g
+         /pzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=b17aKGGo37hlriIldcmoz+zA0kaOJNJHOAY7BkBHEEk=;
-        b=WYm/ciafKfXSoSad370lF5Ri9584cm5RsIsYl3neD+QCPvjGxBMvbWRuv2Lu6/E6vD
-         Uxbw937gBc39zDHchjJFxtTscmX+kMoPggHxa6X2MB3ELpmyPttzW2WhqH7a/iVWm4v2
-         3hjnHzvL6A5YNxiiGM0T5Pkd2hDh4we7pS0Cdr1S6OngqccRKksSePf1lOzbha48qnyv
-         TF/6nveTPfsGnJKMDs/chEp1dmerJXK/Pgqwc/DYXVYYWcpzqCSeqzJI/Ll176CC8yPu
-         WiC3oXKA44GavLbp2++f6TOD9iTlsGcr23SZFeUfkjleiS09iuGGnrVJ/pl8pZkVcN9q
-         otWw==
-X-Gm-Message-State: APjAAAVhLuOwEKwV+c5p0UarHkOAXg8Q4pio04AXUNfcKQbQ/Tx/wWhg
-        Dy4eXNo9EFP4cqeW3Qf9DY/Jiw==
-X-Google-Smtp-Source: APXvYqwaX3Qx0JPPkN4W2i4VvkAqp+PbHoLHG0AyAgFRU7VWjYcrc1zecMEqMlyXjqs3YalcSS5+Cw==
-X-Received: by 2002:aed:2266:: with SMTP id o35mr4713762qtc.392.1581725314463;
-        Fri, 14 Feb 2020 16:08:34 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id b26sm4404148qkk.5.2020.02.14.16.08.33
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 14 Feb 2020 16:08:33 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j2l0b-0003m7-Bl; Fri, 14 Feb 2020 20:08:33 -0400
-Date:   Fri, 14 Feb 2020 20:08:33 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, parav@mellanox.com, galpress@amazon.com,
-        selvin.xavier@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        benve@cisco.com, bharat@chelsio.com, xavier.huwei@huawei.com,
-        yishaih@mellanox.com, leonro@mellanox.com, mkalderon@marvell.com,
-        aditr@vmware.com, Kiran Patil <kiran.patil@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20200215000833.GA31668@ziepe.ca>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
- <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ozKrbV9YfTz6vucGT9VrMxTC/eyWscPQQFZszlSTXLs=;
+        b=BrXV5Rg4ZJcWUgxoKCLlsh0K4akm/Ocjf1MmAXOOAXZf/hIBOTvIxFQXS4N2s5MYXt
+         /EecM1Tuh5jcEHYb3wCuaM4ybh+2GpsnRpbwZh6RDu41bCCRixQcjdIU7EWFYbspVElb
+         4sDGwzW3+NzUiKbDooj8PzkJhGSNYRfeMKhqqsbMhN7vFu0G8X+Gqm4qLhEdzy7ZNAAx
+         wyKmJjKoGlecED+bgXj3TSghXeAgWrCJs14TLs0CW1tYZlZTNM0OyEoqHELRlSdPeaJ0
+         1dsZ6n4WjKXCb+Q/iAkQ3yoZ/vitO14liaMMLpMOOBEiTipBlPx9DqjUG7x8a4Arp0/T
+         aR5A==
+X-Gm-Message-State: APjAAAVbMQaJJ6WWppKjCU8fb0YVwErKjV9ktYOBn0mjL3EmI8BVW0JI
+        +F72TlnN4USGIhuMIU+greNCIA==
+X-Google-Smtp-Source: APXvYqy8DTuEFHGlRtGaV0cPmjZ/m3mjtVfHuIC1GmvBhZ1emVAHuETtIJ350OSAClGfviVU3O6USQ==
+X-Received: by 2002:aa7:8ec1:: with SMTP id b1mr5918175pfr.95.1581726072996;
+        Fri, 14 Feb 2020 16:21:12 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v8sm7970637pff.151.2020.02.14.16.21.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Feb 2020 16:21:12 -0800 (PST)
+Date:   Fri, 14 Feb 2020 16:21:04 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options
+ support for erspan metadata
+Message-ID: <20200214162104.04e0bb71@hermes.lan>
+In-Reply-To: <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
+References: <cover.1581676056.git.lucien.xin@gmail.com>
+        <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
+        <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
+        <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
+        <20200214081324.48dc2090@hermes.lan>
+        <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 11:14:00AM -0800, Jeff Kirsher wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
-> 
-> This is the initial implementation of the Virtual Bus,
-> virtbus_device and virtbus_driver.  The virtual bus is
-> a software based bus intended to support registering
-> virtbus_devices and virtbus_drivers and provide matching
-> between them and probing of the registered drivers.
-> 
-> The bus will support probe/remove shutdown and
-> suspend/resume callbacks.
-> 
-> Kconfig and Makefile alterations are included
+On Sat, 15 Feb 2020 01:40:27 +0800
+Xin Long <lucien.xin@gmail.com> wrote:
 
-Can you please include the various sysfs paths that are generated by
-all of this for irdma in some commit message?
+> This's not gonna work. as the output will be:
+> {"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
+> instead of
+> {"ver":2,"index":0,"dir":1,"hwid":2} (number)
 
-I'm particularly interested to see how all the parentage turned out
-for the virtual device.
-
-Is PM going to work? IIRC PM will require that the virtual bus device
-goes through PM states in the right order relative to the PCI
-device. This all turned out OK?
-
-The concept certainly seems like what I imagined
-
-I'm not totally sold on 'virtual bus' as a name for this 'multi
-function pci device' thing, but you can work that out with Greg :)
-
-Thanks,
-Jason
+JSON is typeless. Lots of values are already printed in hex
