@@ -2,65 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECAEE15FDE6
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 10:56:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9488D15FE09
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 11:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725974AbgBOJ4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 04:56:52 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:33490 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbgBOJ4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 04:56:52 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 541C015D54AD5;
-        Sat, 15 Feb 2020 01:56:51 -0800 (PST)
-Date:   Sat, 15 Feb 2020 01:56:47 -0800 (PST)
-Message-Id: <20200215.015647.1085864163503366086.davem@davemloft.net>
-To:     marex@denx.de
-Cc:     netdev@vger.kernel.org, lukas@wunner.de, ynezz@true.cz,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH 2/3] net: ks8851-ml: Fix 16-bit data access
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <925845a7-c79b-a434-ca1c-bc9b660aa3ba@denx.de>
-References: <20200210184139.342716-2-marex@denx.de>
-        <20200215.012458.724817187941650024.davem@davemloft.net>
-        <925845a7-c79b-a434-ca1c-bc9b660aa3ba@denx.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 15 Feb 2020 01:56:51 -0800 (PST)
+        id S1726217AbgBOKuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 05:50:00 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:53279 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgBOKt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 05:49:59 -0500
+Received: by mail-pj1-f66.google.com with SMTP id n96so5126962pjc.3
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 02:49:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=yBP4Vy7DWHI/UAiR8Qm9FYp+5N6BpaIF/sueqcJlpu0=;
+        b=pD2Q6KxFwM5Bcyep8ZYeeXYwl87jqgsfH1d7+FWrs0y2wYIRXWafoof84nR0bPLfJZ
+         BOCQ3y2NOs4yqIuOAx1WoA9kJ87uAljqYLwV69vdBiLzg6DbhFMVpjaZcg6r8BkqSlhC
+         lcUJ6qy712Om5H7jEtU1KkyqW+e6lj2U0G33CHzi7hkM4HrWpPZlBRKeuZ3AF8UNYve1
+         UH/9W2fv1Ffgx3NtG+hiwgUPbqBlgLiAzchLpreOKGxQ+P5wLu4nSpeeBmTYARMPc/Yr
+         QQwBG2/weLXX1d9/0tto3QT3BYIyqKABbAjVUr+zwYuhBXvTKSLb8iPi3EUANdt7pkzK
+         NW3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yBP4Vy7DWHI/UAiR8Qm9FYp+5N6BpaIF/sueqcJlpu0=;
+        b=ii5FfZrXs9ovowD6QPOTF04vjOnPRI27ZrebMQq5U1xUsQQJck9K9bMUt6dLzQsHEW
+         9HDrkoI/OTmCCByEV1Y4PZSdkDzNJLeyoGC10tPIwIJ0u4O0MINCgyTKeBvhj+JHwZ/i
+         brwWQNZnaQw+SKRbj10ajVhY/KNvKYONcrf725XBbRuOoP+YZ6O0PbbgKTyTEBIZsEeQ
+         w2Yng3obWVJC6QVeBK2t4OgqpnWeDlVnPi2V/jntDKc0rctZXAQqRqrw3z79ekgaxm4f
+         QfidLuVMraNae2ytvlh4ieX7IdtyMw3kn0rt4suOJkinPxAV6Eitavcg0S0PucMlQ/ia
+         m6jQ==
+X-Gm-Message-State: APjAAAWptEfUEco+VOyH9aLh0HsJQFEcrVnjY1DWjEwNi9EwsN0geTYM
+        71T81ORoQedGRvvJCqtjn7c=
+X-Google-Smtp-Source: APXvYqxzLigt5WaNyyAeX6qNRgAX1meBvu28jbJSnbd531wsrpQgnqjOkvMMrUPB7difK6AMKadJdg==
+X-Received: by 2002:a17:90a:8042:: with SMTP id e2mr8926425pjw.16.1581763797443;
+        Sat, 15 Feb 2020 02:49:57 -0800 (PST)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id 18sm2938520pfj.20.2020.02.15.02.49.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Feb 2020 02:49:56 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, eric.dumazet@gmail.com,
+        netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net v2 0/3] bonding: fix bonding interface bugs
+Date:   Sat, 15 Feb 2020 10:49:49 +0000
+Message-Id: <20200215104949.21355-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Date: Sat, 15 Feb 2020 10:47:56 +0100
+This patchset fixes lockdep problem in bonding interface
 
-> On 2/15/20 10:24 AM, David Miller wrote:
->> From: Marek Vasut <marex@denx.de>
->> Date: Mon, 10 Feb 2020 19:41:38 +0100
->> 
->>> @@ -197,7 +197,7 @@ static inline void ks_inblk(struct ks_net *ks, u16 *wptr, u32 len)
->>>  {
->>>  	len >>= 1;
->>>  	while (len--)
->>> -		*wptr++ = (u16)ioread16(ks->hw_addr);
->>> +		*wptr++ = swab16(ioread16(ks->hw_addr));
->> 
->> I agree with the other feedback, the endianness looks wrong here.
->> 
->> The ioread16() translates whatever is behind ks->hw_addr into cpu
->> endianness.
->> 
->> This is either always little endian (for example), which means that
->> unconditionally swapping this doesn't seem to make sense.
-> 
-> So what is the suggestion to fix this properly ?
+1. The first patch is to add missing netdev_update_lockdep_key().
+After bond_release(), netdev_update_lockdep_key() should be called.
+But both ioctl path and attribute path don't call
+netdev_update_lockdep_key().
+This patch adds missing netdev_update_lockdep_key().
 
-once you know the endianness coming out of ioread16() you can then
-use le16_to_cpu() or be16_to_cpu() as appropriate.
+2. The second patch is to export netdev_next_lower_dev_rcu symbol.
+netdev_next_lower_dev_rcu() is useful to implement the function,
+which is to walk their all lower interfaces.
+This patch is actually a preparing patch for the third patch.
+
+3. The last patch is to fix lockdep waring in bond_get_stats().
+The stats_lock uses a dynamic lockdep key.
+So, after "nomaster" operation, updating the dynamic lockdep key
+routine is needed. but it doesn't
+So, lockdep warning occurs.
+
+Change log:
+v1 -> v2:
+ - Update headline from "fix bonding interface bugs"
+   to "bonding: fix bonding interface bugs"
+ - Drop a patch("bonding: do not collect slave's stats")
+ - Add new patches
+   - ("net: export netdev_next_lower_dev_rcu()")
+   - ("bonding: fix lockdep warning in bond_get_stats()")
+
+Taehee Yoo (3):
+  bonding: add missing netdev_update_lockdep_key()
+  net: export netdev_next_lower_dev_rcu()
+  bonding: fix lockdep warning in bond_get_stats()
+
+ drivers/net/bonding/bond_main.c    | 55 ++++++++++++++++++++++++++++--
+ drivers/net/bonding/bond_options.c |  2 ++
+ include/linux/netdevice.h          |  7 ++--
+ net/core/dev.c                     |  6 ++--
+ 4 files changed, 60 insertions(+), 10 deletions(-)
+
+-- 
+2.17.1
+
