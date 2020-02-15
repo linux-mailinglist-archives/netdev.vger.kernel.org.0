@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4315415FEB4
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 14:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB52815FEB5
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 14:54:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgBONyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 08:54:41 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36097 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgBONyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 08:54:41 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z3so14363906wru.3
-        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 05:54:39 -0800 (PST)
+        id S1726462AbgBONyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 08:54:43 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40222 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbgBONym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 08:54:42 -0500
+Received: by mail-wm1-f65.google.com with SMTP id t14so13867030wmi.5
+        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 05:54:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ipD4LW6uHm0pxW7Uj+c2BamCcec0X8UMajzOQ1sCxqM=;
-        b=MpUF7xG4e2QzBgUuxaT/T6rm5FdBQK0PqshtbUOW0wdi48WZfZBlO6n5G7ZkLpsFy6
-         WXopulSyBq7Ny0yiE96MuUMRM0pv5/ndSXhp0LrU/Jk/Ayu4P5EHbLGxzrX15kcTn3d7
-         Tq0ZovMVvAys4m2PPrc6Sw1Ar2CYZjmArgvDlOfLig21b+GqO7lSqXx/b4DWdHig4DaD
-         MgOpweKHeoWFyZe5IGy8lj0OauoO80xeaXDmgkAomnoHlM+dS+L0YR+tE9mRjcLU5WP4
-         NBgqzwcUGkrKpfQdnwSP8jTrhLhN/c7RAfdHJGmFVZb6E4hpIBv5DMy84RmOpjg4YDao
-         sXKw==
+        bh=Xhcr1JSZN9mrLpDzKd4UDLzrvfdLETKaAWkV9cGi/AQ=;
+        b=chbI49HNBlylen5mTRISq5nsTUX3uV93N4sOLnLNYvcTjPJdfDgKzzvpP9Pk4XskP7
+         KMp1yqKBtvXz3Y7osBQV8L4HtgsDAsgtXreMcIlqQBeauWT+/KccEnpAPcWDhPBqFEjL
+         QXMhi6ZLtJAvR3jCiPkE9+vp9WwVjrSG0l++LWXVlOglIzqkP4LHNctn7e6IUhrJe9zq
+         WFCCL4j8veNTBzBBFjyU7JqagSwXvlGURalHsqz2riIS6bExTtdbDHNnTL1uuihdwRcY
+         wAc2AV2yBwHlZtzbGPKwzffBJq8TmmGeobM2YVPFnl67s+dUHxA6rU/puSO8WEi3qbCz
+         PThw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ipD4LW6uHm0pxW7Uj+c2BamCcec0X8UMajzOQ1sCxqM=;
-        b=ZBFisHNYIocyK6OyPlPr7ZU8tJ/LNabhPwewkzCcJE2cG0AqfbassTGsJIVQz/377f
-         YhjdlxJqesbQH0PdqlrXYWoWoTxaj3XkqOLDhH0UoDycTSsb3L7jh8n2P1MwQRRMQAP4
-         lEAyuZvoAj4zq0nHTQIGzOPPKLBuLdTTtCKn/CPv6a3DKrCjcDyEMRnAyEU4NuNmrNxD
-         7sPOgd7tXmDJ26f0lsqV4tKwWtWmWTFN3Habvz5eGgqPo7FGf2ArnJdLv/JLP/UU02Qu
-         uBJVZ4ZaOBh/khcpGOZabsEZlU4jdJWDXbImj3+Ide/5kl7nLe1ntr1r51ltf0aTT6Hj
-         b5dg==
-X-Gm-Message-State: APjAAAV8eKB6q34GKy6nXbDJYueSZeAWjmOeDa+3Wx656g8lG3Pzk1K0
-        uNuv+ZAZkLF7ZCS6DN65UywGxLF4
-X-Google-Smtp-Source: APXvYqwZgfZwze67UNb8gd/Rk09mfuYqLeb71Ms7w4BD3iUf3LxvHVKgQtaIVSL+Fj9G4oGMpWYdig==
-X-Received: by 2002:a05:6000:8c:: with SMTP id m12mr10373468wrx.142.1581774878935;
-        Sat, 15 Feb 2020 05:54:38 -0800 (PST)
+        bh=Xhcr1JSZN9mrLpDzKd4UDLzrvfdLETKaAWkV9cGi/AQ=;
+        b=dy7bZdbhHYx2+SvgrjTuw+lan0LFPAbUooKlLgG7tUtGvsWxLPO/m1cOWBH90cpJ9d
+         L+K6p62AJ76EZ4X9aAm66mb8W0JbdV1Pn3hToo9rL/8N3uxPFSdrNhJg12RUkOymAApj
+         6rfuQuvatsiWS8+9+pMiIIN/TGEqH0UiX/uXMfe4IBfAYiy+8C5xThjWKFb/pG6C29dM
+         qeRP7aTHVbHtxZbeWsV9bvnCd0KP3ge1CNHe4f+2BjZuF+bV3k6r15PbIgUPISfiAm97
+         h7atRNjWfnC4wftFOV4fWZCunq0j0DuiR7vMKXDfI3kY//7naNcvXLAJR8Vp4GwEt3L4
+         2Rhg==
+X-Gm-Message-State: APjAAAW+LZIoWfdSL/60LVQdYhMLMKSpOPEPZCDL8gA25SD77i6cthDW
+        galPZfJ9fXx1erl8zlt6HW4fkfn+
+X-Google-Smtp-Source: APXvYqyZu5UPvql1aIlG3AR8KfkPlDUeUvC0Z6WpVpUA1/cmNNCTaEvj5EaDkwZxgKCVLYTHHItwwg==
+X-Received: by 2002:a7b:ce18:: with SMTP id m24mr11081577wmc.123.1581774879904;
+        Sat, 15 Feb 2020 05:54:39 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:1ddf:2e8f:533:981f? (p200300EA8F2960001DDF2E8F0533981F.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1ddf:2e8f:533:981f])
-        by smtp.googlemail.com with ESMTPSA id x132sm21294070wmg.0.2020.02.15.05.54.38
+        by smtp.googlemail.com with ESMTPSA id v14sm11480968wrm.28.2020.02.15.05.54.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Feb 2020 05:54:38 -0800 (PST)
-Subject: [PATCH net-next 5/7] r8169: improve rtl8169_get_mac_version
+        Sat, 15 Feb 2020 05:54:39 -0800 (PST)
+Subject: [PATCH net-next 6/7] r8169: improve rtl_jumbo_config
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <bd37db86-a725-57b3-4618-527597752798@gmail.com>
-Message-ID: <8e8ffa83-3ab1-a53a-2eda-f0f3a793d21a@gmail.com>
-Date:   Sat, 15 Feb 2020 14:52:05 +0100
+Message-ID: <44dcba3f-c804-ed96-fe52-46a7be8ba858@gmail.com>
+Date:   Sat, 15 Feb 2020 14:52:58 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.2
 MIME-Version: 1.0
@@ -65,124 +65,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently code snippet (RTL_R32(tp, TxConfig) >> 20) & 0xfcf is used
-in few places to extract the chip XID. Change the code to do the XID
-extraction only once.
+Merge enabling and disabling jumbo packets to one function to make
+the code a little simpler.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 50 ++++++++++++-----------
- 1 file changed, 27 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 69 +++++++++--------------
+ 1 file changed, 27 insertions(+), 42 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 46e8e3dfa..25b0cae73 100644
+index 25b0cae73..ce4cb7d7b 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2045,7 +2045,7 @@ static void rtl_enable_eee(struct rtl8169_private *tp)
- 		phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
+@@ -2472,66 +2472,52 @@ static void r8168b_1_hw_jumbo_disable(struct rtl8169_private *tp)
+ 	RTL_W8(tp, Config4, RTL_R8(tp, Config4) & ~(1 << 0));
  }
  
--static void rtl8169_get_mac_version(struct rtl8169_private *tp)
-+static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
+-static void rtl_hw_jumbo_enable(struct rtl8169_private *tp)
++static void rtl_jumbo_config(struct rtl8169_private *tp)
  {
- 	/*
- 	 * The driver currently handles the 8168Bf and the 8168Be identically
-@@ -2061,7 +2061,7 @@ static void rtl8169_get_mac_version(struct rtl8169_private *tp)
- 	static const struct rtl_mac_info {
- 		u16 mask;
- 		u16 val;
--		u16 mac_version;
-+		enum mac_version ver;
- 	} mac_info[] = {
- 		/* 8125 family. */
- 		{ 0x7cf, 0x608,	RTL_GIGA_MAC_VER_60 },
-@@ -2148,22 +2148,22 @@ static void rtl8169_get_mac_version(struct rtl8169_private *tp)
- 		{ 0x000, 0x000,	RTL_GIGA_MAC_NONE   }
- 	};
- 	const struct rtl_mac_info *p = mac_info;
--	u16 reg = RTL_R32(tp, TxConfig) >> 20;
-+	enum mac_version ver;
+-	rtl_unlock_config_regs(tp);
+-	switch (tp->mac_version) {
+-	case RTL_GIGA_MAC_VER_12:
+-	case RTL_GIGA_MAC_VER_17:
+-		pcie_set_readrq(tp->pci_dev, 512);
+-		r8168b_1_hw_jumbo_enable(tp);
+-		break;
+-	case RTL_GIGA_MAC_VER_18 ... RTL_GIGA_MAC_VER_26:
+-		pcie_set_readrq(tp->pci_dev, 512);
+-		r8168c_hw_jumbo_enable(tp);
+-		break;
+-	case RTL_GIGA_MAC_VER_27 ... RTL_GIGA_MAC_VER_28:
+-		r8168dp_hw_jumbo_enable(tp);
+-		break;
+-	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_33:
+-		pcie_set_readrq(tp->pci_dev, 512);
+-		r8168e_hw_jumbo_enable(tp);
+-		break;
+-	default:
+-		break;
+-	}
+-	rtl_lock_config_regs(tp);
+-}
++	bool jumbo = tp->dev->mtu > ETH_DATA_LEN;
  
--	while ((reg & p->mask) != p->val)
-+	while ((xid & p->mask) != p->val)
- 		p++;
--	tp->mac_version = p->mac_version;
--
--	if (tp->mac_version == RTL_GIGA_MAC_NONE) {
--		dev_err(tp_to_dev(tp), "unknown chip XID %03x\n", reg & 0xfcf);
--	} else if (!tp->supports_gmii) {
--		if (tp->mac_version == RTL_GIGA_MAC_VER_42)
--			tp->mac_version = RTL_GIGA_MAC_VER_43;
--		else if (tp->mac_version == RTL_GIGA_MAC_VER_45)
--			tp->mac_version = RTL_GIGA_MAC_VER_47;
--		else if (tp->mac_version == RTL_GIGA_MAC_VER_46)
--			tp->mac_version = RTL_GIGA_MAC_VER_48;
-+	ver = p->ver;
-+
-+	if (ver != RTL_GIGA_MAC_NONE && !gmii) {
-+		if (ver == RTL_GIGA_MAC_VER_42)
-+			ver = RTL_GIGA_MAC_VER_43;
-+		else if (ver == RTL_GIGA_MAC_VER_45)
-+			ver = RTL_GIGA_MAC_VER_47;
-+		else if (ver == RTL_GIGA_MAC_VER_46)
-+			ver = RTL_GIGA_MAC_VER_48;
+-static void rtl_hw_jumbo_disable(struct rtl8169_private *tp)
+-{
+ 	rtl_unlock_config_regs(tp);
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_12:
+ 	case RTL_GIGA_MAC_VER_17:
+-		r8168b_1_hw_jumbo_disable(tp);
++		if (jumbo) {
++			pcie_set_readrq(tp->pci_dev, 512);
++			r8168b_1_hw_jumbo_enable(tp);
++		} else {
++			r8168b_1_hw_jumbo_disable(tp);
++		}
+ 		break;
+ 	case RTL_GIGA_MAC_VER_18 ... RTL_GIGA_MAC_VER_26:
+-		r8168c_hw_jumbo_disable(tp);
++		if (jumbo) {
++			pcie_set_readrq(tp->pci_dev, 512);
++			r8168c_hw_jumbo_enable(tp);
++		} else {
++			r8168c_hw_jumbo_disable(tp);
++		}
+ 		break;
+ 	case RTL_GIGA_MAC_VER_27 ... RTL_GIGA_MAC_VER_28:
+-		r8168dp_hw_jumbo_disable(tp);
++		if (jumbo)
++			r8168dp_hw_jumbo_enable(tp);
++		else
++			r8168dp_hw_jumbo_disable(tp);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_33:
+-		r8168e_hw_jumbo_disable(tp);
++		if (jumbo) {
++			pcie_set_readrq(tp->pci_dev, 512);
++			r8168e_hw_jumbo_enable(tp);
++		} else {
++			r8168e_hw_jumbo_disable(tp);
++		}
+ 		break;
+ 	default:
+ 		break;
  	}
-+
-+	return ver;
+ 	rtl_lock_config_regs(tp);
+ 
+-	if (pci_is_pcie(tp->pci_dev) && tp->supports_gmii)
++	if (!jumbo && pci_is_pcie(tp->pci_dev) && tp->supports_gmii)
+ 		pcie_set_readrq(tp->pci_dev, 4096);
  }
  
- static void rtl_release_firmware(struct rtl8169_private *tp)
-@@ -5440,9 +5440,10 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
- static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct rtl8169_private *tp;
-+	int jumbo_max, region, rc;
-+	enum mac_version chipset;
- 	struct net_device *dev;
--	int chipset, region;
--	int jumbo_max, rc;
-+	u16 xid;
- 
- 	/* Some tools for creating an initramfs don't consider softdeps, then
- 	 * r8169.ko may be in initramfs, but realtek.ko not. Then the generic
-@@ -5509,10 +5510,16 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	tp->mmio_addr = pcim_iomap_table(pdev)[region];
- 
-+	xid = (RTL_R32(tp, TxConfig) >> 20) & 0xfcf;
-+
- 	/* Identify chip attached to board */
--	rtl8169_get_mac_version(tp);
--	if (tp->mac_version == RTL_GIGA_MAC_NONE)
-+	chipset = rtl8169_get_mac_version(xid, tp->supports_gmii);
-+	if (chipset == RTL_GIGA_MAC_NONE) {
-+		dev_err(&pdev->dev, "unknown chip XID %03x\n", xid);
- 		return -ENODEV;
-+	}
-+
-+	tp->mac_version = chipset;
- 
- 	tp->cp_cmd = RTL_R16(tp, CPlusCmd);
- 
-@@ -5530,8 +5537,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	pci_set_master(pdev);
- 
--	chipset = tp->mac_version;
+-static void rtl_jumbo_config(struct rtl8169_private *tp, int mtu)
+-{
+-	if (mtu > ETH_DATA_LEN)
+-		rtl_hw_jumbo_enable(tp);
+-	else
+-		rtl_hw_jumbo_disable(tp);
+-}
 -
- 	rc = rtl_alloc_irq(tp);
- 	if (rc < 0) {
- 		dev_err(&pdev->dev, "Can't allocate interrupt\n");
-@@ -5619,8 +5624,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_mdio_unregister;
+ DECLARE_RTL_COND(rtl_chipcmd_cond)
+ {
+ 	return RTL_R8(tp, ChipCmd) & CmdReset;
+@@ -3875,7 +3861,7 @@ static void rtl_hw_start(struct  rtl8169_private *tp)
+ 	rtl_set_rx_tx_desc_registers(tp);
+ 	rtl_lock_config_regs(tp);
  
- 	netif_info(tp, probe, dev, "%s, %pM, XID %03x, IRQ %d\n",
--		   rtl_chip_infos[chipset].name, dev->dev_addr,
--		   (RTL_R32(tp, TxConfig) >> 20) & 0xfcf,
-+		   rtl_chip_infos[chipset].name, dev->dev_addr, xid,
- 		   pci_irq_vector(pdev, 0));
+-	rtl_jumbo_config(tp, tp->dev->mtu);
++	rtl_jumbo_config(tp);
  
- 	if (jumbo_max)
+ 	/* Initially a 10 us delay. Turned it into a PCI commit. - FR */
+ 	rtl_pci_commit(tp);
+@@ -3891,10 +3877,9 @@ static int rtl8169_change_mtu(struct net_device *dev, int new_mtu)
+ {
+ 	struct rtl8169_private *tp = netdev_priv(dev);
+ 
+-	rtl_jumbo_config(tp, new_mtu);
+-
+ 	dev->mtu = new_mtu;
+ 	netdev_update_features(dev);
++	rtl_jumbo_config(tp);
+ 
+ 	return 0;
+ }
 -- 
 2.25.0
 
