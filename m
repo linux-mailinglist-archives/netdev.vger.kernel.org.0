@@ -2,142 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E4FD15FF97
-	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2539215FF9A
+	for <lists+netdev@lfdr.de>; Sat, 15 Feb 2020 19:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbgBOSAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 13:00:10 -0500
-Received: from mail-io1-f66.google.com ([209.85.166.66]:46990 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgBOSAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 13:00:10 -0500
-Received: by mail-io1-f66.google.com with SMTP id t26so855471ioi.13
-        for <netdev@vger.kernel.org>; Sat, 15 Feb 2020 10:00:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kixFfhcLwan/IwY+vJbS7NYb2qAqPQPDCAMwJty/8GU=;
-        b=NeSLq5Xu3TqzINYsfVkzehmipG/J1O3OqipSbtvuX8DEMXSGGA7FNTJmfqlcIulPDI
-         xM3OI7UXoUev0bl6X/7/zlZSgS7WYkMcWVd9UK1CKpAgvHXrhi1ei0SCNF1sP3/b8B9U
-         IOiSi7qyYMgQJG+sPysBKruzosfgW+pHzfNWV3tx7YQBIwtqQ6wcB2c3NFSL9qyR6QOU
-         YMtm+9Ls7IHrub750W/JShQfjTzmoVlfTYC+vzhnRS9sskLABR8HsZDuebKTY1KyozTn
-         6wxJJR16tP/tmV9/giOib7/a0Ub4PWDgzV7REd/FsmuksAr7yT5zOEBs7nepRJASUDUF
-         M53w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kixFfhcLwan/IwY+vJbS7NYb2qAqPQPDCAMwJty/8GU=;
-        b=NAxO8D9vnH3lrIhOYMfNnuPisrrofdSmShxwIa0gcVnWirSJnPyQbmsKvWtV2BwK1u
-         CmHDxh5bheCedncTYIQb1ps37yabNISBpjdtNTKvhP7y9HNfciEQH8PLN6x7bf0Dc4yj
-         c1yLTkf4AN4hvipjlGP/7Y47Az50T/bUIl4ex1iqgzGbRKE0VJZOpQQA6SFNMtUnhsly
-         Oaz2vk5rXOonp4EmSvC79QDsPch6IgF3qDxXgeA7hpc+ABE8h8Dq+3gfvea0vm3fUFI5
-         BoayuBLPCVvXAqcnphq+QyW8fI0nenPysbLFEaz3XrbDVV4SEBh7XDDXomvF1bpI+BOy
-         b1ow==
-X-Gm-Message-State: APjAAAVcRgSesEGI14++145HH7LT+YxUl9csCK3BhhWKaJVEmnTFYBFV
-        ykWF7zCJfPf2yX23PJQWLlvabr/W
-X-Google-Smtp-Source: APXvYqxxYwfgz4dLvdf1G1unzgHIJ25iIHFiUGNxnjnWkDWE2M8UQ8pP+jpNVUueFdzOcSK/ZOiCqQ==
-X-Received: by 2002:a6b:ac45:: with SMTP id v66mr6734357ioe.76.1581789610060;
-        Sat, 15 Feb 2020 10:00:10 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:65d1:a3b2:d15f:79af? ([2601:282:803:7700:65d1:a3b2:d15f:79af])
-        by smtp.googlemail.com with ESMTPSA id x62sm3339884ill.86.2020.02.15.10.00.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Feb 2020 10:00:09 -0800 (PST)
-Subject: Re: [PATCH net 1/2] ipv6: Fix route replacement with dev-only route
-To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>,
-        netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Michal_Kube=c4=8dek?= <mkubecek@suse.cz>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Ido Schimmel <idosch@idosch.org>
-References: <20200212014107.110066-1-bpoirier@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <46537e63-1ba9-5e76-fad3-03cae4d0d60f@gmail.com>
-Date:   Sat, 15 Feb 2020 11:00:08 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
-MIME-Version: 1.0
-In-Reply-To: <20200212014107.110066-1-bpoirier@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726510AbgBOSEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 13:04:23 -0500
+Received: from mail-eopbgr1310112.outbound.protection.outlook.com ([40.107.131.112]:45632
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726299AbgBOSEX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Feb 2020 13:04:23 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gODo6Eg2bOczH3ZnCUVnAocLODBLwtdP25rav1sL8ZB0CPoJ3XKPdUO8qfdiqiUcCQccQ/w7rv8LP6sRj8Y/iaFL6JL6ePbWeS6FooryjxexSTaSDgcOMsp4PyCpzM1rC1dfTv7IT/hn1mHScz+j0pLHDPGwWyebvej9ILHFAaljGOzS35jwfK5ae0/uH1qJb9rDbwnMrmFfRvrUcvPjtUudVxvnIK7eDqYQyHymKtSLPBtm9E1+V1Z5YXPpvB61qbjGe0BLO/gZCpJgkiIk4us3kIJOtFChOwrNNTS0lrirHQErAx4Ap/pwQk0+RDLld8w40sO9d3cFGq+bnLw0jQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5IQ09c0TtSv91JazQv6A1MqL2/rQKaRFLkeXrHvLjJY=;
+ b=mf/2NMRtvdNvvhERzmaMfsg1yQiUlCoAsw2mc5vDGWMo/ehba91CHtY27phkVHG3G6I+SR5NBVCOL5L6CjZ0ioNyN6vxLmrY/4m3qq2NG5+jDNl+9zpiHlRTkCt6AtobfFCCAWHQ/1NBzStZ8zbLC9belbogyBYj/hH53omehxKOaSeGtgoUlsCIsxSCiWotCjtFYjPMc1/jCLGzD6V/6k3GMpiNyDIp5yuH8VKGOQyY7Was+x/p605Y9r+JRsF12MhYNnjhj/6Rv6MwXy8FATzq0X6BAE+p9xd9CHo6WZNjRMCH24aPaLTQG9DAJylJJ14IDQw4URfTayeT0wEslw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5IQ09c0TtSv91JazQv6A1MqL2/rQKaRFLkeXrHvLjJY=;
+ b=BE9oqbOYOzytTzmMOffYV9wLFy9bRFOH/Yi+VSeEhrv7dxJn96oIMVWU9ONrUOTt9CXt+Xl9lpORnZriCj7jZGkk0SMVI66Uss+ZADS+eEOLKO7uIqtdYTANTK08RAaYRg7IbdN+PdPW+4aq0ifFDk8pmYQpmklWfqQvSctxse8=
+Received: from HK0P153MB0148.APCP153.PROD.OUTLOOK.COM (52.133.156.139) by
+ HK0P153MB0242.APCP153.PROD.OUTLOOK.COM (10.255.253.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.4; Sat, 15 Feb 2020 18:04:14 +0000
+Received: from HK0P153MB0148.APCP153.PROD.OUTLOOK.COM
+ ([fe80::58ea:c6ae:4ea3:8432]) by HK0P153MB0148.APCP153.PROD.OUTLOOK.COM
+ ([fe80::58ea:c6ae:4ea3:8432%5]) with mapi id 15.20.2750.014; Sat, 15 Feb 2020
+ 18:04:13 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: RE: Is it safe for a NIC driver to use all the 48 bytes of skb->cb?
+Thread-Topic: Is it safe for a NIC driver to use all the 48 bytes of skb->cb?
+Thread-Index: AdXjukH6tGicVKR8QjWZ+wsQCSffGwAV8b7gAAVVXhA=
+Date:   Sat, 15 Feb 2020 18:04:13 +0000
+Message-ID: <HK0P153MB0148861FD9AAB88A98084206BF140@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
+References: <HK0P153MB0148311C48144413792A0FBEBF140@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
+ <MN2PR21MB1437345219FA1CC3A75B9875CA140@MN2PR21MB1437.namprd21.prod.outlook.com>
+In-Reply-To: <MN2PR21MB1437345219FA1CC3A75B9875CA140@MN2PR21MB1437.namprd21.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-02-15T05:23:53.1818868Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=0bdb99fb-ade9-4625-91de-e48aae6b21ec;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=decui@microsoft.com; 
+x-originating-ip: [2601:600:a280:7f70:6019:e41b:6ca1:9563]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9080d85c-e669-4b44-c2ec-08d7b2417725
+x-ms-traffictypediagnostic: HK0P153MB0242:|HK0P153MB0242:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HK0P153MB02427222D06ACA326601D36BBF140@HK0P153MB0242.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 03142412E2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(189003)(199004)(55016002)(8676002)(10290500003)(9686003)(76116006)(6506007)(5660300002)(66946007)(33656002)(52536014)(81156014)(81166006)(86362001)(66476007)(64756008)(66446008)(186003)(478600001)(71200400001)(66556008)(8990500004)(53546011)(110136005)(4326008)(8936002)(7696005)(316002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:HK0P153MB0242;H:HK0P153MB0148.APCP153.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vjr26dNI5eg04PzDHRJ1YgCrNBhwF5rwSAu95QY47+NSNkQX+vE3JT5pSixCdh5Vft/ch+xn5G4M/a73GcALe58bsdgvozx+YHmEGqmPzRw4suZpuuq132AYK4IBGyrQ874Lf9xppL/77s1jeMFMMOsJD5BVsonIAF5gmk0b1VruxZs47Nj6LhLaNM/vTqdq5VQfDu4PPXUjxHgt6RSJzPak7CzyUnMDFaFwPwf1lG9Or900ss6R7aRjTBSIlAIUaNEdaY8LUfMixZ9ZPU1mIOxl0kHRpf6dIUD/vFKyVa//dEEeGeFXyniZgCQ3WvnksPXfWSWn3H1fbcwhWQxco4xVPCNPIHc+/IXcB5Y1eYMUyyRezOdoJGDrzxsOAR6e3FCUpb/tk93707Di/Zo3RU9uZ1vxxUn9alae/fCeYL3S8OgAFhlXXc4nX8ZHFyaQ
+x-ms-exchange-antispam-messagedata: yaJCMWrNI79Pjx2nFrHAkvXDHapOWz6FJTnALxpZ1Q5BBkIGSGrZosJjj3dznQ4wkLTnPZcI7IAW4hlXWhe5uImZPKQFou2XP+anhAbligf1L8RlzmbGrS69ZNGcdOWAGoa2OsBaVZkRALTL1TcPSqaI8SH96so9GhDmfbUCIwCQQoZ0oCIdMdF5SqtCpNQi7FsueakOx9uBMUCMrNw7Bw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9080d85c-e669-4b44-c2ec-08d7b2417725
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2020 18:04:13.3618
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: D0CJdlMqCDpfVllu7M5GP0YeSkSRUmiKulsMQ0yxdIyJ9YKYFdJc24o1jI/hw4PtwsG52la7wDG7skUEBLzX2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0242
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/11/20 6:41 PM, Benjamin Poirier wrote:
-> After commit 27596472473a ("ipv6: fix ECMP route replacement") it is no
-> longer possible to replace an ECMP-able route by a non ECMP-able route.
-> For example,
-> 	ip route add 2001:db8::1/128 via fe80::1 dev dummy0
-> 	ip route replace 2001:db8::1/128 dev dummy0
-> does not work as expected.
-> 
-> Tweak the replacement logic so that point 3 in the log of the above commit
-> becomes:
-> 3. If the new route is not ECMP-able, and no matching non-ECMP-able route
-> exists, replace matching ECMP-able route (if any) or add the new route.
-> 
-> We can now summarize the entire replace semantics to:
-> When doing a replace, prefer replacing a matching route of the same
-> "ECMP-able-ness" as the replace argument. If there is no such candidate,
-> fallback to the first route found.
-> 
-> Fixes: 27596472473a ("ipv6: fix ECMP route replacement")
-> Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
-> ---
->  net/ipv6/ip6_fib.c                       | 7 ++++---
->  tools/testing/selftests/net/fib_tests.sh | 6 ++++++
->  2 files changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> index 58fbde244381..72abf892302f 100644
-> --- a/net/ipv6/ip6_fib.c
-> +++ b/net/ipv6/ip6_fib.c
-> @@ -1102,8 +1102,7 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct fib6_info *rt,
->  					found++;
->  					break;
->  				}
-> -				if (rt_can_ecmp)
-> -					fallback_ins = fallback_ins ?: ins;
-> +				fallback_ins = fallback_ins ?: ins;
->  				goto next_iter;
->  			}
->  
-> @@ -1146,7 +1145,9 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct fib6_info *rt,
->  	}
->  
->  	if (fallback_ins && !found) {
-> -		/* No ECMP-able route found, replace first non-ECMP one */
-> +		/* No matching route with same ecmp-able-ness found, replace
-> +		 * first matching route
-> +		 */
->  		ins = fallback_ins;
->  		iter = rcu_dereference_protected(*ins,
->  				    lockdep_is_held(&rt->fib6_table->tb6_lock));
-> diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
-> index 6dd403103800..60273f1bc7d9 100755
-> --- a/tools/testing/selftests/net/fib_tests.sh
-> +++ b/tools/testing/selftests/net/fib_tests.sh
-> @@ -910,6 +910,12 @@ ipv6_rt_replace_mpath()
->  	check_route6 "2001:db8:104::/64 via 2001:db8:101::3 dev veth1 metric 1024"
->  	log_test $? 0 "Multipath with single path via multipath attribute"
->  
-> +	# multipath with dev-only
-> +	add_initial_route6 "nexthop via 2001:db8:101::2 nexthop via 2001:db8:103::2"
-> +	run_cmd "$IP -6 ro replace 2001:db8:104::/64 dev veth1"
-> +	check_route6 "2001:db8:104::/64 dev veth1 metric 1024"
-> +	log_test $? 0 "Multipath with dev-only"
-> +
->  	# route replace fails - invalid nexthop 1
->  	add_initial_route6 "nexthop via 2001:db8:101::2 nexthop via 2001:db8:103::2"
->  	run_cmd "$IP -6 ro replace 2001:db8:104::/64 nexthop via 2001:db8:111::3 nexthop via 2001:db8:103::3"
-> 
+> From: Haiyang Zhang <haiyangz@microsoft.com>
+> Sent: Saturday, February 15, 2020 7:20 AM
+> To: Dexuan Cui <decui@microsoft.com>; Stephen Hemminger
+>=20
+> According to the comments in skbuff.h below, it is the responsibility of =
+the
+> owning layer to make a SKB clone, if it wants to keep the data across lay=
+ers.=20
+> So, every layer can still use all of the 48 bytes.
+>=20
+>         /*
+>          * This is the control buffer. It is free to use for every
+>          * layer. Please put your private variables there. If you
+>          * want to keep them across layers you have to do a skb_clone()
+>          * first. This is owned by whoever has the skb queued ATM.
+>          */
+>         char                    cb[48] __aligned(8);
+>=20
+> > Now hv_netvsc assumes it can use all of the 48-bytes, though it uses on=
+ly
+> > 20 bytes, but just in case the struct hv_netvsc_packet grows to >32 byt=
+es in
+> the
+> > future, should we change the BUILD_BUG_ON() in netvsc_start_xmit() to
+> > BUILD_BUG_ON(sizeof(struct hv_netvsc_packet) > SKB_SGO_CB_OFFSET); ?
+>=20
+> Based on the explanation above, the existing hv_netvsc code is correct.
+>=20
+> Thanks,
+> - Haiyang
 
-Thanks for adding a test case. I take this to mean that all existing
-tests pass with this change. We have found this code to be extremely
-sensitive to seemingly obvious changes.
+Got it. So if the upper layer saves something in the cb, it must do a skb_c=
+lone()
+and pass the new skb to hv_netvsc. hv_netvsc is the lowest layer in the net=
+work=20
+stack, so it can use all the 48 bytes without calling skb_clone().
 
-Added Ido.
+BTW, now I happen to have a different question: in netvsc_probe() we have=20
+net->needed_headroom =3D RNDIS_AND_PPI_SIZE;
+I think this means when the network stack (ARP, IP, ICMP, TCP, UDP,etc) pas=
+ses a=20
+skb to hv_netvsc, the skb's headroom is increased by an extra size of=20
+net->needed_headroom, right? Then in netvsc_xmit(), why do we still need to
+call skb_cow_head(skb, RNDIS_AND_PPI_SIZE)? -- this looks unnecessary to me=
+?
+
+PS, what does the "cow" here mean? Copy On Write? It looks skb_cow_head()
+just copies the data (if necessary) and it has nothing to do with the=20
+write-protection in the MMU code.
+
+Thanks,
+Dexuan
