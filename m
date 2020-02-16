@@ -2,83 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1891606E6
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 23:22:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEBF1606F6
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 23:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbgBPWWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 17:22:17 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:52125 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726020AbgBPWWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 17:22:17 -0500
-X-Originating-IP: 209.85.222.43
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 8CB781C0004;
-        Sun, 16 Feb 2020 22:22:14 +0000 (UTC)
-Received: by mail-ua1-f43.google.com with SMTP id f7so5471468uaa.8;
-        Sun, 16 Feb 2020 14:22:14 -0800 (PST)
-X-Gm-Message-State: APjAAAXOuO0FtgIz44XaZ5s7sSxC0Gag4k/bRYp9ZDN8KXc6i7bm1drZ
-        yfKiiRnuPx9eCOwQkgrowMIJu/k8F4Ynorpg4yk=
-X-Google-Smtp-Source: APXvYqx2go22AofIyIP98/l6l45UOkLo/JVU6KDf6hZMx9X9FgplBl+/pgthlodHMYDcGG1odYWa6E/YfMjVrHqpEXI=
-X-Received: by 2002:ab0:4753:: with SMTP id i19mr6353393uac.70.1581891733184;
- Sun, 16 Feb 2020 14:22:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20200215132056.42124-1-mcroce@redhat.com>
-In-Reply-To: <20200215132056.42124-1-mcroce@redhat.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Sun, 16 Feb 2020 14:22:02 -0800
-X-Gmail-Original-Message-ID: <CAOrHB_AgZJAc4oD+9pxuUEvepVK1RstD8veC5gfj1m4rhKPROg@mail.gmail.com>
-Message-ID: <CAOrHB_AgZJAc4oD+9pxuUEvepVK1RstD8veC5gfj1m4rhKPROg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5] openvswitch: add TTL decrement action
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bindiya Kurle <bindiyakurle@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Ben Pfaff <blp@ovn.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jeremy Harris <jgh@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726962AbgBPWqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 17:46:37 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33652 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726020AbgBPWqh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Feb 2020 17:46:37 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id EF646AD48;
+        Sun, 16 Feb 2020 22:46:32 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 84C73E03D6; Sun, 16 Feb 2020 23:46:30 +0100 (CET)
+Message-Id: <cover.1581892124.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ethtool 00/19] initial netlink interface implementation for
+ 5.6 release
+To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Date:   Sun, 16 Feb 2020 23:46:30 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 15, 2020 at 5:21 AM Matteo Croce <mcroce@redhat.com> wrote:
->
-> New action to decrement TTL instead of setting it to a fixed value.
-> This action will decrement the TTL and, in case of expired TTL, drop it
-> or execute an action passed via a nested attribute.
-> The default TTL expired action is to drop the packet.
->
-> Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
->
-> Tested with a corresponding change in the userspace:
->
->     # ovs-dpctl dump-flows
->     in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1
->     in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},2
->     in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
->     in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
->
->     # ping -c1 192.168.0.2 -t 42
->     IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
->         192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
->     # ping -c1 192.168.0.2 -t 120
->     IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
->         192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
->     # ping -c1 192.168.0.2 -t 1
->     #
->
-> Co-developed-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> ---
+This series adds initial support for ethtool netlink interface provided by
+kernel since 5.6-rc1. The traditional ioctl interface is still supported
+for compatibility with older kernels. The netlink interface and message
+formats are documented in Documentation/networking/ethtool-netlink.rst file
+in kernel source tree.
 
-Thanks!
+Netlink interface is preferred but ethtool falls back to ioctl if netlink
+interface is not available (i.e. the "ethtool" genetlink family is not
+registered). It also falls back if a particular command is not implemented
+in netlink (kernel returns -EOPNOTSUPP). This allows new ethtool versions
+to work with older kernel versions while support for ethool commands is
+added in steps.
 
-Acked-by: Pravin B Shelar <pshelar@ovn.org>
+The series aims to touch existing ioctl code as little as possible in the
+first phase to minimize the risk of introducing regressions. It is also
+possible to build ethtool without netlink support if --disable-netlink is
+passed to configure script. The most visible changes to existing code are
+
+  - UAPI header copies are moved to uapi/ under original names
+  - some variables and functions which are going to be shared with netlink
+    code are moved from ethtool.c to common.c and common.h
+  - args[] array in ethtool.c was rewritten to use named initializers
+
+Except for changes to main(), all netlink specific code is in a separate
+directory netlink/ and is divided into multiple files.
+
+Michal Kubecek (19):
+  move UAPI header copies to a separate directory
+  update UAPI header copies
+  add --debug option to control debugging messages
+  use named initializers in command line option list
+  netlink: add netlink related UAPI header files
+  netlink: introduce the netlink interface
+  netlink: message buffer and composition helpers
+  netlink: netlink socket wrapper and helpers
+  netlink: initialize ethtool netlink socket
+  netlink: add support for string sets
+  netlink: add notification monitor
+  move shared code into a common file
+  netlink: add bitset helpers
+  netlink: partial netlink handler for gset (no option)
+  netlink: support getting wake-on-lan and debugging settings
+  netlink: add basic command line parsing helpers
+  netlink: add bitset command line parser handlers
+  netlink: add netlink handler for sset (-s)
+  netlink: support tests with netlink enabled
+
+ Makefile.am                                  |   27 +-
+ common.c                                     |  145 +++
+ common.h                                     |   26 +
+ configure.ac                                 |   14 +-
+ ethtool.8.in                                 |   48 +-
+ ethtool.c                                    |  818 ++++++++------
+ internal.h                                   |   30 +-
+ netlink/bitset.c                             |  201 ++++
+ netlink/bitset.h                             |   25 +
+ netlink/extapi.h                             |   44 +
+ netlink/monitor.c                            |  229 ++++
+ netlink/msgbuff.c                            |  169 +++
+ netlink/msgbuff.h                            |  106 ++
+ netlink/netlink.c                            |  216 ++++
+ netlink/netlink.h                            |   78 ++
+ netlink/nlsock.c                             |  293 +++++
+ netlink/nlsock.h                             |   35 +
+ netlink/parser.c                             | 1058 ++++++++++++++++++
+ netlink/parser.h                             |  144 +++
+ netlink/settings.c                           |  945 ++++++++++++++++
+ netlink/strset.c                             |  297 +++++
+ netlink/strset.h                             |   25 +
+ test-cmdline.c                               |   29 +-
+ test-features.c                              |   11 +
+ ethtool-copy.h => uapi/linux/ethtool.h       |   17 +
+ uapi/linux/ethtool_netlink.h                 |  237 ++++
+ uapi/linux/genetlink.h                       |   89 ++
+ net_tstamp-copy.h => uapi/linux/net_tstamp.h |   27 +
+ uapi/linux/netlink.h                         |  248 ++++
+ 29 files changed, 5250 insertions(+), 381 deletions(-)
+ create mode 100644 common.c
+ create mode 100644 common.h
+ create mode 100644 netlink/bitset.c
+ create mode 100644 netlink/bitset.h
+ create mode 100644 netlink/extapi.h
+ create mode 100644 netlink/monitor.c
+ create mode 100644 netlink/msgbuff.c
+ create mode 100644 netlink/msgbuff.h
+ create mode 100644 netlink/netlink.c
+ create mode 100644 netlink/netlink.h
+ create mode 100644 netlink/nlsock.c
+ create mode 100644 netlink/nlsock.h
+ create mode 100644 netlink/parser.c
+ create mode 100644 netlink/parser.h
+ create mode 100644 netlink/settings.c
+ create mode 100644 netlink/strset.c
+ create mode 100644 netlink/strset.h
+ rename ethtool-copy.h => uapi/linux/ethtool.h (99%)
+ create mode 100644 uapi/linux/ethtool_netlink.h
+ create mode 100644 uapi/linux/genetlink.h
+ rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (84%)
+ create mode 100644 uapi/linux/netlink.h
+
+-- 
+2.25.0
+
