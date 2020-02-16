@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0F51604A0
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 16:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C498E1604C0
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 17:17:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgBPPww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 10:52:52 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46012 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728382AbgBPPwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 10:52:51 -0500
-Received: by mail-pg1-f195.google.com with SMTP id b9so7584812pgk.12;
-        Sun, 16 Feb 2020 07:52:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=iPFMbfU6diExASqyRYQaLYTU+lXefr7fxHQr7uWuD1Y=;
-        b=dFOD3H1/B31VEchMzaUoJ9SUKJtUO6Ioafl/z7DDVOwR6NtDtBMs/13RMPQQzMJ18Y
-         c5C04QkzccXncDGICuf/5t/aIGwm7HczFeWtMY+Jo3fy/YcQCQRsbKRTbmcFsW15LoeS
-         5M5xHHjjHalh62RK5nUwazqACK6SczFYM1kEOfjlJRCmKpAnWL3N2Dep6gnyRcSdCy0j
-         drXeDHCcx1PHXAG2jqXie+iYrkyxLoed7F+tWrFY6O9hhTv2nZuJnslWCSQRk5+QSpNy
-         sE6STD6lqxoHPqpbLU3HpctlWUYllldWX66W6Xuc8lCiNKK33NnaGyAvPFFaJicEiWcX
-         AudQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iPFMbfU6diExASqyRYQaLYTU+lXefr7fxHQr7uWuD1Y=;
-        b=Ce5Uvke37UAa8RpF2SW3BtSKhcv7DautnH5GjasaD7SQArf0wyJ2IGjeL54vqs5iJd
-         Vd+DB2MtxuXHk1GnNYhDHquVe4ufSoS37hNnJjt9ysz+tnJ4/NZoAdF1vejy00Ofyifu
-         hjXMUn/8jcfVJg+qlQGd8jNZBbMSia+GPFFPmd4nPt2N91xlFMH8kIwkGo6x+NoOrLBj
-         yK6+rv8027dfrgp1eoMJgnyakfzsBWBTlt+850pRdPLedPoJV3rURFDr3VSNi274aOc+
-         cRjDORUAft+oFsm8Z4RKyz1xllj6xaZZLTHurJsuu/HHrHBLs3W087A+BNWLzpbwcmXy
-         eJ3w==
-X-Gm-Message-State: APjAAAUlIwzSKLBYn1VZq8gDS7zo54V2MrJ60P4ySu5MByEr0vXcNT8W
-        GOte4ERV7OC/cIh7FZ0cR1ooYac=
-X-Google-Smtp-Source: APXvYqx4ANLkD4bX8522tWsKbJuWTodQcLty70mtlhDXz7killP931Qu5hSGCSz5PkBfEfbEtN3CHw==
-X-Received: by 2002:aa7:961b:: with SMTP id q27mr12847463pfg.23.1581868370704;
-        Sun, 16 Feb 2020 07:52:50 -0800 (PST)
-Received: from madhuparna-HP-Notebook ([2402:3a80:d03:50cf:14b2:4950:fe83:57e])
-        by smtp.gmail.com with ESMTPSA id c1sm13631769pfa.51.2020.02.16.07.52.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 16 Feb 2020 07:52:50 -0800 (PST)
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
-Date:   Sun, 16 Feb 2020 21:22:44 +0530
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        id S1728456AbgBPQRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 11:17:45 -0500
+Received: from dvalin.narfation.org ([213.160.73.56]:59426 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728239AbgBPQRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 11:17:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1581869862;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ycDGsIuRvIAvHC8M9jSWoOHJ+C/adZPAoQJAg4MOHh0=;
+        b=zMk1rHpHJsElWdVbsSg4ZDZMx5E98D/6dpZl5fZ7/wTxbWc59OHrFcAPUL4dFRogbZ6BVR
+        a2bf3WJenvnoXSI5J9ZK/6Ud5A8BUs7+CfYLzru/8x4teDCFj3+iU4/214121/5rIFYCMC
+        8hsv797rAa9Y+pWYK8gV6jiuYAOJuZ8=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Cc:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
         davem@davemloft.net, b.a.t.m.a.n@lists.open-mesh.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         joel@joelfernandes.org, frextrite@gmail.com,
         linux-kernel-mentees@lists.linuxfoundation.org
 Subject: Re: [PATCH] net: batman-adv: Use built-in RCU list checking
-Message-ID: <20200216155243.GB4542@madhuparna-HP-Notebook>
-References: <20200216144718.2841-1-madhuparnabhowmik10@gmail.com>
- <3655191.udZcvKk8tv@sven-edge>
- <20200216153324.GA4542@madhuparna-HP-Notebook>
- <1634394.jP7ydfi60B@sven-edge>
+Date:   Sun, 16 Feb 2020 17:17:36 +0100
+Message-ID: <14125758.fD4hS3u3Vl@sven-edge>
+In-Reply-To: <20200216155243.GB4542@madhuparna-HP-Notebook>
+References: <20200216144718.2841-1-madhuparnabhowmik10@gmail.com> <1634394.jP7ydfi60B@sven-edge> <20200216155243.GB4542@madhuparna-HP-Notebook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1634394.jP7ydfi60B@sven-edge>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/signed; boundary="nextPart2027361.KDeqtIc2Nz"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 16, 2020 at 04:35:54PM +0100, Sven Eckelmann wrote:
-> On Sunday, 16 February 2020 16:33:24 CET Madhuparna Bhowmik wrote:
-> [...]
-> > > Can you tell us how you've identified these four hlist_for_each_entry_rcu?
-> >
-> > The other hlist_for_each_entry_rcu() are used under the protection of
-> > rcu_read_lock(). We only need to pass the cond when
-> > hlist_for_each_entry_rcu() is used under a
-> > different lock (not under rcu_red_lock()) because according to the current scheme a lockdep splat
-> > is generated when hlist_for_each_entry_rcu() is used outside of
-> > rcu_read_lock() or the lockdep condition (the cond argument) evaluates
-> > to false. So, we need to pass this cond when it is used under the
-> > protection of spinlock or mutex etc. and not required if rcu_read_lock()
-> > is used.
+--nextPart2027361.KDeqtIc2Nz
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+
+On Sunday, 16 February 2020 16:52:44 CET Madhuparna Bhowmik wrote:
+[...]
+> > I understand this part. I was asking how you've identified them. Did you use 
+> > any tool for that? coccinelle, sparse, ...
 > 
-> I understand this part. I was asking how you've identified them. Did you use 
-> any tool for that? coccinelle, sparse, ...
->
-Hi,
+> Not really, I did it manually by inspecting each occurence.
 
-Not really, I did it manually by inspecting each occurence.
-Thank you,
-Madhuparna
+In that case, I don't understand why you didn't convert the occurrences from 
+hlist_for_each_entry_rcu to hlist_for_each_entry [1]. Because a manual
+inspection should have noticed that there will always be the lock around
+these ones.
 
-> Kind regards,
-> 	Sven
+KInd regards,
+	Sven
+
+[1] https://www.kernel.org/doc/html/v5.6-rc1/RCU/whatisRCU.html#analogy-with-reader-writer-locking
+--nextPart2027361.KDeqtIc2Nz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl5JayAACgkQXYcKB8Em
+e0arqxAAs2BMDdBX1BL6F26UneTAZ8w5R8MOruf6/NJycj1OzwF9X96BeX0cyj4q
+Gnryzgqb3/LXfZPWhF2HSLjuPeVjgiJOoF5S+3n9R00k0Oitqo53gFHirNzLqFYu
+bJThufWSFbq3agNcYgrjYe15pyOe46r9Vt/aGyjVsvX+f8J/7PRFCTkznhluzo9C
+tmLWbM4tbVJu8JDUD3PY/vR9SxPShYqDOlFz45bqmzHb7Dcr2fLYZC/jlbzd5af+
+xTNCsjsk2U9pwR+te1MaIqJ6BDrIljis4HXLCdAMuL5ny1QKrNL1Hj/iS9ycxCnh
+1lUNi0HGdRtGcpXbRBIiLkykMJMiIZoep+PkP5CND2WELURBBRVrys8xvwDD3mxJ
+xdvhXKAkMv2qaJpbGIQWEf/p+UDbXQXr9Xa1UeUOOHjpC8eNm1FYtKKzTL0W74lE
+9KSt086kB2Y9pUMAGQWoIDyb1QKTxQV+jzx9YJEL2AzGO0NEwd+d0UJrxXX+qNbF
+BKd+EqdAIR/PfAp2pA4PIxAvieu9Z3jCnXkEURkhS19Rgu1G/0iBq6p8abj+CW8a
+7OBNe+13SISLc0rMoX/nbH/Pwxq9MlqRJifFr05S77mKEvdNS8tz0KwN/ZVMSfA+
+2dDdXfKzPo3BGnfSOtj7G1wgUMBWOFXVLnFytQEyYXMdlWC47Ks=
+=70Ud
+-----END PGP SIGNATURE-----
+
+--nextPart2027361.KDeqtIc2Nz--
+
 
 
