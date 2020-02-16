@@ -2,102 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F2A216050D
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 18:28:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73572160529
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 18:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728550AbgBPR2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 12:28:21 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35284 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728496AbgBPR2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 12:28:20 -0500
-Received: by mail-pl1-f194.google.com with SMTP id g6so5773993plt.2;
-        Sun, 16 Feb 2020 09:28:19 -0800 (PST)
+        id S1726009AbgBPRnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 12:43:16 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:38471 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbgBPRnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 12:43:16 -0500
+Received: by mail-pj1-f65.google.com with SMTP id j17so6165531pjz.3
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 09:43:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=li9wRD+trYzeYRrIDTG7VErShRh4YzHNS/3QPJhsHYs=;
-        b=R9a6Mac428S9opSV3aq/ZhqE30jY6lafTCf7S2d1eJ1E99RSCGWcpDXTeZ3Vg3+GyD
-         ihz21YJzlyYeM3anV69vpMgMV6lksRliQJ0HCBJbYfSLI+6QzXpoQOwW0aU0izce8Ky+
-         BvU/CsSiIhoznN0iXSXvbX23to+afL5HRUjQ/g0BjQj+mjhbeXlEqW0wLFe15ZHEn8Ip
-         VZjDKptRZCNYMvxaU/Ngrb0Ps89+DO1AkcGFEVdK/ApL+P+Exqzjhlh3gNRNjQnnyuqJ
-         MzGQYvNnAP301j1JSOtlVfkSF9EnxwP70stmA832B99N7jjUloV4FBtKk5SXhWB1f6Wf
-         EL2w==
+        bh=MFSwZodgDo38vB2tJltuq7c8nMLmxTmr/Vm2jQyAZV0=;
+        b=JKHMI7ZoXPhvlUq+KrFwJ9NR8VOkbnv57L8/wkeHQ2omb7tSG6WB/oqGpljnJMJA4J
+         i4pz24MZXBE3IicWISrm4fN0dCs0+FOmURD6blS5eYEd6WmwZAbM1dY80yup3pQn6kJc
+         ac6aM7lLp8mWtA9RlfdVH4bkDv9Icd1ijdYCdC8VK6rKLpPBlzB5dl0gxkQCmoZ2GhDs
+         g/hTOHwNw2hdapQmORXA0Ao7bD/QSn5/XFGAOcNLqSONhKwM/N+DGzvxXBvBFVQHndot
+         /tKpAPmf0Bjjzu9pDBB3TWSgxua5sxtoUIXNToMSqnQl5j4xL+PVpGfO7ahvq8ID3Vc3
+         72/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=li9wRD+trYzeYRrIDTG7VErShRh4YzHNS/3QPJhsHYs=;
-        b=iaA5Q+1xyKP1pbhr56lv/UDb+60N4WfU2CkhyiesjpEZk1tNfwoxgk7Co294bNA1Fa
-         f1aYZYX6knoLVyAnRBCI2D2/3HQHIys3fXFm9Nxgkd6J5V2ehz9lke7yrtZ92yirtLWU
-         qaB0VViWdipKJS00h8ZF20SHyzN2w6Kyamh8c2njePoxrgzM7l4lRPcpe6gXn/qNxOll
-         T6HcPL0+BAxwXw+X8r0vm2AKtEi4JT0rtGwqZSi00LKHBb+kq86aaYsDulG0YG9utp5k
-         f67y46QBBbPlSKrZ0KWpAbIZf0xj1tikg3gQ8xmWYOBtA2LAjY4w/NQzKbjGwq77cI+q
-         kdNA==
-X-Gm-Message-State: APjAAAXWiJqvZEWHExDCv4HSVatTIy+Af+9sAu0Xc5nTNNOs2cJ+QR7i
-        unvrGnFXO6s/K8jZBjXGvX4=
-X-Google-Smtp-Source: APXvYqwnA7pjS1054IxgkOuF4Ptq6AKSK3rxTwoaU0ILSWvT53J2OayxuX5Dez18xr9oJSMfJG/xXg==
-X-Received: by 2002:a17:902:6a88:: with SMTP id n8mr12421746plk.265.1581874098693;
-        Sun, 16 Feb 2020 09:28:18 -0800 (PST)
-Received: from localhost.localdomain ([103.211.17.250])
-        by smtp.googlemail.com with ESMTPSA id iq22sm13836213pjb.9.2020.02.16.09.28.13
+        bh=MFSwZodgDo38vB2tJltuq7c8nMLmxTmr/Vm2jQyAZV0=;
+        b=lt4hY9PaDZnyX1cG7uXzPJF7ZdalgemF19p/vtXQ53yG0PoIQaiL+8I1FK0oE0nTuB
+         iHrCThmgcM/SaQF7BDKwA6OLjFanels39M0JG2Ymlvju8/3NZCY+8tPiOeLfNfA5jKQ+
+         QB/hSDsAN3wkrsdr+61k5fWhPtsVPq1KolnYhzARLbrq6y+CjsXHhXjf1kanTOBg+HjW
+         1DS4KKyxDuyZGx5WoISmDuv60sIDZmliLmJi2DvKPOpDPof6ZpIeegBQ8hTIS18nd8hY
+         NGE7G+buXdu1Ca8dqXGln30eqeA5NtAUg1Ob5WVGeOdHkbrwhgEJfJhRhHZU6YV/stlP
+         dL+Q==
+X-Gm-Message-State: APjAAAW22QHwXgnFZ+EBUQpUdRt/D6WLg+mm1eIuJmXCJDrCnEdlA2vO
+        OGWVy7QO5JES+L+b5BPXbOwKTujA36Q=
+X-Google-Smtp-Source: APXvYqzjdm/6/AxB2UwpzrxE07UupxSGM7tPnGr4C4KEGGnZwD80isxt63YPZSfvqPnysmjy+Kv3CQ==
+X-Received: by 2002:a17:902:b682:: with SMTP id c2mr12708984pls.127.1581874995216;
+        Sun, 16 Feb 2020 09:43:15 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d26sm13860517pgv.66.2020.02.16.09.43.14
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Feb 2020 09:28:18 -0800 (PST)
-From:   Amol Grover <frextrite@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Sowden <jeremy@azazel.net>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Amol Grover <frextrite@gmail.com>
-Subject: [PATCH] netfilter: ipset: Pass lockdep expression to RCU lists
-Date:   Sun, 16 Feb 2020 22:56:54 +0530
-Message-Id: <20200216172653.19772-1-frextrite@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        Sun, 16 Feb 2020 09:43:14 -0800 (PST)
+Date:   Sun, 16 Feb 2020 09:43:07 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 206523] New: Can no longer add routes while the link is
+ down, RTNETLINK answers: Network is down
+Message-ID: <20200216094307.55a66c52@hermes.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ip_set_type_list is traversed using list_for_each_entry_rcu
-outside an RCU read-side critical section but under the protection
-of ip_set_type_mutex.
 
-Hence, add corresponding lockdep expression to silence false-positive
-warnings, and harden RCU lists.
 
-Signed-off-by: Amol Grover <frextrite@gmail.com>
----
- net/netfilter/ipset/ip_set_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Begin forwarded message:
 
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index cf895bc80871..97c851589160 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -86,7 +86,8 @@ find_set_type(const char *name, u8 family, u8 revision)
- {
- 	struct ip_set_type *type;
- 
--	list_for_each_entry_rcu(type, &ip_set_type_list, list)
-+	list_for_each_entry_rcu(type, &ip_set_type_list, list,
-+				lockdep_is_held(&ip_set_type_mutex))
- 		if (STRNCMP(type->name, name) &&
- 		    (type->family == family ||
- 		     type->family == NFPROTO_UNSPEC) &&
+Date: Thu, 13 Feb 2020 18:04:40 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 206523] New: Can no longer add routes while the link is down, RTNETLINK answers: Network is down
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=206523
+
+            Bug ID: 206523
+           Summary: Can no longer add routes while the link is down,
+                    RTNETLINK answers: Network is down
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.19
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: rm+bko@romanrm.net
+        Regression: No
+
+Hello,
+
+I'm upgrading my machines from kernel 4.14 to the 5.4 series, and noticed quite
+a significant behavior change, so I was wondering if this was intentional or a
+side effect of something, or a bug. It already broke my network connectivity
+for a while and required troubleshooting, to figure out that a certain script
+that I had, used to set up all routes before, and only then putting the
+interface up.
+
+On 4.14.170 this works:
+
+# ip link add dummy100 type dummy
+# ip route add fd99::/128 dev dummy100
+# ip -6 route | grep dummy
+fd99:: dev dummy100 metric 1024 linkdown  pref medium
+#
+
+On 5.4.19 however:
+
+# ip link add dummy100 type dummy
+# ip route add fd99::/128 dev dummy100
+RTNETLINK answers: Network is down
+# ip -6 route | grep dummy
+#
+
+Sorry for not narrowing it down more precisely between 4.14 and 5.4, but I'm
+sure for the right people this will be easily either an "oh shit" or "yeah,
+that", even without any more precise version information :)
+
 -- 
-2.24.1
-
+You are receiving this mail because:
+You are the assignee for the bug.
