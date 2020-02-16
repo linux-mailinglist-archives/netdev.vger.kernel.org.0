@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3CA1606A3
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 22:08:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 684341606A4
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 22:08:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbgBPVIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 16:08:19 -0500
+        id S1728151AbgBPVIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 16:08:23 -0500
 Received: from mail.kernel.org ([198.145.29.99]:59084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728081AbgBPVIT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Feb 2020 16:08:19 -0500
+        id S1728128AbgBPVIW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Feb 2020 16:08:22 -0500
 Received: from localhost.localdomain (unknown [151.48.137.85])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C795B208C3;
-        Sun, 16 Feb 2020 21:08:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1F92A20726;
+        Sun, 16 Feb 2020 21:08:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581887298;
-        bh=eD1Xhq+G9hHSl4+5EyFHz1hN32ScEYw/ekfzPEBJmQc=;
+        s=default; t=1581887302;
+        bh=edApw08klPhIPD/+7aOi+ITndtjGY0qm7alSyftfdFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KEEKAAMy2cM7JlOCTkVGuewES6cjfBs4HqQ4ST0mp5byVjR51QrDJu1lA49DvnRMk
-         tTz/vJDsO1rHPofQCVOrODqQJmlyX5KzdZsrnPi7tkvcPY42p4KRQbUsNVlx/lV49u
-         xasCp4vXMyyjur9aAnhEz0baQpNagsxOL+lCbiI0=
+        b=l0p4xH9jPt6qtQ9vE1YaDoPa+FO0U7eFuNPUoQMssH1tQTKEYBGITFsLYXi8HzVUj
+         C6qa2qP19nqRONyLT/W1K1Ie54ElN/OjJrtsu0dgjmS67OAciHi+YpivmrtMXj6aNg
+         3VP61x12ceiHbqMRxFLX3wl1w1HoCTHH5JtCXzaU=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
         lorenzo.bianconi@redhat.com, brouer@redhat.com
-Subject: [PATCH net-next 2/5] net: mvneta: rely on open-coding updating stats for non-xdp and tx path
-Date:   Sun, 16 Feb 2020 22:07:30 +0100
-Message-Id: <e0c10323e86c0f5bb2b6d0d5d980b70789fa09a2.1581886691.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 3/5] net: mvneta: rely on struct mvneta_stats in mvneta_update_stats routine
+Date:   Sun, 16 Feb 2020 22:07:31 +0100
+Message-Id: <efdce29ba14838c3715ef3822cbc679c9cba3161.1581886691.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <cover.1581886691.git.lorenzo@kernel.org>
 References: <cover.1581886691.git.lorenzo@kernel.org>
@@ -40,120 +40,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In oreder to avoid unnecessary instructions rely on open-coding updating
-per-cpu stats in mvneta_tx/mvneta_xdp_submit_frame and mvneta_rx_hwbm
-routines. This patch will be used to add xdp support to ethtool for the
-mvneta driver
+Introduce mvneta_stats structure in mvneta_update_stats routine signature
+in order to collect all the rx stats and update them at the end at the
+napi loop. mvneta_stats will be reused adding xdp statistics support to
+ethtool.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 40 ++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 73 +++++++++++++++------------
+ 1 file changed, 41 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 7433a305e0ff..6552b84be7c9 100644
+index 6552b84be7c9..d41fc7044fa6 100644
 --- a/drivers/net/ethernet/marvell/mvneta.c
 +++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1945,19 +1945,13 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
+@@ -397,7 +397,15 @@ static const struct mvneta_statistic mvneta_statistics[] = {
+ 	{ ETHTOOL_STAT_REFILL_ERR, T_SW, "refill_errors", },
+ };
+ 
++struct mvneta_stats {
++	u64	rx_packets;
++	u64	rx_bytes;
++	u64	tx_packets;
++	u64	tx_bytes;
++};
++
+ struct mvneta_ethtool_stats {
++	struct mvneta_stats ps;
+ 	u64	skb_alloc_error;
+ 	u64	refill_error;
+ };
+@@ -406,12 +414,8 @@ struct mvneta_pcpu_stats {
+ 	struct u64_stats_sync syncp;
+ 
+ 	struct mvneta_ethtool_stats es;
+-	u64	rx_packets;
+-	u64	rx_bytes;
+ 	u64	rx_dropped;
+ 	u64	rx_errors;
+-	u64	tx_packets;
+-	u64	tx_bytes;
+ };
+ 
+ struct mvneta_pcpu_port {
+@@ -751,12 +755,12 @@ mvneta_get_stats64(struct net_device *dev,
+ 		cpu_stats = per_cpu_ptr(pp->stats, cpu);
+ 		do {
+ 			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
+-			rx_packets = cpu_stats->rx_packets;
+-			rx_bytes   = cpu_stats->rx_bytes;
++			rx_packets = cpu_stats->es.ps.rx_packets;
++			rx_bytes   = cpu_stats->es.ps.rx_bytes;
+ 			rx_dropped = cpu_stats->rx_dropped;
+ 			rx_errors  = cpu_stats->rx_errors;
+-			tx_packets = cpu_stats->tx_packets;
+-			tx_bytes   = cpu_stats->tx_bytes;
++			tx_packets = cpu_stats->es.ps.tx_packets;
++			tx_bytes   = cpu_stats->es.ps.tx_bytes;
+ 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
+ 
+ 		stats->rx_packets += rx_packets;
+@@ -1945,13 +1949,14 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
  }
  
  static void
--mvneta_update_stats(struct mvneta_port *pp, u32 pkts,
--		    u32 len, bool tx)
-+mvneta_update_stats(struct mvneta_port *pp, u32 pkts, u32 len)
+-mvneta_update_stats(struct mvneta_port *pp, u32 pkts, u32 len)
++mvneta_update_stats(struct mvneta_port *pp,
++		    struct mvneta_stats *ps)
  {
  	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
  
  	u64_stats_update_begin(&stats->syncp);
--	if (tx) {
--		stats->tx_packets += pkts;
--		stats->tx_bytes += len;
--	} else {
--		stats->rx_packets += pkts;
--		stats->rx_bytes += len;
--	}
-+	stats->rx_packets += pkts;
-+	stats->rx_bytes += len;
+-	stats->rx_packets += pkts;
+-	stats->rx_bytes += len;
++	stats->es.ps.rx_packets += ps->rx_packets;
++	stats->es.ps.rx_bytes += ps->rx_bytes;
  	u64_stats_update_end(&stats->syncp);
  }
  
-@@ -1996,6 +1990,7 @@ static int
- mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
- 			struct xdp_frame *xdpf, bool dma_map)
- {
-+	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 	struct mvneta_tx_desc *tx_desc;
- 	struct mvneta_tx_buf *buf;
- 	dma_addr_t dma_addr;
-@@ -2030,7 +2025,11 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
- 	tx_desc->buf_phys_addr = dma_addr;
+@@ -2026,8 +2031,8 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
  	tx_desc->data_size = xdpf->len;
  
--	mvneta_update_stats(pp, 1, xdpf->len, true);
-+	u64_stats_update_begin(&stats->syncp);
-+	stats->tx_bytes += xdpf->len;
-+	stats->tx_packets++;
-+	u64_stats_update_end(&stats->syncp);
-+
+ 	u64_stats_update_begin(&stats->syncp);
+-	stats->tx_bytes += xdpf->len;
+-	stats->tx_packets++;
++	stats->es.ps.tx_bytes += xdpf->len;
++	stats->es.ps.tx_packets++;
+ 	u64_stats_update_end(&stats->syncp);
+ 
  	mvneta_txq_inc_put(txq);
- 	txq->pending++;
- 	txq->count++;
-@@ -2189,8 +2188,7 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 		ret = mvneta_run_xdp(pp, rxq, xdp_prog, xdp);
+@@ -2098,7 +2103,8 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
+ 
+ static int
+ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+-	       struct bpf_prog *prog, struct xdp_buff *xdp)
++	       struct bpf_prog *prog, struct xdp_buff *xdp,
++	       struct mvneta_stats *stats)
+ {
+ 	unsigned int len;
+ 	u32 ret, act;
+@@ -2108,8 +2114,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 
+ 	switch (act) {
+ 	case XDP_PASS:
+-		ret = MVNETA_XDP_PASS;
+-		break;
++		return MVNETA_XDP_PASS;
+ 	case XDP_REDIRECT: {
+ 		int err;
+ 
+@@ -2145,6 +2150,9 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 		break;
+ 	}
+ 
++	stats->rx_bytes += xdp->data_end - xdp->data;
++	stats->rx_packets++;
++
+ 	return ret;
+ }
+ 
+@@ -2154,7 +2162,8 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ 		     struct mvneta_rx_queue *rxq,
+ 		     struct xdp_buff *xdp,
+ 		     struct bpf_prog *xdp_prog,
+-		     struct page *page, u32 *xdp_ret)
++		     struct page *page, u32 *xdp_ret,
++		     struct mvneta_stats *stats)
+ {
+ 	unsigned char *data = page_address(page);
+ 	int data_len = -MVNETA_MH_SIZE, len;
+@@ -2185,10 +2194,8 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ 	if (xdp_prog) {
+ 		u32 ret;
+ 
+-		ret = mvneta_run_xdp(pp, rxq, xdp_prog, xdp);
++		ret = mvneta_run_xdp(pp, rxq, xdp_prog, xdp, stats);
  		if (ret != MVNETA_XDP_PASS) {
- 			mvneta_update_stats(pp, 1,
--					    xdp->data_end - xdp->data,
--					    false);
-+					    xdp->data_end - xdp->data);
+-			mvneta_update_stats(pp, 1,
+-					    xdp->data_end - xdp->data);
  			rx_desc->buf_phys_addr = 0;
  			*xdp_ret |= ret;
  			return ret;
-@@ -2340,7 +2338,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+@@ -2259,11 +2266,11 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			  struct mvneta_port *pp, int budget,
+ 			  struct mvneta_rx_queue *rxq)
+ {
+-	int rcvd_pkts = 0, rcvd_bytes = 0, rx_proc = 0;
++	int rx_proc = 0, rx_todo, refill;
+ 	struct net_device *dev = pp->dev;
++	struct mvneta_stats ps = {};
+ 	struct bpf_prog *xdp_prog;
+ 	struct xdp_buff xdp_buf;
+-	int rx_todo, refill;
+ 	u32 xdp_ret = 0;
+ 
+ 	/* Get number of received packets */
+@@ -2297,7 +2304,8 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			}
+ 
+ 			err = mvneta_swbm_rx_frame(pp, rx_desc, rxq, &xdp_buf,
+-						   xdp_prog, page, &xdp_ret);
++						   xdp_prog, page, &xdp_ret,
++						   &ps);
+ 			if (err)
+ 				continue;
+ 		} else {
+@@ -2321,8 +2329,9 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			rxq->skb = NULL;
+ 			continue;
+ 		}
+-		rcvd_pkts++;
+-		rcvd_bytes += rxq->skb->len;
++
++		ps.rx_bytes += rxq->skb->len;
++		ps.rx_packets++;
+ 
+ 		/* Linux processing */
+ 		rxq->skb->protocol = eth_type_trans(rxq->skb, dev);
+@@ -2337,8 +2346,8 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	if (xdp_ret & MVNETA_XDP_REDIR)
  		xdp_do_flush_map();
  
- 	if (rcvd_pkts)
--		mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
-+		mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes);
+-	if (rcvd_pkts)
+-		mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes);
++	if (ps.rx_packets)
++		mvneta_update_stats(pp, &ps);
  
  	/* return some buffers to hardware queue, one at a time is too slow */
  	refill = mvneta_rx_refill_queue(pp, rxq);
-@@ -2470,8 +2468,14 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
- 		napi_gro_receive(napi, skb);
+@@ -2346,7 +2355,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	/* Update rxq management counters */
+ 	mvneta_rxq_desc_num_update(pp, rxq, rx_proc, refill);
+ 
+-	return rcvd_pkts;
++	return ps.rx_packets;
+ }
+ 
+ /* Main rx processing when using hardware buffer management */
+@@ -2472,8 +2481,8 @@ static int mvneta_rx_hwbm(struct napi_struct *napi,
+ 		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+ 
+ 		u64_stats_update_begin(&stats->syncp);
+-		stats->rx_packets += rcvd_pkts;
+-		stats->rx_bytes += rcvd_bytes;
++		stats->es.ps.rx_packets += rcvd_pkts;
++		stats->es.ps.rx_bytes += rcvd_bytes;
+ 		u64_stats_update_end(&stats->syncp);
  	}
  
--	if (rcvd_pkts)
--		mvneta_update_stats(pp, rcvd_pkts, rcvd_bytes, false);
-+	if (rcvd_pkts) {
-+		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
-+
-+		u64_stats_update_begin(&stats->syncp);
-+		stats->rx_packets += rcvd_pkts;
-+		stats->rx_bytes += rcvd_bytes;
-+		u64_stats_update_end(&stats->syncp);
-+	}
- 
- 	/* Update rxq management counters */
- 	mvneta_rxq_desc_num_update(pp, rxq, rx_done, rx_done);
-@@ -2727,6 +2731,7 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
- out:
- 	if (frags > 0) {
- 		struct netdev_queue *nq = netdev_get_tx_queue(dev, txq_id);
-+		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 
- 		netdev_tx_sent_queue(nq, len);
- 
-@@ -2740,7 +2745,10 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
- 		else
+@@ -2746,8 +2755,8 @@ static netdev_tx_t mvneta_tx(struct sk_buff *skb, struct net_device *dev)
  			txq->pending += frags;
  
--		mvneta_update_stats(pp, 1, len, true);
-+		u64_stats_update_begin(&stats->syncp);
-+		stats->tx_bytes += len;
-+		stats->tx_packets++;
-+		u64_stats_update_end(&stats->syncp);
+ 		u64_stats_update_begin(&stats->syncp);
+-		stats->tx_bytes += len;
+-		stats->tx_packets++;
++		stats->es.ps.tx_bytes += len;
++		stats->es.ps.tx_packets++;
+ 		u64_stats_update_end(&stats->syncp);
  	} else {
  		dev->stats.tx_dropped++;
- 		dev_kfree_skb_any(skb);
 -- 
 2.24.1
 
