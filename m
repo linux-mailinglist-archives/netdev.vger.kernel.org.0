@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C158E160195
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 04:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F871601E6
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 06:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgBPDpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 22:45:02 -0500
-Received: from mga02.intel.com ([134.134.136.20]:33373 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727874AbgBPDpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 15 Feb 2020 22:45:00 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Feb 2020 19:45:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,447,1574150400"; 
-   d="scan'208";a="257916623"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
-  by fmsmga004.fm.intel.com with ESMTP; 15 Feb 2020 19:45:00 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] ice: use true/false for bool types
-Date:   Sat, 15 Feb 2020 19:44:52 -0800
-Message-Id: <20200216034452.1251706-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200216034452.1251706-1-jeffrey.t.kirsher@intel.com>
-References: <20200216034452.1251706-1-jeffrey.t.kirsher@intel.com>
+        id S1725926AbgBPFc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 00:32:58 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:40992 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725208AbgBPFc6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Feb 2020 00:32:58 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 171EE79E1D983D9FBF57;
+        Sun, 16 Feb 2020 13:32:44 +0800 (CST)
+Received: from [127.0.0.1] (10.133.210.141) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Sun, 16 Feb 2020
+ 13:32:37 +0800
+Subject: Re: [RFC] slip: not call free_netdev before rtnl_unlock in slip_open
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        maowenan <maowenan@huawei.com>
+References: <20200213093248.129757-1-yangerkun@huawei.com>
+From:   yangerkun <yangerkun@huawei.com>
+Message-ID: <2e9edf1e-5f4f-95d6-4381-6675cded02ac@huawei.com>
+Date:   Sun, 16 Feb 2020 13:32:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200213093248.129757-1-yangerkun@huawei.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.210.141]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bruce Allan <bruce.w.allan@intel.com>
+Ping.
 
-Subject says it all.
-
-Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index b6b0f1180b13..55d994f2d71e 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -841,8 +841,8 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
- 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
- 	u16 cleaned_count = ICE_DESC_UNUSED(rx_ring);
- 	unsigned int xdp_xmit = 0;
-+	bool failure = false;
- 	struct xdp_buff xdp;
--	bool failure = 0;
- 
- 	xdp.rxq = &rx_ring->xdp_rxq;
- 
--- 
-2.24.1
+On 2020/2/13 17:32, yangerkun wrote:
+> As the description before netdev_run_todo, we cannot call free_netdev
+> before rtnl_unlock, fix it by reorder the code.
+> 
+> Signed-off-by: yangerkun <yangerkun@huawei.com>
+> ---
+>   drivers/net/slip/slip.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+> index 6f4d7ba8b109..babb01888b78 100644
+> --- a/drivers/net/slip/slip.c
+> +++ b/drivers/net/slip/slip.c
+> @@ -863,7 +863,10 @@ static int slip_open(struct tty_struct *tty)
+>   	tty->disc_data = NULL;
+>   	clear_bit(SLF_INUSE, &sl->flags);
+>   	sl_free_netdev(sl->dev);
+> +	/* do not call free_netdev before rtnl_unlock */
+> +	rtnl_unlock();
+>   	free_netdev(sl->dev);
+> +	return err;
+>   
+>   err_exit:
+>   	rtnl_unlock();
+> 
 
