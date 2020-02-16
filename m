@@ -2,149 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A33160139
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 01:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AADAB160144
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 01:50:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbgBPAAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 19:00:35 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39462 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726389AbgBPAAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 19:00:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=BwU/yMMrRpxpo5udSyMV4AC0NmXPbP6oD4rg0+6KT3M=; b=dK6FLqd7z28eL6c+bbhH+0pPg
-        pN5L6qSsXxB3Jr9exAZmQTlBp3tI948E+Y6+tOZpOJtE+o3I3r7ZTsRcOxBRLpLJJQ7SAJCjawaAP
-        NPutExc8UIqpnGXM5DPYv360MKbtgh5fZljqYOhJpzVN8wTM25ePln+z6UiA7mmJ5yeunPdza13GK
-        WITC4yArEh5jttnQx5jZZ/QCAdhvu0pVx1ju1s6APrmjh/QoPEY6nncCr/VvLsBzJv/ZHP80NNiUO
-        uaLZYqtPntJuQ7LPElrwLz3F2aAiAUPwZxQ6bXbyZ54mWzzFx3DPyYwo6gKanLV4LLY0laTkCHuwB
-        zP2h73hEw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:40862)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j37ML-0007ur-Pe; Sun, 16 Feb 2020 00:00:29 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j37MK-0004kg-Rk; Sun, 16 Feb 2020 00:00:28 +0000
-Date:   Sun, 16 Feb 2020 00:00:28 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 00/10] Pause updates for phylib and phylink
-Message-ID: <20200216000028.GU25745@shell.armlinux.org.uk>
-References: <20200215154839.GR25745@shell.armlinux.org.uk>
- <db876d85-94d3-9295-a21f-d338c1be3b36@gmail.com>
+        id S1726702AbgBPAuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 19:50:14 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:37067 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726504AbgBPAuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 19:50:13 -0500
+Received: by mail-ot1-f67.google.com with SMTP id l2so6598927otp.4;
+        Sat, 15 Feb 2020 16:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uyRNNBKtZ/pBAy6wlcISFvmc40pdoR2VRPKkepKzyLM=;
+        b=Q0WMVYVIM+b2pr/Pn3tUSRAGxAZgv4nYkNxBhG9toP/WvAIaLdYxyP/EisHgN+9XtK
+         cO+219jw4OkNMwxE1dme0AOosSoMn1fSVZZezJDyfLaLCP5mmKJ+B1up/4dGma5d7fcD
+         R35KuDmUMpPqQVeLbfnR2tQqq0819mnmLSfQWwSaE2ZD+kOEk8SvqG0v7mZ1ShkHU/0b
+         ef7TfSzPlXhbF9ibeJZ+jLq434eAPDRc7Tt93/ZyRczazQP6fIrJ7x4LJy6xnAgZXr5v
+         DVfR/DdYNvvpVowKpq+XUhfgOFeD1fDdfo9bv29ZlPLmc7Ez6QBHK9xBsk/lAcmUFOEk
+         ebCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uyRNNBKtZ/pBAy6wlcISFvmc40pdoR2VRPKkepKzyLM=;
+        b=b+OF5cWF1xEtNNlVKUh6+EI79Jd3sirBzooN/6LZDWMMjI/3qAr9iq0kVBvgUo7xUa
+         AjhcObNZo0dxpXVNbQs6L5gucvT0tGBfMcfX2pDRwIylmI5He5iZzjOW+zOqw5sdeM39
+         vyOt7mE8vd2bOCT29NV/gAjGK3tg8wxYTAPssIZc/2LdOuAgW5PDe/moUyW9ZzHnIfRA
+         zJzKDZ+sm4BIfVCWqV2fe3oCLS5UTVs249trhI81pBqjWf8pErp14m6ih3mEn8zx4G2O
+         YKzHP3ZL8/ROhDLWwJ6Qg0XhDxDutuPXNHN440ghn98kNkBqhYrWByBIFNr5mz4guSXt
+         yyYg==
+X-Gm-Message-State: APjAAAVI9nypy+HvWwLk+wovsqI+9bKhsSwuI0fbY0puO2+wswRzuj5X
+        MK37TY5MJ0Oymf1P7AHLbV9pmIm5
+X-Google-Smtp-Source: APXvYqw24cLn9pSDb30se6fd1ilKzuFGImR7J+NkDrn/Y/GrxMH5sclpTk/kehtaW2O3M77GOCbRMA==
+X-Received: by 2002:a05:6830:138b:: with SMTP id d11mr7101057otq.38.1581814212513;
+        Sat, 15 Feb 2020 16:50:12 -0800 (PST)
+Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id g25sm3678506otr.8.2020.02.15.16.50.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 15 Feb 2020 16:50:11 -0800 (PST)
+Date:   Sat, 15 Feb 2020 17:50:10 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Howard Chung <howardchung@google.com>
+Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [Bluez PATCH v5] bluetooth: secure bluetooth stack from bluedump
+ attack
+Message-ID: <20200216005010.GA24335@ubuntu-m2-xlarge-x86>
+References: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <db876d85-94d3-9295-a21f-d338c1be3b36@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200214191609.Bluez.v5.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 15, 2020 at 01:11:16PM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 2/15/2020 7:48 AM, Russell King - ARM Linux admin wrote:
-> > Currently, phylib resolves the speed and duplex settings, which MAC
-> > drivers use directly. phylib also extracts the "Pause" and "AsymPause"
-> > bits from the link partner's advertisement, and stores them in struct
-> > phy_device's pause and asym_pause members with no further processing.
-> > It is left up to each MAC driver to implement decoding for this
-> > information.
-> > 
-> > phylink converted drivers are able to take advantage of code therein
-> > which resolves the pause advertisements for the MAC driver, but this
-> > does nothing for unconverted drivers. It also does not allow us to
-> > make use of hardware-resolved pause states offered by several PHYs.
-> > 
-> > This series aims to address this by:
-> > 
-> > 1. Providing a generic implementation, linkmode_resolve_pause(), that
-> >    takes the ethtool linkmode arrays for the link partner and local
-> >    advertisements, decoding the result to whether pause frames should
-> >    be allowed to be transmitted or received and acted upon.  I call
-> >    this the pause enablement state.
-> > 
-> > 2. Providing a phylib implementation, phy_get_pause(), which allows
-> >    MAC drivers to request the pause enablement state from phylib.
-> > 
-> > 3. Providing a generic linkmode_set_pause() for setting the pause
-> >    advertisement according to the ethtool tx/rx flags - note that this
-> >    design has some shortcomings, see the comments in the kerneldoc for
-> >    this function.
-> > 
-> > 4. Remove the ability in phylink to set the pause states for fixed
-> >    links, which brings them into line with how we deal with the speed
-> >    and duplex parameters; we can reintroduce this later if anyone
-> >    requires it.  This could be a userspace-visible change.
-> > 
-> > 5. Split application of manual pause enablement state from phylink's
-> >    resolution of the same to allow use of phylib's new phy_get_pause()
-> >    interface by phylink, and make that switch.
-> > 
-> > 6. Resolve the fixed-link pause enablement state using the generic
-> >    linkmode_resolve_pause() helper introduced earlier. This, in
-> >    connection with the previous commits, allows us to kill the
-> >    MLO_PAUSE_SYM and MLO_PAUSE_ASYM flags.
-> > 
-> > 7. make phylink's ethtool pause setting implementation update the
-> >    pause advertisement in the same way that phylib does, with the
-> >    same caveats that are present there (as mentioned above w.r.t
-> >    linkmode_set_pause()).
-> > 
-> > 8. create a more accurate initial configuration for MACs, used when
-> >    phy_start() is called or a SFP is detected. In particular, this
-> >    ensures that the pause bits seen by MAC drivers in state->pause
-> >    are accurate for SGMII.
-> > 
-> > 9. finally, update the kerneldoc descriptions for mac_config() for
-> >    the above changes.
-> > 
-> > This series has been build-tested against net-next; the boot tested
-> > patches are in my "phy" branch against v5.5 plus the queued phylink
-> > changes that were merged for 5.6.
-> > 
-> > The next series will introduce the ability for phylib drivers to
-> > provide hardware resolved pause enablement state.  These patches can
-> > be found in my "phy" branch.
-> 
-> I do not think that patch #1 made it to the mailing-list though, so if
-> nothing else you may want to resend it:
-> 
-> http://patchwork.ozlabs.org/project/netdev/list/?series=158739
+Hi Howard,
 
-You're right, it was missing the Cc line.  Resent just that - which
-makes the series complete in patchwork, although not sure if the
-order is correct.  Does it sort a patch series by sent date?
+On Fri, Feb 14, 2020 at 07:16:41PM +0800, Howard Chung wrote:
+> Attack scenario:
+> 1. A Chromebook (let's call this device A) is paired to a legitimate
+>    Bluetooth classic device (e.g. a speaker) (let's call this device
+>    B).
+> 2. A malicious device (let's call this device C) pretends to be the
+>    Bluetooth speaker by using the same BT address.
+> 3. If device A is not currently connected to device B, device A will
+>    be ready to accept connection from device B in the background
+>    (technically, doing Page Scan).
+> 4. Therefore, device C can initiate connection to device A
+>    (because device A is doing Page Scan) and device A will accept the
+>    connection because device A trusts device C's address which is the
+>    same as device B's address.
+> 5. Device C won't be able to communicate at any high level Bluetooth
+>    profile with device A because device A enforces that device C is
+>    encrypted with their common Link Key, which device C doesn't have.
+>    But device C can initiate pairing with device A with just-works
+>    model without requiring user interaction (there is only pairing
+>    notification). After pairing, device A now trusts device C with a
+>    new different link key, common between device A and C.
+> 6. From now on, device A trusts device C, so device C can at anytime
+>    connect to device A to do any kind of high-level hijacking, e.g.
+>    speaker hijack or mouse/keyboard hijack.
+> 
+> Since we don't know whether the repairing is legitimate or not,
+> leave the decision to user space if all the conditions below are met.
+> - the pairing is initialized by peer
+> - the authorization method is just-work
+> - host already had the link key to the peer
+> 
+> Signed-off-by: Howard Chung <howardchung@google.com>
+> ---
+> 
+> Changes in v5:
+> - Rephrase the comment
+> 
+> Changes in v4:
+> - optimise the check in smp.c.
+> 
+> Changes in v3:
+> - Change confirm_hint from 2 to 1
+> - Fix coding style (declaration order)
+> 
+> Changes in v2:
+> - Remove the HCI_PERMIT_JUST_WORK_REPAIR debugfs option
+> - Fix the added code in classic
+> - Add a similar fix for LE
+> 
+>  net/bluetooth/hci_event.c | 10 ++++++++++
+>  net/bluetooth/smp.c       | 19 +++++++++++++++++++
+>  2 files changed, 29 insertions(+)
+> 
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 2c833dae9366..e6982f4f51ea 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -4571,6 +4571,16 @@ static void hci_user_confirm_request_evt(struct hci_dev *hdev,
+>  			goto confirm;
+>  		}
+>  
+> +		/* If there already exists link key in local host, leave the
+> +		 * decision to user space since the remote device could be
+> +		 * legitimate or malicious.
+> +		 */
+> +		if (hci_find_link_key(hdev, &ev->bdaddr)) {
+> +			bt_dev_warn(hdev, "Local host already has link key");
+> +			confirm_hint = 1;
+> +			goto confirm;
+> +		}
+> +
+>  		BT_DBG("Auto-accept of user confirmation with %ums delay",
+>  		       hdev->auto_accept_delay);
+>  
+> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+> index 2cba6e07c02b..25dbf77d216b 100644
+> --- a/net/bluetooth/smp.c
+> +++ b/net/bluetooth/smp.c
+> @@ -2192,6 +2192,25 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+>  		smp_send_cmd(conn, SMP_CMD_PAIRING_RANDOM, sizeof(smp->prnd),
+>  			     smp->prnd);
+>  		SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
+> +
+> +		/* Only Just-Works pairing requires extra checks */
+> +		if (smp->method != JUST_WORKS)
+> +			goto mackey_and_ltk;
+> +
+> +		/* If there already exists link key in local host, leave the
+> +		 * decision to user space since the remote device could be
+> +		 * legitimate or malicious.
+> +		 */
+> +		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
+> +				 hcon->role)) {
+> +			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+> +							hcon->type,
+> +							hcon->dst_type, passkey,
 
-> 
-> > 
-> >  drivers/net/phy/Makefile     |   3 +-
-> >  drivers/net/phy/linkmode.c   |  95 +++++++++++++++++++++++++
-> >  drivers/net/phy/phy_device.c |  43 +++++++-----
-> >  drivers/net/phy/phylink.c    | 162 +++++++++++++++++++++++++++----------------
-> >  include/linux/linkmode.h     |   8 ++-
-> >  include/linux/phy.h          |   3 +
-> >  include/linux/phylink.h      |  34 +++++----
-> >  7 files changed, 258 insertions(+), 90 deletions(-)
-> >  create mode 100644 drivers/net/phy/linkmode.c
-> > 
-> 
-> -- 
-> Florian
-> 
+We received a report from the 0day bot when building with clang that
+passkey is uninitialized when used here:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+https://groups.google.com/forum/#!topic/clang-built-linux/kyRKCjRsGoU
+
+It appears to be legitimate as if we get to this point, we have not
+touched the value of passkey but I do not know if there is any
+contextual code flow going on where this can never happen but I do not
+see how.
+
+Would you mind looking into it?
+
+Cheers,
+Nathan
