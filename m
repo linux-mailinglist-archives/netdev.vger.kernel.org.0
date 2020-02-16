@@ -2,70 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5746416017D
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 04:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A80E616018C
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 04:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbgBPDML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Feb 2020 22:12:11 -0500
-Received: from sonic305-21.consmr.mail.ir2.yahoo.com ([77.238.177.83]:38021
-        "EHLO sonic305-21.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726656AbgBPDMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Feb 2020 22:12:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1581822728; bh=SZahDY+pPbNZZakhohq2fC6Fas1X+CpLLzNU8DNKAp0=; h=Date:From:Reply-To:Subject:References:From:Subject; b=J23Yi35cCU037WZPx89huSfhmxOCF8dCNb5ovw1ofzsP8RrlLN6odoZLAB2kp0013KnopoTzE8OQ2g/6LlJPNGOgIqgc4uNW8JG8D9I7bpDyCc0zxEhm0I3GJl2G1XWC8S6yEZTp/+lkp+Juo6xSs8s4h6WdC9vtb6ot8fKTNyN7q7b1GwBuMzScJSuyrk4sPNPraITmaYDOEKpLSKCOHkS3nikzNMz0Ur48hif6md2DbcZnhlJ7ruTtZx91ub4RM0TH5wVBI9XN/kWiy5OtJiWuG8ncSUWwTqB6D8AkS/tNSX70lgscNPNw88MFFzwPo78f5rDfyD+L+kPKjglWMg==
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.ir2.yahoo.com with HTTP; Sun, 16 Feb 2020 03:12:08 +0000
-Date:   Sun, 16 Feb 2020 03:02:00 +0000 (UTC)
-From:   "Mrs. Judith Compola" <dhhddjj@aol.com>
-Reply-To: mrsjd06@gmail.com
-Message-ID: <559193885.5940015.1581822120282@mail.yahoo.com>
-Subject: Dear Friend,
+        id S1727362AbgBPDoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Feb 2020 22:44:55 -0500
+Received: from mga02.intel.com ([134.134.136.20]:33359 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726651AbgBPDoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Feb 2020 22:44:54 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Feb 2020 19:44:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,447,1574150400"; 
+   d="scan'208";a="257916571"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Feb 2020 19:44:53 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2020-02-15
+Date:   Sat, 15 Feb 2020 19:44:37 -0800
+Message-Id: <20200216034452.1251706-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <559193885.5940015.1581822120282.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15199 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36 OPR/66.0.3515.72
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
-         =20
-Hope All Is Well With You And Your Family.
-=20
-I Am Mrs judith Compola, Accountant By Profession, I'm 34yrs Old, Working A=
-t The Office Of Auditing And Accounting Department Of Africa Development Ba=
-nk (adb).i Is Married With 1 Kids. My Residence Addresses No: 18 Avenue De =
-La Charles Degaulle Sects: 21. Box Postal: 01 Bp 5256 Ouagadougou Burkina F=
-aso. I Want You To Handle This Business Transaction With Me If Chance To Do=
- International Business.
-=20
-I Got Your Mail From Google Search. We Are Imposition To Reclaim And Inheri=
-t The Sum Of (us$5.5millions Dollar=E2=80=99s) Without Any Trouble, From A =
-Dormant Account Which Remains Unclaimed Since 11 Years The Owner Died.  Thi=
-s Is A U.s Dollar=E2=80=99s Account And The Beneficiary Died Without Trace =
-Of His Family To Claim The Fund And No Next Of Kin. I Want You To Stand As =
-His Business Associate And I Will Guild You Without Any Risk Involve.
-=20
-If Interested To Do This Business With Me Without Betray Contact Me Through=
- My Private Email Address mrsjd06@gmail.com With Your Full Details As  Bell=
-ow, I Will Immediately Give You More Details Of The Transfer.
-=20
-(1) Full Name: ............................................. (2) Country: .=
-...................................................... (3) Direct Telephone=
- Number:
-=20
-............................................... (4) Age: ..................=
-................................................ (5) Occupation And Positio=
-n:
-=20
-............................................... (6) Marriage Status: ......=
-................................................. (7) Gender:
-=20
-................................................................
-=20
-Best Regard, Mrs.judith Compola, E-mail Address: mrsjd06@gmail.com
-=20
-Am Waiting For Your Urgent Reply So That We Will Start Immediately, Sorry I=
-f You Received This Letter In Your Spam, Due To Recent Connection Error Her=
-e In My Country.  May Almighty God Bless You!
+This series contains updates to ice driver only.
+
+Brett adds support for "Queue in Queue" (QinQ) support, by supporting
+S-tag & C-tag VLAN traffic by disabling pruning when there are no 0x8100
+VLAN interfaces currently on top of the PF.  Also refactored the port
+VLAN configuration to re-use the common code for enabling and disabling
+a port VLAN in single function.  Added a helper function to determine if
+the VF link is up.  Fixed how the port VLAN configures the priority bits
+for a VF interface.  Fixed the port VLAN to only see its own broadcast
+and multicast traffic.  Added support to enable and disable all receive
+queues, by refactoring adding a new function to do the necessary steps
+to enable/disable a queue with the necessary read flush.  Fixed how we
+set the mapping mode for transmit and receive queues.  Added support for
+VF queues to handle LAN overflow events.  Fixed and refactored how
+receive queues get disabled for VFs, which was being handled one queue
+at at time, so improve it to handle when the VF is requesting more than
+one queue to be disabled.  Fixed how the virtchnl_queue_select bitmap is
+validated.
+
+Finally a patch not authored by Brett, Bruce cleans up "fallthrough"
+comments which are unnecessary.  Also replaces the "fallthough" comments
+with the GCC reserved word fallthrough, along with other GCC compiler
+fixes.  Add missing function header comment regarding a function
+argument that was missing.
+
+The following are changes since commit 2019fc96af228b412bdb2e8e0ad4b1fc12046a51:
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Brett Creeley (10):
+  ice: Add initial support for QinQ
+  ice: Refactor port vlan configuration for the VF
+  ice: Add helper to determine if VF link is up
+  ice: Fix Port VLAN priority bits
+  ice: Only allow tagged bcast/mcast traffic for VF in port VLAN
+  ice: Add support to enable/disable all Rx queues before waiting
+  ice: Fix implicit queue mapping mode in ice_vsi_get_qs
+  ice: Handle LAN overflow event for VF queues
+  ice: Fix and refactor Rx queue disable for VFs
+  ice: Fix virtchnl_queue_select bitmap validation
+
+Bruce Allan (5):
+  ice: remove unnecessary fallthrough comments
+  ice: replace "fallthrough" comments with fallthrough reserved word
+  ice: use proper format for function pointer as a function parameter
+  ice: add function argument description to function header comment
+  ice: use true/false for bool types
+
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  11 +
+ drivers/net/ethernet/intel/ice/ice_base.c     |  43 ++-
+ drivers/net/ethernet/intel/ice/ice_base.h     |   4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   6 +-
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   2 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  98 +++--
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  33 +-
+ drivers/net/ethernet/intel/ice/ice_sriov.c    |   2 -
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   5 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 341 ++++++++++++------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  12 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |  12 +-
+ 15 files changed, 385 insertions(+), 198 deletions(-)
+
+-- 
+2.24.1
+
