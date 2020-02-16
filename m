@@ -2,55 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2140D16061E
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 20:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9BC71606A1
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 22:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbgBPT6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 14:58:20 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48664 "EHLO vps0.lunn.ch"
+        id S1726962AbgBPVIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 16:08:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726020AbgBPT6U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Feb 2020 14:58:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QFW3UM4x+zFJDy3HjBcmX54iFSWaDym9CLwJ9v1iClc=; b=DSAyETxeHYnxA7GZ8b6sLsUMR9
-        jDJqzI3RQAADii1TEA0p3AqeFD5eNj53aaKK2qgw6XVqGJqu664ywkQSnPCh6daXFPrSiqXhBHrL+
-        pvrMsAT004acuxMpq8XgJ1rKbj44npoU+bDD1A5VUj7AjrDaX7QLgYhPA9X0FjU7JDZ8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j3Q3V-0000Ye-8C; Sun, 16 Feb 2020 20:58:17 +0100
-Date:   Sun, 16 Feb 2020 20:58:17 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Mathieu Malaterre <malat@debian.org>
-Subject: Re: [PATCH] net: ethernet: dm9000: Handle -EPROBE_DEFER in
- dm9000_parse_dt()
-Message-ID: <20200216195817.GB32734@lunn.ch>
-References: <20200216193943.81134-1-paul@crapouillou.net>
+        id S1726043AbgBPVIG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Feb 2020 16:08:06 -0500
+Received: from localhost.localdomain (unknown [151.48.137.85])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C47F20726;
+        Sun, 16 Feb 2020 21:08:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581887285;
+        bh=U1NnfrWpx16BXVIZpOChV4m/YhGrQ9FrOazanTtPzRE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pTGxfniGou6+U0mxtrZy5E6Yz0UrcW2WgTs2hAwrQCm+0ArtZEFFflG238B1If5N1
+         uczbvccoVf3/jIdA4wrkqhPnEAyTedasZfbvCjR+1bwhe907mUc1s71+/qQ71jJ7L4
+         nWjs1XFJof6/b6W1sS/c8B9Oh3O/+rEEg6FVdDKM=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com
+Subject: [PATCH net-next 0/5] add xdp ethtool stats to mvneta driver
+Date:   Sun, 16 Feb 2020 22:07:28 +0100
+Message-Id: <cover.1581886691.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200216193943.81134-1-paul@crapouillou.net>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 16, 2020 at 04:39:43PM -0300, Paul Cercueil wrote:
-> The call to of_get_mac_address() can return -EPROBE_DEFER, for instance
-> when the MAC address is read from a NVMEM driver that did not probe yet.
-> 
-> Cc: H. Nikolaus Schaller <hns@goldelico.com>
-> Cc: Mathieu Malaterre <malat@debian.org>
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Rework mvneta stats accounting in order to introduce xdp ethtool
+statistics in the mvneta driver.
+Introduce xdp_redirect, xdp_pass, xdp_drop and xdp_tx counters to
+ethtool statistics.
+Fix skb_alloc_error and refill_error ethtool accounting
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Lorenzo Bianconi (5):
+  net: mvneta: move refill_err and skb_alloc_err in per-cpu stats
+  net: mvneta: rely on open-coding updating stats for non-xdp and tx
+    path
+  net: mvneta: rely on struct mvneta_stats in mvneta_update_stats
+    routine
+  net: mvneta: introduce xdp counters to ethtool
+  net: mvneta: get rid of xdp_ret in mvneta_swbm_rx_frame
 
-    Andrew
+ drivers/net/ethernet/marvell/mvneta.c | 227 ++++++++++++++++++--------
+ 1 file changed, 163 insertions(+), 64 deletions(-)
+
+-- 
+2.24.1
+
