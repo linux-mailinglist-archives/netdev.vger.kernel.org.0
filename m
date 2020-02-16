@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E46416034C
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 11:02:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F32C7160340
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 11:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727946AbgBPKCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 05:02:12 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44748 "EHLO
+        id S1727842AbgBPKBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 05:01:48 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52945 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726140AbgBPKBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 05:01:44 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
+        with ESMTP id S1726787AbgBPKBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 05:01:46 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 16 Feb 2020 12:01:38 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01GA1cdu007834;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01GA1cdv007834;
         Sun, 16 Feb 2020 12:01:38 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,95 +25,177 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next v3 00/16] Handle multi chain hardware misses
-Date:   Sun, 16 Feb 2020 12:01:20 +0200
-Message-Id: <1581847296-19194-1-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next v3 01/16] net: sched: Introduce ingress classification function
+Date:   Sun, 16 Feb 2020 12:01:21 +0200
+Message-Id: <1581847296-19194-2-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1581847296-19194-1-git-send-email-paulb@mellanox.com>
+References: <1581847296-19194-1-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David/Jakub/Saeed,
-
 TC multi chain configuration can cause offloaded tc chains to miss in
 hardware after jumping to some chain. In such cases the software should
-continue from the chain that was missed in hardware, as the hardware may have
-manipulated the packet and updated some counters.
+continue from the chain that missed in hardware, as the hardware may
+have manipulated the packet and updated some counters.
 
-The first four patches enables tc classification to start from a specified chain by
-re-using the existing TC_SKB_EXT skb extension.
+Currently a single tcf classification function serves both ingress and
+egress. However, multi chain miss processing (get tc skb extension on
+hw miss, set tc skb extension on tc miss) should happen only on
+ingress.
 
-The next six patches are the Mellanox driver implementation of the miss path.
-The driver loads the last processed chain from HW register (reg_c0, then flow_tag)
-and stores it on the TC_SKB_EXT skb extension for continued processing
-in software.
+Refactor the code to use ingress classification function, and move setting
+the tc skb extension from general classification to it, as a prestep
+for supporting the hw miss scenario.
 
-The final six patches introduce the Mellanox driver implementation for handling
-tunnel restore when the packet was decapsulated on first chain hop.
-Early decapsulation creates two issues:
-1. The outer headers will not be available in later chains
-2. If the HW will miss on later chains, the packet will come up to software
-   without the tunnel header. Therefore, sw matches on the tunnel info will miss.
+Co-developed-by: Vlad Buslov <vladbu@mellanox.com>
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ Changelog:
+   v2->v3
+       Split from v2 first patch
+       Defined tcf_classify_ingress so we only affect ingress classification
+       Move setting the skb extension to ingress classification
+       
+ include/net/pkt_cls.h | 10 +++++++++
+ net/core/dev.c        |  3 ++-
+ net/sched/cls_api.c   | 58 ++++++++++++++++++++++++++++++++++++++-------------
+ 3 files changed, 56 insertions(+), 15 deletions(-)
 
-Address these issues by mapping a unique id per tunnel info. The mapping is
-stored on hardware register (c1) when the packet is decapsulated. On miss,
-use the id to restore the tunnel info metadata on the skb.
-
-Note that miss path handling of multi-chain rules is a required infrastructure
-for connection tracking hardware offload. The connection tracking offload
-series will follow this one.
-
-Changelog:
-   v2-v3:
-     Split first patch to four
-
-Paul Blakey (16):
-  net: sched: Introduce ingress classification function
-  net: sched: Pass ingress block to tcf_classify_ingress
-  net: sched: Change the block's chain list to an rcu list
-  net: sched: Support specifying a starting chain via tc skb ext
-  net/mlx5: Introduce mapping infra for mapping unique ids to data
-  net/mlx5: E-Switch, Move source port on reg_c0 to the upper 16 bits
-  net/mlx5: E-Switch, Get reg_c0 value on CQE
-  net/mlx5: E-Switch, Mark miss packets with new chain id mapping
-  net/mlx5e: Rx, Split rep rx mpwqe handler from nic
-  net/mlx5: E-Switch, Restore chain id on miss
-  net/mlx5e: Allow re-allocating mod header actions
-  net/mlx5e: Move tc tunnel parsing logic with the rest at tc_tun module
-  net/mlx5e: Disallow inserting vxlan/vlan egress rules without
-    decap/pop
-  net/mlx5e: Support inner header rewrite with goto action
-  net/mlx5: E-Switch, Get reg_c1 value on miss
-  net/mlx5e: Restore tunnel metadata on miss
-
- drivers/infiniband/hw/mlx5/main.c                  |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/mapping.c   | 218 ++++++
- .../net/ethernet/mellanox/mlx5/core/en/mapping.h   |  27 +
- .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    | 112 ++-
- .../net/ethernet/mellanox/mlx5/core/en/tc_tun.h    |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   7 +
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  66 ++
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 818 ++++++++++++++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  45 ++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  15 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 240 +++++-
- .../mellanox/mlx5/core/eswitch_offloads_chains.c   | 130 +++-
- .../mellanox/mlx5/core/eswitch_offloads_chains.h   |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +-
- include/linux/mlx5/eswitch.h                       |  31 +-
- include/net/pkt_cls.h                              |  13 +
- include/net/sch_generic.h                          |   3 +
- net/core/dev.c                                     |   3 +-
- net/sched/cls_api.c                                |  98 ++-
- net/sched/sch_generic.c                            |   8 +
- net/sched/sch_ingress.c                            |  11 +-
- 23 files changed, 1619 insertions(+), 246 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/mapping.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/mapping.h
-
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index a972244..3d51a2d 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -72,6 +72,8 @@ static inline struct Qdisc *tcf_block_q(struct tcf_block *block)
+ 
+ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 		 struct tcf_result *res, bool compat_mode);
++int tcf_classify_ingress(struct sk_buff *skb, const struct tcf_proto *tp,
++			 struct tcf_result *res, bool compat_mode);
+ 
+ #else
+ static inline bool tcf_block_shared(struct tcf_block *block)
+@@ -133,6 +135,14 @@ static inline int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ {
+ 	return TC_ACT_UNSPEC;
+ }
++
++static inline int tcf_classify_ingress(struct sk_buff *skb,
++				       const struct tcf_proto *tp,
++				       struct tcf_result *res, bool compat_mode)
++{
++	return TC_ACT_UNSPEC;
++}
++
+ #endif
+ 
+ static inline unsigned long
+diff --git a/net/core/dev.c b/net/core/dev.c
+index a6316b3..107af00 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4860,7 +4860,8 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
+ 	skb->tc_at_ingress = 1;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+-	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
++	switch (tcf_classify_ingress(skb, miniq->filter_list, &cl_res,
++				     false)) {
+ 	case TC_ACT_OK:
+ 	case TC_ACT_RECLASSIFY:
+ 		skb->tc_index = TC_H_MIN(cl_res.classid);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index c2cdd0f..7652e0e 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1559,8 +1559,11 @@ static int tcf_block_setup(struct tcf_block *block,
+  * to this qdisc, (optionally) tests for protocol and asks
+  * specific classifiers.
+  */
+-int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+-		 struct tcf_result *res, bool compat_mode)
++static inline int __tcf_classify(struct sk_buff *skb,
++				 const struct tcf_proto *tp,
++				 struct tcf_result *res,
++				 bool compat_mode,
++				 u32 *last_executed_chain)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	const int max_reclassify_loop = 4;
+@@ -1582,21 +1585,11 @@ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ #ifdef CONFIG_NET_CLS_ACT
+ 		if (unlikely(err == TC_ACT_RECLASSIFY && !compat_mode)) {
+ 			first_tp = orig_tp;
++			*last_executed_chain = first_tp->chain->index;
+ 			goto reset;
+ 		} else if (unlikely(TC_ACT_EXT_CMP(err, TC_ACT_GOTO_CHAIN))) {
+ 			first_tp = res->goto_tp;
+-
+-#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+-			{
+-				struct tc_skb_ext *ext;
+-
+-				ext = skb_ext_add(skb, TC_SKB_EXT);
+-				if (WARN_ON_ONCE(!ext))
+-					return TC_ACT_SHOT;
+-
+-				ext->chain = err & TC_ACT_EXT_VAL_MASK;
+-			}
+-#endif
++			*last_executed_chain = err & TC_ACT_EXT_VAL_MASK;
+ 			goto reset;
+ 		}
+ #endif
+@@ -1619,8 +1612,45 @@ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 	goto reclassify;
+ #endif
+ }
++
++int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
++		 struct tcf_result *res, bool compat_mode)
++{
++	u32 last_executed_chain = 0;
++
++	return __tcf_classify(skb, tp, res, compat_mode,
++			      &last_executed_chain);
++}
+ EXPORT_SYMBOL(tcf_classify);
+ 
++int tcf_classify_ingress(struct sk_buff *skb, const struct tcf_proto *tp,
++			 struct tcf_result *res, bool compat_mode)
++{
++#if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	u32 last_executed_chain = 0;
++
++	return __tcf_classify(skb, tp, res, compat_mode,
++			      &last_executed_chain);
++#else
++	u32 last_executed_chain = tp ? tp->chain->index : 0;
++	struct tc_skb_ext *ext;
++	int ret;
++
++	ret = __tcf_classify(skb, tp, res, compat_mode, &last_executed_chain);
++
++	/* If we missed on some chain */
++	if (ret == TC_ACT_UNSPEC && last_executed_chain) {
++		ext = skb_ext_add(skb, TC_SKB_EXT);
++		if (WARN_ON_ONCE(!ext))
++			return TC_ACT_SHOT;
++		ext->chain = last_executed_chain;
++	}
++
++	return ret;
++#endif
++}
++EXPORT_SYMBOL(tcf_classify_ingress);
++
+ struct tcf_chain_info {
+ 	struct tcf_proto __rcu **pprev;
+ 	struct tcf_proto __rcu *next;
 -- 
 1.8.3.1
 
