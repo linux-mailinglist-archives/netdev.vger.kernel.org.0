@@ -2,127 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6126C1604E8
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 17:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F2A216050D
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 18:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728476AbgBPQ7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 11:59:11 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:43388 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728386AbgBPQ7L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 11:59:11 -0500
-Received: by mail-yw1-f66.google.com with SMTP id f204so6797664ywc.10
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 08:59:11 -0800 (PST)
+        id S1728550AbgBPR2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 12:28:21 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35284 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728496AbgBPR2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 12:28:20 -0500
+Received: by mail-pl1-f194.google.com with SMTP id g6so5773993plt.2;
+        Sun, 16 Feb 2020 09:28:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+AKNIAXYxKoBaAJPGdS3BRIcV/MOGV1i/wZ5L4HRaJ0=;
-        b=RiwUpFjtVFaKNMvxes5Yfm9WwtW0TaFduO7axpGzz2enkGffQFjYcnqENM7C6hLnEg
-         XvFOKkoXxDstEPYg5x1Glqe3YSy4CBUV3SViTLX5CmNq8p/qFrRnnVYOGnwNfrkhsFmf
-         /k/eMS4W70m9rZztD10X6oNXBOb8cmbJWpo0tEq5F7XGAoZapBriKoN0mdtna8lxeOT4
-         22MRdmfXQ1+HvYiWyimsqg+aTjEZaGs1ivcEDuTTdxMPWrcaBrqtddC5V3hlHKYUo85a
-         tYmyK/U0qEaiCdy123oiFxxC7JIW1atbrLNJr7UKi8Nbq6qFwTy+etV/L7slLauymedq
-         whug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=li9wRD+trYzeYRrIDTG7VErShRh4YzHNS/3QPJhsHYs=;
+        b=R9a6Mac428S9opSV3aq/ZhqE30jY6lafTCf7S2d1eJ1E99RSCGWcpDXTeZ3Vg3+GyD
+         ihz21YJzlyYeM3anV69vpMgMV6lksRliQJ0HCBJbYfSLI+6QzXpoQOwW0aU0izce8Ky+
+         BvU/CsSiIhoznN0iXSXvbX23to+afL5HRUjQ/g0BjQj+mjhbeXlEqW0wLFe15ZHEn8Ip
+         VZjDKptRZCNYMvxaU/Ngrb0Ps89+DO1AkcGFEVdK/ApL+P+Exqzjhlh3gNRNjQnnyuqJ
+         MzGQYvNnAP301j1JSOtlVfkSF9EnxwP70stmA832B99N7jjUloV4FBtKk5SXhWB1f6Wf
+         EL2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+AKNIAXYxKoBaAJPGdS3BRIcV/MOGV1i/wZ5L4HRaJ0=;
-        b=tIBoEkR90e8fCsDQR1iw5YyXhnbdnLvz4LGNpBxoOlSCFKQtQ/VIuNn+mYaxeSFlo7
-         Mz2LPOsg3T93RZcRrrg5wxYo/0jAON7K+zMueUxjF56MUvZ6+W2BFlqZn/cVmX/mgJ17
-         mAF+UR6J5iGsZVeClzvU18PJn4htrmdb6d9W/x3ymoONOjnNbwGkfE/YcbnQK+IPKpJ/
-         IaDgtgpgVzwSpjdvWWFObsnyzzu6ogD06agtNwNevX3mbx0Xgfjpc9F8XnRlo30FvDmC
-         ePg/PWJYG7KKLVrEUjBfXeegJ4Xx9y98qsEKOKzAAXZVvj0z4V1mEChh7kuQHDtObemG
-         FDEQ==
-X-Gm-Message-State: APjAAAV5O49MskLCFZVwsWrPGks/OBLEfBUTn/xxHMakTEutJhAvj2LM
-        GNJHFiwICHoLrGoQOTQkfeFOlcUi
-X-Google-Smtp-Source: APXvYqyDSRbq49rqLSlCmfk3QyO22SBuceoK/3tApHDaflp4Ee777Qa0BSvWJLBWFL1bqJC11t0HGw==
-X-Received: by 2002:a81:9bc2:: with SMTP id s185mr9740384ywg.55.1581872350116;
-        Sun, 16 Feb 2020 08:59:10 -0800 (PST)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id l37sm5334885ywa.103.2020.02.16.08.59.08
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Feb 2020 08:59:09 -0800 (PST)
-Received: by mail-yb1-f182.google.com with SMTP id f21so7513515ybg.11
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 08:59:08 -0800 (PST)
-X-Received: by 2002:a25:7c5:: with SMTP id 188mr11222041ybh.178.1581872347936;
- Sun, 16 Feb 2020 08:59:07 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=li9wRD+trYzeYRrIDTG7VErShRh4YzHNS/3QPJhsHYs=;
+        b=iaA5Q+1xyKP1pbhr56lv/UDb+60N4WfU2CkhyiesjpEZk1tNfwoxgk7Co294bNA1Fa
+         f1aYZYX6knoLVyAnRBCI2D2/3HQHIys3fXFm9Nxgkd6J5V2ehz9lke7yrtZ92yirtLWU
+         qaB0VViWdipKJS00h8ZF20SHyzN2w6Kyamh8c2njePoxrgzM7l4lRPcpe6gXn/qNxOll
+         T6HcPL0+BAxwXw+X8r0vm2AKtEi4JT0rtGwqZSi00LKHBb+kq86aaYsDulG0YG9utp5k
+         f67y46QBBbPlSKrZ0KWpAbIZf0xj1tikg3gQ8xmWYOBtA2LAjY4w/NQzKbjGwq77cI+q
+         kdNA==
+X-Gm-Message-State: APjAAAXWiJqvZEWHExDCv4HSVatTIy+Af+9sAu0Xc5nTNNOs2cJ+QR7i
+        unvrGnFXO6s/K8jZBjXGvX4=
+X-Google-Smtp-Source: APXvYqwnA7pjS1054IxgkOuF4Ptq6AKSK3rxTwoaU0ILSWvT53J2OayxuX5Dez18xr9oJSMfJG/xXg==
+X-Received: by 2002:a17:902:6a88:: with SMTP id n8mr12421746plk.265.1581874098693;
+        Sun, 16 Feb 2020 09:28:18 -0800 (PST)
+Received: from localhost.localdomain ([103.211.17.250])
+        by smtp.googlemail.com with ESMTPSA id iq22sm13836213pjb.9.2020.02.16.09.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Feb 2020 09:28:18 -0800 (PST)
+From:   Amol Grover <frextrite@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jeremy Sowden <jeremy@azazel.net>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Johannes Berg <johannes.berg@intel.com>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH] netfilter: ipset: Pass lockdep expression to RCU lists
+Date:   Sun, 16 Feb 2020 22:56:54 +0530
+Message-Id: <20200216172653.19772-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <cover.1581745878.git.martin.varghese@nokia.com> <c2c5eb533306bccd487c28fb1538554441ad867a.1581745879.git.martin.varghese@nokia.com>
-In-Reply-To: <c2c5eb533306bccd487c28fb1538554441ad867a.1581745879.git.martin.varghese@nokia.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 16 Feb 2020 10:58:30 -0600
-X-Gmail-Original-Message-ID: <CA+FuTSfHFn=niNFmd0yuHYt39a3P8Sfq7RMSBjqK1iro8EWGaQ@mail.gmail.com>
-Message-ID: <CA+FuTSfHFn=niNFmd0yuHYt39a3P8Sfq7RMSBjqK1iro8EWGaQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 1/2] net: UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 11:20 PM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
->
-> From: Martin Varghese <martin.varghese@nokia.com>
->
-> The Bareudp tunnel module provides a generic L3 encapsulation
-> tunnelling module for tunnelling different protocols like MPLS,
-> IP,NSH etc inside a UDP tunnel.
->
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+ip_set_type_list is traversed using list_for_each_entry_rcu
+outside an RCU read-side critical section but under the protection
+of ip_set_type_mutex.
 
-A few small points
+Hence, add corresponding lockdep expression to silence false-positive
+warnings, and harden RCU lists.
 
->  net/ipv4/route.c                     |  48 +++
->  net/ipv6/ip6_output.c                |  70 ++++
+Signed-off-by: Amol Grover <frextrite@gmail.com>
+---
+ net/netfilter/ipset/ip_set_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Both protocols have route.c and ip(6)_output.c files. For the sake of
-consistency, both should ideally be in route.c. Did you choose
-ip6_output.c for a reason?
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index cf895bc80871..97c851589160 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -86,7 +86,8 @@ find_set_type(const char *name, u8 family, u8 revision)
+ {
+ 	struct ip_set_type *type;
+ 
+-	list_for_each_entry_rcu(type, &ip_set_type_list, list)
++	list_for_each_entry_rcu(type, &ip_set_type_list, list,
++				lockdep_is_held(&ip_set_type_mutex))
+ 		if (STRNCMP(type->name, name) &&
+ 		    (type->family == family ||
+ 		     type->family == NFPROTO_UNSPEC) &&
+-- 
+2.24.1
 
-There are also a couple of reverse christmas tree violations.
-
-> +struct rtable *ip_route_output_tunnel(struct sk_buff *skb,
-> +                                     struct net_device *dev,
-> +                                     struct net *net, __be32 *saddr,
-> +                                     const struct ip_tunnel_info *info,
-> +                                     u8 protocol, bool use_cache)
-> +{
-> +#ifdef CONFIG_DST_CACHE
-> +       struct dst_cache *dst_cache;
-> +#endif
-> +       struct rtable *rt = NULL;
-> +       struct flowi4 fl4;
-> +       __u8 tos;
-> +
-> +       memset(&fl4, 0, sizeof(fl4));
-> +       fl4.flowi4_mark = skb->mark;
-> +       fl4.flowi4_proto = protocol;
-> +       fl4.daddr = info->key.u.ipv4.dst;
-> +       fl4.saddr = info->key.u.ipv4.src;
-> +
-> +       tos = info->key.tos;
-> +       fl4.flowi4_tos = RT_TOS(tos);
-> +#ifdef CONFIG_DST_CACHE
-> +       dst_cache = (struct dst_cache *)&info->dst_cache;
-> +       if (use_cache) {
-> +               rt = dst_cache_get_ip4(dst_cache, saddr);
-> +               if (rt)
-> +                       return rt;
-> +       }
-> +#endif
-
-This is the same in geneve, but no need to initialize fl4 on a cache
-hit. Then can also be restructured to only have a single #ifdef block.
