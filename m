@@ -2,144 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 427141606A6
-	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 22:08:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC1891606E6
+	for <lists+netdev@lfdr.de>; Sun, 16 Feb 2020 23:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728198AbgBPVI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 16:08:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728180AbgBPVI2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 16 Feb 2020 16:08:28 -0500
-Received: from localhost.localdomain (unknown [151.48.137.85])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85F0120726;
-        Sun, 16 Feb 2020 21:08:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581887307;
-        bh=XpypPE1fCkyxVWBL5gUfiePN0m0gUNYfeusYLpVFucE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GYOTskG6vZPAzzwXSzqweSwn06+DlL32wQqVtkN+wk2RFU11EvnglvKFhzVty/LmG
-         ko6GRBe1DHVy/l+7LfSJMKooxI056VccDwV6IWcQx2AfybDydikn7JYzbTj4MTcUxQ
-         xc+DCvqIFaQl0DmP4xlwUGisbsJUyzyKETp/gi+w=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com
-Subject: [PATCH net-next 5/5] net: mvneta: get rid of xdp_ret in mvneta_swbm_rx_frame
-Date:   Sun, 16 Feb 2020 22:07:33 +0100
-Message-Id: <7984981598af702a67e5b2560c7616a9665ee808.1581886691.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <cover.1581886691.git.lorenzo@kernel.org>
-References: <cover.1581886691.git.lorenzo@kernel.org>
+        id S1727979AbgBPWWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 17:22:17 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:52125 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726020AbgBPWWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 17:22:17 -0500
+X-Originating-IP: 209.85.222.43
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 8CB781C0004;
+        Sun, 16 Feb 2020 22:22:14 +0000 (UTC)
+Received: by mail-ua1-f43.google.com with SMTP id f7so5471468uaa.8;
+        Sun, 16 Feb 2020 14:22:14 -0800 (PST)
+X-Gm-Message-State: APjAAAXOuO0FtgIz44XaZ5s7sSxC0Gag4k/bRYp9ZDN8KXc6i7bm1drZ
+        yfKiiRnuPx9eCOwQkgrowMIJu/k8F4Ynorpg4yk=
+X-Google-Smtp-Source: APXvYqx2go22AofIyIP98/l6l45UOkLo/JVU6KDf6hZMx9X9FgplBl+/pgthlodHMYDcGG1odYWa6E/YfMjVrHqpEXI=
+X-Received: by 2002:ab0:4753:: with SMTP id i19mr6353393uac.70.1581891733184;
+ Sun, 16 Feb 2020 14:22:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200215132056.42124-1-mcroce@redhat.com>
+In-Reply-To: <20200215132056.42124-1-mcroce@redhat.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Sun, 16 Feb 2020 14:22:02 -0800
+X-Gmail-Original-Message-ID: <CAOrHB_AgZJAc4oD+9pxuUEvepVK1RstD8veC5gfj1m4rhKPROg@mail.gmail.com>
+Message-ID: <CAOrHB_AgZJAc4oD+9pxuUEvepVK1RstD8veC5gfj1m4rhKPROg@mail.gmail.com>
+Subject: Re: [PATCH net-next v5] openvswitch: add TTL decrement action
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Bindiya Kurle <bindiyakurle@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Ben Pfaff <blp@ovn.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Jeremy Harris <jgh@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get rid of xdp_ret in mvneta_swbm_rx_frame routine since now
-we can rely on xdp_stats to flush in case of xdp_redirect
+On Sat, Feb 15, 2020 at 5:21 AM Matteo Croce <mcroce@redhat.com> wrote:
+>
+> New action to decrement TTL instead of setting it to a fixed value.
+> This action will decrement the TTL and, in case of expired TTL, drop it
+> or execute an action passed via a nested attribute.
+> The default TTL expired action is to drop the packet.
+>
+> Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
+>
+> Tested with a corresponding change in the userspace:
+>
+>     # ovs-dpctl dump-flows
+>     in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1
+>     in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},2
+>     in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
+>     in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
+>
+>     # ping -c1 192.168.0.2 -t 42
+>     IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
+>         192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
+>     # ping -c1 192.168.0.2 -t 120
+>     IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
+>         192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
+>     # ping -c1 192.168.0.2 -t 1
+>     #
+>
+> Co-developed-by: Bindiya Kurle <bindiyakurle@gmail.com>
+> Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> ---
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 30 ++++++++++++---------------
- 1 file changed, 13 insertions(+), 17 deletions(-)
+Thanks!
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index e4eb2bd097d4..b7045b6a15c2 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -358,10 +358,10 @@ struct mvneta_statistic {
- #define T_REG_64	64
- #define T_SW		1
- 
--#define MVNETA_XDP_PASS		BIT(0)
--#define MVNETA_XDP_DROPPED	BIT(1)
--#define MVNETA_XDP_TX		BIT(2)
--#define MVNETA_XDP_REDIR	BIT(3)
-+#define MVNETA_XDP_PASS		0
-+#define MVNETA_XDP_DROPPED	BIT(0)
-+#define MVNETA_XDP_TX		BIT(1)
-+#define MVNETA_XDP_REDIR	BIT(2)
- 
- static const struct mvneta_statistic mvneta_statistics[] = {
- 	{ 0x3000, T_REG_64, "good_octets_received", },
-@@ -2183,13 +2183,14 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 		     struct mvneta_rx_queue *rxq,
- 		     struct xdp_buff *xdp,
- 		     struct bpf_prog *xdp_prog,
--		     struct page *page, u32 *xdp_ret,
-+		     struct page *page,
- 		     struct mvneta_stats *stats)
- {
- 	unsigned char *data = page_address(page);
- 	int data_len = -MVNETA_MH_SIZE, len;
- 	struct net_device *dev = pp->dev;
- 	enum dma_data_direction dma_dir;
-+	int ret = 0;
- 
- 	if (MVNETA_SKB_SIZE(rx_desc->data_size) > PAGE_SIZE) {
- 		len = MVNETA_MAX_RX_BUF_SIZE;
-@@ -2213,14 +2214,9 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 	xdp_set_data_meta_invalid(xdp);
- 
- 	if (xdp_prog) {
--		u32 ret;
--
- 		ret = mvneta_run_xdp(pp, rxq, xdp_prog, xdp, stats);
--		if (ret != MVNETA_XDP_PASS) {
--			rx_desc->buf_phys_addr = 0;
--			*xdp_ret |= ret;
--			return ret;
--		}
-+		if (ret)
-+			goto out;
- 	}
- 
- 	rxq->skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
-@@ -2244,9 +2240,11 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
- 	mvneta_rx_csum(pp, rx_desc->status, rxq->skb);
- 
- 	rxq->left_size = rx_desc->data_size - len;
-+
-+out:
- 	rx_desc->buf_phys_addr = 0;
- 
--	return 0;
-+	return ret;
- }
- 
- static void
-@@ -2292,7 +2290,6 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	struct mvneta_stats ps = {};
- 	struct bpf_prog *xdp_prog;
- 	struct xdp_buff xdp_buf;
--	u32 xdp_ret = 0;
- 
- 	/* Get number of received packets */
- 	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
-@@ -2325,8 +2322,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 			}
- 
- 			err = mvneta_swbm_rx_frame(pp, rx_desc, rxq, &xdp_buf,
--						   xdp_prog, page, &xdp_ret,
--						   &ps);
-+						   xdp_prog, page, &ps);
- 			if (err)
- 				continue;
- 		} else {
-@@ -2364,7 +2360,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	}
- 	rcu_read_unlock();
- 
--	if (xdp_ret & MVNETA_XDP_REDIR)
-+	if (ps.xdp_redirect)
- 		xdp_do_flush_map();
- 
- 	if (ps.rx_packets)
--- 
-2.24.1
-
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
