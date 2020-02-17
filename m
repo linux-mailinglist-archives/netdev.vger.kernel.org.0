@@ -2,55 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96704160833
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F1AE160837
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:33:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbgBQCcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 21:32:09 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47790 "EHLO
+        id S1726498AbgBQCdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 21:33:16 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47798 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgBQCcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:32:09 -0500
+        with ESMTP id S1726183AbgBQCdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:33:16 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 60ACE1538019A;
-        Sun, 16 Feb 2020 18:32:09 -0800 (PST)
-Date:   Sun, 16 Feb 2020 18:32:08 -0800 (PST)
-Message-Id: <20200216.183208.2094995024213878147.davem@davemloft.net>
-To:     liuhangbin@gmail.com
-Cc:     netdev@vger.kernel.org, petrm@mellanox.com, jiri@mellanox.com
-Subject: Re: [PATCH net] selftests: forwarding: use proto icmp for
- {gretap,ip6gretap}_mac testing
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7EC3E153808C0;
+        Sun, 16 Feb 2020 18:33:15 -0800 (PST)
+Date:   Sun, 16 Feb 2020 18:33:15 -0800 (PST)
+Message-Id: <20200216.183315.143837712192250537.davem@davemloft.net>
+To:     gustavo@embeddedor.com
+Cc:     jiri@mellanox.com, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] lib: objagg: Replace zero-length arrays with
+ flexible-array member
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200211073256.32652-1-liuhangbin@gmail.com>
-References: <20200211073256.32652-1-liuhangbin@gmail.com>
+In-Reply-To: <20200211205356.GA23101@embeddedor>
+References: <20200211205356.GA23101@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:32:09 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:33:15 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
-Date: Tue, 11 Feb 2020 15:32:56 +0800
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Date: Tue, 11 Feb 2020 14:53:56 -0600
 
-> For tc ip_proto filter, when we extract the flow via __skb_flow_dissect()
-> without flag FLOW_DISSECTOR_F_STOP_AT_ENCAP, we will continue extract to
-> the inner proto.
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
 > 
-> So for GRE + ICMP messages, we should not track GRE proto, but inner ICMP
-> proto.
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
 > 
-> For test mirror_gre.sh, it may make user confused if we capture ICMP
-> message on $h3(since the flow is GRE message). So I move the capture
-> dev to h3-gt{4,6}, and only capture ICMP message.
- ...
-> Fixes: ba8d39871a10 ("selftests: forwarding: Add test for mirror to gretap")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertenly introduced[3] to the codebase from now on.
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Applied, thank you.
+Applied to net-next.
