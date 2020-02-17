@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AE11614BE
+	by mail.lfdr.de (Postfix) with ESMTP id F2CE41614BF
 	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729106AbgBQOba (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 09:31:30 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:37943 "EHLO
+        id S1729129AbgBQObc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 09:31:32 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41913 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729064AbgBQOb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:27 -0500
+        by vger.kernel.org with ESMTP id S1729087AbgBQOb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:29 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 691A121873;
-        Mon, 17 Feb 2020 09:31:27 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9E11221391;
+        Mon, 17 Feb 2020 09:31:28 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:27 -0500
+  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=13WwdRZkigVjzFkGGFs05+m2+I+mYjg5clSsfti6hZA=; b=XLOVQQ3B
-        vj1ItPgj6X3vtOLKcJ/3oTR32Cd77tUDfUmXur4mHr8LTf5cRigdbx0/RtpxIW6p
-        5mSsaiZki8JzLHnSJdfdsefMvVib7hRYWxhGexzQk9o5A5Tod7zsuO0d8F01zsFL
-        ulaOXD8Nc8O5XggRxWsssNKc2eTipIFEm5rNevQhMaE5tqMtZ45Nl5lJL3RZYGFR
-        VoCN8sEaBUV7e3DJQflDQVwqllM/DawPZnLd+51zsnmG7EN7tAwmgJ8Cr3+tFjJi
-        vGM5bgTdWYoAF9BJRDSKUaG/KmR80o53A/8A5A0ZH8XF1M7+erkTqf/o0W2Yr0eU
-        40tOmWDdli7nTQ==
-X-ME-Sender: <xms:v6NKXvGo2P2lSp5-006pddJ-O9gxPf6YSvz2ny9ndUiAxe4JS_mkww>
+        fm2; bh=jsWfOiMZn71QfR2SjYqEdTYA5dTjgcIsy2tSa4/sG/A=; b=3n0r/+Ks
+        jK60Bu+rC4v9Yj1eL6oNXGavxeIq4kpO9533ghJ/cLwpKy2KoG7s+creEiiQF7W5
+        Umo6VLenxs8whP2/2jgSVrvJKrb8ttuQrKHsINdNRVnOXLrp/8GCAMPrHW3RGMCh
+        3XwFQYqaEU8NndgoOeJNjqcBLMbJVkyWa0irzdHC4JR93lAfqAeop4pfcqiHQ8eO
+        6FubiAB2KRNzJqSNKe6Rw3fyeRqFB2wv/2l8qommiXIuOAdhgt0z5If2ODDQwzqh
+        XuhUkO3Hk95I5tS75d2BdwyZ5NMZHIxB3pD2SgAVCteOgtN6Ix16yoaYj7VFumMO
+        eCDRpK05L2k5Uw==
+X-ME-Sender: <xms:wKNKXu4fh2aW4dC8k5qsevSOsa1do2r61wfxfZ5MBWZI0spjQEgrdg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrh
     fuihiivgepjeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
     hhdrohhrgh
-X-ME-Proxy: <xmx:v6NKXoO08cFV4CkJH53xXpFfPBMrd3sIea23cfGFD99ARM5gId4Ixg>
-    <xmx:v6NKXp-etzBFfQ6_h6r60c8t49gOl4jNaxAshL4ZEz55Q83GWvy2Pg>
-    <xmx:v6NKXl62DaKA4G6GcSidmX2NpYMOzWLiwZjJ0qpvaWAooSSzyjH_dA>
-    <xmx:v6NKXsEU7ikb0Y7O93HXR40DA_WWl9Erxt7hWURGbj6-Gf-LY1QOHA>
+X-ME-Proxy: <xmx:wKNKXsJhxYIy409razLNoQlLKEExPD12djzpyF02toV7phDd7MLi2A>
+    <xmx:wKNKXofYYSCTGYTwXn6Tgu8ggBZy2CFLCrh4-LVU3OhJ_dkWk7_mRg>
+    <xmx:wKNKXveEpW83tsPXPBFRUVawmVrbCEQWfgwOzJ5IFZCBA9jgMU5Xpw>
+    <xmx:wKNKXiL0Q55TMdcmVT0GPJiANUJnnhFA6kq1gkxkt8I8_sdF4PadcQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4E9313060EF2;
-        Mon, 17 Feb 2020 09:31:26 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7F92F3060C21;
+        Mon, 17 Feb 2020 09:31:27 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 09/10] selftests: mlxsw: vxlan: Adjust test to recent changes
-Date:   Mon, 17 Feb 2020 16:29:39 +0200
-Message-Id: <20200217142940.307014-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/10] selftests: mlxsw: vxlan: Add test for error path
+Date:   Mon, 17 Feb 2020 16:29:40 +0200
+Message-Id: <20200217142940.307014-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200217142940.307014-1-idosch@idosch.org>
 References: <20200217142940.307014-1-idosch@idosch.org>
@@ -61,33 +61,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-After recent changes, the VXLAN tunnel will be offloaded regardless if
-any local ports are member in the FID or not. Adjust the test to make
-sure the tunnel is offloaded in this case.
+Test that when two VXLAN tunnels with conflicting configurations (i.e.,
+different TTL) are enslaved to the same VLAN-aware bridge, then the
+enslavement of a port to the bridge is denied.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- tools/testing/selftests/drivers/net/mlxsw/vxlan.sh | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ .../selftests/drivers/net/mlxsw/vxlan.sh      | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
-index f68a109c0352..56b95fd414d6 100755
+index 56b95fd414d6..15eb0dc9a685 100755
 --- a/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
 +++ b/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
-@@ -1049,11 +1049,9 @@ offload_indication_vlan_aware_l3vni_test()
- 	ip link set dev vxlan0 master br0
- 	bridge vlan add dev vxlan0 vid 10 pvid untagged
+@@ -854,6 +854,26 @@ sanitization_vlan_aware_test()
+ 	bridge vlan del vid 10 dev vxlan20
+ 	bridge vlan add vid 20 dev vxlan20 pvid untagged
  
--	# No local port or router port is member in the VLAN, so tunnel should
--	# not be offloaded
- 	bridge fdb show brport vxlan0 | grep $zmac | grep self \
- 		| grep -q offload
--	check_fail $? "vxlan tunnel offloaded when should not"
-+	check_err $? "vxlan tunnel not offloaded when should"
- 
- 	# Configure a VLAN interface and make sure tunnel is offloaded
- 	ip link add link br0 name br10 up type vlan id 10
++	# Test that when two VXLAN tunnels with conflicting configurations
++	# (i.e., different TTL) are enslaved to the same VLAN-aware bridge,
++	# then the enslavement of a port to the bridge is denied.
++
++	# Use the offload indication of the local route to ensure the VXLAN
++	# configuration was correctly rollbacked.
++	ip address add 198.51.100.1/32 dev lo
++
++	ip link set dev vxlan10 type vxlan ttl 10
++	ip link set dev $swp1 master br0 &> /dev/null
++	check_fail $?
++
++	ip route show table local | grep 198.51.100.1 | grep -q offload
++	check_fail $?
++
++	log_test "vlan-aware - failed enslavement to bridge due to conflict"
++
++	ip link set dev vxlan10 type vxlan ttl 20
++	ip address del 198.51.100.1/32 dev lo
++
+ 	ip link del dev vxlan20
+ 	ip link del dev vxlan10
+ 	ip link del dev br0
 -- 
 2.24.1
 
