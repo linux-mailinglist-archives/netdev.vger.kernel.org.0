@@ -2,489 +2,375 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 009C6160A6B
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 07:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFDA7160A96
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 07:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbgBQG3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 01:29:02 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38497 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbgBQG3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 01:29:01 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y17so18145338wrh.5
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 22:28:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hYAuocrBZeEgHTAU6dmUY+m6gpanjHMcGrg5syEHytI=;
-        b=sIn/C/1gGZt7XqEGPzUKDJaQfFFbkEbCl4QNrby1ngNsbU78U2hrK+jhNIyrOnu5sa
-         HvI1I1ijZamJBeV4vIf4+FmO+dHuL5CJSz6QjaYMWorsDsaWfUTcphHOznOjX1ot+4R1
-         k883LBo7dSSxt6eLib1Pa/LbxQ5iC2OEcIqQQVPNmARzpwKsSQi7a0eE91niD3WPy5zO
-         Ns/sggOkAqIK/26LS5P28GTEFwAxZZQ/d+483VHVvlrMnYhG18OnK4mlqqBxy/kv7lAC
-         WO1/RhIbX9SXKQvP/hH0ZMrvti+VO2vclnng3ktp+uw3uJxjgTm3etaVVlAZSKkJWjw9
-         xr5Q==
+        id S1726620AbgBQGh1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Feb 2020 01:37:27 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:34896 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725855AbgBQGh0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 01:37:26 -0500
+Received: from mail-pl1-f200.google.com ([209.85.214.200])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1j3a1z-0001sj-So
+        for netdev@vger.kernel.org; Mon, 17 Feb 2020 06:37:24 +0000
+Received: by mail-pl1-f200.google.com with SMTP id c19so7683929plz.19
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 22:37:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hYAuocrBZeEgHTAU6dmUY+m6gpanjHMcGrg5syEHytI=;
-        b=Wo4rORBqX02OUawq6MogZfgLYvGRElbw8VThjL24ZkRVqSc6QDms2gW7xOUYNullx4
-         4rCUdhrRo0D1kI3lrbHgBsYwezA1cw6pRlMlPatIutkoLT9cowVUSy4tdQ+uNa9S8aLd
-         5jzM9SjR7hXJCqxNvVv+fbk0m3pv1IzM2m+qO7rb4ApaXqTf4hwGvDr77mcwLXwpiHUh
-         evc9otg49XnZZ23o8TKz2vV5nM3elhdliaFLdFiUITUm8EtCu12kgfBreUacIkRlg3Hk
-         EicMX4zkvh6LerNtMir0hvzs0lwdloPYcG12U53SfwikW+7KaqT9xCOFhJ0b8MTPcRll
-         3u+w==
-X-Gm-Message-State: APjAAAVlbcqzjZkXyJ4TvsN9InLi9I7NVufcyw4OEqe3euJYlNp1g72X
-        iy1xHkrVeDTqVTH7XP+jjLsyq1j/jg0=
-X-Google-Smtp-Source: APXvYqzkcIfxvOTQYGFbx2fR7F83F15s7ifXFKoB87pGT1IdCAcZ7/8lJR7gyjkHI1bzTfQf9yalSw==
-X-Received: by 2002:adf:dfcc:: with SMTP id q12mr19598288wrn.171.1581920935961;
-        Sun, 16 Feb 2020 22:28:55 -0800 (PST)
-Received: from apalos.home ([2a02:587:4655:3a80:2e56:dcff:fe9a:8f06])
-        by smtp.gmail.com with ESMTPSA id a6sm19364890wrm.69.2020.02.16.22.28.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Feb 2020 22:28:55 -0800 (PST)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org
-Cc:     jonathan.lemon@gmail.com, lorenzo@kernel.org, toke@redhat.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v2] net: page_pool: API cleanup and comments
-Date:   Mon, 17 Feb 2020 08:28:49 +0200
-Message-Id: <20200217062850.133121-1-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.25.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=tAk3INhHUK59yBkHZybzY+Qa6XsfWJlVzY5l6vwO+aM=;
+        b=V5ywM1hl5iRKxy9QmP2xgaLHCZiABnB/ScfQi0UcJ3Y5ky0WdKGNlJKYCvZ2CVgPAA
+         NHB5KiT7BkuqD2aL6xIqpPlxS8VO+rZXmp8cfJQ+En7H2HLQ6vsojnW5xhnkBdjXJI7v
+         QpS85g0kb6fyIzUM2SG4WptW6/Ja4AkP7YV9CHIwueGDDcuxj6KUhpMURFQx2istW96N
+         TCJQavg0cMXVy+xREduQZrXiK2IlBOUNKvm02KCqNQVooEOajdrGiYLhGHSodBy3dxNl
+         GF79EySEC+ntONNCbT93FJ+f6fXRlg2LYHUIBOFbTeaFOMz9TGg/H9/kvn57gXkCi1Xm
+         VRAA==
+X-Gm-Message-State: APjAAAVwWr+7Oydnmxf36yX2ge3BuI6jujslwqJNHOiBwF6ZYFd4kVTv
+        B0QhoZm7ajl56+K2tJl0W0rYcSISvmwUoYtRDaz6iIQxJT6PpdXKbhJ8giCmZX7YO0d8wDYJd0c
+        njsB3zLatKWBD7DnI0iZ9D4KE/0dC3PY8gw==
+X-Received: by 2002:a17:902:6ac7:: with SMTP id i7mr14426665plt.66.1581921437371;
+        Sun, 16 Feb 2020 22:37:17 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzOQEu3TVJqKPSTHj2tAp7xw9aFrLgAoVVjjp7zDmq+NodZQaxFJXH992l9Thk9abTpqpEAFQ==
+X-Received: by 2002:a17:902:6ac7:: with SMTP id i7mr14426635plt.66.1581921436864;
+        Sun, 16 Feb 2020 22:37:16 -0800 (PST)
+Received: from [10.101.46.91] (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id 144sm15515830pfc.45.2020.02.16.22.37.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 16 Feb 2020 22:37:16 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: SFP+ support for 8168fp/8117
+From:   Kai Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <995bddbc4f9d48cbb3a289a7e9799f15@realtek.com>
+Date:   Mon, 17 Feb 2020 14:37:13 +0800
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Jason Yen <jason.yen@canonical.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <12EA7285-06D7-44D3-B033-4F52A06123CC@canonical.com>
+References: <2D8F5FFE-3EC3-480B-9D15-23CACE5556DF@canonical.com>
+ <20200102152143.GB1397@lunn.ch>
+ <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
+ <c148fefc-fd56-26a8-9f9b-fbefbaf25050@gmail.com>
+ <02F7CBDE-B877-481C-A5AF-2F4CBF830A2C@canonical.com>
+ <80E9C881-91C8-4F29-B9CE-652F9EE0B018@canonical.com>
+ <995bddbc4f9d48cbb3a289a7e9799f15@realtek.com>
+To:     Hau <hau@realtek.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Functions starting with __ usually indicate those which are exported,
-but should not be called directly. Update some of those declared in the
-API and make it more readable.
-page_pool_unmap_page() and page_pool_release_page() were doing
-exactly the same thing. Keep the page_pool_release_page() variant
-and export it in order to show up on perf logs.
-Finally rename __page_pool_put_page() to page_pool_put_page() since we
-can now directly call it from drivers and rename the existing
-page_pool_put_page() to page_pool_put_full_page() since they do the same
-thing but the latter is trying to sync the full DMA area.
 
-This patch also updates netsec, mvneta and stmmac drivers which use
-those functions.
 
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
-Changes since v1:
-- Fixed netsec driver compilation error
+> On Feb 14, 2020, at 5:07 PM, Hau <hau@realtek.com> wrote:
+> 
+>> Chun-Hao,
+>> 
+>>> On Jan 3, 2020, at 12:53, Kai-Heng Feng <kai.heng.feng@canonical.com>
+>> wrote:
+>>> 
+>>> 
+>>> 
+>>>> On Jan 3, 2020, at 05:24, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>>> 
+>>>> On 02.01.2020 17:46, Kai-Heng Feng wrote:
+>>>>> Hi Andrew,
+>>>>> 
+>>>>>> On Jan 2, 2020, at 23:21, Andrew Lunn <andrew@lunn.ch> wrote:
+>>>>>> 
+>>>>>> On Thu, Jan 02, 2020 at 02:59:42PM +0800, Kai Heng Feng wrote:
+>>>>>>> Hi Heiner,
+>>>>>>> 
+>>>>>>> There's an 8168fp/8117 chip has SFP+ port instead of RJ45, the phy
+>> device ID matches "Generic FE-GE Realtek PHY" nevertheless.
+>>>>>>> The problems is that, since it uses SFP+, both BMCR and BMSR read
+>> are always zero, so Realtek phylib never knows if the link is up.
+>>>>>>> 
+>>>>>>> However, the old method to read through MMIO correctly shows the
+>> link is up:
+>>>>>>> static unsigned int rtl8169_xmii_link_ok(struct rtl8169_private
+>>>>>>> *tp) {
+>>>>>>>    return RTL_R8(tp, PHYstatus) & LinkStatus; }
+>>>>>>> 
+>>>>>>> Few ideas here:
+>>>>>>> - Add a link state callback for phylib like phylink's
+>> phylink_fixed_state_cb(). However there's no guarantee that other parts of
+>> this chip works.
+>>>>>>> - Add SFP+ support for this chip. However the phy device matches to
+>> "Generic FE-GE Realtek PHY" which may complicate things.
+>>>>>>> 
+>>>>>>> Any advice will be welcome.
+>>>>>> 
+>>>>>> Hi Kai
+>>>>>> 
+>>>>>> Is the i2c bus accessible?
+>>>>> 
+>>>>> I don't think so. It seems to be a regular Realtek 8168 device with generic
+>> PCI ID [10ec:8168].
+>>>>> 
+>>>>>> Is there any documentation or example code?
+>>>>> 
+>>>>> Unfortunately no.
+>>>>> 
+>>>>>> 
+>>>>>> In order to correctly support SFP+ cages, we need access to the i2c
+>>>>>> bus to determine what sort of module has been inserted. It would
+>>>>>> also be good to have access to LOS, transmitter disable, etc, from
+>>>>>> the SFP cage.
+>>>>> 
+>>>>> Seems like we need Realtek to provide more information to support this
+>> chip with SFP+.
+>>>>> 
+>>>> Indeed it would be good to have some more details how this chip
+>>>> handles SFP+, therefore I add Hau to the discussion.
+>>>> 
+>>>> As I see it the PHY registers are simply dummies on this chip. Or
+>>>> does this chip support both, PHY and SFP+? Hopefully SFP presence can
+>>>> be autodetected, we could skip the complete PHY handling in this
+>>>> case. Interesting would be which parts of the SFP interface are exposed
+>> how via (proprietary) registers.
+>>>> Recently the STMMAC driver was converted from phylib to phylink,
+>>>> maybe we have to do the same with r8169 one fine day. But w/o more
+>>>> details this is just speculation, much appreciated would be
+>>>> documentation from Realtek about the
+>>>> SFP+ interface.
+>>>> 
+>>>> Kai, which hardware/board are we talking about?
+>>> 
+>>> It's a regular Intel PC.
+>>> 
+>>> The ethernet is function 1 of the PCI device, function 0 isn't bound to any
+>> driver:
+>>> 02:00.0 Unassigned class [ff00]: Realtek Semiconductor Co., Ltd.
+>>> Device [10ec:816e] (rev 1a)
+>>> 02:00.1 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd.
+>>> RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168]
+>>> (rev 22)
+>> 
+>> Would it be possible to share some info on SFP support?
+> Hi Kai-Heng,
+> 
+> Could you use r8168 to dump hardware info with following command.
+> cat /proc/net/r8168/ethx/*
+> 
+> I want to make sure which chip you use and try to add support it in r8168/r8169.
 
- drivers/net/ethernet/marvell/mvneta.c         | 19 +++---
- drivers/net/ethernet/socionext/netsec.c       | 23 ++++---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +-
- include/net/page_pool.h                       | 38 +++++------
- net/core/page_pool.c                          | 64 ++++++++++---------
- net/core/xdp.c                                |  2 +-
- 6 files changed, 74 insertions(+), 76 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 98017e7d5dd0..22b568c60f65 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1933,7 +1933,7 @@ static void mvneta_rxq_drop_pkts(struct mvneta_port *pp,
- 		if (!data || !(rx_desc->buf_phys_addr))
- 			continue;
+Dump Driver Variable
+Variable	Value
+----------	-----
+MODULENAME	r8168
+driver version	8.048.00-NAPI
+chipset	31
+chipset_name	RTL8168FP/8111FP
+mtu	1500
+NUM_RX_DESC	0x400
+cur_rx	0x0
+dirty_rx	0x0
+NUM_TX_DESC	0x400
+cur_tx	0x0
+dirty_tx	0x0
+rx_buf_sz	0x5f3
+esd_flag	0x0
+pci_cfg_is_read	0x1
+rtl8168_rx_config	0xcf00
+cp_cmd	0x20e1
+intr_mask	0x115
+timer_intr_mask	0x4000
+wol_enabled	0x1
+wol_opts	0x20
+efuse_ver	0x3
+eeprom_type	0x0
+autoneg	0x1
+duplex	0x1
+speed	1000
+advertising	0x3f
+eeprom_len	0x0
+cur_page	0x0
+bios_setting	0x0
+features	0x2
+org_pci_offset_99	0x0
+org_pci_offset_180	0xf
+issue_offset_99_event	0x0
+org_pci_offset_80	0x42
+org_pci_offset_81	0x1
+use_timer_interrrupt	0x1
+HwIcVerUnknown	0x0
+NotWrRamCodeToMicroP	0x0
+NotWrMcuPatchCode	0x0
+HwHasWrRamCodeToMicroP	0x0
+sw_ram_code_ver	0x3
+hw_ram_code_ver	0x0
+rtk_enable_diag	0x0
+ShortPacketSwChecksum	0x0
+UseSwPaddingShortPkt	0x0
+RequireAdcBiasPatch	0x0
+AdcBiasPatchIoffset	0x0
+RequireAdjustUpsTxLinkPulseTiming	0x0
+SwrCnt1msIni	0x0
+HwSuppNowIsOobVer	0x1
+HwFiberModeVer	0x0
+HwFiberStat	0x0
+HwSwitchMdiToFiber	0x0
+NicCustLedValue	0xca9
+RequiredSecLanDonglePatch	0x0
+HwSuppDashVer	0x3
+DASH	0x1
+dash_printer_enabled	0x0
+HwSuppKCPOffloadVer	0x0
+speed_mode	0x3e8
+duplex_mode	0x1
+autoneg_mode	0x1
+advertising_mode	0x3f
+aspm	0x1
+s5wol	0x1
+s5_keep_curr_mac	0x0
+eee_enable	0x0
+hwoptimize	0x0
+proc_init_num	0x2
+s0_magic_packet	0x0
+HwSuppMagicPktVer	0x2
+HwSuppCheckPhyDisableModeVer	0x3
+HwPkgDet	0x6
+HwSuppGigaForceMode	0x1
+random_mac	0x0
+org_mac_addr	54:b2:03:86:1b:40
+perm_addr	54:b2:03:86:1b:40
+dev_addr	54:b2:03:86:1b:40
+
+
+Dump Ethernet PHY
+
+Offset	Value
+------	-----
  
--		page_pool_put_page(rxq->page_pool, data, false);
-+		page_pool_put_full_page(rxq->page_pool, data, false);
- 	}
- 	if (xdp_rxq_info_is_reg(&rxq->xdp_rxq))
- 		xdp_rxq_info_unreg(&rxq->xdp_rxq);
-@@ -2108,9 +2108,9 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
- 		if (err) {
- 			ret = MVNETA_XDP_DROPPED;
--			__page_pool_put_page(rxq->page_pool,
--					     virt_to_head_page(xdp->data),
--					     len, true);
-+			page_pool_put_page(rxq->page_pool,
-+					   virt_to_head_page(xdp->data), len,
-+					   true);
- 		} else {
- 			ret = MVNETA_XDP_REDIR;
- 		}
-@@ -2119,9 +2119,9 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	case XDP_TX:
- 		ret = mvneta_xdp_xmit_back(pp, xdp);
- 		if (ret != MVNETA_XDP_TX)
--			__page_pool_put_page(rxq->page_pool,
--					     virt_to_head_page(xdp->data),
--					     len, true);
-+			page_pool_put_page(rxq->page_pool,
-+					   virt_to_head_page(xdp->data), len,
-+					   true);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-@@ -2130,9 +2130,8 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		trace_xdp_exception(pp->dev, prog, act);
- 		/* fall through */
- 	case XDP_DROP:
--		__page_pool_put_page(rxq->page_pool,
--				     virt_to_head_page(xdp->data),
--				     len, true);
-+		page_pool_put_page(rxq->page_pool,
-+				   virt_to_head_page(xdp->data), len, true);
- 		ret = MVNETA_XDP_DROPPED;
- 		break;
- 	}
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index e8224b543dfc..46424533d478 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -896,9 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 	case XDP_TX:
- 		ret = netsec_xdp_xmit_back(priv, xdp);
- 		if (ret != NETSEC_XDP_TX)
--			__page_pool_put_page(dring->page_pool,
--					     virt_to_head_page(xdp->data),
--					     len, true);
-+			page_pool_put_page(dring->page_pool,
-+					   virt_to_head_page(xdp->data), len,
-+					   true);
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(priv->ndev, xdp, prog);
-@@ -906,9 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			ret = NETSEC_XDP_REDIR;
- 		} else {
- 			ret = NETSEC_XDP_CONSUMED;
--			__page_pool_put_page(dring->page_pool,
--					     virt_to_head_page(xdp->data),
--					     len, true);
-+			page_pool_put_page(dring->page_pool,
-+					   virt_to_head_page(xdp->data), len,
-+					   true);
- 		}
- 		break;
- 	default:
-@@ -919,9 +919,8 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
- 		ret = NETSEC_XDP_CONSUMED;
--		__page_pool_put_page(dring->page_pool,
--				     virt_to_head_page(xdp->data),
--				     len, true);
-+		page_pool_put_page(dring->page_pool,
-+				   virt_to_head_page(xdp->data), len, true);
- 		break;
- 	}
+####################page 0##################
  
-@@ -1020,8 +1019,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 			 * cache state. Since we paid the allocation cost if
- 			 * building an skb fails try to put the page into cache
- 			 */
--			__page_pool_put_page(dring->page_pool, page,
--					     pkt_len, true);
-+			page_pool_put_page(dring->page_pool, page, pkt_len,
-+					   true);
- 			netif_err(priv, drv, priv->ndev,
- 				  "rx failed to build skb\n");
- 			break;
-@@ -1199,7 +1198,7 @@ static void netsec_uninit_pkt_dring(struct netsec_priv *priv, int id)
- 		if (id == NETSEC_RING_RX) {
- 			struct page *page = virt_to_page(desc->addr);
+0x00:	1040 7989 001c c800 0de1 0000 0064 2001 
+0x08:	0000 0200 0000 0000 0000 0000 0000 2000 
+
+Dump Extended Registers
+
+Offset	Value
+------	-----
  
--			page_pool_put_page(dring->page_pool, page, false);
-+			page_pool_put_full_page(dring->page_pool, page, false);
- 		} else if (id == NETSEC_RING_TX) {
- 			dma_unmap_single(priv->dev, desc->dma_addr, desc->len,
- 					 DMA_TO_DEVICE);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 5836b21edd7e..37920b4da091 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1251,11 +1251,11 @@ static void stmmac_free_rx_buffer(struct stmmac_priv *priv, u32 queue, int i)
- 	struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
+0x00:	00000000 00000000 00000000 00000000 
+0x10:	00000000 00000000 00000000 00000000 
+0x20:	00000000 00000000 00000000 00000000 
+0x30:	00000000 00000000 00000000 00000000 
+0x40:	00000000 00000000 00000000 00000000 
+0x50:	00000000 00000000 00000000 00000000 
+0x60:	00000000 00000000 00000000 00000000 
+0x70:	00000000 00000000 00000000 00000000 
+0x80:	00000000 00000000 00000000 00000000 
+0x90:	00000000 00000000 00000000 00000000 
+0xa0:	00000000 00000000 00000000 00000000 
+0xb0:	00000000 00000000 00000000 00000000 
+0xc0:	00000000 00000000 00080002 0000002f 
+0xd0:	0000005f 00001f92 00000000 001e0021 
+0xe0:	8603b254 0000401b 00100006 00000200 
+0xf0:	b2540000 401b8603 00000000 00000000 
+
+Dump PCIE PHY
+
+Offset	Value
+------	-----
  
- 	if (buf->page)
--		page_pool_put_page(rx_q->page_pool, buf->page, false);
-+		page_pool_put_full_page(rx_q->page_pool, buf->page, false);
- 	buf->page = NULL;
+0x00:	a800 7a58 3cee 2e46 10f0 0004 0000 2600 
+0x08:	6443 3318 0cc3 60b0 11e1 0400 3713 9c20 
+0x10:	000c 4c00 fc01 0c81 de01 0000 0000 0000 
+0x18:	0000 fd01 0312 0ea1 0000 0000 24eb 
+
+Dump PCI Registers
+
+Offset	Value
+------	-----
  
- 	if (buf->sec_page)
--		page_pool_put_page(rx_q->page_pool, buf->sec_page, false);
-+		page_pool_put_full_page(rx_q->page_pool, buf->sec_page, false);
- 	buf->sec_page = NULL;
- }
- 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index cfbed00ba7ee..7c1f23930035 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -162,39 +162,33 @@ static inline void page_pool_use_xdp_mem(struct page_pool *pool,
- }
- #endif
- 
--/* Never call this directly, use helpers below */
--void __page_pool_put_page(struct page_pool *pool, struct page *page,
--			  unsigned int dma_sync_size, bool allow_direct);
-+void page_pool_release_page(struct page_pool *pool, struct page *page);
- 
--static inline void page_pool_put_page(struct page_pool *pool,
--				      struct page *page, bool allow_direct)
-+/* If the page refcnt == 1, this will try to recycle the page.
-+ * if PP_FLAG_DMA_SYNC_DEV is set, it will try to sync the DMA area for
-+ * the configured size min(dma_sync_size, pool->max_len).
-+ * If the page refcnt != page will be returned
-+ */
-+void page_pool_put_page(struct page_pool *pool, struct page *page,
-+			unsigned int dma_sync_size, bool allow_direct);
-+
-+/* Same as above but will try to sync the entire area pool->max_len */
-+static inline void page_pool_put_full_page(struct page_pool *pool,
-+					   struct page *page, bool allow_direct)
- {
- 	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
- 	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
- 	 */
- #ifdef CONFIG_PAGE_POOL
--	__page_pool_put_page(pool, page, -1, allow_direct);
-+	page_pool_put_page(pool, page, -1, allow_direct);
- #endif
- }
--/* Very limited use-cases allow recycle direct */
-+
-+/* Same as above but the caller must guarantee safe context. e.g NAPI */
- static inline void page_pool_recycle_direct(struct page_pool *pool,
- 					    struct page *page)
- {
--	__page_pool_put_page(pool, page, -1, true);
--}
--
--/* Disconnects a page (from a page_pool).  API users can have a need
-- * to disconnect a page (from a page_pool), to allow it to be used as
-- * a regular page (that will eventually be returned to the normal
-- * page-allocator via put_page).
-- */
--void page_pool_unmap_page(struct page_pool *pool, struct page *page);
--static inline void page_pool_release_page(struct page_pool *pool,
--					  struct page *page)
--{
--#ifdef CONFIG_PAGE_POOL
--	page_pool_unmap_page(pool, page);
--#endif
-+	page_pool_put_full_page(pool, page, true);
- }
- 
- static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 9b7cbe35df37..464500c551e8 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -96,7 +96,7 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
- }
- EXPORT_SYMBOL(page_pool_create);
- 
--static void __page_pool_return_page(struct page_pool *pool, struct page *page);
-+static void page_pool_return_page(struct page_pool *pool, struct page *page);
- 
- noinline
- static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-@@ -137,7 +137,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
- 			 * (2) break out to fallthrough to alloc_pages_node.
- 			 * This limit stress on page buddy alloactor.
- 			 */
--			__page_pool_return_page(pool, page);
-+			page_pool_return_page(pool, page);
- 			page = NULL;
- 			break;
- 		}
-@@ -281,17 +281,20 @@ static s32 page_pool_inflight(struct page_pool *pool)
- }
- 
- /* Cleanup page_pool state from page */
--static void __page_pool_clean_page(struct page_pool *pool,
--				   struct page *page)
-+static void page_pool_clean_page(struct page_pool *pool, struct page *page)
- {
- 	dma_addr_t dma;
- 	int count;
- 
- 	if (!(pool->p.flags & PP_FLAG_DMA_MAP))
-+		/* Always account for inflight pages, even if we didn't
-+		 * map them
-+		 */
- 		goto skip_dma_unmap;
- 
- 	dma = page->dma_addr;
--	/* DMA unmap */
-+
-+	/* When page is unmapped, it cannot be returned our pool */
- 	dma_unmap_page_attrs(pool->p.dev, dma,
- 			     PAGE_SIZE << pool->p.order, pool->p.dma_dir,
- 			     DMA_ATTR_SKIP_CPU_SYNC);
-@@ -304,20 +307,23 @@ static void __page_pool_clean_page(struct page_pool *pool,
- 	trace_page_pool_state_release(pool, page, count);
- }
- 
--/* unmap the page and clean our state */
--void page_pool_unmap_page(struct page_pool *pool, struct page *page)
-+/* Disconnects a page (from a page_pool).  API users can have a need
-+ * to disconnect a page (from a page_pool), to allow it to be used as
-+ * a regular page (that will eventually be returned to the normal
-+ * page-allocator via put_page).
-+ */
-+void page_pool_release_page(struct page_pool *pool, struct page *page)
- {
--	/* When page is unmapped, this implies page will not be
--	 * returned to page_pool.
--	 */
--	__page_pool_clean_page(pool, page);
-+#ifdef CONFIG_PAGE_POOL
-+	page_pool_clean_page(pool, page);
-+#endif
- }
--EXPORT_SYMBOL(page_pool_unmap_page);
-+EXPORT_SYMBOL(page_pool_release_page);
- 
- /* Return a page to the page allocator, cleaning up our state */
--static void __page_pool_return_page(struct page_pool *pool, struct page *page)
-+static void page_pool_return_page(struct page_pool *pool, struct page *page)
- {
--	__page_pool_clean_page(pool, page);
-+	page_pool_release_page(pool, page);
- 
- 	put_page(page);
- 	/* An optimization would be to call __free_pages(page, pool->p.order)
-@@ -326,8 +332,7 @@ static void __page_pool_return_page(struct page_pool *pool, struct page *page)
- 	 */
- }
- 
--static bool __page_pool_recycle_into_ring(struct page_pool *pool,
--				   struct page *page)
-+static bool page_pool_recycle_in_ring(struct page_pool *pool, struct page *page)
- {
- 	int ret;
- 	/* BH protection not needed if current is serving softirq */
-@@ -344,7 +349,7 @@ static bool __page_pool_recycle_into_ring(struct page_pool *pool,
-  *
-  * Caller must provide appropriate safe context.
-  */
--static bool __page_pool_recycle_direct(struct page *page,
-+static bool page_pool_recycle_in_cache(struct page *page,
- 				       struct page_pool *pool)
- {
- 	if (unlikely(pool->alloc.count == PP_ALLOC_CACHE_SIZE))
-@@ -363,8 +368,8 @@ static bool pool_page_reusable(struct page_pool *pool, struct page *page)
- 	return !page_is_pfmemalloc(page);
- }
- 
--void __page_pool_put_page(struct page_pool *pool, struct page *page,
--			  unsigned int dma_sync_size, bool allow_direct)
-+void page_pool_put_page(struct page_pool *pool, struct page *page,
-+			unsigned int dma_sync_size, bool allow_direct)
- {
- 	/* This allocator is optimized for the XDP mode that uses
- 	 * one-frame-per-page, but have fallbacks that act like the
-@@ -381,12 +386,12 @@ void __page_pool_put_page(struct page_pool *pool, struct page *page,
- 						      dma_sync_size);
- 
- 		if (allow_direct && in_serving_softirq())
--			if (__page_pool_recycle_direct(page, pool))
-+			if (page_pool_recycle_in_cache(page, pool))
- 				return;
- 
--		if (!__page_pool_recycle_into_ring(pool, page)) {
-+		if (!page_pool_recycle_in_ring(pool, page)) {
- 			/* Cache full, fallback to free pages */
--			__page_pool_return_page(pool, page);
-+			page_pool_return_page(pool, page);
- 		}
- 		return;
- 	}
-@@ -403,12 +408,13 @@ void __page_pool_put_page(struct page_pool *pool, struct page *page,
- 	 * doing refcnt based recycle tricks, meaning another process
- 	 * will be invoking put_page.
- 	 */
--	__page_pool_clean_page(pool, page);
-+	/* Do not replace this with page_pool_return_page() */
-+	page_pool_release_page(pool, page);
- 	put_page(page);
- }
--EXPORT_SYMBOL(__page_pool_put_page);
-+EXPORT_SYMBOL(page_pool_put_page);
- 
--static void __page_pool_empty_ring(struct page_pool *pool)
-+static void page_pool_empty_ring(struct page_pool *pool)
- {
- 	struct page *page;
- 
-@@ -419,7 +425,7 @@ static void __page_pool_empty_ring(struct page_pool *pool)
- 			pr_crit("%s() page_pool refcnt %d violation\n",
- 				__func__, page_ref_count(page));
- 
--		__page_pool_return_page(pool, page);
-+		page_pool_return_page(pool, page);
- 	}
- }
- 
-@@ -449,7 +455,7 @@ static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
- 	 */
- 	while (pool->alloc.count) {
- 		page = pool->alloc.cache[--pool->alloc.count];
--		__page_pool_return_page(pool, page);
-+		page_pool_return_page(pool, page);
- 	}
- }
- 
-@@ -461,7 +467,7 @@ static void page_pool_scrub(struct page_pool *pool)
- 	/* No more consumers should exist, but producers could still
- 	 * be in-flight.
- 	 */
--	__page_pool_empty_ring(pool);
-+	page_pool_empty_ring(pool);
- }
- 
- static int page_pool_release(struct page_pool *pool)
-@@ -535,7 +541,7 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
- 	/* Flush pool alloc cache, as refill will check NUMA node */
- 	while (pool->alloc.count) {
- 		page = pool->alloc.cache[--pool->alloc.count];
--		__page_pool_return_page(pool, page);
-+		page_pool_return_page(pool, page);
- 	}
- }
- EXPORT_SYMBOL(page_pool_update_nid);
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 8310714c47fd..4c7ea85486af 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -372,7 +372,7 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
- 		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
- 		page = virt_to_head_page(data);
- 		napi_direct &= !xdp_return_frame_no_direct();
--		page_pool_put_page(xa->page_pool, page, napi_direct);
-+		page_pool_put_full_page(xa->page_pool, page, napi_direct);
- 		rcu_read_unlock();
- 		break;
- 	case MEM_TYPE_PAGE_SHARED:
--- 
-2.25.0
+0x000:	816810ec 00100407 02000022 00800010 
+0x010:	0000d001 00000000 a1108004 00000000 
+0x020:	a1100004 00000000 00000000 03441854 
+0x030:	00000000 00000040 00000000 000001ff 
+0x040:	ffc35001 00000008 00000000 00000000 
+0x050:	00817005 fee01004 00000000 00004024 
+0x060:	00000000 00000000 00000000 00000000 
+0x070:	0202b010 05908ce0 001b5110 00477c12 
+0x080:	10120142 00000000 00000000 00000000 
+0x090:	00000000 000c181f 00000000 00000006 
+0x0a0:	00010000 00000000 00000000 00000000 
+0x0b0:	00030011 00000004 00000804 00000000 
+0x0c0:	00000000 00000000 00000000 00000000 
+0x0d0:	00000003 00000000 00000000 00000000 
+0x0e0:	00000000 00000000 00000000 00000000 
+0x0f0:	00000000 00000000 00000000 00000000 
+0x110:	00002081 
+0x70c:	27ffff01 
+
+Dump MAC Registers
+Offset	Value
+------	-----
+
+0x00:	54 b2 03 86 1b 40 00 00 00 00 00 00 80 00 00 00 
+0x10:	00 00 6f 79 01 00 00 00 a9 0c 06 00 00 00 00 00 
+0x20:	00 80 99 76 01 00 00 00 00 00 00 00 00 00 00 00 
+0x30:	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+0x40:	80 0f a0 57 0e cf 02 00 00 00 00 00 00 00 00 00 
+0x50:	10 00 cf 9c 60 11 03 04 00 00 00 00 00 00 00 00 
+0x60:	00 00 00 00 00 00 00 01 70 f1 01 80 91 00 80 f0 
+0x70:	00 00 00 00 fc f0 00 bf 07 00 00 00 00 00 67 1e 
+0x80:	eb 24 1e 80 00 00 00 00 00 00 00 00 00 00 00 00 
+0x90:	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+0xa0:	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+0xb0:	00 00 00 00 00 00 00 00 00 20 0f d2 00 00 00 00 
+0xc0:	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+0xd0:	e1 00 00 32 ac 00 01 00 00 00 f3 05 40 7f b1 00 
+0xe0:	e1 20 51 5f 00 c0 99 76 01 00 00 00 3f 00 00 00 
+0xf0:	00 80 40 00 00 00 00 00 ff ff ff ff 00 00 00 00 
+
+Dump Tally Counter
+Statistics	Value
+----------	-----
+tx_packets	0
+rx_packets	0
+tx_errors	0
+rx_missed	0
+align_errors	0
+tx_one_collision	0
+tx_multi_collision	0
+rx_unicast	0
+rx_broadcast	0
+rx_multicast	0
+tx_aborted	0
+tx_underun	0
+
+
+> 
+> Hau
+>> 
+>> Kai-Heng
+>> 
+>>> 
+>>> Kai-Heng
+>>> 
+>>>> 
+>>>>> Kai-Heng
+>>>>> 
+>>>>>> 
+>>>>>> Andrew
+>>>>> 
+>>>> Heiner
+>>> 
+>> 
+>> 
+>> ------Please consider the environment before printing this e-mail.
 
