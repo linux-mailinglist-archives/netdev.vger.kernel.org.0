@@ -2,103 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FA916163F
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7963161643
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbgBQPdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 10:33:47 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:37432 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728002AbgBQPdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 10:33:46 -0500
-Received: by mail-ed1-f68.google.com with SMTP id t7so9455978edr.4;
-        Mon, 17 Feb 2020 07:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cpDwgE9K4RX3YbsUsXFN1RxAexrY0yin13bDyT1Pydo=;
-        b=Vt9a75b6ulHLYug9ORVv2qddFUbDqbV0qW9CtOGS4oDqSVs9nx21NosXzjxYJVxMnz
-         Pu7nhiFxbbhjtAUjfyo5P+4RueOD0E/oVaELaFUW5l36zeXuWi+S7PCBLQ8v1a4Q9yXp
-         1Aq8d59GNpz3RxJ13Rzlmwbb1bLbXCvKrbPlNX29pF3Wr0730Y0v5uMzH8llyNoah3W4
-         z/TZA8eqBekmfAqV54oWYf1hPTjOXup5hzElFNxKmGJBG8bBIMYVEHKvRzIJZGDZR4//
-         sC0GJzQPl18/wNWfZ5+lT+79A3KfPwE280NF++pr6knlLSsszJkFpHSBoTZUIu8U6Ws3
-         E1uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cpDwgE9K4RX3YbsUsXFN1RxAexrY0yin13bDyT1Pydo=;
-        b=bPXdixltFLcclUSwt0vEN3zL1ITqYM862xPUigLWeOUlKToI1zRziCdZKkwWZQy1+Q
-         PmaY1hXNo8IXhl/CeZO+c0p0PfGcwTpVljGgQPHL+tI6QIFmckpMucm2m3QmgbCFyn+R
-         n/d4qQiDJV0dz6FD5tklO169XP5Pb4PF+AhnnZrNxTUEKjxNOfex2cgUgvGzrkugkRYc
-         1UaZ6KpZD56GeFpXhfOENV3OVfEwJxznQk758nJDAa6SutapwAdn9QkcoyqQ0B4iiPgG
-         R4ZhmAjbqPxqFgINqBcBrQRZi8kUnRWLFx+dAygZmjRcLjVfYt/2sx3q5jmHyLLXN0e1
-         ItaQ==
-X-Gm-Message-State: APjAAAUtIR7zA65Qu/Pfj6BaSOMciJUAm9QuRVAYqG2ntBWIZDe2dKJh
-        nT6mbK8u3uL20bz4o8ppTCNr0AIcjBAG1ZeGL/M=
-X-Google-Smtp-Source: APXvYqyEhbUMliSSuUHQSx5pNXCM3Cx87B6D7Hnl92XJYYx/7VuKSXcpeYZMT6j5RHmnc3Urzc5Q2GClWyL+yoXzUlw=
-X-Received: by 2002:a17:906:31c3:: with SMTP id f3mr15005416ejf.239.1581953624846;
- Mon, 17 Feb 2020 07:33:44 -0800 (PST)
+        id S1728696AbgBQPfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 10:35:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42880 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727976AbgBQPfE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Feb 2020 10:35:04 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 380E020718;
+        Mon, 17 Feb 2020 15:35:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581953703;
+        bh=8efhOOieeB7D17j3jQ31Byut/zxDybXrDad5pZgzM6g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GUBKrAqfG8eSWxLQWWL2Hm7nfXDbOjgbkjFFHnQy6utvXaBluk+63gdAGLNnTeb30
+         H6BGDGTl6RRv71CiGYfZQM6e2IQ6OJd6B6ojZFHMj8nAM7Y+I5YMylksMDqdvFABaM
+         7usA1EvhAx1vDJlpGyn37JrX8xFPvBnuoK+EtALk=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1j3iQH-005xOP-JS; Mon, 17 Feb 2020 15:35:01 +0000
 MIME-Version: 1.0
-References: <20200217144414.409-1-olteanv@gmail.com> <20200217144414.409-4-olteanv@gmail.com>
- <20200217152912.GE31084@lunn.ch>
-In-Reply-To: <20200217152912.GE31084@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 17 Feb 2020 17:33:33 +0200
-Message-ID: <CA+h21ho29TRG8JYfSaaSsoxM-mg0-yOKBNCq9wbHDHCf2pkdUg@mail.gmail.com>
-Subject: Re: [PATCH devicetree 3/4] arm64: dts: fsl: ls1028a: add node for
- Felix switch
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 17 Feb 2020 15:35:01 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>, stuyoder@gmail.com,
+        nleeder@codeaurora.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Will Deacon <will@kernel.org>, jon@solid-run.com,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>, netdev@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+In-Reply-To: <20200217152518.GA18376@e121166-lin.cambridge.arm.com>
+References: <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
+ <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
+ <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
+ <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
+ <VI1PR0401MB2496373E0C6D1097F22B3026F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <20200214161957.GA27513@e121166-lin.cambridge.arm.com>
+ <VI1PR0401MB2496800C88A3A2CF912959E6F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <20200214174949.GA30484@e121166-lin.cambridge.arm.com>
+ <VI1PR0401MB2496308C27B7DAA7A5396970F1160@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+ <20200217152518.GA18376@e121166-lin.cambridge.arm.com>
+Message-ID: <384eb5378ee2b240d6ab7d89aef2d5c7@kernel.org>
+X-Sender: maz@kernel.org
+User-Agent: Roundcube Webmail/1.3.10
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: lorenzo.pieralisi@arm.com, pankaj.bansal@nxp.com, ard.biesheuvel@linaro.org, makarand.pawagi@nxp.com, calvin.johnson@nxp.com, stuyoder@gmail.com, nleeder@codeaurora.org, ioana.ciornei@nxp.com, cristian.sovaiala@nxp.com, guohanjun@huawei.com, will@kernel.org, jon@solid-run.com, linux@armlinux.org.uk, linux-acpi@vger.kernel.org, lenb@kernel.org, jason@lakedaemon.net, Andy.Wang@arm.com, V.Sethi@nxp.com, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, laurentiu.tudor@nxp.com, Paul.Yang@arm.com, netdev@vger.kernel.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, shameerali.kolothum.thodi@huawei.com, sudeep.holla@arm.com, robin.murphy@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On 2020-02-17 15:25, Lorenzo Pieralisi wrote:
+> On Mon, Feb 17, 2020 at 12:35:12PM +0000, Pankaj Bansal wrote:
 
-On Mon, 17 Feb 2020 at 17:29, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> Hi Vladimir
->
-> > +                                     /* Internal port with DSA tagging */
-> > +                                     mscc_felix_port4: port@4 {
-> > +                                             reg = <4>;
-> > +                                             phy-mode = "gmii";
->
-> Is it really using gmii? Often in SoC connections use something else,
-> and phy-mode = "internal" is more appropriate.
->
+Hi Lorenzo,
 
-What would be that "something else"? Given that the host port and the
-switch are completely different hardware IP blocks, I would assume
-that a parallel GMII is what's connecting them, no optimizations done.
-Certainly no serializer. But I don't know for sure.
-Does it matter, in the end?
+[...]
 
-> > +                                             ethernet = <&enetc_port2>;
-> > +
-> > +                                             fixed-link {
-> > +                                                     speed = <2500>;
-> > +                                                     full-duplex;
-> > +                                             };
->
-> gmii and 2500 also don't really go together.
+>> > Side note: can you explain to me please how the MSI allocation flow
+>> > and kernel data structures/drivers are modeled in DT ? I had a quick
+>> > look at:
+>> >
+>> > drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
+>> >
+>> > and to start with, does that code imply that we create a
+>> > DOMAIN_BUS_FSL_MC_MSI on ALL DT systems with an ITS device node ?
+>> 
+>> Yes. It's being done for all DT systems having ITS node.
+> 
+> This does not seem correct to me, I will let Marc comment on
+> the matter.
 
-Not even if you raise the clock frequency?
+Unfortunately, there isn't a very good way to avoid that ATM,
+other than defering the registration of the irqdomain until
+we know that a particular bus (for example a PCIe RC) is registered.
 
->
->      Andrew
+I started working on that at some point, and ended up nowhere because
+no bus (PCI, FSL, or anything else) really give us the right information
+when it is actually required (when a device starts claiming interrupts).
 
-Thanks,
--Vladimir
+I *think* we could try a defer it until a bus root is found, and that
+this bus has a topological link to an ITS. probably invasive though,
+as you would need a set of "MSI providers" for each available irqchip
+node.
+
+In short, messy. But I'd be happy to revive this and have a look again.
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
