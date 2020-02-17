@@ -2,68 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F32E1608C3
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:25:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4071608E0
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:27:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgBQDZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 22:25:26 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48252 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726742AbgBQDZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:25:26 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3B24F156939A0;
-        Sun, 16 Feb 2020 19:25:26 -0800 (PST)
-Date:   Sun, 16 Feb 2020 19:25:25 -0800 (PST)
-Message-Id: <20200216.192525.1097551100928922122.davem@davemloft.net>
-To:     arjunroy.kdev@gmail.com
-Cc:     netdev@vger.kernel.org, arjunroy@google.com, soheil@google.com,
-        edumazet@google.com
-Subject: Re: [PATCH net-next 2/2] tcp-zerocopy: Return sk_err (if set)
- along with tcp receive zerocopy.
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200214233050.19429-2-arjunroy.kdev@gmail.com>
-References: <20200214233050.19429-1-arjunroy.kdev@gmail.com>
-        <20200214233050.19429-2-arjunroy.kdev@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 19:25:26 -0800 (PST)
+        id S1728186AbgBQD1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 22:27:13 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:42558 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727685AbgBQD1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:27:12 -0500
+Received: by mail-io1-f70.google.com with SMTP id e7so10996036iog.9
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 19:27:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=dEhJDZdogk/AzHtnY6lpncC9g7Pr4YtHwsSeRTNBiSA=;
+        b=AqY6D4Sk4qr6xsLb5BMWeUT9Vb9Ce7k4JeOTZ+yjRcMLD3I8ir0Z0jvvKQcUnZyZN9
+         KZ0acCUgaQqk8kwWFDjaSFqdEmci7rBpv2uAANLxKfzIVlkVSBhd5wV731gr9IBJlNOe
+         aA4vJU0knZXWWBC02OY7mz9+OdnfbvDa6BClYJ1uGojYus7ClPo8vdudx6m0hPCLuEih
+         UhsmtFaGAiGvsXj2M9pg4t1HC1lisUrhCDxI8ygiYZBtVQkDcehaLU81IFZMKcgv8KwI
+         Uk/NEF/9WRLdvnI55ql3pQwNgPXdcriNb/BPKhl/ygkRt2lCnvRm3G+gfqY6rIRZnVD7
+         m8lQ==
+X-Gm-Message-State: APjAAAUGswQe+nm6kpBZvjjS0E/N0mpAsl32PGocPpAEfOLOkyTjUx6W
+        NAXG7LUqlINOT6/ivD7NzmYx8U4NnomjgJs0BYuUmrW+ror5
+X-Google-Smtp-Source: APXvYqxXNI5Jk/qaZxKOHyL02SDG44ZkAdM7TaWwvHZGz4oon7FeNzBnPHZH/Tj4CwIP11FXVPI+XTQIroQ4XyIQdkSoUfIy5Rhw
+MIME-Version: 1.0
+X-Received: by 2002:a02:742:: with SMTP id f63mr11168517jaf.138.1581910032194;
+ Sun, 16 Feb 2020 19:27:12 -0800 (PST)
+Date:   Sun, 16 Feb 2020 19:27:12 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000089226a059ebd21ab@google.com>
+Subject: KMSAN: uninit-value in hci_cmd_timeout
+From:   syzbot <syzbot+d5eabae89ae62371887f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy.kdev@gmail.com>
-Date: Fri, 14 Feb 2020 15:30:50 -0800
+Hello,
 
-> From: Arjun Roy <arjunroy@google.com>
-> 
-> This patchset is intended to reduce the number of extra system calls
-> imposed by TCP receive zerocopy. For ping-pong RPC style workloads,
-> this patchset has demonstrated a system call reduction of about 30%
-> when coupled with userspace changes.
-> 
-> For applications using epoll, returning sk_err along with the result
-> of tcp receive zerocopy could remove the need to call
-> recvmsg()=-EAGAIN after a spurious wakeup.
-> 
-> Consider a multi-threaded application using epoll. A thread may awaken
-> with EPOLLIN but another thread may already be reading. The
-> spuriously-awoken thread does not necessarily know that another thread
-> 'won'; rather, it may be possible that it was woken up due to the
-> presence of an error if there is no data. A zerocopy read receiving 0
-> bytes thus would need to be followed up by recvmsg to be sure.
-> 
-> Instead, we return sk_err directly with zerocopy, so the application
-> can avoid this extra system call.
-> 
-> Signed-off-by: Arjun Roy <arjunroy@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+syzbot found the following crash on:
 
-Applied.
+HEAD commit:    686a4f77 kmsan: don't compile memmove
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b019d9e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e10654781bc1f11c
+dashboard link: https://syzkaller.appspot.com/bug?extid=d5eabae89ae62371887f
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d5eabae89ae62371887f@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in hci_cmd_timeout+0x2bd/0x2d0 net/bluetooth/hci_core.c:2637
+CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.5.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events hci_cmd_timeout
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ hci_cmd_timeout+0x2bd/0x2d0 net/bluetooth/hci_core.c:2637
+ process_one_work+0x1552/0x1ef0 kernel/workqueue.c:2264
+ worker_thread+0xef6/0x2450 kernel/workqueue.c:2410
+ kthread+0x4b5/0x4f0 kernel/kthread.c:256
+ ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
+ slab_alloc_node mm/slub.c:2774 [inline]
+ slab_alloc mm/slub.c:2783 [inline]
+ kmem_cache_alloc+0x711/0xd70 mm/slub.c:2788
+ skb_clone+0x328/0x5d0 net/core/skbuff.c:1448
+ hci_cmd_work+0x12f/0x4f0 net/bluetooth/hci_core.c:4527
+ process_one_work+0x1552/0x1ef0 kernel/workqueue.c:2264
+ worker_thread+0xef6/0x2450 kernel/workqueue.c:2410
+ kthread+0x4b5/0x4f0 kernel/kthread.c:256
+ ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
+=====================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
