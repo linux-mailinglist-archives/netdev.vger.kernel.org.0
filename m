@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B8F161D8C
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 23:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 151E2161D8D
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 23:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbgBQWpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 17:45:17 -0500
-Received: from mail-qv1-f46.google.com ([209.85.219.46]:40372 "EHLO
-        mail-qv1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725853AbgBQWpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 17:45:17 -0500
-Received: by mail-qv1-f46.google.com with SMTP id q9so7383223qvu.7
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 14:45:16 -0800 (PST)
+        id S1726091AbgBQWpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 17:45:19 -0500
+Received: from mail-qv1-f41.google.com ([209.85.219.41]:45939 "EHLO
+        mail-qv1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725853AbgBQWpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 17:45:19 -0500
+Received: by mail-qv1-f41.google.com with SMTP id l14so8285648qvu.12
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 14:45:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gSXQTJ9buN/rNeDG6UuDHZ+3X1XRhIKLh13CScoF424=;
-        b=NEDMeCKmmDx8co/hUZEmiQBuczc5gcDursv2UeVouBpkRW3dXR3UO2mBYM4veEVRLC
-         thyhSATGqbuiyxGqAvwyVgI77HiCz5wWB53Kqme+thRBcOgMEGXZkQ09FVnSosg07Q7F
-         Zg+6GQBjcr99US9q2nKuKtNapZA+MgTXpkyFtnKa7gW+wrhhqTt3TVmfhDJ+lmlB3hAD
-         j52Nmmvzf9aDXPC9lVMnv6mWh/DB+DnRDc4+Np7YRAKG59zK9uK6TwlEx9oLqpgyGRRZ
-         UuJBc9TEvNU+tgbFP2Pr3aWjv5fYZbK/+6t9lsHOzpqA8ZWFSKolaScF3KRpb8Wi6pnt
-         ypTw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=C8MhAzJWS50BSu4JT4oJxlSc/jYCNNl/m+H/bKAJaOs=;
+        b=COkHAoctxRVWi9gwukle5saKxHOvlqmIlK0nQrg+wqXns0RS2785fhUPsSYHUNknKc
+         ZRmQALOCFi9VN9QFpGktFYnh4NcbMSxIZ+vcA/h0nkqaCUbxfwHH0GCMmbrvmQezL4/a
+         maJJdEwf94V7hG2lWvKhQAdcIteShnEfR5Ro1pToa3UAAz5aze7AK6X/n8OXRhjFlzSX
+         hDtcpNtGgya3R+sjJkWkZrUGMpqY97W6vq0LmXOt7Hl0zN0L+NgbUvON+zyHQrSEywzD
+         +PpfoGsoG/J1vLm2OtqonKJCUoc8ySYC5Dt8VUD/5gQvWGT9VIRrqpuffDQI3Lg4HYlg
+         +4kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gSXQTJ9buN/rNeDG6UuDHZ+3X1XRhIKLh13CScoF424=;
-        b=JAiySz+qboSyQf6P3zzXyzh+WCF4R70qXmaI0dQIpZSNtPIunvMA4izDcJR6wPJ4PL
-         F49PymKkiEuQk3peX+nO4ENcjnionJ0OFFbC4epDlPuZvnIS4GZ+sTR/AudvHfu/YM/V
-         Gq7Sijf9T0n7Sh5FyMq2nGmW7qy74IuKJ/GUVgCC3Us4snHRUa+Vm4XFlBB6a1Ecs1Hv
-         D9hMX0WlTyXoD2QOlTUjhMPeGDwZno891qs5F7H4eXpiRv3qvBlW0APa6HitWii3awb7
-         RcEK0No3EZOZnaUrlTtYn9BdelGY+wOujokHOn59wAMZNZCAQmMupWd//+TqwPJVBGKL
-         zI2g==
-X-Gm-Message-State: APjAAAXlcMlKpEoPsJonG93KX+B0eyUL354rw400CV03rCLBjWOtQGK9
-        9q3/mapX1pb3XzWkM45JGx8=
-X-Google-Smtp-Source: APXvYqyzbY4c2HzjI91SEfp2lTn1DgXXe5IQcepCzHM5rcUmeQkvQcRkheAmIfFP85eWlcpYLFp+ew==
-X-Received: by 2002:a05:6214:3aa:: with SMTP id m10mr14535171qvy.125.1581979516133;
-        Mon, 17 Feb 2020 14:45:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=C8MhAzJWS50BSu4JT4oJxlSc/jYCNNl/m+H/bKAJaOs=;
+        b=uh3SHXhnc5HJVPYfc3QT5SW++C1geRZhdmIOPAQyBboFFBJ/JVlcmOVVXmEIgEjpc6
+         0BwGSdYp01mgIAv/eF1ySzZsdMkqn1HeqeHdgyfNNZF93TfxNwB+0BNlT9jo7oja2o/F
+         E5IkTzrb/1fLcUKNvQkyXWVMzNCTYJkOgMYpg2SMXNrussZerertaDbZfum1P5i+P6gs
+         6aMOoh+njUUgqxkqiXSB0ePar3MOPtqfypt2abGrxhFnzG3FzG7sJh2SOwc96m6/y2Ak
+         FR2KG22bLg3j5EydUT43orcu6Ssf9rW7Ng2jN21KkuvsSp9AAuze23+/k7pUDo+Cd8Kl
+         9SPQ==
+X-Gm-Message-State: APjAAAUcraIR3rME+JB89SPsLkhdEElyxqoPmdigkjA0JW9CjP1sL6uk
+        Wum/qgRVDGI/S0mGmSDlyZA=
+X-Google-Smtp-Source: APXvYqxGUzpmPz/2+jwtiQoIyZpRI7t3j5a17Dx9G3UvLifYzkJmgfi0vUDNyI8BANDUfrZYm5X8Lg==
+X-Received: by 2002:a0c:f9c7:: with SMTP id j7mr14608274qvo.222.1581979517462;
+        Mon, 17 Feb 2020 14:45:17 -0800 (PST)
 Received: from localhost.localdomain ([216.154.21.195])
-        by smtp.gmail.com with ESMTPSA id w21sm984725qth.17.2020.02.17.14.45.14
+        by smtp.gmail.com with ESMTPSA id w21sm984725qth.17.2020.02.17.14.45.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2020 14:45:15 -0800 (PST)
+        Mon, 17 Feb 2020 14:45:17 -0800 (PST)
 From:   Alexander Aring <alex.aring@gmail.com>
 To:     stephen@networkplumber.org
 Cc:     dsahern@gmail.com, mcr@sandelman.ca, stefan@datenfreihafen.org,
         kai.beckmann@hs-rm.de, martin.gergeleit@hs-rm.de,
         robert.kaiser@hs-rm.de, netdev@vger.kernel.org,
         Alexander Aring <alex.aring@gmail.com>
-Subject: [RFC iproute2-next 1/2] uapi: updates to lwtunnel and rpl iptunnel
-Date:   Mon, 17 Feb 2020 17:44:53 -0500
-Message-Id: <20200217224454.22297-1-alex.aring@gmail.com>
+Subject: [RFC iproute2-next 2/2] lwtunnel: add support for rpl segment routing
+Date:   Mon, 17 Feb 2020 17:44:54 -0500
+Message-Id: <20200217224454.22297-2-alex.aring@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200217224454.22297-1-alex.aring@gmail.com>
+References: <20200217224454.22297-1-alex.aring@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -61,116 +63,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update uapi headers.
+This patch adds support for rpl segment routing settings.
+Example:
+
+ip -n ns0 -6 route add 2001::3 encap rpl segs \
+fe80::c8fe:beef:cafe:cafe,fe80::c8fe:beef:cafe:beef dev lowpan0
 
 Signed-off-by: Alexander Aring <alex.aring@gmail.com>
 ---
- include/uapi/linux/lwtunnel.h     |  1 +
- include/uapi/linux/rpl.h          | 48 +++++++++++++++++++++++++++++++
- include/uapi/linux/rpl_iptunnel.h | 27 +++++++++++++++++
- 3 files changed, 76 insertions(+)
- create mode 100644 include/uapi/linux/rpl.h
- create mode 100644 include/uapi/linux/rpl_iptunnel.h
+ ip/iproute.c          |   2 +-
+ ip/iproute_lwtunnel.c | 111 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 112 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
-index 532c9370..b7c0191f 100644
---- a/include/uapi/linux/lwtunnel.h
-+++ b/include/uapi/linux/lwtunnel.h
-@@ -13,6 +13,7 @@ enum lwtunnel_encap_types {
- 	LWTUNNEL_ENCAP_SEG6,
- 	LWTUNNEL_ENCAP_BPF,
- 	LWTUNNEL_ENCAP_SEG6_LOCAL,
-+	LWTUNNEL_ENCAP_RPL,
- 	__LWTUNNEL_ENCAP_MAX,
- };
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 93b805c9..f636eb26 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -101,7 +101,7 @@ static void usage(void)
+ 		"TIME := NUMBER[s|ms]\n"
+ 		"BOOL := [1|0]\n"
+ 		"FEATURES := ecn\n"
+-		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local ]\n"
++		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local | rpl ]\n"
+ 		"ENCAPHDR := [ MPLSLABEL | SEG6HDR ]\n"
+ 		"SEG6HDR := [ mode SEGMODE ] segs ADDR1,ADDRi,ADDRn [hmac HMACKEYID] [cleanup]\n"
+ 		"SEGMODE := [ encap | inline ]\n"
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 0d7d7149..1524b8fe 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -29,6 +29,8 @@
  
-diff --git a/include/uapi/linux/rpl.h b/include/uapi/linux/rpl.h
-new file mode 100644
-index 00000000..a55cbb1c
---- /dev/null
-+++ b/include/uapi/linux/rpl.h
-@@ -0,0 +1,48 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 RPL-SR implementation
-+ *
-+ *  Author:
-+ *  Alexander Aring <alex.aring@gmail.com>
-+ */
+ #include <linux/seg6.h>
+ #include <linux/seg6_iptunnel.h>
++#include <linux/rpl.h>
++#include <linux/rpl_iptunnel.h>
+ #include <linux/seg6_hmac.h>
+ #include <linux/seg6_local.h>
+ #include <linux/if_tunnel.h>
+@@ -50,6 +52,8 @@ static const char *format_encap_type(int type)
+ 		return "seg6";
+ 	case LWTUNNEL_ENCAP_SEG6_LOCAL:
+ 		return "seg6local";
++	case LWTUNNEL_ENCAP_RPL:
++		return "rpl";
+ 	default:
+ 		return "unknown";
+ 	}
+@@ -84,6 +88,8 @@ static int read_encap_type(const char *name)
+ 		return LWTUNNEL_ENCAP_SEG6;
+ 	else if (strcmp(name, "seg6local") == 0)
+ 		return LWTUNNEL_ENCAP_SEG6_LOCAL;
++	else if (strcmp(name, "rpl") == 0)
++		return LWTUNNEL_ENCAP_RPL;
+ 	else if (strcmp(name, "help") == 0)
+ 		encap_type_usage();
+ 
+@@ -162,6 +168,32 @@ static void print_encap_seg6(FILE *fp, struct rtattr *encap)
+ 	print_srh(fp, tuninfo->srh);
+ }
+ 
++static void print_rpl_srh(FILE *fp, struct ipv6_rpl_sr_hdr *srh)
++{
++	int i;
 +
-+#ifndef _LINUX_RPL_H
-+#define _LINUX_RPL_H
++	for (i = srh->segments_left - 1; i >= 0; i--) {
++		print_color_string(PRINT_ANY, COLOR_INET6,
++				   NULL, "%s ",
++				   rt_addr_n2a(AF_INET6, 16, &srh->rpl_segaddr[i]));
++	}
++}
 +
-+#include <asm/byteorder.h>
-+#include <linux/types.h>
-+#include <linux/in6.h>
++static void print_encap_rpl(FILE *fp, struct rtattr *encap)
++{
++	struct rtattr *tb[RPL_IPTUNNEL_MAX + 1];
++	struct ipv6_rpl_sr_hdr *srh;
 +
-+/*
-+ * RPL SR Header
-+ */
-+struct ipv6_rpl_sr_hdr {
-+	__u8	nexthdr;
-+	__u8	hdrlen;
-+	__u8	type;
-+	__u8	segments_left;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	__u32	cmpre:4,
-+		cmpri:4,
-+		reserved:4,
-+		pad:4,
-+		reserved1:16;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	__u32	reserved:20,
-+		pad:4,
-+		cmpri:4,
-+		cmpre:4;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
++	parse_rtattr_nested(tb, RPL_IPTUNNEL_MAX, encap);
 +
-+	union {
-+		struct in6_addr addr[0];
-+		__u8 data[0];
-+	} segments;
-+} __attribute__((packed));
++	if (!tb[RPL_IPTUNNEL_SRH])
++		return;
 +
-+#define rpl_segaddr	segments.addr
-+#define rpl_segdata	segments.data
++	srh = RTA_DATA(tb[RPL_IPTUNNEL_SRH]);
 +
-+#endif
-diff --git a/include/uapi/linux/rpl_iptunnel.h b/include/uapi/linux/rpl_iptunnel.h
-new file mode 100644
-index 00000000..f2839b68
---- /dev/null
-+++ b/include/uapi/linux/rpl_iptunnel.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 RPL-SR implementation
-+ *
-+ *  Author:
-+ *  Alexander Aring <alex.aring@gmail.com>
-+ *
-+ *
-+ *  This program is free software; you can redistribute it and/or
-+ *      modify it under the terms of the GNU General Public License
-+ *      as published by the Free Software Foundation; either version
-+ *      2 of the License, or (at your option) any later version.
-+ */
++	print_rpl_srh(fp, srh);
++}
 +
-+#ifndef _LINUX_RPL_IPTUNNEL_H
-+#define _LINUX_RPL_IPTUNNEL_H
+ static const char *seg6_action_names[SEG6_LOCAL_ACTION_MAX + 1] = {
+ 	[SEG6_LOCAL_ACTION_END]			= "End",
+ 	[SEG6_LOCAL_ACTION_END_X]		= "End.X",
+@@ -457,6 +489,9 @@ void lwt_print_encap(FILE *fp, struct rtattr *encap_type,
+ 	case LWTUNNEL_ENCAP_SEG6_LOCAL:
+ 		print_encap_seg6local(fp, encap);
+ 		break;
++	case LWTUNNEL_ENCAP_RPL:
++		print_encap_rpl(fp, encap);
++		break;
+ 	}
+ }
+ 
+@@ -580,6 +615,79 @@ out:
+ 	return ret;
+ }
+ 
++static struct ipv6_rpl_sr_hdr *parse_rpl_srh(char *segbuf)
++{
++	struct ipv6_rpl_sr_hdr *srh;
++	int nsegs = 0;
++	int srhlen;
++	char *s;
++	int i;
 +
-+enum {
-+	RPL_IPTUNNEL_UNSPEC,
-+	RPL_IPTUNNEL_SRH,
-+	__RPL_IPTUNNEL_MAX,
-+};
-+#define RPL_IPTUNNEL_MAX (__RPL_IPTUNNEL_MAX - 1)
++	s = segbuf;
++	for (i = 0; *s; *s++ == ',' ? i++ : *s);
++	nsegs = i + 1;
 +
-+#define RPL_IPTUNNEL_SRH_SIZE(srh) (((srh)->hdrlen + 1) << 3)
++	srhlen = 8 + 16 * nsegs;
 +
-+#endif
++	srh = calloc(1, srhlen);
++
++	srh->hdrlen = (srhlen >> 3) - 1;
++	srh->type = 3;
++	srh->segments_left = nsegs;
++
++	for (s = strtok(segbuf, ","); s; s = strtok(NULL, ",")) {
++		inet_prefix addr;
++
++		get_addr(&addr, s, AF_INET6);
++		memcpy(&srh->rpl_segaddr[i], addr.data, sizeof(struct in6_addr));
++		i--;
++	}
++
++	return srh;
++}
++
++static int parse_encap_rpl(struct rtattr *rta, size_t len, int *argcp,
++			   char ***argvp)
++{
++	struct ipv6_rpl_sr_hdr *srh;
++	char **argv = *argvp;
++	char segbuf[1024] = "";
++	int argc = *argcp;
++	int segs_ok = 0;
++	int ret = 0;
++	int srhlen;
++
++	while (argc > 0) {
++		if (strcmp(*argv, "segs") == 0) {
++			NEXT_ARG();
++			if (segs_ok++)
++				duparg2("segs", *argv);
++
++			strlcpy(segbuf, *argv, 1024);
++		} else {
++			break;
++		}
++		argc--; argv++;
++	}
++
++	srh = parse_rpl_srh(segbuf);
++	srhlen = (srh->hdrlen + 1) << 3;
++
++	if (rta_addattr_l(rta, len, RPL_IPTUNNEL_SRH, srh,
++			  srhlen)) {
++		ret = -1;
++		goto out;
++	}
++
++	*argcp = argc + 1;
++	*argvp = argv - 1;
++
++out:
++	free(srh);
++
++	return ret;
++}
++
+ struct lwt_x {
+ 	struct rtattr *rta;
+ 	size_t len;
+@@ -1159,6 +1267,9 @@ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
+ 	case LWTUNNEL_ENCAP_SEG6_LOCAL:
+ 		ret = parse_encap_seg6local(rta, len, &argc, &argv);
+ 		break;
++	case LWTUNNEL_ENCAP_RPL:
++		ret = parse_encap_rpl(rta, len, &argc, &argv);
++		break;
+ 	default:
+ 		fprintf(stderr, "Error: unsupported encap type\n");
+ 		break;
 -- 
 2.20.1
 
