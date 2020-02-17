@@ -2,22 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C588A161C30
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 21:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B682161C43
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 21:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729643AbgBQUQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 15:16:09 -0500
-Received: from gateway34.websitewelcome.com ([192.185.148.214]:16120 "EHLO
-        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729334AbgBQUQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 15:16:09 -0500
-X-Greylist: delayed 1232 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Feb 2020 15:16:08 EST
+        id S1729789AbgBQUWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 15:22:05 -0500
+Received: from gateway30.websitewelcome.com ([192.185.160.12]:37760 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729124AbgBQUWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 15:22:05 -0500
 Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 77A8848645
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 13:55:36 -0600 (CST)
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 02DC79256
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 13:58:31 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 3mUSjoDBaRP4z3mUSjEp98; Mon, 17 Feb 2020 13:55:36 -0600
+        id 3mXGjoGWvRP4z3mXGjEsT3; Mon, 17 Feb 2020 13:58:31 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -25,25 +24,28 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=crsZaVbHNmz9iNAH8JjIvtOy8euRMhiayEMBT2tKPSA=; b=rNPCQnyoGNxrnnhTyp1ahn8zhf
-        Fl6T1a8oHvVIdwFb4MkmEDJDTOpGcxPI3NsgLLtu+lwnbvJ/9mCYT1kBZ7rD2Rfm6pM8DHmkc2HX/
-        ffYzv/JaQKCKt4//9bSAuOQM9IrId4qWzgUT+PGBrFeNfdv4c5QHWxFR+WT/DE4BgC4ErlhHqYwFZ
-        cxKsOCeFrLAK8hC8QUdu170I46KcFfddFaSl76R122Cq/xU49oliP3yBT2iH07pq3ktvIL7c8BAec
-        QoOYasX33PJgk1g2S244DK3NKewDmtRx2SHSHFzZmPcQx1Q1bCoQzIeZma7o31mVxJcqLn3OIEIQY
-        7mSu22lg==;
-Received: from [200.68.140.26] (port=23204 helo=embeddedor)
+        bh=lL/wXEQHi6LCYu2lhykWxgmf1aHw3CsCn1BREA1tfRE=; b=fK82/v2ZvhIZLJatuoWe0R1cPJ
+        pAvAjXK22AfD8Z/Du17oJLpt7auD8pYHZpKBB5J93519ocXDYMERj8cONkZeFbahHPRH5RXYxIV6M
+        AxzvuVd+cg9PG2eh6aUyqpWWR5DGeUMpcKYOi6/yZAEAeDTNOh0CNhynuWryGDMeuClYY6/XY8KcR
+        dU7c4txB1QAsHDWa2eJ0kkK2gS9XZNT4IULQgdkyqeZPtKP4AuwVy1PI7jyvQ9+nXskmDHhkGjJUV
+        pov0c83Un8z+vtC6yzGbPB4+hhdAN5lLBUjjw+BIy0nquFVXVfDhGShblYTzr9s4zijvIESHIUHlg
+        nkjnRtMg==;
+Received: from [200.68.140.26] (port=19134 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j3mUQ-000LJn-QK; Mon, 17 Feb 2020 13:55:34 -0600
-Date:   Mon, 17 Feb 2020 13:58:16 -0600
+        id 1j3mXF-000Mi0-Fe; Mon, 17 Feb 2020 13:58:29 -0600
+Date:   Mon, 17 Feb 2020 14:01:11 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] net: usb: cdc-phonet: Replace zero-length array
- with flexible-array member
-Message-ID: <20200217195816.GA3306@embeddedor>
+Subject: [PATCH][next] bpf, sockmap: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200217200111.GA5283@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,13 +58,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.68.140.26
 X-Source-L: No
-X-Exim-ID: 1j3mUQ-000LJn-QK
+X-Exim-ID: 1j3mXF-000Mi0-Fe
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.68.140.26]:23204
+X-Source-Sender: (embeddedor) [200.68.140.26]:19134
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 17
+X-Email-Count: 27
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -100,22 +102,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/usb/cdc-phonet.c | 2 +-
+ net/core/sock_map.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/cdc-phonet.c b/drivers/net/usb/cdc-phonet.c
-index bcabd39d136a..9bdbd7b472a0 100644
---- a/drivers/net/usb/cdc-phonet.c
-+++ b/drivers/net/usb/cdc-phonet.c
-@@ -36,7 +36,7 @@ struct usbpn_dev {
- 
- 	spinlock_t		rx_lock;
- 	struct sk_buff		*rx_skb;
--	struct urb		*urbs[0];
-+	struct urb		*urbs[];
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 085cef5857bb..3a7a96ab088a 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -518,7 +518,7 @@ struct bpf_htab_elem {
+ 	u32 hash;
+ 	struct sock *sk;
+ 	struct hlist_node node;
+-	u8 key[0];
++	u8 key[];
  };
  
- static void tx_complete(struct urb *req);
+ struct bpf_htab_bucket {
 -- 
 2.25.0
 
