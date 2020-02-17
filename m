@@ -2,77 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F18711618DE
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:33:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CC51618FA
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:42:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729331AbgBQRdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 12:33:51 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50414 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727179AbgBQRdv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Feb 2020 12:33:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Xnyt33xissQJ4/7LokH7UuqI7OQY8KnfoUx9wM+8IQk=; b=XBHpzWP0Z8ERgkea2mcC8Qp9NJ
-        d7sF7rxklLyXtf4oNMxKt+xuUcM6RpCMG9p9s+pXJbLatajMsedRICtVbt+l5neh59bPG0WyLSFnP
-        Ay0pu10bQE2Gg6QFnxccqLi1j7m7zb5QSs0HDwqR675/El1gaOx4ucCn9BBKN0BOWy/w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j3kGq-00065z-CV; Mon, 17 Feb 2020 18:33:24 +0100
-Date:   Mon, 17 Feb 2020 18:33:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
+        id S1729665AbgBQRms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 12:42:48 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:34651 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728706AbgBQRms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 12:42:48 -0500
+Received: from localhost (lfbn-lyo-1-1670-129.w90-65.abo.wanadoo.fr [90.65.102.129])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 83AE024000D;
+        Mon, 17 Feb 2020 17:42:44 +0000 (UTC)
+Date:   Mon, 17 Feb 2020 18:42:44 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Felix Fietkau <nbd@openwrt.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [CFT 0/8] rework phylink interface for split MAC/PCS support
-Message-ID: <20200217173324.GI31084@lunn.ch>
-References: <20200217172242.GZ25745@shell.armlinux.org.uk>
+        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: macb: Properly handle phylink on at91rm9200
+Message-ID: <20200217174244.GD3316@piout.net>
+References: <20200217104348.43164-1-alexandre.belloni@bootlin.com>
+ <20200217165644.GX25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200217172242.GZ25745@shell.armlinux.org.uk>
+In-Reply-To: <20200217165644.GX25745@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 05:22:43PM +0000, Russell King - ARM Linux admin wrote:
-> Hi,
+On 17/02/2020 16:56:44+0000, Russell King - ARM Linux admin wrote:
+> On Mon, Feb 17, 2020 at 11:43:48AM +0100, Alexandre Belloni wrote:
+> > at91ether_init was handling the phy mode and speed but since the switch to
+> > phylink, the NCFGR register got overwritten by macb_mac_config().
 > 
-> The following series changes the phylink interface to allow us to
-> better support split MAC / MAC PCS setups.  The fundamental change
-> required for this turns out to be quite simple.
+> I don't think this actually explains anything - or at least I can't
+> make sense of it with respect to your patch.
+> 
+> You claim that the NCFGR register gets overwritten in macb_mac_config(),
+> but I see that the NCFGR register is read-modify-write in there,
+> whereas your new implementation below doesn't bother reading the
+> present value.
+> 
+> I think the issue you're referring to is the clearing of the PAE bit,
+> which is also the RM9200_RMII for at91rm9200?
+> 
 
-Hi Russell
+This is the issue, I'll rework the commit message.
 
-Do you have a branch i can pull and test?
+> Next, there's some duplication of code introduced here - it seems
+> that the tail end of macb_mac_link_down() and at91ether_mac_link_down()
+> are identical, as are the tail end of macb_mac_link_up() and
+> at91ether_mac_link_up().
+> 
 
-Thanks
-	Andrew
+I was split between having a new phylink_mac_ops instance or
+differentiating in the various callbacks. If your preference is the
+latter, I'm fine with that.
+
+> > Add new phylink callbacks to handle emac and at91rm9200 properly.
+> > 
+> > Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > ---
+> 
+> I posted a heads-up message last week about updates to phylink that
+> I'll be submitting soon (most of the prerequisits have now been sent
+> for review) which touch every phylink_mac_ops-using piece of code in
+> the tree.  Unfortunately, this patch introduces a new instance that
+> likely isn't going to get my attention, so it's going to create a
+> subtle merge conflict between net-next and net trees unless we work
+> out some way to deal with it.
+> 
+> I'm just mentioning that so that some thought can be applied now
+> rather than when it actually happens - especially as I've no way to
+> test the changes that will be necessary for this driver.
+> 
+
+Does that help if I change the callbacks instead of adding a new
+phylink_mac_ops instance? I can also wait for your work and rebase on
+top of that but that would mean that the fix will not get backported.
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
