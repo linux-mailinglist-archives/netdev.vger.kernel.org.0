@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1AE160837
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFFF6160838
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:35:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbgBQCdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 21:33:16 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47798 "EHLO
+        id S1726271AbgBQCf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 21:35:27 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47816 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgBQCdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:33:16 -0500
+        with ESMTP id S1726183AbgBQCf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:35:26 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7EC3E153808C0;
-        Sun, 16 Feb 2020 18:33:15 -0800 (PST)
-Date:   Sun, 16 Feb 2020 18:33:15 -0800 (PST)
-Message-Id: <20200216.183315.143837712192250537.davem@davemloft.net>
-To:     gustavo@embeddedor.com
-Cc:     jiri@mellanox.com, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lib: objagg: Replace zero-length arrays with
- flexible-array member
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 259EA153808F4;
+        Sun, 16 Feb 2020 18:35:25 -0800 (PST)
+Date:   Sun, 16 Feb 2020 18:35:25 -0800 (PST)
+Message-Id: <20200216.183525.67035879142775466.davem@davemloft.net>
+To:     bpoirier@cumulusnetworks.com
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
+        nicolas.dichtel@6wind.com, dsahern@gmail.com
+Subject: Re: [PATCH net 1/2] ipv6: Fix route replacement with dev-only route
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200211205356.GA23101@embeddedor>
-References: <20200211205356.GA23101@embeddedor>
+In-Reply-To: <20200212014107.110066-1-bpoirier@cumulusnetworks.com>
+References: <20200212014107.110066-1-bpoirier@cumulusnetworks.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:33:15 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:35:26 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Tue, 11 Feb 2020 14:53:56 -0600
+From: Benjamin Poirier <bpoirier@cumulusnetworks.com>
+Date: Wed, 12 Feb 2020 10:41:06 +0900
 
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
+> After commit 27596472473a ("ipv6: fix ECMP route replacement") it is no
+> longer possible to replace an ECMP-able route by a non ECMP-able route.
+> For example,
+> 	ip route add 2001:db8::1/128 via fe80::1 dev dummy0
+> 	ip route replace 2001:db8::1/128 dev dummy0
+> does not work as expected.
 > 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
+> Tweak the replacement logic so that point 3 in the log of the above commit
+> becomes:
+> 3. If the new route is not ECMP-able, and no matching non-ECMP-able route
+> exists, replace matching ECMP-able route (if any) or add the new route.
 > 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertenly introduced[3] to the codebase from now on.
+> We can now summarize the entire replace semantics to:
+> When doing a replace, prefer replacing a matching route of the same
+> "ECMP-able-ness" as the replace argument. If there is no such candidate,
+> fallback to the first route found.
 > 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> Fixes: 27596472473a ("ipv6: fix ECMP route replacement")
+> Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
 
-Applied to net-next.
+Applied and queued up for -stable.
