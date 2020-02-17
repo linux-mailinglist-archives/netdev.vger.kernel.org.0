@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFBE01609CF
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 06:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078671609D0
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 06:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbgBQFRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 00:17:17 -0500
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:33299 "EHLO
+        id S1726070AbgBQFUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 00:20:06 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:43799 "EHLO
         mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725784AbgBQFRQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 00:17:16 -0500
-Received: by mail-yb1-f196.google.com with SMTP id b6so8157443ybr.0
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 21:17:16 -0800 (PST)
+        with ESMTP id S1725784AbgBQFUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 00:20:05 -0500
+Received: by mail-yb1-f196.google.com with SMTP id b141so8133453ybg.10
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 21:20:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qqEhJos7XwFWseneb5zXIELdslq+qUm6mgZUyVOeRDo=;
-        b=QlMr7LHHjMIafjf3qJETNKkB3nze4sSQrJedFV2nN2HsanU+dNn8JRnj8oToGeSqF2
-         PTbCI6D5LpHojTDE7ccScj2yyJtGFQeYDzzc49Msd5LnuqPxnmZt0ASLfEp7kl8X90J+
-         PFJ8vk35ILkeb6RFLHA0GfZjTrnEszlgjUviUhr8VERAVFRmZUUzDk5M4wGLUtxo4DUz
-         M2xmcczR3H7xu3yzYLoeQa8/FXLDx9xBsrTjk4I/11FDooYOrhx8EOF9oXIH/uzZP4wx
-         g0pfK5KJgH3ChztszOOWQyVwwHP4RRKUe3s4ubwXMcVxU3hOsNVs96PjmbPSuIp880Qd
-         /1/Q==
+        bh=1Klaqi42nk+dQlmzrH/S5DstKEezF5OIZyqttsOA2p4=;
+        b=NuTL2mrjsDSxS3elOIJtaz2TafLRu7vGAdbVocZSgICi13MwyDYWr5/lrdg9Y3Pnsx
+         Y+OMQ6Ip5t7y5fTSzzvicXK7WXFaeB6cglMyBn+hEXt8M9aG/Wyu/I/phKev3A1J6mPP
+         jGuoJ9PrNfS3UliY6GR2mhkwCfkv/cEBv4dLPr6d7NUolYE6Aoui6j2nZFXcGhGzHyzb
+         bd5xUvC4wpcInaaZ3PKMVErn6btIuDlWngNBsPIuPADBNQQshdZs8P76mVY3eMXOytVv
+         nGLVR8GbKy/GVKwqRW3Fetw4+T+ulPv0heMyDE54BL57cY/rbEwGp9mNXMrh+ZCRYkFG
+         kkhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qqEhJos7XwFWseneb5zXIELdslq+qUm6mgZUyVOeRDo=;
-        b=aAhB0yo/nhpocobYmYpxu/PiAabmeK3OXq59jO+m6thuATVxlSi7GHOsa00oHDERo3
-         rjjc85pL30YUwv50UgXZOSJ7eyM2AgWx3fT7SE5EDyngeC/C/iVDmBjdFVNxBJgF1LvJ
-         n/vkwSbkBVliny22DBVwdnuYMkzH+Ojwmcgl4+lV+q848RbWn04IwZ0fsnmYmfviSoys
-         i0p7mux1a/lrwMvPzwzyiSgH751VggoqggGSX4BQyGhCRmH0zumkmCmFq+qUMYT9X/Wp
-         vCtEQbylnWLgSSh2ewod8clqL6Lkim1vfK8+WAhp2pD4SFjOpaHFF1QYif3LE0UX6apO
-         9HYA==
-X-Gm-Message-State: APjAAAXY+jJjSjU1jHzF3etCaf/JWJxIH5E5IMvfa1STxiuLz1xiGQuT
-        9ZYm4JcELR9OOKSBbVTlaQtddv5s
-X-Google-Smtp-Source: APXvYqyN+fXUnexk/UGekQwbFcjSLPw5w5mJY+kjbEC/D+WaDjqcBwVSoO5IBd9SibvlFsRi1wX43A==
-X-Received: by 2002:a25:cc95:: with SMTP id l143mr12756143ybf.367.1581916635124;
-        Sun, 16 Feb 2020 21:17:15 -0800 (PST)
-Received: from mail-yw1-f45.google.com (mail-yw1-f45.google.com. [209.85.161.45])
-        by smtp.gmail.com with ESMTPSA id i66sm6126716ywa.74.2020.02.16.21.17.13
+        bh=1Klaqi42nk+dQlmzrH/S5DstKEezF5OIZyqttsOA2p4=;
+        b=iLBl+gXr9OSUDM6u1zlUlz5eq6Sjfimy4WUiqJ5/84xGNNaZK4x1KwOo1NARbXmS3S
+         3GRY3JszUkKjkmMqIORjSCZg+C5voHTZiegjoxEMTmKHXqqv2w2szWAuAeBs8iSZ96tU
+         WRZBQRKBTMY8q0abYsfblGiofB+JdW0QUiZFe6Brl0J96zzkL8b7fbqHqNzlg95qylYN
+         BHVhGD/89dqBBIuVlPPOywmJvvbxuWIkQQbc/1vNo9mn0a7OY0q6ScMPaSFR03XNqV3H
+         9T3E5VSHQtQ3qd+5iM0spsVGeEkX7thHj9FcI787isUea/91dzJzHtGGqHWTjqrJznXw
+         pQ6Q==
+X-Gm-Message-State: APjAAAW/ZPQTV5Jc6WgV4nMr9wOqCWParJtZJMuTkS7/OLQSn5dHaPTt
+        BgqUJ6JvD1wviBKUqpylIN72E9n7
+X-Google-Smtp-Source: APXvYqz5UA9nXKRexavkreEojpVaKJKr3XtAIPfik6sao4Yrvg9F2eEeoxOh5vXHFD9Koxby+bqBjg==
+X-Received: by 2002:a25:be91:: with SMTP id i17mr13180865ybk.452.1581916804218;
+        Sun, 16 Feb 2020 21:20:04 -0800 (PST)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id b195sm6153062ywh.80.2020.02.16.21.20.03
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Feb 2020 21:17:14 -0800 (PST)
-Received: by mail-yw1-f45.google.com with SMTP id b81so7353217ywe.9
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 21:17:13 -0800 (PST)
-X-Received: by 2002:a81:517:: with SMTP id 23mr12175708ywf.104.1581916632927;
- Sun, 16 Feb 2020 21:17:12 -0800 (PST)
+        Sun, 16 Feb 2020 21:20:03 -0800 (PST)
+Received: by mail-yb1-f180.google.com with SMTP id v12so8139806ybi.5
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 21:20:03 -0800 (PST)
+X-Received: by 2002:a25:6906:: with SMTP id e6mr12753364ybc.441.1581916802871;
+ Sun, 16 Feb 2020 21:20:02 -0800 (PST)
 MIME-Version: 1.0
 References: <cover.1581745878.git.martin.varghese@nokia.com>
  <c2c5eb533306bccd487c28fb1538554441ad867a.1581745879.git.martin.varghese@nokia.com>
- <CA+FuTSfHFn=niNFmd0yuHYt39a3P8Sfq7RMSBjqK1iro8EWGaQ@mail.gmail.com> <20200217024351.GA11681@martin-VirtualBox>
-In-Reply-To: <20200217024351.GA11681@martin-VirtualBox>
+ <CA+FuTSfdBm4z4dTT3dHB=Fe7GTwrjJkHRw-5W3cSHbAWa1T_eQ@mail.gmail.com> <20200217024943.GA11700@martin-VirtualBox>
+In-Reply-To: <20200217024943.GA11700@martin-VirtualBox>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 16 Feb 2020 21:16:34 -0800
-X-Gmail-Original-Message-ID: <CA+FuTSeMBFu44266y_JkkxduUcXVcbVctjaFCuFaCnEwS_LwEQ@mail.gmail.com>
-Message-ID: <CA+FuTSeMBFu44266y_JkkxduUcXVcbVctjaFCuFaCnEwS_LwEQ@mail.gmail.com>
+Date:   Sun, 16 Feb 2020 21:19:24 -0800
+X-Gmail-Original-Message-ID: <CA+FuTSd=x3TDKjmtZZv3Hv1L=zMKSoSc4nt3wgcFhvJc-KB+tA@mail.gmail.com>
+Message-ID: <CA+FuTSd=x3TDKjmtZZv3Hv1L=zMKSoSc4nt3wgcFhvJc-KB+tA@mail.gmail.com>
 Subject: Re: [PATCH net-next v7 1/2] net: UDP tunnel encapsulation module for
  tunnelling different protocols like MPLS,IP,NSH etc.
 To:     Martin Varghese <martinvarghesenokia@gmail.com>
@@ -75,54 +75,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > There are also a couple of reverse christmas tree violations.
-> >
-> In Bareudp.c correct?
-
-Right. Like bareudp_udp_encap_recv.
-
-> Wondering if there is any flag in checkpatch to catch them?
-
-It has come up, but I don't believe anything is merged.
-
+> > > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> > > index cec1a54..1bf8065 100644
+> > > --- a/include/net/ipv6.h
+> > > +++ b/include/net/ipv6.h
+> > > @@ -1027,6 +1027,12 @@ struct dst_entry *ip6_dst_lookup_flow(struct net *net, const struct sock *sk, st
+> > >  struct dst_entry *ip6_sk_dst_lookup_flow(struct sock *sk, struct flowi6 *fl6,
+> > >                                          const struct in6_addr *final_dst,
+> > >                                          bool connected);
+> > > +struct dst_entry *ip6_dst_lookup_tunnel(struct sk_buff *skb,
+> > > +                                       struct net_device *dev,
+> > > +                                       struct net *net, struct socket *sock,
+> > > +                                       struct in6_addr *saddr,
+> > > +                                       const struct ip_tunnel_info *info,
+> > > +                                       u8 protocol, bool use_cache);
+> > >  struct dst_entry *ip6_blackhole_route(struct net *net,
+> > >                                       struct dst_entry *orig_dst);
+> > >
+> > > diff --git a/include/net/route.h b/include/net/route.h
+> > > index a9c60fc..81750ae 100644
+> > > --- a/include/net/route.h
+> > > +++ b/include/net/route.h
+> > > @@ -128,6 +128,12 @@ static inline struct rtable *__ip_route_output_key(struct net *net,
+> > >
+> > >  struct rtable *ip_route_output_flow(struct net *, struct flowi4 *flp,
+> > >                                     const struct sock *sk);
 > > > +struct rtable *ip_route_output_tunnel(struct sk_buff *skb,
 > > > +                                     struct net_device *dev,
 > > > +                                     struct net *net, __be32 *saddr,
 > > > +                                     const struct ip_tunnel_info *info,
-> > > +                                     u8 protocol, bool use_cache)
-> > > +{
-> > > +#ifdef CONFIG_DST_CACHE
-> > > +       struct dst_cache *dst_cache;
-> > > +#endif
-> > > +       struct rtable *rt = NULL;
-> > > +       struct flowi4 fl4;
-> > > +       __u8 tos;
+> > > +                                     u8 protocol, bool use_cache);
 > > > +
-> > > +       memset(&fl4, 0, sizeof(fl4));
-> > > +       fl4.flowi4_mark = skb->mark;
-> > > +       fl4.flowi4_proto = protocol;
-> > > +       fl4.daddr = info->key.u.ipv4.dst;
-> > > +       fl4.saddr = info->key.u.ipv4.src;
-> > > +
-> > > +       tos = info->key.tos;
-> > > +       fl4.flowi4_tos = RT_TOS(tos);
-> > > +#ifdef CONFIG_DST_CACHE
-> > > +       dst_cache = (struct dst_cache *)&info->dst_cache;
-> > > +       if (use_cache) {
-> > > +               rt = dst_cache_get_ip4(dst_cache, saddr);
-> > > +               if (rt)
-> > > +                       return rt;
-> > > +       }
-> > > +#endif
+> > >  struct dst_entry *ipv4_blackhole_route(struct net *net,
+> > >                                        struct dst_entry *dst_orig);
+> > >
 > >
-> > This is the same in geneve, but no need to initialize fl4 on a cache
-> > hit. Then can also be restructured to only have a single #ifdef block.
-> Yes , We need not initialize fl4 when cache is used.
-> But i didnt get your point on restructuing to have a single #ifdef block
-> Could you please give more details
+> > Ah, I now see where the difference between net/ipv4/route.c and
+> > net/ipv6/ip6_output.c come from. It follows from existing locations of
+> >  ip6_sk_dst_lookup_flow and ip_route_output_flow.
+> >
+> > Looking for the ipv6 analog of ip_route_output_flow, I see that, e.g.,
+> > ipvlan uses ip6_route_output from net/ipv6/route.c without a NULL sk.
+> > But ping calls ip6_sk_dst_lookup_flow.
+> >
+> > It might be a better fit behind ip6_route_output_flags, but it's
+> > probably moot, really.
+>
+> Actually i considered both the files but i felt this function
+> should naturally sit with ip6_sk_dst_lookup_flow.
+> If you dont have strong objection i would like to keep the
+> function in ip6_output.c
 
-Actually, I was mistaken, missing the third #ifdef block that calls
-dst_cache_set_ip[46]. But the type of info->dst_cache is struct
-dst_cache, so I don't think the explicit cast or additional pointer
-variable (and with that the first #ifdef) is needed. But it's clearly
-not terribly important.
+Yes, sounds good, thanks. The difference stood out to me in an initial
+git show --stat, but on closer reading both choices can be argued for.
