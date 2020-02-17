@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D7461614B8
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B732F1614B7
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728995AbgBQObU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728868AbgBQObU (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 17 Feb 2020 09:31:20 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:35901 "EHLO
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:44519 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728087AbgBQObU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:20 -0500
+        by vger.kernel.org with ESMTP id S1727898AbgBQObT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:19 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B8FFD21EAF;
-        Mon, 17 Feb 2020 09:31:16 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id CACE421F8E;
+        Mon, 17 Feb 2020 09:31:17 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:16 -0500
+  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=0mnpylERM1WwX75Vf
-        E0umnGtMyDQqWVF0IxBZlXIYuk=; b=R/0rGM93I2hJyUWRsUlA2ftkpuJYVhBqM
-        zqxDFMQy7f7Jgzqtc3LOLwr0hy8ttvKi5qE11xIrBaS4IQcIJm1WpqgKZqCK5vo4
-        4VZ0F7IqoINsAC3gYvwbwJoOHVNqy0tcdmZBPYOEq5V5n3XwABzxHPgGEXfkntdM
-        MA1JEI6Y/nbU++i+VtiyeACDis0kMhVQnqMk9OnUb5gbvl2ISGXXz7wgk8ZJ+MIB
-        Z1H4bsHh8pAKRBP6wR65KO4rV/rXgtQ9x59N6wflZUHdNNZCopWuablcRgLHLCFL
-        m0e5bmFZR5zJ0KUrcey5TBBGmO6QcIRuwh/KpPNKnagROie89duIQ==
-X-ME-Sender: <xms:tKNKXn4beac5GRMm5aOammhVCtNUt7A48ztdDP79HniI3iJRj_C2xg>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=Yhd4Dq/ESiPSQABcmMLjt/rMyx0bFsxxq2K+uqY3MT4=; b=1BPwzcPW
+        reIidDGr6CCLkpTyIR1/gaegcFcFKFUDknEGPgX5EFTfPvw84FeEa+QdnzjUf2QA
+        ibnzvzIUQmfCDYLBK3x8uBdkwv6ltvTi2In3vOqeeqBF7bEPyrv+tsybTEXVb8fN
+        HRg2ceU3rbofe3GuMWiNyxX8wyFmP4gj4xoAAV4hJSy8D1yjkwXTNBZZuJT33t6l
+        LDKWNyNvOC1SKf5qWIRDymIU1VTleL0NyssY25XahXnN6rlZG8E4NLcMZkVLmvbA
+        HTwm2qeWpyln9EFoOmTroU3V3H61Ero67mzhSsaTwMTtzhRlr+gUDgmP2wwnfOo0
+        Ur2Mlb8dNKaEtw==
+X-ME-Sender: <xms:taNKXlLaXZKoveWt6TYTMz8q2Vj0kumS_uM7TWlanYF2vz3YvntV9w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdr
-    ohhrgh
-X-ME-Proxy: <xmx:tKNKXhgIc4zwBTOOqmZygSvRQlVIEkrJOdy70v2RAEt398lEFxty_A>
-    <xmx:tKNKXhJr07AiH0_eh7GcBHyODxZXyF3CesGCrNYGVGHaZD2o0YCvJg>
-    <xmx:tKNKXndpfB-U8ClAq3VIdw5stS5Q6K3Z1Q1qX8PmKsJfTQTjeJlL5w>
-    <xmx:tKNKXuBvfYEcJtzqgrAHu6qsCo7pqdnDoEVWxaF5opAmGDvtDbeYOg>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:taNKXjgNQw22F4l8yrBFxkRGhPXOp3gQMlCLdrZbzrYhOv-X-N6pUQ>
+    <xmx:taNKXvIrmGud1zHqphiTB8wJUhNJtSWlf96MFBa_L9ayxwqNOPMK4A>
+    <xmx:taNKXoE03OBLjry6Za4lOfTF-0mB_lea9HrC3RqYIhFmTHNBm_acPQ>
+    <xmx:taNKXo-_VmnPNDDEc44e4sGQpbCL3BA9Sn1L40Vk3cSglcPokQMj8A>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 7B7523060EF2;
-        Mon, 17 Feb 2020 09:31:15 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id ADFC93060EF5;
+        Mon, 17 Feb 2020 09:31:16 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 00/10] mlxsw: Reduce dependency between bridge and router code
-Date:   Mon, 17 Feb 2020 16:29:30 +0200
-Message-Id: <20200217142940.307014-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/10] mlxsw: spectrum_fid: Use 'refcount_t' for FID reference counting
+Date:   Mon, 17 Feb 2020 16:29:31 +0200
+Message-Id: <20200217142940.307014-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200217142940.307014-1-idosch@idosch.org>
+References: <20200217142940.307014-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -58,51 +61,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-This patch set reduces the dependency between the bridge and the router
-code in preparation for RTNL removal from the route insertion path in
-mlxsw.
+'refcount_t' is very useful for catching over/under flows. Convert the
+FID (Filtering Identifier) objects to use it instead of 'unsigned int'
+for their reference count.
 
-The motivation and solution are explained in detail in patch #3. The
-main idea is that we need to stop special-casing the VXLAN devices with
-regards to the reference counting of the FIDs. Otherwise, we can bump
-into the situation described in patch #3, where the routing code calls
-into the bridge code which calls back into the routing code. After
-adding a mutex to protect router data structures to remove RTNL
-dependency, this can result in an AA deadlock.
+A subsequent patch in the series will change the way VXLAN devices hold
+/ release the FID reference, which is why the conversion is made now.
 
-Patches #1 and #2 are preparations. They convert the FIDs to use
-'refcount_t' for reference counting in order to catch over/under flows
-and add extack to the bridge creation function.
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-Patches #3-#5 reduce the dependency between the bridge and the router
-code. First, by having the VXLAN device take a reference on the FID in
-patch #3 and then by removing unnecessary code following the change in
-patch #3.
-
-Patches #6-#10 adjust existing selftests and add new ones to exercise
-the new code paths.
-
-Ido Schimmel (10):
-  mlxsw: spectrum_fid: Use 'refcount_t' for FID reference counting
-  mlxsw: spectrum_switchdev: Propagate extack to bridge creation
-    function
-  mlxsw: spectrum_switchdev: Have VXLAN device take reference on FID
-  mlxsw: spectrum_switchdev: Remove VXLAN checks during FID membership
-  mlxsw: spectrum: Reduce dependency between bridge and router code
-  selftests: mlxsw: Remove deprecated test
-  selftests: mlxsw: extack: Test bridge creation with VXLAN
-  selftests: mlxsw: extack: Test creation of multiple VLAN-aware bridges
-  selftests: mlxsw: vxlan: Adjust test to recent changes
-  selftests: mlxsw: vxlan: Add test for error path
-
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |   4 -
- .../ethernet/mellanox/mlxsw/spectrum_fid.c    |  13 +-
- .../ethernet/mellanox/mlxsw/spectrum_router.c |   4 +-
- .../mellanox/mlxsw/spectrum_switchdev.c       | 186 +++++++++---------
- .../selftests/drivers/net/mlxsw/extack.sh     |  45 ++++-
- .../selftests/drivers/net/mlxsw/vxlan.sh      |  27 +--
- 6 files changed, 147 insertions(+), 132 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+index 8df3cb21baa6..65486a90b526 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+@@ -8,6 +8,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/rhashtable.h>
+ #include <linux/rtnetlink.h>
++#include <linux/refcount.h>
+ 
+ #include "spectrum.h"
+ #include "reg.h"
+@@ -24,7 +25,7 @@ struct mlxsw_sp_fid_core {
+ struct mlxsw_sp_fid {
+ 	struct list_head list;
+ 	struct mlxsw_sp_rif *rif;
+-	unsigned int ref_count;
++	refcount_t ref_count;
+ 	u16 fid_index;
+ 	struct mlxsw_sp_fid_family *fid_family;
+ 	struct rhash_head ht_node;
+@@ -149,7 +150,7 @@ struct mlxsw_sp_fid *mlxsw_sp_fid_lookup_by_index(struct mlxsw_sp *mlxsw_sp,
+ 	fid = rhashtable_lookup_fast(&mlxsw_sp->fid_core->fid_ht, &fid_index,
+ 				     mlxsw_sp_fid_ht_params);
+ 	if (fid)
+-		fid->ref_count++;
++		refcount_inc(&fid->ref_count);
+ 
+ 	return fid;
+ }
+@@ -183,7 +184,7 @@ struct mlxsw_sp_fid *mlxsw_sp_fid_lookup_by_vni(struct mlxsw_sp *mlxsw_sp,
+ 	fid = rhashtable_lookup_fast(&mlxsw_sp->fid_core->vni_ht, &vni,
+ 				     mlxsw_sp_fid_vni_ht_params);
+ 	if (fid)
+-		fid->ref_count++;
++		refcount_inc(&fid->ref_count);
+ 
+ 	return fid;
+ }
+@@ -1030,7 +1031,7 @@ static struct mlxsw_sp_fid *mlxsw_sp_fid_lookup(struct mlxsw_sp *mlxsw_sp,
+ 	list_for_each_entry(fid, &fid_family->fids_list, list) {
+ 		if (!fid->fid_family->ops->compare(fid, arg))
+ 			continue;
+-		fid->ref_count++;
++		refcount_inc(&fid->ref_count);
+ 		return fid;
+ 	}
+ 
+@@ -1075,7 +1076,7 @@ static struct mlxsw_sp_fid *mlxsw_sp_fid_get(struct mlxsw_sp *mlxsw_sp,
+ 		goto err_rhashtable_insert;
+ 
+ 	list_add(&fid->list, &fid_family->fids_list);
+-	fid->ref_count++;
++	refcount_set(&fid->ref_count, 1);
+ 	return fid;
+ 
+ err_rhashtable_insert:
+@@ -1093,7 +1094,7 @@ void mlxsw_sp_fid_put(struct mlxsw_sp_fid *fid)
+ 	struct mlxsw_sp_fid_family *fid_family = fid->fid_family;
+ 	struct mlxsw_sp *mlxsw_sp = fid_family->mlxsw_sp;
+ 
+-	if (--fid->ref_count != 0)
++	if (!refcount_dec_and_test(&fid->ref_count))
+ 		return;
+ 
+ 	list_del(&fid->list);
 -- 
 2.24.1
 
