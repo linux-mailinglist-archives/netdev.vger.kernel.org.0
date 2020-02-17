@@ -2,179 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 552B716161D
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E263D161627
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728972AbgBQPZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 10:25:28 -0500
-Received: from foss.arm.com ([217.140.110.172]:37308 "EHLO foss.arm.com"
+        id S1728202AbgBQP3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 10:29:21 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50082 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727553AbgBQPZ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Feb 2020 10:25:28 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8B69030E;
-        Mon, 17 Feb 2020 07:25:27 -0800 (PST)
-Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com [10.1.196.255])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 41D553F703;
-        Mon, 17 Feb 2020 07:25:24 -0800 (PST)
-Date:   Mon, 17 Feb 2020 15:25:18 +0000
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Pankaj Bansal <pankaj.bansal@nxp.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        Calvin Johnson <calvin.johnson@nxp.com>,
-        "stuyoder@gmail.com" <stuyoder@gmail.com>,
-        "nleeder@codeaurora.org" <nleeder@codeaurora.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        "jon@solid-run.com" <jon@solid-run.com>,
-        Russell King <linux@armlinux.org.uk>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Paul Yang <Paul.Yang@arm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-Message-ID: <20200217152518.GA18376@e121166-lin.cambridge.arm.com>
-References: <DB8PR04MB7164DDF48480956F05886DABEB070@DB8PR04MB7164.eurprd04.prod.outlook.com>
- <12531d6c569c7e14dffe8e288d9f4a0b@kernel.org>
- <CAKv+Gu8uaJBmy5wDgk=uzcmC4vkEyOjW=JRvhpjfsdh-HcOCLg@mail.gmail.com>
- <VI1PR0401MB249622CFA9B213632F1DE955F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
- <7349fa0e6d62a3e0d0e540f2e17646e0@kernel.org>
- <VI1PR0401MB2496373E0C6D1097F22B3026F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
- <20200214161957.GA27513@e121166-lin.cambridge.arm.com>
- <VI1PR0401MB2496800C88A3A2CF912959E6F1150@VI1PR0401MB2496.eurprd04.prod.outlook.com>
- <20200214174949.GA30484@e121166-lin.cambridge.arm.com>
- <VI1PR0401MB2496308C27B7DAA7A5396970F1160@VI1PR0401MB2496.eurprd04.prod.outlook.com>
+        id S1726397AbgBQP3U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Feb 2020 10:29:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=B3MQFO6OCVy3CaonUG+ggsdLMmIu76Cs+DwnBQUzbNE=; b=UcrU4Z6N0sY6vQwq1LiOEY0WJQ
+        UZdGGqBcYl6pDrIO0E2I4R379eX8YplMipjv53nsB9QPtcCY6ok5UMDGA926zEictJkl/onyFRicB
+        FmDJXsNtk9SZaIxV9Hn6UVRtjv27BMN/jOX2iEk8ozRW1CwYQa1tEDXfH7eu6FHJVoe0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j3iKe-0005L3-6K; Mon, 17 Feb 2020 16:29:12 +0100
+Date:   Mon, 17 Feb 2020 16:29:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     shawnguo@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH devicetree 3/4] arm64: dts: fsl: ls1028a: add node for
+ Felix switch
+Message-ID: <20200217152912.GE31084@lunn.ch>
+References: <20200217144414.409-1-olteanv@gmail.com>
+ <20200217144414.409-4-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR0401MB2496308C27B7DAA7A5396970F1160@VI1PR0401MB2496.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200217144414.409-4-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 12:35:12PM +0000, Pankaj Bansal wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > Sent: Friday, February 14, 2020 11:20 PM
-> > To: Pankaj Bansal <pankaj.bansal@nxp.com>
-> > Cc: Marc Zyngier <maz@kernel.org>; Ard Biesheuvel
-> > <ard.biesheuvel@linaro.org>; Makarand Pawagi <makarand.pawagi@nxp.com>;
-> > Calvin Johnson <calvin.johnson@nxp.com>; stuyoder@gmail.com;
-> > nleeder@codeaurora.org; Ioana Ciornei <ioana.ciornei@nxp.com>; Cristi
-> > Sovaiala <cristian.sovaiala@nxp.com>; Hanjun Guo <guohanjun@huawei.com>;
-> > Will Deacon <will@kernel.org>; jon@solid-run.com; Russell King
-> > <linux@armlinux.org.uk>; ACPI Devel Maling List <linux-acpi@vger.kernel.org>;
-> > Len Brown <lenb@kernel.org>; Jason Cooper <jason@lakedaemon.net>; Andy
-> > Wang <Andy.Wang@arm.com>; Varun Sethi <V.Sethi@nxp.com>; Thomas
-> > Gleixner <tglx@linutronix.de>; linux-arm-kernel <linux-arm-
-> > kernel@lists.infradead.org>; Laurentiu Tudor <laurentiu.tudor@nxp.com>; Paul
-> > Yang <Paul.Yang@arm.com>; netdev@vger.kernel.org; Rafael J. Wysocki
-> > <rjw@rjwysocki.net>; Linux Kernel Mailing List <linux-kernel@vger.kernel.org>;
-> > Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> > Sudeep Holla <sudeep.holla@arm.com>; Robin Murphy
-> > <robin.murphy@arm.com>
-> > Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-> > 
-> > On Fri, Feb 14, 2020 at 04:35:10PM +0000, Pankaj Bansal wrote:
-> > 
-> > [...]
-> > 
-> > > > -----Original Message-----
-> > > > From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > > > Sent: Friday, February 14, 2020 9:50 PM
-> > > > To: Pankaj Bansal <pankaj.bansal@nxp.com>
-> > > > Cc: Marc Zyngier <maz@kernel.org>; Ard Biesheuvel
-> > > > <ard.biesheuvel@linaro.org>; Makarand Pawagi
-> > <makarand.pawagi@nxp.com>;
-> > > > Calvin Johnson <calvin.johnson@nxp.com>; stuyoder@gmail.com;
-> > > > nleeder@codeaurora.org; Ioana Ciornei <ioana.ciornei@nxp.com>; Cristi
-> > > > Sovaiala <cristian.sovaiala@nxp.com>; Hanjun Guo
-> > <guohanjun@huawei.com>;
-> > > > Will Deacon <will@kernel.org>; jon@solid-run.com; Russell King
-> > > > <linux@armlinux.org.uk>; ACPI Devel Maling List <linux-
-> > acpi@vger.kernel.org>;
-> > > > Len Brown <lenb@kernel.org>; Jason Cooper <jason@lakedaemon.net>;
-> > Andy
-> > > > Wang <Andy.Wang@arm.com>; Varun Sethi <V.Sethi@nxp.com>; Thomas
-> > > > Gleixner <tglx@linutronix.de>; linux-arm-kernel <linux-arm-
-> > > > kernel@lists.infradead.org>; Laurentiu Tudor <laurentiu.tudor@nxp.com>;
-> > Paul
-> > > > Yang <Paul.Yang@arm.com>; netdev@vger.kernel.org; Rafael J. Wysocki
-> > > > <rjw@rjwysocki.net>; Linux Kernel Mailing List <linux-
-> > kernel@vger.kernel.org>;
-> > > > Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> > > > Sudeep Holla <sudeep.holla@arm.com>; Robin Murphy
-> > > > <robin.murphy@arm.com>
-> > > > Subject: Re: [EXT] Re: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
-> > Side note: would you mind removing the email headers (as above) in your
-> > replies please ?
+Hi Vladimir
 
-Read the question above please.
+> +					/* Internal port with DSA tagging */
+> +					mscc_felix_port4: port@4 {
+> +						reg = <4>;
+> +						phy-mode = "gmii";
 
-[...]
+Is it really using gmii? Often in SoC connections use something else,
+and phy-mode = "internal" is more appropriate.
 
-> > > As stated above, in Linux MC is a bus (just like PCI bus, AMBA bus etc)
-> > > There can be multiple devices attached to this bus. Moreover, we can
-> > dynamically create/destroy these devices.
-> > > Now, we want to represent this BUS (not individual devices connected to bus)
-> > in IORT table.
-> > > The only possible way right now we see is that we describe it as Named
-> > components having a pool of ID mappings.
-> > > As and when devices are created and attached to bus, we sift through this pool
-> > to correctly determine the output ID for the device.
-> > > Now the input ID that we provide, can come from device itself.
-> > > Then we can use the Platform MSI framework for MC bus devices.
-> > 
-> > So are you asking me if that's OK ? Or there is something you can't
-> > describe with IORT ?
-> 
-> I am asking if that would be acceptable?
-> i.e. we represent MC bus as Named component is IORT table with a pool of IDs (without single ID mapping flag)
-> and then we use the Platform MSI framework for all children devices of MC bus.
-> Note that it would require the Platform MSI layer to correctly pass an input id for a platform device to IORT layer.
+> +						ethernet = <&enetc_port2>;
+> +
+> +						fixed-link {
+> +							speed = <2500>;
+> +							full-duplex;
+> +						};
 
-How is this solved in DT ? You don't seem to need any DT binding on top
-of the msi-parent property, which is equivalent to IORT single mappings
-AFAICS so I would like to understand the whole DT flow (so that I
-understand how this FSL bus works) before commenting any further.
+gmii and 2500 also don't really go together.
 
-> And IORT layer ought to retrieve the output id based on single ID mapping flag as well as input id.
-> 
-> > 
-> > Side note: can you explain to me please how the MSI allocation flow
-> > and kernel data structures/drivers are modeled in DT ? I had a quick
-> > look at:
-> > 
-> > drivers/irqchip/irq-gic-v3-its-fsl-mc-msi.c
-> > 
-> > and to start with, does that code imply that we create a
-> > DOMAIN_BUS_FSL_MC_MSI on ALL DT systems with an ITS device node ?
-> 
-> Yes. It's being done for all DT systems having ITS node.
-
-This does not seem correct to me, I will let Marc comment on
-the matter.
-
-> The domain creation is handled in drivers/bus/fsl-mc/fsl-mc-msi.c
-
-Thanks,
-Lorenzo
+     Andrew
