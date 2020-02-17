@@ -2,139 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9957B160852
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:49:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCE1160853
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:49:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgBQCtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 21:49:45 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36993 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgBQCtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:49:45 -0500
-Received: by mail-wr1-f68.google.com with SMTP id w15so17799203wru.4
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 18:49:43 -0800 (PST)
+        id S1726697AbgBQCtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 21:49:49 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37964 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgBQCts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:49:48 -0500
+Received: by mail-pg1-f193.google.com with SMTP id d6so8262106pgn.5
+        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 18:49:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QbCKuQ3HWUk2tjBL4ms2S9fkU78qMXUWOgnMMNKtfqA=;
-        b=BC8iPXbUVUjLotfxMGgI0rzf15pX7EZZZIpYktiRoItFNovqCq5y1XMx2ouZIh8zSU
-         WcIhCsB9TSgsoRRTF7kE8iH5s9Lfibp9pfWche8yXhP8SGS6hevjysl4SlDT0Hx0wNO5
-         /A0/CTgM0/0/eRn3zfTroGwPglBnBfQqe3NuqCcHQlW5eL0ogyHw/5edc6bHamKk20d7
-         Q6Z2eV/pkdUmBrjXkfXjpaEIGPlWqfd94b91dK1GkF7FgZrowdjSKWhH+/nuyohKdcpZ
-         MP5azqKnXM2BAa0F5/v8/tUbwngsYihHWRoGV+j+aQ+LLq2XW10pbxnGoIsu1kKsrlzi
-         YSdw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ywJwOOxzyEYrZwSjpCFVqCUvNC6Gsi/zYbh8rasTSZ4=;
+        b=abUGd6GggKVwz2RVaXo17AHvz9uy7QtWVqx1bPlP6L7ZVu+g22vghxLTOsppX26AMu
+         qn4yfTVpm1Q2CENUwQPWOfspJ1gyGQuBRi3xrZPiaAuoIhodM/Z3c1H5/7PTcIEoYmHH
+         SYPEsFL7ajR4hutQmDOdcoOscXhbBUtqmTgX9V6y+EZl1ESEFVSK+D0k5rJdnnGO5del
+         08AL8wtxWMnXg3c8D8KxnnPK6P0bfUDvRVjC97PEgAY2RYxDJ3wRqDO9nar1qfQJR3hJ
+         BpDIRgLBfJvEEyeyNlZiHm5nNdjxS3mcN+KjP8ByEW3O+ZE+z7/akTmoMfkKFHdGK3SD
+         kBCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QbCKuQ3HWUk2tjBL4ms2S9fkU78qMXUWOgnMMNKtfqA=;
-        b=c+QIvIvb6FmoUYYRypexF26rnLYhERYJbbQUu905aWyQhfJA4rkYvxt+Rj1fWGHQ17
-         eLLsADTpzr/pZHauQhwbzOl7FAr//GwzvYpBgla5Ut4lV/zOMvvwwntFmgFNSJeFr69o
-         pIfb/CDBeQXE3yYK8ql8MANv9KzFjB05NsT2ggzbzg9L8r24H2EjevQkvPjokOrFVrXl
-         jM6LJQzp5+IpKBVDm1nrmiifwyQIDvT8lcxbkOasTiL63UgOL1nyVjglHThxHDz2MxrI
-         HpqcfTCh6U67LnZzFYMVUBUJ2hsqgzv5cHd3kLrR1ZJ856hq0e1Tiz7Yg2HfE4uu20zC
-         WlRQ==
-X-Gm-Message-State: APjAAAXq2iGYugP5lHZ1Xkt8a6ydbjU+37QuT6FQleItH1fhtiNaRGEy
-        SrOtbEWkyZoPtpTBaXGmxh5B0WYxZOdUveyxJOiC2A==
-X-Google-Smtp-Source: APXvYqyb4CGujtE+7iOmYlkYkOUSWA+lEPcMiT5hg9For2xP7aoDRWM21l5+HQgr9UrviS1J0HU0+Qt3LFYTA2oWk5U=
-X-Received: by 2002:a5d:6545:: with SMTP id z5mr18489870wrv.3.1581907782489;
- Sun, 16 Feb 2020 18:49:42 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ywJwOOxzyEYrZwSjpCFVqCUvNC6Gsi/zYbh8rasTSZ4=;
+        b=F8BRce3oggIoWqgoVRUdxp6S9Mei+QS8rByeuXzlrFS/8y8iTunZ3fIRIH7q5NP+iD
+         GQ8KZLwM2sbp+L6Hlc4A816Mkjx1WSTjU5hhDAJLm8tbp2lGopDPjtY0mQ3w4GkAgRq/
+         R0DS28Ap2I5EQrPxtS2tHiu9TyeQ+4BLUFOobr4c8h938ecqO8tDai3Mj2Xs1WONsG5Z
+         4Y7OWgM+w0DnsBynS2Rj5Ycshi6q+N9lwDXp4+gDKfjXzWxvqmT7q9MZqFGkAxOc25rw
+         78iWZHMgsO4msQD5wK+NdrJ3Ljz3b5Gt7Q+hDJTs9XUJxcxsRC6sr3vsQfSrlweznccK
+         X1Bg==
+X-Gm-Message-State: APjAAAWz6z9tdspQQs6EDEindQoW/7+c/5ciANtUaqUgAMR5lvsq8RgX
+        rC/F7ArUP9xJd8pTEPA7Guc=
+X-Google-Smtp-Source: APXvYqz+mpa33Bcw1s/9blStN2CLS9OeHHqXu3oxBi1Iha7B+Q0N7aWC8ZPYN88S6ScN4LnI24Ywcw==
+X-Received: by 2002:a63:d441:: with SMTP id i1mr16256387pgj.426.1581907787521;
+        Sun, 16 Feb 2020 18:49:47 -0800 (PST)
+Received: from martin-VirtualBox ([137.97.166.11])
+        by smtp.gmail.com with ESMTPSA id r6sm14415228pfh.91.2020.02.16.18.49.46
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 16 Feb 2020 18:49:47 -0800 (PST)
+Date:   Mon, 17 Feb 2020 08:19:43 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next v7 1/2] net: UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+Message-ID: <20200217024943.GA11700@martin-VirtualBox>
+References: <cover.1581745878.git.martin.varghese@nokia.com>
+ <c2c5eb533306bccd487c28fb1538554441ad867a.1581745879.git.martin.varghese@nokia.com>
+ <CA+FuTSfdBm4z4dTT3dHB=Fe7GTwrjJkHRw-5W3cSHbAWa1T_eQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
- <20200128025958.43490-3-arjunroy.kdev@gmail.com> <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
-In-Reply-To: <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Sun, 16 Feb 2020 18:49:31 -0800
-Message-ID: <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
-Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
- vm_insert_pages() for tcp rcv zerocopy.
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSfdBm4z4dTT3dHB=Fe7GTwrjJkHRw-5W3cSHbAWa1T_eQ@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 6:56 PM Andrew Morton <akpm@linux-foundation.org> w=
-rote:
->
-> On Mon, 27 Jan 2020 18:59:58 -0800 Arjun Roy <arjunroy.kdev@gmail.com> wr=
-ote:
->
-> > Use vm_insert_pages() for tcp receive zerocopy. Spin lock cycles
-> > (as reported by perf) drop from a couple of percentage points
-> > to a fraction of a percent. This results in a roughly 6% increase in
-> > efficiency, measured roughly as zerocopy receive count divided by CPU
-> > utilization.
+On Sun, Feb 16, 2020 at 12:26:18PM -0600, Willem de Bruijn wrote:
+> On Sat, Feb 15, 2020 at 12:20 AM Martin Varghese
+> <martinvarghesenokia@gmail.com> wrote:
 > >
-> > The intention of this patch-set is to reduce atomic ops for
-> > tcp zerocopy receives, which normally hits the same spinlock multiple
-> > times consecutively.
->
-> For some reason the patch causes this:
->
-> In file included from ./arch/x86/include/asm/atomic.h:5:0,
->                  from ./include/linux/atomic.h:7,
->                  from ./include/linux/crypto.h:15,
->                  from ./include/crypto/hash.h:11,
->                  from net/ipv4/tcp.c:246:
-> net/ipv4/tcp.c: In function =E2=80=98do_tcp_getsockopt.isra.29=E2=80=99:
-> ./include/linux/compiler.h:225:31: warning: =E2=80=98tp=E2=80=99 may be u=
-sed uninitialized in this function [-Wmaybe-uninitialized]
->   case 4: *(volatile __u32 *)p =3D *(__u32 *)res; break;
->           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
-> net/ipv4/tcp.c:1779:19: note: =E2=80=98tp=E2=80=99 was declared here
->   struct tcp_sock *tp;
->                    ^~
->
-> It's a false positive.  gcc-7.2.0
->
-> : out:
-> :        up_read(&current->mm->mmap_sem);
-> :        if (length) {
-> :                WRITE_ONCE(tp->copied_seq, seq);
->
-> but `length' is zero here.
->
-> This suppresses it:
->
-> --- a/net/ipv4/tcp.c~net-zerocopy-use-vm_insert_pages-for-tcp-rcv-zerocop=
-y-fix
-> +++ a/net/ipv4/tcp.c
-> @@ -1788,6 +1788,8 @@ static int tcp_zerocopy_receive(struct s
->
->         sock_rps_record_flow(sk);
->
-> +       tp =3D tcp_sk(sk);
-> +
->         down_read(&current->mm->mmap_sem);
->
->         ret =3D -EINVAL;
-> @@ -1796,7 +1798,6 @@ static int tcp_zerocopy_receive(struct s
->                 goto out;
->         zc->length =3D min_t(unsigned long, zc->length, vma->vm_end - add=
-ress);
->
-> -       tp =3D tcp_sk(sk);
->         seq =3D tp->copied_seq;
->         inq =3D tcp_inq(sk);
->         zc->length =3D min_t(u32, zc->length, inq);
->
-> and I guess it's zero-cost.
->
->
-> Anyway, I'll sit on this lot for a while, hoping for a davem ack?
+> > From: Martin Varghese <martin.varghese@nokia.com>
+> >
+> > The Bareudp tunnel module provides a generic L3 encapsulation
+> > tunnelling module for tunnelling different protocols like MPLS,
+> > IP,NSH etc inside a UDP tunnel.
+> >
+> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> 
+> > +struct net_device *bareudp_dev_create(struct net *net, const char *name,
+> > +                                     u8 name_assign_type,
+> > +                                     struct bareudp_conf *conf)
+> > +{
+> > +       struct nlattr *tb[IFLA_MAX + 1];
+> > +       struct net_device *dev;
+> > +       LIST_HEAD(list_kill);
+> > +       int err;
+> > +
+> > +       memset(tb, 0, sizeof(tb));
+> > +       dev = rtnl_create_link(net, name, name_assign_type,
+> > +                              &bareudp_link_ops, tb, NULL);
+> > +       if (IS_ERR(dev))
+> > +               return dev;
+> > +
+> > +       err = bareudp_configure(net, dev, conf);
+> > +       if (err) {
+> > +               free_netdev(dev);
+> > +               return ERR_PTR(err);
+> > +       }
+> > +       err = dev_set_mtu(dev, IP_MAX_MTU);
+> 
+> does this not exceed dev->max_mtu?
+> 
+Noted.Must consider BAREUDP Overhead.
+> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> > index cec1a54..1bf8065 100644
+> > --- a/include/net/ipv6.h
+> > +++ b/include/net/ipv6.h
+> > @@ -1027,6 +1027,12 @@ struct dst_entry *ip6_dst_lookup_flow(struct net *net, const struct sock *sk, st
+> >  struct dst_entry *ip6_sk_dst_lookup_flow(struct sock *sk, struct flowi6 *fl6,
+> >                                          const struct in6_addr *final_dst,
+> >                                          bool connected);
+> > +struct dst_entry *ip6_dst_lookup_tunnel(struct sk_buff *skb,
+> > +                                       struct net_device *dev,
+> > +                                       struct net *net, struct socket *sock,
+> > +                                       struct in6_addr *saddr,
+> > +                                       const struct ip_tunnel_info *info,
+> > +                                       u8 protocol, bool use_cache);
+> >  struct dst_entry *ip6_blackhole_route(struct net *net,
+> >                                       struct dst_entry *orig_dst);
+> >
+> > diff --git a/include/net/route.h b/include/net/route.h
+> > index a9c60fc..81750ae 100644
+> > --- a/include/net/route.h
+> > +++ b/include/net/route.h
+> > @@ -128,6 +128,12 @@ static inline struct rtable *__ip_route_output_key(struct net *net,
+> >
+> >  struct rtable *ip_route_output_flow(struct net *, struct flowi4 *flp,
+> >                                     const struct sock *sk);
+> > +struct rtable *ip_route_output_tunnel(struct sk_buff *skb,
+> > +                                     struct net_device *dev,
+> > +                                     struct net *net, __be32 *saddr,
+> > +                                     const struct ip_tunnel_info *info,
+> > +                                     u8 protocol, bool use_cache);
+> > +
+> >  struct dst_entry *ipv4_blackhole_route(struct net *net,
+> >                                        struct dst_entry *dst_orig);
+> >
+> 
+> Ah, I now see where the difference between net/ipv4/route.c and
+> net/ipv6/ip6_output.c come from. It follows from existing locations of
+>  ip6_sk_dst_lookup_flow and ip_route_output_flow.
+> 
+> Looking for the ipv6 analog of ip_route_output_flow, I see that, e.g.,
+> ipvlan uses ip6_route_output from net/ipv6/route.c without a NULL sk.
+> But ping calls ip6_sk_dst_lookup_flow.
+> 
+> It might be a better fit behind ip6_route_output_flags, but it's
+> probably moot, really.
 
-Actually, speaking of the ack on the networking side:
-
-I guess this patch set is a bit weird since it requires some
-non-trivial coordination between mm and net-next? Not sure what the
-normal approach is in this case.
-
--Arjun
+Actually i considered both the files but i felt this function 
+should naturally sit with ip6_sk_dst_lookup_flow.
+If you dont have strong objection i would like to keep the
+function in ip6_output.c
