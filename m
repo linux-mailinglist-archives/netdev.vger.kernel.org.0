@@ -2,113 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C721615E8
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:15:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A321615FB
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:19:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728430AbgBQPPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 10:15:50 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:43576 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726833AbgBQPPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 10:15:50 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01HFFTk5125091;
-        Mon, 17 Feb 2020 09:15:29 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1581952529;
-        bh=sesL32PDsZi01y0X5NncQMWx/LULUnsHSmLX5Wya1Xc=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=gCgf3hT+IcPMAv4XKF0sDStZbR0mz80E4QENsSIj7d/a/S0T9abzOcR9XKl/l4VRP
-         2SmDJfX6EVy8ENek08jsvgB0YRJuZdn2JrQ2R1I74ByocsVYcggHmzoqhPB3jhe/ry
-         f8Pk6FCS1OW8+2L6kaPAZzzqZsr6mp6T8TUrhg6o=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01HFFTfv119247
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 17 Feb 2020 09:15:29 -0600
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 17
- Feb 2020 09:15:28 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 17 Feb 2020 09:15:28 -0600
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01HFFSIB067034;
-        Mon, 17 Feb 2020 09:15:28 -0600
-Subject: Re: [PATCH v2 2/3] can: m_can: m_can_platform: Add support for
- enabling transceiver
-To:     Faiz Abbas <faiz_abbas@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-can@vger.kernel.org>
-CC:     <broonie@kernel.org>, <lgirdwood@gmail.com>,
-        <catalin.marinas@arm.com>, <mark.rutland@arm.com>,
-        <robh+dt@kernel.org>, <mkl@pengutronix.de>, <wg@grandegger.com>,
-        <sriram.dash@samsung.com>
-References: <20200217142836.23702-1-faiz_abbas@ti.com>
- <20200217142836.23702-3-faiz_abbas@ti.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <250f905a-33c3-dd17-15c9-e282299dd742@ti.com>
-Date:   Mon, 17 Feb 2020 09:10:47 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728692AbgBQPTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 10:19:22 -0500
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:38594 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727533AbgBQPTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 10:19:22 -0500
+Received: by mail-qv1-f68.google.com with SMTP id g6so7728723qvy.5
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 07:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9YM0odjGl8U3GcBGpw5GZV0Acwp28LkTIz+4MS3NiOI=;
+        b=REhI8W3pkPtEn4gDLUJNQzzFMWgYM2fAO/VezaDubVC8li8vhFgRm9Q6mA75CzMCdm
+         D7xlSTzzSLCimAvMcyu6Cr2hrb3q0sWvfvMxNRO64ur6i+H7LjL4J9rP5kK0+LFkkKvr
+         u1OWkISE6g1kmB6MX0Rz/wqsYO5Q/O+9q6q10BjTbtfvFVz6qzUm6X6n1OWp3bRJyena
+         ma5eTLteiP0XapelHUjn0DBwtDBL2RHjX/G7nWKz/NYuqzrqm6zbWD75bGFuHrnh7RUo
+         bQGpDDhZABCedR9l0T8RK31tLWN3Gtfw6xLetq0AldEe0r954q1pd/iCmpP0U+t0XewC
+         A4NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9YM0odjGl8U3GcBGpw5GZV0Acwp28LkTIz+4MS3NiOI=;
+        b=NaneG3BYWir7mqRqGb7h+eTUF3P+COzRKtb+XR7l0bwpPJOh6stLLat/h9FKbZTJRC
+         2Dhk11y/Ff+hlYxSCi0p/Ado66qTaQMCoV+Gh/0VMzueLmMSWoyBE33u8Px9VNWpC+tE
+         PWRZZb3yPe/Rad2aJxCjLTmR7QubOOt3A7dXrjaSh9SwRDUXQUm6mKwTWdeajNT4Od50
+         0rQ2YmFDQx2ObbVWZdx2Pax0VzKmIQ0OSQA72zYqGFvAdiHQdW2j/lYAstvC1CZJMZS5
+         nXVcWT/Y0HJROdFx/LtUS7VVIaBMXCcIo8U+mxvDrSPcIiPaJNDW/tKCYj31Q9zX+BHC
+         UQHg==
+X-Gm-Message-State: APjAAAUoouvxA4Jy2KX8inJ9Y84e+Cgy4NXASLN9WHD2EIAiJ14TQ8t3
+        YCGGeZJUgGj/Ry1lEXlTFJvJNtUtVqnMLpRfar2lSA==
+X-Google-Smtp-Source: APXvYqwE7/00LaJ4qib/XNoqXuTzN5OtJffyQDf4Cp286Ut3VWkae83YdClEOKdxaj9OT2syBPcME7FcVAplbjUtQaU=
+X-Received: by 2002:a0c:ee91:: with SMTP id u17mr12489562qvr.22.1581952760881;
+ Mon, 17 Feb 2020 07:19:20 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200217142836.23702-3-faiz_abbas@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
+ <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+ <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+ <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
+ <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com>
+ <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com> <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+In-Reply-To: <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 17 Feb 2020 16:19:09 +0100
+Message-ID: <CACT4Y+a8N7_n4t_vxezKJVkd1+gDHaMzpeG18MuDE04+r3341A@mail.gmail.com>
+Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
+ net: WireGuard secure network tunnel]
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Faiz
-
-On 2/17/20 8:28 AM, Faiz Abbas wrote:
-> CAN transceivers on some boards have a standby line which can be
-> toggled to enable/disable the transceiver. Model this as an optional
-> fixed xceiver regulator.
+On Mon, Feb 17, 2020 at 12:44 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-> Acked-by: Sriram Dash <sriram.dash@samsung.com>
-> ---
->   drivers/net/can/m_can/m_can_platform.c | 6 ++++++
->   1 file changed, 6 insertions(+)
+> Observation:
 >
-> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-> index 38ea5e600fb8..719468fab507 100644
-> --- a/drivers/net/can/m_can/m_can_platform.c
-> +++ b/drivers/net/can/m_can/m_can_platform.c
-> @@ -6,6 +6,7 @@
->   // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
->   
->   #include <linux/platform_device.h>
-> +#include <linux/regulator/consumer.h>
->   
->   #include "m_can.h"
->   
-> @@ -57,6 +58,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
->   {
->   	struct m_can_classdev *mcan_class;
->   	struct m_can_plat_priv *priv;
-> +	struct regulator *reg_xceiver;
->   	struct resource *res;
->   	void __iomem *addr;
->   	void __iomem *mram_addr;
-> @@ -111,6 +113,10 @@ static int m_can_plat_probe(struct platform_device *pdev)
->   
->   	m_can_init_ram(mcan_class);
->   
-> +	reg_xceiver = devm_regulator_get_optional(&pdev->dev, "xceiver");
-> +	if (PTR_ERR(reg_xceiver) == -EPROBE_DEFER)
-> +		return -EPROBE_DEFER;
-> +
+> It seems to be starting to synthesize packets sent to the wireguard
+> socket. These aren't the proper handshake packets generated internally
+> by that triangle commit, but rather ones that syzkaller creates
+> itself. That's why we have coverage on wg_receive, which otherwise
+> wouldn't be called from a userspace process, since syzbot is sending
+> its own packets to that function.
+>
+> However, the packets it generates aren't getting very far, failing all
+> of the tests in validate_header_len. None of those checks are at all
+> cryptographic, which means it should be able to hit those eventually.
+> Anything we should be doing to help it out? After it gets past that
+> check, it'll wind up in the handshake queue or the data queue, and
+> then (in theory) it should be rejected on a cryptographic basis. But
+> maybe syzbot will figure out how to crash it instead :-P.
 
-Where is this regulator enabled?
+Looking into this.
 
-Shouldn't the regulator be managed by runtime PM as well?
+Found the program that gives wg_receive coverage:
 
-Dan
+r0 = openat$tun(0xffffffffffffff9c,
+&(0x7f0000000080)='/dev/net/tun\x00', 0x88002, 0x0)
+ioctl$TUNSETIFF(r0, 0x400454ca, &(0x7f00000000c0)={'syzkaller1\x00',
+0x420000015001})
+r1 = socket$netlink(0x10, 0x3, 0x0)
+ioctl$sock_inet_SIOCSIFADDR(r1, 0x8914,
+&(0x7f0000000140)={'syzkaller1\x00', {0x7, 0x0, @empty}})
+write$tun(r0, &(0x7f00000002c0)={@void, @val, @ipv4=@udp={{0x5, 0x4,
+0x0, 0x0, 0x1c, 0x0, 0x0, 0x0, 0x11, 0x0, @remote, @broadcast}, {0x0,
+0x4e21, 0x8}}}, 0x26)
 
+Checked that doing SIOCSIFADDR is also required, otherwise the packet
+does not reach wg_receive.
