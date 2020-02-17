@@ -2,70 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA519160FD1
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 11:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED9A160FDF
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 11:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729189AbgBQKUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 05:20:20 -0500
-Received: from helcar.hmeau.com ([216.24.177.18]:50508 "EHLO deadmen.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726397AbgBQKUT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Feb 2020 05:20:19 -0500
-Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
-        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
-        id 1j3dVg-0005di-3a; Mon, 17 Feb 2020 18:20:16 +0800
-Received: from herbert by gondobar with local (Exim 4.89)
-        (envelope-from <herbert@gondor.apana.org.au>)
-        id 1j3dVd-0003kW-1p; Mon, 17 Feb 2020 18:20:13 +0800
-Date:   Mon, 17 Feb 2020 18:20:13 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     eric.dumazet@gmail.com, cai@lca.pw, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v3] skbuff: fix a data race in skb_queue_len()
-Message-ID: <20200217102012.si4t2x75mo52fnlh@gondor.apana.org.au>
-References: <20200206163844.GA432041@zx2c4.com>
- <20200217032458.kwatitz3pvxeb25w@gondor.apana.org.au>
- <CAHmME9q+YYia0H3upW7ikwSii_XegNNSBkVxP-1mxaHyEVmBxA@mail.gmail.com>
+        id S1729186AbgBQK0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 05:26:01 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41108 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729100AbgBQK0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 05:26:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581935161;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6epTaHjRmLWv9XYoFLjbZ/bw1j+jKl1wWI0BYO6CRzc=;
+        b=a1woZLl75FH/yGy5LZducVvoN02PNESSC0e9QV/feauxXuyVRSOQHgHFD6DTmSddHpJjIJ
+        ir7GNHNaqfYwcl6qdzIOqISqMOzhGaqt2k81izmHR5BU4pVYBT0qhevfLio6RvgykuzCjG
+        3FYCQuoaex9g8nGEPgbdkc8zWLhjZMA=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-oWI1TyjhPre5XXGxt9AcNg-1; Mon, 17 Feb 2020 05:25:56 -0500
+X-MC-Unique: oWI1TyjhPre5XXGxt9AcNg-1
+Received: by mail-wr1-f72.google.com with SMTP id l1so8763712wrt.4
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 02:25:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6epTaHjRmLWv9XYoFLjbZ/bw1j+jKl1wWI0BYO6CRzc=;
+        b=qg5clSyRyj7mKC/ZjfCh78iG6QOogim95cVT0S+0Ggv5WqT0sgVN29erucU5STl127
+         8DoxGNFjcuuTxKUc47OoEFECbNr3xJn75a1lXmMq4adr+dBIfUaAVgRL+an8TCIKKutt
+         8Ry1bdUl8RhJToC7T4EJSpOan4mwDz7IXbVolyhwnCY5XoDx0cOvdkoJETm8U7d81eOs
+         n99mVbwpbSISN7GjSaYEPO0ylzrKmMxEHLyBrXgNk6MjI0im5yazMk4wtL7xjzxr8eg0
+         MGDw8WeFnfh0uVTbMGxJ432AHDOPsmKn5z29ms48L+ua0Vu4zIhMeioTOdhL4aZlYox8
+         klYg==
+X-Gm-Message-State: APjAAAUxLKvKJQL/Luf9UFrevhRkaiBUiZkMSHXGIn90mFshE9UNQBYN
+        um/ZQCmJDykpwlhNH8ns/Io0kK8QOcZnJDwjTldr0ndEUNjmY8fyAYjV4ZG+7XUNPj49dLrx+9/
+        tUTFxnEKf1z5GBlzX
+X-Received: by 2002:a7b:cae9:: with SMTP id t9mr21178392wml.186.1581935155402;
+        Mon, 17 Feb 2020 02:25:55 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwCYPBAF1g4WsZRJGvZza5x+Y0tUMSEUKPx9O2i+pTrtH/WoxvArQ5Zggr8eqSx7An2D6AMOQ==
+X-Received: by 2002:a7b:cae9:: with SMTP id t9mr21178372wml.186.1581935155149;
+        Mon, 17 Feb 2020 02:25:55 -0800 (PST)
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id f127sm51473wma.4.2020.02.17.02.25.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2020 02:25:53 -0800 (PST)
+Date:   Mon, 17 Feb 2020 11:25:50 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net,
+        David Ahern <dsahern@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>
+Subject: Re: [PATCH net-next 4/5] net: mvneta: introduce xdp counters to
+ ethtool
+Message-ID: <20200217102550.GB3080@localhost.localdomain>
+References: <cover.1581886691.git.lorenzo@kernel.org>
+ <882d9f03a8542cceec7c7b8e6d083419d84eaf7a.1581886691.git.lorenzo@kernel.org>
+ <20200217111718.2c9ab08a@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="MfFXiAuoTsnnDAfZ"
 Content-Disposition: inline
-In-Reply-To: <CAHmME9q+YYia0H3upW7ikwSii_XegNNSBkVxP-1mxaHyEVmBxA@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20200217111718.2c9ab08a@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 08:39:45AM +0100, Jason A. Donenfeld wrote:
->
-> Not necessarily a big fan of this either, but just for the record here
-> in case it helps, while you might complain about instruction size
-> blowing up a bit, cycle-wise these wind up being about the same
-> anyway. On x86, one instruction != one cycle.
 
-I don't care about that.  My problem is with the mindless patches
-that started this thread.  Look at the patch:
+--MfFXiAuoTsnnDAfZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-commit 86b18aaa2b5b5bb48e609cd591b3d2d0fdbe0442
-Author: Qian Cai <cai@lca.pw>
-Date:   Tue Feb 4 13:40:29 2020 -0500
+> On Sun, 16 Feb 2020 22:07:32 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > @@ -2033,6 +2050,7 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, s=
+truct mvneta_tx_queue *txq,
+> >  	u64_stats_update_begin(&stats->syncp);
+> >  	stats->es.ps.tx_bytes +=3D xdpf->len;
+> >  	stats->es.ps.tx_packets++;
+> > +	stats->es.ps.xdp_tx++;
+> >  	u64_stats_update_end(&stats->syncp);
+>=20
+> I find it confusing that this ethtool stats is named "xdp_tx".
+> Because you use it as an "xmit" counter and not for the action XDP_TX.
+>=20
+> Both XDP_TX and XDP_REDIRECT out this device will increment this
+> "xdp_tx" counter.  I don't think end-users will comprehend this...
+>=20
+> What about naming it "xdp_xmit" ?
 
-    skbuff: fix a data race in skb_queue_len()
+Hi Jesper,
 
-It's utter garbage.  Why on earth did it change that one instance
-of unix_recvq_full? In fact you can see how stupid it is because
-right after the call that got changed we again call into
-unix_recvq_full which surely would trigger the same warning.
+yes, I think it is definitely better. So to follow up:
+- rename current "xdp_tx" counter in "xdp_xmit" and increment it for
+  XDP_TX verdict and for ndo_xdp_xmit
+- introduce a new "xdp_tx" counter only for XDP_TX verdict.
 
-So far the vast majority of the KCSAN patches that have caught
-my attention have been of this mindless kind that does not add
-any value to the kernel.  If anything they could be hiding real
-bugs that would now be harder to find.
+If we agree I can post a follow-up patch.
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Regards,
+Lorenzo
+
+>=20
+>=20
+> >  	mvneta_txq_inc_put(txq);
+> > @@ -2114,6 +2132,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvn=
+eta_rx_queue *rxq,
+> > =20
+> >  	switch (act) {
+> >  	case XDP_PASS:
+> > +		stats->xdp_pass++;
+> >  		return MVNETA_XDP_PASS;
+> >  	case XDP_REDIRECT: {
+> >  		int err;
+> > @@ -2126,6 +2145,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvn=
+eta_rx_queue *rxq,
+> >  					     len, true);
+> >  		} else {
+> >  			ret =3D MVNETA_XDP_REDIR;
+> > +			stats->xdp_redirect++;
+> >  		}
+> >  		break;
+> >  	}
+> > @@ -2147,6 +2167,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvn=
+eta_rx_queue *rxq,
+> >  				     virt_to_head_page(xdp->data),
+> >  				     len, true);
+> >  		ret =3D MVNETA_XDP_DROPPED;
+> > +		stats->xdp_drop++;
+> >  		break;
+> >  	}
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+
+--MfFXiAuoTsnnDAfZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXkpqKwAKCRA6cBh0uS2t
+rPJOAQCsUD5KceDQcPI6VgvAeg8OuEyhI6OTjLlLxAgankyQkAD/QNkAyTfPEFFX
+KNY6jevHKUqaOKz4B9eC82D+6KCXQAQ=
+=OKl2
+-----END PGP SIGNATURE-----
+
+--MfFXiAuoTsnnDAfZ--
+
