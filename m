@@ -2,155 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AE3161137
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 12:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CF416114F
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 12:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728733AbgBQLha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 06:37:30 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:47918 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728312AbgBQLha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 06:37:30 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01HBRguO005555;
-        Mon, 17 Feb 2020 03:37:27 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=5iLt2WSWBadvKXVfyqIZKFReFIOMiJW2ZSOSUhU2RqM=;
- b=nPgcsM6+xCeG1PCSaf5/4i4d+bR31vEZwD44gdFxrvjWCOJjvRe82TH7Rs9ktES8fZNY
- Uv/Z90UuoIjou3C2XgG5y45dnxvAsmg/Y9R+hsbKp88s0M7AL5LYnl79/rCJg9FGI7fy
- lvPezpII9tNjMBwX91pSJPs5qVzD1kjJQ2gnJsI/ixwxKsSL5y9ijFZRQHKcG5YANmzk
- IOl/n6u28wAIiwDD8x9/yx/ZEtzb2JiFned2QTLAP8YNMCfJug1WO8RYXuCRGPSuLEeL
- aIrIPFNhHEtdu2VHsUpWYD09Or0wLuv3VGCzamPW5zC2i7DHYh1r3vRbEh9RFA0K6b75 GA== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2y6h1sxtt0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 17 Feb 2020 03:37:27 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 Feb
- 2020 03:37:25 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 17 Feb 2020 03:37:25 -0800
-Received: from lb-tlvb-michal.il.qlogic.org (unknown [10.5.220.215])
-        by maili.marvell.com (Postfix) with ESMTP id 450433F703F;
-        Mon, 17 Feb 2020 03:37:24 -0800 (PST)
-From:   Michal Kalderon <michal.kalderon@marvell.com>
-To:     <aelior@marvell.com>, <michal.kalderon@marvell.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, Ariel Elior <ariel.elior@marvell.com>
-Subject: [PATCH net] qede: Fix race between rdma destroy workqueue and link change event
-Date:   Mon, 17 Feb 2020 13:37:18 +0200
-Message-ID: <20200217113718.32207-1-michal.kalderon@marvell.com>
-X-Mailer: git-send-email 2.14.5
+        id S1728845AbgBQLoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 06:44:20 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:54069 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728272AbgBQLoT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Feb 2020 06:44:19 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 816a57ce
+        for <netdev@vger.kernel.org>;
+        Mon, 17 Feb 2020 11:41:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=wQXCNI9A2YUaaGUQfj7y9iUP5zk=; b=uNiIDr
+        yEcK5YYCGrCJEAp+i8Pe4xhHWu90hFP00Pj1sjkRMpRpU6krYX+dvwCIBs8tjU1M
+        KYz55GNxoLDsmsVzaqrOY4Dvl6v3wQkIBR/MRCvaS+IyUSaNfWpeSNUGxLXWKBcs
+        07cAcSdH4DBcTzDB7T5VLvmvgkN1xtynItjPIo1qMKImgrDxeyLwEtXeZ4VROjES
+        c6nl2AMO6n7TbitwwrGc0+9d3Ff1NGWngXu/IixkYyWxsxZfeQUkDMXSWQ2loJGT
+        e6oaMpJpnBESzRMd8EIQ+gyZ4pPpL5gYLUeDuGECAhuCIdAHIcE7RjbYn7zqqJxd
+        X7LXYjsYKgRy8X/Q==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f9c1e6dd (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 17 Feb 2020 11:41:49 +0000 (UTC)
+Received: by mail-ot1-f47.google.com with SMTP id l2so9584295otp.4
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 03:44:18 -0800 (PST)
+X-Gm-Message-State: APjAAAWcAQ/+ukz9ZNl7HPMN1EMFl/TDXQmGoet9hi0FINal9C6KJsZV
+        NGyqZFReIjKvQjJuq06juVIxHcNffkc0C91fDTU=
+X-Google-Smtp-Source: APXvYqx/nE/SIdj6n88DX7WkMOWTXoc9LjwiMOkSC90rKZGFpSfr9MnZAvgN9CvPdc+XVc0yw0XHz+mACRWNCdb8yNA=
+X-Received: by 2002:a9d:674f:: with SMTP id w15mr11839173otm.243.1581939857444;
+ Mon, 17 Feb 2020 03:44:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-17_06:2020-02-17,2020-02-17 signatures=0
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
+ <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+ <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+ <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
+ <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com> <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
+In-Reply-To: <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 17 Feb 2020 12:44:06 +0100
+X-Gmail-Original-Message-ID: <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+Message-ID: <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
+ net: WireGuard secure network tunnel]
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an event is added while the rdma workqueue is being destroyed
-it could lead to several races, list corruption, null pointer
-dereference during queue_work or init_queue.
-This fixes the race between the two flows which can occur during
-shutdown.
+Observation:
 
-A kref object and a completion object are added to the rdma_dev
-structure, these are initialized before the workqueue is created.
-The refcnt is used to indicate work is being added to the
-workqueue and ensures the cleanup flow won't start while we're in
-the middle of adding the event.
-Once the work is added, the refcnt is decreased and the cleanup flow
-is safe to run.
+It seems to be starting to synthesize packets sent to the wireguard
+socket. These aren't the proper handshake packets generated internally
+by that triangle commit, but rather ones that syzkaller creates
+itself. That's why we have coverage on wg_receive, which otherwise
+wouldn't be called from a userspace process, since syzbot is sending
+its own packets to that function.
 
-Fixes: cee9fbd8e2e ("qede: Add qedr framework")
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/qede.h      |  2 ++
- drivers/net/ethernet/qlogic/qede/qede_rdma.c | 29 +++++++++++++++++++++++++++-
- 2 files changed, 30 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index e8a1b27db84d..234c6f30effb 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -163,6 +163,8 @@ struct qede_rdma_dev {
- 	struct list_head entry;
- 	struct list_head rdma_event_list;
- 	struct workqueue_struct *rdma_wq;
-+	struct kref refcnt;
-+	struct completion event_comp;
- 	bool exp_recovery;
- };
- 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-index ffabc2d2f082..2d873ae8a234 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-@@ -59,6 +59,9 @@ static void _qede_rdma_dev_add(struct qede_dev *edev)
- static int qede_rdma_create_wq(struct qede_dev *edev)
- {
- 	INIT_LIST_HEAD(&edev->rdma_info.rdma_event_list);
-+	kref_init(&edev->rdma_info.refcnt);
-+	init_completion(&edev->rdma_info.event_comp);
-+
- 	edev->rdma_info.rdma_wq = create_singlethread_workqueue("rdma_wq");
- 	if (!edev->rdma_info.rdma_wq) {
- 		DP_NOTICE(edev, "qedr: Could not create workqueue\n");
-@@ -83,8 +86,23 @@ static void qede_rdma_cleanup_event(struct qede_dev *edev)
- 	}
- }
- 
-+static void qede_rdma_complete_event(struct kref *ref)
-+{
-+	struct qede_rdma_dev *rdma_dev =
-+		container_of(ref, struct qede_rdma_dev, refcnt);
-+
-+	/* no more events will be added after this */
-+	complete(&rdma_dev->event_comp);
-+}
-+
- static void qede_rdma_destroy_wq(struct qede_dev *edev)
- {
-+	/* Avoid race with add_event flow, make sure it finishes before
-+	 * we start accessing the list and cleaning up the work
-+	 */
-+	kref_put(&edev->rdma_info.refcnt, qede_rdma_complete_event);
-+	wait_for_completion(&edev->rdma_info.event_comp);
-+
- 	qede_rdma_cleanup_event(edev);
- 	destroy_workqueue(edev->rdma_info.rdma_wq);
- }
-@@ -310,15 +328,24 @@ static void qede_rdma_add_event(struct qede_dev *edev,
- 	if (!edev->rdma_info.qedr_dev)
- 		return;
- 
-+	/* We don't want the cleanup flow to start while we're allocating and
-+	 * scheduling the work
-+	 */
-+	if (!kref_get_unless_zero(&edev->rdma_info.refcnt))
-+		return; /* already being destroyed */
-+
- 	event_node = qede_rdma_get_free_event_node(edev);
- 	if (!event_node)
--		return;
-+		goto out;
- 
- 	event_node->event = event;
- 	event_node->ptr = edev;
- 
- 	INIT_WORK(&event_node->work, qede_rdma_handle_event);
- 	queue_work(edev->rdma_info.rdma_wq, &event_node->work);
-+
-+out:
-+	kref_put(&edev->rdma_info.refcnt, qede_rdma_complete_event);
- }
- 
- void qede_rdma_dev_event_open(struct qede_dev *edev)
--- 
-2.14.5
-
+However, the packets it generates aren't getting very far, failing all
+of the tests in validate_header_len. None of those checks are at all
+cryptographic, which means it should be able to hit those eventually.
+Anything we should be doing to help it out? After it gets past that
+check, it'll wind up in the handshake queue or the data queue, and
+then (in theory) it should be rejected on a cryptographic basis. But
+maybe syzbot will figure out how to crash it instead :-P.
