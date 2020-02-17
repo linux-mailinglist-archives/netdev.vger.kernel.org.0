@@ -2,111 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F22160725
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 00:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C2F1607E8
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:02:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbgBPXMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 18:12:20 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:40229 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728148AbgBPXMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 18:12:16 -0500
-Received: by mail-pj1-f65.google.com with SMTP id 12so6347651pjb.5
-        for <netdev@vger.kernel.org>; Sun, 16 Feb 2020 15:12:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=43HSTFMFDLMK5OsuXjIiOKhf3nldU6Wm+nyTF1bRCNQ=;
-        b=aOOpoCEIsIX803ZCd2RiLTFP48wI/AkxTde/FBKFMc/sYG1BkhLn/9radeJzxbpNRq
-         zY55gaAUQNMU+Bfws4L5njXmXO2Muc9/ZH3nD5xckeDLh6m3pCms6ykgTfNlEfGz5Ng7
-         JQ7VeTxXj53SzaOVx7KcLg4DqDqszvl8rVBHTKXJmZtvfosTrhwcZYzybuFhvwuF6wUk
-         c9lzcwNc85/QCseOgycndDtjpeLZkCoJdIA8h3tqEJK1ppkgR9VHwtAYVitWosm3lHzb
-         k1zs8EhQxOHgn++00OjNcL+i5TgW1M0GN73rEhz9kwV2YhzIT3w28z9Mm6vGuXEoux0t
-         Vnlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=43HSTFMFDLMK5OsuXjIiOKhf3nldU6Wm+nyTF1bRCNQ=;
-        b=FnBjvA/OjUpGxAX8z+nSZVEgrHnvVoZ/4yNEvg87ITjK67FzVGLCVfyHJQQH1/lhIv
-         Yvo9WOt5EtpZmZgsWO4VdimHKWZMEvFIs67vcgBZrX1gqqXTvUCgy+93Ep5QpVhhHmMg
-         2xJPtod6qN+2mp+esbRLvqCsPCBD3/V1/s79nnldokOH4kwk05iDBq0Xfh9+ztdtoNhF
-         qTFWGRHWLVwbxM2CyO52ZBAb5Fj45iTVqj11W5Uz080vcheCTyUw7fxiBDc50spCsItp
-         1BzjdWwpDIl8+mNEEDKXVy0sITeNj/55nIv8it63Daz4/zkEAI1sjY139LFHrE0d0BWY
-         s+EQ==
-X-Gm-Message-State: APjAAAXu1aOiw0c33DQFcBgyzXe6XnV5WBNOJz1qz8Mc1rCMZrYmpeEy
-        2cu0hWHC+ddzLFvtZvFQws4dic2Mi/5cNQ==
-X-Google-Smtp-Source: APXvYqzUY4NvNyjaE7pxAtsgMLlQUTCYGc89BWDYctMF3Y4A44hXxALDACFIqqa8/f4MacI9Kc/qgA==
-X-Received: by 2002:a17:90a:3745:: with SMTP id u63mr16416246pjb.123.1581894735975;
-        Sun, 16 Feb 2020 15:12:15 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 70sm14074573pgd.28.2020.02.16.15.12.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 16 Feb 2020 15:12:15 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 9/9] ionic: keep ionic dev on lif init fail
-Date:   Sun, 16 Feb 2020 15:11:58 -0800
-Message-Id: <20200216231158.5678-10-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200216231158.5678-1-snelson@pensando.io>
-References: <20200216231158.5678-1-snelson@pensando.io>
+        id S1726380AbgBQCC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 21:02:28 -0500
+Received: from mail3-bck.iservicesmail.com ([217.130.24.85]:34625 "EHLO
+        mail3-bck.iservicesmail.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726251AbgBQCC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:02:28 -0500
+IronPort-SDR: sER5Kcjvg6O91itjVXWk9DvY7FrHS3pOsQKcLBjprXKCsqZ+5t+9/D81E1MrakHZTJQCgo7gSr
+ l7u2/pSvD0Ag==
+IronPort-PHdr: =?us-ascii?q?9a23=3AKE8mBBEZw2Nw6qav+7tcz51GYnF86YWxBRYc79?=
+ =?us-ascii?q?8ds5kLTJ78ocuwAkXT6L1XgUPTWs2DsrQY0raQ7P2rAj1IyK3CmU5BWaQEbw?=
+ =?us-ascii?q?UCh8QSkl5oK+++Imq/EsTXaTcnFt9JTl5v8iLzG0FUHMHjew+a+SXqvnYdFR?=
+ =?us-ascii?q?rlKAV6OPn+FJLMgMSrzeCy/IDYbxlViDanbr5+MRq7oR/Tu8QWjodvJKI8wQ?=
+ =?us-ascii?q?bVr3VVfOhb2WxnKVWPkhjm+8y+5oRj8yNeu/Ig885PT6D3dLkmQLJbETorLX?=
+ =?us-ascii?q?k76NXkuhffQwSP4GAcUngNnRpTHwfF9hD6UYzvvSb8q+FwxTOVPczyTbAzRD?=
+ =?us-ascii?q?Si86JmQwLmhSsbKzI09nzch8pth6xZvR2hvQRyzYDUboGPKvRwfb7TctwGSm?=
+ =?us-ascii?q?RORctRSy5MDZ+gY4cTE+YNI+BVpJT9qVsUqhu+ABGhCvnxxT9UmHD2x7Ax3O?=
+ =?us-ascii?q?QmEQHA0wwrAtUDsGzTrNXvKKcdS/u4zLTOzTXCdPNWxS3955LVfR87u/2MXK?=
+ =?us-ascii?q?5wfNPXxEIyFA3Flk2dpZL4Mz6XzOgBrmaW4/Z6We6xhGMrsQ98rzipy8wxkI?=
+ =?us-ascii?q?fGnJgVxUrB9ShhxYY1IsC3R1BjbN6/FZtQqzmaN4xrQsM+W21ouDg1yrkBuZ?=
+ =?us-ascii?q?OjeSgF0pUnxxrFa/OZd4iE/h3uWPyPITd/mX1qYry/hxG08Ue+0OHzSNK03E?=
+ =?us-ascii?q?5LripDjNbMqmgA2wLO5sWFUPdx40ms1SqV2wzN5exIO045mKrDJ54k2LEwl5?=
+ =?us-ascii?q?4TsUrZHi/xnUX7lLeWdkI++ui08evqeajmppmdN49vlgH+KL4hldGlDugiMw?=
+ =?us-ascii?q?gOQ3CX+f6g27374U35XLJKg+UwkqbHrJDVONoUprCiDg9L3YYs9Qy/Ay2l0N?=
+ =?us-ascii?q?sGh3kHKkxKeBadg4juIVHOL6OwMfDqhVmwnDp17+7JM6enAZjXKHXH1rD7cu?=
+ =?us-ascii?q?VH5lZY2TY0mOhS+59OQo4GJv27Dlf8qNHCERg/PAy3w/3tA/1y04ofXSSEBa?=
+ =?us-ascii?q?rPY43Itlrd3u8zLvPEW4gTt36pM/8/+/fGkHk4gkMHdKWgm5oLPiPrVs96Kl?=
+ =?us-ascii?q?mUNCK/yuwKFn0H61Iz?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2HOOADy80lelyMYgtlmgkOBPgIBgVV?=
+ =?us-ascii?q?SIBKMY4ZsVAZzH4NDhlKEEYEFgQCDM4YHEwyBWw0BAQEBATUCBAEBhECCBCQ?=
+ =?us-ascii?q?8Ag0CAw0BAQYBAQEBAQUEAQECEAEBAQEBCBYGhXOCOyKDcCAPOUoMQAEOAYN?=
+ =?us-ascii?q?XgksBAQoprTwNDQKFHoJPBAqBCIEbI4E2AwEBjCEaeYEHgSMhgisIAYIBgn8?=
+ =?us-ascii?q?BEgFugkiCWQSNUhIhiUWYNIFqWgSWa4I5AQ+IFoQ3A4JaD4ELgx2DCYFnhFK?=
+ =?us-ascii?q?Bf59mhBRXgSBzcTMaCDCBbhqBIE8YDY43jisCQIEXEAJPi0mCMgEB?=
+X-IPAS-Result: =?us-ascii?q?A2HOOADy80lelyMYgtlmgkOBPgIBgVVSIBKMY4ZsVAZzH?=
+ =?us-ascii?q?4NDhlKEEYEFgQCDM4YHEwyBWw0BAQEBATUCBAEBhECCBCQ8Ag0CAw0BAQYBA?=
+ =?us-ascii?q?QEBAQUEAQECEAEBAQEBCBYGhXOCOyKDcCAPOUoMQAEOAYNXgksBAQoprTwND?=
+ =?us-ascii?q?QKFHoJPBAqBCIEbI4E2AwEBjCEaeYEHgSMhgisIAYIBgn8BEgFugkiCWQSNU?=
+ =?us-ascii?q?hIhiUWYNIFqWgSWa4I5AQ+IFoQ3A4JaD4ELgx2DCYFnhFKBf59mhBRXgSBzc?=
+ =?us-ascii?q?TMaCDCBbhqBIE8YDY43jisCQIEXEAJPi0mCMgEB?=
+X-IronPort-AV: E=Sophos;i="5.70,450,1574118000"; 
+   d="scan'208";a="337904923"
+Received: from mailrel04.vodafone.es ([217.130.24.35])
+  by mail02.vodafone.es with ESMTP; 17 Feb 2020 03:02:15 +0100
+Received: (qmail 29090 invoked from network); 17 Feb 2020 01:53:15 -0000
+Received: from unknown (HELO 192.168.1.163) (mariapazos@[217.217.179.17])
+          (envelope-sender <porta@unistrada.it>)
+          by mailrel04.vodafone.es (qmail-ldap-1.03) with SMTP
+          for <netdev@vger.kernel.org>; 17 Feb 2020 01:53:15 -0000
+Date:   Mon, 17 Feb 2020 02:53:14 +0100 (CET)
+From:   Peter Wong <porta@unistrada.it>
+Reply-To: Peter Wong <peterwonghkhsbc@gmail.com>
+To:     netdev@vger.kernel.org
+Message-ID: <5943196.43957.1581904395090.JavaMail.cash@217.130.24.55>
+Subject: Investment opportunity
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the basic ionic interface works but the lif creation fails,
-don't fail the probe.  This will allow us to use the driver to
-help inspect the hw/fw/pci interface for debugging purposes.
+Greetings,
+Please check the attached email for a buisness proposal to explore.
+Looking forward to hearing from you for more details.
+Sincerely: Peter Wong
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 8 ++++++++
- drivers/net/ethernet/pensando/ionic/ionic_lif.c     | 3 +++
- 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 448d7b23b2f7..554bafac1147 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -37,6 +37,9 @@ int ionic_bus_alloc_irq_vectors(struct ionic *ionic, unsigned int nintrs)
- 
- void ionic_bus_free_irq_vectors(struct ionic *ionic)
- {
-+	if (!ionic->nintrs)
-+		return;
-+
- 	pci_free_irq_vectors(ionic->pdev);
- }
- 
-@@ -346,6 +349,11 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	ionic_reset(ionic);
- err_out_teardown:
- 	ionic_dev_teardown(ionic);
-+	/* Don't fail the probe for these errors, keep
-+	 * the hw interface around for inspection
-+	 */
-+	return 0;
-+
- err_out_unmap_bars:
- 	ionic_unmap_bars(ionic);
- 	pci_release_regions(pdev);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 85dfd76ff0c6..a6fd6aa4ce40 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2486,6 +2486,9 @@ void ionic_lifs_unregister(struct ionic *ionic)
- 	 * current model, so don't bother searching the
- 	 * ionic->lif for candidates to unregister
- 	 */
-+	if (!ionic->master_lif)
-+		return;
-+
- 	cancel_work_sync(&ionic->master_lif->deferred.work);
- 	cancel_work_sync(&ionic->master_lif->tx_timeout_work);
- 	if (ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
--- 
-2.17.1
+
+
+----------------------------------------------------
+This email was sent by the shareware version of Postman Professional.
 
