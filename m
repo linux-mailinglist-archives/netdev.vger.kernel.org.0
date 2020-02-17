@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D13A31613BD
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 216011613CB
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:45:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbgBQNnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 08:43:37 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:48298 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726314AbgBQNng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:43:36 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5C91BB40066;
-        Mon, 17 Feb 2020 13:43:35 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 17 Feb
- 2020 13:43:31 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 2/2] sfc: move some ARFS code out of headers
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <3d83a647-beb0-6de7-39f7-c960e3299dc7@solarflare.com>
-Message-ID: <83a9b2d7-7800-173d-2a5d-1604c1c6a80f@solarflare.com>
-Date:   Mon, 17 Feb 2020 13:43:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <3d83a647-beb0-6de7-39f7-c960e3299dc7@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25236.003
-X-TM-AS-Result: No-3.466000-8.000000-10
-X-TMASE-MatchedRID: fIPceilDx+VyOVk+FPzL1/zTlJK+gA83qnabhLgnhmgjRiu1AuxJTLCW
-        JgRLh7wH3+cJ6tKTUNVTvVffeIwvQwUcfW/oedmqnFVnNmvv47tLXPA26IG0hN9RlPzeVuQQ1EP
-        2Wxlu2pZC062FL4CYwFl+rJjPLsuBs1dXYh6zp8ckOFAoKA9tAms80vt+osfctLJ1NlvsxGCeAi
-        CmPx4NwLTrdaH1ZWqC1kTfEkyaZdz6C0ePs7A07fhmFHnZFzVqAJlpjrPvMPE/ymNsCWgmLoXma
-        m+o4C0KGP1j749zTTuZIZX117UGDOM7p+n2ZHJ0PT4hOck6e9+0WPHMW130vw/hYamggk2w7X0N
-        Uj756kyalV1F4xrI89hfrwWZbOCvsmqnO4HNG+XDa0xNKDTHvg==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.466000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25236.003
-X-MDID: 1581947016-ATLJIroPdDao
+        id S1728383AbgBQNpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 08:45:14 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8580 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727132AbgBQNpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:45:14 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01HDi5Tb097469
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 08:45:13 -0500
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2y6e2e5x42-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 08:45:13 -0500
+Received: from localhost
+        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Mon, 17 Feb 2020 13:45:11 -0000
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 17 Feb 2020 13:45:08 -0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01HDiCat50790664
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Feb 2020 13:44:12 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 88A7D11C066;
+        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4CB1D11C04C;
+        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next] net: bridge: teach ndo_dflt_bridge_getlink() more brport flags
+Date:   Mon, 17 Feb 2020 14:45:01 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 20021713-0020-0000-0000-000003AAF0CE
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20021713-0021-0000-0000-00002202E80E
+Message-Id: <20200217134501.97044-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-17_08:2020-02-17,2020-02-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 mlxscore=0 suspectscore=0 clxscore=1011 lowpriorityscore=0
+ impostorscore=0 phishscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002170114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-efx_filter_rfs_expire() is a work-function, so it being inline makes no
- sense.  It's only ever used in efx_channels.c, so move it there.
-While we're at it, clean out some related unused cruft.
+This enables ndo_dflt_bridge_getlink() to report a bridge port's
+offload settings for multicast and broadcast flooding.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
+CC: Roopa Prabhu <roopa@cumulusnetworks.com>
+CC: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/net/ethernet/sfc/efx.h          | 18 ------------------
- drivers/net/ethernet/sfc/efx_channels.c | 17 +++++++++++++++++
- 2 files changed, 17 insertions(+), 18 deletions(-)
+ net/core/rtnetlink.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
-index 78babbe6d2d8..da54afaa3c44 100644
---- a/drivers/net/ethernet/sfc/efx.h
-+++ b/drivers/net/ethernet/sfc/efx.h
-@@ -150,24 +150,6 @@ static inline s32 efx_filter_get_rx_ids(struct efx_nic *efx,
- int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
- 		   u16 rxq_index, u32 flow_id);
- bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota);
--static inline void efx_filter_rfs_expire(struct work_struct *data)
--{
--	struct delayed_work *dwork = to_delayed_work(data);
--	struct efx_channel *channel;
--	unsigned int time, quota;
--
--	channel = container_of(dwork, struct efx_channel, filter_work);
--	time = jiffies - channel->rfs_last_expiry;
--	quota = channel->rfs_filter_count * time / (30 * HZ);
--	if (quota >= 20 && __efx_filter_rfs_expire(channel, min(channel->rfs_filter_count, quota)))
--		channel->rfs_last_expiry += time;
--	/* Ensure we do more work eventually even if NAPI poll is not happening */
--	schedule_delayed_work(dwork, 30 * HZ);
--}
--#define efx_filter_rfs_enabled() 1
--#else
--static inline void efx_filter_rfs_expire(struct work_struct *data) {}
--#define efx_filter_rfs_enabled() 0
- #endif
- 
- /* RSS contexts */
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index 1b1265d94fc9..d2d738314c50 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -485,6 +485,23 @@ void efx_remove_eventq(struct efx_channel *channel)
-  *
-  *************************************************************************/
- 
-+#ifdef CONFIG_RFS_ACCEL
-+static void efx_filter_rfs_expire(struct work_struct *data)
-+{
-+	struct delayed_work *dwork = to_delayed_work(data);
-+	struct efx_channel *channel;
-+	unsigned int time, quota;
-+
-+	channel = container_of(dwork, struct efx_channel, filter_work);
-+	time = jiffies - channel->rfs_last_expiry;
-+	quota = channel->rfs_filter_count * time / (30 * HZ);
-+	if (quota >= 20 && __efx_filter_rfs_expire(channel, min(channel->rfs_filter_count, quota)))
-+		channel->rfs_last_expiry += time;
-+	/* Ensure we do more work eventually even if NAPI poll is not happening */
-+	schedule_delayed_work(dwork, 30 * HZ);
-+}
-+#endif
-+
- /* Allocate and initialise a channel structure. */
- struct efx_channel *
- efx_alloc_channel(struct efx_nic *efx, int i, struct efx_channel *old_channel)
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 09c44bf2e1d2..9b4f8a254a15 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -4555,7 +4555,11 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 	    brport_nla_put_flag(skb, flags, mask,
+ 				IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD) ||
+ 	    brport_nla_put_flag(skb, flags, mask,
+-				IFLA_BRPORT_PROXYARP, BR_PROXYARP)) {
++				IFLA_BRPORT_PROXYARP, BR_PROXYARP) ||
++	    brport_nla_put_flag(skb, flags, mask,
++				IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD) ||
++	    brport_nla_put_flag(skb, flags, mask,
++				IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD)) {
+ 		nla_nest_cancel(skb, protinfo);
+ 		goto nla_put_failure;
+ 	}
+-- 
+2.17.1
+
