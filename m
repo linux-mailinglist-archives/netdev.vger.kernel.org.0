@@ -2,126 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67553161C59
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 21:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D343B161C63
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 21:41:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729739AbgBQUgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 15:36:18 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39835 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbgBQUgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 15:36:17 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y11so21312262wrt.6
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 12:36:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MpJ4DvtYyO+oUgoMfkwYiiyleVaUnKf+mDfdXQCV8hE=;
-        b=DhGweMnSe/LGx/J2Y0j0eepNswnTGVd4bIcQdmxhFKPEhoE/9rw6IHQWX7kAYZWdOJ
-         5RhOyU0fnWmBWA1t9ssCG5paxupcZeAm68UA6yytI+w6N8dnkoW99K3BlXwf8xn31WzE
-         mBaDPOMvHFdkna/ygMJaosAF6vxASqXmvFeO1PLZ346D8zzpyt/mKPkdGi1oedMbTLdY
-         Fp+LyMaqkANlevYiwb21fhEUwdV/Fz1ersEraL6TVTH/aM6lklwQVdhzLpTpUKjuws6L
-         TJ7eJsy1jD7qiFMw/0xAo4s1d8auhaFW4LqnM723W8P0MRZKpMF9guoPQxzDD1L7G2Gy
-         aVig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MpJ4DvtYyO+oUgoMfkwYiiyleVaUnKf+mDfdXQCV8hE=;
-        b=cCbZAJRYBq0HzoBDiwZ93MU+pcWaDjU+nl8hO70H4hH5uFg2MX357acnCGqM64k8GT
-         0rpKq7Fe/MNfhJuxmqmmHoNVMGZRUGcw/ve7Hc872zzVJX3n29HZK39DiItyaLlt2sOJ
-         tyuLzhxapxRBR/ikIKktBuuR2h9RDhXTpRM6gl4+jxeXYn1bb/n+y602QrOFKfejL+UF
-         1qE01OvHLx4Q7/JRu/xEMAlxyZCbhgt71OWhrII3jeKQ3wgS+wFEEQs+4tSmxWealEKN
-         L9as0G0CJjtSprhualNyQHrV4/kPkav8eozoC6NH1jGN97km8xf+PB+66fzT53jLTShr
-         LelQ==
-X-Gm-Message-State: APjAAAUJp41vrdspzTZ2NLsLlU81hSlYvqN8BJeCRBZkn8Pioin21g7q
-        RuMpEfD1vy5zS2BX1mfINsNRk1r2
-X-Google-Smtp-Source: APXvYqwQBuZaufWysqlFR1FQvqqduVv3itQNFIl3jZFudU5hBum2BEPvQ3EWyJRimuzOooi5Mzts9A==
-X-Received: by 2002:adf:cd11:: with SMTP id w17mr25029094wrm.66.1581971775621;
-        Mon, 17 Feb 2020 12:36:15 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:41c6:31a6:d880:888? (p200300EA8F29600041C631A6D8800888.dip0.t-ipconnect.de. [2003:ea:8f29:6000:41c6:31a6:d880:888])
-        by smtp.googlemail.com with ESMTPSA id y7sm910840wmd.1.2020.02.17.12.36.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Feb 2020 12:36:15 -0800 (PST)
-Subject: [PATCH net-next 2/2] r8169: let managed MDIO bus handling unregister
- the MDIO bus
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <15ee7621-0e74-a3c1-0778-ca4fa6c2e3c6@gmail.com>
-Message-ID: <fe286040-382a-c705-bd10-f1a3cf318c34@gmail.com>
-Date:   Mon, 17 Feb 2020 21:35:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <15ee7621-0e74-a3c1-0778-ca4fa6c2e3c6@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729402AbgBQUlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 15:41:00 -0500
+Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:56110 "EHLO
+        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727332AbgBQUk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 15:40:59 -0500
+Received: from pps.filterd (m0122333.ppops.net [127.0.0.1])
+        by mx0a-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01HKWGuW027247;
+        Mon, 17 Feb 2020 20:40:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to; s=jan2016.eng;
+ bh=8XJ7OuLWZ0V1Mlp4n4ryROk3raofF+rl5vPWIxb9Wfg=;
+ b=j1dwjqbKs4o2bbnOhHZkcnx5bQw9YzWrgT5NVgRyLalDdKy9AODwGyboismhT5hB8BZf
+ Z0ScxRiTZGHb03XrCCyEWFFZ0kcIcTOnEIDyC6fehqaA+ZvMY4mF6WMgt2icwIvpUfGw
+ IMKyPb79IradX+cEpMfQ4cYrBRKlw4WzM2LptwOHBNVpp16+tSHWms/UkzmdfVYE/PE7
+ AOXenIWIv3FXYUNaya46TuCKwULM5ZQss+BvZhHqg9q12e9kX41T5tJ6eIfUw7nKUZtZ
+ XHTrPPoCGrixu3gPFIxCgEZPOZ94uEadLwgwRz4TX1+kueT6EGVX7fgs1iDiFSmljQqv Fw== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by mx0a-00190b01.pphosted.com with ESMTP id 2y68sf1eqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 17 Feb 2020 20:40:53 +0000
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.16.0.27/8.16.0.27) with SMTP id 01HKZjHX005439;
+        Mon, 17 Feb 2020 15:40:52 -0500
+Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
+        by prod-mail-ppoint6.akamai.com with ESMTP id 2y6cuy1np2-1;
+        Mon, 17 Feb 2020 15:40:52 -0500
+Received: from bos-lpjec.145bw.corp.akamai.com (bos-lpjec.145bw.corp.akamai.com [172.28.3.71])
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 46EE621A4A;
+        Mon, 17 Feb 2020 20:40:52 +0000 (GMT)
+From:   Jason Baron <jbaron@akamai.com>
+To:     davem@davemloft.net, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com
+Cc:     netdev@vger.kernel.org, soukjin.bae@samsung.com,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH v3 net] net: sched: correct flower port blocking
+Date:   Mon, 17 Feb 2020 15:38:09 -0500
+Message-Id: <1581971889-5862-1-git-send-email-jbaron@akamai.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20200216.191837.828352407289487240.davem@davemloft.net>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2020-02-17_12:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=960
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2002050000 definitions=main-2002170169
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-17_12:2020-02-17,2020-02-17 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 impostorscore=0
+ spamscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=960 malwarescore=0 mlxscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2002170168
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of the recent extension to automagically unregister the MDIO
-bus in case managed MDIO bus handling is used.
+tc flower rules that are based on src or dst port blocking are sometimes
+ineffective due to uninitialized stack data. __skb_flow_dissect() extracts
+ports from the skb for tc flower to match against. However, the port
+dissection is not done when when the FLOW_DIS_IS_FRAGMENT bit is set in
+key_control->flags. All callers of __skb_flow_dissect(), zero-out the
+key_control field except for fl_classify() as used by the flower
+classifier. Thus, the FLOW_DIS_IS_FRAGMENT may be set on entry to
+__skb_flow_dissect(), since key_control is allocated on the stack
+and may not be initialized.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Since key_basic and key_control are present for all flow keys, let's
+make sure they are initialized.
+
+Fixes: 62230715fd24 ("flow_dissector: do not dissect l4 ports for fragments")
+Co-developed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: Jason Baron <jbaron@akamai.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index ad4bb5ac6..5a9143b50 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5102,7 +5102,6 @@ static void rtl_remove_one(struct pci_dev *pdev)
- 	netif_napi_del(&tp->napi);
+v3:
+-add include of string.h for memset() (David Miller)
+
+v2:
+-move rename to flow_dissector_init_keys() amd move to
+ flow_dissector.h (Cong Wang)
+
+
+ include/net/flow_dissector.h | 9 +++++++++
+ net/sched/cls_flower.c       | 1 +
+ 2 files changed, 10 insertions(+)
+
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index d93017a..e03827f 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -5,6 +5,7 @@
+ #include <linux/types.h>
+ #include <linux/in6.h>
+ #include <linux/siphash.h>
++#include <linux/string.h>
+ #include <uapi/linux/if_ether.h>
  
- 	unregister_netdev(dev);
--	mdiobus_unregister(tp->phydev->mdio.bus);
+ struct sk_buff;
+@@ -349,4 +350,12 @@ struct bpf_flow_dissector {
+ 	void			*data_end;
+ };
  
- 	rtl_release_firmware(tp);
++static inline void
++flow_dissector_init_keys(struct flow_dissector_key_control *key_control,
++			 struct flow_dissector_key_basic *key_basic)
++{
++	memset(key_control, 0, sizeof(*key_control));
++	memset(key_basic, 0, sizeof(*key_basic));
++}
++
+ #endif
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index f9c0d1e..b783254 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -305,6 +305,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 	struct cls_fl_filter *f;
  
-@@ -5244,10 +5243,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 		return ret;
+ 	list_for_each_entry_rcu(mask, &head->masks, list) {
++		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
+ 		fl_clear_masked_range(&skb_key, mask);
  
- 	tp->phydev = mdiobus_get_phy(new_bus, 0);
--	if (!tp->phydev) {
--		mdiobus_unregister(new_bus);
-+	if (!tp->phydev)
- 		return -ENODEV;
--	}
- 
- 	/* PHY will be woken up in rtl_open() */
- 	phy_suspend(tp->phydev);
-@@ -5585,7 +5582,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	rc = register_netdev(dev);
- 	if (rc)
--		goto err_mdio_unregister;
-+		return rc;
- 
- 	netif_info(tp, probe, dev, "%s, %pM, XID %03x, IRQ %d\n",
- 		   rtl_chip_infos[chipset].name, dev->dev_addr, xid,
-@@ -5604,10 +5601,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		pm_runtime_put_sync(&pdev->dev);
- 
- 	return 0;
--
--err_mdio_unregister:
--	mdiobus_unregister(tp->phydev->mdio.bus);
--	return rc;
- }
- 
- static struct pci_driver rtl8169_pci_driver = {
+ 		skb_flow_dissect_meta(skb, &mask->dissector, &skb_key);
 -- 
-2.25.0
-
+2.7.4
 
