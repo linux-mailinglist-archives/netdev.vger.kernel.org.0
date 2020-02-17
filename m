@@ -2,57 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8936D1616D2
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 16:57:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9817F1616EE
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 17:03:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729497AbgBQP5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 10:57:00 -0500
-Received: from www62.your-server.de ([213.133.104.62]:34936 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729167AbgBQP5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 10:57:00 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j3ilW-0000Lh-28; Mon, 17 Feb 2020 16:56:58 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j3ilV-000JSw-PJ; Mon, 17 Feb 2020 16:56:57 +0100
-Subject: Re: [PATCH] bpf_prog_offload_info_fill: replace bitwise AND by
- logical AND
-To:     Johannes Krude <johannes@krude.de>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        trivial@kernel.org
-References: <20200212193227.GA3769@phlox.h.transitiv.net>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5456d0d1-487d-1019-3083-397803b23888@iogearbox.net>
-Date:   Mon, 17 Feb 2020 16:56:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729585AbgBQQDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 11:03:18 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:38554 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726891AbgBQQDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 11:03:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rbW9+vAfXrPZvdejZEfPXADprAL9Rw8CTJhNk9FA5Ks=; b=nZEnzdjl5xpHu5/rfdNxQobhaD
+        9mVvzCgFiIcxP0Ap1OqP0MGseHcwFczMdzTftboUhNSjM4g2kiSbV1NuV/8Wm8+5f9W+0AmO/Mwxn
+        5tbJ7E8zaA+Riu9OvM/VJ3WyxWv6Bp9567F7TAg5hwHpi8mbvQoDIFM80W4SylNq/W8+bTEbXS8Pw
+        kFggSkwlNgxoHWU3J9QO9/K+2/XS7mAA5p37be7zxKa0zxsK8oNO9/dfttren2vhyTR8E11KdyhKr
+        D9l6ETtndLj/4STRMtb0CQDPwsz1IEX+SbX1ldoGZ77bOoAJuyxM6ATJivAciQIrfIweHsV5fuoqR
+        M8tr/twg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:40700 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j3irY-0001km-2K; Mon, 17 Feb 2020 16:03:12 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j3irX-0006JO-FW; Mon, 17 Feb 2020 16:03:11 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: phy: allow bcm84881 to be a module
 MIME-Version: 1.0
-In-Reply-To: <20200212193227.GA3769@phlox.h.transitiv.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.1/25726/Mon Feb 17 15:01:07 2020)
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1j3irX-0006JO-FW@rmk-PC.armlinux.org.uk>
+Date:   Mon, 17 Feb 2020 16:03:11 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/12/20 8:32 PM, Johannes Krude wrote:
-> This if guards whether user-space wants a copy of the offload-jited
-> bytecode and whether this bytecode exists. By erroneously doing a bitwise
-> AND instead of a logical AND on user- and kernel-space buffer-size can lead
-> to no data being copied to user-space especially when user-space size is a
-> power of two and bigger then the kernel-space buffer.
-> 
-> Signed-off-by: Johannes Krude <johannes@krude.de>
+Now that the phylib module loading issue has been resolved, we can
+allow this PHY driver to be built as a module.
 
-Applied, thanks!
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+
+This is a result of:
+
+7d49a32a66d2 ("net: phy: ensure that phy IDs are correctly typed")
+d2ed49cf6c13 ("mod_devicetable: fix PHY module format")
+
+merged during the last cycle. Given that the bcm84881 driver is so
+new, I'm not sure whether it's really important enough for -rc and
+backporting to 5.5-stable or just queue it in net-next. My feeling
+is that it's fairly low priority, and not important enough to
+justify backporting to 5.5-stable unless someone really wants this
+PHY driver to be modular. Therefore, I'm opting for net-next for
+this posting.
+
+ drivers/net/phy/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 9dabe03a668c..edb1cb8a228e 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -326,8 +326,8 @@ config BROADCOM_PHY
+ 	  BCM5481, BCM54810 and BCM5482 PHYs.
+ 
+ config BCM84881_PHY
+-	bool "Broadcom BCM84881 PHY"
+-	depends on PHYLIB=y
++	tristate "Broadcom BCM84881 PHY"
++	depends on PHYLIB
+ 	---help---
+ 	  Support the Broadcom BCM84881 PHY.
+ 
+-- 
+2.20.1
+
