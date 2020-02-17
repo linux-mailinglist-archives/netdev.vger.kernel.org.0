@@ -2,103 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94537161418
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:04:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2973E161431
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727739AbgBQOEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 09:04:00 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42784 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbgBQOEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:04:00 -0500
-Received: by mail-lj1-f196.google.com with SMTP id d10so19004997ljl.9
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 06:03:58 -0800 (PST)
+        id S1728823AbgBQOI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 09:08:57 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:32926 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728817AbgBQOI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:08:57 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 6so9245881pgk.0
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 06:08:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=t0TLC5mt6zw20J38nO6UV1Kz+5E95WBtIXeRkoxQ4a0=;
-        b=bzLwrCnB1Hwv/zHvNihastUPvgywQqJn7Em99nqFHdqHN18y59jKvf953ZSW3XjY7x
-         upnPVWTh6fGm4kg/rDCa4agzrSe6Wn13rw8+qQLzvFPCgcmVbJNYB3d3BHGn1jaXZIqu
-         UZ/u5brURGS9JAuLr/4OqcjGrKVgsxoqyc6u7Da2g67Xj7aHWcAWcjJs4Pqm+pRXMaoe
-         ngWYjBKUDFfauABmZxFb46ghucbqkls7YBfyHv3pFntyVvl1z/QInI5cFtxiantnBwNv
-         iNuYLpaWj8ZLB+Rb2k3ssl4DDYaRIeq7HAveE/KdQ62eN2aULDrjSjs9HNhtIpJ1ghRD
-         jOfA==
+        bh=PFMUFzEmDIkBA0Pfibz4eQc5zQ2VQF/xXd1GJXK9Czw=;
+        b=bMaZeBMPdbSLKqtMoLC+0OYsFp77TM7hMoQ21k7gEbmUfxnCE3Wf0Emcjysr90s9L8
+         Zh0NyiXyxVK22EEr1ehOQ0m5kZzEDUhX21l/VJiFdP3aKRW3Ap+eSFbThSyZuGIX8h0r
+         JljBEdDD4AK/iA8FNxJ2k4IQpKxw4o/LW87C7CMjveF6bR4cPH1WnjLWrmOBfdQ3NhkO
+         u1EVP2HW/zaiTGv7jwbPeeEvxaKLC0fjtX6ErG3c2HkDDreNmTwt9RGhMfyIxjGJ1ClI
+         Wv07q+xmFSuK1Oh+9QJlqZgMuq1m/y+GFFNbvd8H0iec4ZzW2LusSIPJ9j0erTDK5ZmK
+         /vMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=t0TLC5mt6zw20J38nO6UV1Kz+5E95WBtIXeRkoxQ4a0=;
-        b=IG7dU39sYlV6Ac0i/rS2GI+U5vX3TT98LvH6Q6umJNqXFIaqrtfiH6hzv7smgihsUw
-         VSqptPWUPSoxP6U6Et0f//etrNsLj+gW6Jpd6VXwmPzF5aAyf7FLKyWffFOuVhPWf63i
-         0vjrIfcP4/hX+GyHR+UvndUwtM3iD+/F2deEW9sElCAb/xYIWmyOwD5LJGQ5t+ECEX0s
-         6ByCjr+DVY7NEhM63KqN0k2PI6UNH/ib7K872Fy7s4gFKKHjTIl/5kh/sZk3eNGeTABu
-         AlZaBoiJ9B8d3Oj6XxXyOfy4mJ6KhNE5T5z8m+oWMmrz0RW1gUuD3Qv12ZoKUOqnPX8m
-         0c6A==
-X-Gm-Message-State: APjAAAWYzgQFHuUFUjjdkFfE8gTcA6VnYrhY43yhRg9Wqj/M7YrERsN9
-        rfUYeOrnLVBJVBpUKqOMOfpTqP/PdVuGNwMhF+o=
-X-Google-Smtp-Source: APXvYqxDaAtbrKE7RaAqAboowWEwX87tNiNGY2Ygltm4VI/Hc64ga4W0Dmqq5P+efuvNTFeAcmscETutdfMkKqJ+Usk=
-X-Received: by 2002:a2e:865a:: with SMTP id i26mr10293877ljj.236.1581948237314;
- Mon, 17 Feb 2020 06:03:57 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PFMUFzEmDIkBA0Pfibz4eQc5zQ2VQF/xXd1GJXK9Czw=;
+        b=t3wX/ZiVsQ/sAnayfd+7eovy6X/JdGW+tdYe77p+b9K5YtZqDAJoleMsPXSTYg4DO5
+         qUutcS/7lERp+293o4pDHGW0xRYNwg26d9Ho2D1GFKHQ4JA9LT/Wh3smlMBm5EXRWc3C
+         BUfBKwEr7BGoL897U36k8e6D2j4fJ8J5Tuu0vVTwTEZ72UTgZy9jEFJyPn9Wy9Sd7bag
+         3VDINlr+58vcZ4EP+JWTSY40u32S7IZZYGF3z0D4PNoxW7KkCzUFZ2cwS+sl/goHQ5db
+         ZmI/7RsB/mnkdplFGGvTbJQ47XcIR2Bx3pgtPwEq/MBH+mS/nZU5DkqCtTdg1cVY1slJ
+         iKmA==
+X-Gm-Message-State: APjAAAU6n9BA+Ep2e5cjJUlTp9FoiO5xFwzC2F8AuPSPiJVnxCNsH0C1
+        YY2X/K1xHNaVMnfSic8oNq0=
+X-Google-Smtp-Source: APXvYqyOGWZazEEUBz2Eo164YTKRKNUEX2pMe3Ffl3jEMwESajKQyFIFib1yzL93LZmAyJMbS82jag==
+X-Received: by 2002:a17:90b:4382:: with SMTP id in2mr20339129pjb.29.1581948536380;
+        Mon, 17 Feb 2020 06:08:56 -0800 (PST)
+Received: from openvirtualnetworks.com.com ([219.142.145.21])
+        by smtp.gmail.com with ESMTPSA id v25sm615318pfe.147.2020.02.17.06.08.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Feb 2020 06:08:55 -0800 (PST)
+From:   xiangxia.m.yue@gmail.com
+To:     gerlitz.or@gmail.com, roid@mellanox.com, saeedm@dev.mellanox.co.il
+Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v4] net/mlx5e: Don't allow forwarding between uplink
+Date:   Mon, 17 Feb 2020 22:08:50 +0800
+Message-Id: <20200217140850.4509-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Reply-To: mrsanna.h.bruun119@gmail.com
-Received: by 2002:ac2:4a9d:0:0:0:0:0 with HTTP; Mon, 17 Feb 2020 06:03:56
- -0800 (PST)
-From:   "Mrs. Anna H. Bruun" <mrsanna.h.bruun119@gmail.com>
-Date:   Mon, 17 Feb 2020 06:03:56 -0800
-X-Google-Sender-Auth: xNTqfYCx20AZ5Sf4DqMwCX4Otr0
-Message-ID: <CAEv_75Y=ZQghQSK8wnERXJomOzYNXYB4w9GYn1oCPPhsY0tnCw@mail.gmail.com>
-Subject: My Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Dear
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-My Name is Mrs. Anna H. Bruun, from Norway. I know that this message
-will be a surprise to you. Firstly, I am married to Mr. Patrick Bruun,
-A gold merchant who owns a small gold Mine in Burkina Faso; He died of
-Cardiovascular Disease in mid-March 2011. During his life time he
-deposited the sum of =E2=82=AC 8.5 Million Euro) Eight million, Five hundre=
-d
-thousand Euros in a bank in Ouagadougou the capital city of Burkina
-Faso. The deposited money was from the sale of the shares, death
-benefits payment and entitlements of my deceased husband by his
-company.
+We can install forwarding packets rule between uplink
+in switchdev mode, as show below. But the hardware does
+not do that as expected (mlnx_perf -i $PF1, we can't get
+the counter of the PF1). By the way, if we add the uplink
+PF0, PF1 to Open vSwitch and enable hw-offload, the rules
+can be offloaded but not work fine too. This patch add a
+check and if so return -EOPNOTSUPP.
 
-I am sending this message to you praying that it will reach you in
-good health, since I am not in good health condition in which I sleep
-every night without knowing if I may be alive to see the next day. I
-am suffering from long time cancer and presently i am partially
-suffering from a stroke illness which has become almost impossible for
-me to move around. I am married to my late husband for over 4 years
-before he died and is unfortunately that we don't have a child, my
-doctor confided in me that i have less chance to live. Having known my
-health condition, I decided to contact you to claim the fund since I
-don't have any relation I grew up from the orphanage home,
+$ tc filter add dev $PF0 protocol all parent ffff: prio 1 handle 1 \
+    flower skip_sw action mirred egress redirect dev $PF1
 
-I have decided to donate what I have to you for the support of helping
-Motherless babies/Less privileged/Widows' because I am dying and
-diagnosed of cancer for about 2 years ago. I have been touched by God
-Almighty to donate from what I have inherited from my late husband to
-you for good work of God Almighty. I have asked Almighty God to
-forgive me and believe he has, because He is a Merciful God I will be
-going in for an operation surgery soon
+$ tc -d -s filter show dev $PF0 ingress
+    skip_sw
+    in_hw in_hw_count 1
+    action order 1: mirred (Egress Redirect to device enp130s0f1) stolen
+    ...
+    Sent hardware 408954 bytes 4173 pkt
+    ...
 
-This is the reason i need your services to stand as my next of kin or
-an executor to claim the funds for charity purposes. If this money
-remains unclaimed after my death, the bank executives or the
-government will take the money as unclaimed fund and maybe use it for
-selfish and worthless ventures, I need a very honest person who can
-claim this money and use it for Charity works, for orphanages, widows
-and also build schools for less privilege that will be named after my
-late husband and my name; I need your urgent answer to know if you
-will be able to execute this project, and I will give you more
-Information on how the fund will be transferred to your bank account.
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c |  5 +++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c  | 17 +++++++++++++++++
+ 3 files changed, 23 insertions(+)
 
-Thanks
-Mrs. Anna H.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 7b48cca..18d3dcd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -1464,6 +1464,11 @@ static struct devlink_port *mlx5e_get_devlink_port(struct net_device *dev)
+ 	.ndo_set_features        = mlx5e_set_features,
+ };
+ 
++bool mlx5e_eswitch_uplink_rep(struct net_device *netdev)
++{
++	return netdev->netdev_ops == &mlx5e_netdev_ops_uplink_rep;
++}
++
+ bool mlx5e_eswitch_rep(struct net_device *netdev)
+ {
+ 	if (netdev->netdev_ops == &mlx5e_netdev_ops_rep ||
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
+index 3f756d5..8336301 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
+@@ -200,6 +200,7 @@ void mlx5e_rep_encap_entry_detach(struct mlx5e_priv *priv,
+ void mlx5e_rep_queue_neigh_stats_work(struct mlx5e_priv *priv);
+ 
+ bool mlx5e_eswitch_rep(struct net_device *netdev);
++bool mlx5e_eswitch_uplink_rep(struct net_device *netdev);
+ 
+ #else /* CONFIG_MLX5_ESWITCH */
+ static inline bool mlx5e_is_uplink_rep(struct mlx5e_priv *priv) { return false; }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 74091f7..290cdf3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3405,6 +3405,7 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 				struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
+ 				struct net_device *uplink_dev = mlx5_eswitch_uplink_get_proto_dev(esw, REP_ETH);
+ 				struct net_device *uplink_upper;
++				struct mlx5e_rep_priv *rep_priv;
+ 
+ 				if (is_duplicated_output_device(priv->netdev,
+ 								out_dev,
+@@ -3440,6 +3441,22 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 						return err;
+ 				}
+ 
++				/* Don't allow forwarding between uplink.
++				 *
++				 * Input vport was stored esw_attr->in_rep.
++				 * In LAG case, *priv* is the private data of
++				 * uplink which may be not the input vport.
++				 */
++				rep_priv = mlx5e_rep_to_rep_priv(attr->in_rep);
++				if (mlx5e_eswitch_uplink_rep(rep_priv->netdev) &&
++				    mlx5e_eswitch_uplink_rep(out_dev)) {
++					NL_SET_ERR_MSG_MOD(extack,
++							   "devices are both uplink, can't offload forwarding");
++					pr_err("devices %s %s are both uplink, can't offload forwarding\n",
++					       priv->netdev->name, out_dev->name);
++					return -EOPNOTSUPP;
++				}
++
+ 				if (!mlx5e_is_valid_eswitch_fwd_dev(priv, out_dev)) {
+ 					NL_SET_ERR_MSG_MOD(extack,
+ 							   "devices are not on same switch HW, can't offload forwarding");
+-- 
+1.8.3.1
+
