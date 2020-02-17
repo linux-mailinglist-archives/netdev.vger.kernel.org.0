@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A911614BA
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341681614BB
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729018AbgBQObY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 09:31:24 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:55921 "EHLO
+        id S1729031AbgBQObZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 09:31:25 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:58133 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727448AbgBQObX (ORCPT
+        by vger.kernel.org with ESMTP id S1729002AbgBQObX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:23 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 686BA201E3;
-        Mon, 17 Feb 2020 09:31:21 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9C35321873;
+        Mon, 17 Feb 2020 09:31:22 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:21 -0500
+  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=/HSGrKBijbsTzFdMNu5An1d5GjYFYFIfSaO3tKnS1j8=; b=ybanfPWt
-        ygjiwtUidsTuO20rvAggIYtgsZcM5pD9DmB27JmQx31Gq3qqxThb2PLQrfc/Zry1
-        SrTtTK8LDJQCud2UR0Q87UyNn4wRAUScr+T333hhPWow+Yhs+rPGikfMxhNIEHIX
-        fHim5UBsZgSqzx8VDjxOG0makHKuy7E0VvGPBHMmXtglmursAC7/LI1kpMmVYER7
-        3hF6J6xyA4xz8eK09tGhbJBkhG8iGOakeR8uCo15w/UW/xQEf17YonLXUlwDScil
-        UzD0hZYOkaGWL3DaF9CWU83kFTPjsp1Xml7tYKJ0i44lTdZyZpIBYG8+o2QokUve
-        aRr8+zcp/9cHhQ==
-X-ME-Sender: <xms:uaNKXjHM-OWieM6sLMGdz6WExOnbh5yJMtEkT2tg8V-bxxGKgig7RQ>
+        fm2; bh=EiA81wtQBwUyH5aVtrmdicXwJY4JwmuKgbPrijY6x7U=; b=wXCQ2EsP
+        Y8la2Ol+emvgPKGGbT7uRrJfFBCMXMfLVucnGigpZ8iP0WWSYdhZA0zfwKWTiRx6
+        EB4nO33Lg1pRsVyuzdpGqSDB5Cf+ffimKFWPHKEoVRAW+9+1uGOk1RLrREU+Goid
+        uv3nRpRsCXMLIuI++WcWwjyfp4Pl5YzJirFYcq9safFvTJGeP3FRSmfzKnvGIXQG
+        dHNJUdHPieVkePxgejoISc8RCvQb+HQot53h5CAu+iLObz+jvnlrpl1oE7a2J8B9
+        DvBzcxq/jnDiNOPtplXgbyUGD69z3hi7JcT7GQOqREUSwrNCPp6/u85PyN/rOw9f
+        NuhJjcS8tTKZOg==
+X-ME-Sender: <xms:uqNKXmxI7qf-Cj2nUL9WaYW2tAqz8H1410L04Zf0CoGHhQC3QYibxw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrh
     fuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
     hhdrohhrgh
-X-ME-Proxy: <xmx:uaNKXiY6Y33RBjxnRu-gzN-Vu2WDbIn2W-Tscy8HMZWMi0VKcL_rig>
-    <xmx:uaNKXjTsWpFMZzhZWnA263SfaOSW42PUQGbDHnvvsQU5ft0BQx9iew>
-    <xmx:uaNKXmC-shfSqvf5jh5wmDH-fanFBB0UTOunQdgQejogEimg3AJjLw>
-    <xmx:uaNKXn2GrGMKjtGU3YRHcPGhBjGB43-hlompnI6D6eTKjQQW-AUtig>
+X-ME-Proxy: <xmx:uqNKXo0eXqfeJTlk3-_kT6KPKrwxFrIW5tQhhssAP1bUSQiww-suFw>
+    <xmx:uqNKXljcCrRZcurna3uVu3OB7sRKlsIITKS_5t4LAgb79JmnUtJUAQ>
+    <xmx:uqNKXunC6-hkxRxQQLA-Th-1CWnr78rrA5HddalbNGF32I_d4iIrvg>
+    <xmx:uqNKXh5xNHYCKTg49HjTHAJRjqq4x5JGqT1ZpGLFFq4JZ7XvRAveJA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4EB073060C28;
-        Mon, 17 Feb 2020 09:31:20 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7FB353060C28;
+        Mon, 17 Feb 2020 09:31:21 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 04/10] mlxsw: spectrum_switchdev: Remove VXLAN checks during FID membership
-Date:   Mon, 17 Feb 2020 16:29:34 +0200
-Message-Id: <20200217142940.307014-5-idosch@idosch.org>
+Subject: [PATCH net-next 05/10] mlxsw: spectrum: Reduce dependency between bridge and router code
+Date:   Mon, 17 Feb 2020 16:29:35 +0200
+Message-Id: <20200217142940.307014-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200217142940.307014-1-idosch@idosch.org>
 References: <20200217142940.307014-1-idosch@idosch.org>
@@ -61,99 +61,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-As explained in previous patch, VXLAN devices now take a reference on
-the FID and not only local ports. Therefore, there is no need for local
-ports to check if they need to set a VNI on the FID when they join the
-FID.
+Commit f40be47a3e40 ("mlxsw: spectrum_router: Do not force specific
+configuration order") added a call from the routing code to the bridge
+code in order to handle the case where VNI should be set on a FID
+following the joining of the router port to the FID.
 
-Remove these unnecessary checks.
+This is no longer required, as previous patches made VXLAN devices
+explicitly take a reference on the FID and set VNI on it.
+
+Therefore, remove the unnecessary call and simply have the RIF take a
+reference on the FID without checking if VNI should also be set on it.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../mellanox/mlxsw/spectrum_switchdev.c       | 60 +------------------
- 1 file changed, 2 insertions(+), 58 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h     |  4 ----
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c  |  4 ++--
+ .../ethernet/mellanox/mlxsw/spectrum_switchdev.c   | 14 --------------
+ 3 files changed, 2 insertions(+), 20 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index a0f1f9dceec5..4c3d39223a46 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -468,10 +468,6 @@ int mlxsw_sp_bridge_vxlan_join(struct mlxsw_sp *mlxsw_sp,
+ 			       struct netlink_ext_ack *extack);
+ void mlxsw_sp_bridge_vxlan_leave(struct mlxsw_sp *mlxsw_sp,
+ 				 const struct net_device *vxlan_dev);
+-struct mlxsw_sp_fid *mlxsw_sp_bridge_fid_get(struct mlxsw_sp *mlxsw_sp,
+-					     const struct net_device *br_dev,
+-					     u16 vid,
+-					     struct netlink_ext_ack *extack);
+ extern struct notifier_block mlxsw_sp_switchdev_notifier;
+ 
+ /* spectrum.c */
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 4a77b511ead2..def75d7fcd06 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -7428,7 +7428,7 @@ mlxsw_sp_rif_vlan_fid_get(struct mlxsw_sp_rif *rif,
+ 		}
+ 	}
+ 
+-	return mlxsw_sp_bridge_fid_get(rif->mlxsw_sp, br_dev, vid, extack);
++	return mlxsw_sp_fid_8021q_get(rif->mlxsw_sp, vid);
+ }
+ 
+ static void mlxsw_sp_rif_vlan_fdb_del(struct mlxsw_sp_rif *rif, const char *mac)
+@@ -7519,7 +7519,7 @@ static struct mlxsw_sp_fid *
+ mlxsw_sp_rif_fid_fid_get(struct mlxsw_sp_rif *rif,
+ 			 struct netlink_ext_ack *extack)
+ {
+-	return mlxsw_sp_bridge_fid_get(rif->mlxsw_sp, rif->dev, 0, extack);
++	return mlxsw_sp_fid_8021d_get(rif->mlxsw_sp, rif->dev->ifindex);
+ }
+ 
+ static void mlxsw_sp_rif_fid_fdb_del(struct mlxsw_sp_rif *rif, const char *mac)
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 3ba07233d400..c3a890e0bba1 100644
+index c3a890e0bba1..6213fa43aa7b 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2108,38 +2108,8 @@ mlxsw_sp_bridge_8021q_fid_get(struct mlxsw_sp_bridge_device *bridge_device,
- 			      u16 vid, struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_lower_get(bridge_device->dev);
--	struct net_device *vxlan_dev;
--	struct mlxsw_sp_fid *fid;
--	int err;
--
--	fid = mlxsw_sp_fid_8021q_get(mlxsw_sp, vid);
--	if (IS_ERR(fid))
--		return fid;
--
--	if (mlxsw_sp_fid_vni_is_set(fid))
--		return fid;
--
--	/* Find the VxLAN device that has the specified VLAN configured as
--	 * PVID and egress untagged. There can be at most one such device
--	 */
--	vxlan_dev = mlxsw_sp_bridge_8021q_vxlan_dev_find(bridge_device->dev,
--							 vid);
--	if (!vxlan_dev)
--		return fid;
--
--	if (!netif_running(vxlan_dev))
--		return fid;
- 
--	err = mlxsw_sp_bridge_8021q_vxlan_join(bridge_device, vxlan_dev, vid,
--					       extack);
--	if (err)
--		goto err_vxlan_join;
--
--	return fid;
--
--err_vxlan_join:
--	mlxsw_sp_fid_put(fid);
--	return ERR_PTR(err);
-+	return mlxsw_sp_fid_8021q_get(mlxsw_sp, vid);
+@@ -2358,20 +2358,6 @@ void mlxsw_sp_bridge_vxlan_leave(struct mlxsw_sp *mlxsw_sp,
+ 	mlxsw_sp_fid_put(fid);
  }
  
- static struct mlxsw_sp_fid *
-@@ -2273,34 +2243,8 @@ mlxsw_sp_bridge_8021d_fid_get(struct mlxsw_sp_bridge_device *bridge_device,
- 			      u16 vid, struct netlink_ext_ack *extack)
- {
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_lower_get(bridge_device->dev);
--	struct net_device *vxlan_dev;
--	struct mlxsw_sp_fid *fid;
--	int err;
+-struct mlxsw_sp_fid *mlxsw_sp_bridge_fid_get(struct mlxsw_sp *mlxsw_sp,
+-					     const struct net_device *br_dev,
+-					     u16 vid,
+-					     struct netlink_ext_ack *extack)
+-{
+-	struct mlxsw_sp_bridge_device *bridge_device;
 -
--	fid = mlxsw_sp_fid_8021d_get(mlxsw_sp, bridge_device->dev->ifindex);
--	if (IS_ERR(fid))
--		return fid;
+-	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, br_dev);
+-	if (WARN_ON(!bridge_device))
+-		return ERR_PTR(-EINVAL);
 -
--	if (mlxsw_sp_fid_vni_is_set(fid))
--		return fid;
+-	return bridge_device->ops->fid_get(bridge_device, vid, extack);
+-}
 -
--	vxlan_dev = mlxsw_sp_bridge_vxlan_dev_find(bridge_device->dev);
--	if (!vxlan_dev)
--		return fid;
--
--	if (!netif_running(vxlan_dev))
--		return fid;
--
--	err = mlxsw_sp_bridge_8021d_vxlan_join(bridge_device, vxlan_dev, 0,
--					       extack);
--	if (err)
--		goto err_vxlan_join;
- 
--	return fid;
--
--err_vxlan_join:
--	mlxsw_sp_fid_put(fid);
--	return ERR_PTR(err);
-+	return mlxsw_sp_fid_8021d_get(mlxsw_sp, bridge_device->dev->ifindex);
- }
- 
- static struct mlxsw_sp_fid *
+ static void
+ mlxsw_sp_switchdev_vxlan_addr_convert(const union vxlan_addr *vxlan_addr,
+ 				      enum mlxsw_sp_l3proto *proto,
 -- 
 2.24.1
 
