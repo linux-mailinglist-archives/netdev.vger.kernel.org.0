@@ -2,136 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D343B161C63
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 21:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3AC161C90
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 22:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729402AbgBQUlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 15:41:00 -0500
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:56110 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727332AbgBQUk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 15:40:59 -0500
-Received: from pps.filterd (m0122333.ppops.net [127.0.0.1])
-        by mx0a-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01HKWGuW027247;
-        Mon, 17 Feb 2020 20:40:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
- subject : date : message-id : in-reply-to; s=jan2016.eng;
- bh=8XJ7OuLWZ0V1Mlp4n4ryROk3raofF+rl5vPWIxb9Wfg=;
- b=j1dwjqbKs4o2bbnOhHZkcnx5bQw9YzWrgT5NVgRyLalDdKy9AODwGyboismhT5hB8BZf
- Z0ScxRiTZGHb03XrCCyEWFFZ0kcIcTOnEIDyC6fehqaA+ZvMY4mF6WMgt2icwIvpUfGw
- IMKyPb79IradX+cEpMfQ4cYrBRKlw4WzM2LptwOHBNVpp16+tSHWms/UkzmdfVYE/PE7
- AOXenIWIv3FXYUNaya46TuCKwULM5ZQss+BvZhHqg9q12e9kX41T5tJ6eIfUw7nKUZtZ
- XHTrPPoCGrixu3gPFIxCgEZPOZ94uEadLwgwRz4TX1+kueT6EGVX7fgs1iDiFSmljQqv Fw== 
-Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
-        by mx0a-00190b01.pphosted.com with ESMTP id 2y68sf1eqv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 17 Feb 2020 20:40:53 +0000
-Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
-        by prod-mail-ppoint6.akamai.com (8.16.0.27/8.16.0.27) with SMTP id 01HKZjHX005439;
-        Mon, 17 Feb 2020 15:40:52 -0500
-Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint6.akamai.com with ESMTP id 2y6cuy1np2-1;
-        Mon, 17 Feb 2020 15:40:52 -0500
-Received: from bos-lpjec.145bw.corp.akamai.com (bos-lpjec.145bw.corp.akamai.com [172.28.3.71])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id 46EE621A4A;
-        Mon, 17 Feb 2020 20:40:52 +0000 (GMT)
-From:   Jason Baron <jbaron@akamai.com>
-To:     davem@davemloft.net, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        jhs@mojatatu.com
-Cc:     netdev@vger.kernel.org, soukjin.bae@samsung.com,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v3 net] net: sched: correct flower port blocking
-Date:   Mon, 17 Feb 2020 15:38:09 -0500
-Message-Id: <1581971889-5862-1-git-send-email-jbaron@akamai.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20200216.191837.828352407289487240.davem@davemloft.net>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2020-02-17_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=960
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-2002050000 definitions=main-2002170169
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-17_12:2020-02-17,2020-02-17 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 impostorscore=0
- spamscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0 adultscore=0
- bulkscore=0 mlxlogscore=960 malwarescore=0 mlxscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2002170168
+        id S1729676AbgBQVDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 16:03:05 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42934 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729396AbgBQVDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 16:03:04 -0500
+Received: by mail-pl1-f195.google.com with SMTP id e8so7189508plt.9
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 13:03:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ELkDR22vOnk2EMyh6lZ2o2EgTEKCyjqr9cOt+NsucFc=;
+        b=MoKrzZYvy3eX4RRSzB+sptEStuaFvIl1XRw1otldcbCpLdQw0D5mE9hGuOV8Ka4PQF
+         ZEEPp0TqSuFYCz02SPhBmdmSAu3CuqY+cVnGccAxZegah+rfd5A1GRu6G+c37pltzg4S
+         VSCj4oOABZrxgizSfISE18WTUbEVdf2xvKP/uSsOfzD4cXyNjFP6LwfB9uVQznWQFJLa
+         hgIkByVdX7e7OHsXkThUKWFsi26a89l1IZmV2NreezhdhHwxCU8xEvjU+uAwwvDmPdYz
+         gxxIp21LWQ7QaSHp9rDbkYddKCG27hedojKol6eUOG+Aj68DWK5O9e6UyqJOYwoTAAw/
+         VbEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ELkDR22vOnk2EMyh6lZ2o2EgTEKCyjqr9cOt+NsucFc=;
+        b=WXUIOCJSqPzYW3IBaWgYePIqrhR0OcG7BsASwew5BLnPbDBfj7vah97B/xORiGq6ml
+         7nlyzHnnmh5VRrBjy3VWyTIeRbeVFXWibqUuU02JarqKE/mlo+FIVDANSQqlH0QZv6eK
+         mW7v9OngzI7rrmBmdco4efMRkZDzAo7kCSGoUOtJrcL081xflFymVqAvb+P6vGCvlD8X
+         5E1BEXMDYBeZvG6jirF7r2IZQJOk6xFfwGw2mRYyaNlWZlc1xihGmN0hRaCBEB9eH+dS
+         72xroms5fjOw7jHKPjDTiLnYp2Vq0UEtPB3d8EBB6XIjsPjz9weEep4RcTBpI0GYePgv
+         5+mg==
+X-Gm-Message-State: APjAAAVYH5sIMPgHcFUMPA1NQIvIFUN1sLG1CRvmILAVDdI0K3KBXhOK
+        nCaxtNpgPHQXyFpilXpnzQLmog==
+X-Google-Smtp-Source: APXvYqwL4IUEYtWCP7yrVfMaL1+mbRuRI+vSipt6X46kMueHdAyrTIuvzQZy/iHpFB7jserm3mCaAw==
+X-Received: by 2002:a17:902:341:: with SMTP id 59mr18537943pld.29.1581973383776;
+        Mon, 17 Feb 2020 13:03:03 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id x197sm1380868pfc.1.2020.02.17.13.03.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2020 13:03:03 -0800 (PST)
+Date:   Mon, 17 Feb 2020 13:02:55 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options
+ support for erspan metadata
+Message-ID: <20200217130255.06644553@hermes.lan>
+In-Reply-To: <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com>
+References: <cover.1581676056.git.lucien.xin@gmail.com>
+        <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
+        <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
+        <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
+        <20200214081324.48dc2090@hermes.lan>
+        <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
+        <20200214162104.04e0bb71@hermes.lan>
+        <CADvbK_eSiGXuZqHAdQTJugLa7mNUkuQTDmcuVYMHO=1VB+Cs8w@mail.gmail.com>
+        <793b8ff4-c04a-f962-f54f-3eae87a42963@gmail.com>
+        <CADvbK_fOfEC0kG8wY_xbg_Yj4t=Y1oRKxo4h5CsYxN6Keo9YBQ@mail.gmail.com>
+        <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tc flower rules that are based on src or dst port blocking are sometimes
-ineffective due to uninitialized stack data. __skb_flow_dissect() extracts
-ports from the skb for tc flower to match against. However, the port
-dissection is not done when when the FLOW_DIS_IS_FRAGMENT bit is set in
-key_control->flags. All callers of __skb_flow_dissect(), zero-out the
-key_control field except for fl_classify() as used by the flower
-classifier. Thus, the FLOW_DIS_IS_FRAGMENT may be set on entry to
-__skb_flow_dissect(), since key_control is allocated on the stack
-and may not be initialized.
+On Mon, 17 Feb 2020 12:53:14 -0700
+David Ahern <dsahern@gmail.com> wrote:
 
-Since key_basic and key_control are present for all flow keys, let's
-make sure they are initialized.
+> On 2/15/20 11:38 PM, Xin Long wrote:
+> > On Sun, Feb 16, 2020 at 12:51 AM David Ahern <dsahern@gmail.com> wrote:  
+> >>
+> >> On 2/14/20 9:18 PM, Xin Long wrote:  
+> >>> On Sat, Feb 15, 2020 at 8:21 AM Stephen Hemminger
+> >>> <stephen@networkplumber.org> wrote:  
+> >>>>
+> >>>> On Sat, 15 Feb 2020 01:40:27 +0800
+> >>>> Xin Long <lucien.xin@gmail.com> wrote:
+> >>>>  
+> >>>>> This's not gonna work. as the output will be:
+> >>>>> {"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
+> >>>>> instead of
+> >>>>> {"ver":2,"index":0,"dir":1,"hwid":2} (number)  
+> >>>>
+> >>>> JSON is typeless. Lots of values are already printed in hex  
+> >>> You may mean JSON data itself is typeless.
+> >>> But JSON objects are typed when parsing JSON data, which includes
+> >>> string, number, array, boolean. So it matters how to define the
+> >>> members' 'type' in JSON data.
+> >>>
+> >>> For example, in python's 'json' module:
+> >>>
+> >>> #!/usr/bin/python2
+> >>> import json
+> >>> json_data_1 = '{"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}'
+> >>> json_data_2 = '{"ver":2,"index":0,"dir":1,"hwid":2}'
+> >>> parsed_json_1 = (json.loads(json_data_1))
+> >>> parsed_json_2 = (json.loads(json_data_2))
+> >>> print type(parsed_json_1["hwid"])
+> >>> print type(parsed_json_2["hwid"])
+> >>>
+> >>> The output is:
+> >>> <type 'unicode'>
+> >>> <type 'int'>
+> >>>
+> >>> Also, '{"result": true}' is different from '{"result": "true"}' when
+> >>> loading it in a 3rd-party lib.
+> >>>
+> >>> I think the JSON data coming from iproute2 is designed to be used by
+> >>> a 3rd-party lib to parse, not just to show to users. To keep these
+> >>> members' original type (numbers) is more appropriate, IMO.
+> >>>  
+> >>
+> >> Stephen: why do you think all of the numbers should be in hex?
+> >>
+> >> It seems like consistency with existing output should matter more.
+> >> ip/link_gre.c for instance prints index as an int, version as an int,
+> >> direction as a string and only hwid in hex.
+> >>
+> >> Xin: any reason you did not follow the output of the existingg netdev
+> >> based solutions?  
+> > Hi David,
+> > 
+> > Option is expressed as "version:index:dir:hwid", I made all fields
+> > in this string of hex, just like "class:type:data" in:
+> > 
+> > commit 0ed5269f9e41f495c8e9020c85f5e1644c1afc57
+> > Author: Simon Horman <simon.horman@netronome.com>
+> > Date:   Tue Jun 26 21:39:37 2018 -0700
+> > 
+> >     net/sched: add tunnel option support to act_tunnel_key
+> > 
+> > I'm not sure if it's good to mix multiple types in this string. wdyt?
+> > 
+> > but for the JSON data, of course, these are all numbers(not string).
+> >   
+> 
+> I don't understand why Stephen is pushing for hex; it does not make
+> sense for version, index or direction. I don't have a clear
+> understanding of hwid to know uint vs hex, so your current JSON prints
+> seem fine.
+> 
+> As for the stdout print and hex fields, staring at the tc and lwtunnel
+> code, it seems like those 2 have a lot of parallels in expressing
+> options for encoding vs lwtunnel and netdev based code. ie., I think
+> this latest set is correct.
+> 
+> Stephen?
 
-Fixes: 62230715fd24 ("flow_dissector: do not dissect l4 ports for fragments")
-Co-developed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: Jason Baron <jbaron@akamai.com>
----
+I just wanted:
+1. The parse and print functions should have the same formats.
+I.e. if you take the output and do a little massaging of the ifindex
+it should be accepted as an input set of parameters.
 
-v3:
--add include of string.h for memset() (David Miller)
+2. As much as possible, the JSON and non-JSON output should be similar.
+If non-JSON prints in hex, then JSON should display hex and vice/versa.
 
-v2:
--move rename to flow_dissector_init_keys() amd move to
- flow_dissector.h (Cong Wang)
-
-
- include/net/flow_dissector.h | 9 +++++++++
- net/sched/cls_flower.c       | 1 +
- 2 files changed, 10 insertions(+)
-
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index d93017a..e03827f 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -5,6 +5,7 @@
- #include <linux/types.h>
- #include <linux/in6.h>
- #include <linux/siphash.h>
-+#include <linux/string.h>
- #include <uapi/linux/if_ether.h>
- 
- struct sk_buff;
-@@ -349,4 +350,12 @@ struct bpf_flow_dissector {
- 	void			*data_end;
- };
- 
-+static inline void
-+flow_dissector_init_keys(struct flow_dissector_key_control *key_control,
-+			 struct flow_dissector_key_basic *key_basic)
-+{
-+	memset(key_control, 0, sizeof(*key_control));
-+	memset(key_basic, 0, sizeof(*key_basic));
-+}
-+
- #endif
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index f9c0d1e..b783254 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -305,6 +305,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 	struct cls_fl_filter *f;
- 
- 	list_for_each_entry_rcu(mask, &head->masks, list) {
-+		flow_dissector_init_keys(&skb_key.control, &skb_key.basic);
- 		fl_clear_masked_range(&skb_key, mask);
- 
- 		skb_flow_dissect_meta(skb, &mask->dissector, &skb_key);
--- 
-2.7.4
-
+Ideally all inputs would be human format (not machine formats like hex).
+But I guess the mistake was already made with some of the other tunnels.
