@@ -2,65 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7895160911
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D8B160912
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:40:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgBQDhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 22:37:33 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48358 "EHLO
+        id S1726751AbgBQDkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 22:40:08 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48372 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726498AbgBQDhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:37:33 -0500
+        with ESMTP id S1726498AbgBQDkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:40:08 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AD3941579181D;
-        Sun, 16 Feb 2020 19:37:32 -0800 (PST)
-Date:   Sun, 16 Feb 2020 19:37:32 -0800 (PST)
-Message-Id: <20200216.193732.474649064358030475.davem@davemloft.net>
-To:     matthieu.baerts@tessares.net
-Cc:     netdev@vger.kernel.org, mathew.j.martineau@linux.intel.com,
-        pabeni@redhat.com, cpaasch@apple.com, mptcp@lists.01.org
-Subject: Re: [PATCH net] mptcp: select CRYPTO
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 75B5A15796801;
+        Sun, 16 Feb 2020 19:40:07 -0800 (PST)
+Date:   Sun, 16 Feb 2020 19:40:06 -0800 (PST)
+Message-Id: <20200216.194006.251898075240263496.davem@davemloft.net>
+To:     linux@armlinux.org.uk
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 00/10] Pause updates for phylib and phylink
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200215144556.956173-1-matthieu.baerts@tessares.net>
-References: <20200215144556.956173-1-matthieu.baerts@tessares.net>
+In-Reply-To: <20200215154839.GR25745@shell.armlinux.org.uk>
+References: <20200215154839.GR25745@shell.armlinux.org.uk>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 19:37:32 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 19:40:07 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
-Date: Sat, 15 Feb 2020 15:45:56 +0100
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Date: Sat, 15 Feb 2020 15:48:39 +0000
 
-> Without this modification and if CRYPTO is not selected, we have this
-> warning:
+> Currently, phylib resolves the speed and duplex settings, which MAC
+> drivers use directly. phylib also extracts the "Pause" and "AsymPause"
+> bits from the link partner's advertisement, and stores them in struct
+> phy_device's pause and asym_pause members with no further processing.
+> It is left up to each MAC driver to implement decoding for this
+> information.
 > 
->   WARNING: unmet direct dependencies detected for CRYPTO_LIB_SHA256
->     Depends on [n]: CRYPTO [=n]
->     Selected by [y]:
->     - MPTCP [=y] && NET [=y] && INET [=y]
+> phylink converted drivers are able to take advantage of code therein
+> which resolves the pause advertisements for the MAC driver, but this
+> does nothing for unconverted drivers. It also does not allow us to
+> make use of hardware-resolved pause states offered by several PHYs.
 > 
-> MPTCP selects CRYPTO_LIB_SHA256 which seems to depend on CRYPTO. CRYPTO
-> is now selected to avoid this issue.
+> This series aims to address this by:
+ ...
+> This series has been build-tested against net-next; the boot tested
+> patches are in my "phy" branch against v5.5 plus the queued phylink
+> changes that were merged for 5.6.
 > 
-> Even though the config system prints that warning, it looks like
-> sha256.c is compiled and linked even without CONFIG_CRYPTO. Since MPTCP
-> will end up needing CONFIG_CRYPTO anyway in future commits -- currently
-> in preparation for net-next -- we propose to add it now to fix the
-> warning.
-> 
-> The dependency in the config system comes from the fact that
-> CRYPTO_LIB_SHA256 is defined in "lib/crypto/Kconfig" which is sourced
-> from "crypto/Kconfig" only if CRYPTO is selected.
-> 
-> Fixes: 65492c5a6ab5 (mptcp: move from sha1 (v0) to sha256 (v1))
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> The next series will introduce the ability for phylib drivers to
+> provide hardware resolved pause enablement state.  These patches can
+> be found in my "phy" branch.
 
-Applied.
+Series applied to net-next, thank you.
