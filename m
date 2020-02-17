@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B732F1614B7
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D95091614C1
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 15:31:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728868AbgBQObU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 09:31:20 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:44519 "EHLO
+        id S1729147AbgBQObg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 09:31:36 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:56105 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727898AbgBQObT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:19 -0500
+        by vger.kernel.org with ESMTP id S1727421AbgBQObU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 09:31:20 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id CACE421F8E;
-        Mon, 17 Feb 2020 09:31:17 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 05F1D22050;
+        Mon, 17 Feb 2020 09:31:19 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:17 -0500
+  by compute3.internal (MEProxy); Mon, 17 Feb 2020 09:31:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=Yhd4Dq/ESiPSQABcmMLjt/rMyx0bFsxxq2K+uqY3MT4=; b=1BPwzcPW
-        reIidDGr6CCLkpTyIR1/gaegcFcFKFUDknEGPgX5EFTfPvw84FeEa+QdnzjUf2QA
-        ibnzvzIUQmfCDYLBK3x8uBdkwv6ltvTi2In3vOqeeqBF7bEPyrv+tsybTEXVb8fN
-        HRg2ceU3rbofe3GuMWiNyxX8wyFmP4gj4xoAAV4hJSy8D1yjkwXTNBZZuJT33t6l
-        LDKWNyNvOC1SKf5qWIRDymIU1VTleL0NyssY25XahXnN6rlZG8E4NLcMZkVLmvbA
-        HTwm2qeWpyln9EFoOmTroU3V3H61Ero67mzhSsaTwMTtzhRlr+gUDgmP2wwnfOo0
-        Ur2Mlb8dNKaEtw==
-X-ME-Sender: <xms:taNKXlLaXZKoveWt6TYTMz8q2Vj0kumS_uM7TWlanYF2vz3YvntV9w>
+        fm2; bh=lMVF5D49BmyWx7rWinrK/PwUbUx0fCBL09PBBD8Npzk=; b=KKGTyPj1
+        IDX6I66u4fzDiZBBPzh2GwW2Xhp2BQtN/BrqibjPf/qVdARnTNR7OuVS0ElGOUP8
+        GPldQp+HlgBxxcrVLe6IY9rRREDpQPlU8OQz6fpE5iNfnUXedi1yuonfXvCnzdRv
+        URn7eEYRH7SHaNE0epQ5koKU9nJhDWv2qM2pqW4va9oXtXgwvMOhEPgknerepRJj
+        i4Jiil5KimTcgZw7AA7UZmzqsez13qKoKXNZ3NvjUNDqs4T0PKPmHUB7YkYQdecq
+        Y3piZiuqPJEbbz4iZehU7u1f/x2pbjyVlJpqEmtNSKCdcWqjrCIjbDN5rd3/uEyD
+        qiKkwRfuxLKR6Q==
+X-ME-Sender: <xms:tqNKXmXyQszRa0NoSTz6inxcq3SemKleaPlsTEj0vKPUUHjvwvYToA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrjeeigdeiiecutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecuvehluhhsthgvrh
     fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
     hhdrohhrgh
-X-ME-Proxy: <xmx:taNKXjgNQw22F4l8yrBFxkRGhPXOp3gQMlCLdrZbzrYhOv-X-N6pUQ>
-    <xmx:taNKXvIrmGud1zHqphiTB8wJUhNJtSWlf96MFBa_L9ayxwqNOPMK4A>
-    <xmx:taNKXoE03OBLjry6Za4lOfTF-0mB_lea9HrC3RqYIhFmTHNBm_acPQ>
-    <xmx:taNKXo-_VmnPNDDEc44e4sGQpbCL3BA9Sn1L40Vk3cSglcPokQMj8A>
+X-ME-Proxy: <xmx:tqNKXpitOCveHyV5Pr1Ujoq1_bnjSJymWAIEL2zkucIU4OHpBUl-rg>
+    <xmx:tqNKXjWvq_WPQTYr0VsXIqGJA1GKHrIPwG9UGQNbWVObAm4S4nJB9A>
+    <xmx:tqNKXlIvLbEuFqmgC9lzbsKdW7xmGuYg1LxG3vMRd8-KCGNzlChJeg>
+    <xmx:t6NKXrcM5Sqej5qFiUsP91hN--mCpLv1h4Y4v98xlmI6k4qqKgRQyQ>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id ADFC93060EF5;
-        Mon, 17 Feb 2020 09:31:16 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id DF6583060C28;
+        Mon, 17 Feb 2020 09:31:17 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 01/10] mlxsw: spectrum_fid: Use 'refcount_t' for FID reference counting
-Date:   Mon, 17 Feb 2020 16:29:31 +0200
-Message-Id: <20200217142940.307014-2-idosch@idosch.org>
+Subject: [PATCH net-next 02/10] mlxsw: spectrum_switchdev: Propagate extack to bridge creation function
+Date:   Mon, 17 Feb 2020 16:29:32 +0200
+Message-Id: <20200217142940.307014-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200217142940.307014-1-idosch@idosch.org>
 References: <20200217142940.307014-1-idosch@idosch.org>
@@ -61,85 +61,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-'refcount_t' is very useful for catching over/under flows. Convert the
-FID (Filtering Identifier) objects to use it instead of 'unsigned int'
-for their reference count.
+Propagate extack to bridge creation function so that error messages
+could be passed to user space via netlink instead of printing them to
+kernel log.
 
-A subsequent patch in the series will change the way VXLAN devices hold
-/ release the FID reference, which is why the conversion is made now.
+A subsequent patch will pass the new extack argument to more functions.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-index 8df3cb21baa6..65486a90b526 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-@@ -8,6 +8,7 @@
- #include <linux/netdevice.h>
- #include <linux/rhashtable.h>
- #include <linux/rtnetlink.h>
-+#include <linux/refcount.h>
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index a3af171c6358..798aefd3e3b6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -155,7 +155,8 @@ static void mlxsw_sp_bridge_device_rifs_destroy(struct mlxsw_sp *mlxsw_sp,
  
- #include "spectrum.h"
- #include "reg.h"
-@@ -24,7 +25,7 @@ struct mlxsw_sp_fid_core {
- struct mlxsw_sp_fid {
- 	struct list_head list;
- 	struct mlxsw_sp_rif *rif;
--	unsigned int ref_count;
-+	refcount_t ref_count;
- 	u16 fid_index;
- 	struct mlxsw_sp_fid_family *fid_family;
- 	struct rhash_head ht_node;
-@@ -149,7 +150,7 @@ struct mlxsw_sp_fid *mlxsw_sp_fid_lookup_by_index(struct mlxsw_sp *mlxsw_sp,
- 	fid = rhashtable_lookup_fast(&mlxsw_sp->fid_core->fid_ht, &fid_index,
- 				     mlxsw_sp_fid_ht_params);
- 	if (fid)
--		fid->ref_count++;
-+		refcount_inc(&fid->ref_count);
+ static struct mlxsw_sp_bridge_device *
+ mlxsw_sp_bridge_device_create(struct mlxsw_sp_bridge *bridge,
+-			      struct net_device *br_dev)
++			      struct net_device *br_dev,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct device *dev = bridge->mlxsw_sp->bus_info->dev;
+ 	struct mlxsw_sp_bridge_device *bridge_device;
+@@ -163,6 +164,7 @@ mlxsw_sp_bridge_device_create(struct mlxsw_sp_bridge *bridge,
  
- 	return fid;
- }
-@@ -183,7 +184,7 @@ struct mlxsw_sp_fid *mlxsw_sp_fid_lookup_by_vni(struct mlxsw_sp *mlxsw_sp,
- 	fid = rhashtable_lookup_fast(&mlxsw_sp->fid_core->vni_ht, &vni,
- 				     mlxsw_sp_fid_vni_ht_params);
- 	if (fid)
--		fid->ref_count++;
-+		refcount_inc(&fid->ref_count);
- 
- 	return fid;
- }
-@@ -1030,7 +1031,7 @@ static struct mlxsw_sp_fid *mlxsw_sp_fid_lookup(struct mlxsw_sp *mlxsw_sp,
- 	list_for_each_entry(fid, &fid_family->fids_list, list) {
- 		if (!fid->fid_family->ops->compare(fid, arg))
- 			continue;
--		fid->ref_count++;
-+		refcount_inc(&fid->ref_count);
- 		return fid;
+ 	if (vlan_enabled && bridge->vlan_enabled_exists) {
+ 		dev_err(dev, "Only one VLAN-aware bridge is supported\n");
++		NL_SET_ERR_MSG_MOD(extack, "Only one VLAN-aware bridge is supported");
+ 		return ERR_PTR(-EINVAL);
  	}
  
-@@ -1075,7 +1076,7 @@ static struct mlxsw_sp_fid *mlxsw_sp_fid_get(struct mlxsw_sp *mlxsw_sp,
- 		goto err_rhashtable_insert;
+@@ -203,7 +205,8 @@ mlxsw_sp_bridge_device_destroy(struct mlxsw_sp_bridge *bridge,
  
- 	list_add(&fid->list, &fid_family->fids_list);
--	fid->ref_count++;
-+	refcount_set(&fid->ref_count, 1);
- 	return fid;
+ static struct mlxsw_sp_bridge_device *
+ mlxsw_sp_bridge_device_get(struct mlxsw_sp_bridge *bridge,
+-			   struct net_device *br_dev)
++			   struct net_device *br_dev,
++			   struct netlink_ext_ack *extack)
+ {
+ 	struct mlxsw_sp_bridge_device *bridge_device;
  
- err_rhashtable_insert:
-@@ -1093,7 +1094,7 @@ void mlxsw_sp_fid_put(struct mlxsw_sp_fid *fid)
- 	struct mlxsw_sp_fid_family *fid_family = fid->fid_family;
- 	struct mlxsw_sp *mlxsw_sp = fid_family->mlxsw_sp;
+@@ -211,7 +214,7 @@ mlxsw_sp_bridge_device_get(struct mlxsw_sp_bridge *bridge,
+ 	if (bridge_device)
+ 		return bridge_device;
  
--	if (--fid->ref_count != 0)
-+	if (!refcount_dec_and_test(&fid->ref_count))
- 		return;
+-	return mlxsw_sp_bridge_device_create(bridge, br_dev);
++	return mlxsw_sp_bridge_device_create(bridge, br_dev, extack);
+ }
  
- 	list_del(&fid->list);
+ static void
+@@ -292,7 +295,8 @@ mlxsw_sp_bridge_port_destroy(struct mlxsw_sp_bridge_port *bridge_port)
+ 
+ static struct mlxsw_sp_bridge_port *
+ mlxsw_sp_bridge_port_get(struct mlxsw_sp_bridge *bridge,
+-			 struct net_device *brport_dev)
++			 struct net_device *brport_dev,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct net_device *br_dev = netdev_master_upper_dev_get(brport_dev);
+ 	struct mlxsw_sp_bridge_device *bridge_device;
+@@ -305,7 +309,7 @@ mlxsw_sp_bridge_port_get(struct mlxsw_sp_bridge *bridge,
+ 		return bridge_port;
+ 	}
+ 
+-	bridge_device = mlxsw_sp_bridge_device_get(bridge, br_dev);
++	bridge_device = mlxsw_sp_bridge_device_get(bridge, br_dev, extack);
+ 	if (IS_ERR(bridge_device))
+ 		return ERR_CAST(bridge_device);
+ 
+@@ -1000,7 +1004,7 @@ mlxsw_sp_port_vlan_bridge_join(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan,
+ 		 &bridge_vlan->port_vlan_list);
+ 
+ 	mlxsw_sp_bridge_port_get(mlxsw_sp_port->mlxsw_sp->bridge,
+-				 bridge_port->dev);
++				 bridge_port->dev, extack);
+ 	mlxsw_sp_port_vlan->bridge_port = bridge_port;
+ 
+ 	return 0;
+@@ -2287,7 +2291,8 @@ int mlxsw_sp_port_bridge_join(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	struct mlxsw_sp_bridge_port *bridge_port;
+ 	int err;
+ 
+-	bridge_port = mlxsw_sp_bridge_port_get(mlxsw_sp->bridge, brport_dev);
++	bridge_port = mlxsw_sp_bridge_port_get(mlxsw_sp->bridge, brport_dev,
++					       extack);
+ 	if (IS_ERR(bridge_port))
+ 		return PTR_ERR(bridge_port);
+ 	bridge_device = bridge_port->bridge_device;
 -- 
 2.24.1
 
