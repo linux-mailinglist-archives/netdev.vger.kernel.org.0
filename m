@@ -2,147 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD811618DB
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:33:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D381618D5
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729701AbgBQRdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 12:33:08 -0500
-Received: from rcdn-iport-3.cisco.com ([173.37.86.74]:11482 "EHLO
-        rcdn-iport-3.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728000AbgBQRdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 12:33:08 -0500
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Feb 2020 12:33:06 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=603; q=dns/txt; s=iport;
-  t=1581960786; x=1583170386;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=OBRp6v7Rwqz/mvtbAplSCPjjaIqs4Aw5FEfVrUlizxg=;
-  b=ITOLK35chYIBzkK9sgtKY9jdbp6sCe6vnFh+JyKbdTd5BsFXvvMHCpAx
-   LKEkttN7t2VMbM6+YwlUM1B7yf18NwE3Y24SMb3SzaxtmZ0eDf0/YRogM
-   OQ4A+4ttJKQJrPWCTL8YxCmD61MSDR7mtVYuxh8P08+5zeZWpIxp0S54C
-   M=;
-IronPort-PHdr: =?us-ascii?q?9a23=3AuEYfGhQy2NgtCO7VvIz/stHiudpsv++ubAcI9p?=
- =?us-ascii?q?oqja5Pea2//pPkeVbS/uhpkESXBNfA8/wRje3QvuigQmEG7Zub+FE6OJ1XH1?=
- =?us-ascii?q?5g640NmhA4RsuMCEn1NvnvOiAzGsVPUEBs13q6KkNSXs35Yg6arw=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0ABCADHy0pe/5BdJa1mHgELHIFwC4F?=
- =?us-ascii?q?UUAWBRCAECyoKh1ADinqCX48WEohpgS6BJANUCQEBAQwBAS0CBAEBhEACggQ?=
- =?us-ascii?q?kNgcOAgMNAQEFAQEBAgEFBG2FNwyFZwEBAQMSKAYBATcBDwIBCA4KCRUQDyM?=
- =?us-ascii?q?lAgQOJ4VPAy4BAqFgAoE5iGKCJ4J/AQEFhS8YggwJgTiMJBqBQT+EJD6EIyi?=
- =?us-ascii?q?FbrACCoI6lkcoDoIrEIgWkDstilifFQIEAgQFAg4BAQWBWQQugVhwFYMnUBg?=
- =?us-ascii?q?Njh2Dc4pTdIEpinSBMgGBDwEB?=
-X-IronPort-AV: E=Sophos;i="5.70,453,1574121600"; 
-   d="scan'208";a="710630933"
-Received: from rcdn-core-8.cisco.com ([173.37.93.144])
-  by rcdn-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 Feb 2020 17:25:59 +0000
-Received: from XCH-ALN-004.cisco.com (xch-aln-004.cisco.com [173.36.7.14])
-        by rcdn-core-8.cisco.com (8.15.2/8.15.2) with ESMTPS id 01HHPx7w027524
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
-        Mon, 17 Feb 2020 17:25:59 GMT
-Received: from xhs-rcd-001.cisco.com (173.37.227.246) by XCH-ALN-004.cisco.com
- (173.36.7.14) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 17 Feb
- 2020 11:25:58 -0600
-Received: from xhs-rtp-002.cisco.com (64.101.210.229) by xhs-rcd-001.cisco.com
- (173.37.227.246) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 17 Feb
- 2020 11:25:58 -0600
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (64.101.32.56) by
- xhs-rtp-002.cisco.com (64.101.210.229) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 17 Feb 2020 12:25:58 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c+gPunQQQGennu2Ge5X8AYgQC2lyWNu+ShxEvO+yBcHZRvybfUWmYhD4pRCUTxdvzWQ+M6HVh2Q+moBDnm8kX7BwOsGuZ4W7vqE3D4VDSIW9JzlfdVIiMFIxPzFi+lXrnykLWhhVUCVnFmD8fGPHlTO9fPJK8brbo5d+SHbDErpCeGnSOZ2eK6LI5pTupgfqozdBSE0daQTxRXUOBOBHL+npP1Jy+0TPV4YyGFE4Bb+5Lhkx5G7NLB2uAosNEju8B5vI8FB5E9itFsrHbrznh+aTO6btz0/9sdviRM8av1Z6/N+mNHhs4FdcbyJk4MD4TaparGTIty7DKmQeFWiIXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OBRp6v7Rwqz/mvtbAplSCPjjaIqs4Aw5FEfVrUlizxg=;
- b=cScO/9UEPWc2oj0XTkScjfvZc14GV+cAzCzT8HmiGCEEggK0KVxKJymCWD/MiWPqDUg1W/osEtmnpQaqyVjbg+S1cGfq2UEtZWQ/8dQbn3ZVR3T3L4eHg0VQM0UVsE+Q1JbWSyE/jQTUMBH2X1EH82IYrsIF17H8BbQjN9E53RMazhDaKCZp22ACVuOw2MEJ738y+x1GwuTiV3HeWSmJzOyYnE47hJrHzJZO4iAxpsuT9e4cGyKThKL9dTFq76tliczltJyP4GD/LiHy1q7Wf1h0oUHlzHyZT90JVHdakN2DdbVP/1Oz/eVX/QxkMHL6FlDh1D+lH9IzaaD5TSINsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
- dkim=pass header.d=cisco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
- s=selector2-cisco-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OBRp6v7Rwqz/mvtbAplSCPjjaIqs4Aw5FEfVrUlizxg=;
- b=AJNYMgXTyLyptDoDYCc5caVt3193E2C7YtehGJeR3lk9jWSh59XrrEtUhs/kXlcms4LcTBxfHwZtmO6au2RC3VYhrbxdbkjZ92lir0Vyh51pzipXB/HYiGmv5Xolg0ttGulcMeeXAHCsMQg8qVA5h5b+tHEDM/Cj74roLKgnK8k=
-Received: from BYAPR11MB3205.namprd11.prod.outlook.com (20.177.187.32) by
- BYAPR11MB3590.namprd11.prod.outlook.com (20.178.206.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.27; Mon, 17 Feb 2020 17:25:57 +0000
-Received: from BYAPR11MB3205.namprd11.prod.outlook.com
- ([fe80::89a6:9355:e6ba:832]) by BYAPR11MB3205.namprd11.prod.outlook.com
- ([fe80::89a6:9355:e6ba:832%7]) with mapi id 15.20.2729.031; Mon, 17 Feb 2020
- 17:25:57 +0000
-From:   "Daniel Walker (danielwa)" <danielwa@cisco.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "zbr@ioremap.net" <zbr@ioremap.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: connector: cn_proc: allow limiting certain
- messages
-Thread-Topic: [PATCH] drivers: connector: cn_proc: allow limiting certain
- messages
-Thread-Index: AQHV5bdQT6LwfCsUu0CE16IMgyv7nQ==
-Date:   Mon, 17 Feb 2020 17:25:57 +0000
-Message-ID: <20200217172551.GL24152@zorba>
-References: <20200212192901.6402-1-danielwa@cisco.com>
- <20200216.184443.782357344949548902.davem@davemloft.net>
-In-Reply-To: <20200216.184443.782357344949548902.davem@davemloft.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=danielwa@cisco.com; 
-x-originating-ip: [128.107.241.162]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0b12c51c-bbea-4f99-0631-08d7b3ce7336
-x-ms-traffictypediagnostic: BYAPR11MB3590:
-x-microsoft-antispam-prvs: <BYAPR11MB35900BF874B424EA4B7E1129DD160@BYAPR11MB3590.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0316567485
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(376002)(366004)(346002)(136003)(396003)(39860400002)(199004)(189003)(26005)(5660300002)(86362001)(6506007)(81156014)(81166006)(8676002)(8936002)(316002)(33656002)(33716001)(478600001)(4744005)(15650500001)(2906002)(54906003)(6486002)(71200400001)(66446008)(66556008)(66476007)(6916009)(186003)(64756008)(1076003)(76116006)(6512007)(9686003)(66946007)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR11MB3590;H:BYAPR11MB3205.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: cisco.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KHG1w/XZrC3AF/dWihm67sU+462hAegVcSYB0jMK1bigedOpvHjQjTl04d6H0GaYTCxIrFQS++r2jyyAGlW8sB5t+6DH9rw5m0hpK6s1EasJq7Ss2Rug6hyI9rKGlR0nyC/OxjoLkHEsy2q8iqn9ud890/hukcEummVuF52nRSAXdGuIzRE/0PkSR4US9FcoJIknO3THm8P7BmViBcxOTR5Pvrhv4aSOoqUcE29Xw+z4Im6BaJrA2QZ+QCZIwpYYCUFJwEGj2ItZ0t/CtIXxT8Ap5Epi40Y0njXP+0x9blW77+CQjb778lXR4v/H80XIMomIV7mJH2K/y1YxWeu08HgdZ9leias2YzJmWCdDvTDnR+sKJ8btJD9OcRhDYrRb7yWGWGD32GniGUMCA1/qRXGF+m1vHo24kcBObJswofdXD+sv12PTEe4EZQ0H6ebw
-x-ms-exchange-antispam-messagedata: zT3kYG5cmut/SgQie9nvEiinIkVpK0bMS571LigfBV+WszGJNjtSmGKSGjyrGOwbItVc0KoQJnptyOP5aK81r8jLcbodwYf3s/phwZsJ/t7HVqf415Kx3s7OyukiuIMs5VRZF8aQ0uROoHoSNQ6how==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0D981EAD9FAC9348AC0A8E316B90615D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729678AbgBQRb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 12:31:28 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:39938 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728575AbgBQRb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 12:31:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581960687;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RDNr8uSJFx59Jhf7UFuMY4MdIqV6VZNKPmJEIQeiPFg=;
+        b=PSFsu9BqksDSDC5Xsvpv34YO/dsbThoB1edttJVfTIBLFyqR98G0prdEtrW+6G1zAlH+6a
+        bZSjGPiY97UCawkgNDVUm5fZuOTXNOaamvREoyIYsJOKsvsg8IIER1KP+W1gAxl06NyxDU
+        HtxnIy4PR1MRCV3Tx0oh6CHqZWgD5Ms=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-132-x0g0exzkOw2591G_SPVGAA-1; Mon, 17 Feb 2020 12:31:26 -0500
+X-MC-Unique: x0g0exzkOw2591G_SPVGAA-1
+Received: by mail-wm1-f72.google.com with SMTP id p2so62717wma.3
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 09:31:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RDNr8uSJFx59Jhf7UFuMY4MdIqV6VZNKPmJEIQeiPFg=;
+        b=HDk5tjp6JHInCE1h+F1I4Xinal8DakCWqopikDGVBbBmSGkV/gI5F6d3cSzN4do7wR
+         Ys3sRbVr9J6rmRogt0MVuMHB7WzIlYbanjAL6VbFdizuzwio0RLBKegLkTKEBrcBEoTz
+         Dc29RIRy+8br5Zb5KfE8DEATESMxGS041wlGoTgjfRgVGdf5ADtyglx3szpLBGsZbRGB
+         tFMz97zvbvPfRfeqnJ7TahvFaO3MaQ1r0oLY8gSJCmgo+5b9TUz+wnHcaGT3gLA6kbDo
+         8EGu2F/UXmzvQlxgF3IvV3ROwHOJ+83Ine6JOqIjeHL4vH4Wy3Lo2vTtGLiU75sRQkN8
+         OQ/Q==
+X-Gm-Message-State: APjAAAWMJz/EfVrNnK7suOZz/3C462FhBaZSVpNYZdTV1BA7zQgrAzXO
+        h1O+g9MDDQKItjgBcaPxXIH66eqRYAYDq78vuxXsxR0wh/GhfUGh8lR8auJA4rpht1xem3iQljS
+        QUwrgeh1g8yL+5mlc
+X-Received: by 2002:a1c:a9c4:: with SMTP id s187mr83150wme.97.1581960684883;
+        Mon, 17 Feb 2020 09:31:24 -0800 (PST)
+X-Google-Smtp-Source: APXvYqydEgIaLAMeg8L3wmkxuEFr+1Usg0RMHSX1PoJkBi8Zw0lHfES2eqo1OOcB+81A9ChrE+B7Jw==
+X-Received: by 2002:a1c:a9c4:: with SMTP id s187mr83076wme.97.1581960683665;
+        Mon, 17 Feb 2020 09:31:23 -0800 (PST)
+Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
+        by smtp.gmail.com with ESMTPSA id b13sm1924870wrq.48.2020.02.17.09.31.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2020 09:31:23 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     mtk.manpages@gmail.com
+Cc:     linux-man@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jorgen Hansen <jhansen@vmware.com>, netdev@vger.kernel.org
+Subject: [PATCH v3] vsock.7: add VMADDR_CID_LOCAL description
+Date:   Mon, 17 Feb 2020 18:31:21 +0100
+Message-Id: <20200217173121.159132-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b12c51c-bbea-4f99-0631-08d7b3ce7336
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2020 17:25:57.2550
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LWO8ojTj6ie5Vc8Hqy1cjoIl/8g7iqgmU3dbhT2A9EwFlwNv33wg4JkkqarS9YONQi052OmPzSUwFcXJynIynQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3590
-X-OriginatorOrg: cisco.com
-X-Outbound-SMTP-Client: 173.36.7.14, xch-aln-004.cisco.com
-X-Outbound-Node: rcdn-core-8.cisco.com
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 16, 2020 at 06:44:43PM -0800, David Miller wrote:
->=20
-> This is a netlink based facility, therefore please you should add filteri=
-ng
-> capabilities to the netlink configuration and communications path.
->=20
-> Module parameters are quite verboten.
+Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
+local communication.
 
-How about adding in Kconfig options to limit the types of messages? The iss=
-ue
-with this interface is that it's very easy for someone to enable the interf=
-ace
-as a listener, then never turn the interface off. Then it becomes a broadca=
-st
-interface. It's desirable to limit the more noisy messages in some cases.
+This patch explains how to use it and remove the legacy
+VMADDR_CID_RESERVED no longer available.
 
-Daniel=
+Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+v3:
+    * rephrased "Previous versions" part [Jorgen]
+v2:
+    * rephrased "Local communication" description [Stefan]
+    * added a mention of previous versions that supported
+      loopback only in the guest [Stefan]
+---
+ man7/vsock.7 | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/man7/vsock.7 b/man7/vsock.7
+index c5ffcf07d..219e3505f 100644
+--- a/man7/vsock.7
++++ b/man7/vsock.7
+@@ -127,8 +127,8 @@ There are several special addresses:
+ means any address for binding;
+ .B VMADDR_CID_HYPERVISOR
+ (0) is reserved for services built into the hypervisor;
+-.B VMADDR_CID_RESERVED
+-(1) must not be used;
++.B VMADDR_CID_LOCAL
++(1) is the well-known address for local communication (loopback);
+ .B VMADDR_CID_HOST
+ (2)
+ is the well-known address of the host.
+@@ -164,6 +164,16 @@ Consider using
+ .B VMADDR_CID_ANY
+ when binding instead of getting the local CID with
+ .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
++.SS Local communication
++The
++.B VMADDR_CID_LOCAL
++(1) directs packets to the same host that generated them. This is useful
++for testing applications on a single host and for debugging.
++.PP
++The local CID obtained with
++.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
++can be used for the same purpose, but it is preferable to use
++.B VMADDR_CID_LOCAL .
+ .SH ERRORS
+ .TP
+ .B EACCES
+@@ -222,6 +232,11 @@ are valid.
+ Support for VMware (VMCI) has been available since Linux 3.9.
+ KVM (virtio) is supported since Linux 4.8.
+ Hyper-V is supported since Linux 4.14.
++.PP
++VMADDR_CID_LOCAL is supported since Linux 5.6.
++Local communication in the guest and on the host is available since Linux 5.6.
++Previous versions only supported local communication within a guest
++(not on the host), and only with some transports (VMCI and virtio).
+ .SH SEE ALSO
+ .BR bind (2),
+ .BR connect (2),
+-- 
+2.24.1
+
