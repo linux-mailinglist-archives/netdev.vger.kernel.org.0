@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B5D16085E
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C10416085F
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 03:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgBQC4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 21:56:01 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47990 "EHLO
+        id S1726717AbgBQC5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 21:57:43 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48004 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726498AbgBQC4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:56:01 -0500
+        with ESMTP id S1726498AbgBQC5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 21:57:43 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E6806153DF5F0;
-        Sun, 16 Feb 2020 18:56:00 -0800 (PST)
-Date:   Sun, 16 Feb 2020 18:56:00 -0800 (PST)
-Message-Id: <20200216.185600.43507558643527863.davem@davemloft.net>
-To:     manivannan.sadhasivam@linaro.org
-Cc:     kuba@kernel.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] net: qrtr: Migrate nameservice to kernel from
- userspace
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0923D153EE2D7;
+        Sun, 16 Feb 2020 18:57:43 -0800 (PST)
+Date:   Sun, 16 Feb 2020 18:57:42 -0800 (PST)
+Message-Id: <20200216.185742.1253688525124192173.davem@davemloft.net>
+To:     liuhangbin@gmail.com
+Cc:     netdev@vger.kernel.org, petrm@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net] selftests: forwarding: vxlan_bridge_1d: fix tos
+ value
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200213091427.13435-2-manivannan.sadhasivam@linaro.org>
-References: <20200213091427.13435-1-manivannan.sadhasivam@linaro.org>
-        <20200213091427.13435-2-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20200213094054.27993-1-liuhangbin@gmail.com>
+References: <20200213094054.27993-1-liuhangbin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:56:01 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 18:57:43 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Date: Thu, 13 Feb 2020 14:44:26 +0530
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Thu, 13 Feb 2020 17:40:54 +0800
 
-> +static int service_announce_new(struct sockaddr_qrtr *dest,
-> +				struct qrtr_server *srv)
-> +{
-> +	struct qrtr_ctrl_pkt pkt;
-> +	struct msghdr msg = { };
-> +	struct kvec iv = { &pkt, sizeof(pkt) };
+> After commit 71130f29979c ("vxlan: fix tos value before xmit") we start
+> strict vxlan xmit tos value by RT_TOS(), which limits the tos value less
+> than 0x1E. With current value 0x40 the test will failed with "v1: Expected
+> to capture 10 packets, got 0". So let's choose a smaller tos value for
+> testing.
+> 
+> Fixes: d417ecf533fe ("selftests: forwarding: vxlan_bridge_1d: Add a TOS test")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Please use reverse christmas tree ordering for local variables.
-
-Please fix this for your entire submission.
+Applied.
