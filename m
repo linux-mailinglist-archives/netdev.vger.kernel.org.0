@@ -2,156 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 167181613DD
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:46:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 346B31613F9
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbgBQNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 08:46:49 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:29757 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726977AbgBQNqt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:46:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1581947207;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=d3J45i/iFgFhqXdb8PdNOHV/vscLYNA2Zd6HEo5Tg2c=;
-        b=WeK5Gi1JbMR0wttDfv04blN1jZPr5ooQjMpwqEZb+OOAOyRj9TvPO5re8VGLW9Ry36n5Wt
-        ZSesb/yOclma9fw4oYhxxC5tcAcjy0vwptqofWECTw9e1YjqptZet8KORXAtzzmCIbjMg8
-        AMVdfAWWAjtaeuFTuy+9QR2Cc8zCgdc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-438-EQ-6DH7QOAy0OPX2wGflXw-1; Mon, 17 Feb 2020 08:46:46 -0500
-X-MC-Unique: EQ-6DH7QOAy0OPX2wGflXw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3886F100550E;
-        Mon, 17 Feb 2020 13:46:45 +0000 (UTC)
-Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.130])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ECE019757;
-        Mon, 17 Feb 2020 13:46:44 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2 v2] nstat: print useful error messages in abort() cases
-Date:   Mon, 17 Feb 2020 14:46:18 +0100
-Message-Id: <df68542441f77ecedd95a3c29dd61d696f98dfac.1581946818.git.aclaudi@redhat.com>
+        id S1728712AbgBQNwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 08:52:34 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:60064 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726710AbgBQNwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:52:34 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01HDqCYC046134;
+        Mon, 17 Feb 2020 07:52:12 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1581947532;
+        bh=+byLAupfUW+GTMI0YH08CXSZf3dS/A6iBoU8mYL7Bjs=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=HURDfCsN2H10t7joYw6Uc17TbFSzb3Bapj1w2k5EsFytBbtFsNE9Ny8ytRK5p2oF+
+         nktDfWEC01tDiWJfk602k506HngSFs22HRsrfGjm16bvB3ZbUYwepME7vLxUSYHmzQ
+         16vYOXQYxGv0LZT4rKidGd0bxJb6KgY4O1fDvNi8=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01HDqCNK060998
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 17 Feb 2020 07:52:12 -0600
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 17
+ Feb 2020 07:52:11 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Mon, 17 Feb 2020 07:52:11 -0600
+Received: from [172.24.190.4] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01HDq6xY041711;
+        Mon, 17 Feb 2020 07:52:07 -0600
+Subject: Re: [PATCH 1/3] dt-bindings: net: can: m_can: Add Documentation for
+ stb-gpios
+To:     Rob Herring <robh@kernel.org>
+CC:     Dan Murphy <dmurphy@ti.com>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-can@vger.kernel.org>,
+        <catalin.marinas@arm.com>, <mark.rutland@arm.com>,
+        <davem@davemloft.net>, <mkl@pengutronix.de>, <wg@grandegger.com>,
+        <sriram.dash@samsung.com>, <nm@ti.com>, <t-kristo@ti.com>
+References: <20200122080310.24653-1-faiz_abbas@ti.com>
+ <20200122080310.24653-2-faiz_abbas@ti.com>
+ <c3b0eeb8-bd78-aa96-4783-62dc93f03bfe@ti.com>
+ <8fc7c343-267d-c91c-0381-60990cfc35e8@ti.com>
+ <f834087b-da1c-88a0-93fe-bc72c8ac71ff@ti.com>
+ <57baeedc-9f51-7b92-f190-c0bbd8525a16@ti.com> <20200203120610.GA9303@bogus>
+From:   Faiz Abbas <faiz_abbas@ti.com>
+Message-ID: <15ae4d0e-10cf-7b4b-6487-8b64f885f184@ti.com>
+Date:   Mon, 17 Feb 2020 19:23:52 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200203120610.GA9303@bogus>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When nstat temporary file is corrupted or in some other corner cases,
-nstat use abort() to stop its execution. This can puzzle some users,
-wondering what is the reason for the crash.
+Rob,
 
-This commit replaces abort() with some meaningful error messages and exit=
-()
+On 03/02/20 5:36 pm, Rob Herring wrote:
+> On Thu, Jan 23, 2020 at 01:09:41PM +0530, Faiz Abbas wrote:
+>> Hi,
+>>
+>> On 22/01/20 8:04 pm, Dan Murphy wrote:
+>>> Sekhar
+>>>
+>>> On 1/22/20 8:24 AM, Sekhar Nori wrote:
+>>>> On 22/01/20 7:05 PM, Dan Murphy wrote:
+>>>>> Faiz
+>>>>>
+>>>>> On 1/22/20 2:03 AM, Faiz Abbas wrote:
+>>>>>> The CAN transceiver on some boards has an STB pin which is
+>>>>>> used to control its standby mode. Add an optional property
+>>>>>> stb-gpios to toggle the same.
+>>>>>>
+>>>>>> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+>>>>>> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
+>>>>>> ---
+>>>>>>    Documentation/devicetree/bindings/net/can/m_can.txt | 2 ++
+>>>>>>    1 file changed, 2 insertions(+)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt
+>>>>>> b/Documentation/devicetree/bindings/net/can/m_can.txt
+>>>>>> index ed614383af9c..cc8ba3f7a2aa 100644
+>>>>>> --- a/Documentation/devicetree/bindings/net/can/m_can.txt
+>>>>>> +++ b/Documentation/devicetree/bindings/net/can/m_can.txt
+>>>>>> @@ -48,6 +48,8 @@ Optional Subnode:
+>>>>>>                  that can be used for CAN/CAN-FD modes. See
+>>>>>>                
+>>>>>> Documentation/devicetree/bindings/net/can/can-transceiver.txt
+>>>>>>                  for details.
+>>>>>> +stb-gpios        : gpio node to toggle the STB (standby) signal on
+>>>>>> the transceiver
+>>>>>> +
+>>>>> The m_can.txt is for the m_can framework.  If this is specific to the
+>>>>> platform then it really does not belong here.
+>>>>>
+>>>>> If the platform has specific nodes then maybe we need a
+>>>>> m_can_platform.txt binding for specific platform nodes.  But I leave
+>>>>> that decision to Rob.
+>>>> Since this is transceiver enable, should this not be in
+>>>> Documentation/devicetree/bindings/net/can/can-transceiver.txt?
+>>>
+>>
+>> The transceiver node is just a node without an associated device. I had
+>> tried to convert it to a phy implementation but that idea got shot down
+>> here:
+>>
+>> https://lore.kernel.org/patchwork/patch/1006238/
+> 
+> Nodes and drivers are not a 1-1 thing. Is the transceiver a separate h/w 
+> device? If so, then it should be a separate node and properties of that 
+> device go in its node. 
 
-Reported-by: Renaud M=C3=A9trich <rmetrich@redhat.com>
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- v2: replace two missing abort(), resend to iproute2 instead of iproute2-=
-next
+The transceiver is indeed a separate device.
 
- misc/nstat.c | 47 +++++++++++++++++++++++++++++++++--------------
- 1 file changed, 33 insertions(+), 14 deletions(-)
+Also, nothing is stopping you from using the PHY
+> binding without using the kernel's PHY framework.
 
-diff --git a/misc/nstat.c b/misc/nstat.c
-index 23113b223b22d..425e75ef461ec 100644
---- a/misc/nstat.c
-+++ b/misc/nstat.c
-@@ -142,14 +142,19 @@ static void load_good_table(FILE *fp)
- 		}
- 		/* idbuf is as big as buf, so this is safe */
- 		nr =3D sscanf(buf, "%s%llu%lg", idbuf, &val, &rate);
--		if (nr < 2)
--			abort();
-+		if (nr < 2) {
-+			fprintf(stderr, "%s:%d: error parsing history file\n",
-+				__FILE__, __LINE__);
-+			exit(-2);
-+		}
- 		if (nr < 3)
- 			rate =3D 0;
- 		if (useless_number(idbuf))
- 			continue;
--		if ((n =3D malloc(sizeof(*n))) =3D=3D NULL)
--			abort();
-+		if ((n =3D malloc(sizeof(*n))) =3D=3D NULL) {
-+			perror("nstat: malloc");
-+			exit(-1);
-+		}
- 		n->id =3D strdup(idbuf);
- 		n->val =3D val;
- 		n->rate =3D rate;
-@@ -190,8 +195,11 @@ static void load_ugly_table(FILE *fp)
- 		int count1, count2, skip =3D 0;
-=20
- 		p =3D strchr(buf, ':');
--		if (!p)
--			abort();
-+		if (!p) {
-+			fprintf(stderr, "%s:%d: error parsing history file\n",
-+				__FILE__, __LINE__);
-+			exit(-2);
-+		}
- 		count1 =3D count_spaces(buf);
- 		*p =3D 0;
- 		idbuf[0] =3D 0;
-@@ -211,8 +219,10 @@ static void load_ugly_table(FILE *fp)
- 				strncat(idbuf, p, sizeof(idbuf) - off - 1);
- 			}
- 			n =3D malloc(sizeof(*n));
--			if (!n)
--				abort();
-+			if (!n) {
-+				perror("nstat: malloc");
-+				exit(-1);
-+			}
- 			n->id =3D strdup(idbuf);
- 			n->rate =3D 0;
- 			n->next =3D db;
-@@ -221,18 +231,27 @@ static void load_ugly_table(FILE *fp)
- 		}
- 		n =3D db;
- 		nread =3D getline(&buf, &buflen, fp);
--		if (nread =3D=3D -1)
--			abort();
-+		if (nread =3D=3D -1) {
-+			fprintf(stderr, "%s:%d: error parsing history file\n",
-+				__FILE__, __LINE__);
-+			exit(-2);
-+		}
- 		count2 =3D count_spaces(buf);
- 		if (count2 > count1)
- 			skip =3D count2 - count1;
- 		do {
- 			p =3D strrchr(buf, ' ');
--			if (!p)
--				abort();
-+			if (!p) {
-+				fprintf(stderr, "%s:%d: error parsing history file\n",
-+					__FILE__, __LINE__);
-+				exit(-2);
-+			}
- 			*p =3D 0;
--			if (sscanf(p+1, "%llu", &n->val) !=3D 1)
--				abort();
-+			if (sscanf(p+1, "%llu", &n->val) !=3D 1) {
-+				fprintf(stderr, "%s:%d: error parsing history file\n",
-+					__FILE__, __LINE__);
-+				exit(-2);
-+			}
- 			/* Trick to skip "dummy" trailing ICMP MIB in 2.4 */
- 			if (skip)
- 				skip--;
---=20
-2.24.1
+The phy framework seemed like the best code reuse to implement it.
 
+> 
+> As to whether it should be a separate phy driver, I think probably the 
+> wrong decision was made. We always seem to start out with no PHY on 
+> these things and the complexity just grows until we need one. 
+> 
+
+We should be able to handle two properties (one max-datarate and the
+other regulator node) for now. If we have to add more complex parts then
+maybe we can think about the driver. I am just adding a xceiver
+regulator for now.
+
+Thanks,
+Faiz
