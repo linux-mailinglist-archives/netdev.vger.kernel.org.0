@@ -2,54 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F36A161D3A
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 23:18:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3D48161D46
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 23:23:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgBQWSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 17:18:52 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56070 "EHLO
+        id S1726002AbgBQWXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 17:23:09 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56106 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbgBQWSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 17:18:51 -0500
+        with ESMTP id S1725798AbgBQWXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 17:23:09 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3523015AA6301;
-        Mon, 17 Feb 2020 14:18:51 -0800 (PST)
-Date:   Mon, 17 Feb 2020 14:18:50 -0800 (PST)
-Message-Id: <20200217.141850.2134390863127670308.davem@davemloft.net>
-To:     lorenzo.bianconi@redhat.com
-Cc:     brouer@redhat.com, lorenzo@kernel.org, netdev@vger.kernel.org,
-        ilias.apalodimas@linaro.org, dsahern@kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 4/5] net: mvneta: introduce xdp counters to
- ethtool
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D50D615AA75A5;
+        Mon, 17 Feb 2020 14:23:08 -0800 (PST)
+Date:   Mon, 17 Feb 2020 14:23:08 -0800 (PST)
+Message-Id: <20200217.142308.588904136253746041.davem@davemloft.net>
+To:     andriy.shevchenko@linux.intel.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v1] net: stmmac: Get rid of custom STMMAC_DEVICE() macro
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200217102550.GB3080@localhost.localdomain>
-References: <882d9f03a8542cceec7c7b8e6d083419d84eaf7a.1581886691.git.lorenzo@kernel.org>
-        <20200217111718.2c9ab08a@carbon>
-        <20200217102550.GB3080@localhost.localdomain>
+In-Reply-To: <20200217105827.54512-1-andriy.shevchenko@linux.intel.com>
+References: <20200217105827.54512-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Feb 2020 14:18:51 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Feb 2020 14:23:09 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date: Mon, 17 Feb 2020 11:25:50 +0100
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Mon, 17 Feb 2020 12:58:27 +0200
 
-> yes, I think it is definitely better. So to follow up:
-> - rename current "xdp_tx" counter in "xdp_xmit" and increment it for
->   XDP_TX verdict and for ndo_xdp_xmit
-> - introduce a new "xdp_tx" counter only for XDP_TX verdict.
+> Since PCI core provides a generic PCI_DEVICE_DATA() macro,
+> replace STMMAC_DEVICE() with former one.
 > 
-> If we agree I can post a follow-up patch.
+> No functional change intended.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-What names do other drivers use?  Consistency is important.  I noticed
-while reviewing these patches that mellanox drivers export similar
-statistics in the exact same way.
+Applied to net-next, thank you.
