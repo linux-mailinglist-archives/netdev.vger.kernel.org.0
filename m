@@ -2,96 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 216011613CB
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:45:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 167181613DD
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 14:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728383AbgBQNpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 08:45:14 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8580 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727132AbgBQNpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:45:14 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01HDi5Tb097469
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 08:45:13 -0500
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2y6e2e5x42-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 08:45:13 -0500
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Mon, 17 Feb 2020 13:45:11 -0000
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 17 Feb 2020 13:45:08 -0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01HDiCat50790664
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 Feb 2020 13:44:12 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 88A7D11C066;
-        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4CB1D11C04C;
-        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 17 Feb 2020 13:45:07 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next] net: bridge: teach ndo_dflt_bridge_getlink() more brport flags
-Date:   Mon, 17 Feb 2020 14:45:01 +0100
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-x-cbid: 20021713-0020-0000-0000-000003AAF0CE
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20021713-0021-0000-0000-00002202E80E
-Message-Id: <20200217134501.97044-1-jwi@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-17_08:2020-02-17,2020-02-17 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- mlxlogscore=999 mlxscore=0 suspectscore=0 clxscore=1011 lowpriorityscore=0
- impostorscore=0 phishscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002170114
+        id S1728091AbgBQNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 08:46:49 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:29757 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726977AbgBQNqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 08:46:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581947207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=d3J45i/iFgFhqXdb8PdNOHV/vscLYNA2Zd6HEo5Tg2c=;
+        b=WeK5Gi1JbMR0wttDfv04blN1jZPr5ooQjMpwqEZb+OOAOyRj9TvPO5re8VGLW9Ry36n5Wt
+        ZSesb/yOclma9fw4oYhxxC5tcAcjy0vwptqofWECTw9e1YjqptZet8KORXAtzzmCIbjMg8
+        AMVdfAWWAjtaeuFTuy+9QR2Cc8zCgdc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-438-EQ-6DH7QOAy0OPX2wGflXw-1; Mon, 17 Feb 2020 08:46:46 -0500
+X-MC-Unique: EQ-6DH7QOAy0OPX2wGflXw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3886F100550E;
+        Mon, 17 Feb 2020 13:46:45 +0000 (UTC)
+Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.130])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ECE019757;
+        Mon, 17 Feb 2020 13:46:44 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2 v2] nstat: print useful error messages in abort() cases
+Date:   Mon, 17 Feb 2020 14:46:18 +0100
+Message-Id: <df68542441f77ecedd95a3c29dd61d696f98dfac.1581946818.git.aclaudi@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This enables ndo_dflt_bridge_getlink() to report a bridge port's
-offload settings for multicast and broadcast flooding.
+When nstat temporary file is corrupted or in some other corner cases,
+nstat use abort() to stop its execution. This can puzzle some users,
+wondering what is the reason for the crash.
 
-CC: Roopa Prabhu <roopa@cumulusnetworks.com>
-CC: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+This commit replaces abort() with some meaningful error messages and exit=
+()
+
+Reported-by: Renaud M=C3=A9trich <rmetrich@redhat.com>
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
 ---
- net/core/rtnetlink.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ v2: replace two missing abort(), resend to iproute2 instead of iproute2-=
+next
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 09c44bf2e1d2..9b4f8a254a15 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -4555,7 +4555,11 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
- 	    brport_nla_put_flag(skb, flags, mask,
- 				IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD) ||
- 	    brport_nla_put_flag(skb, flags, mask,
--				IFLA_BRPORT_PROXYARP, BR_PROXYARP)) {
-+				IFLA_BRPORT_PROXYARP, BR_PROXYARP) ||
-+	    brport_nla_put_flag(skb, flags, mask,
-+				IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD) ||
-+	    brport_nla_put_flag(skb, flags, mask,
-+				IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD)) {
- 		nla_nest_cancel(skb, protinfo);
- 		goto nla_put_failure;
- 	}
--- 
-2.17.1
+ misc/nstat.c | 47 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 14 deletions(-)
+
+diff --git a/misc/nstat.c b/misc/nstat.c
+index 23113b223b22d..425e75ef461ec 100644
+--- a/misc/nstat.c
++++ b/misc/nstat.c
+@@ -142,14 +142,19 @@ static void load_good_table(FILE *fp)
+ 		}
+ 		/* idbuf is as big as buf, so this is safe */
+ 		nr =3D sscanf(buf, "%s%llu%lg", idbuf, &val, &rate);
+-		if (nr < 2)
+-			abort();
++		if (nr < 2) {
++			fprintf(stderr, "%s:%d: error parsing history file\n",
++				__FILE__, __LINE__);
++			exit(-2);
++		}
+ 		if (nr < 3)
+ 			rate =3D 0;
+ 		if (useless_number(idbuf))
+ 			continue;
+-		if ((n =3D malloc(sizeof(*n))) =3D=3D NULL)
+-			abort();
++		if ((n =3D malloc(sizeof(*n))) =3D=3D NULL) {
++			perror("nstat: malloc");
++			exit(-1);
++		}
+ 		n->id =3D strdup(idbuf);
+ 		n->val =3D val;
+ 		n->rate =3D rate;
+@@ -190,8 +195,11 @@ static void load_ugly_table(FILE *fp)
+ 		int count1, count2, skip =3D 0;
+=20
+ 		p =3D strchr(buf, ':');
+-		if (!p)
+-			abort();
++		if (!p) {
++			fprintf(stderr, "%s:%d: error parsing history file\n",
++				__FILE__, __LINE__);
++			exit(-2);
++		}
+ 		count1 =3D count_spaces(buf);
+ 		*p =3D 0;
+ 		idbuf[0] =3D 0;
+@@ -211,8 +219,10 @@ static void load_ugly_table(FILE *fp)
+ 				strncat(idbuf, p, sizeof(idbuf) - off - 1);
+ 			}
+ 			n =3D malloc(sizeof(*n));
+-			if (!n)
+-				abort();
++			if (!n) {
++				perror("nstat: malloc");
++				exit(-1);
++			}
+ 			n->id =3D strdup(idbuf);
+ 			n->rate =3D 0;
+ 			n->next =3D db;
+@@ -221,18 +231,27 @@ static void load_ugly_table(FILE *fp)
+ 		}
+ 		n =3D db;
+ 		nread =3D getline(&buf, &buflen, fp);
+-		if (nread =3D=3D -1)
+-			abort();
++		if (nread =3D=3D -1) {
++			fprintf(stderr, "%s:%d: error parsing history file\n",
++				__FILE__, __LINE__);
++			exit(-2);
++		}
+ 		count2 =3D count_spaces(buf);
+ 		if (count2 > count1)
+ 			skip =3D count2 - count1;
+ 		do {
+ 			p =3D strrchr(buf, ' ');
+-			if (!p)
+-				abort();
++			if (!p) {
++				fprintf(stderr, "%s:%d: error parsing history file\n",
++					__FILE__, __LINE__);
++				exit(-2);
++			}
+ 			*p =3D 0;
+-			if (sscanf(p+1, "%llu", &n->val) !=3D 1)
+-				abort();
++			if (sscanf(p+1, "%llu", &n->val) !=3D 1) {
++				fprintf(stderr, "%s:%d: error parsing history file\n",
++					__FILE__, __LINE__);
++				exit(-2);
++			}
+ 			/* Trick to skip "dummy" trailing ICMP MIB in 2.4 */
+ 			if (skip)
+ 				skip--;
+--=20
+2.24.1
 
