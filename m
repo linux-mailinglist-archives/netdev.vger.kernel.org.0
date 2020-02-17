@@ -2,117 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDF31617E6
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 17:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 138D3161805
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 17:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728564AbgBQQ3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 11:29:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37220 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726873AbgBQQ3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Feb 2020 11:29:16 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35B0A214D8;
-        Mon, 17 Feb 2020 16:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581956954;
-        bh=3RyDHdCvjIDVivxlLYCUY6FAPAIB2sXqUpmcgkCzhL0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RDAcdCoNIDDp07PhuKaqUFmG3j2kkYyX4AI8GwU+iW2xs9ifI+alAwc7jSsNjnWNC
-         izXx4On2CO3plUbt+zfIs+pCQT1kvPFnPUUw8rglZ7wWKybI6Y0/BVULDe0zpjMXQ8
-         nmRLuzkDAjLOhPAHZuSzp7CyF1i7uzQHP4+XxcC8=
-Date:   Mon, 17 Feb 2020 17:29:12 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH net-next v2 01/10] sysfs: add
- sysfs_file_change_owner{_by_name}()
-Message-ID: <20200217162912.GB1502885@kroah.com>
-References: <20200217161436.1748598-1-christian.brauner@ubuntu.com>
- <20200217161436.1748598-2-christian.brauner@ubuntu.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200217161436.1748598-2-christian.brauner@ubuntu.com>
+        id S1729318AbgBQQfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 11:35:05 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44753 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728952AbgBQQfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 11:35:03 -0500
+Received: by mail-pg1-f196.google.com with SMTP id g3so9329356pgs.11;
+        Mon, 17 Feb 2020 08:35:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=YrIogMAzNjDoho/ZMU6x1lezaGjyCZgCFRA4k/XFA2Q=;
+        b=aXgx9FuIkeYKessQtQzklWhRed4jxOnavjhebJk8qxFqotlinaiVCYCk9oJYu7YW58
+         gE55ReQ6tAr5DE6hchYO+4+STqMfXLl700fgujDLdPKXRYMhUFHY/WFDFxmf9wuYPaK/
+         XrQgQaGivi9aO3xhZ4tC2oWJbDEWMDQF0Jvp4RIc8kD0ri6Tq3e8bnXsK2mOjGpZo9QH
+         O0vJozOBSNIOg7dsM86py2lI0LJieWnmw7A7EpM2+Qwqjn6lmuo1aBqwCRckWbSfpLn0
+         hHFihs3ga6m4FjlXEmLo65qmWVypS1yq7RbE79ska5OatKQK8LZ1YhMPelfMNYQQg0Z1
+         uBag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=YrIogMAzNjDoho/ZMU6x1lezaGjyCZgCFRA4k/XFA2Q=;
+        b=dlVhztOs8sw3mztTOxVqP0gpco8E3nAt/KiC8TZZwUgLv9F+T2SUYvIWCXBSOk7d2N
+         Kb1E8r4NpMZXbUV6Q86aMbgvPk3Yytz/oYJa0dVRBpShaih/XCaJG0nBHDI/b+X9ALGO
+         rhsmgkxml0bPxDXj5RlMrodztx46fFylwFzlm0ZcByhNDaMsrGzicwnTrXAtD2cegHUX
+         9xIgCIDbXrTtsT6dWZoGNV9HvUaduzS8nLvkU2++yYPen2DGbEP1PdIPO/rVTQQ8b8nU
+         c4YyuqaqglghpQQQjta+7tTI5pUZOzCK6YV2jzLCKgbv5pf/QynpAzSKWr5sZcKqDw1Q
+         fKPw==
+X-Gm-Message-State: APjAAAXSXrgbVeFnnYrIEkAnkxqvVX1U77pLTjBXqrfhXhb7WrIuR/qO
+        ZzYsVdxIbrivddBOpZNLgkxRu7fQ
+X-Google-Smtp-Source: APXvYqydvjkI9S+SrpEeWISB9MlWmSQ3HxruBrrg/IpEMPCedHSOfzWlJhjNx2aOmtrEeyu91UG0LQ==
+X-Received: by 2002:a63:5c0e:: with SMTP id q14mr18826292pgb.313.1581957301149;
+        Mon, 17 Feb 2020 08:35:01 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w26sm952373pfj.119.2020.02.17.08.34.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Feb 2020 08:35:00 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] sctp: move the format error check out of __sctp_sf_do_9_1_abort
+Date:   Tue, 18 Feb 2020 00:34:52 +0800
+Message-Id: <1833bf6abc2610393666b930fe629534cd21e0fa.1581957292.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 05:14:27PM +0100, Christian Brauner wrote:
-> Add helpers to change owner of a sysfs files.
-> The ownership of a sysfs object is determined based on the ownership of
-> the corresponding kobject, i.e. only if the ownership of a kobject is
-> changed will this function change the ownership of the corresponding
-> sysfs entry.
-> This function will be used to correctly account for kobject ownership
-> changes, e.g. when moving network devices between network namespaces.
-> 
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-> ---
-> /* v2 */
-> -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
->    - Better naming for sysfs_file_change_owner() to reflect the fact that it
->      can be used to change the owner of the kobject itself by passing NULL as
->      argument.
-> - Christian Brauner <christian.brauner@ubuntu.com>:
->   - Split sysfs_file_change_owner() into two helpers sysfs_change_owner() and
->     sysfs_change_owner_by_name(). The former changes the owner of the kobject
->     itself, the latter the owner of the kobject looked up via the name
->     argument.
-> ---
->  fs/sysfs/file.c       | 82 +++++++++++++++++++++++++++++++++++++++++++
->  include/linux/sysfs.h | 14 ++++++++
->  2 files changed, 96 insertions(+)
-> 
-> diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
-> index 130fc6fbcc03..8f2607de2456 100644
-> --- a/fs/sysfs/file.c
-> +++ b/fs/sysfs/file.c
-> @@ -558,3 +558,85 @@ void sysfs_remove_bin_file(struct kobject *kobj,
->  	kernfs_remove_by_name(kobj->sd, attr->attr.name);
->  }
->  EXPORT_SYMBOL_GPL(sysfs_remove_bin_file);
-> +
-> +static int internal_change_owner(struct kernfs_node *kn, struct kobject *kobj)
-> +{
-> +	kuid_t uid;
-> +	kgid_t gid;
-> +	struct iattr newattrs = {
-> +		.ia_valid = ATTR_UID | ATTR_GID,
-> +	};
-> +
-> +	kobject_get_ownership(kobj, &uid, &gid);
-> +	newattrs.ia_uid = uid;
-> +	newattrs.ia_gid = gid;
-> +
-> +	return kernfs_setattr(kn, &newattrs);
-> +}
-> +
-> +/**
-> + *	sysfs_file_change_owner_by_name - change owner of a file.
-> + *	@kobj:	object.
-> + *	@name:	name of the file to change.
-> + *
-> + * To change the ownership of a sysfs object, the caller must first change the
-> + * uid/gid of the kobject and then call this function.
+When T2 timer is to be stopped, the asoc should also be deleted,
+otherwise, there will be no chance to call sctp_association_free
+and the asoc could last in memory forever.
 
-Why have the caller do this?  Why not pass the uid/gid as a parameter
-here?  That would make it totally obvious as to what is happening here,
-right?
+However, in sctp_sf_shutdown_sent_abort(), after adding the cmd
+SCTP_CMD_TIMER_STOP for T2 timer, it may return error due to the
+format error from __sctp_sf_do_9_1_abort() and miss adding
+SCTP_CMD_ASSOC_FAILED where the asoc will be deleted.
 
-Otherwise this function is depending on someone doing something before
-calling it, and that's going to be a very very hard thing to always
-ensure/audit.
+This patch is to fix it by moving the format error check out of
+__sctp_sf_do_9_1_abort(), and do it before adding the cmd
+SCTP_CMD_TIMER_STOP for T2 timer.
 
-thanks,
+Thanks Hangbin for reporting this issue by the fuzz testing.
 
-greg k-h
+Fixes: 96ca468b86b0 ("sctp: check invalid value of length parameter in error cause")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/sm_statefuns.c | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
+
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index 748e3b1..e2b2b41 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -170,6 +170,16 @@ static inline bool sctp_chunk_length_valid(struct sctp_chunk *chunk,
+ 	return true;
+ }
+ 
++/* Check for the format error in an ABORT chunk */
++static inline bool sctp_err_chunk_valid(struct sctp_chunk *chunk)
++{
++	struct sctp_errhdr *err;
++
++	sctp_walk_errors(err, chunk->chunk_hdr);
++
++	return (void *)err == (void *)chunk->chunk_end;
++}
++
+ /**********************************************************
+  * These are the state functions for handling chunk events.
+  **********************************************************/
+@@ -2255,6 +2265,9 @@ enum sctp_disposition sctp_sf_shutdown_pending_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
+ }
+ 
+@@ -2298,6 +2311,9 @@ enum sctp_disposition sctp_sf_shutdown_sent_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* Stop the T2-shutdown timer. */
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_STOP,
+ 			SCTP_TO(SCTP_EVENT_TIMEOUT_T2_SHUTDOWN));
+@@ -2565,6 +2581,9 @@ enum sctp_disposition sctp_sf_do_9_1_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
+ }
+ 
+@@ -2582,16 +2601,8 @@ static enum sctp_disposition __sctp_sf_do_9_1_abort(
+ 
+ 	/* See if we have an error cause code in the chunk.  */
+ 	len = ntohs(chunk->chunk_hdr->length);
+-	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr)) {
+-		struct sctp_errhdr *err;
+-
+-		sctp_walk_errors(err, chunk->chunk_hdr);
+-		if ((void *)err != (void *)chunk->chunk_end)
+-			return sctp_sf_pdiscard(net, ep, asoc, type, arg,
+-						commands);
+-
++	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr))
+ 		error = ((struct sctp_errhdr *)chunk->skb->data)->cause;
+-	}
+ 
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_SET_SK_ERR, SCTP_ERROR(ECONNRESET));
+ 	/* ASSOC_FAILED will DELETE_TCB. */
+-- 
+2.1.0
+
