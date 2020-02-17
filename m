@@ -2,108 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFEE0161B37
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 20:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E9F161B91
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 20:24:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728991AbgBQTHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 14:07:11 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44094 "EHLO
+        id S1728448AbgBQTYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 14:24:43 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36052 "EHLO
         mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728054AbgBQTHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 14:07:10 -0500
-Received: by mail-qt1-f196.google.com with SMTP id k7so12745200qth.11
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 11:07:10 -0800 (PST)
+        with ESMTP id S1727300AbgBQTYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 14:24:43 -0500
+Received: by mail-qt1-f196.google.com with SMTP id t13so12830308qto.3
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 11:24:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Xc/8Y37laiaktHHfmAYSRHTTBTzj7tz0tagnhkkhPrw=;
-        b=EMF9R/zwuzbjONBev0Yypuc0IrlPXbw+YxGR7ibmbJIiSir4dIfkuD2wGWOj+bqF48
-         vrU9r02xBBZ3+Ccq0f5n9LFLB3H8iCh+ruKS3103RYjXrZTQPopYrLywN6h/prZ0bdjL
-         os1DpCv82qaywiKJr30Ht4j5QgUftfO5T9iFgffRa75KHwjzjB7Nmf1ghNuvk/JhUcka
-         AKU/vAe3bF0WkjZBMwxDkFKECowYAncf46zy1+CBUOn1qB1Z0wecf5eEi9vQlqWJN+XG
-         2FFK1TW501YBJdjkLqhnbeTb4e2mb2IVFQrghgX66zQ22VgRAo3o2agQdnNpmdxkaIB0
-         YAiw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JIJCYoeJZi1BF4DfYx9tVVCS/hUoszz7+fHwROsJ/sg=;
+        b=XhfvhwYnBIK/WesduUEBtjCLLyg3HK5iR0ADqhQf7XKcPzSMZ9DoPvWMTwo8CVK9hd
+         K92GqoXzrg79sURfb1CFsaHPXP3fWZWih+xbekMovSOT5URkz+zM4Mmi93FQiwPvwPSQ
+         3QB8/m0jb9Le4OUoZ+RR6H6vOV7b/RK4a6EQHlA+jgjM8oHHUYW2g0ovMSAThXIex9M5
+         sSAsbCOpNXhwERWCtSo2z5ji5yWD65fD70bqqS7jElMIHKSmaa0a0qABHDm0nIL8XrGX
+         b5mHKLKhOjywqoFjKP4cWDPIRRNSNiFFrqqqQ/NcHDEQyu6UZcA7P0hSQ9MjzKcThyg1
+         akRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Xc/8Y37laiaktHHfmAYSRHTTBTzj7tz0tagnhkkhPrw=;
-        b=HuIXFZ2loMJVMd5uRQUH3ChywuVN67n2xZA6/QBbAiQ3P0TgXFUCl5H8PDN/hVcsW1
-         TZhRsHHoAIerSBAacm2SQb5Ujv66bDCNRmdUtujjE2GqoYjbGs/FaycDOUbj2MVXXlrG
-         GlVuOA1NKpBEFGcL2nSYLwdnRDIuZlJXjJcsrpUlQEO6U2iCZ0W6jJozImwDZSPVBA4g
-         ArbjOMUyMJYJPTgS8eLkrTzl5nOzrOQqDY2qMpbHxlwWDHGkxJkZL7R6v2M2S5n53aG4
-         k2175ADu9W6n4xxq/lx2us3h0kuQFJIAAOFjOBi6g4WQR+GjYDtPP0NGBg4ohO6urzuY
-         opwg==
-X-Gm-Message-State: APjAAAW9Xp14U3z1f4Qq1rWp3jVdhx3XeAYkBqkKXWTAzMZCC13dZvSP
-        g/arhmQz3ToEuUlRoAq6s6ZX0mXR
-X-Google-Smtp-Source: APXvYqwtgNdU5l2qWBdYnpapO+BF6xZus/ClOXPaZ1Fq8ep2wYuJSfDdkuAIdeuDLoAzeQavZQIdPg==
-X-Received: by 2002:ac8:1952:: with SMTP id g18mr14473920qtk.157.1581966429909;
-        Mon, 17 Feb 2020 11:07:09 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:65d1:a3b2:d15f:79af? ([2601:282:803:7700:65d1:a3b2:d15f:79af])
-        by smtp.googlemail.com with ESMTPSA id w2sm620148qto.73.2020.02.17.11.07.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Feb 2020 11:07:09 -0800 (PST)
-Subject: Re: [PATCH iproute2] erspan: set erspan_ver to 1 by default
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        stephen@networkplumber.org
-Cc:     William Tu <u9012063@gmail.com>
-References: <0abbe3fb8e20741c17fe3a0ecbca9ccd4f8ab96b.1581933223.git.lucien.xin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <34272893-fce7-4ad7-8f07-57ae01493b39@gmail.com>
-Date:   Mon, 17 Feb 2020 12:07:07 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JIJCYoeJZi1BF4DfYx9tVVCS/hUoszz7+fHwROsJ/sg=;
+        b=Hp4SAnkXrMAJG4UmpuHsIVKHNxybLkvsIe7Nj2SBap0w6ucCD0MEKeRDQJ5rqDXa9Q
+         mCgjUcLEp8ab2YxX/YDH1NutRYQpYhODdBQoXGysCbIrocicY1fcOG/+47mIT93Yaxw2
+         wkbey9oVYJiF+h96lJsvdNMck05yd/w/McKU81f1WJj9FvZhbKYD0ElN0gumEB8SlE3O
+         3B+JMZiWx/30YibhANEuOcN8nLJzm4jE9RM1ExmEKlTW4/Ysr40dqN66efPIaKE6fgCD
+         t8Niwq0joqR97v6myRhvrQLje+LcthGZ62fGqW5ah7qUxIDGSuQnbyB5UAJhBMUi+ggA
+         VDZA==
+X-Gm-Message-State: APjAAAW011qgdxsU3WWc97qE5wVccwRC+R2OG1sfcSV0Nd2EuGPHVU4E
+        pcpgDKXgRulIebHYlRytDCeIuPOf+YUzhKw/PTaL6A==
+X-Google-Smtp-Source: APXvYqxzV0kH2vSIgFPc02FvrnF/SPy8sz7uAskPUxbXNJCk+2tUtc7DjPEHrVOaM6ByqoCgeGeTp2teVfzLlb5yhLI=
+X-Received: by 2002:ac8:7159:: with SMTP id h25mr14505780qtp.380.1581967481700;
+ Mon, 17 Feb 2020 11:24:41 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <0abbe3fb8e20741c17fe3a0ecbca9ccd4f8ab96b.1581933223.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
+ <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+ <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+ <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
+ <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com>
+ <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
+ <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+ <CACT4Y+a8N7_n4t_vxezKJVkd1+gDHaMzpeG18MuDE04+r3341A@mail.gmail.com> <CACT4Y+atqrSfZuquPZcRUKNtVbLdu+B5YN3=YmDb38Ruzj3Pzw@mail.gmail.com>
+In-Reply-To: <CACT4Y+atqrSfZuquPZcRUKNtVbLdu+B5YN3=YmDb38Ruzj3Pzw@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 17 Feb 2020 20:24:30 +0100
+Message-ID: <CACT4Y+bMzYZeMvv2DdTuTKtJFzTcHhinp7N7VmSiXqSBDyj8Ug@mail.gmail.com>
+Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
+ net: WireGuard secure network tunnel]
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/17/20 2:53 AM, Xin Long wrote:
-> Commit 289763626721 ("erspan: add erspan version II support")
-> breaks the command:
-> 
->  # ip link add erspan1 type erspan key 1 seq erspan 123 \
->     local 10.1.0.2 remote 10.1.0.1
-> 
-> as erspan_ver is set to 0 by default, then IFLA_GRE_ERSPAN_INDEX
-> won't be set in gre_parse_opt().
-> 
->   # ip -d link show erspan1
->     ...
->     erspan remote 10.1.0.1 local 10.1.0.2 ... erspan_index 0 erspan_ver 1
->                                               ^^^^^^^^^^^^^^
-> 
-> This patch is to change to set erspan_ver to 1 by default.
-> 
-> Fixes: 289763626721 ("erspan: add erspan version II support")
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  ip/link_gre.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/ip/link_gre.c b/ip/link_gre.c
-> index 15beb73..e42f21a 100644
-> --- a/ip/link_gre.c
-> +++ b/ip/link_gre.c
-> @@ -94,7 +94,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
->  	__u8 metadata = 0;
->  	__u32 fwmark = 0;
->  	__u32 erspan_idx = 0;
-> -	__u8 erspan_ver = 0;
-> +	__u8 erspan_ver = 1;
->  	__u8 erspan_dir = 0;
->  	__u16 erspan_hwid = 0;
->  
-> 
+On Mon, Feb 17, 2020 at 4:42 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > >
+> > > Observation:
+> > >
+> > > It seems to be starting to synthesize packets sent to the wireguard
+> > > socket. These aren't the proper handshake packets generated internally
+> > > by that triangle commit, but rather ones that syzkaller creates
+> > > itself. That's why we have coverage on wg_receive, which otherwise
+> > > wouldn't be called from a userspace process, since syzbot is sending
+> > > its own packets to that function.
+> > >
+> > > However, the packets it generates aren't getting very far, failing all
+> > > of the tests in validate_header_len. None of those checks are at all
+> > > cryptographic, which means it should be able to hit those eventually.
+> > > Anything we should be doing to help it out? After it gets past that
+> > > check, it'll wind up in the handshake queue or the data queue, and
+> > > then (in theory) it should be rejected on a cryptographic basis. But
+> > > maybe syzbot will figure out how to crash it instead :-P.
+> >
+> > Looking into this.
+> >
+> > Found the program that gives wg_receive coverage:
+> >
+> > r0 = openat$tun(0xffffffffffffff9c,
+> > &(0x7f0000000080)='/dev/net/tun\x00', 0x88002, 0x0)
+> > ioctl$TUNSETIFF(r0, 0x400454ca, &(0x7f00000000c0)={'syzkaller1\x00',
+> > 0x420000015001})
+> > r1 = socket$netlink(0x10, 0x3, 0x0)
+> > ioctl$sock_inet_SIOCSIFADDR(r1, 0x8914,
+> > &(0x7f0000000140)={'syzkaller1\x00', {0x7, 0x0, @empty}})
+> > write$tun(r0, &(0x7f00000002c0)={@void, @val, @ipv4=@udp={{0x5, 0x4,
+> > 0x0, 0x0, 0x1c, 0x0, 0x0, 0x0, 0x11, 0x0, @remote, @broadcast}, {0x0,
+> > 0x4e21, 0x8}}}, 0x26)
+> >
+> > Checked that doing SIOCSIFADDR is also required, otherwise the packet
+> > does not reach wg_receive.
+>
+>
+> All packets we inject with standard means (syz_emit_ethernet) get
+> rejected on the following check:
+>
+> static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+> {
+> const struct iphdr *iph;
+> u32 len;
+>
+> /* When the interface is in promisc. mode, drop all the crap
+> * that it receives, do not try to analyse it.
+> */
+> if (skb->pkt_type == PACKET_OTHERHOST)
+> goto drop;
+>
+> Even if we drop IFF_NAPI_FRAGS which diverges packets who-knows-where.
+>
+> Somehow we need to get something other than PACKET_OTHERHOST...
+> Why is it dropping all remote packets?...
+> How do remote packets get into stack then?...
 
-that seems correct to me.
+I've managed to create a packet that reaches wg_receive, that is:
 
-What about the v6 version? It defaults to 0 as well by the same Fixes tag.
+syz_emit_ethernet(AUTO, &AUTO={@local, @empty, @void, {@ipv4={AUTO,
+@udp={{AUTO, AUTO, 0x0, 0x0, AUTO, 0x0, 0x0, 0x0, AUTO, 0x0, @empty,
+@empty, {[]}}, {0x0, 0x4e22, AUTO, 0x0, [], ""/10}}}}}, 0x0)
+
+Had to enumerate all possible combinations of local/remote mac,
+local/report ip, local/remote port.
+
+However, this is only without IFF_NAPI_FRAGS. With IFF_NAPI_FRAGS it
+reaches udp_gro_receive, but does not get past:
+
+if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
+    (skb->ip_summed != CHECKSUM_PARTIAL &&
+     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+     !NAPI_GRO_CB(skb)->csum_valid) ||
+    !udp_sk(sk)->gro_receive)
+    goto out;
