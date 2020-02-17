@@ -2,143 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71B33160FAD
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 11:12:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF178160FC5
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 11:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729182AbgBQKMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 05:12:46 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38595 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729089AbgBQKMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 05:12:46 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 17 Feb 2020 12:12:39 +0200
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01HACcAR017557;
-        Mon, 17 Feb 2020 12:12:38 +0200
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        pablo@netfilter.org, marcelo.leitner@gmail.com,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [RESEND PATCH net-next 4/4] net: sched: don't take rtnl lock during flow_action setup
-Date:   Mon, 17 Feb 2020 12:12:12 +0200
-Message-Id: <20200217101212.5979-5-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20200217101212.5979-1-vladbu@mellanox.com>
-References: <20200217101212.5979-1-vladbu@mellanox.com>
+        id S1729128AbgBQKRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 05:17:32 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30175 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729058AbgBQKRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 05:17:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581934651;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ppDD5AMkrOfQjlQvQgRMNAO+Ohmwmyr7wzDAlX1AsEc=;
+        b=IwM5yWa3IJ5OOr1YThhT7a4Xv2YlfsJ/SjP/5hBAWBjcIC+GerAf0nZ00JOaEGGhaSp95X
+        NxE+DKaD4txD4CbqhqsziZZkznRla+CxmEtP72Mkdm2AftYZDmZK1rm3vrbS6+kTI5w6hW
+        7syP4FW6mm4lFI/C4RgWcwcm3QqvRaQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-369-HZVGfACIP069pHQUmWBUdg-1; Mon, 17 Feb 2020 05:17:29 -0500
+X-MC-Unique: HZVGfACIP069pHQUmWBUdg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 14950800D5A;
+        Mon, 17 Feb 2020 10:17:28 +0000 (UTC)
+Received: from carbon (ovpn-200-41.brq.redhat.com [10.40.200.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6CC785C3FA;
+        Mon, 17 Feb 2020 10:17:20 +0000 (UTC)
+Date:   Mon, 17 Feb 2020 11:17:18 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com,
+        brouer@redhat.com, David Ahern <dsahern@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>
+Subject: Re: [PATCH net-next 4/5] net: mvneta: introduce xdp counters to
+ ethtool
+Message-ID: <20200217111718.2c9ab08a@carbon>
+In-Reply-To: <882d9f03a8542cceec7c7b8e6d083419d84eaf7a.1581886691.git.lorenzo@kernel.org>
+References: <cover.1581886691.git.lorenzo@kernel.org>
+        <882d9f03a8542cceec7c7b8e6d083419d84eaf7a.1581886691.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor tc_setup_flow_action() function not to use rtnl lock and remove
-'rtnl_held' argument that is no longer needed.
+On Sun, 16 Feb 2020 22:07:32 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- include/net/pkt_cls.h    | 2 +-
- net/sched/cls_api.c      | 8 +-------
- net/sched/cls_flower.c   | 6 ++----
- net/sched/cls_matchall.c | 4 ++--
- 4 files changed, 6 insertions(+), 14 deletions(-)
+> @@ -2033,6 +2050,7 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
+>  	u64_stats_update_begin(&stats->syncp);
+>  	stats->es.ps.tx_bytes += xdpf->len;
+>  	stats->es.ps.tx_packets++;
+> +	stats->es.ps.xdp_tx++;
+>  	u64_stats_update_end(&stats->syncp);
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index a972244ab193..53946b509b51 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -509,7 +509,7 @@ tcf_match_indev(struct sk_buff *skb, int ifindex)
- }
- 
- int tc_setup_flow_action(struct flow_action *flow_action,
--			 const struct tcf_exts *exts, bool rtnl_held);
-+			 const struct tcf_exts *exts);
- void tc_cleanup_flow_action(struct flow_action *flow_action);
- 
- int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 610505117780..13c33eaf1ca1 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3433,7 +3433,7 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
- }
- 
- int tc_setup_flow_action(struct flow_action *flow_action,
--			 const struct tcf_exts *exts, bool rtnl_held)
-+			 const struct tcf_exts *exts)
- {
- 	struct tc_action *act;
- 	int i, j, k, err = 0;
-@@ -3441,9 +3441,6 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 	if (!exts)
- 		return 0;
- 
--	if (!rtnl_held)
--		rtnl_lock();
--
- 	j = 0;
- 	tcf_exts_for_each_action(i, act, exts) {
- 		struct flow_action_entry *entry;
-@@ -3577,9 +3574,6 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 	}
- 
- err_out:
--	if (!rtnl_held)
--		rtnl_unlock();
--
- 	if (err)
- 		tc_cleanup_flow_action(flow_action);
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index f9c0d1e8d380..d7d3aab53120 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -449,8 +449,7 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 	cls_flower.rule->match.key = &f->mkey;
- 	cls_flower.classid = f->res.classid;
- 
--	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
--				   rtnl_held);
-+	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
- 	if (err) {
- 		kfree(cls_flower.rule);
- 		if (skip_sw) {
-@@ -1999,8 +1998,7 @@ static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 		cls_flower.rule->match.mask = &f->mask->key;
- 		cls_flower.rule->match.key = &f->mkey;
- 
--		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
--					   true);
-+		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
- 		if (err) {
- 			kfree(cls_flower.rule);
- 			if (tc_skip_sw(f->flags)) {
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index 039cc86974f4..bf2d42ee55a3 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -97,7 +97,7 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
- 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
- 	cls_mall.cookie = cookie;
- 
--	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
- 	if (err) {
- 		kfree(cls_mall.rule);
- 		mall_destroy_hw_filter(tp, head, cookie, NULL);
-@@ -301,7 +301,7 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
- 	cls_mall.cookie = (unsigned long)head;
- 
--	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
-+	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
- 	if (err) {
- 		kfree(cls_mall.rule);
- 		if (add && tc_skip_sw(head->flags)) {
+I find it confusing that this ethtool stats is named "xdp_tx".
+Because you use it as an "xmit" counter and not for the action XDP_TX.
+
+Both XDP_TX and XDP_REDIRECT out this device will increment this
+"xdp_tx" counter.  I don't think end-users will comprehend this...
+
+What about naming it "xdp_xmit" ?
+
+
+>  	mvneta_txq_inc_put(txq);
+> @@ -2114,6 +2132,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  
+>  	switch (act) {
+>  	case XDP_PASS:
+> +		stats->xdp_pass++;
+>  		return MVNETA_XDP_PASS;
+>  	case XDP_REDIRECT: {
+>  		int err;
+> @@ -2126,6 +2145,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  					     len, true);
+>  		} else {
+>  			ret = MVNETA_XDP_REDIR;
+> +			stats->xdp_redirect++;
+>  		}
+>  		break;
+>  	}
+> @@ -2147,6 +2167,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  				     virt_to_head_page(xdp->data),
+>  				     len, true);
+>  		ret = MVNETA_XDP_DROPPED;
+> +		stats->xdp_drop++;
+>  		break;
+>  	}
+
+
 -- 
-2.21.0
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
