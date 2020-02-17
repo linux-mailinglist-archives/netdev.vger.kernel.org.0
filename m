@@ -2,47 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B68881608E6
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE891608EC
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 04:29:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727934AbgBQD2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Feb 2020 22:28:06 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48268 "EHLO
+        id S1727842AbgBQD33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Feb 2020 22:29:29 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48272 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbgBQD2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:28:06 -0500
+        with ESMTP id S1726672AbgBQD33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Feb 2020 22:29:29 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 363B81573F03A;
-        Sun, 16 Feb 2020 19:28:06 -0800 (PST)
-Date:   Sun, 16 Feb 2020 19:28:05 -0800 (PST)
-Message-Id: <20200216.192805.2104578155326769364.davem@davemloft.net>
-To:     f.fainelli@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D5A69157413F9;
+        Sun, 16 Feb 2020 19:29:28 -0800 (PST)
+Date:   Sun, 16 Feb 2020 19:29:28 -0800 (PST)
+Message-Id: <20200216.192928.1291469951934245769.davem@davemloft.net>
+To:     mkubecek@suse.cz
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: bcm_sf2: Also configure Port 5 for
- 2Gb/sec on 7278
+Subject: Re: [PATCH net] ethtool: fix application of verbose no_mask bitset
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200215003230.27181-1-f.fainelli@gmail.com>
-References: <20200215003230.27181-1-f.fainelli@gmail.com>
+In-Reply-To: <20200215005553.4D202E03D6@unicorn.suse.cz>
+References: <20200215005553.4D202E03D6@unicorn.suse.cz>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 19:28:06 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 16 Feb 2020 19:29:29 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-Date: Fri, 14 Feb 2020 16:32:29 -0800
+From: Michal Kubecek <mkubecek@suse.cz>
+Date: Sat, 15 Feb 2020 01:55:53 +0100 (CET)
 
-> Either port 5 or port 8 can be used on a 7278 device, make sure that
-> port 5 also gets configured properly for 2Gb/sec in that case.
+> A bitset without mask in a _SET request means we want exactly the bits in
+> the bitset to be set. This works correctly for compact format but when
+> verbose format is parsed, ethnl_update_bitset32_verbose() only sets the
+> bits present in the request bitset but does not clear the rest. This can
+> cause incorrect results like
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>   lion:~ # ethtool eth0 | grep Wake
+>           Supports Wake-on: pumbg
+>           Wake-on: g
+>   lion:~ # ethtool -s eth0 wol u
+>   lion:~ # ethtool eth0 | grep Wake
+>           Supports Wake-on: pumbg
+>           Wake-on: ug
+> 
+> when the second ethtool command issues request
+> 
+> ETHTOOL_MSG_WOL_SET
+>     ETHTOOL_A_WOL_HEADER
+>         ETHTOOL_A_HEADER_DEV_NAME = "eth0"
+>     ETHTOOL_A_WOL_MODES
+>         ETHTOOL_A_BITSET_NOMASK
+>         ETHTOOL_A_BITSET_BITS
+>             ETHTOOL_A_BITSET_BITS_BIT
+>                 ETHTOOL_BITSET_BIT_INDEX = 1
+> 
+> Fix the logic by clearing the whole target bitmap before we start iterating
+> through the request bits.
+> 
+> Fixes: 10b518d4e6dd ("ethtool: netlink bitset handling")
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Applied.
+Applied, thanks Michal.
