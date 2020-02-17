@@ -2,99 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A86A716187B
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2249B1618A7
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 18:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729146AbgBQRHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 12:07:01 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39288 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728935AbgBQRHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 12:07:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=V2b0d1gUR930/id42O1ijC2yJQ/z2WLsY4dFHF7zz9k=; b=TT35hLrOxBVLzCKJph9tBQ4I9
-        9qjfMI6ImhwTUvtKySaL+IoXUyRExCX181Kyao7+OvlCpIn2KUte7mEJImazIdbuL+X8RVggxkA+1
-        SOBF21/nbzYN1UA93A3m9qzdLRIFxHB1Mbupvuo4laKp4GBQOe6wrXt4HkagkEGw/bVaY965HSLme
-        +CyU8K5lRCjuHpoKdkcbfTJgLhHqhU7pedP0CP4XkvZiFTUNCfz73R0FxYffyaLKHtP5ZqBQvU1XI
-        gdg2bNamdlh/MIRODoV4PQoWU0SQUEDDd3cZodhzPyxQP2cK8ASvh3lMf0Elalxf8WaeeVT3wDuML
-        SHaRTJEVw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49118)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j3jrF-00021x-7A; Mon, 17 Feb 2020 17:06:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j3jrE-0006T8-Ig; Mon, 17 Feb 2020 17:06:56 +0000
-Date:   Mon, 17 Feb 2020 17:06:56 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net] net: macb: Properly handle phylink on at91rm9200
-Message-ID: <20200217170656.GY25745@shell.armlinux.org.uk>
-References: <20200217104348.43164-1-alexandre.belloni@bootlin.com>
- <20200217165644.GX25745@shell.armlinux.org.uk>
+        id S1729599AbgBQRRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 12:17:20 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:58167 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726788AbgBQRRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 12:17:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581959839;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qeiA2zNy+KX8mcg4wbgxxGNyHshOOJC4Sg9lsLuNiz0=;
+        b=HyTx+hSaO8pHSb8BNsOI4UzjzUWbrAcLnVQm1FeFu5Tjh1Yq4NlQ/CyJ/gyygebuPWAMpG
+        wuqSxyCMrb1VcTM+r/uMYMqP+bxLX/F3fXQSf1J1CctyOB5/Mv3HF+8r5kTYFpHjwhdx7o
+        rPWP7BTH5J8aIV/asZcxiQy9xclQAQo=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-307-PE-1mdZEOXeOE9pw8HeCUw-1; Mon, 17 Feb 2020 12:17:17 -0500
+X-MC-Unique: PE-1mdZEOXeOE9pw8HeCUw-1
+Received: by mail-lj1-f198.google.com with SMTP id b3so6083674ljo.23
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 09:17:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qeiA2zNy+KX8mcg4wbgxxGNyHshOOJC4Sg9lsLuNiz0=;
+        b=i9XvblifgLY6NzxaYECGC8YEhNJxT7C382aL96cV9uUcDhISdRAD8zxutxrpE/tY0s
+         byNgi31kS/wP1W5WyQjev+1v9aI+akJqGsgqn9SfSBREyikly86fTkptK/mvbJIbY6gT
+         2fsWCVdYmFnd6O2vzNCsC4AOLxbXgt7YXST+CVdIz9GbhSQfC/T4IwmERk24RFU+OseQ
+         sAFLhrB6KVKAbdVpB1oylguQaGuvj61iSepgzm8YOlE7YagOU4wNTCEKOofZXtePPzVm
+         fbKmGYLXs7nYCF4oF7nkz9XIuDQ5nMrAFlimY05/DnljLVlh2vWatx5aGlfYIM8XFeNA
+         uZNA==
+X-Gm-Message-State: APjAAAWpJaXJYAB7nMhbycQEqm4+nU9Rl2qYC4o3umZd22f5KUCVugrC
+        rh2Fp3XsBc75jPYt90I+oIXpR1VhwPxvZx9eAXB4F2DJZRu1eAHoCNZVu7TLgNm0rcnbcaRVH6M
+        j+UdfHFOylLA6P5re
+X-Received: by 2002:a2e:8702:: with SMTP id m2mr10741511lji.278.1581959835816;
+        Mon, 17 Feb 2020 09:17:15 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyT/XRSylcKMU5hkKtXzin0V8eVj+3tuoEYwtYxLeF2KXw8Lvo06GvSDcZZ6TCVSTq5wcEmkA==
+X-Received: by 2002:a2e:8702:: with SMTP id m2mr10741501lji.278.1581959835561;
+        Mon, 17 Feb 2020 09:17:15 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id k12sm703708lfc.33.2020.02.17.09.17.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2020 09:17:14 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A9C3C180365; Mon, 17 Feb 2020 18:17:13 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH bpf] libbpf: Sanitise internal map names so they are not rejected by the kernel
+Date:   Mon, 17 Feb 2020 18:17:01 +0100
+Message-Id: <20200217171701.215215-1-toke@redhat.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200217165644.GX25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 04:56:44PM +0000, Russell King - ARM Linux admin wrote:
-> On Mon, Feb 17, 2020 at 11:43:48AM +0100, Alexandre Belloni wrote:
-> > at91ether_init was handling the phy mode and speed but since the switch to
-> > phylink, the NCFGR register got overwritten by macb_mac_config().
-> 
-> I don't think this actually explains anything - or at least I can't
-> make sense of it with respect to your patch.
-> 
-> You claim that the NCFGR register gets overwritten in macb_mac_config(),
-> but I see that the NCFGR register is read-modify-write in there,
-> whereas your new implementation below doesn't bother reading the
-> present value.
-> 
-> I think the issue you're referring to is the clearing of the PAE bit,
-> which is also the RM9200_RMII for at91rm9200?
-> 
-> Next, there's some duplication of code introduced here - it seems
-> that the tail end of macb_mac_link_down() and at91ether_mac_link_down()
-> are identical, as are the tail end of macb_mac_link_up() and
-> at91ether_mac_link_up().
-> 
-> > Add new phylink callbacks to handle emac and at91rm9200 properly.
-> > 
-> > Fixes: 7897b071ac3b ("net: macb: convert to phylink")
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > ---
-> 
-> I posted a heads-up message last week about updates to phylink that
-> I'll be submitting soon (most of the prerequisits have now been sent
-> for review) which touch every phylink_mac_ops-using piece of code in
-> the tree.  Unfortunately, this patch introduces a new instance that
-> likely isn't going to get my attention, so it's going to create a
-> subtle merge conflict between net-next and net trees unless we work
-> out some way to deal with it.
-> 
-> I'm just mentioning that so that some thought can be applied now
-> rather than when it actually happens - especially as I've no way to
-> test the changes that will be necessary for this driver.
+The kernel only accepts map names with alphanumeric characters, underscores
+and periods in their name. However, the auto-generated internal map names
+used by libbpf takes their prefix from the user-supplied BPF object name,
+which has no such restriction. This can lead to "Invalid argument" errors
+when trying to load a BPF program using global variables.
 
-I'm going to post these changes shortly, but not for davem to merge
-yet - it would be a good idea if people can test the changes first.
+Fix this by sanitising the map names, replacing any non-allowed characters
+with underscores.
 
+Fixes: d859900c4c56 ("bpf, libbpf: support global data/bss/rodata sections")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ tools/lib/bpf/libbpf.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 514b1a524abb..7469c7dcc15e 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -24,6 +24,7 @@
+ #include <endian.h>
+ #include <fcntl.h>
+ #include <errno.h>
++#include <ctype.h>
+ #include <asm/unistd.h>
+ #include <linux/err.h>
+ #include <linux/kernel.h>
+@@ -1283,7 +1284,7 @@ static size_t bpf_map_mmap_sz(const struct bpf_map *map)
+ static char *internal_map_name(struct bpf_object *obj,
+ 			       enum libbpf_map_type type)
+ {
+-	char map_name[BPF_OBJ_NAME_LEN];
++	char map_name[BPF_OBJ_NAME_LEN], *p;
+ 	const char *sfx = libbpf_type_to_btf_name[type];
+ 	int sfx_len = max((size_t)7, strlen(sfx));
+ 	int pfx_len = min((size_t)BPF_OBJ_NAME_LEN - sfx_len - 1,
+@@ -1292,6 +1293,11 @@ static char *internal_map_name(struct bpf_object *obj,
+ 	snprintf(map_name, sizeof(map_name), "%.*s%.*s", pfx_len, obj->name,
+ 		 sfx_len, libbpf_type_to_btf_name[type]);
+ 
++	/* sanitise map name to characters allowed by kernel */
++	for (p = map_name; *p && p < map_name + sizeof(map_name); p++)
++		if (!isalnum(*p) && *p != '_' && *p != '.')
++			*p = '_';
++
+ 	return strdup(map_name);
+ }
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.25.0
+
