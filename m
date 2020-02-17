@@ -2,152 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 138D3161805
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 17:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF4916185E
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 17:57:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729318AbgBQQfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 11:35:05 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:44753 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728952AbgBQQfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 11:35:03 -0500
-Received: by mail-pg1-f196.google.com with SMTP id g3so9329356pgs.11;
-        Mon, 17 Feb 2020 08:35:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YrIogMAzNjDoho/ZMU6x1lezaGjyCZgCFRA4k/XFA2Q=;
-        b=aXgx9FuIkeYKessQtQzklWhRed4jxOnavjhebJk8qxFqotlinaiVCYCk9oJYu7YW58
-         gE55ReQ6tAr5DE6hchYO+4+STqMfXLl700fgujDLdPKXRYMhUFHY/WFDFxmf9wuYPaK/
-         XrQgQaGivi9aO3xhZ4tC2oWJbDEWMDQF0Jvp4RIc8kD0ri6Tq3e8bnXsK2mOjGpZo9QH
-         O0vJozOBSNIOg7dsM86py2lI0LJieWnmw7A7EpM2+Qwqjn6lmuo1aBqwCRckWbSfpLn0
-         hHFihs3ga6m4FjlXEmLo65qmWVypS1yq7RbE79ska5OatKQK8LZ1YhMPelfMNYQQg0Z1
-         uBag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YrIogMAzNjDoho/ZMU6x1lezaGjyCZgCFRA4k/XFA2Q=;
-        b=dlVhztOs8sw3mztTOxVqP0gpco8E3nAt/KiC8TZZwUgLv9F+T2SUYvIWCXBSOk7d2N
-         Kb1E8r4NpMZXbUV6Q86aMbgvPk3Yytz/oYJa0dVRBpShaih/XCaJG0nBHDI/b+X9ALGO
-         rhsmgkxml0bPxDXj5RlMrodztx46fFylwFzlm0ZcByhNDaMsrGzicwnTrXAtD2cegHUX
-         9xIgCIDbXrTtsT6dWZoGNV9HvUaduzS8nLvkU2++yYPen2DGbEP1PdIPO/rVTQQ8b8nU
-         c4YyuqaqglghpQQQjta+7tTI5pUZOzCK6YV2jzLCKgbv5pf/QynpAzSKWr5sZcKqDw1Q
-         fKPw==
-X-Gm-Message-State: APjAAAXSXrgbVeFnnYrIEkAnkxqvVX1U77pLTjBXqrfhXhb7WrIuR/qO
-        ZzYsVdxIbrivddBOpZNLgkxRu7fQ
-X-Google-Smtp-Source: APXvYqydvjkI9S+SrpEeWISB9MlWmSQ3HxruBrrg/IpEMPCedHSOfzWlJhjNx2aOmtrEeyu91UG0LQ==
-X-Received: by 2002:a63:5c0e:: with SMTP id q14mr18826292pgb.313.1581957301149;
-        Mon, 17 Feb 2020 08:35:01 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w26sm952373pfj.119.2020.02.17.08.34.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Feb 2020 08:35:00 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] sctp: move the format error check out of __sctp_sf_do_9_1_abort
-Date:   Tue, 18 Feb 2020 00:34:52 +0800
-Message-Id: <1833bf6abc2610393666b930fe629534cd21e0fa.1581957292.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1728704AbgBQQ44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 11:56:56 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39154 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726492AbgBQQ44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 11:56:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=2/En5IBaP1moV+pglClAUBUFc5ut9gbuR38WbrIBi8E=; b=iHB8AbZ1Vnw4mfaL2XpqFSha0
+        Phl21B5adT9qkUS+oIjhwKzNrJ9zF9ogY5LwOPq8/CwAacml5pUsOH/US9s33sSoRB0zaqGsEEH8K
+        ipyEWYXdeLXd+7K7lBqES9rPn8pJTBFsEr7XzFAA+rAUb/Sgm8oZLJI4uQKOiGWa3BUUhXJahyaaV
+        f4L5JMSjUAoZ5dAgRskiP0wGNqe6kqQ3vuTkoMey0doLT9/E53VLppdWit9LTNj4yTxWKb3NbN6XC
+        M+T+TP7Y8FwbUEVECeD0m94bSgLC6cQPj2uNP1xTmFmW3l02B3Cfv4M4psMwtJwbb9fQeP3ISwKc4
+        N0cJWPOLg==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:41594)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j3jhO-0001yk-Pd; Mon, 17 Feb 2020 16:56:46 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j3jhM-0006St-61; Mon, 17 Feb 2020 16:56:44 +0000
+Date:   Mon, 17 Feb 2020 16:56:44 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: macb: Properly handle phylink on at91rm9200
+Message-ID: <20200217165644.GX25745@shell.armlinux.org.uk>
+References: <20200217104348.43164-1-alexandre.belloni@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200217104348.43164-1-alexandre.belloni@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When T2 timer is to be stopped, the asoc should also be deleted,
-otherwise, there will be no chance to call sctp_association_free
-and the asoc could last in memory forever.
+On Mon, Feb 17, 2020 at 11:43:48AM +0100, Alexandre Belloni wrote:
+> at91ether_init was handling the phy mode and speed but since the switch to
+> phylink, the NCFGR register got overwritten by macb_mac_config().
 
-However, in sctp_sf_shutdown_sent_abort(), after adding the cmd
-SCTP_CMD_TIMER_STOP for T2 timer, it may return error due to the
-format error from __sctp_sf_do_9_1_abort() and miss adding
-SCTP_CMD_ASSOC_FAILED where the asoc will be deleted.
+I don't think this actually explains anything - or at least I can't
+make sense of it with respect to your patch.
 
-This patch is to fix it by moving the format error check out of
-__sctp_sf_do_9_1_abort(), and do it before adding the cmd
-SCTP_CMD_TIMER_STOP for T2 timer.
+You claim that the NCFGR register gets overwritten in macb_mac_config(),
+but I see that the NCFGR register is read-modify-write in there,
+whereas your new implementation below doesn't bother reading the
+present value.
 
-Thanks Hangbin for reporting this issue by the fuzz testing.
+I think the issue you're referring to is the clearing of the PAE bit,
+which is also the RM9200_RMII for at91rm9200?
 
-Fixes: 96ca468b86b0 ("sctp: check invalid value of length parameter in error cause")
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/sm_statefuns.c | 29 ++++++++++++++++++++---------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+Next, there's some duplication of code introduced here - it seems
+that the tail end of macb_mac_link_down() and at91ether_mac_link_down()
+are identical, as are the tail end of macb_mac_link_up() and
+at91ether_mac_link_up().
 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 748e3b1..e2b2b41 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -170,6 +170,16 @@ static inline bool sctp_chunk_length_valid(struct sctp_chunk *chunk,
- 	return true;
- }
- 
-+/* Check for the format error in an ABORT chunk */
-+static inline bool sctp_err_chunk_valid(struct sctp_chunk *chunk)
-+{
-+	struct sctp_errhdr *err;
-+
-+	sctp_walk_errors(err, chunk->chunk_hdr);
-+
-+	return (void *)err == (void *)chunk->chunk_end;
-+}
-+
- /**********************************************************
-  * These are the state functions for handling chunk events.
-  **********************************************************/
-@@ -2255,6 +2265,9 @@ enum sctp_disposition sctp_sf_shutdown_pending_abort(
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
- 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
- 
-+	if (!sctp_err_chunk_valid(chunk))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
- }
- 
-@@ -2298,6 +2311,9 @@ enum sctp_disposition sctp_sf_shutdown_sent_abort(
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
- 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
- 
-+	if (!sctp_err_chunk_valid(chunk))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	/* Stop the T2-shutdown timer. */
- 	sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_STOP,
- 			SCTP_TO(SCTP_EVENT_TIMEOUT_T2_SHUTDOWN));
-@@ -2565,6 +2581,9 @@ enum sctp_disposition sctp_sf_do_9_1_abort(
- 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
- 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
- 
-+	if (!sctp_err_chunk_valid(chunk))
-+		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-+
- 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
- }
- 
-@@ -2582,16 +2601,8 @@ static enum sctp_disposition __sctp_sf_do_9_1_abort(
- 
- 	/* See if we have an error cause code in the chunk.  */
- 	len = ntohs(chunk->chunk_hdr->length);
--	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr)) {
--		struct sctp_errhdr *err;
--
--		sctp_walk_errors(err, chunk->chunk_hdr);
--		if ((void *)err != (void *)chunk->chunk_end)
--			return sctp_sf_pdiscard(net, ep, asoc, type, arg,
--						commands);
--
-+	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr))
- 		error = ((struct sctp_errhdr *)chunk->skb->data)->cause;
--	}
- 
- 	sctp_add_cmd_sf(commands, SCTP_CMD_SET_SK_ERR, SCTP_ERROR(ECONNRESET));
- 	/* ASSOC_FAILED will DELETE_TCB. */
+> Add new phylink callbacks to handle emac and at91rm9200 properly.
+> 
+> Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> ---
+
+I posted a heads-up message last week about updates to phylink that
+I'll be submitting soon (most of the prerequisits have now been sent
+for review) which touch every phylink_mac_ops-using piece of code in
+the tree.  Unfortunately, this patch introduces a new instance that
+likely isn't going to get my attention, so it's going to create a
+subtle merge conflict between net-next and net trees unless we work
+out some way to deal with it.
+
+I'm just mentioning that so that some thought can be applied now
+rather than when it actually happens - especially as I've no way to
+test the changes that will be necessary for this driver.
+
+>  drivers/net/ethernet/cadence/macb.h      |  1 +
+>  drivers/net/ethernet/cadence/macb_main.c | 81 +++++++++++++++++++++---
+>  2 files changed, 73 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+> index dbf7070fcdba..a3f0f27fc79a 100644
+> --- a/drivers/net/ethernet/cadence/macb.h
+> +++ b/drivers/net/ethernet/cadence/macb.h
+> @@ -652,6 +652,7 @@
+>  #define MACB_CAPS_GEM_HAS_PTP			0x00000040
+>  #define MACB_CAPS_BD_RD_PREFETCH		0x00000080
+>  #define MACB_CAPS_NEEDS_RSTONUBR		0x00000100
+> +#define MACB_CAPS_MACB_IS_EMAC			0x08000000
+>  #define MACB_CAPS_FIFO_MODE			0x10000000
+>  #define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
+>  #define MACB_CAPS_SG_DISABLED			0x40000000
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index def94e91883a..529a1d0d7dab 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -654,6 +654,72 @@ static const struct phylink_mac_ops macb_phylink_ops = {
+>  	.mac_link_up = macb_mac_link_up,
+>  };
+>  
+> +static void at91ether_mac_config(struct phylink_config *config,
+> +				 unsigned int mode,
+> +				 const struct phylink_link_state *state)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct macb *bp = netdev_priv(ndev);
+> +	unsigned long flags;
+> +	u32 ctrl;
+> +
+> +	spin_lock_irqsave(&bp->lock, flags);
+> +
+> +	ctrl = MACB_BF(CLK, MACB_CLK_DIV32) | MACB_BIT(BIG);
+> +	if (state->speed == SPEED_100)
+> +		ctrl |= MACB_BIT(SPD);
+> +
+> +	if (state->duplex)
+> +		ctrl |= MACB_BIT(FD);
+> +
+> +	if (state->interface == PHY_INTERFACE_MODE_RMII)
+> +		ctrl |= MACB_BIT(RM9200_RMII);
+> +
+> +	macb_writel(bp, NCFGR, ctrl);
+> +
+> +	bp->speed = state->speed;
+> +
+> +	spin_unlock_irqrestore(&bp->lock, flags);
+> +}
+> +
+> +static void at91ether_mac_link_down(struct phylink_config *config,
+> +				    unsigned int mode,
+> +				    phy_interface_t interface)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct macb *bp = netdev_priv(ndev);
+> +	u32 ctrl;
+> +
+> +	/* Disable Rx and Tx */
+> +	ctrl = macb_readl(bp, NCR) & ~(MACB_BIT(RE) | MACB_BIT(TE));
+> +	macb_writel(bp, NCR, ctrl);
+> +
+> +	netif_tx_stop_all_queues(ndev);
+> +}
+> +
+> +static void at91ether_mac_link_up(struct phylink_config *config,
+> +				  unsigned int mode,
+> +				  phy_interface_t interface,
+> +				  struct phy_device *phy)
+> +{
+> +	struct net_device *ndev = to_net_dev(config->dev);
+> +	struct macb *bp = netdev_priv(ndev);
+> +
+> +	/* Enable Rx and Tx */
+> +	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(RE) | MACB_BIT(TE));
+> +
+> +	netif_tx_wake_all_queues(ndev);
+> +}
+> +
+> +static const struct phylink_mac_ops at91ether_phylink_ops = {
+> +	.validate = macb_validate,
+> +	.mac_pcs_get_state = macb_mac_pcs_get_state,
+> +	.mac_an_restart = macb_mac_an_restart,
+> +	.mac_config = at91ether_mac_config,
+> +	.mac_link_down = at91ether_mac_link_down,
+> +	.mac_link_up = at91ether_mac_link_up,
+> +};
+> +
+>  static bool macb_phy_handle_exists(struct device_node *dn)
+>  {
+>  	dn = of_parse_phandle(dn, "phy-handle", 0);
+> @@ -695,13 +761,17 @@ static int macb_phylink_connect(struct macb *bp)
+>  /* based on au1000_eth. c*/
+>  static int macb_mii_probe(struct net_device *dev)
+>  {
+> +	const struct phylink_mac_ops *phylink_ops = &macb_phylink_ops;
+>  	struct macb *bp = netdev_priv(dev);
+>  
+> +	if (bp->caps & MACB_CAPS_MACB_IS_EMAC)
+> +		phylink_ops = &at91ether_phylink_ops;
+> +
+>  	bp->phylink_config.dev = &dev->dev;
+>  	bp->phylink_config.type = PHYLINK_NETDEV;
+>  
+>  	bp->phylink = phylink_create(&bp->phylink_config, bp->pdev->dev.fwnode,
+> -				     bp->phy_interface, &macb_phylink_ops);
+> +				     bp->phy_interface, phylink_ops);
+>  	if (IS_ERR(bp->phylink)) {
+>  		netdev_err(dev, "Could not create a phylink instance (%ld)\n",
+>  			   PTR_ERR(bp->phylink));
+> @@ -4041,7 +4111,6 @@ static int at91ether_init(struct platform_device *pdev)
+>  	struct net_device *dev = platform_get_drvdata(pdev);
+>  	struct macb *bp = netdev_priv(dev);
+>  	int err;
+> -	u32 reg;
+>  
+>  	bp->queues[0].bp = bp;
+>  
+> @@ -4055,12 +4124,6 @@ static int at91ether_init(struct platform_device *pdev)
+>  
+>  	macb_writel(bp, NCR, 0);
+>  
+> -	reg = MACB_BF(CLK, MACB_CLK_DIV32) | MACB_BIT(BIG);
+> -	if (bp->phy_interface == PHY_INTERFACE_MODE_RMII)
+> -		reg |= MACB_BIT(RM9200_RMII);
+> -
+> -	macb_writel(bp, NCFGR, reg);
+> -
+>  	return 0;
+>  }
+>  
+> @@ -4218,7 +4281,7 @@ static const struct macb_config sama5d4_config = {
+>  };
+>  
+>  static const struct macb_config emac_config = {
+> -	.caps = MACB_CAPS_NEEDS_RSTONUBR,
+> +	.caps = MACB_CAPS_NEEDS_RSTONUBR | MACB_CAPS_MACB_IS_EMAC,
+>  	.clk_init = at91ether_clk_init,
+>  	.init = at91ether_init,
+>  };
+> -- 
+> 2.24.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+
 -- 
-2.1.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
