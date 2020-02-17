@@ -2,167 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C3AC161C90
-	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 22:03:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94728161CD7
+	for <lists+netdev@lfdr.de>; Mon, 17 Feb 2020 22:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729676AbgBQVDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 16:03:05 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:42934 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729396AbgBQVDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 16:03:04 -0500
-Received: by mail-pl1-f195.google.com with SMTP id e8so7189508plt.9
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 13:03:04 -0800 (PST)
+        id S1729936AbgBQVjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 16:39:37 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35710 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728935AbgBQVjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 16:39:37 -0500
+Received: by mail-wr1-f67.google.com with SMTP id w12so21494408wrt.2;
+        Mon, 17 Feb 2020 13:39:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ELkDR22vOnk2EMyh6lZ2o2EgTEKCyjqr9cOt+NsucFc=;
-        b=MoKrzZYvy3eX4RRSzB+sptEStuaFvIl1XRw1otldcbCpLdQw0D5mE9hGuOV8Ka4PQF
-         ZEEPp0TqSuFYCz02SPhBmdmSAu3CuqY+cVnGccAxZegah+rfd5A1GRu6G+c37pltzg4S
-         VSCj4oOABZrxgizSfISE18WTUbEVdf2xvKP/uSsOfzD4cXyNjFP6LwfB9uVQznWQFJLa
-         hgIkByVdX7e7OHsXkThUKWFsi26a89l1IZmV2NreezhdhHwxCU8xEvjU+uAwwvDmPdYz
-         gxxIp21LWQ7QaSHp9rDbkYddKCG27hedojKol6eUOG+Aj68DWK5O9e6UyqJOYwoTAAw/
-         VbEQ==
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=pQK+JSaj4X1ouX/nv3XugRaRb5vhJaYjMLbHKqXiJLs=;
+        b=tRxbEzBjpxae4/jPkX1ksr+AcCQ64ru3BPDzjqwTU82KNKYS4zCXaPWBV+ZO5ottcE
+         SWRr3JAXQpC0gyS+wvRGCiIV4U7PA5WMbz2ZSGOVn7SsIblDcq7V3IvlODWdUH8p0ZeP
+         sCvsYdTwQE2yPqtNrPz6d1lxZtBN6p6isE2YiGyv2JTZHAKg31zP2fe1rcF1Al3uFeA6
+         uiKo+SF5Lcs5EuO1azjUgTpoU2DReG7SX6W8+ujPHNv7MEWktBJFkZQKhjLy9uu1OizE
+         Jh0qS3HZKJGRz9Hc84QtlrjF3T0y9mRnpe/R7e9MGNwBJa9fWcRifsPM/jzkNm8IjdmP
+         LUxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ELkDR22vOnk2EMyh6lZ2o2EgTEKCyjqr9cOt+NsucFc=;
-        b=WXUIOCJSqPzYW3IBaWgYePIqrhR0OcG7BsASwew5BLnPbDBfj7vah97B/xORiGq6ml
-         7nlyzHnnmh5VRrBjy3VWyTIeRbeVFXWibqUuU02JarqKE/mlo+FIVDANSQqlH0QZv6eK
-         mW7v9OngzI7rrmBmdco4efMRkZDzAo7kCSGoUOtJrcL081xflFymVqAvb+P6vGCvlD8X
-         5E1BEXMDYBeZvG6jirF7r2IZQJOk6xFfwGw2mRYyaNlWZlc1xihGmN0hRaCBEB9eH+dS
-         72xroms5fjOw7jHKPjDTiLnYp2Vq0UEtPB3d8EBB6XIjsPjz9weEep4RcTBpI0GYePgv
-         5+mg==
-X-Gm-Message-State: APjAAAVYH5sIMPgHcFUMPA1NQIvIFUN1sLG1CRvmILAVDdI0K3KBXhOK
-        nCaxtNpgPHQXyFpilXpnzQLmog==
-X-Google-Smtp-Source: APXvYqwL4IUEYtWCP7yrVfMaL1+mbRuRI+vSipt6X46kMueHdAyrTIuvzQZy/iHpFB7jserm3mCaAw==
-X-Received: by 2002:a17:902:341:: with SMTP id 59mr18537943pld.29.1581973383776;
-        Mon, 17 Feb 2020 13:03:03 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id x197sm1380868pfc.1.2020.02.17.13.03.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2020 13:03:03 -0800 (PST)
-Date:   Mon, 17 Feb 2020 13:02:55 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options
- support for erspan metadata
-Message-ID: <20200217130255.06644553@hermes.lan>
-In-Reply-To: <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com>
-References: <cover.1581676056.git.lucien.xin@gmail.com>
-        <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
-        <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
-        <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
-        <20200214081324.48dc2090@hermes.lan>
-        <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
-        <20200214162104.04e0bb71@hermes.lan>
-        <CADvbK_eSiGXuZqHAdQTJugLa7mNUkuQTDmcuVYMHO=1VB+Cs8w@mail.gmail.com>
-        <793b8ff4-c04a-f962-f54f-3eae87a42963@gmail.com>
-        <CADvbK_fOfEC0kG8wY_xbg_Yj4t=Y1oRKxo4h5CsYxN6Keo9YBQ@mail.gmail.com>
-        <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com>
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=pQK+JSaj4X1ouX/nv3XugRaRb5vhJaYjMLbHKqXiJLs=;
+        b=EuXsJmXSuow80EnJPHYONBimakZupXfMjrmjETsHnKuMNye063HQNRX6b5wtxxlXXa
+         s5QIdUgOLCCkaRL55yqsrJyvET+MAIWC1Hilzin1hwYmx38dynfg+E0AbotrQIsdH5Bu
+         usPi4gshVIMGdOvsWdH5DYrVzuQihcpTu4U/f2oZ+gABwRr0cDvaQMUvi5cFMipYZGK5
+         AJ10owrzCHeUJCwRV01hE1ec+sWgLhD80NUAz9aWbflW5XPeS6JdJ98e1xO9h+Ue6Bf5
+         EfeOnli7lXTL/2XiECxdZemwEQhUd8hfxR5EM3uBnVvQpiZrUE6mQInRuzz9sYSQ4Jzc
+         f8pQ==
+X-Gm-Message-State: APjAAAUpBXFde1CcJPLsdrBV6lqv0wiB1JNElg7XIY3RkiXnuPeLQZ+7
+        2dlvCN1UMxeGLJC5as1Az0GLvai9Wk0=
+X-Google-Smtp-Source: APXvYqxtgfXlPYMtn3A/6f+SlQuvmEQ1uS0kThsmRCNvSY3l7Z1IWf9fXRqMYdc2QonmDvWxMh0+og==
+X-Received: by 2002:a5d:4d06:: with SMTP id z6mr24421643wrt.241.1581975575195;
+        Mon, 17 Feb 2020 13:39:35 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:41c6:31a6:d880:888? (p200300EA8F29600041C631A6D8800888.dip0.t-ipconnect.de. [2003:ea:8f29:6000:41c6:31a6:d880:888])
+        by smtp.googlemail.com with ESMTPSA id t13sm2892378wrw.19.2020.02.17.13.39.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Feb 2020 13:39:34 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/3] net: core: add helper tcp_v6_gso_csum_prep
+To:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Parvi Kaustubhi <pkaustub@cisco.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Guo-Fu Tseng <cooldavid@cooldavid.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Timur Tabi <timur@kernel.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, linux-hyperv@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>
+Message-ID: <76cd6cfc-f4f3-ece7-203a-0266b7f02a12@gmail.com>
+Date:   Mon, 17 Feb 2020 22:39:27 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Feb 2020 12:53:14 -0700
-David Ahern <dsahern@gmail.com> wrote:
+Several network drivers for chips that support TSO6 share the same code
+for preparing the TCP header. A difference is that some reset the
+payload_len whilst others don't do this. Let's factor out this common
+code to a new helper.
 
-> On 2/15/20 11:38 PM, Xin Long wrote:
-> > On Sun, Feb 16, 2020 at 12:51 AM David Ahern <dsahern@gmail.com> wrote:  
-> >>
-> >> On 2/14/20 9:18 PM, Xin Long wrote:  
-> >>> On Sat, Feb 15, 2020 at 8:21 AM Stephen Hemminger
-> >>> <stephen@networkplumber.org> wrote:  
-> >>>>
-> >>>> On Sat, 15 Feb 2020 01:40:27 +0800
-> >>>> Xin Long <lucien.xin@gmail.com> wrote:
-> >>>>  
-> >>>>> This's not gonna work. as the output will be:
-> >>>>> {"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
-> >>>>> instead of
-> >>>>> {"ver":2,"index":0,"dir":1,"hwid":2} (number)  
-> >>>>
-> >>>> JSON is typeless. Lots of values are already printed in hex  
-> >>> You may mean JSON data itself is typeless.
-> >>> But JSON objects are typed when parsing JSON data, which includes
-> >>> string, number, array, boolean. So it matters how to define the
-> >>> members' 'type' in JSON data.
-> >>>
-> >>> For example, in python's 'json' module:
-> >>>
-> >>> #!/usr/bin/python2
-> >>> import json
-> >>> json_data_1 = '{"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}'
-> >>> json_data_2 = '{"ver":2,"index":0,"dir":1,"hwid":2}'
-> >>> parsed_json_1 = (json.loads(json_data_1))
-> >>> parsed_json_2 = (json.loads(json_data_2))
-> >>> print type(parsed_json_1["hwid"])
-> >>> print type(parsed_json_2["hwid"])
-> >>>
-> >>> The output is:
-> >>> <type 'unicode'>
-> >>> <type 'int'>
-> >>>
-> >>> Also, '{"result": true}' is different from '{"result": "true"}' when
-> >>> loading it in a 3rd-party lib.
-> >>>
-> >>> I think the JSON data coming from iproute2 is designed to be used by
-> >>> a 3rd-party lib to parse, not just to show to users. To keep these
-> >>> members' original type (numbers) is more appropriate, IMO.
-> >>>  
-> >>
-> >> Stephen: why do you think all of the numbers should be in hex?
-> >>
-> >> It seems like consistency with existing output should matter more.
-> >> ip/link_gre.c for instance prints index as an int, version as an int,
-> >> direction as a string and only hwid in hex.
-> >>
-> >> Xin: any reason you did not follow the output of the existingg netdev
-> >> based solutions?  
-> > Hi David,
-> > 
-> > Option is expressed as "version:index:dir:hwid", I made all fields
-> > in this string of hex, just like "class:type:data" in:
-> > 
-> > commit 0ed5269f9e41f495c8e9020c85f5e1644c1afc57
-> > Author: Simon Horman <simon.horman@netronome.com>
-> > Date:   Tue Jun 26 21:39:37 2018 -0700
-> > 
-> >     net/sched: add tunnel option support to act_tunnel_key
-> > 
-> > I'm not sure if it's good to mix multiple types in this string. wdyt?
-> > 
-> > but for the JSON data, of course, these are all numbers(not string).
-> >   
-> 
-> I don't understand why Stephen is pushing for hex; it does not make
-> sense for version, index or direction. I don't have a clear
-> understanding of hwid to know uint vs hex, so your current JSON prints
-> seem fine.
-> 
-> As for the stdout print and hex fields, staring at the tc and lwtunnel
-> code, it seems like those 2 have a lot of parallels in expressing
-> options for encoding vs lwtunnel and netdev based code. ie., I think
-> this latest set is correct.
-> 
-> Stephen?
+Heiner Kallweit (3):
+  net: core: add helper tcp_v6_gso_csum_prep
+  r8169: use new helper tcp_v6_gso_csum_prep
+  net: use new helper tcp_v6_gso_csum_prep
 
-I just wanted:
-1. The parse and print functions should have the same formats.
-I.e. if you take the output and do a little massaging of the ifindex
-it should be accepted as an input set of parameters.
+ drivers/net/ethernet/atheros/alx/main.c       |  5 +---
+ .../net/ethernet/atheros/atl1c/atl1c_main.c   |  6 ++---
+ drivers/net/ethernet/brocade/bna/bnad.c       |  7 +----
+ drivers/net/ethernet/cisco/enic/enic_main.c   |  3 +--
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  6 +----
+ drivers/net/ethernet/intel/e1000e/netdev.c    |  5 +---
+ drivers/net/ethernet/jme.c                    |  7 +----
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  5 +---
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c |  7 ++---
+ drivers/net/ethernet/realtek/r8169_main.c     | 26 ++-----------------
+ drivers/net/ethernet/socionext/netsec.c       |  6 +----
+ drivers/net/hyperv/netvsc_drv.c               |  5 +---
+ drivers/net/usb/r8152.c                       | 26 ++-----------------
+ drivers/net/vmxnet3/vmxnet3_drv.c             |  5 +---
+ include/net/ip6_checksum.h                    | 12 +++++++++
+ 15 files changed, 30 insertions(+), 101 deletions(-)
 
-2. As much as possible, the JSON and non-JSON output should be similar.
-If non-JSON prints in hex, then JSON should display hex and vice/versa.
+-- 
+2.25.0
 
-Ideally all inputs would be human format (not machine formats like hex).
-But I guess the mistake was already made with some of the other tunnels.
