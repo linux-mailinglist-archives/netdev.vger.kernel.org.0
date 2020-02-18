@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBE51635F8
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA70016360C
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726478AbgBRWVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 17:21:20 -0500
-Received: from correo.us.es ([193.147.175.20]:57518 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726655AbgBRWVP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 17:21:15 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5BAAA303D0C
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:21:11 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4C8FADA3A4
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:21:11 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 4228DDA3A1; Tue, 18 Feb 2020 23:21:11 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 64BDFDA39F;
-        Tue, 18 Feb 2020 23:21:09 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 18 Feb 2020 23:21:09 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 3A99142EE38E;
-        Tue, 18 Feb 2020 23:21:09 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 9/9] netfilter: nft_set_pipapo: Don't abuse unlikely() in pipapo_refill()
-Date:   Tue, 18 Feb 2020 23:21:01 +0100
-Message-Id: <20200218222101.635808-10-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200218222101.635808-1-pablo@netfilter.org>
-References: <20200218222101.635808-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726729AbgBRWX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 17:23:28 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35774 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726391AbgBRWX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:23:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582064607;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KzniXuxGG3xuNTREj2X9iqbFXp/dsAkbv0yAly6KfyY=;
+        b=Cyrw7i/14fdvbw8jR1eW+sfDAhSU8K9VpmVy/LXOPRbJ88btgYRaBMdVxDEaBuu3KgtgbF
+        a/APVnhOjjnibJOOvyd/Z37ARdwnmYtqnDI2di+koQVCqVqhxJQapVj7oxgEwdODwfgbfQ
+        lv2ypXdiungGfNvBHcfNITEuE0Csmu0=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-51-yYzlHoNKNsOIzTJ7wc9pkA-1; Tue, 18 Feb 2020 17:23:25 -0500
+X-MC-Unique: yYzlHoNKNsOIzTJ7wc9pkA-1
+Received: by mail-lf1-f71.google.com with SMTP id l2so2325218lfk.23
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 14:23:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=KzniXuxGG3xuNTREj2X9iqbFXp/dsAkbv0yAly6KfyY=;
+        b=j8KqiQ9sunSqZ1rcPrahklu8U2Njbq8sf/+DB2P82HBfNvXX4LhX43c6HOnyr7j9Kd
+         Ky4zfnHR9d8Qp8hs7XDG1VfBQrSFKPgRXNtYYdFt8SktjVaUVY0pRy44KFqwmD7sNZ2J
+         NVJWu8ogKyIrTwP0xW+n1gsHrkh/aA7geOaZExiGmKpYKbkRMENTt14RSxSwbuuHzWC3
+         xLRTvmGAkSoVtbGMzk0GeuvngvnNHr1e0Pkh6z/w4fgdHXlbd+3WsQhUTkGcQtjqlt8b
+         4hqzGH7X0wbnJGJukVd4C0k0/F3Bkk0KAv5oDsKEkavdN4AM/qZX4i9Rg9wHQ26QKMu5
+         UcbQ==
+X-Gm-Message-State: APjAAAU71csotYsjPGKoZjxTazo0UiithRWmI9fRmBdHs1tjIoXr4PnH
+        tUQm2+kAJS82m595Q8oZArsBCTGV8sNt+0nWzNC7G2wERWkLFSAX9azpWRal3PriZlKTttDUo7r
+        EuUT0u3AvUFNc8/Az
+X-Received: by 2002:a2e:888b:: with SMTP id k11mr14325323lji.197.1582064604203;
+        Tue, 18 Feb 2020 14:23:24 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxYWLZAyv8CoD8AZ/XywYZzw4bS9wLMvINlzJFDMHl7GteVE53+Up4eF5q8jg0FySo7bFGPNA==
+X-Received: by 2002:a2e:888b:: with SMTP id k11mr14325313lji.197.1582064603932;
+        Tue, 18 Feb 2020 14:23:23 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id n2sm67763ljj.1.2020.02.18.14.23.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 14:23:23 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4FB19180365; Tue, 18 Feb 2020 23:23:22 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com, andrew@lunn.ch,
+        brouer@redhat.com, dsahern@kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to mlx5 driver
+In-Reply-To: <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
+References: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org> <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 18 Feb 2020 23:23:22 +0100
+Message-ID: <87eeury1ph.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
+Jakub Kicinski <kuba@kernel.org> writes:
 
-I originally used unlikely() in the if (match_only) clause, which
-we hit on the mapping table for the last field in a set, to ensure
-we avoid branching to the rest of for loop body, which is executed
-more frequently.
+> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote:
+>> Introduce "rx" prefix in the name scheme for xdp counters
+>> on rx path.
+>> Differentiate between XDP_TX and ndo_xdp_xmit counters
+>> 
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>
+> Sorry for coming in late.
+>
+> I thought the ability to attach a BPF program to a fexit of another BPF
+> program will put an end to these unnecessary statistics. IOW I maintain
+> my position that there should be no ethtool stats for XDP.
+>
+> As discussed before real life BPF progs will maintain their own stats
+> at the granularity of their choosing, so we're just wasting datapath
+> cycles.
+>
+> The previous argument that the BPF prog stats are out of admin control
+> is no longer true with the fexit option (IIUC how that works).
 
-However, Pablo reports, this is confusing as it gives the impression
-that this is not a common case, and it's actually not the intended
-usage of unlikely().
+So you're proposing an admin that wants to keep track of XDP has to
+(permantently?) attach an fexit program to every running XDP program and
+use that to keep statistics? But presumably he'd first need to discover
+that XDP is enabled; which the ethtool stats is a good hint for :)
 
-I couldn't observe any statistical difference in matching rates on
-x864_64 and aarch64 without it, so just drop it.
-
-Reported-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Fixes: 3c4287f62044 ("nf_tables: Add set type for arbitrary concatenation of ranges")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_set_pipapo.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
-index 579600b39f39..feac8553f6d9 100644
---- a/net/netfilter/nft_set_pipapo.c
-+++ b/net/netfilter/nft_set_pipapo.c
-@@ -503,7 +503,7 @@ static int pipapo_refill(unsigned long *map, int len, int rules,
- 				return -1;
- 			}
- 
--			if (unlikely(match_only)) {
-+			if (match_only) {
- 				bitmap_clear(map, i, 1);
- 				return i;
- 			}
--- 
-2.11.0
+-Toke
 
