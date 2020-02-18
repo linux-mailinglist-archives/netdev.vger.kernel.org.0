@@ -2,192 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33124162336
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6101162330
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:16:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgBRJQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 04:16:37 -0500
-Received: from mail-pf1-f172.google.com ([209.85.210.172]:35649 "EHLO
-        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbgBRJQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:16:36 -0500
-Received: by mail-pf1-f172.google.com with SMTP id y73so10353542pfg.2;
-        Tue, 18 Feb 2020 01:16:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gTzqX9MZ+13NkjyUA3S/Rp+W6CQYR2KrA7XcAGA6wdU=;
-        b=B+AlZHGcpJk0mxGmPoY7aZFp0ikUmF6RIRP7ID7OmMIL90dTtMS9GCU/YyRDm3lfMu
-         sdtpz6yMAR9tiT2bY5cM2Z9ZgsfXHLH1MSEqxrOkjE2CXhVmHuiu1hEpYsNb5IpVaw/H
-         S/FGaT/DNPuCoHcSdDtZKvH5tR4wwI/KdZGUGBt1UldliBgZarCa1b17OGwwpzzS2mfg
-         MxSpEL760lVTX9b+TFfmr1ETsCb1Ap7z0akQAleYQbi6wk00vZ68vqsxJQ988DX1szh/
-         KY4KEfScmqLJKodyO6O1oXv7Yh/+w90UEns2cNwvSOg1GB/0FmK6CT9BGCgqNygyTG3i
-         eLzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gTzqX9MZ+13NkjyUA3S/Rp+W6CQYR2KrA7XcAGA6wdU=;
-        b=HkJGVu8N2xBJb1RoIMXYGX6e8QjMmAnpoDdRkrpt9gYUGfPChV84ypwCskVstvO4vZ
-         NMH/G8StHqBcE70kXdo5gfYJ9fgo1Gko08YwhVLAkTUIOoA1h8Q8UuydCjaFDpr9JMHa
-         0rzBBBazaPYgxorq1IDZAzvNDTkHf+RoAb+L/qQ0OidZAuf/Ma9EMntNAFnixwI4pQtA
-         JwaqfxTVq6Y0dlQvfZL3MrA1NpZqxrCefLnXbgLk0Uty3JfHNXdgk4sy8pcj37IJLaBu
-         K7kKKvth3Q2hPSzsJgCgsli7RhgWJ5VmgHMK4dLNwECiGop/owbfeyNbp//hxPsbKL4A
-         8Dqg==
-X-Gm-Message-State: APjAAAV21EYBd8iEkDCX2ii4s6tXaWX4M3GOYMfbIm8Bs5K0BC4GrgOg
-        3N2uh4GZHmU9sgmd3TFxnn2sPfdiv1fYfg==
-X-Google-Smtp-Source: APXvYqw78e8junFXhv9T9LHsbHXY4LhWqaxISEgzBHJrNzX/HevXlUf23y/TUMVgvKIZ5MCorVaTtQ==
-X-Received: by 2002:a62:15d8:: with SMTP id 207mr21015921pfv.40.1582017395525;
-        Tue, 18 Feb 2020 01:16:35 -0800 (PST)
-Received: from kernel.rdqbwbcbjylexclmhxlbqg5jve.hx.internal.cloudapp.net ([65.52.171.215])
-        by smtp.gmail.com with ESMTPSA id h191sm1992110pge.85.2020.02.18.01.16.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 01:16:35 -0800 (PST)
-From:   Lingpeng Chen <forrest0579@gmail.com>
-To:     bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Petar Penkov <ppenkov.kernel@gmail.com>,
-        Lingpeng Chen <forrest0579@gmail.com>
-Subject: [PATCH v2 bpf-next 3/3] selftests/bpf: add selftest for sock_ops_get_netns helper
-Date:   Tue, 18 Feb 2020 09:15:41 +0000
-Message-Id: <20200218091541.107371-4-forrest0579@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200218091541.107371-1-forrest0579@gmail.com>
-References: <20200206083515.10334-1-forrest0579@gmail.com>
- <20200218091541.107371-1-forrest0579@gmail.com>
+        id S1726444AbgBRJQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 04:16:24 -0500
+Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:6247 "EHLO
+        esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgBRJQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:16:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1582017382;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=lcDVb9zXtKxtRtcOkp+nnORggRYgX9o2VvFOkpOp/P8=;
+  b=Wcv8Oo1vNyFtzekkkXrdLKefd1xRdv460LmxJby949OKvkMac/Er3JG3
+   lTs+CjdkJIO8oOYPmh+FPXH7iqdmUBrTnS/bbAt0WbgBDFgygU9H3toEN
+   TRs29hb+u+6WHreqTy9IrLpRoQxg82Gw2ENKMOT5qL5D4R5ZNUZ/izLsb
+   w=;
+Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa4.hc3370-68.iphmx.com: domain of
+  roger.pau@citrix.com designates 162.221.158.21 as permitted
+  sender) identity=mailfrom; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
+  ip4:168.245.78.127 ~all"
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@mail.citrix.com) identity=helo;
+  client-ip=162.221.158.21; receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="postmaster@mail.citrix.com";
+  x-conformance=sidf_compatible
+IronPort-SDR: +NEaIej/3FoAmfEcfZRKSsrlG2EvLazi8i5c8rEat0w9DZFheqa79Nk6lGtTXdWahQxWJl2DCh
+ tlH9OIp4sxxYTLOa3B/zsETTAUK8TdmCfj5QS1nbH7zQdOb38cbTB0gh9TwQ83rCNVxkZpFmoq
+ j1LtHDChEp7jQ9ejWC3CN7k9hxaDnckSFEXLd4lOIy3xb5OQT9MQ0pZkm803x4ik86Fj0f3jA3
+ liTdQc2+rRln3CHugnKLQ5/73TashOzsfWqyviP0SOWxvTvxXsU6PhJjMAiJRq9l7kT8QkhDY2
+ q1o=
+X-SBRS: 2.7
+X-MesageID: 13228854
+X-Ironport-Server: esa4.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.70,456,1574139600"; 
+   d="scan'208";a="13228854"
+Date:   Tue, 18 Feb 2020 10:16:11 +0100
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
+        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
+        <linux-mm@kvack.org>, <kamatam@amazon.com>,
+        <sstabellini@kernel.org>, <konrad.wilk@oracle.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>,
+        <benh@kernel.crashing.org>
+Subject: Re: [RFC PATCH v3 06/12] xen-blkfront: add callbacks for PM suspend
+ and hibernation
+Message-ID: <20200218091611.GN4679@Air-de-Roger>
+References: <cover.1581721799.git.anchalag@amazon.com>
+ <890c404c585d7790514527f0c021056a7be6e748.1581721799.git.anchalag@amazon.com>
+ <20200217100509.GE4679@Air-de-Roger>
+ <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
+ AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-adding selftest for new bpf helper function sock_ops_get_netns
+On Mon, Feb 17, 2020 at 11:05:53PM +0000, Anchal Agarwal wrote:
+> On Mon, Feb 17, 2020 at 11:05:09AM +0100, Roger Pau Monné wrote:
+> > On Fri, Feb 14, 2020 at 11:25:34PM +0000, Anchal Agarwal wrote:
+> > > From: Munehisa Kamata <kamatam@amazon.com
+> > > 
+> > > Add freeze, thaw and restore callbacks for PM suspend and hibernation
+> > > support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
+> > > events, need to implement these xenbus_driver callbacks.
+> > > The freeze handler stops a block-layer queue and disconnect the
+> > > frontend from the backend while freeing ring_info and associated resources.
+> > > The restore handler re-allocates ring_info and re-connect to the
+> > > backend, so the rest of the kernel can continue to use the block device
+> > > transparently. Also, the handlers are used for both PM suspend and
+> > > hibernation so that we can keep the existing suspend/resume callbacks for
+> > > Xen suspend without modification. Before disconnecting from backend,
+> > > we need to prevent any new IO from being queued and wait for existing
+> > > IO to complete.
+> > 
+> > This is different from Xen (xenstore) initiated suspension, as in that
+> > case Linux doesn't flush the rings or disconnects from the backend.
+> Yes, AFAIK in xen initiated suspension backend takes care of it. 
 
-Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
----
- .../selftests/bpf/progs/test_tcpbpf_kern.c    | 11 +++++
- .../testing/selftests/bpf/test_tcpbpf_user.c  | 46 ++++++++++++++++++-
- 2 files changed, 56 insertions(+), 1 deletion(-)
+No, in Xen initiated suspension backend doesn't take care of flushing
+the rings, the frontend has a shadow copy of the ring contents and it
+re-issues the requests on resume.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index 1f1966e86e9f..044967f70432 100644
---- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -28,6 +28,13 @@ struct {
- 	__type(value, int);
- } sockopt_results SEC(".maps");
- 
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} netns_number SEC(".maps");
-+
- static inline void update_event_map(int event)
- {
- 	__u32 key = 0;
-@@ -61,6 +68,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 	int rv = -1;
- 	int v = 0;
- 	int op;
-+	__u64 netns_inum;
- 
- 	op = (int) skops->op;
- 
-@@ -144,6 +152,9 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 		__u32 key = 0;
- 
- 		bpf_map_update_elem(&sockopt_results, &key, &v, BPF_ANY);
-+
-+		netns_inum = bpf_sock_ops_get_netns(skops);
-+		bpf_map_update_elem(&netns_number, &key, &netns_inum, BPF_ANY);
- 		break;
- 	default:
- 		rv = -1;
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf_user.c b/tools/testing/selftests/bpf/test_tcpbpf_user.c
-index 3ae127620463..77a344f41310 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf_user.c
-+++ b/tools/testing/selftests/bpf/test_tcpbpf_user.c
-@@ -76,6 +76,41 @@ int verify_sockopt_result(int sock_map_fd)
- 	return ret;
- }
- 
-+int verify_netns(__u64 netns_inum)
-+{
-+	char buf1[40];
-+	char buf2[40];
-+	int ret = 0;
-+	ssize_t len = 0;
-+
-+	len = readlink("/proc/self/ns/net", buf1, 39);
-+	sprintf(buf2, "net:[%llu]", netns_inum);
-+
-+	if (len <= 0) {
-+		printf("FAILED: readlink /proc/self/ns/net");
-+		return ret;
-+	}
-+
-+	if (strncmp(buf1, buf2, len)) {
-+		printf("FAILED: netns don't match");
-+		ret = 1;
-+	}
-+	return ret;
-+}
-+
-+int verify_netns_result(int netns_map_fd)
-+{
-+	__u32 key = 0;
-+	__u64 res = 0;
-+	int ret = 0;
-+	int rv;
-+
-+	rv = bpf_map_lookup_elem(netns_map_fd, &key, &res);
-+	EXPECT_EQ(0, rv, "d");
-+
-+	return verify_netns(res);
-+}
-+
- static int bpf_find_map(const char *test, struct bpf_object *obj,
- 			const char *name)
- {
-@@ -92,7 +127,7 @@ static int bpf_find_map(const char *test, struct bpf_object *obj,
- int main(int argc, char **argv)
- {
- 	const char *file = "test_tcpbpf_kern.o";
--	int prog_fd, map_fd, sock_map_fd;
-+	int prog_fd, map_fd, sock_map_fd, netns_map_fd;
- 	struct tcpbpf_globals g = {0};
- 	const char *cg_path = "/foo";
- 	int error = EXIT_FAILURE;
-@@ -137,6 +172,10 @@ int main(int argc, char **argv)
- 	if (sock_map_fd < 0)
- 		goto err;
- 
-+	netns_map_fd = bpf_find_map(__func__, obj, "netns_number");
-+	if (netns_map_fd < 0)
-+		goto err;
-+
- retry_lookup:
- 	rv = bpf_map_lookup_elem(map_fd, &key, &g);
- 	if (rv != 0) {
-@@ -161,6 +200,11 @@ int main(int argc, char **argv)
- 		goto err;
- 	}
- 
-+	if (verify_netns_result(netns_map_fd)) {
-+		printf("FAILED: Wrong netns stats\n");
-+		goto err;
-+	}
-+
- 	printf("PASSED!\n");
- 	error = 0;
- err:
--- 
-2.20.1
+> > > +static int blkfront_freeze(struct xenbus_device *dev)
+> > > +{
+> > > +	unsigned int i;
+> > > +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> > > +	struct blkfront_ring_info *rinfo;
+> > > +	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
+> > > +	unsigned int timeout = 5 * HZ;
+> > > +	int err = 0;
+> > > +
+> > > +	info->connected = BLKIF_STATE_FREEZING;
+> > > +
+> > > +	blk_mq_freeze_queue(info->rq);
+> > > +	blk_mq_quiesce_queue(info->rq);
+> > > +
+> > > +	for (i = 0; i < info->nr_rings; i++) {
+> > > +		rinfo = &info->rinfo[i];
+> > > +
+> > > +		gnttab_cancel_free_callback(&rinfo->callback);
+> > > +		flush_work(&rinfo->work);
+> > > +	}
+> > > +
+> > > +	/* Kick the backend to disconnect */
+> > > +	xenbus_switch_state(dev, XenbusStateClosing);
+> > 
+> > Are you sure this is safe?
+> > 
+> In my testing running multiple fio jobs, other test scenarios running
+> a memory loader works fine. I did not came across a scenario that would
+> have failed resume due to blkfront issues unless you can sugest some?
 
+AFAICT you don't wait for the in-flight requests to be finished, and
+just rely on blkback to finish processing those. I'm not sure all
+blkback implementations out there can guarantee that.
+
+The approach used by Xen initiated suspension is to re-issue the
+in-flight requests when resuming. I have to admit I don't think this
+is the best approach, but I would like to keep both the Xen and the PM
+initiated suspension using the same logic, and hence I would request
+that you try to re-use the existing resume logic (blkfront_resume).
+
+> > I don't think you wait for all requests pending on the ring to be
+> > finished by the backend, and hence you might loose requests as the
+> > ones on the ring would not be re-issued by blkfront_restore AFAICT.
+> > 
+> AFAIU, blk_mq_freeze_queue/blk_mq_quiesce_queue should take care of no used
+> request on the shared ring. Also, we I want to pause the queue and flush all
+> the pending requests in the shared ring before disconnecting from backend.
+
+Oh, so blk_mq_freeze_queue does wait for in-flight requests to be
+finished. I guess it's fine then.
+
+> Quiescing the queue seemed a better option here as we want to make sure ongoing
+> requests dispatches are totally drained.
+> I should accept that some of these notion is borrowed from how nvme freeze/unfreeze 
+> is done although its not apple to apple comparison.
+
+That's fine, but I would still like to requests that you use the same
+logic (as much as possible) for both the Xen and the PM initiated
+suspension.
+
+So you either apply this freeze/unfreeze to the Xen suspension (and
+drop the re-issuing of requests on resume) or adapt the same approach
+as the Xen initiated suspension. Keeping two completely different
+approaches to suspension / resume on blkfront is not suitable long
+term.
+
+Thanks, Roger.
