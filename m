@@ -2,99 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E87FB16371C
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0580D16374C
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:36:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727998AbgBRXYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 18:24:19 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45766 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727930AbgBRXYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:24:19 -0500
-Received: by mail-qk1-f194.google.com with SMTP id a2so21270783qko.12;
-        Tue, 18 Feb 2020 15:24:17 -0800 (PST)
+        id S1726655AbgBRXgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 18:36:51 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:35229 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726422AbgBRXgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:36:50 -0500
+Received: by mail-pj1-f66.google.com with SMTP id q39so1694106pjc.0;
+        Tue, 18 Feb 2020 15:36:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=04+RMjxV0LSG9mommATrJNcWRaF6OML8kDZixe0EFvo=;
-        b=s3Des/NAGzhRLNt3aEE+Ak7ahHPjL7mgsduSsRQVUSlPXSq4/qyNPHUYi/ESbExi58
-         XZKGDTaPU+nIBoCb+DbiYIVHl6BR27aAgSd3B7Um7pO6N8GwYADs8iKtVgMO2Cb7AoxB
-         Jn4TebTQPzbaP0LwuTI0p4XqYtga6+PHHEFyfbdG5kE9FEC72MTwnvEEMre05Ea3UVm8
-         9Wj0178i5gl38In7hqBrVy7Ar+FIUu+ijxqE8Qv2iDPxLt3bG4bH+xNBL/MsPiA33iLw
-         jJnJrpXw7oVJfvzh5uW5ltzs+uZHKcbPk6za9bS4Dpq+rKpcuIK9L645+Zh3iBQZp7ys
-         0uDg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=bTzxD9TcFYcChEJJr98YzSBO8WFXRduTV9HuNB7JAI0=;
+        b=uwceS1lBwDXOZIZaX98KUbUeiIKQYJmtbXvRktMiGsvOP/lZwsEj6NTczMS0EmOVtE
+         6NQeRrWHDcbavsVfdxKUICBZ+fYZEjYwt8v8jx7wxKin6XOTP/8Vvtf5ZNVmqMRmBZ8Z
+         a/LIK+1eFNrtc0AbOP6ds5wvmpQPgPCx9NOTanOFQqU0ok4W6VavErSkyLQT1XjMVS4w
+         x7VJKg+y/nDoHEnjysAHc70yw7KKF51SI/NnkOD9MptqHZr9tZeDg0ndMZKcPbvtwpW9
+         k6rczakekV0Ht82e3uL/ZDqleQOLY/o6zaqcwNZ8P+89QJfDV9CzOe5XkwiSbeI9vr8Z
+         a+1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=04+RMjxV0LSG9mommATrJNcWRaF6OML8kDZixe0EFvo=;
-        b=QV+jVbDnMBD6RCKhY6t5jk0o59ZlV5PHyMc8MQ6ceHIpOUSzkBaxdlCbQwcYDhdHtX
-         ClZXTGkGNG3mgZeGGIqxAbJSKRWENMbQio37lVgEamO5GhvZ5U2M/0i0btQlvf20qNZx
-         VvTYC2655NMStQzwRODZwsEQ19oJ+hifG9z10HDXXtdbsw+i8rngYa+os/Krz9KadUyc
-         nEqoxkCf9UFGmhHeNYOcg+HV+njUCyRMtIwvapmUKWgQ2yIUmbVXJ5Kot27vsJqEG1nm
-         9PpeOUIlcG5DSNit2dgJxcDCKCBRIJcueeKPmz19zQT0Yo7uN4uPFyc1Vi8A/hPDyXu4
-         6/Og==
-X-Gm-Message-State: APjAAAXkGvshrLLZuNs4pWm51zD/glNXRTxX2SO1Bsb6ANlyFiXvke7A
-        WFddgauDg7UaF23gUV4AUZ8AgmJ8
-X-Google-Smtp-Source: APXvYqxLFghvbyRGeHBc15A1CBuBf1g6mQkNO4XLY48JsQWOBu4qTVtHo7hKJy20Ytv3JjyqokWaQQ==
-X-Received: by 2002:a05:620a:1326:: with SMTP id p6mr825419qkj.50.1582068256678;
-        Tue, 18 Feb 2020 15:24:16 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:5af:31c:27bd:ccb5? ([2601:282:803:7700:5af:31c:27bd:ccb5])
-        by smtp.googlemail.com with ESMTPSA id m27sm16197qta.21.2020.02.18.15.24.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 15:24:15 -0800 (PST)
-Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to mlx5
- driver
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        davem@davemloft.net, lorenzo.bianconi@redhat.com, andrew@lunn.ch,
-        brouer@redhat.com, dsahern@kernel.org, bpf@vger.kernel.org
-References: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org>
- <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN> <87eeury1ph.fsf@toke.dk>
- <703ce998-e454-713c-fc7a-d5f1609146d8@iogearbox.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c9018a2d-27d0-9ff8-82eb-83b37b40b12f@gmail.com>
-Date:   Tue, 18 Feb 2020 16:24:13 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bTzxD9TcFYcChEJJr98YzSBO8WFXRduTV9HuNB7JAI0=;
+        b=srF1BEB7tS0f1N1M//P4nXUzhKl4vDvR6NzI8dodavIzS7rRuCWEprxr7BXNo7+qKs
+         Dw3Nd4WyMNTYu8anGWtMz/pa4qBKnwKccQfwRt352QshPXTSge8vQxTvEyGOBskx47mI
+         jpucuYPvrWn7M3hO1MKTk8mNvsbNcW2g/y+piNQ/4PJKaAZa4bYAJKe4dufwG+3SR6vm
+         3FvgNwqKhE88u41zyIg2O7qq9xGXjrWXEQe1Rh4P3GT4MnPMk5KBtRsph4Rw7yI7TTeK
+         oQPrFXgT7S5ReJzFH8S/4ixaIx7kYeZ8Yhwj4KBOy1Ybhc8IddB/wyXObnS0tGUTVESt
+         udeQ==
+X-Gm-Message-State: APjAAAVXQ6npScRnoTLeXkn5nW1Y5GME7KuzbWccgTg3FhNccl52Vexo
+        48kZ3HjShW45ry55KW5yGHg=
+X-Google-Smtp-Source: APXvYqzNtI9Cmyr0xksX/kuZPbU/WRWO1EWsEb8gLhMo5G+UefucY3zihUkjbYj8A4ORpQGFiCKxQg==
+X-Received: by 2002:a17:902:8a85:: with SMTP id p5mr23934536plo.154.1582069009699;
+        Tue, 18 Feb 2020 15:36:49 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:500::5:dd54])
+        by smtp.gmail.com with ESMTPSA id s13sm3824655pjp.1.2020.02.18.15.36.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Feb 2020 15:36:48 -0800 (PST)
+Date:   Tue, 18 Feb 2020 15:36:42 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [RFC patch 14/19] bpf: Use migrate_disable() in hashtab code
+Message-ID: <20200218233641.i7fyf36zxocgucap@ast-mbp>
+References: <20200214133917.304937432@linutronix.de>
+ <20200214161504.325142160@linutronix.de>
+ <20200214191126.lbiusetaxecdl3of@localhost>
+ <87imk9t02r.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <703ce998-e454-713c-fc7a-d5f1609146d8@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87imk9t02r.fsf@nanos.tec.linutronix.de>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 4:19 PM, Daniel Borkmann wrote:
-> On 2/18/20 11:23 PM, Toke Høiland-Jørgensen wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->>> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote:
->>>> Introduce "rx" prefix in the name scheme for xdp counters
->>>> on rx path.
->>>> Differentiate between XDP_TX and ndo_xdp_xmit counters
->>>>
->>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->>>
->>> Sorry for coming in late.
->>>
->>> I thought the ability to attach a BPF program to a fexit of another BPF
->>> program will put an end to these unnecessary statistics. IOW I maintain
->>> my position that there should be no ethtool stats for XDP.
->>>
->>> As discussed before real life BPF progs will maintain their own stats
->>> at the granularity of their choosing, so we're just wasting datapath
->>> cycles.
+On Fri, Feb 14, 2020 at 08:56:12PM +0100, Thomas Gleixner wrote:
 > 
-> +1
+> > Also, I don't think using __this_cpu_inc() without preempt-disable or
+> > irq off is safe. You'll probably want to move to this_cpu_inc/dec
+> > instead, which can be heavier on some architectures.
+> 
+> Good catch.
 
-There is value in having something as essential as stats available
-through standard APIs and tooling. mlx5, i40e, sfc, etc, etc already
-provide stats via ethtool. This patch is making mvneta consistent with
-existing stats from these other drivers.
+Overall looks great.
+Thank you for taking time to write commit logs and detailed cover letter.
+I think s/__this_cpu_inc/this_cpu_inc/ is the only bit that needs to be
+addressed for it to be merged.
+There were few other suggestions from Mathieu and Jakub.
+Could you address them and resend?
+I saw patch 1 landing in tip tree, but it needs to be in bpf-next as well
+along with the rest of the series. Does it really need to be in the tip?
+I would prefer to take the whole thing and avoid conflicts around
+migrate_disable() especially if nothing in tip is going to use it in this
+development cycle. So just drop patch 1 from the tip?
+
+Regarding
+union {
+   raw_spinlock_t  raw_lock;
+   spinlock_t      lock;
+};
+yeah. it's not pretty, but I also don't have better ideas.
+
+Regarding migrate_disable()... can you enable it without the rest of RT?
+I haven't seen its implementation. I suspect it's scheduler only change?
+If I can use migrate_disable() without RT it will help my work on sleepable
+BPF programs. I would only have to worry about rcu_read_lock() since
+preempt_disable() is nicely addressed.
