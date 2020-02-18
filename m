@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C88C162C22
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A25162C19
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727913AbgBRROX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 12:14:23 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:40361 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727488AbgBRRNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 12:13:38 -0500
-Received: by mail-ot1-f68.google.com with SMTP id i6so20247025otr.7;
-        Tue, 18 Feb 2020 09:13:37 -0800 (PST)
+        id S1727896AbgBRROF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 12:14:05 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43175 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727636AbgBRRNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 12:13:40 -0500
+Received: by mail-oi1-f196.google.com with SMTP id p125so20818028oif.10;
+        Tue, 18 Feb 2020 09:13:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=u8D2FPtNZ0VMBn5UkeqSg7CSDs/wZAjBSTTCQDmiSkY=;
-        b=eyn6Ia268py7xlpLA8tqbDqJJSSLK5C60VrqcXGDlAbKlm31cTS2Qv6bB5Jk3gSO00
-         XAeAxlrXmJTtbq3xnxOrexH4sS8b2aynAiSRLsGvvCQLDTr/vAJsmOdpBnZuH/UvKstq
-         JdHjXbpL1BhNuqYpsScd8nBLgjciEXsUnkQ1esdkgwSm1qYLSMkPXNFMf61jGBLdxP/a
-         968TK4URNPOXPP038wET6ShZ1+uvrihBvA8DacKgUWcjdNTQJvLqH6ZhGKtmxq7DhuWu
-         AWPW1ZULxnuntUDqhBrWuFouj2poa5YMUiYn3A2VcZiI/8F3rY2unUejlxaLsSclwcMA
-         +TrA==
-X-Gm-Message-State: APjAAAW8ExL+sPFYv+ek2ABsN6y2Db8CsNxHYl2j2lkIa9JlUvZDy+pK
-        3mCb7psTmDzgWGbcZa7kmA==
-X-Google-Smtp-Source: APXvYqw6TNQhn8784qV+7u3WFCDSuqFfYxpVsfN96SobcjyzzV4x9MxcI5ZxKLnqYBrEuZO3mSlkJg==
-X-Received: by 2002:a9d:7386:: with SMTP id j6mr16115366otk.336.1582046016817;
-        Tue, 18 Feb 2020 09:13:36 -0800 (PST)
+        bh=OfSjz0SY3gB9vvqANcu/VWw8bhc0UxSKC0tVnm3NpGk=;
+        b=L1AGWk8BpgWHL5guD5QdhRD713FXIpInZBcfX2DHLO7iWUSArEo13izgAJ9OBj+qep
+         2HtrjqwuB7bSRzniiWuFenijkHqzWyGvLHi6hgNBQZ12nRoWqwC17sxAtK+pAMLVbAiW
+         Au76CT7uz7ONcymB/idAwc0a09v0kPeflhhxdxC87TDfomwYOQQK6frOWwiPPVJjJRZA
+         d6531oOLaF3begNXV8t148fnQuFjIbobAPK4/a7Iuoz2afRNfyVt1rHPfzNJ+TwUVqI4
+         sYnZcmRMVbBENJKqoLeY6aR8c5HulGNNIA4GmY2r43teZaK6juSMddPcjjQS0SWNkcqP
+         Epew==
+X-Gm-Message-State: APjAAAWCPwf1qPbc4fvrusGEB3/MJb7aBU9/QEcKet8Jbca4/pM1Sgzj
+        58/G6gJX5wWWoDxV8t8tyw==
+X-Google-Smtp-Source: APXvYqxbphi1K6W3rxnH0g40QxVSz6sF58VircIrd+GanSZMoZoTlalIrudHTPYPIyhAT1DhIrluPg==
+X-Received: by 2002:aca:f305:: with SMTP id r5mr1981696oih.174.1582046018439;
+        Tue, 18 Feb 2020 09:13:38 -0800 (PST)
 Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.googlemail.com with ESMTPSA id y25sm1545755oto.27.2020.02.18.09.13.35
+        by smtp.googlemail.com with ESMTPSA id y25sm1545755oto.27.2020.02.18.09.13.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 09:13:36 -0800 (PST)
+        Tue, 18 Feb 2020 09:13:37 -0800 (PST)
 From:   Rob Herring <robh@kernel.org>
 To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
@@ -59,9 +59,9 @@ Cc:     Alex Williamson <alex.williamson@redhat.com>,
         Tony Luck <tony.luck@intel.com>,
         Viresh Kumar <viresh.kumar@linaro.org>,
         Will Deacon <will@kernel.org>
-Subject: [RFC PATCH 08/11] clk: Remove Calxeda driver
-Date:   Tue, 18 Feb 2020 11:13:18 -0600
-Message-Id: <20200218171321.30990-9-robh@kernel.org>
+Subject: [RFC PATCH 09/11] ARM: Remove Calxeda platform support
+Date:   Tue, 18 Feb 2020 11:13:19 -0600
+Message-Id: <20200218171321.30990-10-robh@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200218171321.30990-1-robh@kernel.org>
 References: <20200218171321.30990-1-robh@kernel.org>
@@ -72,363 +72,591 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: linux-clk@vger.kernel.org
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
-Do not apply yet.
+ MAINTAINERS                         |   8 --
+ arch/arm/Kconfig                    |   2 -
+ arch/arm/Kconfig.debug              |  12 +-
+ arch/arm/Makefile                   |   1 -
+ arch/arm/configs/multi_v7_defconfig |   5 -
+ arch/arm/mach-highbank/Kconfig      |  19 ---
+ arch/arm/mach-highbank/Makefile     |   4 -
+ arch/arm/mach-highbank/core.h       |  18 ---
+ arch/arm/mach-highbank/highbank.c   | 175 ----------------------------
+ arch/arm/mach-highbank/pm.c         |  49 --------
+ arch/arm/mach-highbank/smc.S        |  25 ----
+ arch/arm/mach-highbank/sysregs.h    |  75 ------------
+ arch/arm/mach-highbank/system.c     |  22 ----
+ 13 files changed, 1 insertion(+), 414 deletions(-)
+ delete mode 100644 arch/arm/mach-highbank/Kconfig
+ delete mode 100644 arch/arm/mach-highbank/Makefile
+ delete mode 100644 arch/arm/mach-highbank/core.h
+ delete mode 100644 arch/arm/mach-highbank/highbank.c
+ delete mode 100644 arch/arm/mach-highbank/pm.c
+ delete mode 100644 arch/arm/mach-highbank/smc.S
+ delete mode 100644 arch/arm/mach-highbank/sysregs.h
+ delete mode 100644 arch/arm/mach-highbank/system.c
 
- drivers/clk/Makefile       |   1 -
- drivers/clk/clk-highbank.c | 329 -------------------------------------
- 2 files changed, 330 deletions(-)
- delete mode 100644 drivers/clk/clk-highbank.c
-
-diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
-index f4169cc2fd31..cb71dfaf1ac7 100644
---- a/drivers/clk/Makefile
-+++ b/drivers/clk/Makefile
-@@ -33,7 +33,6 @@ obj-$(CONFIG_COMMON_CLK_FSL_SAI)	+= clk-fsl-sai.o
- obj-$(CONFIG_COMMON_CLK_GEMINI)		+= clk-gemini.o
- obj-$(CONFIG_COMMON_CLK_ASPEED)		+= clk-aspeed.o
- obj-$(CONFIG_MACH_ASPEED_G6)		+= clk-ast2600.o
--obj-$(CONFIG_ARCH_HIGHBANK)		+= clk-highbank.o
- obj-$(CONFIG_CLK_HSDK)			+= clk-hsdk-pll.o
- obj-$(CONFIG_COMMON_CLK_LOCHNAGAR)	+= clk-lochnagar.o
- obj-$(CONFIG_COMMON_CLK_MAX77686)	+= clk-max77686.o
-diff --git a/drivers/clk/clk-highbank.c b/drivers/clk/clk-highbank.c
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4732bb268299..551aaa9d2dab 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1604,14 +1604,6 @@ F:	Documentation/devicetree/bindings/arm/bitmain.yaml
+ F:	Documentation/devicetree/bindings/clock/bitmain,bm1880-clk.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/bitmain,bm1880-pinctrl.txt
+ 
+-ARM/CALXEDA HIGHBANK ARCHITECTURE
+-M:	Rob Herring <robh@kernel.org>
+-L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+-S:	Maintained
+-F:	arch/arm/mach-highbank/
+-F:	arch/arm/boot/dts/highbank.dts
+-F:	arch/arm/boot/dts/ecx-*.dts*
+-
+ ARM/CAVIUM NETWORKS CNS3XXX MACHINE SUPPORT
+ M:	Krzysztof Halasa <khalasa@piap.pl>
+ S:	Maintained
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 97864aabc2a6..6f8ce7b38a46 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -640,8 +640,6 @@ source "arch/arm/mach-footbridge/Kconfig"
+ 
+ source "arch/arm/mach-gemini/Kconfig"
+ 
+-source "arch/arm/mach-highbank/Kconfig"
+-
+ source "arch/arm/mach-hisi/Kconfig"
+ 
+ source "arch/arm/mach-imx/Kconfig"
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index b70d7debf5ca..66413f98cae9 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -346,14 +346,6 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on HI3620 UART.
+ 
+-	config DEBUG_HIGHBANK_UART
+-		bool "Kernel low-level debugging messages via Highbank UART"
+-		depends on ARCH_HIGHBANK
+-		select DEBUG_UART_PL01X
+-		help
+-		  Say Y here if you want the debug print routines to direct
+-		  their output to the UART on Highbank based devices.
+-
+ 	config DEBUG_HIP01_UART
+ 		bool "Hisilicon Hip01 Debug UART"
+ 		depends on ARCH_HIP01
+@@ -1692,7 +1684,6 @@ config DEBUG_UART_PHYS
+ 	default 0xffc03000 if DEBUG_SOCFPGA_CYCLONE5_UART1
+ 	default 0xffe40000 if DEBUG_RCAR_GEN1_SCIF0
+ 	default 0xffe42000 if DEBUG_RCAR_GEN1_SCIF2
+-	default 0xfff36000 if DEBUG_HIGHBANK_UART
+ 	default 0xfffb0000 if DEBUG_OMAP1UART1 || DEBUG_OMAP7XXUART1
+ 	default 0xfffb0800 if DEBUG_OMAP1UART2 || DEBUG_OMAP7XXUART2
+ 	default 0xfffb9800 if DEBUG_OMAP1UART3 || DEBUG_OMAP7XXUART3
+@@ -1810,7 +1801,6 @@ config DEBUG_UART_VIRT
+ 	default 0xfee20000 if DEBUG_NSPIRE_CLASSIC_UART || DEBUG_NSPIRE_CX_UART
+ 	default 0xfef00000 if ARCH_IXP4XX && !CPU_BIG_ENDIAN
+ 	default 0xfef00003 if ARCH_IXP4XX && CPU_BIG_ENDIAN
+-	default 0xfef36000 if DEBUG_HIGHBANK_UART
+ 	default 0xfefb0000 if DEBUG_OMAP1UART1 || DEBUG_OMAP7XXUART1
+ 	default 0xfefb0800 if DEBUG_OMAP1UART2 || DEBUG_OMAP7XXUART2
+ 	default 0xfefb9800 if DEBUG_OMAP1UART3 || DEBUG_OMAP7XXUART3
+@@ -1873,7 +1863,7 @@ config DEBUG_UNCOMPRESS
+ 	  When this option is set, the selected DEBUG_LL output method
+ 	  will be re-used for normal decompressor output on multiplatform
+ 	  kernels.
+-	  
++
+ 
+ config UNCOMPRESS_INCLUDE
+ 	string
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index db857d07114f..fa3bc920e3ac 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -178,7 +178,6 @@ machine-$(CONFIG_ARCH_EP93XX)		+= ep93xx
+ machine-$(CONFIG_ARCH_EXYNOS)		+= exynos
+ machine-$(CONFIG_ARCH_FOOTBRIDGE)	+= footbridge
+ machine-$(CONFIG_ARCH_GEMINI)		+= gemini
+-machine-$(CONFIG_ARCH_HIGHBANK)		+= highbank
+ machine-$(CONFIG_ARCH_HISI)		+= hisi
+ machine-$(CONFIG_ARCH_INTEGRATOR)	+= integrator
+ machine-$(CONFIG_ARCH_IOP32X)		+= iop32x
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index 017d65f86eba..69eb62f831c7 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -31,7 +31,6 @@ CONFIG_MACH_BERLIN_BG2CD=y
+ CONFIG_MACH_BERLIN_BG2Q=y
+ CONFIG_ARCH_DIGICOLOR=y
+ CONFIG_ARCH_EXYNOS=y
+-CONFIG_ARCH_HIGHBANK=y
+ CONFIG_ARCH_HISI=y
+ CONFIG_ARCH_HI3xxx=y
+ CONFIG_ARCH_HIP01=y
+@@ -236,7 +235,6 @@ CONFIG_AHCI_ST=y
+ CONFIG_AHCI_IMX=y
+ CONFIG_AHCI_SUNXI=y
+ CONFIG_AHCI_TEGRA=y
+-CONFIG_SATA_HIGHBANK=y
+ CONFIG_SATA_MV=y
+ CONFIG_SATA_RCAR=y
+ CONFIG_NETDEVICES=y
+@@ -250,7 +248,6 @@ CONFIG_BCMGENET=m
+ CONFIG_BGMAC_BCMA=y
+ CONFIG_SYSTEMPORT=m
+ CONFIG_MACB=y
+-CONFIG_NET_CALXEDA_XGMAC=y
+ CONFIG_FTGMAC100=m
+ CONFIG_GIANFAR=y
+ CONFIG_HIX5HD2_GMAC=y
+@@ -866,8 +863,6 @@ CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
+ CONFIG_LEDS_TRIGGER_TRANSIENT=y
+ CONFIG_LEDS_TRIGGER_CAMERA=y
+ CONFIG_EDAC=y
+-CONFIG_EDAC_HIGHBANK_MC=y
+-CONFIG_EDAC_HIGHBANK_L2=y
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_AC100=y
+ CONFIG_RTC_DRV_AS3722=y
+diff --git a/arch/arm/mach-highbank/Kconfig b/arch/arm/mach-highbank/Kconfig
 deleted file mode 100644
-index 2a0cea2946f9..000000000000
---- a/drivers/clk/clk-highbank.c
+index 1bc68913d62c..000000000000
+--- a/arch/arm/mach-highbank/Kconfig
 +++ /dev/null
-@@ -1,329 +0,0 @@
+@@ -1,19 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-config ARCH_HIGHBANK
+-	bool "Calxeda ECX-1000/2000 (Highbank/Midway)"
+-	depends on ARCH_MULTI_V7
+-	select ARCH_HAS_HOLES_MEMORYMODEL
+-	select ARCH_SUPPORTS_BIG_ENDIAN
+-	select ARM_AMBA
+-	select ARM_ERRATA_764369 if SMP
+-	select ARM_ERRATA_775420
+-	select ARM_ERRATA_798181 if SMP
+-	select ARM_GIC
+-	select ARM_PSCI
+-	select ARM_TIMER_SP804
+-	select CACHE_L2X0
+-	select HAVE_ARM_SCU
+-	select HAVE_ARM_TWD if SMP
+-	select MAILBOX
+-	select PL320_MBOX
+-	select ZONE_DMA if ARM_LPAE
+diff --git a/arch/arm/mach-highbank/Makefile b/arch/arm/mach-highbank/Makefile
+deleted file mode 100644
+index 71cc68041d92..000000000000
+--- a/arch/arm/mach-highbank/Makefile
++++ /dev/null
+@@ -1,4 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-obj-y					:= highbank.o system.o smc.o
+-
+-obj-$(CONFIG_PM_SLEEP)			+= pm.o
+diff --git a/arch/arm/mach-highbank/core.h b/arch/arm/mach-highbank/core.h
+deleted file mode 100644
+index 3991a6594ae5..000000000000
+--- a/arch/arm/mach-highbank/core.h
++++ /dev/null
+@@ -1,18 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __HIGHBANK_CORE_H
+-#define __HIGHBANK_CORE_H
+-
+-#include <linux/reboot.h>
+-
+-extern void highbank_restart(enum reboot_mode, const char *);
+-extern void __iomem *scu_base_addr;
+-
+-#ifdef CONFIG_PM_SLEEP
+-extern void highbank_pm_init(void);
+-#else
+-static inline void highbank_pm_init(void) {}
+-#endif
+-
+-extern void highbank_smc1(int fn, int arg);
+-
+-#endif
+diff --git a/arch/arm/mach-highbank/highbank.c b/arch/arm/mach-highbank/highbank.c
+deleted file mode 100644
+index 56bf29523c65..000000000000
+--- a/arch/arm/mach-highbank/highbank.c
++++ /dev/null
+@@ -1,175 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0-only
 -/*
-- * Copyright 2011-2012 Calxeda, Inc.
+- * Copyright 2010-2011 Calxeda, Inc.
 - */
--
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/err.h>
--#include <linux/clk-provider.h>
+-#include <linux/clk.h>
+-#include <linux/clkdev.h>
+-#include <linux/clocksource.h>
+-#include <linux/dma-mapping.h>
+-#include <linux/input.h>
 -#include <linux/io.h>
+-#include <linux/irqchip.h>
+-#include <linux/pl320-ipc.h>
 -#include <linux/of.h>
+-#include <linux/of_irq.h>
 -#include <linux/of_address.h>
+-#include <linux/reboot.h>
+-#include <linux/amba/bus.h>
+-#include <linux/platform_device.h>
+-#include <linux/psci.h>
 -
--#define HB_PLL_LOCK_500		0x20000000
--#define HB_PLL_LOCK		0x10000000
--#define HB_PLL_DIVF_SHIFT	20
--#define HB_PLL_DIVF_MASK	0x0ff00000
--#define HB_PLL_DIVQ_SHIFT	16
--#define HB_PLL_DIVQ_MASK	0x00070000
--#define HB_PLL_DIVR_SHIFT	8
--#define HB_PLL_DIVR_MASK	0x00001f00
--#define HB_PLL_RANGE_SHIFT	4
--#define HB_PLL_RANGE_MASK	0x00000070
--#define HB_PLL_BYPASS		0x00000008
--#define HB_PLL_RESET		0x00000004
--#define HB_PLL_EXT_BYPASS	0x00000002
--#define HB_PLL_EXT_ENA		0x00000001
+-#include <asm/hardware/cache-l2x0.h>
+-#include <asm/mach/arch.h>
+-#include <asm/mach/map.h>
 -
--#define HB_PLL_VCO_MIN_FREQ	2133000000
--#define HB_PLL_MAX_FREQ		HB_PLL_VCO_MIN_FREQ
--#define HB_PLL_MIN_FREQ		(HB_PLL_VCO_MIN_FREQ / 64)
+-#include "core.h"
+-#include "sysregs.h"
 -
--#define HB_A9_BCLK_DIV_MASK	0x00000006
--#define HB_A9_BCLK_DIV_SHIFT	1
--#define HB_A9_PCLK_DIV		0x00000001
+-void __iomem *sregs_base;
+-void __iomem *scu_base_addr;
 -
--struct hb_clk {
--        struct clk_hw	hw;
--	void __iomem	*reg;
--	char *parent_name;
--};
--#define to_hb_clk(p) container_of(p, struct hb_clk, hw)
+-static void __init highbank_scu_map_io(void)
+-{
+-	unsigned long base;
 -
--static int clk_pll_prepare(struct clk_hw *hwclk)
--	{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 reg;
+-	/* Get SCU base */
+-	asm("mrc p15, 4, %0, c15, c0, 0" : "=r" (base));
 -
--	reg = readl(hbclk->reg);
--	reg &= ~HB_PLL_RESET;
--	writel(reg, hbclk->reg);
--
--	while ((readl(hbclk->reg) & HB_PLL_LOCK) == 0)
--		;
--	while ((readl(hbclk->reg) & HB_PLL_LOCK_500) == 0)
--		;
--
--	return 0;
+-	scu_base_addr = ioremap(base, SZ_4K);
 -}
 -
--static void clk_pll_unprepare(struct clk_hw *hwclk)
--{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 reg;
 -
--	reg = readl(hbclk->reg);
--	reg |= HB_PLL_RESET;
--	writel(reg, hbclk->reg);
+-static void highbank_l2c310_write_sec(unsigned long val, unsigned reg)
+-{
+-	if (reg == L2X0_CTRL)
+-		highbank_smc1(0x102, val);
+-	else
+-		WARN_ONCE(1, "Highbank L2C310: ignoring write to reg 0x%x\n",
+-			  reg);
 -}
 -
--static int clk_pll_enable(struct clk_hw *hwclk)
+-static void __init highbank_init_irq(void)
 -{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 reg;
+-	irqchip_init();
 -
--	reg = readl(hbclk->reg);
--	reg |= HB_PLL_EXT_ENA;
--	writel(reg, hbclk->reg);
--
--	return 0;
+-	if (of_find_compatible_node(NULL, NULL, "arm,cortex-a9"))
+-		highbank_scu_map_io();
 -}
 -
--static void clk_pll_disable(struct clk_hw *hwclk)
+-static void highbank_power_off(void)
 -{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 reg;
+-	highbank_set_pwr_shutdown();
 -
--	reg = readl(hbclk->reg);
--	reg &= ~HB_PLL_EXT_ENA;
--	writel(reg, hbclk->reg);
+-	while (1)
+-		cpu_do_idle();
 -}
 -
--static unsigned long clk_pll_recalc_rate(struct clk_hw *hwclk,
--					 unsigned long parent_rate)
+-static int highbank_platform_notifier(struct notifier_block *nb,
+-				  unsigned long event, void *__dev)
 -{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	unsigned long divf, divq, vco_freq, reg;
+-	struct resource *res;
+-	int reg = -1;
+-	u32 val;
+-	struct device *dev = __dev;
 -
--	reg = readl(hbclk->reg);
--	if (reg & HB_PLL_EXT_BYPASS)
--		return parent_rate;
+-	if (event != BUS_NOTIFY_ADD_DEVICE)
+-		return NOTIFY_DONE;
 -
--	divf = (reg & HB_PLL_DIVF_MASK) >> HB_PLL_DIVF_SHIFT;
--	divq = (reg & HB_PLL_DIVQ_MASK) >> HB_PLL_DIVQ_SHIFT;
--	vco_freq = parent_rate * (divf + 1);
--
--	return vco_freq / (1 << divq);
--}
--
--static void clk_pll_calc(unsigned long rate, unsigned long ref_freq,
--			u32 *pdivq, u32 *pdivf)
--{
--	u32 divq, divf;
--	unsigned long vco_freq;
--
--	if (rate < HB_PLL_MIN_FREQ)
--		rate = HB_PLL_MIN_FREQ;
--	if (rate > HB_PLL_MAX_FREQ)
--		rate = HB_PLL_MAX_FREQ;
--
--	for (divq = 1; divq <= 6; divq++) {
--		if ((rate * (1 << divq)) >= HB_PLL_VCO_MIN_FREQ)
--			break;
+-	if (of_device_is_compatible(dev->of_node, "calxeda,hb-ahci"))
+-		reg = 0xc;
+-	else if (of_device_is_compatible(dev->of_node, "calxeda,hb-sdhci"))
+-		reg = 0x18;
+-	else if (of_device_is_compatible(dev->of_node, "arm,pl330"))
+-		reg = 0x20;
+-	else if (of_device_is_compatible(dev->of_node, "calxeda,hb-xgmac")) {
+-		res = platform_get_resource(to_platform_device(dev),
+-					    IORESOURCE_MEM, 0);
+-		if (res) {
+-			if (res->start == 0xfff50000)
+-				reg = 0;
+-			else if (res->start == 0xfff51000)
+-				reg = 4;
+-		}
 -	}
 -
--	vco_freq = rate * (1 << divq);
--	divf = (vco_freq + (ref_freq / 2)) / ref_freq;
--	divf--;
+-	if (reg < 0)
+-		return NOTIFY_DONE;
 -
--	*pdivq = divq;
--	*pdivf = divf;
--}
--
--static long clk_pll_round_rate(struct clk_hw *hwclk, unsigned long rate,
--			       unsigned long *parent_rate)
--{
--	u32 divq, divf;
--	unsigned long ref_freq = *parent_rate;
--
--	clk_pll_calc(rate, ref_freq, &divq, &divf);
--
--	return (ref_freq * (divf + 1)) / (1 << divq);
--}
--
--static int clk_pll_set_rate(struct clk_hw *hwclk, unsigned long rate,
--			    unsigned long parent_rate)
--{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 divq, divf;
--	u32 reg;
--
--	clk_pll_calc(rate, parent_rate, &divq, &divf);
--
--	reg = readl(hbclk->reg);
--	if (divf != ((reg & HB_PLL_DIVF_MASK) >> HB_PLL_DIVF_SHIFT)) {
--		/* Need to re-lock PLL, so put it into bypass mode */
--		reg |= HB_PLL_EXT_BYPASS;
--		writel(reg | HB_PLL_EXT_BYPASS, hbclk->reg);
--
--		writel(reg | HB_PLL_RESET, hbclk->reg);
--		reg &= ~(HB_PLL_DIVF_MASK | HB_PLL_DIVQ_MASK);
--		reg |= (divf << HB_PLL_DIVF_SHIFT) | (divq << HB_PLL_DIVQ_SHIFT);
--		writel(reg | HB_PLL_RESET, hbclk->reg);
--		writel(reg, hbclk->reg);
--
--		while ((readl(hbclk->reg) & HB_PLL_LOCK) == 0)
--			;
--		while ((readl(hbclk->reg) & HB_PLL_LOCK_500) == 0)
--			;
--		reg |= HB_PLL_EXT_ENA;
--		reg &= ~HB_PLL_EXT_BYPASS;
--	} else {
--		writel(reg | HB_PLL_EXT_BYPASS, hbclk->reg);
--		reg &= ~HB_PLL_DIVQ_MASK;
--		reg |= divq << HB_PLL_DIVQ_SHIFT;
--		writel(reg | HB_PLL_EXT_BYPASS, hbclk->reg);
+-	if (of_property_read_bool(dev->of_node, "dma-coherent")) {
+-		val = readl(sregs_base + reg);
+-		writel(val | 0xff01, sregs_base + reg);
+-		set_dma_ops(dev, &arm_coherent_dma_ops);
 -	}
--	writel(reg, hbclk->reg);
+-
+-	return NOTIFY_OK;
+-}
+-
+-static struct notifier_block highbank_amba_nb = {
+-	.notifier_call = highbank_platform_notifier,
+-};
+-
+-static struct notifier_block highbank_platform_nb = {
+-	.notifier_call = highbank_platform_notifier,
+-};
+-
+-static struct platform_device highbank_cpuidle_device = {
+-	.name = "cpuidle-calxeda",
+-};
+-
+-static int hb_keys_notifier(struct notifier_block *nb, unsigned long event, void *data)
+-{
+-	u32 key = *(u32 *)data;
+-
+-	if (event != 0x1000)
+-		return 0;
+-
+-	if (key == KEY_POWER)
+-		orderly_poweroff(false);
+-	else if (key == 0xffff)
+-		ctrl_alt_del();
 -
 -	return 0;
 -}
--
--static const struct clk_ops clk_pll_ops = {
--	.prepare = clk_pll_prepare,
--	.unprepare = clk_pll_unprepare,
--	.enable = clk_pll_enable,
--	.disable = clk_pll_disable,
--	.recalc_rate = clk_pll_recalc_rate,
--	.round_rate = clk_pll_round_rate,
--	.set_rate = clk_pll_set_rate,
+-static struct notifier_block hb_keys_nb = {
+-	.notifier_call = hb_keys_notifier,
 -};
 -
--static unsigned long clk_cpu_periphclk_recalc_rate(struct clk_hw *hwclk,
--						   unsigned long parent_rate)
+-static void __init highbank_init(void)
 -{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 div = (readl(hbclk->reg) & HB_A9_PCLK_DIV) ? 8 : 4;
--	return parent_rate / div;
--}
--
--static const struct clk_ops a9periphclk_ops = {
--	.recalc_rate = clk_cpu_periphclk_recalc_rate,
--};
--
--static unsigned long clk_cpu_a9bclk_recalc_rate(struct clk_hw *hwclk,
--						unsigned long parent_rate)
--{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 div = (readl(hbclk->reg) & HB_A9_BCLK_DIV_MASK) >> HB_A9_BCLK_DIV_SHIFT;
--
--	return parent_rate / (div + 2);
--}
--
--static const struct clk_ops a9bclk_ops = {
--	.recalc_rate = clk_cpu_a9bclk_recalc_rate,
--};
--
--static unsigned long clk_periclk_recalc_rate(struct clk_hw *hwclk,
--					     unsigned long parent_rate)
--{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 div;
--
--	div = readl(hbclk->reg) & 0x1f;
--	div++;
--	div *= 2;
--
--	return parent_rate / div;
--}
--
--static long clk_periclk_round_rate(struct clk_hw *hwclk, unsigned long rate,
--				   unsigned long *parent_rate)
--{
--	u32 div;
--
--	div = *parent_rate / rate;
--	div++;
--	div &= ~0x1;
--
--	return *parent_rate / div;
--}
--
--static int clk_periclk_set_rate(struct clk_hw *hwclk, unsigned long rate,
--				unsigned long parent_rate)
--{
--	struct hb_clk *hbclk = to_hb_clk(hwclk);
--	u32 div;
--
--	div = parent_rate / rate;
--	if (div & 0x1)
--		return -EINVAL;
--
--	writel(div >> 1, hbclk->reg);
--	return 0;
--}
--
--static const struct clk_ops periclk_ops = {
--	.recalc_rate = clk_periclk_recalc_rate,
--	.round_rate = clk_periclk_round_rate,
--	.set_rate = clk_periclk_set_rate,
--};
--
--static void __init hb_clk_init(struct device_node *node, const struct clk_ops *ops, unsigned long clkflags)
--{
--	u32 reg;
--	struct hb_clk *hb_clk;
--	const char *clk_name = node->name;
--	const char *parent_name;
--	struct clk_init_data init;
--	struct device_node *srnp;
--	int rc;
--
--	rc = of_property_read_u32(node, "reg", &reg);
--	if (WARN_ON(rc))
--		return;
--
--	hb_clk = kzalloc(sizeof(*hb_clk), GFP_KERNEL);
--	if (WARN_ON(!hb_clk))
--		return;
+-	struct device_node *np;
 -
 -	/* Map system registers */
--	srnp = of_find_compatible_node(NULL, NULL, "calxeda,hb-sregs");
--	hb_clk->reg = of_iomap(srnp, 0);
--	of_node_put(srnp);
--	BUG_ON(!hb_clk->reg);
--	hb_clk->reg += reg;
+-	np = of_find_compatible_node(NULL, NULL, "calxeda,hb-sregs");
+-	sregs_base = of_iomap(np, 0);
+-	WARN_ON(!sregs_base);
 -
--	of_property_read_string(node, "clock-output-names", &clk_name);
+-	pm_power_off = highbank_power_off;
+-	highbank_pm_init();
 -
--	init.name = clk_name;
--	init.ops = ops;
--	init.flags = clkflags;
--	parent_name = of_clk_get_parent_name(node, 0);
--	init.parent_names = &parent_name;
--	init.num_parents = 1;
+-	bus_register_notifier(&platform_bus_type, &highbank_platform_nb);
+-	bus_register_notifier(&amba_bustype, &highbank_amba_nb);
 -
--	hb_clk->hw.init = &init;
+-	pl320_ipc_register_notifier(&hb_keys_nb);
 -
--	rc = clk_hw_register(NULL, &hb_clk->hw);
--	if (WARN_ON(rc)) {
--		kfree(hb_clk);
+-	if (psci_ops.cpu_suspend)
+-		platform_device_register(&highbank_cpuidle_device);
+-}
+-
+-static const char *const highbank_match[] __initconst = {
+-	"calxeda,highbank",
+-	"calxeda,ecx-2000",
+-	NULL,
+-};
+-
+-DT_MACHINE_START(HIGHBANK, "Highbank")
+-#if defined(CONFIG_ZONE_DMA) && defined(CONFIG_ARM_LPAE)
+-	.dma_zone_size	= (4ULL * SZ_1G),
+-#endif
+-	.l2c_aux_val	= 0,
+-	.l2c_aux_mask	= ~0,
+-	.l2c_write_sec	= highbank_l2c310_write_sec,
+-	.init_irq	= highbank_init_irq,
+-	.init_machine	= highbank_init,
+-	.dt_compat	= highbank_match,
+-	.restart	= highbank_restart,
+-MACHINE_END
+diff --git a/arch/arm/mach-highbank/pm.c b/arch/arm/mach-highbank/pm.c
+deleted file mode 100644
+index 561941baeda9..000000000000
+--- a/arch/arm/mach-highbank/pm.c
++++ /dev/null
+@@ -1,49 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * Copyright 2011 Calxeda, Inc.
+- */
+-
+-#include <linux/cpu_pm.h>
+-#include <linux/init.h>
+-#include <linux/psci.h>
+-#include <linux/suspend.h>
+-
+-#include <asm/suspend.h>
+-
+-#include <uapi/linux/psci.h>
+-
+-#define HIGHBANK_SUSPEND_PARAM \
+-	((0 << PSCI_0_2_POWER_STATE_ID_SHIFT) | \
+-	 (1 << PSCI_0_2_POWER_STATE_AFFL_SHIFT) | \
+-	 (PSCI_POWER_STATE_TYPE_POWER_DOWN << PSCI_0_2_POWER_STATE_TYPE_SHIFT))
+-
+-static int highbank_suspend_finish(unsigned long val)
+-{
+-	return psci_ops.cpu_suspend(HIGHBANK_SUSPEND_PARAM, __pa(cpu_resume));
+-}
+-
+-static int highbank_pm_enter(suspend_state_t state)
+-{
+-	cpu_pm_enter();
+-	cpu_cluster_pm_enter();
+-
+-	cpu_suspend(0, highbank_suspend_finish);
+-
+-	cpu_cluster_pm_exit();
+-	cpu_pm_exit();
+-
+-	return 0;
+-}
+-
+-static const struct platform_suspend_ops highbank_pm_ops = {
+-	.enter = highbank_pm_enter,
+-	.valid = suspend_valid_only_mem,
+-};
+-
+-void __init highbank_pm_init(void)
+-{
+-	if (!psci_ops.cpu_suspend)
 -		return;
--	}
--	of_clk_add_hw_provider(node, of_clk_hw_simple_get, &hb_clk->hw);
+-
+-	suspend_set_ops(&highbank_pm_ops);
+-}
+diff --git a/arch/arm/mach-highbank/smc.S b/arch/arm/mach-highbank/smc.S
+deleted file mode 100644
+index 78b3f19e7f37..000000000000
+--- a/arch/arm/mach-highbank/smc.S
++++ /dev/null
+@@ -1,25 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Copied from omap44xx-smc.S Copyright (C) 2010 Texas Instruments, Inc.
+- * Copyright 2012 Calxeda, Inc.
+- */
+-
+-#include <linux/linkage.h>
+-
+-/*
+- * This is common routine to manage secure monitor API
+- * used to modify the PL310 secure registers.
+- * 'r0' contains the value to be modified and 'r12' contains
+- * the monitor API number.
+- * Function signature : void highbank_smc1(u32 fn, u32 arg)
+- */
+-	.arch armv7-a
+-	.arch_extension sec
+-ENTRY(highbank_smc1)
+-	stmfd   sp!, {r4-r11, lr}
+-	mov	r12, r0
+-	mov 	r0, r1
+-	dsb
+-	smc	#0
+-	ldmfd   sp!, {r4-r11, pc}
+-ENDPROC(highbank_smc1)
+diff --git a/arch/arm/mach-highbank/sysregs.h b/arch/arm/mach-highbank/sysregs.h
+deleted file mode 100644
+index 3c13fdcafb1e..000000000000
+--- a/arch/arm/mach-highbank/sysregs.h
++++ /dev/null
+@@ -1,75 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * Copyright 2011 Calxeda, Inc.
+- */
+-#ifndef _MACH_HIGHBANK__SYSREGS_H_
+-#define _MACH_HIGHBANK__SYSREGS_H_
+-
+-#include <linux/io.h>
+-#include <linux/smp.h>
+-#include <asm/smp_plat.h>
+-#include <asm/smp_scu.h>
+-#include "core.h"
+-
+-extern void __iomem *sregs_base;
+-
+-#define HB_SREG_A9_PWR_REQ		0xf00
+-#define HB_SREG_A9_BOOT_STAT		0xf04
+-#define HB_SREG_A9_BOOT_DATA		0xf08
+-
+-#define HB_PWR_SUSPEND			0
+-#define HB_PWR_SOFT_RESET		1
+-#define HB_PWR_HARD_RESET		2
+-#define HB_PWR_SHUTDOWN			3
+-
+-#define SREG_CPU_PWR_CTRL(c)		(0x200 + ((c) * 4))
+-
+-static inline void highbank_set_core_pwr(void)
+-{
+-	int cpu = MPIDR_AFFINITY_LEVEL(cpu_logical_map(smp_processor_id()), 0);
+-	if (scu_base_addr)
+-		scu_power_mode(scu_base_addr, SCU_PM_POWEROFF);
+-	else
+-		writel_relaxed(1, sregs_base + SREG_CPU_PWR_CTRL(cpu));
 -}
 -
--static void __init hb_pll_init(struct device_node *node)
+-static inline void highbank_clear_core_pwr(void)
 -{
--	hb_clk_init(node, &clk_pll_ops, 0);
+-	int cpu = MPIDR_AFFINITY_LEVEL(cpu_logical_map(smp_processor_id()), 0);
+-	if (scu_base_addr)
+-		scu_power_mode(scu_base_addr, SCU_PM_NORMAL);
+-	else
+-		writel_relaxed(0, sregs_base + SREG_CPU_PWR_CTRL(cpu));
 -}
--CLK_OF_DECLARE(hb_pll, "calxeda,hb-pll-clock", hb_pll_init);
 -
--static void __init hb_a9periph_init(struct device_node *node)
+-static inline void highbank_set_pwr_suspend(void)
 -{
--	hb_clk_init(node, &a9periphclk_ops, 0);
+-	writel(HB_PWR_SUSPEND, sregs_base + HB_SREG_A9_PWR_REQ);
+-	highbank_set_core_pwr();
 -}
--CLK_OF_DECLARE(hb_a9periph, "calxeda,hb-a9periph-clock", hb_a9periph_init);
 -
--static void __init hb_a9bus_init(struct device_node *node)
+-static inline void highbank_set_pwr_shutdown(void)
 -{
--	hb_clk_init(node, &a9bclk_ops, CLK_IS_CRITICAL);
+-	writel(HB_PWR_SHUTDOWN, sregs_base + HB_SREG_A9_PWR_REQ);
+-	highbank_set_core_pwr();
 -}
--CLK_OF_DECLARE(hb_a9bus, "calxeda,hb-a9bus-clock", hb_a9bus_init);
 -
--static void __init hb_emmc_init(struct device_node *node)
+-static inline void highbank_set_pwr_soft_reset(void)
 -{
--	hb_clk_init(node, &periclk_ops, 0);
+-	writel(HB_PWR_SOFT_RESET, sregs_base + HB_SREG_A9_PWR_REQ);
+-	highbank_set_core_pwr();
 -}
--CLK_OF_DECLARE(hb_emmc, "calxeda,hb-emmc-clock", hb_emmc_init);
---
+-
+-static inline void highbank_set_pwr_hard_reset(void)
+-{
+-	writel(HB_PWR_HARD_RESET, sregs_base + HB_SREG_A9_PWR_REQ);
+-	highbank_set_core_pwr();
+-}
+-
+-static inline void highbank_clear_pwr_request(void)
+-{
+-	writel(~0UL, sregs_base + HB_SREG_A9_PWR_REQ);
+-	highbank_clear_core_pwr();
+-}
+-
+-#endif
+diff --git a/arch/arm/mach-highbank/system.c b/arch/arm/mach-highbank/system.c
+deleted file mode 100644
+index b749c4a6ddf5..000000000000
+--- a/arch/arm/mach-highbank/system.c
++++ /dev/null
+@@ -1,22 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * Copyright 2011 Calxeda, Inc.
+- */
+-#include <linux/io.h>
+-#include <asm/proc-fns.h>
+-#include <linux/reboot.h>
+-
+-#include "core.h"
+-#include "sysregs.h"
+-
+-void highbank_restart(enum reboot_mode mode, const char *cmd)
+-{
+-	if (mode == REBOOT_HARD)
+-		highbank_set_pwr_hard_reset();
+-	else
+-		highbank_set_pwr_soft_reset();
+-
+-	while (1)
+-		cpu_do_idle();
+-}
+-
+-- 
 2.20.1
+
