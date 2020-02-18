@@ -2,111 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DD8162125
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD85016212B
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:55:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbgBRGvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 01:51:15 -0500
-Received: from mail-eopbgr50089.outbound.protection.outlook.com ([40.107.5.89]:48867
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726104AbgBRGvO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 01:51:14 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dk/utZWk+BcAgR3tHTlVcNHGc/AUZfafRZKienMp9zqEAl2xFlBv4+Q23PlcRwOpQSA0BtieT3/pHc13InhQzMCf2pTSf8cmClZLVCNH8oY297gkXt7czmKs11DqZHbTzH2PhbD7ziMhhoo02AhIO1pT4soWunrXj6UbGLVP0uoKSCjPZKjkt6MSVBqm8+++hYAQXfMez+7VNyK+JVNzlLp0g6MjqRbWUHE/9meffywHPB7a0vqVY6Z1gnGSImnMKvtCkHvLkYUUr+SxdQ3k70HUo62s23mvnCf1oA4PA7E9/vJJDT5xTHbeD6ZHpUgf8bjRCuBY9nV51/YeBP6jVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nt7MsMz23uG4V/aaFpAdJzjJGbm+oP6vxZ9ibW/qrqE=;
- b=djib7rsm+jHZcfq3Mqv6CujGocagX3LBqQFu3eosYTatHQlRwFmW3KL+Mx9g/XNt/hkeClt6MhOjemW0vSA+4tw52WSOyyYeVtZQL5p6djXDhh6UzqZ1FZu4p+roSrdgSV8my/r6mhPwUff7qvS+WXumCeSz+MhPNo88A2O5FlPiGjSXhBxSUeTS/EuII6zf5yGesMciGtTrXCSgp/yy62wLwFFXLZJ4M1Yd1Ir0Qrb1KxvxWZOiZmoJbgZ1ip35FpoTzsqfi1WsS/T/sl7GZH0Grzm8TEvQcLom1SwhBw3zpHIrTVQFcayIafqvfZphUXDFLBlJdr/C0fWph1tdyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nt7MsMz23uG4V/aaFpAdJzjJGbm+oP6vxZ9ibW/qrqE=;
- b=IWEr2dWq+8IQ4QN2GSj1HWeMoAgxinVb83DRcBR4h43FSp5QR2920eswa628A7Il8v/DrFwiDOz4g6jnMMNJ40mPFecb2GTuFenyNTWFZBWHoGaqEV0pan3AYIIg/7m9ng2vVH6AbfYk9nPAhXrBPuF1jrcQIk63jSqUfs6cLy4=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
- VI1PR0402MB3407.eurprd04.prod.outlook.com (52.134.2.153) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.22; Tue, 18 Feb 2020 06:51:11 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::18c:4d15:c3ab:afa6]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::18c:4d15:c3ab:afa6%7]) with mapi id 15.20.2729.032; Tue, 18 Feb 2020
- 06:51:11 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     David Miller <davem@davemloft.net>,
-        "festevam@gmail.com" <festevam@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: RE: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation
- scheme
-Thread-Topic: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation
- scheme
-Thread-Index: AQHV5h8UIR0p36NlJkiaMX6HnulgEKgggl2A
-Date:   Tue, 18 Feb 2020 06:51:11 +0000
-Message-ID: <VI1PR0402MB3600C163FEFD846B1D5869B4FF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20200217223651.22688-1-festevam@gmail.com>
- <20200217.214840.486235315714211732.davem@davemloft.net>
-In-Reply-To: <20200217.214840.486235315714211732.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.68]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: d880e717-5239-41e1-22aa-08d7b43ef0ec
-x-ms-traffictypediagnostic: VI1PR0402MB3407:
-x-microsoft-antispam-prvs: <VI1PR0402MB3407D355E0EFDBA85C275A6DFF110@VI1PR0402MB3407.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 031763BCAF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(189003)(199004)(9686003)(55016002)(7696005)(71200400001)(2906002)(478600001)(4744005)(86362001)(4326008)(110136005)(52536014)(54906003)(8936002)(8676002)(33656002)(66476007)(66946007)(76116006)(316002)(26005)(81156014)(81166006)(186003)(66556008)(66446008)(64756008)(5660300002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3407;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B0SDdzzjl1el+l5R6v+I8FkozTRjIAMg3dhQHNL3QoFlCYH+9FjmPVv7dIQeaO15ETTANgVQ2MVBEd+6d5b3kse5F5Fo91p1I1SoYq/ErX38UZJusfiOwGP75FO/txjPLt4qP58s+cpcssm76Xrs6EDsE036fgFyvY0Ol5Qyzux8KKcB0mhL6LXE3ZmsHFNnypFg9OiFEP+KloqQZBM3jAxoM+5KJHGFJGa9UsHKnpKR6+OxWQyTK1NQh4XW/Jut8DO3Kbm8kKqhyQ7VVkQbLxNRLA7NVf6GidFZswQ2YZuQ3v/i4I/sr3vZ/3B0HtJ9tCkl1QkXmpDozYurcL4kwLE1uvj/t7J1OpIQvMQhmyF3eMNWKOKXYD0PShRV3SUv4e3U80tnPF9rc/JLNdnvZQ4IMIobAGVfSOMS38J8MUEcczoV0SqoTvASudPyfrhb
-x-ms-exchange-antispam-messagedata: TOEMKUUDhTNi+bmxsOw/Hat3DySfZWjc/l7v7KVMnp02h6pcM4VoKezSJPp38LGb8W1b1BnmtGzaOAjNpMr/Tm9WrmFi/Uqt+uJlUdkonufQWxtu0Oo0UUBrWFaABb9T27t+ruP1cA4r1RAQ/uhDYg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726134AbgBRGzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 01:55:41 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:34632 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbgBRGzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 01:55:41 -0500
+Received: by mail-lf1-f66.google.com with SMTP id l18so13685800lfc.1
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 22:55:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iR40Pui0oXMELNuBKY7gkeoebMPelbh7IMg3628HWFc=;
+        b=M5UNyemHqzgQxT7eCjbABatQ5mYzbxuM3M4BayV8zIs2AQxejTpMp2ox/HgBHlPRi/
+         YpZQ5/PU1tB/HLBU5ikBRdiMWnLmlTRIrZ45xarZXlu6gGtmBkSF83s/zRRVbHcIoHQo
+         qOHAICITXz52w8nNvQL1RN7835VZeWkr0V+QsAH1My5xW4Rg9eoTX4tkMvVxDDc1BYHl
+         fIj4K3xNRWiZDHdgOkWi21eG6QNumxqIMbidjx9jwsL5yh/BfqjTvhUAXddla6oINCeH
+         LHKLndbFAc+R/VPRpPdbAryU8GOCnq+npSbA2mByazYy6LVq/uY9HPMD6fMQIGqquQuu
+         bXJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iR40Pui0oXMELNuBKY7gkeoebMPelbh7IMg3628HWFc=;
+        b=HENrSE6uQE1UZ4hQXpZzfehaUQQ8uDZ3YpVJKattkmTrqBFQRolkVwDKgzbjdMZSB4
+         UMt4ln9B00a5pT5OOCJITdAhf39BsAvhYxfcIBJXO56mGyBkQT/AXm7R82HbCR94XsUV
+         LMOQOC/8dyVAblxm6XeBOrT1goQucGopFXxIXX5DG/X7okLwL8lik4ysn+x86/yOaEWI
+         TP/bpT/X4bCm1Sx8BZYU0xwVNYLgloxKPFKQH6aOpt1jMl9lgr/jQgJDAqp46RY4oAip
+         NV6kBXDG+FTKfDXF+pcpN+EodgGxV7bB+fk/3V++iRD1F0bSbGoxpe56eJOXrINwnQDH
+         iT7g==
+X-Gm-Message-State: APjAAAUWbBB/B+7zrLIkcQBXn1P5/0l4wrymB9CXvKVSg1MUculvsiNk
+        4V3pdLZ0xjYNhLlmhvVBjrU=
+X-Google-Smtp-Source: APXvYqwwdxN3dvADft8S7YR1ZibnlgBK6Wx8W87pBahwmf+wd04U+n8U+NLVK8pGeUs6xPfAzWL0Xw==
+X-Received: by 2002:a19:cb17:: with SMTP id b23mr9805626lfg.201.1582008938956;
+        Mon, 17 Feb 2020 22:55:38 -0800 (PST)
+Received: from elitebook.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id f19sm1779093ljj.50.2020.02.17.22.55.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Feb 2020 22:55:38 -0800 (PST)
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
+ leak)
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Jo-Philipp Wich <jo@mein.io>
+References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
+ <20200212082434.GM2159@dhcp-12-139.nay.redhat.com>
+ <2bc4f125-db14-734d-724e-4028b863eca2@gmail.com>
+ <20200212100813.GN2159@dhcp-12-139.nay.redhat.com>
+Message-ID: <954a388a-5a9a-1554-ddb3-133e82208a03@gmail.com>
+Date:   Tue, 18 Feb 2020 07:55:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d880e717-5239-41e1-22aa-08d7b43ef0ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2020 06:51:11.8574
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bLfkzjZ3lr00hY50uDijFnJx30/pJJISx4P6uuMf1ebDsqJjUV0Rrf2jAtZZpFJPjr4VHKfR5tgsOAX7m2Slzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3407
+In-Reply-To: <20200212100813.GN2159@dhcp-12-139.nay.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net> Sent: Tuesday, February 18, 2020 1=
-:49 PM
-> From: Fabio Estevam <festevam@gmail.com>
-> Date: Mon, 17 Feb 2020 19:36:51 -0300
->=20
-> > Instead of using such poor mechanism for counting the network
-> > interfaces IDs, use a proper allocation scheme, such as IDR.
-> >
-> > This fixes the network behavior after unbind/bind.
->=20
-> What about:
->=20
-> 1) unbind fec0
-> 2) unbind fec1
-> 3) bind fec0
->=20
-> It doesn't work even with the IDR scheme.
+I'm sorry for a late reply, I spent that time for switching my devices
+to some newer kernel. I wanted to make sure we are not chasing a bug
+that's long time fixed now.
 
-Not only such case, instance#A (maybe fec0 or fec1) depends on instance#B (=
-maybe fec1 or fec0),
-Unbind instance#B firstly has problem.
-Bind instance#A firstly also has problem.
+This problem still exists in the 5.4.18.
+
+On Wed, 12 Feb 2020 at 11:08, Hangbin Liu <liuhangbin@gmail.com> wrote:
+> On Wed, Feb 12, 2020 at 09:49:02AM +0100, Rafał Miłecki wrote:
+> > On 12.02.2020 09:24, Hangbin Liu wrote:
+> > > Thanks for the report. Although you said this is not a memory leak. Maybe
+> > > you can try a84d01647989 ("mld: fix memory leak in mld_del_delrec()").
+> >
+> > Thanks, that commit was also pointed by Eric and I verified it was
+> > backported as:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-4.9.y&id=df9c0f8a15c283b3339ef636642d3769f8fbc434
+> >
+> > So it must be some other bug affecting me.
+>
+> Hmm, I'm surprised that IGMP works for you, as it requires enable IPv6
+> forwarding. Do you have a lot IPv6 multicast groups on your device?
+
+The thing is I don't really use IPv6. There are some single IPv6 packets
+in my network (e.g. MDNS packets) but nothing significant.
+
+For my testing purposes I access my access points using ssh and it's the
+only real traffic. There are no wireless devices connected to my testing
+devices. They are just running monitor mode interfaces without any real
+traffic.
+
+Monitor interfaces have
+	type = ARPHRD_IEEE80211_RADIOTAP
+and skbs have
+	skb->pkt_type = PACKET_OTHERHOST
+	skb->protocol = htons(ETH_P_802_2)
+that also shouldn't trigger any IPv6 traffic in the kernel AFAIU.
+
+
+ > What dose `ip maddr list` show?
+
+# ip maddr list
+1:      lo
+         inet  224.0.0.1
+         inet6 ff02::1
+         inet6 ff01::1
+2:      eth0
+         link  33:33:00:00:00:01
+         link  33:33:00:00:00:02 users 2
+         link  01:00:5e:00:00:01 users 2
+         link  33:33:ff:7a:fc:80
+         link  33:33:ff:00:00:00
+         inet  224.0.0.1
+         inet6 ff02::1:ff00:0
+         inet6 ff02::1:ff7a:fc80
+         inet6 ff05::2
+         inet6 ff01::2
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+3:      eth1
+         link  33:33:00:00:00:01
+         link  33:33:00:00:00:02 users 2
+         inet6 ff05::2
+         inet6 ff01::2
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+4:      eth2
+         link  33:33:00:00:00:01
+         link  33:33:00:00:00:02 users 2
+         inet6 ff05::2
+         inet6 ff01::2
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+5:      wlan0
+         link  01:00:5e:00:00:01
+         link  33:33:00:00:00:02 users 2
+         link  33:33:00:00:00:01
+         link  33:33:ff:7a:fc:81
+         link  33:33:ff:00:00:00
+         inet  224.0.0.1
+         inet6 ff02::1:ff00:0
+         inet6 ff02::1:ff7a:fc81
+         inet6 ff05::2
+         inet6 ff01::2
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+6:      wlan1
+         link  01:00:5e:00:00:01
+         link  33:33:00:00:00:02 users 2
+         link  33:33:00:00:00:01
+         link  33:33:ff:7a:fc:88
+         link  33:33:ff:00:00:00
+         inet  224.0.0.1
+         inet6 ff02::1:ff00:0
+         inet6 ff02::1:ff7a:fc88
+         inet6 ff05::2
+         inet6 ff01::2
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+7:      br-lan
+         link  33:33:00:00:00:01
+         link  33:33:00:00:00:02
+         link  01:00:5e:00:00:01
+         link  33:33:ff:7a:fc:80
+         link  33:33:ff:00:00:00
+         inet  224.0.0.1
+         inet6 ff02::1:ff00:0
+         inet6 ff02::1:ff7a:fc80
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+8:      eth0.1
+         link  01:00:5e:00:00:01 users 2
+         inet  224.0.0.1
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+9:      mon-phy0
+         inet  224.0.0.1
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
+10:     mon-phy1
+         inet6 ff02::2
+         inet6 ff02::1
+         inet6 ff01::1
