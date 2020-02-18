@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F09BC163774
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 318A6163776
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:48:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgBRXsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 18:48:18 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:33238 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbgBRXsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:48:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=sYBK+hjxHOSyJ0cblfH2VNIbIJzTu4XFcpaB69wTeWk=; b=MYwJWGczxQd4fFetHU1cgxSuX
-        kqFCTwhwAz55L5vJPt+ntJBh4iSk0yaI5iZZpD0q68AbR8dBgIXOxFWoxNe0jieOSOezGgxC/y3Q1
-        tJ6F/bv9WAmkOXfwbTPRCKmDvJf1SdpndlbXI+sunYl1HiFNUMNyjN9U5jp8I/hNUVfCl55tR+brx
-        zQBr4JrcoKyzVfvm8pcvClKYHzPfT98TeExww4WMj4SPFXdJF0vHqwhe0MKAJOYRqQfkVjSgR0gL3
-        166igm0HVCrOS8T4Wrc2tGUQWrVe19ik9fZqCCDQSeqxuq6MgPyYehzbgA8cQM42uUoXJ2U8om3It
-        3iQyx3nGw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:53832)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4Cb4-0001v7-DF; Tue, 18 Feb 2020 23:48:10 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4Cb1-0000qa-05; Tue, 18 Feb 2020 23:48:07 +0000
-Date:   Tue, 18 Feb 2020 23:48:06 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: fix vlan setup
-Message-ID: <20200218234806.GN25745@shell.armlinux.org.uk>
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
- <E1j41KW-0002v5-2S@rmk-PC.armlinux.org.uk>
- <20200218140907.GB15095@t480s.localdomain>
- <3bfda6cc-5108-427f-e225-beba0f809d73@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3bfda6cc-5108-427f-e225-beba0f809d73@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726939AbgBRXsa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Feb 2020 18:48:30 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38388 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbgBRXs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:48:29 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2536915B7527F;
+        Tue, 18 Feb 2020 15:48:29 -0800 (PST)
+Date:   Tue, 18 Feb 2020 15:48:28 -0800 (PST)
+Message-Id: <20200218.154828.858448801341482999.davem@davemloft.net>
+To:     daniel@iogearbox.net
+Cc:     toke@redhat.com, kuba@kernel.org, lorenzo@kernel.org,
+        netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        lorenzo.bianconi@redhat.com, andrew@lunn.ch, brouer@redhat.com,
+        dsahern@kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to
+ mlx5 driver
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <703ce998-e454-713c-fc7a-d5f1609146d8@iogearbox.net>
+References: <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
+        <87eeury1ph.fsf@toke.dk>
+        <703ce998-e454-713c-fc7a-d5f1609146d8@iogearbox.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Feb 2020 15:48:29 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 11:34:38AM -0800, Florian Fainelli wrote:
-> Russell, in your tests/examples, did the tagged traffic of $VN continue
-> to work after you toggled vlan_filtering on? If so, that must be because
-> on a bridge with VLAN filtering disabled, we still ended up calling down
-> to the lan1..6 ndo_vlan_rx_add_vid() and so we do have VLAN entries
-> programmed for $VN.
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Wed, 19 Feb 2020 00:19:36 +0100
 
-From what I remember, _all_ traffic was blocked because the VTU
-was completely empty when vlan filtering is turned on.
+> On 2/18/20 11:23 PM, Toke Høiland-Jørgensen wrote:
+>> Jakub Kicinski <kuba@kernel.org> writes:
+>>> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote:
+>>>> Introduce "rx" prefix in the name scheme for xdp counters
+>>>> on rx path.
+>>>> Differentiate between XDP_TX and ndo_xdp_xmit counters
+>>>>
+>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>>
+>>> Sorry for coming in late.
+>>>
+>>> I thought the ability to attach a BPF program to a fexit of another
+>>> BPF
+>>> program will put an end to these unnecessary statistics. IOW I
+>>> maintain
+>>> my position that there should be no ethtool stats for XDP.
+>>>
+>>> As discussed before real life BPF progs will maintain their own stats
+>>> at the granularity of their choosing, so we're just wasting datapath
+>>> cycles.
+> 
+> +1
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Bugs in bpf programs leading to lack of fundamental statistics.
+
+I think that is absolutely the wrong tradeoff.
+
+And if performance is a concern, we can have a knob to turn off
+the xdp counter bumps.  This is something I totally support.
