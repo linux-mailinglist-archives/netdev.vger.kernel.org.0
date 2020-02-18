@@ -2,83 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E08B161F20
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 03:52:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D00161F26
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 04:01:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbgBRCwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 21:52:36 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57898 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726212AbgBRCwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 21:52:36 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::f0c])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E550D15B19518;
-        Mon, 17 Feb 2020 18:52:35 -0800 (PST)
-Date:   Mon, 17 Feb 2020 18:52:35 -0800 (PST)
-Message-Id: <20200217.185235.495219494110132658.davem@davemloft.net>
-To:     danielwa@cisco.com
-Cc:     zbr@ioremap.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: connector: cn_proc: allow limiting certain
- messages
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200217175209.GM24152@zorba>
-References: <20200217172551.GL24152@zorba>
-        <16818701581961475@iva7-8a22bc446c12.qloud-c.yandex.net>
-        <20200217175209.GM24152@zorba>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Feb 2020 18:52:36 -0800 (PST)
+        id S1726312AbgBRDA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 22:00:57 -0500
+Received: from mail-pj1-f42.google.com ([209.85.216.42]:52450 "EHLO
+        mail-pj1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726245AbgBRDA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 22:00:57 -0500
+Received: by mail-pj1-f42.google.com with SMTP id ep11so356180pjb.2
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 19:00:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=8TQW2MMPyzSIqUDhFwAM22VWp8oXFENVG+pkQxcxX7Q=;
+        b=Fzwj3DXF7d8c35GJ3uhvP/tpOaWXQNvRsGR7siWhQL7a4m4nmITOIMI1IHFnxm/mY6
+         TlJUN1MZsuS3tBZasp6WgYrgPvbvc3tEvJ3MpBUuy/1qUM0x/t45Cbc9JzeOrbt7PP3e
+         x8KZxqCbvQrOHFfQ+5kRsjNWEJAP/cjFi2gVA+gyvkQ7JL3OssrnSgSYd8O5mHANtWTx
+         lfl5z/r0Vq6PB4Secj0BUDOXuqJtBfkoAQ/IrdAzyieVWIGCITGSbbQk7gSeYy/l6QOk
+         ADV+BK7ikpHTDIR1xhodm/Ayo6ds5yFJ3R3NMls0ePEXk9OGSAAThheI18BTGGXWCWxV
+         hvAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8TQW2MMPyzSIqUDhFwAM22VWp8oXFENVG+pkQxcxX7Q=;
+        b=W22g+u0IsedY13l8iLH79cePOaKQv+jdy7tT45QeCpTNNNAMEjVzq7uSIBA29QCstp
+         rC2J/1z39DBXrWQcc9h5LLiPvqtuAiCrgYYp37Yv2Rx+3VDyptVjjcCOhNIKOcnb1pKu
+         m26XhAMYEB0/fUOKMMEfaIAa3KU0SbOokMAZjTfmlnZhtpECX4FI4qHe6xyZRkFp9pLU
+         DgF1OV3LJTb4vXeUcbhxypdgElT8dAXmjnwaeZ5Xs9miCyhvGt058GU8Q4PGcbSiveby
+         VzAV5ZwqQLiUWrvsCyWaMd+gHgep9j9l3outUOtQ/viuo/eWd7GiSaanO5ZUYDrWwsYH
+         AgAw==
+X-Gm-Message-State: APjAAAXF5BAKlkTvo/DiwICqEiSf+6/Yrk3okcvPinGQ9wev3hg7EYI8
+        PN9EnMDfQFXoXm0U6wjjTmJUjGHXWNc=
+X-Google-Smtp-Source: APXvYqx78Y6OC3HB6BOVRM2+JAEjQXhcqmHvLRdlyvFVeSvFV1Pj5E6A+mfvim30T5h8wAhRLmcXEQ==
+X-Received: by 2002:a17:902:aa49:: with SMTP id c9mr19353340plr.145.1581994856696;
+        Mon, 17 Feb 2020 19:00:56 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b6sm1736783pfg.17.2020.02.17.19.00.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Feb 2020 19:00:56 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, stephen@networkplumber.org
+Cc:     William Tu <u9012063@gmail.com>, David Ahern <dsahern@gmail.com>
+Subject: [PATCHv2 iproute2] erspan: set erspan_ver to 1 by default
+Date:   Tue, 18 Feb 2020 11:00:48 +0800
+Message-Id: <0abbe3fb8e20741c17fe3a0ecbca9ccd4f8ab96b.1581994848.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Daniel Walker (danielwa)" <danielwa@cisco.com>
-Date: Mon, 17 Feb 2020 17:52:11 +0000
+Commit 289763626721 ("erspan: add erspan version II support")
+breaks the command:
 
-> On Mon, Feb 17, 2020 at 08:44:35PM +0300, Evgeniy Polyakov wrote:
->>    Hi Daniel, David
->>     
->>    17.02.2020, 20:26, "Daniel Walker (danielwa)" <danielwa@cisco.com>:
->>    > On Sun, Feb 16, 2020 at 06:44:43PM -0800, David Miller wrote:
->>    >>  This is a netlink based facility, therefore please you should add
->>    filtering
->>    >>  capabilities to the netlink configuration and communications path.
->>    >>
->>    >>  Module parameters are quite verboten.
->>    >
->>    > How about adding in Kconfig options to limit the types of messages? The
->>    issue
->>    > with this interface is that it's very easy for someone to enable the
->>    interface
->>    > as a listener, then never turn the interface off. Then it becomes a
->>    broadcast
->>    > interface. It's desirable to limit the more noisy messages in some
->>    cases.
->>     
->>     
->>    Compile-time options are binary switches which live forever after kernel
->>    config has been created, its not gonna help those who enabled messages.
->>    Kernel modules are kind of no-go, since it requires reboot to change in
->>    some cases.
->>     
->>    Having netlink control from userspace is a nice option, and connector has
->>    simple userspace->kernelspace channel,
->>    but it requires additional userspace utils or programming, which is still
->>    cumbersome.
->>     
->>    What about sysfs interface with one file per message type?
-> 
-> You mean similar to the module parameters I've done, but thru sysfs ? It would
-> work for Cisco. I kind of like Kconfig because it also reduces kernel size for
-> messages you may never want to see.
+ # ip link add erspan1 type erspan key 1 seq erspan 123 \
+    local 10.1.0.2 remote 10.1.0.1
 
-Even the sysfs has major downsides, as it fails to take the socket context into
-consideration and makes a system wide decision for what should be a per service
-decision.
+as erspan_ver is set to 0 by default, then IFLA_GRE_ERSPAN_INDEX
+won't be set in gre_parse_opt().
+
+  # ip -d link show erspan1
+    ...
+    erspan remote 10.1.0.1 local 10.1.0.2 ... erspan_index 0 erspan_ver 1
+                                              ^^^^^^^^^^^^^^
+
+This patch is to change to set erspan_ver to 1 by default.
+
+Fixes: 289763626721 ("erspan: add erspan version II support")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ ip/link_gre.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ip/link_gre.c b/ip/link_gre.c
+index 15beb73..e42f21a 100644
+--- a/ip/link_gre.c
++++ b/ip/link_gre.c
+@@ -94,7 +94,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	__u8 metadata = 0;
+ 	__u32 fwmark = 0;
+ 	__u32 erspan_idx = 0;
+-	__u8 erspan_ver = 0;
++	__u8 erspan_ver = 1;
+ 	__u8 erspan_dir = 0;
+ 	__u16 erspan_hwid = 0;
+ 
+-- 
+2.1.0
+
