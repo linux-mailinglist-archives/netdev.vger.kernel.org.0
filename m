@@ -2,128 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 813C01626BC
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 14:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFA33162716
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 14:24:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgBRNEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 08:04:15 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:28990 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726340AbgBRNEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 08:04:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582031054;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=GIrGFZ0JSlt7bh77UYGwq8VnSNDnywZL5T2KJvjBXIU=;
-        b=Bwb3rnDuOjiM4xe0lnEuOrS4ffCFsCYOrbVA4l21oWEBrYdCcm9aARAmOjEX0yXoMVMUMe
-        0xUvQGWEepvUHZ7NGsUvmjCQfzwz9w5/X+1DS1RGwGML5MxXLP/NzVbUWJEltFL6vgbiAR
-        iuyr+EAbNeaUMR6zDssME3AhdveoGUU=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-343-FHcb0QJ5N-Oc1N5lUhGY5w-1; Tue, 18 Feb 2020 08:04:11 -0500
-X-MC-Unique: FHcb0QJ5N-Oc1N5lUhGY5w-1
-Received: by mail-lj1-f200.google.com with SMTP id r14so7083172ljc.18
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 05:04:10 -0800 (PST)
+        id S1726648AbgBRNY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 08:24:56 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:32983 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726442AbgBRNY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 08:24:56 -0500
+Received: by mail-lj1-f193.google.com with SMTP id y6so22950966lji.0
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 05:24:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cp2LHXRjAwdGFGqhDpjH1tRAAkkcIyA4nhmvZj5NcIU=;
+        b=MFa4w3QpReBQ5jxYBilarOKRoZcskBKPYDlAWdB0DfKbB/OhOnfZ4jc5PqM2xoiqrn
+         ty/N5iqGXrC2ctyOes4AAlixwTxsdVBnLaGFXKzk3eaciIKHdLN4ruwtGO1tDJ4Seh16
+         r9fE0XRaAy7n/r32gmtWlYqvBUb1agcYPnYkUMwLR3bx6LV+MaMDhw6Z55tG4UYBJHM7
+         Poyz2vyrXvRAI65zYgknEpUGNo/tjXhmi3ayempl/LqrvwvWYpQmZUP6H3ieO4OwuTXg
+         cNAuoazMpHOmuo+rzvLj8/oODgcYcvIobDNKUrpV5SkpuL8iUQK1cMHX0CddnUR0Hg+F
+         n+bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GIrGFZ0JSlt7bh77UYGwq8VnSNDnywZL5T2KJvjBXIU=;
-        b=qFv2edrYJUKUv1+Mrg1vDAahmHxxbOcNXaYbhcmMUHM+nzBGhRUA3fuU0rxZDqr7/Y
-         GThQK08M3Rg1kTxt7FusnkdaGWK7gQAqk/WqPqKhokxJPqzToXtJowFUl00/2RyepzQZ
-         vVDUuyVODKw4h1CdOhWqg3V4F8X8aucXfhSIEKdFq9KIbvXI0EASkTvslQpyOdHkjgWB
-         XqeW/ZDSOPIFXCD28KY+dYPZismcNlK8WYYAf8NEYVrH4mjzdLN+c4KerINjlt9/puAM
-         lAarwhMGzrRXJAEYp8/4HDzBLTYD1S+1C+pAhFu45cgjmfbpAFgyArrWdfNO5ErY/p1o
-         18CQ==
-X-Gm-Message-State: APjAAAVf7yR0CPTvrfP6PnvBmjZ+odqAr+gqp2pyGN7xXs6uPcKhY8Vg
-        tIWkCwEd2G1X6C08rsJig0x/gqEF2HjxzVs2AJDfp1an3zggC9Ej5zcz1sp5BIK7znEXrdZlJ56
-        6Wr0+RgGwtaNHf0lS
-X-Received: by 2002:ac2:4c84:: with SMTP id d4mr10465269lfl.64.1582031049435;
-        Tue, 18 Feb 2020 05:04:09 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzrC2Z6mY//wkKUZYuZ5mv/ieMoyTzpwX7NytYOPWmRzTueN0cVzKV8fznNuQrf4W6pVPFKPA==
-X-Received: by 2002:ac2:4c84:: with SMTP id d4mr10465253lfl.64.1582031049172;
-        Tue, 18 Feb 2020 05:04:09 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i4sm2765122lji.0.2020.02.18.05.04.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 05:04:08 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BA243180365; Tue, 18 Feb 2020 14:04:06 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf v2] uapi/bpf: Remove text about bpf_redirect_map() giving higher performance
-Date:   Tue, 18 Feb 2020 14:03:34 +0100
-Message-Id: <20200218130334.29889-1-toke@redhat.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cp2LHXRjAwdGFGqhDpjH1tRAAkkcIyA4nhmvZj5NcIU=;
+        b=onkR0LC2LgdG2HP25SS03UnnYnaM2/csmycjqCPrUF4oW881PdmZFmO26J73vH30Ok
+         Kfex0/+NUmiV90kCAF7TnGVTgiLEqAoNhOzzJv9rCEmE8z/N2Xi11PS3HI0/YUXgWIH0
+         BrRzEgp2ru3p2NqHeO/pxFzvGTAX5/eK9Sc6aXnMHxX4DiO0+F1py95pydG+/vwmExQ3
+         b/hJ2sQVDdxKLpyz1FStUJN0+UBiIeLQNGU2501oPC2jUhOPv62NMVDl2YeNouX1fWYD
+         k+8GmhS4UYsn9aYDJTU7TW3/QSd+2dZyKlp1gvwPFK7kH+Am/I4jq5jtIPe6eLHbYxht
+         XnRw==
+X-Gm-Message-State: APjAAAVq59sf3pY2BHbwfA5ztWpZAiO4Wx4Ztfi6kltHWHRIvJhfPYju
+        fZ8YJnBb2Z0RrRGA1Y6Yl/nkYp+zvYQj/w8KsST391d2
+X-Google-Smtp-Source: APXvYqzWvARWc1d8Ne4FYShqga7u9SwBlD8znlBgjKGpXzWX9vpjp36oM0dm5I+4ufidvr9Zd3SASM36ZhqFoTDv3ac=
+X-Received: by 2002:a2e:7818:: with SMTP id t24mr12594250ljc.195.1582032293892;
+ Tue, 18 Feb 2020 05:24:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20200217223651.22688-1-festevam@gmail.com> <20200217.214840.486235315714211732.davem@davemloft.net>
+ <VI1PR0402MB3600C163FEFD846B1D5869B4FF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR0402MB3600C163FEFD846B1D5869B4FF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 18 Feb 2020 10:24:42 -0300
+Message-ID: <CAOMZO5CWX9dhcg_v3LgPvK97yESAi_kS72e0=vjiB+-15C5J1g@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation scheme
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The performance of bpf_redirect() is now roughly the same as that of
-bpf_redirect_map(). However, David Ahern pointed out that the header file
-has not been updated to reflect this, and still says that a significant
-performance increase is possible when using bpf_redirect_map(). Remove this
-text from the bpf_redirect_map() description, and reword the description in
-bpf_redirect() slightly. Also fix the 'Return' section of the
-bpf_redirect_map() documentation.
+Hi Andy,
 
-Fixes: 1d233886dd90 ("xdp: Use bulking for non-map XDP_REDIRECT and consolidate code paths")
-Reported-by: David Ahern <dsahern@gmail.com>
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-v2:
-  - Keep a reference to bpf_redirect() in bpf_redirect_map() text (Quentin)
-  - Also fix up 'Return' section of bpf_redirect_map()
+On Tue, Feb 18, 2020 at 3:51 AM Andy Duan <fugang.duan@nxp.com> wrote:
 
- include/uapi/linux/bpf.h | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+> > What about:
+> >
+> > 1) unbind fec0
+> > 2) unbind fec1
+> > 3) bind fec0
+> >
+> > It doesn't work even with the IDR scheme.
+>
+> Not only such case, instance#A (maybe fec0 or fec1) depends on instance#B (maybe fec1 or fec0),
+> Unbind instance#B firstly has problem.
+> Bind instance#A firstly also has problem.
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index f1d74a2bd234..22f235260a3a 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1045,9 +1045,9 @@ union bpf_attr {
-  * 		supports redirection to the egress interface, and accepts no
-  * 		flag at all.
-  *
-- * 		The same effect can be attained with the more generic
-- * 		**bpf_redirect_map**\ (), which requires specific maps to be
-- * 		used but offers better performance.
-+ * 		The same effect can also be attained with the more generic
-+ * 		**bpf_redirect_map**\ (), which uses a BPF map to store the
-+ * 		redirect target instead of providing it directly to the helper.
-  * 	Return
-  * 		For XDP, the helper returns **XDP_REDIRECT** on success or
-  * 		**XDP_ABORTED** on error. For other program types, the values
-@@ -1611,13 +1611,11 @@ union bpf_attr {
-  * 		the caller. Any higher bits in the *flags* argument must be
-  * 		unset.
-  *
-- * 		When used to redirect packets to net devices, this helper
-- * 		provides a high performance increase over **bpf_redirect**\ ().
-- * 		This is due to various implementation details of the underlying
-- * 		mechanisms, one of which is the fact that **bpf_redirect_map**\
-- * 		() tries to send packet as a "bulk" to the device.
-+ * 		See also bpf_redirect(), which only supports redirecting to an
-+ * 		ifindex, but doesn't require a map to do so.
-  * 	Return
-- * 		**XDP_REDIRECT** on success, or **XDP_ABORTED** on error.
-+ * 		**XDP_REDIRECT** on success, or the value of the two lower bits
-+ * 		of the **flags* argument on error.
-  *
-  * int bpf_sk_redirect_map(struct sk_buff *skb, struct bpf_map *map, u32 key, u64 flags)
-  * 	Description
--- 
-2.25.0
+Yes, I do see the error now with the sequence suggested by David.
 
+I have also noticed in the fec_main.c comments:
+
+/*
+* The i.MX28 dual fec interfaces are not equal.
+* Here are the differences:
+*
+*  - fec0 supports MII & RMII modes while fec1 only supports RMII
+*  - fec0 acts as the 1588 time master while fec1 is slave
+*  - external phys can only be configured by fec0
+*
+* That is to say fec1 can not work independently. It only works
+* when fec0 is working. The reason behind this design is that the
+* second interface is added primarily for Switch mode.
+*
+* Because of the last point above, both phys are attached on fec0
+* mdio interface in board design, and need to be configured by
+* fec0 mii_bus.
+*/
+
+Should we prevent unbind operation from this driver like this?
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c
+b/drivers/net/ethernet/freescale/fec_main.c
+index 4432a59904c7..1d348c5d0794 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3793,6 +3793,7 @@ static struct platform_driver fec_driver = {
+                .name   = DRIVER_NAME,
+                .pm     = &fec_pm_ops,
+                .of_match_table = fec_dt_ids,
++               .suppress_bind_attrs = true
+        },
+        .id_table = fec_devtype,
+        .probe  = fec_probe,
+
+Please advise.
+
+Thanks
