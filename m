@@ -2,85 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6AD16236F
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E16C162378
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:36:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbgBRJd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 04:33:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43404 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726353AbgBRJd5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 04:33:57 -0500
-Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726298AbgBRJgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 04:36:04 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20877 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726193AbgBRJgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:36:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582018562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fWR8xXNURq/A7qaaU9LreZTRwnXB/YqaO0uSA7r06h8=;
+        b=L1B3Exad8gh6wwozwgLsLQQR/qKclBD2lndALXhZZM8M3gdbfvi9fS2M0+HqpqEfXaTOp2
+        9Ao0R1bQK/bvJMtbOkOtJZJKmE8dVMOYYGDUZGB/wloCZvdDF/SXPLt8+JTBE8cGxlFByv
+        ADNKXgnwuznINf6zUVoBQCNVoYy5p88=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-255-tcuzZyX8PLy6kSMgyfVWGw-1; Tue, 18 Feb 2020 04:35:59 -0500
+X-MC-Unique: tcuzZyX8PLy6kSMgyfVWGw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E4C8A20722;
-        Tue, 18 Feb 2020 09:33:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582018436;
-        bh=K36RDAcdA5MabXG47exlTsMpZKm6WyeaQQyW6jWnhCs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L9bL+/4yW0jhUgqaTD0QPEIhUsewMfhj9+WJtdmiKXtwOTGZA92D9dL3eAjBjjgLX
-         mWc16CQ+64dnjveWLqv/sumLTuspB6LSkDBwptVYGX0JgAK3kvzKMqW4Z9vgVgdnp2
-         HmU3WkwU9nJks1a6eJD7kiLvfZfXBbzityqETXVE=
-Date:   Tue, 18 Feb 2020 17:33:51 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, wg@grandegger.com,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        Pankaj Bansal <pankaj.bansal@nxp.com>
-Subject: Re: [PATCH 0/8] can: flexcan: add CAN FD support for NXP Flexcan
-Message-ID: <20200218093346.GC6075@dragon>
-References: <24eb5c67-4692-1002-2468-4ae2e1a6b68b@pengutronix.de>
- <20200213192027.4813-1-michael@walle.cc>
- <DB7PR04MB461896B6CC3EDC7009BCD741E6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <2322fb83486c678917957d9879e27e63@walle.cc>
- <DB7PR04MB46187A6B5A8EC3A1D73D69FFE6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <bf671072ce479049eb354d44f3617383@walle.cc>
- <DB7PR04MB46183F74C137B644A229B632E6150@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <78789949f2a9dc532ec461768fbd3a60@walle.cc>
- <20200217071349.GC7973@dragon>
- <0d02f6cee0d3a680f246e8fea40f6699@walle.cc>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B35C2801E66;
+        Tue, 18 Feb 2020 09:35:57 +0000 (UTC)
+Received: from hive.redhat.com (ovpn-204-208.brq.redhat.com [10.40.204.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 747FA7FB60;
+        Tue, 18 Feb 2020 09:35:56 +0000 (UTC)
+From:   Petr Oros <poros@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        ivecera@redhat.com
+Subject: [PATCH net-next] phy: avoid unnecessary link-up delay in polling mode
+Date:   Tue, 18 Feb 2020 10:35:55 +0100
+Message-Id: <20200218093555.948922-1-poros@redhat.com>
+In-Reply-To: <20200129101308.74185-1-poros@redhat.com>
+References: <20200129101308.74185-1-poros@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d02f6cee0d3a680f246e8fea40f6699@walle.cc>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 09:48:36AM +0100, Michael Walle wrote:
-> > My opinion is that all compatibles should be defined explicitly in
-> > bindings doc.  In above example, the possible values of <processor>
-> > should be given.  This must be done anyway, as we are moving to
-> > json-schema bindings.
-> 
-> But if they are listed in the document, they also have to be in the
-> of_device_id table, correct?
+commit 93c0970493c71f ("net: phy: consider latched link-down status in
+polling mode") removed double-read of latched link-state register for
+polling mode from genphy_update_link(). This added extra ~1s delay into
+sequence link down->up.
+Following scenario:
+ - After boot link goes up
+ - phy_start() is called triggering an aneg restart, hence link goes
+   down and link-down info is latched.
+ - After aneg has finished link goes up. In phy_state_machine is checked
+   link state but it is latched "link is down". The state machine is
+   scheduled after one second and there is detected "link is up". This
+   extra delay can be avoided when we keep link-state register double rea=
+d
+   in case when link was down previously.
 
-I do not think so.  Documenting compatibles used in DTS now doesn't
-necessarily mean we need to use it in kernel driver right away.
-Bindings doc is a specification for device tree, not kernel.  With the
-compatible in DTS and bindings, kernel can start using it at any time
-when there is a need, like dealing with SoC quirks or bugs found later.
+With this solution we don't miss a link-down event in polling mode and
+link-up is faster.
 
-Shawn
+Details about this quirky behavior on Realtek phy:
+Without patch:
+T0:    aneg is started, link goes down, link-down status is latched
+T0+3s: state machine runs, up-to-date link-down is read
+T0+4s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE=3D=3D1),
+       here i read link-down (BMSR_LSTATUS=3D=3D0),
+T0+5s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE=3D=3D1),
+       up-to-date link-up is read (BMSR_LSTATUS=3D=3D1),
+       phydev->link goes up, state change PHY_NOLINK to PHY_RUNNING
 
-> Which somehow contradicts the talk Pankaj
-> mentioned [1,2]. Eg.
-> 
->   compatible = "fsl,ls1028ar1-flexcan","fsl,lx2160ar1-flexcan";
-> 
-> Doesn't make any sense, because the "fsl,ls1028ar1-flexcan" is alreay
-> in the driver and the fallback "fsl,lx2160ar1-flexcan" isn't needed.
-> 
-> OTOH the talk is already 2 to 3 years old and things might have changed
-> since then.
-> 
-> -michael
-> 
-> [1] https://elinux.org/images/0/0e/OSELAS.Presentation-ELCE2017-DT.pdf
-> [2] https://www.youtube.com/watch?v=6iguKSJJfxo
+With patch:
+T0:    aneg is started, link goes down, link-down status is latched
+T0+3s: state machine runs, up-to-date link-down is read
+T0+4s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE=3D=3D1),
+       first BMSR read: BMSR_ANEGCOMPLETE=3D=3D1 and BMSR_LSTATUS=3D=3D0,
+       second BMSR read: BMSR_ANEGCOMPLETE=3D=3D1 and BMSR_LSTATUS=3D=3D1=
+,
+       phydev->link goes up, state change PHY_NOLINK to PHY_RUNNING
+
+Signed-off-by: Petr Oros <poros@redhat.com>
+---
+ drivers/net/phy/phy-c45.c    | 5 +++--
+ drivers/net/phy/phy_device.c | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index a1caeee1223617..bceb0dcdecbd61 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -239,9 +239,10 @@ int genphy_c45_read_link(struct phy_device *phydev)
+=20
+ 		/* The link state is latched low so that momentary link
+ 		 * drops can be detected. Do not double-read the status
+-		 * in polling mode to detect such short link drops.
++		 * in polling mode to detect such short link drops except
++		 * the link was already down.
+ 		 */
+-		if (!phy_polling_mode(phydev)) {
++		if (!phy_polling_mode(phydev) || !phydev->link) {
+ 			val =3D phy_read_mmd(phydev, devad, MDIO_STAT1);
+ 			if (val < 0)
+ 				return val;
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 2a973265de8095..be0129231c2a1c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1930,9 +1930,10 @@ int genphy_update_link(struct phy_device *phydev)
+=20
+ 	/* The link state is latched low so that momentary link
+ 	 * drops can be detected. Do not double-read the status
+-	 * in polling mode to detect such short link drops.
++	 * in polling mode to detect such short link drops except
++	 * the link was already down.
+ 	 */
+-	if (!phy_polling_mode(phydev)) {
++	if (!phy_polling_mode(phydev) || !phydev->link) {
+ 		status =3D phy_read(phydev, MII_BMSR);
+ 		if (status < 0)
+ 			return status;
+--=20
+2.24.1
+
