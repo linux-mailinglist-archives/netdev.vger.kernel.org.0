@@ -2,132 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ADDE163709
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A398116370E
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbgBRXPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 18:15:33 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35249 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727635AbgBRXPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:15:33 -0500
-Received: by mail-ed1-f66.google.com with SMTP id y25so4633479edi.2;
-        Tue, 18 Feb 2020 15:15:32 -0800 (PST)
+        id S1727938AbgBRXSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 18:18:21 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33242 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727635AbgBRXSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:18:21 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 6so11722847pgk.0;
+        Tue, 18 Feb 2020 15:18:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JWWqmVpcRfqJEivRVNBcgidPXaZP+c61nTzWzkomjSY=;
-        b=dfeL8JDieKb1EJAiJ+pv09xpLoSlv1ti7VYIdShY02oVYOiFQgtiG0Rx4uBBiyZjrS
-         QmzwFCgojq0fb4j3gMCYkdaSedFjtCUI8U0OhjQ1PSBvBLikhHQdop8DMtfdHzMCVHQ9
-         SJ7qn6r3vZDOmbYsFkbH7WScznKy9qri4Vx/N06RoPr86mPOo0trji7KKh6iGp1JrBTu
-         aLbqbiEn2X9WFha7xFYRuEr9gJR/U5RselzA4MYDU0v0gvje+zyG80i2RvBCHa6WRJeS
-         jiFf6KQ7J7sQJXEHeZp6CAb80qxp1HaJgG6pPce5/aX1s0Y/nTq8uYNJibsA/LnnVtc4
-         s9WQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Wr4DuRVgR1jd4oTUUpPq0Q2YSUdbLao1hXDjFRWINh0=;
+        b=NZIOEomRHq5wTNr6cqFSxCO12drK3rGMjv66dh6YznuBgxTbw1yqHwaHw9GUufDJo+
+         OgZCEardbTeP4Z4J1oDXyOXrYNFlbvL1PNXL+Nu7bbHryI4kzzBhc7uh+1u+icxU3CKD
+         fkMhhf/Tb0Khgo453xtPmF7AMdQWpvELJL1wTHkqjJkwEOLOd4Lhr+EdGdk9ECLaW7fL
+         bbgN7hyIScKQ4vTYByVR5yOlKGE6flyml8kc6aR//ZzBZw/pXzUR09h5uNqNc82t5jjG
+         UDDPIhxgrK/IVx3gRM8RXIRp2/59VsOaZh+FpW5WT1ht5RkFuTF5VO1Wo6nremUpteNG
+         Rcuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JWWqmVpcRfqJEivRVNBcgidPXaZP+c61nTzWzkomjSY=;
-        b=lW0flRUwPnY5kjdvgPgPEqshxVymZhZ5AfKr5EhQy9/1MkxMYbjaHe0jTGkg8wA4y8
-         Cv7zsMqBTEInzjRfAYvpGkDdqboWMNiq+CcUTd84mcWyGRZfiCAs27KPvzMv0ASu1h6i
-         ya5xHmTlWUZcnuR/JV6qkJXqhwHdTNjOH7K73euhWwWarr9I+FpcSl3OnmKNzGUtzw5A
-         A4j33A4METsLkdF48b/3/PBeAt1lHAGPcUD66T+eCt5c5TTaYJtbqiYJUaquZ91ESNH6
-         ZThoeyaY7pBgQvyyQ1WBor2eaDDVGLUkkhAhMy/c0alsAzHMkigHwq541CyIPDvE32GL
-         iT1A==
-X-Gm-Message-State: APjAAAWqoA4IA3injHJXo8LmsCHbL6soZPuQXa/WmhdU2qcPweyRUF/P
-        IFshMy4oMiBvwnbQ67n9QQ0whLJJ1HjbPqAUa40=
-X-Google-Smtp-Source: APXvYqwpiOgIQO5h/xXb5VqSiH6WwB+YHjUU0Oq3uD55L/C5F0wkdPzJFx0H5q34fTJ4KuEdbA/iQm/ZlBnvvxRQZeU=
-X-Received: by 2002:a50:a864:: with SMTP id j91mr21551777edc.318.1582067731479;
- Tue, 18 Feb 2020 15:15:31 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Wr4DuRVgR1jd4oTUUpPq0Q2YSUdbLao1hXDjFRWINh0=;
+        b=DxSkhTVvdYCLF+2vWCacRj8hjkWSGZdMRIpGaJhqjIjmHYi/rYkOjPjrsaXTNPNMkZ
+         ePSfIBZ5xiyHCob/r4KeV/mJwINN7jo8q8+vhjyGuv+/Fgk650qsEhf+Doq4t3SJjcux
+         q3OfjZEmcl3RQOCmcgmE+kW9WUBR9iKohsCfqoGh2nlQHWjpncFsKzeTEgmswQgSl3bs
+         dRTs8FQDrtOE0b84UY47w2k4LXIP4pSykOBWuzyGuoABcAxhNeOx1ihOFVbp37MaC4Yj
+         5BdjdPBDz2t9GgtxO0VXRfEizuXSrJMHw4P1Jh5TqMhPLF/QQSt6xU6KrlxVoaIEpMRq
+         d4RA==
+X-Gm-Message-State: APjAAAWfhzn+DifnDltp7QWEmGHP//3kmLXrqD6hhtbC9to2h0aCjMkD
+        NhvDY9QWFEBbvQFvdaWUQlI=
+X-Google-Smtp-Source: APXvYqzRzk6xcaC+XO/KYJEeu21032vpEy76fvhAcH60V4Vx/eqYEIkQe2n87Vg7YAFFAFPYBieULA==
+X-Received: by 2002:a65:6718:: with SMTP id u24mr25535951pgf.289.1582067900759;
+        Tue, 18 Feb 2020 15:18:20 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:500::5:dd54])
+        by smtp.gmail.com with ESMTPSA id x65sm68563pfb.171.2020.02.18.15.18.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Feb 2020 15:18:19 -0800 (PST)
+Date:   Tue, 18 Feb 2020 15:18:17 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH 15/18] bpf: Sort bpf kallsyms symbols
+Message-ID: <20200218231816.own6y5ijjx25kti6@ast-mbp>
+References: <20200216193005.144157-1-jolsa@kernel.org>
+ <20200216193005.144157-16-jolsa@kernel.org>
 MIME-Version: 1.0
-References: <20200217144414.409-1-olteanv@gmail.com> <20200217144414.409-4-olteanv@gmail.com>
- <20200217152912.GE31084@lunn.ch> <CA+h21ho29TRG8JYfSaaSsoxM-mg0-yOKBNCq9wbHDHCf2pkdUg@mail.gmail.com>
- <CA+h21hp-4WWtY=-WeMgC0M6Ls7Aq6AdVv3y=8WE9z=2Ybikt7Q@mail.gmail.com>
-In-Reply-To: <CA+h21hp-4WWtY=-WeMgC0M6Ls7Aq6AdVv3y=8WE9z=2Ybikt7Q@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 19 Feb 2020 01:15:20 +0200
-Message-ID: <CA+h21hqyiMQ6rxNz+hC-L7qX0heDAjoEXr1c5TBNV97hFRAopQ@mail.gmail.com>
-Subject: Re: [PATCH devicetree 3/4] arm64: dts: fsl: ls1028a: add node for
- Felix switch
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200216193005.144157-16-jolsa@kernel.org>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sun, Feb 16, 2020 at 08:30:02PM +0100, Jiri Olsa wrote:
+> Currently we don't sort bpf_kallsyms and display symbols
+> in proc/kallsyms as they come in via __bpf_ksym_add.
+> 
+> Using the latch tree to get the next bpf_ksym object
+> and insert the new symbol ahead of it.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/core.c | 21 ++++++++++++++++++++-
+>  1 file changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 2f857bbfe05c..fa814179730c 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -651,9 +651,28 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
+>  
+>  static void __bpf_ksym_add(struct bpf_ksym *ksym)
+>  {
+> +	struct list_head *head = &bpf_kallsyms;
+> +	struct rb_node *next;
+> +
+>  	WARN_ON_ONCE(!list_empty(&ksym->lnode));
+> -	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
+>  	latch_tree_insert(&ksym->tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
+> +
+> +	/*
+> +	 * Add ksym into bpf_kallsyms in ordered position,
+> +	 * which is prepared for us by latch tree addition.
+> +	 *
+> +	 * Find out the next symbol and insert ksym right
+> +	 * ahead of it. If ksym is the last one, just tail
+> +	 * add to the bpf_kallsyms.
+> +	 */
+> +	next = rb_next(&ksym->tnode.node[0]);
+> +	if (next) {
+> +		struct bpf_ksym *ptr;
+> +
+> +		ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
+> +		head = &ptr->lnode;
+> +	}
+> +	list_add_tail_rcu(&ksym->lnode, head);
 
-On Mon, 17 Feb 2020 at 19:24, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Mon, 17 Feb 2020 at 17:33, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > Hi Andrew,
-> >
-> > On Mon, 17 Feb 2020 at 17:29, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > Hi Vladimir
-> > >
-> > > > +                                     /* Internal port with DSA tagging */
-> > > > +                                     mscc_felix_port4: port@4 {
-> > > > +                                             reg = <4>;
-> > > > +                                             phy-mode = "gmii";
-> > >
-> > > Is it really using gmii? Often in SoC connections use something else,
-> > > and phy-mode = "internal" is more appropriate.
-> > >
-> >
-> > What would be that "something else"? Given that the host port and the
-> > switch are completely different hardware IP blocks, I would assume
-> > that a parallel GMII is what's connecting them, no optimizations done.
-> > Certainly no serializer. But I don't know for sure.
-> > Does it matter, in the end?
-> >
->
-> To clarify, the reason I'm asking whether it matters is because I'd
-> have to modify PHY_INTERFACE_MODE_GMII in
-> drivers/net/dsa/ocelot/felix_vsc9959.c too, for the internal ports.
-> Then I'm not sure anymore what tree this device tree patch should go
-> in through.
->
-> > > > +                                             ethernet = <&enetc_port2>;
-> > > > +
-> > > > +                                             fixed-link {
-> > > > +                                                     speed = <2500>;
-> > > > +                                                     full-duplex;
-> > > > +                                             };
-> > >
-> > > gmii and 2500 also don't really go together.
-> >
-> > Not even if you raise the clock frequency?
-> >
-> > >
-> > >      Andrew
-> >
-> > Thanks,
-> > -Vladimir
-
-Correct me if I'm wrong, but I think that PHY_INTERFACE_MODE_INTERNAL
-is added by Florian in 2017 as a generalization of the BCM7445 DSA
-switch bindings with internal PHY ports, and later became "popular"
-with other DSA drivers (ar9331, lantiq gswip). Of those, ar9331 is
-actually using phy-mode = "gmii" for the CPU port, and phy-mode =
-"internal" for the embedded copper PHYs.
-I hate to be making this sort of non-binary decision. Is it a GMII
-interface _or_ an internal interface? Prior to 2017, this would have
-probably been a non-question. The patch series which adds it does not
-clarify "you should use this mode in situation A, and this mode in
-situation B" either.
-
-Regards,
--Vladimir
+what is the motivation for sorting? do you want perf and other user space
+to depend on it? Or purely aesthetics?
