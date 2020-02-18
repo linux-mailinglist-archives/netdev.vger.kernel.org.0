@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD03D16225E
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 09:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 902D01622C7
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 09:53:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbgBRI2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 03:28:05 -0500
-Received: from mail-pj1-f41.google.com ([209.85.216.41]:32961 "EHLO
-        mail-pj1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbgBRI2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 03:28:05 -0500
-Received: by mail-pj1-f41.google.com with SMTP id m7so472714pjs.0
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 00:28:05 -0800 (PST)
+        id S1726276AbgBRIxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 03:53:22 -0500
+Received: from mail-pl1-f180.google.com ([209.85.214.180]:33532 "EHLO
+        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726199AbgBRIxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 03:53:22 -0500
+Received: by mail-pl1-f180.google.com with SMTP id ay11so7828027plb.0
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 00:53:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to
          :user-agent;
-        bh=VVw9crMvjIEg8nFFmWLIfJc/Z/7Ms8GCU14BI146KWw=;
-        b=BoZ5Eke5L2zSRRv/hkK4hxJo0VrK1rdMcAo7N2PRA3LAo6B4UihVCkR3yF8HCLXu6l
-         xqu54bsT1YcueBZG8Pr+9savuDhYdb1aKbt1qCTh3Hk3zG2JRbVmPuB32ZoaRZNE9Vu5
-         nBAvrYrAhuKYGO2ND8eLZ60EKJgF9XfwXE4xeTBCojPgyT445I1FBgIps1sDpGrvBI0Z
-         ZgTbKRMoCqdCFwhsw0fARSKd2uTPVL6cF1+ZqQdFZJ88nFJ0GIEw2j3wRlEwUIcn30Yv
-         +VFnt+O54wjXhdHV0IGEKuJKSr3Ijjgpz6RJWZ7fd6/VLedDHaq5fliM3rGXeRM+MXYG
-         SDog==
+        bh=LfgzIrLKhdplSUv5x9z4tLvmxYpGNenEmtMwhPZbNTE=;
+        b=YgQDfd1XbfeLAkntqPIZdSFrmTw/bsvYqNJ8VHAOJe9N+avtozitaNyDLZqwzJ1LNY
+         QRiTrWEbFl7clfPY3wzer5twpfhQjNn20HI9xn2IoOz4mUmeSUSo2Gj8N6UB91MCDWci
+         j0WRjsrYb1r4hQH3y+SG3g26j35RItevbHb8ZmvCE/aezjxVYVmpPNT0+SFS6A4dWB+E
+         Ed7SEisEUL9yQUgZ2Maa/s0K1oTakugNAqUXiAbKIX0/LrcIb3mkr9lw16MtaqUm1b4K
+         Xgd1Hfaa79R+m0oSRzl7Wi5h71JJ9fznX/njGAerT2umak1WFjWaRygcgLS0rS18P8db
+         Vajg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to:user-agent;
-        bh=VVw9crMvjIEg8nFFmWLIfJc/Z/7Ms8GCU14BI146KWw=;
-        b=NW20yHrhUDle1UGb9LOqoqmcI0gl9nnh96HvjteERj+eYmpS8hnc/rknKGfZeTEKPu
-         UthtCbM7G/bnPAx3JYucmEdsaUFUHeRA3LglArPq/bLXrpAPMMSwZKjZB/lXzfrtp57o
-         dogy/K/7WVogcB7R1ko8SOV8SVZtqRteexZNXUTWFN0kJlAFde5J/nyK90j5mcGQ4EWq
-         ki9QhLCaJL+hqY+s9nJNoqadnmoNLx4FgQxZioXYVJYWRZU2y34DO2/6q1sKfpRp1XSQ
-         An09pgzfk2ObZxwGBuC5LY0Xe32CHAL0y2DakM/rOI62nh3tPVco1vNJ+P/Afw92eUOS
-         i7CQ==
-X-Gm-Message-State: APjAAAW8VI7baYvBpScROdaejrxTNrs/OQLMMScR73Sfw29NdSQzN8eR
-        v/RsMuuqvw+hbP2zy5lJ/fNqZ+gT5Ng=
-X-Google-Smtp-Source: APXvYqzPzaxnJ5x3PMtRuV7f5X1wbvdssuM1wUraLrvvBH2GFQgvUsaIkGuZ71rJzqqIMKzR1gBbXw==
-X-Received: by 2002:a17:90a:f013:: with SMTP id bt19mr1284453pjb.47.1582014484610;
-        Tue, 18 Feb 2020 00:28:04 -0800 (PST)
+        bh=LfgzIrLKhdplSUv5x9z4tLvmxYpGNenEmtMwhPZbNTE=;
+        b=ZfdwZzX51vN04pabh7EJHlO51fpmzx8CqX+Z5v6wM7VP/oLSSkBLSjDLjjfaimJo/8
+         /UAinbh7zVW+xawYhg32UT6/oV9xbqwSO36S/B4F3+dPLT89LCzNo+NsZJJYtvMwdJko
+         BOubLykIZD4xvQc70tghm9D81UaKnqDbjIZy6/ubOATuXlBmOVSjhQKxadshieUNWW/B
+         bAzSQ4oZj2BdyuoJ57DRhljMSOdFS272Ubrb5ehEnRqMfYiCCuvPdY14iBd7OTpmNKIq
+         HfUe/dh+QnzIPzTFGMBlrPclum0ggAhFOHFuPp6I70qapbt//W2a+lWvzROQOhIUdvZN
+         I5oA==
+X-Gm-Message-State: APjAAAVsCbIXlUh2TVJaf/xuE57mobR8l19Koe1XZ127M0n6tNXHlAld
+        9EI10VG/znXakGlj8iMJSXg=
+X-Google-Smtp-Source: APXvYqyukS0dlBALI+vm/u6eBsiH7hGYxRva8GO4U2rl7pFg+X55jNAtPpKPTNSoji6Cbg5yiNceyA==
+X-Received: by 2002:a17:902:504:: with SMTP id 4mr18173957plf.276.1582016000441;
+        Tue, 18 Feb 2020 00:53:20 -0800 (PST)
 Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id hg11sm1977516pjb.14.2020.02.18.00.28.01
+        by smtp.gmail.com with ESMTPSA id 13sm3096709pfi.78.2020.02.18.00.53.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 00:28:03 -0800 (PST)
-Date:   Tue, 18 Feb 2020 16:27:53 +0800
+        Tue, 18 Feb 2020 00:53:19 -0800 (PST)
+Date:   Tue, 18 Feb 2020 16:53:09 +0800
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
@@ -57,69 +57,49 @@ Cc:     Network Development <netdev@vger.kernel.org>,
         Jo-Philipp Wich <jo@mein.io>
 Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
  leak)
-Message-ID: <20200218082753.GS2159@dhcp-12-139.nay.redhat.com>
+Message-ID: <20200218085309.GT2159@dhcp-12-139.nay.redhat.com>
 References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
- <20200212082434.GM2159@dhcp-12-139.nay.redhat.com>
- <2bc4f125-db14-734d-724e-4028b863eca2@gmail.com>
- <20200212100813.GN2159@dhcp-12-139.nay.redhat.com>
- <954a388a-5a9a-1554-ddb3-133e82208a03@gmail.com>
+ <CACna6rzgH0Ltgib+mmDNLMQE5qmU2xBYUFBJDCswvyC1bnonjg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <954a388a-5a9a-1554-ddb3-133e82208a03@gmail.com>
+In-Reply-To: <CACna6rzgH0Ltgib+mmDNLMQE5qmU2xBYUFBJDCswvyC1bnonjg@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 07:55:36AM +0100, Rafał Miłecki wrote:
-> I'm sorry for a late reply, I spent that time for switching my devices
-> to some newer kernel. I wanted to make sure we are not chasing a bug
-> that's long time fixed now.
+On Tue, Feb 18, 2020 at 09:08:54AM +0100, Rafał Miłecki wrote:
 > 
-> This problem still exists in the 5.4.18.
+> Thinking about meaning of that commit ("do not remove mld souce list
+> info when set link down") made me realize one more thing.
+> 
+> My app accessing monitor mode brings it up and down repeatedly:
+> while (1) {
+>   ifconfig X up (ifr_flags |= IFF_UP | IFF_RUNNING)
+>   select(...)
+>   recv(...)
+>   ifconfig X down (ifr_flags &= ~(IFF_UP | IFF_RUNNING))
+>   sleep(...)
+> }
+> 
+> So maybe that bug running device out of memory was there since ever?
+> Maybe before 1666d49e1d41 ("mld: do not remove mld souce list info
+> when set link down") I just didn't notice it as every "ifconfig X
+> down" was flushing list. Flushing it every few seconds didn't let list
+> grow too big and eat all my memory?
 
-OK, bad news...
+Maybe. before that patch we will remove all the list when link down.
+After that we will store the list and restore it back when link up.
+> 
+> I'm going to test some old kernel now using monitor mode all time,
+> without putting its interface down. Is there some of debugging
+> mld/ipv6 kernel lists to see if there are indeed growing huge?
 
-> > 
-> > Hmm, I'm surprised that IGMP works for you, as it requires enable IPv6
-> > forwarding. Do you have a lot IPv6 multicast groups on your device?
-> 
-> The thing is I don't really use IPv6. There are some single IPv6 packets
-> in my network (e.g. MDNS packets) but nothing significant.
-> 
-> For my testing purposes I access my access points using ssh and it's the
-> only real traffic. There are no wireless devices connected to my testing
-> devices. They are just running monitor mode interfaces without any real
-> traffic.
-> 
-> > What dose `ip maddr list` show?
-> 
-> # ip maddr list
-> 1:      lo
->         inet  224.0.0.1
->         inet6 ff02::1
->         inet6 ff01::1
-> 7:      br-lan
->         link  33:33:00:00:00:01
->         link  33:33:00:00:00:02
->         link  01:00:5e:00:00:01
->         link  33:33:ff:7a:fc:80
->         link  33:33:ff:00:00:00
->         inet  224.0.0.1
->         inet6 ff02::1:ff00:0
->         inet6 ff02::1:ff7a:fc80
->         inet6 ff02::2
->         inet6 ff02::1
->         inet6 ff01::1
-
-No much ipv6 traffic, no much IPv6 multicast groups. Only occurred with
-IPv6 forwarding enabled...Any possibility(although unlikely) that there
-is a loop for ipv6 multicast traffic under br-lan?
-
-Maybe we can use perf kmem to trace kernel memory statistics.
+I will just try test with link up/down(with forwarding enabled) and see
+if I can reproduce.
 
 Thanks
 Hangbin
