@@ -2,119 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A398116370E
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9F6163711
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727938AbgBRXSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 18:18:21 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:33242 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727635AbgBRXSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:18:21 -0500
-Received: by mail-pg1-f195.google.com with SMTP id 6so11722847pgk.0;
-        Tue, 18 Feb 2020 15:18:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Wr4DuRVgR1jd4oTUUpPq0Q2YSUdbLao1hXDjFRWINh0=;
-        b=NZIOEomRHq5wTNr6cqFSxCO12drK3rGMjv66dh6YznuBgxTbw1yqHwaHw9GUufDJo+
-         OgZCEardbTeP4Z4J1oDXyOXrYNFlbvL1PNXL+Nu7bbHryI4kzzBhc7uh+1u+icxU3CKD
-         fkMhhf/Tb0Khgo453xtPmF7AMdQWpvELJL1wTHkqjJkwEOLOd4Lhr+EdGdk9ECLaW7fL
-         bbgN7hyIScKQ4vTYByVR5yOlKGE6flyml8kc6aR//ZzBZw/pXzUR09h5uNqNc82t5jjG
-         UDDPIhxgrK/IVx3gRM8RXIRp2/59VsOaZh+FpW5WT1ht5RkFuTF5VO1Wo6nremUpteNG
-         Rcuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Wr4DuRVgR1jd4oTUUpPq0Q2YSUdbLao1hXDjFRWINh0=;
-        b=DxSkhTVvdYCLF+2vWCacRj8hjkWSGZdMRIpGaJhqjIjmHYi/rYkOjPjrsaXTNPNMkZ
-         ePSfIBZ5xiyHCob/r4KeV/mJwINN7jo8q8+vhjyGuv+/Fgk650qsEhf+Doq4t3SJjcux
-         q3OfjZEmcl3RQOCmcgmE+kW9WUBR9iKohsCfqoGh2nlQHWjpncFsKzeTEgmswQgSl3bs
-         dRTs8FQDrtOE0b84UY47w2k4LXIP4pSykOBWuzyGuoABcAxhNeOx1ihOFVbp37MaC4Yj
-         5BdjdPBDz2t9GgtxO0VXRfEizuXSrJMHw4P1Jh5TqMhPLF/QQSt6xU6KrlxVoaIEpMRq
-         d4RA==
-X-Gm-Message-State: APjAAAWfhzn+DifnDltp7QWEmGHP//3kmLXrqD6hhtbC9to2h0aCjMkD
-        NhvDY9QWFEBbvQFvdaWUQlI=
-X-Google-Smtp-Source: APXvYqzRzk6xcaC+XO/KYJEeu21032vpEy76fvhAcH60V4Vx/eqYEIkQe2n87Vg7YAFFAFPYBieULA==
-X-Received: by 2002:a65:6718:: with SMTP id u24mr25535951pgf.289.1582067900759;
-        Tue, 18 Feb 2020 15:18:20 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::5:dd54])
-        by smtp.gmail.com with ESMTPSA id x65sm68563pfb.171.2020.02.18.15.18.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Feb 2020 15:18:19 -0800 (PST)
-Date:   Tue, 18 Feb 2020 15:18:17 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
+        id S1727952AbgBRXTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 18:19:47 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60420 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727862AbgBRXTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:19:47 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j4C9Q-0001k5-Vl; Wed, 19 Feb 2020 00:19:37 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j4C9Q-000D8S-Jm; Wed, 19 Feb 2020 00:19:36 +0100
+Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to mlx5
+ driver
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: Re: [PATCH 15/18] bpf: Sort bpf kallsyms symbols
-Message-ID: <20200218231816.own6y5ijjx25kti6@ast-mbp>
-References: <20200216193005.144157-1-jolsa@kernel.org>
- <20200216193005.144157-16-jolsa@kernel.org>
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com, andrew@lunn.ch,
+        brouer@redhat.com, dsahern@kernel.org, bpf@vger.kernel.org
+References: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org>
+ <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN> <87eeury1ph.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <703ce998-e454-713c-fc7a-d5f1609146d8@iogearbox.net>
+Date:   Wed, 19 Feb 2020 00:19:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200216193005.144157-16-jolsa@kernel.org>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <87eeury1ph.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.1/25727/Tue Feb 18 15:05:00 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 16, 2020 at 08:30:02PM +0100, Jiri Olsa wrote:
-> Currently we don't sort bpf_kallsyms and display symbols
-> in proc/kallsyms as they come in via __bpf_ksym_add.
-> 
-> Using the latch tree to get the next bpf_ksym object
-> and insert the new symbol ahead of it.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/bpf/core.c | 21 ++++++++++++++++++++-
->  1 file changed, 20 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 2f857bbfe05c..fa814179730c 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -651,9 +651,28 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
->  
->  static void __bpf_ksym_add(struct bpf_ksym *ksym)
->  {
-> +	struct list_head *head = &bpf_kallsyms;
-> +	struct rb_node *next;
-> +
->  	WARN_ON_ONCE(!list_empty(&ksym->lnode));
-> -	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
->  	latch_tree_insert(&ksym->tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
-> +
-> +	/*
-> +	 * Add ksym into bpf_kallsyms in ordered position,
-> +	 * which is prepared for us by latch tree addition.
-> +	 *
-> +	 * Find out the next symbol and insert ksym right
-> +	 * ahead of it. If ksym is the last one, just tail
-> +	 * add to the bpf_kallsyms.
-> +	 */
-> +	next = rb_next(&ksym->tnode.node[0]);
-> +	if (next) {
-> +		struct bpf_ksym *ptr;
-> +
-> +		ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
-> +		head = &ptr->lnode;
-> +	}
-> +	list_add_tail_rcu(&ksym->lnode, head);
+On 2/18/20 11:23 PM, Toke Høiland-Jørgensen wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+>> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote:
+>>> Introduce "rx" prefix in the name scheme for xdp counters
+>>> on rx path.
+>>> Differentiate between XDP_TX and ndo_xdp_xmit counters
+>>>
+>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>
+>> Sorry for coming in late.
+>>
+>> I thought the ability to attach a BPF program to a fexit of another BPF
+>> program will put an end to these unnecessary statistics. IOW I maintain
+>> my position that there should be no ethtool stats for XDP.
+>>
+>> As discussed before real life BPF progs will maintain their own stats
+>> at the granularity of their choosing, so we're just wasting datapath
+>> cycles.
 
-what is the motivation for sorting? do you want perf and other user space
-to depend on it? Or purely aesthetics?
++1
+
+>> The previous argument that the BPF prog stats are out of admin control
+>> is no longer true with the fexit option (IIUC how that works).
+> 
+> So you're proposing an admin that wants to keep track of XDP has to
+> (permantently?) attach an fexit program to every running XDP program and
+> use that to keep statistics? But presumably he'd first need to discover
+> that XDP is enabled; which the ethtool stats is a good hint for :)
+
+Doesn't iproute2 clearly show that already via `ip l` that XDP is attached?
