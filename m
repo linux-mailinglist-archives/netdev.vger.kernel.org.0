@@ -2,34 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F02BC161DF8
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 00:43:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAF87161E28
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 01:15:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726070AbgBQXnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 18:43:43 -0500
-Received: from mout-p-201.mailbox.org ([80.241.56.171]:15784 "EHLO
-        mout-p-201.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbgBQXnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 18:43:43 -0500
-X-Greylist: delayed 469 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Feb 2020 18:43:42 EST
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        id S1726185AbgBRAPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 19:15:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32780 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726140AbgBRAPH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Feb 2020 19:15:07 -0500
+Received: from localhost.localdomain (unknown [151.48.137.85])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 48M0jN0pm5zQj5W;
-        Tue, 18 Feb 2020 00:35:52 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id EebsR1Q1XS90; Tue, 18 Feb 2020 00:35:49 +0100 (CET)
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-To:     davem@davemloft.net, linux@rempel-privat.de
-Cc:     netdev@vger.kernel.org, jcliburn@gmail.com, chris.snook@gmail.com,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH 3/3] ag71xx: Run ag71xx_link_adjust() only when needed
-Date:   Tue, 18 Feb 2020 00:35:18 +0100
-Message-Id: <20200217233518.3159-3-hauke@hauke-m.de>
-In-Reply-To: <20200217233518.3159-1-hauke@hauke-m.de>
-References: <20200217233518.3159-1-hauke@hauke-m.de>
+        by mail.kernel.org (Postfix) with ESMTPSA id 14541207FD;
+        Tue, 18 Feb 2020 00:15:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581984906;
+        bh=wy2pRQV+bU+yOoXVAQAXXPoSzon9kgDk14ziMHLv6IE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mR+EzqiQqBhBrktMURSKmDttWLwGKALjseyBBQBm5WzDoK8PaEjq0cZSLnI4fN4as
+         qqo58tAI3NtC3CJhREMRIYcvRD/xjBiYMV5R5az1aHizAGeHsNmE9iI/qXc0qIiMKY
+         3Rmj/Fe84ABCOLg5pNTMO+v2dWPUjHrmt6NjqNms=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, andrew@lunn.ch, brouer@redhat.com,
+        dsahern@kernel.org, bpf@vger.kernel.org
+Subject: [RFC net-next] net: mvneta: align xdp stats naming scheme to mlx5 driver
+Date:   Tue, 18 Feb 2020 01:14:29 +0100
+Message-Id: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -37,72 +39,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My system printed this line every second:
-  ag71xx 19000000.eth eth0: Link is Up - 1Gbps/Full - flow control off
-The function ag71xx_phy_link_adjust() was called by the PHY layer every
-second even when nothing changed.
+Introduce "rx" prefix in the name scheme for xdp counters
+on rx path.
+Differentiate between XDP_TX and ndo_xdp_xmit counters
 
-With this patch the old status is stored and the real the
-ag71xx_link_adjust() function is only called when something really
-changed. This way the update and also this print is only done once any
-more.
-
-Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/atheros/ag71xx.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvneta.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index 7d3fec009030..12eaf6d2518d 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -307,6 +307,10 @@ struct ag71xx {
- 	u32 msg_enable;
- 	const struct ag71xx_dcfg *dcfg;
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index b7045b6a15c2..6223700dc3df 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -344,6 +344,7 @@ enum {
+ 	ETHTOOL_XDP_REDIRECT,
+ 	ETHTOOL_XDP_PASS,
+ 	ETHTOOL_XDP_DROP,
++	ETHTOOL_XDP_XMIT,
+ 	ETHTOOL_XDP_TX,
+ 	ETHTOOL_MAX_STATS,
+ };
+@@ -399,10 +400,11 @@ static const struct mvneta_statistic mvneta_statistics[] = {
+ 	{ ETHTOOL_STAT_EEE_WAKEUP, T_SW, "eee_wakeup_errors", },
+ 	{ ETHTOOL_STAT_SKB_ALLOC_ERR, T_SW, "skb_alloc_errors", },
+ 	{ ETHTOOL_STAT_REFILL_ERR, T_SW, "refill_errors", },
+-	{ ETHTOOL_XDP_REDIRECT, T_SW, "xdp_redirect", },
+-	{ ETHTOOL_XDP_PASS, T_SW, "xdp_pass", },
+-	{ ETHTOOL_XDP_DROP, T_SW, "xdp_drop", },
+-	{ ETHTOOL_XDP_TX, T_SW, "xdp_tx", },
++	{ ETHTOOL_XDP_REDIRECT, T_SW, "rx_xdp_redirect", },
++	{ ETHTOOL_XDP_PASS, T_SW, "rx_xdp_pass", },
++	{ ETHTOOL_XDP_DROP, T_SW, "rx_xdp_drop", },
++	{ ETHTOOL_XDP_TX, T_SW, "rx_xdp_tx_xmit", },
++	{ ETHTOOL_XDP_XMIT, T_SW, "tx_xdp_xmit", },
+ };
  
-+	unsigned int		link;
-+	unsigned int		speed;
-+	int			duplex;
-+
- 	/* From this point onwards we're not looking at per-packet fields. */
- 	void __iomem *mac_base;
+ struct mvneta_stats {
+@@ -414,6 +416,7 @@ struct mvneta_stats {
+ 	u64	xdp_redirect;
+ 	u64	xdp_pass;
+ 	u64	xdp_drop;
++	u64	xdp_xmit;
+ 	u64	xdp_tx;
+ };
  
-@@ -854,6 +858,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
+@@ -2050,7 +2053,10 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
+ 	u64_stats_update_begin(&stats->syncp);
+ 	stats->es.ps.tx_bytes += xdpf->len;
+ 	stats->es.ps.tx_packets++;
+-	stats->es.ps.xdp_tx++;
++	if (buf->type == MVNETA_TYPE_XDP_NDO)
++		stats->es.ps.xdp_xmit++;
++	else
++		stats->es.ps.xdp_tx++;
+ 	u64_stats_update_end(&stats->syncp);
  
- 	if (!phydev->link && update) {
- 		ag71xx_hw_stop(ag);
-+		phy_print_status(phydev);
- 		return;
+ 	mvneta_txq_inc_put(txq);
+@@ -4484,6 +4490,7 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 		u64 xdp_redirect;
+ 		u64 xdp_pass;
+ 		u64 xdp_drop;
++		u64 xdp_xmit;
+ 		u64 xdp_tx;
+ 
+ 		stats = per_cpu_ptr(pp->stats, cpu);
+@@ -4494,6 +4501,7 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 			xdp_redirect = stats->es.ps.xdp_redirect;
+ 			xdp_pass = stats->es.ps.xdp_pass;
+ 			xdp_drop = stats->es.ps.xdp_drop;
++			xdp_xmit = stats->es.ps.xdp_xmit;
+ 			xdp_tx = stats->es.ps.xdp_tx;
+ 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+ 
+@@ -4502,6 +4510,7 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
+ 		es->ps.xdp_redirect += xdp_redirect;
+ 		es->ps.xdp_pass += xdp_pass;
+ 		es->ps.xdp_drop += xdp_drop;
++		es->ps.xdp_xmit += xdp_xmit;
+ 		es->ps.xdp_tx += xdp_tx;
  	}
- 
-@@ -907,8 +912,25 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- static void ag71xx_phy_link_adjust(struct net_device *ndev)
- {
- 	struct ag71xx *ag = netdev_priv(ndev);
-+	struct phy_device *phydev = ndev->phydev;
-+	int status_change = 0;
-+
-+	if (phydev->link) {
-+		if (ag->duplex != phydev->duplex ||
-+		    ag->speed != phydev->speed) {
-+			status_change = 1;
-+		}
-+	}
-+
-+	if (phydev->link != ag->link)
-+		status_change = 1;
-+
-+	ag->link = phydev->link;
-+	ag->duplex = phydev->duplex;
-+	ag->speed = phydev->speed;
- 
--	ag71xx_link_adjust(ag, true);
-+	if (status_change)
-+		ag71xx_link_adjust(ag, true);
  }
- 
- static int ag71xx_phy_connect(struct ag71xx *ag)
+@@ -4555,6 +4564,9 @@ static void mvneta_ethtool_update_stats(struct mvneta_port *pp)
+ 			case ETHTOOL_XDP_TX:
+ 				pp->ethtool_stats[i] = stats.ps.xdp_tx;
+ 				break;
++			case ETHTOOL_XDP_XMIT:
++				pp->ethtool_stats[i] = stats.ps.xdp_xmit;
++				break;
+ 			}
+ 			break;
+ 		}
 -- 
-2.20.1
+2.24.1
 
