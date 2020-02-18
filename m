@@ -2,117 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A88E162A5A
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:25:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC41162A71
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgBRQZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 11:25:34 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:55722 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726399AbgBRQZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:25:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TuGSrvtELJKmIcTw7/lXFrOIqywCrRTKxNNZt6j2szI=; b=zIDHrQxrA7hSQMKjFT/5Wgaky
-        YJVsedvMcMrIA0Oq186C6D6WsSc6xdXZxOwNN39v6eZiw08CVhMZN5/6QACTXqSm7vg7by/N7I6Bi
-        vLhz1Nk5dweWrxImvZQiH6vUAFT7AS5gjk08k8lL/4gcDyu901t/qejvUJJNrHC/ZxY8trbhoTNi5
-        SYocZZ5ESMMe9zGRVYEjjORsEY8iopdR6/KKfN6EQsFsi3WUbQ3SImgbsCWnlF1EtSxscDVOVC3HO
-        HKCSnVq3VWfHE8kssCu2auajXwVflDXCJe+I7p86tisIojWRpOA4tWotZ8chWqDA649LJSeKPx7iu
-        IznYaGVMQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:42040)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j45gb-0008FW-QW; Tue, 18 Feb 2020 16:25:25 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j45gY-0000ZK-Ex; Tue, 18 Feb 2020 16:25:22 +0000
-Date:   Tue, 18 Feb 2020 16:25:22 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, andrew@lunn.ch,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
- feature
-Message-ID: <20200218162522.GH25745@shell.armlinux.org.uk>
-References: <20200204181319.27381-1-dmurphy@ti.com>
- <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
- <170d6518-ea82-08d3-0348-228c72425e64@ti.com>
- <7569617d-f69f-9190-1223-77d3be637753@gmail.com>
- <c7a7bd71-3a1c-1cf3-5faa-204b10ea8b78@ti.com>
- <44499cb2-ec72-75a1-195b-fbadd8463e1c@ti.com>
- <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
+        id S1726672AbgBRQ17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 11:27:59 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51830 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726422AbgBRQ17 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 11:27:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=QD9GNcHoJ03duxzSyGpPsXKk48h4VH3torud6JCFlAU=; b=ZV/p/Nsqle6IwLF7g4B1GYCr1l
+        Z8P6AiTSGBUKU2tQiOScaIGK2dkbb7qBI9M/xcWr1oRSrvKhgTvEJpcBwNaMWI1JQ/HYyqrdb6n3i
+        NuZX1gdbCWpcifCUXnKOAiwbilBjQTUVmLKacHQMzdTmbERVk+QaHgeXhhVBNaNpD2cU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j45iw-0003S4-6E; Tue, 18 Feb 2020 17:27:50 +0100
+Date:   Tue, 18 Feb 2020 17:27:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: fix duplicate vlan
+ warning
+Message-ID: <20200218162750.GR31084@lunn.ch>
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+ <E1j41KQ-0002uy-TQ@rmk-PC.armlinux.org.uk>
+ <20200218115157.GG25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200218115157.GG25745@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 12:31:52PM -0600, Dan Murphy wrote:
-> Grygorii
+On Tue, Feb 18, 2020 at 11:51:57AM +0000, Russell King - ARM Linux admin wrote:
+> On Tue, Feb 18, 2020 at 11:46:14AM +0000, Russell King wrote:
+> > When setting VLANs on DSA switches, the VLAN is added to both the port
+> > concerned as well as the CPU port by dsa_slave_vlan_add().  If multiple
+> > ports are configured with the same VLAN ID, this triggers a warning on
+> > the CPU port.
+> > 
+> > Avoid this warning for CPU ports.
+> > 
+> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > 
-> On 2/14/20 12:32 PM, Grygorii Strashko wrote:
-> > I think it's good idea to have this message as just wrong cable might be
-> > used.
-> > 
-> > But this notifier make no sense in it current form - it will produce
-> > noise in case of forced 100m/10M.
-> > 
-> > FYI. PHY sequence to update link:
-> > phy_state_machine()
-> > |-phy_check_link_status()
-> >   |-phy_link_down/up()
-> >     |- .phy_link_change()->phy_link_change()
-> >     |-adjust_link() ----> netdev callback
-> > |-phydev->drv->link_change_notify(phydev);
-> > 
-> > So, log output has to be done or in .read_status() or
-> > some info has to be saved in .read_status() and then re-used in
-> > .link_change_notify().
-> > 
-> OK I will try to find a way to give some sort of message.
+> Note that there is still something not right.  On the ZII dev rev B,
+> setting up a bridge across all the switch ports, I get:
 
-How do you know the speed that the PHY downshifted to?
+Hi Russell
 
-If the speed and duplex are available in some PHY specific status
-register, then one way you can detect downshift is to decode the
-negotiated speed/duplex from the advertisements (specifically the LPA
-read from the registers and the advertisement that we should be
-advertising - some PHYs modify their registers when downshifting) and
-check whether it matches the negotiated parameters in the PHY
-specific status register.
+FYI: You need to be a little careful with VLANs on rev B. The third
+switch does not have the PVT hardware. So VLANs are going to 'leak'
+when they cross the DSA link to that switch.
 
-Alternatively, if the PHY modifies the advertisement register on
-downshift, comparing the advertisement register with what it should
-be will tell you if downshift has occurred.
+I will look at these patches later today.
 
-Note, however, that if both ends of the link are capable of
-downshift, and they downshift at the same time, it can be difficult
-to reliably tell whether the downshift was performed by the local
-PHY or the remote PHY - even if the local PHY gives you status bits
-for downshift, you won't know if the remote end downshifted instead.
-
-It's a bit like auto MDI/MDIX - if pairswap is needed, either end
-may do it, and which end does it may change each time the link comes
-up.
-
-So, reporting downshift in the kernel log may not be all that useful,
-it may be more suited to being reported through a future ethtool
-interface just like MDI/MDIX.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+  Andrew
