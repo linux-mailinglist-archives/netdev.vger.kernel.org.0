@@ -2,143 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FBC162A41
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A88E162A5A
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgBRQT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 11:19:29 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:43288 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726422AbgBRQT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:19:28 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01IGHijZ014623;
-        Tue, 18 Feb 2020 08:19:14 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=rleMcoIwphusmxQ5DE3DZ0lYTC8HG23lw9diZbQ9Dlw=;
- b=Ak2AHltc6pgcfRhe/ZoizzjAqGrZaj19dLRShhfg4UXVFLnnBOe5MJXiSIthdfVFvHWs
- aaC/tLNov4g6AVEQg0S6NaBmd0pJvYLOFvSFm24I9PN9dX2ai44ciVRpfhOtlf6iIt1r
- 85ZNVR5JkQWuU/sohXCLGlnDCyIJNU+n9yw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2y8fdyh7gt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 18 Feb 2020 08:19:14 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 18 Feb 2020 08:19:08 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gTEiKhdEOETitSo5VWLT3dQtr/U5XHOwa8b7sfTXZX55KbBl0TosOj8/Ssxxy7CTDp/EkBUhNHK7aCB3vAl5xnQJ238PaPgiQKLoP1sEyUCeqrpQamXuQu5PeOVgf6trZSG/3D7wP8niQDmLLaN9EDbI5UFhruAFld4IAeRZeB+fdZiqq+repemA5yqVHr772dmIwoBFC0zz8F5FK/izEsh+Fbkfh/E9x1yxlEpl4Vt1uDrHOf7fBN+Q738ZcQxFdOBGU5mWoqG0DV2TIFDLIOGbcQKrpcRlmJxQqfbfGD6zOhJz41S5loUAVko0+j4I0RBeHJ/wQeMjSI/+7X1L+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rleMcoIwphusmxQ5DE3DZ0lYTC8HG23lw9diZbQ9Dlw=;
- b=mUyv62ZCtEj/guF6DQeseYgf8MmNO5omFp6+dr5qPbJWexg+oDmNVN7oc7HWJ2OK5affTdw/x42pVyigcS4tHgrev/V+8hnnsoQcGDtBGid9+j2osmsY6oT4i7DNGvNmc+AfvhjnRB8iSRsdZznB/4eNeGI7dArEf1gbOeuhYRHY4XCddltVVjNa844+9RToND9PxoSHfMiWpc3hMAlqJeOiKtdDPBKbtog6spqbRHj5gnjrsM6n+zwJ9OK3hNHyWXdlqrfITZvLt17RLcBnKiGRaHvef7JnjWqLNKduJ+Et3Lkj+gfuSR8P2hVtGlG62JekFwmnVkyOU+zdYfM30w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rleMcoIwphusmxQ5DE3DZ0lYTC8HG23lw9diZbQ9Dlw=;
- b=XMLlWudqXRQfrV3f+wrY4r4Am19WNwlNedU5QOrjBuzgNf+wchnqWm2OQVPOJUiukkzbBxPgkNFNizn/iM/QfWSqEHcALPsey1G5vdxDpXFoonLn6/FJf13D3we70IdoKZuKPTiCTFWBTBf9NrD1YQkyZpNJbTftbvnex29uBDM=
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com (20.178.231.16) by
- DM6PR15MB3990.namprd15.prod.outlook.com (20.181.4.81) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.24; Tue, 18 Feb 2020 16:19:07 +0000
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2729.032; Tue, 18 Feb 2020
- 16:19:07 +0000
-Subject: Re: [PATCH bpf] libbpf: Sanitise internal map names so they are not
- rejected by the kernel
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        <ast@fb.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20200217171701.215215-1-toke@redhat.com>
- <9ddddbd6-aca2-61ae-b864-0f12d7fd33b4@iogearbox.net>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <a0923745-ee34-3eb0-7f9b-31cec99661ec@fb.com>
-Date:   Tue, 18 Feb 2020 08:19:05 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
-In-Reply-To: <9ddddbd6-aca2-61ae-b864-0f12d7fd33b4@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MWHPR19CA0091.namprd19.prod.outlook.com
- (2603:10b6:320:1f::29) To DM6PR15MB3001.namprd15.prod.outlook.com
- (2603:10b6:5:13c::16)
+        id S1726651AbgBRQZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 11:25:34 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:55722 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbgBRQZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:25:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=TuGSrvtELJKmIcTw7/lXFrOIqywCrRTKxNNZt6j2szI=; b=zIDHrQxrA7hSQMKjFT/5Wgaky
+        YJVsedvMcMrIA0Oq186C6D6WsSc6xdXZxOwNN39v6eZiw08CVhMZN5/6QACTXqSm7vg7by/N7I6Bi
+        vLhz1Nk5dweWrxImvZQiH6vUAFT7AS5gjk08k8lL/4gcDyu901t/qejvUJJNrHC/ZxY8trbhoTNi5
+        SYocZZ5ESMMe9zGRVYEjjORsEY8iopdR6/KKfN6EQsFsi3WUbQ3SImgbsCWnlF1EtSxscDVOVC3HO
+        HKCSnVq3VWfHE8kssCu2auajXwVflDXCJe+I7p86tisIojWRpOA4tWotZ8chWqDA649LJSeKPx7iu
+        IznYaGVMQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:42040)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j45gb-0008FW-QW; Tue, 18 Feb 2020 16:25:25 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j45gY-0000ZK-Ex; Tue, 18 Feb 2020 16:25:22 +0000
+Date:   Tue, 18 Feb 2020 16:25:22 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, andrew@lunn.ch,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
+ feature
+Message-ID: <20200218162522.GH25745@shell.armlinux.org.uk>
+References: <20200204181319.27381-1-dmurphy@ti.com>
+ <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
+ <170d6518-ea82-08d3-0348-228c72425e64@ti.com>
+ <7569617d-f69f-9190-1223-77d3be637753@gmail.com>
+ <c7a7bd71-3a1c-1cf3-5faa-204b10ea8b78@ti.com>
+ <44499cb2-ec72-75a1-195b-fbadd8463e1c@ti.com>
+ <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
 MIME-Version: 1.0
-Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:500::5:fd19) by MWHPR19CA0091.namprd19.prod.outlook.com (2603:10b6:320:1f::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2729.25 via Frontend Transport; Tue, 18 Feb 2020 16:19:06 +0000
-X-Originating-IP: [2620:10d:c090:500::5:fd19]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 78aaca0b-ff30-4be2-9497-08d7b48e4776
-X-MS-TrafficTypeDiagnostic: DM6PR15MB3990:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR15MB39904F09B8ED971069328BF4D3110@DM6PR15MB3990.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-Forefront-PRVS: 031763BCAF
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(366004)(136003)(396003)(39860400002)(376002)(199004)(189003)(6636002)(86362001)(52116002)(31686004)(478600001)(53546011)(110136005)(2906002)(6506007)(66574012)(66476007)(66556008)(186003)(4326008)(31696002)(6486002)(8936002)(6512007)(81156014)(36756003)(5660300002)(8676002)(2616005)(316002)(16526019)(81166006)(66946007);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3990;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VlitK5Oj9DT2xl6eS1bmfW9oMAqUuP2ZoAmkKRi9kJe9jD+a2s5WZOSAGp/STjcXjgQ4XN2IU0LWCa3pRAoWR0dq/I9a6MXhZGc6XBLPGH9Bx2/YY1PJi/kLGRQXDkOCxQOq0L28rXp5UmBBrjCYaN633Z2ZzPKPLpprcZuCSjA1HtIxR3skBHF3TEXRsijRHmQfn6OK/+Ol3cWYTZZtCYUdr5nVPQa4aQsAoXM6mOBzYXniS+gMMZj1yPrCt8BB2/K0nu5vCbwDAGwODf00xI85K6hbbV+0PIm7+4aPypKptQzjKKOQU0oSiZUp0XXNjOCy9pA/YZCf942L7aX1ESXrj9ZBQ0FhASRc6JI487nPPfiPfIsH/CSZ88KjmY8a/Fggk0Ng3H3qwbXyzZylL7hNolFg9GnZdlbtJGidy6Y3efivCm0bv6QZ3TN/qnus
-X-MS-Exchange-AntiSpam-MessageData: QbkYPuVWcVuuE+DztuVB0UsGMvJEYZIK5bB9v1HFY4DMcyFyjkZBfkDodD2z7iEyNZTstyrII9Q11A/q7soI7hpX5S7KjCSFCczTrzRXKaagcZjaiuj2WMcSSW/S7VcQd6Efj8qBO2/jPqLXMzKGuAbt8ZKJ1l8KuXuaS8dL2L2wtPgzaznI7w+amb6ha0rS
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78aaca0b-ff30-4be2-9497-08d7b48e4776
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2020 16:19:07.4693
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sdqRTISvMGvMdzTGlj7ueYt+NzJT/9HX1D4BeL2M8bXYrxD62oB85N3fuStsfloc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3990
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-18_04:2020-02-18,2020-02-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- mlxlogscore=999 adultscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
- clxscore=1015 lowpriorityscore=0 suspectscore=0 bulkscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002180121
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/18/20 6:40 AM, Daniel Borkmann wrote:
-> On 2/17/20 6:17 PM, Toke HÃ¸iland-JÃ¸rgensen wrote:
->> The kernel only accepts map names with alphanumeric characters, 
->> underscores
->> and periods in their name. However, the auto-generated internal map names
->> used by libbpf takes their prefix from the user-supplied BPF object name,
->> which has no such restriction. This can lead to "Invalid argument" errors
->> when trying to load a BPF program using global variables.
->>
->> Fix this by sanitising the map names, replacing any non-allowed 
->> characters
->> with underscores.
->>
->> Fixes: d859900c4c56 ("bpf, libbpf: support global data/bss/rodata 
->> sections")
->> Signed-off-by: Toke HÃ¸iland-JÃ¸rgensen <toke@redhat.com>
+On Fri, Feb 14, 2020 at 12:31:52PM -0600, Dan Murphy wrote:
+> Grygorii
 > 
-> Makes sense to me, applied, thanks! I presume you had something like '-' 
-> in the
-> global var leading to rejection?
+> On 2/14/20 12:32 PM, Grygorii Strashko wrote:
+> > I think it's good idea to have this message as just wrong cable might be
+> > used.
+> > 
+> > But this notifier make no sense in it current form - it will produce
+> > noise in case of forced 100m/10M.
+> > 
+> > FYI. PHY sequence to update link:
+> > phy_state_machine()
+> > |-phy_check_link_status()
+> >   |-phy_link_down/up()
+> >     |- .phy_link_change()->phy_link_change()
+> >     |-adjust_link() ----> netdev callback
+> > |-phydev->drv->link_change_notify(phydev);
+> > 
+> > So, log output has to be done or in .read_status() or
+> > some info has to be saved in .read_status() and then re-used in
+> > .link_change_notify().
+> > 
+> OK I will try to find a way to give some sort of message.
 
-The C global variable cannot have '-'. I saw a complain in bcc mailing 
-list sometimes back like: if an object file is a-b.o, then we will 
-generate a map name like a-b.bss for the bss ELF section data. The
-map name "a-b.bss" name will be rejected by the kernel. The workaround
-is to change object file name. Not sure whether this is the only
-issue which may introduce non [a-zA-Z0-9_] or not. But this patch indeed 
-should fix the issue I just described.
+How do you know the speed that the PHY downshifted to?
+
+If the speed and duplex are available in some PHY specific status
+register, then one way you can detect downshift is to decode the
+negotiated speed/duplex from the advertisements (specifically the LPA
+read from the registers and the advertisement that we should be
+advertising - some PHYs modify their registers when downshifting) and
+check whether it matches the negotiated parameters in the PHY
+specific status register.
+
+Alternatively, if the PHY modifies the advertisement register on
+downshift, comparing the advertisement register with what it should
+be will tell you if downshift has occurred.
+
+Note, however, that if both ends of the link are capable of
+downshift, and they downshift at the same time, it can be difficult
+to reliably tell whether the downshift was performed by the local
+PHY or the remote PHY - even if the local PHY gives you status bits
+for downshift, you won't know if the remote end downshifted instead.
+
+It's a bit like auto MDI/MDIX - if pairswap is needed, either end
+may do it, and which end does it may change each time the link comes
+up.
+
+So, reporting downshift in the kernel log may not be all that useful,
+it may be more suited to being reported through a future ethtool
+interface just like MDI/MDIX.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
