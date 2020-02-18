@@ -2,143 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E38F3162EB5
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BFA162EBC
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgBRShO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 13:37:14 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:44578 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726482AbgBRShN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:37:13 -0500
-Received: by mail-io1-f68.google.com with SMTP id z16so23396269iod.11;
-        Tue, 18 Feb 2020 10:37:13 -0800 (PST)
+        id S1726352AbgBRSiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 13:38:54 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:53256 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726225AbgBRSiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:38:54 -0500
+Received: by mail-pj1-f67.google.com with SMTP id n96so1406657pjc.3;
+        Tue, 18 Feb 2020 10:38:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6LA/EHc+e6t+L6IRcGNPtyhrDj7kNqfD9AG7NcrsSIY=;
-        b=ekctg0PMKqPatEN0YWNxfW/TVojwFT/Xw7GIftfux3NatRBdzA6JL2YNSwG79V8vKD
-         UFw11psOsaLwBmDpMbkxywHStdyI6bR827wD7sVoCDbHc2V+SH8nTqn8u2rBcBRprmPH
-         SU9n42TIwAc97+EMrUvqUmOvl4QbE9a2vCOc83T/EYnkN0XFJv9NzBDW+aeytcRtI3mz
-         hB2rrPEHrade7jwj811BcUiQzn9Vdu3yhEZ1T5ecD6B8T4uRTty2cgqbYL5he+o6jy+O
-         GYHxfbqWVzrlQSUUJZNR8KzNeBkY5E3BcTIjcnrcfhhJerkmN68i8YJ32/DwSAh7nAGh
-         Vl3A==
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ge6QbXPJfidzvxb+AJMv70bE8ndG+87hnIvCcboqxj4=;
+        b=rnLp/vTDGXq8W9evlz2QfyuWiVtf5zPntnRq6MfVpAHMA7vxUxWjcBX++7ipGkr7qP
+         7exnPE5Wem3IELjPj9FCpfM4HNOC1wh159D2l6/QX1tLGSwJeN4prTj7zua2d9PEvych
+         //jqtkIEqozdBBHSbfnsaQZ7rHWD4SwRl8arOsXRgNhjCExwjMPnqU1bF3XrcxKRBYxy
+         UdC4DO8AMJ3Gd+xwVVfxafuR+qoZPlZIMm0sSXlzWZ3YIN+BCAd0bVv6MXBqIPjbGF07
+         AEjD+Ujq5Hx8lkRcARHbZ3VRgQNR3UjbQwZI26Hulw9jnh//ksQoQ8OjsP9+pwnQRL7u
+         1UBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6LA/EHc+e6t+L6IRcGNPtyhrDj7kNqfD9AG7NcrsSIY=;
-        b=GJCj/dxXhXtrZ/nWwmsscLqWEwpR5akvn/wJAqTBewblUoZ9lcr2ruQ9+OhemgdtAj
-         Hge79t1Ujc5SRLmfdeHGeRkQnZlBjwP5J4CxGJBtpNOyCuYdUebi4NbdJHgf2mHuG+4g
-         WBJ4hpnBU6VTj3+UrRq8KhUg49pDDgXAl+qe2Rjyi5kXlSIgOvIXltoQBz2rsXIW81mq
-         OAqvN7DGPHIYJFpO7SjTTh3/KV9IQnbCH+taRjPfG8FYd9FS3/Aav+xOwPYBRq7Y/6vZ
-         TYneyg8wQxuwCcspPGDuFX2W7N9OiwOeDpnKNa+v2km6/ttbLxZTCG1sotKW9liWGu2M
-         RE9g==
-X-Gm-Message-State: APjAAAX2ySILkV2s0ooxP3PvuBfM6sEwx8VXHzRKbGzrC4pcvfmbZmSj
-        4hskRtrcrOAzCzTKpTxW12MnjsBSE2pkLO0SsCI=
-X-Google-Smtp-Source: APXvYqwhyw0esPb3ZI68eB4xydSJJbHEThpDI7EWoOn2jZ3Agi54dpmtxRpKq28iacd4HYAP0sYnlF6/X5wTe00bIIg=
-X-Received: by 2002:a6b:6205:: with SMTP id f5mr17136935iog.42.1582051032503;
- Tue, 18 Feb 2020 10:37:12 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ge6QbXPJfidzvxb+AJMv70bE8ndG+87hnIvCcboqxj4=;
+        b=D7WJQ/zS3MVbuAMeR79NrNnqMek162sQprL2B7roDJnvwkbJPVXKl8QW6aOa7G7nAr
+         23/ENf+IF0/oDqOmBjxmrRAvYunnjlj0540Y+Q94TYhEYKTKx+Jj8O27G856qewpXDl9
+         IQAHcluPAb5yDNPvwtVxVn75mPfzQclu89WGSdAdlQ3P1qKZQsDqNQ8DTxyLRmTYBPmv
+         cxK6MMRYog2NxxuPEwqfgTqpS/L3VGjEvIAt2we+3sV2gvDTMDVQMAS00z5HBy2ujwYT
+         YiiiiWs/dvS+QvGM6SJfPmiB4UgdxRlNjT5bJoAvGGZXFWTzV4xTFCyE3VDsbEtEF6bZ
+         4PuQ==
+X-Gm-Message-State: APjAAAUggOO28FVmd59EskXSBNX9cSEePNTAOUfWDviWBmC0PjeJeY8C
+        y8eBDuB+2RQErxRu240okIwC/W/l
+X-Google-Smtp-Source: APXvYqzRmIS0mNMfU62CSC7A6WOazNqix669Y5xR4UnDOi/8dhi5BIeLmKxaC0owxXMpTKHupEYsZg==
+X-Received: by 2002:a17:902:aa01:: with SMTP id be1mr21074798plb.293.1582051133168;
+        Tue, 18 Feb 2020 10:38:53 -0800 (PST)
+Received: from [10.67.49.41] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j125sm4900354pfg.160.2020.02.18.10.38.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Feb 2020 10:38:52 -0800 (PST)
+Subject: Re: [PATCH] net: phy: broadcom: Fix a typo ("firsly")
+To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+References: <20200218154701.1639-1-j.neuschaefer@gmx.net>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <ac8b50f7-09f9-d103-823f-db0a1b209d1e@gmail.com>
+Date:   Tue, 18 Feb 2020 10:38:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <76cd6cfc-f4f3-ece7-203a-0266b7f02a12@gmail.com> <02ea88e7-1a79-f779-d58c-bb1dced0b3b4@gmail.com>
-In-Reply-To: <02ea88e7-1a79-f779-d58c-bb1dced0b3b4@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 18 Feb 2020 10:37:01 -0800
-Message-ID: <CAKgT0UfaBpLxWQZO55-KE8QKJD9XgC2SCPAtzo=PA_MAwRxtuw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] r8169: use new helper tcp_v6_gso_csum_prep
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Rasesh Mody <rmody@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Parvi Kaustubhi <pkaustub@cisco.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Guo-Fu Tseng <cooldavid@cooldavid.org>,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Timur Tabi <timur@kernel.org>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Ronak Doshi <doshir@vmware.com>,
-        "VMware, Inc." <pv-drivers@vmware.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        linux-hyperv@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200218154701.1639-1-j.neuschaefer@gmx.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 1:42 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> Simplify the code by using new helper tcp_v6_gso_csum_prep.
->
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 26 ++---------------------
->  1 file changed, 2 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 5a9143b50..75ba10069 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -4108,29 +4108,6 @@ static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp, struct sk_buff *skb)
->         return skb->len < ETH_ZLEN && tp->mac_version == RTL_GIGA_MAC_VER_34;
->  }
->
-> -/* msdn_giant_send_check()
-> - * According to the document of microsoft, the TCP Pseudo Header excludes the
-> - * packet length for IPv6 TCP large packets.
-> - */
-> -static int msdn_giant_send_check(struct sk_buff *skb)
-> -{
-> -       const struct ipv6hdr *ipv6h;
-> -       struct tcphdr *th;
-> -       int ret;
-> -
-> -       ret = skb_cow_head(skb, 0);
-> -       if (ret)
-> -               return ret;
-> -
-> -       ipv6h = ipv6_hdr(skb);
-> -       th = tcp_hdr(skb);
-> -
-> -       th->check = 0;
-> -       th->check = ~tcp_v6_check(0, &ipv6h->saddr, &ipv6h->daddr, 0);
-> -
-> -       return ret;
-> -}
-> -
->  static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
->  {
->         u32 mss = skb_shinfo(skb)->gso_size;
-> @@ -4163,9 +4140,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
->                         break;
->
->                 case htons(ETH_P_IPV6):
-> -                       if (msdn_giant_send_check(skb))
-> +                       if (skb_cow_head(skb, 0))
->                                 return false;
->
-> +                       tcp_v6_gso_csum_prep(skb, false);
->                         opts[0] |= TD1_GTSENV6;
->                         break;
->
+On 2/18/20 7:47 AM, Jonathan Neuschäfer wrote:
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-This change looks more or less identical to the one you made in
-"drivers/net/usb/r8152.c" for patch 3. If you have to resubmit it
-might make sense to pull that change out and include it here since
-they are both essentially the same change.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
