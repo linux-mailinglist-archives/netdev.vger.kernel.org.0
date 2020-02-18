@@ -2,125 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 718D6162ADD
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF736162ADE
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:42:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgBRQlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 11:41:40 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:48994 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726360AbgBRQlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:41:40 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01IGfUpC058325;
-        Tue, 18 Feb 2020 10:41:30 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1582044090;
-        bh=XqWypZvdvdNi2Z9BIjBjeP9SnJYbpRPnSzXd5amFc1o=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=cwwABiAqXxWjh0WopAYPCNW5gaFz3PXo1luZlIlzIHrFfoB8O/GKD23w/fSmuAvEV
-         /LJIxncHZMhSTC6YuLtnRdiJN/lN6Pbf8Ih/TOQNxsrFC8txi232/FQ99XysANOiDF
-         tR5bKO02xfH8iimZoTFqYaBs7StSx//eqbMAAfFg=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01IGfUSw128832;
-        Tue, 18 Feb 2020 10:41:30 -0600
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 18
- Feb 2020 10:41:30 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 18 Feb 2020 10:41:30 -0600
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01IGfUhJ082164;
-        Tue, 18 Feb 2020 10:41:30 -0600
-Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
- feature
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200204181319.27381-1-dmurphy@ti.com>
- <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
- <170d6518-ea82-08d3-0348-228c72425e64@ti.com>
- <7569617d-f69f-9190-1223-77d3be637753@gmail.com>
- <c7a7bd71-3a1c-1cf3-5faa-204b10ea8b78@ti.com>
- <44499cb2-ec72-75a1-195b-fbadd8463e1c@ti.com>
- <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
- <20200218162522.GH25745@shell.armlinux.org.uk>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <1346e6b0-1d20-593f-d994-37de87ede891@ti.com>
-Date:   Tue, 18 Feb 2020 10:36:47 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726700AbgBRQmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 11:42:06 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48459 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726360AbgBRQmG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:42:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582044125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Da0a2vMsz34AthRKxQAElJS/XJmZChgUuBhVkkThmfM=;
+        b=IQ3F72SgixdQZaAfI4LvEe36fXHlNkR3uULn7j7Omssi0XAEnhzpAm4IGU3KopXyHRNxN6
+        4ysJ2+st4scmlvATuVI8xxMDWclFaeldtn7ah8Air1SqeErKhkFv9Kluf3lS6lSgsU84Mk
+        mnVNJTvGPtdlXkyL4OwxCgOEb9dc0wA=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-Ng2E6Gp9MB24jKmzLMF9WQ-1; Tue, 18 Feb 2020 11:42:03 -0500
+X-MC-Unique: Ng2E6Gp9MB24jKmzLMF9WQ-1
+Received: by mail-lj1-f198.google.com with SMTP id b15so7323800ljp.7
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 08:42:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Da0a2vMsz34AthRKxQAElJS/XJmZChgUuBhVkkThmfM=;
+        b=UgZ6p3o9MV+rrsQAXWq03oQOaNgGXeKN+9+QKRoCarSFQYealXltF0jB7CPAlXg4aJ
+         QHt1ex28EDV70CzAJmqaZZjv1SkkR/yx41J8Z5tYXkdPfGHmIivFH44IsXx3SlAMQO1M
+         dM8qfkAvd4/CBPTuEFqztcnc44PzQImir9z36RoYJ4NKumxwtbBdI7D7UzEEVYtMx2E+
+         JR4CO+y5U1QNHx4nIo55Ze/OyzOyKss5OFjhXYftkTZNNcuMCbnoLgSS3o1T81XKP3e6
+         /IgpItcYn+E+Znlw2qkwJkyzKQcyTy137qay5W5MPAntDsorilHvUvtW80bF6Xkqy49x
+         EItQ==
+X-Gm-Message-State: APjAAAV3hMmY9Pep1/yOYU30Ak6DTzgoQN+2Pv2B/CHPl6OksLfHFfsM
+        oA/We9X+FXCxk9hyDs/JpZ7V9+/f8FzZnRJekxQartNoPkbq+iix17/pRLo7owZHcNsBDUDNzNa
+        S6rSJXNNUYcgwUnKG
+X-Received: by 2002:a2e:761a:: with SMTP id r26mr13717318ljc.135.1582044122172;
+        Tue, 18 Feb 2020 08:42:02 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx0fuWRuZpOiL5TQahKWr/7iSFU4gA7j8vSPrhDev9my/sJmZkObcwb4DCUACw44gNhVDzNIQ==
+X-Received: by 2002:a2e:761a:: with SMTP id r26mr13717304ljc.135.1582044121946;
+        Tue, 18 Feb 2020 08:42:01 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id l22sm2841469ljb.2.2020.02.18.08.42.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 08:42:01 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3C9FC180365; Tue, 18 Feb 2020 17:42:00 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Yonghong Song <yhs@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
+        ast@fb.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf] libbpf: Sanitise internal map names so they are not rejected by the kernel
+In-Reply-To: <a0923745-ee34-3eb0-7f9b-31cec99661ec@fb.com>
+References: <20200217171701.215215-1-toke@redhat.com> <9ddddbd6-aca2-61ae-b864-0f12d7fd33b4@iogearbox.net> <a0923745-ee34-3eb0-7f9b-31cec99661ec@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 18 Feb 2020 17:42:00 +0100
+Message-ID: <87sgj7yhif.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200218162522.GH25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Russell
+Yonghong Song <yhs@fb.com> writes:
 
-On 2/18/20 10:25 AM, Russell King - ARM Linux admin wrote:
-> On Fri, Feb 14, 2020 at 12:31:52PM -0600, Dan Murphy wrote:
->> Grygorii
->>
->> On 2/14/20 12:32 PM, Grygorii Strashko wrote:
->>> I think it's good idea to have this message as just wrong cable might be
->>> used.
+> On 2/18/20 6:40 AM, Daniel Borkmann wrote:
+>> On 2/17/20 6:17 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>> The kernel only accepts map names with alphanumeric characters,=20
+>>> underscores
+>>> and periods in their name. However, the auto-generated internal map nam=
+es
+>>> used by libbpf takes their prefix from the user-supplied BPF object nam=
+e,
+>>> which has no such restriction. This can lead to "Invalid argument" erro=
+rs
+>>> when trying to load a BPF program using global variables.
 >>>
->>> But this notifier make no sense in it current form - it will produce
->>> noise in case of forced 100m/10M.
+>>> Fix this by sanitising the map names, replacing any non-allowed=20
+>>> characters
+>>> with underscores.
 >>>
->>> FYI. PHY sequence to update link:
->>> phy_state_machine()
->>> |-phy_check_link_status()
->>>    |-phy_link_down/up()
->>>      |- .phy_link_change()->phy_link_change()
->>>      |-adjust_link() ----> netdev callback
->>> |-phydev->drv->link_change_notify(phydev);
->>>
->>> So, log output has to be done or in .read_status() or
->>> some info has to be saved in .read_status() and then re-used in
->>> .link_change_notify().
->>>
->> OK I will try to find a way to give some sort of message.
-> How do you know the speed that the PHY downshifted to?
-
-The DP83867 has a register PHYSTS where BIT 15:14 indicate the speed 
-that the PHY negotiated.
-
-In the same register BIT 13 indicates the duplex mode.
-
-> If the speed and duplex are available in some PHY specific status
-> register, then one way you can detect downshift is to decode the
-> negotiated speed/duplex from the advertisements (specifically the LPA
-> read from the registers and the advertisement that we should be
-> advertising - some PHYs modify their registers when downshifting) and
-> check whether it matches the negotiated parameters in the PHY
-> specific status register.
+>>> Fixes: d859900c4c56 ("bpf, libbpf: support global data/bss/rodata=20
+>>> sections")
+>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>=20
+>> Makes sense to me, applied, thanks! I presume you had something like '-'=
+=20
+>> in the
+>> global var leading to rejection?
 >
-> Alternatively, if the PHY modifies the advertisement register on
-> downshift, comparing the advertisement register with what it should
-> be will tell you if downshift has occurred.
+> The C global variable cannot have '-'. I saw a complain in bcc mailing=20
+> list sometimes back like: if an object file is a-b.o, then we will=20
+> generate a map name like a-b.bss for the bss ELF section data. The
+> map name "a-b.bss" name will be rejected by the kernel. The workaround
+> is to change object file name. Not sure whether this is the only
+> issue which may introduce non [a-zA-Z0-9_] or not. But this patch indeed=
+=20
+> should fix the issue I just described.
 
-The ISR register BIT 5 indicates if a downshift occurred or not. So we 
-can indicate that the PHY downshifted but there is no cause in the 
-registers bit field.  My concern for this bit though is the register is 
-clear on read so all other interrupts are lost if we only read to check 
-downshift.  And the link_change_notifier is called before the interrupt 
-ACK call back.  We could call the interrupt function and get the 
-downshift status but again it will clear the interrupt register and any 
-other statuses may be lost.
+Yes, this was exactly my problem; my object file is called
+'xdp-dispatcher.o'. Fun error to track down :P
 
-Dan
+Why doesn't the kernel allow dashes in the name anyway?
 
+-Toke
 
