@@ -2,354 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B98162572
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 12:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5483D16258E
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 12:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgBRLXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 06:23:20 -0500
-Received: from mga17.intel.com ([192.55.52.151]:57567 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726327AbgBRLXU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 06:23:20 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Feb 2020 03:23:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,456,1574150400"; 
-   d="gz'50?scan'50,208,50";a="268723537"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Feb 2020 03:23:12 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1j40y7-000GJ4-Uu; Tue, 18 Feb 2020 19:23:11 +0800
-Date:   Tue, 18 Feb 2020 19:22:59 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, lorenzo@kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next] net: page_pool: API cleanup and comments
-Message-ID: <202002181917.X25VTBTn%lkp@intel.com>
-References: <20200216094056.8078-1-ilias.apalodimas@linaro.org>
+        id S1726415AbgBRLcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 06:32:19 -0500
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:34716 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgBRLcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 06:32:19 -0500
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: XdQVMSiLAvtdWjTpV4I1RAoN39BlxpCNoQNtQBktHcxJuAWLabQRxYFYdcSTiVywLSeV/uLJco
+ Aw25TRvbOBDzwGMB2nOpp75g6gfYyfaCa2/al9mSPDeZLJT5YCzb3pya13/U6OG1vUN9JnChDl
+ zcuEhJ0Pt7emosqYzyOHyT4p3FyUn7h1mOycRy/bXYEDT2fDG84DOPPcYw3gx3BnHT8Xny7vr4
+ yoxWHd3sgkC5HRYSv4wmqSZV1tPPOw0Un10kYHMQ3YfOsKL89fQWl2WsE+U9yCn2xdE77Vh8gF
+ cPk=
+X-IronPort-AV: E=Sophos;i="5.70,456,1574146800"; 
+   d="scan'208";a="68891879"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2020 04:32:17 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 18 Feb 2020 04:32:01 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 18 Feb 2020 04:31:55 -0700
+Date:   Tue, 18 Feb 2020 12:31:59 +0100
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <davem@davemloft.net>, <horatiu.vultur@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <joergen.andreasen@microchip.com>, <claudiu.manoil@nxp.com>,
+        <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
+ to CPU in standalone mode
+Message-ID: <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
+References: <20200217150058.5586-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="Dxnq1zWXvFF0Q93v"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20200216094056.8078-1-ilias.apalodimas@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200217150058.5586-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 17.02.2020 17:00, Vladimir Oltean wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+>The Ocelot switches have what is, in my opinion, a design flaw: their
+>DSA header is in front of the Ethernet header, which means that they
+>subvert the DSA master's RX filter, which for all practical purposes,
+>either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
+>needs to be used for extraction, which makes the switch add a fake DMAC
+>of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
+>
+>The issue with this design, of course, is that the CPU will be spammed
+>with frames that it doesn't want to respond to, and there isn't any
+>hardware offload in place by default to drop them.
+In the case of Ocelot, the NPI port is expected to be connected back to
+back to the CPU, meaning that it should not matter what DMAC is set.
 
---Dxnq1zWXvFF0Q93v
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+It was also my understanding that this is how you have connected this.
 
-Hi Ilias,
+I'm not able to see why this would cause spamming.
 
-I love your patch! Yet something to improve:
+>What is being done in the VSC7514 Ocelot driver is a process of
+>selective whitelisting. The "MAC address" of each Ocelot switch net
+>device, with all VLANs installed on that port, is being added as a FDB
+>entry towards PGID_CPU.
+>
+>PGID_CPU is is a multicast set containing only BIT(cpu). I don't know
+>why it was chosen to be a multicast PGID (59) and not simply the unicast
+>one of this port, but it doesn't matter. The point is that the the CPU
+>port is special, and frames are "copied" to the CPU, disregarding the
+>source masks (third PGID lookup), if BIT(cpu) is found to be set in the
+>destination masks (first PGID lookup).
+>
+>Frames that match the FDB will go to PGID_CPU by virtue of the DEST_IDX
+>from the respective MAC table entry, and frames that don't will go to
+>PGID_UC or PGID_MC, by virtue of the FLD_UNICAST, FLD_BROADCAST etc
+>settings for flooding. And that is where the distinction is made:
+>flooded frames will be subject to the third PGID lookup, while frames
+>that are whitelisted to the PGID_CPU by the MAC table aren't.
+>
+>So we can use this mechanism to simulate an RX filter, given that we are
+>subverting the DSA master's implicit one, as mentioned in the first
+>paragraph. But this has some limitations:
+>
+>- In Ocelot each net device has its own MAC address. When simulating
+>  this with MAC table entries, it will practically result in having N
+>  MAC addresses for each of the N front-panel ports (because FDB entries
+>  are not per source port). A bit strange, I think.
+>
+>- In DSA we don't have the infrastructure in place to support this
+>  whitelisting mechanism. Calling .port_fdb_add on the CPU port for each
+>  slave net device dev_addr isn't, in itself, hard. The problem is with
+>  the VLANs that this port is part of. We would need to keep a duplicate
+>  list of the VLANs from the bridge, plus the ones added from 8021q, for
+>  each port. And we would need reference counting on each MAC address,
+>  such that when a front-panel port changes its MAC address and we need
+>  to delete the old FDB entry, we don't actually delete it if the other
+>  front-panel ports are still using it. Not to mention that this FDB
+>  entry would have to be added on the whole net of upstream DSA switches.
+>
+>- Cascading a different DSA switch that has tags before the Ethernet
+>  header would not possibly work if we rely on the whitelisting
+>  mechanism exclusively.
+>
+>So... it's complicated. What this patch does is to simply allow frames
+>to be flooded to the CPU, which is anyway what the Ocelot driver is
+>doing after removing the bridge from the net devices, see this snippet
+>from ocelot_bridge_stp_state_set:
+>
+>    /* Apply FWD mask. The loop is needed to add/remove the current port as
+>     * a source for the other ports.
+>     */
+>    for (p = 0; p < ocelot->num_phys_ports; p++) {
+>            if (p == ocelot->cpu || (ocelot->bridge_fwd_mask & BIT(p))) {
+>                    (...)
+>            } else {
+>                    /* Only the CPU port, this is compatible with link
+>                     * aggregation.
+>                     */
+>                    ocelot_write_rix(ocelot,
+>                                     BIT(ocelot->cpu),
+>                                     ANA_PGID_PGID, PGID_SRC + p);
+>            }
+>
+>Otherwise said, the ocelot driver itself is already not self-coherent,
+>since immediately after probe time, and immediately after removal from a
+>bridge, it behaves in different ways, although the front panel ports are
+>standalone in both cases.
+Maybe you found a bug, maybe you have different expectations.
 
-[auto build test ERROR on v5.6-rc1]
-[also build test ERROR on next-20200217]
-[cannot apply to net-next/master net/master linus/master ipvs/master v5.6-rc2]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+The idea is that after probe time all the ports must behave as NIC
+devices. No forwarding are being done, and all traffic is copied to the
+CPU.
 
-url:    https://github.com/0day-ci/linux/commits/Ilias-Apalodimas/net-page_pool-API-cleanup-and-comments/20200218-163634
-base:    bb6d3fb354c5ee8d6bde2d576eb7220ea09862b9
-config: alpha-defconfig (attached as .config)
-compiler: alpha-linux-gcc (GCC) 7.5.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        GCC_VERSION=7.5.0 make.cross ARCH=alpha 
+When a port is added to the bridge, the given ports-bit must be set in
+the PGID_SRC.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+As I read the code, this seems to be done right. If you believe you have
+found a bug regarding this then please clarify this a bit.
 
-All errors (new ones prefixed by >>):
+>While standalone traffic _does_ work for the Felix DSA wrapper after
+>enslaving and removing the ports from a bridge, this patch makes
+>standalone traffic work at probe time too, with the caveat that even
+>irrelevant frames will get processed by software, making it more
+>susceptible to potential denial of service.
+>
+>Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>---
+> drivers/net/ethernet/mscc/ocelot.c | 12 ++++++++++++
+> 1 file changed, 12 insertions(+)
+>
+>diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+>index 86d543ab1ab9..94d39ccea017 100644
+>--- a/drivers/net/ethernet/mscc/ocelot.c
+>+++ b/drivers/net/ethernet/mscc/ocelot.c
+>@@ -2297,6 +2297,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
+>                         enum ocelot_tag_prefix injection,
+>                         enum ocelot_tag_prefix extraction)
+> {
+>+       int port;
+>+
+>+       for (port = 0; port < ocelot->num_phys_ports; port++) {
+>+               /* Disable old CPU port and enable new one */
+>+               ocelot_rmw_rix(ocelot, 0, BIT(ocelot->cpu),
+>+                              ANA_PGID_PGID, PGID_SRC + port);
+I do not understand why you have an "old" CPU. The ocelot->cpu field is
+not initialized at this point (at least not in case of Ocelot).
 
-   net/core/xdp.o: In function `__xdp_release_frame':
->> (.text+0x694): undefined reference to `page_pool_release_page'
-   (.text+0x698): undefined reference to `page_pool_release_page'
+Are you trying to move the NPI port?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>+               if (port == cpu)
+>+                       continue;
+>+               ocelot_rmw_rix(ocelot, BIT(cpu), BIT(cpu),
+>+                              ANA_PGID_PGID, PGID_SRC + port);
+So you want all ports to be able to forward traffic to your CPU port,
+regardless of if these ports are member of a bridge...
 
---Dxnq1zWXvFF0Q93v
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+I have read through this several times, and I'm still not convinced I
+understood it.
 
-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
-AAA=
+Can you please provide a specific example of how things are being
+forwarded (wrongly), and describe how you would like them to be
+forwarded.
 
---Dxnq1zWXvFF0Q93v--
+/Allan
+
