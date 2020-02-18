@@ -2,46 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 264CD16333C
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:42:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA417163343
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgBRUl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 15:41:58 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:36978 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgBRUl6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:41:58 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A4B9312357EB3;
-        Tue, 18 Feb 2020 12:41:57 -0800 (PST)
-Date:   Tue, 18 Feb 2020 12:41:57 -0800 (PST)
-Message-Id: <20200218.124157.111814567105514802.davem@davemloft.net>
-To:     ecree@solarflare.com
-Cc:     linux-net-drivers@solarflare.com, netdev@vger.kernel.org,
-        Jason@zx2c4.com
-Subject: Re: [PATCH net-next] sfc: elide assignment of skb
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <85e28e89-0488-c7e2-8ea4-3feaeada22a4@solarflare.com>
-References: <85e28e89-0488-c7e2-8ea4-3feaeada22a4@solarflare.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Feb 2020 12:41:57 -0800 (PST)
+        id S1727161AbgBRUm7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Feb 2020 15:42:59 -0500
+Received: from mga14.intel.com ([192.55.52.115]:47887 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726283AbgBRUm6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 15:42:58 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Feb 2020 12:42:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,457,1574150400"; 
+   d="scan'208";a="382577403"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+  by orsmga004.jf.intel.com with ESMTP; 18 Feb 2020 12:42:57 -0800
+Received: from fmsmsx102.amr.corp.intel.com (10.18.124.200) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 18 Feb 2020 12:42:54 -0800
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.69]) by
+ FMSMSX102.amr.corp.intel.com ([169.254.10.49]) with mapi id 14.03.0439.000;
+ Tue, 18 Feb 2020 12:42:53 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Parav Pandit <parav@mellanox.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>
+Subject: RE: [RFC PATCH v4 10/25] RDMA/irdma: Add driver framework
+ definitions
+Thread-Topic: [RFC PATCH v4 10/25] RDMA/irdma: Add driver framework
+ definitions
+Thread-Index: AQHV4dioDC3nzfOBDEenlR28w/w9U6gbyl6AgAV2V/A=
+Date:   Tue, 18 Feb 2020 20:42:53 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7C60C94AF@fmsmsx124.amr.corp.intel.com>
+References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+ <20200212191424.1715577-11-jeffrey.t.kirsher@intel.com>
+ <6f01d517-3196-1183-112e-8151b821bd72@mellanox.com>
+In-Reply-To: <6f01d517-3196-1183-112e-8151b821bd72@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYTZhMGJlNTItN2U2ZC00NGFmLTlhMWYtNzg1NTc1MGEwMzAxIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoic3hSREtWRlZselwvSWNyQUk0Zk1OZHVueUUxU0FEbWJ2aVwvRjdQQUlXaXRXSVBJcUN2VmpyMExqV3Z6dEMxNTNVIn0=
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree@solarflare.com>
-Date: Tue, 18 Feb 2020 17:34:00 +0000
-
-> Instead of assigning skb = segments before the loop, just pass
->  segments directly as the first argument to skb_list_walk_safe().
+> Subject: Re: [RFC PATCH v4 10/25] RDMA/irdma: Add driver framework
+> definitions
 > 
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
 
-Applied.
+[..]
+
+> > +static int irdma_devlink_reload_up(struct devlink *devlink,
+> > +				   struct netlink_ext_ack *extack) {
+> > +	struct irdma_dl_priv *priv = devlink_priv(devlink);
+> > +	union devlink_param_value saved_value;
+> > +	const struct virtbus_dev_id *id = priv->vdev->matched_element;
+> 
+> Like irdma_probe(), struct iidc_virtbus_object *vo is accesible for the given priv.
+> Please use struct iidc_virtbus_object for any sharing between two drivers.
+> matched_element modification inside the virtbus match() function and accessing
+> pointer to some driver data between two driver through this matched_element is
+> not appropriate.
+
+We can possibly avoid matched_element and driver data look up here.
+But fundamentally, at probe time (see irdma_gen_probe) the irdma driver needs
+to know which generation type of vdev we bound to. i.e. i40e or ice ? since we support both.
+And based on it, extract the driver specific virtbus device object, i.e i40e_virtbus_device
+vs iidc_virtbus_object and init that device.
+
+Accessing driver_data off the vdev matched entry in irdma_virtbus_id_table is how
+we know this generation info and make the decision.
+
+This is very similar to what platform_get_device_id does for platform drivers.
+https://elixir.bootlin.com/linux/v5.6-rc2/source/drivers/clk/clk-s2mps11.c
+
+Shiraz
+
+
+
