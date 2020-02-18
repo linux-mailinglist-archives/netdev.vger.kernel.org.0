@@ -2,169 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 756CB161FA8
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 04:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77015161FAB
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 04:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbgBRDs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 22:48:27 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:39578 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbgBRDs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 22:48:26 -0500
-Received: by mail-qv1-f67.google.com with SMTP id y8so8549193qvk.6;
-        Mon, 17 Feb 2020 19:48:26 -0800 (PST)
+        id S1726289AbgBRDu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 22:50:29 -0500
+Received: from mail-pj1-f47.google.com ([209.85.216.47]:53075 "EHLO
+        mail-pj1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726261AbgBRDu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 22:50:29 -0500
+Received: by mail-pj1-f47.google.com with SMTP id ep11so399870pjb.2
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 19:50:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Vu6CU59Cz7sEnbzV237zGVka9ncms1GdBGbJ0ZwzOXI=;
-        b=YoayJ2jin/ywHSPWozpZVY7OyPqp9PSeR3oV6sEk6H3k4K3bCH/QJPlgWlPRXr7KSj
-         FD02EDAcEy9IdipC2iyMDeFveQm4OpK37p3IVGHHKoNnvWs9lSA4R1eFk036gVm1OyBf
-         /xI6V4dP6WwUVnOlqxIdgxIBXdjUq39wGqFh+xEdclIKXW36ZKT9erVHJMnZbGe+3q7t
-         cpdPVJBC7D3Ek/+CUXQqaOkaDXSSVHgj/FgJZhELvhoSq90LyCdh87V9hsY8OGWarXK2
-         gv5uZ3V4dtQaWKZH//defMevIr1eGxdGZtp2u7d8PMVbw9QrWjjuvc0dB7XzjvxLg/5i
-         Xc4A==
+        h=from:to:cc:subject:date:message-id;
+        bh=xerYhA/fvUUMNFn4ar2McA52CLBUSySk7Gpr3dq0qwk=;
+        b=Ayrdd7pdDbkWTXo6s3b/MZrgE+UK5KBw4iTkoZsnkVG+MXxNZGgtlWLKnZBjxSNDOL
+         VrSkzaNIhWK7tYtzKA1ip5tyttx3NJX9seOEw0rspLdYjhPYWu7ORTmqc8AB2hzJPMjQ
+         eCWT8oVgDAef7FouQchYpe66cyb7g/3g0EiqiqbdoFQZ62sUI0mrQdGht7xEuCsG5wyF
+         VDXLP8sGe9x4qUpKF3Z4QtYImjWLQaHZoFpgKn/xA0jxg/YP/VoKoJ6RzuWW4veMVPnY
+         zwKaScxXOS4gsM7tKceNKIofzhZZzIayIfQNRbOwWrVr48W5XbpOPc+Qm4RtJcLn8vzD
+         USOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Vu6CU59Cz7sEnbzV237zGVka9ncms1GdBGbJ0ZwzOXI=;
-        b=rXBJbzuc4OG+R00oTAJ4OxwDVbqXj1Q4miwlOVvfacJPRaGlCJ37jseQafNKp0rytf
-         qTH6/mmcbifsgA08Hk3e/8aVcSeqDkCxK3Aly0zighHBlr8IOVhOKMY48u5MgjQ6oS7n
-         IZFDbZ4fc4XiFvevVcaT+qv1ax2LcwdZME2HaWB/xO9YGNQSSdZSMPNkIt6MT2zjw3MK
-         v7tst+Vu/1o7PiVu+qM2NZnfHJ6cyz5QFcn5ChRi2Z5stA2QGut1HJtRc36Bhm7WBbpt
-         H995t5hlyBXUhtOeyc4visex3yx/Q3TMsCAowchnUODDtOIRvQhg0D+Xl1q9U8MqmGL1
-         Zuhg==
-X-Gm-Message-State: APjAAAWsdu9l4dwXtvK+/FvkkIuN00eerCqfqFsvBGhDjm34OfLsoi6b
-        DUt+uiAdnOB4c7+cyMiuwbccEdh8r0c=
-X-Google-Smtp-Source: APXvYqyAsbVlr3ckRyhbQymQ/+etK6giDEhUcEvgTUQVlQfxn7xacKiFXxd9POzuib8CSn/p+M0nHg==
-X-Received: by 2002:ad4:55a4:: with SMTP id f4mr15069472qvx.221.1581997705642;
-        Mon, 17 Feb 2020 19:48:25 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:d58:b2a5:6cad:97fb:fa6f])
-        by smtp.gmail.com with ESMTPSA id 24sm1342916qka.32.2020.02.17.19.48.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2020 19:48:25 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 9201AC0DD6; Tue, 18 Feb 2020 00:48:22 -0300 (-03)
-Date:   Tue, 18 Feb 2020 00:48:22 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, Neil Horman <nhorman@tuxdriver.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: Re: [PATCH net] sctp: move the format error check out of
- __sctp_sf_do_9_1_abort
-Message-ID: <20200218034822.GB2547@localhost.localdomain>
-References: <1833bf6abc2610393666b930fe629534cd21e0fa.1581957292.git.lucien.xin@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1833bf6abc2610393666b930fe629534cd21e0fa.1581957292.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=xerYhA/fvUUMNFn4ar2McA52CLBUSySk7Gpr3dq0qwk=;
+        b=obIUZBSrj6lw2eNVkNRC3cgfgGwMNu9VVXz3ZtEC0HxiwHeiTVW7Kr+c2XQPfS1xes
+         1HVFcsEo/1geYqpMo+x1a2C7uTOvzYxz8xXhGkVC05M+srQmtOSp7G2CD5yPeT4kC2OM
+         SAUykGXb1B5B2yV2MUw2PJkCLK6jgQnrT53ytt2kCmc6KpDRf+bUZttnkrzgh1y5PSZN
+         XamQgravmNGbrmhL64IEAoDi06PiQbNB6pNayuZs7x3Wuywwx9bcyrBEWOwrDeX2MJrr
+         tY+ZzzXZnsV2oOPMbMF83Dn0A0EGSWTSTi5oikmTTBZF/jvE2ylfhojR0Dap4lOcFQCa
+         0Vjg==
+X-Gm-Message-State: APjAAAXpBgvq2Hdp/3+sQEC7WDKLoC5CaSFRmoNPTKdoJ07YS/iznk4Q
+        tdYwbCNp8Ep4v4TR33zKOKi8MLzQdfY=
+X-Google-Smtp-Source: APXvYqwR/4gqsBslrZU/yxbMJpgOd/RbZR3U8A7qOFuiNVRIyyO/WlqJg/MxYLi2rzb0v5mWmSm9dQ==
+X-Received: by 2002:a17:90a:7187:: with SMTP id i7mr209184pjk.6.1581997828705;
+        Mon, 17 Feb 2020 19:50:28 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l29sm2272432pgb.86.2020.02.17.19.50.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Feb 2020 19:50:28 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, stephen@networkplumber.org
+Cc:     William Tu <u9012063@gmail.com>, David Ahern <dsahern@gmail.com>
+Subject: [PATCHv3 iproute2] erspan: set erspan_ver to 1 by default
+Date:   Tue, 18 Feb 2020 11:50:20 +0800
+Message-Id: <0719e2437448261ef83bf5d4e902481cad1a8e46.1581997820.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 12:34:52AM +0800, Xin Long wrote:
-> When T2 timer is to be stopped, the asoc should also be deleted,
-> otherwise, there will be no chance to call sctp_association_free
-> and the asoc could last in memory forever.
-> 
-> However, in sctp_sf_shutdown_sent_abort(), after adding the cmd
-> SCTP_CMD_TIMER_STOP for T2 timer, it may return error due to the
-> format error from __sctp_sf_do_9_1_abort() and miss adding
-> SCTP_CMD_ASSOC_FAILED where the asoc will be deleted.
-> 
-> This patch is to fix it by moving the format error check out of
-> __sctp_sf_do_9_1_abort(), and do it before adding the cmd
-> SCTP_CMD_TIMER_STOP for T2 timer.
-> 
-> Thanks Hangbin for reporting this issue by the fuzz testing.
-> 
-> Fixes: 96ca468b86b0 ("sctp: check invalid value of length parameter in error cause")
-> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  net/sctp/sm_statefuns.c | 29 ++++++++++++++++++++---------
->  1 file changed, 20 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> index 748e3b1..e2b2b41 100644
-> --- a/net/sctp/sm_statefuns.c
-> +++ b/net/sctp/sm_statefuns.c
-> @@ -170,6 +170,16 @@ static inline bool sctp_chunk_length_valid(struct sctp_chunk *chunk,
->  	return true;
->  }
->  
-> +/* Check for the format error in an ABORT chunk */
+Commit 289763626721 ("erspan: add erspan version II support")
+breaks the command:
 
-Can we just change this comment to:
-+/* Check for format error in an ABORT chunk */
-(just s/the //)
-It is slightly misleading otherwise.
+ # ip link add erspan1 type erspan key 1 seq erspan 123 \
+    local 10.1.0.2 remote 10.1.0.1
 
-Rest of the patch LGTM.
+as erspan_ver is set to 0 by default, then IFLA_GRE_ERSPAN_INDEX
+won't be set in gre_parse_opt().
 
-> +static inline bool sctp_err_chunk_valid(struct sctp_chunk *chunk)
-> +{
-> +	struct sctp_errhdr *err;
-> +
-> +	sctp_walk_errors(err, chunk->chunk_hdr);
-> +
-> +	return (void *)err == (void *)chunk->chunk_end;
-> +}
-> +
->  /**********************************************************
->   * These are the state functions for handling chunk events.
->   **********************************************************/
-> @@ -2255,6 +2265,9 @@ enum sctp_disposition sctp_sf_shutdown_pending_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
->  }
->  
-> @@ -2298,6 +2311,9 @@ enum sctp_disposition sctp_sf_shutdown_sent_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	/* Stop the T2-shutdown timer. */
->  	sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_STOP,
->  			SCTP_TO(SCTP_EVENT_TIMEOUT_T2_SHUTDOWN));
-> @@ -2565,6 +2581,9 @@ enum sctp_disposition sctp_sf_do_9_1_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
->  }
->  
-> @@ -2582,16 +2601,8 @@ static enum sctp_disposition __sctp_sf_do_9_1_abort(
->  
->  	/* See if we have an error cause code in the chunk.  */
->  	len = ntohs(chunk->chunk_hdr->length);
-> -	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr)) {
-> -		struct sctp_errhdr *err;
-> -
-> -		sctp_walk_errors(err, chunk->chunk_hdr);
-> -		if ((void *)err != (void *)chunk->chunk_end)
-> -			return sctp_sf_pdiscard(net, ep, asoc, type, arg,
-> -						commands);
-> -
-> +	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr))
->  		error = ((struct sctp_errhdr *)chunk->skb->data)->cause;
-> -	}
->  
->  	sctp_add_cmd_sf(commands, SCTP_CMD_SET_SK_ERR, SCTP_ERROR(ECONNRESET));
->  	/* ASSOC_FAILED will DELETE_TCB. */
-> -- 
-> 2.1.0
-> 
+  # ip -d link show erspan1
+    ...
+    erspan remote 10.1.0.1 local 10.1.0.2 ... erspan_index 0 erspan_ver 1
+                                              ^^^^^^^^^^^^^^
+
+This patch is to change to set erspan_ver to 1 by default.
+
+v1->v2:
+  - no change.
+v2->v3:
+  - add the same fix for v6.
+
+Fixes: 289763626721 ("erspan: add erspan version II support")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ ip/link_gre.c  | 2 +-
+ ip/link_gre6.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ip/link_gre.c b/ip/link_gre.c
+index 15beb73..e42f21a 100644
+--- a/ip/link_gre.c
++++ b/ip/link_gre.c
+@@ -94,7 +94,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	__u8 metadata = 0;
+ 	__u32 fwmark = 0;
+ 	__u32 erspan_idx = 0;
+-	__u8 erspan_ver = 0;
++	__u8 erspan_ver = 1;
+ 	__u8 erspan_dir = 0;
+ 	__u16 erspan_hwid = 0;
+ 
+diff --git a/ip/link_gre6.c b/ip/link_gre6.c
+index 9d1741b..94a4ee7 100644
+--- a/ip/link_gre6.c
++++ b/ip/link_gre6.c
+@@ -106,7 +106,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	__u8 metadata = 0;
+ 	__u32 fwmark = 0;
+ 	__u32 erspan_idx = 0;
+-	__u8 erspan_ver = 0;
++	__u8 erspan_ver = 1;
+ 	__u8 erspan_dir = 0;
+ 	__u16 erspan_hwid = 0;
+ 
+-- 
+2.1.0
+
