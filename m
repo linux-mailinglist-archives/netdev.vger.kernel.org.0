@@ -2,133 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0C551629E8
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFA61629F3
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:56:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgBRPym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 10:54:42 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29598 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726444AbgBRPym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:54:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582041280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=R8B7btjReU6qVqxwjEIY1YJ+fv46JUdfE/jDnMX3JJQ=;
-        b=WLY3VuQnssOebvYWG8KVDv8JIHwThnJZz4BpE0Ng+GozEOGUuopAnQAwkFA5BYtUNf/Q6b
-        8Ad+NMPDsxsAoqu9ztWJzJLeaRmLihNvBo78H/8x/rNR+iQlcOUp+7mZxDUGKc/9po2eIa
-        czHJKl6XGJXLoJ+fhkr1yFCHzeGav30=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-251-Gla1TV-xMp2MEx_G9Q0X9g-1; Tue, 18 Feb 2020 10:54:38 -0500
-X-MC-Unique: Gla1TV-xMp2MEx_G9Q0X9g-1
-Received: by mail-wr1-f72.google.com with SMTP id v17so10954837wrm.17
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 07:54:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R8B7btjReU6qVqxwjEIY1YJ+fv46JUdfE/jDnMX3JJQ=;
-        b=FbzDDM1Ypw1EjQXfDN0dw017ckOHRm9Rk94zQ5+ZWHB7LEVyFAm3VuefiBTH5gI+V3
-         TnguWEur3qlLXDfbaKUNBe8LiSjynll3uonaWA8ZuCtsJkrT3+likcYPZ6Wj2Uclrzpl
-         ILZGfkbFxI+5RSMOogtT3QbvABMXrwXfX57oppqIe1XiMKHKhpY20qsqpMyhtjzj5G2Y
-         cbAjkkQuAPciPH5ZTWyoPpO2yFnklfOglwqqhERwcRi94U3dQuBfpL0aBY8VEkSK0BvB
-         K+mDJMc7wMBS5/UrMUeGjH6oLeQNteNpTCpzDnD7G/ti02u/ecRSgwrtZlay5f1x0tFS
-         emAQ==
-X-Gm-Message-State: APjAAAUwdHEYaeOFWrQF0IMREzwlPpqCgodsKGC8EoHsdhlcHYJb4/ZU
-        g+DBD+AQLlcID6xhzXfvvv2Yj21rs4ch3DxaRe8Ksp3QJYSp4IRAAoyY2S3w6iDL95gj/Dzigl/
-        E4cPtQHsngMKPQvbn
-X-Received: by 2002:a1c:7203:: with SMTP id n3mr3829525wmc.119.1582041277439;
-        Tue, 18 Feb 2020 07:54:37 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwVMLwmI9lWeEdC/itvflVDqN7kJuopZW0hKDhTbHjVqtZfY5KD1vTHmGpoCxwXqLyXhxMdmQ==
-X-Received: by 2002:a1c:7203:: with SMTP id n3mr3829507wmc.119.1582041277173;
-        Tue, 18 Feb 2020 07:54:37 -0800 (PST)
-Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id f1sm6678029wro.85.2020.02.18.07.54.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 07:54:36 -0800 (PST)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     mtk.manpages@gmail.com
-Cc:     Jorgen Hansen <jhansen@vmware.com>, netdev@vger.kernel.org,
-        linux-man@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH v4] vsock.7: add VMADDR_CID_LOCAL description
-Date:   Tue, 18 Feb 2020 16:54:35 +0100
-Message-Id: <20200218155435.172860-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726640AbgBRP4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 10:56:32 -0500
+Received: from www62.your-server.de ([213.133.104.62]:38758 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726360AbgBRP4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:56:32 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j45EX-00081J-6U; Tue, 18 Feb 2020 16:56:25 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j45EW-000VnX-Sy; Tue, 18 Feb 2020 16:56:24 +0100
+Subject: Re: [PATCH bpf] bpf: Do not grab the bucket spinlock by default on
+ htab batch ops
+To:     Yonghong Song <yhs@fb.com>, Brian Vazquez <brianvv@google.com>,
+        Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20200214224302.229920-1-brianvv@google.com>
+ <8ac06749-491f-9a77-3899-641b4f40afe2@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <63fa17bf-a109-65c1-6cc5-581dd84fc93b@iogearbox.net>
+Date:   Tue, 18 Feb 2020 16:56:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <8ac06749-491f-9a77-3899-641b4f40afe2@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.1/25727/Tue Feb 18 15:05:00 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
-local communication.
+On 2/18/20 4:43 PM, Yonghong Song wrote:
+> On 2/14/20 2:43 PM, Brian Vazquez wrote:
+>> Grabbing the spinlock for every bucket even if it's empty, was causing
+>> significant perfomance cost when traversing htab maps that have only a
+>> few entries. This patch addresses the issue by checking first the
+>> bucket_cnt, if the bucket has some entries then we go and grab the
+>> spinlock and proceed with the batching.
+>>
+>> Tested with a htab of size 50K and different value of populated entries.
+>>
+>> Before:
+>>    Benchmark             Time(ns)        CPU(ns)
+>>    ---------------------------------------------
+>>    BM_DumpHashMap/1       2759655        2752033
+>>    BM_DumpHashMap/10      2933722        2930825
+>>    BM_DumpHashMap/200     3171680        3170265
+>>    BM_DumpHashMap/500     3639607        3635511
+>>    BM_DumpHashMap/1000    4369008        4364981
+>>    BM_DumpHashMap/5k     11171919       11134028
+>>    BM_DumpHashMap/20k    69150080       69033496
+>>    BM_DumpHashMap/39k   190501036      190226162
+>>
+>> After:
+>>    Benchmark             Time(ns)        CPU(ns)
+>>    ---------------------------------------------
+>>    BM_DumpHashMap/1        202707         200109
+>>    BM_DumpHashMap/10       213441         210569
+>>    BM_DumpHashMap/200      478641         472350
+>>    BM_DumpHashMap/500      980061         967102
+>>    BM_DumpHashMap/1000    1863835        1839575
+>>    BM_DumpHashMap/5k      8961836        8902540
+>>    BM_DumpHashMap/20k    69761497       69322756
+>>    BM_DumpHashMap/39k   187437830      186551111
+>>
+>> Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
+>> Cc: Yonghong Song <yhs@fb.com>
+>> Signed-off-by: Brian Vazquez <brianvv@google.com>
+> 
+> Acked-by: Yonghong Song <yhs@fb.com>
 
-This patch explains how to use it and remove the legacy
-VMADDR_CID_RESERVED no longer available.
-
-Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
-v4:
-    * removed "The" in the "Local communication" section [Stefan]
-v3:
-    * rephrased "Previous versions" part [Jorgen]
-v2:
-    * rephrased "Local communication" description [Stefan]
-    * added a mention of previous versions that supported
-      loopback only in the guest [Stefan]
----
- man7/vsock.7 | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/man7/vsock.7 b/man7/vsock.7
-index c5ffcf07d..fa2c6e17e 100644
---- a/man7/vsock.7
-+++ b/man7/vsock.7
-@@ -127,8 +127,8 @@ There are several special addresses:
- means any address for binding;
- .B VMADDR_CID_HYPERVISOR
- (0) is reserved for services built into the hypervisor;
--.B VMADDR_CID_RESERVED
--(1) must not be used;
-+.B VMADDR_CID_LOCAL
-+(1) is the well-known address for local communication (loopback);
- .B VMADDR_CID_HOST
- (2)
- is the well-known address of the host.
-@@ -164,6 +164,15 @@ Consider using
- .B VMADDR_CID_ANY
- when binding instead of getting the local CID with
- .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
-+.SS Local communication
-+.B VMADDR_CID_LOCAL
-+(1) directs packets to the same host that generated them. This is useful
-+for testing applications on a single host and for debugging.
-+.PP
-+The local CID obtained with
-+.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
-+can be used for the same purpose, but it is preferable to use
-+.B VMADDR_CID_LOCAL .
- .SH ERRORS
- .TP
- .B EACCES
-@@ -222,6 +231,11 @@ are valid.
- Support for VMware (VMCI) has been available since Linux 3.9.
- KVM (virtio) is supported since Linux 4.8.
- Hyper-V is supported since Linux 4.14.
-+.PP
-+VMADDR_CID_LOCAL is supported since Linux 5.6.
-+Local communication in the guest and on the host is available since Linux 5.6.
-+Previous versions only supported local communication within a guest
-+(not on the host), and only with some transports (VMCI and virtio).
- .SH SEE ALSO
- .BR bind (2),
- .BR connect (2),
--- 
-2.24.1
-
+I must probably be missing something, but how is this safe? Presume we
+traverse in the walk with bucket_cnt = 0. Meanwhile a different CPU added
+entries to this bucket since not locked. Same reader on the other CPU with
+bucket_cnt = 0 then starts to traverse the second
+hlist_nulls_for_each_entry_safe() unlocked e.g. deleting entries?
