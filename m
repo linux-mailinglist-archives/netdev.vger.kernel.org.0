@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF30C1629C4
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7001629E4
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgBRPra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 10:47:30 -0500
-Received: from mout.gmx.net ([212.227.15.19]:46263 "EHLO mout.gmx.net"
+        id S1726442AbgBRPyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 10:54:17 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:48043 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726338AbgBRPr3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 10:47:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1582040838;
-        bh=MBOJrFcaXa3Z19n1i45xJXpCvEYvi0ktVJoJ0KCJdaM=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=lEAw20A9pa4AMyV2mOHYTAYIhJPNpYHngS5bg8kwJcoVo+iuzPocNOYbDtuBiVWPe
-         ukVY//hBaxNGUw16uGyN9eH1BgJqS7q1OOnNbXVYmA/9Li7vyyTb4y93CZfJx64cPB
-         BKg0V2/7Nb7bycl5dWxxazxRijxtVcdNtnIY5eRM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.223]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M5QF5-1j3Fbv3L3F-001RAv; Tue, 18
- Feb 2020 16:47:18 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: broadcom: Fix a typo ("firsly")
-Date:   Tue, 18 Feb 2020 16:47:01 +0100
-Message-Id: <20200218154701.1639-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.20.1
+        id S1726373AbgBRPyR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 10:54:17 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 6cb48bc0
+        for <netdev@vger.kernel.org>;
+        Tue, 18 Feb 2020 15:51:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=MN5KnVYqUFmR9/YourV1KMbg0Zc=; b=dbC2Iv
+        mn07/QzLTwHL9tb8969CRM+beHNVMW2TiMhbORswQZYTuetU+EnELNkAvvTRHRqy
+        jt34ZJwnDzJooKCB0YbaiBR+mmHw1xQOIySDjo0mWDjdTNDofLUn+Kg3cuCGG1+u
+        hL5sMl+BqSUaQ1MSkO7rIemntKxkLVWnviemPvR3kI3zcKsOUzPD6gXouIJpwe4R
+        PAj6JIN2PeX1iZ8L6H5m4krKmsHu/FkJCEWsCj31cy5jgpgIljz0ptNX45PfA5aM
+        UcfnTurJtVqS/LII8V7y/IYH4DSe/t9emACIMrUw6qt9wpUf2YjtuUJfKPjimI2/
+        ZMsJk1Vd9Xmn56oA==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ea966107 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Tue, 18 Feb 2020 15:51:36 +0000 (UTC)
+Received: by mail-oi1-f171.google.com with SMTP id j132so20548416oih.9
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 07:54:14 -0800 (PST)
+X-Gm-Message-State: APjAAAWm0aTHpPTQuZU3a6GSYKq5/6EZiqHkeYxyZMilxd3i15Y9E1lb
+        cuMlRfmwtrWiDZGCCvp2Erj2h55WvAe7UndxNcM=
+X-Google-Smtp-Source: APXvYqydDoIRdDotIhjfukZ/mljlE33HHiYzymdRwFDX8oElXs3tVlRafiQFmz3Hjiw/43eaPvRNRNGF9ZxG17d5RoU=
+X-Received: by 2002:a05:6808:4d3:: with SMTP id a19mr9093oie.119.1582041254391;
+ Tue, 18 Feb 2020 07:54:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:c0xLfCruKpO49xdxAJWcPwUZ8C0bEuPdja+hSV//rJgFLlGQLlh
- 8pHOZUB6UVZ3NDRosEVruEci3mivxKm3kJzTNlbIE9k0GkyMqwOogA7pBas4fzElBwu44Tz
- 4bENV1Y/kyWD/OWxiZ3wiXAQs+fMAx8/vGwHi6ylP9Ryrrq0AseLtlvPu68ZclCo36cnLj2
- 3l3QeqP+LupeCUhY42R6Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8fOIy8TzPYM=:w3XmnmVGYvahaYGzCVqNwe
- KLu1WaDDWsLkJqiHw38ffAdHLR3+6mDtbz3UD2EzkCdLt+LMfio1cKeAdqS13UeVyEtHX7RtA
- qcVOas4Zsjmq09DQnEfQbNDsXoymm8Z7OuQNTPuDWmbrmsMXA1UB3qh1VCxtKkwer+ALaNDFR
- f7dNZ/lHk3VxRH0oyoHBne25oCs8V2eG/a7TS5Ngt3MvWPbA+TzGui1bjBsK8vupxbGHz/lU+
- TiGN9ZGBYJwVcVVI1T6C1rRlQ6nSnDdig+2vCX4IIYWiSNkgGqgn+EK2c/BuzAay87vU0x3cK
- WRRQeJkq7ar66FHcEuR5E/hoeXV9noQh0QxOK3xLwDP+oIxv12YJK5vahXZ6T0aayi/A0Ht+z
- 7HiiIXmSrwZVsmXBNDScy+jHSMsFLAIuZQrg7DtF+3Ks8AqSUBU47OmyH1vaA4QEGX3ibj8qQ
- nbmhYSYwbjPTw80OjkoCwlL0Lt9Ef8bI6JStwgseYWrahPN1iBeb2J8aQ1f+yzs0N4ZFn4rKb
- Abn9sZtNYbY80noibkupgH9SefbQd45K2isMocsFbHGxd59Pyc7mBWwxRYIIjaOcmiEPu5Dzw
- /2nIp+Per/YJ3Q32sNOQ1P+6XhbXaBGI88V9+unG7C+HkyjIyj4MmD+21iULNA8xX96BuLEsy
- lSJhuqWHMQ6t7gWV0f9Z3m6GhThiBy1ogKHhdKPXtQht1o09PRz1zeM/UwiLx/v+BsHJScsN0
- jfpQb9guFZ3Z0hUjqq6tPyHQu3Okv3MeCi8PB8/BLqYMV6x/fHs/JiVGhCEwwA21J/7xo0Cqb
- 83Ib1x90fNyPLqbqIeXKUM1dBmvyv8+EvfWam/E77qywFbAxLZStqn8N9CZYaQSlOhfegR9hY
- 8bVdR/S5pE8rdhcOEuOBTEBMxFzNvBBfdFmZyRtDaih2wiuhIA7x60C+OmJ/JlHuzdAL5CLgu
- HovwOxMAugBVaTDqh43winFahe7o4UvSoeuRcKTKtqpoHKUFKRvXLu6LARuzG/Dwg7aQhgrie
- yfxgVQgibi5mkDhGQU8VoHXO69TbWiLkMRjGSQemKM0SZVBt3vlq/eHB/55yX3d+UybPsTRAr
- R6myshlmqp5kBi3qY4Uj3D7ezvIJRGTn3xjjqiorgapIih6NdKNdHY8fe7wSFzlPWyxkX6BOE
- KIRYv3WkEwwp/iL2XYF4ikS8XDhx4ow7K8ZULjHfSl5fm1nVpFFgC9hkXk9Yg+IPOs8XXQ/KQ
- ljxVPU7JGkDdVfKOl
+References: <20200108215909.421487-1-Jason@zx2c4.com> <20200108215909.421487-7-Jason@zx2c4.com>
+ <e1e06281-16e9-edb8-dcda-7bdcf60507a7@solarflare.com>
+In-Reply-To: <e1e06281-16e9-edb8-dcda-7bdcf60507a7@solarflare.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 18 Feb 2020 16:54:03 +0100
+X-Gmail-Original-Message-ID: <CAHmME9r=eiMizN_E0noTCEaR=9PXVpq76=4x+v-xT6Nf9MsFAw@mail.gmail.com>
+Message-ID: <CAHmME9r=eiMizN_E0noTCEaR=9PXVpq76=4x+v-xT6Nf9MsFAw@mail.gmail.com>
+Subject: Re: [PATCH 6/8] net: sfc: use skb_list_walk_safe helper for gso segments
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- drivers/net/phy/broadcom.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Tue, Feb 18, 2020 at 4:35 PM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 08/01/2020 21:59, Jason A. Donenfeld wrote:
+> > This is a straight-forward conversion case for the new function, and
+> > while we're at it, we can remove a null write to skb->next by replacing
+> > it with skb_mark_not_on_list.
+> >
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > ---
+> >  drivers/net/ethernet/sfc/tx.c | 7 ++-----
+> >  1 file changed, 2 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+> > index 00c1c4402451..547692b33b4d 100644
+> > --- a/drivers/net/ethernet/sfc/tx.c
+> > +++ b/drivers/net/ethernet/sfc/tx.c
+> > @@ -473,12 +473,9 @@ static int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue,
+> >       dev_consume_skb_any(skb);
+> >       skb = segments;
+> >
+> > -     while (skb) {
+> > -             next = skb->next;
+> > -             skb->next = NULL;
+> > -
+> > +     skb_list_walk_safe(skb, skb, next) {
+> Could this be replaced with
+>     skb_list_walk_safe(segments, skb, next) {
+> and elide the assignment just above?
+> Or is there some reason I'm missing not to do that?
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 7d68b28bb893..a62229a8b1a4 100644
-=2D-- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -410,7 +410,7 @@ static int bcm5481_config_aneg(struct phy_device *phyd=
-ev)
- 	struct device_node *np =3D phydev->mdio.dev.of_node;
- 	int ret;
-
--	/* Aneg firsly. */
-+	/* Aneg firstly. */
- 	ret =3D genphy_config_aneg(phydev);
-
- 	/* Then we can set up the delay. */
-@@ -463,7 +463,7 @@ static int bcm54616s_config_aneg(struct phy_device *ph=
-ydev)
- {
- 	int ret;
-
--	/* Aneg firsly. */
-+	/* Aneg firstly. */
- 	if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX)
- 		ret =3D genphy_c37_config_aneg(phydev);
- 	else
-=2D-
-2.20.1
-
+Yes that's probably correct.
