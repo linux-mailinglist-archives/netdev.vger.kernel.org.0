@@ -2,83 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D74162221
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 09:18:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5CF16222D
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 09:26:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726246AbgBRISP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Feb 2020 03:18:15 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:37800 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbgBRISP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 03:18:15 -0500
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 678BFCED24;
-        Tue, 18 Feb 2020 09:27:37 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [Bluez PATCH v6] bluetooth: secure bluetooth stack from bluedump
- attack
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200217120454.Bluez.v6.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
-Date:   Tue, 18 Feb 2020 09:18:12 +0100
-Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <0B84BD16-9C82-4910-8646-B24BCB152AC2@holtmann.org>
-References: <20200217120454.Bluez.v6.1.Ia71869d2f3e19a76a6a352c61088a085a1d41ba6@changeid>
-To:     Howard Chung <howardchung@google.com>
-X-Mailer: Apple Mail (2.3608.60.0.2.5)
+        id S1726319AbgBRI0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 03:26:11 -0500
+Received: from first.geanix.com ([116.203.34.67]:59508 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726180AbgBRI0L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 03:26:11 -0500
+Received: from localhost (unknown [193.163.1.7])
+        by first.geanix.com (Postfix) with ESMTPSA id 022A1C0025;
+        Tue, 18 Feb 2020 08:25:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1582014320; bh=/5PMdnbcZEmMSf5cYP0ZOMULsq12k2qzbPlGi8rrhgU=;
+        h=From:To:Cc:Subject:Date;
+        b=ZgWAOP0Hylu0LjKdn3Be7eQFCzflLQxHlbF9uN5ym2/rCl6O/6VcuXiWzoCWPi7um
+         VuwNlDTMwWLPnF3jARudkJRYDPOEcX0SNjE1foTw3ezYopjP7ZHlLG2CJ1ADDZNuiJ
+         nyWO8ROCLMvNKZvk93KqX4SH7RIK+9UpcGQLUIQTzauvPCtKqVTmMgNbO3J7zGakb9
+         QcB6UZr9jKQiv4JCpCc1dG8VK/LydOeIQM7I2FobwSwod2xomL4oGBcQcMKWwrGdnl
+         OwoihCxFENs1TfKNVjtHvah/xoG5ucszhw/2PzirGJjgSRsWRavT8WW4C3PcI6n0/3
+         FRiDfyPSgmKWw==
+From:   Esben Haabendal <esben@geanix.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+Subject: [PATCH 0/8] net: ll_temac: Bugfixes and ethtool support
+Date:   Tue, 18 Feb 2020 09:26:07 +0100
+Message-Id: <20200218082607.7035-1-esben@geanix.com>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.0 required=4.0 tests=BAYES_50,DKIM_INVALID,
+        DKIM_SIGNED,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=disabled
+        version=3.4.3
+X-Spam-Level: *
+X-Spam-Checker-Version: SpamAssassin 3.4.3 (2019-12-06) on eb9da72b0f73
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
+Patch 1-4 brings fixes a number of bugs observed.
+Patch 5-6 are simple cleanup, removing two unused struct fields.
+Patch 7-8 add ethtool support for controlling rx and tx ring sizes and irq
+coalesce parameters.
 
-> Attack scenario:
-> 1. A Chromebook (let's call this device A) is paired to a legitimate
->   Bluetooth classic device (e.g. a speaker) (let's call this device
->   B).
-> 2. A malicious device (let's call this device C) pretends to be the
->   Bluetooth speaker by using the same BT address.
-> 3. If device A is not currently connected to device B, device A will
->   be ready to accept connection from device B in the background
->   (technically, doing Page Scan).
-> 4. Therefore, device C can initiate connection to device A
->   (because device A is doing Page Scan) and device A will accept the
->   connection because device A trusts device C's address which is the
->   same as device B's address.
-> 5. Device C won't be able to communicate at any high level Bluetooth
->   profile with device A because device A enforces that device C is
->   encrypted with their common Link Key, which device C doesn't have.
->   But device C can initiate pairing with device A with just-works
->   model without requiring user interaction (there is only pairing
->   notification). After pairing, device A now trusts device C with a
->   new different link key, common between device A and C.
-> 6. From now on, device A trusts device C, so device C can at anytime
->   connect to device A to do any kind of high-level hijacking, e.g.
->   speaker hijack or mouse/keyboard hijack.
-> 
-> Since we don't know whether the repairing is legitimate or not,
-> leave the decision to user space if all the conditions below are met.
-> - the pairing is initialized by peer
-> - the authorization method is just-work
-> - host already had the link key to the peer
-> 
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> ---
-> 
-> Changes in v6:
-> - Fix passkey uninitialized issue
+Esben Haabendal (9):
+  net: ll_temac: Fix race condition causing TX hang
+  net: ll_temac: Add more error handling of dma_map_single() calls
+  net: ll_temac: Fix RX buffer descriptor handling on GFP_ATOMIC
+    pressure
+  net: ll_temac: Handle DMA halt condition caused by buffer underrun
+  net: ll_temac: Remove unused tx_bd_next struct field
+  net: ll_temac: Remove unused start_p variable
+  net: ll_temac: Make RX/TX ring sizes configurable
+  net: ll_temac: Add ethtool support for coalesce parameters
 
-since I already applied v5, can you send a delta-patch. And please add a comment for using 0 as passkey and why that is correct.
+ drivers/net/ethernet/xilinx/ll_temac.h      |  12 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 435 ++++++++++++++++----
+ 2 files changed, 367 insertions(+), 80 deletions(-)
 
-Regards
-
-Marcel
+-- 
+2.25.0
 
