@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 963AB162C52
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:16:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4191B162C6B
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgBRRQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 12:16:06 -0500
-Received: from mail-oi1-f173.google.com ([209.85.167.173]:42855 "EHLO
-        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726612AbgBRRQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 12:16:05 -0500
-Received: by mail-oi1-f173.google.com with SMTP id j132so20843230oih.9
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 09:16:05 -0800 (PST)
+        id S1726768AbgBRRRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 12:17:30 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:35896 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726475AbgBRRR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 12:17:29 -0500
+Received: by mail-qt1-f195.google.com with SMTP id t13so15055834qto.3
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 09:17:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=y0j7L8KEFVkF2RsaXchTUsplwAcEOEeWnNKXl1YFxto=;
-        b=laApKm+avlMC/8SVnUcLbJJ20Ax3Fku0Yapbl1wEMB6uHYYM4mhzfKGi6eAWY9qWed
-         PqCODnQJC1LW3DxJDTfozuLVwrwFia5EUryt47672RVeYN8b2b09qdCqEvw7QfI1UE1P
-         3Nn2lgEBKa2QHial29ARxAY8y1JPPOg9t5N9FeSLftjny0LPgMpbPg/bmdIfY72Eknzv
-         hTAt/K/XpvKR5P/MoF+TzEVqSzHFYR5T+7BbC7+VLtAXv/vq8mWmVap25ays28BNzpWY
-         fURdYuqMhctt7ZT38I1fEHGm7wqp+6E+3NcqumFOeLEBpdZPBINK+UDmeQHaZ6A8QyO1
-         52nQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gf3c27UM5Ss99iOzIT8w47DwlJSXAKjh3PFBJKCwLF8=;
+        b=i2cLEZaaF6HR38mH2Pyvl/hTYo9IfVYR14E1PXZBXeRc07Cnhj7S6+qyAPFZ4qjlPM
+         OMAiBx1OKmZs+14ZsZJFu0EbZEfnwVCejtDro9AgG9JKUzqA9WDvlyY7gXZaeTqhDsEq
+         +fDds6HpRa6S4n3G2ncdujfbfIEL9iYEYKtsVA0O1p1UXNY4YJl8AiZnlZTA2bq0D6I7
+         GfUR++1Nt74X7OoSKB8QBytoXtSLHFeMYTLW11giL6zkRFVXpukPdaWwyNETJ8hVrNY8
+         nUmGd/KTchLtPdeuvk1PaxUslK0qkJb/LCa4ZxHjRBYmNV4dFj7Xbi6cuI1vX6KQBPGo
+         FGLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=y0j7L8KEFVkF2RsaXchTUsplwAcEOEeWnNKXl1YFxto=;
-        b=naJIpsSC/zXRkk6TUG5kuGBAJxEeujlt+1q18+Z9pqAfXh/69qAyz4PVHiYXcuBAXo
-         w424fKqaGYLOc0EH+llfu3uCpwfKA4ds2Ugp/UzFJutOrt9A/xi3cdZkzELBcri8GvdE
-         v/UJd0C2L+ysCfkaLpryNcayAnlaaSO5vx4Ucku9eWt9Y+aDtQvlO6Qvl0huenTPom0X
-         gV4YTCP11cPPrMP3ix5wBrAsJ7W0M4RM9hwER/g2pV0Bl0qdEeAiQ5BTmANWc+zEy8yM
-         +bdibnVBH4pW3Aa8AUtODdwO3vC3dV9eHIb6JGOZ1dJUpFSXw18XyB8un5qo3GCC3134
-         6D0Q==
-X-Gm-Message-State: APjAAAVyDTaKC296hykgBT6/RNwtT/oKCFgR4wQO+qqVvYnsCHxg8d1j
-        Fet7dOWJgUqBjvc2wxhCzh/m9uoH3GPViD7BoMBF
-X-Google-Smtp-Source: APXvYqygcKkEw36CPWvoVyPkz5DBjgNJy5Av1s28tEhhgOHqS9DK+bJC7V9CckgtZSr4LXuouP9BLUHLSyWjYUPUCfk=
-X-Received: by 2002:aca:554d:: with SMTP id j74mr1958370oib.92.1582046163976;
- Tue, 18 Feb 2020 09:16:03 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gf3c27UM5Ss99iOzIT8w47DwlJSXAKjh3PFBJKCwLF8=;
+        b=oPUh8qWGo5BBIYicJlaAkcu1RT6qvn4BsCtxOqdLFRRIyrQBNW00JMX+cpmyOwhXwr
+         zG+R0POa+An4bftPFl63HySPRPgx1bjemWugQ1sVQI4dFCTjRNZKtlYMtEkibkB6h4le
+         PKOmsuPxtJdsqpVlCf+RNFARftb1ngl+nonISJtAeLk6vGShO5k3uGc53d0rKnVHU7bc
+         eBjD/rmtdxLajqfIQNLEcDe60bLLZYVhZhETA7FnKKgkGsDY5Fr38Ia4yMfiGt7p8k1V
+         cax9ogahoQQNBVqAndgwfZqOr3aP8HJ2lFAgw3Qh/86+Pa5Fvg7178hOn9fWxbOuIGpB
+         O3fw==
+X-Gm-Message-State: APjAAAX4D2u1cxESMHmOKm+X7SAr+98PLznJINpLBw4cvjBDPJ1ws8N2
+        wzZDE/TgG4WyCce9eGcGNZRiD2e52+o30OYKxNc=
+X-Google-Smtp-Source: APXvYqxU9sPwZYqxv/WedrtF2uq6yqW92T/+kIFyC+xHyFkryKRTaVQEXLJSoU3QEyxJcPGDJl7t/smas0uJ9X9IfKo=
+X-Received: by 2002:ac8:538e:: with SMTP id x14mr18382952qtp.301.1582046248750;
+ Tue, 18 Feb 2020 09:17:28 -0800 (PST)
 MIME-Version: 1.0
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Tue, 18 Feb 2020 11:15:52 -0600
-Message-ID: <CAFSKS=Mr+V0zFVBZyZu2zoY-yF3VZuOu+if6=P_0pJiaCDwmRA@mail.gmail.com>
-Subject: net: dsa: HSR/PRP support
-To:     netdev@vger.kernel.org
-Cc:     m-karicheri2@ti.com, vinicius.gomes@intel.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
+References: <0719e2437448261ef83bf5d4e902481cad1a8e46.1581997820.git.lucien.xin@gmail.com>
+In-Reply-To: <0719e2437448261ef83bf5d4e902481cad1a8e46.1581997820.git.lucien.xin@gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Tue, 18 Feb 2020 09:16:46 -0800
+Message-ID: <CALDO+SYFG63tqPmuyQ9gq7e2gs2uPv6zPZz7so4iYyvTxWVvhQ@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2] erspan: set erspan_ver to 1 by default
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'd like to add a switch to DSA that has hardware support for HSR (IEC
-62439-3 Clause 5) and PRP (IEC 62439-3 Clause 4).
+On Mon, Feb 17, 2020 at 7:50 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> Commit 289763626721 ("erspan: add erspan version II support")
+> breaks the command:
+>
+>  # ip link add erspan1 type erspan key 1 seq erspan 123 \
+>     local 10.1.0.2 remote 10.1.0.1
+>
+> as erspan_ver is set to 0 by default, then IFLA_GRE_ERSPAN_INDEX
+> won't be set in gre_parse_opt().
+>
+>   # ip -d link show erspan1
+>     ...
+>     erspan remote 10.1.0.1 local 10.1.0.2 ... erspan_index 0 erspan_ver 1
+>                                               ^^^^^^^^^^^^^^
+>
+> This patch is to change to set erspan_ver to 1 by default.
+>
+> v1->v2:
+>   - no change.
+> v2->v3:
+>   - add the same fix for v6.
+>
+> Fixes: 289763626721 ("erspan: add erspan version II support")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-As well as many common switch features, it supports:
-Self-address filtering
-Forwarding of frames with cut-through
-Automatic insertion of HSR tag and PRP trailer
-Automatic removal of HSR tag and PRP trailer
-Automatic duplicate generation for HSR and PRP
+LGTM. Thanks!
+Acked-by: William Tu <u9012063@gmail.com>
 
-I've also seen other switches that support a subset of these features
-and require software support for the rest (like insertion and removal
-of tag/trailer).
-
-Currently there is software HSR support in net/hsr. I've seen some
-past discussions on the list about adding PRP support and adding
-support for offloading HSR and PRP to a switch.
-
-Is anyone still working on any of this? If not, has anyone made
-progress on any of this they'd like to share as a starting point for
-getting some of this upstreamed? Has anyone run across any problems
-along the way they'd like to share. I've read that the TI vendor
-kernel may have support for some of these features on the CPSW.
-
-Thanks,
-George McCollister
+> ---
+>  ip/link_gre.c  | 2 +-
+>  ip/link_gre6.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/ip/link_gre.c b/ip/link_gre.c
+> index 15beb73..e42f21a 100644
+> --- a/ip/link_gre.c
+> +++ b/ip/link_gre.c
+> @@ -94,7 +94,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
+>         __u8 metadata = 0;
+>         __u32 fwmark = 0;
+>         __u32 erspan_idx = 0;
+> -       __u8 erspan_ver = 0;
+> +       __u8 erspan_ver = 1;
+>         __u8 erspan_dir = 0;
+>         __u16 erspan_hwid = 0;
+>
+> diff --git a/ip/link_gre6.c b/ip/link_gre6.c
+> index 9d1741b..94a4ee7 100644
+> --- a/ip/link_gre6.c
+> +++ b/ip/link_gre6.c
+> @@ -106,7 +106,7 @@ static int gre_parse_opt(struct link_util *lu, int argc, char **argv,
+>         __u8 metadata = 0;
+>         __u32 fwmark = 0;
+>         __u32 erspan_idx = 0;
+> -       __u8 erspan_ver = 0;
+> +       __u8 erspan_ver = 1;
+>         __u8 erspan_dir = 0;
+>         __u16 erspan_hwid = 0;
+>
+> --
+> 2.1.0
+>
