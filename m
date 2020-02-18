@@ -2,164 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4992D16275A
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 14:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CDD4162771
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 14:54:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726556AbgBRNs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 08:48:57 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:48244 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726347AbgBRNs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 08:48:57 -0500
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 7Y6b7oYd5NLMw/GIOQaq+3vxjz0ZUj7TlQdOBsVNhDiGQBL9vHF8yMLE6tmqtahI5cJe3aDJyI
- /XQiNLa2rYh1wQEukpAmokb0LWq1tpnubx2zSrv+X+OB8F3ZvJXmqTMXSioDtVHl0nwE6MTPv1
- LReRCwOcjoseE5d3u37kGtbeYCtAlii79X9qnCsEmp5p1RhRdtzs61wNjg3f5nbxoLA0oUabyj
- xf4UF6lBvm4jO7jitpQn7V8zAApaUaKMv5RFEeNnTSLgMU6LZf+RJYkbayIbPT/LNByYMVR3k4
- eN8=
-X-IronPort-AV: E=Sophos;i="5.70,456,1574146800"; 
-   d="scan'208";a="68903985"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2020 06:48:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 18 Feb 2020 06:48:46 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 18 Feb 2020 06:48:57 -0700
-Date:   Tue, 18 Feb 2020 14:48:50 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-Message-ID: <20200218134850.yor4rs72b6cjfddz@lx-anielsen.microsemi.net>
-References: <20200217150058.5586-1-olteanv@gmail.com>
- <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
- <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
+        id S1726703AbgBRNyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 08:54:04 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:40405 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbgBRNyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 08:54:03 -0500
+Received: by mail-qk1-f193.google.com with SMTP id b7so19496145qkl.7
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 05:54:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wco1ACmBJKT01bm8zBO0MP2nnQlGcVNyX36uIR1E9uo=;
+        b=G0ZnAaGIytyfHiex43w/GJT+NEhMLwNxhYp1/W9HDnNFPo3glIRu93O66AaSeintW4
+         ewAToI5pRBz8O0l7tILOYNKjgySJWe17ht2quS2ahOjbZzAcz+xWKd0a5zthc019NWFQ
+         R1W77HwaNo2iUrrHabUyK2dJHQqwkMP3HcjM/gvl7CgOnOP2bq7gx3OJGNClRVsDU1GO
+         EpLTqCubJgP4nYoHsCBh1Njcn6q1PFTHEiM9EHe9usCQvVsgXVgmRkKNwwLnoHhUcsio
+         7ZzHIqeumqbjEfKuANmJfatwdGn/Gam/JXB0m0k1C5xdDcz21BPJmu8PlWtabKOypOds
+         oRlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wco1ACmBJKT01bm8zBO0MP2nnQlGcVNyX36uIR1E9uo=;
+        b=FbuSSoP3ozoTqm8BK0mbLb9r6IrdMKPvhpDJ9UnJkuAyLmNcw4vJfbd5Z7ZwYUzraF
+         ru676kJfF1fxW0jZNLJQHR11HOepD9pJwZxAaErBqeUrJJaER3LNTYmHRF7DNTx19ZGL
+         gLs32I5y1gRh3OXaF1uAHpp6C4+/1mZUA/RNHOT8f5hAWhPX8L/DJWIypD5X0rbunT5U
+         HCOVn4LYnWKIuZn8InLUTwXjvQki0XdGQ6cU+kxbXhjItEeHk29CdB0DxyBGmnbIn+OU
+         q5nFrMm3+NKmYiyFwcX4tiCZOJaW53+qPXdGDeLjKom0XwfzvjxEHFTXL4z9AComfSos
+         ykTw==
+X-Gm-Message-State: APjAAAXzoWP6e+tKBgN0zDq3Vld/Yfv7oq0JbFUOvbmIjTS72Mu8Mvg0
+        UTFjkGZBI/2lc1INRGSs7h9YUw==
+X-Google-Smtp-Source: APXvYqwkMwWoPoOuRyU9S1o0YCBdIBRy95mN2TqVYVQmY44HIF+ueV8rib/5b0aqZ5/M9OsEvpjRCQ==
+X-Received: by 2002:a37:b8c2:: with SMTP id i185mr18411300qkf.156.1582034040843;
+        Tue, 18 Feb 2020 05:54:00 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id w21sm1956489qth.17.2020.02.18.05.54.00
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 18 Feb 2020 05:54:00 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1j43K3-0002fU-Nx; Tue, 18 Feb 2020 09:53:59 -0400
+Date:   Tue, 18 Feb 2020 09:53:59 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, shahafs@mellanox.com,
+        rob.miller@broadcom.com, haotian.wang@sifive.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com,
+        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
+        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: Re: [PATCH] vhost: introduce vDPA based backend
+Message-ID: <20200218135359.GA9608@ziepe.ca>
+References: <20200131033651.103534-1-tiwei.bie@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
+In-Reply-To: <20200131033651.103534-1-tiwei.bie@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.02.2020 14:29, Vladimir Oltean wrote:
->> >diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
->> >index 86d543ab1ab9..94d39ccea017 100644
->> >--- a/drivers/net/ethernet/mscc/ocelot.c
->> >+++ b/drivers/net/ethernet/mscc/ocelot.c
->> >@@ -2297,6 +2297,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
->> >                         enum ocelot_tag_prefix injection,
->> >                         enum ocelot_tag_prefix extraction)
->> > {
->> >+       int port;
->> >+
->> >+       for (port = 0; port < ocelot->num_phys_ports; port++) {
->> >+               /* Disable old CPU port and enable new one */
->> >+               ocelot_rmw_rix(ocelot, 0, BIT(ocelot->cpu),
->> >+                              ANA_PGID_PGID, PGID_SRC + port);
->> I do not understand why you have an "old" CPU. The ocelot->cpu field is
->> not initialized at this point (at least not in case of Ocelot).
->>
->> Are you trying to move the NPI port?
->>
->
->Yes, that's what this function does. It sets the NPI port. It should
->be able to work even if called multiple times (even though the felix
->and ocelot drivers both call it exactly one time).
->But I can (and will) remove/simplify the logic for the "old" CPU port.
->I had the patch formatted already, and I didn't want to change it
->because I was lazy to re-test after the changes.
->
->> >+               if (port == cpu)
->> >+                       continue;
->> >+               ocelot_rmw_rix(ocelot, BIT(cpu), BIT(cpu),
->> >+                              ANA_PGID_PGID, PGID_SRC + port);
->> So you want all ports to be able to forward traffic to your CPU port,
->> regardless of if these ports are member of a bridge...
->>
->
->Yes.
->
->> I have read through this several times, and I'm still not convinced I
->> understood it.
->>
->> Can you please provide a specific example of how things are being
->> forwarded (wrongly), and describe how you would like them to be
->> forwarded.
->
->Be there 4 net devices: swp0, swp1, swp2, swp3.
->At probe time, the following doesn't work on the Felix DSA driver:
->ip addr add 192.168.1.1/24 dev swp0
->ping 192.168.1.2
-This does work with Ocelot, without your patch. I would like to
-understand why this does not work in your case.
+On Fri, Jan 31, 2020 at 11:36:51AM +0800, Tiwei Bie wrote:
 
-Is it in RX or TX you have the problem.
+> +static int vhost_vdpa_alloc_minor(struct vhost_vdpa *v)
+> +{
+> +	return idr_alloc(&vhost_vdpa.idr, v, 0, MINORMASK + 1,
+> +			 GFP_KERNEL);
+> +}
 
-Is it with the broadcast ARP, or is it the following unicast packet?
+Please don't use idr in new code, use xarray directly
 
->But if I do this:
->ip link add dev br0 type bridge
->ip link set dev swp0 master br0
->ip link set dev swp0 nomaster
->ping 192.168.1.2
->Then it works, because the code path from ocelot_bridge_stp_state_set
->that puts the CPU port in the forwarding mask of the other ports gets
->executed on the "bridge leave" action.
->The whole point is to have the same behavior at probe time as after
->removing the ports from the bridge.
-This does sound like a bug, but I still do not agree in the solution.
+> +static int vhost_vdpa_probe(struct device *dev)
+> +{
+> +	struct vdpa_device *vdpa = dev_to_vdpa(dev);
+> +	const struct vdpa_config_ops *ops = vdpa->config;
+> +	struct vhost_vdpa *v;
+> +	struct device *d;
+> +	int minor, nvqs;
+> +	int r;
+> +
+> +	/* Currently, we only accept the network devices. */
+> +	if (ops->get_device_id(vdpa) != VIRTIO_ID_NET) {
+> +		r = -ENOTSUPP;
+> +		goto err;
+> +	}
+> +
+> +	v = kzalloc(sizeof(*v), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+> +	if (!v) {
+> +		r = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	nvqs = VHOST_VDPA_VQ_MAX;
+> +
+> +	v->vqs = kmalloc_array(nvqs, sizeof(struct vhost_virtqueue),
+> +			       GFP_KERNEL);
+> +	if (!v->vqs) {
+> +		r = -ENOMEM;
+> +		goto err_alloc_vqs;
+> +	}
+> +
+> +	mutex_init(&v->mutex);
+> +	atomic_set(&v->opened, 0);
+> +
+> +	v->vdpa = vdpa;
+> +	v->nvqs = nvqs;
+> +	v->virtio_id = ops->get_device_id(vdpa);
+> +
+> +	mutex_lock(&vhost_vdpa.mutex);
+> +
+> +	minor = vhost_vdpa_alloc_minor(v);
+> +	if (minor < 0) {
+> +		r = minor;
+> +		goto err_alloc_minor;
+> +	}
+> +
+> +	d = device_create(vhost_vdpa.class, NULL,
+> +			  MKDEV(MAJOR(vhost_vdpa.devt), minor),
+> +			  v, "%d", vdpa->index);
+> +	if (IS_ERR(d)) {
+> +		r = PTR_ERR(d);
+> +		goto err_device_create;
+> +	}
+> +
 
->The code with ocelot_mact_learn towards PGID_CPU for the MAC addresses
->of the switch port netdevices is all bypassed in Felix DSA. Even if it
->weren't, it isn't the best solution.
->On your switch, this test would probably work exactly because of that
->ocelot_mact_learn.
-So I guess it is the reception of the unicast packet which is causing
-problems.
+I can't understand what this messing around with major/minor numbers
+does. Without allocating a cdev via cdev_add/etc there is only a
+single char dev in existence here. This and the stuff in
+vhost_vdpa_open() looks non-functional.
 
->But try to receive packets sent at any other unicast DMAC immediately
->after probe time, and you should see them in tcpdump but won't.
-That is true - this is because we have no way of implementing promisc
-mode, which still allow us to HW offload of the switching. We discussed
-this before.
+> +static void vhost_vdpa_remove(struct device *dev)
+> +{
+> +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+> +	struct vhost_vdpa *v = dev_get_drvdata(dev);
+> +	int opened;
+> +
+> +	add_wait_queue(&vhost_vdpa.release_q, &wait);
+> +
+> +	do {
+> +		opened = atomic_cmpxchg(&v->opened, 0, 1);
+> +		if (!opened)
+> +			break;
+> +		wait_woken(&wait, TASK_UNINTERRUPTIBLE, HZ * 10);
+> +	} while (1);
+> +
+> +	remove_wait_queue(&vhost_vdpa.release_q, &wait);
 
-Long story short, it sounds like you have an issue because the
-Felix/DSA driver behave differently than the Ocelot. Could you try to do
-your fix such that it only impact Felix and does not change the Ocelot
-behavioral.
+*barf* use the normal refcount pattern please
 
-/Allan
+read side:
 
+  refcount_inc_not_zero(uses)
+  //stuff
+  if (refcount_dec_and_test(uses))
+     complete(completer)
+
+destroy side:
+  if (refcount_dec_and_test(uses))
+     complete(completer)
+  wait_for_completion(completer)
+  // refcount now permanently == 0
+
+Use a completion in driver code
+
+> +	mutex_lock(&vhost_vdpa.mutex);
+> +	device_destroy(vhost_vdpa.class,
+> +		       MKDEV(MAJOR(vhost_vdpa.devt), v->minor));
+> +	vhost_vdpa_free_minor(v->minor);
+> +	mutex_unlock(&vhost_vdpa.mutex);
+> +	kfree(v->vqs);
+> +	kfree(v);
+
+This use after-fress vs vhost_vdpa_open prior to it setting the open
+bit. Maybe use xarray, rcu and kfree_rcu ..
+
+> +static int __init vhost_vdpa_init(void)
+> +{
+> +	int r;
+> +
+> +	idr_init(&vhost_vdpa.idr);
+> +	mutex_init(&vhost_vdpa.mutex);
+> +	init_waitqueue_head(&vhost_vdpa.release_q);
+> +
+> +	/* /dev/vhost-vdpa/$vdpa_device_index */
+> +	vhost_vdpa.class = class_create(THIS_MODULE, "vhost-vdpa");
+> +	if (IS_ERR(vhost_vdpa.class)) {
+> +		r = PTR_ERR(vhost_vdpa.class);
+> +		goto err_class;
+> +	}
+> +
+> +	vhost_vdpa.class->devnode = vhost_vdpa_devnode;
+> +
+> +	r = alloc_chrdev_region(&vhost_vdpa.devt, 0, MINORMASK + 1,
+> +				"vhost-vdpa");
+> +	if (r)
+> +		goto err_alloc_chrdev;
+> +
+> +	cdev_init(&vhost_vdpa.cdev, &vhost_vdpa_fops);
+> +	r = cdev_add(&vhost_vdpa.cdev, vhost_vdpa.devt, MINORMASK + 1);
+> +	if (r)
+> +		goto err_cdev_add;
+
+It is very strange, is the intention to create a single global char
+dev?
+
+If so, why is there this:
+
++static int vhost_vdpa_open(struct inode *inode, struct file *filep)
++{
++	struct vhost_vdpa *v;
++	struct vhost_dev *dev;
++	struct vhost_virtqueue **vqs;
++	int nvqs, i, r, opened;
++
++	v = vhost_vdpa_get_from_minor(iminor(inode));
+
+?
+
+If the idea is to create a per-vdpa char dev then this stuff belongs
+in vhost_vdpa_probe(), the cdev should be part of the vhost_vdpa, and
+the above should be container_of not an idr lookup.
+
+Jason
