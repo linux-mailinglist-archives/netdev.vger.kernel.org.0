@@ -2,90 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 082FF1627A4
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14991627A6
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgBROFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 09:05:13 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:32904 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbgBROFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:05:13 -0500
-Received: by mail-lj1-f193.google.com with SMTP id y6so23107486lji.0
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 06:05:11 -0800 (PST)
+        id S1726772AbgBROFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 09:05:21 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:41220 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbgBROFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:05:20 -0500
+Received: by mail-ed1-f66.google.com with SMTP id c26so24939667eds.8
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 06:05:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gepirWzsXM8fMOGmpzh1TBArlnDGwmVTkXthgGICiqE=;
-        b=ddMyzjMB3HZYRC4oGoarNS9uYm/KPRZoCbQ0aPEjyYCqdGE50erFfzSHPoDBhLvyt7
-         iqWB/JjdVumEDwi407Nw1VLXKEou3v8qBiktQgY1K+ustPYp71j+3q9FingQSwp2jwrc
-         fHuwxptJyb4/T9ZHAukNdHnojBE+8P06YlDH9NQDRAjCtnylESHZVwiWZ3YPB7EaJivl
-         /gswMj6mo7YTiYixnHpgwlbrKWL4WLhTJ0iA5vDBsXd7SB4RLw9S4ep1yMi+mLcYtwqK
-         0NYQ3qb8iHBFoyKTgllwM9Q/bAn3OfcMvPX2YzZIpAcHmH2ypzxtSHrJfMApa8ZgHr//
-         VMDQ==
+        bh=4Kj9k5jCAauZHUGLdR01UFe5z+TfeUoeZRYGm9jwYdg=;
+        b=hUxDg+0tKrZXhu0xBHHwcFprs5ZrqhGmAuKV/0miDidk00aYXuXncx0evr6dgbxsbt
+         hGofv0sjGfgwanktFw18aVWM8u1QhX0NGXPuPOLYUyqcYEAqbkv2TZ/irwblw80J45ca
+         eNfqnYp/iOnVaCCtePyCQbJMUeVpBs9k+09iJ8bACLDcxJrmTuVQdoVwBpcvMzlA5FDA
+         DEIUn9EUdOZagYaZXSL7SrhHvlD/ctA8DVhq3mH6AT80fpikMJP/QsY7E9xzuznZtRwb
+         RaB3Mr180iz7NijkDOptW9oR8g1fADOnSx6dUjrLcAYLk+9hSFpy54LcD4JIkrpMYZ7g
+         xk7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gepirWzsXM8fMOGmpzh1TBArlnDGwmVTkXthgGICiqE=;
-        b=arN9M+dlhKnYqoG2LN0AwhLlW20TXq359yPjdop8sXeEEad/nhHyAuMwHS6Cc+ACIa
-         GEbH0mTW8yLFMxMSS0Q6V1DLTTNGjNgshC5HvfG91XAKrn4efZ0ds36BeJhvnEPu1lrb
-         wVMZIMaKhQB/jPv/es0GrpD8plAOI67IoncWsmrcYJR8sBWf7fCkBIVFeXFlxN/ubWas
-         ql8L1v0P1W6SgrVEuRSniq4snTIhB8pVmGZiZI6KOydh7sKbKTIuAcvCryktYQIbfh9h
-         VsmN45TzLH5g9U33psLko5+ZxekyoahOpj6yPppf4jkF0EZuKT9pRy7BQi4LK/i1wuTh
-         jsFg==
-X-Gm-Message-State: APjAAAWPYdI5t+00NmWzH7bMT1d3/eDttwOIbHO9lbIqw3gZnbArJR11
-        JiyA5JT82N6kqRctj/n2uzZ6L82Q26SrblFsPlgkFpTP
-X-Google-Smtp-Source: APXvYqxBZFQ8IYKs1larRN+se+woUVQvettdIJnprafxEZS6z/oSgR+hYra3gpNAPfoz53YbgrOIHkB35lGPZmOh4gM=
-X-Received: by 2002:a2e:7818:: with SMTP id t24mr12690476ljc.195.1582034710972;
- Tue, 18 Feb 2020 06:05:10 -0800 (PST)
+        bh=4Kj9k5jCAauZHUGLdR01UFe5z+TfeUoeZRYGm9jwYdg=;
+        b=k5Hl2V0bDOxiiEDgmu05rHEpo3csWL0GG12dciM5TVo6Cwr28aaMR8ve1I006aRDVE
+         Gber/T0JToPpW9c26VumXdXlWdP3t75sFbZ4yBO47uFV3TlJN7gRNPb/Nkt2MKXYcE5b
+         aAyhebcKCL1bD6ojrizwQACQ9Yzg0UbdxLnLRSUT5joF2wmC7R+dp7gVOY7OkDDyUHD0
+         YL8WluH/AqmF30QXFiQkQupjat/zpv7puAZKBPs/TEdk1uCNVa+jMcSQXAO5fEDYfkAi
+         9ftmn60hQ4DbAZs9ngNa4pylzJK9r28ekIlFcgKrLq6eKAUtLymB2cQs2uNYDJ6u2x/P
+         JFcQ==
+X-Gm-Message-State: APjAAAVjIgcNvLWTqk9I+J0agwsVZXkKg6ncgTYW/gySm2pSM8KKOmnS
+        +0Qp58KxCZTrqhrAYpv0ysrv7YSZeo7Vz2eQVs4=
+X-Google-Smtp-Source: APXvYqyezJKuGiGNceDlZzVYADt53HOkAtJMlYB+ywmil549+K1QkSl4nvA5POx9gzVmFJkUclAEyE/zYNNCJUTk6Xk=
+X-Received: by 2002:a17:906:f49:: with SMTP id h9mr20374029ejj.6.1582034718924;
+ Tue, 18 Feb 2020 06:05:18 -0800 (PST)
 MIME-Version: 1.0
-References: <20200217223651.22688-1-festevam@gmail.com> <20200217.214840.486235315714211732.davem@davemloft.net>
- <VI1PR0402MB3600C163FEFD846B1D5869B4FF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <CAOMZO5CWX9dhcg_v3LgPvK97yESAi_kS72e0=vjiB+-15C5J1g@mail.gmail.com> <VI1PR0402MB3600B90E7775C368E81B533DFF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-In-Reply-To: <VI1PR0402MB3600B90E7775C368E81B533DFF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 18 Feb 2020 11:04:59 -0300
-Message-ID: <CAOMZO5A_LvVOEQKqbrm5xKUR5vBLcgpB6e50_Vmf5BDFsRnaTw@mail.gmail.com>
-Subject: Re: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation scheme
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
+References: <20200217150058.5586-1-olteanv@gmail.com> <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
+ <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com> <20200218140111.GB10541@lunn.ch>
+In-Reply-To: <20200218140111.GB10541@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 18 Feb 2020 16:05:08 +0200
+Message-ID: <CA+h21hpFwQyW0HwYpMRgBHBn51ySR_SxS5eDQ2ixwqiEbLj2mA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
+ to CPU in standalone mode
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andy,
+Hi Andrew,
 
-On Tue, Feb 18, 2020 at 10:54 AM Andy Duan <fugang.duan@nxp.com> wrote:
+On Tue, 18 Feb 2020 at 16:01, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Tue, Feb 18, 2020 at 02:29:15PM +0200, Vladimir Oltean wrote:
+> > Hi Allan,
+> >
+> > On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
+> > <allan.nielsen@microchip.com> wrote:
+> > >
+> > > On 17.02.2020 17:00, Vladimir Oltean wrote:
+> > > >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > > >
+> > > >From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > >
+> > > >The Ocelot switches have what is, in my opinion, a design flaw: their
+> > > >DSA header is in front of the Ethernet header, which means that they
+> > > >subvert the DSA master's RX filter, which for all practical purposes,
+> > > >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
+> > > >needs to be used for extraction, which makes the switch add a fake DMAC
+> > > >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
+> > > >
+> > > >The issue with this design, of course, is that the CPU will be spammed
+> > > >with frames that it doesn't want to respond to, and there isn't any
+> > > >hardware offload in place by default to drop them.
+> > > In the case of Ocelot, the NPI port is expected to be connected back to
+> > > back to the CPU, meaning that it should not matter what DMAC is set.
+> > >
+> >
+> > You are omitting the fact that the host Ethernet port has an RX filter
+> > as well. By default it should drop frames that aren't broadcast or
+> > aren't sent to a destination MAC equal to its configured MAC address.
+> > Most DSA switches add their tag _after_ the Ethernet header. This
+> > makes the DMAC and SMAC seen by the front-panel port of the switch be
+> > the same as the DMAC and SMAC seen by the host port. Combined with the
+> > fact that DSA sets up switch port MAC addresses to be inherited from
+> > the host port, RX filtering 'just works'.
+>
+> It is a little bit more complex than that, but basically yes. If the
+> slave interface is in promisc mode, the master interface is also made
+> promisc. So as soon as you add a slave to a bridge, the master it set
+> promisc. Also, if the slave has a different MAC address to the master,
+> the MAC address is added to the masters RX filter.
+>
+> If the DSA header is before the DMAC, you need promisc mode all the
+> time. But i don't expect the CPU port to be spammed. The switch should
+> only be forwarding frames to the CPU which the CPU is actually
+> interested in.
+>
+> > Be there 4 net devices: swp0, swp1, swp2, swp3.
+> > At probe time, the following doesn't work on the Felix DSA driver:
+> > ip addr add 192.168.1.1/24 dev swp0
+> > ping 192.168.1.2
+>
+> That is expected to work.
+>
+> > But if I do this:
+> > ip link add dev br0 type bridge
+> > ip link set dev swp0 master br0
+> > ip link set dev swp0 nomaster
+> > ping 192.168.1.2
+> > Then it works, because the code path from ocelot_bridge_stp_state_set
+> > that puts the CPU port in the forwarding mask of the other ports gets
+> > executed on the "bridge leave" action.
+>
+> It probably also works because when the port is added to the bridge,
+> the bridge puts the port into promisc mode. That in term causes the
+> master to be put into promisc mode.
 
-> For imx6sl/imx8mp/imx8mm/imx8mn, soc only has one instance, bind operation
-> is supported and has no problem.
+Promisc on the DSA master is not why this works. The switch drops the
+packets instead of forwarding them to the CPU, because the CPU is not
+in the list of valid destination for unknown unicast traffic received
+on the front panel ports.
+Promiscuous mode on the DSA master is also disabled when the switch
+ports exit the bridge, by the way.
 
-This is not true.
+>
+>        Andrew
 
-As per the commit log, here is the result of unbind/bind on a i.mx6qp,
-which only has a single FEC instance:
-
-# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/unbind
-# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/bind
-[   10.756519] pps pps0: new PPS source ptp0
-[   10.792626] libphy: fec_enet_mii_bus: probed
-[   10.799330] fec 2188000.ethernet eth0: registered PHC device 1
-# udhcpc -i eth0
-udhcpc: started, v1.31.1
-[   14.985211] fec 2188000.ethernet eth0: no PHY, assuming direct
-connection to switch
-[   14.993140] libphy: PHY fixed-0:00 not found
-[   14.997643] fec 2188000.ethernet eth0: could not attach to PHY
-
-After performing unbind/bind operation the network is not functional at all.
-
-Don't you agree that unbind/bind is currently broken here even for
-SoCs with a single FEC?
-
-Should we prevent unbind? Or any other suggestion?
+Regards,
+-Vladimir
