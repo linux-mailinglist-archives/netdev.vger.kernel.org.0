@@ -2,306 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 949A816261C
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 13:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA0A016266F
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 13:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbgBRM3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 07:29:30 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:45906 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgBRM3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 07:29:30 -0500
-Received: by mail-ed1-f66.google.com with SMTP id v28so24576724edw.12
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 04:29:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZmBbRIxCiaXc+kfSoiHUrxp9r4P+BSqBK22CsveBs7Q=;
-        b=ROq+F5lhhRUxdiaLnYUa9FMbWrLhLM/tqt97Omf3xwWmYR0kYXCHhUi0a23r62CRq9
-         aNR1Yk+lG+d9rInJCDTXo7viD+XQYPKaabLSws2gE8sO8/U+wleMHzNiqQpt6SvXliKJ
-         OhzG4Kb9ZcKLDOEvr1dljx/sQKJPl6VVeBzH8aIt2g0wMjhmZHTrux3xzolrStAKRSC4
-         x4Wt7rXUxsukCBWQMrIGFfrkTDRyKXkCYRPKpyqOcAeI/bn3EU7gLf9VI7bKfOr4TrBM
-         koXJ7h6YAeF/GQk3M1YzkHY168iTG1g/zbS/724VZfyvU5OHOkdUgrC5WTNgw9OCflNo
-         8NfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZmBbRIxCiaXc+kfSoiHUrxp9r4P+BSqBK22CsveBs7Q=;
-        b=Vh4WPEWQR1hDD6hybGfBSa1Px9vgSjVpCqeu4fOj+F5Hl/Lx5g4uvO8t78w94TIRYi
-         5rhTWUB10Ddb/u1/r+pt8YnnAdZuzIkTbqmvUynZZffKtjENx4ex7/ZqDDDZOAHT6Nqr
-         Aqkzc3yG4igR43emu6rwLO253rHW7y/j9zQjCg3EzOBp/wzrgtavgkZnWJBlGsfO+94M
-         irbALEPqJETzKaCd4dMgOWUMTE8B7aIlJiusozMEllGIxDYO6ZNKLLW0SPcr4cfCcjGp
-         l6E1x4nDzOisuKHH22lhd1WLWUMdXeaVD0WQLN3HppZOe8EjNsH+MssHYQCGgs0MT61W
-         iefw==
-X-Gm-Message-State: APjAAAVMk5XD3MXf6flueTKpj6sLxQyy8by91pPgDxjmEdSHwhKhyWhh
-        0/BkZ7ibGr5pDF8qmSJOLjW01le1e+BkXWtqPuc=
-X-Google-Smtp-Source: APXvYqz+Tk2zBtqDUqVExZ4Pm9feWCgxA8RfaGoLxYaFZ+cxNbpAd5snK5Yq7C/4eqC4WDlnkh3DGDas+63mXwAXQNY=
-X-Received: by 2002:a17:907:2636:: with SMTP id aq22mr3692165ejc.176.1582028966045;
- Tue, 18 Feb 2020 04:29:26 -0800 (PST)
+        id S1726659AbgBRMsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 07:48:45 -0500
+Received: from mail-eopbgr30066.outbound.protection.outlook.com ([40.107.3.66]:29051
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726546AbgBRMsp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 07:48:45 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NEe0EMAcyAMDNpXzHeiMBqDpK71YlRR6y/yxOWK3j9ZwrcYrufOulYJKzN7MZj1rrrEIWJmTeyTZ6b1JRwgFPvpDPWdzm1hG2duuiiYncHSZr7hPawGVkpyyc+ZVnnrb6XTsB6F4LWvqHTLM4vtfvYBweaCIP+JgBxDK5W9odB3PWjf/26qkIY949CEB9G19fepeZX2Aw+0LvXTK2NS35NkFmSj3T0/kmX8i+XMHaOocY12y0wBLqye14gG5HQ6EbQsleUxxuU3tfOw2ZEG/cP1f14shuZ2mbmPypZzb2FdOp2T+BXyU1kbdv6DuVJK0d35+pKP7VNSFt1BXBAq2tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dYcVTViYBGsSqB+VO5DjojJV6+iGDxqjCfxruYX/JdY=;
+ b=NWRt9pzPiS74XW0AmbzjHJvesfCietJ7jCG4wIkoIJYLJF/qWhDvQwh7BHmxX++PUHwqMr+w0XCNgMzNd2jc5J/qfPQheBP9AU8BotRMsHrsDjdZNH8yVMV4Gz7jewk4tUkYzvCY8Y23tC8Q252I4qJL8Un8cERYSNRzHsYOsl/F6d9L+RmKyPyvz53yYGGo0eMwHyrTdtqdZ71i3jgFbr9qFMYazjH+ckevNbqryEHXN6chP2S2xmAhd02vcWO/BxCl8P2GwDMOVEFDBeZL+HNe5lLR8Ixc2ru6qsVJwXsNCywlu1/c6oUwsjUaE428E1qbdjrdyIQrD7ia5ggHeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dYcVTViYBGsSqB+VO5DjojJV6+iGDxqjCfxruYX/JdY=;
+ b=b27rHQmlgvoGfMDQtq7+dnrRFfeB5KHCYLj9k6gy0tEVmwhhTNtCsJL1W90SHL3ol/2wXDlS7pXAsTN+I0OVn8ZAnrc3gS60EYt6u+yUBnyT817cw8qyzyE2821WKEyK2RLm/5X/Y1ZIzwg1TamoDnuvL6kM//ChSb8YefBZ0BU=
+Received: from VI1PR04MB5135.eurprd04.prod.outlook.com (20.177.52.139) by
+ VI1PR04MB5679.eurprd04.prod.outlook.com (20.178.204.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2729.25; Tue, 18 Feb 2020 12:48:39 +0000
+Received: from VI1PR04MB5135.eurprd04.prod.outlook.com
+ ([fe80::ed73:9d46:d34:5e19]) by VI1PR04MB5135.eurprd04.prod.outlook.com
+ ([fe80::ed73:9d46:d34:5e19%6]) with mapi id 15.20.2729.032; Tue, 18 Feb 2020
+ 12:48:39 +0000
+From:   "Pankaj Bansal (OSS)" <pankaj.bansal@oss.nxp.com>
+To:     Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+CC:     Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@nxp.com>,
+        "stuyoder@gmail.com" <stuyoder@gmail.com>,
+        "nleeder@codeaurora.org" <nleeder@codeaurora.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Will Deacon <will@kernel.org>,
+        "jon@solid-run.com" <jon@solid-run.com>,
+        Russell King <linux@armlinux.org.uk>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andy Wang <Andy.Wang@arm.com>, Varun Sethi <V.Sethi@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Paul Yang <Paul.Yang@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Thread-Topic: [PATCH] bus: fsl-mc: Add ACPI support for fsl-mc
+Thread-Index: AQHV5lZ7Xi36FCZsh0O+fGt3c05hNagg5R2w
+Date:   Tue, 18 Feb 2020 12:48:39 +0000
+Message-ID: <VI1PR04MB513558BF77192255CBE12102B0110@VI1PR04MB5135.eurprd04.prod.outlook.com>
+References: <VI1PR04MB5135D7D8597D33DB76DA05BDB0110@VI1PR04MB5135.eurprd04.prod.outlook.com>
+ <615c6807-c018-92c9-b66a-8afdda183699@huawei.com>
+In-Reply-To: <615c6807-c018-92c9-b66a-8afdda183699@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=pankaj.bansal@oss.nxp.com; 
+x-originating-ip: [92.120.1.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: d8bd4d1f-a583-4669-b0fe-08d7b470e07b
+x-ms-traffictypediagnostic: VI1PR04MB5679:|VI1PR04MB5679:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB5679B6B06B0F91EE268FB452B0110@VI1PR04MB5679.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 031763BCAF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(396003)(376002)(346002)(136003)(199004)(189003)(55016002)(966005)(66446008)(7416002)(9686003)(66556008)(478600001)(71200400001)(64756008)(33656002)(52536014)(66946007)(86362001)(76116006)(186003)(81166006)(26005)(4326008)(5660300002)(66476007)(81156014)(8676002)(8936002)(110136005)(2906002)(54906003)(7696005)(6506007)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5679;H:VI1PR04MB5135.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kDBi4HWLhLrIsPrOxANEvgNUiF4Bdn8K7zs9lwscGyxVUFo/PbpohUFUNAELTxXVUCNMCmeqX9m/zGmjxhQrS+WUbJ7L4lqCHM5DGT8wLmWTcPzHcfaYrIQsLFtQAui2nmSivVFr+zT6c6S/hFv7jrnQUcX89LSwX7Y/6rRKoJ3FjwgC6Y1y+rqHyQ2q/zCFLxdjOZKE0MD5cbZsp5LiVFGSKbvgIju1BWBY1gDKPqnloKM/iIssIfZspXQxktvOf5ArCcZdcXfdUs7x/Zk4ZaGMeHwHR3pCNSZh2wn3tFs+r9e22LRRPKP1DHkmQgVKu8TkrhB9CPDbKP8NsL7pskiCbOv79LFZGdCAGXqlXhRnG0a2R0SWBsh0D9tsh/SYX9rAUpGhZgWpMHbqPosrgTrT+ORy25BBX4raKzRnv+RkxK6Hor4KxjMirbd3fCtWypEMCIOLh8VO3GRraLIVKPKV+DAM03nkXwbnexUiugan/HGGxdf98d0NnVZrRyiXCiG9NPSXVuTvBLim2JWToA==
+x-ms-exchange-antispam-messagedata: Yse2htim+PlHP/Mc4MP47q3uJbQn93CcinVMGKRxuv7NscsspTwh3EKoGODpAlljjU41kHyaB0iV62j/giEQIJsw38auv/+FbBCxyYy+2e/QZON74fe9B/cfbXkLjTMenT0+Y0deoTl4FXPGPio1Hw==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200217150058.5586-1-olteanv@gmail.com> <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
-In-Reply-To: <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 18 Feb 2020 14:29:15 +0200
-Message-ID: <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8bd4d1f-a583-4669-b0fe-08d7b470e07b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2020 12:48:39.0794
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tRsOruYEPEGwXSOol6bOT0B9vVcJumAvGr4kZDTIVRQWZ9j0ZF8bAAXK5/VvmxJbqqAhzO1n0I3LPGooAmTaBwheGT79UB1GjCUhXD9leJHVYR60+/Dexu9fLakhsA8k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5679
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Allan,
-
-On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
-<allan.nielsen@microchip.com> wrote:
->
-> On 17.02.2020 17:00, Vladimir Oltean wrote:
-> >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> >From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> >The Ocelot switches have what is, in my opinion, a design flaw: their
-> >DSA header is in front of the Ethernet header, which means that they
-> >subvert the DSA master's RX filter, which for all practical purposes,
-> >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
-> >needs to be used for extraction, which makes the switch add a fake DMAC
-> >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
-> >
-> >The issue with this design, of course, is that the CPU will be spammed
-> >with frames that it doesn't want to respond to, and there isn't any
-> >hardware offload in place by default to drop them.
-> In the case of Ocelot, the NPI port is expected to be connected back to
-> back to the CPU, meaning that it should not matter what DMAC is set.
->
-
-You are omitting the fact that the host Ethernet port has an RX filter
-as well. By default it should drop frames that aren't broadcast or
-aren't sent to a destination MAC equal to its configured MAC address.
-Most DSA switches add their tag _after_ the Ethernet header. This
-makes the DMAC and SMAC seen by the front-panel port of the switch be
-the same as the DMAC and SMAC seen by the host port. Combined with the
-fact that DSA sets up switch port MAC addresses to be inherited from
-the host port, RX filtering 'just works'.
-
-> It was also my understanding that this is how you have connected this.
->
-
-Yup.
-
-> I'm not able to see why this would cause spamming.
->
-
-With the Ocelot switch adding just the tag on extraction, the host
-port would interpret random garbage as the DMAC (basically first 6
-bytes of the extraction header whose format is detailed in
-net/dsa/tag_ocelot.c.
-So it would drop basically all packets, unless by pure chance, the
-first 6 bytes of the extraction header form a pattern that is equal to
-the MAC address configured on the host port (highly unlikely).
-With the Ocelot switches, the host port should really be
-unconditionally put in promiscuous mode. DSA doesn't support
-specifying this yet, because no other switch has needed this.
-Another workaround (the one currently used now) is to use this long
-prefix format, which makes the Ocelot switch add some fake DMAC and
-SMAC before the extraction header, such that the frames will pass
-through any host port RX filter.
-Using either one of the 2 workarounds (promiscuous mode or long
-prefix), the advantage and the disadvantage is the same: the host port
-can no longer drop frames in hardware for unknown DMACs (either
-because it doesn't know where the real DMAC is, or because it is told
-not to drop them).
-The disadvantage is that a mechanism that worked implicitly so far for
-every other DSA switch does not work for Ocelot. Of course it causes
-spamming only if you send traffic towards a DMAC that is irrelevant to
-the CPU.
-
-> >What is being done in the VSC7514 Ocelot driver is a process of
-> >selective whitelisting. The "MAC address" of each Ocelot switch net
-> >device, with all VLANs installed on that port, is being added as a FDB
-> >entry towards PGID_CPU.
-> >
-> >PGID_CPU is is a multicast set containing only BIT(cpu). I don't know
-> >why it was chosen to be a multicast PGID (59) and not simply the unicast
-> >one of this port, but it doesn't matter. The point is that the the CPU
-> >port is special, and frames are "copied" to the CPU, disregarding the
-> >source masks (third PGID lookup), if BIT(cpu) is found to be set in the
-> >destination masks (first PGID lookup).
-> >
-> >Frames that match the FDB will go to PGID_CPU by virtue of the DEST_IDX
-> >from the respective MAC table entry, and frames that don't will go to
-> >PGID_UC or PGID_MC, by virtue of the FLD_UNICAST, FLD_BROADCAST etc
-> >settings for flooding. And that is where the distinction is made:
-> >flooded frames will be subject to the third PGID lookup, while frames
-> >that are whitelisted to the PGID_CPU by the MAC table aren't.
-> >
-> >So we can use this mechanism to simulate an RX filter, given that we are
-> >subverting the DSA master's implicit one, as mentioned in the first
-> >paragraph. But this has some limitations:
-> >
-> >- In Ocelot each net device has its own MAC address. When simulating
-> >  this with MAC table entries, it will practically result in having N
-> >  MAC addresses for each of the N front-panel ports (because FDB entries
-> >  are not per source port). A bit strange, I think.
-> >
-> >- In DSA we don't have the infrastructure in place to support this
-> >  whitelisting mechanism. Calling .port_fdb_add on the CPU port for each
-> >  slave net device dev_addr isn't, in itself, hard. The problem is with
-> >  the VLANs that this port is part of. We would need to keep a duplicate
-> >  list of the VLANs from the bridge, plus the ones added from 8021q, for
-> >  each port. And we would need reference counting on each MAC address,
-> >  such that when a front-panel port changes its MAC address and we need
-> >  to delete the old FDB entry, we don't actually delete it if the other
-> >  front-panel ports are still using it. Not to mention that this FDB
-> >  entry would have to be added on the whole net of upstream DSA switches.
-> >
-> >- Cascading a different DSA switch that has tags before the Ethernet
-> >  header would not possibly work if we rely on the whitelisting
-> >  mechanism exclusively.
-> >
-> >So... it's complicated. What this patch does is to simply allow frames
-> >to be flooded to the CPU, which is anyway what the Ocelot driver is
-> >doing after removing the bridge from the net devices, see this snippet
-> >from ocelot_bridge_stp_state_set:
-> >
-> >    /* Apply FWD mask. The loop is needed to add/remove the current port as
-> >     * a source for the other ports.
-> >     */
-> >    for (p = 0; p < ocelot->num_phys_ports; p++) {
-> >            if (p == ocelot->cpu || (ocelot->bridge_fwd_mask & BIT(p))) {
-> >                    (...)
-> >            } else {
-> >                    /* Only the CPU port, this is compatible with link
-> >                     * aggregation.
-> >                     */
-> >                    ocelot_write_rix(ocelot,
-> >                                     BIT(ocelot->cpu),
-> >                                     ANA_PGID_PGID, PGID_SRC + p);
-> >            }
-> >
-> >Otherwise said, the ocelot driver itself is already not self-coherent,
-> >since immediately after probe time, and immediately after removal from a
-> >bridge, it behaves in different ways, although the front panel ports are
-> >standalone in both cases.
-> Maybe you found a bug, maybe you have different expectations.
->
-> The idea is that after probe time all the ports must behave as NIC
-> devices. No forwarding are being done, and all traffic is copied to the
-> CPU.
->
-
-Yup.
-
-> When a port is added to the bridge, the given ports-bit must be set in
-> the PGID_SRC.
->
-
-Yup.
-
-> As I read the code, this seems to be done right. If you believe you have
-> found a bug regarding this then please clarify this a bit.
->
-
-Writing BIT(ocelot->cpu) into PGID_SRC + p is only done from
-ocelot_bridge_stp_state_set. That function does not get called at
-probe time. So BIT(ocelot->cpu) is not present in PGID_SRC + p at
-probe time.
-
-> >While standalone traffic _does_ work for the Felix DSA wrapper after
-> >enslaving and removing the ports from a bridge, this patch makes
-> >standalone traffic work at probe time too, with the caveat that even
-> >irrelevant frames will get processed by software, making it more
-> >susceptible to potential denial of service.
-> >
-> >Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >---
-> > drivers/net/ethernet/mscc/ocelot.c | 12 ++++++++++++
-> > 1 file changed, 12 insertions(+)
-> >
-> >diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> >index 86d543ab1ab9..94d39ccea017 100644
-> >--- a/drivers/net/ethernet/mscc/ocelot.c
-> >+++ b/drivers/net/ethernet/mscc/ocelot.c
-> >@@ -2297,6 +2297,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
-> >                         enum ocelot_tag_prefix injection,
-> >                         enum ocelot_tag_prefix extraction)
-> > {
-> >+       int port;
-> >+
-> >+       for (port = 0; port < ocelot->num_phys_ports; port++) {
-> >+               /* Disable old CPU port and enable new one */
-> >+               ocelot_rmw_rix(ocelot, 0, BIT(ocelot->cpu),
-> >+                              ANA_PGID_PGID, PGID_SRC + port);
-> I do not understand why you have an "old" CPU. The ocelot->cpu field is
-> not initialized at this point (at least not in case of Ocelot).
->
-> Are you trying to move the NPI port?
->
-
-Yes, that's what this function does. It sets the NPI port. It should
-be able to work even if called multiple times (even though the felix
-and ocelot drivers both call it exactly one time).
-But I can (and will) remove/simplify the logic for the "old" CPU port.
-I had the patch formatted already, and I didn't want to change it
-because I was lazy to re-test after the changes.
-
-> >+               if (port == cpu)
-> >+                       continue;
-> >+               ocelot_rmw_rix(ocelot, BIT(cpu), BIT(cpu),
-> >+                              ANA_PGID_PGID, PGID_SRC + port);
-> So you want all ports to be able to forward traffic to your CPU port,
-> regardless of if these ports are member of a bridge...
->
-
-Yes.
-
-> I have read through this several times, and I'm still not convinced I
-> understood it.
->
-> Can you please provide a specific example of how things are being
-> forwarded (wrongly), and describe how you would like them to be
-> forwarded.
-
-Be there 4 net devices: swp0, swp1, swp2, swp3.
-At probe time, the following doesn't work on the Felix DSA driver:
-ip addr add 192.168.1.1/24 dev swp0
-ping 192.168.1.2
-But if I do this:
-ip link add dev br0 type bridge
-ip link set dev swp0 master br0
-ip link set dev swp0 nomaster
-ping 192.168.1.2
-Then it works, because the code path from ocelot_bridge_stp_state_set
-that puts the CPU port in the forwarding mask of the other ports gets
-executed on the "bridge leave" action.
-The whole point is to have the same behavior at probe time as after
-removing the ports from the bridge.
-
-The code with ocelot_mact_learn towards PGID_CPU for the MAC addresses
-of the switch port netdevices is all bypassed in Felix DSA. Even if it
-weren't, it isn't the best solution.
-On your switch, this test would probably work exactly because of that
-ocelot_mact_learn. But try to receive packets sent at any other
-unicast DMAC immediately after probe time, and you should see them in
-tcpdump but won't.
-
->
-> /Allan
->
-
-Regards,
--Vladimir
+PiA+Pj4+PiBBcyBzdGF0ZWQgYWJvdmUsIGluIExpbnV4IE1DIGlzIGEgYnVzIChqdXN0IGxpa2Ug
+UENJIGJ1cywgQU1CQSBidXMgZXRjKQ0KPiA+Pj4+PiBUaGVyZSBjYW4gYmUgbXVsdGlwbGUgZGV2
+aWNlcyBhdHRhY2hlZCB0byB0aGlzIGJ1cy4gTW9yZW92ZXIsIHdlIGNhbg0KPiA+Pj4+IGR5bmFt
+aWNhbGx5IGNyZWF0ZS9kZXN0cm95IHRoZXNlIGRldmljZXMuDQo+ID4+Pj4+IE5vdywgd2Ugd2Fu
+dCB0byByZXByZXNlbnQgdGhpcyBCVVMgKG5vdCBpbmRpdmlkdWFsIGRldmljZXMgY29ubmVjdGVk
+IHRvDQo+ID4+IGJ1cykNCj4gPj4+PiBpbiBJT1JUIHRhYmxlLg0KPiA+Pj4+PiBUaGUgb25seSBw
+b3NzaWJsZSB3YXkgcmlnaHQgbm93IHdlIHNlZSBpcyB0aGF0IHdlIGRlc2NyaWJlIGl0IGFzIE5h
+bWVkDQo+ID4+Pj4gY29tcG9uZW50cyBoYXZpbmcgYSBwb29sIG9mIElEIG1hcHBpbmdzLg0KPiA+
+Pj4+PiBBcyBhbmQgd2hlbiBkZXZpY2VzIGFyZSBjcmVhdGVkIGFuZCBhdHRhY2hlZCB0byBidXMs
+IHdlIHNpZnQgdGhyb3VnaCB0aGlzDQo+ID4+IHBvb2wNCj4gPj4+PiB0byBjb3JyZWN0bHkgZGV0
+ZXJtaW5lIHRoZSBvdXRwdXQgSUQgZm9yIHRoZSBkZXZpY2UuDQo+ID4+Pj4+IE5vdyB0aGUgaW5w
+dXQgSUQgdGhhdCB3ZSBwcm92aWRlLCBjYW4gY29tZSBmcm9tIGRldmljZSBpdHNlbGYuDQo+ID4+
+Pj4+IFRoZW4gd2UgY2FuIHVzZSB0aGUgUGxhdGZvcm0gTVNJIGZyYW1ld29yayBmb3IgTUMgYnVz
+IGRldmljZXMuDQo+ID4+Pj4NCj4gPj4+PiBTbyBhcmUgeW91IGFza2luZyBtZSBpZiB0aGF0J3Mg
+T0sgPyBPciB0aGVyZSBpcyBzb21ldGhpbmcgeW91IGNhbid0DQo+ID4+Pj4gZGVzY3JpYmUgd2l0
+aCBJT1JUID8NCj4gPj4+DQo+ID4+PiBJIGFtIGFza2luZyBpZiB0aGF0IHdvdWxkIGJlIGFjY2Vw
+dGFibGU/DQo+ID4+PiBpLmUuIHdlIHJlcHJlc2VudCBNQyBidXMgYXMgTmFtZWQgY29tcG9uZW50
+IGlzIElPUlQgdGFibGUgd2l0aCBhIHBvb2wgb2YNCj4gSURzDQo+ID4+ICh3aXRob3V0IHNpbmds
+ZSBJRCBtYXBwaW5nIGZsYWcpDQo+ID4+PiBhbmQgdGhlbiB3ZSB1c2UgdGhlIFBsYXRmb3JtIE1T
+SSBmcmFtZXdvcmsgZm9yIGFsbCBjaGlsZHJlbiBkZXZpY2VzIG9mIE1DDQo+ID4+IGJ1cy4NCj4g
+Pj4+IE5vdGUgdGhhdCBpdCB3b3VsZCByZXF1aXJlIHRoZSBQbGF0Zm9ybSBNU0kgbGF5ZXIgdG8g
+Y29ycmVjdGx5IHBhc3MgYW4gaW5wdXQNCj4gaWQNCj4gPj4gZm9yIGEgcGxhdGZvcm0gZGV2aWNl
+IHRvIElPUlQgbGF5ZXIuDQo+ID4+DQo+ID4+IEhvdyBpcyB0aGlzIHNvbHZlZCBpbiBEVCA/IFlv
+dSBkb24ndCBzZWVtIHRvIG5lZWQgYW55IERUIGJpbmRpbmcgb24gdG9wDQo+ID4+IG9mIHRoZSBt
+c2ktcGFyZW50IHByb3BlcnR5LCB3aGljaCBpcyBlcXVpdmFsZW50IHRvIElPUlQgc2luZ2xlIG1h
+cHBpbmdzDQo+ID4+IEFGQUlDUyBzbyBJIHdvdWxkIGxpa2UgdG8gdW5kZXJzdGFuZCB0aGUgd2hv
+bGUgRFQgZmxvdyAoc28gdGhhdCBJDQo+ID4+IHVuZGVyc3RhbmQgaG93IHRoaXMgRlNMIGJ1cyB3
+b3JrcykgYmVmb3JlIGNvbW1lbnRpbmcgYW55IGZ1cnRoZXIuDQo+ID4NCj4gPiBJbiBEVCBjYXNl
+LCB3ZSBjcmVhdGUgdGhlIGRvbWFpbiBET01BSU5fQlVTX0ZTTF9NQ19NU0kgZm9yIE1DIGJ1cyBh
+bmQNCj4gaXQncyBjaGlsZHJlbi4NCj4gPiBBbmQgdGhlbiB3aGVuIE1DIGNoaWxkIGRldmljZSBp
+cyBjcmVhdGVkLCB3ZSBzZWFyY2ggdGhlICJtc2ktcGFyZW50Ig0KPiBwcm9wZXJ0eSBmcm9tIHRo
+ZSBNQw0KPiA+IERUIG5vZGUgYW5kIGdldCB0aGUgSVRTIGFzc29jaWF0ZWQgd2l0aCBNQyBidXMu
+IFRoZW4gd2Ugc2VhcmNoDQo+IERPTUFJTl9CVVNfRlNMX01DX01TSQ0KPiA+IG9uIHRoYXQgSVRT
+LiBPbmNlIHdlIGZpbmQgdGhlIGRvbWFpbiwgd2UgY2FuIGNhbGwgbXNpX2RvbWFpbl9hbGxvY19p
+cnFzIGZvcg0KPiB0aGF0IGRvbWFpbi4NCj4gPg0KPiA+IFRoaXMgaXMgZXhhY3RseSB3aGF0IHdl
+IHRyaWVkIHRvIGRvIGluaXRpYWxseSB3aXRoIEFDUEkuIEJ1dCB0aGUgc2VhcmNoaW5nDQo+IERP
+TUFJTl9CVVNfRlNMX01DX01TSQ0KPiA+IGFzc29jaWF0ZWQgdG8gYW4gSVRTLCBpcyBzb21ldGhp
+bmcgdGhhdCBpcyBwYXJ0IG9mIGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMuDQo+ID4gKHNpbWls
+YXIgdG8gRE9NQUlOX0JVU19QTEFURk9STV9NU0kgYW5kIERPTUFJTl9CVVNfUENJX01TSSkNCj4g
+DQo+IENhbiB5b3UgaGF2ZSBhIGxvb2sgYXQgbWJpZ2VuIGRyaXZlciAoZHJpdmVycy9pcnFjaGlw
+L2lycS1tYmlnZW4uYykgdG8gc2VlIGlmDQo+IGl0IGhlbHBzIHlvdT8NCj4gDQo+IG1iaWdlbiBp
+cyBhbiBpcnEgY29udmVydGVyIHRvIGNvbnZlcnQgZGV2aWNlJ3Mgd2lyZWQgaW50ZXJydXB0cyBp
+bnRvIE1TSQ0KPiAoY29ubmVjdGluZyB0byBJVFMpLCB3aGljaCB3aWxsIGFsbG9jIGEgYnVuY2gg
+b2YgTVNJcyBmcm9tIElUUyBwbGF0Zm9ybSBNU0kNCj4gZG9tYWluIGF0IHRoZSBzZXR1cC4NCg0K
+VW5mb3J0dW5hdGVseSB0aGlzIGlzIG5vdCB0aGUgc2FtZSBjYXNlIGFzIG91cnMuIEFzIEkgc2Vl
+IEhpc2lsaWNvbiBJT1JUIHRhYmxlDQpJcyB1c2luZyBzaW5nbGUgaWQgbWFwcGluZyB3aXRoIG5h
+bWVkIGNvbXBvbmVudHMuDQoNCmh0dHBzOi8vZ2l0aHViLmNvbS90aWFub2NvcmUvZWRrMi1wbGF0
+Zm9ybXMvYmxvYi9tYXN0ZXIvU2lsaWNvbi9IaXNpbGljb24vSGkxNjE2L0QwNUFjcGlUYWJsZXMv
+RDA1SW9ydC5hc2wjTDMwMA0KDQp3aGlsZSB3ZSBhcmUgbm90Og0KDQpodHRwczovL3NvdXJjZS5j
+b2RlYXVyb3JhLm9yZy9leHRlcm5hbC9xb3JpcS9xb3JpcS1jb21wb25lbnRzL2VkazItcGxhdGZv
+cm1zL3RyZWUvUGxhdGZvcm0vTlhQL0xYMjE2MGFSZGJQa2cvQWNwaVRhYmxlcy9Jb3J0LmFzbGM/
+aD1MWDIxNjBfVUVGSV9BQ1BJX0VBUjEjbjI5MA0KDQpUaGlzIGlzIGJlY2F1c2UgYXMgSSBzYWlk
+LCB3ZSBhcmUgdHJ5aW5nIHRvIHJlcHJlc2VudCBhIGJ1cyBpbiBJT1JUIHZpYSBuYW1lZCBjb21w
+b25lbnRzIGFuZA0Kbm90IGluZGl2aWR1YWwgZGV2aWNlcyBjb25uZWN0ZWQgdG8gdGhhdCBidXMu
+DQoNCj4gDQo+IFRoYW5rcw0KPiBIYW5qdW4NCg0K
