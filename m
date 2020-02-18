@@ -2,79 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BA39162FAE
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7DEC162FE3
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbgBRTWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 14:22:21 -0500
-Received: from mail-ua1-f54.google.com ([209.85.222.54]:36665 "EHLO
-        mail-ua1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgBRTWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 14:22:21 -0500
-Received: by mail-ua1-f54.google.com with SMTP id y3so7894271uae.3
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 11:22:21 -0800 (PST)
+        id S1726623AbgBRT1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 14:27:06 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39602 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbgBRT1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 14:27:05 -0500
+Received: by mail-ed1-f66.google.com with SMTP id m13so26127427edb.6
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 11:27:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=YbgargU8ALt/nB7SKZ47CKsWwNRksvqKNRcpqJ5pJaY=;
-        b=iAWf/tw2BDerSn7IxVh7DdIyqHNZThH47QVhqCprUX2FjBe98WfKWxYmLCM6hAK4lG
-         Mv/ivouhM0N8uXYsVzYq3gNN9/Y+h7biM1Cp6q5MYZ0epevol/ckM16/N5UF4nikOqRt
-         9cEdgKuUh0oSDhEcy2y3PxJP/aGl2GxLR9T6WSAwRimuT+MejWGnhNcgFCAtv5jO6JqJ
-         51pLPmaw6lKyfG9K+EU24dn9xsNT5bwE/E0sB3nWWA1IkB+/iZhY9WAVKs93ZLv+iLXr
-         1gqPtog72DtbEjjbOulUuiEK8qlkmZG3jhEtaz5XyHLWuZgPEq5r14zPQ7PigrLoCgwf
-         zpoA==
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1hKJn5ovAKsR1j0naIrWLGoGjErC+k7UByeRa+X0K+0=;
+        b=bCp9XpQmTvvT6t5x3hjjC4S7enZ4QidSAztQ5OHWWmciwMEoSUH0As4INXaKRSMw1G
+         Ua+/K0ipw8ZzRxiOXRbnGptzyTNR+z87dmOtx8AwlI6SATCuJ/laO6kJ7MhGFX9vAg8N
+         pWsa3BycAPjdItwRDYbOp5/GNaGX7ScUezpHo4WylsX9Wpb2UumjN/9lEL84W/XvKrX3
+         ZygW1DKFZxMfP9GmaaRi3xt/nte02FJjgjWUeH5VuTO9CD4GqEyq8oYPNybjE5uwGDOJ
+         yLJ5Gc+3VxAiSD4eVf2ZLPSkX7vvDllXLduufSZNDkOUA/zUkMe1QAsIdDudYFin9VEm
+         dq0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=YbgargU8ALt/nB7SKZ47CKsWwNRksvqKNRcpqJ5pJaY=;
-        b=L3+Ve60rbHC+Xz4jEubsBWrPbfd1alPy2lhGxVKtLqYQUq9kYOuv0bbcepujD68ANC
-         pxOfzoplDVA6mqIjVne9VowlqyepmAjFHMNm4PhMPF4ssI6DKQFwbG5a/ExFVPOtfgGq
-         J9waQ63w5ya+rmhzdYHAKvaO0iUqmstFt9AMnk1N1mh6wZdNUvWXcW/3x+Ld6RvuHW0v
-         /uvSkW3Z3EJG+TVAhhzsRpIRhP/xN7C+3vTpp2MowM7iwULeUlXwwP2PNtQ+lMp/BwxW
-         Ce9iD/g4BRns9DCcKvVAs1Z2N22tazdrXLbvYWm4di46QhCyRAunWZxsIZnb7tTmyv4m
-         tZLw==
-X-Gm-Message-State: APjAAAXXJ8yVTMfEhLh2WafEQF8USaBJPqm8gdoNWr+lJK28ZPwwFIDC
-        MQexHc0tyFCr2ccbpti2dPq+v6hw10D7btM2Q4Athw==
-X-Google-Smtp-Source: APXvYqw2d0k0qU/8FLKEr1vWMuMMgdu6g1QEpcd2i3V4OHL3uLOS4FN2aoNXyazEgugYUPlN+EZAiFtXBS9c/u3GeJY=
-X-Received: by 2002:a9f:2808:: with SMTP id c8mr11274756uac.49.1582053740074;
- Tue, 18 Feb 2020 11:22:20 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1hKJn5ovAKsR1j0naIrWLGoGjErC+k7UByeRa+X0K+0=;
+        b=lY3tXSjKWC5B/DLanqvwj0giX9TNUzXJYo2bmGIU9jZbcmwIcH/b5XZKsMBdvOxmKK
+         RiS5OP23LHY4Mx7tXgduOkjgfP0FOjie0Spu68N7krw0ZdM9IrsOYtrFxS7FNNd9IpoK
+         qKrVh2yp5lY0BqmB8D6LcKSTra8h2r0TqOc2OZLBLdavqox1xJQc0JgCxi3/ZaRCmHqo
+         /+fx9QqRtNPztEzbalvrwU2Frtx0wnqF4IB6sK6EPu9xowxg1D6LAfcpHNauH0w25Iz+
+         mtONr+DtggVoY82bFI86wEzZeuGDE3vJ94OK3EuNYeQLdQBYmJt+Euiyq8cmN1fKg465
+         CKEQ==
+X-Gm-Message-State: APjAAAVcUAaDVFHHIB+OSWgnKNbFP0U/EP10Ot4fDBN0Eka54w6tmjL2
+        SuBIGFvZVRDWPvgdODRXym6DcH2L
+X-Google-Smtp-Source: APXvYqyZE7YXtXYFCEgXf6kV1Ldtp0lz34Oz7XvJ8nEks+TA6SNsL36a8xjGUcAq7Qr1dd94UU2Kfw==
+X-Received: by 2002:a50:9ee8:: with SMTP id a95mr19374541edf.86.1582054023219;
+        Tue, 18 Feb 2020 11:27:03 -0800 (PST)
+Received: from [10.67.49.41] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id e16sm136312ejt.10.2020.02.18.11.26.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Feb 2020 11:27:02 -0800 (PST)
+Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <00bd9511-65ae-7adc-782e-c40b60d81658@gmail.com>
+Date:   Tue, 18 Feb 2020 11:26:52 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Received: by 2002:ab0:4186:0:0:0:0:0 with HTTP; Tue, 18 Feb 2020 11:22:19
- -0800 (PST)
-From:   Kent Dorfman <kent.dorfman766@gmail.com>
-Date:   Tue, 18 Feb 2020 14:22:19 -0500
-Message-ID: <CAK4PFCVewY-n0Z=q8NeQCaV+p1PWL9-eQg+j5+7RD3mtks+rNA@mail.gmail.com>
-Subject: need to identify sl# interface used by a particular instance of
- slattach (not subscribed to LKML)
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200218114515.GL18808@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey gents.
+On 2/18/20 3:45 AM, Russell King - ARM Linux admin wrote:
+> Hi,
+> 
+> This is a repost of the previously posted RFC back in December, which
+> did not get fully reviewed.  I've dropped the RFC tag this time as no
+> one really found anything too problematical in the RFC posting.
+> 
+> I've been trying to configure DSA for VLANs and not having much success.
+> The setup is quite simple:
+> 
+> - The main network is untagged
+> - The wifi network is a vlan tagged with id $VN running over the main
+>   network.
+> 
+> I have an Armada 388 Clearfog with a PCIe wifi card which I'm trying to
+> setup to provide wifi access to the vlan $VN network, while the switch
+> is also part of the main network.
+> 
+> However, I'm encountering problems:
+> 
+> 1) vlan support in DSA has a different behaviour from the Linux
+>    software bridge implementation.
+> 
+>     # bridge vlan
+>     port    vlan ids
+>     lan1     1 PVID Egress Untagged
+>     ...
+> 
+>    shows the default setup - the bridge ports are all configured for
+>    vlan 1, untagged egress, and vlan 1 as the port vid.  Issuing:
+> 
+>     # ip li set dev br0 type bridge vlan_filtering 1
+> 
+>    with no other vlan configuration commands on a Linux software bridge
+>    continues to allow untagged traffic to flow across the bridge.
+>    
+>    This difference in behaviour is because the MV88E6xxx VTU is
+>    completely empty - because net/dsa ignores all vlan settings for
+>    a port if br_vlan_enabled(dp->bridge_dev) is false - this reflects
+>    the vlan filtering state of the bridge, not whether the bridge is
+>    vlan aware.
+>    
+>    What this means is that attempting to configure the bridge port
+>    vlans before enabling vlan filtering works for Linux software
+>    bridges, but fails for DSA bridges.
 
-As is usually the case, engineering decisions were made before I came
-on-board, and now I'm stuck dealing with plans that I had no input
-into.
+FWIW, because VLAN filtering is global with b53 switches, we do actually
+program every port with a valid VLAN entry into VID 0 which ensures that
+standalone (non-bridged) ports, with, or without VLAN interfaces on top
+(e.g.: sw0p0.N) continue to work as soon as another port gets enslaved
+into a bridge that does request vlan_filtering.
 
-Anyway, company advertised to external customers that they could
-connect their widgets to our system using plain ole uncompressed SLIP
-over RS422 serial (four wire, no flow control, 115200bps)
+> 
+> 2) Assuming the above is sorted, we move on to the next issue, which
+>    is altogether more weird.  Let's take a setup where we have a
+>    DSA bridge with lan1..6 in a bridge device, br0, with vlan
+>    filtering enabled.  lan1 is the upstream port, lan2 is a downstream
+>    port that also wants to see traffic on vlan id $VN.
+> 
+>    Both lan1 and lan2 are configured for that:
+> 
+>      # bridge vlan add vid $VN dev lan1
+>      # bridge vlan add vid $VN dev lan2
+>      # ip li set br0 type bridge vlan_filtering 1
+> 
+>    Untagged traffic can now pass between all the six lan ports, and
+>    vlan $VN between lan1 and lan2 only.  The MV88E6xxx 8021q_mode
+>    debugfs file shows all lan ports are in mode "secure" - this is
+>    important!  /sys/class/net/br0/bridge/vlan_filtering contains 1.
+> 
+>    tcpdumping from another machine on lan4 shows that no $VN traffic
+>    reaches it.  Everything seems to be working correctly...
+>    
+>    In order to further bridge vlan $VN traffic to hostapd's wifi
+>    interface, things get a little more complex - we can't add hostapd's
+>    wifi interface to br0 directly, because hostapd will bring up the
+>    wifi interface and leak the main, untagged traffic onto the wifi.
+>    (hostapd does have vlan support, but only as a dynamic per-client
+>    thing, and there's no hooks I can see to allow script-based config
+>    of the network setup before hostapd up's the wifi interface.)
+> 
+>    So, what I tried was:
+> 
+>      # ip li add link br0 name br0.$VN type vlan id $VN
+>      # bridge vlan add vid $VN dev br0 self
+>      # ip li set dev br0.$VN up
+> 
+>    So far so good, we get a vlan interface on top of the bridge, and
+>    tcpdumping it shows we get traffic.  The 8021q_mode file has not
+>    changed state.  Everything still seems to be correct.
+> 
+>      # bridge addbr br1
+> 
+>    Still nothing has changed.
+> 
+>      # bridge addif br1 br0.$VN
+> 
+>    And now the 8021q_mode debugfs file shows that all ports are now in
+>    "disabled" mode, but /sys/class/net/br0/bridge/vlan_filtering still
+>    contains '1'.  In other words, br0 still thinks vlan filtering is
+>    enabled, but the hardware has had vlan filtering disabled.
+> 
+>    Adding some stack traces to an appropriate point indicates that this
+>    is because __switchdev_handle_port_attr_set() recurses down through
+>    the tree of interfaces, skipping over the vlan interface, applying
+>    br1's configuration to br0's ports.
+> 
+>    This surely can not be right - surely
+>    __switchdev_handle_port_attr_set() and similar should stop recursing
+>    down through another master bridge device?  There are probably other
+>    network device classes that switchdev shouldn't recurse down too.
+> 
+>    I've considered whether switchdev is the right level to do it, and
+>    I think it is - as we want the check/set callbacks to be called for
+>    the top level device even if it is a master bridge device, but we
+>    don't want to recurse through a lower master bridge device.
+> 
 
-Problem, as you may have guessed, is that since the lines are
-statically allocated I need to be able to assign static IPs based on
-the tty port they are using.  I haven't used a SLIP dialup since
-mid-90s and from what I remember, the sl# link is dynamically
-allocated based on the "next available" when the slattach command
-handshakes with the other end.  This leaves me without knowing what
-sl# interface to assign the IP number to.  The common use case was
-always a single sl link over a dialup line, not 16+ different
-statically allocated slip connections on a single server (with no end
-user authentication to define the IP on a per-port basis)
 
-What is my work-around?  How can I know which sl interface to
-configure based on a particular tty serial link?
-
-I'm not a LKML subscriber, so please CC me directly.
+-- 
+Florian
