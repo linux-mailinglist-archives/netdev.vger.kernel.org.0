@@ -2,286 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A4A11627E6
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:16:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 240501627FA
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbgBROQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 09:16:22 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:48456 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbgBROQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:16:22 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01IEGEsE074273;
-        Tue, 18 Feb 2020 08:16:14 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1582035374;
-        bh=n2KrMiBAVRvNdjvVSSSf2VgxPh00qjT1MxIsx1Js1bc=;
-        h=From:To:CC:Subject:Date;
-        b=C2X155UeR3DePPy2KyaY05jG+tv6Is1x6lU0t+7bN0kz5Jv8h+7L728qp3zd7co2Q
-         bX6tCUoDYqCoZnQ6rXRAO8e1YdeVS72qbsMl1f1myn9PsYpvdMDkwDW9wRVRcxOxES
-         34jks0T40/qeLocpvAIzkTalfZegurFcSbSTjI/4=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01IEGEgY020868
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Feb 2020 08:16:14 -0600
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 18
- Feb 2020 08:16:13 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 18 Feb 2020 08:16:13 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01IEGDMk085215;
-        Tue, 18 Feb 2020 08:16:13 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>
-CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v3] net: phy: dp83867: Add speed optimization feature
-Date:   Tue, 18 Feb 2020 08:11:30 -0600
-Message-ID: <20200218141130.28825-1-dmurphy@ti.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726696AbgBROTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 09:19:22 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36681 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726442AbgBROTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:19:22 -0500
+Received: by mail-qt1-f196.google.com with SMTP id t13so14583929qto.3
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 06:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=CH7Z7igOAVyWqs5n+JcT2i1kWn/G1KqfnqfWfi6DuDU=;
+        b=GFq/MPUKyvJIe14p3ec10QMDR+XFLeYA7OAWtUHvh2Uj5c/DKMGjtLXMK1uMRSfVwg
+         HS0h2+J6FjZ0AKRmMCQfu18Eq6DJpSrQYnywz+G+zWpic+34rx3y6CiezSQGACrJDZwl
+         2NDUrTjNl/dWR7vaxF7L8T1BYDJWhLpmU8dZjqnuoiw5dM/9Ml7Ehg5mxBN6EAQVvLN4
+         K1oAIDyPJvg6A2FYjwEvSRLCfK5sW1JP0Vqwg5SKvCMzFsHT7eVrjHcHXonwFR+heqfK
+         OCCLpT1t5qPeezxjkp8wV9gBt9HLJFjuVuUSENIFJmxZpZUhDAmSMqEGq630mt8nDesC
+         t76w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=CH7Z7igOAVyWqs5n+JcT2i1kWn/G1KqfnqfWfi6DuDU=;
+        b=MC0D3bx0w6IRN7G9f8KGDqqt45lSiggcPCttcLiVLMe2qe6gacoODeB3naQwgk4HP9
+         /zk4KE6zN2wvjDnvlJrDPwffSS9Lx72ZXg+XP4ApVj5rskgns0eSGubb4nSs3EyyWAQr
+         3Qd7P38d1MsVd2c5EdcF+mngshrAEGoCrYML1xodtLINHEIARhNnpZa2cHhofVV+gLq4
+         6+d/SnXF1ey1vbtyRDK92jwqH6+laiMv41NipLgOj9kUa/xzmQszZjpAOcbXiuK/kVbW
+         UAEqN+ufUNOgJjrCCiR8ey+bAgl2s/OwdA/siGtw/GpH7QHghenN9TUh36hMA0oN0ky4
+         Lhjg==
+X-Gm-Message-State: APjAAAXmHn8u5YPN93yGFtEBrLDmNGoQ/SOv17zapPdCPnVkbpUeVn2K
+        0CXTBpWPvsaBmn8DrXw3Xv1l3YyqM8gjfQiQ3so=
+X-Google-Smtp-Source: APXvYqxBkBUhzFLROZdxwkbCbuvYzdBfsYqu+jsGfbH6+vxT40liXrCMq9hqy+Mb5Mg16BENZzHAAwy/9Lm3y7/abKo=
+X-Received: by 2002:ac8:73d3:: with SMTP id v19mr16381452qtp.334.1582035561466;
+ Tue, 18 Feb 2020 06:19:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Received: by 2002:aed:25c5:0:0:0:0:0 with HTTP; Tue, 18 Feb 2020 06:19:21
+ -0800 (PST)
+Reply-To: davidabulatg2@gmail.com
+From:   David Abula <upslometogo@gmail.com>
+Date:   Tue, 18 Feb 2020 15:19:21 +0100
+Message-ID: <CADteQA+zQWSb-m_=nT+duLbbq6Z4h62GovfaWKexx29zHxSjCg@mail.gmail.com>
+Subject: RE
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the speed optimization bit on the DP83867 PHY.
-This feature can also be strapped on the 64 pin PHY devices
-but the 48 pin devices do not have the strap pin available to enable
-this feature in the hardware.  PHY team suggests to have this bit set.
-
-With this bit set the PHY will auto negotiate and report the link
-parameters in the PHYSTS register.  This register provides a single
-location within the register set for quick access to commonly accessed
-information.
-
-In this case when auto negotiation is on the PHY core reads the bits
-that have been configured or if auto negotiation is off the PHY core
-reads the BMCR register and sets the phydev parameters accordingly.
-
-This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
-4-wire cable.  If this should occur the PHYSTS register contains the
-current negotiated speed and duplex mode.
-
-In overriding the genphy_read_status the dp83867_read_status will do a
-genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
-register is read and the phydev speed and duplex mode settings are
-updated.
-
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
-
-v3 - Add the tunable feature into the driver for downshift.  Change speed optimization
-nomenclature to dwonshift
-
- drivers/net/phy/dp83867.c | 150 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 150 insertions(+)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 967f57ed0b65..13f7f2d5a2ea 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -14,6 +14,7 @@
- #include <linux/delay.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
-+#include <linux/bitfield.h>
- 
- #include <dt-bindings/net/ti-dp83867.h>
- 
-@@ -21,6 +22,7 @@
- #define DP83867_DEVADDR		0x1f
- 
- #define MII_DP83867_PHYCTRL	0x10
-+#define MII_DP83867_PHYSTS	0x11
- #define MII_DP83867_MICR	0x12
- #define MII_DP83867_ISR		0x13
- #define DP83867_CFG2		0x14
-@@ -118,6 +120,24 @@
- #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
- #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
- 
-+/* PHY STS bits */
-+#define DP83867_PHYSTS_1000			BIT(15)
-+#define DP83867_PHYSTS_100			BIT(14)
-+#define DP83867_PHYSTS_DUPLEX			BIT(13)
-+#define DP83867_PHYSTS_LINK			BIT(10)
-+
-+/* CFG2 bits */
-+#define DP83867_DOWNSHIFT_EN		(BIT(8) | BIT(9))
-+#define DP83867_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
-+#define DP83867_DOWNSHIFT_1_COUNT_VAL	0
-+#define DP83867_DOWNSHIFT_2_COUNT_VAL	1
-+#define DP83867_DOWNSHIFT_4_COUNT_VAL	2
-+#define DP83867_DOWNSHIFT_8_COUNT_VAL	3
-+#define DP83867_DOWNSHIFT_1_COUNT	1
-+#define DP83867_DOWNSHIFT_2_COUNT	2
-+#define DP83867_DOWNSHIFT_4_COUNT	4
-+#define DP83867_DOWNSHIFT_8_COUNT	8
-+
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
- #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-@@ -287,6 +307,126 @@ static int dp83867_config_intr(struct phy_device *phydev)
- 	return phy_write(phydev, MII_DP83867_MICR, micr_status);
- }
- 
-+static int dp83867_read_status(struct phy_device *phydev)
-+{
-+	int status = phy_read(phydev, MII_DP83867_PHYSTS);
-+	int ret;
-+
-+	ret = genphy_read_status(phydev);
-+	if (ret)
-+		return ret;
-+
-+	if (status < 0)
-+		return status;
-+
-+	if (status & DP83867_PHYSTS_DUPLEX)
-+		phydev->duplex = DUPLEX_FULL;
-+	else
-+		phydev->duplex = DUPLEX_HALF;
-+
-+	if (status & DP83867_PHYSTS_1000)
-+		phydev->speed = SPEED_1000;
-+	else if (status & DP83867_PHYSTS_100)
-+		phydev->speed = SPEED_100;
-+	else
-+		phydev->speed = SPEED_10;
-+
-+	return 0;
-+}
-+
-+static int dp83867_get_downshift(struct phy_device *phydev, u8 *data)
-+{
-+	int val, cnt, enable, count;
-+
-+	val = phy_read(phydev, DP83867_CFG2);
-+	if (val < 0)
-+		return val;
-+
-+	enable = FIELD_GET(DP83867_DOWNSHIFT_EN, val);
-+	cnt = FIELD_GET(DP83867_DOWNSHIFT_ATTEMPT_MASK, val);
-+
-+	switch (cnt) {
-+	case DP83867_DOWNSHIFT_1_COUNT_VAL:
-+		count = DP83867_DOWNSHIFT_1_COUNT;
-+		break;
-+	case DP83867_DOWNSHIFT_2_COUNT_VAL:
-+		count = DP83867_DOWNSHIFT_2_COUNT;
-+		break;
-+	case DP83867_DOWNSHIFT_4_COUNT_VAL:
-+		count = DP83867_DOWNSHIFT_4_COUNT;
-+		break;
-+	case DP83867_DOWNSHIFT_8_COUNT_VAL:
-+		count = DP83867_DOWNSHIFT_8_COUNT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	};
-+
-+	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
-+
-+	return 0;
-+}
-+
-+static int dp83867_set_downshift(struct phy_device *phydev, u8 cnt)
-+{
-+	int val, count;
-+
-+	if (cnt > DP83867_DOWNSHIFT_8_COUNT)
-+		return -E2BIG;
-+
-+	if (!cnt)
-+		return phy_clear_bits(phydev, DP83867_CFG2,
-+				      DP83867_DOWNSHIFT_EN);
-+
-+	switch (cnt) {
-+		case DP83867_DOWNSHIFT_1_COUNT:
-+			count = DP83867_DOWNSHIFT_1_COUNT_VAL;
-+			break;
-+		case DP83867_DOWNSHIFT_2_COUNT:
-+			count = DP83867_DOWNSHIFT_2_COUNT_VAL;
-+			break;
-+		case DP83867_DOWNSHIFT_4_COUNT:
-+			count = DP83867_DOWNSHIFT_4_COUNT_VAL;
-+			break;
-+		case DP83867_DOWNSHIFT_8_COUNT:
-+			count = DP83867_DOWNSHIFT_8_COUNT_VAL;
-+			break;
-+		default:
-+			phydev_err(phydev,
-+				   "Downshift count must be 1, 2, 4 or 8\n");
-+			return -EINVAL;
-+	};
-+
-+	val = DP83867_DOWNSHIFT_EN;
-+	val |= FIELD_PREP(DP83867_DOWNSHIFT_ATTEMPT_MASK, count);
-+
-+	return phy_modify(phydev, DP83867_CFG2,
-+			  DP83867_DOWNSHIFT_EN | DP83867_DOWNSHIFT_ATTEMPT_MASK,
-+			  val);
-+}
-+
-+static int dp83867_get_tunable(struct phy_device *phydev,
-+				struct ethtool_tunable *tuna, void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83867_get_downshift(phydev, data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int dp83867_set_tunable(struct phy_device *phydev,
-+				struct ethtool_tunable *tuna, const void *data)
-+{
-+	switch (tuna->id) {
-+	case ETHTOOL_PHY_DOWNSHIFT:
-+		return dp83867_set_downshift(phydev, *(const u8 *)data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int dp83867_config_port_mirroring(struct phy_device *phydev)
- {
- 	struct dp83867_private *dp83867 =
-@@ -467,6 +607,12 @@ static int dp83867_config_init(struct phy_device *phydev)
- 	int ret, val, bs;
- 	u16 delay;
- 
-+	/* Force speed optimization for the PHY even if it strapped */
-+	ret = phy_modify(phydev, DP83867_CFG2, DP83867_DOWNSHIFT_EN,
-+			 DP83867_DOWNSHIFT_EN);
-+	if (ret)
-+		return ret;
-+
- 	ret = dp83867_verify_rgmii_cfg(phydev);
- 	if (ret)
- 		return ret;
-@@ -655,6 +801,10 @@ static struct phy_driver dp83867_driver[] = {
- 		.config_init	= dp83867_config_init,
- 		.soft_reset	= dp83867_phy_reset,
- 
-+		.read_status	= dp83867_read_status,
-+		.get_tunable	= dp83867_get_tunable,
-+		.set_tunable	= dp83867_set_tunable,
-+
- 		.get_wol	= dp83867_get_wol,
- 		.set_wol	= dp83867_set_wol,
- 
--- 
-2.25.0
-
+Hi,
+Good day,
+Please accept my sincere congratulations and I know this message may
+come to you as a surprise, but I advise you to read with good
+understanding. I am Barrister David Abula, from Togo. Therefore, there
+is a certain amount of funds $ 11.7 million that was left by my late
+client, is a citizen of your country, who died a few years ago here in
+my country; can I trust you to work with you to transfer the total
+amount of $ 11.7 million into your account in your country? and after
+we will share the total fund 50 % to 50 %.Moreover, my wife is sick
+and I need to fly her to Hospital in Abroad, therefore, i want to get
+to success of this transaction so that i can go further with the
+treatment of my wife so If you are interested to cooperate with me, I
+will advise you to respond back to me in my email address or you
+provide to me your email address to enable me send you the full
+details about the transaction, so that you can read and come to a good
+understanding with me. Reply me on my email address
+(davidabulatg2@gmail.com) Thank you and I wait for your immediate
+response.
+Sincerely,
+Lawyer David Abula
+Phone: +22890712188
+davidabulatg2@gmail.com
