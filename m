@@ -2,402 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3986B162F53
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:03:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5FA162F67
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:09:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbgBRTCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 14:02:48 -0500
-Received: from mx2.suse.de ([195.135.220.15]:35786 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726700AbgBRTCp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 14:02:45 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 59328ADAB;
-        Tue, 18 Feb 2020 19:02:42 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next 6/6] selftests/bpf: Add test for "bpftool feature" command
-Date:   Tue, 18 Feb 2020 20:02:23 +0100
-Message-Id: <20200218190224.22508-7-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200218190224.22508-1-mrostecki@opensuse.org>
-References: <20200218190224.22508-1-mrostecki@opensuse.org>
+        id S1726383AbgBRTJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 14:09:10 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41294 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbgBRTJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 14:09:09 -0500
+Received: by mail-qk1-f194.google.com with SMTP id d11so20575813qko.8
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 11:09:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=Td4LB0UxhUmlCZLysvleIz+839hQOKglA5Z9n8IWCJk=;
+        b=qGFK3ge3TOsUxEvNZvB/4L67c3OyvKunokAiqAE7tEb2ojTi8mCqt+0D8CqwlxdRjQ
+         hdAa/YOx3HRL0D14l2Oe+6LtN+nTVCksKYXw17GP0n/ANcL0yHxcJY+ttZ+3V1NSt+ny
+         GMJV09CRqsa5szY20nCNjEfHz4qq7fGrb/B7eAhQV/szWZQJC9UnZdtA84twVDvDo1Zc
+         mnCy3yXN46zEGX9nwUicFDyHJXtEc7nEAkFq1ZgfzhLI299ZX7O8+0l6aZPe73UuUFis
+         gvgpH3CA1uw7muobmMlRyNNgUxgwbV2v2IPUpvG+8jqE0swWF7llmHWwETYNoJQ+dyX9
+         B2GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=Td4LB0UxhUmlCZLysvleIz+839hQOKglA5Z9n8IWCJk=;
+        b=t2Lgx/4hRFQqyRR9A83lZdas/Yoc278lk6R2RecozDRlyVv42EAiWj52vxW+/ftguE
+         9ZTiVdJ22s8qgz5hvyRyin5jKFdlWHw50K4WU3lWO2pvJ1pRk2EotohB8jVfF5SnTcmJ
+         yYRJ7xquMWogwB2c0ltFWydF4xAEW0bpK0C1StHxKML/GhAX+GV7sQjPKzzySj+tZWKz
+         mbbwAipOkeQRwaqpI6mwhcaf6wNJ9yboynzyNuqQ3MxGDWZYKkVZFLEXrmin/reAZitf
+         qJiP6nK18Vz6bl0lupfllE228D1Tw4rO7QxUdeMSDgrmMJ793VcPvtH3RKX2B2SaEyTE
+         7dIw==
+X-Gm-Message-State: APjAAAU75DRRbl0lKteDmfFSu10oPjzvsW447vnvqanzKO8+d0uM71ET
+        nXPaTJ8c5diOyVNl9m314nQ=
+X-Google-Smtp-Source: APXvYqyuM3X5TzeG7lNDXbuAhoYhUZuZnf5blWd/1+Uk0V77ngJPKud8NM7re/S6Yx06WSF3xfD96g==
+X-Received: by 2002:ae9:c014:: with SMTP id u20mr20160941qkk.53.1582052948578;
+        Tue, 18 Feb 2020 11:09:08 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id v78sm2381264qkb.48.2020.02.18.11.09.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 11:09:07 -0800 (PST)
+Date:   Tue, 18 Feb 2020 14:09:07 -0500
+Message-ID: <20200218140907.GB15095@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: fix vlan setup
+In-Reply-To: <E1j41KW-0002v5-2S@rmk-PC.armlinux.org.uk>
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+ <E1j41KW-0002v5-2S@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Python module with tests for "bpftool feature" command which check
-whether:
+Hi Russell,
 
-- probing kernel and network devices works
-- "section" option selects sections properly
-- "filter_in" and "filter_out" options filter results properly
-- "macro" option generates C macros properly
+On Tue, 18 Feb 2020 11:46:20 +0000, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> DSA assumes that a bridge which has vlan filtering disabled is not
+> vlan aware, and ignores all vlan configuration. However, the kernel
+> software bridge code allows configuration in this state.
+> 
+> This causes the kernel's idea of the bridge vlan state and the
+> hardware state to disagree, so "bridge vlan show" indicates a correct
+> configuration but the hardware lacks all configuration. Even worse,
+> enabling vlan filtering on a DSA bridge immediately blocks all traffic
+> which, given the output of "bridge vlan show", is very confusing.
+> 
+> Provide an option that drivers can set to indicate they want to receive
+> vlan configuration even when vlan filtering is disabled. This is safe
+> for Marvell DSA bridges, which do not look up ingress traffic in the
+> VTU if the port is in 8021Q disabled state. Whether this change is
+> suitable for all DSA bridges is not known.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c |  1 +
+>  include/net/dsa.h                |  1 +
+>  net/dsa/slave.c                  | 12 ++++++++----
+>  3 files changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 629eb7bbbb23..e656e571ef7d 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -2934,6 +2934,7 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+>  
+>  	chip->ds = ds;
+>  	ds->slave_mii_bus = mv88e6xxx_default_mdio_bus(chip);
+> +	ds->vlan_bridge_vtu = true;
+>  
+>  	mv88e6xxx_reg_lock(chip);
+>  
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 63495e3443ac..d3a826646e8e 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -273,6 +273,7 @@ struct dsa_switch {
+>  	 * settings on ports if not hardware-supported
+>  	 */
+>  	bool			vlan_filtering_is_global;
+> +	bool			vlan_bridge_vtu;
+>  
+>  	/* In case vlan_filtering_is_global is set, the VLAN awareness state
+>  	 * should be retrieved from here and not from the per-port settings.
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 088c886e609e..534d511b349e 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -318,7 +318,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+>  	if (obj->orig_dev != dev)
+>  		return -EOPNOTSUPP;
+>  
+> -	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
+> +	if (dp->bridge_dev && !dp->ds->vlan_bridge_vtu &&
+> +	    !br_vlan_enabled(dp->bridge_dev))
+>  		return 0;
+>  
+>  	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
+> @@ -385,7 +386,8 @@ static int dsa_slave_vlan_del(struct net_device *dev,
+>  	if (obj->orig_dev != dev)
+>  		return -EOPNOTSUPP;
+>  
+> -	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
+> +	if (dp->bridge_dev && !dp->ds->vlan_bridge_vtu &&
+> +	    !br_vlan_enabled(dp->bridge_dev))
+>  		return 0;
+>  
+>  	/* Do not deprogram the CPU port as it may be shared with other user
+> @@ -1106,7 +1108,8 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+>  	 * need to emulate the switchdev prepare + commit phase.
+>  	 */
+>  	if (dp->bridge_dev) {
+> -		if (!br_vlan_enabled(dp->bridge_dev))
+> +		if (!dp->ds->vlan_bridge_vtu &&
+> +		    !br_vlan_enabled(dp->bridge_dev))
+>  			return 0;
+>  
+>  		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+> @@ -1140,7 +1143,8 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+>  	 * need to emulate the switchdev prepare + commit phase.
+>  	 */
+>  	if (dp->bridge_dev) {
+> -		if (!br_vlan_enabled(dp->bridge_dev))
+> +		if (!dp->ds->vlan_bridge_vtu &&
+> +		    !br_vlan_enabled(dp->bridge_dev))
+>  			return 0;
+>  
+>  		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
 
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
----
- tools/testing/selftests/.gitignore          |   5 +-
- tools/testing/selftests/bpf/Makefile        |   3 +-
- tools/testing/selftests/bpf/test_bpftool.py | 294 ++++++++++++++++++++
- tools/testing/selftests/bpf/test_bpftool.sh |   5 +
- 4 files changed, 305 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
- create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
+It is confusing to add a Marvell specific term (VTU) in the generic dsa_switch
+structure to bypass the fact that VLAN configuration in hardware was already
+bypassed for some reasons until vlan filtering is turned on. As you said,
+simply offloading the VLAN configuration in hardware and only turning the
+ports' 802.1Q mode to Secure once vlan_filtering is flipped to 1 should work
+in theory for both VLAN filtering aware and unaware scenarios, but this was
+causing problems if I'm not mistaken, I'll try to dig this out.
 
-diff --git a/tools/testing/selftests/.gitignore b/tools/testing/selftests/.gitignore
-index 61df01cdf0b2..304fdf1a21dc 100644
---- a/tools/testing/selftests/.gitignore
-+++ b/tools/testing/selftests/.gitignore
-@@ -3,4 +3,7 @@ gpiogpio-hammer
- gpioinclude/
- gpiolsgpio
- tpm2/SpaceTest.log
--tpm2/*.pyc
-+
-+# Python bytecode and cache
-+__pycache__/
-+*.py[cod]
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 257a1aaaa37d..e7d822259c50 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -62,7 +62,8 @@ TEST_PROGS := test_kmod.sh \
- 	test_tc_tunnel.sh \
- 	test_tc_edt.sh \
- 	test_xdping.sh \
--	test_bpftool_build.sh
-+	test_bpftool_build.sh \
-+	test_bpftool.sh
- 
- TEST_PROGS_EXTENDED := with_addr.sh \
- 	with_tunnels.sh \
-diff --git a/tools/testing/selftests/bpf/test_bpftool.py b/tools/testing/selftests/bpf/test_bpftool.py
-new file mode 100644
-index 000000000000..e298dca5fdcf
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpftool.py
-@@ -0,0 +1,294 @@
-+# Copyright (c) 2020 SUSE LLC.
-+#
-+# This software is licensed under the GNU General License Version 2,
-+# June 1991 as shown in the file COPYING in the top-level directory of this
-+# source tree.
-+#
-+# THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
-+# WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
-+# BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-+# FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
-+# OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
-+# THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-+
-+import collections
-+import functools
-+import json
-+import os
-+import socket
-+import subprocess
-+import unittest
-+
-+
-+# Add the source tree of bpftool and /usr/local/sbin to PATH
-+cur_dir = os.path.dirname(os.path.realpath(__file__))
-+bpftool_dir = os.path.abspath(os.path.join(cur_dir, "..", "..", "..", "..",
-+                                           "tools", "bpf", "bpftool"))
-+os.environ["PATH"] = bpftool_dir + ":/usr/local/sbin:" + os.environ["PATH"]
-+
-+# Probe sections
-+SECTION_SYSTEM_CONFIG_NAME = "system_config"
-+SECTION_SYSCALL_CONFIG_NAME = "syscall_config"
-+SECTION_PROGRAM_TYPES_NAME = "program_types"
-+SECTION_MAP_TYPES_NAME = "map_types"
-+SECTION_HELPERS_NAME = "helpers"
-+SECTION_MISC_NAME = "misc"
-+SECTION_SYSTEM_CONFIG_PATTERN = b"Scanning system configuration..."
-+SECTION_SYSCALL_CONFIG_PATTERN = b"Scanning system call availability..."
-+SECTION_PROGRAM_TYPES_PATTERN = b"Scanning eBPF program types..."
-+SECTION_MAP_TYPES_PATTERN = b"Scanning eBPF map types..."
-+SECTION_HELPERS_PATTERN = b"Scanning eBPF helper functions..."
-+SECTION_MISC_PATTERN = b"Scanning miscellaneous eBPF features..."
-+
-+
-+class IfaceNotFoundError(Exception):
-+    pass
-+
-+
-+class UnprivilegedUserError(Exception):
-+    pass
-+
-+
-+def _bpftool(args, json=True):
-+    _args = ["bpftool"]
-+    if json:
-+        _args.append("-j")
-+    _args.extend(args)
-+
-+    res = subprocess.run(_args, capture_output=True)
-+    return res.stdout
-+
-+
-+def bpftool(args):
-+    return _bpftool(args, json=False)
-+
-+
-+def bpftool_json(args):
-+    res = _bpftool(args)
-+    return json.loads(res)
-+
-+
-+def get_default_iface():
-+    for iface in socket.if_nameindex():
-+        if iface[1] != "lo":
-+            return iface[1]
-+    raise IfaceNotFoundError("Could not find any network interface to probe")
-+
-+
-+def default_iface(f):
-+    @functools.wraps(f)
-+    def wrapper(*args, **kwargs):
-+        iface = get_default_iface()
-+        return f(*args, iface, **kwargs)
-+    return wrapper
-+
-+
-+class TestBpftool(unittest.TestCase):
-+    @classmethod
-+    def setUpClass(cls):
-+        if os.getuid() != 0:
-+            raise UnprivilegedUserError("This test suite eeeds root privileges")
-+
-+    @default_iface
-+    def test_feature_dev(self, iface):
-+        expected_lines = [
-+            SECTION_SYSCALL_CONFIG_PATTERN,
-+            SECTION_PROGRAM_TYPES_PATTERN,
-+            SECTION_MAP_TYPES_PATTERN,
-+            SECTION_HELPERS_PATTERN,
-+            SECTION_MISC_PATTERN,
-+        ]
-+
-+        res = bpftool(["feature", "probe", "dev", iface])
-+        for expected_line in expected_lines:
-+            self.assertIn(expected_line, res)
-+
-+    @default_iface
-+    def test_feature_dev_json(self, iface):
-+        expected_keys = [
-+            "syscall_config",
-+            "program_types",
-+            "map_types",
-+            "helpers",
-+            "misc",
-+        ]
-+
-+        res = bpftool_json(["feature", "probe", "dev", iface])
-+        self.assertCountEqual(res.keys(), expected_keys)
-+
-+    def test_feature_kernel(self):
-+        expected_lines = [
-+            SECTION_SYSTEM_CONFIG_PATTERN,
-+            SECTION_SYSCALL_CONFIG_PATTERN,
-+            SECTION_PROGRAM_TYPES_PATTERN,
-+            SECTION_MAP_TYPES_PATTERN,
-+            SECTION_HELPERS_PATTERN,
-+            SECTION_MISC_PATTERN,
-+        ]
-+
-+        res_default1 = bpftool(["feature"])
-+        res_default2 = bpftool(["feature", "probe"])
-+        res = bpftool(["feature", "probe", "kernel"])
-+
-+        for expected_line in expected_lines:
-+            self.assertIn(expected_line, res_default1)
-+            self.assertIn(expected_line, res_default2)
-+            self.assertIn(expected_line, res)
-+
-+    def test_feature_kernel_json(self):
-+        expected_keys = [
-+            "system_config",
-+            "syscall_config",
-+            "program_types",
-+            "map_types",
-+            "helpers",
-+            "misc",
-+        ]
-+
-+        res_default1 = bpftool_json(["feature"])
-+        self.assertCountEqual(res_default1.keys(), expected_keys)
-+
-+        res_default2 = bpftool_json(["feature", "probe"])
-+        self.assertCountEqual(res_default2.keys(), expected_keys)
-+
-+        res = bpftool_json(["feature", "probe", "kernel"])
-+        self.assertCountEqual(res.keys(), expected_keys)
-+
-+    def test_feature_section(self):
-+        SectionTestCase = collections.namedtuple(
-+            "SectionTestCase",
-+            ["section_name", "expected_pattern", "unexpected_patterns"])
-+        test_cases = [
-+            SectionTestCase(
-+                section_name=SECTION_SYSTEM_CONFIG_NAME,
-+                expected_pattern=SECTION_SYSTEM_CONFIG_PATTERN,
-+                unexpected_patterns=[SECTION_SYSCALL_CONFIG_PATTERN,
-+                                     SECTION_PROGRAM_TYPES_PATTERN,
-+                                     SECTION_MAP_TYPES_PATTERN,
-+                                     SECTION_HELPERS_PATTERN,
-+                                     SECTION_MISC_PATTERN]),
-+            SectionTestCase(
-+                section_name=SECTION_SYSCALL_CONFIG_NAME,
-+                expected_pattern=SECTION_SYSCALL_CONFIG_PATTERN,
-+                unexpected_patterns=[SECTION_SYSTEM_CONFIG_PATTERN,
-+                                     SECTION_PROGRAM_TYPES_PATTERN,
-+                                     SECTION_MAP_TYPES_PATTERN,
-+                                     SECTION_HELPERS_PATTERN,
-+                                     SECTION_MISC_PATTERN]),
-+            SectionTestCase(
-+                section_name=SECTION_PROGRAM_TYPES_NAME,
-+                expected_pattern=SECTION_PROGRAM_TYPES_PATTERN,
-+                unexpected_patterns=[SECTION_SYSTEM_CONFIG_PATTERN,
-+                                     SECTION_SYSCALL_CONFIG_PATTERN,
-+                                     SECTION_MAP_TYPES_PATTERN,
-+                                     SECTION_HELPERS_PATTERN,
-+                                     SECTION_MISC_PATTERN]),
-+            SectionTestCase(
-+                section_name=SECTION_MAP_TYPES_NAME,
-+                expected_pattern=SECTION_MAP_TYPES_PATTERN,
-+                unexpected_patterns=[SECTION_SYSTEM_CONFIG_PATTERN,
-+                                     SECTION_SYSCALL_CONFIG_PATTERN,
-+                                     SECTION_PROGRAM_TYPES_PATTERN,
-+                                     SECTION_HELPERS_PATTERN,
-+                                     SECTION_MISC_PATTERN]),
-+            SectionTestCase(
-+                section_name=SECTION_HELPERS_NAME,
-+                expected_pattern=SECTION_HELPERS_PATTERN,
-+                unexpected_patterns=[SECTION_SYSTEM_CONFIG_PATTERN,
-+                                     SECTION_SYSCALL_CONFIG_PATTERN,
-+                                     SECTION_PROGRAM_TYPES_PATTERN,
-+                                     SECTION_MAP_TYPES_PATTERN,
-+                                     SECTION_MISC_PATTERN]),
-+            SectionTestCase(
-+                section_name=SECTION_MISC_NAME,
-+                expected_pattern=SECTION_MISC_PATTERN,
-+                unexpected_patterns=[SECTION_SYSTEM_CONFIG_PATTERN,
-+                                     SECTION_SYSCALL_CONFIG_PATTERN,
-+                                     SECTION_PROGRAM_TYPES_PATTERN,
-+                                     SECTION_MAP_TYPES_PATTERN,
-+                                     SECTION_HELPERS_PATTERN]),
-+        ]
-+
-+        for tc in test_cases:
-+            res = bpftool(["feature", "probe", "kernel",
-+                           "section", tc.section_name])
-+            self.assertIn(tc.expected_pattern, res)
-+            for pattern in tc.unexpected_patterns:
-+                self.assertNotIn(pattern, res)
-+
-+    def test_feature_section_json(self):
-+        res_syscall_config = bpftool_json(["feature", "probe", "kernel",
-+                                           "section", "syscall_config"])
-+        self.assertCountEqual(res_syscall_config.keys(), ["syscall_config"])
-+
-+        res_system_config = bpftool_json(["feature", "probe", "kernel",
-+                                          "section", "system_config"])
-+        self.assertCountEqual(res_system_config.keys(), ["system_config"])
-+
-+        res_program_types = bpftool_json(["feature", "probe", "kernel",
-+                                          "section", "program_types"])
-+        self.assertCountEqual(res_program_types.keys(), ["program_types"])
-+
-+        res_map_types = bpftool_json(["feature", "probe", "kernel",
-+                                      "section", "map_types"])
-+        self.assertCountEqual(res_map_types.keys(), ["map_types"])
-+
-+        res_helpers = bpftool_json(["feature", "probe", "kernel",
-+                                    "section", "helpers"])
-+        self.assertCountEqual(res_helpers.keys(), ["helpers"])
-+
-+        res_misc = bpftool_json(["feature", "probe", "kernel",
-+                                 "section", "misc"])
-+        self.assertCountEqual(res_misc.keys(), ["misc"])
-+
-+    def _assert_pattern_in_dict(self, dct, pattern, check_keys=False):
-+        """Check if all string values inside dictionary contain the given
-+        pattern.
-+        """
-+        for key, value in dct.items():
-+            if check_keys:
-+                self.assertIn(pattern, key)
-+            if isinstance(value, dict):
-+                self._assert_pattern_in_dict(value, pattern, check_keys=True)
-+            elif isinstance(value, str):
-+                self.assertIn(pattern, value)
-+
-+    def _assert_pattern_not_in_dict(self, dct, pattern, check_keys=False):
-+        """Check if all string values inside dictionary do not containe the
-+        given pattern.
-+        """
-+        for key, value in dct.items():
-+            if check_keys:
-+                self.assertNotIn(pattern, key)
-+            if isinstance(value, dict):
-+                self._assert_pattern_not_in_dict(value, pattern,
-+                                                 check_keys=True)
-+            elif isinstance(value, str):
-+                self.assertNotIn(pattern, value)
-+
-+    def test_feature_filter_in_json(self):
-+        res = bpftool_json(["feature", "probe", "kernel",
-+                            "filter_in", "trace"])
-+        self._assert_pattern_in_dict(res, "trace")
-+
-+    def test_feature_filter_out_json(self):
-+        res = bpftool_json(["feature", "probe", "kernel",
-+                            "filter_out", "trace"])
-+        self._assert_pattern_not_in_dict(res, "trace")
-+
-+    def test_feature_macros(self):
-+        expected_patterns = [
-+            b"/\*\*\* System call availability \*\*\*/",
-+            b"#define HAVE_BPF_SYSCALL",
-+            b"/\*\*\* eBPF program types \*\*\*/",
-+            b"#define HAVE.*PROG_TYPE",
-+            b"/\*\*\* eBPF map types \*\*\*/",
-+            b"#define HAVE.*MAP_TYPE",
-+            b"/\*\*\* eBPF helper functions \*\*\*/",
-+            b"#define HAVE.*HELPER",
-+            b"/\*\*\* eBPF misc features \*\*\*/",
-+        ]
-+
-+        res = bpftool(["feature", "probe", "macros"])
-+        for pattern in expected_patterns:
-+            self.assertRegex(res, pattern)
-diff --git a/tools/testing/selftests/bpf/test_bpftool.sh b/tools/testing/selftests/bpf/test_bpftool.sh
-new file mode 100755
-index 000000000000..66690778e36d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpftool.sh
-@@ -0,0 +1,5 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2020 SUSE LLC.
-+
-+python3 -m unittest -v test_bpftool.TestBpftool
--- 
-2.25.0
+In the meantime, does the issue you're trying to solve here happens if you
+create a vlan-filtering aware bridge in the first place, before any VLAN
+configuration? i.e.:
 
+    # ip link add name br0 type bridge vlan_filtering 1
+    # ip link set master br0 dev lan1 up
+    # bridge vlan add ...
+
+
+Thank you,
+Vivien
