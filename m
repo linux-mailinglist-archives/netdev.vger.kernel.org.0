@@ -2,130 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9BFA162EBC
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0869162EC2
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgBRSiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 13:38:54 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:53256 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbgBRSiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:38:54 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so1406657pjc.3;
-        Tue, 18 Feb 2020 10:38:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ge6QbXPJfidzvxb+AJMv70bE8ndG+87hnIvCcboqxj4=;
-        b=rnLp/vTDGXq8W9evlz2QfyuWiVtf5zPntnRq6MfVpAHMA7vxUxWjcBX++7ipGkr7qP
-         7exnPE5Wem3IELjPj9FCpfM4HNOC1wh159D2l6/QX1tLGSwJeN4prTj7zua2d9PEvych
-         //jqtkIEqozdBBHSbfnsaQZ7rHWD4SwRl8arOsXRgNhjCExwjMPnqU1bF3XrcxKRBYxy
-         UdC4DO8AMJ3Gd+xwVVfxafuR+qoZPlZIMm0sSXlzWZ3YIN+BCAd0bVv6MXBqIPjbGF07
-         AEjD+Ujq5Hx8lkRcARHbZ3VRgQNR3UjbQwZI26Hulw9jnh//ksQoQ8OjsP9+pwnQRL7u
-         1UBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ge6QbXPJfidzvxb+AJMv70bE8ndG+87hnIvCcboqxj4=;
-        b=D7WJQ/zS3MVbuAMeR79NrNnqMek162sQprL2B7roDJnvwkbJPVXKl8QW6aOa7G7nAr
-         23/ENf+IF0/oDqOmBjxmrRAvYunnjlj0540Y+Q94TYhEYKTKx+Jj8O27G856qewpXDl9
-         IQAHcluPAb5yDNPvwtVxVn75mPfzQclu89WGSdAdlQ3P1qKZQsDqNQ8DTxyLRmTYBPmv
-         cxK6MMRYog2NxxuPEwqfgTqpS/L3VGjEvIAt2we+3sV2gvDTMDVQMAS00z5HBy2ujwYT
-         YiiiiWs/dvS+QvGM6SJfPmiB4UgdxRlNjT5bJoAvGGZXFWTzV4xTFCyE3VDsbEtEF6bZ
-         4PuQ==
-X-Gm-Message-State: APjAAAUggOO28FVmd59EskXSBNX9cSEePNTAOUfWDviWBmC0PjeJeY8C
-        y8eBDuB+2RQErxRu240okIwC/W/l
-X-Google-Smtp-Source: APXvYqzRmIS0mNMfU62CSC7A6WOazNqix669Y5xR4UnDOi/8dhi5BIeLmKxaC0owxXMpTKHupEYsZg==
-X-Received: by 2002:a17:902:aa01:: with SMTP id be1mr21074798plb.293.1582051133168;
-        Tue, 18 Feb 2020 10:38:53 -0800 (PST)
-Received: from [10.67.49.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id j125sm4900354pfg.160.2020.02.18.10.38.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 10:38:52 -0800 (PST)
-Subject: Re: [PATCH] net: phy: broadcom: Fix a typo ("firsly")
-To:     =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-References: <20200218154701.1639-1-j.neuschaefer@gmx.net>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <ac8b50f7-09f9-d103-823f-db0a1b209d1e@gmail.com>
-Date:   Tue, 18 Feb 2020 10:38:45 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726488AbgBRSkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 13:40:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60070 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726225AbgBRSkY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 13:40:24 -0500
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E3BA124656;
+        Tue, 18 Feb 2020 18:40:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582051223;
+        bh=e0prGkshvWw2XTwL3+iei7JE8F3vbsgEto2sLKzoNxY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZbapHghKemvj/oI+zpPIruW3rQ0y+/IGCFK4hWmOUDx7Vi4fNxeSS/WMkU/tOfVw6
+         5U9tzmE0siFMLLMGiimacSWFAD6i3onMYAlpQEevIhoPtM05rP/W3Mn7mRRqz8OUEZ
+         FvJ+rEAk2hZeuYncgmnHdz8KREoKXg7XPBgExTnc=
+Received: by mail-qk1-f170.google.com with SMTP id h4so20556083qkm.0;
+        Tue, 18 Feb 2020 10:40:22 -0800 (PST)
+X-Gm-Message-State: APjAAAXMOybWhbMjP/PI5WyTkGrIoj25iB3wKpVv2e+lmQsAhJTKVBQW
+        6myrge+bZL3RZnK73O4cu1nqjyZvPb1bDrWCqQ==
+X-Google-Smtp-Source: APXvYqzzc5l2bT41Ulxw896RzAsZHa163jCmWCxKmNgy3aUdTfnzFWB1uBJXqNRZFmClh71pLAlutTDYlRFRVHXfwrQ=
+X-Received: by 2002:ae9:f205:: with SMTP id m5mr20551704qkg.152.1582051221993;
+ Tue, 18 Feb 2020 10:40:21 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200218154701.1639-1-j.neuschaefer@gmx.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200218171321.30990-1-robh@kernel.org> <20200218181356.09ae0779@donnerap.cambridge.arm.com>
+In-Reply-To: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 18 Feb 2020 12:40:10 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
+Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        soc@kernel.org, Robert Richter <rrichter@marvell.com>,
+        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Mark Langsdorf <mlangsdo@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        James Morse <james.morse@arm.com>,
+        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        linux-edac <linux-edac@vger.kernel.org>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 7:47 AM, Jonathan Neuschäfer wrote:
-> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+On Tue, Feb 18, 2020 at 12:14 PM Andre Przywara <andre.przywara@arm.com> wr=
+ote:
+>
+> On Tue, 18 Feb 2020 11:13:10 -0600
+> Rob Herring <robh@kernel.org> wrote:
+>
+> Hi,
+>
+> > Calxeda has been defunct for 6 years now. Use of Calxeda servers carrie=
+d
+> > on for some time afterwards primarily as distro builders for 32-bit ARM=
+.
+> > AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
+> > hosts.
+> >
+> > The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
+> > support as there are few or no other systems with enough RAM and LPAE. =
+Now
+> > 32-bit KVM host support is getting removed[1].
+> >
+> > While it's not much maintenance to support, I don't care to convert the
+> > Calxeda DT bindings to schema nor fix any resulting errors in the dts f=
+iles
+> > (which already don't exactly match what's shipping in firmware).
+>
+> While every kernel maintainer seems always happy to take patches with a n=
+egative diffstat, I wonder if this is really justification enough to remove=
+ a perfectly working platform. I don't really know about any active users, =
+but experience tells that some platforms really are used for quite a long t=
+ime, even if they are somewhat obscure. N900 or Netwinder, anyone?
+>
+> So to not give the impression that actually *everyone* (from that small s=
+ubset of people actively reading the kernel list) is happy with that, I thi=
+nk that having support for at least Midway would be useful. On the one hand=
+ it's a decent LPAE platform (with memory actually exceeding 4GB), and on t=
+he other hand it's something with capable I/O (SATA) and networking, so one=
+ can actually stress test the system. Which is the reason I was using that =
+for KVM testing, but even with that probably going away now there remain st=
+ill some use cases, and be it for general ARM(32) testing.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Does LPAE with more than 4GB actually need to work if there's not
+another platform out there?
+
+> I don't particularly care about the more optional parts like EDAC, cpuidl=
+e, or cpufreq, but I wonder if keeping in at least the rather small SATA an=
+d XGMAC drivers and basic platform support is feasible.
+
+cpuidle isn't actually stable from what I remember. I think without
+cpufreq, we default to 1.1GHz instead of 1.4.
+
+> If YAML DT bindings are used as an excuse, I am more than happy to conver=
+t those over.
+
+Thanks!
+
+>
+> And if anyone has any particular gripes with some code, maybe there is a =
+way to fix that instead of removing it? I was always wondering if we could =
+get rid of the mach-highbank directory, for instance. I think most of it is=
+ Highbank (Cortex-A9) related.
+
+All the reset/suspend/poweroff and coherency parts are shared. The SCU
+and L2 parts could be removed, but not really worth the surgery IMO.
+
+Rob
