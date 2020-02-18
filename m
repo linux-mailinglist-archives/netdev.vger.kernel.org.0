@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6711632C3
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1172C1632D8
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:17:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbgBRUQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 15:16:21 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35707 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726756AbgBRUQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:16:17 -0500
-Received: by mail-wr1-f68.google.com with SMTP id w12so25535306wrt.2;
-        Tue, 18 Feb 2020 12:16:16 -0800 (PST)
+        id S1727789AbgBRURH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 15:17:07 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52411 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbgBRUQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:16:18 -0500
+Received: by mail-wm1-f65.google.com with SMTP id p9so4102462wmc.2;
+        Tue, 18 Feb 2020 12:16:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4Rc8DWOPa+KHz6kWLduKvor/98RO2j9a30URsDICP5M=;
-        b=FrOMnbpFqApO6TyQk8xsp26ipMrtIvZ5zEj6zO9O/GHWHPfOrCpDOpRYypk1e+yG8i
-         pdxuDDBeMp/KMcID/uR7siiU147wfevvLmRIrkZMJCBqSOByaDl0QNfjNdH2gqgII8II
-         qX/vZgNoyKB9NEyeuVxKOYygHNuOCogCIWSfg0G9mtkxOkjEzR0pLtWbLqk5fKJ67cfC
-         gPeU2WV6Ar0b2Gxa79XU4qlCMcZctE4pb20SnD7RalGkzRc55M8hg9yjpNFBlyFxTjBi
-         J4WTQ5H7I02TWuViMssEWgZShy/ANPpRJPpuOXZQP3m6CDAVppUafoB5+7Jon9fJNevX
-         8sWw==
+        bh=faBVqPTcYPP2mJjHh2h8k1eNwReQK/o/MeBiESpq7Co=;
+        b=Gv2OvzIvDKL8C1oLMCAExLfw7s1uXTT3LNrkPFqKMKXwvGKdHVIT1c8O/JqoX2e1jL
+         FbvEgOprTF3QVHY59MVQOeXD2JY0nN6946HVq4Ie9YSLpI0YPyThjHdbtvW5bPeoEoIB
+         feodXJDktTZAzvJ02ibilJ/Idf5sb3RGSNTC9NP63HePr80rz66jEbnM31tPDRBlZ609
+         GZbJcqJsLoC7qsHSpZmoj87W0l7xSOYXnUbWQP7JsKoKta0cFJvNmQi+3veWQMSMCZ0Y
+         SRa9oi92JkhNm6KJ8W8sjcSd6aTOPnJG0p8NxMJXc7A3pxEZz10vrDlxCaZ+foWwKz2Y
+         7OfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4Rc8DWOPa+KHz6kWLduKvor/98RO2j9a30URsDICP5M=;
-        b=mKKeEcM54RGA+9gJNFKOl5peT9X7/BeSgmUnWN5W95+VivazM2HeKBeI0XYNCqrNcy
-         YSpW3d8E2LNkKSROVR+HD3XmWJO7X+1fuCIHRaPJP3Z60ZpBUc5q/pZjBdKC97RLN/jY
-         RkBzFrSO1iD6Ge7oqvpJqOOOm1qxW3S4yPGFmQ0vHB90OaxMaD7V6sgXGM4oyCWTrUzl
-         DpdpX4xWA1wC8as0VWQA+t60WKI4N0iqQyGm6OodxArzf0aHZrcrdYRWA2w0ojux9xWG
-         C2+d88Wi58Dm7Moui0r6RcggD/E51WQGqb/CXpx0rteZgQQrBsb2NgQ9FRumfhhv9VV+
-         2y8g==
-X-Gm-Message-State: APjAAAVOISepbeG4EyuNYpR4ROoTOaADCGjQkTOmyRWoV/hrv4St5Wkh
-        VCit4a12EhOsZ1XsDY9RKUJsrHew
-X-Google-Smtp-Source: APXvYqxgOCIIRMTmEqbJu/JCIS3JlQVaNVFkdkjcKAyjtTkW/KrITw2gXflWe0C20eMenOmcVlUQuQ==
-X-Received: by 2002:adf:ec0d:: with SMTP id x13mr30604236wrn.400.1582056975466;
-        Tue, 18 Feb 2020 12:16:15 -0800 (PST)
+        bh=faBVqPTcYPP2mJjHh2h8k1eNwReQK/o/MeBiESpq7Co=;
+        b=L0CZrZ++7Qy645IqXkg8WjAo0JjgLCOpAVFppOGNjgLmFUEtWXrUKBtcn+JeaOE2Qg
+         2l+DBVn/VKncnFi+DuMsBNzYZgYg7l4E9EeGxW1s3d56S17BRyodnyMo0TI/aL63pjik
+         dRKhh1RfYSXgKWd4Xpcvlz2MH17hDRsmxKeAN7WNGRJmBZwAp499FG+mSLyPtSqGkyEe
+         NhA64oXAjIMjUtWc2blCjZWSeblhrZWrqOj9yQuIwBNHfmKVIYDeMIDcScd3qFphtQpL
+         auCwOH1ovbzrQeMP7VI/WyJMAmD+VC7vNM/M5FvIU2/FgxC/4NkCegT6AdBwoy8TSKS7
+         r5jg==
+X-Gm-Message-State: APjAAAWwRvNwaL92TS127FVl7Q9O3/QvQomSWKy3baBremoJBmn5YPjQ
+        kpIOYwh4NV5lAgRFJ2S49YawN61b
+X-Google-Smtp-Source: APXvYqwj9n0AWyFCf7wlztQVh7m87fwQMuFHKD3sMCvi3AvICoXSkgax7knIe2MzB3xz8/JcsHTpvw==
+X-Received: by 2002:a1c:ded7:: with SMTP id v206mr5112438wmg.106.1582056976440;
+        Tue, 18 Feb 2020 12:16:16 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:5cb0:582f:968:ec00? (p200300EA8F2960005CB0582F0968EC00.dip0.t-ipconnect.de. [2003:ea:8f29:6000:5cb0:582f:968:ec00])
-        by smtp.googlemail.com with ESMTPSA id n1sm7999711wrw.52.2020.02.18.12.16.14
+        by smtp.googlemail.com with ESMTPSA id h128sm5112270wmh.33.2020.02.18.12.16.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 12:16:15 -0800 (PST)
-Subject: [PATCH net-next v2 07/13] jme: use new helper tcp_v6_gso_csum_prep
+        Tue, 18 Feb 2020 12:16:16 -0800 (PST)
+Subject: [PATCH net-next v2 08/13] ionic: use new helper tcp_v6_gso_csum_prep
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
-        Guo-Fu Tseng <cooldavid@cooldavid.org>
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
-Message-ID: <f9f6897b-8dc8-2036-97d4-60e154b57356@gmail.com>
-Date:   Tue, 18 Feb 2020 21:06:11 +0100
+Message-ID: <6960380e-cee3-b65c-010f-551635cb3988@gmail.com>
+Date:   Tue, 18 Feb 2020 21:07:16 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -70,27 +71,25 @@ Use new helper tcp_v6_gso_csum_prep in additional network drivers.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/jme.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/jme.c b/drivers/net/ethernet/jme.c
-index 2e4975572..de3c7ce93 100644
---- a/drivers/net/ethernet/jme.c
-+++ b/drivers/net/ethernet/jme.c
-@@ -2077,12 +2077,7 @@ jme_tx_tso(struct sk_buff *skb, __le16 *mss, u8 *flags)
- 								IPPROTO_TCP,
- 								0);
- 		} else {
--			struct ipv6hdr *ip6h = ipv6_hdr(skb);
--
--			tcp_hdr(skb)->check = ~csum_ipv6_magic(&ip6h->saddr,
--								&ip6h->daddr, 0,
--								IPPROTO_TCP,
--								0);
-+			tcp_v6_gso_csum_prep(skb);
- 		}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index e452f4242..020acc300 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@ -632,10 +632,7 @@ static int ionic_tx_tcp_pseudo_csum(struct sk_buff *skb)
+ 					   ip_hdr(skb)->daddr,
+ 					   0, IPPROTO_TCP, 0);
+ 	} else if (skb->protocol == cpu_to_be16(ETH_P_IPV6)) {
+-		tcp_hdr(skb)->check =
+-			~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+-					 &ipv6_hdr(skb)->daddr,
+-					 0, IPPROTO_TCP, 0);
++		tcp_v6_gso_csum_prep(skb);
+ 	}
  
- 		return 0;
+ 	return 0;
 -- 
 2.25.1
 
