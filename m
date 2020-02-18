@@ -2,141 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0869162EC2
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC8A8162EE8
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgBRSkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 13:40:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60070 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726225AbgBRSkY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 13:40:24 -0500
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E3BA124656;
-        Tue, 18 Feb 2020 18:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582051223;
-        bh=e0prGkshvWw2XTwL3+iei7JE8F3vbsgEto2sLKzoNxY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZbapHghKemvj/oI+zpPIruW3rQ0y+/IGCFK4hWmOUDx7Vi4fNxeSS/WMkU/tOfVw6
-         5U9tzmE0siFMLLMGiimacSWFAD6i3onMYAlpQEevIhoPtM05rP/W3Mn7mRRqz8OUEZ
-         FvJ+rEAk2hZeuYncgmnHdz8KREoKXg7XPBgExTnc=
-Received: by mail-qk1-f170.google.com with SMTP id h4so20556083qkm.0;
-        Tue, 18 Feb 2020 10:40:22 -0800 (PST)
-X-Gm-Message-State: APjAAAXMOybWhbMjP/PI5WyTkGrIoj25iB3wKpVv2e+lmQsAhJTKVBQW
-        6myrge+bZL3RZnK73O4cu1nqjyZvPb1bDrWCqQ==
-X-Google-Smtp-Source: APXvYqzzc5l2bT41Ulxw896RzAsZHa163jCmWCxKmNgy3aUdTfnzFWB1uBJXqNRZFmClh71pLAlutTDYlRFRVHXfwrQ=
-X-Received: by 2002:ae9:f205:: with SMTP id m5mr20551704qkg.152.1582051221993;
- Tue, 18 Feb 2020 10:40:21 -0800 (PST)
-MIME-Version: 1.0
-References: <20200218171321.30990-1-robh@kernel.org> <20200218181356.09ae0779@donnerap.cambridge.arm.com>
-In-Reply-To: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 18 Feb 2020 12:40:10 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        soc@kernel.org, Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1726734AbgBRSmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 13:42:44 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:44827 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726391AbgBRSmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:42:44 -0500
+Received: by mail-pf1-f195.google.com with SMTP id y5so11076972pfb.11;
+        Tue, 18 Feb 2020 10:42:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FRPijcKo7kcY7YCcx2mnm2XntT5PXC3jc8cYZD9bnvc=;
+        b=STSEWAj2mLLdHZrKCoSsV8S5dtobBUHz7/MKp0aKP2JnTSV18tnQhlLbjjBD5wAsyk
+         ePvAISX8FcYTeBxh36DpesEK5H9hLIyHXPCaI53agF7h6zTrNhh3MO1631cf4QqufW42
+         QQkE6llrFzaX0E7sDPbCe7F1FpDG8zHWxqNSBvWm8MucYpATLWu79qFmG5UWT7kRbWSj
+         ltd36F12euAfNFEi+OdRHdpdTBNOQ/c0HHX+mvTuxDbggM8hbFsAOPnqU/edC1lHjvVR
+         12Dux0Qg5EpOjGIdANsYT0hynAY00NrxXqpcQImu6orXAs/FBnK8po4uRFlIkNTmvl5m
+         J4Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FRPijcKo7kcY7YCcx2mnm2XntT5PXC3jc8cYZD9bnvc=;
+        b=FvcCwn/jIRk/66QWFCKye09gc+rn1z6cBtVyLonAqASFQlQu4hmm1muddWvNM7Q/Er
+         TvVhCcyDig43j99JyZ5mgDsoziJsgQZWNF8Zt+OY3kBRFnly1iU06a7/k52V02ae2oIS
+         Kvk1fIX3/ZrsZ2orYYT8ylSZ0h5us1QjVygUqlGQ4HkVzzyfaK/8wPvfbnWmQvzqiIy7
+         ZSWjkFYulDlnkb+skB9cjUayTP/47K6OP+PpQLqAYZOxAhHO2eygFX0EdZ9O/IRJk4Aq
+         8eOiccY3IRz4+HJc5FUsds7kciWNu7j3bkgw6hK+Bc6tth5QXjcJf7cMkwgaBgvcnnQO
+         r9Pw==
+X-Gm-Message-State: APjAAAVDWLQxc0yM3UBtvI19rxxyn91pO81XfrvuC/ZQUjxb3/dJjyKD
+        Hb81gGNcaSaOl2ibVp0tNg==
+X-Google-Smtp-Source: APXvYqwl800bbQ26s9xKJZDhrO9PdZlbIcrYNVvwauRbeX7NJfuXFF1uGmSM7zo9LH4rJfVnnVed0w==
+X-Received: by 2002:a63:515d:: with SMTP id r29mr23493038pgl.265.1582051363462;
+        Tue, 18 Feb 2020 10:42:43 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:54c:a276:f869:e1e5:121e:cdbf])
+        by smtp.gmail.com with ESMTPSA id v5sm5526791pgc.11.2020.02.18.10.42.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 10:42:42 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     paul@paul-moore.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] netlabel_domainhash.c: Use built-in RCU list checking
+Date:   Wed, 19 Feb 2020 00:11:32 +0530
+Message-Id: <20200218184132.20363-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 12:14 PM Andre Przywara <andre.przywara@arm.com> wr=
-ote:
->
-> On Tue, 18 Feb 2020 11:13:10 -0600
-> Rob Herring <robh@kernel.org> wrote:
->
-> Hi,
->
-> > Calxeda has been defunct for 6 years now. Use of Calxeda servers carrie=
-d
-> > on for some time afterwards primarily as distro builders for 32-bit ARM=
-.
-> > AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
-> > hosts.
-> >
-> > The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
-> > support as there are few or no other systems with enough RAM and LPAE. =
-Now
-> > 32-bit KVM host support is getting removed[1].
-> >
-> > While it's not much maintenance to support, I don't care to convert the
-> > Calxeda DT bindings to schema nor fix any resulting errors in the dts f=
-iles
-> > (which already don't exactly match what's shipping in firmware).
->
-> While every kernel maintainer seems always happy to take patches with a n=
-egative diffstat, I wonder if this is really justification enough to remove=
- a perfectly working platform. I don't really know about any active users, =
-but experience tells that some platforms really are used for quite a long t=
-ime, even if they are somewhat obscure. N900 or Netwinder, anyone?
->
-> So to not give the impression that actually *everyone* (from that small s=
-ubset of people actively reading the kernel list) is happy with that, I thi=
-nk that having support for at least Midway would be useful. On the one hand=
- it's a decent LPAE platform (with memory actually exceeding 4GB), and on t=
-he other hand it's something with capable I/O (SATA) and networking, so one=
- can actually stress test the system. Which is the reason I was using that =
-for KVM testing, but even with that probably going away now there remain st=
-ill some use cases, and be it for general ARM(32) testing.
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-Does LPAE with more than 4GB actually need to work if there's not
-another platform out there?
+list_for_each_entry_rcu() has built-in RCU and lock checking.
 
-> I don't particularly care about the more optional parts like EDAC, cpuidl=
-e, or cpufreq, but I wonder if keeping in at least the rather small SATA an=
-d XGMAC drivers and basic platform support is feasible.
+Pass cond argument to list_for_each_entry_rcu() to silence
+false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
+by default.
 
-cpuidle isn't actually stable from what I remember. I think without
-cpufreq, we default to 1.1GHz instead of 1.4.
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ net/netlabel/netlabel_domainhash.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> If YAML DT bindings are used as an excuse, I am more than happy to conver=
-t those over.
+diff --git a/net/netlabel/netlabel_domainhash.c b/net/netlabel/netlabel_domainhash.c
+index f5d34da0646e..a1f2320ecc16 100644
+--- a/net/netlabel/netlabel_domainhash.c
++++ b/net/netlabel/netlabel_domainhash.c
+@@ -143,7 +143,8 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
+ 	if (domain != NULL) {
+ 		bkt = netlbl_domhsh_hash(domain);
+ 		bkt_list = &netlbl_domhsh_rcu_deref(netlbl_domhsh)->tbl[bkt];
+-		list_for_each_entry_rcu(iter, bkt_list, list)
++		list_for_each_entry_rcu(iter, bkt_list, list,
++					lockdep_is_held(&netlbl_domhsh_lock))
+ 			if (iter->valid &&
+ 			    netlbl_family_match(iter->family, family) &&
+ 			    strcmp(iter->domain, domain) == 0)
+-- 
+2.17.1
 
-Thanks!
-
->
-> And if anyone has any particular gripes with some code, maybe there is a =
-way to fix that instead of removing it? I was always wondering if we could =
-get rid of the mach-highbank directory, for instance. I think most of it is=
- Highbank (Cortex-A9) related.
-
-All the reset/suspend/poweroff and coherency parts are shared. The SCU
-and L2 parts could be removed, but not really worth the surgery IMO.
-
-Rob
