@@ -2,190 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6E61624A6
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 11:34:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA061624BD
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 11:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbgBRKeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 05:34:08 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:51546 "EHLO
+        id S1726327AbgBRKkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 05:40:12 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:51638 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbgBRKeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 05:34:08 -0500
+        with ESMTP id S1726298AbgBRKkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 05:40:12 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OPbVEYgyF0rq1HakgIj5T2TdUNlUSGacKTY0m4Nkpww=; b=k4BCVAkwPbiRh0N/YFFZ66kst
-        HJalHNVmdWPbfakXw0NHy9X4d2HuGnkyh7YevxBHLTihVX61p2lvPuSPCfoe6C+y6vlL+NejtJk7i
-        iizWXE8UYNm0W1itMP1KwcqXbaS9D3wIkDIctqOJFP5RZ03KeKv15XynZToqKLN3lah0g53rvoutn
-        NZaWHVwcLJLfsjy/RKL9Nea0yMKevvydgwRGwZa84Mcpik8ID6q0YlpjEPBr4qZqOk3ZVvl34eN5v
-        G0pfSq3NJFlVZGPx/+fdkLpvY3spKJ6LjhgY024mdPv8JYPZq6ykOpnIfe4CiGWObDI4GRWym/hth
-        gBiNm8Z7Q==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49456)
+         bh=Hp0Ij7ZYJ3qifvzMcq1wfno2U3C2scBRGrabjWil+tw=; b=d9abACLXMhWhCiSNCDA8kuDBI
+        iaMFLa23nYQhzNxmDtQcVzvqLsk6ZAJ3jxvlX9Z8AjM0OM2CydwBCTWWsDKrvbiMRiKFGwtMuxtfi
+        j8fkUYTrZZUKMt0QugferbpVtNgz1bfKyfw+8bAI+3ckeIT3ByT6U3OD2rWjFATsAl4r1gadGhge/
+        uyZt3FGeCup8AuQp+1FeNpKjVbzQJpYsXjoB0yR6K7tUYa4hYLr7HOasYxjLBVygxl0irUsCJlKul
+        pCVb6UdYv/hhokxD49rub9GnVNEInC1BQKphfU7H71gvh8QUan9yymU1+rug/RPWocniAykbWdyGe
+        xHZXgpQEg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:56356 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j40CY-0006d8-94; Tue, 18 Feb 2020 10:34:02 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j40CW-0000MA-Bf; Tue, 18 Feb 2020 10:34:00 +0000
-Date:   Tue, 18 Feb 2020 10:34:00 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [CFT 5/8] net: dpaa2-mac: use resolved link config in
- mac_link_up()
-Message-ID: <20200218103400.GF25745@shell.armlinux.org.uk>
-References: <20200217172242.GZ25745@shell.armlinux.org.uk>
- <E1j3k80-00072W-E5@rmk-PC.armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j40IM-0006ee-5J; Tue, 18 Feb 2020 10:40:02 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j40IL-0002TU-At; Tue, 18 Feb 2020 10:40:01 +0000
+Date:   Tue, 18 Feb 2020 10:40:01 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: remove Felix Fietkau for the Mediatek ethernet
+ driver
+Message-ID: <20200218103959.GA9487@e0022681537dd.dyn.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1j3k80-00072W-E5@rmk-PC.armlinux.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It would really help if MAINTAINERS were updated with the correct
-information for this driver:
+Felix's address has been failing for a while now with the following
+non-delivery report:
 
-DPAA2 ETHERNET DRIVER
-M:      Ioana Radulescu <ruxandra.radulescu@nxp.com>
+This message was created automatically by mail delivery software.
 
-This address bounces.  Given what I find in the git history, is the
-correct person is now:
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
 
-Ioana Ciornei <ioana.ciornei@nxp.com>
+  nbd@openwrt.org
+    host util-01.infra.openwrt.org [2a03:b0c0:3:d0::175a:2001]
+    SMTP error from remote mail server after RCPT TO:<nbd@openwrt.org>:
+    550 Unrouteable address
 
-Please submit a patch updating MAINTAINERS.  Thanks.
+Let's remove his address from MAINTAINERS.  If a different resolution
+is desired, please submit an alternative patch.
 
-On Mon, Feb 17, 2020 at 05:24:16PM +0000, Russell King wrote:
-> Convert the DPAA2 ethernet driver to use the finalised link parameters
-> in mac_link_up() rather than the parameters in mac_config(), which are
-> more suited to the needs of the DPAA2 MC firmware than those available
-> via mac_config().
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 54 +++++++++++--------
->  .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |  1 +
->  2 files changed, 33 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> index 3a75c5b58f95..3ee236c5fc37 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> @@ -123,35 +123,16 @@ static void dpaa2_mac_config(struct phylink_config *config, unsigned int mode,
->  	struct dpmac_link_state *dpmac_state = &mac->state;
->  	int err;
->  
-> -	if (state->speed != SPEED_UNKNOWN)
-> -		dpmac_state->rate = state->speed;
-> -
-> -	if (state->duplex != DUPLEX_UNKNOWN) {
-> -		if (!state->duplex)
-> -			dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
-> -		else
-> -			dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
-> -	}
-> -
->  	if (state->an_enabled)
->  		dpmac_state->options |= DPMAC_LINK_OPT_AUTONEG;
->  	else
->  		dpmac_state->options &= ~DPMAC_LINK_OPT_AUTONEG;
->  
-> -	if (state->pause & MLO_PAUSE_RX)
-> -		dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
-> -	else
-> -		dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
-> -
-> -	if (!!(state->pause & MLO_PAUSE_RX) ^ !!(state->pause & MLO_PAUSE_TX))
-> -		dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
-> -	else
-> -		dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
-> -
->  	err = dpmac_set_link_state(mac->mc_io, 0,
->  				   mac->mc_dev->mc_handle, dpmac_state);
->  	if (err)
-> -		netdev_err(mac->net_dev, "dpmac_set_link_state() = %d\n", err);
-> +		netdev_err(mac->net_dev, "%s: dpmac_set_link_state() = %d\n",
-> +			   __func__, err);
->  }
->  
->  static void dpaa2_mac_link_up(struct phylink_config *config,
-> @@ -165,10 +146,37 @@ static void dpaa2_mac_link_up(struct phylink_config *config,
->  	int err;
->  
->  	dpmac_state->up = 1;
-> +
-> +	if (mac->if_link_type == DPMAC_LINK_TYPE_PHY) {
-> +		/* If the DPMAC is configured for PHY mode, we need
-> +		 * to pass the link parameters to the MC firmware.
-> +		 */
-> +		dpmac_state->rate = speed;
-> +
-> +		if (duplex == DUPLEX_HALF)
-> +			dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
-> +		else if (duplex == DUPLEX_FULL)
-> +			dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
-> +
-> +		/* This is lossy; the firmware really should take the pause
-> +		 * enablement status rather than pause/asym pause status.
-> +		 */
-> +		if (rx_pause)
-> +			dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
-> +		else
-> +			dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
-> +
-> +		if (rx_pause ^ tx_pause)
-> +			dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
-> +		else
-> +			dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
-> +	}
-> +
->  	err = dpmac_set_link_state(mac->mc_io, 0,
->  				   mac->mc_dev->mc_handle, dpmac_state);
->  	if (err)
-> -		netdev_err(mac->net_dev, "dpmac_set_link_state() = %d\n", err);
-> +		netdev_err(mac->net_dev, "%s: dpmac_set_link_state() = %d\n",
-> +			   __func__, err);
->  }
->  
->  static void dpaa2_mac_link_down(struct phylink_config *config,
-> @@ -241,6 +249,8 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
->  		goto err_close_dpmac;
->  	}
->  
-> +	mac->if_link_type = attr.link_type;
-> +
->  	dpmac_node = dpaa2_mac_get_node(attr.id);
->  	if (!dpmac_node) {
->  		netdev_err(net_dev, "No dpmac@%d node found.\n", attr.id);
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> index 4da8079b9155..2130d9c7d40e 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> @@ -20,6 +20,7 @@ struct dpaa2_mac {
->  	struct phylink_config phylink_config;
->  	struct phylink *phylink;
->  	phy_interface_t if_mode;
-> +	enum dpmac_link_type if_link_type;
->  };
->  
->  bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
-> -- 
-> 2.20.1
-> 
-> 
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a0d86490c2c6..82dccd29b24f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10528,7 +10528,6 @@ F:	drivers/leds/leds-mt6323.c
+ F:	Documentation/devicetree/bindings/leds/leds-mt6323.txt
+ 
+ MEDIATEK ETHERNET DRIVER
+-M:	Felix Fietkau <nbd@openwrt.org>
+ M:	John Crispin <john@phrozen.org>
+ M:	Sean Wang <sean.wang@mediatek.com>
+ M:	Mark Lee <Mark-MC.Lee@mediatek.com>
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
