@@ -2,125 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9238C162411
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 235F9162415
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 11:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgBRJ7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 04:59:46 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58372 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726327AbgBRJ7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:59:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582019985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t8eyLEjJkU8sIdEC16q3jhFcx07tfSetwgj0/6SmRN8=;
-        b=AIuVuXetjKeukSFV7QTiSS9IRpF8MjHRIgqeXH/7GWZ0XZ6F7QZUzIna+qQjZ6GS5VNRl3
-        87Re5Wm8W+m/CIEDtX4f7l4iQBcwwgHmhJKBxeQgpGAfJ0BwR2DA9ZYDmIQCx4nd1zMqbI
-        3FEmkwEAK0QEnFg/cwlZuIwnISyjcIw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-393-mFg2yYs7PMOtjpYYHhy3LQ-1; Tue, 18 Feb 2020 04:59:43 -0500
-X-MC-Unique: mFg2yYs7PMOtjpYYHhy3LQ-1
-Received: by mail-wm1-f71.google.com with SMTP id u11so807472wmb.4
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 01:59:43 -0800 (PST)
+        id S1726496AbgBRKAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 05:00:20 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38901 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726327AbgBRKAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 05:00:20 -0500
+Received: by mail-qk1-f194.google.com with SMTP id z19so18902330qkj.5
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 02:00:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l1r+LsWOb2AmE1u/gMvHdqR1rXomzL+PpjbvPFDdPEE=;
+        b=e9hBWxopHFK0jPOPiWZfyppwvSzbv6U1cGvaZYTveag0nnDgwlr2Hxlp3QytNijDw0
+         ZNj1W/cDf57c7Tz6Ya5As1Valur+2V15hYSl8MqJF3NsNrHlhlDos8WQ1WFe2vVZ91xQ
+         FrpuK1p47Kuue0w+988x5yRSiJ4Xm08Pp5G02TyBokiZu5BbExdAqvNQKMHroc1yDd5n
+         hySQtiAPH0sUdgIQNXd8NfnW8L2puIOd7qwU5750+l26YG2e3+08UpvUBSykjIqJL44e
+         w4S6JEf+vcWxWujELiuSsZmxPAMfVAW0padwUP6B21mB16EyRvOqHTwH7E+T7yA11mnd
+         4VOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t8eyLEjJkU8sIdEC16q3jhFcx07tfSetwgj0/6SmRN8=;
-        b=UsB87KxVvDCAzwfZaU6gctxZgxilGJfnifCrxUYqH7rCx5wB/8a6Yy0WDjGUCeADaj
-         hv24eqvXvg+19rvexvPlVuzmgVgLUNH9b7HB5vKl77HoJEJtog/4fjigQsr2lHQyh09E
-         5w/G/JdFBAczrIZfNVZ1MBSyBwI2LmTmu3HaMcNNEsH6lK7Slif65p1n0B2IChTzgm85
-         DQUyz+8IWgo7t21aEQEkTwWotz0x7jSp0Th3oarX34zNKzCBkAG+3cssSjh/fI97L9k5
-         NrRvoablXJLO3cQvHl7lyhW0mhh9CfZt7suMGPEZfxbgdMuUG7j2wSVaUcOAlR8wsGJt
-         1/rQ==
-X-Gm-Message-State: APjAAAUJsed7DpBmxa9qJv3gQffYQLW0WZlWsrlIF9egJAkcoYvbn63q
-        gLgKiuvmvFZ4pLqE4Ha5POym+OG/qdSJrKcRXNad+tkR7+pt1iOUHUbBas4c361HicKsHirQPpt
-        p7a2A2wdZHJnL5jfk
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr26951316wrv.86.1582019982642;
-        Tue, 18 Feb 2020 01:59:42 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwePfeSJTNnPPtdjW1ezHXtYzYsxnhdZ7k4RJxR+fpByDcCmLltpiM3YK/9gTUXEXBHAuTVow==
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr26951293wrv.86.1582019982380;
-        Tue, 18 Feb 2020 01:59:42 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id 21sm2913906wmo.8.2020.02.18.01.59.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 01:59:41 -0800 (PST)
-Date:   Tue, 18 Feb 2020 10:59:40 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     mtk.manpages@gmail.com, linux-man@vger.kernel.org,
-        Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3] vsock.7: add VMADDR_CID_LOCAL description
-Message-ID: <20200218095940.vnyva3lknsfsxxs5@steredhat>
-References: <20200217173121.159132-1-sgarzare@redhat.com>
- <20200218095319.GB786556@stefanha-x1.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l1r+LsWOb2AmE1u/gMvHdqR1rXomzL+PpjbvPFDdPEE=;
+        b=ToBhuUA7DigYFeaIRsX/4aONT+HpvRWA8CwI1aiIm/mPbcvc58zIuVD0cHjT/m0vLJ
+         DinxvZ7gp5r+YSP1jrOWf8IwhNAzY0+PbZpYas/+JIVAE8F1LP2eux05wi91inO+b9r6
+         eoFnpVILb9hx0IjGLOecL1Vw5TUq+byfE1HpZCqcruukuObwEi1xe15BbntEW+QqDF8l
+         dGkQsAwll+84zVQilB85FtJ73i5pXEMxOE/kRgB0htWxm0LN9dEBIUdCXyP8E35yv7W8
+         ns6DuPlg5uWI7RBmbM7CnZEvrTJiUJqrYk+irm83OvdkgeSmmIZabj2wD/w3FEfpHsQy
+         sAtQ==
+X-Gm-Message-State: APjAAAWX0g5JVK5fv1MIku01ICYYW7n27S4a7f5pK3AfRVa6mc6YQEKw
+        K7SMA7+9EppYpY0pmfJhm4+zE80kgH16RsTcTQUoJXwCr4PX7g==
+X-Google-Smtp-Source: APXvYqxxr7CNmWczhCqSO2HneSo/ObH+uGo2aundzGwuSDWUBnJ7lUHocIXMpy5s6B0ppyEwyUEIRGpo0OKKSFn/Nu4=
+X-Received: by 2002:a37:5686:: with SMTP id k128mr14509523qkb.8.1582020018519;
+ Tue, 18 Feb 2020 02:00:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200218095319.GB786556@stefanha-x1.localdomain>
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
+ <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+ <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+ <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
+ <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com>
+ <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
+ <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+ <CACT4Y+a8N7_n4t_vxezKJVkd1+gDHaMzpeG18MuDE04+r3341A@mail.gmail.com>
+ <CACT4Y+atqrSfZuquPZcRUKNtVbLdu+B5YN3=YmDb38Ruzj3Pzw@mail.gmail.com> <CACT4Y+bMzYZeMvv2DdTuTKtJFzTcHhinp7N7VmSiXqSBDyj8Ug@mail.gmail.com>
+In-Reply-To: <CACT4Y+bMzYZeMvv2DdTuTKtJFzTcHhinp7N7VmSiXqSBDyj8Ug@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 18 Feb 2020 11:00:07 +0100
+Message-ID: <CACT4Y+bUXAstk41RPSF-EQDh7A8-XkTbc53nQTHt4DS5AUhr-A@mail.gmail.com>
+Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
+ net: WireGuard secure network tunnel]
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 09:53:19AM +0000, Stefan Hajnoczi wrote:
-> On Mon, Feb 17, 2020 at 06:31:21PM +0100, Stefano Garzarella wrote:
-> > Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
-> > local communication.
-> > 
-> > This patch explains how to use it and remove the legacy
-> > VMADDR_CID_RESERVED no longer available.
-> > 
-> > Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > ---
-> > v3:
-> >     * rephrased "Previous versions" part [Jorgen]
-> > v2:
-> >     * rephrased "Local communication" description [Stefan]
-> >     * added a mention of previous versions that supported
-> >       loopback only in the guest [Stefan]
-> > ---
-> >  man7/vsock.7 | 19 +++++++++++++++++--
-> >  1 file changed, 17 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/man7/vsock.7 b/man7/vsock.7
-> > index c5ffcf07d..219e3505f 100644
-> > --- a/man7/vsock.7
-> > +++ b/man7/vsock.7
-> > @@ -127,8 +127,8 @@ There are several special addresses:
-> >  means any address for binding;
-> >  .B VMADDR_CID_HYPERVISOR
-> >  (0) is reserved for services built into the hypervisor;
-> > -.B VMADDR_CID_RESERVED
-> > -(1) must not be used;
-> > +.B VMADDR_CID_LOCAL
-> > +(1) is the well-known address for local communication (loopback);
-> >  .B VMADDR_CID_HOST
-> >  (2)
-> >  is the well-known address of the host.
-> > @@ -164,6 +164,16 @@ Consider using
-> >  .B VMADDR_CID_ANY
-> >  when binding instead of getting the local CID with
-> >  .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
-> > +.SS Local communication
-> > +The
-> > +.B VMADDR_CID_LOCAL
-> > +(1) directs packets to the same host that generated them. This is useful
-> 
-> Please see my comment on v2.  "The VMADDR_CID_LOCAL (1) directs packets
-> ..." sounds unnatural.  Please drop "The".
+On Mon, Feb 17, 2020 at 8:24 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Mon, Feb 17, 2020 at 4:42 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > >
+> > > > Observation:
+> > > >
+> > > > It seems to be starting to synthesize packets sent to the wireguard
+> > > > socket. These aren't the proper handshake packets generated internally
+> > > > by that triangle commit, but rather ones that syzkaller creates
+> > > > itself. That's why we have coverage on wg_receive, which otherwise
+> > > > wouldn't be called from a userspace process, since syzbot is sending
+> > > > its own packets to that function.
+> > > >
+> > > > However, the packets it generates aren't getting very far, failing all
+> > > > of the tests in validate_header_len. None of those checks are at all
+> > > > cryptographic, which means it should be able to hit those eventually.
+> > > > Anything we should be doing to help it out? After it gets past that
+> > > > check, it'll wind up in the handshake queue or the data queue, and
+> > > > then (in theory) it should be rejected on a cryptographic basis. But
+> > > > maybe syzbot will figure out how to crash it instead :-P.
+> > >
+> > > Looking into this.
+> > >
+> > > Found the program that gives wg_receive coverage:
+> > >
+> > > r0 = openat$tun(0xffffffffffffff9c,
+> > > &(0x7f0000000080)='/dev/net/tun\x00', 0x88002, 0x0)
+> > > ioctl$TUNSETIFF(r0, 0x400454ca, &(0x7f00000000c0)={'syzkaller1\x00',
+> > > 0x420000015001})
+> > > r1 = socket$netlink(0x10, 0x3, 0x0)
+> > > ioctl$sock_inet_SIOCSIFADDR(r1, 0x8914,
+> > > &(0x7f0000000140)={'syzkaller1\x00', {0x7, 0x0, @empty}})
+> > > write$tun(r0, &(0x7f00000002c0)={@void, @val, @ipv4=@udp={{0x5, 0x4,
+> > > 0x0, 0x0, 0x1c, 0x0, 0x0, 0x0, 0x11, 0x0, @remote, @broadcast}, {0x0,
+> > > 0x4e21, 0x8}}}, 0x26)
+> > >
+> > > Checked that doing SIOCSIFADDR is also required, otherwise the packet
+> > > does not reach wg_receive.
+> >
+> >
+> > All packets we inject with standard means (syz_emit_ethernet) get
+> > rejected on the following check:
+> >
+> > static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+> > {
+> > const struct iphdr *iph;
+> > u32 len;
+> >
+> > /* When the interface is in promisc. mode, drop all the crap
+> > * that it receives, do not try to analyse it.
+> > */
+> > if (skb->pkt_type == PACKET_OTHERHOST)
+> > goto drop;
+> >
+> > Even if we drop IFF_NAPI_FRAGS which diverges packets who-knows-where.
+> >
+> > Somehow we need to get something other than PACKET_OTHERHOST...
+> > Why is it dropping all remote packets?...
+> > How do remote packets get into stack then?...
+>
+> I've managed to create a packet that reaches wg_receive, that is:
+>
+> syz_emit_ethernet(AUTO, &AUTO={@local, @empty, @void, {@ipv4={AUTO,
+> @udp={{AUTO, AUTO, 0x0, 0x0, AUTO, 0x0, 0x0, 0x0, AUTO, 0x0, @empty,
+> @empty, {[]}}, {0x0, 0x4e22, AUTO, 0x0, [], ""/10}}}}}, 0x0)
+>
+> Had to enumerate all possible combinations of local/remote mac,
+> local/report ip, local/remote port.
+>
+> However, this is only without IFF_NAPI_FRAGS. With IFF_NAPI_FRAGS it
+> reaches udp_gro_receive, but does not get past:
+>
+> if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
+>     (skb->ip_summed != CHECKSUM_PARTIAL &&
+>      NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+>      !NAPI_GRO_CB(skb)->csum_valid) ||
+>     !udp_sk(sk)->gro_receive)
+>     goto out;
 
-I received it just now :O but you sent it 4 days ago!
-Sorry for that!
 
-I'll send v4 dropping "The".
+I've added descriptions for wireguard packets:
+https://github.com/google/syzkaller/commit/012fbc3229ebef871a201ea431b16610e6e0d345
+It gives all reachable coverage (without breaking crypto).
 
-Thanks,
-Stefano
+Strictly saying, for tcp we experimented with receiving ACKs back from
+tun and exposing them to fuzzer to form proper SYNACKs:
+https://github.com/google/syzkaller/blob/012fbc3229ebef871a201ea431b16610e6e0d345/executor/common_linux.h#L1390-L1441
+https://github.com/google/syzkaller/blob/012fbc3229ebef871a201ea431b16610e6e0d345/sys/linux/vnet.txt#L24-L27
 
+Theoretically, it could receive wireguard handshakes and form proper
+replies with valid signatures and stuff.
+
+I disabled IFF_NAPI_FRAGS entirely, it seems to prevent from getting
+any meaningful coverage:
+https://github.com/google/syzkaller/commit/39cd0f85a1ac60b88c793bd8f4a981227614da88
