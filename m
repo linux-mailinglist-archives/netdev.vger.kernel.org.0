@@ -2,116 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A90162982
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4E316297F
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgBRPfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 10:35:25 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:35479 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726360AbgBRPfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:35:25 -0500
-Received: by mail-qk1-f195.google.com with SMTP id v2so19907544qkj.2
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 07:35:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=afX3KgJkWGEW0W8JceKePdfDS4ix1ghc1PEha2UnpqQ=;
-        b=b+VqMWcRqMbYGasbeh74gyfhHyS5wGN3hyLrh/sfXi0JsBSuJFfbIZXxLmOnHTOhaS
-         xjfeHgNAu8IgUjhk06iRYMJtWMLwpYY7xAilEq0lNkZRqio2kE2m9w+TSwklM0e+axQ+
-         3GY7gypVaFw9IjZ7EFl9eaCBlwrv8Twwsv/qo/hJBzZblJ27aDUAttLK5+gYAic6mtpP
-         t9S4XdWgXgUuGKUpZa0hXAXQAGb0jX2fetI8Yq2HVBtu1B4LyR/XR/sVNkq0sn0w3Xoq
-         bLCKSVsRYiP4DqMKjYD+uKA+vACdUPnebxU+orWVSEXVSFKBPdRof1qjUcNuahh2FsNR
-         ShBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=afX3KgJkWGEW0W8JceKePdfDS4ix1ghc1PEha2UnpqQ=;
-        b=AQ3gKMx9VvrqV+s6tcF5UibcWMyo3JlY0yyWruuV3KSwFePDuq8OxCtuZE1p1TAT+Z
-         nHTN9B/oXPPnNyblJcTm8JptODW2gLgnkI5TQga7pwoEe3pEKsQWLfFWMc8ZHWJULpaB
-         rSQ0/fA37BLBNsm02H+/GTMCsYgcooMCrF3rpfPtepjnc+mD425J+zgLHcNO1RYMhZCe
-         AqwuTV6Yzbddnm4R68Lp/L3BRPINp8l1CuPehw0YkFpEQ6QhRTSeKXdgoHSJa+u0vgac
-         CZ18a1kckinZfsB+oYaJDAGENUMHCwLBjB6aY6RtndMubl5DthY3a0TJuEqnh4+CNIto
-         adWA==
-X-Gm-Message-State: APjAAAXHctelp7+2xA+H42RwZVaXFSCfLwEU4jw2M2XHdzX4MX3BxeAj
-        5XKcv+evGZWpG8d+C5ksH7U=
-X-Google-Smtp-Source: APXvYqyx4IAxe2tt5MaGScmYfS2Okgff/t1OOnY/aRXuQqxK1Qu0P5Phhdmp034Bw/Y78sZ5LqtFww==
-X-Received: by 2002:a37:c84:: with SMTP id 126mr19674888qkm.372.1582040124235;
-        Tue, 18 Feb 2020 07:35:24 -0800 (PST)
-Received: from fabio-Latitude-E5450.nxp.com ([177.221.114.206])
-        by smtp.gmail.com with ESMTPSA id q25sm2064223qkc.60.2020.02.18.07.35.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 07:35:23 -0800 (PST)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     davem@davemloft.net
-Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v2 net-next] net: fec: Prevent unbind operation
-Date:   Tue, 18 Feb 2020 12:34:44 -0300
-Message-Id: <20200218153444.4899-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726528AbgBRPe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 10:34:56 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33794 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726373AbgBRPez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:34:55 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A54F6B4008C;
+        Tue, 18 Feb 2020 15:34:53 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 18 Feb
+ 2020 15:34:49 +0000
+Subject: Re: [PATCH 6/8] net: sfc: use skb_list_walk_safe helper for gso
+ segments
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+References: <20200108215909.421487-1-Jason@zx2c4.com>
+ <20200108215909.421487-7-Jason@zx2c4.com>
+From:   Edward Cree <ecree@solarflare.com>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <e1e06281-16e9-edb8-dcda-7bdcf60507a7@solarflare.com>
+Date:   Tue, 18 Feb 2020 15:34:46 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <20200108215909.421487-7-Jason@zx2c4.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25238.003
+X-TM-AS-Result: No-10.432700-8.000000-10
+X-TMASE-MatchedRID: QfHZjzml1E+HYS4ybQtcOvZvT2zYoYOwC/ExpXrHizwmwE7sgPtN9vN+
+        oA4oIb1d+cJJvHsDISaQZ93QmyD758c7x4DEI6P2D3uYMxd01benZS/aYgjrztjMMV3eZDNhyJN
+        a6DYLgM2XUzspP39qoCexqzGrj/vqYlldA0POS1IaPMGCcVm9Dn/rg2QvIx03QW6eCaGxKwIx6L
+        WUsNtDB/gReLkdnDE2z46ntczvww06k8DwKL1tBPRUId35VCIeJeZTqzmsW8WXBXaJoB9JZ4MbH
+        85DUZXyseWplitmp0j6C0ePs7A07YFInLyeDAoZh2q4EPfW6DYO6g3LRQJgDrWOxQHHWoUsmMKe
+        MkiDgaxt6nh0ne7HIQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--10.432700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25238.003
+X-MDID: 1582040094-XvmolXkbj6q9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After performing an unbind/bind operation the network is no longer
-functional on i.MX6 (which has a single FEC instance):
-
-# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/unbind
-# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/bind
-[   10.756519] pps pps0: new PPS source ptp0
-[   10.792626] libphy: fec_enet_mii_bus: probed
-[   10.799330] fec 2188000.ethernet eth0: registered PHC device 1
-# udhcpc -i eth0
-udhcpc: started, v1.31.1
-[   14.985211] fec 2188000.ethernet eth0: no PHY, assuming direct connection to switch
-[   14.993140] libphy: PHY fixed-0:00 not found
-[   14.997643] fec 2188000.ethernet eth0: could not attach to PHY
-
-On SoCs with two FEC instances there are some cases where one FEC instance
-depends on the other one being present. One such example is i.MX28, which
-has the following FEC dependency as noted in the comments:
-
-	/*
-	 * The i.MX28 dual fec interfaces are not equal.
-	 * Here are the differences:
-	 *
-	 *  - fec0 supports MII & RMII modes while fec1 only supports RMII
-	 *  - fec0 acts as the 1588 time master while fec1 is slave
-	 *  - external phys can only be configured by fec0
-	 *
-	 * That is to say fec1 can not work independently. It only works
-	 * when fec0 is working. The reason behind this design is that the
-	 * second interface is added primarily for Switch mode.
-	 *
-	 * Because of the last point above, both phys are attached on fec0
-	 * mdio interface in board design, and need to be configured by
-	 * fec0 mii_bus.
-	 */
-
-Prevent the unbind operation to avoid these issues.
-
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
----
-Changes since v1:
-- Prevent unbind operation.
-
- drivers/net/ethernet/freescale/fec_main.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 4432a59904c7..12edd4e358f8 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3793,6 +3793,7 @@ static struct platform_driver fec_driver = {
- 		.name	= DRIVER_NAME,
- 		.pm	= &fec_pm_ops,
- 		.of_match_table = fec_dt_ids,
-+		.suppress_bind_attrs = true,
- 	},
- 	.id_table = fec_devtype,
- 	.probe	= fec_probe,
--- 
-2.17.1
-
+On 08/01/2020 21:59, Jason A. Donenfeld wrote:
+> This is a straight-forward conversion case for the new function, and
+> while we're at it, we can remove a null write to skb->next by replacing
+> it with skb_mark_not_on_list.
+>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/ethernet/sfc/tx.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+> index 00c1c4402451..547692b33b4d 100644
+> --- a/drivers/net/ethernet/sfc/tx.c
+> +++ b/drivers/net/ethernet/sfc/tx.c
+> @@ -473,12 +473,9 @@ static int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue,
+>  	dev_consume_skb_any(skb);
+>  	skb = segments;
+>  
+> -	while (skb) {
+> -		next = skb->next;
+> -		skb->next = NULL;
+> -
+> +	skb_list_walk_safe(skb, skb, next) {
+Could this be replaced with
+    skb_list_walk_safe(segments, skb, next) {
+and elide the assignment just above?
+Or is there some reason I'm missing not to do that?
+-ed
+> +		skb_mark_not_on_list(skb);
+>  		efx_enqueue_skb(tx_queue, skb);
+> -		skb = next;
+>  	}
+>  
+>  	return 0;
