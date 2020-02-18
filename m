@@ -2,129 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 160691636CE
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:03:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADDE163709
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 00:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727921AbgBRXDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 18:03:54 -0500
-Received: from www62.your-server.de ([213.133.104.62]:56932 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727211AbgBRXDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:03:53 -0500
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4BuA-0008E5-MW; Wed, 19 Feb 2020 00:03:50 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4BuA-00072U-7Q; Wed, 19 Feb 2020 00:03:50 +0100
-Subject: Re: [PATCH 03/18] bpf: Add struct bpf_ksym
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-References: <20200216193005.144157-1-jolsa@kernel.org>
- <20200216193005.144157-4-jolsa@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d61ff7d5-f0a7-8828-cf94-54936670f244@iogearbox.net>
-Date:   Wed, 19 Feb 2020 00:03:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727894AbgBRXPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 18:15:33 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35249 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727635AbgBRXPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 18:15:33 -0500
+Received: by mail-ed1-f66.google.com with SMTP id y25so4633479edi.2;
+        Tue, 18 Feb 2020 15:15:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JWWqmVpcRfqJEivRVNBcgidPXaZP+c61nTzWzkomjSY=;
+        b=dfeL8JDieKb1EJAiJ+pv09xpLoSlv1ti7VYIdShY02oVYOiFQgtiG0Rx4uBBiyZjrS
+         QmzwFCgojq0fb4j3gMCYkdaSedFjtCUI8U0OhjQ1PSBvBLikhHQdop8DMtfdHzMCVHQ9
+         SJ7qn6r3vZDOmbYsFkbH7WScznKy9qri4Vx/N06RoPr86mPOo0trji7KKh6iGp1JrBTu
+         aLbqbiEn2X9WFha7xFYRuEr9gJR/U5RselzA4MYDU0v0gvje+zyG80i2RvBCHa6WRJeS
+         jiFf6KQ7J7sQJXEHeZp6CAb80qxp1HaJgG6pPce5/aX1s0Y/nTq8uYNJibsA/LnnVtc4
+         s9WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JWWqmVpcRfqJEivRVNBcgidPXaZP+c61nTzWzkomjSY=;
+        b=lW0flRUwPnY5kjdvgPgPEqshxVymZhZ5AfKr5EhQy9/1MkxMYbjaHe0jTGkg8wA4y8
+         Cv7zsMqBTEInzjRfAYvpGkDdqboWMNiq+CcUTd84mcWyGRZfiCAs27KPvzMv0ASu1h6i
+         ya5xHmTlWUZcnuR/JV6qkJXqhwHdTNjOH7K73euhWwWarr9I+FpcSl3OnmKNzGUtzw5A
+         A4j33A4METsLkdF48b/3/PBeAt1lHAGPcUD66T+eCt5c5TTaYJtbqiYJUaquZ91ESNH6
+         ZThoeyaY7pBgQvyyQ1WBor2eaDDVGLUkkhAhMy/c0alsAzHMkigHwq541CyIPDvE32GL
+         iT1A==
+X-Gm-Message-State: APjAAAWqoA4IA3injHJXo8LmsCHbL6soZPuQXa/WmhdU2qcPweyRUF/P
+        IFshMy4oMiBvwnbQ67n9QQ0whLJJ1HjbPqAUa40=
+X-Google-Smtp-Source: APXvYqwpiOgIQO5h/xXb5VqSiH6WwB+YHjUU0Oq3uD55L/C5F0wkdPzJFx0H5q34fTJ4KuEdbA/iQm/ZlBnvvxRQZeU=
+X-Received: by 2002:a50:a864:: with SMTP id j91mr21551777edc.318.1582067731479;
+ Tue, 18 Feb 2020 15:15:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200216193005.144157-4-jolsa@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.1/25727/Tue Feb 18 15:05:00 2020)
+References: <20200217144414.409-1-olteanv@gmail.com> <20200217144414.409-4-olteanv@gmail.com>
+ <20200217152912.GE31084@lunn.ch> <CA+h21ho29TRG8JYfSaaSsoxM-mg0-yOKBNCq9wbHDHCf2pkdUg@mail.gmail.com>
+ <CA+h21hp-4WWtY=-WeMgC0M6Ls7Aq6AdVv3y=8WE9z=2Ybikt7Q@mail.gmail.com>
+In-Reply-To: <CA+h21hp-4WWtY=-WeMgC0M6Ls7Aq6AdVv3y=8WE9z=2Ybikt7Q@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 19 Feb 2020 01:15:20 +0200
+Message-ID: <CA+h21hqyiMQ6rxNz+hC-L7qX0heDAjoEXr1c5TBNV97hFRAopQ@mail.gmail.com>
+Subject: Re: [PATCH devicetree 3/4] arm64: dts: fsl: ls1028a: add node for
+ Felix switch
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Shawn Guo <shawnguo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/20 8:29 PM, Jiri Olsa wrote:
-> Adding 'struct bpf_ksym' object that will carry the
-> kallsym information for bpf symbol. Adding the start
-> and end address to begin with. It will be used by
-> bpf_prog, bpf_trampoline, bpf_dispatcher.
-> 
-> Using the bpf_func for program symbol start instead
-> of the image start, because it will be used later for
-> kallsyms program value and it makes no difference
-> (compared to the image start) for sorting bpf programs.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->   include/linux/bpf.h |  6 ++++++
->   kernel/bpf/core.c   | 26 +++++++++++---------------
->   2 files changed, 17 insertions(+), 15 deletions(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index be7afccc9459..5ad8eea1cd37 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -462,6 +462,11 @@ int arch_prepare_bpf_trampoline(void *image, void *image_end,
->   u64 notrace __bpf_prog_enter(void);
->   void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start);
->   
-> +struct bpf_ksym {
-> +	unsigned long		 start;
-> +	unsigned long		 end;
-> +};
-> +
->   enum bpf_tramp_prog_type {
->   	BPF_TRAMP_FENTRY,
->   	BPF_TRAMP_FEXIT,
-> @@ -643,6 +648,7 @@ struct bpf_prog_aux {
->   	u32 size_poke_tab;
->   	struct latch_tree_node ksym_tnode;
->   	struct list_head ksym_lnode;
-> +	struct bpf_ksym ksym;
->   	const struct bpf_prog_ops *ops;
->   	struct bpf_map **used_maps;
->   	struct bpf_prog *prog;
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 973a20d49749..39a9e4184900 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -524,17 +524,15 @@ int bpf_jit_harden   __read_mostly;
->   long bpf_jit_limit   __read_mostly;
->   
->   static __always_inline void
-> -bpf_get_prog_addr_region(const struct bpf_prog *prog,
-> -			 unsigned long *symbol_start,
-> -			 unsigned long *symbol_end)
-> +bpf_get_prog_addr_region(const struct bpf_prog *prog)
->   {
->   	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
->   	unsigned long addr = (unsigned long)hdr;
->   
->   	WARN_ON_ONCE(!bpf_prog_ebpf_jited(prog));
->   
-> -	*symbol_start = addr;
-> -	*symbol_end   = addr + hdr->pages * PAGE_SIZE;
-> +	prog->aux->ksym.start = (unsigned long) prog->bpf_func;
+Hi Andrew,
 
-Your commit descriptions are too terse. :/ What does "because it will be used
-later for kallsyms program value" mean exactly compared to how it's used today
-for programs?
+On Mon, 17 Feb 2020 at 19:24, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Mon, 17 Feb 2020 at 17:33, Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > Hi Andrew,
+> >
+> > On Mon, 17 Feb 2020 at 17:29, Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > Hi Vladimir
+> > >
+> > > > +                                     /* Internal port with DSA tagging */
+> > > > +                                     mscc_felix_port4: port@4 {
+> > > > +                                             reg = <4>;
+> > > > +                                             phy-mode = "gmii";
+> > >
+> > > Is it really using gmii? Often in SoC connections use something else,
+> > > and phy-mode = "internal" is more appropriate.
+> > >
+> >
+> > What would be that "something else"? Given that the host port and the
+> > switch are completely different hardware IP blocks, I would assume
+> > that a parallel GMII is what's connecting them, no optimizations done.
+> > Certainly no serializer. But I don't know for sure.
+> > Does it matter, in the end?
+> >
+>
+> To clarify, the reason I'm asking whether it matters is because I'd
+> have to modify PHY_INTERFACE_MODE_GMII in
+> drivers/net/dsa/ocelot/felix_vsc9959.c too, for the internal ports.
+> Then I'm not sure anymore what tree this device tree patch should go
+> in through.
+>
+> > > > +                                             ethernet = <&enetc_port2>;
+> > > > +
+> > > > +                                             fixed-link {
+> > > > +                                                     speed = <2500>;
+> > > > +                                                     full-duplex;
+> > > > +                                             };
+> > >
+> > > gmii and 2500 also don't really go together.
+> >
+> > Not even if you raise the clock frequency?
+> >
+> > >
+> > >      Andrew
+> >
+> > Thanks,
+> > -Vladimir
 
-Is this a requirement to have them point exactly to prog->bpf_func and if so
-why? My concern is that bpf_func has a random offset from hdr, so even if the
-/proc/kallsyms would be readable with concrete addresses for !cap_sys_admin
-users, it's still not the concrete start address being exposed there, but the
-allocated range instead.
+Correct me if I'm wrong, but I think that PHY_INTERFACE_MODE_INTERNAL
+is added by Florian in 2017 as a generalization of the BCM7445 DSA
+switch bindings with internal PHY ports, and later became "popular"
+with other DSA drivers (ar9331, lantiq gswip). Of those, ar9331 is
+actually using phy-mode = "gmii" for the CPU port, and phy-mode =
+"internal" for the embedded copper PHYs.
+I hate to be making this sort of non-binary decision. Is it a GMII
+interface _or_ an internal interface? Prior to 2017, this would have
+probably been a non-question. The patch series which adds it does not
+clarify "you should use this mode in situation A, and this mode in
+situation B" either.
 
-> +	prog->aux->ksym.end   = addr + hdr->pages * PAGE_SIZE;
->   }
->   
+Regards,
+-Vladimir
