@@ -2,148 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F14991627A6
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1C31627CA
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:12:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgBROFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 09:05:21 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41220 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbgBROFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:05:20 -0500
-Received: by mail-ed1-f66.google.com with SMTP id c26so24939667eds.8
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 06:05:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4Kj9k5jCAauZHUGLdR01UFe5z+TfeUoeZRYGm9jwYdg=;
-        b=hUxDg+0tKrZXhu0xBHHwcFprs5ZrqhGmAuKV/0miDidk00aYXuXncx0evr6dgbxsbt
-         hGofv0sjGfgwanktFw18aVWM8u1QhX0NGXPuPOLYUyqcYEAqbkv2TZ/irwblw80J45ca
-         eNfqnYp/iOnVaCCtePyCQbJMUeVpBs9k+09iJ8bACLDcxJrmTuVQdoVwBpcvMzlA5FDA
-         DEIUn9EUdOZagYaZXSL7SrhHvlD/ctA8DVhq3mH6AT80fpikMJP/QsY7E9xzuznZtRwb
-         RaB3Mr180iz7NijkDOptW9oR8g1fADOnSx6dUjrLcAYLk+9hSFpy54LcD4JIkrpMYZ7g
-         xk7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4Kj9k5jCAauZHUGLdR01UFe5z+TfeUoeZRYGm9jwYdg=;
-        b=k5Hl2V0bDOxiiEDgmu05rHEpo3csWL0GG12dciM5TVo6Cwr28aaMR8ve1I006aRDVE
-         Gber/T0JToPpW9c26VumXdXlWdP3t75sFbZ4yBO47uFV3TlJN7gRNPb/Nkt2MKXYcE5b
-         aAyhebcKCL1bD6ojrizwQACQ9Yzg0UbdxLnLRSUT5joF2wmC7R+dp7gVOY7OkDDyUHD0
-         YL8WluH/AqmF30QXFiQkQupjat/zpv7puAZKBPs/TEdk1uCNVa+jMcSQXAO5fEDYfkAi
-         9ftmn60hQ4DbAZs9ngNa4pylzJK9r28ekIlFcgKrLq6eKAUtLymB2cQs2uNYDJ6u2x/P
-         JFcQ==
-X-Gm-Message-State: APjAAAVjIgcNvLWTqk9I+J0agwsVZXkKg6ncgTYW/gySm2pSM8KKOmnS
-        +0Qp58KxCZTrqhrAYpv0ysrv7YSZeo7Vz2eQVs4=
-X-Google-Smtp-Source: APXvYqyezJKuGiGNceDlZzVYADt53HOkAtJMlYB+ywmil549+K1QkSl4nvA5POx9gzVmFJkUclAEyE/zYNNCJUTk6Xk=
-X-Received: by 2002:a17:906:f49:: with SMTP id h9mr20374029ejj.6.1582034718924;
- Tue, 18 Feb 2020 06:05:18 -0800 (PST)
-MIME-Version: 1.0
-References: <20200217150058.5586-1-olteanv@gmail.com> <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
- <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com> <20200218140111.GB10541@lunn.ch>
-In-Reply-To: <20200218140111.GB10541@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 18 Feb 2020 16:05:08 +0200
-Message-ID: <CA+h21hpFwQyW0HwYpMRgBHBn51ySR_SxS5eDQ2ixwqiEbLj2mA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        id S1726492AbgBROMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 09:12:22 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:52054 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgBROMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:12:22 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01IEC5qI001586;
+        Tue, 18 Feb 2020 08:12:05 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1582035125;
+        bh=bNTXu71NE0h/VJ8zfewkGVLjiEHxVw0+DNsKQs3ZHdA=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=Sz1cJYOsza8s0QBaUyDd+4znkqgCHA9sdXGzC2s58EI2W1GsHUUh2TQsZ2EFrKSRz
+         iwrecpPX7/6DGh86OwD8wcSO8JUQKoY4JMFAVhZGFoq9l53iWjlpJ3CWYXINTFrm9e
+         XECkrKsAeWD33tJo46rW61TW0sEsokqRhdiPD+Gc=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01IEC5F3023723;
+        Tue, 18 Feb 2020 08:12:05 -0600
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 18
+ Feb 2020 08:12:05 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 18 Feb 2020 08:12:05 -0600
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01IEC4q3077097;
+        Tue, 18 Feb 2020 08:12:04 -0600
+Subject: Re: [PATCH net-next v2] net: phy: dp83867: Add speed optimization
+ feature
+From:   Dan Murphy <dmurphy@ti.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+        Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>
+CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20200204181319.27381-1-dmurphy@ti.com>
+ <0ebcd40d-b9cc-1a76-bb18-91d8350aa1cd@gmail.com>
+ <170d6518-ea82-08d3-0348-228c72425e64@ti.com>
+ <7569617d-f69f-9190-1223-77d3be637753@gmail.com>
+ <c7a7bd71-3a1c-1cf3-5faa-204b10ea8b78@ti.com>
+ <44499cb2-ec72-75a1-195b-fbadd8463e1c@ti.com>
+ <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
+Message-ID: <e9f873a1-2158-3aa3-482b-79bf09da7056@ti.com>
+Date:   Tue, 18 Feb 2020 08:07:22 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <6f800f83-0008-c138-c33a-c00a95862463@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Grygorii
 
-On Tue, 18 Feb 2020 at 16:01, Andrew Lunn <andrew@lunn.ch> wrote:
+On 2/14/20 12:31 PM, Dan Murphy wrote:
+> Grygorii
 >
-> On Tue, Feb 18, 2020 at 02:29:15PM +0200, Vladimir Oltean wrote:
-> > Hi Allan,
-> >
-> > On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
-> > <allan.nielsen@microchip.com> wrote:
-> > >
-> > > On 17.02.2020 17:00, Vladimir Oltean wrote:
-> > > >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > > >
-> > > >From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > >
-> > > >The Ocelot switches have what is, in my opinion, a design flaw: their
-> > > >DSA header is in front of the Ethernet header, which means that they
-> > > >subvert the DSA master's RX filter, which for all practical purposes,
-> > > >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
-> > > >needs to be used for extraction, which makes the switch add a fake DMAC
-> > > >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
-> > > >
-> > > >The issue with this design, of course, is that the CPU will be spammed
-> > > >with frames that it doesn't want to respond to, and there isn't any
-> > > >hardware offload in place by default to drop them.
-> > > In the case of Ocelot, the NPI port is expected to be connected back to
-> > > back to the CPU, meaning that it should not matter what DMAC is set.
-> > >
-> >
-> > You are omitting the fact that the host Ethernet port has an RX filter
-> > as well. By default it should drop frames that aren't broadcast or
-> > aren't sent to a destination MAC equal to its configured MAC address.
-> > Most DSA switches add their tag _after_ the Ethernet header. This
-> > makes the DMAC and SMAC seen by the front-panel port of the switch be
-> > the same as the DMAC and SMAC seen by the host port. Combined with the
-> > fact that DSA sets up switch port MAC addresses to be inherited from
-> > the host port, RX filtering 'just works'.
+> On 2/14/20 12:32 PM, Grygorii Strashko wrote:
+>>
+>>
+>> On 06/02/2020 00:01, Dan Murphy wrote:
+>>> Florian
+>>>
+>>> On 2/5/20 4:00 PM, Florian Fainelli wrote:
+>>>> On 2/5/20 1:51 PM, Dan Murphy wrote:
+>>>>> Heiner
+>>>>>
+>>>>> On 2/5/20 3:16 PM, Heiner Kallweit wrote:
+>>>>>> On 04.02.2020 19:13, Dan Murphy wrote:
+>>>>>>> Set the speed optimization bit on the DP83867 PHY.
+>>>>>>> This feature can also be strapped on the 64 pin PHY devices
+>>>>>>> but the 48 pin devices do not have the strap pin available to 
+>>>>>>> enable
+>>>>>>> this feature in the hardware.  PHY team suggests to have this 
+>>>>>>> bit set.
+>>>>>>>
+>>>>>>> With this bit set the PHY will auto negotiate and report the link
+>>>>>>> parameters in the PHYSTS register.  This register provides a single
+>>>>>>> location within the register set for quick access to commonly 
+>>>>>>> accessed
+>>>>>>> information.
+>>>>>>>
+>>>>>>> In this case when auto negotiation is on the PHY core reads the 
+>>>>>>> bits
+>>>>>>> that have been configured or if auto negotiation is off the PHY 
+>>>>>>> core
+>>>>>>> reads the BMCR register and sets the phydev parameters accordingly.
+>>>>>>>
+>>>>>>> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to
+>>>>>>> accomodate a
+>>>>>>> 4-wire cable.  If this should occur the PHYSTS register contains 
+>>>>>>> the
+>>>>>>> current negotiated speed and duplex mode.
+>>>>>>>
+>>>>>>> In overriding the genphy_read_status the dp83867_read_status 
+>>>>>>> will do a
+>>>>>>> genphy_read_status to setup the LP and pause bits. And then the 
+>>>>>>> PHYSTS
+>>>>>>> register is read and the phydev speed and duplex mode settings are
+>>>>>>> updated.
+>>>>>>>
+>>>>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>>>>>> ---
+>>>>>>> v2 - Updated read status to call genphy_read_status first, added
+>>>>>>> link_change
+>>>>>>> callback to notify of speed change and use phy_set_bits -
+>>>>>>> https://lore.kernel.org/patchwork/patch/1188348/
+>>>>>>>
+>>>>>> As stated in the first review, it would be appreciated if you 
+>>>>>> implement
+>>>>>> also the downshift tunable. This could be a separate patch in this
+>>>>>> series.
+>>>>>> Most of the implementation would be boilerplate code.
+>>>>> I just don't have a requirement from our customer to make it 
+>>>>> adjustable
+>>>>> so I did not want to add something extra.
+>>>>>
+>>>>> I can add in for v3.
+>>>>>
+>>>>>> And I have to admit that I'm not too happy with the term "speed
+>>>>>> optimization".
+>>>>>> This sounds like the PHY has some magic to establish a 1.2Gbps link.
+>>>>>> Even though the vendor may call it this way in the datasheet, the
+>>>>>> standard
+>>>>>> term is "downshift". I'm fine with using "speed optimization" in
+>>>>>> constants
+>>>>>> to be in line with the datasheet. Just a comment in the code 
+>>>>>> would be
+>>>>>> helpful
+>>>>>> that speed optimization is the vendor's term for downshift.
+>>>>> Ack.  The data sheet actually says "Speed optimization, also known as
+>>>>> link downshift"
+>>>>>
+>>>>> So I probably will just rename everything down shift.
+>>>>>
+>>>>>>>    drivers/net/phy/dp83867.c | 55 
+>>>>>>> +++++++++++++++++++++++++++++++++++++++
+>>>>>>>    1 file changed, 55 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+>>>>>>> index 967f57ed0b65..6f86ca1ebb51 100644
+>>>>>>> --- a/drivers/net/phy/dp83867.c
+>>>>>>> +++ b/drivers/net/phy/dp83867.c
+>>>>>>> @@ -21,6 +21,7 @@
+>>>>>>>    #define DP83867_DEVADDR        0x1f
+>>>>>>>      #define MII_DP83867_PHYCTRL    0x10
+>>>>>>> +#define MII_DP83867_PHYSTS    0x11
+>>>>>>>    #define MII_DP83867_MICR    0x12
+>>>>>>>    #define MII_DP83867_ISR        0x13
+>>>>>>>    #define DP83867_CFG2        0x14
+>>>>>>> @@ -118,6 +119,15 @@
+>>>>>>>    #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK    (0x1f << 8)
+>>>>>>>    #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT    8
+>>>>>>>    +/* PHY STS bits */
+>>>>>>> +#define DP83867_PHYSTS_1000            BIT(15)
+>>>>>>> +#define DP83867_PHYSTS_100            BIT(14)
+>>>>>>> +#define DP83867_PHYSTS_DUPLEX            BIT(13)
+>>>>>>> +#define DP83867_PHYSTS_LINK            BIT(10)
+>>>>>>> +
+>>>>>>> +/* CFG2 bits */
+>>>>>>> +#define DP83867_SPEED_OPTIMIZED_EN        (BIT(8) | BIT(9))
+>>>>>>> +
+>>>>>>>    /* CFG3 bits */
+>>>>>>>    #define DP83867_CFG3_INT_OE            BIT(7)
+>>>>>>>    #define DP83867_CFG3_ROBUST_AUTO_MDIX        BIT(9)
+>>>>>>> @@ -287,6 +297,43 @@ static int dp83867_config_intr(struct 
+>>>>>>> phy_device
+>>>>>>> *phydev)
+>>>>>>>        return phy_write(phydev, MII_DP83867_MICR, micr_status);
+>>>>>>>    }
+>>>>>>>    +static void dp83867_link_change_notify(struct phy_device 
+>>>>>>> *phydev)
+>>>>>>> +{
+>>>>>>> +    if (phydev->state != PHY_RUNNING)
+>>>>>>> +        return;
+>>>>>>> +
+>>>>>>> +    if (phydev->speed == SPEED_100 || phydev->speed == SPEED_10)
+>>>>>>> +        phydev_warn(phydev, "Downshift detected connection is
+>>>>>>> %iMbps\n",
+>>>>>>> +                phydev->speed);
+>>>>>> The link partner may simply not advertise 1Gbps. How do you know 
+>>>>>> that
+>>>>>> a link speed of e.g. 100Mbps is caused by a downshift?
+>>>>>> Some PHY's I've seen with this feature have a flag somewhere 
+>>>>>> indicating
+>>>>>> that downshift occurred. How about the PHY here?
+>>>>> I don't see a register that gives us that status
+>>>>>
+>>>>> I will ask the hardware team if there is one.
+>>>>>
+>>>>> This is a 1Gbps PHY by default so if a slower connection is 
+>>>>> established
+>>>>> due to faulty cabling or LP advertisement then this would be a down
+>>>>> shift IMO.
+>>>> With your current link_change_notify function it would not be possible
+>>>> to know whether the PHY was connected to a link partner that 
+>>>> advertised
+>>>> only 10/100 and so 100 ended up being the link speed, or the link
+>>>> partner was capable of 10/100/1000 and downshift reduced the link 
+>>>> speed.
+>>>>
+>>>> If you cannot tell the difference from a register, it might be 
+>>>> better to
+>>>> simply omit that function then.
+>>>
+>>> Yeah I thought it was a bit redundant and wonky to see in the log 
+>>> that the link established to xG/Mbps and then see another message 
+>>> saying the downshift occurred.
+>>
+>> I think it's good idea to have this message as just wrong cable might 
+>> be used.
+>>
+>> But this notifier make no sense in it current form - it will produce 
+>> noise in case of forced 100m/10M.
+>>
+>> FYI. PHY sequence to update link:
+>> phy_state_machine()
+>> |-phy_check_link_status()
+>>   |-phy_link_down/up()
+>>     |- .phy_link_change()->phy_link_change()
+>>     |-adjust_link() ----> netdev callback
+>> |-phydev->drv->link_change_notify(phydev);
+>>
+>> So, log output has to be done or in .read_status() or
+>> some info has to be saved in .read_status() and then re-used in
+>> .link_change_notify().
+>>
+> OK I will try to find a way to give some sort of message.
 >
-> It is a little bit more complex than that, but basically yes. If the
-> slave interface is in promisc mode, the master interface is also made
-> promisc. So as soon as you add a slave to a bridge, the master it set
-> promisc. Also, if the slave has a different MAC address to the master,
-> the MAC address is added to the masters RX filter.
+> Also we did get confirmation from HW guys and you also confirmed that 
+> the number of attempts for downshift is configurable.  So I will be 
+> adding back the tunable code once net-next opens.
 >
-> If the DSA header is before the DMAC, you need promisc mode all the
-> time. But i don't expect the CPU port to be spammed. The switch should
-> only be forwarding frames to the CPU which the CPU is actually
-> interested in.
->
-> > Be there 4 net devices: swp0, swp1, swp2, swp3.
-> > At probe time, the following doesn't work on the Felix DSA driver:
-> > ip addr add 192.168.1.1/24 dev swp0
-> > ping 192.168.1.2
->
-> That is expected to work.
->
-> > But if I do this:
-> > ip link add dev br0 type bridge
-> > ip link set dev swp0 master br0
-> > ip link set dev swp0 nomaster
-> > ping 192.168.1.2
-> > Then it works, because the code path from ocelot_bridge_stp_state_set
-> > that puts the CPU port in the forwarding mask of the other ports gets
-> > executed on the "bridge leave" action.
->
-> It probably also works because when the port is added to the bridge,
-> the bridge puts the port into promisc mode. That in term causes the
-> master to be put into promisc mode.
+I worked on this a bit and I think the notification is a bit complicated 
+to get into the code just to print a message.  First the notification 
+comes from the interrupt register which is COR. So if I read the 
+interrupt register in read_status then the ack_interrupt call back won't 
+do anything and status will be lost so if we need to implement other 
+features that depend on the interrupt status that status is cleared.  In 
+addition the downshift interrupt will be read and cleared so the state 
+of any downshift is lost after the message.  The link_change_notifier is 
+called first then the ack_interrupt function is called so as I stated 
+the downshift status will be reset to no downshift as the bit is 
+cleared.  So I don't think adding this notifier is worth the complex 
+code to print a message.
 
-Promisc on the DSA master is not why this works. The switch drops the
-packets instead of forwarding them to the CPU, because the CPU is not
-in the list of valid destination for unknown unicast traffic received
-on the front panel ports.
-Promiscuous mode on the DSA master is also disabled when the switch
-ports exit the bridge, by the way.
+Dan
 
->
->        Andrew
-
-Regards,
--Vladimir
