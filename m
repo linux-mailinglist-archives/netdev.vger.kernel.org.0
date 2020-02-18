@@ -2,120 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE85162117
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DD8162125
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgBRGrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 01:47:14 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:47054 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726102AbgBRGrO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 01:47:14 -0500
-Received: by mail-il1-f197.google.com with SMTP id a2so16282841ill.13
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 22:47:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2uIvG8n91WjAK+8Fc4AV0UFGKDnjSDw2pznJjQ1AoWI=;
-        b=m67cG8RUfBlwV7OeGvfoEsZX4MAgm60COSc3C3nUefD8tNS715B7s79Kws2t410FRG
-         pDoxtfJRqbEDbDn1XSd+hZLKheN0B/ebBz9g1sjbDi48V3xolnXKMUo2bTESzvx2srjx
-         YppPzymGHpxDBmEP1Z6DlhIHH0WCcxtEPVrlPVgVLpIvHYmhhSn3mUaQ5js80XkVIzpY
-         GGoNbhDGLCvCBYDkFwLoTRUG7gkLK+UEX/eMirfJNOphSsliyVaFgqsP3pBkoDt05kck
-         Mpm0NJT4kYlwdpfv+shiv8yxYoQ3vPSLdZze3Ef3eTghc07yruoD813Rf6gtvJqbXPgG
-         xyHw==
-X-Gm-Message-State: APjAAAXlxyA3HFML3EXEXWm4vhl2eSVpi21bQIDYFPTN0d24W+W14N0R
-        4UALFx7IzJ29hosxO5FhBgXnxtgYg8OzCBYTG3G26jsIIxKu
-X-Google-Smtp-Source: APXvYqyl+yC5vY8YiRKB6Nj+2QlehHRz/NDgCroTLCqKaqYUOiL9cwZlR8Nwrb/BTXe5y7Qx+Y6WRTSbs4MQ49+t3mAlTgzvI1NM
+        id S1726154AbgBRGvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 01:51:15 -0500
+Received: from mail-eopbgr50089.outbound.protection.outlook.com ([40.107.5.89]:48867
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726104AbgBRGvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 01:51:14 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Dk/utZWk+BcAgR3tHTlVcNHGc/AUZfafRZKienMp9zqEAl2xFlBv4+Q23PlcRwOpQSA0BtieT3/pHc13InhQzMCf2pTSf8cmClZLVCNH8oY297gkXt7czmKs11DqZHbTzH2PhbD7ziMhhoo02AhIO1pT4soWunrXj6UbGLVP0uoKSCjPZKjkt6MSVBqm8+++hYAQXfMez+7VNyK+JVNzlLp0g6MjqRbWUHE/9meffywHPB7a0vqVY6Z1gnGSImnMKvtCkHvLkYUUr+SxdQ3k70HUo62s23mvnCf1oA4PA7E9/vJJDT5xTHbeD6ZHpUgf8bjRCuBY9nV51/YeBP6jVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Nt7MsMz23uG4V/aaFpAdJzjJGbm+oP6vxZ9ibW/qrqE=;
+ b=djib7rsm+jHZcfq3Mqv6CujGocagX3LBqQFu3eosYTatHQlRwFmW3KL+Mx9g/XNt/hkeClt6MhOjemW0vSA+4tw52WSOyyYeVtZQL5p6djXDhh6UzqZ1FZu4p+roSrdgSV8my/r6mhPwUff7qvS+WXumCeSz+MhPNo88A2O5FlPiGjSXhBxSUeTS/EuII6zf5yGesMciGtTrXCSgp/yy62wLwFFXLZJ4M1Yd1Ir0Qrb1KxvxWZOiZmoJbgZ1ip35FpoTzsqfi1WsS/T/sl7GZH0Grzm8TEvQcLom1SwhBw3zpHIrTVQFcayIafqvfZphUXDFLBlJdr/C0fWph1tdyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Nt7MsMz23uG4V/aaFpAdJzjJGbm+oP6vxZ9ibW/qrqE=;
+ b=IWEr2dWq+8IQ4QN2GSj1HWeMoAgxinVb83DRcBR4h43FSp5QR2920eswa628A7Il8v/DrFwiDOz4g6jnMMNJ40mPFecb2GTuFenyNTWFZBWHoGaqEV0pan3AYIIg/7m9ng2vVH6AbfYk9nPAhXrBPuF1jrcQIk63jSqUfs6cLy4=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
+ VI1PR0402MB3407.eurprd04.prod.outlook.com (52.134.2.153) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2729.22; Tue, 18 Feb 2020 06:51:11 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::18c:4d15:c3ab:afa6]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::18c:4d15:c3ab:afa6%7]) with mapi id 15.20.2729.032; Tue, 18 Feb 2020
+ 06:51:11 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     David Miller <davem@davemloft.net>,
+        "festevam@gmail.com" <festevam@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: RE: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation
+ scheme
+Thread-Topic: [EXT] Re: [PATCH net-next] net: fec: Use a proper ID allocation
+ scheme
+Thread-Index: AQHV5h8UIR0p36NlJkiaMX6HnulgEKgggl2A
+Date:   Tue, 18 Feb 2020 06:51:11 +0000
+Message-ID: <VI1PR0402MB3600C163FEFD846B1D5869B4FF110@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <20200217223651.22688-1-festevam@gmail.com>
+ <20200217.214840.486235315714211732.davem@davemloft.net>
+In-Reply-To: <20200217.214840.486235315714211732.davem@davemloft.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-originating-ip: [119.31.174.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: d880e717-5239-41e1-22aa-08d7b43ef0ec
+x-ms-traffictypediagnostic: VI1PR0402MB3407:
+x-microsoft-antispam-prvs: <VI1PR0402MB3407D355E0EFDBA85C275A6DFF110@VI1PR0402MB3407.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 031763BCAF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(189003)(199004)(9686003)(55016002)(7696005)(71200400001)(2906002)(478600001)(4744005)(86362001)(4326008)(110136005)(52536014)(54906003)(8936002)(8676002)(33656002)(66476007)(66946007)(76116006)(316002)(26005)(81156014)(81166006)(186003)(66556008)(66446008)(64756008)(5660300002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3407;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: B0SDdzzjl1el+l5R6v+I8FkozTRjIAMg3dhQHNL3QoFlCYH+9FjmPVv7dIQeaO15ETTANgVQ2MVBEd+6d5b3kse5F5Fo91p1I1SoYq/ErX38UZJusfiOwGP75FO/txjPLt4qP58s+cpcssm76Xrs6EDsE036fgFyvY0Ol5Qyzux8KKcB0mhL6LXE3ZmsHFNnypFg9OiFEP+KloqQZBM3jAxoM+5KJHGFJGa9UsHKnpKR6+OxWQyTK1NQh4XW/Jut8DO3Kbm8kKqhyQ7VVkQbLxNRLA7NVf6GidFZswQ2YZuQ3v/i4I/sr3vZ/3B0HtJ9tCkl1QkXmpDozYurcL4kwLE1uvj/t7J1OpIQvMQhmyF3eMNWKOKXYD0PShRV3SUv4e3U80tnPF9rc/JLNdnvZQ4IMIobAGVfSOMS38J8MUEcczoV0SqoTvASudPyfrhb
+x-ms-exchange-antispam-messagedata: TOEMKUUDhTNi+bmxsOw/Hat3DySfZWjc/l7v7KVMnp02h6pcM4VoKezSJPp38LGb8W1b1BnmtGzaOAjNpMr/Tm9WrmFi/Uqt+uJlUdkonufQWxtu0Oo0UUBrWFaABb9T27t+ruP1cA4r1RAQ/uhDYg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a5e:940e:: with SMTP id q14mr13738130ioj.247.1582008433632;
- Mon, 17 Feb 2020 22:47:13 -0800 (PST)
-Date:   Mon, 17 Feb 2020 22:47:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b7ee04059ed40af8@google.com>
-Subject: general protection fault in sco_sock_getsockopt
-From:   syzbot <syzbot+4a38d3795200fd59a9eb@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d880e717-5239-41e1-22aa-08d7b43ef0ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2020 06:51:11.8574
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bLfkzjZ3lr00hY50uDijFnJx30/pJJISx4P6uuMf1ebDsqJjUV0Rrf2jAtZZpFJPjr4VHKfR5tgsOAX7m2Slzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3407
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: David Miller <davem@davemloft.net> Sent: Tuesday, February 18, 2020 1=
+:49 PM
+> From: Fabio Estevam <festevam@gmail.com>
+> Date: Mon, 17 Feb 2020 19:36:51 -0300
+>=20
+> > Instead of using such poor mechanism for counting the network
+> > interfaces IDs, use a proper allocation scheme, such as IDR.
+> >
+> > This fixes the network behavior after unbind/bind.
+>=20
+> What about:
+>=20
+> 1) unbind fec0
+> 2) unbind fec1
+> 3) bind fec0
+>=20
+> It doesn't work even with the IDR scheme.
 
-syzbot found the following crash on:
-
-HEAD commit:    c25a951c Add linux-next specific files for 20200217
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=127e5865e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c727d8fc485ff049
-dashboard link: https://syzkaller.appspot.com/bug?extid=4a38d3795200fd59a9eb
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=158849e9e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e3d711e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4a38d3795200fd59a9eb@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 9807 Comm: syz-executor290 Not tainted 5.6.0-rc2-next-20200217-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:sco_sock_getsockopt+0x33a/0x910 net/bluetooth/sco.c:966
-Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 74 05 00 00 49 8b 9e b8 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 45 05 00 00 48 8b 3b e8 44 d1 f3 ff be c8 03 00
-RSP: 0018:ffffc90007a97d40 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87282cb2
-RDX: 0000000000000000 RSI: ffffffff87282cc0 RDI: ffff88808cc7b4b8
-RBP: ffffc90007a97e00 R08: ffff8880a8fc0380 R09: fffffbfff1709225
-R10: fffffbfff1709224 R11: 0000000000000003 R12: 0000000000000000
-R13: 1ffff92000f52fab R14: ffff88808cc7b000 R15: 0000000000000000
-FS:  00000000009c3880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 00000000a6d61000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __sys_getsockopt+0x16d/0x310 net/socket.c:2175
- __do_sys_getsockopt net/socket.c:2190 [inline]
- __se_sys_getsockopt net/socket.c:2187 [inline]
- __x64_sys_getsockopt+0xbe/0x150 net/socket.c:2187
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x440199
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd6ad93468 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440199
-RDX: 000000000000000e RSI: 0000000000000084 RDI: 0000000000000005
-RBP: 00000000006ca018 R08: 0000000020000080 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a20
-R13: 0000000000401ab0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 2241e8fa1d14b6d0 ]---
-RIP: 0010:sco_sock_getsockopt+0x33a/0x910 net/bluetooth/sco.c:966
-Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 74 05 00 00 49 8b 9e b8 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 45 05 00 00 48 8b 3b e8 44 d1 f3 ff be c8 03 00
-RSP: 0018:ffffc90007a97d40 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87282cb2
-RDX: 0000000000000000 RSI: ffffffff87282cc0 RDI: ffff88808cc7b4b8
-RBP: ffffc90007a97e00 R08: ffff8880a8fc0380 R09: fffffbfff1709225
-R10: fffffbfff1709224 R11: 0000000000000003 R12: 0000000000000000
-R13: 1ffff92000f52fab R14: ffff88808cc7b000 R15: 0000000000000000
-FS:  00000000009c3880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 00000000a6d61000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Not only such case, instance#A (maybe fec0 or fec1) depends on instance#B (=
+maybe fec1 or fec0),
+Unbind instance#B firstly has problem.
+Bind instance#A firstly also has problem.
