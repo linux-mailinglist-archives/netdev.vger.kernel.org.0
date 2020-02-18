@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A14B7163652
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D6016366F
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:49:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgBRWpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 17:45:44 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:34882 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbgBRWpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:45:44 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01IMh21k010556;
-        Tue, 18 Feb 2020 22:45:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : from :
- subject : message-id : date : mime-version : content-type :
- content-transfer-encoding; s=corp-2020-01-29;
- bh=LgtDhGcMicnQ/HovtsUZ7ZcsAV2e19NUsPDAG+k2uj4=;
- b=Sjfd0R37h393Osv6xDwgLNRVrXIAiZXBlIpq9PyyKU0wqm8Gnx47kjm+exCxEeRQOg9E
- MvIQryiP/wqUFn6ozgD+SfMddUD+UJ9vNwhbcWNDJ9yb3/CmVGEM8GZHoO6ZiXuPmzYb
- RpiInH/ZaPicRzvZCFDwNoHPDqmPNm3FALmJsH8osYIZTOm9uzy9bBd6GitJU737NUHL
- SZtLOYZqubJBkzSsCuBPoA7HS1H7BCddTyomDsp0PmO2vaKFIhxzBSOl88I+3lJV/meZ
- S0dCWlmw1ykBHuS2+mbwAPgDHuytM0YwtccABb8Z2kWePxomirqIJiIPrxXim/Vrqz4v FA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2y7aq5vm50-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Feb 2020 22:45:40 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01IMhanx085598;
-        Tue, 18 Feb 2020 22:45:40 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2y6tc38mkr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Feb 2020 22:45:40 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 01IMjd79016522;
-        Tue, 18 Feb 2020 22:45:39 GMT
-Received: from [10.76.182.202] (/10.76.182.202)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 18 Feb 2020 14:45:39 -0800
-To:     sgarzare@redhat.com
-Cc:     stefanha@redhat.com, netdev@vger.kernel.org
-From:   ted.h.kim@oracle.com
-Subject: vsock CID questions
-Organization: Oracle Corporation
-Message-ID: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
-Date:   Tue, 18 Feb 2020 14:45:38 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1726882AbgBRWtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 17:49:10 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46329 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbgBRWtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:49:10 -0500
+Received: by mail-ed1-f67.google.com with SMTP id p14so18577019edy.13
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 14:49:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l6bGLfW+S3PbTSNe7BlkqXOXTsrm4VZ4lQdamKUPW64=;
+        b=Ih8OVG9omwJ6Rxw+SlKjwczxNf0k2Ng94CvXCZbV3YDaX3UQbLCeVFJCDBgE+/TbWa
+         949c1MNdpMLpcyDXtROzVlkZqcqThZvj3dhD1ALAKRu2iuAubkhK1t55o+Mi/JGULJQA
+         Do0mKi+fIwpeSajmK6ZtYgsGWtcp2ixmaSSIN7Z+3VM59asG03lUut8OZYU+OftobKN/
+         FARxahH/c9osR5/SjqCdrfiIcl3zufcnKdJwz8aagy+PHbiKJZq82UM0DiByhRA429++
+         amw4egh1MaKmoNsfmmEllJZPFRXMrhRAJ3PBPBSRTfXKHz76UknYvpsHjXKYCfr9H+iG
+         sLNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l6bGLfW+S3PbTSNe7BlkqXOXTsrm4VZ4lQdamKUPW64=;
+        b=D90cqWB2hEBBzXN8v8syiSuX/Hl5WTQB/RmOCOAxL0zrHL5DMn2hVoQkYlEpJOs/l6
+         rptiLjzRuciDo8mkuGmPFgSfunsI0RB9DhiAQVAjXTO9T0FO5Zrd2qEfq9XTZtrVdIFg
+         R0l818Mh1+RZRqdJSd+NT7PQgcdUds27yKHWe2UFBf0fk40kmlActYoylu0sXK0cuiY4
+         dw5eCmESf6qxbfCh3qhx3yMAKKzDWXLtjNzAbCYecOfZK0USqYPWagqftPQkHD/+KQ+T
+         rlQmq8VexL0Km3CX0lRAo9djqEWmXnvvEtrsPlItw3C2jbpm5iKNgLl0Zw4ikwK1tfGY
+         o1og==
+X-Gm-Message-State: APjAAAWs2OCYC4N5eQG+/EsbAXlBSiGRphEIVTINUxRdAXHE7xu/ptZl
+        48fzagDYtnx11s62nPuLBiauti/6crBZh7ewRw6k
+X-Google-Smtp-Source: APXvYqyL9+hoGiE8tChYcCVk+t7iqdIxiz2N27oHXffytLSJrvsGhrrkoMyf4wu5HG59PmlYeN3uSH1WjtWg9WFGERg=
+X-Received: by 2002:a17:906:f251:: with SMTP id gy17mr21225090ejb.308.1582066147205;
+ Tue, 18 Feb 2020 14:49:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9535 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 suspectscore=1
- mlxscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=834
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2002180154
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9535 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0 adultscore=0
- spamscore=0 priorityscore=1501 suspectscore=1 clxscore=1011 bulkscore=0
- phishscore=0 mlxlogscore=896 lowpriorityscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2002180154
+References: <20200218181718.7258-1-madhuparnabhowmik10@gmail.com>
+In-Reply-To: <20200218181718.7258-1-madhuparnabhowmik10@gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 18 Feb 2020 17:48:56 -0500
+Message-ID: <CAHC9VhSzqccDgt2EAPqVmTFCcETrKrkUDRoL-2YzzSFGfYJGQg@mail.gmail.com>
+Subject: Re: [PATCH] net: netlabel: Use built-in RCU list checking
+To:     madhuparnabhowmik10@gmail.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefano (and Stefan),
+On Tue, Feb 18, 2020 at 1:17 PM <madhuparnabhowmik10@gmail.com> wrote:
+>
+> From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+>
+> list_for_each_entry_rcu() has built-in RCU and lock checking.
+>
+> Pass cond argument to list_for_each_entry_rcu() to silence
+> false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
+> by default.
+>
+> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> ---
+>  net/netlabel/netlabel_unlabeled.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-I have some questions about vsock CIDs, particularly when migration happens.
+Not that this has much bearing since it's already been merged, but for
+what it's worth ...
 
-1. Is there an API to lookup CIDs of guests from the host side (in 
-libvirt)?
+Acked-by: Paul Moore <paul@paul-moore.com>
 
-2. In the vsock(7) man page, it says the CID might change upon 
-migration, if it is not available.
-Is there some notification when CID reassignment happens?
-
-3. if CID reassignment happens, is this persistent? (i.e. will I see 
-updated vsock definition in XML for the guest)
-
-4. I would like to minimize the chance of CID collision. If I understand 
-correctly, the CID is a 32-bit unsigned. So for my application, it might 
-work to put an IPv4 address. But if I adopt this convention, then I need 
-to look forward to possibly using IPv6. Anyway, would it be hard to 
-potentially expand the size of the CID to 64 bits or even 128?
-
-Thanks,
--ted
+> diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+> index d2e4ab8d1cb1..77bb1bb22c3b 100644
+> --- a/net/netlabel/netlabel_unlabeled.c
+> +++ b/net/netlabel/netlabel_unlabeled.c
+> @@ -207,7 +207,8 @@ static struct netlbl_unlhsh_iface *netlbl_unlhsh_search_iface(int ifindex)
+>
+>         bkt = netlbl_unlhsh_hash(ifindex);
+>         bkt_list = &netlbl_unlhsh_rcu_deref(netlbl_unlhsh)->tbl[bkt];
+> -       list_for_each_entry_rcu(iter, bkt_list, list)
+> +       list_for_each_entry_rcu(iter, bkt_list, list,
+> +                               lockdep_is_held(&netlbl_unlhsh_lock))
+>                 if (iter->valid && iter->ifindex == ifindex)
+>                         return iter;
+>
+> --
+> 2.17.1
 
 -- 
-Ted H. Kim, PhD
-ted.h.kim@oracle.com
-+1 310-258-7515
-
-
+paul moore
+www.paul-moore.com
