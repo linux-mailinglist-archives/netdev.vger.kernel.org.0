@@ -2,149 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E959D16363A
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:34:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A14B7163652
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgBRWex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 17:34:53 -0500
-Received: from www62.your-server.de ([213.133.104.62]:47746 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726415AbgBRWew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:34:52 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4BS4-0005lA-Hh; Tue, 18 Feb 2020 23:34:48 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4BS4-000OU6-1k; Tue, 18 Feb 2020 23:34:48 +0100
-Subject: Re: [PATCH 06/18] bpf: Add bpf_ksym_tree tree
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-References: <20200216193005.144157-1-jolsa@kernel.org>
- <20200216193005.144157-7-jolsa@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e869424c-eaf5-d8b1-dfde-86958f437538@iogearbox.net>
-Date:   Tue, 18 Feb 2020 23:34:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726736AbgBRWpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 17:45:44 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:34882 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726438AbgBRWpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:45:44 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01IMh21k010556;
+        Tue, 18 Feb 2020 22:45:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : from :
+ subject : message-id : date : mime-version : content-type :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=LgtDhGcMicnQ/HovtsUZ7ZcsAV2e19NUsPDAG+k2uj4=;
+ b=Sjfd0R37h393Osv6xDwgLNRVrXIAiZXBlIpq9PyyKU0wqm8Gnx47kjm+exCxEeRQOg9E
+ MvIQryiP/wqUFn6ozgD+SfMddUD+UJ9vNwhbcWNDJ9yb3/CmVGEM8GZHoO6ZiXuPmzYb
+ RpiInH/ZaPicRzvZCFDwNoHPDqmPNm3FALmJsH8osYIZTOm9uzy9bBd6GitJU737NUHL
+ SZtLOYZqubJBkzSsCuBPoA7HS1H7BCddTyomDsp0PmO2vaKFIhxzBSOl88I+3lJV/meZ
+ S0dCWlmw1ykBHuS2+mbwAPgDHuytM0YwtccABb8Z2kWePxomirqIJiIPrxXim/Vrqz4v FA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2y7aq5vm50-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Feb 2020 22:45:40 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01IMhanx085598;
+        Tue, 18 Feb 2020 22:45:40 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2y6tc38mkr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Feb 2020 22:45:40 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 01IMjd79016522;
+        Tue, 18 Feb 2020 22:45:39 GMT
+Received: from [10.76.182.202] (/10.76.182.202)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 18 Feb 2020 14:45:39 -0800
+To:     sgarzare@redhat.com
+Cc:     stefanha@redhat.com, netdev@vger.kernel.org
+From:   ted.h.kim@oracle.com
+Subject: vsock CID questions
+Organization: Oracle Corporation
+Message-ID: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
+Date:   Tue, 18 Feb 2020 14:45:38 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200216193005.144157-7-jolsa@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.1/25727/Tue Feb 18 15:05:00 2020)
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9535 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 suspectscore=1
+ mlxscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=834
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2002180154
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9535 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0 adultscore=0
+ spamscore=0 priorityscore=1501 suspectscore=1 clxscore=1011 bulkscore=0
+ phishscore=0 mlxlogscore=896 lowpriorityscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2002180154
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/20 8:29 PM, Jiri Olsa wrote:
-> The bpf_tree is used both for kallsyms iterations and searching
-> for exception tables of bpf programs, which is needed only for
-> bpf programs.
-> 
-> Adding bpf_ksym_tree that will hold symbols for all bpf_prog
-> bpf_trampoline and bpf_dispatcher objects and keeping bpf_tree
-> only for bpf_prog objects to keep it fast.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->   include/linux/bpf.h |  1 +
->   kernel/bpf/core.c   | 60 ++++++++++++++++++++++++++++++++++++++++-----
->   2 files changed, 55 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index f1174d24c185..5d6649cdc3df 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -468,6 +468,7 @@ struct bpf_ksym {
->   	unsigned long		 end;
->   	char			 name[KSYM_NAME_LEN];
->   	struct list_head	 lnode;
-> +	struct latch_tree_node	 tnode;
->   };
->   
->   enum bpf_tramp_prog_type {
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 604093d2153a..9fb08b4d01f7 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -606,8 +606,46 @@ static const struct latch_tree_ops bpf_tree_ops = {
->   	.comp	= bpf_tree_comp,
->   };
->   
-> +static unsigned long
-> +bpf_get_ksym_start(struct latch_tree_node *n)
-> +{
-> +	const struct bpf_ksym *ksym;
-> +
-> +	ksym = container_of(n, struct bpf_ksym, tnode);
-> +	return ksym->start;
+Hi Stefano (and Stefan),
 
-Small nit, can be simplified to:
+I have some questions about vsock CIDs, particularly when migration happens.
 
-	return container_of(n, struct bpf_ksym, tnode)->start;
+1. Is there an API to lookup CIDs of guests from the host side (in 
+libvirt)?
 
-> +}
-> +
-> +static bool
-> +bpf_ksym_tree_less(struct latch_tree_node *a,
-> +		   struct latch_tree_node *b)
-> +{
-> +	return bpf_get_ksym_start(a) < bpf_get_ksym_start(b);
-> +}
-> +
-> +static int
-> +bpf_ksym_tree_comp(void *key, struct latch_tree_node *n)
-> +{
-> +	unsigned long val = (unsigned long)key;
-> +	const struct bpf_ksym *ksym;
-> +
-> +	ksym = container_of(n, struct bpf_ksym, tnode);
-> +
-> +	if (val < ksym->start)
-> +		return -1;
-> +	if (val >= ksym->end)
-> +		return  1;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct latch_tree_ops bpf_ksym_tree_ops = {
-> +	.less	= bpf_ksym_tree_less,
-> +	.comp	= bpf_ksym_tree_comp,
-> +};
-> +
->   static DEFINE_SPINLOCK(bpf_lock);
->   static LIST_HEAD(bpf_kallsyms);
-> +static struct latch_tree_root bpf_ksym_tree __cacheline_aligned;
->   static struct latch_tree_root bpf_tree __cacheline_aligned;
+2. In the vsock(7) man page, it says the CID might change upon 
+migration, if it is not available.
+Is there some notification when CID reassignment happens?
 
-You mention in your commit description performance being the reason on why
-we need two latch trees. Can't we maintain everything just in a single one?
+3. if CID reassignment happens, is this persistent? (i.e. will I see 
+updated vsock definition in XML for the guest)
 
-What does "to keep it fast" mean here in absolute numbers that would affect
-overall system performance? It feels a bit like premature optimization with
-the above rationale as-is.
-
-If it is about differentiating the different bpf_ksym symbols for some of the
-kallsym handling functions (?), can't we simply add an enum bpf_ksym_type {
-BPF_SYM_PROGRAM, BPF_SYM_TRAMPOLINE, BPF_SYM_DISPATCHER } instead, but still
-maintain them all in a single latch tree?
+4. I would like to minimize the chance of CID collision. If I understand 
+correctly, the CID is a 32-bit unsigned. So for my application, it might 
+work to put an IPv4 address. But if I adopt this convention, then I need 
+to look forward to possibly using IPv6. Anyway, would it be hard to 
+potentially expand the size of the CID to 64 bits or even 128?
 
 Thanks,
-Daniel
+-ted
+
+-- 
+Ted H. Kim, PhD
+ted.h.kim@oracle.com
++1 310-258-7515
+
+
