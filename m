@@ -2,71 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC41162A71
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C837162A80
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 17:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgBRQ17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 11:27:59 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:51830 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726422AbgBRQ17 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 11:27:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QD9GNcHoJ03duxzSyGpPsXKk48h4VH3torud6JCFlAU=; b=ZV/p/Nsqle6IwLF7g4B1GYCr1l
-        Z8P6AiTSGBUKU2tQiOScaIGK2dkbb7qBI9M/xcWr1oRSrvKhgTvEJpcBwNaMWI1JQ/HYyqrdb6n3i
-        NuZX1gdbCWpcifCUXnKOAiwbilBjQTUVmLKacHQMzdTmbERVk+QaHgeXhhVBNaNpD2cU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j45iw-0003S4-6E; Tue, 18 Feb 2020 17:27:50 +0100
-Date:   Tue, 18 Feb 2020 17:27:50 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: fix duplicate vlan
- warning
-Message-ID: <20200218162750.GR31084@lunn.ch>
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
- <E1j41KQ-0002uy-TQ@rmk-PC.armlinux.org.uk>
- <20200218115157.GG25745@shell.armlinux.org.uk>
+        id S1726783AbgBRQaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 11:30:10 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:57204 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726567AbgBRQaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 11:30:09 -0500
+Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1j45l7-0003h0-Pm; Tue, 18 Feb 2020 16:30:05 +0000
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-pm@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: [PATCH net-next v3 2/9] sysfs: add sysfs_link_change_owner()
+Date:   Tue, 18 Feb 2020 17:29:36 +0100
+Message-Id: <20200218162943.2488012-3-christian.brauner@ubuntu.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200218162943.2488012-1-christian.brauner@ubuntu.com>
+References: <20200218162943.2488012-1-christian.brauner@ubuntu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200218115157.GG25745@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 11:51:57AM +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Feb 18, 2020 at 11:46:14AM +0000, Russell King wrote:
-> > When setting VLANs on DSA switches, the VLAN is added to both the port
-> > concerned as well as the CPU port by dsa_slave_vlan_add().  If multiple
-> > ports are configured with the same VLAN ID, this triggers a warning on
-> > the CPU port.
-> > 
-> > Avoid this warning for CPU ports.
-> > 
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> Note that there is still something not right.  On the ZII dev rev B,
-> setting up a bridge across all the switch ports, I get:
+Add a helper to change the owner of a sysfs link.
+This function will be used to correctly account for kobject ownership
+changes, e.g. when moving network devices between network namespaces.
 
-Hi Russell
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+---
+/* v2 */
+-  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+   - Add comment how ownership of sysfs object is changed.
 
-FYI: You need to be a little careful with VLANs on rev B. The third
-switch does not have the PVT hardware. So VLANs are going to 'leak'
-when they cross the DSA link to that switch.
+/* v3 */
+-  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+   - Add explicit uid/gid parameters.
+---
+ fs/sysfs/file.c       | 40 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/sysfs.h | 10 ++++++++++
+ 2 files changed, 50 insertions(+)
 
-I will look at these patches later today.
+diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+index 32bb04b4d9d9..df5107d7b3fd 100644
+--- a/fs/sysfs/file.c
++++ b/fs/sysfs/file.c
+@@ -570,6 +570,46 @@ static int internal_change_owner(struct kernfs_node *kn, struct kobject *kobj,
+ 	return kernfs_setattr(kn, &newattrs);
+ }
+ 
++/**
++ *	sysfs_link_change_owner - change owner of a link.
++ *	@kobj:	object of the kernfs_node the symlink is located in.
++ *	@targ:	object of the kernfs_node the symlink points to.
++ *	@name:	name of the link.
++ *	@kuid:	new owner's kuid
++ *	@kgid:	new owner's kgid
++ */
++int sysfs_link_change_owner(struct kobject *kobj, struct kobject *targ,
++			    const char *name, kuid_t kuid, kgid_t kgid)
++{
++	struct kernfs_node *parent, *kn = NULL;
++	int error;
++
++	if (!kobj)
++		parent = sysfs_root_kn;
++	else
++		parent = kobj->sd;
++
++	if (!targ->state_in_sysfs)
++		return -EINVAL;
++
++	error = -ENOENT;
++	kn = kernfs_find_and_get_ns(parent, name, targ->sd->ns);
++	if (!kn)
++		goto out;
++
++	error = -EINVAL;
++	if (kernfs_type(kn) != KERNFS_LINK)
++		goto out;
++	if (kn->symlink.target_kn->priv != targ)
++		goto out;
++
++	error = internal_change_owner(kn, targ, kuid, kgid);
++
++out:
++	kernfs_put(kn);
++	return error;
++}
++
+ /**
+  *	sysfs_file_change_owner_by_name - change owner of a file.
+  *	@kobj:	object.
+diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
+index c11d11c78713..899500950410 100644
+--- a/include/linux/sysfs.h
++++ b/include/linux/sysfs.h
+@@ -313,6 +313,8 @@ static inline void sysfs_enable_ns(struct kernfs_node *kn)
+ int sysfs_file_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid);
+ int sysfs_file_change_owner_by_name(struct kobject *kobj, const char *name,
+ 				    kuid_t kuid, kgid_t kgid);
++int sysfs_link_change_owner(struct kobject *kobj, struct kobject *targ,
++			    const char *name, kuid_t kuid, kgid_t kgid);
+ 
+ #else /* CONFIG_SYSFS */
+ 
+@@ -539,6 +541,14 @@ static inline int sysfs_file_change_owner_by_name(struct kobject *kobj,
+ 	return 0;
+ }
+ 
++static inline int sysfs_link_change_owner(struct kobject *kobj,
++					  struct kobject *targ,
++					  const char *name, kuid_t kuid,
++					  kgid_t kgid)
++{
++	return 0;
++}
++
+ #endif /* CONFIG_SYSFS */
+ 
+ static inline int __must_check sysfs_create_file(struct kobject *kobj,
+-- 
+2.25.0
 
-  Andrew
