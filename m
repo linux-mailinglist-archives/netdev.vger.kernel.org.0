@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B6F1620A6
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50E51620C0
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 07:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbgBRGDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 01:03:02 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:50654 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbgBRGDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 01:03:02 -0500
-Received: by mail-il1-f197.google.com with SMTP id z12so16135527ilh.17
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 22:03:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=s90mtOgUot9BLQ8vD0J1ERBgI+WUMFy7aI1WWZiJRPc=;
-        b=NXsrQd2MdYofnbJ4cKgWazE5n9kQFN5nmAvVYHT3nzrDTYd7awsHlr70QUyOTbwC36
-         1LxL3COpNQb1WQdSpaAZeXmTMg3/h9qc0vYKQyuNe1H+h3z9r3TWPTxruQtjj37Td3l3
-         453+RZx2VFeIDmyvm3Tu99y/LfVVS0Rjn0YcEbWFMMJdWRQOs4hF9sg59Jam5rwU4Djs
-         ZmcxqG/wZve0Q2IOoc1UWfo81VBoRfsrQzju0UprRICUm8QAniNtx/SWKdbxq3Ws6UvN
-         CegKKJroLThjn1hY54JyeHHq265Idf9CPp8bdRiK2qzaCFkyAdlFcBMCcgpHmxY8TC43
-         Kwww==
-X-Gm-Message-State: APjAAAX7ZPCt3TqB+u+lXQIp5J1qWPqMqQx3WMVG5u+IVrwRhqjiEO2x
-        uu6AAVvYnf9pKnMnc+q6LQybIRTlAn0Eq9ab+ukVmN2aARrR
-X-Google-Smtp-Source: APXvYqyKbrb4s0QHhXUHJyLBgCo8QfHdPqjJt+Gn6V7xrj04pmL0UCt5qN2sCqpWHU5C1lVX4urkbh8cyDLI0yG0Ty2a9C4plVi6
+        id S1726206AbgBRGTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 01:19:34 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10633 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726065AbgBRGTe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 01:19:34 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id CE0479280B2678BB9764;
+        Tue, 18 Feb 2020 14:19:30 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 18 Feb 2020
+ 14:19:29 +0800
+Subject: Re: [PATCH net-next] net: ena: remove set but not used variable
+ 'rx_ring'
+To:     David Miller <davem@davemloft.net>
+References: <20200218015951.7224-1-yuehaibing@huawei.com>
+ <20200217.215308.783108603461354408.davem@davemloft.net>
+CC:     <netanel@amazon.com>, <akiyano@amazon.com>, <gtzalik@amazon.com>,
+        <saeedb@amazon.com>, <zorik@amazon.com>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <sameehj@amazon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <3ac2812b-9e5e-286a-ea65-62d2ec2f6400@huawei.com>
+Date:   Tue, 18 Feb 2020 14:19:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3f9:: with SMTP id s25mr15172224jaq.83.1582005781889;
- Mon, 17 Feb 2020 22:03:01 -0800 (PST)
-Date:   Mon, 17 Feb 2020 22:03:01 -0800
-In-Reply-To: <0000000000007838f1059ed1cea5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a98782059ed36cb4@google.com>
-Subject: Re: general protection fault in l2cap_sock_getsockopt
-From:   syzbot <syzbot+6446a589a5ca34dd6e8b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, eric.dumazet@gmail.com,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.von.dentz@intel.com, marcel@holtmann.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200217.215308.783108603461354408.davem@davemloft.net>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On 2020/2/18 13:53, David Miller wrote:
+> From: YueHaibing <yuehaibing@huawei.com>
+> Date: Tue, 18 Feb 2020 09:59:51 +0800
+> 
+>> drivers/net/ethernet/amazon/ena/ena_netdev.c: In function ena_xdp_xmit_buff:
+>> drivers/net/ethernet/amazon/ena/ena_netdev.c:316:19: warning:
+>>  variable rx_ring set but not used [-Wunused-but-set-variable]
+>>
+>> commit 548c4940b9f1 ("net: ena: Implement XDP_TX action")
+>> left behind this unused variable.
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> This does not apply cleanly to net-next, please respin.
 
-commit eab2404ba798a8efda2a970f44071c3406d94e57
-Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Date:   Fri Feb 14 18:08:57 2020 +0000
+Sorry, this is a duplicate, my bad.
+> 
+> .
+> 
 
-    Bluetooth: Add BT_PHY socket option
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17b08045e00000
-start commit:   c25a951c Add linux-next specific files for 20200217
-git tree:       linux-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=14708045e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10708045e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c727d8fc485ff049
-dashboard link: https://syzkaller.appspot.com/bug?extid=6446a589a5ca34dd6e8b
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10465579e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16dabb11e00000
-
-Reported-by: syzbot+6446a589a5ca34dd6e8b@syzkaller.appspotmail.com
-Fixes: eab2404ba798 ("Bluetooth: Add BT_PHY socket option")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
