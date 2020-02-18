@@ -2,77 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 639DF163539
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:40:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF18816354A
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727905AbgBRVkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 16:40:42 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:44567 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbgBRVkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 16:40:42 -0500
-Received: by mail-ot1-f67.google.com with SMTP id h9so21016972otj.11;
-        Tue, 18 Feb 2020 13:40:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=absML5Rt6ZupsC+GvFjujXUs8xFi6ZxOgzvL0Pb76xo=;
-        b=cFRQdCDeYyV7eVqFyveH1nO4INItX7gc13AjeWHU9UD3ekV35B9QJG9JCDsIg/90ff
-         KbaARgRVkrdQgc6/HjX5C0y/99Qyd30y+sGd4EmzZAkEkQD/UgHjuSZJrAipz2UpoJeQ
-         lhvF57BxFL17R9VaSbyulo5oAiQUAZJGZPpuu1mpN4GPBzNhmYFz6BhTauiHfPgwv3jL
-         I6Y4LhXDeXmsLKIy0vmtfIvNSvEY2Zo8dXQyQ5mbn22Nk2y6qEFg4iIpdKKN7d0Y0PUU
-         ZmlRmOA/8UhVz2wavPCpzagg2OyucHpW7gBmtbRQd6mlxRVU4p9wiHX9gwN0Lo2thFZJ
-         0uVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=absML5Rt6ZupsC+GvFjujXUs8xFi6ZxOgzvL0Pb76xo=;
-        b=K6CjHQhKflSp2COfeQGwOLFqCr+iqvhzZK0GEV77xDgmJEd3+frMDIGy4PbuIrS/VX
-         komeGqlUGXUZgNSsx2hrF11VBHAcjI/FVaJlDVPMJHUAv5OUF3Ku8K2m3bfXrq1O6aav
-         a6q/GgX4nKTKvdUcfaVAaH7q81EHiGMmxMoosCW47rr4A2+Q1jxW9nonbpwA3EpogchY
-         xReaouLwP+mjxIrWGgs+VVjDMRj4ozMnFU35np0OmMjyOPjGyBQhw9gcB1FcQp1i1r27
-         u0S8DkdtssW5Xcj7X8ZNSYphd4yYl2W+3UDmo4Do1vw2Xwz06gRxtAV00r1nF4YRVjPG
-         dRSw==
-X-Gm-Message-State: APjAAAVk0hQg6pomzMe1ucEIDZwk1G/ga0vUce6gOU6GdZRc4uQ5pWmN
-        T9lyqpP6kt6gvAqSdPTHZa8HeyJvSJcyjB91Du/q/jWd
-X-Google-Smtp-Source: APXvYqxU1slM4rCdozwMFpWT3Xlqu/h77XTf3eV4aFXRt+TkAcnIjw5mtD/NHG/6n+5827ucNXmkiQGYdNYoxzV/jyk=
-X-Received: by 2002:a9d:20a:: with SMTP id 10mr16704954otb.319.1582062040428;
- Tue, 18 Feb 2020 13:40:40 -0800 (PST)
+        id S1727809AbgBRVoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 16:44:37 -0500
+Received: from mga02.intel.com ([134.134.136.20]:51998 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726481AbgBRVog (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 16:44:36 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Feb 2020 13:44:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,458,1574150400"; 
+   d="scan'208";a="258699528"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Feb 2020 13:44:32 -0800
+Subject: Re: [RFC PATCH v2 13/22] devlink: track snapshot ids using an IDR and
+ refcounts
+To:     netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+ <20200214232223.3442651-14-jacob.e.keller@intel.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <cd0c5118-492d-0a7c-9622-cf560d508035@intel.com>
+Date:   Tue, 18 Feb 2020 13:44:32 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-References: <20200213065352.6310-1-xiyou.wangcong@gmail.com> <20200218213524.5yuccwnl2eie6p6x@salvia>
-In-Reply-To: <20200218213524.5yuccwnl2eie6p6x@salvia>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 18 Feb 2020 13:40:26 -0800
-Message-ID: <CAM_iQpWfb7xgd2LuRmaXhRSJskJPsupFk0A7=dRXtMEjZJjr3w@mail.gmail.com>
-Subject: Re: [Patch nf] netfilter: xt_hashlimit: unregister proc file before
- releasing mutex
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzbot <syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200214232223.3442651-14-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 1:35 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->
-> On Wed, Feb 12, 2020 at 10:53:52PM -0800, Cong Wang wrote:
-> > Before releasing the global mutex, we only unlink the hashtable
-> > from the hash list, its proc file is still not unregistered at
-> > this point. So syzbot could trigger a race condition where a
-> > parallel htable_create() could register the same file immediately
-> > after the mutex is released.
-> >
-> > Move htable_remove_proc_entry() back to mutex protection to
-> > fix this. And, fold htable_destroy() into htable_put() to make
-> > the code slightly easier to understand.
->
-> Probably revert previous one?
+On 2/14/2020 3:22 PM, Jacob Keller wrote:
+> New snapshot ids are generated by calling a getter function. The same id
+> may be used by multiple snapshots created at the same trigger event.
+> 
+> Currently no effort is made to release any previously used snapshot ids.
+> 
+> Replace the basic logic of using a single devlink integer for tracking
+> ids with the IDR interface.
+> 
+> snapshot IDs will be reference counted using a refcount stored in the
+> IDR. First, ids are allocated using idr_alloc without a refcount (using
+> the NULL pointer).
+> 
+> Once the devlink_region_snapshot_create function is called, it will call
+> the new __devlink_region_snapshot_id_ref(). This function will insert
+> a new refcount or increment the pre-existing refcount.
+> 
+> devlink_region_snapshot_destroy will call the new
+> __devlink_region_snapshot_id_deref(), decrementing the reference count.
+> Once there are no other references, the refcount will be removed from
+> IDR.
+> 
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-The hung task could appear again if we move the cleanup
-back under mutex.
+Based on recent comments on the list it looks like the preference would
+be to use xarray directly instead of IDR for this?
+
+(See https://lore.kernel.org/netdev/20200218135359.GA9608@ziepe.ca/ )
+
+I'd be happy to rework this to use xarray instead. I don't believe we
+can use an ida directly because of the implementation that enables
+re-using the same snapshot id for multiple snapshots. (hence why I went
+with a reference count that can be NULL initially to "pre-allocate" the id)
+
+I'm open to also considering whether we should simplify how ids are
+managed in some way so that an ida on its own can be used.
+
+Thanks,
+Jake
+
+> ---
+>  include/net/devlink.h |   3 +-
+>  net/core/devlink.c    | 141 ++++++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 138 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index 3a7759355434..3a5ff6bea143 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -17,6 +17,7 @@
+>  #include <linux/refcount.h>
+>  #include <net/net_namespace.h>
+>  #include <uapi/linux/devlink.h>
+> +#include <linux/idr.h>
+>  
+>  struct devlink_ops;
+>  
+> @@ -28,13 +29,13 @@ struct devlink {
+>  	struct list_head resource_list;
+>  	struct list_head param_list;
+>  	struct list_head region_list;
+> -	u32 snapshot_id;
+>  	struct list_head reporter_list;
+>  	struct mutex reporters_lock; /* protects reporter_list */
+>  	struct devlink_dpipe_headers *dpipe_headers;
+>  	struct list_head trap_list;
+>  	struct list_head trap_group_list;
+>  	const struct devlink_ops *ops;
+> +	struct idr snapshot_idr;
+>  	struct device *dev;
+>  	possible_net_t _net;
+>  	struct mutex lock;
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index da4e669f425b..9571063846cc 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -3760,21 +3760,118 @@ static void devlink_nl_region_notify(struct devlink_region *region,
+>  	nlmsg_free(msg);
+>  }
+>  
+> +/**
+> + * __devlink_region_snapshot_id_ref - Increment reference for a snapshot ID
+> + *	@devlink: devlink instance
+> + *	@id: the snapshot id being referenced
+> + *
+> + *	Increments the reference count for the given snapshot id. If the id
+> + *	was not yet allocated, it is allocated immediately. If the id was
+> + *	allocated but no references exist, a new refcount is created and
+> + *	inserted.
+> + */
+> +static int __devlink_region_snapshot_id_ref(struct devlink *devlink, u32 id)
+> +{
+> +	struct idr *idr = &devlink->snapshot_idr;
+> +	refcount_t *ref;
+> +	void *old_ptr;
+> +	int err;
+> +
+> +	lockdep_assert_held(&devlink->lock);
+> +
+> +	if (id < 1 || id >= INT_MAX)
+> +		return -EINVAL;
+> +
+> +	/* Check if a refcount already exists. If so, increment it and exit */
+> +	ref = idr_find(idr, id);
+> +	if (ref) {
+> +		refcount_inc(ref);
+> +		return 0;
+> +	}
+> +
+> +	/* Allocate a new reference count */
+> +	ref = kzalloc(sizeof(*ref), GFP_KERNEL);
+> +	refcount_set(ref, 1);
+> +
+> +	/* The id was likely allocated ahead of time using
+> +	 * devlink_region_snapshot_id_get, so attempt to replace the NULL
+> +	 * pointer with the refcount. Since idr_find returned NULL,
+> +	 * idr_replace should either return ERR_PTR(-ENOENT) or NULL.
+> +	 */
+> +	old_ptr = idr_replace(idr, ref, id);
+> +	/* if old_ptr is NULL, we've inserted the reference */
+> +	if (old_ptr == NULL)
+> +		return 0;
+> +	if (PTR_ERR(old_ptr) != -ENOENT) {
+> +		kfree(ref);
+> +		return PTR_ERR(old_ptr);
+> +	}
+> +
+> +	/* the snapshot id was not reserved, so reserve it now. */
+> +	err = idr_alloc(idr, ref, id, id+1, GFP_KERNEL);
+> +	if (err < 0)
+> +		return err;
+> +	WARN_ON(err != id);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * __devlink_region_snapshot_id_deref - Decrement reference for a snapshot ID
+> + *	@devlink: devlink instance
+> + *	@id: the snapshot id being referenced
+> + *
+> + *	Decrements the reference count for a given snapshot id. If the
+> + *	refcount has reached zero then remove the reference from the IDR.
+> + */
+> +static void __devlink_region_snapshot_id_deref(struct devlink *devlink, u32 id)
+> +{
+> +	struct idr *idr = &devlink->snapshot_idr;
+> +	refcount_t *ref;
+> +
+> +	lockdep_assert_held(&devlink->lock);
+> +
+> +	if (WARN_ON(id < 1 || id >= INT_MAX))
+> +		return;
+> +
+> +	/* Find the reference pointer */
+> +	ref = idr_find(idr, id);
+> +	if (!ref) {
+> +		WARN(true, "no previous reference was inserted");
+> +		/* this shouldn't happen, but at least attempt to cleanup if
+> +		 * something went wrong.
+> +		 */
+> +		idr_remove(idr, id);
+> +		return;
+> +	}
+> +
+> +	if (refcount_dec_and_test(ref)) {
+> +		/* There are no more references, so remove it from the IDR and
+> +		 * free the reference count.
+> +		 */
+> +		idr_remove(idr, id);
+> +		kfree(ref);
+> +	}
+> +}
+> +
+>  /**
+>   *	__devlink_region_snapshot_id_get - get snapshot ID
+>   *	@devlink: devlink instance
+>   *
+>   *	Returns a new snapshot id or a negative error code on failure. Must be
+>   *	called while holding the devlink instance lock.
+> + *
+> + *	Snapshot ids are stored in an IDR and reference counted by the number
+> + *	of snapshots currently using that id. This function pre-allocates
+> + *	a snapshot id but does not fill in a reference count. A later call to
+> + *	devlink_region_snapshot_create will update the IDR pointer to
+> + *	a reference count. On devlink_region_snapshot_destory, if there are no
+> + *	further references, the id will be removed from the IDR.
+>   */
+>  static int __devlink_region_snapshot_id_get(struct devlink *devlink)
+>  {
+>  	lockdep_assert_held(&devlink->lock);
+> -
+> -	if (devlink->snapshot_id >= INT_MAX)
+> -		return -ENOSPC;
+> -
+> -	return ++devlink->snapshot_id;
+> +	return idr_alloc(&devlink->snapshot_idr, NULL, 1, INT_MAX, GFP_KERNEL);
+>  }
+>  
+>  /**
+> @@ -3797,6 +3894,7 @@ __devlink_region_snapshot_create(struct devlink_region *region,
+>  {
+>  	struct devlink *devlink = region->devlink;
+>  	struct devlink_snapshot *snapshot;
+> +	int err;
+>  
+>  	lockdep_assert_held(&devlink->lock);
+>  
+> @@ -3811,6 +3909,11 @@ __devlink_region_snapshot_create(struct devlink_region *region,
+>  	if (!snapshot)
+>  		return -ENOMEM;
+>  
+> +	/* Increment snapshot id reference */
+> +	err = __devlink_region_snapshot_id_ref(devlink, snapshot_id);
+> +	if (err)
+> +		goto err_free_snapshot;
+> +
+>  	snapshot->id = snapshot_id;
+>  	snapshot->region = region;
+>  	snapshot->data = data;
+> @@ -3821,15 +3924,25 @@ __devlink_region_snapshot_create(struct devlink_region *region,
+>  
+>  	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_NEW);
+>  	return 0;
+> +
+> +err_free_snapshot:
+> +	kfree(snapshot);
+> +	return err;
+>  }
+>  
+>  static void devlink_region_snapshot_del(struct devlink_region *region,
+>  					struct devlink_snapshot *snapshot)
+>  {
+> +	struct devlink *devlink = region->devlink;
+> +
+> +	lockdep_assert_held(&devlink_mutex);
+> +
+>  	devlink_nl_region_notify(region, snapshot, DEVLINK_CMD_REGION_DEL);
+>  	region->cur_snapshots--;
+>  	list_del(&snapshot->list);
+>  	region->ops->destructor(snapshot->data);
+> +	__devlink_region_snapshot_id_deref(devlink, snapshot->id);
+> +
+>  	kfree(snapshot);
+>  }
+>  
+> @@ -6388,6 +6501,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
+>  	if (!devlink)
+>  		return NULL;
+>  	devlink->ops = ops;
+> +	idr_init(&devlink->snapshot_idr);
+>  	__devlink_net_set(devlink, &init_net);
+>  	INIT_LIST_HEAD(&devlink->port_list);
+>  	INIT_LIST_HEAD(&devlink->sb_list);
+> @@ -6480,6 +6594,23 @@ EXPORT_SYMBOL_GPL(devlink_reload_disable);
+>   */
+>  void devlink_free(struct devlink *devlink)
+>  {
+> +	struct idr *idr = &devlink->snapshot_idr;
+> +
+> +	mutex_lock(&devlink->lock);
+> +	if (!idr_is_empty(idr)) {
+> +		refcount_t *ref;
+> +		int id;
+> +
+> +		WARN(true, "snapshot IDR is not empty");
+> +
+> +		idr_for_each_entry(idr, ref, id) {
+> +			if (ref)
+> +				kfree(ref);
+> +		}
+> +	}
+> +	idr_destroy(&devlink->snapshot_idr);
+> +	mutex_unlock(&devlink->lock);
+> +
+>  	mutex_destroy(&devlink->reporters_lock);
+>  	mutex_destroy(&devlink->lock);
+>  	WARN_ON(!list_empty(&devlink->trap_group_list));
+> 
