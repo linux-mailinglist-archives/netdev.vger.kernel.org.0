@@ -2,166 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6405316338C
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB7A016349E
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:17:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbgBRUzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 15:55:01 -0500
-Received: from alln-iport-6.cisco.com ([173.37.142.93]:59652 "EHLO
-        alln-iport-6.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgBRUzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:55:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1420; q=dns/txt; s=iport;
-  t=1582059299; x=1583268899;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=qHGSPJYUWaP3FHLyCY4CRIua/3sd1BrFgdBFnK41Yx4=;
-  b=UqlUUDJl1uJxnjC9xL884FwsRxshEsCXqbp0MB9QnnRN3xFAweXYOP1E
-   gjRi2r+fTFbApzBUSSBXzB2KuxPS8scQrAl+7l4i4RA38YFqAPov5Q9GC
-   GtNLEqs1XtzxhwGLYkVpOVd9/+yEOpRyKSCkICzgy4K9JEMYoecJ+O3Bx
-   0=;
-IronPort-PHdr: =?us-ascii?q?9a23=3AYqPi3RF8biwuZc8osM4l0Z1GYnJ96bzpIg4Y7I?=
- =?us-ascii?q?YmgLtSc6Oluo7vJ1Hb+e4z1Q3SRYuO7fVChqKWqK3mVWEaqbe5+HEZON0pNV?=
- =?us-ascii?q?cejNkO2QkpAcqLE0r+efLjaS03GNtLfFRk5Hq8d0NSHZW2ag=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0BJAABBTkxe/4UNJK1mHAEBAQEBBwE?=
- =?us-ascii?q?BEQEEBAEBgWcHAQELAYFTUAWBRCAECyoKh1ADhFqGH4JfjxaIe4EugSQDVAk?=
- =?us-ascii?q?BAQEMAQEtAgQBAYRAAoIDJDQJDgIDDQEBBQEBAQIBBQRthTcMhWYBAQEBAxI?=
- =?us-ascii?q?oBgEBNwEPAgEIDgYBAwkVEA8jJQIEDgUihU8DLgECol4CgTmIYoIngn8BAQW?=
- =?us-ascii?q?FJxiCDAmBOAGMIxqBQT+EJD6ES4NCgiywDgqCO5ZNKA6bGC2KW4FrnTgCBAI?=
- =?us-ascii?q?EBQIOAQEFgVI5gVhwFYMnUBgNjh0HewGCcIpTdIEpjSOBDQGBDwEB?=
-X-IronPort-AV: E=Sophos;i="5.70,457,1574121600"; 
-   d="scan'208";a="454746104"
-Received: from alln-core-11.cisco.com ([173.36.13.133])
-  by alln-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 18 Feb 2020 20:54:59 +0000
-Received: from XCH-RCD-002.cisco.com (xch-rcd-002.cisco.com [173.37.102.12])
-        by alln-core-11.cisco.com (8.15.2/8.15.2) with ESMTPS id 01IKsxsl002766
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
-        Tue, 18 Feb 2020 20:54:59 GMT
-Received: from xhs-aln-003.cisco.com (173.37.135.120) by XCH-RCD-002.cisco.com
- (173.37.102.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Feb
- 2020 14:54:58 -0600
-Received: from xhs-rtp-001.cisco.com (64.101.210.228) by xhs-aln-003.cisco.com
- (173.37.135.120) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Feb
- 2020 14:54:57 -0600
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (64.101.32.56) by
- xhs-rtp-001.cisco.com (64.101.210.228) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 18 Feb 2020 15:54:57 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dsnqm1lb/fj6IPrIexfJ98zZ1a33i4BRNAK59fkLc3CTEu+nbYom5Ctek/B8M42VLj+3HBX/Zzv1NdrZZYt4BZbfsUCV41ri7oGPCZNemxydm/hD5d+6aVScoyGYtNSWUlWIxdeW9UKHO7DDIlvvMpePrGlohV4Mj29bUaNQz6Ej+9mRu8i+6PLZQfQ2ULjO3HT+2w2kcEaPA5dN9bJFEb1gHTa/gF6uVLxnwaMiLwN8yQNHrKeNYncRJZ1Vjm+qSaWn94+Wly8lPsUIXC2xL/8wiJ7IHtOtl2W7QmQfzgQyxi5PJJS1E3JUhEkpnrxJ3PZRQL1zTCavz930sX4VUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qHGSPJYUWaP3FHLyCY4CRIua/3sd1BrFgdBFnK41Yx4=;
- b=X5SRpm4VST2vMBGGcwfDvX3oyX6KYo6MJLiGsucRXZZQ5F2lcz/Vx8XXE8OUJIhnl06xxz6NnfcwjgASxkADwASI5mD/mwnWxlPyH3wFe8TQDEjNhhTPH5POb2L8I8rACIDcrbvwU75nbTV1HvLablsE+u4D6n8QXO8RiBzCWPjrtWbUBI+Ud+L3xdGyaToO9HEdH86jmJwp24kWTp9mVKBsWcFlspOfefioopk+v8vF3AGwk4qUC98Cl6TpWozI65em9zNI7PDjKg6kkNfE0f0/Q8Ae35Ccvj1glHzWTD8l3HIK0YeAUKCLL5ogLKI2KOKBlYuGWjbSt3RsPheRHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
- dkim=pass header.d=cisco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
- s=selector2-cisco-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qHGSPJYUWaP3FHLyCY4CRIua/3sd1BrFgdBFnK41Yx4=;
- b=zswTTHb8s6by5x0imvoDTv6XURTPPMm1SiwDsE6Fsogw7kdi0AC/W4mWNMKy+SlBwPn8np8/lfHnB9pG+SBopVidMc5Wi8pFyipn72EuNWWczxf7/T4aqipz8ZvVYQDBSG1Q6cQQxaaBLdrG4XkapnVRVS/NRy+ZiaYO6hv9vJA=
-Received: from BYAPR11MB3205.namprd11.prod.outlook.com (20.177.187.32) by
- BYAPR11MB2552.namprd11.prod.outlook.com (52.135.227.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2750.17; Tue, 18 Feb 2020 20:54:56 +0000
-Received: from BYAPR11MB3205.namprd11.prod.outlook.com
- ([fe80::89a6:9355:e6ba:832]) by BYAPR11MB3205.namprd11.prod.outlook.com
- ([fe80::89a6:9355:e6ba:832%7]) with mapi id 15.20.2729.032; Tue, 18 Feb 2020
- 20:54:56 +0000
-From:   "Daniel Walker (danielwa)" <danielwa@cisco.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "zbr@ioremap.net" <zbr@ioremap.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: connector: cn_proc: allow limiting certain
- messages
-Thread-Topic: [PATCH] drivers: connector: cn_proc: allow limiting certain
- messages
-Thread-Index: AQHV5p2t0fDeU99AI0q9taXpnYkWBg==
-Date:   Tue, 18 Feb 2020 20:54:56 +0000
-Message-ID: <20200218205441.GA24043@zorba>
-References: <20200217175209.GM24152@zorba>
- <20200217.185235.495219494110132658.davem@davemloft.net>
- <20200218163030.GR24152@zorba>
- <20200218.123546.666027846950664712.davem@davemloft.net>
-In-Reply-To: <20200218.123546.666027846950664712.davem@davemloft.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=danielwa@cisco.com; 
-x-originating-ip: [128.107.241.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 035703d4-1127-467a-d0a5-08d7b4b4cfb1
-x-ms-traffictypediagnostic: BYAPR11MB2552:
-x-microsoft-antispam-prvs: <BYAPR11MB25522F1636E564EEBA346C56DD110@BYAPR11MB2552.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 031763BCAF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(376002)(396003)(136003)(366004)(346002)(39860400002)(189003)(199004)(6506007)(81166006)(54906003)(15650500001)(186003)(26005)(316002)(81156014)(71200400001)(8936002)(6486002)(2906002)(5660300002)(86362001)(33656002)(6916009)(4326008)(1076003)(66446008)(6512007)(9686003)(66556008)(33716001)(66946007)(64756008)(478600001)(66476007)(76116006)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR11MB2552;H:BYAPR11MB3205.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: cisco.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8V6a/tJGAn0OGbQ0GvAzfkYqb0JHknMU+B6esBno4XPTxtObwJgfDhrsVMwqknZfcoRdg/6SpU9GEYCnmdYYw1QavP0nYfuRlM5iT63vKOGYq7tOsPSNSoQCm3zhThbAC652P/fmLdK1HgsEMEDq06nMmWinoWOfGhVDXS3L8DEjCmQd/25lFAiEFTLh+ebY/hYtheMGiTtWCmBX7MQczWBAn0H1GdBolqrW3EVx21/op8wIVmPi1CCeNDiHDeRRrovuToYR+NluOO7eHVIfQD+zMqfFfQZulmgebMgPTBVepBeQJ+ozZ2c5aAuLpLN4FZu8bOdWWpT+EXtc3vVp9OQfK5li5Js3Sleh8w+d3Soo+Nyn5IyiNoMrApwRLzlhf/oY4KejcYMg8SUfOe302gXn5fOb4bwqEF6WM0I0HuIOARSLGF44kmorhinYDmPq
-x-ms-exchange-antispam-messagedata: TLBOgxvftujjv/RNloohRbX8mP8NKCrdobw9CYx+dqYsFxs5mihs8GxkyyMKcTKXEGnRShFnfc3MOkn6qpG3eBb7dioGubIYMhHAjkz7h34PRPom/PexZ3xKrBHO6x02Ne9HIgaD9DcqtJG6DMF6rw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B9CAB0FFB9ED6447B9838954E29F7DEF@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726756AbgBRVRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 16:17:44 -0500
+Received: from gateway34.websitewelcome.com ([192.185.149.72]:43186 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726339AbgBRVRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 16:17:43 -0500
+X-Greylist: delayed 1397 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Feb 2020 16:17:42 EST
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 54A1797BC8
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 14:54:24 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 49sujF7wWRP4z49sujfWl4; Tue, 18 Feb 2020 14:54:24 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=m4fWlpkqGiGuCYq5elOi8k6r3NJ/jeu5oJZInYcenKg=; b=CbuBpuY1RBhmt3aSkHVvglrEFB
+        NWBgDXbzUc+YN0NGI+uFQenAPZE0fBuTDXDRIAPZa2Cf7edonY7fc59bQOA3e+hUzZtShQC3QzRxO
+        GkteRxVCqTi1LMT56/4A45lovmPF2p8lPOfdqx0o7Hu6un4mfBBVmq7Tuh9Vb0cD4x9QBe2WnJLoc
+        DWgv/NPykULMwwCFMWeiZuokAiOeAG1Pati6ViMkSBMQ0oRWG2Z/5lkaRcs/ZctK7cfGRR9LbRwCB
+        MtNBLAwZq0mB0XkwwuUFkZNPa6EY4pEf21tPwkOLnmTbpTjR9ErMFR78LQWZECp5jmYXwHcAGQ/tZ
+        +lY7NUyg==;
+Received: from [200.68.140.26] (port=12800 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j49ss-000Tu7-TY; Tue, 18 Feb 2020 14:54:23 -0600
+Date:   Tue, 18 Feb 2020 14:57:05 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] mlxsw: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200218205705.GA29805@embeddedor>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 035703d4-1127-467a-d0a5-08d7b4b4cfb1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2020 20:54:56.5745
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mygS3wEShQe8jbY6PCyk9pNpcasDnxYP+i2z+sJPJbUT7Swgb+M8qDL4DOpeYATb753J7w2+QlraaSb6s96vpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2552
-X-OriginatorOrg: cisco.com
-X-Outbound-SMTP-Client: 173.37.102.12, xch-rcd-002.cisco.com
-X-Outbound-Node: alln-core-11.cisco.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 200.68.140.26
+X-Source-L: No
+X-Exim-ID: 1j49ss-000Tu7-TY
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [200.68.140.26]:12800
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 18
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 12:35:46PM -0800, David Miller wrote:
-> From: "Daniel Walker (danielwa)" <danielwa@cisco.com>
-> Date: Tue, 18 Feb 2020 16:30:36 +0000
->=20
-> > It's multicast and essentially broadcast messages .. So everyone gets e=
-very
-> > message, and once it's on it's likely it won't be turned off. Given tha=
-t, It seems
-> > appropriate that the system administrator has control of what messages =
-if any
-> > are sent, and it should effect all listening for messages.
-> >=20
-> > I think I would agree with you if this was unicast, and each listener c=
-ould tailor
-> > what messages they want to get. However, this interface isn't that, and=
- it would
-> > be considerable work to convert to that.
->=20
-> You filter at recvmsg() on the specific socket, multicast or not, I
-> don't understand what the issue is.
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-Cisco tried something like this (I don't know if it was exactly what your r=
-eferring to),
-and it was messy and fairly complicated for a simple interface. In fact it =
-was
-the first thing I suggested for Cisco.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-I'm not sure why Connector has to supply an exact set of messages, one coul=
-d
-just make a whole new kernel module hooked into netlink sending a different
-subset of connector messages. The interface eats up CPU and slows the
-system if it's sending messages your just going to ignore. I'm sure the
-filtering would also slows down the system.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-Daniel=
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/core.c                    | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c      | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c          | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c          | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c            | 4 ++--
+ .../net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c   | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c       | 4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h       | 4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_kvdl.c           | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c             | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c            | 2 +-
+ 11 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index e9f791c43f20..0d630096a28c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -82,7 +82,7 @@ struct mlxsw_core {
+ 	struct mlxsw_core_port *ports;
+ 	unsigned int max_ports;
+ 	bool fw_flash_in_progress;
+-	unsigned long driver_priv[0];
++	unsigned long driver_priv[];
+ 	/* driver_priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c
+index feb4672a5ac0..bd2207f60722 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_keys.c
+@@ -72,7 +72,7 @@ struct mlxsw_afk_key_info {
+ 						      * is index inside "blocks"
+ 						      */
+ 	struct mlxsw_afk_element_usage elusage;
+-	const struct mlxsw_afk_block *blocks[0];
++	const struct mlxsw_afk_block *blocks[];
+ };
+ 
+ static bool
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
+index 09ee0a807747..a9fff8adc75e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum1_kvdl.c
+@@ -60,7 +60,7 @@ static const struct mlxsw_sp1_kvdl_part_info mlxsw_sp1_kvdl_parts_info[] = {
+ 
+ struct mlxsw_sp1_kvdl_part {
+ 	struct mlxsw_sp1_kvdl_part_info info;
+-	unsigned long usage[0];	/* Entries */
++	unsigned long usage[];	/* Entries */
+ };
+ 
+ struct mlxsw_sp1_kvdl {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
+index 8d14770766b4..3a73d654017f 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
+@@ -45,7 +45,7 @@ struct mlxsw_sp2_kvdl_part {
+ 	unsigned int usage_bit_count;
+ 	unsigned int indexes_per_usage_bit;
+ 	unsigned int last_allocated_bit;
+-	unsigned long usage[0];	/* Usage bits */
++	unsigned long usage[];	/* Usage bits */
+ };
+ 
+ struct mlxsw_sp2_kvdl {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+index 3d3cca596116..9368b93dab38 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+@@ -58,7 +58,7 @@ struct mlxsw_sp_acl_ruleset {
+ 	struct mlxsw_sp_acl_ruleset_ht_key ht_key;
+ 	struct rhashtable rule_ht;
+ 	unsigned int ref_count;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+@@ -71,7 +71,7 @@ struct mlxsw_sp_acl_rule {
+ 	u64 last_used;
+ 	u64 last_packets;
+ 	u64 last_bytes;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
+index 3a2de13fcb68..dbd3bebf11ec 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
+@@ -13,7 +13,7 @@
+ struct mlxsw_sp_acl_bf {
+ 	struct mutex lock; /* Protects Bloom Filter updates. */
+ 	unsigned int bank_size;
+-	refcount_t refcnt[0];
++	refcount_t refcnt[];
+ };
+ 
+ /* Bloom filter uses a crc-16 hash over chunks of data which contain 4 key
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+index e993159e8e4c..430da69003d8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
+@@ -224,7 +224,7 @@ struct mlxsw_sp_acl_tcam_vchunk;
+ struct mlxsw_sp_acl_tcam_chunk {
+ 	struct mlxsw_sp_acl_tcam_vchunk *vchunk;
+ 	struct mlxsw_sp_acl_tcam_region *region;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+@@ -243,7 +243,7 @@ struct mlxsw_sp_acl_tcam_vchunk {
+ struct mlxsw_sp_acl_tcam_entry {
+ 	struct mlxsw_sp_acl_tcam_ventry *ventry;
+ 	struct mlxsw_sp_acl_tcam_chunk *chunk;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
+index 5965913565a5..96437992b102 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
+@@ -20,7 +20,7 @@ struct mlxsw_sp_acl_tcam {
+ 	struct mutex lock; /* guards vregion list */
+ 	struct list_head vregion_list;
+ 	u32 vregion_rehash_intrvl;   /* ms */
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+@@ -86,7 +86,7 @@ struct mlxsw_sp_acl_tcam_region {
+ 	char tcam_region_info[MLXSW_REG_PXXX_TCAM_REGION_INFO_LEN];
+ 	struct mlxsw_afk_key_info *key_info;
+ 	struct mlxsw_sp *mlxsw_sp;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_kvdl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_kvdl.c
+index 1e4cdee7bcd7..715ec8ecacba 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_kvdl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_kvdl.c
+@@ -8,7 +8,7 @@
+ 
+ struct mlxsw_sp_kvdl {
+ 	const struct mlxsw_sp_kvdl_ops *kvdl_ops;
+-	unsigned long priv[0];
++	unsigned long priv[];
+ 	/* priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
+index 54275624718b..423eedebcd22 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
+@@ -68,7 +68,7 @@ struct mlxsw_sp_mr_table {
+ 	struct list_head route_list;
+ 	struct rhashtable route_ht;
+ 	const struct mlxsw_sp_mr_table_ops *ops;
+-	char catchall_route_priv[0];
++	char catchall_route_priv[];
+ 	/* catchall_route_priv has to be always the last item */
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+index 2153bcc4b585..16a130c2f21c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+@@ -67,7 +67,7 @@ struct mlxsw_sp_nve_mc_record {
+ 	struct mlxsw_sp_nve_mc_list *mc_list;
+ 	const struct mlxsw_sp_nve_mc_record_ops *ops;
+ 	u32 kvdl_index;
+-	struct mlxsw_sp_nve_mc_entry entries[0];
++	struct mlxsw_sp_nve_mc_entry entries[];
+ };
+ 
+ struct mlxsw_sp_nve_mc_list {
+-- 
+2.25.0
+
