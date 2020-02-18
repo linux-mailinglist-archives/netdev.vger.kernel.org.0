@@ -2,142 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA0A1623B9
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:44:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 906D21623F6
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 10:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgBRJoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 04:44:03 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38417 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbgBRJoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:44:03 -0500
-Received: by mail-lj1-f195.google.com with SMTP id w1so22150971ljh.5
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 01:44:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xXmwuNNnN+ad/dmuTuvRQ+NXZYB3cMUttaegMQhBnLU=;
-        b=nb2tVAWLGloVhrpcH+1tLLiB1wzYyd5PrnuKYSwfGIdCBQNrmv9uI2ZrAvA4wZVjpU
-         SSxyAr06sl8/jK8zW/oG4PLIlfCYQOk/t8Nn6tvNfew/hTMauMaLR+YMi8SFuJpUoB46
-         Oqiuy2m61WvrpYCRi+pN+1gl4aSw175LMi4EOVTrYZhbt6qNpFIsIHQEQSN+I857ePEq
-         PeTDiYtnfaBL+sPYUF4sNHLPl0nUj7WT9JdynT53iVUtxIZH0/kXu/fZFwtAzVCXYTAd
-         zpgEYQ/vI6toc+GdL9NHnPm8wFCUL9XsFTgnDfGz3e8YHF7CDgZJyBfbT0TzsOUieDDn
-         iKFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xXmwuNNnN+ad/dmuTuvRQ+NXZYB3cMUttaegMQhBnLU=;
-        b=sUv98kVx8QlFR9D9mSDjsPbV1WAMjY3sQy6bf6KFYjnTa3qt2ixPtyUxl2lw5AahPt
-         U0Ky8h6K1NsygRbCNer88V/pSJLpVoyaBUW7FiTNyLIC4IObUIN7Dfhie7TKGq0Dhxmz
-         +3kgTz00FlD2146hyVQLRAhZgM711scfR5kbq2+DTsZnORyFkiiovSzfZAGH2ChVLhs6
-         Tyy+LHr3l29EsI2zDfdKO8Vp7IikUussBA4pIk61euKn4VXV8FQkhp/6sMGA8I+Md0FG
-         TQavxMZM0tDs4vDTdIcRFe0BjtJHKQOfjOpruCfodE18aeR+1XfS44WoR1GODCi0U0a0
-         D3Nw==
-X-Gm-Message-State: APjAAAUyqugc2W8EV7DyfIASJ2J7s1dwis9gZ4iC/iyG33aOZlY0mRNq
-        07IVcBg8dT8nhymv4CB9E8xlqg==
-X-Google-Smtp-Source: APXvYqy9dc9FHnjzy5R+4aUwrOjgQtHVjzWJ8LXwZVezAgnc/Hdx0Gz871eIYbtqAZPAwGJGrWKCFg==
-X-Received: by 2002:a2e:88c4:: with SMTP id a4mr12634394ljk.174.1582019041456;
-        Tue, 18 Feb 2020 01:44:01 -0800 (PST)
-Received: from ?IPv6:2a00:1fa0:4ca:678e:4969:cd4e:2383:27e8? ([2a00:1fa0:4ca:678e:4969:cd4e:2383:27e8])
-        by smtp.gmail.com with ESMTPSA id f29sm2016567ljo.76.2020.02.18.01.43.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 01:44:00 -0800 (PST)
-Subject: Re: [PATCH 3/3] ag71xx: Run ag71xx_link_adjust() only when needed
-To:     Hauke Mehrtens <hauke@hauke-m.de>, davem@davemloft.net,
-        linux@rempel-privat.de
-Cc:     netdev@vger.kernel.org, jcliburn@gmail.com, chris.snook@gmail.com
-References: <20200217233518.3159-1-hauke@hauke-m.de>
- <20200217233518.3159-3-hauke@hauke-m.de>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <2a6b9908-44d8-3c81-4b44-be1e5568a567@cogentembedded.com>
-Date:   Tue, 18 Feb 2020 12:43:41 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726508AbgBRJx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 04:53:26 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21488 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726338AbgBRJx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 04:53:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582019605;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OVdo3NOzij8aAAUXkSWLWkZWw+3RPCay4xKSpW5yzqk=;
+        b=fk+KWd7edGAf0M61UyRxUY5EJW8LD692UFvgEc2Eyv8MShOCQrj9yRes6xs/1hOcS6DzD+
+        NIHKTzud7dIT+8fSEmP3Fpn9sPRbY3XRmUJhg5z8Rkk0JAmLv6PKod1euS4B+JIho6HcWZ
+        hdq+IcpmAxDk2kuM5OdCfU7E65gtzwE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-417-IyT8ekwIOiyPG-KXGIN6Og-1; Tue, 18 Feb 2020 04:53:22 -0500
+X-MC-Unique: IyT8ekwIOiyPG-KXGIN6Og-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1FBD107B7D4;
+        Tue, 18 Feb 2020 09:53:21 +0000 (UTC)
+Received: from localhost (unknown [10.36.118.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 00F7710027B2;
+        Tue, 18 Feb 2020 09:53:20 +0000 (UTC)
+Date:   Tue, 18 Feb 2020 09:53:19 +0000
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     mtk.manpages@gmail.com, linux-man@vger.kernel.org,
+        Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3] vsock.7: add VMADDR_CID_LOCAL description
+Message-ID: <20200218095319.GB786556@stefanha-x1.localdomain>
+References: <20200217173121.159132-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200217233518.3159-3-hauke@hauke-m.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200217173121.159132-1-sgarzare@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gatW/ieO32f1wygP"
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+--gatW/ieO32f1wygP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 18.02.2020 2:35, Hauke Mehrtens wrote:
-
-> My system printed this line every second:
->    ag71xx 19000000.eth eth0: Link is Up - 1Gbps/Full - flow control off
-> The function ag71xx_phy_link_adjust() was called by the PHY layer every
-> second even when nothing changed.
-> 
-> With this patch the old status is stored and the real the
-> ag71xx_link_adjust() function is only called when something really
-> changed. This way the update and also this print is only done once any
-> more.
-> 
-> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-> Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+On Mon, Feb 17, 2020 at 06:31:21PM +0100, Stefano Garzarella wrote:
+> Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
+> local communication.
+>=20
+> This patch explains how to use it and remove the legacy
+> VMADDR_CID_RESERVED no longer available.
+>=20
+> Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 > ---
->   drivers/net/ethernet/atheros/ag71xx.c | 24 +++++++++++++++++++++++-
->   1 file changed, 23 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-> index 7d3fec009030..12eaf6d2518d 100644
-> --- a/drivers/net/ethernet/atheros/ag71xx.c
-> +++ b/drivers/net/ethernet/atheros/ag71xx.c
-> @@ -307,6 +307,10 @@ struct ag71xx {
->   	u32 msg_enable;
->   	const struct ag71xx_dcfg *dcfg;
->   
-> +	unsigned int		link;
-> +	unsigned int		speed;
-> +	int			duplex;
-> +
->   	/* From this point onwards we're not looking at per-packet fields. */
->   	void __iomem *mac_base;
->   
-> @@ -854,6 +858,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
->   
->   	if (!phydev->link && update) {
->   		ag71xx_hw_stop(ag);
-> +		phy_print_status(phydev);
->   		return;
->   	}
->   
-> @@ -907,8 +912,25 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
->   static void ag71xx_phy_link_adjust(struct net_device *ndev)
->   {
->   	struct ag71xx *ag = netdev_priv(ndev);
-> +	struct phy_device *phydev = ndev->phydev;
-> +	int status_change = 0;
-> +
-> +	if (phydev->link) {
-> +		if (ag->duplex != phydev->duplex ||
-> +		    ag->speed != phydev->speed) {
-> +			status_change = 1;
-> +		}
+> v3:
+>     * rephrased "Previous versions" part [Jorgen]
+> v2:
+>     * rephrased "Local communication" description [Stefan]
+>     * added a mention of previous versions that supported
+>       loopback only in the guest [Stefan]
+> ---
+>  man7/vsock.7 | 19 +++++++++++++++++--
+>  1 file changed, 17 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/man7/vsock.7 b/man7/vsock.7
+> index c5ffcf07d..219e3505f 100644
+> --- a/man7/vsock.7
+> +++ b/man7/vsock.7
+> @@ -127,8 +127,8 @@ There are several special addresses:
+>  means any address for binding;
+>  .B VMADDR_CID_HYPERVISOR
+>  (0) is reserved for services built into the hypervisor;
+> -.B VMADDR_CID_RESERVED
+> -(1) must not be used;
+> +.B VMADDR_CID_LOCAL
+> +(1) is the well-known address for local communication (loopback);
+>  .B VMADDR_CID_HOST
+>  (2)
+>  is the well-known address of the host.
+> @@ -164,6 +164,16 @@ Consider using
+>  .B VMADDR_CID_ANY
+>  when binding instead of getting the local CID with
+>  .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
+> +.SS Local communication
+> +The
+> +.B VMADDR_CID_LOCAL
+> +(1) directs packets to the same host that generated them. This is useful
 
-    Do we really need {} here? There's only 1 statement enclosed...
+Please see my comment on v2.  "The VMADDR_CID_LOCAL (1) directs packets
+..." sounds unnatural.  Please drop "The".
 
-> +	}
-> +
-> +	if (phydev->link != ag->link)
-> +		status_change = 1;
-> +
-> +	ag->link = phydev->link;
-> +	ag->duplex = phydev->duplex;
-> +	ag->speed = phydev->speed;
->   
-> -	ag71xx_link_adjust(ag, true);
-> +	if (status_change)
-> +		ag71xx_link_adjust(ag, true);
->   }
->   
->   static int ag71xx_phy_connect(struct ag71xx *ag)
+--gatW/ieO32f1wygP
+Content-Type: application/pgp-signature; name="signature.asc"
 
-MBR, Sergei
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl5LtA8ACgkQnKSrs4Gr
+c8gq2AgAhEWJnASHc2ds5BdQYjs+9IK6beCEi/CNM1VkDrlI0tAiKHzQC5sRXvvL
+MIC0s10vWtim+1alfZYuAjZydhS2Ek/ZYAKjN9Emi8Cr2UDj0LTZdFiJbltffzKd
+R0IAAzBYqT1xLS67zlSWLpCWzXM07gv7A9bCVTwjWAx8aw5frm35ihgANyKDGthi
+NQ5089YZvpNKREXNpATSSrwSHJpeKxVyxX6a0MNuMVRSoIoFxljK83mxn7J7bIIJ
+mcia2Bu7KvLewuyUu57B9EcSoYxwOq7qYrxryJp4x5wYEmDG+hMjeABtXY84MHQe
+gBFhD76daJ38oWQaKPettQWpovQ9CA==
+=iidn
+-----END PGP SIGNATURE-----
+
+--gatW/ieO32f1wygP--
+
