@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2997E162C77
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:18:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE67F162C85
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 18:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgBRRSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 12:18:16 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:33066 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726671AbgBRRSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 12:18:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582046295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ek37kVTDy+eubHSmBaHlU9802HiWJpZwSmyiNbGJoro=;
-        b=M5rFuEHug/ZtNlxV0hPVRe9RcJpZ9v57I1lCLNI7XP0rHcl5vBKMovji8EYkwDo7w8JJNd
-        SCLUW3jX/iInQbhS6552040hwLhJMrnDSOw5yKFL89y0QPmEvcoylKbgPcrm8t4qagSbyb
-        CzLpsTQMl1WxD32zFrCV52RiGjP0KGc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-240-uC0VfL6AP3Ci3cM_MFvf2Q-1; Tue, 18 Feb 2020 12:18:10 -0500
-X-MC-Unique: uC0VfL6AP3Ci3cM_MFvf2Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726655AbgBRRUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 12:20:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45638 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726415AbgBRRUK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 12:20:10 -0500
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CD648010FF;
-        Tue, 18 Feb 2020 17:18:06 +0000 (UTC)
-Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D179990F70;
-        Tue, 18 Feb 2020 17:17:53 +0000 (UTC)
-Date:   Tue, 18 Feb 2020 18:17:51 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, lorenzo@kernel.org, toke@redhat.com,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        by mail.kernel.org (Postfix) with ESMTPSA id 2AA1D20801;
+        Tue, 18 Feb 2020 17:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582046409;
+        bh=1/QcFFVdy6vaYY3yC/qBVxENZ9VWu8BQUFNLPDxdkwc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FUdza3Rmbg/mS79PNLWd5ZIzn/9300o9tKNwbcJP/mcDcJzUXNmpPjr3jh0X1zJQY
+         2DeI3v9A8QBOH7SD92VtvtrHYPjrF3geQHcK40Qmlnhfnh4LVkrgJXeC+f0XbtauyE
+         Egn9ZDEQtvitjwxDPEpQNg8nsuu31Fls/i5PJ22g=
+Date:   Tue, 18 Feb 2020 17:20:00 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Robert Richter <rrichter@marvell.com>,
+        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Mark Langsdorf <mlangsdo@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v4] net: page_pool: API cleanup and comments
-Message-ID: <20200218181751.1d7139d2@carbon>
-In-Reply-To: <20200218141031.377860-1-ilias.apalodimas@linaro.org>
-References: <20200218141031.377860-1-ilias.apalodimas@linaro.org>
+        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        iommu@lists.linux-foundation.org,
+        James Morse <james.morse@arm.com>,
+        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+        kvm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode
+ quirk
+Message-ID: <20200218172000.GF1133@willie-the-truck>
+References: <20200218171321.30990-1-robh@kernel.org>
+ <20200218171321.30990-7-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200218171321.30990-7-robh@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Feb 2020 16:10:31 +0200
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-
-> Functions starting with __ usually indicate those which are exported,
-> but should not be called directly. Update some of those declared in the
-> API and make it more readable.
->=20
-> page_pool_unmap_page() and page_pool_release_page() were doing
-> exactly the same thing calling __page_pool_clean_page().  Let's
-> rename __page_pool_clean_page() to page_pool_release_page() and
-> export it in order to show up on perf logs and get rid of
-> page_pool_unmap_page().
->=20
-> Finally rename __page_pool_put_page() to page_pool_put_page() since we
-> can now directly call it from drivers and rename the existing
-> page_pool_put_page() to page_pool_put_full_page() since they do the same
-> thing but the latter is trying to sync the full DMA area.
->=20
-> This patch also updates netsec, mvneta and stmmac drivers which use
-> those functions.
->=20
-> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-
-LGTM - on a quick review (not compile tested...).
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
+On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
-> Changes since
-> v1:
-> - Fixed netsec driver compilation error
-> v2:
-> - Improved comment description of page_pool_put_page()
-> v3:
-> - Properly define page_pool_release_page() in the header file
->   within an ifdef since xdp.c uses it even if CONFIG_PAGE_POOL is not sel=
-ected
-> - rename __page_pool_clean_page -> page_pool_release_page and get rid of
-> another redundant helper
+> Do not apply yet.
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Pleeeeease? ;)
 
+>  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
+>  1 file changed, 43 deletions(-)
+
+Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
+anything from 'struct arm_smmu_impl' because most implementations fall
+just short of perfect.
+
+Anyway, let me know when I can push the button and I'll queue this in
+the arm-smmu tree.
+
+Cheers,
+
+Will
