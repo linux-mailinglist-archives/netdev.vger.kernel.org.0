@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F0CE1632D4
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:17:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5561F1632BD
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:16:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgBRUQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 15:16:16 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33716 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgBRUQN (ORCPT
+        id S1726707AbgBRUQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 15:16:14 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38617 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726403AbgBRUQN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:16:13 -0500
-Received: by mail-wm1-f65.google.com with SMTP id m10so2983865wmc.0;
-        Tue, 18 Feb 2020 12:16:10 -0800 (PST)
+Received: by mail-wm1-f66.google.com with SMTP id a9so4329980wmj.3;
+        Tue, 18 Feb 2020 12:16:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NiB0gYJtVh4XqjFzKHUq7rr/qTHV5TRjAy5y8PoqEnI=;
-        b=AgdQgVf1xtudUwbV3cxx0uX+jcPllvVK7pxFiQSbdbfANjaNdxD46+7yTsqX95X6VT
-         KxYzen35g/I4ILmQr6cpOYzJspauqCgqbsz/RdvPIOUUZ3Pj+uUZpn4bDbowXl7ey9HG
-         oi+vZTxFeYnlErv8YZQg/zGw6FTlFA336f5vz1uinbUwkwApbjXU1uOk4XE+2j4c8afz
-         DPz3CI8qhrI3hr4X3UiVIuxwVjs1w7+OWxYK0TKQxv0yEq1oIbo19J0vtNpItbBgRB63
-         wg8kSg2u1B6NcWOjn7lYl2Y8gYwe1N1t5kXLP3lgQflXwRBEc7R6LbWYhkNybTgC64Cx
-         PcUw==
+        bh=JbsLBIjey08BbMjYFR6nJwXmiiRgfHCLvVuuHl3uFUI=;
+        b=Rinj2lVTWNz7/BNm1zAxBIspri2k1m14YWUmAPlw7jt/8CCHBQSR5Dbk/02hp8P6X9
+         tgJ2kdvS8tG8qqlB0ZjvaayEFISKmKclWsZQkds47pEc4+bKJkZzeeN706uNtH4B03Oe
+         WHJX3/eYAM7VavLRXdpNBS025IBlEkiQVDNQPqD7BAdl2wbNqGpukdIp60clYjW/ugAU
+         Ktq36jx1SiM+3w5TGg3ycKXe+992MGlCeU38o/CP/1ShA4FzOQl0wGxfaOpCN1ZwEs5O
+         LTXU6ytVHGc01+vr7xEX+6UySWu+C1PIyFHJ5Ncj/mtljJMXbyg8py8Rw3G8d7X+yZiS
+         D3AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=NiB0gYJtVh4XqjFzKHUq7rr/qTHV5TRjAy5y8PoqEnI=;
-        b=l7BZB7NZN9O84zCGeOAz+1Gxxo5pdR/WhrthTiK6TvCVL50sj4d7OxEptURTCBK4xy
-         WpzNb0H+nmleWXLtBpFT9uYm2jpqdd1wpm+fKQfBQi9hCIulsD7V3ZmWMXMiq2T5TeSQ
-         MS38DvYDKhjL3QeZP8HXom2Ro3M5g3XBf+lvoNrRh7rdpzNrnK8/0yoWO1hNLXU4+BTo
-         DsbgcOetJ6d7PW8zrncTChBrXUydUdH3KnV8fBJ0mvdDz63q3wSAKAeDkUWM7VXj3csQ
-         Ywun4PezoHZAhUANkVZl/funk0UhB0i/Wf1/YAo2TW9lLRLQvQO0a5abIsMEye4AAatH
-         DhSw==
-X-Gm-Message-State: APjAAAUENv5+wxVVz6LZPLFlF6QIT4dDArBLiZNS5XQoWvhpzBxNYa6g
-        cIz/5HhFO0r37clKIh7ERHLq2BwX
-X-Google-Smtp-Source: APXvYqwi6eF1HbMfOHzP0n/iQiZYv9cLCnZ+Pg9W9uXA4CqI3Cw8JlFnSw+8Lq4fN66Ha2MvlyRmow==
-X-Received: by 2002:a1c:4d08:: with SMTP id o8mr5074259wmh.86.1582056970073;
-        Tue, 18 Feb 2020 12:16:10 -0800 (PST)
+        bh=JbsLBIjey08BbMjYFR6nJwXmiiRgfHCLvVuuHl3uFUI=;
+        b=GB5zp7M4NB9kR1Lizs29dWVTxla+yOPXt5U+RRw6Rp2GVmSnZyKg7vB4/4sDvIbJIP
+         Q+chRS8KR+FdKrELGnpXrrxSDk0Pgf2HIGs9T35+6exVvpnvquG17hB5Fgu4OOtqpJ2f
+         bdXIj+NGVFa16bYY08yC+tQrsNyCckdQb3396TzgBaRSsQBIzT5fAhZB2DN8Jhtcndlo
+         eF9Px0J+O87rb66PzDImz06VKt5rt0zIGAzbmJ89SQHkT79oO5C+FRu/evPFq+P4DWMk
+         1EYaAKX/p2vZHzRv20lTh9ew0MwZaIwu0WwJvwSrXIcRnFTqAGBmtLS2+zpnJEylO96Q
+         Ky9g==
+X-Gm-Message-State: APjAAAX85m8ujm75fgRt8rn8MX5CCOOSOkn8BFVgHdX7OSw5GHZFXGFk
+        F2qtFC1Eq5ub6cAqiiVdO5uelPg9
+X-Google-Smtp-Source: APXvYqxI/VJcYjsYm7gpnuCDb5HwGwkesJn3QsGVBgmcDSCjVOiM3MpKgLzznSNQvZjj5YglEYytpw==
+X-Received: by 2002:a1c:a382:: with SMTP id m124mr4906128wme.90.1582056971147;
+        Tue, 18 Feb 2020 12:16:11 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:5cb0:582f:968:ec00? (p200300EA8F2960005CB0582F0968EC00.dip0.t-ipconnect.de. [2003:ea:8f29:6000:5cb0:582f:968:ec00])
-        by smtp.googlemail.com with ESMTPSA id u14sm7213382wrm.51.2020.02.18.12.16.09
+        by smtp.googlemail.com with ESMTPSA id f8sm7651895wru.12.2020.02.18.12.16.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 12:16:09 -0800 (PST)
-Subject: [PATCH net-next v2 02/13] r8169: use new helper tcp_v6_gso_csum_prep
+        Tue, 18 Feb 2020 12:16:10 -0800 (PST)
+Subject: [PATCH net-next v2 03/13] net: atheros: use new helper
+ tcp_v6_gso_csum_prep
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
-Message-ID: <76384f13-f51e-2fd2-a84b-70c07a485b29@gmail.com>
-Date:   Tue, 18 Feb 2020 20:58:14 +0100
+Message-ID: <45c910c2-36ed-2557-ac35-cb978e44cbf4@gmail.com>
+Date:   Tue, 18 Feb 2020 20:59:55 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -66,59 +68,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the code by using the new helper tcp_v6_gso_csum_prep.
+Use new helper tcp_v6_gso_csum_prep in additional network drivers.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 26 ++---------------------
- 1 file changed, 2 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/atheros/alx/main.c         | 5 +----
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 6 ++----
+ 2 files changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 5a9143b50..8442b8767 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4108,29 +4108,6 @@ static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp, struct sk_buff *skb)
- 	return skb->len < ETH_ZLEN && tp->mac_version == RTL_GIGA_MAC_VER_34;
- }
- 
--/* msdn_giant_send_check()
-- * According to the document of microsoft, the TCP Pseudo Header excludes the
-- * packet length for IPv6 TCP large packets.
-- */
--static int msdn_giant_send_check(struct sk_buff *skb)
--{
--	const struct ipv6hdr *ipv6h;
--	struct tcphdr *th;
--	int ret;
--
--	ret = skb_cow_head(skb, 0);
--	if (ret)
--		return ret;
--
--	ipv6h = ipv6_hdr(skb);
--	th = tcp_hdr(skb);
--
--	th->check = 0;
--	th->check = ~tcp_v6_check(0, &ipv6h->saddr, &ipv6h->daddr, 0);
--
--	return ret;
--}
--
- static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
- {
- 	u32 mss = skb_shinfo(skb)->gso_size;
-@@ -4163,9 +4140,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
- 			break;
- 
- 		case htons(ETH_P_IPV6):
--			if (msdn_giant_send_check(skb))
-+			if (skb_cow_head(skb, 0))
- 				return false;
- 
-+			tcp_v6_gso_csum_prep(skb);
- 			opts[0] |= TD1_GTSENV6;
- 			break;
- 
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index 1dcbc486e..b9b4edb91 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1416,10 +1416,7 @@ static int alx_tso(struct sk_buff *skb, struct alx_txd *first)
+ 							 0, IPPROTO_TCP, 0);
+ 		first->word1 |= 1 << TPD_IPV4_SHIFT;
+ 	} else if (skb_is_gso_v6(skb)) {
+-		ipv6_hdr(skb)->payload_len = 0;
+-		tcp_hdr(skb)->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+-						       &ipv6_hdr(skb)->daddr,
+-						       0, IPPROTO_TCP, 0);
++		tcp_v6_gso_csum_prep(skb);
+ 		/* LSOv2: the first TPD only provides the packet length */
+ 		first->adrl.l.pkt_len = skb->len;
+ 		first->word1 |= 1 << TPD_LSO_V2_SHIFT;
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index 4c0b1f855..0d67b951c 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -2025,10 +2025,8 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
+ 						"IPV6 tso with zero data??\n");
+ 				goto check_sum;
+ 			} else
+-				tcp_hdr(skb)->check = ~csum_ipv6_magic(
+-						&ipv6_hdr(skb)->saddr,
+-						&ipv6_hdr(skb)->daddr,
+-						0, IPPROTO_TCP, 0);
++				tcp_v6_gso_csum_prep(skb);
++
+ 			etpd->word1 |= 1 << TPD_LSO_EN_SHIFT;
+ 			etpd->word1 |= 1 << TPD_LSO_VER_SHIFT;
+ 			etpd->pkt_len = cpu_to_le32(skb->len);
 -- 
 2.25.1
 
