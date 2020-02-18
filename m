@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAEC163579
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:50:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 657BE1635C9
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:05:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgBRVuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 16:50:00 -0500
-Received: from mga09.intel.com ([134.134.136.24]:18503 "EHLO mga09.intel.com"
+        id S1726352AbgBRWFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 17:05:11 -0500
+Received: from correo.us.es ([193.147.175.20]:53412 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726617AbgBRVuA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 16:50:00 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Feb 2020 13:49:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,458,1574150400"; 
-   d="asc'?scan'208";a="434250424"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.76])
-  by fmsmga005.fm.intel.com with ESMTP; 18 Feb 2020 13:49:59 -0800
-Message-ID: <3f966849ef8a21343d5a96b1ef89b7ad00b65b80.camel@intel.com>
-Subject: Re: [PATCH net-next v2 06/13] e1000(e): use new helper
- tcp_v6_gso_csum_prep
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Date:   Tue, 18 Feb 2020 13:49:58 -0800
-In-Reply-To: <47621909-1b75-e8d1-cf32-857c1601e0af@gmail.com>
-References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
-         <47621909-1b75-e8d1-cf32-857c1601e0af@gmail.com>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-796u9qmPm7ptgG3w0PuR"
-User-Agent: Evolution 3.34.3 (3.34.3-1.fc31) 
+        id S1726339AbgBRWFL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 17:05:11 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 175E12EFEAD
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:05:10 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 06426DA38F
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:05:10 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id EFCC3DA840; Tue, 18 Feb 2020 23:05:09 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 17843DA788;
+        Tue, 18 Feb 2020 23:05:08 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 18 Feb 2020 23:05:08 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id EEEB542EE38F;
+        Tue, 18 Feb 2020 23:05:07 +0100 (CET)
+Date:   Tue, 18 Feb 2020 23:05:07 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        syzbot <syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com>
+Subject: Re: [Patch nf] netfilter: xt_hashlimit: unregister proc file before
+ releasing mutex
+Message-ID: <20200218220507.cqlhd4kj4ukyjhuu@salvia>
+References: <20200213065352.6310-1-xiyou.wangcong@gmail.com>
+ <20200218213524.5yuccwnl2eie6p6x@salvia>
+ <CAM_iQpWfb7xgd2LuRmaXhRSJskJPsupFk0A7=dRXtMEjZJjr3w@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpWfb7xgd2LuRmaXhRSJskJPsupFk0A7=dRXtMEjZJjr3w@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 18, 2020 at 01:40:26PM -0800, Cong Wang wrote:
+> On Tue, Feb 18, 2020 at 1:35 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> >
+> > On Wed, Feb 12, 2020 at 10:53:52PM -0800, Cong Wang wrote:
+> > > Before releasing the global mutex, we only unlink the hashtable
+> > > from the hash list, its proc file is still not unregistered at
+> > > this point. So syzbot could trigger a race condition where a
+> > > parallel htable_create() could register the same file immediately
+> > > after the mutex is released.
+> > >
+> > > Move htable_remove_proc_entry() back to mutex protection to
+> > > fix this. And, fold htable_destroy() into htable_put() to make
+> > > the code slightly easier to understand.
+> >
+> > Probably revert previous one?
+> 
+> The hung task could appear again if we move the cleanup
+> back under mutex.
 
---=-796u9qmPm7ptgG3w0PuR
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+How could the hung task appear again by reverting
+c4a3922d2d20c710f827? Please elaborate.
 
-On Tue, 2020-02-18 at 21:05 +0100, Heiner Kallweit wrote:
-> Use new helper tcp_v6_gso_csum_prep in additional network drivers.
->=20
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
-> ---
->  drivers/net/ethernet/intel/e1000/e1000_main.c | 6 +-----
->  drivers/net/ethernet/intel/e1000e/netdev.c    | 5 +----
->  2 files changed, 2 insertions(+), 9 deletions(-)
-
-
---=-796u9qmPm7ptgG3w0PuR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl5MXAYACgkQ5W/vlVpL
-7c7JJRAAja7gTuoCY8nLUTo/e7RixJCcGoY9h5CIHHGwnH2rgCX+uVtSwaLhprto
-4w+ku8RVydlnA9dACtEMljTnC2jiC6Wdh13M9cvLO7BFTcvqTG06BjrRCKB8UQC8
-fJRoC+JkNVNJ8Z4VQ7x6TRNTTZaHfzAVn5rqlmxZ67BWNeq9bsLgn4CBirXiR7BB
-5rgc0/jUvFV6k1G9RTUfqecvjpkX2siOzL8OQAK5VK3B/FzqhcWjUhJGlzoNVAp2
-3DA0h+mVkA6xfsjJFb6TC+Hbf0XyScSVUdh3mgwbNxDcqeHUlIk4hvoJMD4I83Uy
-AMxzCXMeC9cRczdIlwqcB+5iyE02J/GtMxzeZTE2Tj2IYEMI0mo4jktWDMqY+TPD
-2CJ8UyQP2jF7xZjDv8yNhZFPUiKOU4g+WQrnLqZ3cBCjE4qEJk3iTGRlaMrbnA3g
-rIK+CDTeJ2FGmhj0f8kqRW+wAiaUD3b0AWHEhh5WlaxbK7116JGIQ67gWQ0mOnQX
-8Gu6PlzVjgdf0ZYlc0DtuzeBdXI5qDMxmDMme2kASAhTVvcJOhKXUxPQ0ii7aEdo
-KTUQtgRDegW31wH6gOnsZBOUZ2xIYgC8Co4Vrss84U2axHBHT8JXcDd1oHSIyKgt
-tQBuSQ8iHDLHiyIInbLgc1yGmWShwOMupIJKLYw3qpsSwbdxF+M=
-=bwIq
------END PGP SIGNATURE-----
-
---=-796u9qmPm7ptgG3w0PuR--
-
+Thanks.
