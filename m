@@ -2,247 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7DEC162FE3
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:27:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E03E162FF2
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 20:28:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbgBRT1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 14:27:06 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39602 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgBRT1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 14:27:05 -0500
-Received: by mail-ed1-f66.google.com with SMTP id m13so26127427edb.6
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 11:27:04 -0800 (PST)
+        id S1726510AbgBRT2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 14:28:19 -0500
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:40792 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726467AbgBRT2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 14:28:17 -0500
+Received: by mail-pf1-f176.google.com with SMTP id b185so814444pfb.7
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 11:28:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1hKJn5ovAKsR1j0naIrWLGoGjErC+k7UByeRa+X0K+0=;
-        b=bCp9XpQmTvvT6t5x3hjjC4S7enZ4QidSAztQ5OHWWmciwMEoSUH0As4INXaKRSMw1G
-         Ua+/K0ipw8ZzRxiOXRbnGptzyTNR+z87dmOtx8AwlI6SATCuJ/laO6kJ7MhGFX9vAg8N
-         pWsa3BycAPjdItwRDYbOp5/GNaGX7ScUezpHo4WylsX9Wpb2UumjN/9lEL84W/XvKrX3
-         ZygW1DKFZxMfP9GmaaRi3xt/nte02FJjgjWUeH5VuTO9CD4GqEyq8oYPNybjE5uwGDOJ
-         yLJ5Gc+3VxAiSD4eVf2ZLPSkX7vvDllXLduufSZNDkOUA/zUkMe1QAsIdDudYFin9VEm
-         dq0g==
+        d=google.com; s=20161025;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zhYJCkJXlPxXtgjObEVr42uyGuLn0+lKW2wKfP/UpCE=;
+        b=DvmqpHrnM5O330XZo1r4oQuSvPgecXnkvWf1HePsqxhXDtfRmjIjyRMJC5NXDcCYn+
+         OwvGhCTbVAvqmsw7DHX6CX7ayI8MRX80ZKZFm3l7gtOi8e7I+QXoV2LNG3hx3pvtvgiV
+         LSIt91cMdVZ0sjN19WquhWlHxwMKtoi8sHzngiTeNW13UUBuZJ+eKQMx92fEmu2wm/iA
+         Zt5J/EId0BdKG8K0owTwcXRs3abR2p6cDm6V/Hc1tImyyILCj1yMKM1SnD10oedygFij
+         qIgZMDYYyaPAr0O+2Mq3cmqiX39FLOwWYivab+YigA6JwRjURv6j+9wGEC6ZR3iOJu+H
+         mZDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=1hKJn5ovAKsR1j0naIrWLGoGjErC+k7UByeRa+X0K+0=;
-        b=lY3tXSjKWC5B/DLanqvwj0giX9TNUzXJYo2bmGIU9jZbcmwIcH/b5XZKsMBdvOxmKK
-         RiS5OP23LHY4Mx7tXgduOkjgfP0FOjie0Spu68N7krw0ZdM9IrsOYtrFxS7FNNd9IpoK
-         qKrVh2yp5lY0BqmB8D6LcKSTra8h2r0TqOc2OZLBLdavqox1xJQc0JgCxi3/ZaRCmHqo
-         /+fx9QqRtNPztEzbalvrwU2Frtx0wnqF4IB6sK6EPu9xowxg1D6LAfcpHNauH0w25Iz+
-         mtONr+DtggVoY82bFI86wEzZeuGDE3vJ94OK3EuNYeQLdQBYmJt+Euiyq8cmN1fKg465
-         CKEQ==
-X-Gm-Message-State: APjAAAVcUAaDVFHHIB+OSWgnKNbFP0U/EP10Ot4fDBN0Eka54w6tmjL2
-        SuBIGFvZVRDWPvgdODRXym6DcH2L
-X-Google-Smtp-Source: APXvYqyZE7YXtXYFCEgXf6kV1Ldtp0lz34Oz7XvJ8nEks+TA6SNsL36a8xjGUcAq7Qr1dd94UU2Kfw==
-X-Received: by 2002:a50:9ee8:: with SMTP id a95mr19374541edf.86.1582054023219;
-        Tue, 18 Feb 2020 11:27:03 -0800 (PST)
-Received: from [10.67.49.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id e16sm136312ejt.10.2020.02.18.11.26.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 11:27:02 -0800 (PST)
-Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <00bd9511-65ae-7adc-782e-c40b60d81658@gmail.com>
-Date:   Tue, 18 Feb 2020 11:26:52 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200218114515.GL18808@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=zhYJCkJXlPxXtgjObEVr42uyGuLn0+lKW2wKfP/UpCE=;
+        b=g9f0TfrKP2ACmJ1N0i1xyXjMlKUD2McXyUY81mf0cpxy0ofKomGaez5kcRJlCK2R9O
+         JfIS2PjVj2Y0CXFaAktVbjM3ubN9kE+PAFQIGczAH/6oAtOVAjQBZapQoMHxEpvon80u
+         XsZT6z5hq2SQqjz5gM996FIrjFuJ5MYTEJan2w3CCQFvsdCTUgXJfa7+jMfGk+oADaf+
+         sNmjVJKjQy8FInAWf2lnfVsI0TQTFZDoA/J4gQAYWqeCTAm3q7XvPhjOwpbGymiyULim
+         hTIbBebJnZ7LWeXqKAYpL1YfAog0gFHHRlcbNjshMXmHHlNc+4mwJXiShQlAeOPYqyEX
+         LHtg==
+X-Gm-Message-State: APjAAAUlTul3haPMZeXwW4RZ9nRp7BtdMUMBlXsiYnsiVyzcFvLx+Nbg
+        EN5s+SGB+mwvXGistntdfSOgRA==
+X-Google-Smtp-Source: APXvYqxvBhs/kNz46f0NM7yQK9O+VsDMro0hxwtL6uWXHEPpf1QvsgH3bBRF8NOa1+svFTWNKSApFA==
+X-Received: by 2002:a62:cfc1:: with SMTP id b184mr22611022pfg.55.1582054093924;
+        Tue, 18 Feb 2020 11:28:13 -0800 (PST)
+Received: from localhost ([2620:0:1000:2514:23a5:d584:6a92:3e3c])
+        by smtp.gmail.com with ESMTPSA id q12sm4931028pfh.158.2020.02.18.11.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 11:28:13 -0800 (PST)
+Date:   Tue, 18 Feb 2020 11:28:13 -0800 (PST)
+X-Google-Original-Date: Tue, 18 Feb 2020 11:28:02 PST (-0800)
+Subject:     Re: arm64: bpf: Elide some moves to a0 after calls
+In-Reply-To: <5e39d509c9edc_63882ad0d49345c08@john-XPS-13-9370.notmuch>
+CC:     Bjorn Topel <bjorn.topel@gmail.com>, daniel@iogearbox.net,
+        ast@kernel.org, zlim.lnx@gmail.com, catalin.marinas@arm.com,
+        will@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        andriin@fb.com, shuah@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        clang-built-linux@googlegroups.com, kernel-team@android.com
+From:   Palmer Dabbelt <palmerdabbelt@google.com>
+To:     john.fastabend@gmail.com
+Message-ID: <mhng-eae623ac-3032-4327-9b23-af9838e3e979@palmerdabbelt-glaptop1>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 3:45 AM, Russell King - ARM Linux admin wrote:
-> Hi,
-> 
-> This is a repost of the previously posted RFC back in December, which
-> did not get fully reviewed.  I've dropped the RFC tag this time as no
-> one really found anything too problematical in the RFC posting.
-> 
-> I've been trying to configure DSA for VLANs and not having much success.
-> The setup is quite simple:
-> 
-> - The main network is untagged
-> - The wifi network is a vlan tagged with id $VN running over the main
->   network.
-> 
-> I have an Armada 388 Clearfog with a PCIe wifi card which I'm trying to
-> setup to provide wifi access to the vlan $VN network, while the switch
-> is also part of the main network.
-> 
-> However, I'm encountering problems:
-> 
-> 1) vlan support in DSA has a different behaviour from the Linux
->    software bridge implementation.
-> 
->     # bridge vlan
->     port    vlan ids
->     lan1     1 PVID Egress Untagged
->     ...
-> 
->    shows the default setup - the bridge ports are all configured for
->    vlan 1, untagged egress, and vlan 1 as the port vid.  Issuing:
-> 
->     # ip li set dev br0 type bridge vlan_filtering 1
-> 
->    with no other vlan configuration commands on a Linux software bridge
->    continues to allow untagged traffic to flow across the bridge.
->    
->    This difference in behaviour is because the MV88E6xxx VTU is
->    completely empty - because net/dsa ignores all vlan settings for
->    a port if br_vlan_enabled(dp->bridge_dev) is false - this reflects
->    the vlan filtering state of the bridge, not whether the bridge is
->    vlan aware.
->    
->    What this means is that attempting to configure the bridge port
->    vlans before enabling vlan filtering works for Linux software
->    bridges, but fails for DSA bridges.
+On Tue, 04 Feb 2020 12:33:13 PST (-0800), john.fastabend@gmail.com wrote:
+> Björn Töpel wrote:
+>> On Tue, 28 Jan 2020 at 03:14, Palmer Dabbelt <palmerdabbelt@google.com> wrote:
+>> >
+>> > There's four patches here, but only one of them actually does anything.  The
+>> > first patch fixes a BPF selftests build failure on my machine and has already
+>> > been sent to the list separately.  The next three are just staged such that
+>> > there are some patches that avoid changing any functionality pulled out from
+>> > the whole point of those refactorings, with two cleanups and then the idea.
+>> >
+>> > Maybe this is an odd thing to say in a cover letter, but I'm not actually sure
+>> > this patch set is a good idea.  The issue of extra moves after calls came up as
+>> > I was reviewing some unrelated performance optimizations to the RISC-V BPF JIT.
+>> > I figured I'd take a whack at performing the optimization in the context of the
+>> > arm64 port just to get a breath of fresh air, and I'm not convinced I like the
+>> > results.
+>> >
+>> > That said, I think I would accept something like this for the RISC-V port
+>> > because we're already doing a multi-pass optimization for shrinking function
+>> > addresses so it's not as much extra complexity over there.  If we do that we
+>> > should probably start puling some of this code into the shared BPF compiler,
+>> > but we're also opening the doors to more complicated BPF JIT optimizations.
+>> > Given that the BPF JIT appears to have been designed explicitly to be
+>> > simple/fast as opposed to perform complex optimization, I'm not sure this is a
+>> > sane way to move forward.
+>> >
+>> 
+>> Obviously I can only speak for myself and the RISC-V JIT, but given
+>> that we already have opened the door for more advanced translations
+>> (branch relaxation e.g.), I think that this makes sense. At the same
+>> time we don't want to go all JVM on the JITs. :-P
+>
+> I'm not against it although if we start to go this route I would want some
+> way to quantify how we are increasing/descreasing load times.
+>
+>> 
+>> > I figured I'd send the patch set out as more of a question than anything else.
+>> > Specifically:
+>> >
+>> > * How should I go about measuring the performance of these sort of
+>> >   optimizations?  I'd like to balance the time it takes to run the JIT with the
+>> >   time spent executing the program, but I don't have any feel for what real BPF
+>> >   programs look like or have any benchmark suite to run.  Is there something
+>> >   out there this should be benchmarked against?  (I'd also like to know that to
+>> >   run those benchmarks on the RISC-V port.)
+>> 
+>> If you run the selftests 'test_progs' with -v it'll measure/print the
+>> execution time of the programs. I'd say *most* BPF program invokes a
+>> helper (via call). It would be interesting to see, for say the
+>> selftests, how often the optimization can be performed.
+>> 
+>> > * Is this the sort of thing that makes sense in a BPF JIT?  I guess I've just
+>> >   realized I turned "review this patch" into a way bigger rabbit hole than I
+>> >   really want to go down...
+>> >
+>> 
+>> I'd say 'yes'. My hunch, and the workloads I've seen, BPF programs are
+>> usually loaded, and then resident for a long time. So, the JIT time is
+>> not super critical. The FB/Cilium folks can definitely provide a
+>> better sample point, than my hunch. ;-)
+>
+> In our case the JIT time can be relevant because we are effectively holding
+> up a kubernetes pod load waiting for programs to load. However, we can
+> probably work-around it by doing more aggressive dynamic linking now that
+> this is starting to land.
+>
+> It would be interesting to have a test to measure load time in selftests
+> or selftests/benchmark/ perhaps. We have some of these out of tree we
+> could push in I think if there is interest.
 
-FWIW, because VLAN filtering is global with b53 switches, we do actually
-program every port with a valid VLAN entry into VID 0 which ensures that
-standalone (non-bridged) ports, with, or without VLAN interfaces on top
-(e.g.: sw0p0.N) continue to work as soon as another port gets enslaved
-into a bridge that does request vlan_filtering.
+I'd be interested in some sort of benchmark suite for BPF.  Something like
+selftests/bpf/benchmarks/ seems like a reasonable place to me.
 
-> 
-> 2) Assuming the above is sorted, we move on to the next issue, which
->    is altogether more weird.  Let's take a setup where we have a
->    DSA bridge with lan1..6 in a bridge device, br0, with vlan
->    filtering enabled.  lan1 is the upstream port, lan2 is a downstream
->    port that also wants to see traffic on vlan id $VN.
-> 
->    Both lan1 and lan2 are configured for that:
-> 
->      # bridge vlan add vid $VN dev lan1
->      # bridge vlan add vid $VN dev lan2
->      # ip li set br0 type bridge vlan_filtering 1
-> 
->    Untagged traffic can now pass between all the six lan ports, and
->    vlan $VN between lan1 and lan2 only.  The MV88E6xxx 8021q_mode
->    debugfs file shows all lan ports are in mode "secure" - this is
->    important!  /sys/class/net/br0/bridge/vlan_filtering contains 1.
-> 
->    tcpdumping from another machine on lan4 shows that no $VN traffic
->    reaches it.  Everything seems to be working correctly...
->    
->    In order to further bridge vlan $VN traffic to hostapd's wifi
->    interface, things get a little more complex - we can't add hostapd's
->    wifi interface to br0 directly, because hostapd will bring up the
->    wifi interface and leak the main, untagged traffic onto the wifi.
->    (hostapd does have vlan support, but only as a dynamic per-client
->    thing, and there's no hooks I can see to allow script-based config
->    of the network setup before hostapd up's the wifi interface.)
-> 
->    So, what I tried was:
-> 
->      # ip li add link br0 name br0.$VN type vlan id $VN
->      # bridge vlan add vid $VN dev br0 self
->      # ip li set dev br0.$VN up
-> 
->    So far so good, we get a vlan interface on top of the bridge, and
->    tcpdumping it shows we get traffic.  The 8021q_mode file has not
->    changed state.  Everything still seems to be correct.
-> 
->      # bridge addbr br1
-> 
->    Still nothing has changed.
-> 
->      # bridge addif br1 br0.$VN
-> 
->    And now the 8021q_mode debugfs file shows that all ports are now in
->    "disabled" mode, but /sys/class/net/br0/bridge/vlan_filtering still
->    contains '1'.  In other words, br0 still thinks vlan filtering is
->    enabled, but the hardware has had vlan filtering disabled.
-> 
->    Adding some stack traces to an appropriate point indicates that this
->    is because __switchdev_handle_port_attr_set() recurses down through
->    the tree of interfaces, skipping over the vlan interface, applying
->    br1's configuration to br0's ports.
-> 
->    This surely can not be right - surely
->    __switchdev_handle_port_attr_set() and similar should stop recursing
->    down through another master bridge device?  There are probably other
->    network device classes that switchdev shouldn't recurse down too.
-> 
->    I've considered whether switchdev is the right level to do it, and
->    I think it is - as we want the check/set callbacks to be called for
->    the top level device even if it is a master bridge device, but we
->    don't want to recurse through a lower master bridge device.
-> 
-
-
--- 
-Florian
+>
+>> 
+>> 
+>> Björn
