@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 711101632C0
+	by mail.lfdr.de (Postfix) with ESMTP id DAF341632C1
 	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 21:16:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726681AbgBRUQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 15:16:18 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42445 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726713AbgBRUQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:16:15 -0500
-Received: by mail-wr1-f68.google.com with SMTP id k11so25506900wrd.9;
-        Tue, 18 Feb 2020 12:16:14 -0800 (PST)
+        id S1726852AbgBRUQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 15:16:19 -0500
+Received: from mail-wm1-f41.google.com ([209.85.128.41]:34486 "EHLO
+        mail-wm1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726723AbgBRUQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 15:16:16 -0500
+Received: by mail-wm1-f41.google.com with SMTP id s144so2976779wme.1;
+        Tue, 18 Feb 2020 12:16:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uCOvUqXndu0FXRimsvIZXqxdLu4CTTZ92HjAKcokS0g=;
-        b=UK8w573eUVjtwrWFsyz+LRkruPH1ZBEFG92oeS90NlT2H9eI86fHr+n42dWQwzuwkq
-         K1L/tvXNu4okKMwz1PdlBzJIRoIfHCBXmYBAVSKviCEpdTFZHhht9QqeWBYfKNkM9Gwv
-         FaMPp6JgMBIZviyMpe59eFnStTn6AgVzxpiAKWnHbPRu6tDgDla/c3HDymmu59AVH5rx
-         /K07yVjVpP244IAWXLmhOzbX9xuJs1CPwl9cy5NJ+Iu/t1itOj4XtSNvH5SIWaHDg5d2
-         Ja/YqDtFLp60T4EszVW16eRm9lluQ9WtUNS2hgI6w/L8rOCGjh1Svg1Rb6EwM8Zcj1Yg
-         /Drw==
+        bh=VoDwB16SuE+XESOylFdFbMZhtyxQWDEo3Kn2cQMk/Ig=;
+        b=XoWNbnGUmMt7KBVCcRP8yGX41WtBvXyiboHO/jy+N3jroImZcunKYAoAuJSra87Q3P
+         j2VdKbgAwAqnw6B89KGRGq8M0vgWAsYh1liL1GbMzhZ0f70ywzJutu8dPXtH+kgQJkV4
+         FFJxdCmE56e4tCORta8UcnK//R+EzxED0gPkTigLOmzvfuSm3k34HBFq6DtTWJ6ztKYn
+         Tko81Rj4CK8oG4qiWLWw5I+A2R08QdV/cvS0cL+Z1ewxeiveY/Ad+mYi5V81DM6HFGBB
+         r6iQ3tcDSltQOYu4GZqMN73d6fvb/G3oBDgwnkPoE7ze8eNubuO80ZG05Ajx14vv76p0
+         LnnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uCOvUqXndu0FXRimsvIZXqxdLu4CTTZ92HjAKcokS0g=;
-        b=Kk6f7rX/P00/eLNyKEuAMtCdi373H/GFX1ikmhH13nb59x6+FtIT2ia0Eh1jrcuGen
-         qM4tIo04JIzilLYf0VgANEgimB7QCW3n9fwf5E9dR0zBZ6plnzARb52CfyufgBk41Lmi
-         xe/QHeizBnWySAl3AWUpvJuyVIHpwG+4hCmRO29SKexfeITKKu1qdP+XgUCChil+apYf
-         mnAmMfpAbKh8P70qEWXSSV88+Mi7Jaaw5/XmE9YzdqL7LsBAIqYiFfDMJ5+X2YdGozqQ
-         IME5gZXyXZo86Ac3XTb7NPW/4vaKcTX17xRlhVPtG+JMpdhD5tqKkFopiC6SMRayZ8k6
-         8xsA==
-X-Gm-Message-State: APjAAAU2gwG34v8+VcAuS7x2o26p7O22DsKgpRnbzoXq8S7Vui2G9nti
-        Oz+eko8SOSpFvAKALIMsiUFbYxv4
-X-Google-Smtp-Source: APXvYqygRztvLJ4KgoREMpd3P1KMgN7wV0tLI3gbOARfAosvcRH5DEZHla6u1s7G53VyLEaAsnL++A==
-X-Received: by 2002:a5d:62d1:: with SMTP id o17mr31684406wrv.9.1582056973305;
-        Tue, 18 Feb 2020 12:16:13 -0800 (PST)
+        bh=VoDwB16SuE+XESOylFdFbMZhtyxQWDEo3Kn2cQMk/Ig=;
+        b=SqBmGcRYd5SF43uu9uCD/26iRZtmWMQjgYmpCt13+oJSiKwn3AtmFAjbAeKG5B8HK4
+         +HGWfcZQvhgZnp9j6wsWdYc/8GcZwoLZq7QPOf67So6j1AThcd1jPT8IlEZYg/umujcW
+         w0LKn4xObWi0hLczbxp3Jf3m3867tIacrvklUreWmVf5xp4oWdM7qwqltj/ZMcHpkc9J
+         agGocBzqOyTqIl3tuDovF3N0wweu9Txl8vgrrx+cz0qaqX0cNkCB143We1GZVJ7+7XkF
+         ktk9Yw/mz28NJD6LcYmEO8LQLe4j8I65jgngkf9+jEMn4fTQYC2PIMC/FvxeQ8v4NrWG
+         UceA==
+X-Gm-Message-State: APjAAAVQqAmd+85j7nDjNvwK9ANq6NgXybmiQPfCMAX3xHp7EqkttcGD
+        yUhOZhNTrOU15X+KGX+TYOvkQypc
+X-Google-Smtp-Source: APXvYqz0iJyVWhzS3TWEjb0aiPmNZmsAU5SGBiGEo9x49CTL1lE3vcUUYblewvTLfkUE/5/XnzabnA==
+X-Received: by 2002:a05:600c:114d:: with SMTP id z13mr460488wmz.105.1582056974499;
+        Tue, 18 Feb 2020 12:16:14 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:5cb0:582f:968:ec00? (p200300EA8F2960005CB0582F0968EC00.dip0.t-ipconnect.de. [2003:ea:8f29:6000:5cb0:582f:968:ec00])
-        by smtp.googlemail.com with ESMTPSA id o77sm4907924wme.34.2020.02.18.12.16.12
+        by smtp.googlemail.com with ESMTPSA id f1sm7668322wro.85.2020.02.18.12.16.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 12:16:12 -0800 (PST)
-Subject: [PATCH net-next v2 05/13] enic: use new helper tcp_v6_gso_csum_prep
+        Tue, 18 Feb 2020 12:16:14 -0800 (PST)
+Subject: [PATCH net-next v2 06/13] e1000(e): use new helper
+ tcp_v6_gso_csum_prep
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
-        Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Parvi Kaustubhi <pkaustub@cisco.com>
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
 References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
-Message-ID: <f5b68c9f-ecdc-004d-b493-e0a7009ab5dd@gmail.com>
-Date:   Tue, 18 Feb 2020 21:02:26 +0100
+Message-ID: <47621909-1b75-e8d1-cf32-857c1601e0af@gmail.com>
+Date:   Tue, 18 Feb 2020 21:05:02 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -71,24 +72,45 @@ X-Mailing-List: netdev@vger.kernel.org
 Use new helper tcp_v6_gso_csum_prep in additional network drivers.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 ---
- drivers/net/ethernet/cisco/enic/enic_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 6 +-----
+ drivers/net/ethernet/intel/e1000e/netdev.c    | 5 +----
+ 2 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
-index ddf60dc9a..3fc858b2c 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -696,8 +696,7 @@ static void enic_preload_tcp_csum(struct sk_buff *skb)
- 		tcp_hdr(skb)->check = ~csum_tcpudp_magic(ip_hdr(skb)->saddr,
- 			ip_hdr(skb)->daddr, 0, IPPROTO_TCP, 0);
- 	} else if (skb->protocol == cpu_to_be16(ETH_P_IPV6)) {
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 2bced34c1..f7103356e 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -2715,11 +2715,7 @@ static int e1000_tso(struct e1000_adapter *adapter,
+ 			cmd_length = E1000_TXD_CMD_IP;
+ 			ipcse = skb_transport_offset(skb) - 1;
+ 		} else if (skb_is_gso_v6(skb)) {
+-			ipv6_hdr(skb)->payload_len = 0;
+-			tcp_hdr(skb)->check =
+-				~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+-						 &ipv6_hdr(skb)->daddr,
+-						 0, IPPROTO_TCP, 0);
++			tcp_v6_gso_csum_prep(skb);
+ 			ipcse = 0;
+ 		}
+ 		ipcss = skb_network_offset(skb);
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 0f02c7a5e..74379d2e9 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -5461,10 +5461,7 @@ static int e1000_tso(struct e1000_ring *tx_ring, struct sk_buff *skb,
+ 		cmd_length = E1000_TXD_CMD_IP;
+ 		ipcse = skb_transport_offset(skb) - 1;
+ 	} else if (skb_is_gso_v6(skb)) {
+-		ipv6_hdr(skb)->payload_len = 0;
 -		tcp_hdr(skb)->check = ~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
--			&ipv6_hdr(skb)->daddr, 0, IPPROTO_TCP, 0);
+-						       &ipv6_hdr(skb)->daddr,
+-						       0, IPPROTO_TCP, 0);
 +		tcp_v6_gso_csum_prep(skb);
+ 		ipcse = 0;
  	}
- }
- 
+ 	ipcss = skb_network_offset(skb);
 -- 
 2.25.1
 
