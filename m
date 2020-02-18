@@ -2,118 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 428B8162796
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B5E7162798
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 15:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgBROBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 09:01:17 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:51614 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726638AbgBROBR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 09:01:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=DSNbhoBkhWknUTfDd9IqyGPBpflOa3A+hx3OdsN/Pwg=; b=x3uk7rhZl6lRJuUgBGOqvlMgTu
-        8HJPKOxVVeCxEvuNfNvKiSzrYIl4Lz4KvAA/O0Xgakz/L/k7eO1vm0JRN5m8V2Anb+Yre89uor0rn
-        djmwjgERG4rBNP+9hvo12sKl0cSACamVXAWwanDMLgYh2uxolqpBP9HlxldTZhnaqk4g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j43R1-0002r6-9B; Tue, 18 Feb 2020 15:01:11 +0100
-Date:   Tue, 18 Feb 2020 15:01:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726700AbgBROCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 09:02:21 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:46245 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbgBROCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 09:02:21 -0500
+Received: by mail-ed1-f65.google.com with SMTP id p14so16770212edy.13
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 06:02:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LWtzCA/ZYfMPHMklTDUQXbccXiZzLT49q/V2CNuTAPA=;
+        b=H2bByViDCphnZdYwUcovsy7f4F5gfCdDYAbkLWeutQ0DYOrb+RFH0ZCdNrbVYYawVV
+         t23rpguMWgb+sJa3GxrrW/blAMYx6QMaJv7pQIvHCzbm0KEmS3561UYSbmf2m3wfTmvB
+         EiVTW9Wxba3BnBfKuw6KBNt7W+ak+Ip3GUOi2BUZVRjrqyLwhz/ylKqUwxiscL4YpUH+
+         DloGwaVXgjMXgp56qq9RPmN9ksddayxWTxQHfaS55lbpYYewjv/MmtbSW/hwjOOR2YWL
+         TeyobCLpIKFprtow4D0RT11M9wYlVK28dKzzUOJStVZQXZhIsVlNKyG0n7ZzwfzFw+V6
+         CWIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LWtzCA/ZYfMPHMklTDUQXbccXiZzLT49q/V2CNuTAPA=;
+        b=rTPhjeMOtj/gS/ab7jNlEtBdP2Dgg1hoxSjjK0NS6Kebd6vp9orBRR1GC3fW2mQW9J
+         CuLLodhlUmY+DSiGXbxnZa83vUGsrc5rYMSNoUmEDuDy87b0OkZ2tZc4aGCtEtGQ7UQt
+         U62TuKg/hhp5ZIJcp9K0qEjISmQIYVNkKYicuf8mGi78jFjPQYWmnbXQXRhlkGLDm8uZ
+         ZvN14itRVy8op/dofWy0l7tlo1QpMl0UPvi9JKapcemFNPLBVPx0c5R831hsb4DwPWty
+         hpBOaVjLvQ5a8KTeQe2IcoTcaobiqTT8m7AKuoeFg0o6zlmqjkaLMakdcaROOLkbAC18
+         qjzg==
+X-Gm-Message-State: APjAAAUBvb6TEWtBssbtedcyTDXbII6cptZGptKKDtqAUtQODQvf20P3
+        rjURW+19I3gFhvN2E2A4gEj9lmBJp264ufJKHjPfOLPH
+X-Google-Smtp-Source: APXvYqy36oV/AFlXGULRoO07lTQemKa8yhHb1gdDKr8I3suzJmEMpXjA6ZG9iP1kqIHmzS5WeuEIixksxrcVhNGAUSI=
+X-Received: by 2002:a05:6402:3132:: with SMTP id dd18mr19383816edb.118.1582034538970;
+ Tue, 18 Feb 2020 06:02:18 -0800 (PST)
+MIME-Version: 1.0
+References: <20200217150058.5586-1-olteanv@gmail.com> <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
+ <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com> <20200218134850.yor4rs72b6cjfddz@lx-anielsen.microsemi.net>
+In-Reply-To: <20200218134850.yor4rs72b6cjfddz@lx-anielsen.microsemi.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 18 Feb 2020 16:02:08 +0200
+Message-ID: <CA+h21hpj+ARUZN5kkiponTCN_W1xaNDTpNB4u4xdiAGP5QqmfA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
+ to CPU in standalone mode
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Joergen Andreasen <joergen.andreasen@microchip.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         netdev <netdev@vger.kernel.org>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-Message-ID: <20200218140111.GB10541@lunn.ch>
-References: <20200217150058.5586-1-olteanv@gmail.com>
- <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
- <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 02:29:15PM +0200, Vladimir Oltean wrote:
-> Hi Allan,
-> 
-> On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
-> <allan.nielsen@microchip.com> wrote:
+On Tue, 18 Feb 2020 at 15:48, Allan W. Nielsen
+<allan.nielsen@microchip.com> wrote:
+>
+> On 18.02.2020 14:29, Vladimir Oltean wrote:
+> >> >diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> >> >index 86d543ab1ab9..94d39ccea017 100644
+> >> >--- a/drivers/net/ethernet/mscc/ocelot.c
+> >> >+++ b/drivers/net/ethernet/mscc/ocelot.c
+> >> >@@ -2297,6 +2297,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
+> >> >                         enum ocelot_tag_prefix injection,
+> >> >                         enum ocelot_tag_prefix extraction)
+> >> > {
+> >> >+       int port;
+> >> >+
+> >> >+       for (port = 0; port < ocelot->num_phys_ports; port++) {
+> >> >+               /* Disable old CPU port and enable new one */
+> >> >+               ocelot_rmw_rix(ocelot, 0, BIT(ocelot->cpu),
+> >> >+                              ANA_PGID_PGID, PGID_SRC + port);
+> >> I do not understand why you have an "old" CPU. The ocelot->cpu field is
+> >> not initialized at this point (at least not in case of Ocelot).
+> >>
+> >> Are you trying to move the NPI port?
+> >>
 > >
-> > On 17.02.2020 17:00, Vladimir Oltean wrote:
-> > >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > >
-> > >From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > >
-> > >The Ocelot switches have what is, in my opinion, a design flaw: their
-> > >DSA header is in front of the Ethernet header, which means that they
-> > >subvert the DSA master's RX filter, which for all practical purposes,
-> > >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
-> > >needs to be used for extraction, which makes the switch add a fake DMAC
-> > >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
-> > >
-> > >The issue with this design, of course, is that the CPU will be spammed
-> > >with frames that it doesn't want to respond to, and there isn't any
-> > >hardware offload in place by default to drop them.
-> > In the case of Ocelot, the NPI port is expected to be connected back to
-> > back to the CPU, meaning that it should not matter what DMAC is set.
+> >Yes, that's what this function does. It sets the NPI port. It should
+> >be able to work even if called multiple times (even though the felix
+> >and ocelot drivers both call it exactly one time).
+> >But I can (and will) remove/simplify the logic for the "old" CPU port.
+> >I had the patch formatted already, and I didn't want to change it
+> >because I was lazy to re-test after the changes.
 > >
-> 
-> You are omitting the fact that the host Ethernet port has an RX filter
-> as well. By default it should drop frames that aren't broadcast or
-> aren't sent to a destination MAC equal to its configured MAC address.
-> Most DSA switches add their tag _after_ the Ethernet header. This
-> makes the DMAC and SMAC seen by the front-panel port of the switch be
-> the same as the DMAC and SMAC seen by the host port. Combined with the
-> fact that DSA sets up switch port MAC addresses to be inherited from
-> the host port, RX filtering 'just works'.
+> >> >+               if (port == cpu)
+> >> >+                       continue;
+> >> >+               ocelot_rmw_rix(ocelot, BIT(cpu), BIT(cpu),
+> >> >+                              ANA_PGID_PGID, PGID_SRC + port);
+> >> So you want all ports to be able to forward traffic to your CPU port,
+> >> regardless of if these ports are member of a bridge...
+> >>
+> >
+> >Yes.
+> >
+> >> I have read through this several times, and I'm still not convinced I
+> >> understood it.
+> >>
+> >> Can you please provide a specific example of how things are being
+> >> forwarded (wrongly), and describe how you would like them to be
+> >> forwarded.
+> >
+> >Be there 4 net devices: swp0, swp1, swp2, swp3.
+> >At probe time, the following doesn't work on the Felix DSA driver:
+> >ip addr add 192.168.1.1/24 dev swp0
+> >ping 192.168.1.2
+> This does work with Ocelot, without your patch. I would like to
+> understand why this does not work in your case.
+>
+> Is it in RX or TX you have the problem.
+>
 
-It is a little bit more complex than that, but basically yes. If the
-slave interface is in promisc mode, the master interface is also made
-promisc. So as soon as you add a slave to a bridge, the master it set
-promisc. Also, if the slave has a different MAC address to the master,
-the MAC address is added to the masters RX filter.
+The problem is on RX.
 
-If the DSA header is before the DMAC, you need promisc mode all the
-time. But i don't expect the CPU port to be spammed. The switch should
-only be forwarding frames to the CPU which the CPU is actually
-interested in.
+> Is it with the broadcast ARP, or is it the following unicast packet?
+>
 
-> Be there 4 net devices: swp0, swp1, swp2, swp3.
-> At probe time, the following doesn't work on the Felix DSA driver:
-> ip addr add 192.168.1.1/24 dev swp0
-> ping 192.168.1.2
+For the unicast packet.
 
-That is expected to work.
+> >But if I do this:
+> >ip link add dev br0 type bridge
+> >ip link set dev swp0 master br0
+> >ip link set dev swp0 nomaster
+> >ping 192.168.1.2
+> >Then it works, because the code path from ocelot_bridge_stp_state_set
+> >that puts the CPU port in the forwarding mask of the other ports gets
+> >executed on the "bridge leave" action.
+> >The whole point is to have the same behavior at probe time as after
+> >removing the ports from the bridge.
+> This does sound like a bug, but I still do not agree in the solution.
+>
+> >The code with ocelot_mact_learn towards PGID_CPU for the MAC addresses
+> >of the switch port netdevices is all bypassed in Felix DSA. Even if it
+> >weren't, it isn't the best solution.
+> >On your switch, this test would probably work exactly because of that
+> >ocelot_mact_learn.
+> So I guess it is the reception of the unicast packet which is causing
+> problems.
+>
+> >But try to receive packets sent at any other unicast DMAC immediately
+> >after probe time, and you should see them in tcpdump but won't.
+> That is true - this is because we have no way of implementing promisc
+> mode, which still allow us to HW offload of the switching. We discussed
+> this before.
+>
+> Long story short, it sounds like you have an issue because the
+> Felix/DSA driver behave differently than the Ocelot. Could you try to do
+> your fix such that it only impact Felix and does not change the Ocelot
+> behavioral.
 
-> But if I do this:
-> ip link add dev br0 type bridge
-> ip link set dev swp0 master br0
-> ip link set dev swp0 nomaster
-> ping 192.168.1.2
-> Then it works, because the code path from ocelot_bridge_stp_state_set
-> that puts the CPU port in the forwarding mask of the other ports gets
-> executed on the "bridge leave" action.
+It looks like you disagree with having BIT(ocelot->cpu) in PGID_SRC +
+p (the forwarding matrix) and just want to rely on whitelisting
+towards PGID_CPU*?
+But you already have that logic present in your driver, it's just not
+called from a useful place for Felix.
+So it logically follows that we should remove these lines from
+ocelot_bridge_stp_state_set, no?
 
-It probably also works because when the port is added to the bridge,
-the bridge puts the port into promisc mode. That in term causes the
-master to be put into promisc mode.
+            } else {
+                    /* Only the CPU port, this is compatible with link
+                     * aggregation.
+                     */
+                    ocelot_write_rix(ocelot,
+                                     BIT(ocelot->cpu),
+                                     ANA_PGID_PGID, PGID_SRC + p);
 
-       Andrew
+*I admit that I have no idea why it works for you, and why the frames
+learned towards PGID_CPU are forwarded to the CPU _despite_
+BIT(ocelot->cpu) not being present in PGID_SRC + p.
+
+>
+> /Allan
+>
