@@ -2,82 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E47D8162973
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A90162982
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 16:35:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbgBRPb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 10:31:58 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:38781 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726415AbgBRPb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:31:58 -0500
-Received: by mail-qv1-f66.google.com with SMTP id g6so9324030qvy.5
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 07:31:57 -0800 (PST)
+        id S1726557AbgBRPfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 10:35:25 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35479 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726360AbgBRPfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 10:35:25 -0500
+Received: by mail-qk1-f195.google.com with SMTP id v2so19907544qkj.2
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 07:35:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kgJ5e0m8kd/eylgSGLtBqafsT7upwZtQRw5yQE+pirM=;
-        b=f51uQV6i7RVkrbx35fo2wuAJb0tIk2Bd5VBqaE+QTvKvZM0H17D4jnCkx+P5LnsVS2
-         0sLbnJHbsywlbXjspB/46wsxzvgT4fOl6Iny4AgvbwB77w+Qa/bSCBKiYtbIWF+XjzsH
-         IJRwoqvZLP3lJ22QL/qCc1DCXiBpRKbBN5YSv3iFowWnKQ1VndIUytutUNa9CINZXtCY
-         fagp3j8ephAPkFdN1O5oictuRN94608XOQGQ7Fii43pox2FDWjcLvyeIJICDmnaRbVUv
-         VZjYooOw14reftQho/d9ydWUR3MFi8tIFFgRtjUxYzgcb66pLXFxxW4CmzD94J3oXgZH
-         o9uA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=afX3KgJkWGEW0W8JceKePdfDS4ix1ghc1PEha2UnpqQ=;
+        b=b+VqMWcRqMbYGasbeh74gyfhHyS5wGN3hyLrh/sfXi0JsBSuJFfbIZXxLmOnHTOhaS
+         xjfeHgNAu8IgUjhk06iRYMJtWMLwpYY7xAilEq0lNkZRqio2kE2m9w+TSwklM0e+axQ+
+         3GY7gypVaFw9IjZ7EFl9eaCBlwrv8Twwsv/qo/hJBzZblJ27aDUAttLK5+gYAic6mtpP
+         t9S4XdWgXgUuGKUpZa0hXAXQAGb0jX2fetI8Yq2HVBtu1B4LyR/XR/sVNkq0sn0w3Xoq
+         bLCKSVsRYiP4DqMKjYD+uKA+vACdUPnebxU+orWVSEXVSFKBPdRof1qjUcNuahh2FsNR
+         ShBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kgJ5e0m8kd/eylgSGLtBqafsT7upwZtQRw5yQE+pirM=;
-        b=ZxXoa7jbWYYmA2Gvu9ROG2SEWJc+FuOkFf3GK/5i7F30Od0iIvGfg+GCNzsGS00Jpk
-         h7mbcwqyN/BIvc7kp2dLilmrptybB+NNsRA5IAfM8l0gxVFbzUuB1HnoMK2umnL/eWA5
-         GQN/DXs/6JR4d2DXgiBED5CU5GEGANM6GG/BQ8fddE8Z0Jg9mwlxW2nA6ZGHVoufX6Dt
-         yyUk0IPv/4OPU18sqa00K1FfnMzHDmKUNjkIwstsa3br0F3oWfKw8YIHas/b/IwOGvzO
-         lU2AqZBbCD2mVv3on6FKUtebL9zcnSP+Ysy8VIe/Bpomdlaf1UOYzTZoBS4sGrwnmnNx
-         uvRA==
-X-Gm-Message-State: APjAAAXtM6cuwj6451BxfhYw09QUt9LHm006fiXbG5CillKgBhDkuWuG
-        k4rNeOQm9hgK+JpWWVUX+k/q1Q==
-X-Google-Smtp-Source: APXvYqw/R8COveSuTpqp0dXDAaA0eGnoHLgn18YUnQmKmhmu5CMtb9VaqHrK46bkt1Myyi7keMmjIA==
-X-Received: by 2002:a05:6214:1090:: with SMTP id o16mr17291199qvr.105.1582039917062;
-        Tue, 18 Feb 2020 07:31:57 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id v10sm1935968qtp.22.2020.02.18.07.31.56
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 18 Feb 2020 07:31:56 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j44qq-0005P0-5P; Tue, 18 Feb 2020 11:31:56 -0400
-Date:   Tue, 18 Feb 2020 11:31:56 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Lang Cheng <chenglang@huawei.com>
-Cc:     dledford@redhat.com, leon@kernel.org, davem@davemloft.net,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        linuxarm@huawei.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [RFC rdma-next] RDMA/core: Add attribute WQ_MEM_RECLAIM to
- workqueue "infiniband"
-Message-ID: <20200218153156.GD31668@ziepe.ca>
-References: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=afX3KgJkWGEW0W8JceKePdfDS4ix1ghc1PEha2UnpqQ=;
+        b=AQ3gKMx9VvrqV+s6tcF5UibcWMyo3JlY0yyWruuV3KSwFePDuq8OxCtuZE1p1TAT+Z
+         nHTN9B/oXPPnNyblJcTm8JptODW2gLgnkI5TQga7pwoEe3pEKsQWLfFWMc8ZHWJULpaB
+         rSQ0/fA37BLBNsm02H+/GTMCsYgcooMCrF3rpfPtepjnc+mD425J+zgLHcNO1RYMhZCe
+         AqwuTV6Yzbddnm4R68Lp/L3BRPINp8l1CuPehw0YkFpEQ6QhRTSeKXdgoHSJa+u0vgac
+         CZ18a1kckinZfsB+oYaJDAGENUMHCwLBjB6aY6RtndMubl5DthY3a0TJuEqnh4+CNIto
+         adWA==
+X-Gm-Message-State: APjAAAXHctelp7+2xA+H42RwZVaXFSCfLwEU4jw2M2XHdzX4MX3BxeAj
+        5XKcv+evGZWpG8d+C5ksH7U=
+X-Google-Smtp-Source: APXvYqyx4IAxe2tt5MaGScmYfS2Okgff/t1OOnY/aRXuQqxK1Qu0P5Phhdmp034Bw/Y78sZ5LqtFww==
+X-Received: by 2002:a37:c84:: with SMTP id 126mr19674888qkm.372.1582040124235;
+        Tue, 18 Feb 2020 07:35:24 -0800 (PST)
+Received: from fabio-Latitude-E5450.nxp.com ([177.221.114.206])
+        by smtp.gmail.com with ESMTPSA id q25sm2064223qkc.60.2020.02.18.07.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 07:35:23 -0800 (PST)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     davem@davemloft.net
+Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH v2 net-next] net: fec: Prevent unbind operation
+Date:   Tue, 18 Feb 2020 12:34:44 -0300
+Message-Id: <20200218153444.4899-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 11:35:35AM +0800, Lang Cheng wrote:
-> The hns3 driver sets "hclge_service_task" workqueue with
-> WQ_MEM_RECLAIM flag in order to guarantee forward progress
-> under memory pressure.
+After performing an unbind/bind operation the network is no longer
+functional on i.MX6 (which has a single FEC instance):
 
-Don't do that. WQ_MEM_RECLAIM is only to be used by things interlinked
-with reclaimed processing.
+# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/unbind
+# echo 2188000.ethernet > /sys/bus/platform/drivers/fec/bind
+[   10.756519] pps pps0: new PPS source ptp0
+[   10.792626] libphy: fec_enet_mii_bus: probed
+[   10.799330] fec 2188000.ethernet eth0: registered PHC device 1
+# udhcpc -i eth0
+udhcpc: started, v1.31.1
+[   14.985211] fec 2188000.ethernet eth0: no PHY, assuming direct connection to switch
+[   14.993140] libphy: PHY fixed-0:00 not found
+[   14.997643] fec 2188000.ethernet eth0: could not attach to PHY
 
-Work on queues marked with WQ_MEM_RECLAIM can't use GFP_KERNEL
-allocations, can't do certain kinds of sleeps, can't hold certain
-kinds of locks, etc.
+On SoCs with two FEC instances there are some cases where one FEC instance
+depends on the other one being present. One such example is i.MX28, which
+has the following FEC dependency as noted in the comments:
 
-Jason
+	/*
+	 * The i.MX28 dual fec interfaces are not equal.
+	 * Here are the differences:
+	 *
+	 *  - fec0 supports MII & RMII modes while fec1 only supports RMII
+	 *  - fec0 acts as the 1588 time master while fec1 is slave
+	 *  - external phys can only be configured by fec0
+	 *
+	 * That is to say fec1 can not work independently. It only works
+	 * when fec0 is working. The reason behind this design is that the
+	 * second interface is added primarily for Switch mode.
+	 *
+	 * Because of the last point above, both phys are attached on fec0
+	 * mdio interface in board design, and need to be configured by
+	 * fec0 mii_bus.
+	 */
+
+Prevent the unbind operation to avoid these issues.
+
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+---
+Changes since v1:
+- Prevent unbind operation.
+
+ drivers/net/ethernet/freescale/fec_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 4432a59904c7..12edd4e358f8 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3793,6 +3793,7 @@ static struct platform_driver fec_driver = {
+ 		.name	= DRIVER_NAME,
+ 		.pm	= &fec_pm_ops,
+ 		.of_match_table = fec_dt_ids,
++		.suppress_bind_attrs = true,
+ 	},
+ 	.id_table = fec_devtype,
+ 	.probe	= fec_probe,
+-- 
+2.17.1
+
