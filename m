@@ -2,168 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AE0161FC5
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 05:18:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8953161FCC
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 05:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbgBRESo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 23:18:44 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:46004 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbgBRESn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 23:18:43 -0500
-Received: by mail-qv1-f67.google.com with SMTP id l14so8550987qvu.12;
-        Mon, 17 Feb 2020 20:18:42 -0800 (PST)
+        id S1726283AbgBRE2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 23:28:49 -0500
+Received: from mail-wm1-f54.google.com ([209.85.128.54]:53239 "EHLO
+        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726245AbgBRE2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 23:28:48 -0500
+Received: by mail-wm1-f54.google.com with SMTP id p9so1346134wmc.2
+        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 20:28:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rrl2PGiVKhiS3+BWSYzKqXLa18ZV5zl04M5paHTNB9w=;
-        b=VN165w2rOIwUpLADVTNCGoUNRpIT460bdknzHNDWEjIyo6Zb2Aic5q9XEN9hxLF/kD
-         ElpwQ0iMrt4fY0cvAeDHEQcMmosGbtMboL7IkvZxvbCtHPaJUr5HtXnY1YFYblK7+G/H
-         +uJH7LFL9W/mAZPN3ERlieloSJ9re046dKgOtUlVowPg9XVoPItmAJ9h8w894y93xad2
-         tidudO0viF0uTe/51xwqRWlzwQHj9exP5QGv/UXxYESV0v4jnveLmVENlmByNJ0kocbh
-         /E4AiJfKMcL8HH5FsOPD353XwRMPlFR2cbqtZOl3+KPs0CzsuYtcW/tQOjaG1SlH93ie
-         4MBA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BzPuU4g95aSBBFeFG+TjCwekfqveeuOJt5APejNXzoE=;
+        b=Pb22be2ATGB3e8cOIGk75UEAqsB+RvxSpFMOhS4PKUO1N/6bdoy3eu1gGzYJWJ+yRY
+         DJMUm0tcNZjTSMxxwFp9v9Q/gy8TkUT18DQFKJdK9Oqrph3PnnkbRG+9eWde2kdSwoQ6
+         VyceGqx3lND7JYBiBjEWgzw2UDtokYOa5MMGDmfovT26HD63kTcr3H0UmkYmUvByOyQe
+         tL+hgh1w4Q4C4feO0yNzkNqX+Q+Zu4CpocvurbndWON+pSlonEgAWworYSC4BBNJM3Ka
+         ROXbkRO7vVh7sQNv37RFZiY3aVTOTNMS3SHSYwfj0inhAyJg3QhrA/thv6knOi3YJgsQ
+         /R8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rrl2PGiVKhiS3+BWSYzKqXLa18ZV5zl04M5paHTNB9w=;
-        b=lW+plZenF5vxtUmHfO5d4YgV4veX+BCyjS2WAYYcx/bmXTV9ZP8vIvoGd2QP0hsUnu
-         Hao0a1M0ci5Shr8/66pSqppMTQsR7SF2EYVwmb+WK3jS6dJ+24K8w0YgT6ieOlOsrs1L
-         NZ2homqhvB3izMiaJ+YoLmwoBvuYD55m3QaJPRcqHEpTtBXyPTo9zyYAUgN1yr74gH0Q
-         ABAnfsRUBQC+RUz1Sw1Sd4mAAuUDVik2/DMfLo2f7Da7b27HEkh6gp5QVnICwnt0ocJo
-         nMtJyEZOgoiGyXRaMCDeeFQ7gtbAIF3/gQ+Cye5Fr5C7bElhEpFDxBe1vbFWK8Auos6F
-         ErOQ==
-X-Gm-Message-State: APjAAAXu2LqGGhuPO+VWFrom9qOD9o1kxDxsacA/1dqJ8po8W8id5YvX
-        yxWG/UVpc35oTwLcX/xYyBA=
-X-Google-Smtp-Source: APXvYqyCfGp0PYo9Yhgnqnbv0dVtKt4qlsVl3vjv4wjcYHNLaPFjso4D+5mstpBxxHMkNoiBVod4Kw==
-X-Received: by 2002:a0c:e2cf:: with SMTP id t15mr15437971qvl.127.1581999522385;
-        Mon, 17 Feb 2020 20:18:42 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:d58:b2a5:6cad:97fb:fa6f])
-        by smtp.gmail.com with ESMTPSA id k37sm1277690qtf.70.2020.02.17.20.18.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2020 20:18:41 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 5F35FC0DD6; Tue, 18 Feb 2020 01:18:39 -0300 (-03)
-Date:   Tue, 18 Feb 2020 01:18:39 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, Neil Horman <nhorman@tuxdriver.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: Re: [PATCHv2 net] sctp: move the format error check out of
- __sctp_sf_do_9_1_abort
-Message-ID: <20200218041839.GC2547@localhost.localdomain>
-References: <7f0002ee4446436104eb72bcfa9a4cf417570f7e.1581998873.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BzPuU4g95aSBBFeFG+TjCwekfqveeuOJt5APejNXzoE=;
+        b=QGxgyUR9lWfz3J8lBJR0Nt5o2Wl0e58oXNBeRMyK1w1PFAP2MbyHWZYZx/eMzuPl+R
+         xqlZ3Qyk7IVP7bZbvuG+AJOFxiM7jRFP7J3ExadrkRPjtvMVx/Rc4Fn7UyKA3szU3b5Y
+         hOGlSo4omaVttjdKW2N/rIKgSK8qch7Mq1vG/Zcm5JOTRQMmxTsIRH3yJbvsjG9MDERo
+         aDeskRXB4aHkmkUBJQ20sgt/XCvGgKSa7ytC/G/RMDdY17Z3Kt4sS1oZsvwefdMGUoW6
+         NiXlVefDnbko3SZXZ3LnqiVSRq9fcl/JAoZxh1+hzR+Eg6uJYuItiwxt6lNxMErtN0iT
+         jB5Q==
+X-Gm-Message-State: APjAAAVO4Qny3QCiGLmHl3/hx4b7di8NwAwL7tVBjyy2b97z95cvLoX/
+        pJVpdZnxeNJ41neLfcmkB0XHhMp7POxy7Cro3gw=
+X-Google-Smtp-Source: APXvYqw/WrxEomPjeB6K62+thBB8Mk8IuWXee20YkvPelocFqAoh2U4U+MrKd6L2x75pR5xrcnEak6UYTHKQySGYiXc=
+X-Received: by 2002:a1c:7d93:: with SMTP id y141mr392504wmc.111.1582000127169;
+ Mon, 17 Feb 2020 20:28:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7f0002ee4446436104eb72bcfa9a4cf417570f7e.1581998873.git.lucien.xin@gmail.com>
+References: <cover.1581676056.git.lucien.xin@gmail.com> <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
+ <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
+ <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
+ <20200214081324.48dc2090@hermes.lan> <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
+ <20200214162104.04e0bb71@hermes.lan> <CADvbK_eSiGXuZqHAdQTJugLa7mNUkuQTDmcuVYMHO=1VB+Cs8w@mail.gmail.com>
+ <793b8ff4-c04a-f962-f54f-3eae87a42963@gmail.com> <CADvbK_fOfEC0kG8wY_xbg_Yj4t=Y1oRKxo4h5CsYxN6Keo9YBQ@mail.gmail.com>
+ <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com> <20200217130255.06644553@hermes.lan>
+In-Reply-To: <20200217130255.06644553@hermes.lan>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 18 Feb 2020 12:29:45 +0800
+Message-ID: <CADvbK_c4=FesEqfjLxtCf712e3_1aLJYv9ebkomWYs+J=vcLpg@mail.gmail.com>
+Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options support
+ for erspan metadata
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 12:07:53PM +0800, Xin Long wrote:
-> When T2 timer is to be stopped, the asoc should also be deleted,
-> otherwise, there will be no chance to call sctp_association_free
-> and the asoc could last in memory forever.
-> 
-> However, in sctp_sf_shutdown_sent_abort(), after adding the cmd
-> SCTP_CMD_TIMER_STOP for T2 timer, it may return error due to the
-> format error from __sctp_sf_do_9_1_abort() and miss adding
-> SCTP_CMD_ASSOC_FAILED where the asoc will be deleted.
-> 
-> This patch is to fix it by moving the format error check out of
-> __sctp_sf_do_9_1_abort(), and do it before adding the cmd
-> SCTP_CMD_TIMER_STOP for T2 timer.
-> 
-> Thanks Hangbin for reporting this issue by the fuzz testing.
-> 
-> v1->v2:
->   - improve the comment in the code as Marcelo's suggestion.
-> 
-> Fixes: 96ca468b86b0 ("sctp: check invalid value of length parameter in error cause")
-> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+On Tue, Feb 18, 2020 at 5:03 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Mon, 17 Feb 2020 12:53:14 -0700
+> David Ahern <dsahern@gmail.com> wrote:
+>
+> > On 2/15/20 11:38 PM, Xin Long wrote:
+> > > On Sun, Feb 16, 2020 at 12:51 AM David Ahern <dsahern@gmail.com> wrote:
+> > >>
+> > >> On 2/14/20 9:18 PM, Xin Long wrote:
+> > >>> On Sat, Feb 15, 2020 at 8:21 AM Stephen Hemminger
+> > >>> <stephen@networkplumber.org> wrote:
+> > >>>>
+> > >>>> On Sat, 15 Feb 2020 01:40:27 +0800
+> > >>>> Xin Long <lucien.xin@gmail.com> wrote:
+> > >>>>
+> > >>>>> This's not gonna work. as the output will be:
+> > >>>>> {"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}  (string)
+> > >>>>> instead of
+> > >>>>> {"ver":2,"index":0,"dir":1,"hwid":2} (number)
+> > >>>>
+> > >>>> JSON is typeless. Lots of values are already printed in hex
+> > >>> You may mean JSON data itself is typeless.
+> > >>> But JSON objects are typed when parsing JSON data, which includes
+> > >>> string, number, array, boolean. So it matters how to define the
+> > >>> members' 'type' in JSON data.
+> > >>>
+> > >>> For example, in python's 'json' module:
+> > >>>
+> > >>> #!/usr/bin/python2
+> > >>> import json
+> > >>> json_data_1 = '{"ver":"0x2","idx":"0","dir":"0x1","hwid":"0x2"}'
+> > >>> json_data_2 = '{"ver":2,"index":0,"dir":1,"hwid":2}'
+> > >>> parsed_json_1 = (json.loads(json_data_1))
+> > >>> parsed_json_2 = (json.loads(json_data_2))
+> > >>> print type(parsed_json_1["hwid"])
+> > >>> print type(parsed_json_2["hwid"])
+> > >>>
+> > >>> The output is:
+> > >>> <type 'unicode'>
+> > >>> <type 'int'>
+> > >>>
+> > >>> Also, '{"result": true}' is different from '{"result": "true"}' when
+> > >>> loading it in a 3rd-party lib.
+> > >>>
+> > >>> I think the JSON data coming from iproute2 is designed to be used by
+> > >>> a 3rd-party lib to parse, not just to show to users. To keep these
+> > >>> members' original type (numbers) is more appropriate, IMO.
+> > >>>
+> > >>
+> > >> Stephen: why do you think all of the numbers should be in hex?
+> > >>
+> > >> It seems like consistency with existing output should matter more.
+> > >> ip/link_gre.c for instance prints index as an int, version as an int,
+> > >> direction as a string and only hwid in hex.
+> > >>
+> > >> Xin: any reason you did not follow the output of the existingg netdev
+> > >> based solutions?
+> > > Hi David,
+> > >
+> > > Option is expressed as "version:index:dir:hwid", I made all fields
+> > > in this string of hex, just like "class:type:data" in:
+> > >
+> > > commit 0ed5269f9e41f495c8e9020c85f5e1644c1afc57
+> > > Author: Simon Horman <simon.horman@netronome.com>
+> > > Date:   Tue Jun 26 21:39:37 2018 -0700
+> > >
+> > >     net/sched: add tunnel option support to act_tunnel_key
+> > >
+> > > I'm not sure if it's good to mix multiple types in this string. wdyt?
+> > >
+> > > but for the JSON data, of course, these are all numbers(not string).
+> > >
+> >
+> > I don't understand why Stephen is pushing for hex; it does not make
+> > sense for version, index or direction. I don't have a clear
+> > understanding of hwid to know uint vs hex, so your current JSON prints
+> > seem fine.
+> >
+> > As for the stdout print and hex fields, staring at the tc and lwtunnel
+> > code, it seems like those 2 have a lot of parallels in expressing
+> > options for encoding vs lwtunnel and netdev based code. ie., I think
+> > this latest set is correct.
+> >
+> > Stephen?
+>
+> I just wanted:
+> 1. The parse and print functions should have the same formats.
+> I.e. if you take the output and do a little massaging of the ifindex
+> it should be accepted as an input set of parameters.
+>
+> 2. As much as possible, the JSON and non-JSON output should be similar.
+> If non-JSON prints in hex, then JSON should display hex and vice/versa.
+>
+> Ideally all inputs would be human format (not machine formats like hex).
+> But I guess the mistake was already made with some of the other tunnels.
+I guess we can't 'fix' these in other tunnels in tc.
 
-Thanks :-)
-
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  net/sctp/sm_statefuns.c | 29 ++++++++++++++++++++---------
->  1 file changed, 20 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> index 748e3b1..6a16af4 100644
-> --- a/net/sctp/sm_statefuns.c
-> +++ b/net/sctp/sm_statefuns.c
-> @@ -170,6 +170,16 @@ static inline bool sctp_chunk_length_valid(struct sctp_chunk *chunk,
->  	return true;
->  }
->  
-> +/* Check for format error in an ABORT chunk */
-> +static inline bool sctp_err_chunk_valid(struct sctp_chunk *chunk)
-> +{
-> +	struct sctp_errhdr *err;
-> +
-> +	sctp_walk_errors(err, chunk->chunk_hdr);
-> +
-> +	return (void *)err == (void *)chunk->chunk_end;
-> +}
-> +
->  /**********************************************************
->   * These are the state functions for handling chunk events.
->   **********************************************************/
-> @@ -2255,6 +2265,9 @@ enum sctp_disposition sctp_sf_shutdown_pending_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
->  }
->  
-> @@ -2298,6 +2311,9 @@ enum sctp_disposition sctp_sf_shutdown_sent_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	/* Stop the T2-shutdown timer. */
->  	sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_STOP,
->  			SCTP_TO(SCTP_EVENT_TIMEOUT_T2_SHUTDOWN));
-> @@ -2565,6 +2581,9 @@ enum sctp_disposition sctp_sf_do_9_1_abort(
->  		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
->  		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
->  
-> +	if (!sctp_err_chunk_valid(chunk))
-> +		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> +
->  	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
->  }
->  
-> @@ -2582,16 +2601,8 @@ static enum sctp_disposition __sctp_sf_do_9_1_abort(
->  
->  	/* See if we have an error cause code in the chunk.  */
->  	len = ntohs(chunk->chunk_hdr->length);
-> -	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr)) {
-> -		struct sctp_errhdr *err;
-> -
-> -		sctp_walk_errors(err, chunk->chunk_hdr);
-> -		if ((void *)err != (void *)chunk->chunk_end)
-> -			return sctp_sf_pdiscard(net, ep, asoc, type, arg,
-> -						commands);
-> -
-> +	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr))
->  		error = ((struct sctp_errhdr *)chunk->skb->data)->cause;
-> -	}
->  
->  	sctp_add_cmd_sf(commands, SCTP_CMD_SET_SK_ERR, SCTP_ERROR(ECONNRESET));
->  	/* ASSOC_FAILED will DELETE_TCB. */
-> -- 
-> 2.1.0
-> 
+So I'm thinking we can either use the latest patchset,
+or keep the geneve opts format in lwtunnel consistent
+with the geneve opts in tc only and parse all with
+unint in the new erspan/vxlan tunnels opts.
