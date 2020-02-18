@@ -2,120 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE319161FBB
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 05:07:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1579161FBD
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 05:08:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgBREHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Feb 2020 23:07:15 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:42533 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbgBREHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 23:07:15 -0500
-Received: by mail-io1-f72.google.com with SMTP id e7so13086441iog.9
-        for <netdev@vger.kernel.org>; Mon, 17 Feb 2020 20:07:13 -0800 (PST)
+        id S1726415AbgBREIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Feb 2020 23:08:02 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34018 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726261AbgBREIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Feb 2020 23:08:02 -0500
+Received: by mail-pg1-f193.google.com with SMTP id j4so10284853pgi.1;
+        Mon, 17 Feb 2020 20:08:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6I29+OkcvhYhAunZjeEp0E/Cn3jozgYBeUqo/R46mdw=;
+        b=la7p82wQz4UMVc5tjC4/j0uIXT6+JiWEO3kmvcQydjxh7SXG9EyQhWtVwOjqURbHC/
+         cvysQ7wMgg+wBHqWpp3RPDUdPhHr3WZeKm7eXqIK03m2gP4xYfuqo5NePAud9vfLPNHr
+         ZNjh5WKsAO5wx6GeSQmEHhzabBXVjRHdjJFEvmBjpdHUSQElfmKEsNXS8UoDJXj2m3et
+         rdxeiNYHRl6Iy2DNY4cCG6gwr4Njzkdv+uXBjeIEkjU9UwP+CUgaC4sBf2oP+R632gIM
+         BMb+4DcP1YwIOMwRFGDrvVd1WKXmJUxDs2RazgahNwa9DdC1JL6MAhc8gJuaWojOzcN+
+         BgeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=uHglhlTsZL9nYXC1SuW5n8zSraL5OSomR7EKPnnITWs=;
-        b=lc86WA3Tb82KH1ZotXEXHBX79E7xa0Cn0sEMbujuuf7btDeVHny/Q9SFsBvoIs+LXO
-         JTN+OY7CIAfP0NEWQ3AzsYRncKE/tg+4bj7l8PuH1RvoYLdjnPXGruFRRPnqsg1BS0r2
-         hkg9XIDboRLaBx92zdyYgQepE3VoHTEhpMFXhWMDuKtzIAyjh6w6pRTGSfwRWCTrTVjE
-         qSWHejvl/9oens/7iVw367T8jbTU39//vyNdB6TpcOffMCqivvgXM2LWcqBGGsRhWA6O
-         TleKIUljmt9jJQSG7dxb4kjBCxuUSFiQFIb8q2e4F3RmHZlybAqLzkPira0Tq9H3F7xd
-         gItw==
-X-Gm-Message-State: APjAAAW2dSYgXtJaEi37+vkZa+0b1KJNJJSicWyxc2ZKFn8/OyJGHJM3
-        mzxtykXELGyvMYfEJ8f3BFeMBCDCWZaLvera+3ndepl9+O4G
-X-Google-Smtp-Source: APXvYqykvr5lZYYJzLA1G3jokmMLxLQMutu/6LzMIis/OPHm53DIYqPrXMQ1lTAZYZ7MZTpQKx8uB0HWAK4G5RctK5UqXjFwwjDg
-MIME-Version: 1.0
-X-Received: by 2002:a6b:d912:: with SMTP id r18mr13781201ioc.306.1581998832890;
- Mon, 17 Feb 2020 20:07:12 -0800 (PST)
-Date:   Mon, 17 Feb 2020 20:07:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007838f1059ed1cea5@google.com>
-Subject: general protection fault in l2cap_sock_getsockopt
-From:   syzbot <syzbot+6446a589a5ca34dd6e8b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6I29+OkcvhYhAunZjeEp0E/Cn3jozgYBeUqo/R46mdw=;
+        b=kDUv3I9GXW2x3iFTJzNnfAVVJwJILNIokE2beBHSfxvA2Ycd0iti1mzhD8/UcP6wB9
+         +XGNd3Q8VDwHZimBtIlwG05JpnZyI9q3uboHxWIYik5frPmfLtj6hX/wcdOKCSiRNDDV
+         ZAbxxZS64lh8EmBQuh3+0vwAXnpfViSpbvGQNSCsj9ouhVo+fm16f12HlFeYx5s8xSj5
+         9NPjHaDo3yYSHu9CPf7ejqy4HXj5JB5dTHrQAKK76lzm2zzuuFeif1mKdlkue1a4XZ47
+         DPCyJ08SfF4Yt0V5Rl/ZOocTv0kcN+1Mp4OtrBRrqLyVlHpNS+KctdP72Zwse9d5GYOM
+         2asQ==
+X-Gm-Message-State: APjAAAUfnWH/iZquL0Mvq+Te9Ga/CLSXkGEpLTVqJ78voYu14bT2aZZw
+        6nqv4EzlU0ayEnAxLxGh7H+h8S9Hq2c=
+X-Google-Smtp-Source: APXvYqw48CPmn3Vjm4lcJQ+FczYuioHh+tmdzb44jORTY1Ugfwr3ohwsoTY/sZj2V6MMH4b0EW7G3A==
+X-Received: by 2002:a65:4d0d:: with SMTP id i13mr20599229pgt.346.1581998881349;
+        Mon, 17 Feb 2020 20:08:01 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a36sm2333121pga.32.2020.02.17.20.08.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Feb 2020 20:08:00 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 net] sctp: move the format error check out of __sctp_sf_do_9_1_abort
+Date:   Tue, 18 Feb 2020 12:07:53 +0800
+Message-Id: <7f0002ee4446436104eb72bcfa9a4cf417570f7e.1581998873.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+When T2 timer is to be stopped, the asoc should also be deleted,
+otherwise, there will be no chance to call sctp_association_free
+and the asoc could last in memory forever.
 
-syzbot found the following crash on:
+However, in sctp_sf_shutdown_sent_abort(), after adding the cmd
+SCTP_CMD_TIMER_STOP for T2 timer, it may return error due to the
+format error from __sctp_sf_do_9_1_abort() and miss adding
+SCTP_CMD_ASSOC_FAILED where the asoc will be deleted.
 
-HEAD commit:    c25a951c Add linux-next specific files for 20200217
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=171b1a29e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c727d8fc485ff049
-dashboard link: https://syzkaller.appspot.com/bug?extid=6446a589a5ca34dd6e8b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10465579e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16dabb11e00000
+This patch is to fix it by moving the format error check out of
+__sctp_sf_do_9_1_abort(), and do it before adding the cmd
+SCTP_CMD_TIMER_STOP for T2 timer.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6446a589a5ca34dd6e8b@syzkaller.appspotmail.com
+Thanks Hangbin for reporting this issue by the fuzz testing.
 
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 9844 Comm: syz-executor679 Not tainted 5.6.0-rc2-next-20200217-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:l2cap_sock_getsockopt+0x7d3/0x1200 net/bluetooth/l2cap_sock.c:613
-Code: 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 a0 09 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 1f 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 75 09 00 00 48 8b 3b e8 cb be f6 ff be 67 02 00
-RSP: 0018:ffffc900062f7d20 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87253e8c
-RDX: 0000000000000000 RSI: ffffffff87253f44 RDI: 0000000000000001
-RBP: ffffc900062f7e00 R08: ffff88808a5001c0 R09: fffffbfff16a3f80
-R10: fffffbfff16a3f7f R11: ffffffff8b51fbff R12: 0000000000000000
-R13: 1ffff92000c5efa7 R14: ffff8880a9a79000 R15: ffff8880a1d92000
-FS:  0000000001ccd880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000140 CR3: 0000000097113000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __sys_getsockopt+0x16d/0x310 net/socket.c:2175
- __do_sys_getsockopt net/socket.c:2190 [inline]
- __se_sys_getsockopt net/socket.c:2187 [inline]
- __x64_sys_getsockopt+0xbe/0x150 net/socket.c:2187
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x440149
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffcb256f088 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440149
-RDX: 000000000000000e RSI: 0000000000000112 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000020000140 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004019d0
-R13: 0000000000401a60 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 63f0b6416dbaab7d ]---
-RIP: 0010:l2cap_sock_getsockopt+0x7d3/0x1200 net/bluetooth/l2cap_sock.c:613
-Code: 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 a0 09 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 1f 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 75 09 00 00 48 8b 3b e8 cb be f6 ff be 67 02 00
-RSP: 0018:ffffc900062f7d20 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87253e8c
-RDX: 0000000000000000 RSI: ffffffff87253f44 RDI: 0000000000000001
-RBP: ffffc900062f7e00 R08: ffff88808a5001c0 R09: fffffbfff16a3f80
-R10: fffffbfff16a3f7f R11: ffffffff8b51fbff R12: 0000000000000000
-R13: 1ffff92000c5efa7 R14: ffff8880a9a79000 R15: ffff8880a1d92000
-FS:  0000000001ccd880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000140 CR3: 0000000097113000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+v1->v2:
+  - improve the comment in the code as Marcelo's suggestion.
 
-
+Fixes: 96ca468b86b0 ("sctp: check invalid value of length parameter in error cause")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/sctp/sm_statefuns.c | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index 748e3b1..6a16af4 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -170,6 +170,16 @@ static inline bool sctp_chunk_length_valid(struct sctp_chunk *chunk,
+ 	return true;
+ }
+ 
++/* Check for format error in an ABORT chunk */
++static inline bool sctp_err_chunk_valid(struct sctp_chunk *chunk)
++{
++	struct sctp_errhdr *err;
++
++	sctp_walk_errors(err, chunk->chunk_hdr);
++
++	return (void *)err == (void *)chunk->chunk_end;
++}
++
+ /**********************************************************
+  * These are the state functions for handling chunk events.
+  **********************************************************/
+@@ -2255,6 +2265,9 @@ enum sctp_disposition sctp_sf_shutdown_pending_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
+ }
+ 
+@@ -2298,6 +2311,9 @@ enum sctp_disposition sctp_sf_shutdown_sent_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* Stop the T2-shutdown timer. */
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_TIMER_STOP,
+ 			SCTP_TO(SCTP_EVENT_TIMEOUT_T2_SHUTDOWN));
+@@ -2565,6 +2581,9 @@ enum sctp_disposition sctp_sf_do_9_1_abort(
+ 		    sctp_bind_addr_state(&asoc->base.bind_addr, &chunk->dest))
+ 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg, commands);
+ 
++	if (!sctp_err_chunk_valid(chunk))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	return __sctp_sf_do_9_1_abort(net, ep, asoc, type, arg, commands);
+ }
+ 
+@@ -2582,16 +2601,8 @@ static enum sctp_disposition __sctp_sf_do_9_1_abort(
+ 
+ 	/* See if we have an error cause code in the chunk.  */
+ 	len = ntohs(chunk->chunk_hdr->length);
+-	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr)) {
+-		struct sctp_errhdr *err;
+-
+-		sctp_walk_errors(err, chunk->chunk_hdr);
+-		if ((void *)err != (void *)chunk->chunk_end)
+-			return sctp_sf_pdiscard(net, ep, asoc, type, arg,
+-						commands);
+-
++	if (len >= sizeof(struct sctp_chunkhdr) + sizeof(struct sctp_errhdr))
+ 		error = ((struct sctp_errhdr *)chunk->skb->data)->cause;
+-	}
+ 
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_SET_SK_ERR, SCTP_ERROR(ECONNRESET));
+ 	/* ASSOC_FAILED will DELETE_TCB. */
+-- 
+2.1.0
+
