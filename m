@@ -2,89 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E04162E3C
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37328162E71
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 19:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgBRSRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 13:17:50 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:34773 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbgBRSRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:17:49 -0500
-Received: by mail-pj1-f66.google.com with SMTP id f2so848770pjq.1;
-        Tue, 18 Feb 2020 10:17:49 -0800 (PST)
+        id S1726446AbgBRSZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 13:25:31 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37224 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726225AbgBRSZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 13:25:31 -0500
+Received: by mail-io1-f67.google.com with SMTP id k24so10907410ioc.4;
+        Tue, 18 Feb 2020 10:25:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=tw386GnWn7lj+7DS5UVonCjIBe7s4kOvANVaGw+hVzg=;
-        b=YhOhNOGMg32OFt9+hY8OakRL4DmVH0jPNRRNE/E6tkW/9ccBR09BQA7dCQUs2MkmUu
-         mARR3uHwAkKSOVX+kcW1sZFEihdGg6YcfHt4rgk3uekBDYLocuAG+oOBDcBhvv6BsqXJ
-         dyy0x6j8c8aQy6Jqv4YLREsxGD1wl7U/nD+ADGhKoWCDJcETad+RpMrhLuuK565r68VM
-         Irhn27ZhTQ/t/CZGbPPj4qvukPMUzUZO3UAYtopsVf+MDqOh9vs86Kummox/0AfpMKaX
-         CEPGdzAzvbMiar11LAE1NX7bNRqXtJKzzgSyrUXJ00luH0kGWCXk5u9z6qaC70WAs3BD
-         XClw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0oo2FfOUL0MjlcigokgYSuRLB0N4VOcL/NZk+nWeo40=;
+        b=Wq3t2NifRRVRe6tINTW8hnfC80948jJcADE2VTky69RGcQ4+0Dd53XZ1Y1VlaNyLFa
+         EfnQcbLNpv/2vZpiea2s2z9deEkxsXp14CLzj6XpJ2WOoIbvX7WKkcy/cML5KZh+VeGr
+         UlwwDsF+m1vxVQRM6vLpsNGVaB3R5HIdPOYp07ciPcmBHr7rqWNT1b5v+o7BEW01IhGj
+         ejEtIlBR4lNJUjBPWwg6XvzAX1AJ3XK7nsmTS0zJCx+70vGgdRlDVuN/Etqa1dj8kxDk
+         Dwn6dYui17G6BrZxMFPFthQXEJ9Gj6wSKhjYFWNoMX1KEg2kWuURhzvJBT1LKgORPCFs
+         zFOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tw386GnWn7lj+7DS5UVonCjIBe7s4kOvANVaGw+hVzg=;
-        b=t+qbaIKr+b4l+dtXyD4yHfa7HWzNylev7z6ONoJwGjWHpu9ehU5cMRPyfTOzAv81pB
-         l2blZSs7TUsSq298V1olIe5e8NRysfIPrP+HuvRPhVBNgrU4qgNYt0yfjhKMBnivMzeU
-         MN+SsTIbJAPxOH7bEvjsvRqu3AVMdz85q6MwlD2gnl0C90jlOEcgQvxzDIuunrnlpBzV
-         Txbmycx5v7hRLjRjMTBkxEi/S4uzm8aYNZS0j3JWWuqknJkgcHEvqoQwDTHrkPvBGiKU
-         zG9SFrPDzzN7aHVsm8wcYFY4IPKGp2samVU5R4pm9KE7m42ovHM5O33BC0ygiR4DYZcZ
-         Z5eA==
-X-Gm-Message-State: APjAAAW7xdUe1qKZrd8ADOKZT8E43lJTSCeE6vnmWYIrYRvdbzojIh3s
-        L4tDWZxU2GwSTjW6GWQOtQ==
-X-Google-Smtp-Source: APXvYqwOgUC5exI24u36RZ9dseIdpW0+8p5dXgCQ/NuN3Ou6YZrerHkWr3LK9lWM9jlF1o9vCDlFuw==
-X-Received: by 2002:a17:902:b68c:: with SMTP id c12mr21462103pls.160.1582049869131;
-        Tue, 18 Feb 2020 10:17:49 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:54c:a276:f869:e1e5:121e:cdbf])
-        by smtp.gmail.com with ESMTPSA id f3sm5474950pga.38.2020.02.18.10.17.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 10:17:48 -0800 (PST)
-From:   madhuparnabhowmik10@gmail.com
-To:     paul@paul-moore.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH] net: netlabel: Use built-in RCU list checking
-Date:   Tue, 18 Feb 2020 23:47:18 +0530
-Message-Id: <20200218181718.7258-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0oo2FfOUL0MjlcigokgYSuRLB0N4VOcL/NZk+nWeo40=;
+        b=cOIvo9KpwseWMBaV0F96CfmUykbqnduIPRtTwsGDuZXgtoN3/BBHSYMh9Eliw+uatp
+         vWeXT1JaMwCpvziT9S+KJVEEe0/nMX6pBq1ahFr/OVXWAHVHkDDeaI+ZgkLL+SAfW1yG
+         FKi3rN/Zviwz3hl9iTRJuaWza5p5wC8L04MDnyRgrU8c/8txUtXOaPwhFLYPoIEuhxPV
+         bU6DZGUqo8TmshQ0RT5oE6uC2QzySdlIRkredT2LwBL4Ddq8WNICMcChrt1l5ehrSib2
+         tWL4Fx2oBOmf4hyFzBzd9MhYN2wE0zuHT7lx1BLN4AvNckiqepWV3OZjpDcNCsw2Vrzn
+         eC2Q==
+X-Gm-Message-State: APjAAAVIg1E0A0zvo5sOlU8D/4swM2qr9ofjYTDnjtk5Ia7PYdsSu+aU
+        eSsnr+wm1HXa/3BltNlo1N4AfIBxFefvaF0dUEo=
+X-Google-Smtp-Source: APXvYqwgtWgImN9QZV7JQUuv0hVUZuRkzL56C+1AttxemO7MC8eMPliv6NfqFQATOc/UbFf6Hm1OohYvw/cxkJsQ2bc=
+X-Received: by 2002:a5e:860f:: with SMTP id z15mr16017999ioj.64.1582050330517;
+ Tue, 18 Feb 2020 10:25:30 -0800 (PST)
+MIME-Version: 1.0
+References: <76cd6cfc-f4f3-ece7-203a-0266b7f02a12@gmail.com> <9fdc5f0c-fdf0-122e-48a5-43ff029cf8d9@gmail.com>
+In-Reply-To: <9fdc5f0c-fdf0-122e-48a5-43ff029cf8d9@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 18 Feb 2020 10:25:19 -0800
+Message-ID: <CAKgT0UeUEcoKZsRnxzftMA4tc2chasmW+sWQkP11hVLbdYTYxA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: core: add helper tcp_v6_gso_csum_prep
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Parvi Kaustubhi <pkaustub@cisco.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Guo-Fu Tseng <cooldavid@cooldavid.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Timur Tabi <timur@kernel.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Ronak Doshi <doshir@vmware.com>,
+        "VMware, Inc." <pv-drivers@vmware.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        linux-hyperv@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+On Mon, Feb 17, 2020 at 1:41 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> Several network drivers for chips that support TSO6 share the same code
+> for preparing the TCP header. A difference is that some reset the
+> payload_len whilst others don't do this. Let's factor out this common
+> code to a new helper.
+>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  include/net/ip6_checksum.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/include/net/ip6_checksum.h b/include/net/ip6_checksum.h
+> index 7bec95df4..ef0130023 100644
+> --- a/include/net/ip6_checksum.h
+> +++ b/include/net/ip6_checksum.h
+> @@ -76,6 +76,18 @@ static inline void __tcp_v6_send_check(struct sk_buff *skb,
+>         }
+>  }
+>
+> +static inline void tcp_v6_gso_csum_prep(struct sk_buff *skb,
+> +                                       bool clear_payload_len)
+> +{
+> +       struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+> +       struct tcphdr *th = tcp_hdr(skb);
+> +
+> +       if (clear_payload_len)
+> +               ipv6h->payload_len = 0;
+> +
+> +       th->check = ~tcp_v6_check(0, &ipv6h->saddr, &ipv6h->daddr, 0);
+> +}
+> +
+>  #if IS_ENABLED(CONFIG_IPV6)
+>  static inline void tcp_v6_send_check(struct sock *sk, struct sk_buff *skb)
+>  {
 
-list_for_each_entry_rcu() has built-in RCU and lock checking.
+So functionally I believe this is correct. The only piece I have a
+question about is if we should just force the clear_payload_len as
+always being the case since the value should either be
+ignored/overwritten in any GSO case anyway.
 
-Pass cond argument to list_for_each_entry_rcu() to silence
-false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
-by default.
-
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
- net/netlabel/netlabel_unlabeled.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
-index d2e4ab8d1cb1..77bb1bb22c3b 100644
---- a/net/netlabel/netlabel_unlabeled.c
-+++ b/net/netlabel/netlabel_unlabeled.c
-@@ -207,7 +207,8 @@ static struct netlbl_unlhsh_iface *netlbl_unlhsh_search_iface(int ifindex)
- 
- 	bkt = netlbl_unlhsh_hash(ifindex);
- 	bkt_list = &netlbl_unlhsh_rcu_deref(netlbl_unlhsh)->tbl[bkt];
--	list_for_each_entry_rcu(iter, bkt_list, list)
-+	list_for_each_entry_rcu(iter, bkt_list, list,
-+				lockdep_is_held(&netlbl_unlhsh_lock))
- 		if (iter->valid && iter->ifindex == ifindex)
- 			return iter;
- 
--- 
-2.17.1
-
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
