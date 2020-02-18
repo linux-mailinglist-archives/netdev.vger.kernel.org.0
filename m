@@ -2,100 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA70016360C
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E959D16363A
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 23:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgBRWX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 17:23:28 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35774 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726391AbgBRWX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:23:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582064607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KzniXuxGG3xuNTREj2X9iqbFXp/dsAkbv0yAly6KfyY=;
-        b=Cyrw7i/14fdvbw8jR1eW+sfDAhSU8K9VpmVy/LXOPRbJ88btgYRaBMdVxDEaBuu3KgtgbF
-        a/APVnhOjjnibJOOvyd/Z37ARdwnmYtqnDI2di+koQVCqVqhxJQapVj7oxgEwdODwfgbfQ
-        lv2ypXdiungGfNvBHcfNITEuE0Csmu0=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-51-yYzlHoNKNsOIzTJ7wc9pkA-1; Tue, 18 Feb 2020 17:23:25 -0500
-X-MC-Unique: yYzlHoNKNsOIzTJ7wc9pkA-1
-Received: by mail-lf1-f71.google.com with SMTP id l2so2325218lfk.23
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 14:23:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=KzniXuxGG3xuNTREj2X9iqbFXp/dsAkbv0yAly6KfyY=;
-        b=j8KqiQ9sunSqZ1rcPrahklu8U2Njbq8sf/+DB2P82HBfNvXX4LhX43c6HOnyr7j9Kd
-         Ky4zfnHR9d8Qp8hs7XDG1VfBQrSFKPgRXNtYYdFt8SktjVaUVY0pRy44KFqwmD7sNZ2J
-         NVJWu8ogKyIrTwP0xW+n1gsHrkh/aA7geOaZExiGmKpYKbkRMENTt14RSxSwbuuHzWC3
-         xLRTvmGAkSoVtbGMzk0GeuvngvnNHr1e0Pkh6z/w4fgdHXlbd+3WsQhUTkGcQtjqlt8b
-         4hqzGH7X0wbnJGJukVd4C0k0/F3Bkk0KAv5oDsKEkavdN4AM/qZX4i9Rg9wHQ26QKMu5
-         UcbQ==
-X-Gm-Message-State: APjAAAU71csotYsjPGKoZjxTazo0UiithRWmI9fRmBdHs1tjIoXr4PnH
-        tUQm2+kAJS82m595Q8oZArsBCTGV8sNt+0nWzNC7G2wERWkLFSAX9azpWRal3PriZlKTttDUo7r
-        EuUT0u3AvUFNc8/Az
-X-Received: by 2002:a2e:888b:: with SMTP id k11mr14325323lji.197.1582064604203;
-        Tue, 18 Feb 2020 14:23:24 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxYWLZAyv8CoD8AZ/XywYZzw4bS9wLMvINlzJFDMHl7GteVE53+Up4eF5q8jg0FySo7bFGPNA==
-X-Received: by 2002:a2e:888b:: with SMTP id k11mr14325313lji.197.1582064603932;
-        Tue, 18 Feb 2020 14:23:23 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id n2sm67763ljj.1.2020.02.18.14.23.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 14:23:23 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4FB19180365; Tue, 18 Feb 2020 23:23:22 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        davem@davemloft.net, lorenzo.bianconi@redhat.com, andrew@lunn.ch,
-        brouer@redhat.com, dsahern@kernel.org, bpf@vger.kernel.org
-Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to mlx5 driver
-In-Reply-To: <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
-References: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org> <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 18 Feb 2020 23:23:22 +0100
-Message-ID: <87eeury1ph.fsf@toke.dk>
+        id S1726713AbgBRWex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 17:34:53 -0500
+Received: from www62.your-server.de ([213.133.104.62]:47746 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbgBRWew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 17:34:52 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j4BS4-0005lA-Hh; Tue, 18 Feb 2020 23:34:48 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j4BS4-000OU6-1k; Tue, 18 Feb 2020 23:34:48 +0100
+Subject: Re: [PATCH 06/18] bpf: Add bpf_ksym_tree tree
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+References: <20200216193005.144157-1-jolsa@kernel.org>
+ <20200216193005.144157-7-jolsa@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e869424c-eaf5-d8b1-dfde-86958f437538@iogearbox.net>
+Date:   Tue, 18 Feb 2020 23:34:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200216193005.144157-7-jolsa@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.1/25727/Tue Feb 18 15:05:00 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On 2/16/20 8:29 PM, Jiri Olsa wrote:
+> The bpf_tree is used both for kallsyms iterations and searching
+> for exception tables of bpf programs, which is needed only for
+> bpf programs.
+> 
+> Adding bpf_ksym_tree that will hold symbols for all bpf_prog
+> bpf_trampoline and bpf_dispatcher objects and keeping bpf_tree
+> only for bpf_prog objects to keep it fast.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>   include/linux/bpf.h |  1 +
+>   kernel/bpf/core.c   | 60 ++++++++++++++++++++++++++++++++++++++++-----
+>   2 files changed, 55 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index f1174d24c185..5d6649cdc3df 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -468,6 +468,7 @@ struct bpf_ksym {
+>   	unsigned long		 end;
+>   	char			 name[KSYM_NAME_LEN];
+>   	struct list_head	 lnode;
+> +	struct latch_tree_node	 tnode;
+>   };
+>   
+>   enum bpf_tramp_prog_type {
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 604093d2153a..9fb08b4d01f7 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -606,8 +606,46 @@ static const struct latch_tree_ops bpf_tree_ops = {
+>   	.comp	= bpf_tree_comp,
+>   };
+>   
+> +static unsigned long
+> +bpf_get_ksym_start(struct latch_tree_node *n)
+> +{
+> +	const struct bpf_ksym *ksym;
+> +
+> +	ksym = container_of(n, struct bpf_ksym, tnode);
+> +	return ksym->start;
 
-> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote:
->> Introduce "rx" prefix in the name scheme for xdp counters
->> on rx path.
->> Differentiate between XDP_TX and ndo_xdp_xmit counters
->> 
->> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->
-> Sorry for coming in late.
->
-> I thought the ability to attach a BPF program to a fexit of another BPF
-> program will put an end to these unnecessary statistics. IOW I maintain
-> my position that there should be no ethtool stats for XDP.
->
-> As discussed before real life BPF progs will maintain their own stats
-> at the granularity of their choosing, so we're just wasting datapath
-> cycles.
->
-> The previous argument that the BPF prog stats are out of admin control
-> is no longer true with the fexit option (IIUC how that works).
+Small nit, can be simplified to:
 
-So you're proposing an admin that wants to keep track of XDP has to
-(permantently?) attach an fexit program to every running XDP program and
-use that to keep statistics? But presumably he'd first need to discover
-that XDP is enabled; which the ethtool stats is a good hint for :)
+	return container_of(n, struct bpf_ksym, tnode)->start;
 
--Toke
+> +}
+> +
+> +static bool
+> +bpf_ksym_tree_less(struct latch_tree_node *a,
+> +		   struct latch_tree_node *b)
+> +{
+> +	return bpf_get_ksym_start(a) < bpf_get_ksym_start(b);
+> +}
+> +
+> +static int
+> +bpf_ksym_tree_comp(void *key, struct latch_tree_node *n)
+> +{
+> +	unsigned long val = (unsigned long)key;
+> +	const struct bpf_ksym *ksym;
+> +
+> +	ksym = container_of(n, struct bpf_ksym, tnode);
+> +
+> +	if (val < ksym->start)
+> +		return -1;
+> +	if (val >= ksym->end)
+> +		return  1;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct latch_tree_ops bpf_ksym_tree_ops = {
+> +	.less	= bpf_ksym_tree_less,
+> +	.comp	= bpf_ksym_tree_comp,
+> +};
+> +
+>   static DEFINE_SPINLOCK(bpf_lock);
+>   static LIST_HEAD(bpf_kallsyms);
+> +static struct latch_tree_root bpf_ksym_tree __cacheline_aligned;
+>   static struct latch_tree_root bpf_tree __cacheline_aligned;
 
+You mention in your commit description performance being the reason on why
+we need two latch trees. Can't we maintain everything just in a single one?
+
+What does "to keep it fast" mean here in absolute numbers that would affect
+overall system performance? It feels a bit like premature optimization with
+the above rationale as-is.
+
+If it is about differentiating the different bpf_ksym symbols for some of the
+kallsym handling functions (?), can't we simply add an enum bpf_ksym_type {
+BPF_SYM_PROGRAM, BPF_SYM_TRAMPOLINE, BPF_SYM_DISPATCHER } instead, but still
+maintain them all in a single latch tree?
+
+Thanks,
+Daniel
