@@ -2,189 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB7411634B1
-	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F881634BC
+	for <lists+netdev@lfdr.de>; Tue, 18 Feb 2020 22:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727216AbgBRVUf convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Feb 2020 16:20:35 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:38502 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726595AbgBRVUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 16:20:35 -0500
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 9C238CECC6;
-        Tue, 18 Feb 2020 22:29:57 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [Bluez PATCH v1] bluetooth: fix passkey uninitialized when used
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200218190509.Bluez.v1.1.I04681c6e295c27088c0b4ed7bb9b187d1bb4ed19@changeid>
-Date:   Tue, 18 Feb 2020 22:20:32 +0100
-Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        clang-built-linux@googlegroups.com
-Content-Transfer-Encoding: 8BIT
-Message-Id: <D9045CD6-997B-4018-8AB0-40F15C71BF5C@holtmann.org>
-References: <20200218190509.Bluez.v1.1.I04681c6e295c27088c0b4ed7bb9b187d1bb4ed19@changeid>
-To:     Howard Chung <howardchung@google.com>
-X-Mailer: Apple Mail (2.3608.60.0.2.5)
+        id S1726634AbgBRVV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 16:21:26 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:38696 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726352AbgBRVVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 16:21:25 -0500
+Received: by mail-qk1-f193.google.com with SMTP id z19so21019787qkj.5;
+        Tue, 18 Feb 2020 13:21:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LQ64KB+SxWlk5T/EEiMuvPiP3uK4I4XFfLmMHv+k+HY=;
+        b=u985Z+2gGIfpFk5yThwq9eaffQ5n6cRW5bSOj3+0ZOKArM0N4SY+x/eaMONdaOP7vA
+         9SW16DKzaJJwXuFC7hKrb0fIQZjeMnO0kqXSJDLQRSL2gfaIspWdhnV5GWso9vMOxaU3
+         8dUZbadEd2JLh5xet3+EiwWIWuwxgDAYu+z8DWov5EjFC/Zd98gdDc1DueLGHd8m7hu+
+         Xl0rk+8N02eZ/P4XQ+Kyn9IWZQZxJNzbgZtQbtOAsThZXhZjcrMefK8z9tE5/9gEPegb
+         ilGjBpYq0wkEt60SXq9DuxgJMrHIpr9c3rvOp4FNzCgtP0mgXtZG8TRqU3z8yVD30LJb
+         KNRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LQ64KB+SxWlk5T/EEiMuvPiP3uK4I4XFfLmMHv+k+HY=;
+        b=k/jJNXm8Goj4WEbbPD0Sbjhxu8vJqKpZUAHZWpQeiUQziwOi3KT/aTTJd9AshzHomw
+         /7cS/jvjg67oZy/YnOVpC3HS6o3K3z0wT1kpd09WvocNhhJfqWNKzzRPmHwxPRHYrvld
+         81fgrirOC8WNBxawOy+ntUBtJvYm9s0X2VgzyDUn93Vo4qyRCF9P9ksywKbx3DZKGWJ7
+         WviwxvqVv3pGtnb4fjD81EEW5n4/Sv+jzM1aOm/0YBJvgdLjMeKrEciRcDqv/qa/Q9Yr
+         4PN63j6rOfV9F30JUawXBAjuWR6U6wOsJXoHDrfi+tylyHmcxrbMUCmH1KZ3e0zxXroJ
+         3leQ==
+X-Gm-Message-State: APjAAAWDqVsHD7p697kW2t/HOpY5kd2H3kdEEOS1kNjMBVWodrVG4UWJ
+        emLx0Z6qgxsDMXgbb8oVNFa+4Rtk2yPAmwx6ysc=
+X-Google-Smtp-Source: APXvYqxEVKW5Haaca66zUDYRxgJ6rbLd++np5oICLEiSRfqGn4JvovnZv/+h1alVg7OztBotwFYamMmqZ/e0KpnMXJ8=
+X-Received: by 2002:a37:2744:: with SMTP id n65mr20620739qkn.92.1582060884775;
+ Tue, 18 Feb 2020 13:21:24 -0800 (PST)
+MIME-Version: 1.0
+References: <158194337246.104074.6407151818088717541.stgit@xdp-tutorial> <158194342478.104074.6851588870108514192.stgit@xdp-tutorial>
+In-Reply-To: <158194342478.104074.6851588870108514192.stgit@xdp-tutorial>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 18 Feb 2020 13:21:14 -0800
+Message-ID: <CAEf4BzYx2ZccrAu8JC=UxeHamk4dHKVa2jH4P=Hr7VzMwUphJQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 3/3] selftests/bpf: update xdp_bpf2bpf test to
+ use new set_attach_target API
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
+On Mon, Feb 17, 2020 at 5:03 AM Eelco Chaudron <echaudro@redhat.com> wrote:
+>
+> Use the new bpf_program__set_attach_target() API in the xdp_bpf2bpf
+> selftest so it can be referenced as an example on how to use it.
+>
+>
 
-> From: "howardchung@google.com" <howardchung@google.com>
+nit: extra empty line?
 
-any chance you fix your git setting to provide a From: with full name and email like you have in the signed-off-by line.
-
-> 
-> This issue cause a warning here
-> https://groups.google.com/forum/#!topic/clang-built-linux/kyRKCjRsGoU
-> 
-> Signed-off-by: Howard Chung <howardchung@google.com>
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 > ---
-> 
-> net/bluetooth/smp.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-> index 50e0ac692ec4..fa40de69e487 100644
-> --- a/net/bluetooth/smp.c
-> +++ b/net/bluetooth/smp.c
-> @@ -2179,10 +2179,12 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
-> 		 */
-> 		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
-> 				 hcon->role)) {
-> +			/* Set passkey to 0. The value can be any number since
-> +			 * it'll be ignored anyway.
-> +			 */
-> 			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-> 							hcon->type,
-> -							hcon->dst_type,
-> -							passkey, 1);
-> +							hcon->dst_type, 0, 1);
-> 			if (err)
-> 				return SMP_UNSPECIFIED;
-> 			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
+>  .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   16 +++++++++++++-=
+--
+>  .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |    4 ++--
+>  2 files changed, 15 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools=
+/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> index 6b56bdc73ebc..513fdbf02b81 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+> @@ -14,7 +14,7 @@ void test_xdp_bpf2bpf(void)
+>         struct test_xdp *pkt_skel =3D NULL;
+>         struct test_xdp_bpf2bpf *ftrace_skel =3D NULL;
+>         struct vip key4 =3D {.protocol =3D 6, .family =3D AF_INET};
+> -       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
+> +       struct bpf_program *prog;
+>
+>         /* Load XDP program to introspect */
+>         pkt_skel =3D test_xdp__open_and_load();
+> @@ -27,11 +27,21 @@ void test_xdp_bpf2bpf(void)
+>         bpf_map_update_elem(map_fd, &key4, &value4, 0);
+>
+>         /* Load trace program */
+> -       opts.attach_prog_fd =3D pkt_fd,
+> -       ftrace_skel =3D test_xdp_bpf2bpf__open_opts(&opts);
+> +       ftrace_skel =3D test_xdp_bpf2bpf__open();
+>         if (CHECK(!ftrace_skel, "__open", "ftrace skeleton failed\n"))
+>                 goto out;
+>
+> +       /* Demonstrate the bpf_program__set_attach_target() API rather th=
+an
+> +        * the load with options, i.e. opts.attach_prog_fd.
+> +        */
+> +       prog =3D *ftrace_skel->skeleton->progs[0].prog;
 
-Since I have to look at this again, I wonder if we do this correctly. Either we have a bug there or not enough comments on why the code is correct.
+it took me a while to understand what's going on here... :) You are
+not supposed to peek into ftrace_skel->skeleton, it's an "internal"
+object that's passed into libbpf.
 
-        if (hcon->out) {
-                u8 cfm[16];
+It's better to write it as a nice and short:
 
-                err = smp_f4(smp->tfm_cmac, smp->remote_pk, smp->local_pk,
-                             smp->rrnd, 0, cfm);
-                if (err)
-                        return SMP_UNSPECIFIED;
+prog =3D ftrace_skel->progs.trace_on_entry;
 
-                if (crypto_memneq(smp->pcnf, cfm, 16))
-                        return SMP_CONFIRM_FAILED;
-        } else {
-                smp_send_cmd(conn, SMP_CMD_PAIRING_RANDOM, sizeof(smp->prnd),
-                             smp->prnd);
-                SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
+> +       bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
+> +       bpf_program__set_attach_target(prog, pkt_fd, "_xdp_tx_iptunnel");
+> +
+> +       prog =3D *ftrace_skel->skeleton->progs[1].prog;
 
-                /* Only Just-Works pairing requires extra checks */
-                if (smp->method != JUST_WORKS)
-                        goto mackey_and_ltk;
+same as above: ftrace_skel->progs.trace_on_exit
 
-                /* If there already exists long term key in local host, leave
-                 * the decision to user space since the remote device could
-                 * be legitimate or malicious.
-                 */
-                if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
-                                 hcon->role)) {
-                        err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-                                                        hcon->type,
-                                                        hcon->dst_type,
-                                                        passkey, 1);
-                        if (err)
-                                return SMP_UNSPECIFIED;
-                        set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-                }
-        }
-
-mackey_and_ltk:
-        /* Generate MacKey and LTK */
-        err = sc_mackey_and_ltk(smp, smp->mackey, smp->tk);
-        if (err)
-                return SMP_UNSPECIFIED;
-
-        if (smp->method == JUST_WORKS || smp->method == REQ_OOB) {
-                if (hcon->out) {
-                        sc_dhkey_check(smp);
-                        SMP_ALLOW_CMD(smp, SMP_CMD_DHKEY_CHECK);
-                }
-                return 0;
-        }
-
-        err = smp_g2(smp->tfm_cmac, pkax, pkbx, na, nb, &passkey);
-        if (err)
-                return SMP_UNSPECIFIED;
-
-        err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst, hcon->type,
-                                        hcon->dst_type, passkey, 0);
-        if (err)
-                return SMP_UNSPECIFIED;
-
-        set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-
-        return 0;
-}
-
-Since we are already !hcon->out and smp->method == JUST_WORKS, why are we moving into mackey_and_ltk path? If we have already an LTK, then we just should bail out after setting SMP_FLAG_WAIT_USER, right?
-
-@@ -2115,7 +2115,7 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
-        struct l2cap_chan *chan = conn->smp;
-        struct smp_chan *smp = chan->data;
-        struct hci_conn *hcon = conn->hcon;
--       u8 *pkax, *pkbx, *na, *nb;
-+       u8 *pkax, *pkbx, *na, *nb, confirm_hint;
-        u32 passkey;
-        int err;
- 
-@@ -2179,13 +2179,9 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
-                 */
-                if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
-                                 hcon->role)) {
--                       err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
--                                                       hcon->type,
--                                                       hcon->dst_type,
--                                                       passkey, 1);
--                       if (err)
--                               return SMP_UNSPECIFIED;
--                       set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-+                       passkey = 0;
-+                       confirm_hint = 1;
-+                       goto confirm;
-                }
-        }
- 
-@@ -2207,8 +2203,11 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
-        if (err)
-                return SMP_UNSPECIFIED;
- 
-+       confirm_hint = 0;
-+
-+confirm:
-        err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst, hcon->type,
--                                       hcon->dst_type, passkey, 0);
-+                                       hcon->dst_type, passkey, confirm_hint);
-        if (err)
-                return SMP_UNSPECIFIED;
-
-So isn’t this the better approach and actually cleaner code? And I would still add a comment above setting passkey = 0.
-
-Am I missing anything?
-
-Regards
-
-Marcel
-
+> +       bpf_program__set_expected_attach_type(prog, BPF_TRACE_FEXIT);
+> +       bpf_program__set_attach_target(prog, pkt_fd, "_xdp_tx_iptunnel");
+> +
+>         err =3D test_xdp_bpf2bpf__load(ftrace_skel);
+>         if (CHECK(err, "__load", "ftrace skeleton failed\n"))
+>                 goto out;
+> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c b/tools=
+/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+> index cb8a04ab7a78..b840fc9e3ed5 100644
+> --- a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+> +++ b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+> @@ -28,7 +28,7 @@ struct xdp_buff {
+>  } __attribute__((preserve_access_index));
+>
+>  __u64 test_result_fentry =3D 0;
+> -SEC("fentry/_xdp_tx_iptunnel")
+> +SEC("fentry/FUNC")
+>  int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
+>  {
+>         test_result_fentry =3D xdp->rxq->dev->ifindex;
+> @@ -36,7 +36,7 @@ int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
+>  }
+>
+>  __u64 test_result_fexit =3D 0;
+> -SEC("fexit/_xdp_tx_iptunnel")
+> +SEC("fexit/FUNC")
+>  int BPF_PROG(trace_on_exit, struct xdp_buff *xdp, int ret)
+>  {
+>         test_result_fexit =3D ret;
+>
