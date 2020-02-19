@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F4416445B
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 519E516445E
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:36:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbgBSMfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:35:48 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:33832 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726491AbgBSMfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:35:47 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 063D9800077;
-        Wed, 19 Feb 2020 12:35:46 +0000 (UTC)
-Received: from [10.17.20.62] (10.17.20.62) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 19 Feb
- 2020 12:35:41 +0000
-Subject: Re: [PATCH v2 net-next] sfc: remove unused variable
- 'efx_default_channel_type'
-To:     YueHaibing <yuehaibing@huawei.com>,
-        <linux-net-drivers@solarflare.com>, <ecree@solarflare.com>,
-        <davem@davemloft.net>, <amaftei@solarflare.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200211141606.47180-1-yuehaibing@huawei.com>
- <20200219013458.47620-1-yuehaibing@huawei.com>
-From:   Martin Habets <mhabets@solarflare.com>
-Message-ID: <14ded279-719b-41f6-0ee6-56e782f9cfb5@solarflare.com>
-Date:   Wed, 19 Feb 2020 12:35:40 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727497AbgBSMgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 07:36:37 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:33469 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbgBSMgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:36:36 -0500
+Received: by mail-wm1-f66.google.com with SMTP id m10so262786wmc.0
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 04:36:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e1KT/bGjXdS9JX36oYOobEWFP9+9W68S7UedIsUPL3g=;
+        b=wvTEMRu62ptTSLne83UAS/8TEW7UxSrhbG1LVY3oBfEBItR+m5QjfxK5dQr9NifGft
+         UNKysyLr9HQd77BiQeECDkigzsckGT3nNYCiBxFXpcXhLyugZlqOBC8ApoAh3cEOfVTB
+         kidpv/aznZ5R/iCDpFXdI906intbC0yWh0HF81iIMuukY1dKfW/PEhcq7k36M34bmaiq
+         p/ap+2SEYw64zC9WeJRef1upliHpDswNNL36BIqKATRqQH0MhM984prn0F7ipUcl6w+S
+         mmv1cmtTmcYnnnBcUQA+atbKHlmikIwLFPABmhbA/jUcfB8/hGLDezrE7QFiFD0iCAl2
+         M5oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e1KT/bGjXdS9JX36oYOobEWFP9+9W68S7UedIsUPL3g=;
+        b=hNi+EwF7xb+hFTC3pQFXTlGsTEf9GOKMxI22LswYw+CM5FM7lr7qVs58sX8qgIfcdg
+         mDT4Zc14lYmD5H6Du5FZijfumoqVKicfWvmYJ6mZvva5KOPcQL6sOX/KdTBHRmcP+Tlk
+         FaBHsdtaRnW8hbfzklbzO9Zr94e4HccQAOSXm5OijTNAVeO4DMl1m85dc6hIicyYIYvD
+         kHkiQT/p+3Uv5KURuMtQea3/F28nUc+mEcMD51UxhkfPT39TeabzVcWvWH4sEUbGmM3S
+         RYwvSlKFGWJ3JeKhqhVuzjarndTayTpkp2TSYPGF+ilRKIf4/Mdh3jlgOpTyWI4t/PYJ
+         4pTg==
+X-Gm-Message-State: APjAAAWFfBlPOlUKDofRDkpX+lo05FUrDxlqTKBhSS1jGXSMGbJ4phBp
+        bOEP6b3ylx1kvg21klsyiRbJMQ==
+X-Google-Smtp-Source: APXvYqxBfJy9323J1kVWL0P8JS4bRHRmT/7haNAKhAZi8RRkU1GfQ+qPOMG+QE0ZIvZfwhzwoEP4Og==
+X-Received: by 2002:a7b:c05a:: with SMTP id u26mr5189887wmc.74.1582115794896;
+        Wed, 19 Feb 2020 04:36:34 -0800 (PST)
+Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
+        by smtp.gmail.com with ESMTPSA id c141sm2821179wme.41.2020.02.19.04.36.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 04:36:34 -0800 (PST)
+Date:   Wed, 19 Feb 2020 14:36:31 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 10/13] net: socionext: use new helper
+ tcp_v6_gso_csum_prep
+Message-ID: <20200219123631.GA651277@apalos.home>
+References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
+ <6f02ce1c-aef7-6127-1724-72f7eee56810@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200219013458.47620-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ukex01.SolarFlarecom.com (10.17.10.4) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25240.003
-X-TM-AS-Result: No-5.114700-8.000000-10
-X-TMASE-MatchedRID: oTBA/+sdKabmLzc6AOD8DfHkpkyUphL9eouvej40T4gd0WOKRkwsh/pe
-        Js18NRDdXqyKGNlj+bAOxUl2LETEm3DrA8J4/NO6bm8pd3f6T7/wKD5QtMI+mVSOymiJfTYXeUp
-        nydDvXEaGy3RToYQak6q9CuM/w766nMA3Sw1wynk/ApMPW/xhXkyQ5fRSh2650AWKUvQ4UnVdaO
-        8DxOlYWKT06nkcV3iq9D5vXEWlG7Z2m+j+coBLPp4CIKY/Hg3AtOt1ofVlaoLUHQeTVDUrItRnE
-        QCUU+jzjoczmuoPCq3oqCWlP9IHhbGpmBtOWT82gNZ8DuQuuZDHoz0dNUiX8ZdruZ1qStaEIUNv
-        dCYa2BPomz7ic/IL9UsRVrP5dTCHdThcEcVE5i3i+fTMx9KaNitss6PUa4/cD6GAt+UbooSj1CO
-        4X0EqeXggXFAhtWiYlExlQIQeRG0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.114700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25240.003
-X-MDID: 1582115746-XXmW6YoeFmi8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f02ce1c-aef7-6127-1724-72f7eee56810@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/02/2020 01:34, YueHaibing wrote:
-> drivers/net/ethernet/sfc/efx.c:116:38: warning:
->  efx_default_channel_type defined but not used [-Wunused-const-variable=]
+On Tue, Feb 18, 2020 at 09:09:17PM +0100, Heiner Kallweit wrote:
+> Use new helper tcp_v6_gso_csum_prep in additional network drivers.
 > 
-> commit 83975485077d ("sfc: move channel alloc/removal code")
-> left behind this, remove it.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 83975485077d ("sfc: move channel alloc/removal code")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-
-Acked-by: Martin Habets <mhabets@solarflare.com>
-
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 > ---
-> v2: Add Fixes tag
-> ---
->  drivers/net/ethernet/sfc/efx.c | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/net/ethernet/socionext/netsec.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index 4481f21..256807c 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -113,7 +113,6 @@ MODULE_PARM_DESC(debug, "Bitmapped debugging message enable value");
->   *
->   *************************************************************************/
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index e8224b543..6266926fe 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -1148,11 +1148,7 @@ static netdev_tx_t netsec_netdev_start_xmit(struct sk_buff *skb,
+>  				~tcp_v4_check(0, ip_hdr(skb)->saddr,
+>  					      ip_hdr(skb)->daddr, 0);
+>  		} else {
+> -			ipv6_hdr(skb)->payload_len = 0;
+> -			tcp_hdr(skb)->check =
+> -				~csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
+> -						 &ipv6_hdr(skb)->daddr,
+> -						 0, IPPROTO_TCP, 0);
+> +			tcp_v6_gso_csum_prep(skb);
+>  		}
 >  
-> -static const struct efx_channel_type efx_default_channel_type;
->  static void efx_remove_port(struct efx_nic *efx);
->  static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog);
->  static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp);
+>  		tx_ctrl.tcp_seg_offload_flag = true;
+> -- 
+> 2.25.1
 > 
+> 
+
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
