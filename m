@@ -2,110 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D352164149
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:17:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9316F16414F
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:17:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbgBSKRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:17:05 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46409 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgBSKRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:17:05 -0500
-Received: by mail-pg1-f193.google.com with SMTP id y30so855916pga.13;
-        Wed, 19 Feb 2020 02:17:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wx3cl/ju+y18z95mSB4X4cdRQQ7rCw0DISRZpgvl858=;
-        b=mN10sBd/GXiQoJR3Ywfsm0PgOHnA0dVmNF3IgQ8Ktyp7fHFx4uXm9z6AnSYjILHEIV
-         BAZuo/Qzdzixq8W+e9q65H8A0nw4EeI4VW8DpBfebiI8ju0TWNS5j6aH+EUlou6AYQnO
-         QowgF8dWYECxBSGNFRbDdqgiNPb4ggGYLCHRw6x4N1s+H7Y8VoinygwuqrYU9UI08Mkn
-         1jdpPlct9uT3eS4Hyp281UiuPQ8R9RCNUENIsaUMvOdmPRsrzEPB6R3V2VvWEQzELr9T
-         dXuxcP4YxroyUstNofwTQhh6Yk+wv4ttKWd+yjJf0swaUFO3aBClYJpFbl4F8ctGX/Bf
-         ZVdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wx3cl/ju+y18z95mSB4X4cdRQQ7rCw0DISRZpgvl858=;
-        b=R+uQYR//jDMLz6rW5FgeVsvM6NUNgcDU1EpL38UnDCrGyT/D/mBn06c4KF4ZTdsprJ
-         Kko+OMVZ4muJ87CV7lV3o0RUR+ee7Gk3GsKD0JB+hIXLl048gr2bPJP8MiESSsFjtRgZ
-         K1mxcE+BiEyS93bb45w8aSo/H+Yz6LT2LZt2HnDZM8iYAQbum2M/KZlXrUSRwoVPo1Ih
-         7oGZONIKAtOcNJfo1vN+36f0vD8Hku3MQl619Db7KAdT96irQFsG+6Op68H0PCbr6z8C
-         qYdY60HCpzuPaPoGAMhoFFVJvqw0+5rFv5Ya8OQUPOCuF2pM84vHPEx1QCkyz2I1i2uG
-         H4YQ==
-X-Gm-Message-State: APjAAAXECzoHvUUIDoqxUyOVTLYR9Of/LoL7ZoHSmkLDQkvmaMN45Ws/
-        /6W1VdEw77kdUvivlwLkrKM=
-X-Google-Smtp-Source: APXvYqy6NiIl+ebEVWdcRWivE8SiuoiFsCnaSaA8epCJyhv6rxlKttT+lXy/ebF12zJfvlcSy/d+Bw==
-X-Received: by 2002:a63:6d0b:: with SMTP id i11mr26437592pgc.266.1582107424607;
-        Wed, 19 Feb 2020 02:17:04 -0800 (PST)
-Received: from localhost.localdomain ([146.196.37.220])
-        by smtp.googlemail.com with ESMTPSA id a2sm2400885pfi.30.2020.02.19.02.16.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 02:17:04 -0800 (PST)
-From:   Amol Grover <frextrite@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Amol Grover <frextrite@gmail.com>
-Subject: [PATCH] netfilter: ipt_CLUSTERIP: Pass lockdep expression to RCU lists
-Date:   Wed, 19 Feb 2020 15:46:27 +0530
-Message-Id: <20200219101626.31943-1-frextrite@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726510AbgBSKRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 05:17:51 -0500
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:22318 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgBSKRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:17:51 -0500
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: BwKLTfREsDGPQ2O8anVwbUt7AayfbgmtXbaXbyYJyveGrrIsRO4IAb41pam/FYGG39DNu6ykYN
+ mBfOP1LR4SK3L7MXnnGYcNTE3LeL1JbbZc6HepWle3R16bU7N7jAzndUAYm3nug1NAklPQ6KcV
+ GWeDzP7jWd/ecrIhncCwsgPxAFHuOLscfQm+ELJfDR77ZtDSQ4DSii2DpCmYpFcWQ3A/hRsyeR
+ KUuTYJIGRli3hl68WsGB0f1Zx3VC41Om1G8bZZnruvlx9i+FtnXYgJBmVn7HvK/9rycnNc9bEp
+ 9rM=
+X-IronPort-AV: E=Sophos;i="5.70,459,1574146800"; 
+   d="scan'208";a="69023145"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Feb 2020 03:17:50 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 19 Feb 2020 03:17:34 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 19 Feb 2020 03:17:34 -0700
+Date:   Wed, 19 Feb 2020 11:17:39 +0100
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "Joergen Andreasen" <joergen.andreasen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
+ to CPU in standalone mode
+Message-ID: <20200219101739.65ucq6a4dmlfgfki@lx-anielsen.microsemi.net>
+References: <20200217150058.5586-1-olteanv@gmail.com>
+ <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
+ <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
+ <20200218140111.GB10541@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20200218140111.GB10541@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cn->configs is traversed using list_for_each_entry_rcu
-outside an RCU read-side critical section but under the protection
-of cn->lock.
+On 18.02.2020 15:01, Andrew Lunn wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>On Tue, Feb 18, 2020 at 02:29:15PM +0200, Vladimir Oltean wrote:
+>> Hi Allan,
+>>
+>> On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
+>> <allan.nielsen@microchip.com> wrote:
+>> >
+>> > On 17.02.2020 17:00, Vladimir Oltean wrote:
+>> > >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>> > >
+>> > >From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> > >
+>> > >The Ocelot switches have what is, in my opinion, a design flaw: their
+>> > >DSA header is in front of the Ethernet header, which means that they
+>> > >subvert the DSA master's RX filter, which for all practical purposes,
+>> > >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
+>> > >needs to be used for extraction, which makes the switch add a fake DMAC
+>> > >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
+>> > >
+>> > >The issue with this design, of course, is that the CPU will be spammed
+>> > >with frames that it doesn't want to respond to, and there isn't any
+>> > >hardware offload in place by default to drop them.
+>> > In the case of Ocelot, the NPI port is expected to be connected back to
+>> > back to the CPU, meaning that it should not matter what DMAC is set.
+>> >
+>>
+>> You are omitting the fact that the host Ethernet port has an RX filter
+>> as well. By default it should drop frames that aren't broadcast or
+>> aren't sent to a destination MAC equal to its configured MAC address.
+>> Most DSA switches add their tag _after_ the Ethernet header. This
+>> makes the DMAC and SMAC seen by the front-panel port of the switch be
+>> the same as the DMAC and SMAC seen by the host port. Combined with the
+>> fact that DSA sets up switch port MAC addresses to be inherited from
+>> the host port, RX filtering 'just works'.
+>
+>It is a little bit more complex than that, but basically yes. If the
+>slave interface is in promisc mode, the master interface is also made
+>promisc. So as soon as you add a slave to a bridge, the master it set
+>promisc. Also, if the slave has a different MAC address to the master,
+>the MAC address is added to the masters RX filter.
+Good to know. I assume this will mean that in the case of Felix+NXP cpu
+the master interface is in promisc mode?
 
-Hence, add corresponding lockdep expression to silence false-positive
-warnings, and harden RCU lists.
+>If the DSA header is before the DMAC, you need promisc mode all the
+>time. But i don't expect the CPU port to be spammed. The switch should
+>only be forwarding frames to the CPU which the CPU is actually
+>interested in.
+With Ocelot we do not see this spamming - and I still do not understand
+why this is seen with Felix.
 
-Signed-off-by: Amol Grover <frextrite@gmail.com>
----
- net/ipv4/netfilter/ipt_CLUSTERIP.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+It is the same core with process the frames, and decide which frames
+should be copied to the CPU. The only difference is that in Ocelot the
+CPU queue is connected to a frame-DMA, while in Felix it is a MAC-to-MAC
+connection.
 
-diff --git a/net/ipv4/netfilter/ipt_CLUSTERIP.c b/net/ipv4/netfilter/ipt_CLUSTERIP.c
-index 6bdb1ab8af61..df856ff835b7 100644
---- a/net/ipv4/netfilter/ipt_CLUSTERIP.c
-+++ b/net/ipv4/netfilter/ipt_CLUSTERIP.c
-@@ -139,7 +139,8 @@ __clusterip_config_find(struct net *net, __be32 clusterip)
- 	struct clusterip_config *c;
- 	struct clusterip_net *cn = clusterip_pernet(net);
- 
--	list_for_each_entry_rcu(c, &cn->configs, list) {
-+	list_for_each_entry_rcu(c, &cn->configs, list,
-+				lockdep_is_held(&cn->lock)) {
- 		if (c->clusterip == clusterip)
- 			return c;
- 	}
-@@ -194,7 +195,8 @@ clusterip_netdev_event(struct notifier_block *this, unsigned long event,
- 	struct clusterip_config *c;
- 
- 	spin_lock_bh(&cn->lock);
--	list_for_each_entry_rcu(c, &cn->configs, list) {
-+	list_for_each_entry_rcu(c, &cn->configs, list,
-+				lockdep_is_held(&cn->lock)) {
- 		switch (event) {
- 		case NETDEV_REGISTER:
- 			if (!strcmp(dev->name, c->ifname)) {
--- 
-2.24.1
+>> Be there 4 net devices: swp0, swp1, swp2, swp3.
+>> At probe time, the following doesn't work on the Felix DSA driver:
+>> ip addr add 192.168.1.1/24 dev swp0
+>> ping 192.168.1.2
+>
+>That is expected to work.
+>
+>> But if I do this:
+>> ip link add dev br0 type bridge
+>> ip link set dev swp0 master br0
+>> ip link set dev swp0 nomaster
+>> ping 192.168.1.2
+>> Then it works, because the code path from ocelot_bridge_stp_state_set
+>> that puts the CPU port in the forwarding mask of the other ports gets
+>> executed on the "bridge leave" action.
+>
+>It probably also works because when the port is added to the bridge,
+>the bridge puts the port into promisc mode. That in term causes the
+>master to be put into promisc mode.
+>
+>       Andrew
 
+/Allan
