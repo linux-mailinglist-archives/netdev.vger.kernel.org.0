@@ -2,132 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE6B1652B9
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C071652CC
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:55:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbgBSWv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 17:51:58 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52326 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727429AbgBSWv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 17:51:57 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so17186wmc.2
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 14:51:56 -0800 (PST)
+        id S1727979AbgBSWzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 17:55:06 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:35683 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727933AbgBSWzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 17:55:05 -0500
+Received: by mail-il1-f194.google.com with SMTP id g12so22072997ild.2
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 14:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jbujtbx8IL4E4woX2WznpDK1BwIAnRN303wihEdTgzE=;
-        b=bDsHKLLnaLt1VWDmj4X2+Wjsl7sQsft8qDmFVzh3QBpfMZI+HI93+Tox1K/5evJ2NV
-         FbJjsUH/gtpR9LesG6TgJn+iGSJSbm8cXYH0jEAHcg8/dLpcfWWUNpHuvSp6GgTY1Q01
-         wGmhJVWbuwCyepIJOcQM9d5Hx0sqHA81dpza3eLDyh/y84So0YrCzYNGjLnNtAHFUOL8
-         BoUmxU0eP+QDNxqujLDW6HnK3QRF7LSikJAGwrTF47D3hiyDNjhnzoWEvJJEqQ4P+HGO
-         lNIJDNGWWxSUKnODyKiG/jKJ3ZfGGjPWjacPHNn+vKUil8TYHN3c7XTzzDnn8XdeITFw
-         xDHw==
+        d=lixom-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EpAMqTgPV4b+hRig2cUuoFOjWPXPfch7/PyvuUrynfo=;
+        b=MgyJDERiivp1dcjo74oCW8yuyz6aC8CNoXb0F6HsaegPUinGGik9ix6+iP5CnOalk1
+         4UjzVEepkpU3z8MTk5mU1ADbPZVRkWYWlS2H4Ct3iRstTrtyq6jQV1GZeFhXFsOfAFJB
+         MRF928ZnYXO7aHo00rSYB5EX8sAHKDNNxZMo8Ul4ECu0STSLii2l6X4odKnwts1wmiLc
+         pTNby6eBi80K/79yJDmac47n7L1nrvDOPTuR0YKYmrKsNjQkf57nQ77NjximRQjy0WPu
+         oxVprbv/W3YU12Npr8w3cr1ssDrya9ovY16d0PyCYB6FmQYHDBnlcloXk0iHLs2HOI/B
+         oQgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jbujtbx8IL4E4woX2WznpDK1BwIAnRN303wihEdTgzE=;
-        b=Xz3OtoLOcAeCXZStJzpO2MJrjZq6OF5i4MOgxwzlB/BOYznVW+BKvwkHCur3ypFdPt
-         0alfkzE41QB0QUbydYpeqtthStj+pXFQVDNUMfqQxWhG1n0SXx2X31Qdjd/x5++A+6gW
-         EZWL1p3bmztUhvnV72+tKKeG4d0uxzX3A8Vhbn6DZmqvLGf/adR5Sr/ekObK8MdazOAu
-         2RPnF3M5LRSXIOblweAB1cp9ccBQp9iV0jFH4E8+JGVKtPLyUOqQQclESAt+spoBfVse
-         MMnQfTuLeRjRi0xcGoGrn2JlzLYkqQ0zLwUmEisQnAzM/tWSF5cTc+wHLBkB3NFx+fn0
-         n83w==
-X-Gm-Message-State: APjAAAVd0Zu9bk0zC0zpXvK83ZtR/ujdqwbTTqMW4LGMI4R8ZyiNUgV0
-        wjkNk1mEAW/Ri/Gd6svJoDHRmPDt
-X-Google-Smtp-Source: APXvYqzfYp03m0zPkQahTYSBYVDmgm4tLMEjxzNrhq/D0IyDnE5Wi76CA/XT/QfLLRFJsuMx/i2ZQw==
-X-Received: by 2002:a1c:3803:: with SMTP id f3mr16754wma.134.1582152715179;
-        Wed, 19 Feb 2020 14:51:55 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:a8cb:6924:1f30:ec1a? (p200300EA8F296000A8CB69241F30EC1A.dip0.t-ipconnect.de. [2003:ea:8f29:6000:a8cb:6924:1f30:ec1a])
-        by smtp.googlemail.com with ESMTPSA id t9sm1727642wrv.63.2020.02.19.14.51.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Feb 2020 14:51:54 -0800 (PST)
-Subject: Re: [PATCH net-next 1/2] net: phy: unregister MDIO bus in
- _devm_mdiobus_free if needed
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <15ee7621-0e74-a3c1-0778-ca4fa6c2e3c6@gmail.com>
- <913abdae-0617-b411-7eaa-599588f95e32@gmail.com>
- <20200219222103.GZ31084@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <57df2161-a4f8-c57a-d5d0-e360f06aa9a2@gmail.com>
-Date:   Wed, 19 Feb 2020 23:51:47 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EpAMqTgPV4b+hRig2cUuoFOjWPXPfch7/PyvuUrynfo=;
+        b=gmuBThNebr2Z4ptBAVFZEyMxRD80dc9xmFAIBaQhpshsGRI7TQMrr1autUAx3LvqCY
+         THtb7bAi/jakt9fPveMf6Ni/LbKJfzE2Kzgwv6KElshAkkxdN/pdK9BujU/aBJ49SpMZ
+         rWtF2YUnvla2yZavc7d1+rDBjcGHCmxvF0M26XcOGUB0o9kUcyuXj7FhEEvdElohigYQ
+         crbQb0ZRwcDycR9phkRlRZguLWppr5II8jv5W7KESJg/ErA0/yLa0nSbpMhpKp8cYHtQ
+         EjFJROBOq/i+0rEWtxQP6o8zQ0Rr+UBaSil6icnt19xKUonc54IHsAWhl5Ye2QIzjSnq
+         /oLg==
+X-Gm-Message-State: APjAAAXJE1MBCys70IfxoKoLdpouDjMrJheTqiC7fPa/OMbRWDmt5SDt
+        MkfDvOqyBjcNW65L9zc6rHQfFgYWsp337L+2H/oSWQ==
+X-Google-Smtp-Source: APXvYqyb15r2mBFqMeHZTZlCfhyqX8qvJmHY5h2wuxudCzKO9l5t9qgNWFv72waBtxlihRgSTFhu7tMKS/98+D5l1K0=
+X-Received: by 2002:a92:db49:: with SMTP id w9mr24744338ilq.277.1582152904310;
+ Wed, 19 Feb 2020 14:55:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200219222103.GZ31084@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200218171321.30990-1-robh@kernel.org> <20200218181356.09ae0779@donnerap.cambridge.arm.com>
+In-Reply-To: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
+From:   Olof Johansson <olof@lixom.net>
+Date:   Wed, 19 Feb 2020 14:54:53 -0800
+Message-ID: <CAOesGMg=-w6+gpAmBDV6yfAg-HUk5AZfsKxQ+kYOn56NcB59vA@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        SoC Team <soc@kernel.org>,
+        Robert Richter <rrichter@marvell.com>,
+        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Mark Langsdorf <mlangsdo@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        iommu@lists.linux-foundation.org,
+        James Morse <james.morse@arm.com>,
+        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.02.2020 23:21, Andrew Lunn wrote:
-> On Mon, Feb 17, 2020 at 09:34:57PM +0100, Heiner Kallweit wrote:
->> If using managed MDIO bus handling (devm_mdiobus_alloc et al) we still
->> have to manually unregister the MDIO bus. For drivers that don't depend
->> on unregistering the MDIO bus at a specific, earlier point in time we
->> can make driver author's life easier by automagically unregistering
->> the MDIO bus. This extension is transparent to existing drivers.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/mdio_bus.c | 7 ++++++-
->>  1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
->> index 9bb9f37f2..6af51cbdb 100644
->> --- a/drivers/net/phy/mdio_bus.c
->> +++ b/drivers/net/phy/mdio_bus.c
->> @@ -170,7 +170,12 @@ EXPORT_SYMBOL(mdiobus_alloc_size);
->>  
->>  static void _devm_mdiobus_free(struct device *dev, void *res)
->>  {
->> -	mdiobus_free(*(struct mii_bus **)res);
->> +	struct mii_bus *bus = *(struct mii_bus **)res;
->> +
->> +	if (bus->state == MDIOBUS_REGISTERED)
->> +		mdiobus_unregister(bus);
->> +
->> +	mdiobus_free(bus);
->>  }
-> 
-> Hi Heiner
-> 
-> The API is rather asymmetric. The alloc is not just setting up a free,
-> but also an unregister. Are there other examples of this in the
-> kernel?
-> 
-To a certain extent pcim_release() is similar. It silently reverses
-previous calls to pci_enable_msi / pci_enable_msix (after calling
-pcim_enable_device).
+Hi,
 
-> Maybe a devm_of_mdiobus_register() would be better? It is then clear
-> that the unregister happens because of this call, and the free because
-> of the devm_mdiobus_alloc().
-> 
-I understand the concern regarding the asymmetry. For me the question
-is whether the additional effort for avoiding it is worth it.
-We'd have to create at least devm_register_mdiobus and
-devm_of_mdiobus_register.
-Also then we'd have to think about how to deal with the case that a
-non-perfect driver author combines a non-managed mdiobus_alloc
-with a later call to devm_register_mdiobus, because we'd like to
-avoid the case that mdiobus_free is called before mdiobus_unregister.
-Maybe we would need a mechanism similar to the one used in the
-PCI core functions mentioned earlier.
-devm_register_mdiobus would have to warn if the bus allocation was
-non-managed.
+On Tue, Feb 18, 2020 at 10:14 AM Andre Przywara <andre.przywara@arm.com> wr=
+ote:
+>
+> On Tue, 18 Feb 2020 11:13:10 -0600
+> Rob Herring <robh@kernel.org> wrote:
+>
+> Hi,
+>
+> > Calxeda has been defunct for 6 years now. Use of Calxeda servers carrie=
+d
+> > on for some time afterwards primarily as distro builders for 32-bit ARM=
+.
+> > AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
+> > hosts.
+> >
+> > The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
+> > support as there are few or no other systems with enough RAM and LPAE. =
+Now
+> > 32-bit KVM host support is getting removed[1].
+> >
+> > While it's not much maintenance to support, I don't care to convert the
+> > Calxeda DT bindings to schema nor fix any resulting errors in the dts f=
+iles
+> > (which already don't exactly match what's shipping in firmware).
+>
+> While every kernel maintainer seems always happy to take patches with a n=
+egative diffstat, I wonder if this is really justification enough to remove=
+ a perfectly working platform. I don't really know about any active users, =
+but experience tells that some platforms really are used for quite a long t=
+ime, even if they are somewhat obscure. N900 or Netwinder, anyone?
 
->    Andrew
-> 
-Heiner
+One of the only ways we know to confirm whether there are active users
+or not, is to propose removing a platform.
+
+The good news is that if/when you do, and someone cares enough about
+it to want to keep it alive, they should also have access to hardware
+and can help out in maintaining it and keeping it in a working state.
+
+For some hardware platforms, at some point in time it no longer makes
+sense to keep the latest kernel available on them, especially if
+maintainers and others no longer have easy access to hardware and
+resources/time to keep it functional.
+
+It's really more about "If you care about this enough to keep it
+going, please speak up and help out".
+
+> So to not give the impression that actually *everyone* (from that small s=
+ubset of people actively reading the kernel list) is happy with that, I thi=
+nk that having support for at least Midway would be useful. On the one hand=
+ it's a decent LPAE platform (with memory actually exceeding 4GB), and on t=
+he other hand it's something with capable I/O (SATA) and networking, so one=
+ can actually stress test the system. Which is the reason I was using that =
+for KVM testing, but even with that probably going away now there remain st=
+ill some use cases, and be it for general ARM(32) testing.
+
+How many bugs have you found on this platform that you would not have
+on a more popular one? And, how many of those bugs only affected this
+platform, i.e. just adding onto the support burden without positive
+impact to the broader community?
+
+> I don't particularly care about the more optional parts like EDAC, cpuidl=
+e, or cpufreq, but I wonder if keeping in at least the rather small SATA an=
+d XGMAC drivers and basic platform support is feasible.
+
+At what point are you better off just running under QEMU/virtualization?
+
+> If YAML DT bindings are used as an excuse, I am more than happy to conver=
+t those over.
+>
+> And if anyone has any particular gripes with some code, maybe there is a =
+way to fix that instead of removing it? I was always wondering if we could =
+get rid of the mach-highbank directory, for instance. I think most of it is=
+ Highbank (Cortex-A9) related.
+
+Again, how do you fix it if nobody has signed up for maintaining and
+keeping it working? Doing blind changes that might or might not work
+is not a way to keep a platform supported.
+
+Just because code is removed, it doesn't mean it can't be reintroduced
+when someone comes along and wants to do that. Look at some of the
+recent additions of old OLPC hardware support, for example. But
+there's a difference between this and keeping the code around hoping
+that someone will care about it. It's not lost, and it's easy to bring
+back.
+
+
+
+-Olof
