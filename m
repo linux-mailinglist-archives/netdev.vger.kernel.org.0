@@ -2,121 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9BB163D29
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:45:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C9A0163D44
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:50:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbgBSGp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 01:45:26 -0500
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:40809 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbgBSGp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 01:45:26 -0500
-Received: by mail-pf1-f201.google.com with SMTP id d127so14822555pfa.7
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 22:45:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=JFI3+kM1LWruGVLKeVPFO/XZwyOSYT/vDPiEnVdBj2U=;
-        b=PnuQ7SvkJrwFsCkOr3rvHKfrDrwUoHQwrQQitEv/ezWelIifCVoD7E3e/i+/2TbM+X
-         IwDtLxTnUEfVdwcl86OnwvXOLU70wOEw5HjL0v/xxm5717Pb45kjxTcUhUMbrmdsyP+C
-         SBKE6mym4PF3P72mIY7hikh8i3a0aESWh+EGXRwooJhSJ8OYdGDoz+hXpRSaw0axM8Ex
-         lC+0iV0uJuKu1tSimojwsqaUaYK/Ci5C2h9tZDxNlL3m1P3aB2xekQ91IYnZXgMP5WR2
-         +0hlJJr0F5xYVtjxQjNN5VJvD2bkr1IH8Z41iOCRcsbF8sY6i5hUm+rC3ZHfqAgUC51h
-         Ua+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=JFI3+kM1LWruGVLKeVPFO/XZwyOSYT/vDPiEnVdBj2U=;
-        b=mtVE/X059i2Y6haJ4z0Y7NXm0kFsxpZNNOT387qMfvyZXVOfQ+jojY0FLT/UGfpROy
-         M4acePb8TC9bvCk4J6Ub4jjZmZlx5VkaNWCZDoKp0kfK+9yVNBe1cC4ErQw6kwppTcO1
-         L5JdYxEVoNA1NXuuboAsWWjLvbHOs9YrnNjxZjO/uFk8uGKCbTHxYXsJyqYwqPzfg1vh
-         D1V6zhB4rVgzNy8r+JeOkDCoAkSynExzer0jqZ2hUdpld7fXbxHqGcql6sm2m4O7pFue
-         QYJULesAuc/lBIvRR4cBqmcNplyv1G6MuEjVS4QuWCve5PZ04Ca5bw3f87EhH8UWRhtK
-         jjig==
-X-Gm-Message-State: APjAAAWcRw7ezLiqa4VfTWL70F0196elX519JQuafoxjzFnMnyI25Em+
-        77vC1Mh/4xq/Z4DIu0mox4Ks4Xs7alIDn9fEwA==
-X-Google-Smtp-Source: APXvYqz+J/xwCfFRMD1shS+tndghawrwzI7Yd0VrboY//9yoBvjkbC42tNq4IbmZInjyjU6RkwV+tCIPByJGmiAtag==
-X-Received: by 2002:a63:5443:: with SMTP id e3mr20602878pgm.245.1582094725566;
- Tue, 18 Feb 2020 22:45:25 -0800 (PST)
-Date:   Wed, 19 Feb 2020 14:45:19 +0800
-Message-Id: <20200219144442.Bluez.v2.1.I145f6c5bbf2437a6f6afc28d3db2b876c034c2d8@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-Subject: [Bluez PATCH v2] bluetooth: fix passkey uninitialized when used
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Howard Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        clang-built-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1726354AbgBSGuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 01:50:40 -0500
+Received: from smtp-out.kfki.hu ([148.6.0.48]:59167 "EHLO smtp-out.kfki.hu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726121AbgBSGuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 01:50:40 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.kfki.hu (Postfix) with ESMTP id 2C7F3CC00F8;
+        Wed, 19 Feb 2020 07:50:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        blackhole.kfki.hu; h=mime-version:user-agent:references
+        :message-id:in-reply-to:from:from:date:date:received:received
+        :received; s=20151130; t=1582095036; x=1583909437; bh=6N/wx1PPm7
+        0XWkAYLWsXauw4+sMVlpaGdfM/XPXQNfs=; b=P8l5AL1uJmdf4WSO/J4pKD+6nV
+        0fPeRbqTfRajP8An38Xf7agnkiU0vDzIVPuQG32BZwMeZUQgKhN4rDOC2jqi2xim
+        i20JDuOzx9m4pGbAu8EXYZN2ETn5xnENKKjTTF1g1ayRFaKKFgoPjBRLCKWBPwFz
+        3ewJn1A287yoxasEg=
+X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
+Received: from smtp2.kfki.hu ([127.0.0.1])
+        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Wed, 19 Feb 2020 07:50:36 +0100 (CET)
+Received: from blackhole.kfki.hu (blackhole.kfki.hu [148.6.240.2])
+        by smtp2.kfki.hu (Postfix) with ESMTP id DC736CC00F3;
+        Wed, 19 Feb 2020 07:50:33 +0100 (CET)
+Received: by blackhole.kfki.hu (Postfix, from userid 1000)
+        id 6720120FCF; Wed, 19 Feb 2020 07:50:33 +0100 (CET)
+Date:   Wed, 19 Feb 2020 07:50:33 +0100 (CET)
+From:   Jozsef Kadlecsik <kadlec@netfilter.org>
+X-X-Sender: kadlec@blackhole.kfki.hu
+To:     syzbot <syzbot+8b5f151de2f35100bbc5@syzkaller.appspotmail.com>
+cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        coreteam@netfilter.org, David Miller <davem@davemloft.net>,
+        florent.fourcot@wifirst.fr, Florian Westphal <fw@strlen.de>,
+        jeremy@azazel.net, johannes.berg@intel.com,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        tanhuazhong@huawei.com
+Subject: Re: KASAN: use-after-free Read in bitmap_ip_destroy
+In-Reply-To: <0000000000000d774c059ee442e6@google.com>
+Message-ID: <alpine.DEB.2.20.2002190746590.20111@blackhole.kfki.hu>
+References: <0000000000000d774c059ee442e6@google.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; BOUNDARY="110363376-950394365-1582095033=:20111"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This issue cause a warning here
-https://groups.google.com/forum/#!topic/clang-built-linux/kyRKCjRsGoU
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Howard Chung <howardchung@google.com>
+--110363376-950394365-1582095033=:20111
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
----
 
-Changes in v2:
-- refactor code
+#syz fix: netfilter: ipset: use bitmap infrastructure completely
 
- net/bluetooth/smp.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+On Tue, 18 Feb 2020, syzbot wrote:
 
-diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-index 50e0ac692ec4..929e0bebaf80 100644
---- a/net/bluetooth/smp.c
-+++ b/net/bluetooth/smp.c
-@@ -2115,7 +2115,7 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
- 	struct l2cap_chan *chan = conn->smp;
- 	struct smp_chan *smp = chan->data;
- 	struct hci_conn *hcon = conn->hcon;
--	u8 *pkax, *pkbx, *na, *nb;
-+	u8 *pkax, *pkbx, *na, *nb, confirm_hint;
- 	u32 passkey;
- 	int err;
- 
-@@ -2179,13 +2179,12 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
- 		 */
- 		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
- 				 hcon->role)) {
--			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
--							hcon->type,
--							hcon->dst_type,
--							passkey, 1);
--			if (err)
--				return SMP_UNSPECIFIED;
--			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-+			/* Set passkey to 0. The value can be any number since
-+			 * it'll be ignored anyway.
-+			 */
-+			passkey = 0;
-+			confirm_hint = 1;
-+			goto confirm;
- 		}
- 	}
- 
-@@ -2206,9 +2205,11 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
- 	err = smp_g2(smp->tfm_cmac, pkax, pkbx, na, nb, &passkey);
- 	if (err)
- 		return SMP_UNSPECIFIED;
-+	confirm_hint = 0;
- 
-+confirm:
- 	err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst, hcon->type,
--					hcon->dst_type, passkey, 0);
-+					hcon->dst_type, passkey, confirm_hint);
- 	if (err)
- 		return SMP_UNSPECIFIED;
- 
--- 
-2.25.0.265.gbab2e86ba0-goog
+> syzbot suspects this bug was fixed by commit:
+>=20
+> commit 32c72165dbd0e246e69d16a3ad348a4851afd415
+> Author: Kadlecsik J=C3=B3zsef <kadlec@blackhole.kfki.hu>
+> Date:   Sun Jan 19 21:06:49 2020 +0000
+>=20
+>     netfilter: ipset: use bitmap infrastructure completely
+>=20
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=3D17fc79b5e0=
+0000
+> start commit:   8f8972a3 Merge tag 'mtd/fixes-for-5.5-rc7' of git://git.k=
+e..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dcfbb8fa33f49f=
+9f3
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3D8b5f151de2f3510=
+0bbc5
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D12e22559e00=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D16056faee0000=
+0
+>=20
+> If the result looks correct, please mark the bug fixed by replying with:
+>=20
+> #syz fix: netfilter: ipset: use bitmap infrastructure completely
+>=20
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisect=
+ion
+>=20
 
+-
+E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
+Address : Wigner Research Centre for Physics
+          H-1525 Budapest 114, POB. 49, Hungary
+--110363376-950394365-1582095033=:20111--
