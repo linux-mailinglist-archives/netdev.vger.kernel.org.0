@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 334A316420D
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:27:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A49CA16420B
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbgBSK1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:27:18 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55153 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbgBSK1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:27:11 -0500
-Received: by mail-io1-f69.google.com with SMTP id r62so15877668ior.21
+        id S1726643AbgBSK1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 05:27:11 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:55767 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgBSK1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:27:10 -0500
+Received: by mail-il1-f199.google.com with SMTP id w62so19504290ila.22
         for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 02:27:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GN2id+2LRnjznw5TD1tuue3NaDlCHXdRMzYBB7qsFhg=;
-        b=YkARvhiy/uVsjIb90/foWiWyHSrAr2m58BqQBmGMrhyL4X2WOxOiS0D8EgwHyPTGZe
-         mNmWxTxzdwcssRPiawEsL/ehi8BdlyhDv8PaHJm+VmoAjQXBEdjckz+I2PjA3CNoAjBE
-         4OpaYD+NlkNO9TJVSXzk9ano02jKCj3lFhJy7WBLR4eRQuXYX49liwCXwklvtN3z+Hsn
-         /3XqK58hzKIEhY69SqabH5kBKSRufuo9b1Neoz5cUtKLsE6eMYDcYsY3QAfpKs8J6LHD
-         onRx8jcNdGGgZehzjsD85yYdrpNAFpkKLhGx2N8yZmtjZMH8zCdFx7YmN0DSl6IVw1/p
-         ZssA==
-X-Gm-Message-State: APjAAAXibShYgCor2Zh5VFSmgC53YS5RUhEr7sb+57nAFrIIwESg/Wfx
-        jxLP0zy/TzPTralYUQKEWuxqIOy5ZIctYyVUDDULfvPGrZG9
-X-Google-Smtp-Source: APXvYqy6dRQOWUhMqpDmdIuC1tdFrGntBlc8Sj7new4Ib3QNCGH+lkabLXCVIsVhBGOtIkvhxT1eJD0piYh+YYDLpPJRAI4o3jIo
+        bh=33+se4haTh9DlmmNbmgp9VTTpKhaS8ygFsODy9mZqOc=;
+        b=DNM0qOam+QY80oQel14FylUhCmYMOL7klspQ25r0FNE/ma2/UxacN0NuLagzPxhEvh
+         HqskyeO2CI6vgyz9luaFBGHSZS8AJOauz+iBrN2qcLbaFb/hA8aussSyDeujF5cgCbA9
+         arRevSEBZB3hR/E4YlBVVmwGKB3+Gc+GwzzcO9OWiAm7mDbU4JH1sR9htE0/aPpv6AX1
+         jXno9JnwrOEYmXGViiEkK5Khu2lPM8+pfAViqLo89qoQtGrJVpNvn6qL6UCpKFWN8Oau
+         iCML76g+daDpz/pk19nJS8P5nq4YXZlOtXGPFBmLo3SaUwZr1q+b5OUaAHqUiojxlDq3
+         7Dbg==
+X-Gm-Message-State: APjAAAU1Te+x/1i1IZ7oHyTanp7uI123dtGvL4OpB26UrzdQhAzD9Hg4
+        03kgj7xoTJEvdoSNblSsZZtThFJqnO4RmUnAQOUqbsfaEbDr
+X-Google-Smtp-Source: APXvYqzjlt+oO6qH5psK/10bssAQQU0chD5igzOKj4Hf95uzw4fn9SuSfWbr/5WIX8MhdAwIOytu+fdSxewjeeb1dM4wH4OHvGzT
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8b9a:: with SMTP id p26mr19101008iol.273.1582108030498;
+X-Received: by 2002:a6b:e411:: with SMTP id u17mr20164483iog.39.1582108030273;
  Wed, 19 Feb 2020 02:27:10 -0800 (PST)
 Date:   Wed, 19 Feb 2020 02:27:10 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000277b80059eeb3bdb@google.com>
-Subject: net-next boot error: can't ssh into the instance (3)
-From:   syzbot <syzbot+1312d700c503da6008a1@syzkaller.appspotmail.com>
+Message-ID: <000000000000240eeb059eeb3baf@google.com>
+Subject: net boot error: can't ssh into the instance (3)
+From:   syzbot <syzbot+fd422c644918bc119eae@syzkaller.appspotmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
@@ -47,17 +47,17 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    2019fc96 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1387bd4ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=735296e4dd620b10
-dashboard link: https://syzkaller.appspot.com/bug?extid=1312d700c503da6008a1
+HEAD commit:    a1fa83bd netdevice.h: fix all kernel-doc and Sphinx warnings
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10153231e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=71f1d0a1df5278ab
+dashboard link: https://syzkaller.appspot.com/bug?extid=fd422c644918bc119eae
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1312d700c503da6008a1@syzkaller.appspotmail.com
+Reported-by: syzbot+fd422c644918bc119eae@syzkaller.appspotmail.com
 
 
 
