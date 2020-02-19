@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6204163AC6
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 04:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00F23163AC7
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 04:06:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbgBSDGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 22:06:34 -0500
+        id S1728316AbgBSDGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 22:06:36 -0500
 Received: from mail-eopbgr00088.outbound.protection.outlook.com ([40.107.0.88]:65095
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728202AbgBSDGd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 22:06:33 -0500
+        id S1728266AbgBSDGf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 22:06:35 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jxoVR/rmpOyuEaOtSTimXmRBl4Z4E1jVsQDBMxYMHIyc6IfHUOAr5ZBpwOMOCDu7ReGBsU9CS70KxyynlX4vN+w1824p9wv6/OEDarUPSoGGHVzBxA20rNgzDdeSegAQPX96C04QeYqlaUMB1tzlq49nXCs6pzG7i43G/aIW/cdMZu5QFkdhdqJ0VKgWhIRG62ruVuBEOhG/laKQpvY/VM1ab63c0vLlTPVaRGXE7IInwyNRhl6QuaC50tMgUqg25oD99g1pW2dOB1Cw79v/Bg6nEH7cWuWeCF70BYd0581bfYJVCcCnCZNrEGgp3ew7BfpD3QpdCtvelTgi+iVAew==
+ b=ENI9MoFZaxdKbEq6e2JRCubiNmQtLuyo366Gb0Maazq8Zbzpoz02FZgVMkUSf06jJGfhkUCLO4NDunkAjPnZoNy+vpVIykW+WtvLUnaoKXx5qXsJHRqaL6mWd7PI172QAmshQBMcFWWhYp5RN+n6Xmk0eihiJ8+XnzA79sp+Pp8Wm/qVjNX53p6zcqV3m1WK7RgQuguPEKtqZ7A+sHvHTrxo0I1C970TzhDlXq/N4nEJJ8j/Kw77wJ+dPZWMR99KBhlf1ay93kuAA3jCKN+Ya8ba42WFdCtdkJ4AWu96io2gQh4NEvKOCvf7clOuMuZpJi6SdBX71cYFP0cWDXM0gQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bUcpw3kIMmdEekSTRHcOG6GNp03tY98BGpdlGjUz7n8=;
- b=Fl4tVRhXmSM6L95tN3nw2T5OyXsalJVX/JCjydY5gVic3qsQO3Av+EfUYlWq7k1vRNJozGwN0vdXQ3mawFP2d3lEn+UYl86OTOkbXgYd5oFUe4/7OlxvzbbY6sYCW3sRSCAD1QhihtH0G1HH1t2VixRnNV460WVKpaVWN8/48n3ntRWheY0xoKmyboroHoFAHC+poM+EJ1JUq7/oHqZRJEXI9RuQUhphY0REFYuWnZVhWT8u71d/6p8QFIlSf7RJ0rQxCMAodh3sXgXTwNoi5hVdZvsWrCDLWJ9f7U64Tp6z2+q5D7CK0rbbMRAdV8xxkHogBpcnXDmEDNY3p1wpkw==
+ bh=Fr76w6UiiRn2gQZF9CU8w7zBgUSa7ZEaE7D7+0LUj8Q=;
+ b=kf87c19guf3U1unsek98l/jadFPuBCZIz8fCGs9vWRRSsZwWm31qlO6m688VNlI+1OAsv3b+zapY8JbvZ61gJ+shEDQG2WkzcWDX+ab15IqUZgZy5UVyiHk5/4FtLtc0nbboDQgmgKm0NBNQzqwsDYbrIiYipqk7BjVii7TY6KwlPkY6AP7mhzfL+NFDeeggTlXDOFtDf5o5kYiVEZvlixNnQ6iwqLIWaHf4iCtktOUxQCRYH77BEftlCXYyYbaWcquTVDt4OuB7FViIWLs1nkBNj/4xBpeDUj6sQx+vvnhReSgdn60GPmPkacBUasVIzNapDldsQpeos9LAw2Xvcw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bUcpw3kIMmdEekSTRHcOG6GNp03tY98BGpdlGjUz7n8=;
- b=kXBf7A7UkjN2iGcqyoV8PwQ+ftIa2JJ8dwA5kuywTqoCsjzs4WIn3AT1FicqN4j4FLzmpW7zCM2o+o5yBCWW7kTKKmiW6vtPcUy+O9528/Y8g59mi5gD4iilJE4/nDjrrrlSUVLR1LZyI/D7WuncZ0yEr/BGcJuZf3RwgyrDp+Q=
+ bh=Fr76w6UiiRn2gQZF9CU8w7zBgUSa7ZEaE7D7+0LUj8Q=;
+ b=qfwxaZnJjfMOykzhjkgQKYx0la5eGNAbzl+fq0KH3GrdRilmE7jwjol3gO96S1T+OF7Wvg+/9gVz/bRx54+SD38w/73kmfbbf1RA98VAGdfR7QiNgdR1UNfnqB2WNYCajl4tSoYmOy9sy8mdWJ+bjO7cT1pCsbno674m+TTLkr4=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB5853.eurprd05.prod.outlook.com (20.178.125.211) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.25; Wed, 19 Feb 2020 03:06:31 +0000
+ 15.20.2729.25; Wed, 19 Feb 2020 03:06:33 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2729.028; Wed, 19 Feb 2020
- 03:06:30 +0000
-Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0089.namprd05.prod.outlook.com (2603:10b6:a03:e0::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.6 via Frontend Transport; Wed, 19 Feb 2020 03:06:27 +0000
+ 03:06:33 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR05CA0089.namprd05.prod.outlook.com (2603:10b6:a03:e0::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.6 via Frontend Transport; Wed, 19 Feb 2020 03:06:31 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Aya Levin <ayal@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
+        Hamdan Igbaria <hamdani@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 3/7] net/mlx5e: Fix crash in recovery flow without devlink
- reporter
-Thread-Topic: [net 3/7] net/mlx5e: Fix crash in recovery flow without devlink
- reporter
-Thread-Index: AQHV5tGVhDOvzkjvAku4EvEjOrliaQ==
-Date:   Wed, 19 Feb 2020 03:06:30 +0000
-Message-ID: <20200219030548.13215-4-saeedm@mellanox.com>
+Subject: [net 4/7] net/mlx5: DR, Fix matching on vport gvmi
+Thread-Topic: [net 4/7] net/mlx5: DR, Fix matching on vport gvmi
+Thread-Index: AQHV5tGWaN0CXCkVQEujPgXCXYi3ww==
+Date:   Wed, 19 Feb 2020 03:06:33 +0000
+Message-ID: <20200219030548.13215-5-saeedm@mellanox.com>
 References: <20200219030548.13215-1-saeedm@mellanox.com>
 In-Reply-To: <20200219030548.13215-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -67,81 +64,75 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 8948193a-0a7f-47f3-0784-08d7b4e8b71f
+x-ms-office365-filtering-correlation-id: 367289fa-8731-4b65-463f-08d7b4e8b931
 x-ms-traffictypediagnostic: VI1PR05MB5853:|VI1PR05MB5853:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5853586024B0AE5F410B1FD7BE100@VI1PR05MB5853.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:972;
+x-microsoft-antispam-prvs: <VI1PR05MB5853F82B7BDF1B5D8CCFCB58BE100@VI1PR05MB5853.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2276;
 x-forefront-prvs: 0318501FAE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(396003)(39860400002)(366004)(346002)(189003)(199004)(956004)(2616005)(5660300002)(26005)(16526019)(81166006)(52116002)(4326008)(110136005)(316002)(6506007)(186003)(81156014)(2906002)(8936002)(66476007)(8676002)(54906003)(1076003)(64756008)(6512007)(6666004)(71200400001)(478600001)(66556008)(66446008)(86362001)(36756003)(6486002)(107886003)(66946007)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5853;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(396003)(39860400002)(366004)(346002)(189003)(199004)(956004)(2616005)(5660300002)(26005)(16526019)(81166006)(52116002)(4326008)(110136005)(316002)(6506007)(186003)(81156014)(2906002)(8936002)(66476007)(8676002)(54906003)(1076003)(64756008)(6512007)(71200400001)(478600001)(66556008)(66446008)(86362001)(36756003)(6486002)(107886003)(66946007)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5853;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rs2Tm1gA1QPso3HDfFIsm49Z9ZZ1Wdl4uW+E1sKRKaN4LUxcLd+n6ri/OB2D3ZttQ37ux9y3BIcHSHt/c1p0S4mc/rNFD41VFpluP8CgM6PYxkR4sCRi7favM8AFbyG+nGjHYhoKSnNbx9w2G7/Gb4neUzFsSnJ5rxe8ECU7irROEgoVpw3/zbJ6ojIY+hxVzwYo5puT+sQIJ2TVfzgGH8TnoOLwUkdwsSDe5S0WPurttr5S+FhqGYAPjGOMdMUu0tGCPgZQ6BKCkvFCpmm26hw8rfFJex+pA6QxtuXUsr8t2f0LJom1xQBWWHm+JkY+IpfYxQjAN7BN4NfNTG4MdWDE5yInhlD6tO3SNfv/qBxolyK83pi7omOzTgSScm7z7JXqpTSQtsNsU/rz/MvYFKaDq79Fs86EDjPWswpNC8kBbodZ7wJB6VE4/WgSgyutKEA1Kd/2amwywDg75uAVEJ2tWK38d2IH8X4WXipjaa9vZsLI2iQUw5938Ri/sIyO+GI2fJ5dqFKKWhvxdDmSQOVlnQyLCW4YZbYEehbmIvQ=
-x-ms-exchange-antispam-messagedata: 4W7fSqd7fdWNXWeokPGft2YSENfP2Z4tEd2lFiunpugK+JAanrUQaBP7MffJl+JAMUTw1emBrV1xihECoAs0q9IRUH4vyi4LZqV7Phgn73/5HfYWrRjPwJDnG2WOcMG4v7kzyEm4ENR+Cq+QzcGOug==
+x-microsoft-antispam-message-info: 51UeSiB72w9I8YH3cYPhGVg5tZ6HwFfm35smtRJSq3QQOOxZXFhGhCZX23MPg71YJSSdZYSA/czCjEnXPmI+BkkspNwAFapF0EV04VkJJkzk4hrDXNY1dlUDv7eq6oifdb8ClJaCHyPBJofP4Wf/p5E1X2Dou1wPhhJOrk3LbO+yrHrzf+wlPfK5FyWpyoUmPL7K3LO8ZLMQQVdwYjxUhCW8xUjcU1Lzg2m3z7PVYW1WWj0mGSS+vqkWO2OTb8CYHUl1r6Cwzo8gpKrhn3d425WaEEhKCkH4U4CoDhe3BZUObIEeV/W1kQWaZmheQYaMqiTVdQ/tQkXB+eFbdjHIK+0KirXctyOsmdUPeyKsUew/mjiDCpfMWAH5ImN5InNwP4+tbTQhSkbhghd7sC9ay3HOr/ekWcAfxu1HVTi66O6qQSKUyhJhU+Y61GH6YTWsxCRefC2stc1Fj5Tul2lFvP7l+NwG3a6J2Eo/gL1HZNcZWr9w9hSA0JREZjMoUu3wA9tBAybZc3sDz3Ms9FNn5GvM3OO7epInt32VedhkuK8=
+x-ms-exchange-antispam-messagedata: GF6hSL0iVs0Hn/lsyHDn3gFNFT4lI+sSzrX7QSLC/9Ck9Gv3azo5MFX6AaxQKbpIMyzLtS1sY8aS1xNklp0T4WBeZz4+zS3BsBN+qANJmpMlb6WCqKABuWmrbfIR9dZwoQNuzpwg8Zwk+gp+kKhz7w==
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8948193a-0a7f-47f3-0784-08d7b4e8b71f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Feb 2020 03:06:30.7283
+X-MS-Exchange-CrossTenant-Network-Message-Id: 367289fa-8731-4b65-463f-08d7b4e8b931
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Feb 2020 03:06:33.0639
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IEM9wAbb0FN+P1tLSCl3/2eC0ny2nHu9KuePA/yUNquxLHlyx2b7H6iABu/GfJNEfCqz0YS8Hl4kikrcxUIIag==
+X-MS-Exchange-CrossTenant-userprincipalname: 3pXj1OxUPzdNHhaCVUTrXADB6REwGBFGVhXhBRB6DhreK6CFMo/EKF9fndv5/6XMhp+zBO0cpcxOvz+rRbC1sw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5853
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+From: Hamdan Igbaria <hamdani@mellanox.com>
 
-When health reporters are not supported, recovery function is invoked
-directly, not via devlink health reporters.
+Set vport gvmi in the tag, only when source gvmi is set in the bit mask.
 
-In this direct flow, the recover function input parameter was passed
-incorrectly and is causing a kernel oops. This patch is fixing the input
-parameter.
-
-Following call trace is observed on rx error health reporting.
-
-Internal error: Oops: 96000007 [#1] PREEMPT SMP
-Process kworker/u16:4 (pid: 4584, stack limit =3D 0x00000000c9e45703)
-Call trace:
-mlx5e_rx_reporter_err_rq_cqe_recover+0x30/0x164 [mlx5_core]
-mlx5e_health_report+0x60/0x6c [mlx5_core]
-mlx5e_reporter_rq_cqe_err+0x6c/0x90 [mlx5_core]
-mlx5e_rq_err_cqe_work+0x20/0x2c [mlx5_core]
-process_one_work+0x168/0x3d0
-worker_thread+0x58/0x3d0
-kthread+0x108/0x134
-
-Fixes: c50de4af1d63 ("net/mlx5e: Generalize tx reporter's functionality")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Signed-off-by: Parav Pandit <parav@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+Fixes: 26d688e3 ("net/mlx5: DR, Add Steering entry (STE) utilities")
+Signed-off-by: Hamdan Igbaria <hamdani@mellanox.com>
+Reviewed-by: Alex Vesker <valex@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/health.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/health.c
-index 3a975641f902..20b907dc1e29 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/health.c
-@@ -200,7 +200,7 @@ int mlx5e_health_report(struct mlx5e_priv *priv,
- 	netdev_err(priv->netdev, err_str);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/dr=
+ivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+index c6c7d1defbd7..aade62a9ee5c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -2307,7 +2307,9 @@ static int dr_ste_build_src_gvmi_qpn_tag(struct mlx5d=
+r_match_param *value,
+ 	struct mlx5dr_cmd_vport_cap *vport_cap;
+ 	struct mlx5dr_domain *dmn =3D sb->dmn;
+ 	struct mlx5dr_cmd_caps *caps;
++	u8 *bit_mask =3D sb->bit_mask;
+ 	u8 *tag =3D hw_ste->tag;
++	bool source_gvmi_set;
 =20
- 	if (!reporter)
--		return err_ctx->recover(&err_ctx->ctx);
-+		return err_ctx->recover(err_ctx->ctx);
+ 	DR_STE_SET_TAG(src_gvmi_qp, tag, source_qp, misc, source_sqn);
 =20
- 	return devlink_health_report(reporter, err_str, err_ctx);
- }
+@@ -2328,7 +2330,8 @@ static int dr_ste_build_src_gvmi_qpn_tag(struct mlx5d=
+r_match_param *value,
+ 	if (!vport_cap)
+ 		return -EINVAL;
+=20
+-	if (vport_cap->vport_gvmi)
++	source_gvmi_set =3D MLX5_GET(ste_src_gvmi_qp, bit_mask, source_gvmi);
++	if (vport_cap->vport_gvmi && source_gvmi_set)
+ 		MLX5_SET(ste_src_gvmi_qp, tag, source_gvmi, vport_cap->vport_gvmi);
+=20
+ 	misc->source_eswitch_owner_vhca_id =3D 0;
 --=20
 2.24.1
 
