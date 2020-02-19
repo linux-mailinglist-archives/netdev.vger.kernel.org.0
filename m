@@ -2,86 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1761638F9
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 02:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 369F8163921
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 02:13:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbgBSBGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 20:06:03 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39462 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbgBSBGC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 20:06:02 -0500
-Received: by mail-qk1-f194.google.com with SMTP id a141so11657134qkg.6;
-        Tue, 18 Feb 2020 17:06:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OwfuP5nGjqxy79JMZZiigB23bcGhIb7riQCt1QZquPY=;
-        b=i8brOLYuPtuxuL6R0n667/ZUqpFTCCpewfMKnl/XDjdTDO5M6ebkK8Uf+vUTjKUC5Z
-         YgCQljZuCf7fh3grRa0glhcFtyiZo7vTZbPeBZyWl/dWwBfvmjRJw+7CA3N10hgl4IAs
-         WA5AQw8j02wgCmVu2YpXkLtIUABvUHyOGP35KejxM5mk43OqXTguPRQd9ME4WMsWm69I
-         Jzqf7SmIzDpdJ1idCvBR74zxFTKoTsv/Aww5SvJQPhVjuXiz9lq4rQ8GpuPX/cWmHQ+J
-         UbzFi4RhGhIHaUQ4i/7PsckLQXsEMHyIx4nKnEWe4rn+mqWUoMAP8Nu46Ok7xsGqUKep
-         kbtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OwfuP5nGjqxy79JMZZiigB23bcGhIb7riQCt1QZquPY=;
-        b=Cc7FPzNXw3zaO+PGFSZjZzZVK6eIC6qW6T3Fxy/McFP5PzGsUfbXlVe3Og9H3SALEk
-         PcBLHuPrU9yvQrtiMLmgVLzmllIoUgBKprKay1m7vQYnuFp4znH/zr6gzDa8/BqhHAJw
-         Opb8CQ7lL4UhrFjFWRdxfQbQSNgwhSXbhlHReOFmX6iRDQO72HCJ+HXOHLkkjtnpZ20Z
-         KWvK49n1VvGtpVYdzE7qfU4+dSSqSOuGcKduNSHTcG9438pGhMyTXs1u0sqYbb6ZUQLQ
-         fHofB/nHktLwWsQ5V2ZYXner6hi6RrY74AM6RJ+ZboCV6RvBmHVKck5+VRPeYJBfnj+h
-         w5mg==
-X-Gm-Message-State: APjAAAVg2ZDda89Kbjx98Zxaufp+nC1vrYwiLVmXLVxLQ6cFcBk8PJSp
-        rN+IWKXTR2xEZb0O9jaeVJg=
-X-Google-Smtp-Source: APXvYqx/zjFkEC8bz2JJmFlSRjhc4MJJfniyQ6Fjav3IyHnUNf7sVst+AnbkK6KVfJeDi9SH7hMzVA==
-X-Received: by 2002:a37:e81:: with SMTP id 123mr17873898qko.193.1582074361074;
-        Tue, 18 Feb 2020 17:06:01 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:5af:31c:27bd:ccb5? ([2601:282:803:7700:5af:31c:27bd:ccb5])
-        by smtp.googlemail.com with ESMTPSA id g11sm130191qtc.48.2020.02.18.17.05.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 17:06:00 -0800 (PST)
-Subject: Re: [net-next 1/2] Perform IPv4 FIB lookup in a predefined FIB table
-To:     Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ahmed.abdelsalam@gssi.it,
-        dav.lebrun@gmail.com, andrea.mayer@uniroma2.it,
-        paolo.lungaroni@cnit.it
-References: <20200213010932.11817-1-carmine.scarpitta@uniroma2.it>
- <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
- <7302c1f7-b6d1-90b7-5df1-3e5e0ba98f53@gmail.com>
- <20200219005007.23d724b7f717ef89ad3d75e5@uniroma2.it>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cd18410f-7065-ebea-74c5-4c016a3f1436@gmail.com>
-Date:   Tue, 18 Feb 2020 18:05:58 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1727857AbgBSBNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 20:13:34 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:45342 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726757AbgBSBNe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Feb 2020 20:13:34 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 41652542FF67A9A28705;
+        Wed, 19 Feb 2020 09:13:32 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Wed, 19 Feb 2020
+ 09:13:24 +0800
+Subject: Re: [RFC rdma-next] RDMA/core: Add attribute WQ_MEM_RECLAIM to
+ workqueue "infiniband"
+To:     Jason Gunthorpe <jgg@ziepe.ca>, Lang Cheng <chenglang@huawei.com>
+CC:     <dledford@redhat.com>, <leon@kernel.org>, <davem@davemloft.net>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>
+References: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
+ <20200218153156.GD31668@ziepe.ca>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <212eda31-cc86-5487-051b-cb51c368b6fe@huawei.com>
+Date:   Wed, 19 Feb 2020 09:13:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <20200219005007.23d724b7f717ef89ad3d75e5@uniroma2.it>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200218153156.GD31668@ziepe.ca>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 4:50 PM, Carmine Scarpitta wrote:
-> Indeed both call fib_table_lookup and rt_dst_alloc are exported for modules. 
-> However, several functions defined in route.c are not exported:
-> - the two functions rt_cache_valid and rt_cache_route required to handle the routing cache
-> - find_exception, required to support fib exceptions.
-> This would require duplicating a lot of the IPv4 routing code. 
-> The reason behind this change is really to reuse the IPv4 routing code instead of doing a duplication. 
+On 2020/2/18 23:31, Jason Gunthorpe wrote:
+> On Tue, Feb 18, 2020 at 11:35:35AM +0800, Lang Cheng wrote:
+>> The hns3 driver sets "hclge_service_task" workqueue with
+>> WQ_MEM_RECLAIM flag in order to guarantee forward progress
+>> under memory pressure.
 > 
-> For the fi member of the struct fib_result, we will fix it by initializing before "if (!tbl_known)"
+> Don't do that. WQ_MEM_RECLAIM is only to be used by things interlinked
+> with reclaimed processing.
+> 
+> Work on queues marked with WQ_MEM_RECLAIM can't use GFP_KERNEL
+> allocations, can't do certain kinds of sleeps, can't hold certain
+> kinds of locks, etc.
 
-The route.c code does not need to know about the fib table or fib
-policy. Why do all of the existing policy options (mark, L3 domains,
-uid) to direct the lookup to the table of interest not work for this use
-case?
+From mlx5 driver, it seems that there is GFP_KERNEL allocations
+on wq marked with WQ_MEM_RECLAIM too:
+
+mlx5e_tx_timeout_work() -> mlx5e_safe_reopen_channels() ->
+mlx5e_safe_switch_channels() -> mlx5e_open_channels()
+
+kcalloc() is called with GFP_KERNEL in mlx5e_open_channels(),
+and mlx5e_tx_timeout_work() is queued with priv->wq, which is
+allocated with WQ_MEM_RECLAIM flags. see:
+
+mlx5e_netdev_init() -> create_singlethread_workqueue()
+
+
+From the comment in kernel/workqueue.c, the work queued with
+wq with WQ_MEM_RECLAIM flag set seems to be executed without
+blocking under some rare case. I still not quite understand
+the comment, and I can not find any doc that point out the
+GFP_KERNEL allocations can not be done in wq with WQ_MEM_RECLAIM
+yet. Is there any doc that mentions that GFP_KERNEL allocations
+can not be done in wq with WQ_MEM_RECLAIM?
+
+
+/**
+ * rescuer_thread - the rescuer thread function
+ * @__rescuer: self
+ *
+ * Workqueue rescuer thread function.  There's one rescuer for each
+ * workqueue which has WQ_MEM_RECLAIM set.
+ *
+ * Regular work processing on a pool may block trying to create a new
+ * worker which uses GFP_KERNEL allocation which has slight chance of
+ * developing into deadlock if some works currently on the same queue
+ * need to be processed to satisfy the GFP_KERNEL allocation.  This is
+ * the problem rescuer solves.
+ *
+ * When such condition is possible, the pool summons rescuers of all
+ * workqueues which have works queued on the pool and let them process
+ * those works so that forward progress can be guaranteed.
+ *
+ * This should happen rarely.
+ *
+ * Return: 0
+ */
+
+
+The below is the reason we add the sets "hclge_service_task" workqueue
+with WQ_MEM_RECLAIM through analysing why other ethernet drivers has
+allocated wq with WQ_MEM_RECLAIM flag, I may be wrong about that:
+
+hns3 ethernet driver may be used as the low level transport of a
+network file system, memory reclaim data path may depend on the
+worker in hns3 driver to bring back the ethernet link so that it flush
+the some cache to network based disk.
+
+> 
+> Jason
+> 
+> 
+
