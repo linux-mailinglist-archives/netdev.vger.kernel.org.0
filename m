@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C39A1652F5
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:12:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5D21652F9
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:15:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbgBSXMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 18:12:21 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:42764 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgBSXMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 18:12:21 -0500
-Received: by mail-lj1-f195.google.com with SMTP id d10so2161859ljl.9;
-        Wed, 19 Feb 2020 15:12:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wWdZgMsswVvJQU2MierpIWKnEFD04FeEgnx6asgVYnI=;
-        b=WZp2sja7wA3CR4NIL6OyZNdn7QmZHOUFWiYV+dkja9uSHKew/+bKSEoWrRnL4FOiqN
-         NGKZ4lkj83ixJoxxqYMgH7q+tRSNqs/cV0YQugYHYC6+zecrm6XFLsvmzH/6VoY2M6DH
-         YNyynBe/YBVf54qhOuBgRSG0BduKg2rd+Gi9nZfJ+ShsciOYfrDHTibht+8oGOG8wO2i
-         C6Mmp0pSF3V8ndb4C8RNL5DKFVNkzFNa4ps+1Uswgqj7AgLHsbDJUrCqc/ZnY1fnbNkT
-         TFIojIeyAX77RzBMv0GTNM7oCJsteTdQAglUGUpH1pvd7ycS+nb4V0fsW8NgEVIWhmIY
-         iydg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wWdZgMsswVvJQU2MierpIWKnEFD04FeEgnx6asgVYnI=;
-        b=IoyEC68NEy2B9YxLveA561cB1QlNGnv9l+4aHQr3/vSr8aCZu540C0hOz3ApJFtd4E
-         maHWFUz5YTZXEVtSqM3kRM129bPQrSuUaDteQXCJRbyJ/2EacT7XRPCN5wXpzzTMvteD
-         w39ZuBWvWofJWMVM/ajfTxEtslUzsjFPQTpXa8f1CM6U2KtVmDrqvEUJK9FMns0Vgdtv
-         /j5444GS1hoVvQLpHN+dvNcXrtUQeNk7zUD6Mx5p+WiM1mDEb1slua+tUI0WvDOWtdnQ
-         O6uW/UCbG+5HxwEFAbDfOT6wSJSdDvIWEYR7kiQHARlzx4VgvSuIOOFtP28JaVCQ7KN9
-         5swA==
-X-Gm-Message-State: APjAAAWukbffjjmctfRkVxE6NfHQUOI3IuSmGTGQrO+uwJNtuSIduaQd
-        GCXPJ6zE524VyvNMplzo+VoRCRCH/+XCA84rt3Y=
-X-Google-Smtp-Source: APXvYqwPuJO1pn4qVz8SRf9ExBqbylkQAOl355R6sC3iaV5KVqsifvyxlpaZ5kyrxsscgSt0NeEvY1Pp6dOu7d2MFu8=
-X-Received: by 2002:a2e:84d0:: with SMTP id q16mr17395927ljh.138.1582153938706;
- Wed, 19 Feb 2020 15:12:18 -0800 (PST)
+        id S1726697AbgBSXPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 18:15:51 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50236 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726613AbgBSXPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 18:15:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=uiByJ8uwj4w+yypG8/uZx4crDLKhT+yMvcL+mwB85R8=; b=WP9A8mQEzCaLj33FPFy10v6VT
+        QtyVTShq8caCvicWnH/K9bo8peqrkxDoXUUtNPbU12UbeuhbUACu2s6pSGz/DihN4vdXfEYLyYTpZ
+        8NbRWkWzW5UgsoHVJhj0hfwlhTB0OzN7RKUlcm247pxH2TBro29QK5NqMYP1sc2VO+N4wa1aAqKcJ
+        Ro21Tuh9A9srdGGTphrNIGGMJTEU4odn5zXaShfeyn0yYa0CB5uf3aEVJbsqVO3cNtTjQC/1UWJe8
+        0iCBQbtgMgx0n+tshKg9fv3s4V1mqiyP5/OqX/wYBGvWFubqGDQjViHsJvI4hZcgQZcSkEvj6ddO8
+        ls1FL80Mg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50122)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j4YZ3-00088N-7S; Wed, 19 Feb 2020 23:15:33 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j4YYy-0001os-W4; Wed, 19 Feb 2020 23:15:29 +0000
+Date:   Wed, 19 Feb 2020 23:15:28 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
+Message-ID: <20200219231528.GS25745@shell.armlinux.org.uk>
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+ <e2b53d14-7258-0137-79bc-b0a21ccc7b8f@gmail.com>
+ <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
+ <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
 MIME-Version: 1.0
-References: <20200218172552.215077-1-brianvv@google.com> <c31be4c5-d4c7-5979-215e-de23b9ca0549@fb.com>
-In-Reply-To: <c31be4c5-d4c7-5979-215e-de23b9ca0549@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 19 Feb 2020 15:12:06 -0800
-Message-ID: <CAADnVQJofPTYg73qoY6e-SwgyrtqPwU9JKx8DQ-9+L_uW6=X9g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf] bpf: Do not grab the bucket spinlock by default on
- htab batch ops
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Brian Vazquez <brianvv@google.com>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 1:23 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 2/18/20 9:25 AM, Brian Vazquez wrote:
-> > Grabbing the spinlock for every bucket even if it's empty, was causing
-> > significant perfomance cost when traversing htab maps that have only a
-> > few entries. This patch addresses the issue by checking first the
-> > bucket_cnt, if the bucket has some entries then we go and grab the
-> > spinlock and proceed with the batching.
-> >
-> > Tested with a htab of size 50K and different value of populated entries.
-> >
-> > Before:
-> >    Benchmark             Time(ns)        CPU(ns)
-> >    ---------------------------------------------
-> >    BM_DumpHashMap/1       2759655        2752033
-> >    BM_DumpHashMap/10      2933722        2930825
-> >    BM_DumpHashMap/200     3171680        3170265
-> >    BM_DumpHashMap/500     3639607        3635511
-> >    BM_DumpHashMap/1000    4369008        4364981
-> >    BM_DumpHashMap/5k     11171919       11134028
-> >    BM_DumpHashMap/20k    69150080       69033496
-> >    BM_DumpHashMap/39k   190501036      190226162
-> >
-> > After:
-> >    Benchmark             Time(ns)        CPU(ns)
-> >    ---------------------------------------------
-> >    BM_DumpHashMap/1        202707         200109
-> >    BM_DumpHashMap/10       213441         210569
-> >    BM_DumpHashMap/200      478641         472350
-> >    BM_DumpHashMap/500      980061         967102
-> >    BM_DumpHashMap/1000    1863835        1839575
-> >    BM_DumpHashMap/5k      8961836        8902540
-> >    BM_DumpHashMap/20k    69761497       69322756
-> >    BM_DumpHashMap/39k   187437830      186551111
-> >
-> > Fixes: 057996380a42 ("bpf: Add batch ops to all htab bpf map")
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Brian Vazquez <brianvv@google.com>
->
-> Thanks for the fix.
-> Acked-by: Yonghong Song <yhs@fb.com>
+On Wed, Feb 19, 2020 at 11:18:17AM -0800, Florian Fainelli wrote:
+> On 2/19/20 10:52 AM, Vladimir Oltean wrote:
+> > On Wed, 19 Feb 2020 at 02:02, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> >>
+> >> Why not just revert 2ea7a679ca2abd251c1ec03f20508619707e1749 ("net: dsa:
+> >> Don't add vlans when vlan filtering is disabled")? If a driver wants to
+> >> veto the programming of VLANs while it has ports enslaved to a bridge
+> >> that does not have VLAN filtering, it should have enough information to
+> >> not do that operation.
+> >> --
+> >> Florian
+> > 
+> > It would be worth mentioning that for sja1105 and hypothetical other
+> > users of DSA_TAG_PROTO_8021Q, DSA doing that automatically was
+> > helpful. VLAN manipulations are still being done from tag_8021q.c for
+> > the purpose of DSA tagging, but the fact that the VLAN EtherType is
+> > not 0x8100 means that from the perspective of real VLAN traffic, the
+> > switch is VLAN unaware. DSA was the easiest place to disseminate
+> > between VLAN requests of its own and VLAN requests coming from
+> > switchdev.
+> > Without that logic in DSA, a vlan-unaware bridge would be able to
+> > destroy the configuration done for source port decoding.
+> > Just saying - with enough logic in .port_vlan_prepare, I should still
+> > be able to accept only what's whitelisted to work for tagging, and
+> > then it won't matter who issued that VLAN command.
+> 
+> I suppose I am fine with Russell's approach, but maybe its meaning
+> should be reversed, that is, you get VLAN objects notifications by
+> default for a  VLAN unaware bridge and if you do set a specific
+> dsa_switch flag, then you do not get those.
 
-Applied. Thanks
+If we reverse it, I'll need someone to tell me which DSA switches
+should not get the vlan object notifications.  Maybe also in that
+case, we should deny the ability to toggle the state of
+vlan_filtering as well?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
