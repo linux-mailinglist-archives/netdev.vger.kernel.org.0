@@ -2,156 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9316F16414F
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:17:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 704AD1641A7
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbgBSKRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:17:51 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:22318 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgBSKRv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:17:51 -0500
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: BwKLTfREsDGPQ2O8anVwbUt7AayfbgmtXbaXbyYJyveGrrIsRO4IAb41pam/FYGG39DNu6ykYN
- mBfOP1LR4SK3L7MXnnGYcNTE3LeL1JbbZc6HepWle3R16bU7N7jAzndUAYm3nug1NAklPQ6KcV
- GWeDzP7jWd/ecrIhncCwsgPxAFHuOLscfQm+ELJfDR77ZtDSQ4DSii2DpCmYpFcWQ3A/hRsyeR
- KUuTYJIGRli3hl68WsGB0f1Zx3VC41Om1G8bZZnruvlx9i+FtnXYgJBmVn7HvK/9rycnNc9bEp
- 9rM=
-X-IronPort-AV: E=Sophos;i="5.70,459,1574146800"; 
-   d="scan'208";a="69023145"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Feb 2020 03:17:50 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 19 Feb 2020 03:17:34 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Wed, 19 Feb 2020 03:17:34 -0700
-Date:   Wed, 19 Feb 2020 11:17:39 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "Joergen Andreasen" <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-Message-ID: <20200219101739.65ucq6a4dmlfgfki@lx-anielsen.microsemi.net>
-References: <20200217150058.5586-1-olteanv@gmail.com>
- <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
- <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
- <20200218140111.GB10541@lunn.ch>
+        id S1726643AbgBSKXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 05:23:04 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:44065 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726270AbgBSKXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 05:23:04 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id caa781bd
+        for <netdev@vger.kernel.org>;
+        Wed, 19 Feb 2020 10:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=ZCPT+ZMcds8PREOtUbxRL6XjK/M=; b=k3QbIX
+        6WVwRNHUu/tNFoCc4IW4LuWjnKJDU2BOomBRxUPzqLKyfvCwybxDy3+0au872Z93
+        Na5nfOYHEu3jKCtUm0gWxPuMdCyYxRJKyi6UHpYAMURQdRDRiT4Asj3SVN35LUJO
+        E6N48o4yR/6EHm2sWrCSfPK1cnQYrsyI96gcgy7PJLrwj3mENlyU0mdYHlCPihtg
+        yCOnCPdh9jDfQ9pW6biHr6r4AkFUwkGw2s8Xwo6M8BagVXIkvbeJrULsaTrBYHz7
+        4Wv7iZv4Fi1XqmDrxsKh35kJG9qDQuKB+ogdqZjUI2vYXahKI6XezdnIuEE+gcgp
+        i+GtTgZmXU7U6ZxA==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ccce88ba (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Wed, 19 Feb 2020 10:20:17 +0000 (UTC)
+Received: by mail-ot1-f50.google.com with SMTP id z9so22614231oth.5
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 02:23:01 -0800 (PST)
+X-Gm-Message-State: APjAAAVUNevVHn/+HF5Sr/0i4PBdy/pxA6Blznje1+bhV7mRbZReGF3v
+        +VPkQNQme/Tkf7vAEnLqLIU09mmNu1cDirCVWkM=
+X-Google-Smtp-Source: APXvYqw5kcDza6fr8VtyYwTuw85PxRZOmQqC5NnQoMtaWTpFs5uQVk0NP3nmiMvn2lVCeV97cT1XgJ60QCw4J9lWCVY=
+X-Received: by 2002:a9d:811:: with SMTP id 17mr19738264oty.369.1582107780436;
+ Wed, 19 Feb 2020 02:23:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200218140111.GB10541@lunn.ch>
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
+ <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+ <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+ <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
+ <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com>
+ <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
+ <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
+ <CACT4Y+a8N7_n4t_vxezKJVkd1+gDHaMzpeG18MuDE04+r3341A@mail.gmail.com>
+ <CACT4Y+atqrSfZuquPZcRUKNtVbLdu+B5YN3=YmDb38Ruzj3Pzw@mail.gmail.com>
+ <CACT4Y+bMzYZeMvv2DdTuTKtJFzTcHhinp7N7VmSiXqSBDyj8Ug@mail.gmail.com> <CACT4Y+bUXAstk41RPSF-EQDh7A8-XkTbc53nQTHt4DS5AUhr-A@mail.gmail.com>
+In-Reply-To: <CACT4Y+bUXAstk41RPSF-EQDh7A8-XkTbc53nQTHt4DS5AUhr-A@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 19 Feb 2020 11:22:49 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pr4=cn5ijSNs05=fjdfQon49kyEzymkUREJ=xzTZ7Q7w@mail.gmail.com>
+Message-ID: <CAHmME9pr4=cn5ijSNs05=fjdfQon49kyEzymkUREJ=xzTZ7Q7w@mail.gmail.com>
+Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
+ net: WireGuard secure network tunnel]
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.02.2020 15:01, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->On Tue, Feb 18, 2020 at 02:29:15PM +0200, Vladimir Oltean wrote:
->> Hi Allan,
->>
->> On Tue, 18 Feb 2020 at 13:32, Allan W. Nielsen
->> <allan.nielsen@microchip.com> wrote:
->> >
->> > On 17.02.2020 17:00, Vladimir Oltean wrote:
->> > >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->> > >
->> > >From: Vladimir Oltean <vladimir.oltean@nxp.com>
->> > >
->> > >The Ocelot switches have what is, in my opinion, a design flaw: their
->> > >DSA header is in front of the Ethernet header, which means that they
->> > >subvert the DSA master's RX filter, which for all practical purposes,
->> > >either needs to be in promiscuous mode, or the OCELOT_TAG_PREFIX_LONG
->> > >needs to be used for extraction, which makes the switch add a fake DMAC
->> > >of ff:ff:ff:ff:ff:ff so that the DSA master accepts the frame.
->> > >
->> > >The issue with this design, of course, is that the CPU will be spammed
->> > >with frames that it doesn't want to respond to, and there isn't any
->> > >hardware offload in place by default to drop them.
->> > In the case of Ocelot, the NPI port is expected to be connected back to
->> > back to the CPU, meaning that it should not matter what DMAC is set.
->> >
->>
->> You are omitting the fact that the host Ethernet port has an RX filter
->> as well. By default it should drop frames that aren't broadcast or
->> aren't sent to a destination MAC equal to its configured MAC address.
->> Most DSA switches add their tag _after_ the Ethernet header. This
->> makes the DMAC and SMAC seen by the front-panel port of the switch be
->> the same as the DMAC and SMAC seen by the host port. Combined with the
->> fact that DSA sets up switch port MAC addresses to be inherited from
->> the host port, RX filtering 'just works'.
->
->It is a little bit more complex than that, but basically yes. If the
->slave interface is in promisc mode, the master interface is also made
->promisc. So as soon as you add a slave to a bridge, the master it set
->promisc. Also, if the slave has a different MAC address to the master,
->the MAC address is added to the masters RX filter.
-Good to know. I assume this will mean that in the case of Felix+NXP cpu
-the master interface is in promisc mode?
+On Tue, Feb 18, 2020 at 11:00 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> I've added descriptions for wireguard packets:
+> https://github.com/google/syzkaller/commit/012fbc3229ebef871a201ea431b16610e6e0d345
+> It gives all reachable coverage (without breaking crypto).
 
->If the DSA header is before the DMAC, you need promisc mode all the
->time. But i don't expect the CPU port to be spammed. The switch should
->only be forwarding frames to the CPU which the CPU is actually
->interested in.
-With Ocelot we do not see this spamming - and I still do not understand
-why this is seen with Felix.
+Oh, great, that looks really good. It now fails at the index match,
+which is basically trying to brute force a 32-bit integer that's
+changing every 3 minutes, which syzkaller is probably too slow to do
+on it's own. But that's fine.
 
-It is the same core with process the frames, and decide which frames
-should be copied to the CPU. The only difference is that in Ocelot the
-CPU queue is connected to a frame-DMA, while in Felix it is a MAC-to-MAC
-connection.
+Your commit has some questions in it, like "# Not clear if these
+indexes are also generated randomly and we need to guess them or
+not.". Here's what's up with those indices:
 
->> Be there 4 net devices: swp0, swp1, swp2, swp3.
->> At probe time, the following doesn't work on the Felix DSA driver:
->> ip addr add 192.168.1.1/24 dev swp0
->> ping 192.168.1.2
->
->That is expected to work.
->
->> But if I do this:
->> ip link add dev br0 type bridge
->> ip link set dev swp0 master br0
->> ip link set dev swp0 nomaster
->> ping 192.168.1.2
->> Then it works, because the code path from ocelot_bridge_stp_state_set
->> that puts the CPU port in the forwarding mask of the other ports gets
->> executed on the "bridge leave" action.
->
->It probably also works because when the port is added to the bridge,
->the bridge puts the port into promisc mode. That in term causes the
->master to be put into promisc mode.
->
->       Andrew
+Message message_handshake_initiation: the sender picks a random 32-bit
+number, and places it in the "sender_index" field.
+Message message_handshake_response: the sender picks a random 32-bit
+number, and places it in the "sender_index" field. It places the
+32-bit number that it received from message_handshake_initiation into
+the "receiver_index" field.
+Message message_handshake_cookie: the sender places the 32-bit number
+that it received from message_handshake_initiation or
+message_handshake_response into the "receive_index" field.
+Message message_data: the sender places the 32-bit number that it
+picked for the  message_handshake_initiation or
+message_handshake_response into the "key_idx" field.
 
-/Allan
+I'm not sure it'll be too feasible to correlate these relations via
+fuzzing. And either way, I think we've got decent enough non-crypto
+coverage now on the receive path.
+
+I noticed a small seemingly insignificant function with low coverage
+that's on the rtnl path that might benefit from some attention and
+also help find bugs in other devices: wg_netdevice_notification. This
+triggers on various things, but the only case it really cares about is
+NETDEV_REGISTER, which happens when the interface changes network
+namespaces. WireGuard holds a reference to its underlying creating
+namespace, and in order to avoid circular reference counting or UaF it
+needs to either relinquish or get a reference. There are other drivers
+with similar type of reference counting management, I would assume.
+This sort of thing seems up the ally of the types of bugs and races
+syzkaller likes to find. The way to trigger it is with `ip link set
+dev wg0 netns blah`, and then back to its original netns. That's this
+code in net/core/rtnetlink.c:
+
+       if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] ||
+tb[IFLA_TARGET_NETNSID]) {
+               struct net *net = rtnl_link_get_net_capable(skb, dev_net(dev),
+                                                           tb, CAP_NET_ADMIN);
+               if (IS_ERR(net)) {
+                       err = PTR_ERR(net);
+                       goto errout;
+               }
+
+               err = dev_change_net_namespace(dev, net, ifname);
+               put_net(net);
+               if (err)
+                       goto errout;
+               status |= DO_SETLINK_MODIFIED;
+       }
+
+That seems to have decent coverage, but not over wireguard. Is that
+just a result of the syzkaller @devname not yet being expanded to
+wg{0,1,2}, and it'll take a few more weeks for it to learn that?
+@netns_id seems probably good, being restricted to 0:4; is it possible
+these weren't created though a priori?
