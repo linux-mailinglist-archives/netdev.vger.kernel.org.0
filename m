@@ -2,188 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0F2163F43
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 09:33:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 871A2163F46
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 09:34:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbgBSIdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 03:33:36 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:32928 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726202AbgBSIdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 03:33:36 -0500
-Received: by mail-qv1-f68.google.com with SMTP id ek2so1360828qvb.0
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 00:33:33 -0800 (PST)
+        id S1726683AbgBSIeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 03:34:25 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44376 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbgBSIeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 03:34:25 -0500
+Received: by mail-qk1-f195.google.com with SMTP id j8so5937467qka.11
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 00:34:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zsanPJ/bOpiwu8xWV0Vur7nO38aJRb5wjJ5ckvgz0sg=;
-        b=Wy4fEvoxoLI5/rhzQjtUETabmSVcGOhscbRL9+TUQASdl08DQaHTX+w7WduOp4gElR
-         3jBS/Blmr+UruN2t6XK/AAf8aPPKzSZB8clAaJBiz2Kwf+KH+ZHu6YLjETowAVYLHbqv
-         FRPY/vqA0v0sJ3M2hYI75wIb/tIQ9Nx+g04ATkj9zKaARy4BE+0QBfKmckD1K6e6ZnfZ
-         cwSfOvlaAK2vsL+Mdfrep/308LfOk04BaW6bLszNFYSGPvT+HvtpBhOR6HDXg3Y4eo0L
-         wlgCemH/hJbFsPkMyyjIezeTFqN3NTPUC31cdEj4DO3rr9+fpyBfR+Dn/FEGQ4HKoumV
-         HqnA==
+        bh=BrEcUMZPTrT7d1g05LGvZTD+j+iks+IRZfoSSrJsAno=;
+        b=wBEHaUaNMkZl1d7d2+pnRIZl6ftxi/c9QXNIkQVQs9kaUSkpcGo+fF7Vi031GtrTP2
+         9xfy316BmNssZahfqa50ZIkvOf83KBSt+M1FCzJLA3kYfeCmnX39zBeGQuwCS6VuYO/D
+         1qDX9GnGMwEkfI81CWm15eUtYl/m237sy4FRe01YazzrV/pR+ygkpII+dZGvvb+5mJi3
+         b36lZAnBFv3YNKUOQ56IE/vBYOAY5zDqD5QOqpuc3A5CLLpRMrD87PSG+jLXy8xG1hHL
+         F/q2QW3TOmwgIn5kGdB4VdMFKcO+J07yfZ549OTEML81aTNF6JoQnO5dGSSL14Ew4/3+
+         Gm0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zsanPJ/bOpiwu8xWV0Vur7nO38aJRb5wjJ5ckvgz0sg=;
-        b=EyVQnIe728+3Ae698zz9D5WMzr34OzqomDLY6JmOSU+Q9lRRfok4/McB/q81jv19gG
-         1vJrNvxB7Ln10yxlSGIsyr4hod00TqGDv5bNwwGkpin7kbeswkSPKoZe7m9TGUzS8bt3
-         gGSWFrt3fYIqIKtnbNXHZ9ZMpwbtctRosVAAkHwllCtkRz5UQpqQvpNw7Jo9EZ48ovlL
-         v6FrJhJvKAauGmSbkX2akL2vW2UZwaKhyYacAo4K31/icsCfW/bODl+Yc54WrsGxu3al
-         3wgAt+L/78qLFZ0etlP8UG+H6V8QeMxmkj/IBjXnyq43hVRo+GnhUvbvKeww4LUveVE8
-         Hzwg==
-X-Gm-Message-State: APjAAAUtVhyY1Kg2Z1XvoeFo1qS2jz9WlG1bKDmwJ02YxDStGBZcMqpj
-        BVf1Lm6pVfm76abyJCqqcsBt3U/XGJX81Jd/MI47CQ==
-X-Google-Smtp-Source: APXvYqx2kKw4FEuzBg729fZ88vhTu9Sj92ydQu3JtpyUOveWUpKqep22d1y85Rw9AfRhjRXm4T4aRSaNad/+M4XvCaw=
-X-Received: by 2002:a0c:ee91:: with SMTP id u17mr19332879qvr.22.1582101212765;
- Wed, 19 Feb 2020 00:33:32 -0800 (PST)
+        bh=BrEcUMZPTrT7d1g05LGvZTD+j+iks+IRZfoSSrJsAno=;
+        b=cdVIDnHSQeMHiwU6kM6TAFRgd8/5t8+W0f+xucn2Rrrx1XGBgqGsmF/7E6EW/Gk+Si
+         E7982qV1yqdVraIqJoSj6zVhDRdc62bqYAjYqJPxoxlrQbG7d418I8FvFswjL+8tyx/7
+         GLBCvxJ922OoC/0bwvXM2I7Cy9QxEPW0a0HegOY92q6vPRg736jk4xVK9hpImmib6RMo
+         VnxMneil/qTshzjWbg2qt76P+79sqV7fyiwV9hhwh9vepXjcJJz8wlaEBAKEfwxIfGG1
+         HBpzacNAuGKpnLPmo5j7FdGrWnCGS/oYjE633R7U7WF3sJ770XhphnUJpuIehOgy7RES
+         R0TQ==
+X-Gm-Message-State: APjAAAWc0Iag2zi+67NfM4kZ9r79KPB7yBWsVqBt95e5k53zSwmJ/p4t
+        TtpKK671gwr8WE63Rg7SPbUOtTRkdkZza5rBs/6u9A==
+X-Google-Smtp-Source: APXvYqwehC36qQ69QHQkcQGawhD9GhERSJx7/HzdURAscwGWYR4p/EqE7AuuFtkmN9F/jxfV5qtUjSoUzV4vH4kZNpU=
+X-Received: by 2002:a37:5686:: with SMTP id k128mr19072142qkb.8.1582101263392;
+ Wed, 19 Feb 2020 00:34:23 -0800 (PST)
 MIME-Version: 1.0
-References: <1565595162-1383-1-git-send-email-ying.xue@windriver.com>
- <1565595162-1383-4-git-send-email-ying.xue@windriver.com> <CACT4Y+Z6mxvuC4+cmWc++zrJrXWPNDVuguHRHyeEp-teuJ_yNA@mail.gmail.com>
-In-Reply-To: <CACT4Y+Z6mxvuC4+cmWc++zrJrXWPNDVuguHRHyeEp-teuJ_yNA@mail.gmail.com>
+References: <000000000000a40746058c784ef3@google.com> <CACT4Y+b=zF2_S-7SOPZqWBZSaxmWWYgjVs6oVEfXn+ARmy6F7A@mail.gmail.com>
+In-Reply-To: <CACT4Y+b=zF2_S-7SOPZqWBZSaxmWWYgjVs6oVEfXn+ARmy6F7A@mail.gmail.com>
 From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 19 Feb 2020 09:33:21 +0100
-Message-ID: <CACT4Y+ZN_1OPukSwp6U4Z7o=8g5SsDhFZD9rtnD8CRObYZgYYg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] tipc: fix issue of calling smp_processor_id() in preemptible
-To:     Ying Xue <ying.xue@windriver.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Hillf Danton <hdanton@sina.com>,
-        tipc-discussion@lists.sourceforge.net,
+Date:   Wed, 19 Feb 2020 09:34:11 +0100
+Message-ID: <CACT4Y+bbfvKHM1mg_BDu-iSv6A5xpyD3Z8kW+hhbBZ6nMgyu+A@mail.gmail.com>
+Subject: Re: BUG: using smp_processor_id() in preemptible [ADDR] code: syz-executor
+To:     Hillf Danton <hdanton@sina.com>, jmaloy@redhat.com
+Cc:     syzbot <syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com>,
+        allison@lohutok.net, David Miller <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        jmaloy@redhat.com
+        Thomas Gleixner <tglx@linutronix.de>,
+        tipc-discussion@lists.sourceforge.net,
+        Ying Xue <ying.xue@windriver.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 9:29 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+On Wed, Feb 19, 2020 at 9:31 AM Dmitry Vyukov <dvyukov@google.com> wrote:
 >
-> On Mon, Aug 12, 2019 at 9:44 AM Ying Xue <ying.xue@windriver.com> wrote:
+> On Sun, Jun 30, 2019 at 7:19 AM Hillf Danton <hdanton@sina.com> wrote:
 > >
-> > syzbot found the following issue:
 > >
-> > [   81.119772][ T8612] BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor834/8612
-> > [   81.136212][ T8612] caller is dst_cache_get+0x3d/0xb0
-> > [   81.141450][ T8612] CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
-> > [   81.149435][ T8612] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > [   81.159480][ T8612] Call Trace:
-> > [   81.162789][ T8612]  dump_stack+0x172/0x1f0
-> > [   81.167123][ T8612]  debug_smp_processor_id+0x251/0x280
-> > [   81.172479][ T8612]  dst_cache_get+0x3d/0xb0
-> > [   81.176928][ T8612]  tipc_udp_xmit.isra.0+0xc4/0xb80
-> > [   81.182046][ T8612]  ? kasan_kmalloc+0x9/0x10
-> > [   81.186531][ T8612]  ? tipc_udp_addr2str+0x170/0x170
-> > [   81.191641][ T8612]  ? __copy_skb_header+0x2e8/0x560
-> > [   81.196750][ T8612]  ? __skb_checksum_complete+0x3f0/0x3f0
-> > [   81.202364][ T8612]  ? netdev_alloc_frag+0x1b0/0x1b0
-> > [   81.207452][ T8612]  ? skb_copy_header+0x21/0x2b0
-> > [   81.212282][ T8612]  ? __pskb_copy_fclone+0x516/0xc90
-> > [   81.217470][ T8612]  tipc_udp_send_msg+0x29a/0x4b0
-> > [   81.222400][ T8612]  tipc_bearer_xmit_skb+0x16c/0x360
-> > [   81.227585][ T8612]  tipc_enable_bearer+0xabe/0xd20
-> > [   81.232606][ T8612]  ? __nla_validate_parse+0x2d0/0x1ee0
-> > [   81.238048][ T8612]  ? tipc_bearer_xmit_skb+0x360/0x360
-> > [   81.243401][ T8612]  ? nla_memcpy+0xb0/0xb0
-> > [   81.247710][ T8612]  ? nla_memcpy+0xb0/0xb0
-> > [   81.252020][ T8612]  ? __nla_parse+0x43/0x60
-> > [   81.256417][ T8612]  __tipc_nl_bearer_enable+0x2de/0x3a0
-> > [   81.261856][ T8612]  ? __tipc_nl_bearer_enable+0x2de/0x3a0
-> > [   81.267467][ T8612]  ? tipc_nl_bearer_disable+0x40/0x40
-> > [   81.272848][ T8612]  ? unwind_get_return_address+0x58/0xa0
-> > [   81.278501][ T8612]  ? lock_acquire+0x16f/0x3f0
-> > [   81.283190][ T8612]  tipc_nl_bearer_enable+0x23/0x40
-> > [   81.288300][ T8612]  genl_family_rcv_msg+0x74b/0xf90
-> > [   81.293404][ T8612]  ? genl_unregister_family+0x790/0x790
-> > [   81.298935][ T8612]  ? __lock_acquire+0x54f/0x5490
-> > [   81.303852][ T8612]  ? __netlink_lookup+0x3fa/0x7b0
-> > [   81.308865][ T8612]  genl_rcv_msg+0xca/0x16c
-> > [   81.313266][ T8612]  netlink_rcv_skb+0x177/0x450
-> > [   81.318043][ T8612]  ? genl_family_rcv_msg+0xf90/0xf90
-> > [   81.323311][ T8612]  ? netlink_ack+0xb50/0xb50
-> > [   81.327906][ T8612]  ? lock_acquire+0x16f/0x3f0
-> > [   81.332589][ T8612]  ? kasan_check_write+0x14/0x20
-> > [   81.337511][ T8612]  genl_rcv+0x29/0x40
-> > [   81.341485][ T8612]  netlink_unicast+0x531/0x710
-> > [   81.346268][ T8612]  ? netlink_attachskb+0x770/0x770
-> > [   81.351374][ T8612]  ? _copy_from_iter_full+0x25d/0x8c0
-> > [   81.356765][ T8612]  ? __sanitizer_cov_trace_cmp8+0x18/0x20
-> > [   81.362479][ T8612]  ? __check_object_size+0x3d/0x42f
-> > [   81.367667][ T8612]  netlink_sendmsg+0x8ae/0xd70
-> > [   81.372415][ T8612]  ? netlink_unicast+0x710/0x710
-> > [   81.377520][ T8612]  ? aa_sock_msg_perm.isra.0+0xba/0x170
-> > [   81.383051][ T8612]  ? apparmor_socket_sendmsg+0x2a/0x30
-> > [   81.388530][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
-> > [   81.394775][ T8612]  ? security_socket_sendmsg+0x8d/0xc0
-> > [   81.400240][ T8612]  ? netlink_unicast+0x710/0x710
-> > [   81.405161][ T8612]  sock_sendmsg+0xd7/0x130
-> > [   81.409561][ T8612]  ___sys_sendmsg+0x803/0x920
-> > [   81.414220][ T8612]  ? copy_msghdr_from_user+0x430/0x430
-> > [   81.419667][ T8612]  ? _raw_spin_unlock_irqrestore+0x6b/0xe0
-> > [   81.425461][ T8612]  ? debug_object_active_state+0x25d/0x380
-> > [   81.431255][ T8612]  ? __lock_acquire+0x54f/0x5490
-> > [   81.436174][ T8612]  ? kasan_check_read+0x11/0x20
-> > [   81.441208][ T8612]  ? _raw_spin_unlock_irqrestore+0xa4/0xe0
-> > [   81.447008][ T8612]  ? mark_held_locks+0xf0/0xf0
-> > [   81.451768][ T8612]  ? __call_rcu.constprop.0+0x28b/0x720
-> > [   81.457298][ T8612]  ? call_rcu+0xb/0x10
-> > [   81.461353][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
-> > [   81.467589][ T8612]  ? __fget_light+0x1a9/0x230
-> > [   81.472249][ T8612]  ? __fdget+0x1b/0x20
-> > [   81.476301][ T8612]  ? __sanitizer_cov_trace_const_cmp8+0x18/0x20
-> > [   81.482545][ T8612]  __sys_sendmsg+0x105/0x1d0
-> > [   81.487115][ T8612]  ? __ia32_sys_shutdown+0x80/0x80
-> > [   81.492208][ T8612]  ? blkcg_maybe_throttle_current+0x5e2/0xfb0
-> > [   81.498272][ T8612]  ? trace_hardirqs_on_thunk+0x1a/0x1c
-> > [   81.503726][ T8612]  ? do_syscall_64+0x26/0x680
-> > [   81.508385][ T8612]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > [   81.514444][ T8612]  ? do_syscall_64+0x26/0x680
-> > [   81.519110][ T8612]  __x64_sys_sendmsg+0x78/0xb0
-> > [   81.523862][ T8612]  do_syscall_64+0xfd/0x680
-> > [   81.528352][ T8612]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > [   81.534234][ T8612] RIP: 0033:0x444679
-> > [   81.538114][ T8612] Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> > [   81.557709][ T8612] RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> > [   81.566147][ T8612] RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
-> > [   81.574108][ T8612] RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
-> > [   81.582152][ T8612] RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
-> > [   81.590113][ T8612] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
-> > [   81.598089][ T8612] R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
+> > Hello,
 > >
-> > In commit e9c1a793210f ("tipc: add dst_cache support for udp media")
-> > dst_cache_get() was introduced to be called in tipc_udp_xmit(). But
-> > smp_processor_id() called by dst_cache_get() cannot be invoked in
-> > preemptible context, as a result, the complaint above was reported.
+> > On Sat, 29 Jun 2019 08:47:06 -0700 (PDT)
+> > > syzbot found the following crash on:
+> > >
+> > > HEAD commit:    ee7dd773 sis900: remove TxIDLE
+> > > git tree:       net-next
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=17ceb9a9a00000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=7ac9edef4d37e5fb
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119b2a13a00000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13127bada00000
+> > >
+> > > The bug was bisected to:
 > >
-> > Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
-> > Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
-> > Signed-off-by: Hillf Danton <hdanton@sina.com>
-> > Signed-off-by: Ying Xue <ying.xue@windriver.com>
->
-> Hi,
->
-> Was this ever merged?
-> The bug is still open, alive and kicking:
-> https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
->
-> and one of the top crashers currently.
-> Along with few other top crashers, these bugs prevent most of the
-> other kernel testing from happening.
-
-/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-
-+jmaloy new email address
-
+> > Hm... I doubt it is e9c1a793210f ("tipc: add dst_cache support for udp media")
+> > based on one of the lines dumped:
+> >
+> >         >   tipc_udp_xmit.isra.0+0xc4/0xb80 net/tipc/udp_media.c:164
+> >
+> >
+> > And getting the local bottom half disabled looks like a teaspoon of
+> > cough syrup.
 > > ---
-> >  net/tipc/udp_media.c | 12 +++++++++---
-> >  1 file changed, 9 insertions(+), 3 deletions(-)
 > >
-> > diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
-> > index 287df687..ca3ae2e 100644
 > > --- a/net/tipc/udp_media.c
 > > +++ b/net/tipc/udp_media.c
 > > @@ -224,6 +224,8 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
@@ -201,10 +113,9 @@ On Wed, Feb 19, 2020 at 9:29 AM Dmitry Vyukov <dvyukov@google.com> wrote:
 > >
 > > -       if (addr->broadcast != TIPC_REPLICAST_SUPPORT)
 > > -               return tipc_udp_xmit(net, skb, ub, src, dst,
-> > -                                    &ub->rcast.dst_cache);
 > > +       if (addr->broadcast != TIPC_REPLICAST_SUPPORT) {
 > > +               err = tipc_udp_xmit(net, skb, ub, src, dst,
-> > +                                   &ub->rcast.dst_cache);
+> >                                      &ub->rcast.dst_cache);
 > > +               local_bh_enable();
 > > +               return err;
 > > +       }
@@ -220,9 +131,97 @@ On Wed, Feb 19, 2020 at 9:29 AM Dmitry Vyukov <dvyukov@google.com> wrote:
 > >  }
 > >
 > > --
-> > 2.7.4
+> >
+> > > commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+> > > Author: Jon Maloy <jon.maloy@ericsson.com>
+> > > Date:   Thu Mar 22 19:42:52 2018 +0000
+> > >
+> > >      tipc: obtain node identity from interface by default
+>
+> What is the fate of this fix?
+> There is also another fix for this pending for half a year as far as I can tell.
+>
+> This is one of the top crashes and it prevents most other kernel
+> testing from happening.  All kernels just crash on this right away.
+
+/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
++jmaloy new email address
+
+
+> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160ad903a00000
+> > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=150ad903a00000
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=110ad903a00000
+> > >
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
+> > > Fixes: 52dfae5c85a4 ("tipc: obtain node identity from interface by default")
+> > >
+> > > Started in network mode
+> > > Own node identity 7f000001, cluster identity 4711
+> > > New replicast peer: 172.20.20.22
+> > > check_preemption_disabled: 3 callbacks suppressed
+> > > BUG: using smp_processor_id() in preemptible [00000000] code:
+> > > syz-executor834/8612
+> > > caller is dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
+> > > CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > > Google 01/01/2011
+> > > Call Trace:
+> > >   __dump_stack lib/dump_stack.c:77 [inline]
+> > >   dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+> > >   check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+> > >   debug_smp_processor_id+0x251/0x280 lib/smp_processor_id.c:57
+> > >   dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
+> > >   tipc_udp_xmit.isra.0+0xc4/0xb80 net/tipc/udp_media.c:164
+> > >   tipc_udp_send_msg+0x29a/0x4b0 net/tipc/udp_media.c:254
+> > >   tipc_bearer_xmit_skb+0x16c/0x360 net/tipc/bearer.c:503
+> > >   tipc_enable_bearer+0xabe/0xd20 net/tipc/bearer.c:328
+> > >   __tipc_nl_bearer_enable+0x2de/0x3a0 net/tipc/bearer.c:899
+> > >   tipc_nl_bearer_enable+0x23/0x40 net/tipc/bearer.c:907
+> > >   genl_family_rcv_msg+0x74b/0xf90 net/netlink/genetlink.c:629
+> > >   genl_rcv_msg+0xca/0x16c net/netlink/genetlink.c:654
+> > >   netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+> > >   genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+> > >   netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+> > >   netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+> > >   netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
+> > >   sock_sendmsg_nosec net/socket.c:646 [inline]
+> > >   sock_sendmsg+0xd7/0x130 net/socket.c:665
+> > >   ___sys_sendmsg+0x803/0x920 net/socket.c:2286
+> > >   __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
+> > >   __do_sys_sendmsg net/socket.c:2333 [inline]
+> > >   __se_sys_sendmsg net/socket.c:2331 [inline]
+> > >   __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
+> > >   do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+> > >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > > RIP: 0033:0x444679
+> > > Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7
+> > > 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
+> > > ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> > > RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > > RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
+> > > RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
+> > > RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
+> > > R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
+> > > R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
+> > >
+> > >
+> > > ---
+> > > This bug is generated by a bot. It may contain errors.
+> > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > >
+> > > syzbot will keep track of this bug report. See:
+> > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> > > syzbot can test patches for this bug, for details see:
+> > > https://goo.gl/tpsmEJ#testing-patches
+> > >
+> >
 > >
 > > --
 > > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
 > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/1565595162-1383-4-git-send-email-ying.xue%40windriver.com.
+> > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000a40746058c784ef3%40google.com.
+> > For more options, visit https://groups.google.com/d/optout.
