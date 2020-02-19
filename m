@@ -2,125 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 409B016427B
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74FAF16429D
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:53:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgBSKot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:44:49 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29743 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726469AbgBSKot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:44:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582109087;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y+tn+gMbqlpXQWFtJ2fPpofDPzaQP+Q4LGj46J7FNSw=;
-        b=HPw8ltaUGdwqHApigkdZkUxAKbSEp6O57+ocunh2V0JWghfcmNkv9oCCmZX7RmUIWi5AMb
-        M9KCq5m4RJKMp8Uf7phvvaH/S/fdN43nUP2XY4TKbGU8glg2+epBVzwUKOZ6fbGx4C38Nw
-        FmWQa3wurra2yf2vlKnj3jb9K2gLkvg=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-422-GZY4KOxbNTGa-eXun8O7Lg-1; Wed, 19 Feb 2020 05:44:38 -0500
-X-MC-Unique: GZY4KOxbNTGa-eXun8O7Lg-1
-Received: by mail-wr1-f69.google.com with SMTP id p8so12366521wrw.5
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 02:44:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y+tn+gMbqlpXQWFtJ2fPpofDPzaQP+Q4LGj46J7FNSw=;
-        b=RXYoCmIvDyf3PSaqCD8Tc78bhd9kArTQZWtqppeKXUR000c4FaYaOquy8WtPmClMns
-         My6eZJ1l3eBAnaMIwF/xWUVaB9ZeOlgH1lfIzWDB9TlcP5T23/a9xmpWKQybX0QTePY2
-         oBPtGbzolB1V0pRI/9+2+61kFSEdn8DUXHdKftOdmnEKxDEdrwFmJEMU73SMgcNxfo+s
-         hfEOV3IqI7XuhLnZvRESAcmD/EgLd9XP3B5PSCyIcaHWwOH0XNhUx9vulM75xc9h0OFw
-         /ioHkkaaS77aCFYo1WdHvO6GetMmvGg6hlMwCec/u9ywdWQZQm7ADEnNk8nUcYghbRRD
-         AuOw==
-X-Gm-Message-State: APjAAAXbC1mtOLZvItICzD0V+7V7GX4m1EgNeylm3a3ASyRjemT1oufH
-        /9gJGEIkiR3VKJheU/0PBQjixN/D96AHkTk/Nuy1w8ve3iZju0QPCmqgvYwiEGa2bJMAnG/uv79
-        hzlbi0eZio+8T1JI8
-X-Received: by 2002:a1c:b789:: with SMTP id h131mr9279219wmf.148.1582109076992;
-        Wed, 19 Feb 2020 02:44:36 -0800 (PST)
-X-Google-Smtp-Source: APXvYqx0udWojDlLkGOqER8KELYXXzeklq9lDS7QMDVIu0wedvCu/gx2xmxOpWq/PIFyWQ8DlU9oSw==
-X-Received: by 2002:a1c:b789:: with SMTP id h131mr9279187wmf.148.1582109076653;
-        Wed, 19 Feb 2020 02:44:36 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id s15sm2409901wrp.4.2020.02.19.02.44.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 02:44:36 -0800 (PST)
-Date:   Wed, 19 Feb 2020 11:44:34 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     ted.h.kim@oracle.com
-Cc:     stefanha@redhat.com, netdev@vger.kernel.org
-Subject: Re: vsock CID questions
-Message-ID: <20200219104434.xmpgd3os3qlgjnb5@steredhat>
-References: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
+        id S1726823AbgBSKxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 05:53:04 -0500
+Received: from first.geanix.com ([116.203.34.67]:57048 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726469AbgBSKxD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 05:53:03 -0500
+Received: from localhost (_gateway [172.20.0.1])
+        by first.geanix.com (Postfix) with ESMTPSA id 02379C002E;
+        Wed, 19 Feb 2020 10:53:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1582109581; bh=VW+jgWITWMNA+jY6FIGR7+cpj/MuFZAzw0f/ewJNF7g=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To;
+        b=hMU/sPilGZlwszhd5lSoK39aqNCiUQ79DXow8DJr08WITajb0g/jA4MXJ8abVeifh
+         nkhyCkvPWZLbJJDY90uF9MfKSTj+pNUX7UpiMYigxCpwXhkq5XMo0zJCBlegR62/35
+         0Z3o2VRxtOYIlqL78WGk2XMqJ8fJdJ8EqTc1i+SRWkEaggvkhdi7QtQFyFoygxthe7
+         3vQaSXjJFlJOnA4tS5WXh7nXt+muMECwd5KJahXqB33z1AnaRSv+ajCI2n/nNYCe3o
+         TDdekERClLYPV4o8AOAStO7eOx4l7SsDD8Q5UACLCul2XRgYQhQrXU1R1B7d7yqiyH
+         rMKFfq1D7sQmQ==
+From:   Esben Haabendal <esben@geanix.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        michal.simek@xilinx.com, ynezz@true.cz
+Subject: Re: [PATCH 0/8] net: ll_temac: Bugfixes and ethtool support
+References: <20200218082607.7035-1-esben@geanix.com>
+        <20200218.115014.2022578847900470441.davem@davemloft.net>
+Date:   Wed, 19 Feb 2020 11:53:00 +0100
+In-Reply-To: <20200218.115014.2022578847900470441.davem@davemloft.net> (David
+        Miller's message of "Tue, 18 Feb 2020 11:50:14 -0800 (PST)")
+Message-ID: <875zg2n90z.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.7 required=4.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=disabled
+        version=3.4.3
+X-Spam-Checker-Version: SpamAssassin 3.4.3 (2019-12-06) on eb9da72b0f73
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 02:45:38PM -0800, ted.h.kim@oracle.com wrote:
-> Hi Stefano (and Stefan),
+David Miller <davem@davemloft.net> writes:
 
-Hi Ted,
+> Several errors in this submission:
+>
+> 1) Do not mix bug fixes and new features.  Submit the bug fixes
+>    targetting 'net', and then wait for net to be merged into
+>    net-next at which time you can submit the new features on
+>    top.
+>
+> 2) As per Documentation/networking/netdev-FAQ.rst you should not
+>    ever CC: stable for networking patches, we submit bug fixes to
+>    stable ourselves.
 
-> 
-> I have some questions about vsock CIDs, particularly when migration happens.
-> 
-> 1. Is there an API to lookup CIDs of guests from the host side (in libvirt)?
+Got it.  I will resend against net and net-next.
 
-I don't know if there is a specific API, but looking at the xml, you can see
-the assigned CID:
-
-$ virsh dumpxml fedora31 | grep cid
-      <cid auto='yes' address='3'/>
-
-I'm not sure that's what you were asking, if you meant a list of all the
-guest CIDs, I don't think there's an API for that.
-
-> 
-> 2. In the vsock(7) man page, it says the CID might change upon migration, if
-> it is not available.
-> Is there some notification when CID reassignment happens?
-
-Connected stream sockets will receive an error after the migration and then
-they'll be closed.
-
-Usually it is not recommended to bind the guest's cid, it is preferable
-to use VMADDR_CID_ANY.
-
-> 
-> 3. if CID reassignment happens, is this persistent? (i.e. will I see updated
-> vsock definition in XML for the guest)
-
-I guess so, but I didn't try.
-
-> 
-> 4. I would like to minimize the chance of CID collision. If I understand
-> correctly, the CID is a 32-bit unsigned.
-
-Right. 'struct sockaddr_vm' supports 32-bit unsigned CID.
-
->                                          So for my application, it might
-> work to put an IPv4 address. But if I adopt this convention, then I need to
-> look forward to possibly using IPv6. Anyway, would it be hard to potentially
-> expand the size of the CID to 64 bits or even 128?
-
-virtio-vsock specification [1] supports up to 64-bit CID.
-The 'svm_cid' field in the 'struct sockaddr_vm' is the last one, before
-the zero section, and we have 16-bit reserved on top that we can use for
-some flags.
-Maybe extending it to 64 bit might be feasible, but we need to check
-other transports (vmci, hyperv).
-
-Cheers,
-Stefano
-
-[1] https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html#x1-3960006
-
+/Esben
