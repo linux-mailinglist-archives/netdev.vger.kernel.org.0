@@ -2,66 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C5D9164499
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C72301644A4
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbgBSMrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:47:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50220 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726491AbgBSMrN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 07:47:13 -0500
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 454C024654;
-        Wed, 19 Feb 2020 12:47:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582116433;
-        bh=78L7q3X7/Zxk9esBo61a/shxQzMYU6nTCnPnkYfB+2E=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=hdwT7jwDCL5ZqQeaRjVdSYu3jP9wC7ywHEszxyECjNhODNCOWO/jdTrdN/TGO8Kw/
-         iNKq3SBrMzxKe4QcElRQHoD8SJkqLj6UKXd0KzIZM+iwcWfLUOy2jOAHx9O46Ma8Ny
-         OcmmNN29hL1xJorshLjE+GHcL7gPtAHmxirgx1EY=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 1E9FE35229ED; Wed, 19 Feb 2020 04:47:13 -0800 (PST)
-Date:   Wed, 19 Feb 2020 04:47:13 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Amol Grover <frextrite@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: Re: [PATCH] cfg80211: Pass lockdep expression to RCU lists
-Message-ID: <20200219124713.GU2935@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200219091102.10709-1-frextrite@gmail.com>
- <ff8a005c68e512cb3f338b7381853e6b3a3ab293.camel@sipsolutions.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff8a005c68e512cb3f338b7381853e6b3a3ab293.camel@sipsolutions.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1727469AbgBSMuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 07:50:06 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43163 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726491AbgBSMuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:50:06 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from raeds@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 19 Feb 2020 14:50:03 +0200
+Received: from dev-l-vrt-074.mtl.labs.mlnx (dev-l-vrt-074.mtl.labs.mlnx [10.134.74.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01JCo3Cj023842;
+        Wed, 19 Feb 2020 14:50:03 +0200
+From:   Raed Salem <raeds@mellanox.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
+Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, Raed Salem <raeds@mellanox.com>
+Subject: [PATCH net-next] ESP: Export esp_output_fill_trailer function
+Date:   Wed, 19 Feb 2020 14:49:57 +0200
+Message-Id: <1582116597-23065-1-git-send-email-raeds@mellanox.com>
+X-Mailer: git-send-email 1.9.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 10:13:36AM +0100, Johannes Berg wrote:
-> On Wed, 2020-02-19 at 14:41 +0530, Amol Grover wrote:
-> >  
-> > -	WARN_ON_ONCE(!rcu_read_lock_held() && !lockdep_rtnl_is_held());
-> > -
-> > -	list_for_each_entry_rcu(pos, &rdev->sched_scan_req_list, list) {
-> > +	list_for_each_entry_rcu(pos, &rdev->sched_scan_req_list, list,
-> > +				lockdep_rtnl_is_held()) {
-> 
-> Huh, I didn't even know you _could_ do that :)
+The esp fill trailer method is identical for both
+IPv6 and IPv4.
 
-It is a fairly recent addition, courtesy of Joel Fernandes.  ;-)
+Share the implementation for esp6 and esp to avoid
+code duplication in addition it could be also used
+at various drivers code.
 
-							Thanx, Paul
+Signed-off-by: Raed Salem <raeds@mellanox.com>
+Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+---
+ include/net/esp.h | 16 ++++++++++++++++
+ net/ipv4/esp4.c   | 16 ----------------
+ net/ipv6/esp6.c   | 16 ----------------
+ 3 files changed, 16 insertions(+), 32 deletions(-)
+
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 117652e..9c5637d 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -11,6 +11,22 @@ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+ 	return (struct ip_esp_hdr *)skb_transport_header(skb);
+ }
+ 
++static inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
++{
++	/* Fill padding... */
++	if (tfclen) {
++		memset(tail, 0, tfclen);
++		tail += tfclen;
++	}
++	do {
++		int i;
++		for (i = 0; i < plen - 2; i++)
++			tail[i] = i + 1;
++	} while (0);
++	tail[plen - 2] = plen - 2;
++	tail[plen - 1] = proto;
++}
++
+ struct esp_info {
+ 	struct	ip_esp_hdr *esph;
+ 	__be64	seqno;
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 103c7d5..8b07f3a 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -341,22 +341,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
+ 	esp_output_done(base, err);
+ }
+ 
+-static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+-{
+-	/* Fill padding... */
+-	if (tfclen) {
+-		memset(tail, 0, tfclen);
+-		tail += tfclen;
+-	}
+-	do {
+-		int i;
+-		for (i = 0; i < plen - 2; i++)
+-			tail[i] = i + 1;
+-	} while (0);
+-	tail[plen - 2] = plen - 2;
+-	tail[plen - 1] = proto;
+-}
+-
+ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
+ 					       int encap_type,
+ 					       struct esp_info *esp,
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index a3b403b..11143d0 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -207,22 +207,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
+ 	esp_output_done(base, err);
+ }
+ 
+-static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+-{
+-	/* Fill padding... */
+-	if (tfclen) {
+-		memset(tail, 0, tfclen);
+-		tail += tfclen;
+-	}
+-	do {
+-		int i;
+-		for (i = 0; i < plen - 2; i++)
+-			tail[i] = i + 1;
+-	} while (0);
+-	tail[plen - 2] = plen - 2;
+-	tail[plen - 1] = proto;
+-}
+-
+ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
+ {
+ 	u8 *tail;
+-- 
+1.8.3.1
+
