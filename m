@@ -2,137 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6931644B0
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB0891644F7
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 14:04:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727747AbgBSMxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:53:09 -0500
-Received: from mail-eopbgr70044.outbound.protection.outlook.com ([40.107.7.44]:20832
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727525AbgBSMxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 07:53:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PmGaVcqtJiTVZc16QLRT7uHm3ZaoDnVc4RJ8USXfeJxDY3ffxS6F1sxBdOEq0ybYM0NUpgvioHtoHTUNQf3pWp41o8RciMizwjpyZ2Kng7D1HGN6bhtvUcz0slYYoqXwgnwHhlsmvksYMsVVxqHQK81RuHuDKhei3SVezOCyX8xWWwWcCGPNtzdB8uhfOZ4phSqxZKrX7zHuTABl9/PYuSR8awvp/JdgSoI82YvBIBxVhALGMAloJQPKJ1QdIUXoOM6QQ9J5xZCfYHk2PAgw4hFK++jwHqUGFW9xFE64Gj8B4zPEmljwoX1WS80Dk/qr9wV09uV6bnne6XuqJBDskQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4U1S7gWxCLD+xZLK4Y4HwOFiPmx8BRGT7v9BHSVFWxE=;
- b=eHsK1uZzCNqyS0KQQ5oRQhgMfan8L4mTfTDtUOmAzo0jDyJLEIEHNZv4/K7T437Zq4NKg+7hXoy17Fv/hDzB5zQNd38KYmAHzBhRuo+k7kFrywpqFrSi0K5kJdzImBnRR5zuwojmujp9pUemkflYDPWNWCNhv9Wc7gNoff5Ky17zxjq0CPPZOtltJAzYsKh9+unhs1J3L4JdCfStPzrx6vMzGKJ+5aJl/BEnGzOk6eDr/3+lCG3h7kAglG8AwzYBtsmcF0/wxbgQn2Rl260nZCHiIfJIptwH8aZPn/e9sKEV1U7JaHaGWkGSwMYnMGoxgeKBKvtsz4UtynA2jW8Kww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4U1S7gWxCLD+xZLK4Y4HwOFiPmx8BRGT7v9BHSVFWxE=;
- b=IPGYsba6GSc122cZ1aYJwnV8l1LQCjUXumQ+HqsJIa9DSZNbpkKiG0PJyP1Ob+foH68yQmjrfp9urhPhX1FJqceQ3vdS5w0aAATc9EaYggBKnM68w30oMcfR9LRQN7SVGSI3l1qQzLSBZxP8aj3mQPTF0a+6Rn5dmXPHqUL0C0U=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB5389.eurprd05.prod.outlook.com (20.177.201.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.24; Wed, 19 Feb 2020 12:53:02 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2729.032; Wed, 19 Feb 2020
- 12:53:02 +0000
-Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR14CA0025.namprd14.prod.outlook.com (2603:10b6:208:23e::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Wed, 19 Feb 2020 12:53:02 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1j4OqZ-0000XF-5J; Wed, 19 Feb 2020 08:52:59 -0400
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
-Thread-Topic: [PATCH V2 3/5] vDPA: introduce vDPA bus
-Thread-Index: AQHV38asJrupyM4st0u+LnLMVE2dj6gWBCEAgAEv6YCAAFKZAIAA9rcAgACprgCAABWWAIAAAfIAgADOIICAAK/EAIAENTiAgAIVHQCAAQZvgIAAekGA
-Date:   Wed, 19 Feb 2020 12:53:02 +0000
-Message-ID: <20200219125259.GH23930@mellanox.com>
-References: <20200212125108.GS4271@mellanox.com>
- <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
- <20200213134128.GV4271@mellanox.com>
- <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
- <20200213150542.GW4271@mellanox.com>
- <8b3e6a9c-8bfd-fb3c-12a8-2d6a3879f1ae@redhat.com>
- <20200214135232.GB4271@mellanox.com>
- <01c86ebb-cf4b-691f-e682-2d6f93ddbcf7@redhat.com>
- <20200218135608.GS4271@mellanox.com>
- <bbfc608b-2bfa-e4c7-c2b9-dbcfe63518cb@redhat.com>
-In-Reply-To: <bbfc608b-2bfa-e4c7-c2b9-dbcfe63518cb@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR14CA0025.namprd14.prod.outlook.com
- (2603:10b6:208:23e::30) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [142.68.57.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ba3fbb23-66d0-496c-1b57-08d7b53aa7ab
-x-ms-traffictypediagnostic: VI1PR05MB5389:|VI1PR05MB5389:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB53894C300B08E0D37A71AFC9CF100@VI1PR05MB5389.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0318501FAE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(346002)(376002)(396003)(136003)(189003)(199004)(52116002)(4326008)(6666004)(1076003)(86362001)(2616005)(478600001)(2906002)(33656002)(8936002)(7416002)(71200400001)(26005)(66946007)(54906003)(186003)(316002)(4744005)(36756003)(66446008)(64756008)(66556008)(81156014)(6916009)(9786002)(81166006)(9746002)(66476007)(5660300002)(8676002)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5389;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: h2bn7lMnv5+3VAWg8h1VzAxvHo8s5grx723CDDzXVV07RrFEUmpPXMX8XIDGYjx3bJQkMmI6KqThTikiXUZi4NwMXLHy64RckQ+ZG44hSYXmaD0YHvgkEQ+WUVjSAwng1au1CPb5yFiWTzsyh4TBvMgo+mjdV0GMl7ohVGuSSS2JBFzMgkEE7iXVrT40UnUjxOA3lGELZMNJLyxJL+7uO4dihJdeH8m2zxEYr4QVkJskpFntnSDFi421z83nMNCywK3OlqmKUrDOruCn2+TQC0kJhzIIFDBdGyAcq9eMGfP/tG3yPDA+4YB305BGKyS0ND/eoip46cTYegD3FES7VgiXJL/5dCktwJ6mE30c27YFCJZWxiwyJRfMevXNS2Ui81mE/cLSgYv6LOHft53QKBAzxmBVsupR8Dsu1EwF1FX35PASd5wDDhI4jH3AHWghuT4hhvI2/8awJ/9Dnn2wZ4dxW6VNvqx8QvDvGW/6VClGApPzaaLi8jYVswiUMxez
-x-ms-exchange-antispam-messagedata: 3KmHXdOKXt3p+R/SpTcbfIFAAbPJn8i/qeEwpMJ5bE9BEk5SxHkLkL2BUlChz8ALFSms17lF55JV3cpOFqD35h9Exnj0DOv7jlAYlT8JFA3FR42gW+ZE0bcPA94c5qsvy1E2ZWbjSboxus4RH/q96w==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9CD8241DD584C146AFED1EACF6700144@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727686AbgBSNE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 08:04:57 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45377 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726617AbgBSNE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 08:04:57 -0500
+Received: by mail-qk1-f195.google.com with SMTP id a2so22820362qko.12
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 05:04:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=goLUugo2OcTd80Umui3tF9d4Pkr7paqnVUo9dLDeBaU=;
+        b=OsI3n81/VYVZ0WkakBm6Md8OmeNeMhEdktr7wEgXim8YZe7N/5zJjaf2xod5Whd6Bb
+         QaJJrAMOiy1aBVHnA/CLprv0EB89Ymjj9MUl8PqBbiqq67EN1KbuqMOlDYwQKbjgOQaW
+         zf/FroPxNtqkuqkaVNCZiu/msV290IQ29Zaq7nJEKR8Kwxg+5Vm/1MKn8nRSP5iFqO92
+         knT357KPMvhNeBIUdGytFqc/cTstbOODiVH/5BaQWBb3SY+2z2D6CxcuLBRt1sVyE+Ef
+         FLZHgOhL1l1eAmBl7iZhozVW9ayxUL1sF5aQYp09VXEUbDppncp0WZv4KL72FqUGnE+z
+         aqPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=goLUugo2OcTd80Umui3tF9d4Pkr7paqnVUo9dLDeBaU=;
+        b=CeD6kqjQtFO3uJtL0h9KLO73bRM2hfGNtELuEcgaNnjTSlJJldarBEyDRXNI7POFCt
+         WzCdG4Id5vhiGpOrdJ5a0Nmm1EEqjKK/GyiMlE/+nxEsQVaNE+herI3NG65X8jq94sWZ
+         X8Dlufe2/+f2v+Sqs62CxivN0ScPtnH5iS3E0v9vXFoe7EKnJ5N67XFccvyvgX5/rBWv
+         81YWYCpm455Dw0oGZGCS131y7/q8Y8ZTgeJLdNLGoNyJSoPAzsAqEj27R7C6CCV7V/OL
+         JOJB0NVqAeDUoIvljjyV3VA4MgV4LWnO6kmDdC63v3UMafXxznU8/UtmpQy+LJuAwQ3P
+         42Hw==
+X-Gm-Message-State: APjAAAU9YU5Tljn9CuNH3k7gtLOZNlldG5EctNRGd5OcGf7fmDtvrCz8
+        gDMPUCt0XXIPb98n7XzLSa+2LA==
+X-Google-Smtp-Source: APXvYqxJLsvAqlYphCh5e9GMvszpHDnG9qhhwA485l0jlHZRwK3O7Gt57g8U47CpqY7u+6v/lf4oxw==
+X-Received: by 2002:a05:620a:41b:: with SMTP id 27mr23823411qkp.349.1582117496531;
+        Wed, 19 Feb 2020 05:04:56 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id x197sm960409qkb.28.2020.02.19.05.04.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 19 Feb 2020 05:04:56 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1j4P27-0000tR-Bf; Wed, 19 Feb 2020 09:04:55 -0400
+Date:   Wed, 19 Feb 2020 09:04:55 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Lang Cheng <chenglang@huawei.com>, dledford@redhat.com,
+        davem@davemloft.net, salil.mehta@huawei.com,
+        yisen.zhuang@huawei.com, linuxarm@huawei.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>, bhaktipriya96@gmail.com,
+        tj@kernel.org, Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: Re: [RFC rdma-next] RDMA/core: Add attribute WQ_MEM_RECLAIM to
+ workqueue "infiniband"
+Message-ID: <20200219130455.GL31668@ziepe.ca>
+References: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
+ <20200218153156.GD31668@ziepe.ca>
+ <212eda31-cc86-5487-051b-cb51c368b6fe@huawei.com>
+ <20200219064507.GC15239@unreal>
+ <1155d15f-4188-e5cd-3e4a-6e0c52e9b1eb@huawei.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba3fbb23-66d0-496c-1b57-08d7b53aa7ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Feb 2020 12:53:02.5591
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: T2Gm6sTxtBrUs+PoINIJ75nsuTN77W160XncxFqtXOCGiQg1y/3XrxOV4JFVAwhUWI3M1EB1GsNeRqAGOJmSDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5389
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1155d15f-4188-e5cd-3e4a-6e0c52e9b1eb@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 01:35:25PM +0800, Jason Wang wrote:
-> > But it is
-> > open coded and duplicated because .. vdpa?
->=20
->=20
-> I'm not sure I get here, vhost module is reused for vhost-vdpa and all
-> current vhost device (e.g net) uses their own char device.
+On Wed, Feb 19, 2020 at 03:40:59PM +0800, Yunsheng Lin wrote:
+> +cc Bhaktipriya, Tejun and Jeff
+> 
+> On 2020/2/19 14:45, Leon Romanovsky wrote:
+> > On Wed, Feb 19, 2020 at 09:13:23AM +0800, Yunsheng Lin wrote:
+> >> On 2020/2/18 23:31, Jason Gunthorpe wrote:
+> >>> On Tue, Feb 18, 2020 at 11:35:35AM +0800, Lang Cheng wrote:
+> >>>> The hns3 driver sets "hclge_service_task" workqueue with
+> >>>> WQ_MEM_RECLAIM flag in order to guarantee forward progress
+> >>>> under memory pressure.
+> >>>
+> >>> Don't do that. WQ_MEM_RECLAIM is only to be used by things interlinked
+> >>> with reclaimed processing.
+> >>>
+> >>> Work on queues marked with WQ_MEM_RECLAIM can't use GFP_KERNEL
+> >>> allocations, can't do certain kinds of sleeps, can't hold certain
+> >>> kinds of locks, etc.
+> 
+> By the way, what kind of sleeps and locks can not be done in the work
+> queued to wq marked with WQ_MEM_RECLAIM?
 
-I mean there shouldn't be two fops implementing the same uAPI
+Anything that recurses back into a blocking allocation function.
+
+If we are freeing memory because an allocation failed (eg GFP_KERNEL)
+then we cannot go back into a blockable allocation while trying to
+progress the first failing allocation. That is a deadlock.
+
+So a WQ cannot hold any locks that enclose GFP_KERNEL in any other
+threads.
+
+Unfortunately we don't have a lockdep test for this by default.
+
+> >> hns3 ethernet driver may be used as the low level transport of a
+> >> network file system, memory reclaim data path may depend on the
+> >> worker in hns3 driver to bring back the ethernet link so that it flush
+> >> the some cache to network based disk.
+> > 
+> > Unlikely that this "network file system" dependency on ethernet link is correct.
+> 
+> Ok, I may be wrong about the above usecase.  but the below commit
+> explicitly state that network devices may be used in memory reclaim
+> path.
+
+I don't really know how this works when the networking stacks
+intersect with the block stack.
+
+Forward progress on something like a NVMeOF requires a lot of stuff to
+be working, and presumably under reclaim.
+
+But, we can't make everything WQ_MEM_RECLAIM safe, because we could
+never do a GFP_KERNEL allocation..
+
+I have never seen specific guidance what to do here, I assume it is
+broken.
 
 Jason
