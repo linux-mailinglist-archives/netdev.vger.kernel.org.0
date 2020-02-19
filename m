@@ -2,168 +2,319 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E271651BC
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 22:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE9721651BF
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 22:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727576AbgBSVhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 16:37:51 -0500
-Received: from mga17.intel.com ([192.55.52.151]:41725 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727326AbgBSVhv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 16:37:51 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 13:37:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
-   d="scan'208";a="229930938"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
-  by fmsmga008.fm.intel.com with ESMTP; 19 Feb 2020 13:37:50 -0800
-Subject: Re: [RFC PATCH v2 06/22] ice: add basic handler for devlink .info_get
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com
-References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
- <20200214232223.3442651-7-jacob.e.keller@intel.com>
- <20200218184552.7077647b@kicinski-fedora-PC1C0HJN>
- <6b4dd025-bcf8-12de-99b0-1e05e16333e8@intel.com>
- <20200219115757.5af395c5@kicinski-fedora-PC1C0HJN>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <70001e87-b369-bab4-f318-ad4514e7dcfb@intel.com>
-Date:   Wed, 19 Feb 2020 13:37:50 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
-MIME-Version: 1.0
-In-Reply-To: <20200219115757.5af395c5@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727636AbgBSViR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 16:38:17 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36002 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727326AbgBSViR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 16:38:17 -0500
+Received: by mail-qt1-f194.google.com with SMTP id t13so1390726qto.3
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 13:38:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=8qyGB2579j4yy+TVYecF3MMS4B8zTaBpF1Dlq2IhRUE=;
+        b=pXvH4kSl1W+kV1UtX9tx5hwwiguUwSCA+wJoURgidZLwL4BYH1LIiE7DZT2gPtMJ9t
+         e2iyXMmUrK875zPm8Ub8/yAqsA5HxmJy6kqDvmBqzBHg/WAIQ6mp8tdo7Y0ZqRLgg/2b
+         TsGuBExueRXt6TappiBv9t77cloxKcngR9Apa4P4ehI2rnMA6gJtsi3l4NdRx4UV3H52
+         ExuAEFk1oVT1zD5dG4njnuI1NDhzTsDEsZzW2o8yhuMxN9NOFsD7Owt28Br+fBrXcv4M
+         vOooWFEBrbP+b48uP+H8Jwo8yGn0cnue7msrszZBcAb/+mHTM3dNRElRbyE7R5XrPMDG
+         AeIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8qyGB2579j4yy+TVYecF3MMS4B8zTaBpF1Dlq2IhRUE=;
+        b=TiDockd4sYm5ExRbHO+Y0+vzV3aVDk6VVIN/ZTYLryhuDbI5QApSofqA3a0cFROYj/
+         ogB9OAs7lMSkxDpN6Q/e5zHw+SkHu0pXt9Nb9BnZzQTu8Py24KJwEfZwm9V7OyqJem7V
+         5feZdvWaaYG1sw7vSuwGMLwP66dwBv36SHbvKJrtD+Vs5XdU1o8HzWx1BAr4o/TzzMUU
+         Ctc3/Z4/73mWZzNzCX5vE73PiYvLuY2iJo4UvJCpmTyupEOPE3hGpulFpjRjwb9hPsOp
+         r/2J+lLYWqQEQfzuhev7+KOfTxWK6q8RcBf5+/+0m11BxipWaIitAdxXgUa2VB/o4VbC
+         TygQ==
+X-Gm-Message-State: APjAAAUt+IQO0QlYsz2K5FRu65KW63CmtQyRbqA9uUIjhULmivEw3ngt
+        QXLT7IO6XCTIxb9zZM5DjfQqm3wOs54=
+X-Google-Smtp-Source: APXvYqytRrvTnYXtJGXcWKKHffbYvVeXg6hsJ0rCV2jNT+DK//eaDpJuV6Cv6nDf0fFdr3XxsPF8zQ==
+X-Received: by 2002:ac8:67d7:: with SMTP id r23mr23568141qtp.20.1582148295840;
+        Wed, 19 Feb 2020 13:38:15 -0800 (PST)
+Received: from mojatatu.com (69-196-152-194.dsl.teksavvy.com. [69.196.152.194])
+        by smtp.gmail.com with ESMTPSA id g18sm541730qki.13.2020.02.19.13.38.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 19 Feb 2020 13:38:15 -0800 (PST)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net-next 1/1] tc-testing: updated tdc tests for basic filter
+Date:   Wed, 19 Feb 2020 16:37:56 -0500
+Message-Id: <1582148276-6955-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub,
+Added tests for 'u32' extended match rules for u8 alignment.
 
-Thanks for your excellent feedback.
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ .../tc-testing/tc-tests/filters/basic.json         | 242 +++++++++++++++++++++
+ 1 file changed, 242 insertions(+)
 
-On 2/19/2020 11:57 AM, Jakub Kicinski wrote:
-> On Wed, 19 Feb 2020 09:33:09 -0800 Jacob Keller wrote:
->> "fw.psid.api" -> what was the "nvm.psid". This I think needs a bit more
->> work to define. It makes sense to me as some sort of "api" as (if I
->> understand it correctly) it is the format for the parameters, but does
->> not itself define the parameter contents.
-> 
-> Sounds good. So the contents of parameters would be covered by the
-> fw.bundle now and not have a separate version?
-> 
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
+index 98a20faf3198..75f547a5ee48 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
+@@ -372,5 +372,247 @@
+         "teardown": [
+             "$TC qdisc del dev $DEV1 ingress"
+         ]
++    },
++    {
++        "id": "bae4",
++        "name": "Add basic filter with u32 ematch u8/zero offset and default action",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x11 0x0f at 0)' classid 1:1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(01000000/0f000000 at 0\\)",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "e6cb",
++        "name": "Add basic filter with u32 ematch u8/zero offset and invalid value >0xFF",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x1122 0x0f at 0)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(11220000/0f000000 at 0\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "7727",
++        "name": "Add basic filter with u32 ematch u8/positive offset and default action",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x77 0x1f at 12)' classid 1:1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(17000000/1f000000 at 12\\)",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "a429",
++        "name": "Add basic filter with u32 ematch u8/invalid mask >0xFF",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x77 0xff00 at 12)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(77000000/ff000000 at 12\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "8373",
++        "name": "Add basic filter with u32 ematch u8/missing offset",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x77 0xff at)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(77000000 at 12\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "ab8e",
++        "name": "Add basic filter with u32 ematch u8/missing AT keyword",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x77 0xff 0)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(77000000 at 12\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "712d",
++        "name": "Add basic filter with u32 ematch u8/missing value",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 at 12)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(at 12\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "350f",
++        "name": "Add basic filter with u32 ematch u8/non-numeric value",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 zero 0xff at 0)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(00000000/ff000000 at 0\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "e28f",
++        "name": "Add basic filter with u32 ematch u8/non-numeric mask",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0x11 mask at 0)' classid 1:1",
++        "expExitCode": "1",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(11000000/00000000 at 0\\)",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "6d5f",
++        "name": "Add basic filter with u32 ematch u8/negative offset and default action",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0xaa 0xf0 at -14)' classid 1:1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(0000a000/0000f000 at -16\\)",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "12dc",
++        "name": "Add basic filter with u32 ematch u8/nexthdr+ offset and default action",
++        "category": [
++            "filter",
++            "basic"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'u32(u8 0xaa 0xf0 at nexthdr+0)' classid 1:1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip basic",
++        "matchPattern": "^filter parent ffff: protocol ip pref 1 basic.*handle 0x1 flowid 1:1.*u32\\(a0000000/f0000000 at nexthdr\\+0\\)",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
+     }
+ ]
+-- 
+2.7.4
 
-I'm actually not sure if we have any way to identify the parameters.
-I'll ask around about that. My understanding is that these would include
-parameters that can be modified by the driver such as Wake on LAN
-settings, so I'm also not sure if they'd be covered in the fw.bundle
-either. The 'defaults' that were selected when the image was created
-would be covered, but changes to them wouldn't update the value.
-
-Hmmmmm.
-
->> The original reason for using "fw" and "nvm" was because we (internally)
->> use fw to mean the management firmware.. where as these APIs really
->> combine the blocks and use "fw.mgmt" for the management firmware. Thus I
->> think it makes sense to move from
->>
->> I also have a couple other oddities that need to be sorted out. We want
->> to display the DDP version (piece of "firmware" that is loaded during
->> driver load, and is not permanent to the NVM). In some sense this is our
->> "fw.app", but because it's loaded by driver at load and not as
->> permanently stored in the NVM... I'm not really sure that makes sense to
->> put this as the "fw.app", since it is not updated or really touched by
->> the firmware flash update.
-> 
-> Interesting, can DDP be persisted to the flash, though? Is there some
-> default DDP, or is it _never_ in the flash? 
-> 
-
-There's a version of this within the flash, but it is limited, and many
-device features get disabled if you don't load the DDP package file.
-(You may have seen patches for this for implementing "safe mode").
-
-My understanding is there is no mechanism for persisting a different DDP
-to the flash.
-
-> Does it not have some fun implications for firmware signing to have
-> part of the config/ucode loaded from the host?
-> 
-
-I'm not sure how it works exactly. As far as I know, the DDP file is
-itself signed.
-
-> IIRC you could also load multiple of those DDP packages? Perhaps they
-> could get names like fw.app0, fw.app1, etc?
-
-You can load different ones, each has their own version and name
-embedded. However, only one can be loaded at any given time, so I'm not
-sure if multiples like this make sense.
-
-> Also if DDP controls a
-> particular part of the datapath (parser?) feel free to come up with a
-> more targeted name, up to you.
-> 
-
-Right, it's my understanding that this defines the parsing logic, and
-not the complete datapath microcode.
-
-In theory, there could be at least 3 DDP versions
-
-1) the version in the NVM, which would be the very basic "safe mode"
-compatible one.
-
-2) the version in the ddp firmware file that we search for when we load
-
-3) the one that actually got activated. It's a sort of
-first-come-first-serve and sticks around until a device global reset.
-This should in theory always be the same as (2) unless you do something
-weird like load different drivers on the multiple functions.
-
-I suppose we could use "running" and "stored" for this, to have "stored"
-be what's in the NVM, and "running" for the active one.. but that's ugly
-and misusing what stored vs running is supposed to represent.
-
->> Finally we also have a component we call the "netlist", which I'm still
->> not fully up to speed on exactly what it represents, but it has multiple
->> pieces of data including a 2-digit Major.Minor version of the base, a
->> type field indicating the format, and a 2-digit revision field that is
->> incremented on internal and external changes to the contents. Finally
->> there is a hash that I think might *actually* be something like a psid
->> or a bundle to uniquely represent this component. I haven't included
->> this component yet because I'm still trying to grasp exactly what it
->> represents and how best to describe each piece.
-> 
-> Hmm. netlist is a Si term, perhaps it's chip init data? nfp had
-> something called chip.init which I think loaded all the very low 
-> level Si configs.
-> 
-
-I'm asking some colleagues to provide further details on this. Right now
-the "version" for a netlist is just a display of all these fields munged
-together "a.b.c-d.e.f", which I'd rather avoid.
-
-> My current guess is that psid is more of the serdes and maybe clock
-> data. 
-> 
-> Thinking about it now, it seems these versions mirror the company
-> structure. chip.init comes from the Si team. psid comes from the 
-> board design guys. fw.mgmt comes from the BSP/FW team.
-> 
-> None of them are really fixed but the frequency of changes increases
-> from chip.init changing very rarely to mgmt fw having a regular release
-> cadence.
-> 
-
-Without further information I don't know for sure, but I don't think
-chip.init makes sense. I'll try to find out more.
-
-Thanks,
-Jake
