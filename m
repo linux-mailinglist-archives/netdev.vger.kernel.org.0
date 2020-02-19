@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9821642AA
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:53:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96341642AD
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:54:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbgBSKxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:53:51 -0500
-Received: from first.geanix.com ([116.203.34.67]:57102 "EHLO first.geanix.com"
+        id S1727069AbgBSKyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 05:54:04 -0500
+Received: from first.geanix.com ([116.203.34.67]:57128 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726469AbgBSKxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 05:53:51 -0500
+        id S1726469AbgBSKyE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 05:54:04 -0500
 Received: from localhost (_gateway [172.20.0.1])
-        by first.geanix.com (Postfix) with ESMTPSA id 1C78BC002E;
-        Wed, 19 Feb 2020 10:53:49 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id A52EAC002E;
+        Wed, 19 Feb 2020 10:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1582109629; bh=KvmUZ7RpfqddUx8uLthfjCMTy9g+ZYpZDHIMYzR1KoQ=;
+        t=1582109640; bh=yH8TvgCUbnfl/izLx4TJFR7NPStHNtUPhDk2EUg7hbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QDWUVQDTAquUov6+PXtSzsOfsH4R3+bYJ3ZFFOC28FYbLNwgyFlsz7nSieXIiZObI
-         6RS5Cq28tPzIwWfbHZgOkd/XyTSlCRafR7TkPqfGeqwDLdmzmY3nyS3CqkX3Q9PJhU
-         41iR4DuU8ZKbDxt5N1tCKXPCncY6kOy4RZGxwdCWezT2xTMbB9JFcf58WjgZZVSiu0
-         PhJW2zacPec6lzoZSjXu+5GzHFR4kDgIjvxC8bUA1n3K5gZSROG0Ay/8sJ1WvKJn2u
-         kFX78mjFRB31JsHAvVbmiSBDVwE5dJFSitJCWTyiKjyr3uggxs94cQnuO3kc8Bb+E4
-         oHuj6tj7RiLWw==
+        b=SfV+KvsVtUTU3Q8Ujy7zwg/Dja4IT1GTuJAmkeXVNV1y6ULCzMNiALqN8BV07V7aQ
+         LO2X8PDXXQY657KA+LVVvavCX8Kr+PxK1Cnk3HpdvhVFElI/MVyVZy2wOfoMiS7Dr0
+         Le3EBMIlIuBOujDmxOWH3tsP4E20Q0UhTaMYCRpvV3Qmx3y3R1mAZHZglyhd3dnMP/
+         M9Fb8EVloZK+RiHRRkxvKDyKRI/dgaKNkXPmDO3fyfCAc7Ajy8K0vMxFcFqCsjo7KC
+         NuobFMzbIfsA9MqPRwlA/JUR0WJTgK0CKbBCnMcAyRG3NZW07bE90fFZL8hEWxntxk
+         qNZ+2oZphv4cA==
 From:   Esben Haabendal <esben@geanix.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         "David S . Miller" <davem@davemloft.net>,
         Michal Simek <michal.simek@xilinx.com>,
         =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-Subject: [PATCH net 1/4] net: ll_temac: Fix race condition causing TX hang
-Date:   Wed, 19 Feb 2020 11:53:48 +0100
-Message-Id: <c93e0f5ef92d2b17c04e256e32460e9dee1107e8.1582108989.git.esben@geanix.com>
+Subject: [PATCH net 2/4] net: ll_temac: Add more error handling of dma_map_single() calls
+Date:   Wed, 19 Feb 2020 11:54:00 +0100
+Message-Id: <65907810dd82de3fcaad9869f328ab32800c67ea.1582108989.git.esben@geanix.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <cover.1582108989.git.esben@geanix.com>
 References: <cover.1582108989.git.esben@geanix.com>
@@ -47,61 +47,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible that the interrupt handler fires and frees up space in
-the TX ring in between checking for sufficient TX ring space and
-stopping the TX queue in temac_start_xmit. If this happens, the
-queue wake from the interrupt handler will occur before the queue is
-stopped, causing a lost wakeup and the adapter's transmit hanging.
+This adds error handling to the remaining dma_map_single() calls, so that
+behavior is well defined if/when we run out of DMA memory.
 
-To avoid this, after stopping the queue, check again whether there is
-sufficient space in the TX ring. If so, wake up the queue again.
-
-This is a port of the similar fix in axienet driver,
-commit 7de44285c1f6 ("net: axienet: Fix race condition causing TX hang").
-
-Fixes: 23ecc4bde21f ("net: ll_temac: fix checksum offload logic")
+Fixes: 92744989533c ("net: add Xilinx ll_temac device driver")
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/net/ethernet/xilinx/ll_temac_main.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 26 +++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 6f11f52c9a9e..996004ef8bd4 100644
+index 996004ef8bd4..c368c3914bda 100644
 --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
 +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -788,6 +788,9 @@ static void temac_start_xmit_done(struct net_device *ndev)
- 		stat = be32_to_cpu(cur_p->app0);
- 	}
+@@ -367,6 +367,8 @@ static int temac_dma_bd_init(struct net_device *ndev)
+ 		skb_dma_addr = dma_map_single(ndev->dev.parent, skb->data,
+ 					      XTE_MAX_JUMBO_FRAME_SIZE,
+ 					      DMA_FROM_DEVICE);
++		if (dma_mapping_error(ndev->dev.parent, skb_dma_addr))
++			goto out;
+ 		lp->rx_bd_v[i].phys = cpu_to_be32(skb_dma_addr);
+ 		lp->rx_bd_v[i].len = cpu_to_be32(XTE_MAX_JUMBO_FRAME_SIZE);
+ 		lp->rx_bd_v[i].app0 = cpu_to_be32(STS_CTRL_APP0_IRQONEND);
+@@ -863,12 +865,13 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	skb_dma_addr = dma_map_single(ndev->dev.parent, skb->data,
+ 				      skb_headlen(skb), DMA_TO_DEVICE);
+ 	cur_p->len = cpu_to_be32(skb_headlen(skb));
++	if (WARN_ON_ONCE(dma_mapping_error(ndev->dev.parent, skb_dma_addr)))
++		return NETDEV_TX_BUSY;
+ 	cur_p->phys = cpu_to_be32(skb_dma_addr);
+ 	ptr_to_txbd((void *)skb, cur_p);
  
-+	/* Matches barrier in temac_start_xmit */
-+	smp_mb();
-+
- 	netif_wake_queue(ndev);
- }
+ 	for (ii = 0; ii < num_frag; ii++) {
+-		lp->tx_bd_tail++;
+-		if (lp->tx_bd_tail >= TX_BD_NUM)
++		if (++lp->tx_bd_tail >= TX_BD_NUM)
+ 			lp->tx_bd_tail = 0;
  
-@@ -830,9 +833,19 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
- 
- 	if (temac_check_tx_bd_space(lp, num_frag + 1)) {
--		if (!netif_queue_stopped(ndev))
--			netif_stop_queue(ndev);
--		return NETDEV_TX_BUSY;
-+		if (netif_queue_stopped(ndev))
+ 		cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+@@ -876,6 +879,25 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 					      skb_frag_address(frag),
+ 					      skb_frag_size(frag),
+ 					      DMA_TO_DEVICE);
++		if (dma_mapping_error(ndev->dev.parent, skb_dma_addr)) {
++			if (--lp->tx_bd_tail < 0)
++				lp->tx_bd_tail = TX_BD_NUM - 1;
++			cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
++			while (--ii >= 0) {
++				--frag;
++				dma_unmap_single(ndev->dev.parent,
++						 be32_to_cpu(cur_p->phys),
++						 skb_frag_size(frag),
++						 DMA_TO_DEVICE);
++				if (--lp->tx_bd_tail < 0)
++					lp->tx_bd_tail = TX_BD_NUM - 1;
++				cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
++			}
++			dma_unmap_single(ndev->dev.parent,
++					 be32_to_cpu(cur_p->phys),
++					 skb_headlen(skb), DMA_TO_DEVICE);
 +			return NETDEV_TX_BUSY;
-+
-+		netif_stop_queue(ndev);
-+
-+		/* Matches barrier in temac_start_xmit_done */
-+		smp_mb();
-+
-+		/* Space might have just been freed - check again */
-+		if (temac_check_tx_bd_space(lp, num_frag))
-+			return NETDEV_TX_BUSY;
-+
-+		netif_wake_queue(ndev);
- 	}
- 
- 	cur_p->app0 = 0;
++		}
+ 		cur_p->phys = cpu_to_be32(skb_dma_addr);
+ 		cur_p->len = cpu_to_be32(skb_frag_size(frag));
+ 		cur_p->app0 = 0;
 -- 
 2.25.0
 
