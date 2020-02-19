@@ -2,112 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B331643D6
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C722164400
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgBSMDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:03:04 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:57487 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726891AbgBSMDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:03:02 -0500
-Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j4O4A-00028x-UM; Wed, 19 Feb 2020 12:02:59 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Haw Loeung <haw.loeung@canonical.com>
-Subject: [PATCH net-next] net/ipv4/sysctl: show tcp_{allowed,available}_congestion_control in non-initial netns
-Date:   Wed, 19 Feb 2020 13:02:53 +0100
-Message-Id: <20200219120253.2667548-1-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726622AbgBSMPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 07:15:53 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:55208 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726491AbgBSMPx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 07:15:53 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3831620299;
+        Wed, 19 Feb 2020 13:15:52 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CO4tRHGQipD3; Wed, 19 Feb 2020 13:15:51 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id C0090201E2;
+        Wed, 19 Feb 2020 13:15:51 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 19 Feb 2020
+ 13:15:51 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 5C58F3180098;
+ Wed, 19 Feb 2020 13:15:51 +0100 (CET)
+Date:   Wed, 19 Feb 2020 13:15:51 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Raed Salem <raeds@mellanox.com>
+CC:     <herbert@gondor.apana.org.au>, <netdev@vger.kernel.org>,
+        <kuznet@ms2.inr.ac.ru>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH net-next] ESP: Export esp_output_fill_trailer function
+Message-ID: <20200219121551.GT8274@gauss3.secunet.de>
+References: <1582113718-16712-1-git-send-email-raeds@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1582113718-16712-1-git-send-email-raeds@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is currenty possible to switch the TCP congestion control algorithm
-in non-initial network namespaces:
+On Wed, Feb 19, 2020 at 02:01:58PM +0200, Raed Salem wrote:
+> The esp fill trailer method is identical for both
+> IPv6 and IPv4.
+> 
+> Share the implementation for esp6 and esp to avoid
+> code duplication in addition it could be also used
+> at various drivers code.
+> 
+> Change-Id: Iebb4325fe12ef655a5cd6cb896cf9eed68033979
 
-unshare -U --map-root --net --fork --pid --mount-proc
-echo "reno" > /proc/sys/net/ipv4/tcp_congestion_control
+For what do you need the above line?
 
-works just fine. But currently non-initial network namespaces have no
-way of kowing which congestion algorithms are available or allowed other
-than through trial and error by writing the names of the algorithms into
-the aforementioned file.
-Since we already allow changing the congestion algorithm in non-initial
-network namespaces by exposing the tcp_congestion_control file there is
-no reason to not also expose the
-tcp_{allowed,available}_congestion_control files to non-initial network
-namespaces. After this change a container with a separate network
-namespace will show:
+> Signed-off-by: Raed Salem <raeds@mellanox.com>
+> Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
 
-root@f1:~# ls -al /proc/sys/net/ipv4/tcp_* | grep congestion
--rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_allowed_congestion_control
--r--r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_available_congestion_control
--rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_congestion_control
+Your patch does not apply to ipsec-next, please rebase
+on this tree and resend.
 
-Link: https://github.com/lxc/lxc/issues/3267
-Reported-by: Haw Loeung <haw.loeung@canonical.com>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
- net/ipv4/sysctl_net_ipv4.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 9684af02e0a5..d9531b4b33f2 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -554,18 +554,6 @@ static struct ctl_table ipv4_table[] = {
- 		.proc_handler	= proc_dointvec,
- 	},
- #endif /* CONFIG_NETLABEL */
--	{
--		.procname	= "tcp_available_congestion_control",
--		.maxlen		= TCP_CA_BUF_MAX,
--		.mode		= 0444,
--		.proc_handler   = proc_tcp_available_congestion_control,
--	},
--	{
--		.procname	= "tcp_allowed_congestion_control",
--		.maxlen		= TCP_CA_BUF_MAX,
--		.mode		= 0644,
--		.proc_handler   = proc_allowed_congestion_control,
--	},
- 	{
- 		.procname	= "tcp_available_ulp",
- 		.maxlen		= TCP_ULP_BUF_MAX,
-@@ -885,6 +873,18 @@ static struct ctl_table ipv4_net_table[] = {
- 		.maxlen		= TCP_CA_NAME_MAX,
- 		.proc_handler	= proc_tcp_congestion_control,
- 	},
-+	{
-+		.procname	= "tcp_available_congestion_control",
-+		.maxlen		= TCP_CA_BUF_MAX,
-+		.mode		= 0444,
-+		.proc_handler   = proc_tcp_available_congestion_control,
-+	},
-+	{
-+		.procname	= "tcp_allowed_congestion_control",
-+		.maxlen		= TCP_CA_BUF_MAX,
-+		.mode		= 0644,
-+		.proc_handler   = proc_allowed_congestion_control,
-+	},
- 	{
- 		.procname	= "tcp_keepalive_time",
- 		.data		= &init_net.ipv4.sysctl_tcp_keepalive_time,
-
-base-commit: bb6d3fb354c5ee8d6bde2d576eb7220ea09862b9
--- 
-2.25.0
-
+Thanks!
