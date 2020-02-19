@@ -2,99 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5D21652F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 348B5165302
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbgBSXPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 18:15:51 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:50236 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgBSXPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 18:15:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=uiByJ8uwj4w+yypG8/uZx4crDLKhT+yMvcL+mwB85R8=; b=WP9A8mQEzCaLj33FPFy10v6VT
-        QtyVTShq8caCvicWnH/K9bo8peqrkxDoXUUtNPbU12UbeuhbUACu2s6pSGz/DihN4vdXfEYLyYTpZ
-        8NbRWkWzW5UgsoHVJhj0hfwlhTB0OzN7RKUlcm247pxH2TBro29QK5NqMYP1sc2VO+N4wa1aAqKcJ
-        Ro21Tuh9A9srdGGTphrNIGGMJTEU4odn5zXaShfeyn0yYa0CB5uf3aEVJbsqVO3cNtTjQC/1UWJe8
-        0iCBQbtgMgx0n+tshKg9fv3s4V1mqiyP5/OqX/wYBGvWFubqGDQjViHsJvI4hZcgQZcSkEvj6ddO8
-        ls1FL80Mg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50122)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4YZ3-00088N-7S; Wed, 19 Feb 2020 23:15:33 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4YYy-0001os-W4; Wed, 19 Feb 2020 23:15:29 +0000
-Date:   Wed, 19 Feb 2020 23:15:28 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
-Message-ID: <20200219231528.GS25745@shell.armlinux.org.uk>
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
- <e2b53d14-7258-0137-79bc-b0a21ccc7b8f@gmail.com>
- <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
- <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
+        id S1726718AbgBSXTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 18:19:52 -0500
+Received: from lists.gateworks.com ([108.161.130.12]:47800 "EHLO
+        lists.gateworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726613AbgBSXTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 18:19:51 -0500
+Received: from 68-189-91-139.static.snlo.ca.charter.com ([68.189.91.139] helo=rjones.pdc.gateworks.com)
+        by lists.gateworks.com with esmtp (Exim 4.82)
+        (envelope-from <rjones@gateworks.com>)
+        id 1j4Ydv-0005r2-FZ; Wed, 19 Feb 2020 23:20:35 +0000
+From:   Robert Jones <rjones@gateworks.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Robert Richter <rrichter@marvell.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
+        Robert Jones <rjones@gateworks.com>
+Subject: [PATCH net v3] net: thunderx: workaround BGX TX Underflow issue
+Date:   Wed, 19 Feb 2020 15:19:36 -0800
+Message-Id: <20200219231936.5531-1-rjones@gateworks.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 11:18:17AM -0800, Florian Fainelli wrote:
-> On 2/19/20 10:52 AM, Vladimir Oltean wrote:
-> > On Wed, 19 Feb 2020 at 02:02, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> Why not just revert 2ea7a679ca2abd251c1ec03f20508619707e1749 ("net: dsa:
-> >> Don't add vlans when vlan filtering is disabled")? If a driver wants to
-> >> veto the programming of VLANs while it has ports enslaved to a bridge
-> >> that does not have VLAN filtering, it should have enough information to
-> >> not do that operation.
-> >> --
-> >> Florian
-> > 
-> > It would be worth mentioning that for sja1105 and hypothetical other
-> > users of DSA_TAG_PROTO_8021Q, DSA doing that automatically was
-> > helpful. VLAN manipulations are still being done from tag_8021q.c for
-> > the purpose of DSA tagging, but the fact that the VLAN EtherType is
-> > not 0x8100 means that from the perspective of real VLAN traffic, the
-> > switch is VLAN unaware. DSA was the easiest place to disseminate
-> > between VLAN requests of its own and VLAN requests coming from
-> > switchdev.
-> > Without that logic in DSA, a vlan-unaware bridge would be able to
-> > destroy the configuration done for source port decoding.
-> > Just saying - with enough logic in .port_vlan_prepare, I should still
-> > be able to accept only what's whitelisted to work for tagging, and
-> > then it won't matter who issued that VLAN command.
-> 
-> I suppose I am fine with Russell's approach, but maybe its meaning
-> should be reversed, that is, you get VLAN objects notifications by
-> default for a  VLAN unaware bridge and if you do set a specific
-> dsa_switch flag, then you do not get those.
+From: Tim Harvey <tharvey@gateworks.com>
 
-If we reverse it, I'll need someone to tell me which DSA switches
-should not get the vlan object notifications.  Maybe also in that
-case, we should deny the ability to toggle the state of
-vlan_filtering as well?
+While it is not yet understood why a TX underflow can easily occur
+for SGMII interfaces resulting in a TX wedge. It has been found that
+disabling/re-enabling the LMAC resolves the issue.
 
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Reviewed-by: Robert Jones <rjones@gateworks.com>
+---
+Changes in v2:
+ - Changed bgx_register_intr() to a void return
+ - Added pci_free_irq_vectors() calls to free irq if named/allocated
+ - Use snprintf instead of sprintf for irq names
+
+Changes in v3:
+ - Use pci_err() instead of dev_err() calls
+ - Use pci_alloc_irq_vectors() for minimum vectors with PCI_IRQ_ALL_TYPES
+ - Use pci_request_irq() instead of request_irq() with stored name
+ - Move interrupt enable (and add disable) to bgx_lmac_rx_tx_enable()
+ - Add pcim_enable_device(), pci_free_irq() calls and remove vector free calls
+
+ .../net/ethernet/cavium/thunder/thunder_bgx.c | 62 ++++++++++++++++++-
+ .../net/ethernet/cavium/thunder/thunder_bgx.h |  9 +++
+ 2 files changed, 68 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+index c4f6ec0cd183..00751771f662 100644
+--- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
++++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
+@@ -410,10 +410,19 @@ void bgx_lmac_rx_tx_enable(int node, int bgx_idx, int lmacid, bool enable)
+ 	lmac = &bgx->lmac[lmacid];
+ 
+ 	cfg = bgx_reg_read(bgx, lmacid, BGX_CMRX_CFG);
+-	if (enable)
++	if (enable) {
+ 		cfg |= CMR_PKT_RX_EN | CMR_PKT_TX_EN;
+-	else
++
++		/* enable TX FIFO Underflow interrupt */
++		bgx_reg_modify(bgx, lmacid, BGX_GMP_GMI_TXX_INT_ENA_W1S,
++			       GMI_TXX_INT_UNDFLW);
++	} else {
+ 		cfg &= ~(CMR_PKT_RX_EN | CMR_PKT_TX_EN);
++
++		/* Disable TX FIFO Underflow interrupt */
++		bgx_reg_modify(bgx, lmacid, BGX_GMP_GMI_TXX_INT_ENA_W1C,
++			       GMI_TXX_INT_UNDFLW);
++	}
+ 	bgx_reg_write(bgx, lmacid, BGX_CMRX_CFG, cfg);
+ 
+ 	if (bgx->is_rgx)
+@@ -1535,6 +1544,48 @@ static int bgx_init_phy(struct bgx *bgx)
+ 	return bgx_init_of_phy(bgx);
+ }
+ 
++static irqreturn_t bgx_intr_handler(int irq, void *data)
++{
++	struct bgx *bgx = (struct bgx *)data;
++	u64 status, val;
++	int lmac;
++
++	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
++		status = bgx_reg_read(bgx, lmac, BGX_GMP_GMI_TXX_INT);
++		if (status & GMI_TXX_INT_UNDFLW) {
++			pci_err(bgx->pdev, "BGX%d lmac%d UNDFLW\n",
++				bgx->bgx_id, lmac);
++			val = bgx_reg_read(bgx, lmac, BGX_CMRX_CFG);
++			val &= ~CMR_EN;
++			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
++			val |= CMR_EN;
++			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
++		}
++		/* clear interrupts */
++		bgx_reg_write(bgx, lmac, BGX_GMP_GMI_TXX_INT, status);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static void bgx_register_intr(struct pci_dev *pdev)
++{
++	struct bgx *bgx = pci_get_drvdata(pdev);
++	int ret;
++
++	ret = pci_alloc_irq_vectors(pdev, BGX_LMAC_VEC_OFFSET,
++				    BGX_LMAC_VEC_OFFSET, PCI_IRQ_ALL_TYPES);
++	if (ret < 0) {
++		pci_err(pdev, "Req for #%d msix vectors failed\n",
++			BGX_LMAC_VEC_OFFSET);
++		return;
++	}
++	ret = pci_request_irq(pdev, GMPX_GMI_TX_INT, bgx_intr_handler, NULL,
++			      bgx, "BGX%d", bgx->bgx_id);
++	if (ret)
++		pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
++}
++
+ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	int err;
+@@ -1550,7 +1601,7 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	pci_set_drvdata(pdev, bgx);
+ 
+-	err = pci_enable_device(pdev);
++	err = pcim_enable_device(pdev);
+ 	if (err) {
+ 		dev_err(dev, "Failed to enable PCI device\n");
+ 		pci_set_drvdata(pdev, NULL);
+@@ -1604,6 +1655,8 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	bgx_init_hw(bgx);
+ 
++	bgx_register_intr(pdev);
++
+ 	/* Enable all LMACs */
+ 	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
+ 		err = bgx_lmac_enable(bgx, lmac);
+@@ -1620,6 +1673,7 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_enable:
+ 	bgx_vnic[bgx->bgx_id] = NULL;
++	pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
+ err_release_regions:
+ 	pci_release_regions(pdev);
+ err_disable_device:
+@@ -1637,6 +1691,8 @@ static void bgx_remove(struct pci_dev *pdev)
+ 	for (lmac = 0; lmac < bgx->lmac_count; lmac++)
+ 		bgx_lmac_disable(bgx, lmac);
+ 
++	pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
++
+ 	bgx_vnic[bgx->bgx_id] = NULL;
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
+index 25888706bdcd..cdea49392185 100644
+--- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
++++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
+@@ -180,6 +180,15 @@
+ #define BGX_GMP_GMI_TXX_BURST		0x38228
+ #define BGX_GMP_GMI_TXX_MIN_PKT		0x38240
+ #define BGX_GMP_GMI_TXX_SGMII_CTL	0x38300
++#define BGX_GMP_GMI_TXX_INT		0x38500
++#define BGX_GMP_GMI_TXX_INT_W1S		0x38508
++#define BGX_GMP_GMI_TXX_INT_ENA_W1C	0x38510
++#define BGX_GMP_GMI_TXX_INT_ENA_W1S	0x38518
++#define  GMI_TXX_INT_PTP_LOST			BIT_ULL(4)
++#define  GMI_TXX_INT_LATE_COL			BIT_ULL(3)
++#define  GMI_TXX_INT_XSDEF			BIT_ULL(2)
++#define  GMI_TXX_INT_XSCOL			BIT_ULL(1)
++#define  GMI_TXX_INT_UNDFLW			BIT_ULL(0)
+ 
+ #define BGX_MSIX_VEC_0_29_ADDR		0x400000 /* +(0..29) << 4 */
+ #define BGX_MSIX_VEC_0_29_CTL		0x400008
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.25.0
+
