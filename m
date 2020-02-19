@@ -2,99 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE3616407F
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63EBB1640C6
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbgBSJgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 04:36:09 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43665 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgBSJgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:36:09 -0500
-Received: by mail-pl1-f193.google.com with SMTP id p11so9318959plq.10;
-        Wed, 19 Feb 2020 01:36:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=USv22fMY4lRbm7kdOlrco6KeUFWgxCIZrYv0NUecR8k=;
-        b=mFl+Rpghcx4xs9gygrl7xbkfupYFtIeXXg7A2VrlMXSkKuMQsWKeCG26GbJDCiOieA
-         OjvFeZpZfmYjIpBwwOBC9csCzviJo3jbxes07OuwfMKnYxJUcVKvyfaQepkrHlLQx9es
-         OV7Iu2BxOSRlY1uWn0azWWlBlxhrfAL1rnIEVUnSViqd4vKaKk30ZnHvziLZcbICXXdJ
-         rLShTFl9eQRoiKGW0P2xPeeBunLdmhwGgSpuuQMZFkTJMTClvncjNGMTqkyzJhTPZ7l7
-         bVuNYv9kA+TX8kwieNjO4JqyjO3IVcfqL78VqmZ1CUZaxtive881yHsaUaEmaKDPtOo0
-         yKTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=USv22fMY4lRbm7kdOlrco6KeUFWgxCIZrYv0NUecR8k=;
-        b=BnqxSqgb2PCsdaQaiqsFx6PyJxYz4A8QlguJcIIK6LB6qseV1pRAe9qC/opNUtm1/Z
-         q2kTuAS1gmtlSj2KUBi2npYm/ys6/JvmZ7NUcjc9xk74+S5A4A7hXxwGpY+HEzjbOdXU
-         hVpa5xxZ+PwoYXsJOar9WFMD7nIGFDkxLopYce2iXGl7IbJrFEqq8LTe++FQVnz8ltpL
-         XFbveUc9719dJSVdDnIdYe6b7fL7GeVPKbtt0xmamfoSMCDmVCV8l3LWSGX3SWDCw2k6
-         OEsOgjkf8Fyyc6I4WByIQAnXT2hwcmaajRqP94bct8GfUzEK6+X/QPiXoGJyhVeumOXi
-         EyZQ==
-X-Gm-Message-State: APjAAAUMbtOMaR3X4PdQv3XPBrbLxvQYFqeT2wgZeNDX2PO0vOqHDZ73
-        i/zFEE4z/nfH3RIHD1KkySQ=
-X-Google-Smtp-Source: APXvYqyK7T17usTuMnhZLEVXZVGy6SV0GxYbz6ukrtcwQEV2x5dPjBIC/2rZ3TlaqMsCMFAuKp/yxQ==
-X-Received: by 2002:a17:902:9a09:: with SMTP id v9mr24385277plp.341.1582104968248;
-        Wed, 19 Feb 2020 01:36:08 -0800 (PST)
-Received: from localhost.localdomain ([146.196.37.220])
-        by smtp.googlemail.com with ESMTPSA id x197sm2119217pfc.1.2020.02.19.01.36.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 01:36:07 -0800 (PST)
-From:   Amol Grover <frextrite@gmail.com>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        Amol Grover <frextrite@gmail.com>
-Subject: [PATCH] sunrpc: Pass lockdep expression to RCU lists
-Date:   Wed, 19 Feb 2020 15:05:05 +0530
-Message-Id: <20200219093504.16290-1-frextrite@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726523AbgBSJtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 04:49:01 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:60568 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726297AbgBSJtB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:49:01 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 01J9mnsY029951, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 01J9mnsY029951
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Feb 2020 17:48:49 +0800
+Received: from RTEXMB03.realtek.com.tw (172.21.6.96) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 19 Feb 2020 17:48:49 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 19 Feb 2020 17:48:48 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
+ RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
+ 15.01.1779.005; Wed, 19 Feb 2020 17:48:48 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        nic_swsd <nic_swsd@realtek.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 12/13] r8152: use new helper tcp_v6_gso_csum_prep
+Thread-Topic: [PATCH net-next v2 12/13] r8152: use new helper
+ tcp_v6_gso_csum_prep
+Thread-Index: AQHV5phMsUMHsElpxUaoxEMxm3ymXagiRPkw
+Date:   Wed, 19 Feb 2020 09:48:48 +0000
+Message-ID: <42d3acd04d79422aa37715f136497369@realtek.com>
+References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
+ <1dd1668a-b3c6-d441-681d-6cbe3ab22fa4@gmail.com>
+In-Reply-To: <1dd1668a-b3c6-d441-681d-6cbe3ab22fa4@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-detail->hash_table[] is traversed using hlist_for_each_entry_rcu
-outside an RCU read-side critical section but under the protection
-of detail->hash_lock.
-
-Hence, add corresponding lockdep expression to silence false-positive
-warnings, and harden RCU lists.
-
-Signed-off-by: Amol Grover <frextrite@gmail.com>
----
- net/sunrpc/cache.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
-index f740cb51802a..5db5f5b94726 100644
---- a/net/sunrpc/cache.c
-+++ b/net/sunrpc/cache.c
-@@ -97,7 +97,8 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
- 	spin_lock(&detail->hash_lock);
- 
- 	/* check if entry appeared while we slept */
--	hlist_for_each_entry_rcu(tmp, head, cache_list) {
-+	hlist_for_each_entry_rcu(tmp, head, cache_list,
-+				 lockdep_is_held(&detail->hash_lock)) {
- 		if (detail->match(tmp, key)) {
- 			if (cache_is_expired(detail, tmp)) {
- 				hlist_del_init_rcu(&tmp->cache_list);
--- 
-2.24.1
-
+SGVpbmVyIEthbGx3ZWl0IFttYWlsdG86aGthbGx3ZWl0MUBnbWFpbC5jb21dDQo+IFNlbnQ6IFdl
+ZG5lc2RheSwgRmVicnVhcnkgMTksIDIwMjAgNDoxMyBBTQ0KPiBTdWJqZWN0OiBbUEFUQ0ggbmV0
+LW5leHQgdjIgMTIvMTNdIHI4MTUyOiB1c2UgbmV3IGhlbHBlcg0KPiB0Y3BfdjZfZ3NvX2NzdW1f
+cHJlcA0KPiANCj4gVXNlIG5ldyBoZWxwZXIgdGNwX3Y2X2dzb19jc3VtX3ByZXAgaW4gYWRkaXRp
+b25hbCBuZXR3b3JrIGRyaXZlcnMuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBIZWluZXIgS2FsbHdl
+aXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPg0KDQpBY2tlZC1ieTogSGF5ZXMgV2FuZyA8aGF5ZXN3
+YW5nQHJlYWx0ZWsuY29tPg0KDQpCZXN0IFJlZ2FyZHMsDQpIYXllcw0KDQo=
