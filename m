@@ -2,138 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9261A163D27
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:45:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9BB163D29
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726297AbgBSGpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 01:45:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45496 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726156AbgBSGpN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 01:45:13 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 798D92176D;
-        Wed, 19 Feb 2020 06:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582094712;
-        bh=og5blEf5Nwq9xuntnoX3HYDUPTi+Squ4Y93kWDMAi0U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dg2qWhlhWw8eoaftgP7Gfp+TnR9ca0hjjV4wvK7B/lxtaH0/PuOiSAJnrlT7sMwWX
-         FTvaZZ7UJFcMGEdZ5PQFPKsROnR76rx8UydEb8qrlICys+w+xlLlIxJO9+zRiurqF3
-         e/ayO/P+hTHMjkIBaYrw95UIZL2yp3thwGROi4Ko=
-Date:   Wed, 19 Feb 2020 08:45:07 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Lang Cheng <chenglang@huawei.com>,
-        dledford@redhat.com, davem@davemloft.net, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, linuxarm@huawei.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [RFC rdma-next] RDMA/core: Add attribute WQ_MEM_RECLAIM to
- workqueue "infiniband"
-Message-ID: <20200219064507.GC15239@unreal>
-References: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
- <20200218153156.GD31668@ziepe.ca>
- <212eda31-cc86-5487-051b-cb51c368b6fe@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <212eda31-cc86-5487-051b-cb51c368b6fe@huawei.com>
+        id S1726523AbgBSGp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 01:45:26 -0500
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:40809 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgBSGp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 01:45:26 -0500
+Received: by mail-pf1-f201.google.com with SMTP id d127so14822555pfa.7
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 22:45:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=JFI3+kM1LWruGVLKeVPFO/XZwyOSYT/vDPiEnVdBj2U=;
+        b=PnuQ7SvkJrwFsCkOr3rvHKfrDrwUoHQwrQQitEv/ezWelIifCVoD7E3e/i+/2TbM+X
+         IwDtLxTnUEfVdwcl86OnwvXOLU70wOEw5HjL0v/xxm5717Pb45kjxTcUhUMbrmdsyP+C
+         SBKE6mym4PF3P72mIY7hikh8i3a0aESWh+EGXRwooJhSJ8OYdGDoz+hXpRSaw0axM8Ex
+         lC+0iV0uJuKu1tSimojwsqaUaYK/Ci5C2h9tZDxNlL3m1P3aB2xekQ91IYnZXgMP5WR2
+         +0hlJJr0F5xYVtjxQjNN5VJvD2bkr1IH8Z41iOCRcsbF8sY6i5hUm+rC3ZHfqAgUC51h
+         Ua+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=JFI3+kM1LWruGVLKeVPFO/XZwyOSYT/vDPiEnVdBj2U=;
+        b=mtVE/X059i2Y6haJ4z0Y7NXm0kFsxpZNNOT387qMfvyZXVOfQ+jojY0FLT/UGfpROy
+         M4acePb8TC9bvCk4J6Ub4jjZmZlx5VkaNWCZDoKp0kfK+9yVNBe1cC4ErQw6kwppTcO1
+         L5JdYxEVoNA1NXuuboAsWWjLvbHOs9YrnNjxZjO/uFk8uGKCbTHxYXsJyqYwqPzfg1vh
+         D1V6zhB4rVgzNy8r+JeOkDCoAkSynExzer0jqZ2hUdpld7fXbxHqGcql6sm2m4O7pFue
+         QYJULesAuc/lBIvRR4cBqmcNplyv1G6MuEjVS4QuWCve5PZ04Ca5bw3f87EhH8UWRhtK
+         jjig==
+X-Gm-Message-State: APjAAAWcRw7ezLiqa4VfTWL70F0196elX519JQuafoxjzFnMnyI25Em+
+        77vC1Mh/4xq/Z4DIu0mox4Ks4Xs7alIDn9fEwA==
+X-Google-Smtp-Source: APXvYqz+J/xwCfFRMD1shS+tndghawrwzI7Yd0VrboY//9yoBvjkbC42tNq4IbmZInjyjU6RkwV+tCIPByJGmiAtag==
+X-Received: by 2002:a63:5443:: with SMTP id e3mr20602878pgm.245.1582094725566;
+ Tue, 18 Feb 2020 22:45:25 -0800 (PST)
+Date:   Wed, 19 Feb 2020 14:45:19 +0800
+Message-Id: <20200219144442.Bluez.v2.1.I145f6c5bbf2437a6f6afc28d3db2b876c034c2d8@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [Bluez PATCH v2] bluetooth: fix passkey uninitialized when used
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 09:13:23AM +0800, Yunsheng Lin wrote:
-> On 2020/2/18 23:31, Jason Gunthorpe wrote:
-> > On Tue, Feb 18, 2020 at 11:35:35AM +0800, Lang Cheng wrote:
-> >> The hns3 driver sets "hclge_service_task" workqueue with
-> >> WQ_MEM_RECLAIM flag in order to guarantee forward progress
-> >> under memory pressure.
-> >
-> > Don't do that. WQ_MEM_RECLAIM is only to be used by things interlinked
-> > with reclaimed processing.
-> >
-> > Work on queues marked with WQ_MEM_RECLAIM can't use GFP_KERNEL
-> > allocations, can't do certain kinds of sleeps, can't hold certain
-> > kinds of locks, etc.
->
-> From mlx5 driver, it seems that there is GFP_KERNEL allocations
-> on wq marked with WQ_MEM_RECLAIM too:
->
-> mlx5e_tx_timeout_work() -> mlx5e_safe_reopen_channels() ->
-> mlx5e_safe_switch_channels() -> mlx5e_open_channels()
->
-> kcalloc() is called with GFP_KERNEL in mlx5e_open_channels(),
-> and mlx5e_tx_timeout_work() is queued with priv->wq, which is
-> allocated with WQ_MEM_RECLAIM flags. see:
->
-> mlx5e_netdev_init() -> create_singlethread_workqueue()
+This issue cause a warning here
+https://groups.google.com/forum/#!topic/clang-built-linux/kyRKCjRsGoU
 
-There are two reasons for that, first mlx5 driver was written far before
-WQ_MEM_RECLAIM usage was clarified, second mlx5 has bugs.
+Signed-off-by: Howard Chung <howardchung@google.com>
 
->
->
-> From the comment in kernel/workqueue.c, the work queued with
-> wq with WQ_MEM_RECLAIM flag set seems to be executed without
-> blocking under some rare case. I still not quite understand
-> the comment, and I can not find any doc that point out the
-> GFP_KERNEL allocations can not be done in wq with WQ_MEM_RECLAIM
-> yet. Is there any doc that mentions that GFP_KERNEL allocations
-> can not be done in wq with WQ_MEM_RECLAIM?
+---
 
-It is whole purpose of WQ_MEM_RECLAIM flag - allow progress in case of
-memory pressure. Allocation memory while we are under memory pressure
-is an invitation for a disaster.
+Changes in v2:
+- refactor code
 
->
->
-> /**
->  * rescuer_thread - the rescuer thread function
->  * @__rescuer: self
->  *
->  * Workqueue rescuer thread function.  There's one rescuer for each
->  * workqueue which has WQ_MEM_RECLAIM set.
->  *
->  * Regular work processing on a pool may block trying to create a new
->  * worker which uses GFP_KERNEL allocation which has slight chance of
->  * developing into deadlock if some works currently on the same queue
->  * need to be processed to satisfy the GFP_KERNEL allocation.  This is
->  * the problem rescuer solves.
->  *
->  * When such condition is possible, the pool summons rescuers of all
->  * workqueues which have works queued on the pool and let them process
->  * those works so that forward progress can be guaranteed.
->  *
->  * This should happen rarely.
->  *
->  * Return: 0
->  */
->
->
-> The below is the reason we add the sets "hclge_service_task" workqueue
-> with WQ_MEM_RECLAIM through analysing why other ethernet drivers has
-> allocated wq with WQ_MEM_RECLAIM flag, I may be wrong about that:
+ net/bluetooth/smp.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Many drivers are developed using copy/paste technique, so it is wrong
-to assume that "other ethernet drivers" did the right thing.
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 50e0ac692ec4..929e0bebaf80 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -2115,7 +2115,7 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 	struct l2cap_chan *chan = conn->smp;
+ 	struct smp_chan *smp = chan->data;
+ 	struct hci_conn *hcon = conn->hcon;
+-	u8 *pkax, *pkbx, *na, *nb;
++	u8 *pkax, *pkbx, *na, *nb, confirm_hint;
+ 	u32 passkey;
+ 	int err;
+ 
+@@ -2179,13 +2179,12 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 		 */
+ 		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
+ 				 hcon->role)) {
+-			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+-							hcon->type,
+-							hcon->dst_type,
+-							passkey, 1);
+-			if (err)
+-				return SMP_UNSPECIFIED;
+-			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
++			/* Set passkey to 0. The value can be any number since
++			 * it'll be ignored anyway.
++			 */
++			passkey = 0;
++			confirm_hint = 1;
++			goto confirm;
+ 		}
+ 	}
+ 
+@@ -2206,9 +2205,11 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 	err = smp_g2(smp->tfm_cmac, pkax, pkbx, na, nb, &passkey);
+ 	if (err)
+ 		return SMP_UNSPECIFIED;
++	confirm_hint = 0;
+ 
++confirm:
+ 	err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst, hcon->type,
+-					hcon->dst_type, passkey, 0);
++					hcon->dst_type, passkey, confirm_hint);
+ 	if (err)
+ 		return SMP_UNSPECIFIED;
+ 
+-- 
+2.25.0.265.gbab2e86ba0-goog
 
->
-> hns3 ethernet driver may be used as the low level transport of a
-> network file system, memory reclaim data path may depend on the
-> worker in hns3 driver to bring back the ethernet link so that it flush
-> the some cache to network based disk.
-
-Unlikely that this "network file system" dependency on ethernet link is correct.
-
-Thanks
-
->
-> >
-> > Jason
-> >
-> >
->
