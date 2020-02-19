@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39543164F4C
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46434164F5A
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:58:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbgBST4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 14:56:19 -0500
-Received: from gateway21.websitewelcome.com ([192.185.45.133]:13865 "EHLO
-        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726713AbgBST4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 14:56:19 -0500
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway21.websitewelcome.com (Postfix) with ESMTP id D73FB400C9A7B
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 13:56:17 -0600 (CST)
+        id S1727161AbgBST6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 14:58:13 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.100]:27284 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726784AbgBST6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 14:58:13 -0500
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 2DB766B60
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 13:58:11 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 4VSDjYBBO8vkB4VSDjUjcH; Wed, 19 Feb 2020 13:56:17 -0600
+        id 4VU3jFODZSl8q4VU3jvvcL; Wed, 19 Feb 2020 13:58:11 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
@@ -24,25 +24,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vOX1mSydTUmAP/JR5VWdC84Be9M7UUd+kCsN/i1LJtk=; b=FyncX6OwWQ0FTr7fBIcGpQZKp1
-        kdnCeXNghO2313ZTrvOMjQDqu8wr57U4z2IHG4lduQ7sF399q9yuZWaIGr5syJhjRzXOLZ7DleH2z
-        m8wrstWImpBqXow8PeBS5CsCtFgCTSRBQ3ZDJiXeg00L6TomFt36lsIhUHp0hPbPnX1oqUDzZNl2Q
-        aNgki8/hkg7EekQnnP9sCwwE3CU/J1VpbueAOE0tLA+cV98PniCGRlQ53+QLtoah6daDSUuD4I7ET
-        tC2ABZle5UBV0/QPNP20pCyDI+K6TjD4QCDVL1hraVQFlJsrddNJccMmO+HhZtUlJvONVMUKMM5Jr
-        srvWBCTQ==;
-Received: from [200.68.141.28] (port=24271 helo=[192.168.43.131])
+        bh=UYAsQma8WMMEgfFGTxq8KR7cZgkcLup2CpQWS1oHj6o=; b=dS806upTQpFVtK0Uu4+ezniKEV
+        4++S0aMc0sSjVOgj9q4xVUuLKFQhDLAwLZ9OOVvVuafxEs27N5t0jB4HwEbJnKLfOhABHclYOSq/s
+        dwf3GTY8Da5ltm1OCHR4n9e9PkF9QaxDxx0mA0cLrIwmuj19C8UXacpqwMtG8N8nlciSD9J00o5Gt
+        7+oARQ/X+m0j0DcuAEJeCCFiec+kusya7V/81cQfcGoP6rGZeV2rwgccM4h1ReZwzVC5CBcrqRWQF
+        9I0NuMMvCwTEsb1EF4qPvZO1i4dqNshRLjkLvsCdwRbEL4v6aqHjnseehoxmsQ58XmLOhxSWNa3u+
+        nlN0c19Q==;
+Received: from [200.68.141.28] (port=7911 helo=[192.168.43.131])
         by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j4VSD-003TQf-F8; Wed, 19 Feb 2020 13:56:17 -0600
-Subject: Re: [PATCH][next] mlxsw: Replace zero-length array with
+        id 1j4VU2-003UKX-MV; Wed, 19 Feb 2020 13:58:10 -0600
+Subject: Re: [PATCH][next] net/mlx5e: Replace zero-length array with
  flexible-array member
-To:     Ido Schimmel <idosch@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200218205705.GA29805@embeddedor>
- <20200219164311.GA348671@splinter>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200218203114.GA27096@embeddedor>
+ <20200219071435.GE15239@unreal>
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 Autocrypt: addr=gustavo@embeddedor.com; keydata=
  xsFNBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
@@ -87,12 +88,12 @@ Autocrypt: addr=gustavo@embeddedor.com; keydata=
  YJWH93PN+ZUh6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9eh
  GZEO3+gCDFmKrjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrS
  VtSixD1uOgytAP7RWS474w==
-Message-ID: <1f264459-4627-d889-5623-1f18b55019f9@embeddedor.com>
-Date:   Wed, 19 Feb 2020 13:58:53 -0600
+Message-ID: <a077354c-8bbc-fd1f-6799-09778df4ec40@embeddedor.com>
+Date:   Wed, 19 Feb 2020 14:00:52 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200219164311.GA348671@splinter>
+In-Reply-To: <20200219071435.GE15239@unreal>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -104,13 +105,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.68.141.28
 X-Source-L: No
-X-Exim-ID: 1j4VSD-003TQf-F8
+X-Exim-ID: 1j4VU2-003UKX-MV
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: ([192.168.43.131]) [200.68.141.28]:24271
+X-Source-Sender: ([192.168.43.131]) [200.68.141.28]:7911
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 4
+X-Email-Count: 10
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -120,54 +121,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/19/20 10:43, Ido Schimmel wrote:
-> On Tue, Feb 18, 2020 at 02:57:05PM -0600, Gustavo A. R. Silva wrote:
->> The current codebase makes use of the zero-length array language
->> extension to the C90 standard, but the preferred mechanism to declare
->> variable-length types such as these ones is a flexible array member[1][2],
->> introduced in C99:
->>
->> struct foo {
->>         int stuff;
->>         struct boo array[];
->> };
->>
->> By making use of the mechanism above, we will get a compiler warning
->> in case the flexible array does not occur last in the structure, which
->> will help us prevent some kind of undefined behavior bugs from being
->> inadvertently introduced[3] to the codebase from now on.
->>
->> Also, notice that, dynamic memory allocations won't be affected by
->> this change:
->>
->> "Flexible array members have incomplete type, and so the sizeof operator
->> may not be applied. As a quirk of the original implementation of
->> zero-length arrays, sizeof evaluates to zero."[1]
->>
->> This issue was found with the help of Coccinelle.
->>
->> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
->> [2] https://github.com/KSPP/linux/issues/21
->> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+On 2/19/20 01:14, Leon Romanovsky wrote:
+
 >>
 >> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlx5/core/en.h          | 2 +-
+>>  drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c  | 2 +-
+>>  drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c | 2 +-
+>>  drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.h | 4 ++--
+>>  4 files changed, 5 insertions(+), 5 deletions(-)
+>>
 > 
-> Thanks, Gustavo. Looks good to me. Ran a few tests with a debug config
-> and nothing exploded.
-> 
-
-haha great!
-
-> I was just about to submit some patches myself, but they will conflict
-> with this patch, so I will wait :)
-> 
-
-:)
-
-> Reviewed-by: Ido Schimmel <idosch@mellanox.com>
-> Tested-by: Ido Schimmel <idosch@mellanox.com>
+> Thanks, applied to mlx5-next.
 > 
 
-Thanks!
+Thank you.
+
 --
 Gustavo
