@@ -2,90 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A932C164853
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 16:18:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C395A164859
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 16:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727291AbgBSPSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 10:18:32 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33552 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgBSPSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 10:18:32 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n7so228744pfn.0;
-        Wed, 19 Feb 2020 07:18:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ukKkOw2CD1p6V3m08F/J1FLQ/Kv80Rkqm5DlFEyeEwo=;
-        b=Ah7uoNUV021eb0uXbGTT4n8DSdPnmntOsRtdO0sIaVGmDz6Mx9DRCWkzlQUZdixw+q
-         EWquftTkt68WCGlW/aA5nVyhgl+UHA3gsnBdG89IY8cpIjgmPUkSlbSABOsRoUQRQiP2
-         tRiY/eEHI2tZExjQkFe8laVxjuRMHuzuVK45dlKZio/IG/07TcGQVIzIxWHJfXrtvd1a
-         HtRVxwNVVRPt42qadehr7FMIyLth4UrIOnrhkVj5fNTULu6IlHaSMd/bRTPytPu9Y5vU
-         PaRSz9bSbBntBZ+Ij+W79CdwpGDWwZ003hXlhvFCJlR5NffYtNcMGNj1KyqapsoM5/VY
-         K/gA==
+        id S1727584AbgBSPTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 10:19:01 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39261 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbgBSPTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 10:19:01 -0500
+Received: by mail-ot1-f65.google.com with SMTP id 77so465856oty.6;
+        Wed, 19 Feb 2020 07:19:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ukKkOw2CD1p6V3m08F/J1FLQ/Kv80Rkqm5DlFEyeEwo=;
-        b=lp61iyh1zc9+XuR16wO9L+CRo/wsjKV5c2VmAfsLsVYB/XPX8D662XCIsKesq+mG2f
-         bS3OHlLRTTpQB2wp3peqr5M/bj/ayqZpN73jP/MgMoUWpF2P2CUUwtS7R2e7sxeDuryF
-         BDI4vvrTN6hLiy4mKKEC9dMq1kvccvt+SHlYFs7cgO3I8pb+bdVx68flweZjP3WdmVAP
-         ASswROxxTmU2MZm2LKjlEjbDR0fsvW7mVcdsFeckNC2KQZd8pxYyf4KgM6ndFhS7P3wH
-         FiZE05Lrx/pkRafZ+dO3JBsTop7ktYmCWyoD6meR4a+jqMfA7f6oqbiT45kOK2olApzt
-         r0Sw==
-X-Gm-Message-State: APjAAAWbCO7Jtf9B049j4yp8cR1wg+NOziKzPE+DcoYPajZ777Fw7TIF
-        CEXNH1zX80qLYSQmM8ZKvg==
-X-Google-Smtp-Source: APXvYqz7z38VUX56nB4cpmN4ssPqGh9I7Dl7gnU0/yRnff1inv5wjyvzdV1rumvg9fOMEZuF/4bZng==
-X-Received: by 2002:a62:78c1:: with SMTP id t184mr26533069pfc.222.1582125511796;
-        Wed, 19 Feb 2020 07:18:31 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee1:f898:fdeb:e0c7:deeb:a606])
-        by smtp.gmail.com with ESMTPSA id v5sm45906pgc.11.2020.02.19.07.18.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JwUjvFjlBTnRJsVvsxdVVLk710Ge/pdqeSH+IOmuiEE=;
+        b=nJFIiKqJjWGpGqp1PWfCb7bzSpnLPAFsH4vfvwdcAGWRa0L/SihNAicBmjNQ1Z1ogE
+         tr3FoMG29KGijx3H38nBaxvBPLxkEBvrsfY/O2x+Rk31uVWNUEFZAG49Zkngfh/9n+cV
+         iIBg0073jlElxsl1j3CrLDv4NxHLMShTC02rYhdn0JXyC9Mgjv02s2+jac5VExlp0OtU
+         axYIYk52dG4bC1UI3hcjuVq2V1t6y9lygoS9nfKWGcCz/vPb7oZvIH0yOKSCL6x6XvlU
+         4hpN94zLzmYiojtiRuqa9RqrjSU5pOlqf8rTQj8TucK0bn2QqwGZqNh2NJMcs/j6Q+H8
+         hcgQ==
+X-Gm-Message-State: APjAAAUGwgEwx4VqelFNeTNtKlpZubm9AMSDoGOlvwSfa3rV29utlWi1
+        tuF/JunuIWTfEF4BLh9JVQ==
+X-Google-Smtp-Source: APXvYqwv1BAD7eCKzfnd4cfc1ZK3tq+eY/VfMVvWjyLMpU9xD2FVh+tpdOKUVefJ8lnV8NqCeHERtQ==
+X-Received: by 2002:a9d:62d8:: with SMTP id z24mr19238661otk.362.1582125540499;
+        Wed, 19 Feb 2020 07:19:00 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id q22sm13618otf.17.2020.02.19.07.18.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 07:18:30 -0800 (PST)
-From:   madhuparnabhowmik10@gmail.com
-To:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        davem@davemloft.net
-Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH] bridge: br_stp: Use built-in RCU list checking
-Date:   Wed, 19 Feb 2020 20:47:46 +0530
-Message-Id: <20200219151746.1050-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 19 Feb 2020 07:18:59 -0800 (PST)
+Received: (nullmailer pid 8771 invoked by uid 1000);
+        Wed, 19 Feb 2020 15:18:59 -0000
+Date:   Wed, 19 Feb 2020 09:18:59 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     min.li.xe@renesas.com
+Cc:     mark.rutland@arm.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] dt-bindings: ptp: Add device tree
+ binding for IDT 82P33 based PTP clock
+Message-ID: <20200219151859.GA5294@bogus>
+References: <1581114255-6415-1-git-send-email-min.li.xe@renesas.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1581114255-6415-1-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+On Fri, Feb 07, 2020 at 05:24:15PM -0500, min.li.xe@renesas.com wrote:
+> From: Min Li <min.li.xe@renesas.com>
+> 
+> Add device tree binding doc for the PTP clock based on IDT 82P33
+> Synchronization Management Unit (SMU).
+> 
+> Changes since v1:
+>  - As suggested by Rob Herring:
+>    1. Drop reg description for i2c
+>    2. Replace i2c@1 with i2c
+> 
+> Signed-off-by: Min Li <min.li.xe@renesas.com>
+> ---
+>  .../devicetree/bindings/ptp/ptp-idt82p33.yaml      | 45 ++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+> new file mode 100644
+> index 0000000..4c8f87a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/ptp/ptp-idt82p33.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: IDT 82P33 PTP Clock Device Tree Bindings
+> +
+> +description: |
+> +  IDT 82P33XXX Synchronization Management Unit (SMU) based PTP clock
+> +
+> +maintainers:
+> +  - Min Li <min.li.xe@renesas.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - idt,82p33810
+> +      - idt,82p33813
+> +      - idt,82p33814
+> +      - idt,82p33831
+> +      - idt,82p33910
+> +      - idt,82p33913
+> +      - idt,82p33914
+> +      - idt,82p33931
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
 
-list_for_each_entry_rcu() has built-in RCU and lock checking.
+Needs a:
 
-Pass cond argument to list_for_each_entry_rcu() to silence
-false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
-by default.
+addtionalProperties: false
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
- net/bridge/br_stp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +        compatible = "abc,acme-1234";
+> +        reg = <0x01 0x400>;
 
-diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
-index 1f1410f8d312..8be12452071b 100644
---- a/net/bridge/br_stp.c
-+++ b/net/bridge/br_stp.c
-@@ -52,7 +52,8 @@ struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
- {
- 	struct net_bridge_port *p;
- 
--	list_for_each_entry_rcu(p, &br->port_list, list) {
-+	list_for_each_entry_rcu(p, &br->port_list, list,
-+				lockdep_is_held(&br->lock)) {
- 		if (p->port_no == port_no)
- 			return p;
- 	}
--- 
-2.17.1
+Drop these 2 properties.
 
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        phc@51 {
+> +            compatible = "idt,82p33810";
+> +            reg = <0x51>;
+> +        };
+> +    };
+> -- 
+> 2.7.4
+> 
