@@ -2,93 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F1116464C
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C49716465F
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727402AbgBSOFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 09:05:21 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42827 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726725AbgBSOFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:05:21 -0500
-Received: by mail-ed1-f65.google.com with SMTP id e10so29218317edv.9
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 06:05:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jVNn6ydOhoaFYlob8I2x9SK2uphuvWU546pINsPX6fQ=;
-        b=N3q51zL/eN7z+aGyYmvJnQcRertnI8M1y/GJ2yl6wvyB747tg/DFM8NVjnKcStrVLn
-         cJd72hZEdEmNwsqb3U44La3AdtsxGg/72vM04H4zX+RtXvIkaKpgdfrESUYc2k8XN9br
-         tRxzh2GL9axA9c3oTbZ9txi1xKkVDS6nbqJFDJAC9gSj8VmTxAKy1DSkr3gLdZ9srnl8
-         XZbffSfdb4HNW10K4OPn77xsVqW2axwAFd7v5VtgjiUM2JAISxcgMd5k7QFeBuyypXjr
-         Twc7Q/QK+7EAsmAC5V08TJS1PUlt6xMyuE/ydUO2q5x/2Zid6Q+EjB9Vzx47OjCRNmYV
-         xFwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jVNn6ydOhoaFYlob8I2x9SK2uphuvWU546pINsPX6fQ=;
-        b=NFzBkZ3vn7diAmtQbUAaZKKa4StXMqTNiqTAncu885fkWxwkXZMQWOtPV0LPr8hlz1
-         XHIx/OPjkVyiqV0INnPF8JdKxsPTnr4tbiQcZlPDJdBN/74GWb16IzuMMHC0e2H9+siN
-         XDYjkil6xOZhAiZmtUm4ZRltY2Xs6gelacBIsBplcoO+EzZRUTRmqOe1PF++ZpxiMdoa
-         KiVLmuK0PTBr+diJQQRhSEC80kC+OqtlVIOI6aY7TzFOM4soVU4RxtuRWe/wH4/e1DKT
-         ZcP3FB9eLdKgS7oLZBPiQcejqQeqrSxknrZBS1D5AnMGaX6mj2fTtClzj6/vMRrqJ3nA
-         afGg==
-X-Gm-Message-State: APjAAAXPfzVxhcxkwUdhBWSsmZ41k8I6mMu74xXnfZThjYjaiXQOkLFy
-        LH0SsKPCJndbREwv4Gxw8PXopYtw+kWdNHw8rMc=
-X-Google-Smtp-Source: APXvYqwTfd1hdSQivxKMZo7buxE2P7k5IIb2Q35JRxYrDLao9wHaRvElZ8biYQM2k4s2tGUsuZXXtEJwzXO3LIsjDwY=
-X-Received: by 2002:a17:906:9501:: with SMTP id u1mr23328695ejx.113.1582121119254;
- Wed, 19 Feb 2020 06:05:19 -0800 (PST)
+        id S1727984AbgBSOIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 09:08:49 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33188 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727756AbgBSOIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:08:49 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ACE2FB000A1;
+        Wed, 19 Feb 2020 14:08:46 +0000 (UTC)
+Received: from [10.17.20.221] (10.17.20.221) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 19 Feb
+ 2020 14:08:41 +0000
+From:   Tom Zhao <tzhao@solarflare.com>
+Subject: [PATCH net-next] sfc: complete the next packet when we receive a
+ timestamp
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-net-drivers@solarflare.com>
+Message-ID: <f84701f1-f54c-68fa-ef20-ccaabbf3beaf@solarflare.com>
+Date:   Wed, 19 Feb 2020 14:08:37 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <20200217150058.5586-1-olteanv@gmail.com> <20200218113159.qiema7jj2b3wq5bb@lx-anielsen.microsemi.net>
- <CA+h21hpAowv50TayymgbHXY-d5GZABK_rq+Z3aw3fngLUaEFSQ@mail.gmail.com>
- <20200218140111.GB10541@lunn.ch> <20200219101739.65ucq6a4dmlfgfki@lx-anielsen.microsemi.net>
-In-Reply-To: <20200219101739.65ucq6a4dmlfgfki@lx-anielsen.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 19 Feb 2020 16:05:08 +0200
-Message-ID: <CA+h21hp5NQNJJ5agMPAZ+edaZ+ouSjTJ8DypYR5Htx3ZT5iSYA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: Workaround to allow traffic
- to CPU in standalone mode
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.221]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25240.003
+X-TM-AS-Result: No-6.746300-8.000000-10
+X-TMASE-MatchedRID: WUQQpbkem9AqYYRg3clvBqo2fOuRT7aab1d/zpzApVqk3COeFIImbVOb
+        R+eKTMWbnbBGF6l7a+27hw59i5efeNvRJLD/GixsddPPQcdMrYUA+JHhu0IR5lNtD3nNFtZWyJN
+        a6DYLgM2XUzspP39qoDS5Jiy15YFyCKGbCJcIygY/ApMPW/xhXkyQ5fRSh265IxOdJSuZpHJTac
+        dDUa7rn3rQAdigWROjCrlTCdJM65G5rzEqaXlmzVtTO+xodboGAp+UH372RZW8rUtbtWe8+jDHx
+        nr5pBtw0fh0NNTQxKqt8/SSH+XT0vJrU+I+8hTAKrDHzH6zmUUvV5f7P0HVDKjxqhyDxmYjfT1m
+        V/nu2fPryF/mQs3+JkBggEfJoaepkquk8+1EFNtWfOVCJoTbWmf6wD367VgtlwFBEZ/7LUPZULV
+        BYooo+v9OXONwzM4oyqZz22qm4DmRehYFOG64KOn1HxC6hVB/BGvINcfHqheExk6c4qzx8qnmO7
+        xAT+YkYFJmL4S5TwZI8zQSH9zPCm1A5vznb2t5ZacDbE73ZSlC3iRApcRQCsAkyHiYDAQbsKFvJ
+        aID/xR+0A0//ZLNOZsoi2XrUn/JyeMtMD9QOgAYvR9ppOlv1vcUt5lc1lLgRktVxdpRt2LJeZyS
+        gvAzzKSlulCzNw5KJ2DJKtxCh0xsN9tldmG9BZ6oP1a0mRIj
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.746300-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25240.003
+X-MDID: 1582121327-nax9N_pMmGlQ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Feb 2020 at 12:17, Allan W. Nielsen
-<allan.nielsen@microchip.com> wrote:
->
-> With Ocelot we do not see this spamming - and I still do not understand
-> why this is seen with Felix.
->
+We now ignore the "completion" event when using tx queue timestamping, and only
+pay attention to the two (high and low) timestamp events. The NIC will send a
+pair of timestamp events for every packet transmitted. The current firmware may
+merge the completion events, and it is possible that future versions may
+reorder the completion and timestamp events. As such the completion event is
+not useful.
 
-I should have watched my words.
-When doing what all the other DSA switches do, which is enabling a
-bulk forwarding path between the front-panel ports and the CPU, the
-Ocelot switch core is more susceptible to doing more software
-processing work than other devices in its class, for the same end
-effect of dropping packets that the CPU is not interested in (say an
-unknown unicast MAC that is not present in the switch FDB nor in the
-DSA master's RX filter). In such a scenario, any other DSA system
-would have the host port drop these packets in hardware, by virtue of
-the unknown unicast MAC not being being present RX filter. With
-Ocelot, this mechanism that prevents software work being done for
-dropping is subverted. So to avoid this design limitation, the Ocelot
-core does not enable a bulk forwarding path between the front-panel
-ports and the CPU.
+Without this patch in place a merged completion event on a queue with
+timestamping will cause a "spurious TX completion" error. This affects
+SFN8000-series adapters.
 
-Hope this is clearer.
+Signed-off-by: Tom Zhao <tzhao@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef10.c       | 36 ++++++++++---------
+ drivers/net/ethernet/sfc/efx.h        |  1 +
+ drivers/net/ethernet/sfc/net_driver.h |  3 --
+ drivers/net/ethernet/sfc/tx.c         | 68 +++++++++++++++++++++++++++++------
+ 4 files changed, 77 insertions(+), 31 deletions(-)
 
--Vladimir
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 4d9bbcc..984de5c 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -3713,11 +3713,24 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
+ 	}
+ 
+ 	/* Transmit timestamps are only available for 8XXX series. They result
+-	 * in three events per packet. These occur in order, and are:
+-	 *  - the normal completion event
++	 * in up to three events per packet. These occur in order, and are:
++	 *  - the normal completion event (may be omitted)
+ 	 *  - the low part of the timestamp
+ 	 *  - the high part of the timestamp
+ 	 *
++	 * It's possible for multiple completion events to appear before the
++	 * corresponding timestamps. So we can for example get:
++	 *  COMP N
++	 *  COMP N+1
++	 *  TS_LO N
++	 *  TS_HI N
++	 *  TS_LO N+1
++	 *  TS_HI N+1
++	 *
++	 * In addition it's also possible for the adjacent completions to be
++	 * merged, so we may not see COMP N above. As such, the completion
++	 * events are not very useful here.
++	 *
+ 	 * Each part of the timestamp is itself split across two 16 bit
+ 	 * fields in the event.
+ 	 */
+@@ -3725,18 +3738,8 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
+ 
+ 	switch (tx_ev_type) {
+ 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
+-		/* In case of Queue flush or FLR, we might have received
+-		 * the previous TX completion event but not the Timestamp
+-		 * events.
+-		 */
+-		if (tx_queue->completed_desc_ptr != tx_queue->ptr_mask)
+-			efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
+-
+-		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event,
+-						 ESF_DZ_TX_DESCR_INDX);
+-		tx_queue->completed_desc_ptr =
+-					tx_ev_desc_ptr & tx_queue->ptr_mask;
+-		break;
++		/* Ignore this event - see above. */
++        break;
+ 
+ 	case TX_TIMESTAMP_EVENT_TX_EV_TSTAMP_LO:
+ 		ts_part = efx_ef10_extract_event_ts(event);
+@@ -3747,9 +3750,8 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
+ 		ts_part = efx_ef10_extract_event_ts(event);
+ 		tx_queue->completed_timestamp_major = ts_part;
+ 
+-		efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
+-		tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
+-		break;
++		efx_xmit_done_single(tx_queue);
++        break;
+ 
+ 	default:
+ 		netif_err(efx, hw, efx->net_dev,
+diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
+index 2dd8d50..dc1c375 100644
+--- a/drivers/net/ethernet/sfc/efx.h
++++ b/drivers/net/ethernet/sfc/efx.h
+@@ -24,6 +24,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ 				struct net_device *net_dev);
+ netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
++void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
+ int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
+ 		 void *type_data);
+ unsigned int efx_tx_max_skb_descs(struct efx_nic *efx);
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index dfd5182..d6e3115 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -207,8 +207,6 @@ struct efx_tx_buffer {
+  *	avoid cache-line ping-pong between the xmit path and the
+  *	completion path.
+  * @merge_events: Number of TX merged completion events
+- * @completed_desc_ptr: Most recent completed pointer - only used with
+- *      timestamping.
+  * @completed_timestamp_major: Top part of the most recent tx timestamp.
+  * @completed_timestamp_minor: Low part of the most recent tx timestamp.
+  * @insert_count: Current insert pointer
+@@ -268,7 +266,6 @@ struct efx_tx_queue {
+ 	unsigned int merge_events;
+ 	unsigned int bytes_compl;
+ 	unsigned int pkts_compl;
+-	unsigned int completed_desc_ptr;
+ 	u32 completed_timestamp_major;
+ 	u32 completed_timestamp_minor;
+ 
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 00c1c44..a23a3ca 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -687,6 +687,11 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
+ 	return i;
+ }
+ 
++static bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
++{
++	return buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);
++}
++
+ /* Remove packets from the TX queue
+  *
+  * This removes packets from the TX queue, up to and including the
+@@ -706,10 +711,9 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
+ 	while (read_ptr != stop_index) {
+ 		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
+ 
+-		if (!(buffer->flags & EFX_TX_BUF_OPTION) &&
+-		    unlikely(buffer->len == 0)) {
++		if (!efx_tx_buffer_in_use(buffer)) {
+ 			netif_err(efx, tx_err, efx->net_dev,
+-				  "TX queue %d spurious TX completion id %x\n",
++				  "TX queue %d spurious TX completion id %d\n",
+ 				  tx_queue->queue, read_ptr);
+ 			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
+ 			return;
+@@ -835,6 +839,18 @@ int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
+ 	return 0;
+ }
+ 
++static void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
++{
++	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
++		tx_queue->old_write_count = ACCESS_ONCE(tx_queue->write_count);
++		if (tx_queue->read_count == tx_queue->old_write_count) {
++			smp_mb();
++			tx_queue->empty_read_count =
++				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
++		}
++	}
++}
++
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ {
+ 	unsigned fill_level;
+@@ -866,15 +882,46 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ 			netif_tx_wake_queue(tx_queue->core_txq);
+ 	}
+ 
+-	/* Check whether the hardware queue is now empty */
+-	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
+-		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
+-		if (tx_queue->read_count == tx_queue->old_write_count) {
+-			smp_mb();
+-			tx_queue->empty_read_count =
+-				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
++	efx_xmit_done_check_empty(tx_queue);
++}
++
++void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
++{
++	unsigned int pkts_compl = 0, bytes_compl = 0;
++	unsigned int read_ptr;
++	bool finished = false;
++
++	read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
++
++	while (!finished) {
++		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
++
++		if (!efx_tx_buffer_in_use(buffer)) {
++			struct efx_nic *efx = tx_queue->efx;
++
++			netif_err(efx, hw, efx->net_dev,
++				  "TX queue %d spurious single TX completion\n",
++				  tx_queue->queue);
++			atomic_inc(&efx->errors.spurious_tx);
++			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
++			return;
+ 		}
++
++		/* Need to check the flag before dequeueing. */
++		if (buffer->flags & EFX_TX_BUF_SKB)
++			finished = true;
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++
++		++tx_queue->read_count;
++		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
+ 	}
++
++	tx_queue->pkts_compl += pkts_compl;
++	tx_queue->bytes_compl += bytes_compl;
++
++	EFX_WARN_ON_PARANOID(pkts_compl != 1);
++
++	efx_xmit_done_check_empty(tx_queue);
+ }
+ 
+ static unsigned int efx_tx_cb_page_count(struct efx_tx_queue *tx_queue)
+@@ -943,7 +990,6 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->xmit_more_available = false;
+ 	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
+ 				  tx_queue->channel == efx_ptp_channel(efx));
+-	tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
+ 	tx_queue->completed_timestamp_major = 0;
+ 	tx_queue->completed_timestamp_minor = 0;
+ 
+-- 
+1.8.3.1
+
