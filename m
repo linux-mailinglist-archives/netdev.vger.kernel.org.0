@@ -2,194 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 348B5165302
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:19:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F39F165328
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 00:47:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgBSXTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 18:19:52 -0500
-Received: from lists.gateworks.com ([108.161.130.12]:47800 "EHLO
-        lists.gateworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgBSXTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 18:19:51 -0500
-Received: from 68-189-91-139.static.snlo.ca.charter.com ([68.189.91.139] helo=rjones.pdc.gateworks.com)
-        by lists.gateworks.com with esmtp (Exim 4.82)
-        (envelope-from <rjones@gateworks.com>)
-        id 1j4Ydv-0005r2-FZ; Wed, 19 Feb 2020 23:20:35 +0000
-From:   Robert Jones <rjones@gateworks.com>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Robert Richter <rrichter@marvell.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
-        Robert Jones <rjones@gateworks.com>
-Subject: [PATCH net v3] net: thunderx: workaround BGX TX Underflow issue
-Date:   Wed, 19 Feb 2020 15:19:36 -0800
-Message-Id: <20200219231936.5531-1-rjones@gateworks.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726719AbgBSXra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 18:47:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49506 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726681AbgBSXra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 18:47:30 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2648C24656;
+        Wed, 19 Feb 2020 23:47:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582156049;
+        bh=X3UuJYkLBpTG/zlZ1vGpF8EeMBW3zGtM8db2LnXPQpc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kRmI+4Zo1/lVOKoTqoj4poy3ncPnuVD4gAjf8b5e4igOT8YVKKZJBhIQORxfhNzP9
+         Tg5Z3D0UH+RyZMTGBaXVmdNoXa3U9SjQqqYigXHXq3MwerRyJ/WVrRL8+RPpcFsGLM
+         +Fh3XH9n95qOTXatgrR83SrxlE9gvzbTt/iWW4CA=
+Date:   Wed, 19 Feb 2020 15:47:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com
+Subject: Re: [RFC PATCH v2 06/22] ice: add basic handler for devlink
+ .info_get
+Message-ID: <20200219154727.5b52aa73@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <70001e87-b369-bab4-f318-ad4514e7dcfb@intel.com>
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+        <20200214232223.3442651-7-jacob.e.keller@intel.com>
+        <20200218184552.7077647b@kicinski-fedora-PC1C0HJN>
+        <6b4dd025-bcf8-12de-99b0-1e05e16333e8@intel.com>
+        <20200219115757.5af395c5@kicinski-fedora-PC1C0HJN>
+        <70001e87-b369-bab4-f318-ad4514e7dcfb@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tim Harvey <tharvey@gateworks.com>
+On Wed, 19 Feb 2020 13:37:50 -0800 Jacob Keller wrote:
+> Jakub,
+> 
+> Thanks for your excellent feedback.
+> 
+> On 2/19/2020 11:57 AM, Jakub Kicinski wrote:
+> > On Wed, 19 Feb 2020 09:33:09 -0800 Jacob Keller wrote:  
+> >> "fw.psid.api" -> what was the "nvm.psid". This I think needs a bit more
+> >> work to define. It makes sense to me as some sort of "api" as (if I
+> >> understand it correctly) it is the format for the parameters, but does
+> >> not itself define the parameter contents.  
+> > 
+> > Sounds good. So the contents of parameters would be covered by the
+> > fw.bundle now and not have a separate version?
+> >   
+> 
+> I'm actually not sure if we have any way to identify the parameters.
+> I'll ask around about that. My understanding is that these would include
+> parameters that can be modified by the driver such as Wake on LAN
+> settings, so I'm also not sure if they'd be covered in the fw.bundle
+> either. The 'defaults' that were selected when the image was created
+> would be covered, but changes to them wouldn't update the value.
+> 
+> Hmmmmm.
 
-While it is not yet understood why a TX underflow can easily occur
-for SGMII interfaces resulting in a TX wedge. It has been found that
-disabling/re-enabling the LMAC resolves the issue.
+Ah, so these are just defaults, then if there's no existing version 
+I wouldn't worry.
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-Reviewed-by: Robert Jones <rjones@gateworks.com>
----
-Changes in v2:
- - Changed bgx_register_intr() to a void return
- - Added pci_free_irq_vectors() calls to free irq if named/allocated
- - Use snprintf instead of sprintf for irq names
+> >> The original reason for using "fw" and "nvm" was because we (internally)
+> >> use fw to mean the management firmware.. where as these APIs really
+> >> combine the blocks and use "fw.mgmt" for the management firmware. Thus I
+> >> think it makes sense to move from
+> >>
+> >> I also have a couple other oddities that need to be sorted out. We want
+> >> to display the DDP version (piece of "firmware" that is loaded during
+> >> driver load, and is not permanent to the NVM). In some sense this is our
+> >> "fw.app", but because it's loaded by driver at load and not as
+> >> permanently stored in the NVM... I'm not really sure that makes sense to
+> >> put this as the "fw.app", since it is not updated or really touched by
+> >> the firmware flash update.  
+> > 
+> > Interesting, can DDP be persisted to the flash, though? Is there some
+> > default DDP, or is it _never_ in the flash? 
+> 
+> There's a version of this within the flash, but it is limited, and many
+> device features get disabled if you don't load the DDP package file.
+> (You may have seen patches for this for implementing "safe mode").
+> 
+> My understanding is there is no mechanism for persisting a different DDP
+> to the flash.
 
-Changes in v3:
- - Use pci_err() instead of dev_err() calls
- - Use pci_alloc_irq_vectors() for minimum vectors with PCI_IRQ_ALL_TYPES
- - Use pci_request_irq() instead of request_irq() with stored name
- - Move interrupt enable (and add disable) to bgx_lmac_rx_tx_enable()
- - Add pcim_enable_device(), pci_free_irq() calls and remove vector free calls
+I see, so this really isn't just parser extensions.
 
- .../net/ethernet/cavium/thunder/thunder_bgx.c | 62 ++++++++++++++++++-
- .../net/ethernet/cavium/thunder/thunder_bgx.h |  9 +++
- 2 files changed, 68 insertions(+), 3 deletions(-)
+I'm a little surprised you guys went this way, loading FW from disk
+becomes painful for network boot and provisioning :S  All the first
+stage images must have it built in, which is surprisingly painful.
 
-diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-index c4f6ec0cd183..00751771f662 100644
---- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-+++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-@@ -410,10 +410,19 @@ void bgx_lmac_rx_tx_enable(int node, int bgx_idx, int lmacid, bool enable)
- 	lmac = &bgx->lmac[lmacid];
- 
- 	cfg = bgx_reg_read(bgx, lmacid, BGX_CMRX_CFG);
--	if (enable)
-+	if (enable) {
- 		cfg |= CMR_PKT_RX_EN | CMR_PKT_TX_EN;
--	else
-+
-+		/* enable TX FIFO Underflow interrupt */
-+		bgx_reg_modify(bgx, lmacid, BGX_GMP_GMI_TXX_INT_ENA_W1S,
-+			       GMI_TXX_INT_UNDFLW);
-+	} else {
- 		cfg &= ~(CMR_PKT_RX_EN | CMR_PKT_TX_EN);
-+
-+		/* Disable TX FIFO Underflow interrupt */
-+		bgx_reg_modify(bgx, lmacid, BGX_GMP_GMI_TXX_INT_ENA_W1C,
-+			       GMI_TXX_INT_UNDFLW);
-+	}
- 	bgx_reg_write(bgx, lmacid, BGX_CMRX_CFG, cfg);
- 
- 	if (bgx->is_rgx)
-@@ -1535,6 +1544,48 @@ static int bgx_init_phy(struct bgx *bgx)
- 	return bgx_init_of_phy(bgx);
- }
- 
-+static irqreturn_t bgx_intr_handler(int irq, void *data)
-+{
-+	struct bgx *bgx = (struct bgx *)data;
-+	u64 status, val;
-+	int lmac;
-+
-+	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
-+		status = bgx_reg_read(bgx, lmac, BGX_GMP_GMI_TXX_INT);
-+		if (status & GMI_TXX_INT_UNDFLW) {
-+			pci_err(bgx->pdev, "BGX%d lmac%d UNDFLW\n",
-+				bgx->bgx_id, lmac);
-+			val = bgx_reg_read(bgx, lmac, BGX_CMRX_CFG);
-+			val &= ~CMR_EN;
-+			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
-+			val |= CMR_EN;
-+			bgx_reg_write(bgx, lmac, BGX_CMRX_CFG, val);
-+		}
-+		/* clear interrupts */
-+		bgx_reg_write(bgx, lmac, BGX_GMP_GMI_TXX_INT, status);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void bgx_register_intr(struct pci_dev *pdev)
-+{
-+	struct bgx *bgx = pci_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pci_alloc_irq_vectors(pdev, BGX_LMAC_VEC_OFFSET,
-+				    BGX_LMAC_VEC_OFFSET, PCI_IRQ_ALL_TYPES);
-+	if (ret < 0) {
-+		pci_err(pdev, "Req for #%d msix vectors failed\n",
-+			BGX_LMAC_VEC_OFFSET);
-+		return;
-+	}
-+	ret = pci_request_irq(pdev, GMPX_GMI_TX_INT, bgx_intr_handler, NULL,
-+			      bgx, "BGX%d", bgx->bgx_id);
-+	if (ret)
-+		pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
-+}
-+
- static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	int err;
-@@ -1550,7 +1601,7 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	pci_set_drvdata(pdev, bgx);
- 
--	err = pci_enable_device(pdev);
-+	err = pcim_enable_device(pdev);
- 	if (err) {
- 		dev_err(dev, "Failed to enable PCI device\n");
- 		pci_set_drvdata(pdev, NULL);
-@@ -1604,6 +1655,8 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	bgx_init_hw(bgx);
- 
-+	bgx_register_intr(pdev);
-+
- 	/* Enable all LMACs */
- 	for (lmac = 0; lmac < bgx->lmac_count; lmac++) {
- 		err = bgx_lmac_enable(bgx, lmac);
-@@ -1620,6 +1673,7 @@ static int bgx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- err_enable:
- 	bgx_vnic[bgx->bgx_id] = NULL;
-+	pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
- err_release_regions:
- 	pci_release_regions(pdev);
- err_disable_device:
-@@ -1637,6 +1691,8 @@ static void bgx_remove(struct pci_dev *pdev)
- 	for (lmac = 0; lmac < bgx->lmac_count; lmac++)
- 		bgx_lmac_disable(bgx, lmac);
- 
-+	pci_free_irq(pdev, GMPX_GMI_TX_INT, bgx);
-+
- 	bgx_vnic[bgx->bgx_id] = NULL;
- 	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
-diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-index 25888706bdcd..cdea49392185 100644
---- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-+++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.h
-@@ -180,6 +180,15 @@
- #define BGX_GMP_GMI_TXX_BURST		0x38228
- #define BGX_GMP_GMI_TXX_MIN_PKT		0x38240
- #define BGX_GMP_GMI_TXX_SGMII_CTL	0x38300
-+#define BGX_GMP_GMI_TXX_INT		0x38500
-+#define BGX_GMP_GMI_TXX_INT_W1S		0x38508
-+#define BGX_GMP_GMI_TXX_INT_ENA_W1C	0x38510
-+#define BGX_GMP_GMI_TXX_INT_ENA_W1S	0x38518
-+#define  GMI_TXX_INT_PTP_LOST			BIT_ULL(4)
-+#define  GMI_TXX_INT_LATE_COL			BIT_ULL(3)
-+#define  GMI_TXX_INT_XSDEF			BIT_ULL(2)
-+#define  GMI_TXX_INT_XSCOL			BIT_ULL(1)
-+#define  GMI_TXX_INT_UNDFLW			BIT_ULL(0)
- 
- #define BGX_MSIX_VEC_0_29_ADDR		0x400000 /* +(0..29) << 4 */
- #define BGX_MSIX_VEC_0_29_CTL		0x400008
--- 
-2.25.0
+Perhaps the "safe mode" FW is enough to boot, but then I guess once
+real FW is available there may be a loss of link as the device resets?
 
+> > Does it not have some fun implications for firmware signing to have
+> > part of the config/ucode loaded from the host?
+> 
+> I'm not sure how it works exactly. As far as I know, the DDP file is
+> itself signed.
+
+Right, that'd make sense :)
+
+> > IIRC you could also load multiple of those DDP packages? Perhaps they
+> > could get names like fw.app0, fw.app1, etc?  
+> 
+> You can load different ones, each has their own version and name
+> embedded. However, only one can be loaded at any given time, so I'm not
+> sure if multiples like this make sense.
+
+I see. Maybe just fw.app works then..
+
+> > Also if DDP controls a
+> > particular part of the datapath (parser?) feel free to come up with a
+> > more targeted name, up to you.
+> 
+> Right, it's my understanding that this defines the parsing logic, and
+> not the complete datapath microcode.
+> 
+> In theory, there could be at least 3 DDP versions
+> 
+> 1) the version in the NVM, which would be the very basic "safe mode"
+> compatible one.
+> 
+> 2) the version in the ddp firmware file that we search for when we load
+> 
+> 3) the one that actually got activated. It's a sort of
+> first-come-first-serve and sticks around until a device global reset.
+> This should in theory always be the same as (2) unless you do something
+> weird like load different drivers on the multiple functions.
+> 
+> I suppose we could use "running" and "stored" for this, to have "stored"
+> be what's in the NVM, and "running" for the active one.. but that's ugly
+> and misusing what stored vs running is supposed to represent.
+
+Ouff. Having something loaded from disk breaks the running vs stored
+comparison :( But I think Dave was pretty clear on his opinion about
+load FW from disk and interpret it in the kernel to extract the version.
+
+Can we leave stored meaning "stored on the device" and running being
+loaded on the chip?
+
+It's perfectly fine for a component to only be reported in running and
+not stored, nfp already does that:
+
+https://elixir.bootlin.com/linux/v5.6-rc1/source/drivers/net/ethernet/netronome/nfp/nfp_devlink.c#L238
+
+> >> Finally we also have a component we call the "netlist", which I'm still
+> >> not fully up to speed on exactly what it represents, but it has multiple
+> >> pieces of data including a 2-digit Major.Minor version of the base, a
+> >> type field indicating the format, and a 2-digit revision field that is
+> >> incremented on internal and external changes to the contents. Finally
+> >> there is a hash that I think might *actually* be something like a psid
+> >> or a bundle to uniquely represent this component. I haven't included
+> >> this component yet because I'm still trying to grasp exactly what it
+> >> represents and how best to describe each piece.  
+> > 
+> > Hmm. netlist is a Si term, perhaps it's chip init data? nfp had
+> > something called chip.init which I think loaded all the very low 
+> > level Si configs.
+> >   
+> 
+> I'm asking some colleagues to provide further details on this. Right now
+> the "version" for a netlist is just a display of all these fields munged
+> together "a.b.c-d.e.f", which I'd rather avoid.
+> 
+> > My current guess is that psid is more of the serdes and maybe clock
+> > data. 
+> > 
+> > Thinking about it now, it seems these versions mirror the company
+> > structure. chip.init comes from the Si team. psid comes from the 
+> > board design guys. fw.mgmt comes from the BSP/FW team.
+> > 
+> > None of them are really fixed but the frequency of changes increases
+> > from chip.init changing very rarely to mgmt fw having a regular release
+> > cadence.
+> >   
+> 
+> Without further information I don't know for sure, but I don't think
+> chip.init makes sense. I'll try to find out more.
