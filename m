@@ -2,222 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED63F163F08
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 09:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0AB163F1F
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 09:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726632AbgBSI3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 03:29:51 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36997 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726202AbgBSI3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 03:29:51 -0500
-Received: by mail-qt1-f194.google.com with SMTP id w47so16597273qtk.4
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 00:29:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+9YrZhTpNPs6FXM7g17aGUj5HtZ2K5ijZ7ZEaYmBUms=;
-        b=llT1W7kVN8hAWOLp9qk9dkKsl9u/bIJBk522R5u4fHquYl+zx8IaiT7WvROjrpeSOX
-         okyapk6lIwaCN1uHIhEBst+HJCIPxIXteRYP4UYYxL9Szw+XnHJ/1VkGsaUeF0b/6S96
-         Gj37QTZg1RLPVlQOAUwWUTK9aJkB9eGWZ6Rw7apv7jNFk8RR39CB1HeW1UMFg6eiY2dK
-         36nhKrEPUsHBiLlqU4/rpA+cWk6OC2DUpb7E1tmedx+lcsBiWJmFjUU3vo/UFYM9jzx4
-         HCKR6feb1PDrauNruhbgbYLWcveDTHPOhskTDOqems2CXpTeZAchq9NxoAyKxMuncqfT
-         5Lvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+9YrZhTpNPs6FXM7g17aGUj5HtZ2K5ijZ7ZEaYmBUms=;
-        b=lOwV8y4czR7PvfwuuDp5pfY+MqZT4aigWcoeqTNo/7GU8bm89JGgo++KeEJ8WP7v4Q
-         qCDV4yF5Vlmy666j6TTzubIoBblW2cXlmrnzrRh4xas0+2/Pih6zvRgPq62NX0Pl/R6r
-         UNKs1gfD9muuaY3bIDBeYXAqRWeA+9623AnJluGrlp2+CdndG32fQUEMIPZ3VK5sgvvN
-         vwwnr8HXrDtQTqvkZcZ/ukcpEJRb/IlxH99EaN5HQ6TJVfraH57ERswY9S/zmT9ubciC
-         WbIrw9YJfP3lXzPDsSzmfPG1j/4IOKp3Vt7W/5BRqwwlIpVPFhdW+gAIthG2Sa1S8Ds3
-         sKRA==
-X-Gm-Message-State: APjAAAVgLuEO124TeThu0i+n3oyWI2b4eW8qJyEEOma4nqWuODXZGLpg
-        a99vXpWf+reAW9WdCtz231ZNnCK92Z9RnPn21Ezbhw==
-X-Google-Smtp-Source: APXvYqxyTdG3Eq+tLPlkLKVYOHGTHlv/lybn+XyK/uvsYRpLbkcHwnPAl+mYFEmoZBfmoED6p0uh8n+pFCdyOQHtsEY=
-X-Received: by 2002:ac8:f7d:: with SMTP id l58mr6818124qtk.50.1582100989623;
- Wed, 19 Feb 2020 00:29:49 -0800 (PST)
+        id S1726754AbgBSIas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 03:30:48 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21964 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726598AbgBSIar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 03:30:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582101046;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=foOFcmIVQGxB8iP7ecwwHhtaDTShseLOhJBfsRwfGaI=;
+        b=gcsnD+1G0Qu/E/8b+l3zn1aIVJzTWnfg7HmFGHCFLmDUbMLFcMDREZIyknK8P+r9vtazG1
+        oV9FqNgGpgV/sOzTtuan3ZjW2b+5zPW6IOGVBiQ+rz7Y+a69rsVE6V/s45HV/IbgS71Cie
+        rOlXapMMHw25LXGqnEEpdaYojfOI/Qw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-71-CRjTsfbfNXuyUXOlpi-nCg-1; Wed, 19 Feb 2020 03:30:42 -0500
+X-MC-Unique: CRjTsfbfNXuyUXOlpi-nCg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 869DC1005510;
+        Wed, 19 Feb 2020 08:30:40 +0000 (UTC)
+Received: from krava (unknown [10.43.17.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4FBAC62660;
+        Wed, 19 Feb 2020 08:30:37 +0000 (UTC)
+Date:   Wed, 19 Feb 2020 09:30:34 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH 15/18] bpf: Sort bpf kallsyms symbols
+Message-ID: <20200219083034.GB439238@krava>
+References: <20200216193005.144157-1-jolsa@kernel.org>
+ <20200216193005.144157-16-jolsa@kernel.org>
+ <20200218231816.own6y5ijjx25kti6@ast-mbp>
 MIME-Version: 1.0
-References: <1565595162-1383-1-git-send-email-ying.xue@windriver.com> <1565595162-1383-4-git-send-email-ying.xue@windriver.com>
-In-Reply-To: <1565595162-1383-4-git-send-email-ying.xue@windriver.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 19 Feb 2020 09:29:38 +0100
-Message-ID: <CACT4Y+Z6mxvuC4+cmWc++zrJrXWPNDVuguHRHyeEp-teuJ_yNA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] tipc: fix issue of calling smp_processor_id() in preemptible
-To:     Ying Xue <ying.xue@windriver.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        Hillf Danton <hdanton@sina.com>,
-        tipc-discussion@lists.sourceforge.net,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200218231816.own6y5ijjx25kti6@ast-mbp>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 9:44 AM Ying Xue <ying.xue@windriver.com> wrote:
->
-> syzbot found the following issue:
->
-> [   81.119772][ T8612] BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor834/8612
-> [   81.136212][ T8612] caller is dst_cache_get+0x3d/0xb0
-> [   81.141450][ T8612] CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
-> [   81.149435][ T8612] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> [   81.159480][ T8612] Call Trace:
-> [   81.162789][ T8612]  dump_stack+0x172/0x1f0
-> [   81.167123][ T8612]  debug_smp_processor_id+0x251/0x280
-> [   81.172479][ T8612]  dst_cache_get+0x3d/0xb0
-> [   81.176928][ T8612]  tipc_udp_xmit.isra.0+0xc4/0xb80
-> [   81.182046][ T8612]  ? kasan_kmalloc+0x9/0x10
-> [   81.186531][ T8612]  ? tipc_udp_addr2str+0x170/0x170
-> [   81.191641][ T8612]  ? __copy_skb_header+0x2e8/0x560
-> [   81.196750][ T8612]  ? __skb_checksum_complete+0x3f0/0x3f0
-> [   81.202364][ T8612]  ? netdev_alloc_frag+0x1b0/0x1b0
-> [   81.207452][ T8612]  ? skb_copy_header+0x21/0x2b0
-> [   81.212282][ T8612]  ? __pskb_copy_fclone+0x516/0xc90
-> [   81.217470][ T8612]  tipc_udp_send_msg+0x29a/0x4b0
-> [   81.222400][ T8612]  tipc_bearer_xmit_skb+0x16c/0x360
-> [   81.227585][ T8612]  tipc_enable_bearer+0xabe/0xd20
-> [   81.232606][ T8612]  ? __nla_validate_parse+0x2d0/0x1ee0
-> [   81.238048][ T8612]  ? tipc_bearer_xmit_skb+0x360/0x360
-> [   81.243401][ T8612]  ? nla_memcpy+0xb0/0xb0
-> [   81.247710][ T8612]  ? nla_memcpy+0xb0/0xb0
-> [   81.252020][ T8612]  ? __nla_parse+0x43/0x60
-> [   81.256417][ T8612]  __tipc_nl_bearer_enable+0x2de/0x3a0
-> [   81.261856][ T8612]  ? __tipc_nl_bearer_enable+0x2de/0x3a0
-> [   81.267467][ T8612]  ? tipc_nl_bearer_disable+0x40/0x40
-> [   81.272848][ T8612]  ? unwind_get_return_address+0x58/0xa0
-> [   81.278501][ T8612]  ? lock_acquire+0x16f/0x3f0
-> [   81.283190][ T8612]  tipc_nl_bearer_enable+0x23/0x40
-> [   81.288300][ T8612]  genl_family_rcv_msg+0x74b/0xf90
-> [   81.293404][ T8612]  ? genl_unregister_family+0x790/0x790
-> [   81.298935][ T8612]  ? __lock_acquire+0x54f/0x5490
-> [   81.303852][ T8612]  ? __netlink_lookup+0x3fa/0x7b0
-> [   81.308865][ T8612]  genl_rcv_msg+0xca/0x16c
-> [   81.313266][ T8612]  netlink_rcv_skb+0x177/0x450
-> [   81.318043][ T8612]  ? genl_family_rcv_msg+0xf90/0xf90
-> [   81.323311][ T8612]  ? netlink_ack+0xb50/0xb50
-> [   81.327906][ T8612]  ? lock_acquire+0x16f/0x3f0
-> [   81.332589][ T8612]  ? kasan_check_write+0x14/0x20
-> [   81.337511][ T8612]  genl_rcv+0x29/0x40
-> [   81.341485][ T8612]  netlink_unicast+0x531/0x710
-> [   81.346268][ T8612]  ? netlink_attachskb+0x770/0x770
-> [   81.351374][ T8612]  ? _copy_from_iter_full+0x25d/0x8c0
-> [   81.356765][ T8612]  ? __sanitizer_cov_trace_cmp8+0x18/0x20
-> [   81.362479][ T8612]  ? __check_object_size+0x3d/0x42f
-> [   81.367667][ T8612]  netlink_sendmsg+0x8ae/0xd70
-> [   81.372415][ T8612]  ? netlink_unicast+0x710/0x710
-> [   81.377520][ T8612]  ? aa_sock_msg_perm.isra.0+0xba/0x170
-> [   81.383051][ T8612]  ? apparmor_socket_sendmsg+0x2a/0x30
-> [   81.388530][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
-> [   81.394775][ T8612]  ? security_socket_sendmsg+0x8d/0xc0
-> [   81.400240][ T8612]  ? netlink_unicast+0x710/0x710
-> [   81.405161][ T8612]  sock_sendmsg+0xd7/0x130
-> [   81.409561][ T8612]  ___sys_sendmsg+0x803/0x920
-> [   81.414220][ T8612]  ? copy_msghdr_from_user+0x430/0x430
-> [   81.419667][ T8612]  ? _raw_spin_unlock_irqrestore+0x6b/0xe0
-> [   81.425461][ T8612]  ? debug_object_active_state+0x25d/0x380
-> [   81.431255][ T8612]  ? __lock_acquire+0x54f/0x5490
-> [   81.436174][ T8612]  ? kasan_check_read+0x11/0x20
-> [   81.441208][ T8612]  ? _raw_spin_unlock_irqrestore+0xa4/0xe0
-> [   81.447008][ T8612]  ? mark_held_locks+0xf0/0xf0
-> [   81.451768][ T8612]  ? __call_rcu.constprop.0+0x28b/0x720
-> [   81.457298][ T8612]  ? call_rcu+0xb/0x10
-> [   81.461353][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
-> [   81.467589][ T8612]  ? __fget_light+0x1a9/0x230
-> [   81.472249][ T8612]  ? __fdget+0x1b/0x20
-> [   81.476301][ T8612]  ? __sanitizer_cov_trace_const_cmp8+0x18/0x20
-> [   81.482545][ T8612]  __sys_sendmsg+0x105/0x1d0
-> [   81.487115][ T8612]  ? __ia32_sys_shutdown+0x80/0x80
-> [   81.492208][ T8612]  ? blkcg_maybe_throttle_current+0x5e2/0xfb0
-> [   81.498272][ T8612]  ? trace_hardirqs_on_thunk+0x1a/0x1c
-> [   81.503726][ T8612]  ? do_syscall_64+0x26/0x680
-> [   81.508385][ T8612]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [   81.514444][ T8612]  ? do_syscall_64+0x26/0x680
-> [   81.519110][ T8612]  __x64_sys_sendmsg+0x78/0xb0
-> [   81.523862][ T8612]  do_syscall_64+0xfd/0x680
-> [   81.528352][ T8612]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [   81.534234][ T8612] RIP: 0033:0x444679
-> [   81.538114][ T8612] Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> [   81.557709][ T8612] RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> [   81.566147][ T8612] RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
-> [   81.574108][ T8612] RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
-> [   81.582152][ T8612] RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
-> [   81.590113][ T8612] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
-> [   81.598089][ T8612] R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
->
-> In commit e9c1a793210f ("tipc: add dst_cache support for udp media")
-> dst_cache_get() was introduced to be called in tipc_udp_xmit(). But
-> smp_processor_id() called by dst_cache_get() cannot be invoked in
-> preemptible context, as a result, the complaint above was reported.
->
-> Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
-> Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
-> Signed-off-by: Hillf Danton <hdanton@sina.com>
-> Signed-off-by: Ying Xue <ying.xue@windriver.com>
+On Tue, Feb 18, 2020 at 03:18:17PM -0800, Alexei Starovoitov wrote:
+> On Sun, Feb 16, 2020 at 08:30:02PM +0100, Jiri Olsa wrote:
+> > Currently we don't sort bpf_kallsyms and display symbols
+> > in proc/kallsyms as they come in via __bpf_ksym_add.
+> > 
+> > Using the latch tree to get the next bpf_ksym object
+> > and insert the new symbol ahead of it.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  kernel/bpf/core.c | 21 ++++++++++++++++++++-
+> >  1 file changed, 20 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 2f857bbfe05c..fa814179730c 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -651,9 +651,28 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
+> >  
+> >  static void __bpf_ksym_add(struct bpf_ksym *ksym)
+> >  {
+> > +	struct list_head *head = &bpf_kallsyms;
+> > +	struct rb_node *next;
+> > +
+> >  	WARN_ON_ONCE(!list_empty(&ksym->lnode));
+> > -	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
+> >  	latch_tree_insert(&ksym->tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
+> > +
+> > +	/*
+> > +	 * Add ksym into bpf_kallsyms in ordered position,
+> > +	 * which is prepared for us by latch tree addition.
+> > +	 *
+> > +	 * Find out the next symbol and insert ksym right
+> > +	 * ahead of it. If ksym is the last one, just tail
+> > +	 * add to the bpf_kallsyms.
+> > +	 */
+> > +	next = rb_next(&ksym->tnode.node[0]);
+> > +	if (next) {
+> > +		struct bpf_ksym *ptr;
+> > +
+> > +		ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
+> > +		head = &ptr->lnode;
+> > +	}
+> > +	list_add_tail_rcu(&ksym->lnode, head);
+> 
+> what is the motivation for sorting? do you want perf and other user space
+> to depend on it? Or purely aesthetics?
 
-Hi,
+initially I thought perf depends on it, but it does its own sorting
 
-Was this ever merged?
-The bug is still open, alive and kicking:
-https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
+but it turned out to be really easy and fast to sort bpf symbols
+at the end, so I included it, because core symbols in kallsyms
+are also sorted, I should have mentioned this in changelog
 
-and one of the top crashers currently.
-Along with few other top crashers, these bugs prevent most of the
-other kernel testing from happening.
+jirka
 
-
-> ---
->  net/tipc/udp_media.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->
-> diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
-> index 287df687..ca3ae2e 100644
-> --- a/net/tipc/udp_media.c
-> +++ b/net/tipc/udp_media.c
-> @@ -224,6 +224,8 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
->         struct udp_bearer *ub;
->         int err = 0;
->
-> +       local_bh_disable();
-> +
->         if (skb_headroom(skb) < UDP_MIN_HEADROOM) {
->                 err = pskb_expand_head(skb, UDP_MIN_HEADROOM, 0, GFP_ATOMIC);
->                 if (err)
-> @@ -237,9 +239,12 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
->                 goto out;
->         }
->
-> -       if (addr->broadcast != TIPC_REPLICAST_SUPPORT)
-> -               return tipc_udp_xmit(net, skb, ub, src, dst,
-> -                                    &ub->rcast.dst_cache);
-> +       if (addr->broadcast != TIPC_REPLICAST_SUPPORT) {
-> +               err = tipc_udp_xmit(net, skb, ub, src, dst,
-> +                                   &ub->rcast.dst_cache);
-> +               local_bh_enable();
-> +               return err;
-> +       }
->
->         /* Replicast, send an skb to each configured IP address */
->         list_for_each_entry_rcu(rcast, &ub->rcast.list, list) {
-> @@ -259,6 +264,7 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
->         err = 0;
->  out:
->         kfree_skb(skb);
-> +       local_bh_enable();
->         return err;
->  }
->
-> --
-> 2.7.4
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/1565595162-1383-4-git-send-email-ying.xue%40windriver.com.
