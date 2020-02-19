@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8540164FF7
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 21:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B326165051
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 21:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbgBSUfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 15:35:32 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:40509 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbgBSUfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 15:35:32 -0500
-Received: by mail-ot1-f68.google.com with SMTP id i6so1473068otr.7;
-        Wed, 19 Feb 2020 12:35:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wtDIKILIP+uU1BnQ4PlhfoOLvW8WzFAlPwrAgy9AVF4=;
-        b=s2EEy63oMpy6lNm/8azbN4gvBIfEflcdhnreqjnTNRRK44yMnpIK9J5FVW+2SlnThl
-         IVrBM+2Nv34YPj5WFh1V09pn+C4/a15ze7EY7U5JsRFwryVTU1SzEMsfRq+FlFQFlfYi
-         nnLxk1QyJ+HlaIlUfrs7PdoMIwOqMapIu0jYnGiYzHvEJJaZ85ho+3mlD9T6HBWL3quq
-         Z5qiKMrgHX8ITuidwsmFY5bmwCBS+OdH981S3U1kJ+nMYfNjH3Pvui7RPJqukrs8n1VS
-         WvJEfRzqDQ1Z43jWB+St4BuBFOWb0qnc67kL6AjbRW8G4WHECTCch76esKYmhLCmXzSv
-         ThEA==
-X-Gm-Message-State: APjAAAWCB9aPVbNxdsjtY4ezSm/qTA/K0txdPjBu/xWflPnNw60tFGAH
-        Th4mc/R3YPaHUXxvhiDSVA==
-X-Google-Smtp-Source: APXvYqy8RF8sZufK1Y09hIvIcitju60UCY2VX3BG5jLj7GOEMFRFaSV+4rvpbXw5Ae3GeKIvehtg/g==
-X-Received: by 2002:a9d:6f0a:: with SMTP id n10mr21673386otq.54.1582144530975;
-        Wed, 19 Feb 2020 12:35:30 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p83sm323666oia.51.2020.02.19.12.35.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 12:35:30 -0800 (PST)
-Received: (nullmailer pid 25307 invoked by uid 1000);
-        Wed, 19 Feb 2020 20:35:29 -0000
-Date:   Wed, 19 Feb 2020 14:35:29 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Faiz Abbas <faiz_abbas@ti.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, broonie@kernel.org, lgirdwood@gmail.com,
-        catalin.marinas@arm.com, mark.rutland@arm.com, mkl@pengutronix.de,
-        wg@grandegger.com, sriram.dash@samsung.com, dmurphy@ti.com
-Subject: Re: [PATCH v2 1/3] dt-bindings: m_can: Add Documentation for
- transceiver regulator
-Message-ID: <20200219203529.GA21085@bogus>
-References: <20200217142836.23702-1-faiz_abbas@ti.com>
- <20200217142836.23702-2-faiz_abbas@ti.com>
+        id S1727434AbgBSUze convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Feb 2020 15:55:34 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62706 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726760AbgBSUze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 15:55:34 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01JKtVrw002858
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 12:55:33 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2y8ubumsjf-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 12:55:33 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 19 Feb 2020 12:55:17 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 2A168760B34; Wed, 19 Feb 2020 12:55:14 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: Fix build of sockmap_ktls.c
+Date:   Wed, 19 Feb 2020 12:55:14 -0800
+Message-ID: <20200219205514.3353788-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200217142836.23702-2-faiz_abbas@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-19_06:2020-02-19,2020-02-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=972
+ bulkscore=0 malwarescore=0 clxscore=1015 spamscore=0 lowpriorityscore=0
+ phishscore=0 impostorscore=0 adultscore=0 mlxscore=0 priorityscore=1501
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002190156
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 07:58:34PM +0530, Faiz Abbas wrote:
-> Some CAN transceivers have a standby line that needs to be asserted
-> before they can be used. Model this GPIO lines as an optional
-> fixed-regulator node. Document bindings for the same.
-> 
-> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-> ---
->  Documentation/devicetree/bindings/net/can/m_can.txt | 3 +++
->  1 file changed, 3 insertions(+)
+The selftests fails to build with:
+tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c: In function ‘test_sockmap_ktls_disconnect_after_delete’:
+tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c:72:37: error: ‘TCP_ULP’ undeclared (first use in this function)
+   72 |  err = setsockopt(cli, IPPROTO_TCP, TCP_ULP, "tls", strlen("tls"));
+      |                                     ^~~~~~~
 
-This has moved to DT schema in my tree, so please adjust it and resend.
+Similar to commit that fixes build of sockmap_basic.c on systems with old
+/usr/include fix the build of sockmap_ktls.c
 
-> diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt b/Documentation/devicetree/bindings/net/can/m_can.txt
-> index ed614383af9c..f17e2a5207dc 100644
-> --- a/Documentation/devicetree/bindings/net/can/m_can.txt
-> +++ b/Documentation/devicetree/bindings/net/can/m_can.txt
-> @@ -48,6 +48,9 @@ Optional Subnode:
->  			  that can be used for CAN/CAN-FD modes. See
->  			  Documentation/devicetree/bindings/net/can/can-transceiver.txt
->  			  for details.
-> +
-> +- xceiver-supply: Regulator that powers the CAN transceiver.
+Fixes: d1ba1204f2ee ("selftests/bpf: Test unhashing kTLS socket after removing from map")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The supply for a transceiver should go in the transceiver node.
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c b/tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c
+index 589b50c91b96..06b86addc181 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c
+@@ -7,6 +7,7 @@
+ #include "test_progs.h"
+ 
+ #define MAX_TEST_NAME 80
++#define TCP_ULP 31
+ 
+ static int tcp_server(int family)
+ {
+-- 
+2.23.0
 
-> +
->  Example:
->  SoC dtsi:
->  m_can1: can@20e8000 {
-> -- 
-> 2.19.2
-> 
