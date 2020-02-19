@@ -2,108 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D4216484A
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 16:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A932C164853
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 16:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbgBSPRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 10:17:31 -0500
-Received: from mail.efficios.com ([167.114.26.124]:55552 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgBSPRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 10:17:31 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id D7BC02490A3;
-        Wed, 19 Feb 2020 10:17:29 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 2MXQCndbR0nH; Wed, 19 Feb 2020 10:17:29 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 946A7248E45;
-        Wed, 19 Feb 2020 10:17:29 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 946A7248E45
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1582125449;
-        bh=E+T2zau6Nrzd/5UrHxBwjFO/z6zZmEyWpKIt0k5o2nw=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=cBhnjQYooRNjkzLDy0EtHNIr0MyHS+be39Ze0qlXO3sCvsU1Yj2PiVygBNOpGqcSp
-         sZ0FgDegopcSsZYkbQtm24enMnm41JSZs7ecwoOJUs7oZANxMC6bpoU1TA/e2utw3v
-         Dvo0sbsYkU/i2V4JINq7iDku3UFIUow25QevcGzOtZRTdeVBYybp+l5pnKyzCfMS/O
-         +zK5ZuBF3QUgpI4f6wSwfkBG5P/b27iiVmnxdngYxcyPvDVMdwbvi20lFCS5kylVCH
-         euvJRAHMDK8ElCyDRlfzPucBAAXCaBMYBpRETN++FOGjkKBAm8F6RAoneYa4TtAlCR
-         qLMwim9QBTteA==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id i_e6Jf-_d-MZ; Wed, 19 Feb 2020 10:17:29 -0500 (EST)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 7F9E2248E3F;
-        Wed, 19 Feb 2020 10:17:29 -0500 (EST)
-Date:   Wed, 19 Feb 2020 10:17:28 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>
-Message-ID: <1127123648.641.1582125448879.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20200218233641.i7fyf36zxocgucap@ast-mbp>
-References: <20200214133917.304937432@linutronix.de> <20200214161504.325142160@linutronix.de> <20200214191126.lbiusetaxecdl3of@localhost> <87imk9t02r.fsf@nanos.tec.linutronix.de> <20200218233641.i7fyf36zxocgucap@ast-mbp>
-Subject: Re: [RFC patch 14/19] bpf: Use migrate_disable() in hashtab code
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3901 (ZimbraWebClient - FF72 (Linux)/8.8.15_GA_3895)
-Thread-Topic: Use migrate_disable() in hashtab code
-Thread-Index: FMpBzgOmPiKRGoH6zx7fdw8jq3/Jnw==
+        id S1727291AbgBSPSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 10:18:32 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33552 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726777AbgBSPSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 10:18:32 -0500
+Received: by mail-pf1-f194.google.com with SMTP id n7so228744pfn.0;
+        Wed, 19 Feb 2020 07:18:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ukKkOw2CD1p6V3m08F/J1FLQ/Kv80Rkqm5DlFEyeEwo=;
+        b=Ah7uoNUV021eb0uXbGTT4n8DSdPnmntOsRtdO0sIaVGmDz6Mx9DRCWkzlQUZdixw+q
+         EWquftTkt68WCGlW/aA5nVyhgl+UHA3gsnBdG89IY8cpIjgmPUkSlbSABOsRoUQRQiP2
+         tRiY/eEHI2tZExjQkFe8laVxjuRMHuzuVK45dlKZio/IG/07TcGQVIzIxWHJfXrtvd1a
+         HtRVxwNVVRPt42qadehr7FMIyLth4UrIOnrhkVj5fNTULu6IlHaSMd/bRTPytPu9Y5vU
+         PaRSz9bSbBntBZ+Ij+W79CdwpGDWwZ003hXlhvFCJlR5NffYtNcMGNj1KyqapsoM5/VY
+         K/gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ukKkOw2CD1p6V3m08F/J1FLQ/Kv80Rkqm5DlFEyeEwo=;
+        b=lp61iyh1zc9+XuR16wO9L+CRo/wsjKV5c2VmAfsLsVYB/XPX8D662XCIsKesq+mG2f
+         bS3OHlLRTTpQB2wp3peqr5M/bj/ayqZpN73jP/MgMoUWpF2P2CUUwtS7R2e7sxeDuryF
+         BDI4vvrTN6hLiy4mKKEC9dMq1kvccvt+SHlYFs7cgO3I8pb+bdVx68flweZjP3WdmVAP
+         ASswROxxTmU2MZm2LKjlEjbDR0fsvW7mVcdsFeckNC2KQZd8pxYyf4KgM6ndFhS7P3wH
+         FiZE05Lrx/pkRafZ+dO3JBsTop7ktYmCWyoD6meR4a+jqMfA7f6oqbiT45kOK2olApzt
+         r0Sw==
+X-Gm-Message-State: APjAAAWbCO7Jtf9B049j4yp8cR1wg+NOziKzPE+DcoYPajZ777Fw7TIF
+        CEXNH1zX80qLYSQmM8ZKvg==
+X-Google-Smtp-Source: APXvYqz7z38VUX56nB4cpmN4ssPqGh9I7Dl7gnU0/yRnff1inv5wjyvzdV1rumvg9fOMEZuF/4bZng==
+X-Received: by 2002:a62:78c1:: with SMTP id t184mr26533069pfc.222.1582125511796;
+        Wed, 19 Feb 2020 07:18:31 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee1:f898:fdeb:e0c7:deeb:a606])
+        by smtp.gmail.com with ESMTPSA id v5sm45906pgc.11.2020.02.19.07.18.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 07:18:30 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        davem@davemloft.net
+Cc:     bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] bridge: br_stp: Use built-in RCU list checking
+Date:   Wed, 19 Feb 2020 20:47:46 +0530
+Message-Id: <20200219151746.1050-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Feb 18, 2020, at 6:36 PM, Alexei Starovoitov alexei.starovoitov@gmail.com wrote:
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-[...]
+list_for_each_entry_rcu() has built-in RCU and lock checking.
 
-> If I can use migrate_disable() without RT it will help my work on sleepable
-> BPF programs. I would only have to worry about rcu_read_lock() since
-> preempt_disable() is nicely addressed.
+Pass cond argument to list_for_each_entry_rcu() to silence
+false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
+by default.
 
-Hi Alexei,
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ net/bridge/br_stp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-You may want to consider using SRCU rather than RCU if you need to sleep while
-holding a RCU read-side lock.
-
-This is the synchronization approach I consider for adding the ability to take page
-faults when doing syscall tracing.
-
-Then you'll be able to replace preempt_disable() by combining SRCU and
-migrate_disable():
-
-AFAIU eBPF currently uses preempt_disable() for two reasons:
-
-- Ensure the thread is not migrated,
-  -> can be replaced by migrate_disable() in RT
-- Provide RCU existence guarantee through sched-RCU
-  -> can be replaced by SRCU, which allows sleeping and taking page faults.
-
-I wonder if it would be acceptable to take a page fault while migration is
-disabled though ?
-
-Thanks,
-
-Mathieu
-
-
+diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+index 1f1410f8d312..8be12452071b 100644
+--- a/net/bridge/br_stp.c
++++ b/net/bridge/br_stp.c
+@@ -52,7 +52,8 @@ struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
+ {
+ 	struct net_bridge_port *p;
+ 
+-	list_for_each_entry_rcu(p, &br->port_list, list) {
++	list_for_each_entry_rcu(p, &br->port_list, list,
++				lockdep_is_held(&br->lock)) {
+ 		if (p->port_no == port_no)
+ 			return p;
+ 	}
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+2.17.1
+
