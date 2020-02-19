@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5991164E5B
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:04:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34B2164E64
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgBSTEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 14:04:45 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46418 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbgBSTEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 14:04:45 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id ECD4F15ADF45D;
-        Wed, 19 Feb 2020 11:04:44 -0800 (PST)
-Date:   Wed, 19 Feb 2020 11:04:44 -0800 (PST)
-Message-Id: <20200219.110444.1076444130408435728.davem@davemloft.net>
-To:     christian.brauner@ubuntu.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        haw.loeung@canonical.com
-Subject: Re: [PATCH net-next] net/ipv4/sysctl: show
- tcp_{allowed,available}_congestion_control in non-initial netns
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200219120253.2667548-1-christian.brauner@ubuntu.com>
-References: <20200219120253.2667548-1-christian.brauner@ubuntu.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Feb 2020 11:04:45 -0800 (PST)
+        id S1726875AbgBSTF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 14:05:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41788 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726613AbgBSTFZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 14:05:25 -0500
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3D4DB24671;
+        Wed, 19 Feb 2020 19:05:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582139124;
+        bh=dWapGUItAzZ+kxCavxANaF9mCX+PEcxjTy1trvhaW50=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mCKtPlBUeFUPh1yOweM7JD1RAy4W4btTJbJeQhTBgxHBvmTgebmdrTZL6IF8Wf1Z+
+         PCko74lhsAuQsFcNOMiXPKxxyUqvzG9Dhs8JUggjv9dYESQqS+3E4U64GGTt9mXCL6
+         HkQELxCA/cigE9jrZqtSaa/vJ+hbDXJYCoCwvEHs=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH rdma-next 0/2] Packet pacing DEVX API
+Date:   Wed, 19 Feb 2020 21:05:16 +0200
+Message-Id: <20200219190518.200912-1-leon@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Brauner <christian.brauner@ubuntu.com>
-Date: Wed, 19 Feb 2020 13:02:53 +0100
+From: Leon Romanovsky <leonro@mellanox.com>
 
-> It is currenty possible to switch the TCP congestion control algorithm
-> in non-initial network namespaces:
-> 
-> unshare -U --map-root --net --fork --pid --mount-proc
-> echo "reno" > /proc/sys/net/ipv4/tcp_congestion_control
-> 
-> works just fine. But currently non-initial network namespaces have no
-> way of kowing which congestion algorithms are available or allowed other
-> than through trial and error by writing the names of the algorithms into
-> the aforementioned file.
-> Since we already allow changing the congestion algorithm in non-initial
-> network namespaces by exposing the tcp_congestion_control file there is
-> no reason to not also expose the
-> tcp_{allowed,available}_congestion_control files to non-initial network
-> namespaces. After this change a container with a separate network
-> namespace will show:
-> 
-> root@f1:~# ls -al /proc/sys/net/ipv4/tcp_* | grep congestion
-> -rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_allowed_congestion_control
-> -r--r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_available_congestion_control
-> -rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_congestion_control
-> 
-> Link: https://github.com/lxc/lxc/issues/3267
-> Reported-by: Haw Loeung <haw.loeung@canonical.com>
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+Hi,
 
-Applied, thank you.
+This series from Yishai extends packet pacing to work over DEVX
+interface. In first patch, he refactors the mlx5_core internal
+logic. In second patch, the RDMA APIs are added.
+
+Thanks
+
+Yishai Hadas (2):
+  net/mlx5: Expose raw packet pacing APIs
+  IB/mlx5: Introduce UAPIs to manage packet pacing
+
+ drivers/infiniband/hw/mlx5/Makefile          |   1 +
+ drivers/infiniband/hw/mlx5/main.c            |   1 +
+ drivers/infiniband/hw/mlx5/mlx5_ib.h         |   6 +
+ drivers/infiniband/hw/mlx5/qos.c             | 136 +++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/rl.c | 130 +++++++++++++-----
+ include/linux/mlx5/driver.h                  |  11 +-
+ include/linux/mlx5/mlx5_ifc.h                |  26 ++--
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h     |  17 +++
+ include/uapi/rdma/mlx5_user_ioctl_verbs.h    |   4 +
+ 9 files changed, 287 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mlx5/qos.c
+
+--
+2.24.1
+
