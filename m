@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A4E163B23
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 04:25:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F55163AAF
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 04:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbgBSDY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 22:24:57 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10640 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726475AbgBSDY5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Feb 2020 22:24:57 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 420FF1827087B0FDBFDD;
-        Wed, 19 Feb 2020 11:24:55 +0800 (CST)
-Received: from localhost.localdomain (10.175.34.53) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 19 Feb 2020 11:24:45 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <aviad.krawczyk@huawei.com>, <luobin9@huawei.com>,
-        <luoxianjun@huawei.com>
-Subject: [PATCH net-next 2/2] hinic: Fix a bug of setting hw_ioctxt
-Date:   Tue, 18 Feb 2020 19:40:13 +0000
-Message-ID: <20200218194013.23837-2-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200218194013.23837-1-luobin9@huawei.com>
-References: <20200218194013.23837-1-luobin9@huawei.com>
+        id S1728325AbgBSDDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Feb 2020 22:03:05 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:42100 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728202AbgBSDDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 22:03:05 -0500
+Received: by mail-lj1-f196.google.com with SMTP id d10so25405036ljl.9;
+        Tue, 18 Feb 2020 19:03:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7wV059MxZJL/ceXzJdSzbWhMkKat8X1C7CgUxvhC/Fs=;
+        b=PKNhjIBs6bvXetw2vIHXvTsf3L5yW59GXkcSVok4M/uU2jBYLgZexysQZkbBtOlWAn
+         hkSwVsB6durXBAeziSw5lmgLLR12XHSqrfQ5TqvMS66rdkUxRz1T6eXc11RynMpCK59n
+         cJkvJOoodL9Enc6a/92XE2LAG8Vwuwi2f/bkfGx0d7CSYsbRajkcxoqdWqw3YGxT6Xsy
+         le4BR7c0aEHEYSl2xelPy2iRFBEHWwsg6Vg3CWX+QYRgNcQMkjPTpc31ZNl5N+iRoXDL
+         CWioCtrHVMHt3S1sq2sCCLlDRKSRNMBTgRTcUUM39p4Cjc8dkI54ZClZtkbvFiSHcz3F
+         a6VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7wV059MxZJL/ceXzJdSzbWhMkKat8X1C7CgUxvhC/Fs=;
+        b=d+NFftlbFSCL5r2AE0Y0FUpoQl6agmUvnrdbIJsSP2eztrnN69LDlVw/QzdGwQpm27
+         OtWphXRAaj1Iwb66ZpJApW4/fED58wd4Xnh1XWzUDfvOrKxcNAhuW6weXl6LjZtepN/f
+         gjYtDXi2qEpSnUXytBLIESGMshj1/BvWOsZBBQ0SERdhMaDB9W/ewupVFe0YflLIEHSA
+         BBJMUFUpn/RIYuTAJzb0dK2wPmePCw6TrQjNgNszFSAmuFhrgoiNmZcwUjQ1zDmP4FLM
+         BblM58igcW8RZyTqlKkhW2liVn6rzA4QUY8OSDj01ZlAHxeHlN/EvHimDDMP0OiOJCOb
+         dBYg==
+X-Gm-Message-State: APjAAAUazwtX+BFY8dVyjXF3049zDqPF3QYkC6qYNkCI3UQYe8AnK5fH
+        YsH4VuGVMbe5aM01VITM0cOHmHEKQTGagC0Ijk1YGA==
+X-Google-Smtp-Source: APXvYqxwmc9iUV03II2uPqdKueW1KryDeg2UkbKuQpAQnmh0IThI3w3k66upIYSWld8XP8vU0N5CZgxMyIxFT+W5fOM=
+X-Received: by 2002:a2e:a404:: with SMTP id p4mr15029723ljn.234.1582081382464;
+ Tue, 18 Feb 2020 19:03:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.34.53]
-X-CFilter-Loop: Reflected
+References: <20200218190224.22508-1-mrostecki@opensuse.org>
+In-Reply-To: <20200218190224.22508-1-mrostecki@opensuse.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 18 Feb 2020 19:02:49 -0800
+Message-ID: <CAADnVQJm_tvMGjhHyVn66feA3rHLSXTdzqCCABu+9tKer89LVA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/6] bpftool: Allow to select sections and filter probes
+To:     Michal Rostecki <mrostecki@opensuse.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fix the bug of setting hw_ioctxt failed randomly
+On Tue, Feb 18, 2020 at 11:02 AM Michal Rostecki <mrostecki@opensuse.org> wrote:
+>
+> This patch series extend the "bpftool feature" subcommand with the
+> new positional arguments:
+>
+> - "section", which allows to select a specific section of probes (i.e.
+>   "system_config", "program_types", "map_types");
+> - "filter_in", which allows to select only probes which matches the
+>   given regex pattern;
+> - "filter_out", which allows to filter out probes which do not match the
+>   given regex pattern.
+>
+> The main motivation behind those changes is ability the fact that some
+> probes (for example those related to "trace" or "write_user" helpers)
+> emit dmesg messages which might be confusing for people who are running
+> on production environments. For details see the Cilium issue[0].
+>
+> [0] https://github.com/cilium/cilium/issues/10048
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c | 1 +
- drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h | 2 +-
- drivers/net/ethernet/huawei/hinic/hinic_hw_if.h  | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 6f2cf569a283..79b3d53f2fbf 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -297,6 +297,7 @@ static int set_hw_ioctxt(struct hinic_hwdev *hwdev, unsigned int rq_depth,
- 	}
- 
- 	hw_ioctxt.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
-+	hw_ioctxt.ppf_idx = HINIC_HWIF_PPF_IDX(hwif);
- 
- 	hw_ioctxt.set_cmdq_depth = HW_IOCTXT_SET_CMDQ_DEPTH_DEFAULT;
- 	hw_ioctxt.cmdq_depth = 0;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-index b069045de416..1265c11e8da8 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-@@ -151,7 +151,7 @@ struct hinic_cmd_hw_ioctxt {
- 
- 	u8      lro_en;
- 	u8      rsvd3;
--	u8      rsvd4;
-+	u8      ppf_idx;
- 	u8      rsvd5;
- 
- 	u16     rq_depth;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-index 517794509eb2..c7bb9ceca72c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-@@ -137,6 +137,7 @@
- #define HINIC_HWIF_FUNC_IDX(hwif)       ((hwif)->attr.func_idx)
- #define HINIC_HWIF_PCI_INTF(hwif)       ((hwif)->attr.pci_intf_idx)
- #define HINIC_HWIF_PF_IDX(hwif)         ((hwif)->attr.pf_idx)
-+#define HINIC_HWIF_PPF_IDX(hwif)        ((hwif)->attr.ppf_idx)
- 
- #define HINIC_FUNC_TYPE(hwif)           ((hwif)->attr.func_type)
- #define HINIC_IS_PF(hwif)               (HINIC_FUNC_TYPE(hwif) == HINIC_PF)
--- 
-2.17.1
-
+The motivation is clear, but I think the users shouldn't be made
+aware of such implementation details. I think instead of filter_in/out
+it's better to do 'full or safe' mode of probing.
+By default it can do all the probing that doesn't cause
+extra dmesgs and in 'full' mode it can probe everything.
