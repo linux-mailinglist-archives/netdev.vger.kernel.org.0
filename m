@@ -2,68 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49CE3164DDC
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 19:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70ABB164DE9
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 19:48:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbgBSSpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 13:45:00 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46198 "EHLO
+        id S1726750AbgBSSr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 13:47:56 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:46238 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgBSSpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 13:45:00 -0500
+        with ESMTP id S1726634AbgBSSrz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 13:47:55 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 00BD515AD196D;
-        Wed, 19 Feb 2020 10:44:59 -0800 (PST)
-Date:   Wed, 19 Feb 2020 10:44:59 -0800 (PST)
-Message-Id: <20200219.104459.1114218705483242564.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [pull request][net-next V4 00/13] Mellanox, mlx5 updates
- 2020-01-24
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1EBE815AD1977;
+        Wed, 19 Feb 2020 10:47:55 -0800 (PST)
+Date:   Wed, 19 Feb 2020 10:47:54 -0800 (PST)
+Message-Id: <20200219.104754.1226041715847841139.davem@davemloft.net>
+To:     luobin9@huawei.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        aviad.krawczyk@huawei.com, luoxianjun@huawei.com
+Subject: Re: [PATCH net-next 1/2] hinic: Fix a irq affinity bug
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200219032205.15264-1-saeedm@mellanox.com>
-References: <20200219032205.15264-1-saeedm@mellanox.com>
+In-Reply-To: <20200218194013.23837-1-luobin9@huawei.com>
+References: <20200218194013.23837-1-luobin9@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Feb 2020 10:45:00 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Feb 2020 10:47:55 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Wed, 19 Feb 2020 03:22:58 +0000
+From: Luo bin <luobin9@huawei.com>
+Date: Tue, 18 Feb 2020 19:40:12 +0000
 
-> This series adds some updates to mlx5 driver
-> 1) Devlink health dump support for both rx and tx health reporters.
-> 2) FEC modes supports.
-> 3) two misc small patches.
+> do not use a local variable as an input parameter of irq_set_affinity_hint
 > 
-> V4:
->  - Resend after net-next is open and rebased
->  - Added Reviewed-by: Andrew Lunn, to the ethtool patch
-> 
-> V3: 
->  - Improve ethtool patch "FEC LLRS" commit message as requested by
->    Andrew Lunn.
->  - Since we've missed the last cycle, dropped two small fixes patches,
->    as they should go to net now.
-> 
-> V2:
->  - Remove "\n" from snprintf, happened due to rebase with a conflicting
->    feature, Thanks Joe for spotting this.
-> 
-> For more information please see tag log below.
-> 
-> Please pull and let me know if there is any problem.
-> 
-> Note about non-mlx5 change:
-> For the FEC link modes support, Aya added the define for
-> low latency Reed Solomon FEC as LLRS, in: include/uapi/linux/ethtool.h
+> Signed-off-by: Luo bin <luobin9@huawei.com>
 
-Pulled, thank you.
+Bug fixes should target 'net' instead of 'net-next'.
+
+Every patch series containing more than one patch should have an appropriate
+header posting.
