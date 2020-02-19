@@ -2,131 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 827BF1643D1
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:02:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B331643D6
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726671AbgBSMCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:02:07 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43544 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726548AbgBSMCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:02:07 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from raeds@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 19 Feb 2020 14:02:01 +0200
-Received: from dev-l-vrt-074.mtl.labs.mlnx (dev-l-vrt-074.mtl.labs.mlnx [10.134.74.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01JC219H002693;
-        Wed, 19 Feb 2020 14:02:01 +0200
-From:   Raed Salem <raeds@mellanox.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, Raed Salem <raeds@mellanox.com>
-Subject: [PATCH net-next] ESP: Export esp_output_fill_trailer function
-Date:   Wed, 19 Feb 2020 14:01:58 +0200
-Message-Id: <1582113718-16712-1-git-send-email-raeds@mellanox.com>
-X-Mailer: git-send-email 1.9.4
+        id S1727161AbgBSMDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 07:03:04 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:57487 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726891AbgBSMDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:03:02 -0500
+Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1j4O4A-00028x-UM; Wed, 19 Feb 2020 12:02:59 +0000
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Haw Loeung <haw.loeung@canonical.com>
+Subject: [PATCH net-next] net/ipv4/sysctl: show tcp_{allowed,available}_congestion_control in non-initial netns
+Date:   Wed, 19 Feb 2020 13:02:53 +0100
+Message-Id: <20200219120253.2667548-1-christian.brauner@ubuntu.com>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The esp fill trailer method is identical for both
-IPv6 and IPv4.
+It is currenty possible to switch the TCP congestion control algorithm
+in non-initial network namespaces:
 
-Share the implementation for esp6 and esp to avoid
-code duplication in addition it could be also used
-at various drivers code.
+unshare -U --map-root --net --fork --pid --mount-proc
+echo "reno" > /proc/sys/net/ipv4/tcp_congestion_control
 
-Change-Id: Iebb4325fe12ef655a5cd6cb896cf9eed68033979
-Signed-off-by: Raed Salem <raeds@mellanox.com>
-Reviewed-by: Boris Pismenny <borisp@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+works just fine. But currently non-initial network namespaces have no
+way of kowing which congestion algorithms are available or allowed other
+than through trial and error by writing the names of the algorithms into
+the aforementioned file.
+Since we already allow changing the congestion algorithm in non-initial
+network namespaces by exposing the tcp_congestion_control file there is
+no reason to not also expose the
+tcp_{allowed,available}_congestion_control files to non-initial network
+namespaces. After this change a container with a separate network
+namespace will show:
+
+root@f1:~# ls -al /proc/sys/net/ipv4/tcp_* | grep congestion
+-rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_allowed_congestion_control
+-r--r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_available_congestion_control
+-rw-r--r-- 1 root root 0 Feb 19 11:54 /proc/sys/net/ipv4/tcp_congestion_control
+
+Link: https://github.com/lxc/lxc/issues/3267
+Reported-by: Haw Loeung <haw.loeung@canonical.com>
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 ---
- include/net/esp.h | 16 ++++++++++++++++
- net/ipv4/esp4.c   | 16 ----------------
- net/ipv6/esp6.c   | 16 ----------------
- 3 files changed, 16 insertions(+), 32 deletions(-)
+ net/ipv4/sysctl_net_ipv4.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/include/net/esp.h b/include/net/esp.h
-index 117652e..9c5637d 100644
---- a/include/net/esp.h
-+++ b/include/net/esp.h
-@@ -11,6 +11,22 @@ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
- 	return (struct ip_esp_hdr *)skb_transport_header(skb);
- }
- 
-+static inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
-+{
-+	/* Fill padding... */
-+	if (tfclen) {
-+		memset(tail, 0, tfclen);
-+		tail += tfclen;
-+	}
-+	do {
-+		int i;
-+		for (i = 0; i < plen - 2; i++)
-+			tail[i] = i + 1;
-+	} while (0);
-+	tail[plen - 2] = plen - 2;
-+	tail[plen - 1] = proto;
-+}
-+
- struct esp_info {
- 	struct	ip_esp_hdr *esph;
- 	__be64	seqno;
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 5c96776..2c7f391 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -209,22 +209,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
- 	esp_output_done(base, err);
- }
- 
--static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
--{
--	/* Fill padding... */
--	if (tfclen) {
--		memset(tail, 0, tfclen);
--		tail += tfclen;
--	}
--	do {
--		int i;
--		for (i = 0; i < plen - 2; i++)
--			tail[i] = i + 1;
--	} while (0);
--	tail[plen - 2] = plen - 2;
--	tail[plen - 1] = proto;
--}
--
- static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	int encap_type;
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index a3b403b..11143d0 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -207,22 +207,6 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
- 	esp_output_done(base, err);
- }
- 
--static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
--{
--	/* Fill padding... */
--	if (tfclen) {
--		memset(tail, 0, tfclen);
--		tail += tfclen;
--	}
--	do {
--		int i;
--		for (i = 0; i < plen - 2; i++)
--			tail[i] = i + 1;
--	} while (0);
--	tail[plen - 2] = plen - 2;
--	tail[plen - 1] = proto;
--}
--
- int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	u8 *tail;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 9684af02e0a5..d9531b4b33f2 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -554,18 +554,6 @@ static struct ctl_table ipv4_table[] = {
+ 		.proc_handler	= proc_dointvec,
+ 	},
+ #endif /* CONFIG_NETLABEL */
+-	{
+-		.procname	= "tcp_available_congestion_control",
+-		.maxlen		= TCP_CA_BUF_MAX,
+-		.mode		= 0444,
+-		.proc_handler   = proc_tcp_available_congestion_control,
+-	},
+-	{
+-		.procname	= "tcp_allowed_congestion_control",
+-		.maxlen		= TCP_CA_BUF_MAX,
+-		.mode		= 0644,
+-		.proc_handler   = proc_allowed_congestion_control,
+-	},
+ 	{
+ 		.procname	= "tcp_available_ulp",
+ 		.maxlen		= TCP_ULP_BUF_MAX,
+@@ -885,6 +873,18 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.maxlen		= TCP_CA_NAME_MAX,
+ 		.proc_handler	= proc_tcp_congestion_control,
+ 	},
++	{
++		.procname	= "tcp_available_congestion_control",
++		.maxlen		= TCP_CA_BUF_MAX,
++		.mode		= 0444,
++		.proc_handler   = proc_tcp_available_congestion_control,
++	},
++	{
++		.procname	= "tcp_allowed_congestion_control",
++		.maxlen		= TCP_CA_BUF_MAX,
++		.mode		= 0644,
++		.proc_handler   = proc_allowed_congestion_control,
++	},
+ 	{
+ 		.procname	= "tcp_keepalive_time",
+ 		.data		= &init_net.ipv4.sysctl_tcp_keepalive_time,
+
+base-commit: bb6d3fb354c5ee8d6bde2d576eb7220ea09862b9
 -- 
-1.9.4
+2.25.0
 
