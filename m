@@ -2,226 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD2D164F54
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39543164F4C
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 20:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgBST6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 14:58:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43338 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726648AbgBST6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 14:58:01 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E6DA207FD;
-        Wed, 19 Feb 2020 19:58:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582142280;
-        bh=MJ9E0zSMIigqXY6N5GxtDznbfVOPIdTFFrGz7mtk+Zw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2YlTWsYEBwdiK1lbYBN9BYoFMjflRLBq2JaILvtPzNZpmyOVuHHX6bQBDBJUgXXBm
-         MWrP3lH+K+s92nqf9SFybNq1xDSripw/T8YUtsaQZdjlSij/yug5JpN7dKs+rRq7+x
-         QTnHhg2HEZtRevBPihVTWcig01oCVkjKsxAvJa0M=
-Date:   Wed, 19 Feb 2020 11:57:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com
-Subject: Re: [RFC PATCH v2 06/22] ice: add basic handler for devlink
- .info_get
-Message-ID: <20200219115757.5af395c5@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <6b4dd025-bcf8-12de-99b0-1e05e16333e8@intel.com>
-References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
-        <20200214232223.3442651-7-jacob.e.keller@intel.com>
-        <20200218184552.7077647b@kicinski-fedora-PC1C0HJN>
-        <6b4dd025-bcf8-12de-99b0-1e05e16333e8@intel.com>
+        id S1726760AbgBST4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 14:56:19 -0500
+Received: from gateway21.websitewelcome.com ([192.185.45.133]:13865 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726713AbgBST4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 14:56:19 -0500
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id D73FB400C9A7B
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 13:56:17 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 4VSDjYBBO8vkB4VSDjUjcH; Wed, 19 Feb 2020 13:56:17 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vOX1mSydTUmAP/JR5VWdC84Be9M7UUd+kCsN/i1LJtk=; b=FyncX6OwWQ0FTr7fBIcGpQZKp1
+        kdnCeXNghO2313ZTrvOMjQDqu8wr57U4z2IHG4lduQ7sF399q9yuZWaIGr5syJhjRzXOLZ7DleH2z
+        m8wrstWImpBqXow8PeBS5CsCtFgCTSRBQ3ZDJiXeg00L6TomFt36lsIhUHp0hPbPnX1oqUDzZNl2Q
+        aNgki8/hkg7EekQnnP9sCwwE3CU/J1VpbueAOE0tLA+cV98PniCGRlQ53+QLtoah6daDSUuD4I7ET
+        tC2ABZle5UBV0/QPNP20pCyDI+K6TjD4QCDVL1hraVQFlJsrddNJccMmO+HhZtUlJvONVMUKMM5Jr
+        srvWBCTQ==;
+Received: from [200.68.141.28] (port=24271 helo=[192.168.43.131])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j4VSD-003TQf-F8; Wed, 19 Feb 2020 13:56:17 -0600
+Subject: Re: [PATCH][next] mlxsw: Replace zero-length array with
+ flexible-array member
+To:     Ido Schimmel <idosch@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200218205705.GA29805@embeddedor>
+ <20200219164311.GA348671@splinter>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <1f264459-4627-d889-5623-1f18b55019f9@embeddedor.com>
+Date:   Wed, 19 Feb 2020 13:58:53 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200219164311.GA348671@splinter>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 200.68.141.28
+X-Source-L: No
+X-Exim-ID: 1j4VSD-003TQf-F8
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.43.131]) [200.68.141.28]:24271
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 4
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Feb 2020 09:33:09 -0800 Jacob Keller wrote:
-> >  - the PSID stuff was added, which IIUC is either (a) an identifier=20
-> >    for configuration parameters which are not visible via normal Linux
-> >    tools, or (b) a way for an OEM to label a product.
-> >    This changes where this thing should reside because we don't expect
-> >    OEM to relabel the product/SKU (or do we?) and hence it's a fixed
-> >    version.
-> >    If it's an identifier for random parameters of the board (serdes
-> >    params, temperature info, IDK) which is expected to maybe be updated
-> >    or tuned it should be in running/stored.
-> >  =20
->=20
-> Hmm. In my case nvm.psid is basically describing the format of the NVM
-> parameter set, but I don't think it actually covers the contents. This
-> version can update if you update to a newer image.
->=20
-> I probably need to re-word the versions to be "fw.bundle" and "fw.psid",
-> rather than using "nvm", given how you're describing the fields above.
->=20
-> >    So any further info on what's an EETRACK in your case?
-> >  =20
->=20
-> EETRACK is basically the name we used for "bundle", as it is a unique
-> identifier generated when new images are prepared.
->=20
-> I think this should probably just become "fw.bundle".
 
-Okay, cool!
 
-> What I have now as "fw.mgmt.bundle" is a little different. It's
-> basically a unique identifier obtained from the build system of the
-> management firmware that can be used to identify exactly what got built
-> for that firmware. (i.e. it would change even if the developers failed
-> to update their version number).
->=20
-> >    For MLX there's bunch of documents which tell us how we can create=20
-> >    an ini file with parameters, but no info on what those parameters
-> >    actually are.=20
-> >=20
-> >    Jiri would you be able to help? Please chime in..
-> >=20
-> >=20
-> > Sorry for the painful review process, it's quite hard to review what
-> > people are doing without knowing the back end. Hopefully above gives
-> > you an idea of the intentions when this code was added :)
-> >  =20
->=20
-> I understand the difficulty.
->=20
-> > I see that the next patch adds a 'fixed' version, so if that's
-> > sufficient to identify your board there isn't any blocker here. =20
->=20
-> Yes, the board.id is the unique identifier of the physical board design.
-> It's what we've called the Product Board Assembly identifier.
->=20
-> >=20
-> > What I'd still like to consider is:
-> >  - if fw.mgmt.bundle needs to be a bundle if it doesn't bundle multiple
-> >    things? If it's hard to inject the build ID into the fw.mgmt version
-> >    that's fine. =20
->=20
-> I mostly didn't like having it as part of the same version because it is
-> somewhat distinct. I don't think it's a "bundle" in the sense of what
-> you're describing.
->=20
-> It is basically just an identifier from the build system of that
-> component and will be changed even if the developer did not update the
-> firmware version. It's useful primarily to identify precisely where that
-> build of the firmware binary came from. (Hence why I originally used
-> ".build").
+On 2/19/20 10:43, Ido Schimmel wrote:
+> On Tue, Feb 18, 2020 at 02:57:05PM -0600, Gustavo A. R. Silva wrote:
+>> The current codebase makes use of the zero-length array language
+>> extension to the C90 standard, but the preferred mechanism to declare
+>> variable-length types such as these ones is a flexible array member[1][2],
+>> introduced in C99:
+>>
+>> struct foo {
+>>         int stuff;
+>>         struct boo array[];
+>> };
+>>
+>> By making use of the mechanism above, we will get a compiler warning
+>> in case the flexible array does not occur last in the structure, which
+>> will help us prevent some kind of undefined behavior bugs from being
+>> inadvertently introduced[3] to the codebase from now on.
+>>
+>> Also, notice that, dynamic memory allocations won't be affected by
+>> this change:
+>>
+>> "Flexible array members have incomplete type, and so the sizeof operator
+>> may not be applied. As a quirk of the original implementation of
+>> zero-length arrays, sizeof evaluates to zero."[1]
+>>
+>> This issue was found with the help of Coccinelle.
+>>
+>> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+>> [2] https://github.com/KSPP/linux/issues/21
+>> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> 
+> Thanks, Gustavo. Looks good to me. Ran a few tests with a debug config
+> and nothing exploded.
+> 
 
-Okay.
+haha great!
 
-> >  - fw.undi.orom - do we need to say orom? Is there anything else than
-> >    orom for UNDI in the flash? =20
->=20
-> Hmm.. I'll double check this. I wasn't entirely sure if we had other
-> components which is why I went that route. I think you're right though
-> and this can just be "fw.undi".
->=20
-> >  - nvm.psid may perhaps be better as nvm.psid.api? Following your
-> >    fw.mgmt.api? =20
->=20
-> Hmm. Yea this isn't really a parameter set id, but more of describing
-> the format. I am not sure I fully understand it myself yet.
->=20
-> >  - nvm.bundle - eetrack sounds mode like a stream, so perhaps this is
-> >    the PSID?
-> >  =20
->=20
-> So, I think this should probably become "fw.bundle", and I can drop the
-> nvm bits altogether. The EETRACK id is a unique identifier we create
-> when new images are created. If you have the eetrack you can look up
-> data on the source binary that the NVM image came from.
->=20
-> It wouldn't cover the parameters that can be changed, so I don't think
-> it's a psid.
->=20
->=20
-> Given this discussion, here is what I have so far:
->=20
-> "fw.bundle" -> What was "nvm.bundle", the identifier for the combined fw
-> image. This would be our EETRACK id.
+> I was just about to submit some patches myself, but they will conflict
+> with this patch, so I will wait :)
+> 
 
-=F0=9F=91=8D
+:)
 
-> "fw.mgmt" -> The management firmware 3 digit version
+> Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+> Tested-by: Ido Schimmel <idosch@mellanox.com>
+> 
 
-=F0=9F=91=8D
-
-> "fw.mgmt.api" -> The version of API exposed by this firmware
-
-=F0=9F=91=8D
-
-> "fw.mgmt.build" -> The build identifier. I really do think this should
-> be ".build" rather than .bundle, as it's definitely not a bundle in the
-> same sense. I *could* simply make "fw.mgmt" be "maj.min.patch build" but
-> I think it makes sense as its own field.
-
-okay
-
-> "fw.undi" -> Version of the Option ROM containing the UEFI driver
-
-=F0=9F=91=8D
-
-> "fw.psid.api" -> what was the "nvm.psid". This I think needs a bit more
-> work to define. It makes sense to me as some sort of "api" as (if I
-> understand it correctly) it is the format for the parameters, but does
-> not itself define the parameter contents.
-
-Sounds good. So the contents of parameters would be covered by the
-fw.bundle now and not have a separate version?
-
-> The original reason for using "fw" and "nvm" was because we (internally)
-> use fw to mean the management firmware.. where as these APIs really
-> combine the blocks and use "fw.mgmt" for the management firmware. Thus I
-> think it makes sense to move from
->=20
-> I also have a couple other oddities that need to be sorted out. We want
-> to display the DDP version (piece of "firmware" that is loaded during
-> driver load, and is not permanent to the NVM). In some sense this is our
-> "fw.app", but because it's loaded by driver at load and not as
-> permanently stored in the NVM... I'm not really sure that makes sense to
-> put this as the "fw.app", since it is not updated or really touched by
-> the firmware flash update.
-
-Interesting, can DDP be persisted to the flash, though? Is there some
-default DDP, or is it _never_ in the flash?=20
-
-Does it not have some fun implications for firmware signing to have
-part of the config/ucode loaded from the host?
-
-IIRC you could also load multiple of those DDP packages? Perhaps they
-could get names like fw.app0, fw.app1, etc? Also if DDP controls a
-particular part of the datapath (parser?) feel free to come up with a
-more targeted name, up to you.
-
-> Finally we also have a component we call the "netlist", which I'm still
-> not fully up to speed on exactly what it represents, but it has multiple
-> pieces of data including a 2-digit Major.Minor version of the base, a
-> type field indicating the format, and a 2-digit revision field that is
-> incremented on internal and external changes to the contents. Finally
-> there is a hash that I think might *actually* be something like a psid
-> or a bundle to uniquely represent this component. I haven't included
-> this component yet because I'm still trying to grasp exactly what it
-> represents and how best to describe each piece.
-
-Hmm. netlist is a Si term, perhaps it's chip init data? nfp had
-something called chip.init which I think loaded all the very low=20
-level Si configs.
-
-My current guess is that psid is more of the serdes and maybe clock
-data.=20
-
-Thinking about it now, it seems these versions mirror the company
-structure. chip.init comes from the Si team. psid comes from the=20
-board design guys. fw.mgmt comes from the BSP/FW team.
-
-None of them are really fixed but the frequency of changes increases
-from chip.init changing very rarely to mgmt fw having a regular release
-cadence.
+Thanks!
+--
+Gustavo
