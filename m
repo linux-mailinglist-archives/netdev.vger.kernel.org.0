@@ -2,81 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B966B164FB3
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 21:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA106164FB5
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 21:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgBSUUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 15:20:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49320 "EHLO mail.kernel.org"
+        id S1727298AbgBSUUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 15:20:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54268 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726645AbgBSUUG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 15:20:06 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07A6A24654;
-        Wed, 19 Feb 2020 20:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582143605;
-        bh=uIBm1dGD7YzjetMlfl+s7x73fGRtf+jKsTUZT2posg0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ev6C+hKaxC3x5s1Xz8uy3r2XIJQHV4AwCZlCb54jWfF7+HbqSCtTkFLxdEetdlDma
-         ZMyf1jvm7jxHkToPTk58MIMS9OWg8ntwsXE+dV5iveXxNx2eqw+FdQGzpG1h7gu/lA
-         oGrEuV3HnEqbxHpxAUadW3WPYdTpDY18tShsPrDM=
-Date:   Wed, 19 Feb 2020 21:20:03 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: Kernel 5.5.4 build fail for BPF-selftests with latest LLVM
-Message-ID: <20200219202003.GB2882443@kroah.com>
-References: <20200219133012.7cb6ac9e@carbon>
- <20200219132856.GA2836367@kroah.com>
- <20200219144254.36c3921b@carbon>
- <20200219181250.GA2852230@kroah.com>
- <20200219204039.121f10d2@carbon>
+        id S1726645AbgBSUUL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 15:20:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=KAdl9nkfoq9a8f1apc9MyNEY0KMLJnsiy/JC7l/c7WU=; b=mAQK9Gssdh2vlWVYIplASIKeuv
+        I020YSQRqJgT3/iqz3rD3dzEjKu5NZJX5IpW44Lwvxh8T3hlitpAGBI/YBLzqyF+JAyO7S1JStgLX
+        XcctJxsd9Vr+MyKcPNPHvtBxvstwreQBku7TWUXL2jhmqq19jWD/HEJp+iOEQDIzupCE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j4VpG-0002GX-Q0; Wed, 19 Feb 2020 21:20:06 +0100
+Date:   Wed, 19 Feb 2020 21:20:06 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/3] net: phy: broadcom: Have
+ bcm54xx_adjust_rxrefclk() check for flags
+Message-ID: <20200219202006.GY31084@lunn.ch>
+References: <20200219200049.12512-1-f.fainelli@gmail.com>
+ <20200219200049.12512-3-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200219204039.121f10d2@carbon>
+In-Reply-To: <20200219200049.12512-3-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 08:40:39PM +0100, Jesper Dangaard Brouer wrote:
-> On Wed, 19 Feb 2020 19:12:50 +0100
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+On Wed, Feb 19, 2020 at 12:00:48PM -0800, Florian Fainelli wrote:
+> bcm54xx_adjust_rxrefclk() already checks for PHY_BRCM_AUTO_PWRDWN_ENABLE
+> and PHY_BRCM_DIS_TXCRXC_NOENRGY in order to set the appropriate bit. The
+> situation is a bit more complicated with the flag
+> PHY_BRCM_RX_REFCLK_UNUSED but essentially amounts to the same situation.
 > 
-> > On Wed, Feb 19, 2020 at 02:42:54PM +0100, Jesper Dangaard Brouer wrote:
-> > > On Wed, 19 Feb 2020 14:28:56 +0100
-> > > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > >   
-> > > > On Wed, Feb 19, 2020 at 01:30:12PM +0100, Jesper Dangaard Brouer wrote:  
-> > > > > Hi Andrii,
-> > > > > 
-> > > > > Downloaded tarball for kernel release 5.5.4, and I cannot compile
-> > > > > tools/testing/selftests/bpf/ with latest LLVM release version 9.    
-> > > > 
-> [...]
-> > > > And has llvm 9 always worked here?  
-> > > 
-> > > Yes, llvm-9 used to work for tools/testing/selftests/bpf/.  
-> > 
-> > As of when?
+> The default setting for the 125MHz clock is to be on for all PHYs and
+> we still treat BCM50610 and BCM50610M specifically with the polarity of
+> the bit reversed.
 > 
-> Kernel v5.4 works when compiling BPF-selftests with LLVM 9.0.1.
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Bisection can help us here :)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-thanks,
-
-greg k-h
+    Andrew
