@@ -2,104 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6506116399C
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 02:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 249841639D2
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 03:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728093AbgBSBt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Feb 2020 20:49:58 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34245 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728078AbgBSBt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 20:49:56 -0500
-Received: by mail-pg1-f194.google.com with SMTP id j4so11894930pgi.1
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 17:49:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mCpHqL2j5BnpvPO+BvKBhD4kS+poF12ECCa7tnpH+YM=;
-        b=ts8VDPPBuLBZSekAbBB4AA9teS6dDAo1HBlFrWgCyrq8tuMc3thxftGa4AHpAl9HfC
-         u7yxDltYVpeECwcY8RzDqO6Oc+ujMt1LKMzE60hyRUp4CRmsuXIAURjdU5sPKFRoFEwm
-         6FN7vQ7hbitggAiOqBJscQwLzxfsXk6P3kE/ijGHV8xJt/0agF6tzs7iGM9/TJ0Fvy9F
-         ArDT1pSLD7/sstOaJU2GCdk92lHOemZWj0EQ3zQfulnRwfJ76bPc+DDLQ9ZRE1nVboYb
-         jR7FRhkDaPhSRUnmUrrhkxZbwc53oVyaoPQDanlDY6cxtAjJ8vR46+8/3WdA4kMg6eXF
-         I4yA==
+        id S1727978AbgBSCID convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Feb 2020 21:08:03 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56815 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727686AbgBSCIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Feb 2020 21:08:02 -0500
+Received: by mail-io1-f71.google.com with SMTP id d13so15214246ioo.23
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 18:08:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mCpHqL2j5BnpvPO+BvKBhD4kS+poF12ECCa7tnpH+YM=;
-        b=Y9q3q8/PQD9zEsRx4avXlRxd8WzNtHiNiYr4WxHIkBoiV2bpJtXqEMaw10Z87ElPeH
-         iPCWBVZQXHvQ66Y7z6HxD00T8GXBVpVx8qvp2IG5ufZdhPhdp+WPhfcj4PxoXdUH91B1
-         X1NLByaeu9lCqkyidaHlDl3mB6qZhrrTZFDCb8CZ1aTr/IkvPDZHQnkwgd/7jGeI4wKu
-         ftHAfSK0+JnIisxljInppODn+uHOWR81PSDUMlwz0YQTsG9mevWwGK3NrXdg/eql7A/G
-         YT33eraFjoWQp3H/PhwK+JE3ia1L+wCJ19AUITzTaYoJI5KmJlwd/ycdhPmr/pCrlBlA
-         E9PQ==
-X-Gm-Message-State: APjAAAWeYhJmpg3T9oto7YnPZ6A76XtYp2+AwwWIzRll2+1jIOgHw4wf
-        u9plbPa55ofubuzQnd9Gq+YSPQ==
-X-Google-Smtp-Source: APXvYqywbiuEpD1gaeQyiKrj/G0fRGBegWe1kQhCb3QNT2ZiaM+5B/V4zEAel8kBFDrwr4m3Dknbgg==
-X-Received: by 2002:a63:2266:: with SMTP id t38mr26477980pgm.145.1582076994532;
-        Tue, 18 Feb 2020 17:49:54 -0800 (PST)
-Received: from localhost ([223.226.55.170])
-        by smtp.gmail.com with ESMTPSA id q25sm288920pfg.41.2020.02.18.17.49.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Feb 2020 17:49:53 -0800 (PST)
-Date:   Wed, 19 Feb 2020 07:19:51 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        iommu@lists.linux-foundation.org,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>, Will Deacon <will@kernel.org>
-Subject: Re: [RFC PATCH 04/11] cpufreq: Remove Calxeda driver
-Message-ID: <20200219014951.2o2diuw5dzooafji@vireshk-i7>
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218171321.30990-5-robh@kernel.org>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:content-transfer-encoding;
+        bh=4diWwWLXm7lY/GHl3gvscC/1M0a1R7YH2cSj9Fw5eHQ=;
+        b=FOSZCDv5h7bQDPethG5H9GBRNTchRQP5rZ90OODeji51NqHL5+wHAol8/IlflDCXWy
+         v+OF/JF5+wl+9bfnblhC5FRbTgPPXuYR2r9IqkWOTFQkz326oPWDDXIQGG/P9RL6cxV2
+         xZQaeIUCA8U33XIYZUPUrUEAgC9TgQGvCefMiljg8tzx8TKGJapnE8TYlzxxgzIG+Adc
+         oXQLV72udIPRPYY6nqOwnyaVHWtShDA+I8MBUQkEx8035hRxas8xuxcIlsR4TOLnvJpI
+         TV+qnMijsfPjyAIA1IEHsQ8B+HVUhuu/vyZZ3TATc1NC0CSo+Y4dgFYPRdV3unx8L6bP
+         4p/g==
+X-Gm-Message-State: APjAAAXVlTIQ+WGOGcnaiBgRfLSzWr3ToCe4V8W8IR1UFuJESHkWf0TI
+        JTVfJc632nH71WUqSFZJZptyu3Gp6ZPUd0JGCeZ61dHQgnH9
+X-Google-Smtp-Source: APXvYqzdxPP1bcYe7a4xOJJ2PZvwgFfZkFkliW3rcWAp+NO+QUzOk5XyZt5pyzhMqqramXLk6gwjJUtyolpYMy0PBvZtFLrsOuX6
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200218171321.30990-5-robh@kernel.org>
-User-Agent: NeoMutt/20180716-391-311a52
+X-Received: by 2002:a92:15c2:: with SMTP id 63mr22276770ilv.111.1582078081462;
+ Tue, 18 Feb 2020 18:08:01 -0800 (PST)
+Date:   Tue, 18 Feb 2020 18:08:01 -0800
+In-Reply-To: <000000000000bb0378059c865fdf@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000d774c059ee442e6@google.com>
+Subject: Re: KASAN: use-after-free Read in bitmap_ip_destroy
+From:   syzbot <syzbot+8b5f151de2f35100bbc5@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        coreteam@netfilter.org, davem@davemloft.net,
+        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
+        johannes.berg@intel.com, kadlec@blackhole.kfki.hu,
+        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
+        lipeng321@huawei.com, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com, tanhuazhong@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18-02-20, 11:13, Rob Herring wrote:
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> Cc: Viresh Kumar <viresh.kumar@linaro.org>
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> Do not apply yet.
-> 
->  drivers/cpufreq/Kconfig.arm          |  10 ---
->  drivers/cpufreq/Makefile             |   3 +-
->  drivers/cpufreq/cpufreq-dt-platdev.c |   3 -
->  drivers/cpufreq/highbank-cpufreq.c   | 106 ---------------------------
->  4 files changed, 1 insertion(+), 121 deletions(-)
->  delete mode 100644 drivers/cpufreq/highbank-cpufreq.c
+syzbot suspects this bug was fixed by commit:
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+commit 32c72165dbd0e246e69d16a3ad348a4851afd415
+Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
+Date:   Sun Jan 19 21:06:49 2020 +0000
 
--- 
-viresh
+    netfilter: ipset: use bitmap infrastructure completely
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17fc79b5e00000
+start commit:   8f8972a3 Merge tag 'mtd/fixes-for-5.5-rc7' of git://git.ke..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cfbb8fa33f49f9f3
+dashboard link: https://syzkaller.appspot.com/bug?extid=8b5f151de2f35100bbc5
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e22559e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16056faee00000
+
+If the result looks correct, please mark the bug fixed by replying with:
+
+#syz fix: netfilter: ipset: use bitmap infrastructure completely
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
