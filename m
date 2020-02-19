@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D6D16474C
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A829C16475B
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgBSOlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 09:41:46 -0500
-Received: from mail-qv1-f46.google.com ([209.85.219.46]:35430 "EHLO
-        mail-qv1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726604AbgBSOlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:41:46 -0500
-Received: by mail-qv1-f46.google.com with SMTP id u10so277584qvi.2
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 06:41:45 -0800 (PST)
+        id S1726613AbgBSOpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 09:45:15 -0500
+Received: from mail-qk1-f176.google.com ([209.85.222.176]:38812 "EHLO
+        mail-qk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbgBSOpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:45:14 -0500
+Received: by mail-qk1-f176.google.com with SMTP id z19so315311qkj.5
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 06:45:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=4aDP6NKQ60FqBblPtGfroFQSVhqrL4oH8p62Os07w4M=;
-        b=Vbg3XtJS0rAHVis59pR6+VFOqSrrBLNj/LliWy/dxY+9mhoHigeABMR9P67x9W0rB8
-         VEFvxuRzVABiaauwLzCYywZZjE6dXkLuB+6c9xUBcfShakhbiqASqn5saKdidwHUX3F1
-         d4xLkzokFn57sCV3BSppU87GOgkbDMMR5Wlww55sQyyCOP+SYfUcwrsIv7kSZMAnBYRo
-         ZX0OTx0eyF+ULD2dPhNj/nTJsgUUDjNDyUaOq9K7OR3/Q6SUf+6PDsyCW11u3VEr6UCl
-         JI0LD3bUpW+pjzU5/Cn8qRWydk83qVlNrCyGwp5KIV+MSDyzoA5Ja4oGlgT9rhTBvrEu
-         u5Mw==
+        bh=Wh8HqHexRhPwuku2se1ZDnkxF8FSMKWi9ApHV7+VEmM=;
+        b=Kqj1R6EFdsyCSUvk8QQ5zWyYelKGmJaZytAA7PvgN7TiTiQUb8/ufNW3FzceZLHlNK
+         65mgrBpxiJu2dYEOwpF3WDV4DZJmv45CmkU1hM13IGxMRmmGw0AYY5wp1vIgdBXSwq4t
+         hYF2tZ4YptFvCxygexLmZY9r9V+jFUJU3pQoYjhEF14trpvOUiCFDPDlmnESnug4h1Ib
+         GXunEeBRzD1qtZKYYlHyNKr1uS00RYZox7/i84HrVJMKm0Ec2F+AS6dr+TmHwMG4q53n
+         qQ0zlISKE3I28uEHBcPuppPQ+Lvx3xWMdH6Sbn6ZhpBSoXHHLUbrLLCms8iWRrfUPywX
+         m0bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4aDP6NKQ60FqBblPtGfroFQSVhqrL4oH8p62Os07w4M=;
-        b=kPxZ/3hzs7+PfKAdu+8+64QuMAsy+woXZ4WVnmsQZpEs8BVcqKsbbFfTmh7bhzN+7w
-         Ab8diZSWhtKzjxhcttti/QSkGFQkFuGZZP7NjoPfymHEyId3ji/G3EG4oGt9KbAupiv5
-         DHrVMDb7O1PfD5ZapZFf2X9ROZP+CSNpTvHHUcajD6TYIRUzqvopY47Pnyb6J5D1PV4F
-         6MGHu09E8xbBWzm5fXd8+/1XCAXNNeHz9Vm1K2KUEHBI0xNQ5Cdw/6HU63sEmYLJmOd0
-         bV19gTp1V17hjWWR27Tp5nMcguSK7FcOC9EGLDlaRCWmdPPhjMeI+gF1whD66Nd0PiL3
-         w+Iw==
-X-Gm-Message-State: APjAAAUkfnUDRKv/5EDO9RqikKuW1XbdyDbKkwk1da1gdShyLfPdlIrh
-        E4x7dUPTtMEbwVvDklxiu0s=
-X-Google-Smtp-Source: APXvYqwqQ+qH2UjFsAgkCOExHjKgjOxBUhpSO4EudT3ApLzKdDKaRhWfyqfDSM1yWhXtYUlw8R9hBw==
-X-Received: by 2002:ad4:4dc3:: with SMTP id cw3mr21092832qvb.130.1582123305183;
-        Wed, 19 Feb 2020 06:41:45 -0800 (PST)
+        bh=Wh8HqHexRhPwuku2se1ZDnkxF8FSMKWi9ApHV7+VEmM=;
+        b=VQOAAWNA1wiVEy405k932ZpJfT1VBfrvH3ZI8CzF7rqBIeOT2ZTBOdo6govppchBwt
+         MikJibPoUhiLFN+1vDBUSyu8D1FNH0+ZHu07ZoNcLhLolZhD7ru97zS0d724ExdKkkZE
+         ALApOTTbQMFikzJaApb19n1h8ABv6Lm0FMQNt0G12WRh1+TB5uViguQKrsm1/l4NYtR5
+         mOj7mAWpnrBRhIiDRKidHK+QB0vtiwv4NmKPeyUiGoiIJ9Ea7GkcVXSJQ61vQKCcMZsn
+         qsMIk1DSJC3xsO/au/kd+OfSQ0xjvu495I7+D5Y0AgfXxmK8sIxotImvWkHAy8Ntmynu
+         jfEA==
+X-Gm-Message-State: APjAAAV8uyAWG378ArP3pF8ewsKUodyMT+aGbrDdOPIaD9o/+Em558Mm
+        LFrwLltxKcd8yQGOyRdIy54=
+X-Google-Smtp-Source: APXvYqwkOT+FPQASjkl7entCDUTn7n6dCmmFUow78YURayUDkAUdITMHRAK/p18Z6xf5lsEOOubTdA==
+X-Received: by 2002:a37:9407:: with SMTP id w7mr23369863qkd.55.1582123513389;
+        Wed, 19 Feb 2020 06:45:13 -0800 (PST)
 Received: from ryzen ([216.154.21.195])
-        by smtp.gmail.com with ESMTPSA id h6sm72118qtr.33.2020.02.19.06.41.43
+        by smtp.gmail.com with ESMTPSA id t187sm1066853qke.85.2020.02.19.06.45.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 06:41:44 -0800 (PST)
-Date:   Wed, 19 Feb 2020 09:41:37 -0500
+        Wed, 19 Feb 2020 06:45:12 -0800 (PST)
+Date:   Wed, 19 Feb 2020 09:45:10 -0500
 From:   Alexander Aring <alex.aring@gmail.com>
-To:     David Miller <davem@davemloft.net>
+To:     davem@davemloft.net
 Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
         dav.lebrun@gmail.com, mcr@sandelman.ca, stefan@datenfreihafen.org,
         kai.beckmann@hs-rm.de, martin.gergeleit@hs-rm.de,
         robert.kaiser@hs-rm.de, netdev@vger.kernel.org
 Subject: Re: [PACTH net-next 5/5] net: ipv6: add rpl sr tunnel
-Message-ID: <20200219144137.omzmzgfs33fmb6yg@ryzen>
+Message-ID: <20200219144510.2dqsxrbs26azzh6m@ryzen>
 References: <20200217223541.18862-1-alex.aring@gmail.com>
  <20200217223541.18862-6-alex.aring@gmail.com>
- <20200217.214713.1884483376515699603.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200217.214713.1884483376515699603.davem@davemloft.net>
+In-Reply-To: <20200217223541.18862-6-alex.aring@gmail.com>
 User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -68,27 +67,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Mon, Feb 17, 2020 at 09:47:13PM -0800, David Miller wrote:
-> From: Alexander Aring <alex.aring@gmail.com>
-> Date: Mon, 17 Feb 2020 17:35:41 -0500
+On Mon, Feb 17, 2020 at 05:35:41PM -0500, Alexander Aring wrote:
+> This patch adds functionality to configure routes for RPL source routing
+> functionality. There is no IPIP functionality yet implemented which can
+> be added later when the cases when to use IPv6 encapuslation comes more
+> clear.
 > 
-> > +struct rpl_iptunnel_encap {
-> > +	struct ipv6_rpl_sr_hdr srh[0];
-> > +};
-> 
-> We're supposed to use '[]' for zero length arrays these days.
+...
+> +
+> +static bool rpl_validate_srh(struct net *net, struct ipv6_rpl_sr_hdr *srh,
+> +			     size_t seglen)
+> +{
+> +	int err;
+> +
+> +	if ((srh->hdrlen << 3) != seglen)
+> +		return false;
+> +
 
-When I do that I get with gcc 9.2.1:
+I added here a:
 
-linux/net/ipv6/rpl_iptunnel.c:16:25: error: flexible array member in a struct with no named members
-   16 |  struct ipv6_rpl_sr_hdr srh[];
+/* check at least one segment and seglen fit with segments_left */
+if (!srh->segments_left ||
+    (srh->segments_left * sizeof(struct in6_addr)) != seglen)
+        return false;
 
-This struct is so defined that a simple memcmp() can decide if it's the
-same tunnel or not. We don't have any "named members" _yet_ but possible
-new UAPI can introduce them.
+which makes sense to do. No zero segments and check if seglen is the
+same as 16 * segments, because we don't support to set compressed
+segments yet and I don't know if we ever will.
 
-Can we make an exception here? I can remove it but then I need to
-introduce the same code again when we introduce new fields in UAPI for
-this tunnel.
+> +	if (srh->cmpri || srh->cmpre)
+> +		return false;
+> +
+> +	err = ipv6_chk_rpl_srh_loop(net, srh->rpl_segaddr,
+> +				    srh->segments_left);
+> +	if (err)
+> +		return false;
+> +
+> +	if (ipv6_addr_type(&srh->rpl_segaddr[srh->segments_left - 1]) &
+> +	    IPV6_ADDR_MULTICAST)
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
 
 - Alex
