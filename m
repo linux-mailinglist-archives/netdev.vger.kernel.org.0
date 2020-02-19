@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD1216521D
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF7C165227
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727803AbgBSWHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 17:07:00 -0500
+        id S1727926AbgBSWHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 17:07:17 -0500
 Received: from mga01.intel.com ([192.55.52.88]:51315 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727740AbgBSWG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 17:06:58 -0500
+        id S1727778AbgBSWG7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 17:06:59 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 14:06:54 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 14:06:57 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
-   d="scan'208";a="239824803"
+   d="scan'208";a="239824806"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.76])
   by orsmga006.jf.intel.com with ESMTP; 19 Feb 2020 14:06:53 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
+Cc:     Dan Nowlin <dan.nowlin@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 02/13] ice: update malicious driver detection event handling
-Date:   Wed, 19 Feb 2020 14:06:41 -0800
-Message-Id: <20200219220652.2255171-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 03/13] ice: Fix for TCAM entry management
+Date:   Wed, 19 Feb 2020 14:06:42 -0800
+Message-Id: <20200219220652.2255171-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200219220652.2255171-1-jeffrey.t.kirsher@intel.com>
 References: <20200219220652.2255171-1-jeffrey.t.kirsher@intel.com>
@@ -40,445 +39,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Greenwalt <paul.greenwalt@intel.com>
+From: Dan Nowlin <dan.nowlin@intel.com>
 
-Update the PF VFs MDD event message to rate limit once per second and
-report the total number Rx|Tx event count. Add support to print pending
-MDD events that occur during the rate limit. The use of net_ratelimit did
-not allow for per VF Rx|Tx granularity.
+Order intermediate VSIG list correct in order to correctly match existing
+VSIG lists.
 
-Additional PF MDD log messages are guarded by netif_msg_[rx|tx]_err().
+When overriding pre-existing TCAM entries, properly delete the existing
+entry and remove it from the change/update list.
 
-Since VF RX MDD events disable the queue, add ethtool private flag
-mdd-auto-reset-vf to configure VF reset to re-enable the queue.
-
-Disable anti-spoof detection interrupt to prevent spurious events
-during a function reset.
-
-To avoid race condition do not make PF MDD register reads conditional
-on global MDD result.
-
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   4 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   1 +
- .../net/ethernet/intel/ice/ice_hw_autogen.h   |   2 +
- drivers/net/ethernet/intel/ice/ice_main.c     | 126 ++++++++++--------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  56 +++++++-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  20 ++-
- 6 files changed, 150 insertions(+), 59 deletions(-)
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 65 +++++++++++++++----
+ 1 file changed, 51 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index cb10abb14e11..2d51ceaa2c8c 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -212,6 +212,7 @@ enum ice_state {
- 	__ICE_SERVICE_SCHED,
- 	__ICE_SERVICE_DIS,
- 	__ICE_OICR_INTR_DIS,		/* Global OICR interrupt disabled */
-+	__ICE_MDD_VF_PRINT_PENDING,	/* set when MDD event handle */
- 	__ICE_STATE_NBITS		/* must be last */
- };
- 
-@@ -340,6 +341,7 @@ enum ice_pf_flags {
- 	ICE_FLAG_FW_LLDP_AGENT,
- 	ICE_FLAG_ETHTOOL_CTXT,		/* set when ethtool holds RTNL lock */
- 	ICE_FLAG_LEGACY_RX,
-+	ICE_FLAG_MDD_AUTO_RESET_VF,
- 	ICE_PF_FLAGS_NBITS		/* must be last */
- };
- 
-@@ -363,6 +365,8 @@ struct ice_pf {
- 	u16 num_vfs_supported;		/* num VFs supported for this PF */
- 	u16 num_vf_qps;			/* num queue pairs per VF */
- 	u16 num_vf_msix;		/* num vectors per VF */
-+	/* used to ratelimit the MDD event logging */
-+	unsigned long last_printed_mdd_jiffies;
- 	DECLARE_BITMAP(state, __ICE_STATE_NBITS);
- 	DECLARE_BITMAP(flags, ICE_PF_FLAGS_NBITS);
- 	unsigned long *avail_txqs;	/* bitmap to track PF Tx queue usage */
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 583e07fffd5f..63a69ea02d22 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -157,6 +157,7 @@ struct ice_priv_flag {
- static const struct ice_priv_flag ice_gstrings_priv_flags[] = {
- 	ICE_PRIV_FLAG("link-down-on-close", ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA),
- 	ICE_PRIV_FLAG("fw-lldp-agent", ICE_FLAG_FW_LLDP_AGENT),
-+	ICE_PRIV_FLAG("mdd-auto-reset-vf", ICE_FLAG_MDD_AUTO_RESET_VF),
- 	ICE_PRIV_FLAG("legacy-rx", ICE_FLAG_LEGACY_RX),
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index b99ebfefe06b..43e4efbccd8e 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -217,6 +217,8 @@
- #define VPLAN_TX_QBASE_VFNUMQ_M			ICE_M(0xFF, 16)
- #define VPLAN_TXQ_MAPENA(_VF)			(0x00073800 + ((_VF) * 4))
- #define VPLAN_TXQ_MAPENA_TX_ENA_M		BIT(0)
-+#define GL_MDCK_TX_TDPU				0x00049348
-+#define GL_MDCK_TX_TDPU_RCU_ANTISPOOF_ITR_DIS_M BIT(1)
- #define GL_MDET_RX				0x00294C00
- #define GL_MDET_RX_QNUM_S			0
- #define GL_MDET_RX_QNUM_M			ICE_M(0x7FFF, 0)
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 255317e4b1f3..f11e0934dc03 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -1187,20 +1187,28 @@ static void ice_service_timer(struct timer_list *t)
-  * ice_handle_mdd_event - handle malicious driver detect event
-  * @pf: pointer to the PF structure
-  *
-- * Called from service task. OICR interrupt handler indicates MDD event
-+ * Called from service task. OICR interrupt handler indicates MDD event.
-+ * VF MDD logging is guarded by net_ratelimit. Additional PF and VF log
-+ * messages are wrapped by netif_msg_[rx|tx]_err. Since VF Rx MDD events
-+ * disable the queue, the PF can be configured to reset the VF using ethtool
-+ * private flag mdd-auto-reset-vf.
-  */
- static void ice_handle_mdd_event(struct ice_pf *pf)
- {
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
--	bool mdd_detected = false;
- 	u32 reg;
- 	int i;
- 
--	if (!test_and_clear_bit(__ICE_MDD_EVENT_PENDING, pf->state))
-+	if (!test_and_clear_bit(__ICE_MDD_EVENT_PENDING, pf->state)) {
-+		/* Since the VF MDD event logging is rate limited, check if
-+		 * there are pending MDD events.
-+		 */
-+		ice_print_vfs_mdd_events(pf);
- 		return;
-+	}
- 
--	/* find what triggered the MDD event */
-+	/* find what triggered an MDD event */
- 	reg = rd32(hw, GL_MDET_TX_PQM);
- 	if (reg & GL_MDET_TX_PQM_VALID_M) {
- 		u8 pf_num = (reg & GL_MDET_TX_PQM_PF_NUM_M) >>
-@@ -1216,7 +1224,6 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
- 				 event, queue, pf_num, vf_num);
- 		wr32(hw, GL_MDET_TX_PQM, 0xffffffff);
--		mdd_detected = true;
- 	}
- 
- 	reg = rd32(hw, GL_MDET_TX_TCLAN);
-@@ -1234,7 +1241,6 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 			dev_info(dev, "Malicious Driver Detection event %d on TX queue %d PF# %d VF# %d\n",
- 				 event, queue, pf_num, vf_num);
- 		wr32(hw, GL_MDET_TX_TCLAN, 0xffffffff);
--		mdd_detected = true;
- 	}
- 
- 	reg = rd32(hw, GL_MDET_RX);
-@@ -1252,85 +1258,85 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
- 			dev_info(dev, "Malicious Driver Detection event %d on RX queue %d PF# %d VF# %d\n",
- 				 event, queue, pf_num, vf_num);
- 		wr32(hw, GL_MDET_RX, 0xffffffff);
--		mdd_detected = true;
- 	}
- 
--	if (mdd_detected) {
--		bool pf_mdd_detected = false;
--
--		reg = rd32(hw, PF_MDET_TX_PQM);
--		if (reg & PF_MDET_TX_PQM_VALID_M) {
--			wr32(hw, PF_MDET_TX_PQM, 0xFFFF);
--			dev_info(dev, "TX driver issue detected, PF reset issued\n");
--			pf_mdd_detected = true;
--		}
-+	/* check to see if this PF caused an MDD event */
-+	reg = rd32(hw, PF_MDET_TX_PQM);
-+	if (reg & PF_MDET_TX_PQM_VALID_M) {
-+		wr32(hw, PF_MDET_TX_PQM, 0xFFFF);
-+		if (netif_msg_tx_err(pf))
-+			dev_info(dev, "Malicious Driver Detection event TX_PQM detected on PF\n");
-+	}
- 
--		reg = rd32(hw, PF_MDET_TX_TCLAN);
--		if (reg & PF_MDET_TX_TCLAN_VALID_M) {
--			wr32(hw, PF_MDET_TX_TCLAN, 0xFFFF);
--			dev_info(dev, "TX driver issue detected, PF reset issued\n");
--			pf_mdd_detected = true;
--		}
-+	reg = rd32(hw, PF_MDET_TX_TCLAN);
-+	if (reg & PF_MDET_TX_TCLAN_VALID_M) {
-+		wr32(hw, PF_MDET_TX_TCLAN, 0xFFFF);
-+		if (netif_msg_tx_err(pf))
-+			dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on PF\n");
-+	}
- 
--		reg = rd32(hw, PF_MDET_RX);
--		if (reg & PF_MDET_RX_VALID_M) {
--			wr32(hw, PF_MDET_RX, 0xFFFF);
--			dev_info(dev, "RX driver issue detected, PF reset issued\n");
--			pf_mdd_detected = true;
--		}
--		/* Queue belongs to the PF initiate a reset */
--		if (pf_mdd_detected) {
--			set_bit(__ICE_NEEDS_RESTART, pf->state);
--			ice_service_task_schedule(pf);
--		}
-+	reg = rd32(hw, PF_MDET_RX);
-+	if (reg & PF_MDET_RX_VALID_M) {
-+		wr32(hw, PF_MDET_RX, 0xFFFF);
-+		if (netif_msg_rx_err(pf))
-+			dev_info(dev, "Malicious Driver Detection event RX detected on PF\n");
- 	}
- 
--	/* check to see if one of the VFs caused the MDD */
-+	/* Check to see if one of the VFs caused an MDD event, and then
-+	 * increment counters and set print pending
-+	 */
- 	ice_for_each_vf(pf, i) {
- 		struct ice_vf *vf = &pf->vf[i];
- 
--		bool vf_mdd_detected = false;
--
- 		reg = rd32(hw, VP_MDET_TX_PQM(i));
- 		if (reg & VP_MDET_TX_PQM_VALID_M) {
- 			wr32(hw, VP_MDET_TX_PQM(i), 0xFFFF);
--			vf_mdd_detected = true;
--			dev_info(dev, "TX driver issue detected on VF %d\n",
--				 i);
-+			vf->mdd_tx_events.count++;
-+			set_bit(__ICE_MDD_VF_PRINT_PENDING, pf->state);
-+			if (netif_msg_tx_err(pf))
-+				dev_info(dev, "Malicious Driver Detection event TX_PQM detected on VF %d\n",
-+					 i);
- 		}
- 
- 		reg = rd32(hw, VP_MDET_TX_TCLAN(i));
- 		if (reg & VP_MDET_TX_TCLAN_VALID_M) {
- 			wr32(hw, VP_MDET_TX_TCLAN(i), 0xFFFF);
--			vf_mdd_detected = true;
--			dev_info(dev, "TX driver issue detected on VF %d\n",
--				 i);
-+			vf->mdd_tx_events.count++;
-+			set_bit(__ICE_MDD_VF_PRINT_PENDING, pf->state);
-+			if (netif_msg_tx_err(pf))
-+				dev_info(dev, "Malicious Driver Detection event TX_TCLAN detected on VF %d\n",
-+					 i);
- 		}
- 
- 		reg = rd32(hw, VP_MDET_TX_TDPU(i));
- 		if (reg & VP_MDET_TX_TDPU_VALID_M) {
- 			wr32(hw, VP_MDET_TX_TDPU(i), 0xFFFF);
--			vf_mdd_detected = true;
--			dev_info(dev, "TX driver issue detected on VF %d\n",
--				 i);
-+			vf->mdd_tx_events.count++;
-+			set_bit(__ICE_MDD_VF_PRINT_PENDING, pf->state);
-+			if (netif_msg_tx_err(pf))
-+				dev_info(dev, "Malicious Driver Detection event TX_TDPU detected on VF %d\n",
-+					 i);
- 		}
- 
- 		reg = rd32(hw, VP_MDET_RX(i));
- 		if (reg & VP_MDET_RX_VALID_M) {
- 			wr32(hw, VP_MDET_RX(i), 0xFFFF);
--			vf_mdd_detected = true;
--			dev_info(dev, "RX driver issue detected on VF %d\n",
--				 i);
--		}
--
--		if (vf_mdd_detected) {
--			vf->num_mdd_events++;
--			if (vf->num_mdd_events &&
--			    vf->num_mdd_events <= ICE_MDD_EVENTS_THRESHOLD)
--				dev_info(dev, "VF %d has had %llu MDD events since last boot, Admin might need to reload AVF driver with this number of events\n",
--					 i, vf->num_mdd_events);
-+			vf->mdd_rx_events.count++;
-+			set_bit(__ICE_MDD_VF_PRINT_PENDING, pf->state);
-+			if (netif_msg_rx_err(pf))
-+				dev_info(dev, "Malicious Driver Detection event RX detected on VF %d\n",
-+					 i);
-+
-+			/* Since the queue is disabled on VF Rx MDD events, the
-+			 * PF can be configured to reset the VF through ethtool
-+			 * private flag mdd-auto-reset-vf.
-+			 */
-+			if (test_bit(ICE_FLAG_MDD_AUTO_RESET_VF, pf->flags))
-+				ice_reset_vf(&pf->vf[i], false);
- 		}
- 	}
-+
-+	ice_print_vfs_mdd_events(pf);
- }
- 
- /**
-@@ -1995,6 +2001,14 @@ static void ice_ena_misc_vector(struct ice_pf *pf)
- 	struct ice_hw *hw = &pf->hw;
- 	u32 val;
- 
-+	/* Disable anti-spoof detection interrupt to prevent spurious event
-+	 * interrupts during a function reset. Anti-spoof functionally is
-+	 * still supported.
-+	 */
-+	val = rd32(hw, GL_MDCK_TX_TDPU);
-+	val |= GL_MDCK_TX_TDPU_RCU_ANTISPOOF_ITR_DIS_M;
-+	wr32(hw, GL_MDCK_TX_TDPU, val);
-+
- 	/* clear things first */
- 	wr32(hw, PFINT_OICR_ENA, 0);	/* disable all */
- 	rd32(hw, PFINT_OICR);		/* read to clear */
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index a21f9d2edbbb..e5c99bb8529e 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -171,6 +171,11 @@ static void ice_free_vf_res(struct ice_vf *vf)
- 	}
- 
- 	last_vector_idx = vf->first_vector_idx + pf->num_vf_msix - 1;
-+
-+	/* clear VF MDD event information */
-+	memset(&vf->mdd_tx_events, 0, sizeof(vf->mdd_tx_events));
-+	memset(&vf->mdd_rx_events, 0, sizeof(vf->mdd_rx_events));
-+
- 	/* Disable interrupts so that VF starts in a known state */
- 	for (i = vf->first_vector_idx; i <= last_vector_idx; i++) {
- 		wr32(&pf->hw, GLINT_DYN_CTL(i), GLINT_DYN_CTL_CLEARPBA_M);
-@@ -1175,7 +1180,7 @@ static bool ice_is_vf_disabled(struct ice_vf *vf)
-  *
-  * Returns true if the VF is reset, false otherwise.
-  */
--static bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
-+bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- {
- 	struct ice_pf *pf = vf->pf;
- 	struct ice_vsi *vsi;
-@@ -3529,3 +3534,52 @@ int ice_get_vf_stats(struct net_device *netdev, int vf_id,
- 
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 99208946224c..42bac3ec5526 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -3470,6 +3470,24 @@ ice_move_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 vsig,
  	return 0;
  }
-+
+ 
 +/**
-+ * ice_print_vfs_mdd_event - print VFs malicious driver detect event
-+ * @pf: pointer to the PF structure
-+ *
-+ * Called from ice_handle_mdd_event to rate limit and print VFs MDD events.
++ * ice_rem_chg_tcam_ent - remove a specific TCAM entry from change list
++ * @hw: pointer to the HW struct
++ * @idx: the index of the TCAM entry to remove
++ * @chg: the list of change structures to search
 + */
-+void ice_print_vfs_mdd_events(struct ice_pf *pf)
++static void
++ice_rem_chg_tcam_ent(struct ice_hw *hw, u16 idx, struct list_head *chg)
 +{
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_hw *hw = &pf->hw;
-+	int i;
++	struct ice_chs_chg *pos, *tmp;
 +
-+	/* check that there are pending MDD events to print */
-+	if (!test_and_clear_bit(__ICE_MDD_VF_PRINT_PENDING, pf->state))
-+		return;
-+
-+	/* VF MDD event logs are rate limited to one second intervals */
-+	if (time_is_after_jiffies(pf->last_printed_mdd_jiffies + HZ * 1))
-+		return;
-+
-+	pf->last_printed_mdd_jiffies = jiffies;
-+
-+	ice_for_each_vf(pf, i) {
-+		struct ice_vf *vf = &pf->vf[i];
-+
-+		/* only print Rx MDD event message if there are new events */
-+		if (vf->mdd_rx_events.count != vf->mdd_rx_events.last_printed) {
-+			vf->mdd_rx_events.last_printed =
-+							vf->mdd_rx_events.count;
-+
-+			dev_info(dev, "%d Rx Malicious Driver Detection events detected on PF %d VF %d MAC %pM. mdd-auto-reset-vfs=%s\n",
-+				 vf->mdd_rx_events.count, hw->pf_id, i,
-+				 vf->dflt_lan_addr.addr,
-+				 test_bit(ICE_FLAG_MDD_AUTO_RESET_VF, pf->flags)
-+					  ? "on" : "off");
++	list_for_each_entry_safe(tmp, pos, chg, list_entry)
++		if (tmp->type == ICE_TCAM_ADD && tmp->tcam_idx == idx) {
++			list_del(&tmp->list_entry);
++			devm_kfree(ice_hw_to_dev(hw), tmp);
 +		}
-+
-+		/* only print Tx MDD event message if there are new events */
-+		if (vf->mdd_tx_events.count != vf->mdd_tx_events.last_printed) {
-+			vf->mdd_tx_events.last_printed =
-+							vf->mdd_tx_events.count;
-+
-+			dev_info(dev, "%d Tx Malicious Driver Detection events detected on PF %d VF %d MAC %pM.\n",
-+				 vf->mdd_tx_events.count, hw->pf_id, i,
-+				 vf->dflt_lan_addr.addr);
-+		}
-+	}
 +}
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 474b2613f09c..656f1909b38f 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -55,6 +55,13 @@ enum ice_virtchnl_cap {
- 	ICE_VIRTCHNL_VF_CAP_PRIVILEGE,
- };
- 
-+/* VF MDD events print structure */
-+struct ice_mdd_vf_events {
-+	u16 count;			/* total count of Rx|Tx events */
-+	/* count number of the last printed event */
-+	u16 last_printed;
-+};
 +
- /* VF information structure */
- struct ice_vf {
- 	struct ice_pf *pf;
-@@ -83,13 +90,14 @@ struct ice_vf {
- 	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+ /**
+  * ice_prof_tcam_ena_dis - add enable or disable TCAM change
+  * @hw: pointer to the HW struct
+@@ -3489,14 +3507,19 @@ ice_prof_tcam_ena_dis(struct ice_hw *hw, enum ice_block blk, bool enable,
+ 	enum ice_status status;
+ 	struct ice_chs_chg *p;
  
--	u64 num_mdd_events;		/* number of MDD events detected */
- 	u64 num_inval_msgs;		/* number of continuous invalid msgs */
- 	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
- 	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
- 	u16 num_vf_qs;			/* num of queue configured per VF */
-+	struct ice_mdd_vf_events mdd_rx_events;
-+	struct ice_mdd_vf_events mdd_tx_events;
- };
+-	/* Default: enable means change the low flag bit to don't care */
+-	u8 dc_msk[ICE_TCAM_KEY_VAL_SZ] = { 0x01, 0x00, 0x00, 0x00, 0x00 };
++	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
++	u8 dc_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0x00, 0x00, 0x00 };
+ 	u8 nm_msk[ICE_TCAM_KEY_VAL_SZ] = { 0x00, 0x00, 0x00, 0x00, 0x00 };
+-	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0x01, 0x00, 0x00, 0x00, 0x00 };
  
- #ifdef CONFIG_PCI_IOV
-@@ -104,6 +112,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event);
- void ice_vc_notify_link_state(struct ice_pf *pf);
- void ice_vc_notify_reset(struct ice_pf *pf);
- bool ice_reset_all_vfs(struct ice_pf *pf, bool is_vflr);
-+bool ice_reset_vf(struct ice_vf *vf, bool is_vflr);
+ 	/* if disabling, free the TCAM */
+ 	if (!enable) {
+-		status = ice_free_tcam_ent(hw, blk, tcam->tcam_idx);
++		status = ice_rel_tcam_idx(hw, blk, tcam->tcam_idx);
++
++		/* if we have already created a change for this TCAM entry, then
++		 * we need to remove that entry, in order to prevent writing to
++		 * a TCAM entry we no longer will have ownership of.
++		 */
++		ice_rem_chg_tcam_ent(hw, tcam->tcam_idx, chg);
+ 		tcam->tcam_idx = 0;
+ 		tcam->in_use = 0;
+ 		return status;
+@@ -3612,11 +3635,12 @@ ice_adj_prof_priorities(struct ice_hw *hw, enum ice_block blk, u16 vsig,
+  * @blk: hardware block
+  * @vsig: the VSIG to which this profile is to be added
+  * @hdl: the profile handle indicating the profile to add
++ * @rev: true to add entries to the end of the list
+  * @chg: the change list
+  */
+ static enum ice_status
+ ice_add_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsig, u64 hdl,
+-		     struct list_head *chg)
++		     bool rev, struct list_head *chg)
+ {
+ 	/* Masks that ignore flags */
+ 	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+@@ -3625,7 +3649,7 @@ ice_add_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsig, u64 hdl,
+ 	struct ice_prof_map *map;
+ 	struct ice_vsig_prof *t;
+ 	struct ice_chs_chg *p;
+-	u16 i;
++	u16 vsig_idx, i;
  
- int
- ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
-@@ -123,7 +132,7 @@ ice_get_vf_stats(struct net_device *netdev, int vf_id,
- 		 struct ifla_vf_stats *vf_stats);
- void
- ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event);
--
-+void ice_print_vfs_mdd_events(struct ice_pf *pf);
- #else /* CONFIG_PCI_IOV */
- #define ice_process_vflr_event(pf) do {} while (0)
- #define ice_free_vfs(pf) do {} while (0)
-@@ -132,6 +141,7 @@ ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event);
- #define ice_vc_notify_reset(pf) do {} while (0)
- #define ice_set_vf_state_qs_dis(vf) do {} while (0)
- #define ice_vf_lan_overflow_event(pf, event) do {} while (0)
-+#define ice_print_vfs_mdd_events(pf) do {} while (0)
+ 	/* Get the details on the profile specified by the handle ID */
+ 	map = ice_search_prof_id(hw, blk, hdl);
+@@ -3687,8 +3711,13 @@ ice_add_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsig, u64 hdl,
+ 	}
  
- static inline bool
- ice_reset_all_vfs(struct ice_pf __always_unused *pf,
-@@ -140,6 +150,12 @@ ice_reset_all_vfs(struct ice_pf __always_unused *pf,
- 	return true;
+ 	/* add profile to VSIG */
+-	list_add(&t->list,
+-		 &hw->blk[blk].xlt2.vsig_tbl[(vsig & ICE_VSIG_IDX_M)].prop_lst);
++	vsig_idx = vsig & ICE_VSIG_IDX_M;
++	if (rev)
++		list_add_tail(&t->list,
++			      &hw->blk[blk].xlt2.vsig_tbl[vsig_idx].prop_lst);
++	else
++		list_add(&t->list,
++			 &hw->blk[blk].xlt2.vsig_tbl[vsig_idx].prop_lst);
+ 
+ 	return 0;
+ 
+@@ -3728,7 +3757,7 @@ ice_create_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl,
+ 	if (status)
+ 		goto err_ice_create_prof_id_vsig;
+ 
+-	status = ice_add_prof_id_vsig(hw, blk, new_vsig, hdl, chg);
++	status = ice_add_prof_id_vsig(hw, blk, new_vsig, hdl, false, chg);
+ 	if (status)
+ 		goto err_ice_create_prof_id_vsig;
+ 
+@@ -3753,11 +3782,13 @@ ice_create_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl,
+  * @blk: hardware block
+  * @vsi: the initial VSI that will be in VSIG
+  * @lst: the list of profile that will be added to the VSIG
++ * @new_vsig: return of new VSIG
+  * @chg: the change list
+  */
+ static enum ice_status
+ ice_create_vsig_from_lst(struct ice_hw *hw, enum ice_block blk, u16 vsi,
+-			 struct list_head *lst, struct list_head *chg)
++			 struct list_head *lst, u16 *new_vsig,
++			 struct list_head *chg)
+ {
+ 	struct ice_vsig_prof *t;
+ 	enum ice_status status;
+@@ -3772,12 +3803,15 @@ ice_create_vsig_from_lst(struct ice_hw *hw, enum ice_block blk, u16 vsi,
+ 		return status;
+ 
+ 	list_for_each_entry(t, lst, list) {
++		/* Reverse the order here since we are copying the list */
+ 		status = ice_add_prof_id_vsig(hw, blk, vsig, t->profile_cookie,
+-					      chg);
++					      true, chg);
+ 		if (status)
+ 			return status;
+ 	}
+ 
++	*new_vsig = vsig;
++
+ 	return 0;
  }
  
-+static inline bool
-+ice_reset_vf(struct ice_vf __always_unused *vf, bool __always_unused is_vflr)
-+{
-+	return true;
-+}
-+
- static inline int
- ice_sriov_configure(struct pci_dev __always_unused *pdev,
- 		    int __always_unused num_vfs)
+@@ -3899,7 +3933,8 @@ ice_add_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl)
+ 			 * not sharing entries and we can simply add the new
+ 			 * profile to the VSIG.
+ 			 */
+-			status = ice_add_prof_id_vsig(hw, blk, vsig, hdl, &chg);
++			status = ice_add_prof_id_vsig(hw, blk, vsig, hdl, false,
++						      &chg);
+ 			if (status)
+ 				goto err_ice_add_prof_id_flow;
+ 
+@@ -3910,7 +3945,8 @@ ice_add_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl)
+ 		} else {
+ 			/* No match, so we need a new VSIG */
+ 			status = ice_create_vsig_from_lst(hw, blk, vsi,
+-							  &union_lst, &chg);
++							  &union_lst, &vsig,
++							  &chg);
+ 			if (status)
+ 				goto err_ice_add_prof_id_flow;
+ 
+@@ -4076,7 +4112,8 @@ ice_rem_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl)
+ 				 * new VSIG and TCAM entries
+ 				 */
+ 				status = ice_create_vsig_from_lst(hw, blk, vsi,
+-								  &copy, &chg);
++								  &copy, &vsig,
++								  &chg);
+ 				if (status)
+ 					goto err_ice_rem_prof_id_flow;
+ 
 -- 
 2.24.1
 
