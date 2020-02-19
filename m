@@ -2,138 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE77163CBC
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 06:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45A90163CF2
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:14:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgBSFgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 00:36:01 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:45280 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725842AbgBSFgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 00:36:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582090559;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FnMyrS2ffrGzjTv2kAsMGrfcVGfLXQvqbV7CHWKXWPg=;
-        b=fxY2EoGMrH8FuWEyKwW35X7caTPa93kMMNvgTinZ+7VYVUcxCUR1OlGo8Ig+dpip/LjqdU
-        TevjBksX2gj3PVLC/KpKAoZeQwKSeIwL2ecep927+Ntm6tSk1FXWeKbCOw3zXWTWULT4Uh
-        4a4KyduwXkA+s750anNYFNNs/L3sBCs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-193-wJx9yaKzM8O55fVO3NXE4Q-1; Wed, 19 Feb 2020 00:35:52 -0500
-X-MC-Unique: wJx9yaKzM8O55fVO3NXE4Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E95B1085925;
-        Wed, 19 Feb 2020 05:35:49 +0000 (UTC)
-Received: from [10.72.13.212] (ovpn-13-212.pek2.redhat.com [10.72.13.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 44D3D87B1A;
-        Wed, 19 Feb 2020 05:35:27 +0000 (UTC)
-Subject: Re: [PATCH V2 3/5] vDPA: introduce vDPA bus
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-References: <20200211134746.GI4271@mellanox.com>
- <cf7abcc9-f8ef-1fe2-248e-9b9028788ade@redhat.com>
- <20200212125108.GS4271@mellanox.com>
- <12775659-1589-39e4-e344-b7a2c792b0f3@redhat.com>
- <20200213134128.GV4271@mellanox.com>
- <ebaea825-5432-65e2-2ab3-720a8c4030e7@redhat.com>
- <20200213150542.GW4271@mellanox.com>
- <8b3e6a9c-8bfd-fb3c-12a8-2d6a3879f1ae@redhat.com>
- <20200214135232.GB4271@mellanox.com>
- <01c86ebb-cf4b-691f-e682-2d6f93ddbcf7@redhat.com>
- <20200218135608.GS4271@mellanox.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <bbfc608b-2bfa-e4c7-c2b9-dbcfe63518cb@redhat.com>
-Date:   Wed, 19 Feb 2020 13:35:25 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726163AbgBSGOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 01:14:43 -0500
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:31339 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbgBSGOn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 01:14:43 -0500
+X-Greylist: delayed 814 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Feb 2020 01:14:42 EST
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 01J60Qnp032602;
+        Wed, 19 Feb 2020 07:00:26 +0100
+Date:   Wed, 19 Feb 2020 07:00:26 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     Joel Johnson <mrjoel@lixil.net>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>, netdev@vger.kernel.org
+Subject: Re: mvneta: comphy regression with SolidRun ClearFog
+Message-ID: <20200219060026.GA32536@1wt.eu>
+References: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
 MIME-Version: 1.0
-In-Reply-To: <20200218135608.GS4271@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Joel,
 
-On 2020/2/18 =E4=B8=8B=E5=8D=889:56, Jason Gunthorpe wrote:
-> On Mon, Feb 17, 2020 at 02:08:03PM +0800, Jason Wang wrote:
->
->> I thought you were copied in the patch [1], maybe we can move vhost re=
-lated
->> discussion there to avoid confusion.
->>
->> [1] https://lwn.net/Articles/811210/
-> Wow, that is .. confusing.
->
-> So this is supposed to duplicate the uAPI of vhost-user?
+On Tue, Feb 18, 2020 at 10:14:48PM -0700, Joel Johnson wrote:
+> In updating recently I'm encountering a regression with the mvneta driver on
+> SolidRun ClearFog Base devices. I originally filed the bug with Debian
+> (https://bugs.debian.org/951409) since I was using distro provided packages,
+> but after further investigation I have isolated the issue as related to
+> comphy support added during development for kernel version 5.1.
+> 
+> When booting stock kernels up to 5.0 everything works as expected with three
+> ethernet devices identified and functional. However, running any kernel 5.1
+> or later, I only have a single ethernet device available. The single device
+> available appears to be the one attached to the SoC itself and not connected
+> via SerDes lanes using comphy, i.e. the one defined at f1070000.ethernet.
 
+When you say "or later", what most recent version did you try ? My
+clearfog works perfectly on 5.4 with the new comphy. I'm having the 2
+RJ45 ports working at 1 Gbps and the SFP port working at 1 and 2.5 Gbps.
 
-It tries to reuse the uAPI of vhost with some extension.
+> I'm not overly Device Tree savvy, but a cursory inspection of f548ced15f90
+> at least matches my U-Boot SerDes lane configuration, with comphy1 and
+> comphy5 expected to match lane #1 and #5 respectively.
 
+I used to have to modify the device tree in the past, but haven't been
+doing so for a while (well in fact I do have a small change there just
+in order to enable eMMC which I have on my SOM, and I have just rechecked
+that *only* the emmc stuff differs from the regular clearfog-base).
 
-> But it is
-> open coded and duplicated because .. vdpa?
+> The only notable difference I can see in /sys/firmware/devicetree is
+> expected given the change in dtb, with the following new entries:
+> 
+>     hexdump -C
+> /sys/firmware/devicetree/base/soc/internal-regs/ethernet@30000/phys
+>     00000000  00 00 00 0e 00 00 00 01                           |........|
+> 
+>     hexdump -C
+> /sys/firmware/devicetree/base/soc/internal-regs/ethernet@34000/phys
+>     00000000  00 00 00 10 00 00 00 02                           |........|
 
+I've just checked and have exactly the same values there.
 
-I'm not sure I get here, vhost module is reused for vhost-vdpa and all=20
-current vhost device (e.g net) uses their own char device.
+> Likely unrelated, but a difference that also stood out is that
+> armada-388-clearfog.dts contains a managed = "in-band-status" entry for eth1
+> but not eth2.
 
+If I remember well it's because with this port being attached to the
+switch on the clearfog pro, there's no link status.
 
->
->> So it's cheaper and simpler to introduce a new bus instead of refactor=
-ing a
->> well known bus and API where brunches of drivers and devices had been
->> implemented for years.
-> If you reason for this approach is to ease the implementation then you
-> should talk about it in the cover letters/etc
+I used to have issues in the past with the PHY stuff on this board (up
+to 4.9), and *seem* to remember that I once ended up in a similar
+situation as yours due to a config issue, though I don't remmeber which
+one. Here's what I have matching PHY in my config:
 
+   root@clearfog:~# zgrep ^CONFIG.*PHY /proc/config.gz 
+   CONFIG_ARM_PATCH_PHYS_VIRT=y
+   CONFIG_ARCH_HAS_PHYS_TO_DMA=y
+   CONFIG_NETFILTER_XT_MATCH_PHYSDEV=m
+   CONFIG_PHYLINK=y
+   CONFIG_PHYLIB=y
+   CONFIG_SWPHY=y
+   CONFIG_FIXED_PHY=y
+   CONFIG_MARVELL_PHY=y
+   CONFIG_GENERIC_PHY=y
+   CONFIG_PHY_MVEBU_A38X_COMPHY=y
+   CONFIG_DEBUG_UART_PHYS=0xf1012000
+   root@clearfog:~# uname -a
+   Linux clearfog 5.4.2-clearfog #10 SMP Sun Dec 8 00:10:40 CET 2019 armv7l GNU/Linux
 
-I will add more rationale in both cover letter and this patch.
+I'm suspecting it was the FIXED_PHY that I was missing once but I would
+be saying crap.
 
-Thanks
-
-
->
-> Maybe it is reasonable to do this because the rework is too great, I
-> don't know, but to me this whole thing looks rather messy.
->
-> Remember this stuff is all uAPI as it shows up in sysfs, so you can
-> easilly get stuck with it forever.
->
-> Jason
->
-
+Hoping this helps,
+Willy
