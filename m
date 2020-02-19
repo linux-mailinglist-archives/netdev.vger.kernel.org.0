@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A90163CF2
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:14:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5CD6163CE5
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 07:09:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbgBSGOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 01:14:43 -0500
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:31339 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbgBSGOn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 01:14:43 -0500
-X-Greylist: delayed 814 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Feb 2020 01:14:42 EST
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 01J60Qnp032602;
-        Wed, 19 Feb 2020 07:00:26 +0100
-Date:   Wed, 19 Feb 2020 07:00:26 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Joel Johnson <mrjoel@lixil.net>
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>, netdev@vger.kernel.org
-Subject: Re: mvneta: comphy regression with SolidRun ClearFog
-Message-ID: <20200219060026.GA32536@1wt.eu>
-References: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+        id S1726175AbgBSGJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 01:09:41 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36257 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726096AbgBSGJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 01:09:40 -0500
+Received: by mail-pf1-f195.google.com with SMTP id 185so11966654pfv.3;
+        Tue, 18 Feb 2020 22:09:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=XRx7+/ZhOH6YkRAd+n2fjfG4ZqnFn+5bcm4X+MuwWhA=;
+        b=A5FdGI4rv9gdn4TUYmWLo2n8/E3e0zxW50uHOVqVHQh/aOVaelUhNVH8ecBSdj5QwN
+         OwBxFYvno3jtegz94k2Ymuh/xQa2H752yDEyQQvgTb9RiItIeZketnX4R7O5ZHiVdPFt
+         MJUtfbqW1KJL40esvYsV8RzmNcY6ogIGC/wloGf/VIr87E6m8x8vKEif4k5OebtQ5Hj6
+         5pJ2zjo6FF5O5fzuaVvCDSJcNvj9wyrIFsvMF17l055b+BlZ3tqhWA5zKc+9a5NkdjXD
+         pDLkOACRlGWif+e4IRIGTQ3rpyG6ddJemf2Yeqb2zfgjFD1lCTst6CREjtiF0T2CAzic
+         JLkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=XRx7+/ZhOH6YkRAd+n2fjfG4ZqnFn+5bcm4X+MuwWhA=;
+        b=KsWA4fbz9g2wZAtY+Q9Oq6ENaNXkpLy8SX0JTtd/bHWjXK9ZlWc30P7WSfqbHEtjdX
+         OreXYfHg3b0oFxwFCseF7Z466BhL9sYCkCayITjVR7dZscDlsMV7r3OSyvfDnu/6Htib
+         B+SS0KZHR1954vmecRJHhhUoKgFdHve1N1pCmhdOz3dIb9UUa21U5FQsuU2PscuLQQvq
+         aJlmEpO1qi1RzRhGi7MIy/WzAmNSAyVoHfNYOAOs2QPLbfdBtFH3/3Gd4kO36DYC3HWC
+         ij9ismx4eZ7nrACecRGoV0eZS7Pf4d0zPUW+vURFDyzcI7yDsEisAg7AonGccLyfKELO
+         c+Zw==
+X-Gm-Message-State: APjAAAV43TWX1W5w0KPWfXeP3atlvffCH6qejQTaEXRt7RdXSyvXXwZT
+        ND0x4wdSSOyHGmZp5v2AbmU=
+X-Google-Smtp-Source: APXvYqzK8BIhzWQAJJ/RqNONP45inNg/eW/A3lcsWLxeDdsBQQbynyvv05vmFHJz1A8jWFPpIivNDQ==
+X-Received: by 2002:a63:5e07:: with SMTP id s7mr25831014pgb.261.1582092578658;
+        Tue, 18 Feb 2020 22:09:38 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r3sm1127845pfg.145.2020.02.18.22.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 22:09:37 -0800 (PST)
+Date:   Tue, 18 Feb 2020 22:09:29 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Message-ID: <5e4cd1191433d_404b2ac01efba5b4d3@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200217121530.754315-2-jakub@cloudflare.com>
+References: <20200217121530.754315-1-jakub@cloudflare.com>
+ <20200217121530.754315-2-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next 1/3] bpf, sk_msg: Let ULP restore sk_proto and
+ write_space callback
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joel,
-
-On Tue, Feb 18, 2020 at 10:14:48PM -0700, Joel Johnson wrote:
-> In updating recently I'm encountering a regression with the mvneta driver on
-> SolidRun ClearFog Base devices. I originally filed the bug with Debian
-> (https://bugs.debian.org/951409) since I was using distro provided packages,
-> but after further investigation I have isolated the issue as related to
-> comphy support added during development for kernel version 5.1.
+Jakub Sitnicki wrote:
+> We don't need a fallback for when the socket is not using ULP.
+> tcp_update_ulp handles this case exactly the same as we do in
+> sk_psock_restore_proto. Get rid of the duplicated code.
 > 
-> When booting stock kernels up to 5.0 everything works as expected with three
-> ethernet devices identified and functional. However, running any kernel 5.1
-> or later, I only have a single ethernet device available. The single device
-> available appears to be the one attached to the SoC itself and not connected
-> via SerDes lanes using comphy, i.e. the one defined at f1070000.ethernet.
-
-When you say "or later", what most recent version did you try ? My
-clearfog works perfectly on 5.4 with the new comphy. I'm having the 2
-RJ45 ports working at 1 Gbps and the SFP port working at 1 and 2.5 Gbps.
-
-> I'm not overly Device Tree savvy, but a cursory inspection of f548ced15f90
-> at least matches my U-Boot SerDes lane configuration, with comphy1 and
-> comphy5 expected to match lane #1 and #5 respectively.
-
-I used to have to modify the device tree in the past, but haven't been
-doing so for a while (well in fact I do have a small change there just
-in order to enable eMMC which I have on my SOM, and I have just rechecked
-that *only* the emmc stuff differs from the regular clearfog-base).
-
-> The only notable difference I can see in /sys/firmware/devicetree is
-> expected given the change in dtb, with the following new entries:
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  include/linux/skmsg.h | 11 +----------
+>  1 file changed, 1 insertion(+), 10 deletions(-)
 > 
->     hexdump -C
-> /sys/firmware/devicetree/base/soc/internal-regs/ethernet@30000/phys
->     00000000  00 00 00 0e 00 00 00 01                           |........|
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index 14d61bba0b79..8605947d6c08 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -361,16 +361,7 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+>  	sk->sk_prot->unhash = psock->saved_unhash;
+>  
+>  	if (psock->sk_proto) {
+> -		struct inet_connection_sock *icsk = inet_csk(sk);
+> -		bool has_ulp = !!icsk->icsk_ulp_data;
+> -
+> -		if (has_ulp) {
+> -			tcp_update_ulp(sk, psock->sk_proto,
+> -				       psock->saved_write_space);
+> -		} else {
+> -			sk->sk_prot = psock->sk_proto;
+> -			sk->sk_write_space = psock->saved_write_space;
+> -		}
+> +		tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+>  		psock->sk_proto = NULL;
+>  	} else {
+>  		sk->sk_write_space = psock->saved_write_space;
+> -- 
+> 2.24.1
 > 
->     hexdump -C
-> /sys/firmware/devicetree/base/soc/internal-regs/ethernet@34000/phys
->     00000000  00 00 00 10 00 00 00 02                           |........|
 
-I've just checked and have exactly the same values there.
-
-> Likely unrelated, but a difference that also stood out is that
-> armada-388-clearfog.dts contains a managed = "in-band-status" entry for eth1
-> but not eth2.
-
-If I remember well it's because with this port being attached to the
-switch on the clearfog pro, there's no link status.
-
-I used to have issues in the past with the PHY stuff on this board (up
-to 4.9), and *seem* to remember that I once ended up in a similar
-situation as yours due to a config issue, though I don't remmeber which
-one. Here's what I have matching PHY in my config:
-
-   root@clearfog:~# zgrep ^CONFIG.*PHY /proc/config.gz 
-   CONFIG_ARM_PATCH_PHYS_VIRT=y
-   CONFIG_ARCH_HAS_PHYS_TO_DMA=y
-   CONFIG_NETFILTER_XT_MATCH_PHYSDEV=m
-   CONFIG_PHYLINK=y
-   CONFIG_PHYLIB=y
-   CONFIG_SWPHY=y
-   CONFIG_FIXED_PHY=y
-   CONFIG_MARVELL_PHY=y
-   CONFIG_GENERIC_PHY=y
-   CONFIG_PHY_MVEBU_A38X_COMPHY=y
-   CONFIG_DEBUG_UART_PHYS=0xf1012000
-   root@clearfog:~# uname -a
-   Linux clearfog 5.4.2-clearfog #10 SMP Sun Dec 8 00:10:40 CET 2019 armv7l GNU/Linux
-
-I'm suspecting it was the FIXED_PHY that I was missing once but I would
-be saying crap.
-
-Hoping this helps,
-Willy
+Acked-by: John Fastabend <john.fastabend@gmail.com>
