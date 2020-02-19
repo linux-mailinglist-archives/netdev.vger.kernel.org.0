@@ -2,288 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C49716465F
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C3D1646A9
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 15:16:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgBSOIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 09:08:49 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33188 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727756AbgBSOIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:08:49 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ACE2FB000A1;
-        Wed, 19 Feb 2020 14:08:46 +0000 (UTC)
-Received: from [10.17.20.221] (10.17.20.221) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 19 Feb
- 2020 14:08:41 +0000
-From:   Tom Zhao <tzhao@solarflare.com>
-Subject: [PATCH net-next] sfc: complete the next packet when we receive a
- timestamp
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>
-Message-ID: <f84701f1-f54c-68fa-ef20-ccaabbf3beaf@solarflare.com>
-Date:   Wed, 19 Feb 2020 14:08:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727946AbgBSOQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 09:16:16 -0500
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:49713 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbgBSOQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 09:16:16 -0500
+X-Originating-IP: 90.65.102.129
+Received: from localhost (lfbn-lyo-1-1670-129.w90-65.abo.wanadoo.fr [90.65.102.129])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 5C61BC0014;
+        Wed, 19 Feb 2020 14:16:13 +0000 (UTC)
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net: macb: Properly handle phylink on at91rm9200
+Date:   Wed, 19 Feb 2020 15:15:51 +0100
+Message-Id: <20200219141551.5152-1-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.221]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25240.003
-X-TM-AS-Result: No-6.746300-8.000000-10
-X-TMASE-MatchedRID: WUQQpbkem9AqYYRg3clvBqo2fOuRT7aab1d/zpzApVqk3COeFIImbVOb
-        R+eKTMWbnbBGF6l7a+27hw59i5efeNvRJLD/GixsddPPQcdMrYUA+JHhu0IR5lNtD3nNFtZWyJN
-        a6DYLgM2XUzspP39qoDS5Jiy15YFyCKGbCJcIygY/ApMPW/xhXkyQ5fRSh265IxOdJSuZpHJTac
-        dDUa7rn3rQAdigWROjCrlTCdJM65G5rzEqaXlmzVtTO+xodboGAp+UH372RZW8rUtbtWe8+jDHx
-        nr5pBtw0fh0NNTQxKqt8/SSH+XT0vJrU+I+8hTAKrDHzH6zmUUvV5f7P0HVDKjxqhyDxmYjfT1m
-        V/nu2fPryF/mQs3+JkBggEfJoaepkquk8+1EFNtWfOVCJoTbWmf6wD367VgtlwFBEZ/7LUPZULV
-        BYooo+v9OXONwzM4oyqZz22qm4DmRehYFOG64KOn1HxC6hVB/BGvINcfHqheExk6c4qzx8qnmO7
-        xAT+YkYFJmL4S5TwZI8zQSH9zPCm1A5vznb2t5ZacDbE73ZSlC3iRApcRQCsAkyHiYDAQbsKFvJ
-        aID/xR+0A0//ZLNOZsoi2XrUn/JyeMtMD9QOgAYvR9ppOlv1vcUt5lc1lLgRktVxdpRt2LJeZyS
-        gvAzzKSlulCzNw5KJ2DJKtxCh0xsN9tldmG9BZ6oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.746300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25240.003
-X-MDID: 1582121327-nax9N_pMmGlQ
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We now ignore the "completion" event when using tx queue timestamping, and only
-pay attention to the two (high and low) timestamp events. The NIC will send a
-pair of timestamp events for every packet transmitted. The current firmware may
-merge the completion events, and it is possible that future versions may
-reorder the completion and timestamp events. As such the completion event is
-not useful.
+at91ether_init was handling the phy mode and speed but since the switch to
+phylink, the NCFGR register got overwritten by macb_mac_config(). The issue
+is that the RM9200_RMII bit and the MACB_CLK_DIV32 field are cleared
+but never restored as they conflict with the PAE, GBE and PCSSEL bits.
 
-Without this patch in place a merged completion event on a queue with
-timestamping will cause a "spurious TX completion" error. This affects
-SFN8000-series adapters.
+Add new capability to differentiate between EMAC and the other versions of
+the IP and use it to set and avoid clearing the relevant bits.
 
-Signed-off-by: Tom Zhao <tzhao@solarflare.com>
+Also, this fixes a NULL pointer dereference in macb_mac_link_up as the EMAC
+doesn't use any rings/bufffers/queues.
+
+Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/net/ethernet/sfc/ef10.c       | 36 ++++++++++---------
- drivers/net/ethernet/sfc/efx.h        |  1 +
- drivers/net/ethernet/sfc/net_driver.h |  3 --
- drivers/net/ethernet/sfc/tx.c         | 68 +++++++++++++++++++++++++++++------
- 4 files changed, 77 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/cadence/macb.h      |  1 +
+ drivers/net/ethernet/cadence/macb_main.c | 60 +++++++++++++-----------
+ 2 files changed, 33 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 4d9bbcc..984de5c 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -3713,11 +3713,24 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
- 	}
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index dbf7070fcdba..a3f0f27fc79a 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -652,6 +652,7 @@
+ #define MACB_CAPS_GEM_HAS_PTP			0x00000040
+ #define MACB_CAPS_BD_RD_PREFETCH		0x00000080
+ #define MACB_CAPS_NEEDS_RSTONUBR		0x00000100
++#define MACB_CAPS_MACB_IS_EMAC			0x08000000
+ #define MACB_CAPS_FIFO_MODE			0x10000000
+ #define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
+ #define MACB_CAPS_SG_DISABLED			0x40000000
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index def94e91883a..2c28da1737fe 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -572,8 +572,21 @@ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+ 	old_ctrl = ctrl = macb_or_gem_readl(bp, NCFGR);
  
- 	/* Transmit timestamps are only available for 8XXX series. They result
--	 * in three events per packet. These occur in order, and are:
--	 *  - the normal completion event
-+	 * in up to three events per packet. These occur in order, and are:
-+	 *  - the normal completion event (may be omitted)
- 	 *  - the low part of the timestamp
- 	 *  - the high part of the timestamp
- 	 *
-+	 * It's possible for multiple completion events to appear before the
-+	 * corresponding timestamps. So we can for example get:
-+	 *  COMP N
-+	 *  COMP N+1
-+	 *  TS_LO N
-+	 *  TS_HI N
-+	 *  TS_LO N+1
-+	 *  TS_HI N+1
-+	 *
-+	 * In addition it's also possible for the adjacent completions to be
-+	 * merged, so we may not see COMP N above. As such, the completion
-+	 * events are not very useful here.
-+	 *
- 	 * Each part of the timestamp is itself split across two 16 bit
- 	 * fields in the event.
- 	 */
-@@ -3725,18 +3738,8 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
- 
- 	switch (tx_ev_type) {
- 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
--		/* In case of Queue flush or FLR, we might have received
--		 * the previous TX completion event but not the Timestamp
--		 * events.
--		 */
--		if (tx_queue->completed_desc_ptr != tx_queue->ptr_mask)
--			efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
--
--		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event,
--						 ESF_DZ_TX_DESCR_INDX);
--		tx_queue->completed_desc_ptr =
--					tx_ev_desc_ptr & tx_queue->ptr_mask;
--		break;
-+		/* Ignore this event - see above. */
-+        break;
- 
- 	case TX_TIMESTAMP_EVENT_TX_EV_TSTAMP_LO:
- 		ts_part = efx_ef10_extract_event_ts(event);
-@@ -3747,9 +3750,8 @@ static u32 efx_ef10_extract_event_ts(efx_qword_t *event)
- 		ts_part = efx_ef10_extract_event_ts(event);
- 		tx_queue->completed_timestamp_major = ts_part;
- 
--		efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
--		tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
--		break;
-+		efx_xmit_done_single(tx_queue);
-+        break;
- 
- 	default:
- 		netif_err(efx, hw, efx->net_dev,
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
-index 2dd8d50..dc1c375 100644
---- a/drivers/net/ethernet/sfc/efx.h
-+++ b/drivers/net/ethernet/sfc/efx.h
-@@ -24,6 +24,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 				struct net_device *net_dev);
- netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
- void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-+void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
- int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
- 		 void *type_data);
- unsigned int efx_tx_max_skb_descs(struct efx_nic *efx);
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index dfd5182..d6e3115 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -207,8 +207,6 @@ struct efx_tx_buffer {
-  *	avoid cache-line ping-pong between the xmit path and the
-  *	completion path.
-  * @merge_events: Number of TX merged completion events
-- * @completed_desc_ptr: Most recent completed pointer - only used with
-- *      timestamping.
-  * @completed_timestamp_major: Top part of the most recent tx timestamp.
-  * @completed_timestamp_minor: Low part of the most recent tx timestamp.
-  * @insert_count: Current insert pointer
-@@ -268,7 +266,6 @@ struct efx_tx_queue {
- 	unsigned int merge_events;
- 	unsigned int bytes_compl;
- 	unsigned int pkts_compl;
--	unsigned int completed_desc_ptr;
- 	u32 completed_timestamp_major;
- 	u32 completed_timestamp_minor;
- 
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-index 00c1c44..a23a3ca 100644
---- a/drivers/net/ethernet/sfc/tx.c
-+++ b/drivers/net/ethernet/sfc/tx.c
-@@ -687,6 +687,11 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
- 	return i;
- }
- 
-+static bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
-+{
-+	return buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);
-+}
+ 	/* Clear all the bits we might set later */
+-	ctrl &= ~(GEM_BIT(GBE) | MACB_BIT(SPD) | MACB_BIT(FD) | MACB_BIT(PAE) |
+-		  GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
++	ctrl &= ~(MACB_BIT(SPD) | MACB_BIT(FD) | MACB_BIT(PAE));
 +
- /* Remove packets from the TX queue
-  *
-  * This removes packets from the TX queue, up to and including the
-@@ -706,10 +711,9 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
- 	while (read_ptr != stop_index) {
- 		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
++	if (bp->caps & MACB_CAPS_MACB_IS_EMAC) {
++		if (state->interface == PHY_INTERFACE_MODE_RMII)
++			ctrl |= MACB_BIT(RM9200_RMII);
++	} else {
++		ctrl &= ~(GEM_BIT(GBE) | GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
++
++		/* We do not support MLO_PAUSE_RX yet */
++		if (state->pause & MLO_PAUSE_TX)
++			ctrl |= MACB_BIT(PAE);
++
++		if (state->interface == PHY_INTERFACE_MODE_SGMII)
++			ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
++	}
  
--		if (!(buffer->flags & EFX_TX_BUF_OPTION) &&
--		    unlikely(buffer->len == 0)) {
-+		if (!efx_tx_buffer_in_use(buffer)) {
- 			netif_err(efx, tx_err, efx->net_dev,
--				  "TX queue %d spurious TX completion id %x\n",
-+				  "TX queue %d spurious TX completion id %d\n",
- 				  tx_queue->queue, read_ptr);
- 			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
- 			return;
-@@ -835,6 +839,18 @@ int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
+ 	if (state->speed == SPEED_1000)
+ 		ctrl |= GEM_BIT(GBE);
+@@ -583,13 +596,6 @@ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+ 	if (state->duplex)
+ 		ctrl |= MACB_BIT(FD);
+ 
+-	/* We do not support MLO_PAUSE_RX yet */
+-	if (state->pause & MLO_PAUSE_TX)
+-		ctrl |= MACB_BIT(PAE);
+-
+-	if (state->interface == PHY_INTERFACE_MODE_SGMII)
+-		ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
+-
+ 	/* Apply the new configuration, if any */
+ 	if (old_ctrl ^ ctrl)
+ 		macb_or_gem_writel(bp, NCFGR, ctrl);
+@@ -608,9 +614,10 @@ static void macb_mac_link_down(struct phylink_config *config, unsigned int mode,
+ 	unsigned int q;
+ 	u32 ctrl;
+ 
+-	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
+-		queue_writel(queue, IDR,
+-			     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
++	if (!(bp->caps & MACB_CAPS_MACB_IS_EMAC))
++		for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
++			queue_writel(queue, IDR,
++				     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
+ 
+ 	/* Disable Rx and Tx */
+ 	ctrl = macb_readl(bp, NCR) & ~(MACB_BIT(RE) | MACB_BIT(TE));
+@@ -627,17 +634,19 @@ static void macb_mac_link_up(struct phylink_config *config, unsigned int mode,
+ 	struct macb_queue *queue;
+ 	unsigned int q;
+ 
+-	macb_set_tx_clk(bp->tx_clk, bp->speed, ndev);
++	if (!(bp->caps & MACB_CAPS_MACB_IS_EMAC)) {
++		macb_set_tx_clk(bp->tx_clk, bp->speed, ndev);
+ 
+-	/* Initialize rings & buffers as clearing MACB_BIT(TE) in link down
+-	 * cleared the pipeline and control registers.
+-	 */
+-	bp->macbgem_ops.mog_init_rings(bp);
+-	macb_init_buffers(bp);
++		/* Initialize rings & buffers as clearing MACB_BIT(TE) in link down
++		 * cleared the pipeline and control registers.
++		 */
++		bp->macbgem_ops.mog_init_rings(bp);
++		macb_init_buffers(bp);
+ 
+-	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
+-		queue_writel(queue, IER,
+-			     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
++		for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
++			queue_writel(queue, IER,
++				     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
++	}
+ 
+ 	/* Enable Rx and Tx */
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(RE) | MACB_BIT(TE));
+@@ -4041,7 +4050,6 @@ static int at91ether_init(struct platform_device *pdev)
+ 	struct net_device *dev = platform_get_drvdata(pdev);
+ 	struct macb *bp = netdev_priv(dev);
+ 	int err;
+-	u32 reg;
+ 
+ 	bp->queues[0].bp = bp;
+ 
+@@ -4055,11 +4063,7 @@ static int at91ether_init(struct platform_device *pdev)
+ 
+ 	macb_writel(bp, NCR, 0);
+ 
+-	reg = MACB_BF(CLK, MACB_CLK_DIV32) | MACB_BIT(BIG);
+-	if (bp->phy_interface == PHY_INTERFACE_MODE_RMII)
+-		reg |= MACB_BIT(RM9200_RMII);
+-
+-	macb_writel(bp, NCFGR, reg);
++	macb_writel(bp, NCFGR, MACB_BF(CLK, MACB_CLK_DIV32) | MACB_BIT(BIG));
+ 
  	return 0;
  }
+@@ -4218,7 +4222,7 @@ static const struct macb_config sama5d4_config = {
+ };
  
-+static void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
-+{
-+	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
-+		tx_queue->old_write_count = ACCESS_ONCE(tx_queue->write_count);
-+		if (tx_queue->read_count == tx_queue->old_write_count) {
-+			smp_mb();
-+			tx_queue->empty_read_count =
-+				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
-+		}
-+	}
-+}
-+
- void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- {
- 	unsigned fill_level;
-@@ -866,15 +882,46 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- 			netif_tx_wake_queue(tx_queue->core_txq);
- 	}
- 
--	/* Check whether the hardware queue is now empty */
--	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
--		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
--		if (tx_queue->read_count == tx_queue->old_write_count) {
--			smp_mb();
--			tx_queue->empty_read_count =
--				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
-+	efx_xmit_done_check_empty(tx_queue);
-+}
-+
-+void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
-+{
-+	unsigned int pkts_compl = 0, bytes_compl = 0;
-+	unsigned int read_ptr;
-+	bool finished = false;
-+
-+	read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
-+
-+	while (!finished) {
-+		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
-+
-+		if (!efx_tx_buffer_in_use(buffer)) {
-+			struct efx_nic *efx = tx_queue->efx;
-+
-+			netif_err(efx, hw, efx->net_dev,
-+				  "TX queue %d spurious single TX completion\n",
-+				  tx_queue->queue);
-+			atomic_inc(&efx->errors.spurious_tx);
-+			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
-+			return;
- 		}
-+
-+		/* Need to check the flag before dequeueing. */
-+		if (buffer->flags & EFX_TX_BUF_SKB)
-+			finished = true;
-+		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
-+
-+		++tx_queue->read_count;
-+		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
- 	}
-+
-+	tx_queue->pkts_compl += pkts_compl;
-+	tx_queue->bytes_compl += bytes_compl;
-+
-+	EFX_WARN_ON_PARANOID(pkts_compl != 1);
-+
-+	efx_xmit_done_check_empty(tx_queue);
- }
- 
- static unsigned int efx_tx_cb_page_count(struct efx_tx_queue *tx_queue)
-@@ -943,7 +990,6 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
- 	tx_queue->xmit_more_available = false;
- 	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
- 				  tx_queue->channel == efx_ptp_channel(efx));
--	tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
- 	tx_queue->completed_timestamp_major = 0;
- 	tx_queue->completed_timestamp_minor = 0;
- 
+ static const struct macb_config emac_config = {
+-	.caps = MACB_CAPS_NEEDS_RSTONUBR,
++	.caps = MACB_CAPS_NEEDS_RSTONUBR | MACB_CAPS_MACB_IS_EMAC,
+ 	.clk_init = at91ether_clk_init,
+ 	.init = at91ether_init,
+ };
 -- 
-1.8.3.1
+2.24.1
 
