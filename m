@@ -2,182 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A330164449
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:30:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC952164454
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 13:33:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727581AbgBSMad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 07:30:33 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38050 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726788AbgBSMac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 07:30:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582115430;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FlQCARZ1FbwRbU2uJuzeHmBQSyIgJVmrLI3UOgbvB+8=;
-        b=QDp5sC3rmNx8RQcPsOP68t+WeC9RkcsbljuXBTgMGWK55HNWSP5IkUoEL9PZaNObq/N6rE
-        mfvj//PZk7hKtNTjnocwQLFQajk12Bnun5uOySwxYUm5OrrJCt/8YHT9PC0Xwr+1xAyGHd
-        djNGH3gYWbULIxbQJQXKjrtsegL6irY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-208-Q4_uj_NHPDK7p6ZkD_KXvA-1; Wed, 19 Feb 2020 07:30:24 -0500
-X-MC-Unique: Q4_uj_NHPDK7p6ZkD_KXvA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DB191107ACCC;
-        Wed, 19 Feb 2020 12:30:22 +0000 (UTC)
-Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B7E819E9C;
-        Wed, 19 Feb 2020 12:30:13 +0000 (UTC)
-Date:   Wed, 19 Feb 2020 13:30:12 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     brouer@redhat.com, Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
+        id S1726840AbgBSMdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 07:33:06 -0500
+Received: from mx2.suse.de ([195.135.220.15]:47544 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726491AbgBSMdF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 07:33:05 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 347DFC08C;
+        Wed, 19 Feb 2020 12:33:02 +0000 (UTC)
+Subject: Re: [PATCH bpf-next 0/6] bpftool: Allow to select sections and filter
+ probes
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Kernel 5.5.4 build fail for BPF-selftests with latest LLVM
-Message-ID: <20200219133012.7cb6ac9e@carbon>
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+References: <20200218190224.22508-1-mrostecki@opensuse.org>
+ <CAADnVQJm_tvMGjhHyVn66feA3rHLSXTdzqCCABu+9tKer89LVA@mail.gmail.com>
+From:   Michal Rostecki <mrostecki@opensuse.org>
+Autocrypt: addr=mrostecki@opensuse.org; keydata=
+ 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
+ ZURUUA==
+Message-ID: <06ae3070-0d35-df49-9310-d1fb7bfb3e67@opensuse.org>
+Date:   Wed, 19 Feb 2020 13:33:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <CAADnVQJm_tvMGjhHyVn66feA3rHLSXTdzqCCABu+9tKer89LVA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrii,
+On 2/19/20 4:02 AM, Alexei Starovoitov wrote:
+> The motivation is clear, but I think the users shouldn't be made
+> aware of such implementation details. I think instead of filter_in/out
+> it's better to do 'full or safe' mode of probing.
+> By default it can do all the probing that doesn't cause
+> extra dmesgs and in 'full' mode it can probe everything.
 
-Downloaded tarball for kernel release 5.5.4, and I cannot compile
-tools/testing/selftests/bpf/ with latest LLVM release version 9.
-
-Looking closer at the build error messages, I can see that this is
-caused by using LLVM features that (I assume) will be avail in release
-10. I find it very strange that we can release a kernel that have build
-dependencies on a unreleased version of LLVM.
-
-I'm willing to help out, such that we can do either version or feature
-detection, to either skip compiling specific test programs or at least
-give users a proper warning of they are using a too "old" LLVM version.
-
-
-I love the new LLVM BTF features, but we cannot break users/CI-systems
-that wants to run the BPF-selftests.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
-http://releases.llvm.org/download.html
-
-Compile error message:
- unknown builtin '__builtin_preserve_field_info'
-
-Full:
-
-make -C /home/jbrouer/build/linux-5.5.4/tools/lib/bpf OUTPUT=/home/jbrouer/build/linux-5.5.4/tools/testing/selftests/bpf/
-make[1]: Entering directory '/home/jbrouer/build/linux-5.5.4/tools/lib/bpf'
-make[1]: Leaving directory '/home/jbrouer/build/linux-5.5.4/tools/lib/bpf'
-(clang  -I. -I/home/jbrouer/build/linux-5.5.4/tools/testing/selftests/bpf -g -D__TARGET_ARCH_x86 -mlittle-endian -I. -I./include/uapi -I/home/jbrouer/build/linux-5.5.4/tools/include/uapi -I/home/jbrouer/build/linux-5.5.4/tools/lib/bpf -I/home/jbrouer/build/linux-5.5.4/tools/testing/selftests/usr/include -idirafter /usr/local/include -idirafter /usr/lib64/clang/9.0.0/include -idirafter /usr/include -Wno-compare-distinct-pointer-types -O2 -target bpf -emit-llvm -c progs/test_core_reloc_bitfields_probed.c -o - || echo "BPF obj compilation failed") | llc -mattr=dwarfris -march=bpf -mcpu=probe  -mattr=+alu32 -filetype=obj -o /home/jbrouer/build/linux-5.5.4/tools/testing/selftests/bpf/test_core_reloc_bitfields_probed.o
-progs/test_core_reloc_bitfields_probed.c:47:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->ub1 = BPF_CORE_READ_BITFIELD_PROBED(in, ub1);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:48:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->ub2 = BPF_CORE_READ_BITFIELD_PROBED(in, ub2);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:49:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->ub7 = BPF_CORE_READ_BITFIELD_PROBED(in, ub7);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:50:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->sb4 = BPF_CORE_READ_BITFIELD_PROBED(in, sb4);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:51:14: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->sb20 = BPF_CORE_READ_BITFIELD_PROBED(in, sb20);
-                    ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:52:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->u32 = BPF_CORE_READ_BITFIELD_PROBED(in, u32);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-progs/test_core_reloc_bitfields_probed.c:53:13: error: use of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-declaration]
-        out->s32 = BPF_CORE_READ_BITFIELD_PROBED(in, s32);
-                   ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:52:2: note: expanded from macro 'BPF_CORE_READ_BITFIELD_PROBED'
-        __CORE_BITFIELD_PROBE_READ(&val, s, field);                           \
-        ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:28:10: note: expanded from macro '__CORE_BITFIELD_PROBE_READ'
-                       __CORE_RELO(src, fld, BYTE_SIZE),                      \
-                       ^
-/home/jbrouer/build/linux-5.5.4/tools/lib/bpf/bpf_core_read.h:23:2: note: expanded from macro '__CORE_RELO'
-        __builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
-        ^
-7 errors generated.
-llc: error: llc: <stdin>:1:1: error: expected top-level entity
-BPF obj compilation failed
-^
-make: *** [Makefile:281: /home/jbrouer/build/linux-5.5.4/tools/testing/selftests/bpf/test_core_reloc_bitfields_probed.o] Error 1
-
+Alright, then I will send later v2 where the "internal" implementation
+(filtering out based on regex) stays similar (filter_out will stay in
+the code without being exposed to users, filter_in will be removed). And
+the exposed option of "safe" probing will just apply the
+"(trace|write_user)" filter_out pattern. Does it sound good?
