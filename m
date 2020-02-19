@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C75B1640CF
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1E21640D0
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:52:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgBSJv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 04:51:59 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35314 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgBSJv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:51:59 -0500
-Received: by mail-pf1-f194.google.com with SMTP id i19so963463pfa.2
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 01:51:58 -0800 (PST)
+        id S1726558AbgBSJwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 04:52:02 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:32980 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgBSJwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:52:01 -0500
+Received: by mail-pf1-f195.google.com with SMTP id n7so12252989pfn.0
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 01:52:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AmJ4Bvcc6f3eiunx+/mE+4GDNQRQlbSmVnOijpA6h0k=;
-        b=XOj94PTG+H9kFBQosniOPefpGfSQD4WYp4bjMlJbY3cjWTo2uRoJKVh1bDKCFROTs+
-         AvcGigFAFZby0jzZB/+sDC3GzKtgq//I2XAVjWSNjdTjPuZ8eIC9UDAuW0cpc4Xma6bt
-         HG9aL9j9W0p38rGxNjdgP3SQEEEUVM9bjCXh/Ay+FCpJUw9XYHuGdE9OU+69qtBh+kp0
-         k27d5fAcdAMtGHWNZd0JuyHzsd+r5AglSOOYLP/TAEllJJLkl+wYRycsbr6L/8Rn/mkA
-         A5p/CNZ2CKhSvwiZ3lG2l5WnvLSiD/+8s1dvw97KWFBMe/i45bkBkgXQodlAFddhO1Yp
-         zmgQ==
+        bh=GSAnMWzX+AP6bAJBG/Py/WXCgWjsAZJ3fyEBpF+J76w=;
+        b=k4c7bcoNPvPJp3rabNXBbSQrf3g3cI91TGCjzFytCiSfZlTBDtPn59vE65Z5viqDrE
+         q+bxNNpY3NZ/egYfzxZDjpeLKlBiXe2bEJbmZpj+tmhaRQv3gDgshjhdSKnIyChhIBmk
+         R3wIGhhAly/Dy8zUTY0ngDeIAqBflNDcjUNfpJI0KY7gnYX3/53lzTYtIeIG+sqBHSra
+         HHwPSJ3q+gqxnq/A2nVrtj0DKLUSITi8ZqINOtaV2sZa4FPy0mJerVNlszLlrGr6WbOM
+         VhSGkke0+DzeiStgqYrt9PE3gwt/r8jJWGKYGzenJ25E2wz/86yt9jJ6SNLvhgMvT5es
+         61DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=AmJ4Bvcc6f3eiunx+/mE+4GDNQRQlbSmVnOijpA6h0k=;
-        b=eeez/R7POAEL2qiR35W1ayBVCPWS1L06/g1CbSs3j4bmjoIl7rAkLLYeyoodi3dQYJ
-         m8QcW1ySOWYmf/iKy9JJ49r+vgAy+RMDK8YQq32LYpx2A+HHN/iCnXMsSuwlTNpLBWt7
-         h9CLm2p2JZ2c71ztkbcVp04EyUnlS+fdHNdosngZ0rfBL9P24ZjVKKwGula4xpfwEqd1
-         pZfndbHNoYhd+/T4QAKSwZiopUv5S+J698gTe0tEoTTDCCIpKpCBAnBlF6+l3fmyA8AF
-         LY33P+tk5/RmTBiUfcjBWQeLuKpWru7Zi+MzI9pPvJNM96EKGSrMhMwXVyNlQ19kg533
-         zsUw==
-X-Gm-Message-State: APjAAAX4g7w9cwd24+kODRQUu9IqaRrTf8GRhE3clh7on221B/eFOxDZ
-        iscNm4gg2wCmRIBLtL7vmjzbaVgff+Q=
-X-Google-Smtp-Source: APXvYqz16QcNdaurgCiE29welstYCo6GXqIebxPbbelBVla40gCyBkM9/iOuGTAKpDiEDoxi/4ZVRg==
-X-Received: by 2002:aa7:93a6:: with SMTP id x6mr26309804pff.72.1582105917731;
-        Wed, 19 Feb 2020 01:51:57 -0800 (PST)
+        bh=GSAnMWzX+AP6bAJBG/Py/WXCgWjsAZJ3fyEBpF+J76w=;
+        b=ZaL8Gfk9W+skZd/YfifNL7qmCYhZh6izBektzPgbMCW1BgJV0ombq13+wquCIk0qjO
+         kYzBOaNH4/TGDIXQWLg5t4WaIGeDc3lm8FOJoNXz0wYsFF4yLnnGnP0QxmvwtKetyB6z
+         MSrgV2rvze4OEQEz+N18X531FlE1gGUPN/R1nMcnuZDfsP5WlXUrV5BdCIe4LYBtcDmM
+         317SGOMMlYAEkxiq7gjHWvdBtDaxLIc+oh/BiObGNHDt8JaAA0cIrw6LY6grPqSCaZIr
+         1FicMw1lBZ1YmMNldcsrMVOOjVJ0UDdTWbxj97+cDKKjSh1+DTzsjIUrm1fpuA89ULLg
+         +WeQ==
+X-Gm-Message-State: APjAAAWnP1yUMLAng8KhLamv/Xf18SuygCi7N40cOvx7oZSD0csxBg7X
+        F7IcZKzc9XgTUfmwOGqT9Zpdewgsdz8=
+X-Google-Smtp-Source: APXvYqwfJH9qYko2A0P7bxvMmo9WuxFtyIof2mQ2x/Mr9mshJNBEU+I3vmQaJMCjXwzINjJBG7x2HA==
+X-Received: by 2002:aa7:93a4:: with SMTP id x4mr25940814pff.42.1582105920908;
+        Wed, 19 Feb 2020 01:52:00 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id w11sm2023724pgh.5.2020.02.19.01.51.55
+        by smtp.googlemail.com with ESMTPSA id w11sm2023724pgh.5.2020.02.19.01.51.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 19 Feb 2020 01:51:57 -0800 (PST)
+        Wed, 19 Feb 2020 01:52:00 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 2/3] octeontx2-af: Cleanup CGX config permission checks
-Date:   Wed, 19 Feb 2020 15:21:07 +0530
-Message-Id: <1582105868-29012-3-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH 3/3] octeontx2-af: Cleanup nixlf and blkaddr retrieval logic
+Date:   Wed, 19 Feb 2020 15:21:08 +0530
+Message-Id: <1582105868-29012-4-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1582105868-29012-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1582105868-29012-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -59,124 +59,259 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-Most of the CGX register config is restricted to mapped RVU PFs,
-this patch cleans up these permission checks spread across
-the rvu_cgx.c file by moving the checks to a common fn().
+Cleanedup repititive nixlf and blkaddr retrieving logic
+is various mailbox handlers throughout the rvu_nix.c file.
 
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 55 ++++++++++------------
- 1 file changed, 24 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 131 ++++++++-------------
+ 2 files changed, 50 insertions(+), 83 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 11e5921..b8e8f33 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -350,6 +350,18 @@ int rvu_cgx_exit(struct rvu *rvu)
- 	return 0;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 51c206f..7afb7ca 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -432,7 +432,7 @@ int rvu_nix_reserve_mark_format(struct rvu *rvu, struct nix_hw *nix_hw,
+ void rvu_nix_freemem(struct rvu *rvu);
+ int rvu_get_nixlf_count(struct rvu *rvu);
+ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int npalf);
+-int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf);
++int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf, int *nix_blkaddr);
+ 
+ /* NPC APIs */
+ int rvu_npc_init(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index eb5e542..a29e5c7 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -90,6 +90,26 @@ int rvu_get_nixlf_count(struct rvu *rvu)
+ 	return block->lf.max;
  }
  
-+/* Most of the CGX configuration is restricted to the mapped PF only,
-+ * VF's of mapped PF and other PFs are not allowed. This fn() checks
-+ * whether a PFFUNC is permitted to do the config or not.
-+ */
-+static bool is_cgx_config_permitted(struct rvu *rvu, u16 pcifunc)
++int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf, int *nix_blkaddr)
 +{
-+	if ((pcifunc & RVU_PFVF_FUNC_MASK) ||
-+	    !is_pf_cgxmapped(rvu, rvu_get_pf(pcifunc)))
-+		return false;
-+	return true;
++	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
++	struct rvu_hwinfo *hw = rvu->hw;
++	int blkaddr;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
++	if (!pfvf->nixlf || blkaddr < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	*nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
++	if (*nixlf < 0)
++		return NIX_AF_ERR_AF_LF_INVALID;
++
++	if (nix_blkaddr)
++		*nix_blkaddr = blkaddr;
++
++	return 0;
 +}
 +
- void rvu_cgx_enadis_rx_bp(struct rvu *rvu, int pf, bool enable)
+ static void nix_mce_list_init(struct nix_mce_list *list, int max)
  {
- 	u8 cgx_id, lmac_id;
-@@ -373,11 +385,8 @@ int rvu_cgx_config_rxtx(struct rvu *rvu, u16 pcifunc, bool start)
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id, lmac_id;
+ 	INIT_HLIST_HEAD(&list->head);
+@@ -1667,13 +1687,9 @@ int rvu_mbox_handler_nix_txschq_cfg(struct rvu *rvu,
+ 	    req->num_regs > MAX_REGS_PER_MBOX_MSG)
+ 		return NIX_AF_INVAL_TXSCHQ_CFG;
  
--	/* This msg is expected only from PFs that are mapped to CGX LMACs,
--	 * if received from other PF/VF simply ACK, nothing to do.
--	 */
--	if ((pcifunc & RVU_PFVF_FUNC_MASK) || !is_pf_cgxmapped(rvu, pf))
--		return -ENODEV;
-+	if (!is_cgx_config_permitted(rvu, pcifunc))
-+		return -EPERM;
+-	err = nix_get_nixlf(rvu, pcifunc, &nixlf);
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
+ 	if (err)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++		return err;
  
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 
-@@ -409,8 +418,7 @@ int rvu_mbox_handler_cgx_stats(struct rvu *rvu, struct msg_req *req,
- 	u8 cgx_idx, lmac;
- 	void *cgxd;
- 
--	if ((req->hdr.pcifunc & RVU_PFVF_FUNC_MASK) ||
--	    !is_pf_cgxmapped(rvu, pf))
-+	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
- 		return -ENODEV;
- 
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_idx, &lmac);
-@@ -477,12 +485,8 @@ int rvu_mbox_handler_cgx_promisc_enable(struct rvu *rvu, struct msg_req *req,
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id, lmac_id;
- 
--	/* This msg is expected only from PFs that are mapped to CGX LMACs,
--	 * if received from other PF/VF simply ACK, nothing to do.
--	 */
--	if ((req->hdr.pcifunc & RVU_PFVF_FUNC_MASK) ||
--	    !is_pf_cgxmapped(rvu, pf))
--		return -ENODEV;
-+	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
-+		return -EPERM;
- 
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
- 
-@@ -493,16 +497,11 @@ int rvu_mbox_handler_cgx_promisc_enable(struct rvu *rvu, struct msg_req *req,
- int rvu_mbox_handler_cgx_promisc_disable(struct rvu *rvu, struct msg_req *req,
- 					 struct msg_rsp *rsp)
+ 	nix_hw = get_nix_hw(rvu->hw, blkaddr);
+ 	if (!nix_hw)
+@@ -1767,17 +1783,12 @@ int rvu_mbox_handler_nix_vtag_cfg(struct rvu *rvu,
+ 				  struct nix_vtag_config *req,
+ 				  struct msg_rsp *rsp)
  {
+-	struct rvu_hwinfo *hw = rvu->hw;
+ 	u16 pcifunc = req->hdr.pcifunc;
+ 	int blkaddr, nixlf, err;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
+ 
+ 	if (req->cfg_type) {
+ 		err = nix_rx_vtag_cfg(rvu, nixlf, blkaddr, req);
+@@ -2119,18 +2130,13 @@ static int nix_af_mark_format_setup(struct rvu *rvu, struct nix_hw *nix_hw,
+ int rvu_mbox_handler_nix_stats_rst(struct rvu *rvu, struct msg_req *req,
+ 				   struct msg_rsp *rsp)
+ {
+-	struct rvu_hwinfo *hw = rvu->hw;
+ 	u16 pcifunc = req->hdr.pcifunc;
+-	int i, nixlf, blkaddr;
++	int i, nixlf, blkaddr, err;
+ 	u64 stats;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
+ 
+ 	/* Get stats count supported by HW */
+ 	stats = rvu_read64(rvu, blkaddr, NIX_AF_CONST1);
+@@ -2418,18 +2424,14 @@ int rvu_mbox_handler_nix_rss_flowkey_cfg(struct rvu *rvu,
+ 					 struct nix_rss_flowkey_cfg *req,
+ 					 struct nix_rss_flowkey_cfg_rsp *rsp)
+ {
+-	struct rvu_hwinfo *hw = rvu->hw;
+ 	u16 pcifunc = req->hdr.pcifunc;
+ 	int alg_idx, nixlf, blkaddr;
+ 	struct nix_hw *nix_hw;
++	int err;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
+ 
+ 	nix_hw = get_nix_hw(rvu->hw, blkaddr);
+ 	if (!nix_hw)
+@@ -2522,19 +2524,15 @@ int rvu_mbox_handler_nix_set_mac_addr(struct rvu *rvu,
+ 				      struct nix_set_mac_addr *req,
+ 				      struct msg_rsp *rsp)
+ {
+-	struct rvu_hwinfo *hw = rvu->hw;
+ 	u16 pcifunc = req->hdr.pcifunc;
++	int blkaddr, nixlf, err;
+ 	struct rvu_pfvf *pfvf;
+-	int blkaddr, nixlf;
+ 
+-	pfvf = rvu_get_pfvf(rvu, pcifunc);
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (!pfvf->nixlf || blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
+ 
+-	nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
+ 
+ 	ether_addr_copy(pfvf->mac_addr, req->mac_addr);
+ 
+@@ -2567,19 +2565,15 @@ int rvu_mbox_handler_nix_set_rx_mode(struct rvu *rvu, struct nix_rx_mode *req,
+ 				     struct msg_rsp *rsp)
+ {
+ 	bool allmulti = false, disable_promisc = false;
+-	struct rvu_hwinfo *hw = rvu->hw;
+ 	u16 pcifunc = req->hdr.pcifunc;
++	int blkaddr, nixlf, err;
+ 	struct rvu_pfvf *pfvf;
+-	int blkaddr, nixlf;
+ 
+-	pfvf = rvu_get_pfvf(rvu, pcifunc);
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (!pfvf->nixlf || blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
+ 
+-	nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
+ 
+ 	if (req->mode & NIX_RX_MODE_PROMISC)
+ 		allmulti = false;
+@@ -2794,22 +2788,12 @@ int rvu_mbox_handler_nix_rxvlan_alloc(struct rvu *rvu, struct msg_req *req,
+ int rvu_mbox_handler_nix_set_rx_cfg(struct rvu *rvu, struct nix_rx_cfg *req,
+ 				    struct msg_rsp *rsp)
+ {
+-	struct rvu_hwinfo *hw = rvu->hw;
 -	u16 pcifunc = req->hdr.pcifunc;
--	int pf = rvu_get_pf(pcifunc);
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
- 	u8 cgx_id, lmac_id;
+-	struct rvu_block *block;
+-	struct rvu_pfvf *pfvf;
+-	int nixlf, blkaddr;
++	int nixlf, blkaddr, err;
+ 	u64 cfg;
  
--	/* This msg is expected only from PFs that are mapped to CGX LMACs,
--	 * if received from other PF/VF simply ACK, nothing to do.
--	 */
--	if ((req->hdr.pcifunc & RVU_PFVF_FUNC_MASK) ||
--	    !is_pf_cgxmapped(rvu, pf))
--		return -ENODEV;
-+	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
-+		return -EPERM;
+-	pfvf = rvu_get_pfvf(rvu, pcifunc);
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (!pfvf->nixlf || blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	block = &hw->block[blkaddr];
+-	nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
+-	if (nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
++	err = nix_get_nixlf(rvu, req->hdr.pcifunc, &nixlf, &blkaddr);
++	if (err)
++		return err;
  
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+ 	cfg = rvu_read64(rvu, blkaddr, NIX_AF_LFX_RX_CFG(nixlf));
+ 	/* Set the interface configuration */
+@@ -3114,30 +3098,13 @@ void rvu_nix_freemem(struct rvu *rvu)
+ 	}
+ }
  
-@@ -515,11 +514,8 @@ static int rvu_cgx_config_linkevents(struct rvu *rvu, u16 pcifunc, bool en)
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id, lmac_id;
+-int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf)
+-{
+-	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
+-	struct rvu_hwinfo *hw = rvu->hw;
+-	int blkaddr;
+-
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+-	if (!pfvf->nixlf || blkaddr < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	*nixlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, 0);
+-	if (*nixlf < 0)
+-		return NIX_AF_ERR_AF_LF_INVALID;
+-
+-	return 0;
+-}
+-
+ int rvu_mbox_handler_nix_lf_start_rx(struct rvu *rvu, struct msg_req *req,
+ 				     struct msg_rsp *rsp)
+ {
+ 	u16 pcifunc = req->hdr.pcifunc;
+ 	int nixlf, err;
  
--	/* This msg is expected only from PFs that are mapped to CGX LMACs,
--	 * if received from other PF/VF simply ACK, nothing to do.
--	 */
--	if ((pcifunc & RVU_PFVF_FUNC_MASK) || !is_pf_cgxmapped(rvu, pf))
--		return -ENODEV;
-+	if (!is_cgx_config_permitted(rvu, pcifunc))
-+		return -EPERM;
+-	err = nix_get_nixlf(rvu, pcifunc, &nixlf);
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, NULL);
+ 	if (err)
+ 		return err;
  
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+@@ -3152,7 +3119,7 @@ int rvu_mbox_handler_nix_lf_stop_rx(struct rvu *rvu, struct msg_req *req,
+ 	u16 pcifunc = req->hdr.pcifunc;
+ 	int nixlf, err;
  
-@@ -571,11 +567,8 @@ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
- 	int pf = rvu_get_pf(pcifunc);
- 	u8 cgx_id, lmac_id;
- 
--	/* This msg is expected only from PFs that are mapped to CGX LMACs,
--	 * if received from other PF/VF simply ACK, nothing to do.
--	 */
--	if ((pcifunc & RVU_PFVF_FUNC_MASK) || !is_pf_cgxmapped(rvu, pf))
--		return -ENODEV;
-+	if (!is_cgx_config_permitted(rvu, pcifunc))
-+		return -EPERM;
- 
- 	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+-	err = nix_get_nixlf(rvu, pcifunc, &nixlf);
++	err = nix_get_nixlf(rvu, pcifunc, &nixlf, NULL);
+ 	if (err)
+ 		return err;
  
 -- 
 2.7.4
