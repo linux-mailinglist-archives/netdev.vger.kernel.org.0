@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A58B1642B7
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 11:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF411642FB
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 12:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727326AbgBSKym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 05:54:42 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:45232 "EHLO
+        id S1727158AbgBSLGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 06:06:42 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42502 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726558AbgBSKyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 05:54:41 -0500
+        by vger.kernel.org with ESMTP id S1727132AbgBSLGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 06:06:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582109681;
+        s=mimecast20190719; t=1582110399;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PauumciWQeMsaVAq7AsvZUadieEbxMADpQ3r9+NupQ8=;
-        b=UKfsxQlKKEGxB14GkBx5+K6LhxYAT0lrkQ0q5uDypKCESdbnVhsZArKZP9BpXxFVPyxTyD
-        1ijANRyKPfX/PO5OhRtJlQSr74p9CofbwTXYp1v1djobpy064UNotuhoXAib857FKSzRfD
-        +T5iRT4CaVqA7XI1aPb3QceUYtwcsTw=
+        bh=x4aYDNU2/Ggj92x1IgV688KjjVOtiXg/pHW+83Frcpo=;
+        b=ay4oDa04wvZgdZu/75NzI5Rj+IIFO7F4o3b6go7D9P3TJG234JvNWpN62Pl+f7p/HVGZkA
+        a1Hi5C2EcvHBJwi0j3h0oPXZ+9tER45jQ75iyq/bQ7htMYrnUOTr2Z2LS0rQFjHCKf/Lp9
+        +1o4ArULZizA6xxm8uzwEHjzj62uIPQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-vXBSodOxM72P_Chen0DNHQ-1; Wed, 19 Feb 2020 05:54:39 -0500
-X-MC-Unique: vXBSodOxM72P_Chen0DNHQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-350-Sye0ZueAOiylT8NBoVGmOw-1; Wed, 19 Feb 2020 06:06:37 -0500
+X-MC-Unique: Sye0ZueAOiylT8NBoVGmOw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3BC7E1336562;
-        Wed, 19 Feb 2020 10:54:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F2400107B7D7;
+        Wed, 19 Feb 2020 11:06:35 +0000 (UTC)
 Received: from [10.36.116.231] (ovpn-116-231.ams2.redhat.com [10.36.116.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 647E589F3B;
-        Wed, 19 Feb 2020 10:54:32 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AE91B62660;
+        Wed, 19 Feb 2020 11:06:30 +0000 (UTC)
 From:   "Eelco Chaudron" <echaudro@redhat.com>
 To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+Cc:     "Jakub Sitnicki" <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>,
         "Alexei Starovoitov" <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
         "Martin Lau" <kafai@fb.com>, "Song Liu" <songliubraving@fb.com>,
         "Yonghong Song" <yhs@fb.com>, "Andrii Nakryiko" <andriin@fb.com>,
         "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v4 3/3] selftests/bpf: update xdp_bpf2bpf test to
- use new set_attach_target API
-Date:   Wed, 19 Feb 2020 11:54:30 +0100
-Message-ID: <C9BBE2C5-E7ED-465C-98B5-1476B9B475A9@redhat.com>
-In-Reply-To: <CAEf4BzYx2ZccrAu8JC=UxeHamk4dHKVa2jH4P=Hr7VzMwUphJQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/3] libbpf: Add support for dynamic program
+ attach target
+Date:   Wed, 19 Feb 2020 12:06:29 +0100
+Message-ID: <94BE5B07-CFC8-426F-B993-28D01E46BAE5@redhat.com>
+In-Reply-To: <CAEf4BzZ_H7_HVL0uDkxP2hvW7FC=9r_V4X2VzgB+uZMZcxP7aQ@mail.gmail.com>
 References: <158194337246.104074.6407151818088717541.stgit@xdp-tutorial>
- <158194342478.104074.6851588870108514192.stgit@xdp-tutorial>
- <CAEf4BzYx2ZccrAu8JC=UxeHamk4dHKVa2jH4P=Hr7VzMwUphJQ@mail.gmail.com>
+ <158194341424.104074.4927911845622583345.stgit@xdp-tutorial>
+ <877e0jam7z.fsf@cloudflare.com>
+ <CAEf4BzZ_H7_HVL0uDkxP2hvW7FC=9r_V4X2VzgB+uZMZcxP7aQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -61,29 +63,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 18 Feb 2020, at 22:21, Andrii Nakryiko wrote:
+On 18 Feb 2020, at 22:24, Andrii Nakryiko wrote:
 
-> On Mon, Feb 17, 2020 at 5:03 AM Eelco Chaudron <echaudro@redhat.com> wr=
-ote:
+> On Tue, Feb 18, 2020 at 8:34 AM Jakub Sitnicki <jakub@cloudflare.com>=20
+> wrote:
 >>
->> Use the new bpf_program__set_attach_target() API in the xdp_bpf2bpf
->> selftest so it can be referenced as an example on how to use it.
+>> Hey Eelco,
 >>
+>> On Mon, Feb 17, 2020 at 12:43 PM GMT, Eelco Chaudron wrote:
+>>> Currently when you want to attach a trace program to a bpf program
+>>> the section name needs to match the tracepoint/function semantics.
+>>>
+>>> However the addition of the bpf_program__set_attach_target() API
+>>> allows you to specify the tracepoint/function dynamically.
+>>>
+>>> The call flow would look something like this:
+>>>
+>>>   xdp_fd =3D bpf_prog_get_fd_by_id(id);
+>>>   trace_obj =3D bpf_object__open_file("func.o", NULL);
+>>>   prog =3D bpf_object__find_program_by_title(trace_obj,
+>>>                                            "fentry/myfunc");
+>>>   bpf_program__set_expected_attach_type(prog, BPF_TRACE_FENTRY);
+>>>   bpf_program__set_attach_target(prog, xdp_fd,
+>>>                                  "xdpfilt_blk_all");
+>>>   bpf_object__load(trace_obj)
+>>>
+>>> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>>> ---
+>>>  tools/lib/bpf/libbpf.c   |   34 ++++++++++++++++++++++++++++++----
+>>>  tools/lib/bpf/libbpf.h   |    4 ++++
+>>>  tools/lib/bpf/libbpf.map |    2 ++
+>>>  3 files changed, 36 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>>> index 514b1a524abb..0c25d78fb5d8 100644
+>>> --- a/tools/lib/bpf/libbpf.c
+>>> +++ b/tools/lib/bpf/libbpf.c
 >>
+>> [...]
+>>
+>>> @@ -8132,6 +8133,31 @@ void bpf_program__bpil_offs_to_addr(struct=20
+>>> bpf_prog_info_linear *info_linear)
+>>>       }
+>>>  }
+>>>
+>>> +int bpf_program__set_attach_target(struct bpf_program *prog,
+>>> +                                int attach_prog_fd,
+>>> +                                const char *attach_func_name)
+>>> +{
+>>> +     int btf_id;
+>>> +
+>>> +     if (!prog || attach_prog_fd < 0 || !attach_func_name)
+>>> +             return -EINVAL;
+>>> +
+>>> +     if (attach_prog_fd)
+>>> +             btf_id =3D libbpf_find_prog_btf_id(attach_func_name,
+>>> +                                              attach_prog_fd);
+>>> +     else
+>>> +             btf_id =3D __find_vmlinux_btf_id(prog->obj->btf_vmlinux=
+,
+>>> +                                            attach_func_name,
+>>> +                                           =20
+>>> prog->expected_attach_type);
+>>> +
+>>> +     if (btf_id <=3D 0)
+>>> +             return btf_id;
+>>
+>> Looks like we can get 0 as return value on both error and success
+>> (below)?  Is that intentional?
 >
-> nit: extra empty line?
+> Neither libbpf_find_prog_btf_id nor __find_vmlinux_btf_id are going to
+> return 0 on failure. But I do agree that if (btf_id < 0) check would
+> be better here.
 
-ACK <SNIP>
->> +       prog =3D *ftrace_skel->skeleton->progs[0].prog;
->
-> it took me a while to understand what's going on here... :) You are
-> not supposed to peek into ftrace_skel->skeleton, it's an "internal"
-> object that's passed into libbpf.
->
-> It's better to write it as a nice and short:
->
-> prog =3D ftrace_skel->progs.trace_on_entry;
->
+Is see in theory btf__find_by_name_kind() could return 0:
 
-Will change in next rev=E2=80=A6
+	if (kind =3D=3D BTF_KIND_UNKN || !strcmp(type_name, "void"))
+   		return 0;
+
+But for our case, this will not happen and is invalid, so what about=20
+just to make sure its future proof?:
+
+   if (btf_id <=3D 0)
+         return btf_id ? btf_id : -ENOENT;
+
+
+> With that minor nit:
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+>>
+>>> +
+>>> +     prog->attach_btf_id =3D btf_id;
+>>> +     prog->attach_prog_fd =3D attach_prog_fd;
+>>> +     return 0;
+>>> +}
+>>> +
+>>>  int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz)
+>>>  {
+>>>       int err =3D 0, n, len, start, end =3D -1;
+>>
+>> [...]
 
