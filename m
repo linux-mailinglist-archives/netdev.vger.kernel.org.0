@@ -2,126 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D8F164ACA
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 17:43:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9C0164ADE
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 17:46:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbgBSQnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 11:43:18 -0500
-Received: from mail-am6eur05on2086.outbound.protection.outlook.com ([40.107.22.86]:6057
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726638AbgBSQnS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 11:43:18 -0500
+        id S1726791AbgBSQqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 11:46:20 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19146 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726671AbgBSQqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 11:46:20 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01JGiN88021325;
+        Wed, 19 Feb 2020 08:45:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=Z8LD0V0m8xzVn4KyOauT80/VkLtqtrRpjP4QGf0kBgA=;
+ b=GLOPUJ3Cc/Go+4LrA5CCBdIZMWhGq60uejHxdul7mDIJ2q/ECO68dZ5/AtfrExi/VCmp
+ G/nVAz6TBNaPWoyWxFXzp80L25KK22D8T0TLq8bzCDbWIjTMWeaejtkUdoGIa0N+Hy0x
+ YU2AX5RLSnab50v+8u9/Me/pjH6EaoQdErA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2y8ubdudqh-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Feb 2020 08:45:51 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 19 Feb 2020 08:45:49 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MJm6AmTCqAtLWI5g3JrmhUFM7PmNw1bl8vgYgqY786GE+0tJ4uDhVQsXToIXAxsLt6BFQ+1v/Pl76LwqaE2K8frrDm9PUcuxnB5DfIOGYEU0gJa0didBDqGFf01pP7uvf+aI5wByIDQh3/Xv+qNU4WLMF2dvG/h/s9RtpebIaNhyc+lUiEvPjmYYxM7Tiz3ya0dgXqhRy/MMEAfwxUjuNtg9m+xF18FfmB1zIZpE+GlP88itPGvY4e6bSHNW6cYEeKGIfZYqQyjjBnTk/jUbW5MoX9mhI5l0R+veGdPeNp/Z3j7AcwhwRGRGPvq2a5iDT6Fhtx/tmyIPvhXq7fDg+w==
+ b=WB2daIsRM66NomE/qsg9Wrc/uOvUN80NqGKEo8WRsthqH6ooKBL+p78KKHNob7/FI8lvC/c/2cD4RDDZx9QHXglI7or8DRQdSOwSvP+Z7bwghc2zWHY5X6HI+vb8JmMCvhAVU6X51aeCHo9nfIeo5+gl+Bl7l7jVCkpQ6cZJ88ovRz+fF1plTcYCBv6cNt/gMsT/f+4LGH/q+K5GNHtCAray0INZbsj8g2Xtl/iSS57GC13XyThA02rXQztmsm+FV728ET8M2h1hTed1IwiqtTSOuF0KYsSEVw4CPpL9D0x5AB7YTSN0GvqneIdqwFZLSWgWIsdly2tl7z14csy3OA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nGRmZD8SXDm2egzloCx7Q49iMXSRJewyjf0VSQuNGrQ=;
- b=dOQO6A4QefOLCNTEJVQlGpBWnmeuyTJ9eFOh5KBYa7unEk7TvEBeA0p04w2VPGj9QhvMsHKS9sROjv1t9CldLtOaYFmdBzfI90Y8scPot+jF4Q2ahSn3i8EATQ6NNUwqsblYNawhe4wjOPUu6YzW4dS6bYaKYOZKquA4Bg0qCrXQ736MdxohE5EoxfQKTwcQ9bff4et6nv+8Lo+zEPYjnsQWvobBd1kPrwvcRPypZfZ5wev7kNl8TVkz8cefJEnVUorQlab3QsuAt2RwnkHfA52SHRINbrvRzBcN56m3troxxLrdXlyBbvM5eJbJmiHqZ7SOup2r5G7UNQ3uC2b2ug==
+ bh=Z8LD0V0m8xzVn4KyOauT80/VkLtqtrRpjP4QGf0kBgA=;
+ b=CJkqBPi/qWu3rqVo8JlK+akloVXZN//ITwGXKYKV2TaiMYXYStEnUbZd3dHB47oN+yL2XOPsprf1cnWeYROChJkn+Db5yBzpuJ+3G825pvHeAApcdh/2OuoVjb4rnBP7QEFWoPUcyAbAhD+Y7v/VCV71COgUta/sXktzsxe3nY0hdFBiHwnHE9KkrY+l9gbUtQ50byH0RFiGWagz6Q+mowN/vR46ig/jNQ3mGI2qCNqlWosQYlcSMjmDkKJbj75xL/Nwgga1xZCr5HdKICSPy2dCaDayJ/3PaT4NzjykjCMD8PCoW69VAazD3UDidp5tZazcqKaTgT0BGWy2xEkPUw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nGRmZD8SXDm2egzloCx7Q49iMXSRJewyjf0VSQuNGrQ=;
- b=FgJXDx0kjrUj88GVgB7OFzYbays80kYktUxrvdcwAm9bzNREUyc64FVlUTk1aGqiAvc83Gkzs99qme8bdk3Rpxv2xs09OUdg4zGGK3geVe4051VXkQVeEGt78X16pOXzvQ8mlOd/uy9LeTkiCmNohZqKLlF2cNtbOBdYWksLqf8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=idosch@mellanox.com; 
-Received: from AM0PR05MB6754.eurprd05.prod.outlook.com (10.186.174.71) by
- AM0PR05MB4338.eurprd05.prod.outlook.com (52.134.91.147) with Microsoft SMTP
+ bh=Z8LD0V0m8xzVn4KyOauT80/VkLtqtrRpjP4QGf0kBgA=;
+ b=jXAxPneO36Qv5hrDP0KeGXamcsdog6mC+fmmp7U4iW/1BAwurclsfGzzdWiOZGTM/SUXv3n2mda7vTBDkyUPxJJRjf9Xj4RdwX4v+DwNU5L8afy1tpTRX0BRoKmTH8ltsUanhugL8V0r3EdRzI9r0yu+AVahdkNpmJEJJO5jM5Q=
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com (20.178.231.16) by
+ DM6PR15MB3115.namprd15.prod.outlook.com (20.178.230.225) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.25; Wed, 19 Feb 2020 16:43:14 +0000
-Received: from AM0PR05MB6754.eurprd05.prod.outlook.com
- ([fe80::756b:53ca:e33d:7876]) by AM0PR05MB6754.eurprd05.prod.outlook.com
- ([fe80::756b:53ca:e33d:7876%7]) with mapi id 15.20.2750.016; Wed, 19 Feb 2020
- 16:43:14 +0000
-Date:   Wed, 19 Feb 2020 18:43:11 +0200
-From:   Ido Schimmel <idosch@mellanox.com>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] mlxsw: Replace zero-length array with
- flexible-array member
-Message-ID: <20200219164311.GA348671@splinter>
-References: <20200218205705.GA29805@embeddedor>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200218205705.GA29805@embeddedor>
-X-ClientProxiedBy: ZR0P278CA0024.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1c::11) To AM0PR05MB6754.eurprd05.prod.outlook.com
- (2603:10a6:20b:15a::7)
+ 15.20.2750.17; Wed, 19 Feb 2020 16:45:48 +0000
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2729.033; Wed, 19 Feb 2020
+ 16:45:48 +0000
+Subject: Re: [PATCH bpf] libbpf: Sanitise internal map names so they are not
+ rejected by the kernel
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <ast@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <20200217171701.215215-1-toke@redhat.com>
+ <9ddddbd6-aca2-61ae-b864-0f12d7fd33b4@iogearbox.net>
+ <a0923745-ee34-3eb0-7f9b-31cec99661ec@fb.com> <87sgj7yhif.fsf@toke.dk>
+ <e7a1f042-a3d7-ad25-e195-fdd5f8b78680@iogearbox.net> <878skyyipy.fsf@toke.dk>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <75035604-6cf8-515e-c0b0-569758ffa2e1@fb.com>
+Date:   Wed, 19 Feb 2020 08:45:44 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
+In-Reply-To: <878skyyipy.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MWHPR20CA0008.namprd20.prod.outlook.com
+ (2603:10b6:300:13d::18) To DM6PR15MB3001.namprd15.prod.outlook.com
+ (2603:10b6:5:13c::16)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (193.47.165.251) by ZR0P278CA0024.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.17 via Frontend Transport; Wed, 19 Feb 2020 16:43:13 +0000
-X-Originating-IP: [193.47.165.251]
+Received: from marksan-mbp.DHCP.thefacebook.com (2620:10d:c090:400::5:99e4) by MWHPR20CA0008.namprd20.prod.outlook.com (2603:10b6:300:13d::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Wed, 19 Feb 2020 16:45:47 +0000
+X-Originating-IP: [2620:10d:c090:400::5:99e4]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 65e7fe17-f860-4785-016f-08d7b55ad01b
-X-MS-TrafficTypeDiagnostic: AM0PR05MB4338:|AM0PR05MB4338:
+X-MS-Office365-Filtering-Correlation-Id: 5c7d7e3b-7b37-43eb-8b36-08d7b55b2be9
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3115:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB43380990BDB5B3DEAC08B2E6BF100@AM0PR05MB4338.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <DM6PR15MB31155F0CF4F057BDF74FF6BED3100@DM6PR15MB3115.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-Forefront-PRVS: 0318501FAE
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(396003)(136003)(376002)(366004)(346002)(39860400002)(199004)(189003)(6486002)(81166006)(8676002)(52116002)(66476007)(54906003)(6496006)(16526019)(956004)(81156014)(66946007)(186003)(66556008)(966005)(8936002)(2906002)(26005)(9686003)(478600001)(33656002)(316002)(1076003)(86362001)(4326008)(5660300002)(33716001)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4338;H:AM0PR05MB6754.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(136003)(396003)(376002)(39860400002)(366004)(346002)(199004)(189003)(6506007)(31686004)(110136005)(2616005)(86362001)(53546011)(81156014)(31696002)(66946007)(6486002)(66574012)(66476007)(66556008)(186003)(16526019)(6636002)(36756003)(6512007)(316002)(8676002)(8936002)(2906002)(5660300002)(81166006)(4326008)(478600001)(6666004)(52116002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3115;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HMg48+jLq6Vnb4m3Hx18o2RTUjj0z2A5fnZ76CCTI/My0t5fnpfyUbrwtzPhWDAXwzWsiQC1V9BJlJlGyJ0Cf2XF9e5O3aZfwejL+/9FxO89w5u004Ye1/B6kSNN1PuBolJbEmGn42IfiG5DIju5lFCi4foLaxsmUtJUkf3kymccnv6g26QDjcK/lV0Vfgr66Z4XUBji8Z0m6jMmD8cclL8rUHb+39/x5x2D0FkCvyyhdjvlGWxYHCVQnJ1QTx2YdFlHNJZ6iUTKZOuUGNTi9fF5agzc3lYnqw7aspyEAgCbpvxsSPPNusTYaF0FPEgI42fqJpM9/b6zf+jXlfRC1Tl1sPO0/BbJO5zTwsjvNrky0ovX68ruW5xm2+86LYw59r0o5vilGg/hi2yXWf08u6cnh8zMzI9SqYnnGpNWSt8PxU7noHllnKsntV5e1t+YtsFD972M7zOcKsvjEOBswrDzcppT9XfzOZJ7eBjuyBjvWV2/OdlLfP66aOaVQIMt1qKyYWbq2mEOS/AgFwCrjA==
-X-MS-Exchange-AntiSpam-MessageData: zUocK6XZwkfSyecuqgdCVsJavDM65/k1OwKejoiV3mdYhnjMHNu+0Cf6mKMsOf/+2iP4TKfipLGmXfB1mc7tvrEaHlZ7g7WVx5TOdV74AG/C7osLIE3PM7T/SYgM7KHkuW4iPO2eDQ/iTeN5O2wo+A==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65e7fe17-f860-4785-016f-08d7b55ad01b
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2020 16:43:14.1051
+X-Microsoft-Antispam-Message-Info: 7Whi+OPvQkG+Hx4TyONhSm7Lr9bjLU+dph3NXLefU5/NkQ52f0mu8JJGhcRM7ycMc8EXv4SFYDpao8RPPKejAvm0beJRAIuVs4eynD8pXe6hvqIiH+roEgzMhdWhIXRvnMdmofW52V4rWVdxQMyZ3DrtLGptnZ6ewUWGgcfDh2EQE8SESCqwmxrnSNwtKxF7+etb0pGrLmGOqNsmKk9ahv8Nl8jghrS5DwAATY3YwQyO1NxNJpzNv3l+5qqluNTPRW62oQfUkUgMXemt8iJLIzziURFoaGMCnaZt3kf57IaEAo+ldfEGWsV7Sx3apFbgtNbhdtqeOP0hH4fvanbXcTzxsBv/nVkRz8YzDjf/1GuKKbNnWH+i3hnp/Wln9XbUV6Axey78u/ryRGSedWcBu9MT2dGpEEfzeGRR+b80ui3UecJudjO8YaxGVCfrq4t2
+X-MS-Exchange-AntiSpam-MessageData: jhW+z+fai4AMhn1ZgUvdMRgjXbc/vnXFouv35B9lbh1TmGErisEVc7PwBEhiMvQ4mUqFuFall1udZrcjdaAlfzMd/qiMdzGeXNgEsHASNYI1J6EF8xLjw+3F2/AuVJA+zFfM8Sil9od+kZpTQXkdspExOCwEsPYPLgh6Tj2FGj1Q2B04tUJjpCENDwYMq18L
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c7d7e3b-7b37-43eb-8b36-08d7b55b2be9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2020 16:45:48.2020
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lEjVgDu8MlgyDqEL26iT36rlr/o+r971c6SlwDHSssMRBc7oPMZcR3mHx9OAXr07oOK580foozmsCAGMVpYzHw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4338
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ra65n/M+RPcLOkPMbbU19AWZQLS9t3E6l6woTseYcwT7bkYxxNDvDCjl2on0H7co
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3115
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-19_04:2020-02-19,2020-02-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ phishscore=0 lowpriorityscore=0 malwarescore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 bulkscore=0 adultscore=0 clxscore=1015 mlxlogscore=999
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002190127
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 02:57:05PM -0600, Gustavo A. R. Silva wrote:
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Thanks, Gustavo. Looks good to me. Ran a few tests with a debug config
-and nothing exploded.
 
-I was just about to submit some patches myself, but they will conflict
-with this patch, so I will wait :)
+On 2/19/20 2:28 AM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+> 
+>> On 2/18/20 5:42 PM, Toke Høiland-Jørgensen wrote:
+>>> Yonghong Song <yhs@fb.com> writes:
+>>>> On 2/18/20 6:40 AM, Daniel Borkmann wrote:
+>>>>> On 2/17/20 6:17 PM, Toke Høiland-Jørgensen wrote:
+>>>>>> The kernel only accepts map names with alphanumeric characters,
+>>>>>> underscores
+>>>>>> and periods in their name. However, the auto-generated internal map names
+>>>>>> used by libbpf takes their prefix from the user-supplied BPF object name,
+>>>>>> which has no such restriction. This can lead to "Invalid argument" errors
+>>>>>> when trying to load a BPF program using global variables.
+>>>>>>
+>>>>>> Fix this by sanitising the map names, replacing any non-allowed
+>>>>>> characters
+>>>>>> with underscores.
+>>>>>>
+>>>>>> Fixes: d859900c4c56 ("bpf, libbpf: support global data/bss/rodata
+>>>>>> sections")
+>>>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>>>>>
+>>>>> Makes sense to me, applied, thanks! I presume you had something like '-'
+>>>>> in the
+>>>>> global var leading to rejection?
+>>>>
+>>>> The C global variable cannot have '-'. I saw a complain in bcc mailing
+>>>> list sometimes back like: if an object file is a-b.o, then we will
+>>>> generate a map name like a-b.bss for the bss ELF section data. The
+>>>> map name "a-b.bss" name will be rejected by the kernel. The workaround
+>>>> is to change object file name. Not sure whether this is the only
+>>>> issue which may introduce non [a-zA-Z0-9_] or not. But this patch indeed
+>>>> should fix the issue I just described.
+>>
+>> Yep, meant object file name, just realized too late after sending. :/
+>>
+>>> Yes, this was exactly my problem; my object file is called
+>>> 'xdp-dispatcher.o'. Fun error to track down :P
+>>>
+>>> Why doesn't the kernel allow dashes in the name anyway?
+>>
+>> Commit cb4d2b3f03d8 ("bpf: Add name, load_time, uid and map_ids to bpf_prog_info")
+>> doesn't state a specific reason, and we did later extend it via 3e0ddc4f3ff1 ("bpf:
+>> allow . char as part of the object name"). My best guess right now is potentially
+>> not to confuse BPF's kallsyms handling with dashes etc.
+> 
+> Right, OK, fair enough I suppose. I was just wondering since this is
+> the second time I've run into hard-to-debug problems because of the
+> naming restrictions.
+> 
+> Really, it would be nice to have something like the netlink extack
+> mechanism so the kernel can return something more than just an error
+> code when a bpf() call fails. Is there any way to do something similar
+> for a syscall? Could we invent something?
 
-Reviewed-by: Ido Schimmel <idosch@mellanox.com>
-Tested-by: Ido Schimmel <idosch@mellanox.com>
+Currently, BPF_PROG_LOAD and BPF_BTF_LOAD has log_buf as part of syscall 
+interface. Esp. for BPF_PROG_LOAD, maybe we could put some non-verifier 
+logs here?
+
+Maybe we could introduce log_buf to other syscall commands if there is
+a great need in user space to get more details about the error code?
