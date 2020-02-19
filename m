@@ -2,65 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63EBB1640C6
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E3391640CC
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:51:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbgBSJtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 04:49:01 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60568 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbgBSJtB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:49:01 -0500
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 01J9mnsY029951, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 01J9mnsY029951
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Feb 2020 17:48:49 +0800
-Received: from RTEXMB03.realtek.com.tw (172.21.6.96) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 19 Feb 2020 17:48:49 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 19 Feb 2020 17:48:48 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
- RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
- 15.01.1779.005; Wed, 19 Feb 2020 17:48:48 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        nic_swsd <nic_swsd@realtek.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 12/13] r8152: use new helper tcp_v6_gso_csum_prep
-Thread-Topic: [PATCH net-next v2 12/13] r8152: use new helper
- tcp_v6_gso_csum_prep
-Thread-Index: AQHV5phMsUMHsElpxUaoxEMxm3ymXagiRPkw
-Date:   Wed, 19 Feb 2020 09:48:48 +0000
-Message-ID: <42d3acd04d79422aa37715f136497369@realtek.com>
-References: <fffc8b6d-68ed-7501-18f1-94cf548821fb@gmail.com>
- <1dd1668a-b3c6-d441-681d-6cbe3ab22fa4@gmail.com>
-In-Reply-To: <1dd1668a-b3c6-d441-681d-6cbe3ab22fa4@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726453AbgBSJv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 04:51:29 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42164 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgBSJv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:51:29 -0500
+Received: by mail-pg1-f193.google.com with SMTP id w21so12437521pgl.9
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 01:51:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=vZLh34aYeVk+ibDO1zhZ9+7bSmQOzS+1Z8yizhlQwhI=;
+        b=T4m1Qk/OzLIPtmlr6hAHUozl1cIwjjQFNWCcfvTQfu+FuWHLgmfwBXf0ErhEnK+/xx
+         9Nl4uMgq47lbnEwgJFAmAZnRdoQre89Fn5RiWzlGNth5xWlqbGAgby5fAtAvqNS90sXN
+         amOTgk8/3h7FevhmfHKlF9/SwC1qnogEG/P/u/SMUex5gpGD0ZjLOWgTGI2lVZ2BV27s
+         GHTxszqFBCfVijR/ON2aabC1REbwfPgQr/PmlqrrkKVqRyBby7KTx71709qswRtujxJD
+         plHYsMcCfM27Oo5f1ZIJcf3ZwAFiZ/PbjnWFbXoJEmlTY3xIwlMtNVcWjjezecgsCPNY
+         DQMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vZLh34aYeVk+ibDO1zhZ9+7bSmQOzS+1Z8yizhlQwhI=;
+        b=tGvyQfUamxpjJW1oAcatifpGL50nrvla1SJUveal4f8+ja97bcvvpfEGIBjX6gMfpU
+         dRdFDou6zIQAd5Ws/rh29EkjiQRTfAp/iMTFFV72QseMw+cGwH2T/iTgW2Xf8U6Tvn6H
+         3UOABY+7Cdh9xRJRS/ByzhjiDcuECyvYGJUTIgsKb7JHP82o2tQgL/ANL0W8Ovgr3cP0
+         xTq6aDCrpWtajaDGrxokJ3p3pr8mP0TPv2GBVi7ItdKDgT3ERu1qCs6pSvahPxtTMpSE
+         wKB21yVw8naOigldx7mF9eOuhF3W+rbMmeRsPvmlqJFCrL76jx5iVMbzrOppWKUKPMZr
+         k6xA==
+X-Gm-Message-State: APjAAAVBrjChdSndmyCpOXyQ9KQ6IN8PmiecXa4yyzFbi9B2ARxaVWkl
+        iMIgwK3J5eFBkdyOclp3Ce+rUxCT1iQ=
+X-Google-Smtp-Source: APXvYqzx2z+p0R5edAIfS/GEst+xCxr4uqFCynilqrms3BTkmhbl/j679SaDi6Ib5vQm+jxonykK1Q==
+X-Received: by 2002:a65:424d:: with SMTP id d13mr28045532pgq.128.1582105886622;
+        Wed, 19 Feb 2020 01:51:26 -0800 (PST)
+Received: from machine421.marvell.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id w11sm2023724pgh.5.2020.02.19.01.51.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 19 Feb 2020 01:51:25 -0800 (PST)
+From:   sunil.kovvuri@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH 0/3] octeontx2-af: Cleanup changes
+Date:   Wed, 19 Feb 2020 15:21:05 +0530
+Message-Id: <1582105868-29012-1-git-send-email-sunil.kovvuri@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVpbmVyIEthbGx3ZWl0IFttYWlsdG86aGthbGx3ZWl0MUBnbWFpbC5jb21dDQo+IFNlbnQ6IFdl
-ZG5lc2RheSwgRmVicnVhcnkgMTksIDIwMjAgNDoxMyBBTQ0KPiBTdWJqZWN0OiBbUEFUQ0ggbmV0
-LW5leHQgdjIgMTIvMTNdIHI4MTUyOiB1c2UgbmV3IGhlbHBlcg0KPiB0Y3BfdjZfZ3NvX2NzdW1f
-cHJlcA0KPiANCj4gVXNlIG5ldyBoZWxwZXIgdGNwX3Y2X2dzb19jc3VtX3ByZXAgaW4gYWRkaXRp
-b25hbCBuZXR3b3JrIGRyaXZlcnMuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBIZWluZXIgS2FsbHdl
-aXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPg0KDQpBY2tlZC1ieTogSGF5ZXMgV2FuZyA8aGF5ZXN3
-YW5nQHJlYWx0ZWsuY29tPg0KDQpCZXN0IFJlZ2FyZHMsDQpIYXllcw0KDQo=
+From: Sunil Goutham <sgoutham@marvell.com>
+
+These patches cleanup AF driver by removing unnecessary function
+exports and cleanup repititive logic.
+
+Sunil Goutham (3):
+  octeontx2-af: Remove unnecessary export symbols in CGX driver
+  octeontx2-af: Cleanup CGX config permission checks
+  octeontx2-af: Cleanup nixlf and blkaddr retrieval logic
+
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  18 ---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  55 ++++-----
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 131 ++++++++-------------
+ 4 files changed, 74 insertions(+), 132 deletions(-)
+
+-- 
+2.7.4
+
