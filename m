@@ -2,178 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86155165280
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:26:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 702EA165284
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:29:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgBSW0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 17:26:49 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:41204 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727291AbgBSW0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 17:26:49 -0500
-Received: by mail-qt1-f193.google.com with SMTP id l21so1468295qtr.8;
-        Wed, 19 Feb 2020 14:26:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=77QMWZNt2P60hLQ8k2WkobTZOYuQcji0wAgaq/fXtCM=;
-        b=KFkBY2olxZYCK+/8EzDemlFkDrs6pvRfKvSFrDMPzFEDUhPzJJ4aL+kFi6/ysz3K+Q
-         KwW8kGJ+wtfnCNFktmYryzjVLMZoq6okfL0dhySDfdWC8qccjisFZa6cbxyR0CbNU8v/
-         Vqgtk9s8lN5QP4z7BQL2+PXlRnUI+hzSUpn1jBa58sz3KvcjKUfAgm9OmbfK+L7SG36x
-         y7xeE4CFzb9mtkb5QebGDp7GBQtN5jZIkVrSyRvjNoKPWa79u/sVbVCR/rtbZn8SBdvt
-         S52dPpqRaUcCBlhzy8jVHVlpXhJCRoiUgO/PsKNr1qPu03+1iUvtKKUZ6V0GNxePHcJy
-         mTqg==
+        id S1727727AbgBSW3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 17:29:39 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21237 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727469AbgBSW3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 17:29:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582151377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BRybc8sxCddd24vT1nlye7r7O7R0DpcpTVIioA7SFcI=;
+        b=KQVHNkWSxSe1N3LeiuMbDAZPB6fBr3ZwxjVAWSx6sQGUYQ5pnjgYiE+yrnPpWD/qhwweOr
+        xSFWypyaugBulZHGg9Eooj9hP9Jwxp+PNtOf63MgncO1t/z9p/OLOe6nxFxfuKrYDqQq9X
+        BkDuH/74IWCfw9h1cdXCAah0WfNPgu0=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-344-Xzv_q1QMPSGREqzecYt-aA-1; Wed, 19 Feb 2020 17:29:35 -0500
+X-MC-Unique: Xzv_q1QMPSGREqzecYt-aA-1
+Received: by mail-lf1-f70.google.com with SMTP id x79so528043lff.19
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 14:29:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=77QMWZNt2P60hLQ8k2WkobTZOYuQcji0wAgaq/fXtCM=;
-        b=CcsEqrXCJpspqX8DiokqYWxIGdcqEzV8Js0Gz+uxpYERF7wqx/NFjrdmMYNP/NbxIF
-         OqE9h0mva18eg5UrCreAICioVRTTHAtq7d1KeLo4R0uQUH2ZH+/0/HxJt8xkU/O2OQyf
-         /GzO3+GWQs/Fi2GiGRkBXCkgNAaPq+RWVpqeEeLIdGr+Nz2K4Rz8lWRjqnRqJrh75F/u
-         tg7W7dhn04heILZ4d96AhWeSpW5jRTErHtyTOA++322PuLRUGkttKrvvUv4hyaO9ilPw
-         kk4GqlZ55A0cO0SgkgkYN70K9NilVGqXHqO6Hix6/39oc5LpL7NCWWPy24PL2Sn9I4Sl
-         +mvw==
-X-Gm-Message-State: APjAAAWM7+iEY+XTnpUT00vC60TtYsBIr507ePmqhu+ezmTiujN2beJV
-        xuz19Q77RO/Tcnop9ARwVApZJbAQ6SmS+0IJJGo=
-X-Google-Smtp-Source: APXvYqz3a4ETeSJ5fGaTDg5stUvGWjGnVZRnuL45qseQ2+wWXS+F973/E91acebkXk/T6RuR5NdcLVXrNcqB+TKtGQ8=
-X-Received: by 2002:ac8:4050:: with SMTP id j16mr23557464qtl.171.1582151207577;
- Wed, 19 Feb 2020 14:26:47 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=BRybc8sxCddd24vT1nlye7r7O7R0DpcpTVIioA7SFcI=;
+        b=dXuD82+9MrBZyo/w1DcDuVk5IDFMnE8DRTYP6ZTYL4Mw0jw/sqFDBT4TVhgqo4pjgD
+         8M4jfIN5VEQKuCOKtXW3Xydr/tsug5TTX4hWI+HyWcyc5vLV5rzx92a1MISdod3Orwb3
+         pQQwiS/E8RAuqSWT9HBpzycrJr1kLMPCA9bYcr62WFDHZSwWeKF8m8sqC14WlpCVaDoI
+         44ziNp5c671ta6ajTsp7Fv+xz4VNgpiyJPWODXwWSNJ3HvFHxc1bkTXRNPOp18rNjOM4
+         /8kgiGg8hOdLaPMK/wBuetonoFsHJMJWb3F+6D4z5yUSr6hHYM1imvRPZr1Np6IwxvZf
+         vwCw==
+X-Gm-Message-State: APjAAAW4rLkpMC+4wXLevc4IHuCFp7latJAKA7P8p4e6zJxTHUomH28G
+        TSrHClKR7CTe/IQhuI/cDsGj0/tdPUTKgO5fWuMOvyXES07xlxB8Y/pl6cwge1+32MHkt+9Icpf
+        SJJXOlT/DpVzK2xg8
+X-Received: by 2002:ac2:555c:: with SMTP id l28mr14691680lfk.52.1582151374212;
+        Wed, 19 Feb 2020 14:29:34 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxc6aVcfJnfP1VotH2usBJXR3Riq0jeCoNz2ypR8KxRW6Ovyvnd8eBA9IpMzPUNtB288v3RHw==
+X-Received: by 2002:ac2:555c:: with SMTP id l28mr14691666lfk.52.1582151373951;
+        Wed, 19 Feb 2020 14:29:33 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y11sm592004lfc.27.2020.02.19.14.29.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 14:29:33 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 1260B180365; Wed, 19 Feb 2020 23:29:30 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Yonghong Song <yhs@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
+        ast@fb.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf] libbpf: Sanitise internal map names so they are not rejected by the kernel
+In-Reply-To: <75035604-6cf8-515e-c0b0-569758ffa2e1@fb.com>
+References: <20200217171701.215215-1-toke@redhat.com> <9ddddbd6-aca2-61ae-b864-0f12d7fd33b4@iogearbox.net> <a0923745-ee34-3eb0-7f9b-31cec99661ec@fb.com> <87sgj7yhif.fsf@toke.dk> <e7a1f042-a3d7-ad25-e195-fdd5f8b78680@iogearbox.net> <878skyyipy.fsf@toke.dk> <75035604-6cf8-515e-c0b0-569758ffa2e1@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 19 Feb 2020 23:29:30 +0100
+Message-ID: <87imk2w6r9.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20200219133012.7cb6ac9e@carbon> <CAADnVQKQRKtDz0Boy=-cudc4eKGXB-yParGZv6qvYcQR4uMUQQ@mail.gmail.com>
- <20200219180348.40393e28@carbon> <CAEf4Bza9imKymHfv_LpSFE=kNB5=ZapTS3SCdeZsDdtrUrUGcg@mail.gmail.com>
- <20200219192854.6b05b807@carbon> <CAEf4BzaRAK6-7aCCVOA6hjTevKuxgvZZnHeVgdj_ZWNn8wibYQ@mail.gmail.com>
- <20200219210609.20a097fb@carbon> <CAEUSe79Vn8wr=BOh0RzccYij_snZDY=2XGmHmR494wsQBBoo5Q@mail.gmail.com>
-In-Reply-To: <CAEUSe79Vn8wr=BOh0RzccYij_snZDY=2XGmHmR494wsQBBoo5Q@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Feb 2020 14:26:36 -0800
-Message-ID: <CAEf4BzZgjJjGLzcrzMhTLU8ESSCSxdAHuDPd52aQU1zVKxqBzg@mail.gmail.com>
-Subject: Re: Kernel 5.5.4 build fail for BPF-selftests with latest LLVM
-To:     =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 1:59 PM Daniel D=C3=ADaz <daniel.diaz@linaro.org> w=
-rote:
->
-> Hello!
->
-> On Wed, 19 Feb 2020 at 14:06, Jesper Dangaard Brouer <brouer@redhat.com> =
-wrote:
-> >
-> > On Wed, 19 Feb 2020 10:38:45 -0800
-> > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > > On Wed, Feb 19, 2020 at 10:29 AM Jesper Dangaard Brouer
-> > > <brouer@redhat.com> wrote:
-> > > >
-> > > > On Wed, 19 Feb 2020 09:38:50 -0800
-> > > > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> > > >
-> > > > > On Wed, Feb 19, 2020 at 9:04 AM Jesper Dangaard Brouer
-> > > > > <brouer@redhat.com> wrote:
-> > > > > >
-> > > > > > On Wed, 19 Feb 2020 08:41:27 -0800
-> > > > > > Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > > On Wed, Feb 19, 2020 at 4:30 AM Jesper Dangaard Brouer
-> > > > > > > <brouer@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > I'm willing to help out, such that we can do either version=
- or feature
-> > > > > > > > detection, to either skip compiling specific test programs =
-or at least
-> > > > > > > > give users a proper warning of they are using a too "old" L=
-LVM version.
-> > > > > > > ...
-> > > > > > > > progs/test_core_reloc_bitfields_probed.c:47:13: error: use =
-of unknown builtin '__builtin_preserve_field_info' [-Wimplicit-function-dec=
-laration]
-> > > > > > > >         out->ub1 =3D BPF_CORE_READ_BITFIELD_PROBED(in, ub1)=
-;
-> > > > > > >
-> > > > > > > imo this is proper warning message already.
-> > > > > >
-> > > > > > This is an error, not a warning.  The build breaks as the make =
-process stops.
-> > > > > >
-> > > > >
-> > > > > Latest Clang was a requirement for building and running all selft=
-ests
-> > > > > for a long time now. There were few previous discussions on maili=
-ng
-> > > > > list about this and each time the conclusion was the same: latest
-> > > > > Clang is a requirement for BPF selftests.
-> > > >
-> > > > The latest Clang is 9.0.1, and it doesn't build with that.
-> > >
-> > > Latest as in "latest built from sources".
-> >
-> > When I download a specific kernel release, how can I know what LLVM
-> > git-hash or version I need (to use BPF-selftests)?
-> >
-> > Do you think it is reasonable to require end-users to compile their own
-> > bleeding edge version of LLVM, to use BPF-selftests?
-> >
-> > I do hope that some end-users of BPF-selftests will be CI-systems.
-> > That also implies that CI-system maintainers need to constantly do
-> > "latest built from sources" of LLVM git-tree to keep up.  Is that a
-> > reasonable requirement when buying a CI-system in the cloud?
->
-> We [1] are end users of kselftests and many other test suites [2]. We
-> run all of our testing on every git-push on linux-stable-rc, mainline,
-> and linux-next -- approximately 1 million tests per week. We have a
-> dedicated engineering team looking after this CI infrastructure and
-> test results, and as such, I can wholeheartedly echo Jesper's
-> sentiment here: We would really like to help kernel maintainers and
-> developers by automatically testing their code in real hardware, but
-> the BPF kselftests are difficult to work with from a CI perspective.
-> We have caught and reported [3] many [4] build [5] failures [6] in the
-> past for libbpf/Perf, but building is just one of the pieces. We are
-> unable to run the entire BPF kselftests because only a part of the
-> code builds, so our testing is very limited there.
->
-> We hope that this situation can be improved and that our and everyone
-> else's automated testing can help you guys too. For this to work out,
-> we need some help.
+Yonghong Song <yhs@fb.com> writes:
 
-Is it hard to make sure that your CIs install latest builds of Clang,
-though? See [0], Clang has even latest Clang 11 snapshots available
-(though BPF selftests need only Clang 10 right now). In fact, libbpf's
-Github repo just got a support for building latest kernel + building
-latest selftests + running selftests in QEMU, performed for each PR
-([1]), in Travis CI. Making selftests silently being not built/run if
-Clang is too old will just hide problems without anyone noticing.
-
-  [0] http://apt.llvm.org/
-  [1] https://travis-ci.org/libbpf/libbpf/jobs/651838387?utm_medium=3Dnotif=
-ication&utm_source=3Dgithub_status
-
+> On 2/19/20 2:28 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>=20
+>>> On 2/18/20 5:42 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Yonghong Song <yhs@fb.com> writes:
+>>>>> On 2/18/20 6:40 AM, Daniel Borkmann wrote:
+>>>>>> On 2/17/20 6:17 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>>>>> The kernel only accepts map names with alphanumeric characters,
+>>>>>>> underscores
+>>>>>>> and periods in their name. However, the auto-generated internal map=
+ names
+>>>>>>> used by libbpf takes their prefix from the user-supplied BPF object=
+ name,
+>>>>>>> which has no such restriction. This can lead to "Invalid argument" =
+errors
+>>>>>>> when trying to load a BPF program using global variables.
+>>>>>>>
+>>>>>>> Fix this by sanitising the map names, replacing any non-allowed
+>>>>>>> characters
+>>>>>>> with underscores.
+>>>>>>>
+>>>>>>> Fixes: d859900c4c56 ("bpf, libbpf: support global data/bss/rodata
+>>>>>>> sections")
+>>>>>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>>>>>
+>>>>>> Makes sense to me, applied, thanks! I presume you had something like=
+ '-'
+>>>>>> in the
+>>>>>> global var leading to rejection?
+>>>>>
+>>>>> The C global variable cannot have '-'. I saw a complain in bcc mailing
+>>>>> list sometimes back like: if an object file is a-b.o, then we will
+>>>>> generate a map name like a-b.bss for the bss ELF section data. The
+>>>>> map name "a-b.bss" name will be rejected by the kernel. The workaround
+>>>>> is to change object file name. Not sure whether this is the only
+>>>>> issue which may introduce non [a-zA-Z0-9_] or not. But this patch ind=
+eed
+>>>>> should fix the issue I just described.
+>>>
+>>> Yep, meant object file name, just realized too late after sending. :/
+>>>
+>>>> Yes, this was exactly my problem; my object file is called
+>>>> 'xdp-dispatcher.o'. Fun error to track down :P
+>>>>
+>>>> Why doesn't the kernel allow dashes in the name anyway?
+>>>
+>>> Commit cb4d2b3f03d8 ("bpf: Add name, load_time, uid and map_ids to bpf_=
+prog_info")
+>>> doesn't state a specific reason, and we did later extend it via 3e0ddc4=
+f3ff1 ("bpf:
+>>> allow . char as part of the object name"). My best guess right now is p=
+otentially
+>>> not to confuse BPF's kallsyms handling with dashes etc.
+>>=20
+>> Right, OK, fair enough I suppose. I was just wondering since this is
+>> the second time I've run into hard-to-debug problems because of the
+>> naming restrictions.
+>>=20
+>> Really, it would be nice to have something like the netlink extack
+>> mechanism so the kernel can return something more than just an error
+>> code when a bpf() call fails. Is there any way to do something similar
+>> for a syscall? Could we invent something?
 >
-> [1] https://lkft.linaro.org/
-> [2] https://www.youtube.com/watch?v=3DR3H9fPhPf54&t=3D1m26s
-> [3] https://lore.kernel.org/bpf/CA+G9fYtAQGwf=3DOoEvHwbJpitcfhpfhy-ar+6FR=
-rWC_-ti7sUTg@mail.gmail.com/
-> [4] https://lore.kernel.org/stable/CA+G9fYtxRoK6D1_oMf9zQj8MW0JtPdphDDO1N=
-HcYQcoFNL5pjw@mail.gmail.com/
-> [5] https://lore.kernel.org/bpf/CA+G9fYssgDcBkiNGSV7BmjE4Tj1j1_fa4VTJFv3N=
-=3D2FHzewQLg@mail.gmail.com/
-> [6] https://lore.kernel.org/bpf/CA+G9fYsK8zn3jqF=3DWz6=3D8BBx4i1JTkv2h-LC=
-bjE11UJkcz_NEA@mail.gmail.com/
+> Currently, BPF_PROG_LOAD and BPF_BTF_LOAD has log_buf as part of syscall=
+=20
+> interface. Esp. for BPF_PROG_LOAD, maybe we could put some non-verifier=20
+> logs here?
+>
+> Maybe we could introduce log_buf to other syscall commands if there is
+> a great need in user space to get more details about the error code?
+
+Hmm, that's not a bad idea, actually. I guess I'll take a stab at that
+the next time I get really annoyed at having to track down an -EINVAL ;)
+
+Unless someone else beats me to it, of course, which would be great!
+
+-Toke
+
