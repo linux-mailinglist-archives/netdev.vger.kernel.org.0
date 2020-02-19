@@ -2,77 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF564163E38
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 08:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BCEC163EFB
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 09:26:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgBSHyE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Feb 2020 02:54:04 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:54295 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726582AbgBSHyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 02:54:04 -0500
-Received: by mail-il1-f200.google.com with SMTP id t4so19233296ili.21
-        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:54:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=bhiLhZ0hGFmHCjOA0xxswOfkox27Yu7xmMOMfRdjKnY=;
-        b=jhzpV6uDrRm+P0uCY8KEYrwKOKe1f5TYCvMkFUdtjxJNrlW5beBUm0SLe0KNd45IWD
-         s7OX8pnohxCDdeldgTJRaRci04V9RIIzhGX4ECfvGSJ5mPvyQ4Z5vE6N+xIAQKh/cnaF
-         Fde2VeKBMdUYxZDL0PK1ZFv8BpKDIt8mtV3iuY/Svp9dmYEHWbtUwg3FmaBGo35WwbLV
-         eL8QT+0tW5T6RjnyMve6cINDETu47z5UvTxwa+bqMDTZFn5kdIlY33jklNUXOcfgnC6G
-         myjmxWjFXOJRUsWdPKQmPAPQYfQg7vw1AdTfEuhVyjQzGB573h8MvbeMRK4svbzrj/1i
-         /O7w==
-X-Gm-Message-State: APjAAAWDy+wX8fYDc/2gYwKfy7enUQYXbOOSXXT7hxp+pWtmoS7NVANt
-        NgT4iigD60Uwy2dvM6/IqFZtBdJjhFx+k0/yIlmDxHjGrErn
-X-Google-Smtp-Source: APXvYqxGYY13aZOMM0BSOmDQMzSYZrf2qmPLxLF8eTHCcZFD8r1N2DfCNIuzDx8cL8jZ8cKMDsJUm0ShbBazBm0Pcb2Lzvn6MzqR
+        id S1726648AbgBSI03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 03:26:29 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39530 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726001AbgBSI03 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 03:26:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582100787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7GifVFb+0Kxr3UdPmgjUJ5WdA1mThVqvy94SyaGNd6c=;
+        b=WC75XsfJ/cioReVuc53ep0mNVB2kbDWMGlhcgsrugKxDEQk+I9rKPZOkkmuzmU096bqdpS
+        GPnlX8Z57QXLR9dLoIcpkGEaTw3bQ6imtFBpROzYkM4LnNRCZkmpmyRSQ2z+k+tzGDYh1t
+        RT0mySonNC9UKrRHqhqShFXi9k2I9Bk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-36-msCJ53M5OICQ-DahCdb5Lw-1; Wed, 19 Feb 2020 03:26:25 -0500
+X-MC-Unique: msCJ53M5OICQ-DahCdb5Lw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B2D8118AB2C3;
+        Wed, 19 Feb 2020 08:26:23 +0000 (UTC)
+Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D0FD55D9E5;
+        Wed, 19 Feb 2020 08:26:12 +0000 (UTC)
+Date:   Wed, 19 Feb 2020 09:26:11 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     toke@redhat.com, kuba@kernel.org, lorenzo@kernel.org,
+        netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        lorenzo.bianconi@redhat.com, andrew@lunn.ch, dsahern@kernel.org,
+        bpf@vger.kernel.org, brouer@redhat.com
+Subject: Re: [RFC net-next] net: mvneta: align xdp stats naming scheme to
+ mlx5 driver
+Message-ID: <20200219092611.1060dbb0@carbon>
+In-Reply-To: <20200218.154713.1411536344737312845.davem@davemloft.net>
+References: <526238d9bcc60500ed61da1a4af8b65af1af9583.1581984697.git.lorenzo@kernel.org>
+        <20200218132921.46df7f8b@kicinski-fedora-PC1C0HJN>
+        <87eeury1ph.fsf@toke.dk>
+        <20200218.154713.1411536344737312845.davem@davemloft.net>
 MIME-Version: 1.0
-X-Received: by 2002:a02:2101:: with SMTP id e1mr19970446jaa.29.1582098843467;
- Tue, 18 Feb 2020 23:54:03 -0800 (PST)
-Date:   Tue, 18 Feb 2020 23:54:03 -0800
-In-Reply-To: <0000000000006d7b1e059c7db653@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000908c50059ee9173a@google.com>
-Subject: Re: KASAN: use-after-free Read in bitmap_ip_ext_cleanup
-From:   syzbot <syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        bridge@lists.linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, florent.fourcot@wifirst.fr, fw@strlen.de,
-        jeremy@azazel.net, johannes.berg@intel.com,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        nikolay@cumulusnetworks.com, pablo@netfilter.org,
-        roopa@cumulusnetworks.com, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On Tue, 18 Feb 2020 15:47:13 -0800 (PST)
+David Miller <davem@davemloft.net> wrote:
 
-commit 32c72165dbd0e246e69d16a3ad348a4851afd415
-Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
-Date:   Sun Jan 19 21:06:49 2020 +0000
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Date: Tue, 18 Feb 2020 23:23:22 +0100
+>=20
+> > Jakub Kicinski <kuba@kernel.org> writes:
+> >  =20
+> >> On Tue, 18 Feb 2020 01:14:29 +0100 Lorenzo Bianconi wrote: =20
+> >>> Introduce "rx" prefix in the name scheme for xdp counters
+> >>> on rx path.
+> >>> Differentiate between XDP_TX and ndo_xdp_xmit counters
+> >>>=20
+> >>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org> =20
+> >>
+> >> Sorry for coming in late.
+> >>
+> >> I thought the ability to attach a BPF program to a fexit of another BPF
+> >> program will put an end to these unnecessary statistics. IOW I maintain
+> >> my position that there should be no ethtool stats for XDP.
+> >>
+> >> As discussed before real life BPF progs will maintain their own stats
+> >> at the granularity of their choosing, so we're just wasting datapath
+> >> cycles.
 
-    netfilter: ipset: use bitmap infrastructure completely
+Well, in practice we see that real-life[1] BPF progs don't maintain
+stats (as I agree they _should_), and an end-user of this showed up on
+XDP-newbies list, and I helped out, going in the complete wrong
+direction, when it was simply the XDP prog dropping these packets, due
+to builtin rate limiter.  It would have been so much easier to identify
+via a simple counter, that I could have asked for from the sysadm.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17079245e00000
-start commit:   8f8972a3 Merge tag 'mtd/fixes-for-5.5-rc7' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=b554d01b6c7870b17da2
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145948d6e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16202cc9e00000
+[1] https://gitlab.com/Dreae/compressor/
 
-If the result looks correct, please mark the bug fixed by replying with:
+> >>
+> >> The previous argument that the BPF prog stats are out of admin control
+> >> is no longer true with the fexit option (IIUC how that works). =20
+> >=20
+> > So you're proposing an admin that wants to keep track of XDP has to
+> > (permantently?) attach an fexit program to every running XDP program and
+> > use that to keep statistics? But presumably he'd first need to discover
+> > that XDP is enabled; which the ethtool stats is a good hint for :) =20
+>=20
+> Really, mistakes happen and a poorly implemented or inserted fexit
+> module should not be a reason to not have access to accurate and
+> working statistics for fundamental events.
 
-#syz fix: netfilter: ipset: use bitmap infrastructure completely
+Yes, exactly.  These statistics counters are only "basic" XDP events,
+that e.g. don't count the bytes.  They are only the first level of
+identifying what the system is doing.  When digging deeper we need
+tracepoint and fexit.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> I am therefore totally against requiring fexit for this functionality.
+> If you want more sophisticated events or custome ones, sure, but not
+> for this baseline stuff.
+
+I fully agree.
+
+> I do, however, think we need a way to turn off these counter bumps if
+> the user wishes to do so for maximum performance.
+
+I sort of agree, but having a mechanism to turn on/off these "basic"
+counters might cost more than just always having them always on.  Even
+the static_key infra will create sub-optimal code, which can throw-off
+the advantage.
+
+Maybe it is worth pointing out, that Lorenzo's code is doing something
+smart, which lowers the overhead.  The stats struct (mvneta_stats) that
+is passed to mvneta_run_xdp is not global, it only counts events in
+this NAPI cycle, and is first transferred to the global counters when
+drivers NAPI functions end, calling mvneta_update_stats().  (We can
+optimized this a bit more on this HW as it is not necessary to have u64
+long counters for these temp/non-global stats).
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
