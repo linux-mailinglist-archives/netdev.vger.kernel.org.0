@@ -2,82 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD14A16403D
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE3616407F
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 10:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgBSJWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 04:22:45 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40034 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbgBSJWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:22:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=2gmw5/9ku0lPrufppHRIvdpYWfVdw6IxhC1tSWasJ1c=; b=Xbq/0U78QKnv0b62Wvl6lMzLm
-        B/FLaDW5+HkPwJGMTeR+RQqvTXrXiwcGRqEcUOBwwC9Gqhab6eTJQ4dTkQiUalktx2cmVGb/bDJfO
-        PZBI0yp1iJO7koKijqpP/99yCVPGt85jmtg2FMwAiMKXEwESSqwLqcd4p2Owwkot4RhEu9q3JrjQ4
-        9OJZV+sDgz/BDEpBb6mj6ZbamX9PIGZrl3zvrgdRj/HvEaLH/NnjHiK61VYk3F8VXkCMQGNqsLOV8
-        B6KqdA6v84lWOiGAFK/fVskw1dgeVvOcFxuFLKAxxbDyyH3lo4jnMmc+vw6vlpypIgidRTJHfrnZd
-        5i6FqHoiw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49888)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4LYs-0004Sb-Pb; Wed, 19 Feb 2020 09:22:30 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4LYp-0001KX-Cp; Wed, 19 Feb 2020 09:22:27 +0000
-Date:   Wed, 19 Feb 2020 09:22:27 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Joel Johnson <mrjoel@lixil.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>, netdev@vger.kernel.org
-Subject: Re: mvneta: comphy regression with SolidRun ClearFog
-Message-ID: <20200219092227.GR25745@shell.armlinux.org.uk>
-References: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
+        id S1726609AbgBSJgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 04:36:09 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43665 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgBSJgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 04:36:09 -0500
+Received: by mail-pl1-f193.google.com with SMTP id p11so9318959plq.10;
+        Wed, 19 Feb 2020 01:36:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=USv22fMY4lRbm7kdOlrco6KeUFWgxCIZrYv0NUecR8k=;
+        b=mFl+Rpghcx4xs9gygrl7xbkfupYFtIeXXg7A2VrlMXSkKuMQsWKeCG26GbJDCiOieA
+         OjvFeZpZfmYjIpBwwOBC9csCzviJo3jbxes07OuwfMKnYxJUcVKvyfaQepkrHlLQx9es
+         OV7Iu2BxOSRlY1uWn0azWWlBlxhrfAL1rnIEVUnSViqd4vKaKk30ZnHvziLZcbICXXdJ
+         rLShTFl9eQRoiKGW0P2xPeeBunLdmhwGgSpuuQMZFkTJMTClvncjNGMTqkyzJhTPZ7l7
+         bVuNYv9kA+TX8kwieNjO4JqyjO3IVcfqL78VqmZ1CUZaxtive881yHsaUaEmaKDPtOo0
+         yKTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=USv22fMY4lRbm7kdOlrco6KeUFWgxCIZrYv0NUecR8k=;
+        b=BnqxSqgb2PCsdaQaiqsFx6PyJxYz4A8QlguJcIIK6LB6qseV1pRAe9qC/opNUtm1/Z
+         q2kTuAS1gmtlSj2KUBi2npYm/ys6/JvmZ7NUcjc9xk74+S5A4A7hXxwGpY+HEzjbOdXU
+         hVpa5xxZ+PwoYXsJOar9WFMD7nIGFDkxLopYce2iXGl7IbJrFEqq8LTe++FQVnz8ltpL
+         XFbveUc9719dJSVdDnIdYe6b7fL7GeVPKbtt0xmamfoSMCDmVCV8l3LWSGX3SWDCw2k6
+         OEsOgjkf8Fyyc6I4WByIQAnXT2hwcmaajRqP94bct8GfUzEK6+X/QPiXoGJyhVeumOXi
+         EyZQ==
+X-Gm-Message-State: APjAAAUMbtOMaR3X4PdQv3XPBrbLxvQYFqeT2wgZeNDX2PO0vOqHDZ73
+        i/zFEE4z/nfH3RIHD1KkySQ=
+X-Google-Smtp-Source: APXvYqyK7T17usTuMnhZLEVXZVGy6SV0GxYbz6ukrtcwQEV2x5dPjBIC/2rZ3TlaqMsCMFAuKp/yxQ==
+X-Received: by 2002:a17:902:9a09:: with SMTP id v9mr24385277plp.341.1582104968248;
+        Wed, 19 Feb 2020 01:36:08 -0800 (PST)
+Received: from localhost.localdomain ([146.196.37.220])
+        by smtp.googlemail.com with ESMTPSA id x197sm2119217pfc.1.2020.02.19.01.36.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 01:36:07 -0800 (PST)
+From:   Amol Grover <frextrite@gmail.com>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH] sunrpc: Pass lockdep expression to RCU lists
+Date:   Wed, 19 Feb 2020 15:05:05 +0530
+Message-Id: <20200219093504.16290-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 10:14:48PM -0700, Joel Johnson wrote:
-> In updating recently I'm encountering a regression with the mvneta driver on
-> SolidRun ClearFog Base devices. I originally filed the bug with Debian
-> (https://bugs.debian.org/951409) since I was using distro provided packages,
-> but after further investigation I have isolated the issue as related to
-> comphy support added during development for kernel version 5.1.
-> 
-> When booting stock kernels up to 5.0 everything works as expected with three
-> ethernet devices identified and functional. However, running any kernel 5.1
-> or later, I only have a single ethernet device available. The single device
-> available appears to be the one attached to the SoC itself and not connected
-> via SerDes lanes using comphy, i.e. the one defined at f1070000.ethernet.
-> 
-> With some log/diff assisted bisecting, I've been able to confirm that the
-> "tipping point" changeset is f548ced15f90, which actually performs the DT
-> change for the ClearFog family of devices. That's the commit at which the
-> failure starts, but is just the final enablement of the added feature in the
-> overall series. I've also tested booting the same kernel binary (including
-> up to v5.6-rc1) and only swapping the dtb for one excluding the problematic
-> commit and confirmed that simply changing the dtb results in all three
-> devices being functional, albeit obviously without comphy support.
+detail->hash_table[] is traversed using hlist_for_each_entry_rcu
+outside an RCU read-side critical section but under the protection
+of detail->hash_lock.
 
-Does debian have support for the comphy enabled in their kernel,
-which is controlled by CONFIG_PHY_MVEBU_A38X_COMPHY ?
+Hence, add corresponding lockdep expression to silence false-positive
+warnings, and harden RCU lists.
 
+Signed-off-by: Amol Grover <frextrite@gmail.com>
+---
+ net/sunrpc/cache.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/sunrpc/cache.c b/net/sunrpc/cache.c
+index f740cb51802a..5db5f5b94726 100644
+--- a/net/sunrpc/cache.c
++++ b/net/sunrpc/cache.c
+@@ -97,7 +97,8 @@ static struct cache_head *sunrpc_cache_add_entry(struct cache_detail *detail,
+ 	spin_lock(&detail->hash_lock);
+ 
+ 	/* check if entry appeared while we slept */
+-	hlist_for_each_entry_rcu(tmp, head, cache_list) {
++	hlist_for_each_entry_rcu(tmp, head, cache_list,
++				 lockdep_is_held(&detail->hash_lock)) {
+ 		if (detail->match(tmp, key)) {
+ 			if (cache_is_expired(detail, tmp)) {
+ 				hlist_del_init_rcu(&tmp->cache_list);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.24.1
+
