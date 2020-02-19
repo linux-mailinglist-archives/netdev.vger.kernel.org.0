@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A661165228
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:07:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBBE165223
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 23:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgBSWHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 17:07:18 -0500
+        id S1727893AbgBSWHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 17:07:09 -0500
 Received: from mga03.intel.com ([134.134.136.65]:62535 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727082AbgBSWG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 17:06:58 -0500
+        id S1727857AbgBSWHC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 17:07:02 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 14:06:57 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
-   d="scan'208";a="239824809"
+   d="scan'208";a="239824812"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.76])
   by orsmga006.jf.intel.com with ESMTP; 19 Feb 2020 14:06:53 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+Cc:     Avinash JD <avinash.dayanand@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 04/13] ice: Always clear the QRXFLXP_CNTXT register for VF Rx queues
-Date:   Wed, 19 Feb 2020 14:06:43 -0800
-Message-Id: <20200219220652.2255171-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 05/13] ice: Add DCBNL ops required to configure ETS in CEE for SW DCB
+Date:   Wed, 19 Feb 2020 14:06:44 -0800
+Message-Id: <20200219220652.2255171-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200219220652.2255171-1-jeffrey.t.kirsher@intel.com>
 References: <20200219220652.2255171-1-jeffrey.t.kirsher@intel.com>
@@ -40,64 +39,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Avinash JD <avinash.dayanand@intel.com>
 
-Currently when the PF reduces its number of channels via ethtool and
-then VFs are created there may be stale data for some of the Rx queues
-belonging to VFs. This happens when a VF reuses an Rx queue that was
-previously used by the PF. Specifically, the QRXFLXP_CNTXT register
-will have incorrect values. Fix this by always clearing the relevant
-values in the QRXFLXP_CNTXT register for VF queues.
+Couple of DCBNL ops are required for configuring ETS in SW DCB CEE mode. If
+these functions are not added, it'll break the CEE functionality.
 
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Avinash JD <avinash.dayanand@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_base.c       | 8 ++++++--
- drivers/net/ethernet/intel/ice/ice_hw_autogen.h | 1 +
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_dcb_nl.c | 43 +++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index 75cc5a366b26..54aa533f36d4 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -386,8 +386,8 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
- 	 /* Enable Flexible Descriptors in the queue context which
- 	  * allows this driver to select a specific receive descriptor format
- 	  */
-+	regval = rd32(hw, QRXFLXP_CNTXT(pf_q));
- 	if (vsi->type != ICE_VSI_VF) {
--		regval = rd32(hw, QRXFLXP_CNTXT(pf_q));
- 		regval |= (rxdid << QRXFLXP_CNTXT_RXDID_IDX_S) &
- 			QRXFLXP_CNTXT_RXDID_IDX_M;
+diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_nl.c b/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
+index c572aa5c28e0..589b820a6b5b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
++++ b/drivers/net/ethernet/intel/ice/ice_dcb_nl.c
+@@ -540,6 +540,30 @@ ice_dcbnl_get_pg_tc_cfg_rx(struct net_device *netdev, int prio,
+ 	*pgid = pi->local_dcbx_cfg.etscfg.prio_table[prio];
+ }
  
-@@ -398,8 +398,12 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
- 		regval |= (0x03 << QRXFLXP_CNTXT_RXDID_PRIO_S) &
- 			QRXFLXP_CNTXT_RXDID_PRIO_M;
++/**
++ * ice_dcbnl_set_pg_tc_cfg_rx
++ * @netdev: relevant netdev struct
++ * @prio: corresponding user priority
++ * @prio_type: the traffic priority type
++ * @pgid: the PG ID
++ * @bw_pct: BW percentage for corresponding BWG
++ * @up_map: prio mapped to corresponding TC
++ *
++ * lldpad requires this function pointer to be non-NULL to complete CEE config.
++ */
++static void
++ice_dcbnl_set_pg_tc_cfg_rx(struct net_device *netdev,
++			   int __always_unused prio,
++			   u8 __always_unused prio_type,
++			   u8 __always_unused pgid,
++			   u8 __always_unused bw_pct,
++			   u8 __always_unused up_map)
++{
++	struct ice_pf *pf = ice_netdev_to_pf(netdev);
++
++	dev_dbg(ice_pf_to_dev(pf), "Rx TC PG Config Not Supported.\n");
++}
++
+ /**
+  * ice_dcbnl_get_pg_bwg_cfg_rx - Get CEE PG BW Rx config
+  * @netdev: pointer to netdev struct
+@@ -559,6 +583,23 @@ ice_dcbnl_get_pg_bwg_cfg_rx(struct net_device *netdev, int __always_unused pgid,
+ 	*bw_pct = 0;
+ }
  
--		wr32(hw, QRXFLXP_CNTXT(pf_q), regval);
-+	} else {
-+		regval &= ~(QRXFLXP_CNTXT_RXDID_IDX_M |
-+			    QRXFLXP_CNTXT_RXDID_PRIO_M |
-+			    QRXFLXP_CNTXT_TS_M);
- 	}
-+	wr32(hw, QRXFLXP_CNTXT(pf_q), regval);
- 
- 	/* Absolute queue number out of 2K needs to be passed */
- 	err = ice_write_rxq_ctx(hw, &rlan_ctx, pf_q);
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index 43e4efbccd8e..1d37a9f02c1c 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -85,6 +85,7 @@
- #define QRXFLXP_CNTXT_RXDID_IDX_M		ICE_M(0x3F, 0)
- #define QRXFLXP_CNTXT_RXDID_PRIO_S		8
- #define QRXFLXP_CNTXT_RXDID_PRIO_M		ICE_M(0x7, 8)
-+#define QRXFLXP_CNTXT_TS_M			BIT(11)
- #define GLGEN_RSTAT				0x000B8188
- #define GLGEN_RSTAT_DEVSTATE_M			ICE_M(0x3, 0)
- #define GLGEN_RSTCTL				0x000B8180
++/**
++ * ice_dcbnl_set_pg_bwg_cfg_rx
++ * @netdev: the corresponding netdev
++ * @pgid: corresponding TC
++ * @bw_pct: BW percentage for given TC
++ *
++ * lldpad requires this function pointer to be non-NULL to complete CEE config.
++ */
++static void
++ice_dcbnl_set_pg_bwg_cfg_rx(struct net_device *netdev, int __always_unused pgid,
++			    u8 __always_unused bw_pct)
++{
++	struct ice_pf *pf = ice_netdev_to_pf(netdev);
++
++	dev_dbg(ice_pf_to_dev(pf), "Rx BWG PG Config Not Supported.\n");
++}
++
+ /**
+  * ice_dcbnl_get_cap - Get DCBX capabilities of adapter
+  * @netdev: pointer to netdev struct
+@@ -805,6 +846,8 @@ static const struct dcbnl_rtnl_ops dcbnl_ops = {
+ 	.getpermhwaddr = ice_dcbnl_get_perm_hw_addr,
+ 	.setpgtccfgtx = ice_dcbnl_set_pg_tc_cfg_tx,
+ 	.setpgbwgcfgtx = ice_dcbnl_set_pg_bwg_cfg_tx,
++	.setpgtccfgrx = ice_dcbnl_set_pg_tc_cfg_rx,
++	.setpgbwgcfgrx = ice_dcbnl_set_pg_bwg_cfg_rx,
+ 	.getpgtccfgtx = ice_dcbnl_get_pg_tc_cfg_tx,
+ 	.getpgbwgcfgtx = ice_dcbnl_get_pg_bwg_cfg_tx,
+ 	.getpgtccfgrx = ice_dcbnl_get_pg_tc_cfg_rx,
 -- 
 2.24.1
 
