@@ -2,196 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 066A8163E03
-	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 08:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF564163E38
+	for <lists+netdev@lfdr.de>; Wed, 19 Feb 2020 08:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgBSHlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 02:41:13 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10641 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726604AbgBSHlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 02:41:12 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 948E290C984EFA84C4DC;
-        Wed, 19 Feb 2020 15:41:09 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Wed, 19 Feb 2020
- 15:41:01 +0800
-Subject: Re: [RFC rdma-next] RDMA/core: Add attribute WQ_MEM_RECLAIM to
- workqueue "infiniband"
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Jason Gunthorpe <jgg@ziepe.ca>, Lang Cheng <chenglang@huawei.com>,
-        <dledford@redhat.com>, <davem@davemloft.net>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, Saeed Mahameed <saeedm@mellanox.com>,
-        <bhaktipriya96@gmail.com>, <tj@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-References: <1581996935-46507-1-git-send-email-chenglang@huawei.com>
- <20200218153156.GD31668@ziepe.ca>
- <212eda31-cc86-5487-051b-cb51c368b6fe@huawei.com>
- <20200219064507.GC15239@unreal>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <1155d15f-4188-e5cd-3e4a-6e0c52e9b1eb@huawei.com>
-Date:   Wed, 19 Feb 2020 15:40:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726734AbgBSHyE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Feb 2020 02:54:04 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:54295 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726582AbgBSHyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 02:54:04 -0500
+Received: by mail-il1-f200.google.com with SMTP id t4so19233296ili.21
+        for <netdev@vger.kernel.org>; Tue, 18 Feb 2020 23:54:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:content-transfer-encoding;
+        bh=bhiLhZ0hGFmHCjOA0xxswOfkox27Yu7xmMOMfRdjKnY=;
+        b=jhzpV6uDrRm+P0uCY8KEYrwKOKe1f5TYCvMkFUdtjxJNrlW5beBUm0SLe0KNd45IWD
+         s7OX8pnohxCDdeldgTJRaRci04V9RIIzhGX4ECfvGSJ5mPvyQ4Z5vE6N+xIAQKh/cnaF
+         Fde2VeKBMdUYxZDL0PK1ZFv8BpKDIt8mtV3iuY/Svp9dmYEHWbtUwg3FmaBGo35WwbLV
+         eL8QT+0tW5T6RjnyMve6cINDETu47z5UvTxwa+bqMDTZFn5kdIlY33jklNUXOcfgnC6G
+         myjmxWjFXOJRUsWdPKQmPAPQYfQg7vw1AdTfEuhVyjQzGB573h8MvbeMRK4svbzrj/1i
+         /O7w==
+X-Gm-Message-State: APjAAAWDy+wX8fYDc/2gYwKfy7enUQYXbOOSXXT7hxp+pWtmoS7NVANt
+        NgT4iigD60Uwy2dvM6/IqFZtBdJjhFx+k0/yIlmDxHjGrErn
+X-Google-Smtp-Source: APXvYqxGYY13aZOMM0BSOmDQMzSYZrf2qmPLxLF8eTHCcZFD8r1N2DfCNIuzDx8cL8jZ8cKMDsJUm0ShbBazBm0Pcb2Lzvn6MzqR
 MIME-Version: 1.0
-In-Reply-To: <20200219064507.GC15239@unreal>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a02:2101:: with SMTP id e1mr19970446jaa.29.1582098843467;
+ Tue, 18 Feb 2020 23:54:03 -0800 (PST)
+Date:   Tue, 18 Feb 2020 23:54:03 -0800
+In-Reply-To: <0000000000006d7b1e059c7db653@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000908c50059ee9173a@google.com>
+Subject: Re: KASAN: use-after-free Read in bitmap_ip_ext_cleanup
+From:   syzbot <syzbot+b554d01b6c7870b17da2@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        bridge@lists.linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, florent.fourcot@wifirst.fr, fw@strlen.de,
+        jeremy@azazel.net, johannes.berg@intel.com,
+        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        nikolay@cumulusnetworks.com, pablo@netfilter.org,
+        roopa@cumulusnetworks.com, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+cc Bhaktipriya, Tejun and Jeff
+syzbot suspects this bug was fixed by commit:
 
-On 2020/2/19 14:45, Leon Romanovsky wrote:
-> On Wed, Feb 19, 2020 at 09:13:23AM +0800, Yunsheng Lin wrote:
->> On 2020/2/18 23:31, Jason Gunthorpe wrote:
->>> On Tue, Feb 18, 2020 at 11:35:35AM +0800, Lang Cheng wrote:
->>>> The hns3 driver sets "hclge_service_task" workqueue with
->>>> WQ_MEM_RECLAIM flag in order to guarantee forward progress
->>>> under memory pressure.
->>>
->>> Don't do that. WQ_MEM_RECLAIM is only to be used by things interlinked
->>> with reclaimed processing.
->>>
->>> Work on queues marked with WQ_MEM_RECLAIM can't use GFP_KERNEL
->>> allocations, can't do certain kinds of sleeps, can't hold certain
->>> kinds of locks, etc.
+commit 32c72165dbd0e246e69d16a3ad348a4851afd415
+Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
+Date:   Sun Jan 19 21:06:49 2020 +0000
 
-By the way, what kind of sleeps and locks can not be done in the work
-queued to wq marked with WQ_MEM_RECLAIM?
+    netfilter: ipset: use bitmap infrastructure completely
 
->>
->> From mlx5 driver, it seems that there is GFP_KERNEL allocations
->> on wq marked with WQ_MEM_RECLAIM too:
->>
->> mlx5e_tx_timeout_work() -> mlx5e_safe_reopen_channels() ->
->> mlx5e_safe_switch_channels() -> mlx5e_open_channels()
->>
->> kcalloc() is called with GFP_KERNEL in mlx5e_open_channels(),
->> and mlx5e_tx_timeout_work() is queued with priv->wq, which is
->> allocated with WQ_MEM_RECLAIM flags. see:
->>
->> mlx5e_netdev_init() -> create_singlethread_workqueue()
-> 
-> There are two reasons for that, first mlx5 driver was written far before
-> WQ_MEM_RECLAIM usage was clarified, second mlx5 has bugs.
-> 
->>
->>
->> From the comment in kernel/workqueue.c, the work queued with
->> wq with WQ_MEM_RECLAIM flag set seems to be executed without
->> blocking under some rare case. I still not quite understand
->> the comment, and I can not find any doc that point out the
->> GFP_KERNEL allocations can not be done in wq with WQ_MEM_RECLAIM
->> yet. Is there any doc that mentions that GFP_KERNEL allocations
->> can not be done in wq with WQ_MEM_RECLAIM?
-> 
-> It is whole purpose of WQ_MEM_RECLAIM flag - allow progress in case of
-> memory pressure. Allocation memory while we are under memory pressure
-> is an invitation for a disaster.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17079245e00000
+start commit:   8f8972a3 Merge tag 'mtd/fixes-for-5.5-rc7' of git://git.ke..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9290aeb7e6cf1c4
+dashboard link: https://syzkaller.appspot.com/bug?extid=b554d01b6c7870b17da2
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145948d6e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16202cc9e00000
 
-Ok, make sense.
+If the result looks correct, please mark the bug fixed by replying with:
 
-> 
->>
->>
->> /**
->>  * rescuer_thread - the rescuer thread function
->>  * @__rescuer: self
->>  *
->>  * Workqueue rescuer thread function.  There's one rescuer for each
->>  * workqueue which has WQ_MEM_RECLAIM set.
->>  *
->>  * Regular work processing on a pool may block trying to create a new
->>  * worker which uses GFP_KERNEL allocation which has slight chance of
->>  * developing into deadlock if some works currently on the same queue
->>  * need to be processed to satisfy the GFP_KERNEL allocation.  This is
->>  * the problem rescuer solves.
->>  *
->>  * When such condition is possible, the pool summons rescuers of all
->>  * workqueues which have works queued on the pool and let them process
->>  * those works so that forward progress can be guaranteed.
->>  *
->>  * This should happen rarely.
->>  *
->>  * Return: 0
->>  */
->>
->>
->> The below is the reason we add the sets "hclge_service_task" workqueue
->> with WQ_MEM_RECLAIM through analysing why other ethernet drivers has
->> allocated wq with WQ_MEM_RECLAIM flag, I may be wrong about that:
-> 
-> Many drivers are developed using copy/paste technique, so it is wrong
-> to assume that "other ethernet drivers" did the right thing.
-> 
->>
->> hns3 ethernet driver may be used as the low level transport of a
->> network file system, memory reclaim data path may depend on the
->> worker in hns3 driver to bring back the ethernet link so that it flush
->> the some cache to network based disk.
-> 
-> Unlikely that this "network file system" dependency on ethernet link is correct.
+#syz fix: netfilter: ipset: use bitmap infrastructure completely
 
-Ok, I may be wrong about the above usecase.
-but the below commit explicitly state that network devices may be used in
-memory reclaim path.
-
-0a38c17a21a0 ("fm10k: Remove create_workqueue"):
-
-fm10k: Remove create_workqueue
-
-alloc_workqueue replaces deprecated create_workqueue().
-
-A dedicated workqueue has been used since the workitem (viz
-fm10k_service_task, which manages and runs other subtasks) is involved in
-normal device operation and requires forward progress under memory
-pressure.
-
-create_workqueue has been replaced with alloc_workqueue with max_active
-as 0 since there is no need for throttling the number of active work
-items.
-
-Since network devices may be used in memory reclaim path,
-WQ_MEM_RECLAIM has been set to guarantee forward progress.
-
-flush_workqueue is unnecessary since destroy_workqueue() itself calls
-drain_workqueue() which flushes repeatedly till the workqueue
-becomes empty. Hence the call to flush_workqueue() has been dropped.
-
-Signed-off-by: Bhaktipriya Shridhar <bhaktipriya96@gmail.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
-So:
-1. Maybe the above commit log is misleading, and network device driver's
-   wq does not need the WQ_MEM_RECLAIM flag, then maybe document what can
-   not be done in the work queued to wq marked with WQ_MEM_RECLAIM, and
-   remove the WQ_MEM_RECLAIM flag for the wq of network device driver.
-
-
-2. If the network device driver's wq does need the WQ_MEM_RECLAIM flag, then
-   hns3 may have tow problems here: WQ_MEM_RECLAIM wq flushing !WQ_MEM_RECLAIM
-   wq problem and GFP_KERNEL allocations in the work queued to WQ_MEM_RECLAIM wq.
-
-> 
-> Thanks
-> 
->>
->>>
->>> Jason
->>>
->>>
->>
-> 
-> .
-> 
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
