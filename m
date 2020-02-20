@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B11B4166930
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:57:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D75B116696E
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:59:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729334AbgBTU5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 15:57:04 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:44168 "EHLO
+        id S1729510AbgBTU6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 15:58:22 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:44154 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729217AbgBTU4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 15:56:42 -0500
+        with ESMTP id S1729169AbgBTU4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 15:56:38 -0500
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1j4srh-0007aB-OP; Thu, 20 Feb 2020 21:56:09 +0100
+        id 1j4srl-0007at-AL; Thu, 20 Feb 2020 21:56:13 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 38DD7104092;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 72815104094;
         Thu, 20 Feb 2020 21:56:05 +0100 (CET)
-Message-Id: <20200220204618.703606294@linutronix.de>
+Message-Id: <20200220204618.815084606@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Thu, 20 Feb 2020 21:45:31 +0100
+Date:   Thu, 20 Feb 2020 21:45:32 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
@@ -36,7 +36,7 @@ Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [patch V2 14/20] bpf: Use migrate_disable() in hashtab code
+Subject: [patch V2 15/20] bpf: Provide recursion prevention helpers
 References: <20200220204517.863202864@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,58 +48,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The required protection is that the caller cannot be migrated to a
-different CPU as these places take either a hash bucket lock or might
-trigger a kprobe inside the memory allocator. Both scenarios can lead to
-deadlocks. The deadlock prevention is per CPU by incrementing a per CPU
-variable which temporarily blocks the invocation of BPF programs from perf
-and kprobes.
+The places which need to prevent the execution of trace type BPF programs
+to prevent deadlocks on the hash bucket lock do this open coded.
 
-Replace the preempt_disable/enable() pairs with migrate_disable/enable()
-pairs to prepare BPF to work on PREEMPT_RT enabled kernels. On a non-RT
-kernel this maps to preempt_disable/enable(), i.e. no functional change.
+Provide two inline functions, bpf_disable/enable_instrumentation() to
+replace these open coded protection constructs.
+
+Use migrate_disable/enable() instead of preempt_disable/enable() right away
+so this works on RT enabled kernels. On a !RT kernel migrate_disable /
+enable() are mapped to preempt_disable/enable().
+
+These helpers use this_cpu_inc/dec() instead of __this_cpu_inc/dec() on an
+RT enabled kernel because migrate disabled regions are preemptible and
+preemption might hit in the middle of a RMW operation which can lead to
+inconsistent state.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- kernel/bpf/hashtab.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+V2: New patch. Use this_cpu_inc/dec() as pointed out by Mathieu.
+---
+ include/linux/bpf.h |   30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -1319,7 +1319,7 @@ static int
- 	}
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -961,6 +961,36 @@ int bpf_prog_array_copy(struct bpf_prog_
+ #ifdef CONFIG_BPF_SYSCALL
+ DECLARE_PER_CPU(int, bpf_prog_active);
  
- again:
--	preempt_disable();
++/*
++ * Block execution of BPF programs attached to instrumentation (perf,
++ * kprobes, tracepoints) to prevent deadlocks on map operations as any of
++ * these events can happen inside a region which holds a map bucket lock
++ * and can deadlock on it.
++ *
++ * Use the preemption safe inc/dec variants on RT because migrate disable
++ * is preemptible on RT and preemption in the middle of the RMW operation
++ * might lead to inconsistent state. Use the raw variants for non RT
++ * kernels as migrate_disable() maps to preempt_disable() so the slightly
++ * more expensive save operation can be avoided.
++ */
++static inline void bpf_disable_instrumentation(void)
++{
 +	migrate_disable();
- 	this_cpu_inc(bpf_prog_active);
- 	rcu_read_lock();
- again_nocopy:
-@@ -1339,7 +1339,7 @@ static int
- 		raw_spin_unlock_irqrestore(&b->lock, flags);
- 		rcu_read_unlock();
- 		this_cpu_dec(bpf_prog_active);
--		preempt_enable();
-+		migrate_enable();
- 		goto after_loop;
- 	}
- 
-@@ -1348,7 +1348,7 @@ static int
- 		raw_spin_unlock_irqrestore(&b->lock, flags);
- 		rcu_read_unlock();
- 		this_cpu_dec(bpf_prog_active);
--		preempt_enable();
-+		migrate_enable();
- 		kvfree(keys);
- 		kvfree(values);
- 		goto alloc;
-@@ -1398,7 +1398,7 @@ static int
- 
- 	rcu_read_unlock();
- 	this_cpu_dec(bpf_prog_active);
--	preempt_enable();
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		this_cpu_inc(bpf_prog_active);
++	else
++		__this_cpu_inc(bpf_prog_active);
++}
++
++static inline void bpf_enable_instrumentation(void)
++{
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		this_cpu_dec(bpf_prog_active);
++	else
++		__this_cpu_dec(bpf_prog_active);
 +	migrate_enable();
- 	if (bucket_cnt && (copy_to_user(ukeys + total * key_size, keys,
- 	    key_size * bucket_cnt) ||
- 	    copy_to_user(uvalues + total * value_size, values,
++}
++
+ extern const struct file_operations bpf_map_fops;
+ extern const struct file_operations bpf_prog_fops;
+ 
 
