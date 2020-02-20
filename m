@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9789A165785
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 07:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8206B165787
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 07:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727088AbgBTGXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 01:23:12 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42175 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726959AbgBTGXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 01:23:10 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 4so1383173pfz.9
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 22:23:10 -0800 (PST)
+        id S1727273AbgBTGXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 01:23:15 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:37172 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727158AbgBTGXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 01:23:14 -0500
+Received: by mail-pj1-f65.google.com with SMTP id m13so434092pjb.2
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 22:23:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=8qayNiEk6Ez597Hfv2WXjhuGkwTEv6woGfUiEMCan8o=;
-        b=WzZKvPCluiNn0EYIb2cJH7gk/Iwu48zGyL51qi6o50wqyXa0MHNh4UN34IwELQE+tL
-         4Yf/ExFaaZn8+jAbh6sW6rHSPTd19fobn/13Icre1F6EvGp00V+hJxevsi2emcp19IVo
-         QZCPxOy+/BZyRoUge1gQVhsmVL2dZWqhQh+Bk=
+        bh=BVbUzx4OtLJL33n3gcVzeyzzu3sZRJkzVIJtmTNV+t8=;
+        b=JKxOV9AmdvytuXIbHOqsVPLiEQIr2s/zJTnOGnJ0C9/B4mRzi71p9CyGQLE0WiyZG1
+         uCoBI9KY7JgQEXDxAxLhJ78/rqt7frpx3WhF7xrFGNEN/+3jrK/vKvgeYkdw9Tuf/+qv
+         SIP2lN2ClGaLU7i6KOgMBvHHUFhTWKwQ6Xy5Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=8qayNiEk6Ez597Hfv2WXjhuGkwTEv6woGfUiEMCan8o=;
-        b=YV59Tb0BTVMk6R0bLgsm2W7bHy15fcOJNxzFi2Bv3gRBlLz1Ys2k/0AOAHhNdg9U/M
-         rJUOtQ6TVCYMg+i3W1dRZnK5YXi2soIBS8lEg6pB6UaTruoIn1HTgYthNLjXvm4zMoEI
-         41kv57DmgObfTha39wAq/j70jfbJCL5mL8X7Zjn9WjZoFGeN23iY7MBMk8O9ED4ASYNE
-         nTdI5knSfBX4qTGmjJwQMPPewF5lyi79G1QYESLdi7W+r64TrTapkJ/r9c2JtZrIsDN2
-         9cBwC0/yQjn3m45dLke+iu75lQSHiBLw+QzCTXHG9ABzBl5B8tBzEw7br9TW774wJOIp
-         kVow==
-X-Gm-Message-State: APjAAAWbf2vYEz7uSHVVp9K8kjX/sFqbnUu/nUgq1/TF7OYMN7hw1xRz
-        PgePxTAMiOa1ASCQX/ADTIDQyA==
-X-Google-Smtp-Source: APXvYqxbFRQZq8cdLNzYWY9l0+FHpSJxlK3/FtLPNTsPI/zF7OARbBHjOSE/cwPT1SKoTZGUBiiXxg==
-X-Received: by 2002:a63:fe0a:: with SMTP id p10mr30850982pgh.96.1582179789982;
-        Wed, 19 Feb 2020 22:23:09 -0800 (PST)
+        bh=BVbUzx4OtLJL33n3gcVzeyzzu3sZRJkzVIJtmTNV+t8=;
+        b=i8LaYb2xYVzwPs6qeQk+UXhBRFn2Btrl/dPyPfCMVusVAPuPcfZUQ1EuOaZ2FRVauR
+         2iBEDPQVqyGg+I8GSh3A5696syPlR4lwVYo+feS5jFH6iH81vVBo3j/SV1lachSP/2aD
+         4ttU9c4Km3hdWeecFaL7Hp+TakW5VwOqoBOWfPjKlJEMzTzdIW3enI8lBK63QN6QRQjU
+         w6ufOG7dr1lIGMWBFqgsjf1KoSPy6P0/uVQU6MYBLdATH3ssFNFJqnXfh1N6yoT5ZoOJ
+         oPRCzEHQYvts3C//nayTncbl06eKcHs4OZLnGBEoO5DMMOoMfVA1+Yr/0haEp6CLRwRK
+         NGSg==
+X-Gm-Message-State: APjAAAXgWSaWXFa1trlf0hyhr1kMYSG6EQQi3jUkCDf9TZ3SacD+Cylv
+        55OFhbfLtHo2UVsRurmkRLD3Qw==
+X-Google-Smtp-Source: APXvYqzXN0ax5Db2wRJdkMHnt8sHgkOkIWDQT9FiYaQD9pDs6MV//rTXASYUMAmxULw00aCV9LuFzA==
+X-Received: by 2002:a17:90a:6c26:: with SMTP id x35mr1732741pjj.126.1582179792813;
+        Wed, 19 Feb 2020 22:23:12 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id i11sm1763457pjg.0.2020.02.19.22.23.08
+        by smtp.gmail.com with ESMTPSA id x21sm1755020pfq.76.2020.02.19.22.23.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 22:23:09 -0800 (PST)
+        Wed, 19 Feb 2020 22:23:11 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+To:     Pravin B Shelar <pshelar@ovn.org>
 Cc:     Alexander Potapenko <glider@google.com>,
         Kees Cook <keescook@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ip6_gre: Distribute switch variables for initialization
-Date:   Wed, 19 Feb 2020 22:23:07 -0800
-Message-Id: <20200220062307.68986-1-keescook@chromium.org>
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] openvswitch: Distribute switch variables for initialization
+Date:   Wed, 19 Feb 2020 22:23:09 -0800
+Message-Id: <20200220062309.69077-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -74,100 +72,78 @@ direct initializations, the warnings remain.
 To avoid these problems, move such variables into the "case" where
 they're used or lift them up into the main function body.
 
-net/ipv6/ip6_gre.c: In function ‘ip6gre_err’:
-net/ipv6/ip6_gre.c:440:32: warning: statement will never be executed [-Wswitch-unreachable]
-  440 |   struct ipv6_tlv_tnl_enc_lim *tel;
-      |                                ^~~
-
-net/ipv6/ip6_tunnel.c: In function ‘ip6_tnl_err’:
-net/ipv6/ip6_tunnel.c:520:32: warning: statement will never be executed [-Wswitch-unreachable]
-  520 |   struct ipv6_tlv_tnl_enc_lim *tel;
-      |                                ^~~
+net/openvswitch/flow_netlink.c: In function ‘validate_set’:
+net/openvswitch/flow_netlink.c:2711:29: warning: statement will never be executed [-Wswitch-unreachable]
+ 2711 |  const struct ovs_key_ipv4 *ipv4_key;
+      |                             ^~~~~~~~
 
 [1] https://bugs.llvm.org/show_bug.cgi?id=44916
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- net/ipv6/ip6_gre.c    |    8 +++++---
- net/ipv6/ip6_tunnel.c |   13 +++++++++----
- 2 files changed, 14 insertions(+), 7 deletions(-)
+ net/openvswitch/flow_netlink.c |   18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 55bfc5149d0c..781ca8c07a0d 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -437,8 +437,6 @@ static int ip6gre_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 		return -ENOENT;
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 7da4230627f5..288122eec7c8 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2708,10 +2708,6 @@ static int validate_set(const struct nlattr *a,
+ 		return -EINVAL;
  
- 	switch (type) {
--		struct ipv6_tlv_tnl_enc_lim *tel;
--		__u32 teli;
- 	case ICMPV6_DEST_UNREACH:
- 		net_dbg_ratelimited("%s: Path to destination invalid or inactive!\n",
- 				    t->parms.name);
-@@ -452,7 +450,10 @@ static int ip6gre_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 			break;
- 		}
- 		return 0;
--	case ICMPV6_PARAMPROB:
-+	case ICMPV6_PARAMPROB: {
-+		struct ipv6_tlv_tnl_enc_lim *tel;
-+		__u32 teli;
-+
- 		teli = 0;
- 		if (code == ICMPV6_HDR_FIELD)
- 			teli = ip6_tnl_parse_tlv_enc_lim(skb, skb->data);
-@@ -468,6 +469,7 @@ static int ip6gre_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 					    t->parms.name);
- 		}
- 		return 0;
-+	}
- 	case ICMPV6_PKT_TOOBIG:
- 		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
- 		return 0;
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 5d65436ad5ad..4703b09808d0 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -517,8 +517,6 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 	err = 0;
+ 	switch (key_type) {
+-	const struct ovs_key_ipv4 *ipv4_key;
+-	const struct ovs_key_ipv6 *ipv6_key;
+-	int err;
+-
+ 	case OVS_KEY_ATTR_PRIORITY:
+ 	case OVS_KEY_ATTR_SKB_MARK:
+ 	case OVS_KEY_ATTR_CT_MARK:
+@@ -2723,7 +2719,9 @@ static int validate_set(const struct nlattr *a,
+ 			return -EINVAL;
+ 		break;
  
- 	switch (*type) {
--		struct ipv6_tlv_tnl_enc_lim *tel;
--		__u32 mtu, teli;
- 	case ICMPV6_DEST_UNREACH:
- 		net_dbg_ratelimited("%s: Path to destination invalid or inactive!\n",
- 				    t->parms.name);
-@@ -531,7 +529,10 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 			rel_msg = 1;
- 		}
- 		break;
--	case ICMPV6_PARAMPROB:
-+	case ICMPV6_PARAMPROB: {
-+		struct ipv6_tlv_tnl_enc_lim *tel;
-+		__u32 teli;
+-	case OVS_KEY_ATTR_TUNNEL:
++	case OVS_KEY_ATTR_TUNNEL: {
++		int err;
 +
- 		teli = 0;
- 		if ((*code) == ICMPV6_HDR_FIELD)
- 			teli = ip6_tnl_parse_tlv_enc_lim(skb, skb->data);
-@@ -548,7 +549,10 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 					    t->parms.name);
- 		}
+ 		if (masked)
+ 			return -EINVAL; /* Masked tunnel set not supported. */
+ 
+@@ -2732,8 +2730,10 @@ static int validate_set(const struct nlattr *a,
+ 		if (err)
+ 			return err;
  		break;
--	case ICMPV6_PKT_TOOBIG:
 +	}
-+	case ICMPV6_PKT_TOOBIG: {
-+		__u32 mtu;
-+
- 		ip6_update_pmtu(skb, net, htonl(*info), 0, 0,
- 				sock_net_uid(net, NULL));
- 		mtu = *info - offset;
-@@ -562,6 +566,7 @@ ip6_tnl_err(struct sk_buff *skb, __u8 ipproto, struct inet6_skb_parm *opt,
- 			rel_msg = 1;
++	case OVS_KEY_ATTR_IPV4: {
++		const struct ovs_key_ipv4 *ipv4_key;
+ 
+-	case OVS_KEY_ATTR_IPV4:
+ 		if (eth_type != htons(ETH_P_IP))
+ 			return -EINVAL;
+ 
+@@ -2753,8 +2753,10 @@ static int validate_set(const struct nlattr *a,
+ 				return -EINVAL;
  		}
  		break;
 +	}
- 	case NDISC_REDIRECT:
- 		ip6_redirect(skb, net, skb->dev->ifindex, 0,
- 			     sock_net_uid(net, NULL));
++	case OVS_KEY_ATTR_IPV6: {
++		const struct ovs_key_ipv6 *ipv6_key;
+ 
+-	case OVS_KEY_ATTR_IPV6:
+ 		if (eth_type != htons(ETH_P_IPV6))
+ 			return -EINVAL;
+ 
+@@ -2781,7 +2783,7 @@ static int validate_set(const struct nlattr *a,
+ 			return -EINVAL;
+ 
+ 		break;
+-
++	}
+ 	case OVS_KEY_ATTR_TCP:
+ 		if ((eth_type != htons(ETH_P_IP) &&
+ 		     eth_type != htons(ETH_P_IPV6)) ||
+-- 
+2.20.1
+
 
