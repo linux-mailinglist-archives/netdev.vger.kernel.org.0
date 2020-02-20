@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2354B165368
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:13:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 224D116536E
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgBTAM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 19:12:59 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49306 "EHLO
+        id S1726736AbgBTARt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 19:17:49 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:49350 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgBTAM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 19:12:58 -0500
+        with ESMTP id S1726677AbgBTARt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 19:17:49 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 19D6B15BCDA3E;
-        Wed, 19 Feb 2020 16:12:58 -0800 (PST)
-Date:   Wed, 19 Feb 2020 16:12:55 -0800 (PST)
-Message-Id: <20200219.161255.733098365672070487.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     ozsh@mellanox.com, vladbu@mellanox.com, paulb@mellanox.com,
-        jiri@mellanox.com, kuba@kernel.org, netdev@vger.kernel.org,
-        roid@mellanox.com
-Subject: Re: [PATCH net-next v3 00/16] Handle multi chain hardware misses
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 954A215BCF421;
+        Wed, 19 Feb 2020 16:17:48 -0800 (PST)
+Date:   Wed, 19 Feb 2020 16:17:48 -0800 (PST)
+Message-Id: <20200219.161748.303311549500621079.davem@davemloft.net>
+To:     poros@redhat.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, ivecera@redhat.com
+Subject: Re: [PATCH net-next] phy: avoid unnecessary link-up delay in
+ polling mode
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <41b34b364a2656a6f3e37ba256161de477e7881d.camel@mellanox.com>
-References: <1581847296-19194-1-git-send-email-paulb@mellanox.com>
-        <41b34b364a2656a6f3e37ba256161de477e7881d.camel@mellanox.com>
+In-Reply-To: <20200218093555.948922-1-poros@redhat.com>
+References: <20200129101308.74185-1-poros@redhat.com>
+        <20200218093555.948922-1-poros@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Feb 2020 16:12:58 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Feb 2020 16:17:48 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Wed, 19 Feb 2020 02:43:08 +0000
+From: Petr Oros <poros@redhat.com>
+Date: Tue, 18 Feb 2020 10:35:55 +0100
 
-> On Sun, 2020-02-16 at 12:01 +0200, Paul Blakey wrote:
->> Hi David/Jakub/Saeed,
->> 
->> TC multi chain configuration can cause offloaded tc chains to miss in
->> hardware after jumping to some chain. In such cases the software
->> should
->> continue from the chain that was missed in hardware, as the hardware
->> may have
->> manipulated the packet and updated some counters.
->> 
+> commit 93c0970493c71f ("net: phy: consider latched link-down status in
+> polling mode") removed double-read of latched link-state register for
+> polling mode from genphy_update_link(). This added extra ~1s delay into
+> sequence link down->up.
+> Following scenario:
+>  - After boot link goes up
+>  - phy_start() is called triggering an aneg restart, hence link goes
+>    down and link-down info is latched.
+>  - After aneg has finished link goes up. In phy_state_machine is checked
+>    link state but it is latched "link is down". The state machine is
+>    scheduled after one second and there is detected "link is up". This
+>    extra delay can be avoided when we keep link-state register double read
+>    in case when link was down previously.
 > 
-> [...]
+> With this solution we don't miss a link-down event in polling mode and
+> link-up is faster.
 > 
->> Note that miss path handling of multi-chain rules is a required
->> infrastructure
->> for connection tracking hardware offload. The connection tracking
->> offload
->> series will follow this one.
->> 
+> Details about this quirky behavior on Realtek phy:
+> Without patch:
+> T0:    aneg is started, link goes down, link-down status is latched
+> T0+3s: state machine runs, up-to-date link-down is read
+> T0+4s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE==1),
+>        here i read link-down (BMSR_LSTATUS==0),
+> T0+5s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE==1),
+>        up-to-date link-up is read (BMSR_LSTATUS==1),
+>        phydev->link goes up, state change PHY_NOLINK to PHY_RUNNING
 > 
-> Hi Dave, 
+> With patch:
+> T0:    aneg is started, link goes down, link-down status is latched
+> T0+3s: state machine runs, up-to-date link-down is read
+> T0+4s: state machine runs, aneg is finished (BMSR_ANEGCOMPLETE==1),
+>        first BMSR read: BMSR_ANEGCOMPLETE==1 and BMSR_LSTATUS==0,
+>        second BMSR read: BMSR_ANEGCOMPLETE==1 and BMSR_LSTATUS==1,
+>        phydev->link goes up, state change PHY_NOLINK to PHY_RUNNING
 > 
-> As was agreed, i will apply this series and the two to follow to a side
-> branch until all the connection tracking offloads patchsets are posted
-> by Paul and reviewed/acked.
-> 
-> in case of no objection i will apply this patchset to allow Paul to
-> move forward with the other two connection tracking patchsets.
+> Signed-off-by: Petr Oros <poros@redhat.com>
 
-I have no objection to this series, can you setup a pull request with this
-series in it that I can pull from into net-next?
-
-Thanks.
+Applied, thank you.
