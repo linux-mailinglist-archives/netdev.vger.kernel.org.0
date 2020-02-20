@@ -2,137 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB3D16534C
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1460165354
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbgBTAEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 19:04:23 -0500
-Received: from www62.your-server.de ([213.133.104.62]:52554 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgBTAEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 19:04:22 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4ZK7-0005ZO-0U; Thu, 20 Feb 2020 01:04:11 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j4ZK6-000T1L-L3; Thu, 20 Feb 2020 01:04:10 +0100
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: Add sock ops get netns helpers
-To:     Lingpeng Chen <forrest0579@gmail.com>, bpf <bpf@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Petar Penkov <ppenkov.kernel@gmail.com>
-References: <20200206083515.10334-1-forrest0579@gmail.com>
- <20200218091541.107371-1-forrest0579@gmail.com>
- <20200218091541.107371-2-forrest0579@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <07e2568e-0256-29f5-1656-1ac80a69f229@iogearbox.net>
-Date:   Thu, 20 Feb 2020 01:04:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726842AbgBTAGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 19:06:35 -0500
+Received: from mga06.intel.com ([134.134.136.31]:62460 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726647AbgBTAGe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 19:06:34 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 16:06:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
+   d="scan'208";a="382965389"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.86]) ([134.134.177.86])
+  by orsmga004.jf.intel.com with ESMTP; 19 Feb 2020 16:06:34 -0800
+Subject: Re: [RFC PATCH v2 06/22] ice: add basic handler for devlink .info_get
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+ <20200214232223.3442651-7-jacob.e.keller@intel.com>
+ <20200218184552.7077647b@kicinski-fedora-PC1C0HJN>
+ <6b4dd025-bcf8-12de-99b0-1e05e16333e8@intel.com>
+ <20200219115757.5af395c5@kicinski-fedora-PC1C0HJN>
+ <70001e87-b369-bab4-f318-ad4514e7dcfb@intel.com>
+ <20200219154727.5b52aa73@kicinski-fedora-PC1C0HJN>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <1dd1cff3-dbbf-9b04-663d-15c7e4e5a3bd@intel.com>
+Date:   Wed, 19 Feb 2020 16:06:34 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200218091541.107371-2-forrest0579@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200219154727.5b52aa73@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.1/25728/Wed Feb 19 15:06:20 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 10:15 AM, Lingpeng Chen wrote:
-> Currently 5-tuple(sip+dip+sport+dport+proto) can't identify a
-> uniq connection because there may be multi net namespace.
-> For example, there may be a chance that netns a and netns b all
-> listen on 127.0.0.1:8080 and the client with same port 40782
-> connect to them. Without netns number, sock ops program
-> can't distinguish them.
-> Using bpf_sock_ops_get_netns helpers to get current connection
-> netns number to distinguish connections.
+On 2/19/2020 3:47 PM, Jakub Kicinski wrote:
+> On Wed, 19 Feb 2020 13:37:50 -0800 Jacob Keller wrote:
+>> Jakub,
+>>
+>> Thanks for your excellent feedback.
+>>
+>> On 2/19/2020 11:57 AM, Jakub Kicinski wrote:
+>>> On Wed, 19 Feb 2020 09:33:09 -0800 Jacob Keller wrote:  
+>>>> "fw.psid.api" -> what was the "nvm.psid". This I think needs a bit more
+>>>> work to define. It makes sense to me as some sort of "api" as (if I
+>>>> understand it correctly) it is the format for the parameters, but does
+>>>> not itself define the parameter contents.  
+>>>
+>>> Sounds good. So the contents of parameters would be covered by the
+>>> fw.bundle now and not have a separate version?
+>>>   
+>>
+>> I'm actually not sure if we have any way to identify the parameters.
+>> I'll ask around about that. My understanding is that these would include
+>> parameters that can be modified by the driver such as Wake on LAN
+>> settings, so I'm also not sure if they'd be covered in the fw.bundle
+>> either. The 'defaults' that were selected when the image was created
+>> would be covered, but changes to them wouldn't update the value.
+>>
+>> Hmmmmm.
 > 
-> Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
-> ---
->   include/uapi/linux/bpf.h |  8 +++++++-
->   net/core/filter.c        | 19 +++++++++++++++++++
->   2 files changed, 26 insertions(+), 1 deletion(-)
+> Ah, so these are just defaults, then if there's no existing version 
+> I wouldn't worry.
 > 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index f1d74a2bd234..3573907d15e0 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2892,6 +2892,11 @@ union bpf_attr {
->    *		Obtain the 64bit jiffies
->    *	Return
->    *		The 64 bit jiffies
-> + * u64 bpf_sock_ops_get_netns(struct bpf_sock_ops *bpf_socket)
+Ok.
 
-Nit: newline before the new helper signature starts above.
-
-> + *  Description
-> + *      Obtain netns id of sock
-> + * Return
-> + *      The current netns inum
->    */
->   #define __BPF_FUNC_MAPPER(FN)		\
->   	FN(unspec),			\
-> @@ -3012,7 +3017,8 @@ union bpf_attr {
->   	FN(probe_read_kernel_str),	\
->   	FN(tcp_send_ack),		\
->   	FN(send_signal_thread),		\
-> -	FN(jiffies64),
-> +	FN(jiffies64),			\
-> +	FN(sock_ops_get_netns),
-
-Please name this something more generic like FN(get_netns_id) or such. Definitely
-without the 'sock_ops' part so this can be remapped to various other prog types
-for the *_func_proto().
-
->   
->   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->    * function eBPF program intends to call
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index c180871e606d..f8e946aa46fc 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -4421,6 +4421,23 @@ static const struct bpf_func_proto bpf_sock_ops_cb_flags_set_proto = {
->   	.arg2_type	= ARG_ANYTHING,
->   };
->   
-> +BPF_CALL_1(bpf_sock_ops_get_netns, struct bpf_sock_ops_kern *, bpf_sock)
-> +{
-> +#ifdef CONFIG_NET_NS
-> +	struct sock *sk = bpf_sock->sk;
-> +
-> +	return (u64)sk->sk_net.net->ns.inum;
-> +#endif
-> +	return 0;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_sock_ops_get_netns_proto = {
-> +	.func		= bpf_sock_ops_get_netns,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_CTX,
-> +};
-> +
->   const struct ipv6_bpf_stub *ipv6_bpf_stub __read_mostly;
->   EXPORT_SYMBOL_GPL(ipv6_bpf_stub);
->   
-> @@ -6218,6 +6235,8 @@ sock_ops_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   	case BPF_FUNC_tcp_sock:
->   		return &bpf_tcp_sock_proto;
->   #endif /* CONFIG_INET */
-> +	case BPF_FUNC_sock_ops_get_netns:
-> +		return &bpf_sock_ops_get_netns_proto;
->   	default:
->   		return bpf_base_func_proto(func_id);
->   	}
+>>>> The original reason for using "fw" and "nvm" was because we (internally)
+>>>> use fw to mean the management firmware.. where as these APIs really
+>>>> combine the blocks and use "fw.mgmt" for the management firmware. Thus I
+>>>> think it makes sense to move from
+>>>>
+>>>> I also have a couple other oddities that need to be sorted out. We want
+>>>> to display the DDP version (piece of "firmware" that is loaded during
+>>>> driver load, and is not permanent to the NVM). In some sense this is our
+>>>> "fw.app", but because it's loaded by driver at load and not as
+>>>> permanently stored in the NVM... I'm not really sure that makes sense to
+>>>> put this as the "fw.app", since it is not updated or really touched by
+>>>> the firmware flash update.  
+>>>
+>>> Interesting, can DDP be persisted to the flash, though? Is there some
+>>> default DDP, or is it _never_ in the flash? 
+>>
+>> There's a version of this within the flash, but it is limited, and many
+>> device features get disabled if you don't load the DDP package file.
+>> (You may have seen patches for this for implementing "safe mode").
+>>
+>> My understanding is there is no mechanism for persisting a different DDP
+>> to the flash.
+> 
+> I see, so this really isn't just parser extensions.
 > 
 
+Right. I'm not entirely sure what pieces of logic the contents interact
+with.
+
+> I'm a little surprised you guys went this way, loading FW from disk
+> becomes painful for network boot and provisioning :S  All the first
+> stage images must have it built in, which is surprisingly painful.
+> 
+
+Right. I don't have the context for why this was chosen over making it a
+portion that can be updated independently. Unfortunately I don't think
+it's a decision that can be changed, at least not easily.
+
+> Perhaps the "safe mode" FW is enough to boot, but then I guess once
+> real FW is available there may be a loss of link as the device resets?
+> 
+
+it's enough to boot up and handle basic functionality. I'm not sure
+exactly how it would be handled in regards to device reset.
+
+>>> Does it not have some fun implications for firmware signing to have
+>>> part of the config/ucode loaded from the host?
+>>
+>> I'm not sure how it works exactly. As far as I know, the DDP file is
+>> itself signed.
+> 
+> Right, that'd make sense :)
+> 
+>>> IIRC you could also load multiple of those DDP packages? Perhaps they
+>>> could get names like fw.app0, fw.app1, etc?  
+>>
+>> You can load different ones, each has their own version and name
+>> embedded. However, only one can be loaded at any given time, so I'm not
+>> sure if multiples like this make sense.
+> 
+> I see. Maybe just fw.app works then..
+> 
+
+Ok
+
+>>> Also if DDP controls a
+>>> particular part of the datapath (parser?) feel free to come up with a
+>>> more targeted name, up to you.
+>>
+>> Right, it's my understanding that this defines the parsing logic, and
+>> not the complete datapath microcode.
+>>
+>> In theory, there could be at least 3 DDP versions
+>>
+>> 1) the version in the NVM, which would be the very basic "safe mode"
+>> compatible one.
+>>
+>> 2) the version in the ddp firmware file that we search for when we load
+>>
+>> 3) the one that actually got activated. It's a sort of
+>> first-come-first-serve and sticks around until a device global reset.
+>> This should in theory always be the same as (2) unless you do something
+>> weird like load different drivers on the multiple functions.
+>>
+>> I suppose we could use "running" and "stored" for this, to have "stored"
+>> be what's in the NVM, and "running" for the active one.. but that's ugly
+>> and misusing what stored vs running is supposed to represent.
+> 
+> Ouff. Having something loaded from disk breaks the running vs stored
+> comparison :( But I think Dave was pretty clear on his opinion about
+> load FW from disk and interpret it in the kernel to extract the version.
+>> Can we leave stored meaning "stored on the device" and running being
+> loaded on the chip?
+> 
+
+Yes.
+
+> It's perfectly fine for a component to only be reported in running and
+> not stored, nfp already does that:
+> 
+
+Right, that is my plan. I'll probably just display only the running DDP
+fields. If it turns out displaying the NVM default values makes sense
+then it could be done through another field something like
+"fw.app.default" or similar. Not convinced yet that it will be necessary
+or useful.
+
+Even in regards to other versions, I'm not entirely sure if I can read
+the values for what's "stored" vs what is running anyways.
+
+> https://elixir.bootlin.com/linux/v5.6-rc1/source/drivers/net/ethernet/netronome/nfp/nfp_devlink.c#L238
+> 
+
+Thanks,
+Jake
