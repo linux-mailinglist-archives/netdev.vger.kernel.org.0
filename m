@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DA81665C5
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 396831665D5
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:09:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728217AbgBTSEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 13:04:50 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56814 "EHLO
+        id S1728576AbgBTSJk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Feb 2020 13:09:40 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56888 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727298AbgBTSEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:04:50 -0500
+        with ESMTP id S1727298AbgBTSJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:09:40 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 78FDB15AC0C10;
-        Thu, 20 Feb 2020 10:04:49 -0800 (PST)
-Date:   Thu, 20 Feb 2020 10:04:48 -0800 (PST)
-Message-Id: <20200220.100448.49805640721461744.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net-next 00/15] mlxsw: Preparation for RTNL removal
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4460815AC0C26;
+        Thu, 20 Feb 2020 10:09:39 -0800 (PST)
+Date:   Thu, 20 Feb 2020 10:09:38 -0800 (PST)
+Message-Id: <20200220.100938.2134816727649118049.davem@davemloft.net>
+To:     ilias.apalodimas@linaro.org
+Cc:     netdev@vger.kernel.org, jonathan.lemon@gmail.com,
+        lorenzo@kernel.org, toke@redhat.com, brouer@redhat.com,
+        thomas.petazzoni@bootlin.com, jaswinder.singh@linaro.org,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com, hawk@kernel.org,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, bpf@vger.kernel.org
+Subject: Re: [PATCH net-next v5] net: page_pool: API cleanup and comments
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200220070800.364235-1-idosch@idosch.org>
-References: <20200220070800.364235-1-idosch@idosch.org>
+In-Reply-To: <20200220074155.765234-1-ilias.apalodimas@linaro.org>
+References: <20200220074155.765234-1-ilias.apalodimas@linaro.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 20 Feb 2020 10:04:49 -0800 (PST)
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 20 Feb 2020 10:09:40 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Thu, 20 Feb 2020 09:07:45 +0200
+From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date: Thu, 20 Feb 2020 09:41:55 +0200
 
-> From: Ido Schimmel <idosch@mellanox.com>
+> Functions starting with __ usually indicate those which are exported,
+> but should not be called directly. Update some of those declared in the
+> API and make it more readable.
 > 
-> The driver currently acquires RTNL in its route insertion path, which
-> contributes to very large control plane latencies. This patch set
-> prepares mlxsw for RTNL removal from its route insertion path in a
-> follow-up patch set.
+> page_pool_unmap_page() and page_pool_release_page() were doing
+> exactly the same thing calling __page_pool_clean_page().  Let's
+> rename __page_pool_clean_page() to page_pool_release_page() and
+> export it in order to show up on perf logs and get rid of
+> page_pool_unmap_page().
 > 
-> Patches #1-#2 protect shared resources - KVDL and counter pool - with
-> their own locks. All allocations of these resources are currently
-> performed under RTNL, so no locks were required.
+> Finally rename __page_pool_put_page() to page_pool_put_page() since we
+> can now directly call it from drivers and rename the existing
+> page_pool_put_page() to page_pool_put_full_page() since they do the same
+> thing but the latter is trying to sync the full DMA area.
 > 
-> Patches #3-#7 ensure that updates to mirroring sessions only take place
-> in case there are active mirroring sessions. This allows us to avoid
-> taking RTNL when it is unnecessary, as updating of the mirroring
-> sessions must be performed under RTNL for the time being.
+> This patch also updates netsec, mvneta and stmmac drivers which use
+> those functions.
 > 
-> Patches #8-#10 replace the use of APIs that assume that RTNL is taken
-> with their RCU counterparts. Specifically, patches #8 and #9 replace
-> __in_dev_get_rtnl() with __in_dev_get_rcu() under RCU read-side critical
-> section. Patch #10 replaces __dev_get_by_index() with
-> dev_get_by_index_rcu().
-> 
-> Patches #11-#15 perform small adjustments in the code to make it easier
-> to later introduce a router lock instead of relying on RTNL.
+> Suggested-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
-Series applied, thanks!
+Applied, thanks Ilias.
