@@ -2,90 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E558C165AE8
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 11:00:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0606C165B0D
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 11:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728032AbgBTKA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 05:00:27 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:54230 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727525AbgBTKA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 05:00:27 -0500
-Received: by mail-pj1-f66.google.com with SMTP id n96so670220pjc.3
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 02:00:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=15QkUOyqGz6eomBKIwtq/Fp2YhGFsx/KFWnHxF+6NKE=;
-        b=hiuCUmCfLCKyVHPPxzjMhumjyrh6B1A16pg0DojQwPUiI964RCzIfqNv+XihK+bp3V
-         TUJPE6MYFQKH2Wv4ZwqZPYy8BpZHZUBU4xcxShBEIgECEBYnfvsDq9ZSC5Qpniy7WgvV
-         stZSLcQmVbb0yDumCgAnGFWISB9/pc1GKEX1VUHG0suceqKhXrM31B0NT9cq1lSLP2gw
-         y1+g8FDEpwz6tKpq2XlttWsN4p15OVSz+BKidJFBy27N6sqVOdWL3fEDr0qZCvLO25j/
-         Cc61Q/6tpVvaVMoreeGMuW39HDaz9tuUipKZb4p26vaGF4XvTqrhxmHqHp983fnor+8x
-         1MZg==
+        id S1727877AbgBTKCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 05:02:17 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:33436 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbgBTKCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 05:02:17 -0500
+Received: by mail-oi1-f193.google.com with SMTP id q81so27012251oig.0;
+        Thu, 20 Feb 2020 02:02:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=15QkUOyqGz6eomBKIwtq/Fp2YhGFsx/KFWnHxF+6NKE=;
-        b=iY+cQfnwcX/fB8JmVpp/MsTiLSW3uxyxX8wHOWeKatih7b6aQ6aeb9xEh+PyxLVlZ2
-         xHUv438Xn+bpknwf/4f3bhHf91WakDJ+9tgr4jUaI3eL50M8WW4hRWyttSmESfSLgB7p
-         PXkGLBn2EygWggFbc+l+i2mQwpiBfQiG/sosxFkkogasI5DX8SY0VKwJYq1gYIT9d4ID
-         bUvQjfYa64UomrsZBktlUlO9Cup8QKrxnb95EdPbn9XPGWklh5+eF9UoRYoj+g4Wj69u
-         HoLwRx4vIp7KrGk0azAv/2KKRePOAqvfAj4iyitpQSLBTNsyAnHVr+P/DPc2HZPv/XLF
-         XJ/Q==
-X-Gm-Message-State: APjAAAXszbfaDonjRa4Vl487IDSk/aqSQ/RUo5zWw5xDrj4f6V2+UTbf
-        be631t6ULoZ22hoZNZpfr1c7
-X-Google-Smtp-Source: APXvYqwacF6ybkjY5Ij8gFwXOma6aXyq39Ay53DohmoLvDmhDkqUODMNBJth9hqvAnFA5BC1cCbHAg==
-X-Received: by 2002:a17:902:ff11:: with SMTP id f17mr29352446plj.273.1582192826397;
-        Thu, 20 Feb 2020 02:00:26 -0800 (PST)
-Received: from localhost.localdomain ([2409:4072:315:9501:edda:4222:88ae:442f])
-        by smtp.gmail.com with ESMTPSA id b3sm2678644pjo.30.2020.02.20.02.00.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 02:00:25 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     gregkh@linuxfoundation.org, arnd@arndb.de
-Cc:     smohanad@codeaurora.org, jhugo@codeaurora.org,
-        kvalo@codeaurora.org, bjorn.andersson@linaro.org,
-        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v3 15/16] net: qrtr: Do not depend on ARCH_QCOM
-Date:   Thu, 20 Feb 2020 15:28:53 +0530
-Message-Id: <20200220095854.4804-16-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200220095854.4804-1-manivannan.sadhasivam@linaro.org>
-References: <20200220095854.4804-1-manivannan.sadhasivam@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jBIymrbfBl+v7nPPWD0/CAEzGIYciT+Z8FHLl9X2EUc=;
+        b=XnIRNuKkimWKqSKjSt80NFwKrHfxswsPfrUHmZB4nMHzCDZKqVRWJpxAKIm9deHIJ5
+         RBlMmhe69LJXEipStTgDTUKVLXevbibAtXe99hU4MGTjEjz288aUWCHaGzSBeBm6LAyB
+         Zg2R4FC5ZpzY+zipQ4vHUV2Rg549Z/lO9h4jrKrcgxaEt5zwBgPmWhPowxlFHlSJEhr2
+         XCv9YDbPr6YFXRfp1Yi1eSgPvkLdLxg8FGPtIPNT70NeH96gVpIzabWyh8bx3r0qNJIr
+         hi67RuSxiopL9hEBjhv5GO2BFGC1buV1E+RbQBVYLQx3fcT2PLnGGZ+6gcqHB/+BP0a5
+         nPSw==
+X-Gm-Message-State: APjAAAX8TqLU0mGCv0SbIL8sloJBlNolAsDXPq7awkCY44LK/g5+lFXK
+        qmXV+6Tniukl3rzTY+YZAKmJ/6/sYK1r3f3DrH4=
+X-Google-Smtp-Source: APXvYqxnbQilW4iMMvtajv6GT4Exg1xYmHrKUsTKPPxEke+F68s4JqLngeQF4aZcmLr6rDaXsWXHxB3VKBU07slHupM=
+X-Received: by 2002:a05:6808:8e1:: with SMTP id d1mr1369120oic.68.1582192935803;
+ Thu, 20 Feb 2020 02:02:15 -0800 (PST)
+MIME-Version: 1.0
+References: <20200218162943.2488012-1-christian.brauner@ubuntu.com> <20200218162943.2488012-7-christian.brauner@ubuntu.com>
+In-Reply-To: <20200218162943.2488012-7-christian.brauner@ubuntu.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 20 Feb 2020 11:02:04 +0100
+Message-ID: <CAJZ5v0hJwXH8Oc4spzDDemHhBVGKqtbrV2UG6-gmT-F0hA4ynA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 6/9] drivers/base/power: add dpm_sysfs_change_owner()
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPC Router protocol is also used by external modems for exchanging the QMI
-messages. Hence, it doesn't always depend on Qualcomm platforms. As a side
-effect of removing the ARCH_QCOM dependency, it is going to miss the
-COMPILE_TEST build coverage.
+On Tue, Feb 18, 2020 at 5:30 PM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+>
+> Add a helper to change the owner of a device's power entries. This
+> needs to happen when the ownership of a device is changed, e.g. when
+> moving network devices between network namespaces.
+> This function will be used to correctly account for ownership changes,
+> e.g. when moving network devices between network namespaces.
+>
+> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> ---
+> /* v2 */
+> - "Rafael J. Wysocki" <rafael@kernel.org>:
+>   -  Fold if (dev->power.wakeup && dev->power.wakeup->dev) check into
+>      if (device_can_wakeup(dev)) check since the former can never be true if
+>      the latter is false.
+>
+> - Christian Brauner <christian.brauner@ubuntu.com>:
+>   - Place (dev->power.wakeup && dev->power.wakeup->dev) check under
+>     CONFIG_PM_SLEEP ifdefine since it will wakeup_source will only be available
+>     when this config option is set.
+>
+> /* v3 */
+> -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+>    - Add explicit uid/gid parameters.
+> ---
+>  drivers/base/core.c        |  4 ++++
+>  drivers/base/power/power.h |  3 +++
+>  drivers/base/power/sysfs.c | 42 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 49 insertions(+)
+>
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index ec0d5e8cfd0f..efec2792f5d7 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -3522,6 +3522,10 @@ int device_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+>         if (error)
+>                 goto out;
+>
+> +       error = dpm_sysfs_change_owner(dev, kuid, kgid);
+> +       if (error)
+> +               goto out;
+> +
+>  #ifdef CONFIG_BLOCK
+>         if (sysfs_deprecated && dev->class == &block_class)
+>                 goto out;
+> diff --git a/drivers/base/power/power.h b/drivers/base/power/power.h
+> index 444f5c169a0b..54292cdd7808 100644
+> --- a/drivers/base/power/power.h
+> +++ b/drivers/base/power/power.h
+> @@ -74,6 +74,7 @@ extern int pm_qos_sysfs_add_flags(struct device *dev);
+>  extern void pm_qos_sysfs_remove_flags(struct device *dev);
+>  extern int pm_qos_sysfs_add_latency_tolerance(struct device *dev);
+>  extern void pm_qos_sysfs_remove_latency_tolerance(struct device *dev);
+> +extern int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid);
+>
+>  #else /* CONFIG_PM */
+>
+> @@ -88,6 +89,8 @@ static inline void pm_runtime_remove(struct device *dev) {}
+>
+>  static inline int dpm_sysfs_add(struct device *dev) { return 0; }
+>  static inline void dpm_sysfs_remove(struct device *dev) {}
+> +static inline int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid,
+> +                                        kgid_t kgid) { return 0; }
+>
+>  #endif
+>
+> diff --git a/drivers/base/power/sysfs.c b/drivers/base/power/sysfs.c
+> index d7d82db2e4bc..4e79afcd5ca8 100644
+> --- a/drivers/base/power/sysfs.c
+> +++ b/drivers/base/power/sysfs.c
+> @@ -684,6 +684,48 @@ int dpm_sysfs_add(struct device *dev)
+>         return rc;
+>  }
+>
+> +int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+> +{
+> +       int rc;
+> +
+> +       if (device_pm_not_required(dev))
+> +               return 0;
+> +
+> +       rc = sysfs_group_change_owner(&dev->kobj, &pm_attr_group, kuid, kgid);
+> +       if (rc)
+> +               return rc;
+> +
+> +       if (pm_runtime_callbacks_present(dev)) {
+> +               rc = sysfs_group_change_owner(
+> +                       &dev->kobj, &pm_runtime_attr_group, kuid, kgid);
+> +               if (rc)
+> +                       return rc;
+> +       }
+> +       if (device_can_wakeup(dev)) {
+> +               rc = sysfs_group_change_owner(&dev->kobj, &pm_wakeup_attr_group,
+> +                                             kuid, kgid);
+> +               if (rc)
+> +                       return rc;
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +               if (dev->power.wakeup && dev->power.wakeup->dev) {
+> +                       rc = device_change_owner(dev->power.wakeup->dev, kuid,
+> +                                                kgid);
+> +                       if (rc)
+> +                               return rc;
+> +               }
+> +#endif
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- net/qrtr/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+First off, I don't particularly like #ifdefs in function bodies.  In
+particular, there is a CONFIG_PM_SLEEP block in this file already and
+you could define a new function in there to carry out the above
+operations, and provide an empty stub of it for the "unset" case.
+Failing to do so is somewhat on the "rushing things in" side in my
+view.
 
-diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
-index 8eb876471564..f362ca316015 100644
---- a/net/qrtr/Kconfig
-+++ b/net/qrtr/Kconfig
-@@ -4,7 +4,6 @@
- 
- config QRTR
- 	tristate "Qualcomm IPC Router support"
--	depends on ARCH_QCOM || COMPILE_TEST
- 	---help---
- 	  Say Y if you intend to use Qualcomm IPC router protocol.  The
- 	  protocol is used to communicate with services provided by other
--- 
-2.17.1
+Second, the #ifdef should cover the entire if (device_can_wakeup(dev))
+{} block, because wakeup_sysfs_add() is only called if
+device_can_wakeup(dev) returns 'true' for the device in question (and
+arguably you could have checked that easily enough).
 
+> +       }
+> +       if (dev->power.set_latency_tolerance) {
+> +               rc = sysfs_group_change_owner(
+> +                       &dev->kobj, &pm_qos_latency_tolerance_attr_group, kuid,
+> +                       kgid);
+> +               if (rc)
+> +                       return rc;
+> +       }
+> +       return 0;
+> +}
+> +
+>  int wakeup_sysfs_add(struct device *dev)
+>  {
+>         return sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
+> --
+> 2.25.0
+>
