@@ -2,190 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22AA4166AD2
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:12:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED782166AEC
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729335AbgBTXMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 18:12:40 -0500
-Received: from ozlabs.org ([203.11.71.1]:38461 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729027AbgBTXMk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 18:12:40 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48Nr382l3Sz9sPk;
-        Fri, 21 Feb 2020 10:12:36 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1582240356;
-        bh=9q6mRNIp03dcqTokBVM+57+us+Lfs23/8GR9JHEgJnI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TdDjBgqCXTJ+Q4VMJ95puLVMlZFFgOjsIMfbnW2+V2udyMnmoLqhuiq9wnXdla900
-         xAU5WkUQU9cJpCehqNaKUK1s3MiaapJYz2nNake0RUtR9FFTQaePylNynrzCJhLYfa
-         os21j+z89s87vSZjjjDzq2z+2tB9pXds/xAktfWSYpUOdQ5IRryaV5Co6XfJkoPLv7
-         +K0c3iOJDmuOnIagX7re0Nd46pSNuadcn7RYRFAAsHm5PgEfwhBhd1vU7WxHULGYTg
-         t70mGoHTpf+PpKfSK+fXfod2VCAps1mxh24nh8YNgm0zYeBWazAd5boRIK5DbT8feV
-         wTeFUaRSG9mKw==
-Date:   Fri, 21 Feb 2020 10:12:35 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Brett Creeley <brett.creeley@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200221101235.3db4fc56@canb.auug.org.au>
+        id S1729330AbgBTX0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 18:26:35 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36842 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727135AbgBTX0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 18:26:35 -0500
+Received: by mail-wm1-f66.google.com with SMTP id p17so351661wma.1;
+        Thu, 20 Feb 2020 15:26:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Di1qslRPbTpLpq+RzibDLTYgsINPkOU2t7v0O3JomH8=;
+        b=Fx34DlnLGoVm0X3/BbyODqd94691Jp5RZd/JQFAGlbLlPbfN8OUDF/QeeOqf16rtSj
+         ZoH4lb8IL9pmEC0NHIqiLjDR3gQPfCE0xD67dXyqQofrk1SGga+P57hiwz151IPYnusG
+         LsgZUrTfP5aZpoV1cTVco7bW2a/W/Q1apbTlShWxVP5JPME+P0MWWibfSuFVelknEoLq
+         fQwsx8XaZcCo0AI7BB2VaIARsEKESHvrBSAAAJpDSTXZZB7O/kDy4Q925Xkg6x/EuVp3
+         aFupf+zDTd9fPRwKFSUZvYe0d+FVvgZSVuwusXEsDMpPxmsx5oH9mHO3KqIUR0M2O+ZR
+         pIFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Di1qslRPbTpLpq+RzibDLTYgsINPkOU2t7v0O3JomH8=;
+        b=Yq4wxbrRwu2CU64gdSZW3EjeijDaTBZrhL8Hm1l9Z83bqj0Lu19TKXBqpYhiaJgBIa
+         AwiVOhzeqYcoPhFWK0762kDzsHo7fwYAUybY3sCjmesWcy29hVYmLIsdat3MHg0S1F7C
+         rmiOz/Vgv0Me4NcQ4l2CUA2RwiTbG3oeFm8LHnRgSQG6YczCuwKZyOiTjYFR3XA1WgCb
+         yTnGUxfR4ITo0ybt5+P0TYSR0ZPkevwBN8NmtvAdVVL4hA3I3olpAOVNn3A2I/GTuodN
+         5fa+FtlkXZRHzSlKN3HrKPg5CWVtMryGkSv9/F9X3q1E82L5QfNFwXLz7nINUNn3SLsG
+         Ke+g==
+X-Gm-Message-State: APjAAAW8i7jpobq8u0zFlfxRrzSI84cUz4Qq0PhUKHAnD3FYU7Etoa5g
+        qVz9Y9PWRgOwnuBzPwhz1XFgj6WjDO4=
+X-Google-Smtp-Source: APXvYqzcPuox4GKUuu553WORBOrXIwayqJTE8kc1Znk1nXaGNOSlFGzS//GNIR8GOwVkc6s65D/84Q==
+X-Received: by 2002:a7b:c651:: with SMTP id q17mr7138818wmk.5.1582241192025;
+        Thu, 20 Feb 2020 15:26:32 -0800 (PST)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id h18sm1498064wrv.78.2020.02.20.15.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 15:26:31 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/2] net: mdio: add ipq8064 mdio driver
+Date:   Fri, 21 Feb 2020 00:26:21 +0100
+Message-Id: <20200220232624.7001-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/8kFVcoFSaXg35pzhBJbQ1WN";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/8kFVcoFSaXg35pzhBJbQ1WN
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Currently ipq806x soc use generi bitbang driver to
+comunicate with the gmac ethernet interface.
+Add a dedicated driver created by chunkeey to fix this.
 
-Hi all,
+Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/phy/Kconfig        |   8 ++
+ drivers/net/phy/Makefile       |   1 +
+ drivers/net/phy/mdio-ipq8064.c | 163 +++++++++++++++++++++++++++++++++
+ 3 files changed, 172 insertions(+)
+ create mode 100644 drivers/net/phy/mdio-ipq8064.c
 
-Today's linux-next merge of the net-next tree got a conflict in:
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 9dabe03a668c..ec2a5493a7e8 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -157,6 +157,14 @@ config MDIO_I2C
+ 
+ 	  This is library mode.
+ 
++config MDIO_IPQ8064
++	tristate "Qualcomm IPQ8064 MDIO interface support"
++	depends on HAS_IOMEM && OF_MDIO
++	depends on MFD_SYSCON
++	help
++	  This driver supports the MDIO interface found in the network
++	  interface units of the IPQ8064 SoC
++
+ config MDIO_MOXART
+ 	tristate "MOXA ART MDIO interface support"
+ 	depends on ARCH_MOXART || COMPILE_TEST
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index fe5badf13b65..8f02bd2089f3 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -36,6 +36,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
+ obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
+ obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
+ obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
++obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
+ obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
+ obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
+ obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
+diff --git a/drivers/net/phy/mdio-ipq8064.c b/drivers/net/phy/mdio-ipq8064.c
+new file mode 100644
+index 000000000000..e974a6f5d5ef
+--- /dev/null
++++ b/drivers/net/phy/mdio-ipq8064.c
+@@ -0,0 +1,163 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Qualcomm IPQ8064 MDIO interface driver
++//
++// Copyright (C) 2019 Christian Lamparter <chunkeey@gmail.com>
++
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/of_mdio.h>
++#include <linux/phy.h>
++#include <linux/platform_device.h>
++#include <linux/mfd/syscon.h>
++
++/* MII address register definitions */
++#define MII_ADDR_REG_ADDR                       0x10
++#define MII_BUSY                                BIT(0)
++#define MII_WRITE                               BIT(1)
++#define MII_CLKRANGE_60_100M                    (0 << 2)
++#define MII_CLKRANGE_100_150M                   (1 << 2)
++#define MII_CLKRANGE_20_35M                     (2 << 2)
++#define MII_CLKRANGE_35_60M                     (3 << 2)
++#define MII_CLKRANGE_150_250M                   (4 << 2)
++#define MII_CLKRANGE_250_300M                   (5 << 2)
++#define MII_CLKRANGE_MASK			GENMASK(4, 2)
++#define MII_REG_SHIFT				6
++#define MII_REG_MASK				GENMASK(10, 6)
++#define MII_ADDR_SHIFT				11
++#define MII_ADDR_MASK				GENMASK(15, 11)
++
++#define MII_DATA_REG_ADDR                       0x14
++
++#define MII_MDIO_DELAY                          (1000)
++#define MII_MDIO_RETRY                          (10)
++
++struct ipq8064_mdio {
++	struct regmap *base; /* NSS_GMAC0_BASE */
++};
++
++static int
++ipq8064_mdio_wait_busy(struct ipq8064_mdio *priv)
++{
++	u32 busy;
++
++	return regmap_read_poll_timeout(priv->base, MII_ADDR_REG_ADDR, busy,
++				   !(busy & MII_BUSY), MII_MDIO_DELAY,
++				   MII_MDIO_RETRY * USEC_PER_MSEC);
++}
++
++static int
++ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
++{
++	struct ipq8064_mdio *priv = bus->priv;
++	u32 miiaddr = MII_BUSY | MII_CLKRANGE_250_300M;
++	u32 ret_val;
++	int err;
++
++	/* Reject clause 45 */
++	if (reg_offset & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	miiaddr |= ((phy_addr << MII_ADDR_SHIFT) & MII_ADDR_MASK) |
++		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
++
++	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
++	usleep_range(10, 20);
++
++	err = ipq8064_mdio_wait_busy(priv);
++	if (err)
++		return err;
++
++	regmap_read(priv->base, MII_DATA_REG_ADDR, &ret_val);
++	return (int)ret_val;
++}
++
++static int
++ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
++{
++	struct ipq8064_mdio *priv = bus->priv;
++	u32 miiaddr = MII_WRITE | MII_BUSY | MII_CLKRANGE_250_300M;
++
++	/* Reject clause 45 */
++	if (reg_offset & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	regmap_write(priv->base, MII_DATA_REG_ADDR, data);
++
++	miiaddr |= ((phy_addr << MII_ADDR_SHIFT) & MII_ADDR_MASK) |
++		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
++
++	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
++	usleep_range(10, 20);
++
++	return ipq8064_mdio_wait_busy(priv);
++}
++
++static int
++ipq8064_mdio_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct ipq8064_mdio *priv;
++	struct mii_bus *bus;
++	int ret;
++
++	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
++	if (!bus)
++		return -ENOMEM;
++
++	bus->name = "ipq8064_mdio_bus";
++	bus->read = ipq8064_mdio_read;
++	bus->write = ipq8064_mdio_write;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
++	bus->parent = &pdev->dev;
++
++	priv = bus->priv;
++	priv->base = syscon_node_to_regmap(np);
++	if (IS_ERR_OR_NULL(priv->base)) {
++		priv->base = syscon_regmap_lookup_by_phandle(np, "master");
++		if (IS_ERR_OR_NULL(priv->base)) {
++			dev_err(&pdev->dev, "master phandle not found\n");
++			return -EINVAL;
++		}
++	}
++
++	ret = of_mdiobus_register(bus, np);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, bus);
++	return 0;
++}
++
++static int
++ipq8064_mdio_remove(struct platform_device *pdev)
++{
++	struct mii_bus *bus = platform_get_drvdata(pdev);
++
++	mdiobus_unregister(bus);
++
++	return 0;
++}
++
++static const struct of_device_id ipq8064_mdio_dt_ids[] = {
++	{ .compatible = "qcom,ipq8064-mdio" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ipq8064_mdio_dt_ids);
++
++static struct platform_driver ipq8064_mdio_driver = {
++	.probe = ipq8064_mdio_probe,
++	.remove = ipq8064_mdio_remove,
++	.driver = {
++		.name = "ipq8064-mdio",
++		.of_match_table = ipq8064_mdio_dt_ids,
++	},
++};
++
++module_platform_driver(ipq8064_mdio_driver);
++
++MODULE_DESCRIPTION("Qualcomm IPQ8064 MDIO interface driver");
++MODULE_AUTHOR("Christian Lamparter <chunkeey@gmail.com>");
++MODULE_LICENSE("GPL");
+-- 
+2.25.0
 
-  drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-
-between commit:
-
-  c54d209c78b8 ("ice: Wait for VF to be reset/ready before configuration")
-
-from the net tree and commits:
-
-  b093841f9ac9 ("ice: Refactor port vlan configuration for the VF")
-  61c9ce86a6f5 ("ice: Fix Port VLAN priority bits")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 75c70d432c72,a21f9d2edbbb..000000000000
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@@ -2738,7 -2786,8 +2828,8 @@@ ice_set_vf_port_vlan(struct net_device=20
-  	struct ice_vsi *vsi;
-  	struct device *dev;
-  	struct ice_vf *vf;
-+ 	u16 vlanprio;
- -	int ret =3D 0;
- +	int ret;
- =20
-  	dev =3D ice_pf_to_dev(pf);
-  	if (ice_validate_vf_id(pf, vf_id))
-@@@ -2756,47 -2806,58 +2848,59 @@@
- =20
-  	vf =3D &pf->vf[vf_id];
-  	vsi =3D pf->vsi[vf->lan_vsi_idx];
- -	if (ice_check_vf_init(pf, vf))
- -		return -EBUSY;
- +
- +	ret =3D ice_check_vf_ready_for_cfg(vf);
- +	if (ret)
- +		return ret;
- =20
-- 	if (le16_to_cpu(vsi->info.pvid) =3D=3D vlanprio) {
-+ 	vlanprio =3D vlan_id | (qos << VLAN_PRIO_SHIFT);
-+=20
-+ 	if (vf->port_vlan_info =3D=3D vlanprio) {
-  		/* duplicate request, so just return success */
-  		dev_dbg(dev, "Duplicate pvid %d request\n", vlanprio);
- -		return ret;
- +		return 0;
-  	}
- =20
-- 	/* If PVID, then remove all filters on the old VLAN */
-- 	if (vsi->info.pvid)
-- 		ice_vsi_kill_vlan(vsi, (le16_to_cpu(vsi->info.pvid) &
-- 				  VLAN_VID_MASK));
--=20
-  	if (vlan_id || qos) {
-+ 		/* remove VLAN 0 filter set by default when transitioning from
-+ 		 * no port VLAN to a port VLAN. No change to old port VLAN on
-+ 		 * failure.
-+ 		 */
-+ 		ret =3D ice_vsi_kill_vlan(vsi, 0);
-+ 		if (ret)
-+ 			return ret;
-  		ret =3D ice_vsi_manage_pvid(vsi, vlanprio, true);
-  		if (ret)
-  			return ret;
-  	} else {
-- 		ice_vsi_manage_pvid(vsi, 0, false);
-- 		vsi->info.pvid =3D 0;
-+ 		/* add VLAN 0 filter back when transitioning from port VLAN to
-+ 		 * no port VLAN. No change to old port VLAN on failure.
-+ 		 */
-+ 		ret =3D ice_vsi_add_vlan(vsi, 0);
-+ 		if (ret)
-+ 			return ret;
-+ 		ret =3D ice_vsi_manage_pvid(vsi, 0, false);
-+ 		if (ret)
- -			goto error_manage_pvid;
-++			return ret;
-  	}
- =20
-  	if (vlan_id) {
-  		dev_info(dev, "Setting VLAN %d, QoS 0x%x on VF %d\n",
-  			 vlan_id, qos, vf_id);
- =20
-- 		/* add new VLAN filter for each MAC */
-+ 		/* add VLAN filter for the port VLAN */
-  		ret =3D ice_vsi_add_vlan(vsi, vlan_id);
-  		if (ret)
- -			goto error_manage_pvid;
- +			return ret;
-  	}
-+ 	/* remove old port VLAN filter with valid VLAN ID or QoS fields */
-+ 	if (vf->port_vlan_info)
-+ 		ice_vsi_kill_vlan(vsi, vf->port_vlan_info & VLAN_VID_MASK);
- =20
-- 	/* The Port VLAN needs to be saved across resets the same as the
-- 	 * default LAN MAC address.
-- 	 */
-- 	vf->port_vlan_id =3D le16_to_cpu(vsi->info.pvid);
-+ 	/* keep port VLAN information persistent on resets */
-+ 	vf->port_vlan_info =3D le16_to_cpu(vsi->info.pvid);
- =20
- -error_manage_pvid:
- -	return ret;
- +	return 0;
-  }
- =20
-  /**
-
---Sig_/8kFVcoFSaXg35pzhBJbQ1WN
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5PEmMACgkQAVBC80lX
-0Gzoqwf9FP4eMWnPBiWV08yZ3C7pb8dz5+Azf24h1tq8kFFCrDYcB/F7H3QDEUFk
-gKie/4sunhaV93GKs9nQwJLwV0IQU1CbtZAdIj4vqK/ERzr8MwxgBNFA05PFjiUm
-51UkjkMNDBSBxwsDXpFMpZS4VJw8EvVAmT3cC9VrlwU1wnJQiPmFSIFq7I9ZD//k
-BPqbPCGlDI0g4hBN/DO10vfsFM382UVlrqEy9jj8xgfO3ccmkaG+ZyGZ8pN8kMKf
-ad2Wq5oRvtZ75gdM9AAvCw7hCer7qrOHj46tjUBcJOLo/S5WqWu7XdPAGwsnCPSX
-mubFsy0nZRZ1DZwR+KFCdohrAUpyog==
-=OU+m
------END PGP SIGNATURE-----
-
---Sig_/8kFVcoFSaXg35pzhBJbQ1WN--
