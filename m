@@ -2,142 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BFBF1660A4
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:13:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D0AF1660A7
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728497AbgBTPNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 10:13:32 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42412 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727761AbgBTPNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:13:32 -0500
-Received: by mail-wr1-f67.google.com with SMTP id k11so5004518wrd.9;
-        Thu, 20 Feb 2020 07:13:30 -0800 (PST)
+        id S1728406AbgBTPNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 10:13:55 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35134 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727761AbgBTPNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:13:54 -0500
+Received: by mail-pl1-f193.google.com with SMTP id g6so1674960plt.2
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 07:13:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=37niT//lDaILKiAgLmVPycHnKOoR/1yOuQ3A2inzDzc=;
-        b=eH/leP5NlYA5Itg6BI0WErCodKroiFgEuGBBLA2wHlD4l7UaHQ6dKg4XgBRkN77CCD
-         n3Csjk8ofEc79L3wtX6H5AF7WUZB5z7b5HT7EKlIqElxEz8F5IRf+GIYjuCionyT5TDa
-         TtdYpW5fvQm6Z606gfuGZGyMlBDEWlfuOcXhdkmaUZ8o0UdNp5Z3LM+U9+UcAOnTulGa
-         NVQxIvTUEgZ7p+ID1GFprx4Y0guB3LZ608HUTNUz/5AwYUTY38Cpqf16KNMr+anVKyS8
-         7L+LSf1RCm6f/Yen7ME4kkvN5V7HBU5IRJzf/R3xnfNXoXGqNYGW5cIQu6aUIVEJK3OZ
-         sh6Q==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=bMJUAglWaWbIZEErlVZ0yTCdWDkC7jYkZQda3XXE62Q=;
+        b=tKINAgJ0p6sZD6U0O2h4bwxpfrupZWDIqr9wXBctvFse5GFxMsHnN02iA8U7YzBzri
+         /KllxP2aOugr4N+X5pjCoQjP2YocZX6OwA16WqOdats8MmO9a9IWDCMdZdP+AhYQ7NwM
+         GaG9S8eTwzFbK1QwJbi3HTEM1APmHUmOKdhycCPXRyIx8scR1bt1U6R4/ZxvfYmudeAn
+         W/KzS4QLixLg08s30YcWaB+Lt1iTbaPgF9yTx2bcWq6Za35zBYLlXPETPRHzf5Lo1Gc4
+         +j2wvjDhusuW52lJAQ4TIl72d+TV2koEEwWDXfOaWwXU29r0czUn/Yq6RtmK6U5BcGd2
+         dyIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=37niT//lDaILKiAgLmVPycHnKOoR/1yOuQ3A2inzDzc=;
-        b=Q/p2LunmHUojN8MemZwh7H0ANcsRBNrS5MI8cNFWFUfdfnIfvd+chp4/Ao5k8zkBQa
-         GJJkVCfhlJc1qaoOmGxWZy5Jalkk7Uybz92rN00/WcV88Fz9SN7HGLOD4adhQBdCrEtC
-         W+uP7lBsOQveuyZd95PkeWQE+6TpWg8gn258z6PwAY5Yep5QpiGxlp0IhAO8lrw/bfk4
-         s/Z1LjZ70J4jAPywLjVcoJGAZqvWyTnrGfVRNKeSvf1CdPvibKPPzo7wtKxzgUHSoXxL
-         cq1OyzIwMRJnuWAPTgYQGlukUXpOve8CPPbAcsHb6vqujEhDJiiwVBmqE0LM2OODhsuZ
-         luuA==
-X-Gm-Message-State: APjAAAUIic8yTmcdVgGrNllsqmPcYPORpFPUDLDDQkdZhzE+tzLzG2dj
-        PSDNUd8glAl/YUveFGm+ELeXB1aG/98=
-X-Google-Smtp-Source: APXvYqwmwbRvuHx4af/oZnjAvr4YUKjXjsXo6mMq9ZViF7JNcfBWZUJACFKbtWe/mSnfEeXybGaRMw==
-X-Received: by 2002:a5d:640d:: with SMTP id z13mr41339339wru.181.1582211609872;
-        Thu, 20 Feb 2020 07:13:29 -0800 (PST)
-Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.googlemail.com with ESMTPSA id d4sm4983642wra.14.2020.02.20.07.13.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bMJUAglWaWbIZEErlVZ0yTCdWDkC7jYkZQda3XXE62Q=;
+        b=fpxSyMUY2qhClHRDxKm21/KyxtT2dc7/pbe26LyaLh8UQIjvTPnzv7NaRRxpGFwhf+
+         OGywcM3plzKg+wZvIhWMjVgaDWf+/u+TBnXfUtpBWWjLzHcu5QAB21LYAKwMAZ2HIKnX
+         C0pBhs3jvQfEmqRq1KVSoguAiyWs1nORqOQHnYiYrcFg0+/XFZ8dNybdbsIF0u+VJ/om
+         XYj5BPcdr2k/BiXcetC8QyujzZCWfAItfpUTzqQwBRqvTh3j7Yv0zcr+caeCKg+o7/tE
+         uMrXluwQNTOqOjr1ayqKwbBvRjEm1spBp1yAV2ytjD6DuZm/Aug/WTlR+Z1RihQhexeZ
+         ldtA==
+X-Gm-Message-State: APjAAAUR0D0XFDf62R2HZlfFREWREFd3yypRbM/J6N2UG4+UI02eaItr
+        vGgWUMEUXmw7b482yAewNidh
+X-Google-Smtp-Source: APXvYqzFGueZdfe/6uJyF21F4s62BQbhb3H52MtdFXDE0w3cedIOjDgSxh+cqOfTkyvv2VjV2nXIRw==
+X-Received: by 2002:a17:902:59cd:: with SMTP id d13mr32010465plj.146.1582211634020;
+        Thu, 20 Feb 2020 07:13:54 -0800 (PST)
+Received: from localhost.localdomain ([2409:4072:315:9501:8d83:d1eb:ead7:a798])
+        by smtp.gmail.com with ESMTPSA id z16sm3865548pff.125.2020.02.20.07.13.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 07:13:29 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Documentation: devictree: Add ipq806x mdio bindings
-Date:   Thu, 20 Feb 2020 16:12:56 +0100
-Message-Id: <20200220151301.10564-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200220151301.10564-1-ansuelsmth@gmail.com>
-References: <20200220151301.10564-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        Thu, 20 Feb 2020 07:13:53 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvalo@codeaurora.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 0/2] Migrate QRTR Nameservice to Kernel
+Date:   Thu, 20 Feb 2020 20:43:25 +0530
+Message-Id: <20200220151327.4823-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentations for ipq806x mdio driver.
+Hello,
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- .../bindings/net/qcom,ipq8064-mdio.yaml       | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+This patchset migrates the Qualcomm IPC Router (QRTR) Nameservice from userspace
+to kernel under net/qrtr.
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
-new file mode 100644
-index 000000000000..c5a21c0b5325
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: GPL-2.0-or-later
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/qcom,ipq8064-mdio.txt
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm ipq806x MDIO bus controller
-+
-+description: |+
-+  The ipq806x soc have a MDIO dedicated controller that is
-+  used to comunicate with the gmac phy conntected.
-+  Child nodes of this MDIO bus controller node are standard
-+  Ethernet PHY device nodes as described in
-+  Documentation/devicetree/bindings/net/phy.txt
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    const: qcom,ipq8064-mdio
-+  reg:
-+    maxItems: 1
-+    description: address and length of the register set for the device
-+  clocks:
-+    maxItems: 1
-+    description: A reference to the clock supplying the MDIO bus controller
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+examples:
-+  - |
-+    mdio@37000000 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        compatible = "qcom,ipq8064-mdio", "syscon";
-+        reg = <0x37000000 0x200000>;
-+        resets = <&gcc GMAC_CORE1_RESET>;
-+        reset-names = "stmmaceth";
-+        clocks = <&gcc GMAC_CORE1_CLK>;
-+
-+        switch@10 {
-+            compatible = "qca,qca8337";
-+            ...
-+        }
-+    };
-\ No newline at end of file
+The userspace implementation of it can be found here:
+https://github.com/andersson/qrtr/blob/master/src/ns.c
+
+This change is required for enabling the WiFi functionality of some Qualcomm
+WLAN devices using ATH11K without any dependency on a userspace daemon. Since
+the QRTR NS is not usually packed in most of the distros, users need to clone,
+build and install it to get the WiFi working. It will become a hassle when the
+user doesn't have any other source of network connectivity.
+
+The original userspace code is published under BSD3 license. For migrating it
+to Linux kernel, I have adapted Dual BSD/GPL license.
+
+This patchset has been verified on Dragonboard410c and Intel NUC with QCA6390
+WLAN device.
+
+Thanks,
+Mani
+
+Changes in v2:
+
+* Sorted the local variables in reverse XMAS tree order
+
+Manivannan Sadhasivam (2):
+  net: qrtr: Migrate nameservice to kernel from userspace
+  net: qrtr: Fix the local node ID as 1
+
+ net/qrtr/Makefile |   2 +-
+ net/qrtr/ns.c     | 751 ++++++++++++++++++++++++++++++++++++++++++++++
+ net/qrtr/qrtr.c   |  51 +---
+ net/qrtr/qrtr.h   |   4 +
+ 4 files changed, 767 insertions(+), 41 deletions(-)
+ create mode 100644 net/qrtr/ns.c
+
 -- 
-2.25.0
+2.17.1
 
