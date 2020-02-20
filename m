@@ -2,228 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AAD8165B53
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 11:20:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8575165B5A
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 11:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbgBTKUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 05:20:10 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:57804 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726799AbgBTKUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 05:20:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6moDnFKQqPOewRkxNBYP20F+qayHFJQuzc0h1sreZ74=; b=pZBzU+9eIaJhVS0pf55ubOuHS
-        hUM6CpVaaxnVn29ruIsr4Gwu0FeN5a/wALz8vgz5yVqq5GrQYFg80c8O7wEHRSP9pqKOclm9QIfdq
-        H9f4XaU+8pdwbkTct+BmQB2i37b6pGfE1WDq4/W7hbHCJajaXhEROUOQqYMZ3MBg8Wug4V0QP3UgK
-        GerKHo0h65CRpDWeYZCethJ5xoeuzvkMq9wop0qjWHlczF2h8saHaNiwpSkd24Vmu9o3XcMR+7wUG
-        dD7Cd/XsAi36HIZB3UC2a4+HLXcKcwtS+E3qBHBYQu+Tl4S4ATGRE//384/1vacwfT6LOIDa7pyq0
-        HfOjLfOCg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54482)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4iw8-0002df-3X; Thu, 20 Feb 2020 10:20:04 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4iw6-0002LR-U9; Thu, 20 Feb 2020 10:20:02 +0000
-Date:   Thu, 20 Feb 2020 10:20:02 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+        id S1727088AbgBTKVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 05:21:15 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:39028 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726799AbgBTKVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 05:21:15 -0500
+Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1j4ixA-00032V-Nu; Thu, 20 Feb 2020 10:21:08 +0000
+Date:   Thu, 20 Feb 2020 11:21:07 +0100
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [CFT 5/8] net: dpaa2-mac: use resolved link config in
- mac_link_up()
-Message-ID: <20200220102002.GW25745@shell.armlinux.org.uk>
-References: <20200217172242.GZ25745@shell.armlinux.org.uk>
- <E1j3k80-00072W-E5@rmk-PC.armlinux.org.uk>
- <20200218103400.GF25745@shell.armlinux.org.uk>
- <DB8PR04MB6828ECB9945F747281C5796EE0110@DB8PR04MB6828.eurprd04.prod.outlook.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 6/9] drivers/base/power: add
+ dpm_sysfs_change_owner()
+Message-ID: <20200220102107.grkyypt7swrufzas@wittgenstein>
+References: <20200218162943.2488012-1-christian.brauner@ubuntu.com>
+ <20200218162943.2488012-7-christian.brauner@ubuntu.com>
+ <CAJZ5v0hJwXH8Oc4spzDDemHhBVGKqtbrV2UG6-gmT-F0hA4ynA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6828ECB9945F747281C5796EE0110@DB8PR04MB6828.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAJZ5v0hJwXH8Oc4spzDDemHhBVGKqtbrV2UG6-gmT-F0hA4ynA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 10:42:41AM +0000, Ioana Ciornei wrote:
-> > Subject: Re: [CFT 5/8] net: dpaa2-mac: use resolved link config in mac_link_up()
-> > 
-> > It would really help if MAINTAINERS were updated with the correct information
-> > for this driver:
-> > 
-> > DPAA2 ETHERNET DRIVER
-> > M:      Ioana Radulescu <ruxandra.radulescu@nxp.com>
-> > 
-> > This address bounces.  Given what I find in the git history, is the correct person is
-> > now:
-> > 
-> > Ioana Ciornei <ioana.ciornei@nxp.com>
-> > 
-> > Please submit a patch updating MAINTAINERS.  Thanks.
+On Thu, Feb 20, 2020 at 11:02:04AM +0100, Rafael J. Wysocki wrote:
+> On Tue, Feb 18, 2020 at 5:30 PM Christian Brauner
+> <christian.brauner@ubuntu.com> wrote:
+> >
+> > Add a helper to change the owner of a device's power entries. This
+> > needs to happen when the ownership of a device is changed, e.g. when
+> > moving network devices between network namespaces.
+> > This function will be used to correctly account for ownership changes,
+> > e.g. when moving network devices between network namespaces.
+> >
+> > Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> > ---
+> > /* v2 */
+> > - "Rafael J. Wysocki" <rafael@kernel.org>:
+> >   -  Fold if (dev->power.wakeup && dev->power.wakeup->dev) check into
+> >      if (device_can_wakeup(dev)) check since the former can never be true if
+> >      the latter is false.
+> >
+> > - Christian Brauner <christian.brauner@ubuntu.com>:
+> >   - Place (dev->power.wakeup && dev->power.wakeup->dev) check under
+> >     CONFIG_PM_SLEEP ifdefine since it will wakeup_source will only be available
+> >     when this config option is set.
+> >
+> > /* v3 */
+> > -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+> >    - Add explicit uid/gid parameters.
+> > ---
+> >  drivers/base/core.c        |  4 ++++
+> >  drivers/base/power/power.h |  3 +++
+> >  drivers/base/power/sysfs.c | 42 ++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 49 insertions(+)
+> >
+> > diff --git a/drivers/base/core.c b/drivers/base/core.c
+> > index ec0d5e8cfd0f..efec2792f5d7 100644
+> > --- a/drivers/base/core.c
+> > +++ b/drivers/base/core.c
+> > @@ -3522,6 +3522,10 @@ int device_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+> >         if (error)
+> >                 goto out;
+> >
+> > +       error = dpm_sysfs_change_owner(dev, kuid, kgid);
+> > +       if (error)
+> > +               goto out;
+> > +
+> >  #ifdef CONFIG_BLOCK
+> >         if (sysfs_deprecated && dev->class == &block_class)
+> >                 goto out;
+> > diff --git a/drivers/base/power/power.h b/drivers/base/power/power.h
+> > index 444f5c169a0b..54292cdd7808 100644
+> > --- a/drivers/base/power/power.h
+> > +++ b/drivers/base/power/power.h
+> > @@ -74,6 +74,7 @@ extern int pm_qos_sysfs_add_flags(struct device *dev);
+> >  extern void pm_qos_sysfs_remove_flags(struct device *dev);
+> >  extern int pm_qos_sysfs_add_latency_tolerance(struct device *dev);
+> >  extern void pm_qos_sysfs_remove_latency_tolerance(struct device *dev);
+> > +extern int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid);
+> >
+> >  #else /* CONFIG_PM */
+> >
+> > @@ -88,6 +89,8 @@ static inline void pm_runtime_remove(struct device *dev) {}
+> >
+> >  static inline int dpm_sysfs_add(struct device *dev) { return 0; }
+> >  static inline void dpm_sysfs_remove(struct device *dev) {}
+> > +static inline int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid,
+> > +                                        kgid_t kgid) { return 0; }
+> >
+> >  #endif
+> >
+> > diff --git a/drivers/base/power/sysfs.c b/drivers/base/power/sysfs.c
+> > index d7d82db2e4bc..4e79afcd5ca8 100644
+> > --- a/drivers/base/power/sysfs.c
+> > +++ b/drivers/base/power/sysfs.c
+> > @@ -684,6 +684,48 @@ int dpm_sysfs_add(struct device *dev)
+> >         return rc;
+> >  }
+> >
+> > +int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+> > +{
+> > +       int rc;
+> > +
+> > +       if (device_pm_not_required(dev))
+> > +               return 0;
+> > +
+> > +       rc = sysfs_group_change_owner(&dev->kobj, &pm_attr_group, kuid, kgid);
+> > +       if (rc)
+> > +               return rc;
+> > +
+> > +       if (pm_runtime_callbacks_present(dev)) {
+> > +               rc = sysfs_group_change_owner(
+> > +                       &dev->kobj, &pm_runtime_attr_group, kuid, kgid);
+> > +               if (rc)
+> > +                       return rc;
+> > +       }
+> > +       if (device_can_wakeup(dev)) {
+> > +               rc = sysfs_group_change_owner(&dev->kobj, &pm_wakeup_attr_group,
+> > +                                             kuid, kgid);
+> > +               if (rc)
+> > +                       return rc;
+> > +
+> > +#ifdef CONFIG_PM_SLEEP
+> > +               if (dev->power.wakeup && dev->power.wakeup->dev) {
+> > +                       rc = device_change_owner(dev->power.wakeup->dev, kuid,
+> > +                                                kgid);
+> > +                       if (rc)
+> > +                               return rc;
+> > +               }
+> > +#endif
 > 
-> Sure thing.  I'll update the MAINTAINERS file and list myself instead of Ioana Radulescu.
+> First off, I don't particularly like #ifdefs in function bodies.  In
+> particular, there is a CONFIG_PM_SLEEP block in this file already and
+> you could define a new function in there to carry out the above
+> operations, and provide an empty stub of it for the "unset" case.
+> Failing to do so is somewhat on the "rushing things in" side in my
+> view.
 
-Any comments on the patch itself?
+How ifdefines are used is highly dependent on the subsystem; networking
+ofen uses in-place ifdefines in some parts and not in others. That has
+nothing to do with rushing things. I'm happy to change it to your
+preferences. Thanks for pointing out your expectations. But please don't
+assume bad intentions on my part because I'm not meeting them right
+away. It often is the case that adding a helper that is called in one
+place is not well-received.
 
-> > On Mon, Feb 17, 2020 at 05:24:16PM +0000, Russell King wrote:
-> > > Convert the DPAA2 ethernet driver to use the finalised link parameters
-> > > in mac_link_up() rather than the parameters in mac_config(), which are
-> > > more suited to the needs of the DPAA2 MC firmware than those available
-> > > via mac_config().
-> > >
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 54
-> > > +++++++++++--------  .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |
-> > > 1 +
-> > >  2 files changed, 33 insertions(+), 22 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> > > b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> > > index 3a75c5b58f95..3ee236c5fc37 100644
-> > > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> > > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> > > @@ -123,35 +123,16 @@ static void dpaa2_mac_config(struct phylink_config
-> > *config, unsigned int mode,
-> > >  	struct dpmac_link_state *dpmac_state = &mac->state;
-> > >  	int err;
-> > >
-> > > -	if (state->speed != SPEED_UNKNOWN)
-> > > -		dpmac_state->rate = state->speed;
-> > > -
-> > > -	if (state->duplex != DUPLEX_UNKNOWN) {
-> > > -		if (!state->duplex)
-> > > -			dpmac_state->options |=
-> > DPMAC_LINK_OPT_HALF_DUPLEX;
-> > > -		else
-> > > -			dpmac_state->options &=
-> > ~DPMAC_LINK_OPT_HALF_DUPLEX;
-> > > -	}
-> > > -
-> > >  	if (state->an_enabled)
-> > >  		dpmac_state->options |= DPMAC_LINK_OPT_AUTONEG;
-> > >  	else
-> > >  		dpmac_state->options &= ~DPMAC_LINK_OPT_AUTONEG;
-> > >
-> > > -	if (state->pause & MLO_PAUSE_RX)
-> > > -		dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
-> > > -	else
-> > > -		dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
-> > > -
-> > > -	if (!!(state->pause & MLO_PAUSE_RX) ^ !!(state->pause &
-> > MLO_PAUSE_TX))
-> > > -		dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
-> > > -	else
-> > > -		dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
-> > > -
-> > >  	err = dpmac_set_link_state(mac->mc_io, 0,
-> > >  				   mac->mc_dev->mc_handle, dpmac_state);
-> > >  	if (err)
-> > > -		netdev_err(mac->net_dev, "dpmac_set_link_state() = %d\n",
-> > err);
-> > > +		netdev_err(mac->net_dev, "%s: dpmac_set_link_state() =
-> > %d\n",
-> > > +			   __func__, err);
-> > >  }
-> > >
-> > >  static void dpaa2_mac_link_up(struct phylink_config *config, @@
-> > > -165,10 +146,37 @@ static void dpaa2_mac_link_up(struct phylink_config
-> > *config,
-> > >  	int err;
-> > >
-> > >  	dpmac_state->up = 1;
-> > > +
-> > > +	if (mac->if_link_type == DPMAC_LINK_TYPE_PHY) {
-> > > +		/* If the DPMAC is configured for PHY mode, we need
-> > > +		 * to pass the link parameters to the MC firmware.
-> > > +		 */
-> > > +		dpmac_state->rate = speed;
-> > > +
-> > > +		if (duplex == DUPLEX_HALF)
-> > > +			dpmac_state->options |=
-> > DPMAC_LINK_OPT_HALF_DUPLEX;
-> > > +		else if (duplex == DUPLEX_FULL)
-> > > +			dpmac_state->options &=
-> > ~DPMAC_LINK_OPT_HALF_DUPLEX;
-> > > +
-> > > +		/* This is lossy; the firmware really should take the pause
-> > > +		 * enablement status rather than pause/asym pause status.
-> > > +		 */
-> > > +		if (rx_pause)
-> > > +			dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
-> > > +		else
-> > > +			dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
-> > > +
-> > > +		if (rx_pause ^ tx_pause)
-> > > +			dpmac_state->options |=
-> > DPMAC_LINK_OPT_ASYM_PAUSE;
-> > > +		else
-> > > +			dpmac_state->options &=
-> > ~DPMAC_LINK_OPT_ASYM_PAUSE;
-> > > +	}
-> > > +
-> > >  	err = dpmac_set_link_state(mac->mc_io, 0,
-> > >  				   mac->mc_dev->mc_handle, dpmac_state);
-> > >  	if (err)
-> > > -		netdev_err(mac->net_dev, "dpmac_set_link_state() = %d\n",
-> > err);
-> > > +		netdev_err(mac->net_dev, "%s: dpmac_set_link_state() =
-> > %d\n",
-> > > +			   __func__, err);
-> > >  }
-> > >
-> > >  static void dpaa2_mac_link_down(struct phylink_config *config, @@
-> > > -241,6 +249,8 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
-> > >  		goto err_close_dpmac;
-> > >  	}
-> > >
-> > > +	mac->if_link_type = attr.link_type;
-> > > +
-> > >  	dpmac_node = dpaa2_mac_get_node(attr.id);
-> > >  	if (!dpmac_node) {
-> > >  		netdev_err(net_dev, "No dpmac@%d node found.\n", attr.id);
-> > diff
-> > > --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> > > b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> > > index 4da8079b9155..2130d9c7d40e 100644
-> > > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> > > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-> > > @@ -20,6 +20,7 @@ struct dpaa2_mac {
-> > >  	struct phylink_config phylink_config;
-> > >  	struct phylink *phylink;
-> > >  	phy_interface_t if_mode;
-> > > +	enum dpmac_link_type if_link_type;
-> > >  };
-> > >
-> > >  bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
-> > > --
-> > > 2.20.1
-> > >
-> > >
-> > 
-> > --
-> > RMK's Patch system:
-> > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.ar
-> > mlinux.org.uk%2Fdeveloper%2Fpatches%2F&amp;data=02%7C01%7Cioana.cior
-> > nei%40nxp.com%7C09d0167191914135433808d7b45e15fd%7C686ea1d3bc2b4
-> > c6fa92cd99c5c301635%7C0%7C0%7C637176188497544105&amp;sdata=t0%2B
-> > OzkoqRM180UHGBrW6FYAvHsIelx4CaP4oC3QcP1k%3D&amp;reserved=0
-> > FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> > According to speedtest.net: 11.9Mbps down 500kbps up
 > 
+> Second, the #ifdef should cover the entire if (device_can_wakeup(dev))
+> {} block, because wakeup_sysfs_add() is only called if
+> device_can_wakeup(dev) returns 'true' for the device in question (and
+> arguably you could have checked that easily enough).
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+I've looked at the header definitions for device_can_wakeup() and with
+and without CONFIG_PM_SLEEP it is defined as:
+
+static inline bool device_can_wakeup(struct device *dev)
+{
+	return dev->power.can_wakeup;
+}
+
+which to me looks like it would neet to be called in all cases.
+
+I'll rework this to you preferences.
+
+Thanks!
+Christian
