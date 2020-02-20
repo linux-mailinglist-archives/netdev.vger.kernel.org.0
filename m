@@ -2,99 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5E61655B2
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 04:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FB671655D9
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 04:47:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727966AbgBTDc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 22:32:27 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:33925 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727749AbgBTDc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 22:32:27 -0500
-Received: by mail-oi1-f195.google.com with SMTP id l136so26162080oig.1;
-        Wed, 19 Feb 2020 19:32:25 -0800 (PST)
+        id S1727930AbgBTDrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 22:47:11 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43754 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727476AbgBTDrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 22:47:10 -0500
+Received: by mail-pl1-f193.google.com with SMTP id p11so980491plq.10;
+        Wed, 19 Feb 2020 19:47:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FkF0ycPRGHhqzquEy6JKzkt16I6SXZOg50EECEsoAiY=;
-        b=MTI5Gd1odwsP1ifJMDwJ3udM7XXRm2aOaT9itFusiMLqMH+q77dzB0aV7wlPQrXnl0
-         itcvg0OrhmlW9ELGwiLzBZbwaTggXILZ+G/TYWwpPywvfVldZopn/zx1wfuBYdnQNgzU
-         C4pKHt7c2RzB91iUQN1Ill/1VQfHI5pduLkcnZusWUClFoiG+3US6iZ3c07VT8lkgasG
-         9NrKuQX8nrs4tVjS4GskKvh1uRgpRqwq7LgI3AFtAO5rulnbPbnNlqv8IWKfhdf8bmCd
-         A1Tzmi50256FJEFVehxS5PycRVR5ntiWJw2QI6hbIUuMfI+E8gic/v8L1uwj803hzGad
-         Sk1Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4aa14Qa/BJ5gvTUkltBz2vTcHHykju1Xj4YvXyFnul4=;
+        b=CltrD+f29h4W+dpxHPNv1JveX0Lnoy95RgKNGY+7Zfo42vMKUAl3DpBhUFtpbKAmo+
+         QfpevgV35ksKPP2cMOjxPBJDtzA+6EXmzzPFR2GcqcmVNmp5e166xRJzoymejEvelyR/
+         fPPNNfBs1MH6q+PVxSV6pB5HX8rk1Bv5c8QgpYrSqtgPqO8x+oROOZDOazO8zj+S78Wh
+         DAtjtQ5KUMhzVWSa2lEpHychqhfRQOPT2dFb4IiGc1r+w1dqS32b9rrb4lOBJWHUouDJ
+         CYRUTYxUYmv2miBH7fb+ahq0k67y4Y5LlQxzuOSdBrXbmZzuvcGoIo8eSS/u2MaI6Bz6
+         bI9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FkF0ycPRGHhqzquEy6JKzkt16I6SXZOg50EECEsoAiY=;
-        b=FDHl5s9++hMbOgIMCV9B+Fkv7o54RRKawFOLM7xbHkvXeeTyl6R/NQZNpNC7gKYCtZ
-         um36bEU7xBj7rrpUiFSfut19ncqoJWCYx/Vjc3GfLY8Y5806uS0Fo/KKHaxIhZbN12Hq
-         qKlt76bseH+PFFbzP0LjnCTwKJuGR31Px9o3MBpb8CK1G1xtWqPRZb40zYkpB4K/b5as
-         ug3WnTDzuPrV8zfbl9Yw/Ekikk8cA6J1f+qICagroCUGddKhpgl+VH7xpe7TgKWv23sH
-         5lOqWAxW6RQ9D4ByMFaELDMhlvIrxG7QrE5xOPK9YRKSlJopGAxONKq2mdv/Wmj0QCH8
-         FVQQ==
-X-Gm-Message-State: APjAAAVrmR+6QTBVEezRF6qzWoCigAlGWvC/3rcEXPp4UCFHvBg0IN8k
-        s/JWw7pK/lHQJoYELDVtAOeXaaUiQ0tiQzwAeyfQ2CDzxZc=
-X-Google-Smtp-Source: APXvYqyD/un22q+qtTZ5LbIhFY9b09HssAnOPAoOqILbRFYkBGepPyk20TZodlXmSEsdn4jjTarhxHgtBWVFSc4kUCI=
-X-Received: by 2002:aca:1011:: with SMTP id 17mr693298oiq.72.1582169544773;
- Wed, 19 Feb 2020 19:32:24 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4aa14Qa/BJ5gvTUkltBz2vTcHHykju1Xj4YvXyFnul4=;
+        b=iEw5A1bWoHTgKzL/nmw5CCM81D8Sy8GR9L2PFxmdFMWOcb04HHCuK4pTKan+3+P2UM
+         tQp25DDHwjdnzJyeQ0OwQy+bnDntej2XVHfjJj1lsabdQhpSptX2n8ttntQjRTCZX1Ii
+         vQETOhEAFJOFS63E/n6RsusKGeZ1EELfbGvAlb9oOEXEhCC10qph1r2RO1Gjf69/M6VW
+         to6dTz9VSXSaZXhuTNasVbNrsBvPkVqMQvXJLYBTonQO4+eyJvncX/52+ITI3Zo9fNY2
+         n43cZe1myhJfTsEQpxjRQ8wKfbh5JEVadCA98BwmnZf7+bn6s8qscdnqwClNNGfRk63D
+         9IZw==
+X-Gm-Message-State: APjAAAUz3hzJMlDhluAcU9ll1L+RgaEbXVGMapyi09QcUhnaqigaD4DN
+        3+4Aw/hmquWvQMg/S95Li8M=
+X-Google-Smtp-Source: APXvYqx16VVAaiK+h04cWWoZZpTCTSCoAlLhOl9vCeFcmuJ7Z2LuULb7kQPW+C4OELuYq1yxtGtpRQ==
+X-Received: by 2002:a17:90a:868b:: with SMTP id p11mr1219499pjn.60.1582170429686;
+        Wed, 19 Feb 2020 19:47:09 -0800 (PST)
+Received: from workstation-portable ([146.196.37.60])
+        by smtp.gmail.com with ESMTPSA id v25sm1099083pfe.147.2020.02.19.19.47.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 19:47:09 -0800 (PST)
+Date:   Thu, 20 Feb 2020 09:17:02 +0530
+From:   Amol Grover <frextrite@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH] tcp: Pass lockdep expression to RCU lists
+Message-ID: <20200220034702.GA2349@workstation-portable>
+References: <20200219100545.27397-1-frextrite@gmail.com>
+ <b628d0ad-e066-46f5-5746-74dfba1816a8@gmail.com>
 MIME-Version: 1.0
-References: <20200213065352.6310-1-xiyou.wangcong@gmail.com>
- <20200218213524.5yuccwnl2eie6p6x@salvia> <CAM_iQpWfb7xgd2LuRmaXhRSJskJPsupFk0A7=dRXtMEjZJjr3w@mail.gmail.com>
- <20200218220507.cqlhd4kj4ukyjhuu@salvia>
-In-Reply-To: <20200218220507.cqlhd4kj4ukyjhuu@salvia>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 19 Feb 2020 19:32:13 -0800
-Message-ID: <CAM_iQpUYGVpUCatMHVKSx4jM9c6kbYxcWBV0--1mrQi6NbPhhg@mail.gmail.com>
-Subject: Re: [Patch nf] netfilter: xt_hashlimit: unregister proc file before
- releasing mutex
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzbot <syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b628d0ad-e066-46f5-5746-74dfba1816a8@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 2:05 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->
-> On Tue, Feb 18, 2020 at 01:40:26PM -0800, Cong Wang wrote:
-> > On Tue, Feb 18, 2020 at 1:35 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > >
-> > > On Wed, Feb 12, 2020 at 10:53:52PM -0800, Cong Wang wrote:
-> > > > Before releasing the global mutex, we only unlink the hashtable
-> > > > from the hash list, its proc file is still not unregistered at
-> > > > this point. So syzbot could trigger a race condition where a
-> > > > parallel htable_create() could register the same file immediately
-> > > > after the mutex is released.
-> > > >
-> > > > Move htable_remove_proc_entry() back to mutex protection to
-> > > > fix this. And, fold htable_destroy() into htable_put() to make
-> > > > the code slightly easier to understand.
-> > >
-> > > Probably revert previous one?
+On Wed, Feb 19, 2020 at 11:35:21AM -0800, Eric Dumazet wrote:
+> 
+> 
+> On 2/19/20 2:05 AM, Amol Grover wrote:
+> > tcp_cong_list is traversed using list_for_each_entry_rcu
+> > outside an RCU read-side critical section but under the protection
+> > of tcp_cong_list_lock.
 > >
-> > The hung task could appear again if we move the cleanup
-> > back under mutex.
->
-> How could the hung task appear again by reverting
-> c4a3922d2d20c710f827? Please elaborate.
+> 
+> This is not true.
+> 
+> There are cases where RCU read lock is held,
+> and others where the tcp_cong_list_lock is held.
+> 
 
-Because the cfg.max could be as large as 8*HASHLIMIT_MAX_SIZE:
+That's true but this patch specifically fixes those occurences of
+list_for_each_entry_rcu() that are traversed under tcp_cong_list_lock.
+Moreover, an implicit check is done for being inside RCU read-side
+critical section along with testing for this newly added lockdep
+expression.
 
- 311         if (hinfo->cfg.max == 0)
- 312                 hinfo->cfg.max = 8 * hinfo->cfg.size;
- 313         else if (hinfo->cfg.max < hinfo->cfg.size)
- 314                 hinfo->cfg.max = hinfo->cfg.size;
+> I believe you need to be more precise in the changelog.
+> 
+> If there was a bug, net tree would be the target for this patch,
+> with a required Fixes: tag.
+> 
+> Otherwise, if net-next tree is the intended target, you have to signal
+> it, as instructed in Documentation/networking/netdev-FAQ.rst
+> 
 
-Not sure whether we can finish cleaning up 8*HASHLIMIT_MAX_SIZE
-entries within the time a hung task tolerates. This largely depends on
-how much contention the spinlock has, at least I don't want to bet
-on it.
+I don't think this fixes a "bug". However, this may fix potential bugs
+that may creep in. Should I send it against net-next tree?
 
-Thanks.
+Thanks
+Amol
+
+> Thanks.
+> 
+>  
+> > Hence, add corresponding lockdep expression to silence false-positive
+> > warnings, and harden RCU lists.
+> > 
+> > Signed-off-by: Amol Grover <frextrite@gmail.com>
+> > ---
+> >  net/ipv4/tcp_cong.c | 9 ++++++---
+> >  1 file changed, 6 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+> > index 3737ec096650..8d4446ed309e 100644
+> > --- a/net/ipv4/tcp_cong.c
+> > +++ b/net/ipv4/tcp_cong.c
+> > @@ -25,7 +25,8 @@ static struct tcp_congestion_ops *tcp_ca_find(const char *name)
+> >  {
+> >  	struct tcp_congestion_ops *e;
+> >  
+> > -	list_for_each_entry_rcu(e, &tcp_cong_list, list) {
+> > +	list_for_each_entry_rcu(e, &tcp_cong_list, list,
+> > +				lockdep_is_held(&tcp_cong_list_lock)) {
+> >  		if (strcmp(e->name, name) == 0)
+> >  			return e;
+> >  	}
+> > @@ -55,7 +56,8 @@ struct tcp_congestion_ops *tcp_ca_find_key(u32 key)
+> >  {
+> >  	struct tcp_congestion_ops *e;
+> >  
+> > -	list_for_each_entry_rcu(e, &tcp_cong_list, list) {
+> > +	list_for_each_entry_rcu(e, &tcp_cong_list, list,
+> > +				lockdep_is_held(&tcp_cong_list_lock)) {
+> >  		if (e->key == key)
+> >  			return e;
+> >  	}
+> > @@ -317,7 +319,8 @@ int tcp_set_allowed_congestion_control(char *val)
+> >  	}
+> >  
+> >  	/* pass 2 clear old values */
+> > -	list_for_each_entry_rcu(ca, &tcp_cong_list, list)
+> > +	list_for_each_entry_rcu(ca, &tcp_cong_list, list,
+> > +				lockdep_is_held(&tcp_cong_list_lock))
+> >  		ca->flags &= ~TCP_CONG_NON_RESTRICTED;
+> >  
+> >  	/* pass 3 mark as allowed */
+> > 
