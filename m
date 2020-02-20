@@ -2,231 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B548166094
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A92D61660A1
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:13:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728388AbgBTPMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 10:12:24 -0500
-Received: from mail-vi1eur05on2063.outbound.protection.outlook.com ([40.107.21.63]:53185
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728079AbgBTPMX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 10:12:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R1AS9DIBnc6Z+86E8NjJlkCHPVZmJegGmRTwaKZNnXjtrng9lDNmdGntGoM8Jf3ploNXYtA7YqUkJKY1e4q2P+zHQEwsVQ71TGF8XfjTqA10m+mug+arUV7ftCYjjg+6PLBLBrTPzE/Czyaimr1Qj90k/H30NJBRJRsgC/Hg34A+MmfwK47IV7zRtKynyIk2hoQcv/+NPUrYp2ib2YPbuSrXdU6xh9pM9OSeSbcEmHPvJiOrmkDRHo0BeJbJ1YZ92m+tPXSbhIPGLH/p0WEbrrcT1mxO8iVWiGt4DyxClPWlXK9Pqsugy5LaAPfmc8R8tA2D8PxTkcXaNhR3IksJ8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CZH9ftVJglR/snWZrUTd41dkvh56vFT33EBMV4zawWk=;
- b=jI5qjqxVqCBf9meDTrd2YWqMqDZGmuIdlYCraPzFDPzTx2IdyIQ+1b23Md65Ph/VudH0Qor0sIoTBSLnfKAsbeCxVB1+XZ2Z8djRffdqk0nmfoqUwcqt/aTRoJ7pYyi/WqVPyPza4D90ooe50shNAL1GVafMcsiUo9/W8Z8ZiqKpr5Ri5ivI2V75tQxjadHCR6I4vZZMZrw/HNJB2ABcAmUrpXElMWpvOcK01RCBR17cO1N9+6qbEWkcMiKkb1nJ27BfIbfs7mBm1yMcKbCUzYTi6Zk+YvnWykpwiyffGKcX8wleVYnjKXzNQZC/S3IFIQFNtXjNy/6iNyMH6TloZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CZH9ftVJglR/snWZrUTd41dkvh56vFT33EBMV4zawWk=;
- b=JycOTVBiTn4tQ+HfTPw3R6RxJSH5XM2F/pIlyTrijXfvHzPzUIfnix1QXcflIp1m+PfPmxPSJtkaDkPGfYLFJvJOuLoSC/6gzS6CwSqzZdk7eA56lE+HfITdI79ueb8Rp6ss+jKZuVb6WPmeCg3rxNh0uOIdufJlKQRhhSIGPb8=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB4830.eurprd05.prod.outlook.com (20.177.48.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.22; Thu, 20 Feb 2020 15:12:18 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::1c00:7925:d5c6:d60d%7]) with mapi id 15.20.2729.033; Thu, 20 Feb 2020
- 15:12:18 +0000
-Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR17CA0003.namprd17.prod.outlook.com (2603:10b6:208:15e::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Thu, 20 Feb 2020 15:12:17 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1j4nUt-0002sj-4e; Thu, 20 Feb 2020 11:12:15 -0400
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-Subject: Re: [PATCH V4 5/5] vdpasim: vDPA device simulator
-Thread-Topic: [PATCH V4 5/5] vdpasim: vDPA device simulator
-Thread-Index: AQHV57Tl/t7aCF25gE6qK0wpcX6V56gkMNqA
-Date:   Thu, 20 Feb 2020 15:12:18 +0000
-Message-ID: <20200220151215.GU23930@mellanox.com>
-References: <20200220061141.29390-1-jasowang@redhat.com>
- <20200220061141.29390-6-jasowang@redhat.com>
-In-Reply-To: <20200220061141.29390-6-jasowang@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR17CA0003.namprd17.prod.outlook.com
- (2603:10b6:208:15e::16) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [142.68.57.212]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 19be9418-cf9a-4595-655d-08d7b617467c
-x-ms-traffictypediagnostic: VI1PR05MB4830:|VI1PR05MB4830:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB48301A8E29CA9CA55333B25ECF130@VI1PR05MB4830.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:519;
-x-forefront-prvs: 031996B7EF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(366004)(39850400004)(396003)(376002)(189003)(199004)(2616005)(6916009)(86362001)(52116002)(81156014)(71200400001)(8936002)(8676002)(4326008)(9746002)(81166006)(36756003)(9786002)(1076003)(478600001)(2906002)(5660300002)(186003)(33656002)(66446008)(66556008)(316002)(26005)(7416002)(66946007)(66476007)(64756008)(54906003)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4830;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bCH8r5H6eoHo4wgDLqb5d0Sjeyqs03os+uRy2mobj91Co1bE2AcipEUy8NR/pAYyxfIoOSialteMtxvTgLlbyJZDXA0yC02SCag1vpezeX9WrSpO1aX2JQ+dJB3Ngla4JmRihqs+880JOF0Jm4G0m5X1O0JUyWpXS6KCEUmsyKs87QrGrUNWhkATDzvXoS1t510IFYoCFdVBhe8/RD7gDYpYoXMRgwvRbCMJFOf40aVZuSqmdiVhvg3hUJnMcC8T5KeArIWKSr7q5FG2EviDIkTY7IQgXktH15ZqfR6Flkie/mMLE0vbbVIyzStI05aNkWRElWroFZwlHWR+f9FytMNwGfEB1964Vl+rJ7yfrUJmnEGwnLmfeSf7M8g9+UrZOOrbJR8CpWYqgc9BRd+2Ij/u6P3NeaeWwGoB9pOrsx+a8mCq18tEp4SP2Bo1LCJfMxkvrdRA1S+JRUvr2ffgpVA7GKbZsIYDTPUqPO4XhULbmT7F7w+lQ2z7BovguSGv
-x-ms-exchange-antispam-messagedata: brKauSbNI0jj74DfPsEh3D2SMrswkbsa33ZOkMXPRkENK2rqKndQim/p32fEw7OUsh9k+flh3hQJWtn3SIO2bqC54AaW21+kB4cua0bMGr9N0UHZS+GOcwUj29tf74bpQMbv8PQ9msQVVLQwvU5omA==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <27D03B0CCFB76D4196FC8C2FF59A0D07@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728477AbgBTPN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 10:13:26 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38523 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727761AbgBTPN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:13:26 -0500
+Received: by mail-wm1-f68.google.com with SMTP id a9so2447947wmj.3;
+        Thu, 20 Feb 2020 07:13:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gAx4KXlVlewXjqThUmSuBtfHB7stqcpEKawBiT/AQ28=;
+        b=DtIHmc02VW/aUElcz7bvPOQitvg86EmI8kLUWYaXblwwu7kq5auI/RyhyJoNMpJm6f
+         PCLldR4IkPqWSh9LS2zDgeeFSTuksggXDVk7I3Dhmq/kla2oDEzbLzn6I3dU4q/wJl/S
+         QOPsxH1i444QYahUhMExMxNQQLViBQ5v2wh1364Elg3fZ5Q4sMj1XB1UNm6lb80YPkzv
+         EPWaq8BazG1gt0gBwmvf9HHq48XxBStTtmFPJ9qx3ZHAffUfI60zOkmNTeSfpF1YxT1D
+         QPJvb1JRrSFbjOIOM/Q0XcxAOMA9gFQ1r3yaIAuiF6+eKgrQo361EUYwqB7Bnq5GiJlj
+         NpIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gAx4KXlVlewXjqThUmSuBtfHB7stqcpEKawBiT/AQ28=;
+        b=fJFtuRzxsowN+dBNhlhTrCKvx5m/VazCM/2r6q0DLRVrAoZoKrWwNXfJOHqMXAyvOr
+         UD363eCO2qibvZkxSqS2gG4LB4x+E56M5I2Bz+Gt4ECIoR3d5iSlHqRyQGcVDatkm8Ke
+         cPFvyADc3j5vb7K96taJ2y+gJEr7FZzYADd/PoX8dhJtk71hs62oIUpOXu/sNX+Q0xSR
+         9ZSoF6DLFqATyO5+n31wZWyfCr0EFcwMCvCXcoFkNCy823j8njH1fLKxDKZs+HcgYaAM
+         jw5Ztplu+aUx0TX31ZRZYeLBotxJNNyHptf7EYil9CCZhbQ2AYaxda9Ik0zKDmkJgd5c
+         nOYg==
+X-Gm-Message-State: APjAAAV/+pByvIIUycmTg7/17+1Pz0Qn9ngZ/tjwtCwyQcVpS+zc0li0
+        E/fbAsDIF5UJiy3Kg8D3kec=
+X-Google-Smtp-Source: APXvYqymPInvdztYl2kJryLNzkk9Uw1UNZcp4fwP7Q/r2mj/8P0xszABTfq/muaj6c8I0rXJ6HvCXA==
+X-Received: by 2002:a1c:b486:: with SMTP id d128mr5129347wmf.69.1582211603961;
+        Thu, 20 Feb 2020 07:13:23 -0800 (PST)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id d4sm4983642wra.14.2020.02.20.07.13.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 07:13:23 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] net: mdio: add ipq8064 mdio driver
+Date:   Thu, 20 Feb 2020 16:12:55 +0100
+Message-Id: <20200220151301.10564-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19be9418-cf9a-4595-655d-08d7b617467c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Feb 2020 15:12:18.2433
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1/uYslA456LI7zqcojZRMolOqxSlEfek5Xtspy/Wef0GJEw5J+Y5Ocib4REsTxKqegdxgqjOalOMUZhcP4LMaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4830
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 02:11:41PM +0800, Jason Wang wrote:
-> +static void vdpasim_device_release(struct device *dev)
-> +{
-> +	struct vdpasim *vdpasim =3D dev_to_sim(dev);
-> +
-> +	cancel_work_sync(&vdpasim->work);
-> +	kfree(vdpasim->buffer);
-> +	vhost_iotlb_free(vdpasim->iommu);
-> +	kfree(vdpasim);
-> +}
-> +
-> +static struct vdpasim *vdpasim_create(void)
-> +{
-> +	struct virtio_net_config *config;
-> +	struct vhost_iotlb *iommu;
-> +	struct vdpasim *vdpasim;
-> +	struct device *dev;
-> +	void *buffer;
-> +	int ret =3D -ENOMEM;
-> +
-> +	iommu =3D vhost_iotlb_alloc(2048, 0);
-> +	if (!iommu)
-> +		goto err;
-> +
-> +	buffer =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
-> +	if (!buffer)
-> +		goto err_buffer;
-> +
-> +	vdpasim =3D kzalloc(sizeof(*vdpasim), GFP_KERNEL);
-> +	if (!vdpasim)
-> +		goto err_alloc;
-> +
-> +	vdpasim->buffer =3D buffer;
-> +	vdpasim->iommu =3D iommu;
-> +
-> +	config =3D &vdpasim->config;
-> +	config->mtu =3D 1500;
-> +	config->status =3D VIRTIO_NET_S_LINK_UP;
-> +	eth_random_addr(config->mac);
-> +
-> +	INIT_WORK(&vdpasim->work, vdpasim_work);
-> +	spin_lock_init(&vdpasim->lock);
-> +
-> +	vringh_set_iotlb(&vdpasim->vqs[0].vring, vdpasim->iommu);
-> +	vringh_set_iotlb(&vdpasim->vqs[1].vring, vdpasim->iommu);
-> +
-> +	dev =3D &vdpasim->dev;
-> +	dev->release =3D vdpasim_device_release;
-> +	dev->coherent_dma_mask =3D DMA_BIT_MASK(64);
-> +	set_dma_ops(dev, &vdpasim_dma_ops);
-> +	dev_set_name(dev, "%s", VDPASIM_NAME);
-> +
-> +	ret =3D device_register(&vdpasim->dev);
-> +	if (ret)
-> +		goto err_init;
+Currently ipq806x soc use generi bitbang driver to
+comunicate with the gmac ethernet interface.
+Add a dedicated driver created by chunkeey to fix this.
 
-It is a bit weird to be creating this dummy parent, couldn't this be
-done by just passing a NULL parent to vdpa_alloc_device, doing
-set_dma_ops() on the vdpasim->vdpa->dev and setting dma_device to
-vdpasim->vdpa->dev ?
+Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ drivers/net/phy/Kconfig        |   8 ++
+ drivers/net/phy/Makefile       |   1 +
+ drivers/net/phy/mdio-ipq8064.c | 163 +++++++++++++++++++++++++++++++++
+ 3 files changed, 172 insertions(+)
+ create mode 100644 drivers/net/phy/mdio-ipq8064.c
 
-> +	vdpasim->vdpa =3D vdpa_alloc_device(dev, dev, &vdpasim_net_config_ops);
-> +	if (ret)
-> +		goto err_vdpa;
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 9dabe03a668c..ec2a5493a7e8 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -157,6 +157,14 @@ config MDIO_I2C
+ 
+ 	  This is library mode.
+ 
++config MDIO_IPQ8064
++	tristate "Qualcomm IPQ8064 MDIO interface support"
++	depends on HAS_IOMEM && OF_MDIO
++	depends on MFD_SYSCON
++	help
++	  This driver supports the MDIO interface found in the network
++	  interface units of the IPQ8064 SoC
++
+ config MDIO_MOXART
+ 	tristate "MOXA ART MDIO interface support"
+ 	depends on ARCH_MOXART || COMPILE_TEST
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index fe5badf13b65..8f02bd2089f3 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -36,6 +36,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
+ obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
+ obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
+ obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
++obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
+ obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
+ obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
+ obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
+diff --git a/drivers/net/phy/mdio-ipq8064.c b/drivers/net/phy/mdio-ipq8064.c
+new file mode 100644
+index 000000000000..c76e6a647787
+--- /dev/null
++++ b/drivers/net/phy/mdio-ipq8064.c
+@@ -0,0 +1,163 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Qualcomm IPQ8064 MDIO interface driver
++//
++// Copyright (C) 2019 Christian Lamparter <chunkeey@gmail.com>
++
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/of_mdio.h>
++#include <linux/phy.h>
++#include <linux/platform_device.h>
++#include <linux/mfd/syscon.h>
++
++/* MII address register definitions */
++#define MII_ADDR_REG_ADDR                       0x10
++#define MII_BUSY                                BIT(0)
++#define MII_WRITE                               BIT(1)
++#define MII_CLKRANGE_60_100M                    (0 << 2)
++#define MII_CLKRANGE_100_150M                   (1 << 2)
++#define MII_CLKRANGE_20_35M                     (2 << 2)
++#define MII_CLKRANGE_35_60M                     (3 << 2)
++#define MII_CLKRANGE_150_250M                   (4 << 2)
++#define MII_CLKRANGE_250_300M                   (5 << 2)
++#define MII_CLKRANGE_MASK			GENMASK(4, 2)
++#define MII_REG_SHIFT				6
++#define MII_REG_MASK				GENMASK(10, 6)
++#define MII_ADDR_SHIFT				11
++#define MII_ADDR_MASK				GENMASK(15, 11)
++
++#define MII_DATA_REG_ADDR                       0x14
++
++#define MII_MDIO_DELAY                          (1000)
++#define MII_MDIO_RETRY                          (10)
++
++struct ipq8064_mdio {
++	struct regmap *base; /* NSS_GMAC0_BASE */
++};
++
++static int
++ipq8064_mdio_wait_busy(struct ipq8064_mdio *priv)
++{
++	int i;
++
++	for (i = 0; i < MII_MDIO_RETRY; i++) {
++		unsigned int busy;
++
++		regmap_read(priv->base, MII_ADDR_REG_ADDR, &busy);
++		if (!(busy & MII_BUSY))
++			return 0;
++
++		udelay(MII_MDIO_DELAY);
++	}
++
++	return -ETIMEDOUT;
++}
++
++static int
++ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
++{
++	struct ipq8064_mdio *priv = bus->priv;
++	u32 miiaddr = MII_BUSY | MII_CLKRANGE_250_300M;
++	u32 ret_val;
++	int err;
++
++	miiaddr |= ((phy_addr << MII_ADDR_SHIFT) & MII_ADDR_MASK) |
++		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
++
++	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
++	usleep_range(10, 20);
++
++	err = ipq8064_mdio_wait_busy(priv);
++	if (err)
++		return err;
++
++	regmap_read(priv->base, MII_DATA_REG_ADDR, &ret_val);
++	return (int)ret_val;
++}
++
++static int
++ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
++{
++	struct ipq8064_mdio *priv = bus->priv;
++	u32 miiaddr = MII_WRITE | MII_BUSY | MII_CLKRANGE_250_300M;
++
++	regmap_write(priv->base, MII_DATA_REG_ADDR, data);
++
++	miiaddr |= ((phy_addr << MII_ADDR_SHIFT) & MII_ADDR_MASK) |
++		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
++
++	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
++	usleep_range(10, 20);
++
++	return ipq8064_mdio_wait_busy(priv);
++}
++
++static int
++ipq8064_mdio_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct ipq8064_mdio *priv;
++	struct mii_bus *bus;
++	int ret;
++
++	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
++	if (!bus)
++		return -ENOMEM;
++
++	bus->name = "ipq8064_mdio_bus";
++	bus->read = ipq8064_mdio_read;
++	bus->write = ipq8064_mdio_write;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
++	bus->parent = &pdev->dev;
++
++	priv = bus->priv;
++	priv->base = syscon_node_to_regmap(np);
++	if (IS_ERR_OR_NULL(priv->base)) {
++		priv->base = syscon_regmap_lookup_by_phandle(np, "master");
++		if (IS_ERR_OR_NULL(priv->base)) {
++			pr_err("master phandle not found\n");
++			return -EINVAL;
++		}
++	}
++
++	ret = of_mdiobus_register(bus, np);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, bus);
++	return 0;
++}
++
++static int
++ipq8064_mdio_remove(struct platform_device *pdev)
++{
++	struct mii_bus *bus = platform_get_drvdata(pdev);
++
++	mdiobus_unregister(bus);
++
++	return 0;
++}
++
++static const struct of_device_id ipq8064_mdio_dt_ids[] = {
++	{ .compatible = "qcom,ipq8064-mdio" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ipq8064_mdio_dt_ids);
++
++static struct platform_driver ipq8064_mdio_driver = {
++	.probe = ipq8064_mdio_probe,
++	.remove = ipq8064_mdio_remove,
++	.driver = {
++		.name = "ipq8064-mdio",
++		.of_match_table = ipq8064_mdio_dt_ids,
++	},
++};
++
++module_platform_driver(ipq8064_mdio_driver);
++
++MODULE_DESCRIPTION("Qualcomm IPQ8064 MDIO interface driver");
++MODULE_AUTHOR("Christian Lamparter <chunkeey@gmail.com>");
++MODULE_LICENSE("GPL");
+-- 
+2.25.0
 
-> +	ret =3D vdpa_register_device(vdpasim->vdpa);
-> +	if (ret)
-> +		goto err_register;
-> +
-> +	return vdpasim;
-> +
-> +err_register:
-> +	put_device(&vdpasim->vdpa->dev);
-> +err_vdpa:
-> +	device_del(&vdpasim->dev);
-> +	goto err;
-> +err_init:
-> +	put_device(&vdpasim->dev);
-> +	goto err;
-
-If you do the vdmasim alloc first, and immediately do
-device_initialize() then all the failure paths can do put_device
-instead of having this ugly goto unwind split. Just check for
-vdpasim->iommu =3D=3D NULL during release.
-
-> +static int __init vdpasim_dev_init(void)
-> +{
-> +	vdpasim_dev =3D vdpasim_create();
-> +
-> +	if (!IS_ERR(vdpasim_dev))
-> +		return 0;
-> +
-> +	return PTR_ERR(vdpasim_dev);
-> +}
-> +
-> +static int vdpasim_device_remove_cb(struct device *dev, void *data)
-> +{
-> +	struct vdpa_device *vdpa =3D dev_to_vdpa(dev);
-> +
-> +	vdpa_unregister_device(vdpa);
-> +
-> +	return 0;
-> +}
-> +
-> +static void __exit vdpasim_dev_exit(void)
-> +{
-> +	device_for_each_child(&vdpasim_dev->dev, NULL,
-> +			      vdpasim_device_remove_cb);
-
-Why the loop? There is only one device, and it is in the global
-varaible vdmasim_dev ?
-
-Jason
