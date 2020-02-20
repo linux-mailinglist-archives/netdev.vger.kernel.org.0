@@ -2,101 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 688FA165A2E
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 10:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D623165A71
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 10:48:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726976AbgBTJ3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 04:29:05 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:57156 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbgBTJ3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 04:29:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=oyYeAcyFCFN/ozseNMQ3BFdmkcak6a7rBNc1Z7ew3Qw=; b=1asd5m46jHRZGpKmeLcMsHOGe
-        ozGCh4zCKD7PJyEvTDNbNYsQtAAI0eXS/tyXoPIq6DvbWSeg49RTO++lZB7rsUD9d5UwPFQqmUlGm
-        epMJ4ATKPIPBxFjIw83tF5OYzmMDdECSEzSoU+Aeshabdh84dgrdZ7drcZOFZcOMtwNYTCVdTxH2T
-        llbpkr/uYphewFyxLVUy/bjguK2Bd0iJiwuF3HxEkmCfLxxTfcEkdSOxxWpGGBekT6Nr/Olt+qzxd
-        NTRcXzr/GN56HyrJmSv7Xq72Nooi/fQbwPCr9un2Zu54t6Xwf4b/FBe6ONwHX+cRKjvAlxb0RUnJf
-        YKViaBuUg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54460)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4i8Z-0002O0-I8; Thu, 20 Feb 2020 09:28:51 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4i8V-0002It-W1; Thu, 20 Feb 2020 09:28:48 +0000
-Date:   Thu, 20 Feb 2020 09:28:47 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Jakub Kicinski <kuba@kernel.org>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: remove Felix Fietkau for the Mediatek
- ethernet driver
-Message-ID: <20200220092847.GT25745@shell.armlinux.org.uk>
-References: <20200218103959.GA9487@e0022681537dd.dyn.armlinux.org.uk>
- <20200218120036.380a5a16@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <6ec21622-f9fe-8cf9-0464-7f5e4bb0a47e@nbd.name>
+        id S1727001AbgBTJsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 04:48:41 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50873 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726637AbgBTJsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 04:48:40 -0500
+Received: by mail-wm1-f67.google.com with SMTP id a5so1273717wmb.0;
+        Thu, 20 Feb 2020 01:48:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=E4lJsyRn5c8MRRBS5Cfwnz0ljZFD9tB/hN4lq7BDblw=;
+        b=WkpaZeHVz17Y1TMUSg/nKktlNbfBErrdzoba0X8m4cd2P+F0769UaDz6I4KmBu48o2
+         lMoOi/Cwm+PHYYNbWqK7Ddg/jlaRJig2OiNl83hjM8JEctgMO879Fa5MFFDWMnuNi1k3
+         oB1m3BjwL1HKQZvs4FU4NBj4c0gf6LY8jqmIItkPOMh1NVaVIR8uNdWFlGs43xKkFye8
+         MIRnGs1ImZeWy/9DqLH6/lyVmwBM206+HSE37MuJ7ym2aMui87j7PTvT1b25lk2LHNCf
+         oSNvige6GVgAR0IuWMvroCs7ZPRfiu/roVTLsk7djT08it5jZA0EliiUAAzBaB6lW8jC
+         eAew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=E4lJsyRn5c8MRRBS5Cfwnz0ljZFD9tB/hN4lq7BDblw=;
+        b=Vf4yCgA2V6MZuKzB/BVzvJRQQeJQhdTnhHZgH7sqlNiUIvEtEcoeHhNfS6kKk4fGHU
+         otve9WyqqDoEtD7Kthu3NtUHWrR7CeLU3ejwoFdzI/vwRhpToZWRwKk5cnWU738LihNu
+         im3T7d+OpFmKuS2KPL96r5mN1jt/QhAm0219aRCveqYtxoPXuGXArYNVN+9Dcte/y9l4
+         6bphaohvmEdhdd08F8Bdo1ajh22Iaz9K1a1d7iQ35Qg3tka30K56vTf07jm1leTzEV/C
+         89JtZruUbY+QxiUH3+bWA4mSSXIpQ3hp4pFzf5+hu60wcoUToZlH5jjhN2f3x36sPnx/
+         0AZg==
+X-Gm-Message-State: APjAAAXHUcf4vKBg8qozoKJ7wXjMnjx0wfWvBdyXDNnyZZnWGrDWfDgA
+        mIfD4reU6XW0veQvJW+2Kt9Ge+N8+E2nUQ==
+X-Google-Smtp-Source: APXvYqyPmzwx/Erf5L+zeER2/OS5TZCx8jTOE2DdSiG/Rt9EQsSfncEy52jqOK7Nu9XPwLSMgu1jIg==
+X-Received: by 2002:a1c:451:: with SMTP id 78mr3269673wme.125.1582192117251;
+        Thu, 20 Feb 2020 01:48:37 -0800 (PST)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id k10sm3752046wrd.68.2020.02.20.01.48.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Feb 2020 01:48:36 -0800 (PST)
+Subject: Re: [RESEND PATCH v2 9/9] ath5k: Constify ioreadX() iomem argument
+ (as in generic implementation)
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Dave Airlie <airlied@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        virtualization@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-10-krzk@kernel.org>
+From:   Jiri Slaby <jirislaby@gmail.com>
+Autocrypt: addr=jirislaby@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <518a9023-f802-17b3-fca5-582400bc34ae@gmail.com>
+Date:   Thu, 20 Feb 2020 10:48:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ec21622-f9fe-8cf9-0464-7f5e4bb0a47e@nbd.name>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200219175007.13627-10-krzk@kernel.org>
+Content-Type: text/plain; charset=iso-8859-2
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 09:54:44AM +0100, Felix Fietkau wrote:
-> On 2020-02-18 21:00, Jakub Kicinski wrote:
-> > On Tue, 18 Feb 2020 10:40:01 +0000 Russell King wrote:
-> >> Felix's address has been failing for a while now with the following
-> >> non-delivery report:
-> >> 
-> >> This message was created automatically by mail delivery software.
-> >> 
-> >> A message that you sent could not be delivered to one or more of its
-> >> recipients. This is a permanent error. The following address(es) failed:
-> >> 
-> >>   nbd@openwrt.org
-> >>     host util-01.infra.openwrt.org [2a03:b0c0:3:d0::175a:2001]
-> >>     SMTP error from remote mail server after RCPT TO:<nbd@openwrt.org>:
-> >>     550 Unrouteable address
-> >> 
-> >> Let's remove his address from MAINTAINERS.  If a different resolution
-> >> is desired, please submit an alternative patch.
-> >> 
-> >> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> >> ---
-> >>  MAINTAINERS | 1 -
-> >>  1 file changed, 1 deletion(-)
-> >> 
-> >> diff --git a/MAINTAINERS b/MAINTAINERS
-> >> index a0d86490c2c6..82dccd29b24f 100644
-> >> --- a/MAINTAINERS
-> >> +++ b/MAINTAINERS
-> >> @@ -10528,7 +10528,6 @@ F:	drivers/leds/leds-mt6323.c
-> >>  F:	Documentation/devicetree/bindings/leds/leds-mt6323.txt
-> >>  
-> >>  MEDIATEK ETHERNET DRIVER
-> >> -M:	Felix Fietkau <nbd@openwrt.org>
-> >>  M:	John Crispin <john@phrozen.org>
-> >>  M:	Sean Wang <sean.wang@mediatek.com>
-> >>  M:	Mark Lee <Mark-MC.Lee@mediatek.com>
-> > 
-> > Let's CC Felix, I think he's using nbd@nbd.name these days.
-> Yes, my address should simply be changed to nbd@nbd.name.
+On 19. 02. 20, 18:50, Krzysztof Kozlowski wrote:
+> The ioreadX() helpers have inconsistent interface.  On some architectures
+> void *__iomem address argument is a pointer to const, on some not.
+> 
+> Implementations of ioreadX() do not modify the memory under the address
+> so they can be converted to a "const" version for const-safety and
+> consistency among architectures.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+> ---
+>  drivers/net/wireless/ath/ath5k/ahb.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath5k/ahb.c b/drivers/net/wireless/ath/ath5k/ahb.c
+> index 2c9cec8b53d9..8bd01df369fb 100644
+> --- a/drivers/net/wireless/ath/ath5k/ahb.c
+> +++ b/drivers/net/wireless/ath/ath5k/ahb.c
+> @@ -138,18 +138,18 @@ static int ath_ahb_probe(struct platform_device *pdev)
+>  
+>  	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
+>  		/* Enable WMAC AHB arbitration */
+> -		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+> +		reg = ioread32((const void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
 
-Please send a patch to that effect.
+While I understand why the parameter of ioread32 should be const, I
+don't see a reason for these casts on the users' side. What does it
+bring except longer code to read?
 
+thanks,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+js
