@@ -2,132 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC34166865
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:34:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7114416687B
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgBTUeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 15:34:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728400AbgBTUeG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 15:34:06 -0500
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 74D1C206F4;
-        Thu, 20 Feb 2020 20:34:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582230845;
-        bh=F9tVkLvbTtnyCTkxjsPTjMJF2s7fBBIXy1nkIivydXQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Fzojo25+IjDEp2m6iOVojDJPHo1QvMn9XtQv6ZtEtVPZLqeqdjjzoSAD8FkGHAyiX
-         yDkB5RlnIycJb61BjYKdmDrtqZ7RzYGm9stKn5EdX7cdiZmQI808A89TXfm+LXKyHr
-         M8/7HAVdNgbGyMGxU6dZrA8Zun5Q4883PBPRq8so=
-Received: by mail-qv1-f43.google.com with SMTP id ff2so25860qvb.3;
-        Thu, 20 Feb 2020 12:34:05 -0800 (PST)
-X-Gm-Message-State: APjAAAV5+BXWy/nZNO9dqpOksAkjRBzsxxA3M57Ke/KWF9NncR9YiJYK
-        JHaM4YlqP6D8CW4DPPLZCufEhOIcBe6X7hvBIw==
-X-Google-Smtp-Source: APXvYqx+4CwZ75s6qSDd9JgmGRmqpP0rAn6pOTGXJvGi2Vh8/vYAfFs5IK72nq6EJz3ucmI1RAlM48zsSDdlraHZ1YI=
-X-Received: by 2002:a05:6214:11ac:: with SMTP id u12mr27585073qvv.85.1582230844675;
- Thu, 20 Feb 2020 12:34:04 -0800 (PST)
+        id S1729090AbgBTUgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 15:36:40 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:36738 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728582AbgBTUgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 15:36:39 -0500
+Received: by mail-oi1-f194.google.com with SMTP id c16so28956650oic.3;
+        Thu, 20 Feb 2020 12:36:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dTWnQ3lvBmB7ErgPURmWXOoQ/e5ybUtPY0ge36pNzVk=;
+        b=ObtDcSwNnPoxbsU2S/HdnbRZjp4ejrkGrPdcYNIfPj2ghI6Oqf99H8WSK0FWCEYvJD
+         x/g8CFsEEAccr0MF8eHrJXenKeKHOvSgsb3FilscNjmAhU0MsmwnaaIB8JrQwNZZn1Pn
+         rgCos8WjHmiivlRgXLpZxC4+aUTtdslctEMrBe9PumqMP/q+2jLfD5xtYXbAgALavpey
+         MVKTdpOQg+KkihgTffwYnL6Q21EflfEn9qem/t4S9m58eCw6SIKp11t+jDIXm6jQN+dR
+         DJVadjn0bcRhOrPlfu/CrHHn4yvdsxJ7AE4zS4DurutPYnByNzVe12qUR/mtxgu2skIq
+         w5Ww==
+X-Gm-Message-State: APjAAAWBll/5KuzMcZjF3pDws2LDnTbrQw9zLgD5EKQruKO6Zg/3aSkw
+        2QEvzr2uTlaQO+fspLBPNA==
+X-Google-Smtp-Source: APXvYqxq6Fef/uB5nvq/j1hNavakwK21btDjib4pkIuE15IOqq9rtqlxMlELf9zdDMgdlOB20Qhzew==
+X-Received: by 2002:aca:d502:: with SMTP id m2mr3358601oig.41.1582230999091;
+        Thu, 20 Feb 2020 12:36:39 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id k18sm120714oiw.44.2020.02.20.12.36.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 12:36:38 -0800 (PST)
+Received: (nullmailer pid 17428 invoked by uid 1000);
+        Thu, 20 Feb 2020 20:36:37 -0000
+Date:   Thu, 20 Feb 2020 14:36:37 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] Documentation: devictree: Add ipq806x mdio
+ bindings
+Message-ID: <20200220203637.GA16998@bogus>
+References: <20200220170732.12741-1-ansuelsmth@gmail.com>
+ <20200220170732.12741-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <1582149375-25168-1-git-send-email-min.li.xe@renesas.com>
-In-Reply-To: <1582149375-25168-1-git-send-email-min.li.xe@renesas.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 20 Feb 2020 14:33:53 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKpXRoN6Nn7B4gRyrVwrF-J63dSjBrtDYMgmZ4wXmEnNg@mail.gmail.com>
-Message-ID: <CAL_JsqKpXRoN6Nn7B4gRyrVwrF-J63dSjBrtDYMgmZ4wXmEnNg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: ptp: Add device tree binding for IDT
- 82P33 based PTP clock
-To:     min.li.xe@renesas.com
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200220170732.12741-2-ansuelsmth@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 3:56 PM <min.li.xe@renesas.com> wrote:
->
-> From: Min Li <min.li.xe@renesas.com>
->
-> Add device tree binding doc for the PTP clock based on IDT 82P33
-> Synchronization Management Unit (SMU).
->
-> Changes since v1:
->  - As suggested by Rob Herring:
->    1. Drop reg description for i2c
->    2. Replace i2c@1 with i2c
->    3. Add addtionalProperties: false
-
-You copied my typo. Should be 'additionalProperties'
-
-'make dt_binding_check' would have caught this for you. Please run it.
-
-With that fixed,
-
-Reviewed-by: Rob Herring <robh@kernel.org>
-
->
-> Signed-off-by: Min Li <min.li.xe@renesas.com>
+On Thu, 20 Feb 2020 18:07:29 +0100, Ansuel Smith wrote:
+> Add documentations for ipq806x mdio driver.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->  .../devicetree/bindings/ptp/ptp-idt82p33.yaml      | 45 ++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
->
-> diff --git a/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
-> new file mode 100644
-> index 0000000..25806de
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/ptp/ptp-idt82p33.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: IDT 82P33 PTP Clock Device Tree Bindings
-> +
-> +description: |
-> +  IDT 82P33XXX Synchronization Management Unit (SMU) based PTP clock
-> +
-> +maintainers:
-> +  - Min Li <min.li.xe@renesas.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - idt,82p33810
-> +      - idt,82p33813
-> +      - idt,82p33814
-> +      - idt,82p33831
-> +      - idt,82p33910
-> +      - idt,82p33913
-> +      - idt,82p33914
-> +      - idt,82p33931
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +addtionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phc@51 {
-> +            compatible = "idt,82p33810";
-> +            reg = <0x51>;
-> +        };
-> +    };
-> --
-> 2.7.4
->
+>  .../bindings/net/qcom,ipq8064-mdio.yaml       | 52 +++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+> 
+
+My bot found errors running 'make dt_binding_check' on your patch:
+
+warning: no schema found in file: Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml: ignoring, error in schema: $id
+Documentation/devicetree/bindings/display/simple-framebuffer.example.dts:21.16-37.11: Warning (chosen_node_is_root): /example-0/chosen: chosen node must be at root node
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml: $id: 'http://devicetree.org/schemas/net/qcom,ipq8064-mdio.txt' does not match 'http://devicetree.org/schemas/.*\\.yaml#'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml: 'maintainers' is a required property
+Documentation/devicetree/bindings/Makefile:12: recipe for target 'Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.example.dts' failed
+make[1]: *** [Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.example.dts] Error 1
+Makefile:1263: recipe for target 'dt_binding_check' failed
+make: *** [dt_binding_check] Error 2
+
+See https://patchwork.ozlabs.org/patch/1241574
+Please check and re-submit.
