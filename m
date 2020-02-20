@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE734166748
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 20:38:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C2E166786
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 20:51:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728618AbgBTTim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 14:38:42 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:54705 "EHLO
+        id S1729024AbgBTTvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 14:51:52 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55785 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728248AbgBTTil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 14:38:41 -0500
+        with ESMTP id S1728448AbgBTTvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 14:51:52 -0500
 Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j4reg-0005Xc-Ak; Thu, 20 Feb 2020 19:38:38 +0000
-Date:   Thu, 20 Feb 2020 20:38:37 +0100
+        id 1j4rrS-0006UR-54; Thu, 20 Feb 2020 19:51:50 +0000
+Date:   Thu, 20 Feb 2020 20:51:49 +0100
 From:   Christian Brauner <christian.brauner@ubuntu.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -26,23 +26,23 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-pm@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/9] sysfs: add sysfs_group{s}_change_owner()
-Message-ID: <20200220193837.3agsi2idqirzpkiu@wittgenstein>
+Subject: Re: [PATCH net-next v3 2/9] sysfs: add sysfs_link_change_owner()
+Message-ID: <20200220195149.xha7jltmfzs3xs7g@wittgenstein>
 References: <20200218162943.2488012-1-christian.brauner@ubuntu.com>
- <20200218162943.2488012-4-christian.brauner@ubuntu.com>
- <20200220111550.GE3374196@kroah.com>
+ <20200218162943.2488012-3-christian.brauner@ubuntu.com>
+ <20200220111443.GD3374196@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200220111550.GE3374196@kroah.com>
+In-Reply-To: <20200220111443.GD3374196@kroah.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 12:15:50PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Feb 18, 2020 at 05:29:37PM +0100, Christian Brauner wrote:
-> > Add helpers to change the owner of sysfs groups.
+On Thu, Feb 20, 2020 at 12:14:43PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 18, 2020 at 05:29:36PM +0100, Christian Brauner wrote:
+> > Add a helper to change the owner of a sysfs link.
 > > This function will be used to correctly account for kobject ownership
 > > changes, e.g. when moving network devices between network namespaces.
 > > 
@@ -55,87 +55,50 @@ On Thu, Feb 20, 2020 at 12:15:50PM +0100, Greg Kroah-Hartman wrote:
 > > /* v3 */
 > > -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
 > >    - Add explicit uid/gid parameters.
-> > - Christian Brauner <christian.brauner@ubuntu.com>:
-> >   - Collapse groups ownership helper patches into a single patch.
 > > ---
-> >  fs/sysfs/group.c      | 117 ++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/sysfs.h |  20 ++++++++
-> >  2 files changed, 137 insertions(+)
+> >  fs/sysfs/file.c       | 40 ++++++++++++++++++++++++++++++++++++++++
+> >  include/linux/sysfs.h | 10 ++++++++++
+> >  2 files changed, 50 insertions(+)
 > > 
-> > diff --git a/fs/sysfs/group.c b/fs/sysfs/group.c
-> > index c4ab045926b7..bae562d3cba1 100644
-> > --- a/fs/sysfs/group.c
-> > +++ b/fs/sysfs/group.c
-> > @@ -13,6 +13,7 @@
-> >  #include <linux/dcache.h>
-> >  #include <linux/namei.h>
-> >  #include <linux/err.h>
-> > +#include <linux/fs.h>
-> >  #include "sysfs.h"
-> >  
-> >  
-> > @@ -457,3 +458,119 @@ int __compat_only_sysfs_link_entry_to_kobj(struct kobject *kobj,
-> >  	return PTR_ERR_OR_ZERO(link);
+> > diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+> > index 32bb04b4d9d9..df5107d7b3fd 100644
+> > --- a/fs/sysfs/file.c
+> > +++ b/fs/sysfs/file.c
+> > @@ -570,6 +570,46 @@ static int internal_change_owner(struct kernfs_node *kn, struct kobject *kobj,
+> >  	return kernfs_setattr(kn, &newattrs);
 > >  }
-> >  EXPORT_SYMBOL_GPL(__compat_only_sysfs_link_entry_to_kobj);
-> > +
-> > +static int sysfs_group_attrs_change_owner(struct kernfs_node *grp_kn,
-> > +					  const struct attribute_group *grp,
-> > +					  struct iattr *newattrs)
+> >  
+> > +/**
+> > + *	sysfs_link_change_owner - change owner of a link.
+> > + *	@kobj:	object of the kernfs_node the symlink is located in.
+> > + *	@targ:	object of the kernfs_node the symlink points to.
+> > + *	@name:	name of the link.
+> > + *	@kuid:	new owner's kuid
+> > + *	@kgid:	new owner's kgid
+> > + */
+> > +int sysfs_link_change_owner(struct kobject *kobj, struct kobject *targ,
+> > +			    const char *name, kuid_t kuid, kgid_t kgid)
 > > +{
-> > +	struct kernfs_node *kn;
+> > +	struct kernfs_node *parent, *kn = NULL;
 > > +	int error;
 > > +
-> > +	if (grp->attrs) {
-> > +		struct attribute *const *attr;
-> > +
-> > +		for (attr = grp->attrs; *attr; attr++) {
-> > +			kn = kernfs_find_and_get(grp_kn, (*attr)->name);
-> > +			if (!kn)
-> > +				return -ENOENT;
-> > +
-> > +			error = kernfs_setattr(kn, newattrs);
-> > +			kernfs_put(kn);
-> > +			if (error)
-> > +				return error;
-> > +		}
-> > +	}
-> > +
-> > +	if (grp->bin_attrs) {
-> > +		struct bin_attribute *const *bin_attr;
-> > +
-> > +		for (bin_attr = grp->bin_attrs; *bin_attr; bin_attr++) {
-> > +			kn = kernfs_find_and_get(grp_kn, (*bin_attr)->attr.name);
-> > +			if (!kn)
-> > +				return -ENOENT;
-> > +
-> > +			error = kernfs_setattr(kn, newattrs);
-> > +			kernfs_put(kn);
-> > +			if (error)
-> > +				return error;
-> > +		}
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +/**
-> > + * sysfs_group_change_owner - change owner of an attribute group.
-> > + * @kobj:	The kobject containing the group.
-> > + * @grp:	The attribute group.
-> > + * @kuid:	new owner's kuid
-> > + * @kgid:	new owner's kgid
-> > + *
-> > + * Returns 0 on success or error code on failure.
+> > +	if (!kobj)
+> > +		parent = sysfs_root_kn;
+> > +	else
+> > +		parent = kobj->sd;
 > 
-> This is fine to document, just funny it's the only one documented about
-> the return value so far in this series.
+> I don't understand this, why would (!kobj) ever be a valid situation?
 
-I stuck to the documentation style common to the file. Most of the
-functions in fs/syfs/file.c did not mention return codes
-sysfs_remove_bin_file(), sysfs_create_bin_file(),
-sysfs_remove_file_from_group() etc. But I'll document all in this series
-with return codes now.
+Yeah, a caller could just pass in "sysfs_root_kn" itself if they for
+some reason needed to.
+
+> 
+> > +	if (!targ->state_in_sysfs)
+> > +		return -EINVAL;
+> 
+> Should you also check kobj->state_in_sysfs as well?
+
+Probably. I'll take a closer look now.
 
 Thanks!
 Christian
