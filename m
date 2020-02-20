@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD7C166035
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 15:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AA0166036
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 15:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgBTO7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 09:59:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57320 "EHLO mail.kernel.org"
+        id S1728352AbgBTO7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 09:59:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728054AbgBTO7O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 09:59:14 -0500
+        id S1728054AbgBTO7S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Feb 2020 09:59:18 -0500
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CE1F3206F4;
-        Thu, 20 Feb 2020 14:59:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3865A206F4;
+        Thu, 20 Feb 2020 14:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582210754;
-        bh=8WdzDejFLVIXTaQSyllfHhlIJqMh2J+chMaYVK1ObrM=;
+        s=default; t=1582210757;
+        bh=PqykvPQQ/udBG704OUeCLp9f/aB1NAyE9uTf+TCbpz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ung9EJJqDaelHhhU4TQtuG3PKpgqHOjr8vIehsEit4/wgwgoHCEU2H6IXdzADRC4M
-         FaENSdBg6lF9nR5uIx39KNtscAhUMarKRMfq1x9AHoIZgZ7RxF7YL5V9MCApxVQnvB
-         4Cp9vT4Lr4gWzmihYeSDSByScGXCPLs+Ucjgukm0=
+        b=knS+/c7KtbIAQIWu4n1FFXj3eFssOOd8H1HTksKg7rNZ1jW7AkD1D0+uyKZgBNYgG
+         uGHaAzyADtTCCpE7DqeKyG3heAqw0lcL5ga+tjeunFbROVnDIm8FGG6woZ4jBOvWYz
+         SLsA4g5bMJAYfQc8j3HOe4TiwwvYVO+Gy0Uce9O8=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH net-next 05/16] net/aeroflex: Clean ethtool_info struct assignments
-Date:   Thu, 20 Feb 2020 16:58:44 +0200
-Message-Id: <20200220145855.255704-6-leon@kernel.org>
+Subject: [PATCH net-next 06/16] net/agere: Delete unneeded driver version
+Date:   Thu, 20 Feb 2020 16:58:45 +0200
+Message-Id: <20200220145855.255704-7-leon@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200220145855.255704-1-leon@kernel.org>
 References: <20200220145855.255704-1-leon@kernel.org>
@@ -43,31 +43,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@mellanox.com>
 
-If FW version is not available, it is enough to leave that field as
-empty, there is no need to write N/A.
-
-The driver version is replaced in favor of generally available
-in-tree variant.
+There is no need in driver version for in-tree kernel code.
 
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/ethernet/aeroflex/greth.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/agere/et131x.c | 1 -
+ drivers/net/ethernet/agere/et131x.h | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/aeroflex/greth.c b/drivers/net/ethernet/aeroflex/greth.c
-index 2a9f8643629c..bf546118dbc6 100644
---- a/drivers/net/ethernet/aeroflex/greth.c
-+++ b/drivers/net/ethernet/aeroflex/greth.c
-@@ -1114,9 +1114,7 @@ static void greth_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *in
+diff --git a/drivers/net/ethernet/agere/et131x.c b/drivers/net/ethernet/agere/et131x.c
+index cb6a761d5c11..1b19385ad8a9 100644
+--- a/drivers/net/ethernet/agere/et131x.c
++++ b/drivers/net/ethernet/agere/et131x.c
+@@ -2958,7 +2958,6 @@ static void et131x_get_drvinfo(struct net_device *netdev,
+ 	struct et131x_adapter *adapter = netdev_priv(netdev);
 
- 	strlcpy(info->driver, dev_driver_string(greth->dev),
- 		sizeof(info->driver));
--	strlcpy(info->version, "revision: 1.0", sizeof(info->version));
- 	strlcpy(info->bus_info, greth->dev->bus->name, sizeof(info->bus_info));
--	strlcpy(info->fw_version, "N/A", sizeof(info->fw_version));
+ 	strlcpy(info->driver, DRIVER_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
+ 	strlcpy(info->bus_info, pci_name(adapter->pdev),
+ 		sizeof(info->bus_info));
  }
+diff --git a/drivers/net/ethernet/agere/et131x.h b/drivers/net/ethernet/agere/et131x.h
+index be9a11c02526..d0e922584d8a 100644
+--- a/drivers/net/ethernet/agere/et131x.h
++++ b/drivers/net/ethernet/agere/et131x.h
+@@ -46,7 +46,6 @@
+  */
 
- static void greth_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
+ #define DRIVER_NAME "et131x"
+-#define DRIVER_VERSION "v2.0"
+
+ /* EEPROM registers */
+
 --
 2.24.1
 
