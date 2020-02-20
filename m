@@ -2,129 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C81216671D
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 20:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D35C166734
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 20:33:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728932AbgBTT1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 14:27:47 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:35576 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728334AbgBTT1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 14:27:47 -0500
-Received: by mail-qv1-f67.google.com with SMTP id u10so2441054qvi.2
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 11:27:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nUozYIkh0i8DU+wPMPYypmV4LSBzg3fvJQVbP0NF19U=;
-        b=aVVlxkmEL23fXzjpVt1O/bNwtvN016VPrPsihJn7xfGuAXQc6nQFH8CGmIjKLsKpRw
-         dlp+/astzBJYJQsd+HcMBsAvwmcxqnPC2L9gNMZuLLBz9iwqwaho58RC27GiJ6XeD1ka
-         nFxvBGqfHERvZAZjeTAKKd1fW5d8Qph6hQz/mSGwcA2O/q98E7vwcKyhuKxpWjHZu63A
-         sAIG7psOeVl3A/UWwaE1bcehaUS5B29jm5M5pxuos0fX175q8RYD/Fsfg5m5/M5/vk+i
-         rE23UcmQC7c7F+vh/0tOpKz8su539jJZoNFLCIwZmDEQrEMp2KVa+jbmlPfMBW4d/hia
-         VXSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nUozYIkh0i8DU+wPMPYypmV4LSBzg3fvJQVbP0NF19U=;
-        b=WnZKGP3kwKamXtFsy8Bjmx/xM65TDsP7svgzRqaT4d+0pcDT2PhdRTfQoGR76V3WkT
-         74Ub8YpjNbiIr6ya6PterD7VIK5JSDS/lt34wISdaVxqPDmNVvF9gIybCPEOCMHDlC4A
-         w0Qq8FxHfYbJNnCle/FGR8xbNyx/j2R73M8J6As7rKlxgg4B3gQvcI53UqYZGS928KxW
-         3R6NjbjKVo+V8RKz1U+isuP6Kb3t8uedFGOo6qic18jpBhUJPIyakLCjAfsS37PWLegW
-         Krdyz/6HJwJHgGK9lZqHsbb4LnCfWVuQj1fcr/AV2wV3jOlcVOdqO2S6zCV6rr4ZoWkS
-         AIAA==
-X-Gm-Message-State: APjAAAW9lFMxQBgZQY8wYgIsIVi/cvM7krMKGDHindhOX65NgYdTmmje
-        kVUQTJvyVAuY1ZBv0u3Q7paXjA==
-X-Google-Smtp-Source: APXvYqzdvdh4nMl++9Dc7ZrNJO23gvdzS8NJbsAVUjtvTxPN8Dtttw4XRUj+5/HNbSpuM4HGiYxzYg==
-X-Received: by 2002:a0c:ab13:: with SMTP id h19mr26696830qvb.243.1582226864726;
-        Thu, 20 Feb 2020 11:27:44 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id m27sm288868qta.21.2020.02.20.11.27.44
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 20 Feb 2020 11:27:44 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j4rU7-0007w0-S2; Thu, 20 Feb 2020 15:27:43 -0400
-Date:   Thu, 20 Feb 2020 15:27:43 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        "yishaih@mellanox.com" <yishaih@mellanox.com>,
-        "leonro@mellanox.com" <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: Re: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20200220192743.GD31668@ziepe.ca>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
- <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
- <20200214170240.GA4034785@kroah.com>
- <20200214203455.GX31668@ziepe.ca>
- <20200214204500.GC4086224@kroah.com>
- <DM6PR11MB2841DDF7EEA187B368FFDE53DD130@DM6PR11MB2841.namprd11.prod.outlook.com>
+        id S1728582AbgBTTdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 14:33:44 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:40906 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728248AbgBTTdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 14:33:44 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j4rZm-0007Og-Rv; Thu, 20 Feb 2020 19:33:35 +0000
+Received: from [151.251.251.9] (helo=[192.168.14.3])
+        by jain.kot-begemot.co.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j4rZj-0003iM-W6; Thu, 20 Feb 2020 19:33:34 +0000
+Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        linux-um@lists.infradead.org,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        virtualization@lists.linux-foundation.org
+References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
+ <57230228-7030-c65f-a24f-910ca52bbe9e@cambridgegreys.com>
+ <f78bfe6e-2ffc-3734-9618-470f1afea0c6@redhat.com>
+ <918222d9-816a-be70-f8af-b8dfcb586240@cambridgegreys.com>
+ <20200211053502-mutt-send-email-mst@kernel.org>
+ <9547228b-aa93-f2b6-6fdc-8d33cde3716a@cambridgegreys.com>
+ <20200213045937-mutt-send-email-mst@kernel.org>
+ <94fb9656-99ee-a001-e428-9d76c3620e61@gmail.com>
+ <20200213105010-mutt-send-email-mst@kernel.org>
+ <35510da7-08f1-4aa5-c6d6-6bffbccaee0c@cambridgegreys.com>
+ <20200220025506-mutt-send-email-mst@kernel.org>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Organization: Cambridge Greys Limited
+Message-ID: <d26515b2-c0f4-195d-f754-caf7aa78ab81@cambridgegreys.com>
+Date:   Thu, 20 Feb 2020 19:33:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR11MB2841DDF7EEA187B368FFDE53DD130@DM6PR11MB2841.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200220025506-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 06:55:28PM +0000, Ertman, David M wrote:
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Friday, February 14, 2020 12:45 PM
-> > To: Jason Gunthorpe <jgg@ziepe.ca>
-> > Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
-> > Ertman, David M <david.m.ertman@intel.com>; netdev@vger.kernel.org;
-> > linux-rdma@vger.kernel.org; nhorman@redhat.com;
-> > sassmann@redhat.com; parav@mellanox.com; galpress@amazon.com;
-> > selvin.xavier@broadcom.com; sriharsha.basavapatna@broadcom.com;
-> > benve@cisco.com; bharat@chelsio.com; xavier.huwei@huawei.com;
-> > yishaih@mellanox.com; leonro@mellanox.com; mkalderon@marvell.com;
-> > aditr@vmware.com; Patil, Kiran <kiran.patil@intel.com>; Bowers, AndrewX
-> > <andrewx.bowers@intel.com>
-> > Subject: Re: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
-> > 
-> > On Fri, Feb 14, 2020 at 04:34:55PM -0400, Jason Gunthorpe wrote:
-> > > On Fri, Feb 14, 2020 at 09:02:40AM -0800, Greg KH wrote:
-> > > > > +	put_device(&vdev->dev);
-> > > > > +	ida_simple_remove(&virtbus_dev_ida, vdev->id);
-> > > >
-> > > > You need to do this before put_device().
-> > >
-> > > Shouldn't it be in the release function? The ida index should not be
-> > > re-used until the kref goes to zero..
-> 
-> The IDA should not be reused until the virtbus_device is unregistered.  We
-> don't want another device with the same name and same IDA to be
-> registered,
 
-Unregistration of the virtbus_device always happens before release.
+On 20/02/2020 07:58, Michael S. Tsirkin wrote:
+> On Thu, Feb 13, 2020 at 04:23:24PM +0000, Anton Ivanov wrote:
+>> On 13/02/2020 15:53, Michael S. Tsirkin wrote:
+>>> On Thu, Feb 13, 2020 at 07:44:06AM -0800, Eric Dumazet wrote:
+>>>> On 2/13/20 2:00 AM, Michael S. Tsirkin wrote:
+>>>>> On Wed, Feb 12, 2020 at 05:38:09PM +0000, Anton Ivanov wrote:
+>>>>>> On 11/02/2020 10:37, Michael S. Tsirkin wrote:
+>>>>>>> On Tue, Feb 11, 2020 at 07:42:37AM +0000, Anton Ivanov wrote:
+>>>>>>>> On 11/02/2020 02:51, Jason Wang wrote:
+>>>>>>>>> On 2020/2/11 上午12:55, Anton Ivanov wrote:
+>>>>>>>>>> On 09/12/2019 10:48, anton.ivanov@cambridgegreys.com wrote:
+>>>>>>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>>>>>>
+>>>>>>>>>>> Some of the frames marked as GSO which arrive at
+>>>>>>>>>>> virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>>>>>>> fragments (data_len = 0) and length significantly shorter
+>>>>>>>>>>> than the MTU (752 in my experiments).
+>>>>>>>>>>>
+>>>>>>>>>>> This is observed on raw sockets reading off vEth interfaces
+>>>>>>>>>>> in all 4.x and 5.x kernels I tested.
+>>>>>>>>>>>
+>>>>>>>>>>> These frames are reported as invalid while they are in fact
+>>>>>>>>>>> gso-less frames.
+>>>>>>>>>>>
+>>>>>>>>>>> This patch marks the vnet header as no-GSO for them instead
+>>>>>>>>>>> of reporting it as invalid.
+>>>>>>>>>>>
+>>>>>>>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>>>>>> ---
+>>>>>>>>>>>      include/linux/virtio_net.h | 8 ++++++--
+>>>>>>>>>>>      1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>>>>>>>>
+>>>>>>>>>>> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+>>>>>>>>>>> index 0d1fe9297ac6..d90d5cff1b9a 100644
+>>>>>>>>>>> --- a/include/linux/virtio_net.h
+>>>>>>>>>>> +++ b/include/linux/virtio_net.h
+>>>>>>>>>>> @@ -112,8 +112,12 @@ static inline int
+>>>>>>>>>>> virtio_net_hdr_from_skb(const struct sk_buff *skb,
+>>>>>>>>>>>                  hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV4;
+>>>>>>>>>>>              else if (sinfo->gso_type & SKB_GSO_TCPV6)
+>>>>>>>>>>>                  hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
+>>>>>>>>>>> -        else
+>>>>>>>>>>> -            return -EINVAL;
+>>>>>>>>>>> +        else {
+>>>>>>>>>>> +            if (skb->data_len == 0)
+>>>>>>>>>>> +                hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
+>>>>>>>>>>> +            else
+>>>>>>>>>>> +                return -EINVAL;
+>>>>>>>>>>> +        }
+>>>>>>>>>>>              if (sinfo->gso_type & SKB_GSO_TCP_ECN)
+>>>>>>>>>>>                  hdr->gso_type |= VIRTIO_NET_HDR_GSO_ECN;
+>>>>>>>>>>>          } else
+>>>>>>>>>>>
+>>>>>>>>>> ping.
+>>>>>>>>>>
+>>>>>>>>> Do you mean gso_size is set but gso_type is not? Looks like a bug
+>>>>>>>>> elsewhere.
+>>>>>>>>>
+>>>>>>>>> Thanks
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>> Yes.
+>>>>>>>>
+>>>>>>>> I could not trace it where it is coming from.
+>>>>>>>>
+>>>>>>>> I see it when doing recvmmsg on raw sockets in the UML vector network
+>>>>>>>> drivers.
+>>>>>>>>
+>>>>>>> I think we need to find the culprit and fix it there, lots of other things
+>>>>>>> can break otherwise.
+>>>>>>> Just printing out skb->dev->name should do the trick, no?
+>>>>>> The printk in virtio_net_hdr_from_skb says NULL.
+>>>>>>
+>>>>>> That is probably normal for a locally originated frame.
+>>>>>>
+>>>>>> I cannot reproduce this with network traffic by the way - it happens only if the traffic is locally originated on the host.
+>>>>>>
+>>>>>> A,
+>>>>> OK so is it code in __tcp_transmit_skb that sets gso_size to non-null
+>>>>> when gso_type is 0?
+>>>>>
+>>>> Correct way to determine if a packet is a gso one is by looking at gso_size.
+>>>> Then only it is legal looking at gso_type
+>>>>
+>>>>
+>>>> static inline bool skb_is_gso(const struct sk_buff *skb)
+>>>> {
+>>>>       return skb_shinfo(skb)->gso_size;
+>>>> }
+>>>>
+>>>> /* Note: Should be called only if skb_is_gso(skb) is true */
+>>>> static inline bool skb_is_gso_v6(const struct sk_buff *skb)
+>>>> ...
+>>>>
+>>>>
+>>>> There is absolutely no relation between GSO and skb->data_len, skb can be linearized
+>>>> for various orthogonal reasons.
+>>> The reported problem is that virtio gets a packet where gso_size
+>>> is !0 but gso_type is 0.
+>>>
+>>> It currently drops these on the assumption that it's some type
+>>> of a gso packet it does not know how to handle.
+>>>
+>>>
+>>> So you are saying if skb_is_gso we can still have gso_type set to 0,
+>>> and that's an expected configuration?
+>>>
+>>> So the patch should just be:
+>>>
+>>>
+>>> -        if (skb_is_gso(skb)) {
+>>> +        if (skb_is_gso(skb) && sinfo->gso_type) {
+>>>
+>> Yes, provided that skb_is_gso(skb) and sinfo->gso_type == 0 is a valid state.
+>>
+>> I agree with Jason, there may be something wrong going on here and we need to find the source which creates these packets.
+>>
+>> A.
+>
+> Want to submit a patch to address this for now?
 
-release is the point when the kref goes to zero and you can be
-confident there are no other threads reading the index or the device
-name.
+I can do that on Monday - traveling till then.
 
-Remember, the put_device() above is not guarenteed to be the one that
-calls to release..
+A.
 
-Jason
+
+>
+>>> ?
+>>>
+>>>
+>>> _______________________________________________
+>>> linux-um mailing list
+>>> linux-um@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-um
+>> -- 
+>> Anton R. Ivanov
+>> Cambridgegreys Limited. Registered in England. Company Number 10273661
+>> https://www.cambridgegreys.com/
+>
+> _______________________________________________
+> linux-um mailing list
+> linux-um@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-um
+
+-- 
+Anton R. Ivanov
+
+Cambridge Greys Limited, England and Wales company No 10273661
+http://www.cambridgegreys.com/
+
