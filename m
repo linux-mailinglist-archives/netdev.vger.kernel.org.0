@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0592716582D
+	by mail.lfdr.de (Postfix) with ESMTP id D993F16582F
 	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 08:08:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbgBTHIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 02:08:24 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:38855 "EHLO
+        id S1726783AbgBTHI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 02:08:27 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:54395 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725988AbgBTHIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 02:08:23 -0500
+        by vger.kernel.org with ESMTP id S1726342AbgBTHIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 02:08:24 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 68BF121ACE;
-        Thu, 20 Feb 2020 02:08:22 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9BC742108A;
+        Thu, 20 Feb 2020 02:08:23 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:22 -0500
+  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=/h0m9wBXnUPpEpwbkj6pletj3bXXmYwZYypB09fp4NM=; b=UvCeAZGh
-        +Fxz9Zagw95mYZ2SnkjKI4PnvfttAA5hzFoicrUvIFwpWoTqUTw6K6ZHXKXHe4TN
-        sh2GPb+jFVw3jqeodDM3k/jzNG6Lvy4gqAbZYN0FYNW0FhOKzpuclVUyKb8ChNmt
-        lfN5mdNoNYu33wbKgGKx401D0fwmJYtf2rnEzbO/zMxy/VIyPQFFkICY0GcfPBk+
-        Ub3iVvnaN5O3t2Sx3TryY/NoBlv6BI27wSGOBNJExu/hvNCU8kbpTRAPBBfmay5A
-        Pw3b6/4c6efHJgWD92xEFW8dQu3Sa7x5mlks/P/yJW3/A9p/ptyZNXGkNx5Z4tw2
-        z+PSgVv2MiyGkw==
-X-ME-Sender: <xms:ZjBOXuHE9BS5PffjvM7OL_r5mdXGSoHgxWPqRoU4vehRZFCks2EHAw>
+        fm2; bh=UVOIZFteFw87u73yrtU6uYusqWB1/LbaqNOf+vWrDTo=; b=WC0j9SZH
+        LI6wlaWPs66sSX75RCJgonvIZq13i+FD93BM4WOn5gRrVvIEztX+TLQdASS1hKs4
+        969EqZIRase0THP9/Td52uUAZ6K7aJOX7zhjsAvk3ShCBlfC4m1rxbdTxBbY3yry
+        EyprerxpkYxeh7nrWMZTX7Mt4UWL1Mpbvha16qs4z+AnByMCqExz1k5DmV2JuWUY
+        uVDVLWjxIrn5/aAb3gT+Rnco+E6xhfKbB3WJOm4BvMzLy3d+iaf0JegMKc1s8dCI
+        0wolf/eFnXt2E8zOTkbznelMej5xhK4QojtyWCyp9ctmRCgPpZpv7KtUY4nzYBVk
+        /O942qAkASww2A==
+X-ME-Sender: <xms:ZzBOXmgCgPMjK-ckpbsJ-mqEObmatciYq3Bc_24zPZfGpeIC0JiWEw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucevlhhushhtvg
     hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
     tghhrdhorhhg
-X-ME-Proxy: <xmx:ZjBOXoBH9eTuRBYCEm4vl45JKL-o97VZqwDU_AqIDj2eyqbro89Ffg>
-    <xmx:ZjBOXoEGMrhm3IDukgNiPxuUIX0aYm3cvmU6Pr0z8h7rNJdtrjSjFw>
-    <xmx:ZjBOXkmjcgn2_RFlKncpmFHTBeaU98l906b_802FfKE9Z-SYFrp4ow>
-    <xmx:ZjBOXm6YSky-dX6wMyNAPZi7v7JHw3xRE9LC41IQWgvrPdJLvoD7xQ>
+X-ME-Proxy: <xmx:ZzBOXiuvMIs4sa2SC_qWP6cJ7sEygB8MCiNnjx22pF4RB9YrYSdNqg>
+    <xmx:ZzBOXqg4NPeD6w66LuPgonHdI3LSAHoDA3IMiJy914trEEgTJQ8ofA>
+    <xmx:ZzBOXobnIHMdI4t4Jv0puVzySU_89vYQTY_tVgfqwwtsPZWcki_iRQ>
+    <xmx:ZzBOXiKL-ba-hl5XymvXPwMyQLU3ke1g6687OARmZFJh3LMCbv4w_A>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4F57F3060C28;
-        Thu, 20 Feb 2020 02:08:21 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 80CCD3060C28;
+        Thu, 20 Feb 2020 02:08:22 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 02/15] mlxsw: spectrum: Protect counter pool with a lock
-Date:   Thu, 20 Feb 2020 09:07:47 +0200
-Message-Id: <20200220070800.364235-3-idosch@idosch.org>
+Subject: [PATCH net-next 03/15] mlxsw: spectrum_span: Do no expose mirroring agents to entire driver
+Date:   Thu, 20 Feb 2020 09:07:48 +0200
+Message-Id: <20200220070800.364235-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200220070800.364235-1-idosch@idosch.org>
 References: <20200220070800.364235-1-idosch@idosch.org>
@@ -61,99 +61,199 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-The counter pool is a shared resource. It is used by both the ACL code
-to allocate counters for actions and by the routing code to allocate
-counters for adjacency entries (for example).
+The struct holding the different mirroring agents is currently allocated
+as part of the main driver struct. This is unlike other driver modules.
 
-Currently, all allocations are protected by RTNL, but this is going to
-change with the removal of RTNL from the routing code.
-
-Therefore, protect counter allocations with a spin lock.
+Allocate the memory required to store the different mirroring agents as
+part of the initialization of the mirroring module.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_cnt.c    | 25 +++++++++++++++----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  6 +-
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   | 72 ++++++++++++-------
+ 2 files changed, 46 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-index 83c2e1e5f216..6a02ef9ec00e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-@@ -3,6 +3,7 @@
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 4c3d39223a46..2f3d2f8b2377 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -168,12 +168,8 @@ struct mlxsw_sp {
+ 	struct notifier_block netdevice_nb;
+ 	struct mlxsw_sp_ptp_clock *clock;
+ 	struct mlxsw_sp_ptp_state *ptp_state;
+-
+ 	struct mlxsw_sp_counter_pool *counter_pool;
+-	struct {
+-		struct mlxsw_sp_span_entry *entries;
+-		int entries_count;
+-	} span;
++	struct mlxsw_sp_span *span;
+ 	const struct mlxsw_fw_rev *req_rev;
+ 	const char *fw_filename;
+ 	const struct mlxsw_sp_kvdl_ops *kvdl_ops;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+index 0cdd7954a085..4b76f01634c1 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+@@ -14,14 +14,19 @@
+ #include "spectrum_span.h"
+ #include "spectrum_switchdev.h"
  
- #include <linux/kernel.h>
- #include <linux/bitops.h>
-+#include <linux/spinlock.h>
++struct mlxsw_sp_span {
++	struct mlxsw_sp_span_entry *entries;
++	int entries_count;
++};
++
+ static u64 mlxsw_sp_span_occ_get(void *priv)
+ {
+ 	const struct mlxsw_sp *mlxsw_sp = priv;
+ 	u64 occ = 0;
+ 	int i;
  
- #include "spectrum_cnt.h"
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		if (mlxsw_sp->span.entries[i].ref_count)
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		if (mlxsw_sp->span->entries[i].ref_count)
+ 			occ++;
+ 	}
  
-@@ -18,6 +19,7 @@ struct mlxsw_sp_counter_sub_pool {
- struct mlxsw_sp_counter_pool {
- 	unsigned int pool_size;
- 	unsigned long *usage; /* Usage bitmap */
-+	spinlock_t counter_pool_lock; /* Protects counter pool allocations */
- 	struct mlxsw_sp_counter_sub_pool *sub_pools;
- };
- 
-@@ -87,6 +89,7 @@ int mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp)
- 	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
- 	if (!pool)
- 		return -ENOMEM;
-+	spin_lock_init(&pool->counter_pool_lock);
- 
- 	pool->pool_size = MLXSW_CORE_RES_GET(mlxsw_sp->core, COUNTER_POOL_SIZE);
- 	map_size = BITS_TO_LONGS(pool->pool_size) * sizeof(unsigned long);
-@@ -139,25 +142,35 @@ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
- 	struct mlxsw_sp_counter_sub_pool *sub_pool;
- 	unsigned int entry_index;
- 	unsigned int stop_index;
+@@ -31,21 +36,29 @@ static u64 mlxsw_sp_span_occ_get(void *priv)
+ int mlxsw_sp_span_init(struct mlxsw_sp *mlxsw_sp)
+ {
+ 	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
 -	int i;
++	struct mlxsw_sp_span *span;
 +	int i, err;
  
- 	sub_pool = &mlxsw_sp_counter_sub_pools[sub_pool_id];
- 	stop_index = sub_pool->base_index + sub_pool->size;
- 	entry_index = sub_pool->base_index;
+ 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, MAX_SPAN))
+ 		return -EIO;
  
-+	spin_lock(&pool->counter_pool_lock);
- 	entry_index = find_next_zero_bit(pool->usage, stop_index, entry_index);
--	if (entry_index == stop_index)
--		return -ENOBUFS;
-+	if (entry_index == stop_index) {
-+		err = -ENOBUFS;
-+		goto err_alloc;
+-	mlxsw_sp->span.entries_count = MLXSW_CORE_RES_GET(mlxsw_sp->core,
+-							  MAX_SPAN);
+-	mlxsw_sp->span.entries = kcalloc(mlxsw_sp->span.entries_count,
+-					 sizeof(struct mlxsw_sp_span_entry),
+-					 GFP_KERNEL);
+-	if (!mlxsw_sp->span.entries)
++	span = kzalloc(sizeof(*span), GFP_KERNEL);
++	if (!span)
+ 		return -ENOMEM;
++	mlxsw_sp->span = span;
++
++	mlxsw_sp->span->entries_count = MLXSW_CORE_RES_GET(mlxsw_sp->core,
++							   MAX_SPAN);
++	mlxsw_sp->span->entries = kcalloc(mlxsw_sp->span->entries_count,
++					  sizeof(struct mlxsw_sp_span_entry),
++					  GFP_KERNEL);
++	if (!mlxsw_sp->span->entries) {
++		err = -ENOMEM;
++		goto err_alloc_span_entries;
 +	}
- 	/* The sub-pools can contain non-integer number of entries
- 	 * so we must check for overflow
- 	 */
--	if (entry_index + sub_pool->entry_size > stop_index)
--		return -ENOBUFS;
-+	if (entry_index + sub_pool->entry_size > stop_index) {
-+		err = -ENOBUFS;
-+		goto err_alloc;
-+	}
- 	for (i = 0; i < sub_pool->entry_size; i++)
- 		__set_bit(entry_index + i, pool->usage);
-+	spin_unlock(&pool->counter_pool_lock);
  
- 	*p_counter_index = entry_index;
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 
+ 		INIT_LIST_HEAD(&curr->bound_ports_list);
+ 		curr->id = i;
+@@ -55,6 +68,10 @@ int mlxsw_sp_span_init(struct mlxsw_sp *mlxsw_sp)
+ 					  mlxsw_sp_span_occ_get, mlxsw_sp);
+ 
  	return 0;
 +
-+err_alloc:
-+	spin_unlock(&pool->counter_pool_lock);
++err_alloc_span_entries:
++	kfree(span);
 +	return err;
  }
  
- void mlxsw_sp_counter_free(struct mlxsw_sp *mlxsw_sp,
-@@ -171,6 +184,8 @@ void mlxsw_sp_counter_free(struct mlxsw_sp *mlxsw_sp,
- 	if (WARN_ON(counter_index >= pool->pool_size))
- 		return;
- 	sub_pool = &mlxsw_sp_counter_sub_pools[sub_pool_id];
-+	spin_lock(&pool->counter_pool_lock);
- 	for (i = 0; i < sub_pool->entry_size; i++)
- 		__clear_bit(counter_index + i, pool->usage);
-+	spin_unlock(&pool->counter_pool_lock);
+ void mlxsw_sp_span_fini(struct mlxsw_sp *mlxsw_sp)
+@@ -64,12 +81,13 @@ void mlxsw_sp_span_fini(struct mlxsw_sp *mlxsw_sp)
+ 
+ 	devlink_resource_occ_get_unregister(devlink, MLXSW_SP_RESOURCE_SPAN);
+ 
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 
+ 		WARN_ON_ONCE(!list_empty(&curr->bound_ports_list));
+ 	}
+-	kfree(mlxsw_sp->span.entries);
++	kfree(mlxsw_sp->span->entries);
++	kfree(mlxsw_sp->span);
  }
+ 
+ static int
+@@ -645,9 +663,9 @@ mlxsw_sp_span_entry_create(struct mlxsw_sp *mlxsw_sp,
+ 	int i;
+ 
+ 	/* find a free entry to use */
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		if (!mlxsw_sp->span.entries[i].ref_count) {
+-			span_entry = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		if (!mlxsw_sp->span->entries[i].ref_count) {
++			span_entry = &mlxsw_sp->span->entries[i];
+ 			break;
+ 		}
+ 	}
+@@ -673,8 +691,8 @@ mlxsw_sp_span_entry_find_by_port(struct mlxsw_sp *mlxsw_sp,
+ {
+ 	int i;
+ 
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 
+ 		if (curr->ref_count && curr->to_dev == to_dev)
+ 			return curr;
+@@ -694,8 +712,8 @@ mlxsw_sp_span_entry_find_by_id(struct mlxsw_sp *mlxsw_sp, int span_id)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 
+ 		if (curr->ref_count && curr->id == span_id)
+ 			return curr;
+@@ -736,8 +754,8 @@ static bool mlxsw_sp_span_is_egress_mirror(struct mlxsw_sp_port *port)
+ 	struct mlxsw_sp_span_inspected_port *p;
+ 	int i;
+ 
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 
+ 		list_for_each_entry(p, &curr->bound_ports_list, list)
+ 			if (p->local_port == port->local_port &&
+@@ -842,9 +860,9 @@ mlxsw_sp_span_inspected_port_add(struct mlxsw_sp_port *port,
+ 	 * so if a binding is requested, check for conflicts.
+ 	 */
+ 	if (bind)
+-		for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
++		for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
+ 			struct mlxsw_sp_span_entry *curr =
+-				&mlxsw_sp->span.entries[i];
++				&mlxsw_sp->span->entries[i];
+ 
+ 			if (mlxsw_sp_span_entry_bound_port_find(curr, type,
+ 								port, bind))
+@@ -994,8 +1012,8 @@ void mlxsw_sp_span_respin(struct mlxsw_sp *mlxsw_sp)
+ 	int err;
+ 
+ 	ASSERT_RTNL();
+-	for (i = 0; i < mlxsw_sp->span.entries_count; i++) {
+-		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span.entries[i];
++	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
++		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
+ 		struct mlxsw_sp_span_parms sparms = {NULL};
+ 
+ 		if (!curr->ref_count)
 -- 
 2.24.1
 
