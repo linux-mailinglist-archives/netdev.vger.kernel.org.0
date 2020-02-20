@@ -2,178 +2,385 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E505316665B
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:32:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1CE16668F
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728237AbgBTScq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 13:32:46 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37311 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726959AbgBTScq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:32:46 -0500
-Received: by mail-wr1-f68.google.com with SMTP id w15so5773028wru.4
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 10:32:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9GN2bsKOXBFKbvN5ew/4J3QGSow/O2NrTXhmsG611JU=;
-        b=U+Gg6gZgY/T08wbQLgGbnQm2LAC/Y0/n7VEU8cIcdjWS60fkHQMYO8GToSy/KMpzC8
-         QvE04zGR9z4I7jEdfEf8fv0pL6lxEB2Hjs0pShvg5NFs+DZ6B1Rwv3DYmwiWduJj85mw
-         JS35FIFFzAFyTuq3yUxgbk/g2JoihiwEE+KHWHtIhkGwrpgjqmKePo0BAJ5vEaUzADce
-         lun3s3sUkKC4tlt2KXIw2noCo4SzQxOetb43uWrvaXJaebfRf9u3Nsslpb+Fwg9nE/C1
-         jytJw3/gEcyzPTFvb67gZq02CYLkxMoiWL+SMytpSDsArjKtFoGErIKwJczNmEY64ohC
-         CMaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9GN2bsKOXBFKbvN5ew/4J3QGSow/O2NrTXhmsG611JU=;
-        b=VT5JCQ5wV2JARtCs35hqVoRuJZjK5l2iBdpDOpkyl/ecqoQiM09l9rDTNzyG18sroc
-         khWATVcsJs1UmEKHXjtU2jxPFZ8O9hM5RlxH3HU0v2topomO11OMuTiS2dz0DrieAtQz
-         aFrFLaOlEcoUsR7RYAvlU+GQCpK713NCWMem2Qb6gAmDtmgyFsKuy1EKseWcWdMKWBGf
-         w/pqfbjGgYZjrmWC8hz8NRbncUPj0lUikw8iH2Xbxlizz2hTuODc6PilJ28Mwr0b+RHw
-         5ZjgMR3VCvU+HdfR5Uo6/EVUGCG7v6qxqeh4rg4RJXz0Ce2Gd8ZqUta8J55lS4GMej1S
-         WufQ==
-X-Gm-Message-State: APjAAAV+jA+QBKQtPbCBycL188o5kWN9f5yKYZdbLutkmP5NFbr71p94
-        liQj2G+arbGYgRPs3meooHD40ayQ
-X-Google-Smtp-Source: APXvYqyFjFnNF0kRZtzUKrkmoOdqHX4z24Z2M4aeg6qSE0MygYfvr1vr3rHCnXfIKNY583beYLvqgQ==
-X-Received: by 2002:adf:f504:: with SMTP id q4mr41613304wro.28.1582223563321;
-        Thu, 20 Feb 2020 10:32:43 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:98c6:3f79:bff9:4c51? (p200300EA8F29600098C63F79BFF94C51.dip0.t-ipconnect.de. [2003:ea:8f29:6000:98c6:3f79:bff9:4c51])
-        by smtp.googlemail.com with ESMTPSA id m68sm153770wme.48.2020.02.20.10.32.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Feb 2020 10:32:42 -0800 (PST)
-Subject: Re: About r8169 regression 5.4
-To:     Vincas Dargis <vindrg@gmail.com>,
-        Salvatore Bonaccorso <carnil@debian.org>
-Cc:     netdev@vger.kernel.org
-References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
- <9e865e39-0406-d5e0-5022-9978ef4ec6ac@gmail.com>
- <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
- <20200215161247.GA179065@eldamar.local>
- <269f588f-78f2-4acf-06d3-eeefaa5d8e0f@gmail.com>
- <3ad8a76d-5da1-eb62-689e-44ea0534907f@gmail.com>
- <74c2d5db-3396-96c4-cbb3-744046c55c46@gmail.com>
- <81548409-2fd3-9645-eeaf-ab8f7789b676@gmail.com>
- <e0c43868-8201-fe46-9e8b-5e38c2611340@gmail.com>
- <badbb4f9-9fd2-3f7b-b7eb-92bd960769d9@gmail.com>
- <d2b5d904-61e1-6c14-f137-d4d5a803dcf6@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <356588e8-b46a-e0bb-e05b-89af81824dfa@gmail.com>
-Date:   Thu, 20 Feb 2020 19:32:36 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <d2b5d904-61e1-6c14-f137-d4d5a803dcf6@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728618AbgBTSsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 13:48:16 -0500
+Received: from mga01.intel.com ([192.55.52.88]:12649 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728410AbgBTSsP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Feb 2020 13:48:15 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2020 10:48:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,465,1574150400"; 
+   d="scan'208";a="434925960"
+Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
+  by fmsmga005.fm.intel.com with ESMTP; 20 Feb 2020 10:48:14 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 20 Feb 2020 10:48:14 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 20 Feb 2020 10:48:14 -0800
+Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 20 Feb 2020 10:48:14 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.109)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 20 Feb 2020 10:48:10 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CQY9+f2htAcSQCVuVQp8g5xd4mzME6xzoARj196MhwpM04o0Rr8yW3tYCBIZqlFFTod+ZkG1+AcVflXjF5RjPj/1v/ZROMMiDyho/qGfVXL3jMv7OsLKNZIa6Zxuda0OxQQn2Of/mJYa6BqD8xG97KoIfqvgi6LW37Rt0FkkS5gsfPa004G+gVt+ZZSE4TWWN5re30vs4RPaC3LcLpNqXwtAQWCtal8c6dPSv1HFmwqoHlJjPQcb+pS/eIem+5prpIE0Xhg8wRE3OmiUheS7r+t1/h/8M495qbZv6CFCM8nJ/7I1Xr1S9SuF1C8WUrLA+Xm74WQybzNfosMVR4rD9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o0gbn2wKnlXaq4UmyT3nQgoHNcGaapaKaJru9RY71VA=;
+ b=YO8hYvytMB58B7SuxcbUSauV4c4Mdr0j13YZczNHlknbNpYKfNTDw7+GzIcqZTMlp5RVqJ1KLv48rXLiLx4CXTPeANObEQT/YyUGsbwu5c1R5l4Vwq7gnUp+LDUtjUXTHbGFQ52piwD8q7ABlkDYk6Eb6XtBGI0etJ9Cc8RHCO0vbg5E86+mgwKaxia/htMdI0JL6cEOOT425VlUrcyO2OJOYnImEMA4CBFtBTmyjVKPHg+FOCqOtv0JsDPZZYGh92xyuq7uiWoNoewZkJAnSeMHnpTgXohg0fQgA9jWtUIxTB5SO+F/+heR2KBSIALUJANfxzagcDevBzvtAGLOdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o0gbn2wKnlXaq4UmyT3nQgoHNcGaapaKaJru9RY71VA=;
+ b=YbGtSUxKEMcXxRP+fJTjUF3NufuGsylH4h19d8IrkofCHj1uZIkcvFuU2SzcRWm6DutRr/PoUMGydq5Ixg4SfRjosyyHFuJaM+ohpTupRf0WU42nyaScOws+OOr4TpnjYNm5jj8KZB8jhxMcSOwckwsidyX1ff0CyJoBV1cPY30=
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com (20.176.100.32) by
+ DM6PR11MB4564.namprd11.prod.outlook.com (20.180.252.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2729.22; Thu, 20 Feb 2020 18:48:05 +0000
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::f01a:b54b:1bc2:5a80]) by DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::f01a:b54b:1bc2:5a80%2]) with mapi id 15.20.2750.016; Thu, 20 Feb 2020
+ 18:48:05 +0000
+From:   "Ertman, David M" <david.m.ertman@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>
+Subject: RE: [RFC PATCH v4 02/25] ice: Create and register virtual bus for
+ RDMA
+Thread-Topic: [RFC PATCH v4 02/25] ice: Create and register virtual bus for
+ RDMA
+Thread-Index: AQHV4di1fPEgbQYDSkiYYN5ptkcxbagbKgcAgAk9o4A=
+Date:   Thu, 20 Feb 2020 18:48:04 +0000
+Message-ID: <DM6PR11MB2841C1643C0414031941D191DD130@DM6PR11MB2841.namprd11.prod.outlook.com>
+References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
+ <20200212191424.1715577-3-jeffrey.t.kirsher@intel.com>
+ <20200214203932.GY31668@ziepe.ca>
+In-Reply-To: <20200214203932.GY31668@ziepe.ca>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiY2E0NTlmMGItMmU2Ni00MTk3LTgwNWMtYTEyNzhlZDE1YzBhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoia3lEUUU0NmVyXC84NGdwNWxnMDRWSlZKTVNha3pDNU50N3hMWlNTWGx0b0EzV05ndVwvQ0JFMTd6bUxUNWlicG5VIn0=
+x-ctpclassification: CTP_NT
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=david.m.ertman@intel.com; 
+x-originating-ip: [134.134.136.217]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: eb6dad9c-6cdc-4067-bccd-08d7b6356b9f
+x-ms-traffictypediagnostic: DM6PR11MB4564:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB45649DE95AE6223C5C9084BCDD130@DM6PR11MB4564.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2958;
+x-forefront-prvs: 031996B7EF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(136003)(376002)(366004)(346002)(189003)(199004)(66556008)(76116006)(86362001)(64756008)(66446008)(6636002)(8676002)(33656002)(66946007)(66476007)(316002)(6506007)(81166006)(81156014)(7696005)(54906003)(110136005)(8936002)(53546011)(478600001)(26005)(52536014)(9686003)(55016002)(71200400001)(186003)(5660300002)(107886003)(2906002)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR11MB4564;H:DM6PR11MB2841.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nFKHBICiCSVdVZjozsafb7esfZ3cSfwC2YGkS85Zwkvh6O6LubGCkkdj1tFI0bU86k9y5sQMB4R2DQQTccl9LJ89OoSvX9Zep4PuHv4JztaSwJQz7GD0zWwTJftLWv8g8uWMnuYxU8iowlUi3bJzxyyFAlvVBBqeUc/B+QAfbxHr4A+evoUcCLw6Yj/byH+rr0dRycOpbfzgMnaIzt9SFcu0GHqa2lbi91kAgxARMpaZaIK5lAuTlSwk7Nun1CPj3Q9ZOYuOOo0et8nClcERj4U9UgO73Vqt4Yk7t5gIxIP1ZLb+rIyJcfGSFkYw6qdDuO0t1R761K0WKiVZJClkFeBJFHMMqDMuGaPIakEYdeuGr8DGoQ/y20vzoRjXyihiVo6bzgfstLJ0KU6frDX8Siz2t7TMQiFsBnxQJubmJpvuvR2KyqixS7d2JM1+sBMg
+x-ms-exchange-antispam-messagedata: qnlqtHwJkcwx8NfPJMNr95mg7E5PRY6ArttW0cBSBeEEgpMEBEqzDKPcIIjsn09tScVqRk67iIA+QOhKyloJASrWSY2QgUvu7tTrnF23J/zLXk2BFnyJf1mPUuPgZVNMdJRjzEBXWgbQoVT9wbMf6Q==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb6dad9c-6cdc-4067-bccd-08d7b6356b9f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Feb 2020 18:48:04.9538
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: skMJAHlfelJOzjKsxr8SK8PGRH53UaLxPCwMF7BYxCsRw5eXMjgvAMJgJDs0aY9Bl6H9VZfXOO4Hc4hOx/KM7NE1n4VIUL67yKHHyaN6Z3w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4564
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.02.2020 18:36, Vincas Dargis wrote:
-> 2020-02-19 23:54, Heiner Kallweit rašė:
->> Realtek responded that they are not aware of a HW issue with RTL8411b. They will try to reproduce the error,
->> in addition they ask to test whether same issue occurs with their own driver, r8168.
->> Would be great if you could give r8168 a try. Most distributions provide it as an optional package.
->> Worst case it can be downloaded from Realtek's website, then it needs to be compiled.
->>
-> 
-> I have installed r8168-dkms:
-> 
-> ```
-> apt policy r8168-dkms
-> r8168-dkms:
->   Installed: 8.048.00-1
->   Candidate: 8.048.00-1
->   Version table:
->  *** 8.048.00-1 500
->         500 http://debian.mirror.vu.lt/debian unstable/non-free amd64 Packages
->         500 http://debian.mirror.vu.lt/debian unstable/non-free i386 Packages
->         100 /var/lib/dpkg/status
-> ```
-> 
-> Rebooted, and still (rather fast) got same timeout after maybe couple of minutes of running on same 5.4 withoyt ethtool fixes:
-> 
-> Feb 20 19:24:54 vinco kernel: [  228.808802] ------------[ cut here ]------------
-> Feb 20 19:24:54 vinco kernel: [  228.808832] NETDEV WATCHDOG: enp5s0f1 (r8168): transmit queue 0 timed out
-> Feb 20 19:24:54 vinco kernel: [  228.808865] WARNING: CPU: 7 PID: 0 at net/sched/sch_generic.c:447 dev_watchdog+0x248/0x250
-> Feb 20 19:24:54 vinco kernel: [  228.808871] Modules linked in: xt_recent ipt_REJECT nf_reject_ipv4 xt_multiport xt_conntrack xt_hashlimit xt_addrtype xt_iface(OE) xt_mark nft_chain_nat xt_comment xt_CT xt_owner xt_tcpudp nft_compat nft_counter xt_NFLOG nf_log_ipv4 nf_log_common xt_LOG nf_nat_tftp nf_nat_snmp_basic nf_conntrack_snmp nf_nat_sip nf_nat_pptp nf_nat_irc nf_nat_h323 nf_nat_ftp nf_nat_amanda ts_kmp nf_conntrack_amanda nf_nat nf_conntrack_sane nf_conntrack_tftp nf_conntrack_sip nf_conntrack_pptp nf_conntrack_netlink nf_conntrack_netbios_ns nf_conntrack_broadcast nf_conntrack_irc nf_conntrack_h323 nf_conntrack_ftp nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables rfcomm vboxnetadp(OE) vboxnetflt(OE) xfrm_user xfrm_algo vboxdrv(OE) l2tp_ppp l2tp_netlink l2tp_core ip6_udp_tunnel udp_tunnel pppox ppp_generic slhc bnep nfnetlink_log nfnetlink ipmi_devintf ipmi_msghandler intel_rapl_msr intel_rapl_common bbswitch(OE) x86_pkg_temp_thermal intel_powerclamp coretemp
-> kvm_intel kvm irqbypass btusb btrtl iwlmvm btbcm
-> Feb 20 19:24:54 vinco kernel: [  228.808935]  binfmt_misc btintel bluetooth crct10dif_pclmul nls_ascii ghash_clmulni_intel mac80211 nls_cp437 snd_hda_codec_realtek snd_hda_codec_generic vfat drbg ledtrig_audio libarc4 snd_hda_codec_hdmi fat uvcvideo aesni_intel iwlwifi videobuf2_vmalloc ansi_cprng crypto_simd videobuf2_memops videobuf2_v4l2 snd_hda_intel cryptd glue_helper snd_intel_nhlt videobuf2_common snd_hda_codec videodev snd_hda_core intel_cstate ecdh_generic ecc cfg80211 mc intel_uncore efi_pstore snd_hwdep snd_pcm snd_timer asus_nb_wmi joydev asus_wmi snd sparse_keymap iTCO_wdt rtsx_pci_ms iTCO_vendor_support pcspkr intel_rapl_perf serio_raw sg efivars soundcore memstick watchdog rfkill ie31200_edac evdev ac asus_wireless parport_pc ppdev lp parport efivarfs ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 btrfs xor zstd_decompress zstd_compress raid6_pq libcrc32c crc32c_generic sr_mod cdrom sd_mod hid_logitech_hidpp hid_logitech_dj hid_generic usbhid hid i915
-> rtsx_pci_sdmmc mmc_core i2c_algo_bit ahci
-> Feb 20 19:24:54 vinco kernel: [  228.809003]  drm_kms_helper libahci xhci_pci crc32_pclmul mxm_wmi libata xhci_hcd drm crc32c_intel ehci_pci ehci_hcd psmouse scsi_mod usbcore rtsx_pci lpc_ich i2c_i801 mfd_core r8168(OE) usb_common video wmi battery button
-> Feb 20 19:24:54 vinco kernel: [  228.809025] CPU: 7 PID: 0 Comm: swapper/7 Tainted: P           OE     5.4.0-4-amd64 #1 Debian 5.4.19-1
-> Feb 20 19:24:54 vinco kernel: [  228.809027] Hardware name: ASUSTeK COMPUTER INC. N551JM/N551JM, BIOS N551JM.205 02/13/2015
-> Feb 20 19:24:54 vinco kernel: [  228.809034] RIP: 0010:dev_watchdog+0x248/0x250
-> Feb 20 19:24:54 vinco kernel: [  228.809038] Code: 85 c0 75 e5 eb 9f 4c 89 ef c6 05 58 1d a8 00 01 e8 0d e4 fa ff 44 89 e1 4c 89 ee 48 c7 c7 f0 cc d2 9a 48 89 c2 e8 76 40 a0 ff <0f> 0b eb 80 0f 1f 40 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55
-> Feb 20 19:24:54 vinco kernel: [  228.809040] RSP: 0018:ffffc0e74020ce68 EFLAGS: 00010286
-> Feb 20 19:24:54 vinco kernel: [  228.809043] RAX: 0000000000000000 RBX: ffff9f660df8e200 RCX: 000000000000083f
-> Feb 20 19:24:54 vinco kernel: [  228.809044] RDX: 0000000000000000 RSI: 00000000000000f6 RDI: 000000000000083f
-> Feb 20 19:24:54 vinco kernel: [  228.809046] RBP: ffff9f660d30045c R08: ffff9f661edd7688 R09: 0000000000000004
-> Feb 20 19:24:54 vinco kernel: [  228.809048] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-> Feb 20 19:24:54 vinco kernel: [  228.809049] R13: ffff9f660d300000 R14: ffff9f660d300480 R15: 0000000000000001
-> Feb 20 19:24:54 vinco kernel: [  228.809052] FS:  0000000000000000(0000) GS:ffff9f661edc0000(0000) knlGS:0000000000000000
-> Feb 20 19:24:54 vinco kernel: [  228.809054] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> Feb 20 19:24:54 vinco kernel: [  228.809055] CR2: 00005f1110bf6da4 CR3: 0000000185e0a001 CR4: 00000000001626e0
-> Feb 20 19:24:54 vinco kernel: [  228.809057] Call Trace:
-> Feb 20 19:24:54 vinco kernel: [  228.809060]  <IRQ>
-> Feb 20 19:24:54 vinco kernel: [  228.809068]  ? pfifo_fast_enqueue+0x150/0x150
-> Feb 20 19:24:54 vinco kernel: [  228.809073]  call_timer_fn+0x2d/0x130
-> Feb 20 19:24:54 vinco kernel: [  228.809077]  __run_timers.part.0+0x16f/0x260
-> Feb 20 19:24:54 vinco kernel: [  228.809084]  ? tick_sched_handle+0x22/0x60
-> Feb 20 19:24:54 vinco kernel: [  228.809089]  ? tick_sched_timer+0x38/0x80
-> Feb 20 19:24:54 vinco kernel: [  228.809093]  ? tick_sched_do_timer+0x60/0x60
-> Feb 20 19:24:54 vinco kernel: [  228.809096]  run_timer_softirq+0x26/0x50
-> Feb 20 19:24:54 vinco kernel: [  228.809102]  __do_softirq+0xe6/0x2e9
-> Feb 20 19:24:54 vinco kernel: [  228.809111]  irq_exit+0xa6/0xb0
-> Feb 20 19:24:54 vinco kernel: [  228.809115]  smp_apic_timer_interrupt+0x76/0x130
-> Feb 20 19:24:54 vinco kernel: [  228.809118]  apic_timer_interrupt+0xf/0x20
-> Feb 20 19:24:54 vinco kernel: [  228.809120]  </IRQ>
-> Feb 20 19:24:54 vinco kernel: [  228.809126] RIP: 0010:cpuidle_enter_state+0xc4/0x450
-> Feb 20 19:24:54 vinco kernel: [  228.809129] Code: e8 b1 54 ad ff 80 7c 24 0f 00 74 17 9c 58 0f 1f 44 00 00 f6 c4 02 0f 85 61 03 00 00 31 ff e8 a3 74 b3 ff fb 66 0f 1f 44 00 00 <45> 85 e4 0f 88 8c 02 00 00 49 63 cc 4c 2b 6c 24 10 48 8d 04 49 48
-> Feb 20 19:24:54 vinco kernel: [  228.809131] RSP: 0018:ffffc0e7400cfe68 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-> Feb 20 19:24:54 vinco kernel: [  228.809133] RAX: ffff9f661edea6c0 RBX: ffffffff9aeb92e0 RCX: 000000000000001f
-> Feb 20 19:24:54 vinco kernel: [  228.809135] RDX: 0000000000000000 RSI: 000000003351882d RDI: 0000000000000000
-> Feb 20 19:24:54 vinco kernel: [  228.809137] RBP: ffff9f661edf4a00 R08: 000000354610e2fa R09: 0000000000029fa0
-> Feb 20 19:24:54 vinco kernel: [  228.809138] R10: ffff9f661ede95a0 R11: ffff9f661ede9580 R12: 0000000000000005
-> Feb 20 19:24:54 vinco kernel: [  228.809140] R13: 000000354610e2fa R14: 0000000000000005 R15: ffff9f661caa8f00
-> Feb 20 19:24:54 vinco kernel: [  228.809145]  ? cpuidle_enter_state+0x9f/0x450
-> Feb 20 19:24:54 vinco kernel: [  228.809149]  cpuidle_enter+0x29/0x40
-> Feb 20 19:24:54 vinco kernel: [  228.809155]  do_idle+0x1dc/0x270
-> Feb 20 19:24:54 vinco kernel: [  228.809162]  cpu_startup_entry+0x19/0x20
-> Feb 20 19:24:54 vinco kernel: [  228.809168]  start_secondary+0x15f/0x1b0
-> Feb 20 19:24:54 vinco kernel: [  228.809174]  secondary_startup_64+0xa4/0xb0
-> Feb 20 19:24:54 vinco kernel: [  228.809179] ---[ end trace f2c0113df7c88e86 ]---
-> Feb 20 19:24:57 vinco kernel: [  231.448423] r8168: enp5s0f1: link up
-> 
-> Full kernl.log is attached.
-> 
-> Interestingly, network did started working again after some time. Does that "link up" mean card was reset successfully or something?
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Friday, February 14, 2020 12:40 PM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; gregkh@linuxfoundation.org; Ertman, David M
+> <david.m.ertman@intel.com>; netdev@vger.kernel.org; linux-
+> rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Bowers, AndrewX
+> <andrewx.bowers@intel.com>
+> Subject: Re: [RFC PATCH v4 02/25] ice: Create and register virtual bus fo=
+r
+> RDMA
+>=20
+> On Wed, Feb 12, 2020 at 11:14:01AM -0800, Jeff Kirsher wrote:
+> > +/**
+> > + * ice_init_peer_devices - initializes peer devices
+> > + * @pf: ptr to ice_pf
+> > + *
+> > + * This function initializes peer devices on the virtual bus.
+> > + */
+> > +int ice_init_peer_devices(struct ice_pf *pf)
+> > +{
+> > +	struct ice_vsi *vsi =3D pf->vsi[0];
+> > +	struct pci_dev *pdev =3D pf->pdev;
+> > +	struct device *dev =3D &pdev->dev;
+> > +	int status =3D 0;
+> > +	int i;
+> > +
+> > +	/* Reserve vector resources */
+> > +	status =3D ice_reserve_peer_qvector(pf);
+> > +	if (status < 0) {
+> > +		dev_err(dev, "failed to reserve vectors for peer drivers\n");
+> > +		return status;
+> > +	}
+> > +	for (i =3D 0; i < ARRAY_SIZE(ice_peers); i++) {
+> > +		struct ice_peer_dev_int *peer_dev_int;
+> > +		struct ice_peer_drv_int *peer_drv_int;
+> > +		struct iidc_qos_params *qos_info;
+> > +		struct iidc_virtbus_object *vbo;
+> > +		struct msix_entry *entry =3D NULL;
+> > +		struct iidc_peer_dev *peer_dev;
+> > +		struct virtbus_device *vdev;
+> > +		int j;
+> > +
+> > +		/* structure layout needed for container_of's looks like:
+> > +		 * ice_peer_dev_int (internal only ice peer superstruct)
+> > +		 * |--> iidc_peer_dev
+> > +		 * |--> *ice_peer_drv_int
+> > +		 *
+> > +		 * iidc_virtbus_object (container_of parent for vdev)
+> > +		 * |--> virtbus_device
+> > +		 * |--> *iidc_peer_dev (pointer from internal struct)
+> > +		 *
+> > +		 * ice_peer_drv_int (internal only peer_drv struct)
+> > +		 */
+> > +		peer_dev_int =3D devm_kzalloc(dev, sizeof(*peer_dev_int),
+> > +					    GFP_KERNEL);
+> > +		if (!peer_dev_int)
+> > +			return -ENOMEM;
+> > +
+> > +		vbo =3D kzalloc(sizeof(*vbo), GFP_KERNEL);
+> > +		if (!vbo) {
+> > +			devm_kfree(dev, peer_dev_int);
+> > +			return -ENOMEM;
+> > +		}
+> > +
+> > +		peer_drv_int =3D devm_kzalloc(dev, sizeof(*peer_drv_int),
+> > +					    GFP_KERNEL);
+>=20
+> To me, this looks like a lifetime mess. All these devm allocations
+> against the parent object are being referenced through the vbo with a
+> different kref lifetime. The whole thing has very unclear semantics
+> who should be cleaning up on error
 
-Thanks a lot again for testing! I didn't check in detail, but most likely r8168 has the same NIC reset procedure
-after a tx timeout. "link up" means that at least the link on PHY level was successfully re-established.
+Will cover this at the end after addressing your following points =3D)=20
 
-It would be great if you could test one more thing. Few chip versions have a hw issue with tx checksumming
-for very small packets. Maybe your chip version suffers from the same issue.
-Could you please test the following patch (with all features enabled, TSO and checksumming)?
+In my reply, I am going to refer to the kernel object that is registering t=
+he
+virtbus_device(s) as KO_device and the kernel object that is registering
+the virtbus_driver(s) as KO_driver.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8442b8767..bee90af57 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4345,6 +4345,7 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
- 			case RTL_GIGA_MAC_VER_12:
- 			case RTL_GIGA_MAC_VER_17:
- 			case RTL_GIGA_MAC_VER_34:
-+			case RTL_GIGA_MAC_VER_44:
- 				features &= ~NETIF_F_CSUM_MASK;
- 				break;
- 			default:
--- 
-2.25.1
+>=20
+> > +		if (!peer_drv_int) {
+> > +			devm_kfree(dev, peer_dev_int);
+> > +			kfree(vbo);
+>=20
+> ie here we free two things
 
+At this point in the init flow for KO_device, there has only been kallocs d=
+one,
+no device has been registered with virtbus.  So, only memory cleanup is
+required.
+
+>=20
+> > +			return -ENOMEM;
+> > +		}
+> > +
+> > +		pf->peers[i] =3D peer_dev_int;
+> > +		vbo->peer_dev =3D &peer_dev_int->peer_dev;
+> > +		peer_dev_int->peer_drv_int =3D peer_drv_int;
+> > +		peer_dev_int->peer_dev.vdev =3D &vbo->vdev;
+> > +
+> > +		/* Initialize driver values */
+> > +		for (j =3D 0; j < IIDC_EVENT_NBITS; j++)
+> > +			bitmap_zero(peer_drv_int->current_events[j].type,
+> > +				    IIDC_EVENT_NBITS);
+> > +
+> > +		mutex_init(&peer_dev_int->peer_dev_state_mutex);
+> > +
+> > +		peer_dev =3D &peer_dev_int->peer_dev;
+> > +		peer_dev->peer_ops =3D NULL;
+> > +		peer_dev->hw_addr =3D (u8 __iomem *)pf->hw.hw_addr;
+> > +		peer_dev->peer_dev_id =3D ice_peers[i].id;
+> > +		peer_dev->pf_vsi_num =3D vsi->vsi_num;
+> > +		peer_dev->netdev =3D vsi->netdev;
+> > +
+> > +		peer_dev_int->ice_peer_wq =3D
+> > +			alloc_ordered_workqueue("ice_peer_wq_%d",
+> WQ_UNBOUND,
+> > +						i);
+> > +		if (!peer_dev_int->ice_peer_wq)
+> > +			return -ENOMEM;
+>=20
+> Here we free nothing
+
+This is a miss on my part.  At this point we should keep consistent and fre=
+e the memory
+that has been allocated as we unwind. =20
+
+>=20
+> > +
+> > +		peer_dev->pdev =3D pdev;
+> > +		qos_info =3D &peer_dev->initial_qos_info;
+> > +
+> > +		/* setup qos_info fields with defaults */
+> > +		qos_info->num_apps =3D 0;
+> > +		qos_info->num_tc =3D 1;
+> > +
+> > +		for (j =3D 0; j < IIDC_MAX_USER_PRIORITY; j++)
+> > +			qos_info->up2tc[j] =3D 0;
+> > +
+> > +		qos_info->tc_info[0].rel_bw =3D 100;
+> > +		for (j =3D 1; j < IEEE_8021QAZ_MAX_TCS; j++)
+> > +			qos_info->tc_info[j].rel_bw =3D 0;
+> > +
+> > +		/* for DCB, override the qos_info defaults. */
+> > +		ice_setup_dcb_qos_info(pf, qos_info);
+> > +
+> > +		/* make sure peer specific resources such as msix_count and
+> > +		 * msix_entries are initialized
+> > +		 */
+> > +		switch (ice_peers[i].id) {
+> > +		case IIDC_PEER_RDMA_ID:
+> > +			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
+> > +				peer_dev->msix_count =3D pf-
+> >num_rdma_msix;
+> > +				entry =3D &pf->msix_entries[pf-
+> >rdma_base_vector];
+> > +			}
+> > +			break;
+> > +		default:
+> > +			break;
+> > +		}
+> > +
+> > +		peer_dev->msix_entries =3D entry;
+> > +		ice_peer_state_change(peer_dev_int,
+> ICE_PEER_DEV_STATE_INIT,
+> > +				      false);
+> > +
+> > +		vdev =3D &vbo->vdev;
+> > +		vdev->name =3D ice_peers[i].name;
+> > +		vdev->release =3D ice_peer_vdev_release;
+> > +		vdev->dev.parent =3D &pdev->dev;
+> > +
+> > +		status =3D virtbus_dev_register(vdev);
+> > +		if (status) {
+> > +			virtbus_dev_unregister(vdev);
+> > +			vdev =3D NULL;
+>=20
+> Here we double unregister and free nothing.
+>=20
+> You need to go through all of this really carefully and make some kind
+> of sane lifetime model and fix all the error unwinding :(
+
+Thanks for catching this.  A failure in virtbus_register_device()  does
+*not* require a call virtbus_unregister_device.  The failure path for the
+register function handles this.  Also, we need to remain consistent with fr=
+eeing
+on unwind.
+
+>=20
+> Why doesn't the release() function of vbo trigger the free of all this
+> peer related stuff?
+>=20
+> Use a sane design model of splitting into functions to allocate single
+> peices of memory, goto error unwind each function, and build things up
+> properly.
+>=20
+> Jason
+
+I am going to add this to the documentation to record the following informa=
+tion.
+
+The KO_device is responsible for allocating the memory for the virtbus_devi=
+ce
+and keeping it viable for the lifetime of the KO_device.  KO_device will ca=
+ll
+virtbus_register_device to start using the virtbus_device, and KO_device is
+responslble for calling virtbus_unregister_device either on KO_device's exi=
+t
+path (remove/shutdown) or when it is done using the virtbus subsystem.
+
+The KO_driver is responsible for allocating the memory for the virtbus_driv=
+er
+and keeping it viable for the lifetime of the KO_driver. KO_driver will cal=
+l
+virtbus_register_driver to start using the virtbus_driver, and KO_driver is
+responsible for calling virtbus_unregister_driver either on KO_driver's exi=
+t
+path (remove/shutdown) or when it is done using the virtbus subsystem.
+
+The premise is that the KO_device and KO_driver can load and unload multipl=
+e
+times and they can reconnect to each other through the virtbus on each
+occurrence of their reloads.  So one example of a flow looks like the follo=
+wing:
+
+- KO_device loads (order of KO_device and KO_driver loading is irrelevant)
+- KO_device allocates memory for virtbus_device(s) it expects to use and
+        any backing memory it is going to use to interact with KO_driver.
+- KO_device performs virtbus_register_device() which is the *only* place
+        a device_initialize() is performed for virtbus_device.
+
+- KO_driver loads
+- KO_driver allocates memory for virtbus_driver(s) it expects to use and
+        any backing memory it expects to use to interact with KO_device
+- KO_driver performs virtbus_register_driver()
+
+- virtbus matches virtbus_device and virtbus_driver and calls the
+        virtbus_drivers's probe()
+
+- KO_driver and KO_device interact with each other however they choose to d=
+o so.
+
+- KO_device (for example) receives a call to its remove callback
+- KO_device's unload path severs any interaction the KO_device and KO_drive=
+r
+        were having - implementation dependant
+- KO_device's unload path is required to perform a call to
+        virtbus_unregister_device().  virtbus_unregister_device() is the *o=
+nly*
+        place a put_device() is performed.
+- KO_device's unload path frees memory associated with the virtbus_device
+
+- vitbus calls KO_drivers's .remove callback defined for the virtbus_driver
+
+So, the lifespan of the virtbus_device is controlled by KO_device and the
+lifespan of virtbus_driver is controlled by KO_driver.
+
+It is required for the KO's to "allocate -> register -> unregister -> free"
+virtbus objects.
+
+-DaveE
