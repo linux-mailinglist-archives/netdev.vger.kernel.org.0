@@ -2,215 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 271DE165722
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 06:45:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BB28165753
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 07:12:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbgBTFp2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Feb 2020 00:45:28 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:33702 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgBTFp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 00:45:27 -0500
-Received: from mail-pj1-f71.google.com ([209.85.216.71])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1j4eeK-0003DU-5X
-        for netdev@vger.kernel.org; Thu, 20 Feb 2020 05:45:24 +0000
-Received: by mail-pj1-f71.google.com with SMTP id ds13so513457pjb.6
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 21:45:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=86xicwbBMVlu3E1kZ8TRtsoqUJxXhtsMMBSAf01pH9M=;
-        b=J+jeZlJcVi1ToOgjz4RyNfBeZ1KdGwX80IKcSPfi3ZPkrrLmw82+9He1Jb95vdEVT7
-         I49pSAdXE9R1D7sIUwj4aUWMpy9F4rWQDNSqykQNVW6HFvNTb+Z9SeOe31hj7lZE2whv
-         0hiz27z4dTps82Ta+VuEZgbX5FMznjlwlk7G1kzrFEPboSdEmI+Pi8Xd6tkTDCPoJydf
-         rRUL+8IZIGVan0HyQ3RunlKI0mSn/R1TG+JXFacaewImZ1OBLzNKSqgB3rTtrkTvOyXS
-         ezs62qAhGpI+hK5ZE/mAz2Ob7CMMb/ExcBmu314l9io6fHX+wwYQWjkRP4N/PmXKyiy+
-         Q2dQ==
-X-Gm-Message-State: APjAAAXsJte9rnh/5SxRXCk73Hj9NPNT7E4hcd+fNAN4xRxgFoWa/eqi
-        n3LJIiM2sMOwnH10E15krnbMwQcF7eBAZZtyKWGPuuKQ3AegKnig/RP9Ge1ID00Hg0PCMitv1jw
-        EL3Vcie53b7/5dskf52SAPEnjPZZbS7QxzQ==
-X-Received: by 2002:a17:90a:8685:: with SMTP id p5mr1651652pjn.92.1582177522509;
-        Wed, 19 Feb 2020 21:45:22 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyv5WsL7Ac7zUI5dJnfJAsVVE/VOjA6kasW67DyZxI/Z5fZlIVI/Pzm0eNk+3FF5xRw8oeqXg==
-X-Received: by 2002:a17:90a:8685:: with SMTP id p5mr1651611pjn.92.1582177522044;
-        Wed, 19 Feb 2020 21:45:22 -0800 (PST)
-Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id 64sm1572652pfd.48.2020.02.19.21.45.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 19 Feb 2020 21:45:21 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [PATCH v3 2/2] net-sysfs: Ensure begin/complete are called in
- speed_show() and duplex_show()
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <20200207101005.4454-2-kai.heng.feng@canonical.com>
-Date:   Thu, 20 Feb 2020 13:45:16 +0800
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jouni Hogander <jouni.hogander@unikie.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wang Hai <wanghai26@huawei.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Kimberly Brown <kimbrownkd@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, Andrew Lunn <andrew@lunn.ch>,
-        Li RongQing <lirongqing@baidu.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <425AF2D4-1FEE-437B-8520-452F818F7DEE@canonical.com>
-References: <20200207101005.4454-1-kai.heng.feng@canonical.com>
- <20200207101005.4454-2-kai.heng.feng@canonical.com>
-To:     David Miller <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-X-Mailer: Apple Mail (2.3608.60.0.2.5)
+        id S1726165AbgBTGMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 01:12:20 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:48281 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725995AbgBTGMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 01:12:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582179137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mxrixuESiDQRJPG0EpTDwZw9g3MXQYNX4XsMJSeZOaU=;
+        b=WimZFOlt9khrLtB4qas9AlvR4Jbr47NFLzWIHbCXUKJC8JCOEbAEPOyYvOIqFNxppkoUY0
+        U3CCA+IQ+J3Jmay+GrFeRWya+XApSI4VIeWSCC1TVq0M52JFY8dG2oIkriku4gYGLSuzNf
+        nPthUvu9oPf3gxGYU5jTVPXwcZZtB3I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-90-rDP2EHaaNniTRj94Y4QgYA-1; Thu, 20 Feb 2020 01:12:03 -0500
+X-MC-Unique: rDP2EHaaNniTRj94Y4QgYA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2B5F801E5C;
+        Thu, 20 Feb 2020 06:12:00 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-159.pek2.redhat.com [10.72.12.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F7375D9E2;
+        Thu, 20 Feb 2020 06:11:44 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     tiwei.bie@intel.com, jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jiri@mellanox.com,
+        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V4 0/5] vDPA support
+Date:   Thu, 20 Feb 2020 14:11:36 +0800
+Message-Id: <20200220061141.29390-1-jasowang@redhat.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all:
 
-> On Feb 7, 2020, at 18:10, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-> 
-> Device like igb gets runtime suspended when there's no link partner. We
-> can't get correct speed under that state:
-> $ cat /sys/class/net/enp3s0/speed
-> 1000
-> 
-> In addition to that, an error can also be spotted in dmesg:
-> [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
-> 
-> It's because the igb device doesn't get runtime resumed before calling
-> get_link_ksettings().
-> 
-> So let's use a new helper to call begin() and complete() like what
-> dev_ethtool() does, to runtime resume/suspend or power up/down the
-> device properly.
-> 
-> Once this fix is in place, igb can show the speed correctly without link
-> partner:
-> $ cat /sys/class/net/enp3s0/speed
-> -1
-> 
-> -1 here means SPEED_UNKNOWN, which is the correct value when igb is
-> runtime suspended.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+This is an update version of vDPA support in kernel.
 
-A gentle ping...
+vDPA device is a device that uses a datapath which complies with the
+virtio specifications with vendor specific control path. vDPA devices
+can be both physically located on the hardware or emulated by
+software. vDPA hardware devices are usually implemented through PCIE
+with the following types:
 
-Kai-Heng
+- PF (Physical Function) - A single Physical Function
+- VF (Virtual Function) - Device that supports single root I/O
+  virtualization (SR-IOV). Its Virtual Function (VF) represents a
+  virtualized instance of the device that can be assigned to different
+  partitions
+- ADI (Assignable Device Interface) and its equivalents - With
+  technologies such as Intel Scalable IOV, a virtual device (VDEV)
+  composed by host OS utilizing one or more ADIs. Or its equivalent
+  like SF (Sub function) from Mellanox.
 
-> ---
-> v3:
-> - Specify -1 means SPEED_UNKNOWN.
-> v2:
-> - Add a new helper with begin/complete and use it in net-sysfs.
-> 
-> include/linux/ethtool.h |  4 ++++
-> net/core/net-sysfs.c    |  4 ++--
-> net/ethtool/ioctl.c     | 33 ++++++++++++++++++++++++++++++++-
-> 3 files changed, 38 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-> index 95991e4300bf..785ec1921417 100644
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -160,6 +160,10 @@ extern int
-> __ethtool_get_link_ksettings(struct net_device *dev,
-> 			     struct ethtool_link_ksettings *link_ksettings);
-> 
-> +extern int
-> +__ethtool_get_link_ksettings_full(struct net_device *dev,
-> +				  struct ethtool_link_ksettings *link_ksettings);
-> +
-> /**
->  * ethtool_intersect_link_masks - Given two link masks, AND them together
->  * @dst: first mask and where result is stored
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 4c826b8bf9b1..a199e15a080f 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -201,7 +201,7 @@ static ssize_t speed_show(struct device *dev,
-> 	if (netif_running(netdev)) {
-> 		struct ethtool_link_ksettings cmd;
-> 
-> -		if (!__ethtool_get_link_ksettings(netdev, &cmd))
-> +		if (!__ethtool_get_link_ksettings_full(netdev, &cmd))
-> 			ret = sprintf(buf, fmt_dec, cmd.base.speed);
-> 	}
-> 	rtnl_unlock();
-> @@ -221,7 +221,7 @@ static ssize_t duplex_show(struct device *dev,
-> 	if (netif_running(netdev)) {
-> 		struct ethtool_link_ksettings cmd;
-> 
-> -		if (!__ethtool_get_link_ksettings(netdev, &cmd)) {
-> +		if (!__ethtool_get_link_ksettings_full(netdev, &cmd)) {
-> 			const char *duplex;
-> 
-> 			switch (cmd.base.duplex) {
-> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-> index b987052d91ef..faeba247c1fb 100644
-> --- a/net/ethtool/ioctl.c
-> +++ b/net/ethtool/ioctl.c
-> @@ -420,7 +420,9 @@ struct ethtool_link_usettings {
-> 	} link_modes;
-> };
-> 
-> -/* Internal kernel helper to query a device ethtool_link_settings. */
-> +/* Internal kernel helper to query a device ethtool_link_settings. To be called
-> + * inside begin/complete block.
-> + */
-> int __ethtool_get_link_ksettings(struct net_device *dev,
-> 				 struct ethtool_link_ksettings *link_ksettings)
-> {
-> @@ -434,6 +436,35 @@ int __ethtool_get_link_ksettings(struct net_device *dev,
-> }
-> EXPORT_SYMBOL(__ethtool_get_link_ksettings);
-> 
-> +/* Internal kernel helper to query a device ethtool_link_settings. To be called
-> + * outside of begin/complete block.
-> + */
-> +int __ethtool_get_link_ksettings_full(struct net_device *dev,
-> +				      struct ethtool_link_ksettings *link_ksettings)
-> +{
-> +	int rc;
-> +
-> +	ASSERT_RTNL();
-> +
-> +	if (!dev->ethtool_ops->get_link_ksettings)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (dev->ethtool_ops->begin) {
-> +		rc = dev->ethtool_ops->begin(dev);
-> +		if (rc  < 0)
-> +			return rc;
-> +	}
-> +
-> +	memset(link_ksettings, 0, sizeof(*link_ksettings));
-> +	rc = dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
-> +
-> +	if (dev->ethtool_ops->complete)
-> +		dev->ethtool_ops->complete(dev);
-> +
-> +	return rc;
-> +}
-> +EXPORT_SYMBOL(__ethtool_get_link_ksettings_full);
-> +
-> /* convert ethtool_link_usettings in user space to a kernel internal
->  * ethtool_link_ksettings. return 0 on success, errno on error.
->  */
-> -- 
-> 2.17.1
-> 
+From a driver's perspective, depends on how and where the DMA
+translation is done, vDPA devices are split into two types:
+
+- Platform specific DMA translation - From the driver's perspective,
+  the device can be used on a platform where device access to data in
+  memory is limited and/or translated. An example is a PCIE vDPA whose
+  DMA request was tagged via a bus (e.g PCIE) specific way. DMA
+  translation and protection are done at PCIE bus IOMMU level.
+- Device specific DMA translation - The device implements DMA
+  isolation and protection through its own logic. An example is a vDPA
+  device which uses on-chip IOMMU.
+
+To hide the differences and complexity of the above types for a vDPA
+device/IOMMU options and in order to present a generic virtio device
+to the upper layer, a device agnostic framework is required.
+
+This series introduces a software vDPA bus which abstracts the
+common attributes of vDPA device, vDPA bus driver and the
+communication method, the bus operations (vdpa_config_ops) between the
+vDPA device abstraction and the vDPA bus driver. This allows multiple
+types of drivers to be used for vDPA device like the virtio_vdpa and
+vhost_vdpa driver to operate on the bus and allow vDPA device could be
+used by either kernel virtio driver or userspace vhost drivers as:
+
+   virtio drivers  vhost drivers
+          |             |
+    [virtio bus]   [vhost uAPI]
+          |             |
+   virtio device   vhost device
+   virtio_vdpa drv vhost_vdpa drv
+             \       /
+            [vDPA bus]
+                 |
+            vDPA device
+            hardware drv
+                 |
+            [hardware bus]
+                 |
+            vDPA hardware
+
+virtio_vdpa driver is a transport implementation for kernel virtio
+drivers on top of vDPA bus operations. An alternative is to refactor
+virtio bus which is sub-optimal since the bus and drivers are designed
+to be use by kernel subsystem, a non-trivial major refactoring is
+needed which may impact a brunches of drivers and devices
+implementation inside the kernel. Using a new transport may grealy
+simply both the design and changes.
+
+vhost_vdpa driver is a new type of vhost device which allows userspace
+vhost drivers to use vDPA devices via vhost uAPI (with minor
+extension). This help to minimize the changes of existed vhost drivers
+for using vDPA devices.
+
+With the abstraction of vDPA bus and vDPA bus operations, the
+difference and complexity of the under layer hardware is hidden from
+upper layer. The vDPA bus drivers on top can use a unified
+vdpa_config_ops to control different types of vDPA device.
+
+This series contains the bus and virtio_vdpa implementation. We are
+working on the vhost part and IFCVF (vDPA driver from Intel) which
+will be posted in future few days.
+
+Thanks
+
+Changes from V3:
+
+- various Kconfig fixes (Randy)
+
+Changes from V2:
+
+- release idr in the release function for put_device() unwind (Jason)
+- don't panic when fail to register vdpa bus (Jason)
+- use unsigned int instead of int for ida (Jason)
+- fix the wrong commit log in virito_vdpa patches (Jason)
+- make vdpa_sim depends on RUNTIME_TESTING_MENU (Michael)
+- provide a bus release function for vDPA device (Jason)
+- fix the wrong unwind when creating devices for vDPA simulator (Jason)
+- move vDPA simulator to a dedicated directory (Lingshan)
+- cancel the work before release vDPA simulator
+
+Changes from V1:
+
+- drop sysfs API, leave the management interface to future development
+  (Michael)
+- introduce incremental DMA ops (dma_map/dma_unmap) (Michael)
+- introduce dma_device and use it instead of parent device for doing
+  IOMMU or DMA from bus driver (Michael, Jason, Ling Shan, Tiwei)
+- accept parent device and dma device when register vdpa device
+- coding style and compile fixes (Randy)
+- using vdpa_xxx instead of xxx_vdpa (Jason)
+- ove vDPA accessors to header and make it static inline (Jason)
+- split vdp_register_device() into two helpers vdpa_init_device() and
+  vdpa_register_device() which allows intermediate step to be done (Jason=
+)
+- warn on invalidate queue state when fail to creating virtqueue (Jason)
+- make to_virtio_vdpa_device() static (Jason)
+- use kmalloc/kfree instead of devres for virtio vdpa device (Jason)
+- avoid using cast in vdpa bus function (Jason)
+- introduce module_vdpa_driver and fix module refcnt (Jason)
+- fix returning freed address in vdapsim coherent DMA addr allocation (Da=
+n)
+- various other fixes and tweaks
+
+V3: https://lkml.org/lkml/2020/2/19/1347
+V2: https://lkml.org/lkml/2020/2/9/275
+V1: https://lkml.org/lkml/2020/1/16/353
+
+Jason Wang (5):
+  vhost: factor out IOTLB
+  vringh: IOTLB support
+  vDPA: introduce vDPA bus
+  virtio: introduce a vDPA based transport
+  vdpasim: vDPA device simulator
+
+ MAINTAINERS                             |   2 +
+ drivers/vhost/Kconfig                   |   6 +
+ drivers/vhost/Kconfig.vringh            |   1 +
+ drivers/vhost/Makefile                  |   2 +
+ drivers/vhost/net.c                     |   2 +-
+ drivers/vhost/vhost.c                   | 221 +++-----
+ drivers/vhost/vhost.h                   |  36 +-
+ drivers/vhost/vhost_iotlb.c             | 171 ++++++
+ drivers/vhost/vringh.c                  | 421 ++++++++++++++-
+ drivers/virtio/Kconfig                  |  15 +
+ drivers/virtio/Makefile                 |   2 +
+ drivers/virtio/vdpa/Kconfig             |  26 +
+ drivers/virtio/vdpa/Makefile            |   3 +
+ drivers/virtio/vdpa/vdpa.c              | 167 ++++++
+ drivers/virtio/vdpa/vdpa_sim/Makefile   |   2 +
+ drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c | 660 ++++++++++++++++++++++++
+ drivers/virtio/virtio_vdpa.c            | 392 ++++++++++++++
+ include/linux/vdpa.h                    | 232 +++++++++
+ include/linux/vhost_iotlb.h             |  45 ++
+ include/linux/vringh.h                  |  36 ++
+ 20 files changed, 2238 insertions(+), 204 deletions(-)
+ create mode 100644 drivers/vhost/vhost_iotlb.c
+ create mode 100644 drivers/virtio/vdpa/Kconfig
+ create mode 100644 drivers/virtio/vdpa/Makefile
+ create mode 100644 drivers/virtio/vdpa/vdpa.c
+ create mode 100644 drivers/virtio/vdpa/vdpa_sim/Makefile
+ create mode 100644 drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c
+ create mode 100644 drivers/virtio/virtio_vdpa.c
+ create mode 100644 include/linux/vdpa.h
+ create mode 100644 include/linux/vhost_iotlb.h
+
+--=20
+2.19.1
 
