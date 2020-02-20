@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FACF165830
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 08:08:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A50165839
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 08:08:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgBTHIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 02:08:31 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:45883 "EHLO
+        id S1726149AbgBTHIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 02:08:30 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34981 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726777AbgBTHI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 02:08:28 -0500
+        by vger.kernel.org with ESMTP id S1726342AbgBTHI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 02:08:29 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3FB0B2108A;
-        Thu, 20 Feb 2020 02:08:27 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 705AF21E90;
+        Thu, 20 Feb 2020 02:08:28 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:27 -0500
+  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=TXCvhTXLjw9tflMYri/JVhca5r4tdCo+smc6mSelpds=; b=jxr+JLOB
-        6hihD9wjZ/mpEILLVkN3IpAs66xkqKDihEiWWZlw16ezjTSCpAYt4laApD24PExL
-        Zg+ri51iHvmZSY/1UNYYam5IxKGDqJoTTNothlKBWJmZbYCsPzQs0MjSWGHe/izc
-        VPUPMhja4xomW38wrVATZsvaghSbM8uMevoDgtp30eQPNeVROdomf4u2p9WfQPir
-        pPA/NKK9ZjtuQ/Wr831L4fsaclzzNBVObaWgpD6xLlupfj4FtcGjo2bBFFu56akD
-        8Y1GQZ43DaBeb0K58g+A9UZTnBK+3qtA4ae3mOvAH3BuJGWygh3ZLLNWtSvYe9tT
-        2Y5ihSgGsvEEQQ==
-X-ME-Sender: <xms:azBOXjlIC9j6kUvIKv85SsBWE9jeFkI2d4R7sz7M1KlzCEe4cSg4gg>
+        fm2; bh=aOt9PswnLrzs7lGdlkFteWxqxQ7nOFWuTDmc3Bn3nsY=; b=dlj6ujrA
+        weoGYuutkqf6Hz31N3zATWzP81VLPUHzZNR2Q2BNSFeZTkbQCD0QZRGjH5djI9qs
+        5p04wEs8MtnCEdH/XZdDyieyZwXIevZBcyNgzb/0AbsXwwhwLsUNxljBjztxcvBe
+        aB7UNipKMYzgJPJAMPc6TBkXFGwnoNE1p8ibfoW/VHorHBdpuPWLCK7kiGmVl3zN
+        NQ/dBV2KYRfoI6Dlh2jBgnG+7j3wuzm8KaLeaOwgF/6jN+zBkp6DIXp5JUhOVE6F
+        Ts7K+Gt9KO75/26oNEStx0MevUEO7a62f6PYXIbPhdlTPKeN+ff3M+TZUEwbQaEb
+        9vw6GsEiyoprzQ==
+X-ME-Sender: <xms:bDBOXgQGC7wbitpybGZyNZ4W1WSrArvFJ5sycK48aWVkTjuxkzm7uw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucevlhhushhtvg
     hrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
     tghhrdhorhhg
-X-ME-Proxy: <xmx:azBOXrHrYcPByhOZq3c_u1WxCEPlEjcmJdk4UqQ4svU5NvWTuiozmQ>
-    <xmx:azBOXkpNSbGTQyyF0h4YRPNuBRc5_5D-jHSAix_UMmAm5EXSNfprNA>
-    <xmx:azBOXv5t3dIJRcPw5dOh3rtgyEtuiCevzeL-lAub6l0RU6st1xbN-A>
-    <xmx:azBOXkUezgqwaP3qL14VSWEvo1ICtpQPxxVsBRZeMEVQrbYYHN8b_w>
+X-ME-Proxy: <xmx:bDBOXoBgupcva2O5UAwXohSgIsWq8gD3ibsLdjWZCG7056zQN3-ldg>
+    <xmx:bDBOXszCUgDNtph7aXnIH6zY6sZPIRrEiJSdHU4DZ8gbUSL9lsQ0wA>
+    <xmx:bDBOXrpXjxjdnokZLHnCYl-KmfdpRs4YD3jc6RvcByv11xSXq0sU4Q>
+    <xmx:bDBOXsFqcX5NXQM5GiP4vTMCWVBclTV-vIdoJ-Xo_mDymQXwn3jBLg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 22E5A3060C21;
-        Thu, 20 Feb 2020 02:08:26 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 542613060C21;
+        Thu, 20 Feb 2020 02:08:27 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 06/15] mlxsw: spectrum: Convert callers to use new mirroring API
-Date:   Thu, 20 Feb 2020 09:07:51 +0200
-Message-Id: <20200220070800.364235-7-idosch@idosch.org>
+Subject: [PATCH net-next 07/15] mlxsw: spectrum_span: Only update mirroring agents if present
+Date:   Thu, 20 Feb 2020 09:07:52 +0200
+Message-Id: <20200220070800.364235-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200220070800.364235-1-idosch@idosch.org>
 References: <20200220070800.364235-1-idosch@idosch.org>
@@ -61,125 +61,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Previous patch added a work item in the mirroring code that will take
-care of updating the active mirroring agents in response to different
-events.
+In order not to needlessly schedule the work item that updates the
+mirroring agents, only schedule it if there are any mirroring agents
+present.
 
-Change the mirroring agents update function - mlxsw_sp_span_respin() -
-to invoke this work item when called.
+This is done by adding an atomic counter that counts the active
+mirroring agents.
 
-Therefore there is no need for callers to schedule a work item
-themselves.
+It is incremented / decremented whenever a mirroring agent is created /
+destroyed. It is read before scheduling the work item and in the
+devlink-resource occupancy callback.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_span.c   | 29 +++-------------
- .../mellanox/mlxsw/spectrum_switchdev.c       | 34 ++-----------------
- 2 files changed, 7 insertions(+), 56 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_span.c   | 20 +++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 24fd42d79607..f7079f9e8d19 100644
+index f7079f9e8d19..9fb2e9d93929 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -1002,30 +1002,6 @@ void mlxsw_sp_span_mirror_del(struct mlxsw_sp_port *from, int span_id,
- 	mlxsw_sp_span_inspected_port_del(from, span_entry, type, bind);
- }
- 
--void mlxsw_sp_span_respin(struct mlxsw_sp *mlxsw_sp)
--{
--	int i;
--	int err;
--
--	ASSERT_RTNL();
--	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
--		struct mlxsw_sp_span_entry *curr = &mlxsw_sp->span->entries[i];
--		struct mlxsw_sp_span_parms sparms = {NULL};
--
--		if (!curr->ref_count)
--			continue;
--
--		err = curr->ops->parms(curr->to_dev, &sparms);
--		if (err)
--			continue;
--
--		if (memcmp(&sparms, &curr->parms, sizeof(sparms))) {
--			mlxsw_sp_span_entry_deconfigure(curr);
--			mlxsw_sp_span_entry_configure(mlxsw_sp, curr, sparms);
--		}
--	}
--}
--
- static void mlxsw_sp_span_respin_work(struct work_struct *work)
+@@ -19,6 +19,7 @@
+ struct mlxsw_sp_span {
+ 	struct work_struct work;
+ 	struct mlxsw_sp *mlxsw_sp;
++	atomic_t active_entries_count;
+ 	int entries_count;
+ 	struct mlxsw_sp_span_entry entries[0];
+ };
+@@ -28,15 +29,8 @@ static void mlxsw_sp_span_respin_work(struct work_struct *work);
+ static u64 mlxsw_sp_span_occ_get(void *priv)
  {
- 	struct mlxsw_sp_span *span;
-@@ -1054,3 +1030,8 @@ static void mlxsw_sp_span_respin_work(struct work_struct *work)
- 	}
- 	rtnl_unlock();
- }
-+
-+void mlxsw_sp_span_respin(struct mlxsw_sp *mlxsw_sp)
-+{
-+	mlxsw_core_schedule_work(&mlxsw_sp->span->work);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 6213fa43aa7b..d70865f29105 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -1778,36 +1778,6 @@ mlxsw_sp_port_mrouter_update_mdb(struct mlxsw_sp_port *mlxsw_sp_port,
- 	}
+ 	const struct mlxsw_sp *mlxsw_sp = priv;
+-	u64 occ = 0;
+-	int i;
+ 
+-	for (i = 0; i < mlxsw_sp->span->entries_count; i++) {
+-		if (mlxsw_sp->span->entries[i].ref_count)
+-			occ++;
+-	}
+-
+-	return occ;
++	return atomic_read(&mlxsw_sp->span->active_entries_count);
  }
  
--struct mlxsw_sp_span_respin_work {
--	struct work_struct work;
--	struct mlxsw_sp *mlxsw_sp;
--};
--
--static void mlxsw_sp_span_respin_work(struct work_struct *work)
--{
--	struct mlxsw_sp_span_respin_work *respin_work =
--		container_of(work, struct mlxsw_sp_span_respin_work, work);
--
--	rtnl_lock();
--	mlxsw_sp_span_respin(respin_work->mlxsw_sp);
--	rtnl_unlock();
--	kfree(respin_work);
--}
--
--static void mlxsw_sp_span_respin_schedule(struct mlxsw_sp *mlxsw_sp)
--{
--	struct mlxsw_sp_span_respin_work *respin_work;
--
--	respin_work = kzalloc(sizeof(*respin_work), GFP_ATOMIC);
--	if (!respin_work)
--		return;
--
--	INIT_WORK(&respin_work->work, mlxsw_sp_span_respin_work);
--	respin_work->mlxsw_sp = mlxsw_sp;
--
--	mlxsw_core_schedule_work(&respin_work->work);
--}
--
- static int mlxsw_sp_port_obj_add(struct net_device *dev,
- 				 const struct switchdev_obj *obj,
- 				 struct switchdev_trans *trans,
-@@ -1829,7 +1799,7 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev,
- 			 * call for later, so that the respin logic sees the
- 			 * updated bridge state.
- 			 */
--			mlxsw_sp_span_respin_schedule(mlxsw_sp_port->mlxsw_sp);
-+			mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
- 		}
- 		break;
- 	case SWITCHDEV_OBJ_ID_PORT_MDB:
-@@ -1982,7 +1952,7 @@ static int mlxsw_sp_port_obj_del(struct net_device *dev,
- 		break;
- 	}
+ int mlxsw_sp_span_init(struct mlxsw_sp *mlxsw_sp)
+@@ -53,6 +47,7 @@ int mlxsw_sp_span_init(struct mlxsw_sp *mlxsw_sp)
+ 	if (!span)
+ 		return -ENOMEM;
+ 	span->entries_count = entries_count;
++	atomic_set(&span->active_entries_count, 0);
+ 	span->mlxsw_sp = mlxsw_sp;
+ 	mlxsw_sp->span = span;
  
--	mlxsw_sp_span_respin_schedule(mlxsw_sp_port->mlxsw_sp);
-+	mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
+@@ -668,6 +663,7 @@ mlxsw_sp_span_entry_create(struct mlxsw_sp *mlxsw_sp,
+ 	if (!span_entry)
+ 		return NULL;
  
- 	return err;
++	atomic_inc(&mlxsw_sp->span->active_entries_count);
+ 	span_entry->ops = ops;
+ 	span_entry->ref_count = 1;
+ 	span_entry->to_dev = to_dev;
+@@ -676,9 +672,11 @@ mlxsw_sp_span_entry_create(struct mlxsw_sp *mlxsw_sp,
+ 	return span_entry;
+ }
+ 
+-static void mlxsw_sp_span_entry_destroy(struct mlxsw_sp_span_entry *span_entry)
++static void mlxsw_sp_span_entry_destroy(struct mlxsw_sp *mlxsw_sp,
++					struct mlxsw_sp_span_entry *span_entry)
+ {
+ 	mlxsw_sp_span_entry_deconfigure(span_entry);
++	atomic_dec(&mlxsw_sp->span->active_entries_count);
+ }
+ 
+ struct mlxsw_sp_span_entry *
+@@ -740,7 +738,7 @@ static int mlxsw_sp_span_entry_put(struct mlxsw_sp *mlxsw_sp,
+ {
+ 	WARN_ON(!span_entry->ref_count);
+ 	if (--span_entry->ref_count == 0)
+-		mlxsw_sp_span_entry_destroy(span_entry);
++		mlxsw_sp_span_entry_destroy(mlxsw_sp, span_entry);
+ 	return 0;
+ }
+ 
+@@ -1033,5 +1031,7 @@ static void mlxsw_sp_span_respin_work(struct work_struct *work)
+ 
+ void mlxsw_sp_span_respin(struct mlxsw_sp *mlxsw_sp)
+ {
++	if (atomic_read(&mlxsw_sp->span->active_entries_count) == 0)
++		return;
+ 	mlxsw_core_schedule_work(&mlxsw_sp->span->work);
  }
 -- 
 2.24.1
