@@ -2,112 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 598641665EE
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:12:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18642166625
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728410AbgBTSMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 13:12:30 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35582 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728334AbgBTSMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:12:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=FCrzexrV6r/SLxffblwzbkO782uD+G9wMgCdYyWNw1s=; b=mrsNP29hPwh3vir+fN/3hzDPO
-        gTXCMMzUKXCoLQuLJGOtmupyH8jzZfFWbpc0m69uv8754ScDYUmGEuVzmffZiMW6/qDIY4kcJbuUX
-        x5Pi73G0vpZGghbqb0FUoENw0dBGEzhfQKrcmqbli/cVMQWMaqYt0FnuZdpK4mWdq/WFAyCJeYHhx
-        i3u91xe/4Ihs6Uy5EcdFvuq/r/HLS3ycJcVof7W6/2+EuK4/Zz/dMtA5XWpyS33Yr11NUn2/IJD57
-        d27vW+63hDYSKBUBqtb2gjU5IXO8YrCsBf1t5ipgzbiZEPRXQzNfa/GWv7tAnFDteE/GbTSd99NXw
-        9MWREb8Xw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:42972)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j4qJC-0004qI-GI; Thu, 20 Feb 2020 18:12:22 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j4qJ9-0002j1-Ne; Thu, 20 Feb 2020 18:12:19 +0000
-Date:   Thu, 20 Feb 2020 18:12:19 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: fix duplicate vlan
- warning
-Message-ID: <20200220181219.GC25745@shell.armlinux.org.uk>
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
- <E1j41KQ-0002uy-TQ@rmk-PC.armlinux.org.uk>
- <20200218115157.GG25745@shell.armlinux.org.uk>
- <20200218162750.GR31084@lunn.ch>
+        id S1728217AbgBTSZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 13:25:42 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35906 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726959AbgBTSZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:25:42 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z3so5766292wru.3
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 10:25:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j9N9I9KJPzbryQTolaPPFUt0mPBPyGqGLl6t+i/nzVU=;
+        b=q9T764VeUgXWTtFSPDRDLZ+08MFAVEsZ1CcdGVu3/4spR1jecoZ04HO1oX0AqVx40/
+         qR/7BLkhZb4nOa9BiiR82GxYjmDJZfJ4E7EkrlD0RmhEmJqzu82XbwZBmayKJSllJs/s
+         dXkdyxUNZ6YQIf/tkKgA/Yn465lqpBiOpIY3OtVCZACc7RkGandL+WAWMKU3ulWGJbsZ
+         u1aR9/9yb/YwyaBPA18EKpV6oic2+UsRIdUFPXekUIfSYBUnYvcrKA1ftn5hmCRLSmAQ
+         ChD4yutYqADVRo7MACC5tCGnAb1p5j9zRA9Q5LD+sFkc0hvXA2uhpPz1+7Tfq4L6kv/V
+         2wMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j9N9I9KJPzbryQTolaPPFUt0mPBPyGqGLl6t+i/nzVU=;
+        b=pjZNj2yhh5ot3k3G07Ugbk5kSSMaU3Cdg+Y89AcViQUtS6B5rrNEkUaKASR50VHHrf
+         Atege/oLy8m185YsCrgSjObAcXpubaQOHVr9WSKOsZplCt8kFLDuwN/fMmaKgzifgMrP
+         +dUmXTDUVU8LqsZ2r5/5uqxuxvR/Lvb+nEZMbldNwWjNloZrMmySL9ahqpJNRMQdcqR8
+         aAJifFH+6sEjZiHV7L0tu918lNnJYvyEO3vzpUI04QWPWEbsSEJKi3errZrDjADsopWz
+         CVi8T+JvfL1tzHcoUv06TTmvhCC5P9dwF4iHxDTnV7+OTzG/HjuLIRqSmWDEUZD9AM1N
+         5R6A==
+X-Gm-Message-State: APjAAAXSRhB9ZxMCp+BaIL2xuU6O4/GG6iHds5goPoJdV11HYipxqxqM
+        wKChwpD/lq8qutbx1Q2m5kH6MQ==
+X-Google-Smtp-Source: APXvYqy3yhEW3DUHYY5KX61j9BnoYgi87AyCUYJ1jaBBGzWyCjaJC5SHfgGiOHUS3ZWUtVToPUzEKQ==
+X-Received: by 2002:a5d:5305:: with SMTP id e5mr43543869wrv.18.1582223137485;
+        Thu, 20 Feb 2020 10:25:37 -0800 (PST)
+Received: from apalos.home ([2a02:587:4655:3a80:2e56:dcff:fe9a:8f06])
+        by smtp.gmail.com with ESMTPSA id c74sm176168wmd.26.2020.02.20.10.25.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 10:25:36 -0800 (PST)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     brouer@redhat.com, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     lorenzo@kernel.org, rdunlap@infradead.org, toke@redhat.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH net-next] net: page_pool: Add documentation for page_pool API
+Date:   Thu, 20 Feb 2020 20:25:21 +0200
+Message-Id: <20200220182521.859730-1-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200218162750.GR31084@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 05:27:50PM +0100, Andrew Lunn wrote:
-> On Tue, Feb 18, 2020 at 11:51:57AM +0000, Russell King - ARM Linux admin wrote:
-> > On Tue, Feb 18, 2020 at 11:46:14AM +0000, Russell King wrote:
-> > > When setting VLANs on DSA switches, the VLAN is added to both the port
-> > > concerned as well as the CPU port by dsa_slave_vlan_add().  If multiple
-> > > ports are configured with the same VLAN ID, this triggers a warning on
-> > > the CPU port.
-> > > 
-> > > Avoid this warning for CPU ports.
-> > > 
-> > > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > 
-> > Note that there is still something not right.  On the ZII dev rev B,
-> > setting up a bridge across all the switch ports, I get:
-> 
-> Hi Russell
-> 
-> FYI: You need to be a little careful with VLANs on rev B. The third
-> switch does not have the PVT hardware. So VLANs are going to 'leak'
-> when they cross the DSA link to that switch.
+Add documentation explaining the basic functionality and design
+principles of the API
 
-I'm not sure I fully understand what you're saying or the mechanism
-behind it.
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+---
+ Documentation/networking/page_pool.rst | 159 +++++++++++++++++++++++++
+ 1 file changed, 159 insertions(+)
+ create mode 100644 Documentation/networking/page_pool.rst
 
-From what I can see, the 88E6352 and the 88E6185 both contain a VTU
-which is capable of taking an ingressing frame and restricting which
-ports it can egress from.
-
-If a frame ingresses on one 88E6352, passed across to the other
-88E6352, and finally to the 88E6185, doesn't each switch look up in
-its own VTU which ports to egress the packet from, which should
-include the DSA ports, so it can then be passed to the other switches?
-And doesn't the VTU on each switch define which ports the frame is
-allowed to egress out of?
-
-From what I can see, setting up a bridge across all lan ports on the
-Zii rev B, then enabling vlan filtering, and then allowing VID V on
-lan0 and lan8 (one port on each 88E6352, passed across to the other
-88E6352, and finally to the 88E6185 which has the other port on)
-results in VID V frames passed correctly across, and are received
-appropriately.  Untagged traffic continues to be received
-appropriately.
-
-Removing VID V from lan8 (the port I'm monitoring) results in VID V
-traffic no longer sent out via lan8.
-
-So, it seems to work as one would expect.
-
-What am I missing?
-
+diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+new file mode 100644
+index 000000000000..098d339ef272
+--- /dev/null
++++ b/Documentation/networking/page_pool.rst
+@@ -0,0 +1,159 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=============
++Page Pool API
++=============
++
++The page_pool allocator is optimized for the XDP mode that uses one frame
++per-page, but it can fallback on the regular page allocator APIs.
++
++Basic use involve replacing alloc_pages() calls with the
++page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages()
++replacing dev_alloc_pages().
++
++API keeps track of inflight pages, in order to let API user know
++when it is safe to free a page_pool object.  Thus, API users
++must run page_pool_release_page() when a page is leaving the page_pool or
++call page_pool_put_page() where appropriate in order to maintain correct
++accounting.
++
++API user must call page_pool_put_page() once on a page, as it
++will either recycle the page, or in case of refcnt > 1, it will
++release the DMA mapping and inflight state accounting.
++
++Architecture overview
++=====================
++
++.. code-block:: none
++
++    +------------------+
++    |       Driver     |
++    +------------------+
++            ^
++            |
++            |
++            |
++            v
++    +--------------------------------------------+
++    |                request memory              |
++    +--------------------------------------------+
++        ^                                  ^
++        |                                  |
++        | Pool empty                       | Pool has entries
++        |                                  |
++        v                                  v
++    +-----------------------+     +------------------------+
++    | alloc (and map) pages |     |  get page from cache   |
++    +-----------------------+     +------------------------+
++                                    ^                    ^
++                                    |                    |
++                                    | cache available    | No entries, refill
++                                    |                    | from ptr-ring
++                                    |                    |
++                                    v                    v
++                          +-----------------+     +------------------+
++                          |   Fast cache    |     |  ptr-ring cache  |
++                          +-----------------+     +------------------+
++
++API interface
++=============
++The number of pools created **must** match the number of hardware queues
++unless hardware restrictions make that impossible. This would otherwise beat the
++purpose of page pool, which is allocate pages fast from cache without locking.
++This lockless guarantee naturally comes from running under a NAPI softirq.
++The protection doesn't strictly have to be NAPI, any guarantee that allocating
++a page will cause no race conditions is enough.
++
++* page_pool_create(): Create a pool.
++    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
++    * order:      order^n pages on allocation
++    * pool_size:  size of the ptr_ring
++    * nid:        preferred NUMA node for allocation
++    * dev:        struct device. Used on DMA operations
++    * dma_dir:    DMA direction
++    * max_len:    max DMA sync memory size
++    * offset:     DMA address offset
++
++* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
++  driver bumps the refcnt > 1 this will unmap the page. If the page refcnt is 1
++  the allocator owns the page and will try to recycle it in one of the pool
++  caches. If PP_FLAG_DMA_SYNC_DEV is set, the page will be synced for_device
++  using dma_sync_single_range_for_device().
++
++* page_pool_put_full_page(): Similar to page_pool_put_page(), but will DMA sync
++  for the entire memory area configured in area pool->max_len.
++
++* page_pool_recycle_direct(): Similar to page_pool_put_full_page() but caller
++  must guarantee safe context (e.g NAPI), since it will recycle the page
++  directly into the pool fast cache.
++
++* page_pool_release_page(): Unmap the page (if mapped) and account for it on
++  inflight counters.
++
++* page_pool_dev_alloc_pages(): Get a page from the page allocator or page_pool
++  caches.
++
++* page_pool_get_dma_addr(): Retrieve the stored DMA address.
++
++* page_pool_get_dma_dir(): Retrieve the stored DMA direction.
++
++Coding examples
++===============
++
++Registration
++------------
++
++.. code-block:: c
++
++    /* Page pool registration */
++    struct page_pool_params pp_params = { 0 };
++    struct xdp_rxq_info xdp_rxq;
++    int err;
++
++    pp_params.order = 0;
++    /* internal DMA mapping in page_pool */
++    pp_params.flags = PP_FLAG_DMA_MAP;
++    pp_params.pool_size = DESC_NUM;
++    pp_params.nid = NUMA_NO_NODE;
++    pp_params.dev = priv->dev;
++    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
++    page_pool = page_pool_create(&pp_params);
++
++    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
++    if (err)
++        goto err_out;
++
++    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
++    if (err)
++        goto err_out;
++
++NAPI poller
++-----------
++
++
++.. code-block:: c
++
++    /* NAPI Rx poller */
++    enum dma_data_direction dma_dir;
++
++    dma_dir = page_pool_get_dma_dir(dring->page_pool);
++    while (done < budget) {
++        if (some error)
++            page_pool_recycle_direct(page_pool, page);
++        if (packet_is_xdp) {
++            if XDP_DROP:
++                page_pool_recycle_direct(page_pool, page);
++        } else (packet_is_skb) {
++            page_pool_release_page(page_pool, page);
++            new_page = page_pool_dev_alloc_pages(page_pool);
++        }
++    }
++
++Driver unload
++-------------
++
++.. code-block:: c
++
++    /* Driver unload */
++    page_pool_put_full_page(page_pool, page, false);
++    xdp_rxq_info_unreg(&xdp_rxq);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.25.1
+
