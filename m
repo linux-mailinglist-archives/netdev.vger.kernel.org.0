@@ -2,98 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7F716632E
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 17:34:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A88F516633D
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 17:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728769AbgBTQeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 11:34:05 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:53143 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728515AbgBTQeE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 11:34:04 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 70d3bb9f
-        for <netdev@vger.kernel.org>;
-        Thu, 20 Feb 2020 16:31:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=yVRwtw6kJ2XMj4V4P4PtGVoDGHo=; b=qrOCKk
-        X43atkuXWccjJkbr1AotsRzCugYKFhmNCFSaq4qcA2vly9ebxRoldh8h494xJqgd
-        Q9CoLl/rnxqa9+sOw9KsEfvIzGLPRlL3hUVQsazYzIVjU7sZj2FctYXeKFeqdw/4
-        DI23z6ZAMW9Zd/etZ8PyeQFT72wGiloRZYyL/MXMySEQ7QgrwlpYvCPKyPWWNn12
-        48w7XGIp9+3WC2cMoQWTVudEptypFmuInX2Y/EJdyd8E6yxyHIR49ppr5Hv0I+vP
-        dKWODFPM5LRYqO7ZO3gVKKOnfQeuXnmBlwpXeUqHg2SpawJvXziOTMuwP8pexmDY
-        HA2qitAmXOJJcg+A==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 23b5d75b (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Thu, 20 Feb 2020 16:31:08 +0000 (UTC)
-Received: by mail-ot1-f49.google.com with SMTP id 66so4221231otd.9
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 08:34:02 -0800 (PST)
-X-Gm-Message-State: APjAAAWFikPZro4UbURU3Fvnvd5xQcl7ZivO9gwtxGVFYFvTrRUmYJBU
-        x+vOhlEgsZ2HJyA7jV83y+CzDYatdsDDo0Isd9A=
-X-Google-Smtp-Source: APXvYqx67ijbk1qY5//CpLPjuvRXVaxderY03uVmgvQgZGG1qigqoqpBarBdWMHoaZ6HYLw8NP1LifBzpfirR9gbJZQ=
-X-Received: by 2002:a9d:7a47:: with SMTP id z7mr24978732otm.179.1582216442024;
- Thu, 20 Feb 2020 08:34:02 -0800 (PST)
+        id S1728331AbgBTQh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 11:37:59 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37228 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728021AbgBTQh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 11:37:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582216678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JPLN0ouhhg0blmU2M9hGNXZisumAqDkHlC1AmG0Un74=;
+        b=Zn8ACb+NJ5bDueqvOY+YJX9o9chqXSejt6t/jNWHnY5ou5kBHR27vwLGbTN6/3NdBVQegt
+        GjkfycGKW68JgyONine6ptMJxHcOjAO19F7wziiYApbLVB1AD9cnLI0UuDEf071FpjdA5B
+        I1Xg1F8eAfvtHUS1gh4sz5r3ZSEMZlw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-290-8c5kERyLNBuMfxt3ogkWqQ-1; Thu, 20 Feb 2020 11:37:55 -0500
+X-MC-Unique: 8c5kERyLNBuMfxt3ogkWqQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F529477;
+        Thu, 20 Feb 2020 16:37:53 +0000 (UTC)
+Received: from carbon (ovpn-200-26.brq.redhat.com [10.40.200.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F41DF9051B;
+        Thu, 20 Feb 2020 16:37:42 +0000 (UTC)
+Date:   Thu, 20 Feb 2020 17:37:40 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     shuah <shuah@kernel.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel =?UTF-8?B?RMOtYXo=?= <daniel.diaz@linaro.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, brouer@redhat.com
+Subject: Re: Kernel 5.5.4 build fail for BPF-selftests with latest LLVM
+Message-ID: <20200220173740.7a3f9ad7@carbon>
+In-Reply-To: <4a26e6c6-500e-7b92-1e26-16e1e0233889@kernel.org>
+References: <20200219133012.7cb6ac9e@carbon>
+        <CAADnVQKQRKtDz0Boy=-cudc4eKGXB-yParGZv6qvYcQR4uMUQQ@mail.gmail.com>
+        <20200219180348.40393e28@carbon>
+        <CAEf4Bza9imKymHfv_LpSFE=kNB5=ZapTS3SCdeZsDdtrUrUGcg@mail.gmail.com>
+        <20200219192854.6b05b807@carbon>
+        <CAEf4BzaRAK6-7aCCVOA6hjTevKuxgvZZnHeVgdj_ZWNn8wibYQ@mail.gmail.com>
+        <20200219210609.20a097fb@carbon>
+        <CAEUSe79Vn8wr=BOh0RzccYij_snZDY=2XGmHmR494wsQBBoo5Q@mail.gmail.com>
+        <20200220002748.kpwvlz5xfmjm5fd5@ast-mbp>
+        <4a26e6c6-500e-7b92-1e26-16e1e0233889@kernel.org>
 MIME-Version: 1.0
-References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
- <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
- <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
- <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
- <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
- <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
- <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
- <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
- <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
- <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com>
- <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
- <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
- <CAHmME9q3_p_BX0BC6=urj4KeWLN2PvPgvGy3vQLFmd=qkNEkpQ@mail.gmail.com>
- <CACT4Y+bSBD_=rmGCF3mngiRKOfa7cv0odFaadF1wyEV9NVhQcg@mail.gmail.com>
- <CAHmME9pQQhQtg8JymxMbSMgnhZ9BpjEoTb=sSNndjp1rXnzi_Q@mail.gmail.com>
- <CAHmME9or-Wwx63ZtwYzOWV9KQJY1aarx2Eh8iF2P--BXfz6u+g@mail.gmail.com>
- <CACT4Y+a8N7_n4t_vxezKJVkd1+gDHaMzpeG18MuDE04+r3341A@mail.gmail.com>
- <CACT4Y+atqrSfZuquPZcRUKNtVbLdu+B5YN3=YmDb38Ruzj3Pzw@mail.gmail.com>
- <CACT4Y+bMzYZeMvv2DdTuTKtJFzTcHhinp7N7VmSiXqSBDyj8Ug@mail.gmail.com>
- <CACT4Y+bUXAstk41RPSF-EQDh7A8-XkTbc53nQTHt4DS5AUhr-A@mail.gmail.com>
- <CAHmME9pr4=cn5ijSNs05=fjdfQon49kyEzymkUREJ=xzTZ7Q7w@mail.gmail.com> <CACT4Y+aTBNZAekX_D+QdofqBdUuG9BkzLq+TFDxr8-sSqL9hdQ@mail.gmail.com>
-In-Reply-To: <CACT4Y+aTBNZAekX_D+QdofqBdUuG9BkzLq+TFDxr8-sSqL9hdQ@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 20 Feb 2020 17:33:50 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pSWRe8k3+4G45tWE9V+N3A9APN5KFq65S5D0JNvR2xxQ@mail.gmail.com>
-Message-ID: <CAHmME9pSWRe8k3+4G45tWE9V+N3A9APN5KFq65S5D0JNvR2xxQ@mail.gmail.com>
-Subject: Re: syzkaller wireguard key situation [was: Re: [PATCH net-next v2]
- net: WireGuard secure network tunnel]
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+On Wed, 19 Feb 2020 17:47:23 -0700
+shuah <shuah@kernel.org> wrote:
 
-On Thu, Feb 20, 2020 at 5:14 PM Dmitry Vyukov <dvyukov@google.com> wrote:
-> I got some coverage in wg_netdevice_notification:
-> https://imgur.com/a/1sJZKtp
->
-> Or you mean the parts that are still red?
+> On 2/19/20 5:27 PM, Alexei Starovoitov wrote:
+> > On Wed, Feb 19, 2020 at 03:59:41PM -0600, Daniel D=C3=ADaz wrote: =20
+> >>>
+> >>> When I download a specific kernel release, how can I know what LLVM
+> >>> git-hash or version I need (to use BPF-selftests)? =20
+> >=20
+> > as discussed we're going to add documentation-like file that will
+> > list required commits in tools.
+> > This will be enforced for future llvm/pahole commits.
+> >  =20
+> >>> Do you think it is reasonable to require end-users to compile their o=
+wn
+> >>> bleeding edge version of LLVM, to use BPF-selftests? =20
+> >=20
+> > absolutely. =20
+>=20
+> + linux-kselftest@vger.kernel.org
+>=20
+> End-users in this context are users and not necessarily developers.
 
-Yes, it's the red parts that interest me. Intermixing those with
-various wireguard-specific netlink calls and setting devices up and
-down and putting traffic through those sockets, in weird ways, could
-dig up bugs.
+I agree.  And I worry that we are making it increasingly hard for
+non-developer users.
 
-> I think theoretically these parts should be reachable too because
-> syzkaller can do unshare and obtain net ns fd's.
->
-> It's quite hard to test because it just crashes all the time on known bugs.
-> So maybe the most profitable way to get more coverage throughout the
-> networking subsystem now is to fix the top layer of crashers ;)
 
-Ahhh, interesting, so the issue is that syzkaller is finding too many
-other networking stack bugs before it gets to being able to play with
-wireguard. Shucks.
+> > If a developer wants to send a patch they must run all selftests and
+> > all of them must pass in their environment.
+> > "but I'm adding a tracing feature and don't care about networking tests
+> > failing"... is not acceptable. =20
+>=20
+> This is a reasonable expectation when a developers sends bpf patches.
 
-Jason
+Sure. I have several versions on LLVM that I've compiled manually.
+
+> >  =20
+> >>> I do hope that some end-users of BPF-selftests will be CI-systems.
+> >>> That also implies that CI-system maintainers need to constantly do
+> >>> "latest built from sources" of LLVM git-tree to keep up.  Is that a
+> >>> reasonable requirement when buying a CI-system in the cloud? =20
+> >=20
+> > "buying CI-system in the cloud" ?
+> > If I could buy such system I would pay for it out of my own pocket to s=
+ave
+> > maintainer's and developer's time.
+
+And Daniel D=C3=ADaz want to provide his help below (to tests it on arch
+that you likely don't even have access to). That sounds like a good
+offer, and you don't even have to pay.
+
+> >  =20
+> >> We [1] are end users of kselftests and many other test suites [2]. We
+> >> run all of our testing on every git-push on linux-stable-rc, mainline,
+> >> and linux-next -- approximately 1 million tests per week. We have a
+> >> dedicated engineering team looking after this CI infrastructure and
+> >> test results, and as such, I can wholeheartedly echo Jesper's
+> >> sentiment here: We would really like to help kernel maintainers and
+> >> developers by automatically testing their code in real hardware, but
+> >> the BPF kselftests are difficult to work with from a CI perspective.
+> >> We have caught and reported [3] many [4] build [5] failures [6] in the
+> >> past for libbpf/Perf, but building is just one of the pieces. We are
+> >> unable to run the entire BPF kselftests because only a part of the
+> >> code builds, so our testing is very limited there.
+> >>
+> >> We hope that this situation can be improved and that our and everyone
+> >> else's automated testing can help you guys too. For this to work out,
+> >> we need some help. =20
+> >  =20
+>=20
+> It would be helpful understand what "help" is in this context.
+>=20
+> > I don't understand what kind of help you need. Just install the
+> > latest tools. =20
+
+I admire that you want to push *everybody* forward to use the latest
+LLVM, but saying latest is LLVM devel git tree HEAD is too extreme.
+I can support saying latest LLVM release is required.
+
+As soon as your LLVM patches are accepted into llvm-git-tree, you will
+add some BPF selftests that util this. Then CI-systems pull latest
+bpf-next they will start to fail to compile BPF-selftests, and CI
+stops.  Now you want to force CI-system maintainer to recompile LLVM
+from git.  This will likely take some time.  Until that happens
+CI-system doesn't catch stuff. E.g. I really want the ARM tests that
+Linaro can run for us (which isn't run before you apply patches...).
+
+
+> What would be helpful is to write bpf tests such that older tests that
+> worked on older llvm versions continue to work and with some indication
+> on which tests require new bleeding edge tools.
+>=20
+> > Both the latest llvm and the latest pahole are required. =20
+>=20
+> It would be helpful if you can elaborate why latest tools are a
+> requirement.
+>=20
+> > If by 'help' you mean to tweak selftests to skip tests then it's a nack.
+> > We have human driven CI. Every developer must run selftests/bpf before
+> > emailing the patches. Myself and Daniel run them as well before applyin=
+g.
+> > These manual runs is the only thing that keeps bpf tree going.
+> > If selftests get to skip tests humans will miss those errors.
+> > When I don't see '0 SKIPPED, 0 FAILED' I go and investigate.
+> > Anything but zero is a path to broken kernels.
+> >=20
+> > Imagine the tests would get skipped when pahole is too old.
+> > That would mean all of the kernel features from year 2019
+> > would get skipped. Is there a point of running such selftests?
+> > I think the value is not just zero. The value is negative.
+> > Such selftests that run old stuff would give false believe
+> > that they do something meaningful.
+> > "but CI can do build only tests"... If 'helping' such CI means hurting =
+the
+> > key developer/maintainer workflow such CI is on its own.
+> >  =20
+>=20
+> Skipping tests will be useless. I am with you on that. However,
+> figuring out how to maintain some level of backward compatibility
+> to run at least older tests and warn users to upgrade would be
+> helpful.
+
+What I propose is that a BPF-selftest that use a new LLVM feature,
+should return FAIL (or perhaps SKIP), when it is compiled with say one
+release old LLVM. This will allow new-tests to show up in CI-systems
+reports as FAIL, and give everybody breathing room to upgrade their LLVM
+compiler.
+
+> I suspect currently users are ignoring bpf failures because they
+> are unable to keep up with the requirement to install newer tools
+> to run the tests. This isn't great either.
+
+Yes, my worry is also that we are simply making it too difficult for
+non-developer users to run these tests.  And I specifically want to
+attract CI-systems to run these.  And especially Linaro, who have
+dedicated engineering team looking after their CI infrastructure, and
+they explicitly in this email confirm my worry.
+
+
+> Users that care are sharing their pain to see if they can get some
+> help or explanation on why new tools are required every so often.
+> I don't think everybody understands why. :)
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
