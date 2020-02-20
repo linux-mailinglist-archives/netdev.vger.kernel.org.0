@@ -2,144 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E595D166AF0
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:26:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A623E166B01
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:35:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729385AbgBTX0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 18:26:45 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:53341 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727135AbgBTX0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 18:26:45 -0500
-Received: by mail-wm1-f68.google.com with SMTP id s10so327501wmh.3;
-        Thu, 20 Feb 2020 15:26:43 -0800 (PST)
+        id S1729339AbgBTXfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 18:35:00 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:55045 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727135AbgBTXfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 18:35:00 -0500
+Received: by mail-pj1-f68.google.com with SMTP id dw13so172373pjb.4;
+        Thu, 20 Feb 2020 15:34:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kGlgDo9M9XGHB0o0rwRFWRiv//bvSK3bYB5+0sd515M=;
-        b=czR69GA98BlVaV3juXRVfrOeKxTGVbSXZcDUM28FnLGX4nb01iuDNDo1u2qZHzinxf
-         SRVHZd0ei9hcHWUlDbKF+atVq2Leusd7wwVTYbgFF9ZpMABfGtwAljGANnngwdw7aPTP
-         +n/Mkya5XvlyAkwz5Xo+9+Rx2hI3aglGHNMQXN7Fg6p4e5h9mpL8aBYrodr971FY6jx7
-         riiOzir04sedguPOo1WT+prKVxHzUX6idHYh9llE/RkyOTXZFxFTospdvIg5ddZa8ZG+
-         KjWRD8Fxq0WOEN5Soz5G5rJ9jC1fSKTqEaV3EB0cC3pVF0I3wChYG5LNb1Sy4fZkfQES
-         vhLQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=Ib7HQNjwBZEeeeqlrByrC4mTfctGE4wzzBlFkYuG584=;
+        b=Iir8/4hrmlntwuBLVxLAydhzV39gHbjgOxHQiOIHle7rAw6MbPykzseyAGdUz6x0xC
+         RGE82VY+cY+sRtNnJjnJP+cmARNC7s091dZ3Zr48PkpB6Q+T4YzHpM537Q9T1VvnfxN1
+         SYO4c2ex3piIv/Lnar+AJThsbVsCLC4KxQ6OtE/wPICRsrCEUQPRHXtBQzfEQVj8+AWP
+         +ZwWl/t0CygGV/RqZcybjH+eNPJn74acTVQFJPqWqu6rxmbf3XhlQwp337naYtmrRqeP
+         kyLr9napuNwQ9/m29QCKiy0oHNu29lWI/z+jUXjANBNpTwQ1/ykB2Os7HjfqihGj0UK/
+         3reA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kGlgDo9M9XGHB0o0rwRFWRiv//bvSK3bYB5+0sd515M=;
-        b=bOp7LDNTNA0j+kI5xY5/L0W2DZWS4Csl1ut6UCZhimrlyYLWhG4+MjhKrDhPiXSIbE
-         B8KfXszMYqGa+nyJn70cTypKxN1TnUTU3A4p5QfzEu9laEUbQIMduSVLRFHNUUhYMqCz
-         6VlpQgJpdbeEqpZnQX6CAyVt5gqRk/f4zb0kDJf/o3uocmSy748VehzJtRDoRFoiwmt/
-         P+PjZowqM/OgSIkga7AGi+KmnU8uznDoC/ZTpRhIq5hjxOaorQH67Gj1xNTak5iKzS2P
-         ZoWX/FE78HdOoc3eP9vfK00ntog17VE8g1tRKWkrQbIYEpEWKVA5EgMUtMaopo8A4M0U
-         tWcA==
-X-Gm-Message-State: APjAAAWtMgj96aQ1pUK60bcLbrO9S8UOhu+eMT3T9B3dqtMDOYL2Nzuv
-        DPOxFgrl0Q57Zp9f/HgFe9E=
-X-Google-Smtp-Source: APXvYqxK/aZGgmxmFiI9rohUoesB3MtDvIMAtuCgsHCBck2HW7UwTRhRDI9d1Dx0mKQo2ioQ5OQFjw==
-X-Received: by 2002:a1c:238e:: with SMTP id j136mr6963218wmj.33.1582241202986;
-        Thu, 20 Feb 2020 15:26:42 -0800 (PST)
-Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
-        by smtp.googlemail.com with ESMTPSA id h18sm1498064wrv.78.2020.02.20.15.26.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Ib7HQNjwBZEeeeqlrByrC4mTfctGE4wzzBlFkYuG584=;
+        b=KWywZ6YTmDJuZnE9gi3/IpkDtaRSYrMsWJIBldhtK/di524MtVWC8hHCOCV+gleTBA
+         qUpGkYt3lAzdcfP9CZ1C9d2RqTsHKTmAyzErFHZAwZeWnV7mRaZFnAjGwTTZT1NEWmgl
+         dBwfcZIxaDNdsZtLuEsyiHlRfxmj/oxrJAlESpf/f5MhAtdROlkuZlEQOMjLyKGtfYKA
+         uApN/gt/L6pp9Vb5iLAK6Fr+KpNOqrDick+UKNK0ysmuKREUDuClqcon0fgfWhN3qpPE
+         jyV8Jtv4v2NJaPidtwI3KQvYB+ZhX8gS4RtRQkLQIlJwQsY/SZfcGp3JxOZujucU3t6e
+         qHdQ==
+X-Gm-Message-State: APjAAAXKqno8BTBzqhC+4t0xmYqlcxP1UPJ6EYTYES8rWe26LxWE9aYD
+        nA3oOIQrx+ritNHhnQA2zJdZc+2H
+X-Google-Smtp-Source: APXvYqzoUng9rwn9VWrUCJ73KCbi0fQVywXpbpLlOxAQAT0gelfcWCU46XOTD0SbUC9QJF/89dR4Kg==
+X-Received: by 2002:a17:90a:e509:: with SMTP id t9mr6137477pjy.110.1582241699186;
+        Thu, 20 Feb 2020 15:34:59 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d69sm693688pfd.72.2020.02.20.15.34.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 15:26:42 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Thu, 20 Feb 2020 15:34:58 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yoshihiro.shimoda.uh@renesas.com,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] Documentation: devictree: Add ipq806x mdio bindings
-Date:   Fri, 21 Feb 2020 00:26:22 +0100
-Message-Id: <20200220232624.7001-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200220232624.7001-1-ansuelsmth@gmail.com>
-References: <20200220232624.7001-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        "David S. Miller" <davem@davemloft.net>,
+        Fugang Duan <B38611@freescale.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: phy: Avoid multiple suspends
+Date:   Thu, 20 Feb 2020 15:34:53 -0800
+Message-Id: <20200220233454.31514-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentations for ipq806x mdio driver.
+It is currently possible for a PHY device to be suspended as part of a
+network device driver's suspend call while it is still being attached to
+that net_device, either via phy_suspend() or implicitly via phy_stop().
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Later on, when the MDIO bus controller get suspended, we would attempt
+to suspend again the PHY because it is still attached to a network
+device.
+
+This is both a waste of time and creates an opportunity for improper
+clock/power management bugs to creep in.
+
+Fixes: 803dd9c77ac3 ("net: phy: avoid suspending twice a PHY")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/net/qcom,ipq8064-mdio.yaml       | 55 +++++++++++++++++++
- 1 file changed, 55 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+Heiner, Andrew,
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
-new file mode 100644
-index 000000000000..d2254a5ff2ad
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: GPL-2.0-or-later
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/qcom,ipq8064-mdio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm ipq806x MDIO bus controller
-+
-+maintainers:
-+  - Ansuel Smith <ansuelsmth@gmail.com>
-+
-+description: |+
-+  The ipq806x soc have a MDIO dedicated controller that is
-+  used to comunicate with the gmac phy conntected.
-+  Child nodes of this MDIO bus controller node are standard
-+  Ethernet PHY device nodes as described in
-+  Documentation/devicetree/bindings/net/phy.txt
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    const: qcom,ipq8064-mdio
-+  reg:
-+    maxItems: 1
-+    description: address and length of the register set for the device
-+  clocks:
-+    maxItems: 1
-+    description: A reference to the clock supplying the MDIO bus controller
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+examples:
-+  - |
-+    mdio0: mdio@37000000 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        compatible = "qcom,ipq8064-mdio", "syscon";
-+        reg = <0x37000000 0x200000>;
-+        resets = <&gcc GMAC_CORE1_RESET>;
-+        reset-names = "stmmaceth";
-+        clocks = <&gcc GMAC_CORE1_CLK>;
-+
-+        switch@10 {
-+            compatible = "qca,qca8337";
-+            ...
-+        }
-+    };
+I did consider adding logic that would check for phydev->suspended in
+phy_suspend() and phy_resume(), but this was really the only place where
+I found it to be problematic.
+
+ drivers/net/phy/phy_device.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 6a5056e0ae77..6131aca79823 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -247,7 +247,7 @@ static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
+ 	 * MDIO bus driver and clock gated at this point.
+ 	 */
+ 	if (!netdev)
+-		return !phydev->suspended;
++		goto out;
+ 
+ 	if (netdev->wol_enabled)
+ 		return false;
+@@ -267,7 +267,8 @@ static bool mdio_bus_phy_may_suspend(struct phy_device *phydev)
+ 	if (device_may_wakeup(&netdev->dev))
+ 		return false;
+ 
+-	return true;
++out:
++	return !phydev->suspended;
+ }
+ 
+ static int mdio_bus_phy_suspend(struct device *dev)
 -- 
-2.25.0
+2.17.1
 
