@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E43166956
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7508016695D
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 21:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729486AbgBTU6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 15:58:08 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:44157 "EHLO
+        id S1729554AbgBTU6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 15:58:24 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:44145 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729178AbgBTU4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 15:56:39 -0500
+        with ESMTP id S1729029AbgBTU4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 15:56:38 -0500
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1j4sra-0007T1-Ix; Thu, 20 Feb 2020 21:56:02 +0100
+        id 1j4sra-0007T2-OQ; Thu, 20 Feb 2020 21:56:02 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id DFF49104085;
-        Thu, 20 Feb 2020 21:56:01 +0100 (CET)
-Message-Id: <20200220204517.863202864@linutronix.de>
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 24B2110408A;
+        Thu, 20 Feb 2020 21:56:02 +0100 (CET)
+Message-Id: <20200220204617.440152945@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Thu, 20 Feb 2020 21:45:17 +0100
+Date:   Thu, 20 Feb 2020 21:45:18 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
@@ -36,7 +36,10 @@ Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [patch V2 00/20] bpf: Make BPF and PREEMPT_RT co-exist
+Subject: [patch V2 01/20] bpf: Enforce preallocation for all instrumentation programs
+References: <20200220204517.863202864@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-Linutronix-Spam-Score: -1.0
 X-Linutronix-Spam-Level: -
 X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
@@ -45,62 +48,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+The assumption that only programs attached to perf NMI events can deadlock
+on memory allocators is wrong. Assume the following simplified callchain:
 
-This is the second version of the BPF/RT patch set which makes both coexist
-nicely. The long explanation can be found in the cover letter of the V1
-submission:
+ kmalloc() from regular non BPF context
+  cache empty
+   freelist empty
+    lock(zone->lock);
+     tracepoint or kprobe
+      BPF()
+       update_elem()
+        lock(bucket)
+          kmalloc()
+           cache empty
+            freelist empty
+             lock(zone->lock);  <- DEADLOCK
 
-  https://lore.kernel.org/r/20200214133917.304937432@linutronix.de
+There are other ways which do not involve locking to create wreckage:
 
-The following changes vs. V1 have been made:
+ kmalloc() from regular non BPF context
+  local_irq_save();
+   ...
+    obj = percpu_slab_first();
+     kprobe()
+      BPF()
+       update_elem()
+        lock(bucket)
+         kmalloc()
+          local_irq_save();
+           ...
+            obj = percpu_slab_first(); <- Same object as above ...
 
-  - New patch to enforce preallocation for all instrumentation type
-    programs
+So preallocation _must_ be enforced for all variants of intrusive
+instrumentation.
 
-  - New patches which make the recursion protection safe against preemption
-    on RT (Mathieu)
-
-  - New patch which removes the unnecessary recursion protection around
-    the rcu_free() invocation
-
-  - Converted macro to inline (Mathieu)
-
-  - Added explanation about the seccomp loop to the changelog (Vinicius)
-
-  - Fixed the explicitely typos (Jakub)
-
-  - Dropped the migrate* stubs patches and merged them into the tip
-    tree. See below.
-
-The series applies on top of:
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched-for-bpf-2020-02-20
-
-This tag contains only the two migrate stub commits on top of 5.6-rc2 and
-can be pulled into BPF. The commits are immutable and will be carried also
-in tip so further changes in this area can be applied.
-
-Thanks,
-
-	tglx
-
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- include/linux/bpf.h          |   38 ++++++++-
- include/linux/filter.h       |   33 ++++++--
- kernel/bpf/hashtab.c         |  172 ++++++++++++++++++++++++++++++-------------
- kernel/bpf/lpm_trie.c        |   12 +--
- kernel/bpf/percpu_freelist.c |   20 ++---
- kernel/bpf/stackmap.c        |   18 +++-
- kernel/bpf/syscall.c         |   27 ++----
- kernel/bpf/trampoline.c      |    9 +-
- kernel/bpf/verifier.c        |   18 ++--
- kernel/events/core.c         |    2 
- kernel/seccomp.c             |    4 -
- kernel/trace/bpf_trace.c     |    6 -
- lib/test_bpf.c               |    4 -
- net/bpf/test_run.c           |    8 +-
- net/core/flow_dissector.c    |    4 -
- net/core/skmsg.c             |    8 --
- net/kcm/kcmsock.c            |    4 -
- 17 files changed, 252 insertions(+), 135 deletions(-)
+V2: New patch
+---
+ kernel/bpf/verifier.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -8144,19 +8144,23 @@ static int check_map_prog_compatibility(
+ 					struct bpf_prog *prog)
+ 
+ {
+-	/* Make sure that BPF_PROG_TYPE_PERF_EVENT programs only use
+-	 * preallocated hash maps, since doing memory allocation
+-	 * in overflow_handler can crash depending on where nmi got
+-	 * triggered.
++	/*
++	 * Make sure that trace type programs only use preallocated hash
++	 * maps. Perf programs obviously can't do memory allocation in NMI
++	 * context and all other types can deadlock on a memory allocator
++	 * lock when a tracepoint/kprobe triggers a BPF program inside a
++	 * lock held region or create inconsistent state when the probe is
++	 * within an interrupts disabled critical region in the memory
++	 * allocator.
+ 	 */
+-	if (prog->type == BPF_PROG_TYPE_PERF_EVENT) {
++	if ((is_tracing_prog_type(prog->type)) {
+ 		if (!check_map_prealloc(map)) {
+-			verbose(env, "perf_event programs can only use preallocated hash map\n");
++			verbose(env, "tracing programs can only use preallocated hash map\n");
+ 			return -EINVAL;
+ 		}
+ 		if (map->inner_map_meta &&
+ 		    !check_map_prealloc(map->inner_map_meta)) {
+-			verbose(env, "perf_event programs can only use preallocated inner hash map\n");
++			verbose(env, "tracing programs can only use preallocated inner hash map\n");
+ 			return -EINVAL;
+ 		}
+ 	}
+
