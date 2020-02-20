@@ -2,165 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D69831653BF
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:48:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A39631653E8
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 01:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbgBTAr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 19:47:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37434 "EHLO mail.kernel.org"
+        id S1727405AbgBTA5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 19:57:18 -0500
+Received: from mga09.intel.com ([134.134.136.24]:33266 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726962AbgBTAr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 19:47:26 -0500
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 793792465D;
-        Thu, 20 Feb 2020 00:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582159645;
-        bh=IoyCu3Rfg36TnWgV/FX467X5fODdY0uZIig5iWzvj2Y=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=dk0aWK516QpktQDynoQnd5IU3diktxkycW0Dz2cwfjo3LG73XXp9yPtJol9GJVjBE
-         mpyTvwkvUQD1H+YXNjkl9x5u6vrrnrEdrVHo6o6gKRjL732msJctzi9ekPggT78WRt
-         eGR9BGUQfx2yzpuFdPqTeoYIAkn68YZU+BfYT720=
-Subject: Re: Kernel 5.5.4 build fail for BPF-selftests with latest LLVM
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        shuah <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-References: <20200219133012.7cb6ac9e@carbon>
- <CAADnVQKQRKtDz0Boy=-cudc4eKGXB-yParGZv6qvYcQR4uMUQQ@mail.gmail.com>
- <20200219180348.40393e28@carbon>
- <CAEf4Bza9imKymHfv_LpSFE=kNB5=ZapTS3SCdeZsDdtrUrUGcg@mail.gmail.com>
- <20200219192854.6b05b807@carbon>
- <CAEf4BzaRAK6-7aCCVOA6hjTevKuxgvZZnHeVgdj_ZWNn8wibYQ@mail.gmail.com>
- <20200219210609.20a097fb@carbon>
- <CAEUSe79Vn8wr=BOh0RzccYij_snZDY=2XGmHmR494wsQBBoo5Q@mail.gmail.com>
- <20200220002748.kpwvlz5xfmjm5fd5@ast-mbp>
-From:   shuah <shuah@kernel.org>
-Message-ID: <4a26e6c6-500e-7b92-1e26-16e1e0233889@kernel.org>
-Date:   Wed, 19 Feb 2020 17:47:23 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727020AbgBTA5R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Feb 2020 19:57:17 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 16:57:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
+   d="scan'208";a="408621338"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.76])
+  by orsmga005.jf.intel.com with ESMTP; 19 Feb 2020 16:57:14 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/12][pull request] 1GbE Intel Wired LAN Driver Updates 2020-02-19
+Date:   Wed, 19 Feb 2020 16:57:01 -0800
+Message-Id: <20200220005713.682605-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200220002748.kpwvlz5xfmjm5fd5@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/19/20 5:27 PM, Alexei Starovoitov wrote:
-> On Wed, Feb 19, 2020 at 03:59:41PM -0600, Daniel Díaz wrote:
->>>
->>> When I download a specific kernel release, how can I know what LLVM
->>> git-hash or version I need (to use BPF-selftests)?
-> 
-> as discussed we're going to add documentation-like file that will
-> list required commits in tools.
-> This will be enforced for future llvm/pahole commits.
-> 
->>> Do you think it is reasonable to require end-users to compile their own
->>> bleeding edge version of LLVM, to use BPF-selftests?
-> 
-> absolutely.
+This series contains updates to e1000e and igc drivers.
 
-+ linux-kselftest@vger.kernel.org
+Ben Dooks adds a missing cpu_to_le64() in the e1000e transmit ring flush
+function.
 
-End-users in this context are users and not necessarily developers.
+Jia-Ju Bai replaces a couple of udelay() with usleep_range() where we
+could sleep while holding a spinlock in e1000e.
 
-> If a developer wants to send a patch they must run all selftests and
-> all of them must pass in their environment.
-> "but I'm adding a tracing feature and don't care about networking tests
-> failing"... is not acceptable.
+Chen Zhou make 2 functions static in igc,
 
-This is a reasonable expectation when a developers sends bpf patches.
+Sasha finishes the legacy power management support in igc by adding
+resume and schedule suspend requests.  Also added register dump
+functionality in the igc driver.  Added device id support for the next
+generation of i219 devices in e1000e.  Fixed a typo in the igc driver
+that referenced a device that is not support in the driver.  Added the
+missing PTP support when suspending now that igc has legacy power
+management support.  Added PCIe error detection, slot reset and resume
+capability in igc.  Added WoL support for igc as well.  Lastly, added a
+code comment to distinguish between interrupt and flag definitions.
 
-> 
->>> I do hope that some end-users of BPF-selftests will be CI-systems.
->>> That also implies that CI-system maintainers need to constantly do
->>> "latest built from sources" of LLVM git-tree to keep up.  Is that a
->>> reasonable requirement when buying a CI-system in the cloud?
-> 
-> "buying CI-system in the cloud" ?
-> If I could buy such system I would pay for it out of my own pocket to save
-> maintainer's and developer's time.
-> 
->> We [1] are end users of kselftests and many other test suites [2]. We
->> run all of our testing on every git-push on linux-stable-rc, mainline,
->> and linux-next -- approximately 1 million tests per week. We have a
->> dedicated engineering team looking after this CI infrastructure and
->> test results, and as such, I can wholeheartedly echo Jesper's
->> sentiment here: We would really like to help kernel maintainers and
->> developers by automatically testing their code in real hardware, but
->> the BPF kselftests are difficult to work with from a CI perspective.
->> We have caught and reported [3] many [4] build [5] failures [6] in the
->> past for libbpf/Perf, but building is just one of the pieces. We are
->> unable to run the entire BPF kselftests because only a part of the
->> code builds, so our testing is very limited there.
->>
->> We hope that this situation can be improved and that our and everyone
->> else's automated testing can help you guys too. For this to work out,
->> we need some help.
-> 
+Vitaly adds device id support for Tiger Lake platforms, which has
+another next generation of i219 device in e1000e.
 
-It would be helpful understand what "help" is in this context.
+The following are changes since commit 7d51a01599d5285fc94fa4fcea10afabfa9ca5a4:
+  net: mvneta: align xdp stats naming scheme to mlx5 driver
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
 
-> I don't understand what kind of help you need. Just install the latest tools.
+Ben Dooks (Codethink) (1):
+  e1000e: fix missing cpu_to_le64 on buffer_addr
 
-What would be helpful is to write bpf tests such that older tests that
-worked on older llvm versions continue to work and with some indication
-on which tests require new bleeding edge tools.
+Chen Zhou (1):
+  igc: make non-global functions static
 
-> Both the latest llvm and the latest pahole are required.
+Jia-Ju Bai (1):
+  net: intel: e1000e: fix possible sleep-in-atomic-context bugs in
+    e1000e_get_hw_semaphore()
 
-It would be helpful if you can elaborate why latest tools are a
-requirement.
+Sasha Neftin (8):
+  igc: Complete to commit Add legacy power management support
+  igc: Add dump options
+  e1000e: Add support for Alder Lake
+  igc: Fix the typo in comment
+  igc: Complete to commit Add basic skeleton for PTP
+  igc: Add pcie error handler support
+  igc: Add WOL support
+  igc: Add comment
 
-> If by 'help' you mean to tweak selftests to skip tests then it's a nack.
-> We have human driven CI. Every developer must run selftests/bpf before
-> emailing the patches. Myself and Daniel run them as well before applying.
-> These manual runs is the only thing that keeps bpf tree going.
-> If selftests get to skip tests humans will miss those errors.
-> When I don't see '0 SKIPPED, 0 FAILED' I go and investigate.
-> Anything but zero is a path to broken kernels.
-> 
-> Imagine the tests would get skipped when pahole is too old.
-> That would mean all of the kernel features from year 2019
-> would get skipped. Is there a point of running such selftests?
-> I think the value is not just zero. The value is negative.
-> Such selftests that run old stuff would give false believe
-> that they do something meaningful.
-> "but CI can do build only tests"... If 'helping' such CI means hurting the
-> key developer/maintainer workflow such CI is on its own.
-> 
+Vitaly Lifshits (1):
+  e1000e: Add support for Tiger Lake device
 
-Skipping tests will be useless. I am with you on that. However,
-figuring out how to maintain some level of backward compatibility
-to run at least older tests and warn users to upgrade would be
-helpful.
+ drivers/net/ethernet/intel/e1000e/ethtool.c  |   2 +
+ drivers/net/ethernet/intel/e1000e/hw.h       |   6 +
+ drivers/net/ethernet/intel/e1000e/ich8lan.c  |   7 +
+ drivers/net/ethernet/intel/e1000e/mac.c      |   4 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c   |   9 +-
+ drivers/net/ethernet/intel/e1000e/ptp.c      |   1 +
+ drivers/net/ethernet/intel/igc/Makefile      |   2 +-
+ drivers/net/ethernet/intel/igc/igc.h         |  10 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |   6 +
+ drivers/net/ethernet/intel/igc/igc_dump.c    | 323 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  61 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    | 144 +++++++++
+ drivers/net/ethernet/intel/igc/igc_ptp.c     |   2 +-
+ drivers/net/ethernet/intel/igc/igc_regs.h    |   5 +
+ 14 files changed, 576 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/igc/igc_dump.c
 
-I suspect currently users are ignoring bpf failures because they
-are unable to keep up with the requirement to install newer tools
-to run the tests. This isn't great either.
+-- 
+2.24.1
 
-Users that care are sharing their pain to see if they can get some
-help or explanation on why new tools are required every so often.
-I don't think everybody understands why. :)
-
-thanks,
--- Shuah
