@@ -2,210 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 410B7166143
+	by mail.lfdr.de (Postfix) with ESMTP id B6459166144
 	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:45:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728554AbgBTPph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 10:45:37 -0500
-Received: from esa3.hc3370-68.iphmx.com ([216.71.145.155]:15412 "EHLO
-        esa3.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728497AbgBTPpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:45:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1582213536;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Hf2jfb9piSiHju6Ntp+FvddJlG4b1AFVZOCjx1jkZss=;
-  b=Qmuf/Xrp4UXYymWQ2h/clPw8NoSfx150gmhKIT068jN/FTbRrbRPLx0x
-   L8KpeFGsfNw8Jx4ghpbSvslWa+CFrIWXHaXD92PdzvnZmK9mZMFOwJqCb
-   xDuyvDx3j0PklYQ/gx9Txo9Won0gY+TvnVZ1HGS0fLNiMIeBlc1/iJa8+
-   M=;
-Authentication-Results: esa3.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
-Received-SPF: None (esa3.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
-  receiver=esa3.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="roger.pau@citrix.com";
-  x-conformance=sidf_compatible
-Received-SPF: Pass (esa3.hc3370-68.iphmx.com: domain of
-  roger.pau@citrix.com designates 162.221.158.21 as permitted
-  sender) identity=mailfrom; client-ip=162.221.158.21;
-  receiver=esa3.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="roger.pau@citrix.com";
-  x-conformance=sidf_compatible; x-record-type="v=spf1";
-  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
-  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
-  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
-  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
-  ip4:168.245.78.127 ~all"
-Received-SPF: None (esa3.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@mail.citrix.com) identity=helo;
-  client-ip=162.221.158.21; receiver=esa3.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="postmaster@mail.citrix.com";
-  x-conformance=sidf_compatible
-IronPort-SDR: ZHDdixRenlbATRuHBknsZwWZz7xs0v0NuFZmuADao7Vcj1Y3cpXV28Hpg3tWGHyzoPqbmMUbpn
- 3RODTM7jZRSgjsyQkTF3P48v+0IReUEWZ/qXIH4g3s1pEH2JtscssVMtFiFSbpoQgfNeWqCMkb
- 0q7nIJ3+Peu47qKTW6NylrFNYzp5kHsYcD7w38iuUDqhFLh6hPmlWZvuKSAUdEpuUKProKqZLy
- qQu+6xMWY0Wg+XDKCXpD16MdjYaSofKLq9wdY7VLTpLCCcAeTgGxcwP8wx9THTPwEkScIK6usq
- D9s=
-X-SBRS: 2.7
-X-MesageID: 12745476
-X-Ironport-Server: esa3.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.70,464,1574139600"; 
-   d="scan'208";a="12745476"
-Date:   Thu, 20 Feb 2020 16:45:07 +0100
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
-CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "hpa@zytor.com" <hpa@zytor.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "fllinden@amaozn.com" <fllinden@amaozn.com>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>
-Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
- PM suspend and hibernation
-Message-ID: <20200220154507.GO4679@Air-de-Roger>
-References: <cover.1581721799.git.anchalag@amazon.com>
- <890c404c585d7790514527f0c021056a7be6e748.1581721799.git.anchalag@amazon.com>
- <20200217100509.GE4679@Air-de-Roger>
- <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200218091611.GN4679@Air-de-Roger>
- <20200219180424.GA17584@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200220083904.GI4679@Air-de-Roger>
- <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
+        id S1728578AbgBTPpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 10:45:39 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:33528 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728558AbgBTPph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:45:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Er5b7C2Vg0sKMqzkkYNh7tRlDo858FST+Onhm5yHUqE=; b=AKMGM5iNZgniau8cfoh3/v3d9
+        Ntg3V1cmIix8ZKpzx9XcjW5DOvtiOzOOf1oEsQsbMx97tHnG0wLjEqMOqEJex/Td/72W22lIqAWOU
+        DLEPaN558TMLEh8Ne0/P6f0kbKYcRxQ6Dcjrez4cQYAY4ArmX2nXQvxp/dSBQyc2YobPBMSi/tETh
+        aMwRqOHwox4hIHl41wlVf2OzotNBp3CPNwj/tCLz/4efZx9rN6lmqf266PKlqSEiyOV+KaYUT/9nD
+        +898bu8nfV31ioSQU+F7jPwNbBdGX730M+pDuHGqjM2le6GH+jKIeyb3Cp1zbKhIJH+KBsFILqZYW
+        7+3tcuAdw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54584)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j4o0z-00046k-AT; Thu, 20 Feb 2020 15:45:25 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j4o0v-0002di-Q3; Thu, 20 Feb 2020 15:45:21 +0000
+Date:   Thu, 20 Feb 2020 15:45:21 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Joel Johnson <mrjoel@lixil.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>, netdev@vger.kernel.org
+Subject: Re: mvneta: comphy regression with SolidRun ClearFog
+Message-ID: <20200220154521.GB25745@shell.armlinux.org.uk>
+References: <af7602ae737cbc21ce7f01318105ae73@lixil.net>
+ <20200219092227.GR25745@shell.armlinux.org.uk>
+ <8099d231594f1785e7149e4c6c604a5c@lixil.net>
+ <20200220101232.GU25745@shell.armlinux.org.uk>
+ <9c61fda15f89a69989c0d80fda33ea47@lixil.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
- AMSPEX02CL01.citrite.net (10.69.22.125)
+In-Reply-To: <9c61fda15f89a69989c0d80fda33ea47@lixil.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 08:54:36AM +0000, Durrant, Paul wrote:
-> > -----Original Message-----
-> > From: Xen-devel <xen-devel-bounces@lists.xenproject.org> On Behalf Of
-> > Roger Pau Monné
-> > Sent: 20 February 2020 08:39
-> > To: Agarwal, Anchal <anchalag@amazon.com>
-> > Cc: Valentin, Eduardo <eduval@amazon.com>; len.brown@intel.com;
-> > peterz@infradead.org; benh@kernel.crashing.org; x86@kernel.org; linux-
-> > mm@kvack.org; pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de;
-> > sstabellini@kernel.org; fllinden@amaozn.com; Kamata, Munehisa
-> > <kamatam@amazon.com>; mingo@redhat.com; xen-devel@lists.xenproject.org;
-> > Singh, Balbir <sblbir@amazon.com>; axboe@kernel.dk;
-> > konrad.wilk@oracle.com; bp@alien8.de; boris.ostrovsky@oracle.com;
-> > jgross@suse.com; netdev@vger.kernel.org; linux-pm@vger.kernel.org;
-> > rjw@rjwysocki.net; linux-kernel@vger.kernel.org; vkuznets@redhat.com;
-> > davem@davemloft.net; Woodhouse, David <dwmw@amazon.co.uk>
-> > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks
-> > for PM suspend and hibernation
+On Thu, Feb 20, 2020 at 08:34:07AM -0700, Joel Johnson wrote:
+> On 2020-02-20 03:12, Russell King - ARM Linux admin wrote:
+> > On Wed, Feb 19, 2020 at 06:49:51AM -0700, Joel Johnson wrote:
+> > > On 2020-02-19 02:22, Russell King - ARM Linux admin wrote:
+> > > > On Tue, Feb 18, 2020 at 10:14:48PM -0700, Joel Johnson wrote:
+> > > > Does debian have support for the comphy enabled in their kernel,
+> > > > which is controlled by CONFIG_PHY_MVEBU_A38X_COMPHY ?
+> > > 
+> > > Well, doh! I stared at the patch series for way to long, but the added
+> > > Kconfig symbol failed to register mentally somehow. I had been using
+> > > the
+> > > last known good Debian config with make olddefconfig, but it obviously
+> > > wasn't included in earlier configs and not enabled by default.
+> > > 
+> > > Many thanks to you and Willy Tarreau for pointing out my glaring
+> > > omission!
 > > 
-> > Thanks for this work, please see below.
-> > 
-> > On Wed, Feb 19, 2020 at 06:04:24PM +0000, Anchal Agarwal wrote:
-> > > On Tue, Feb 18, 2020 at 10:16:11AM +0100, Roger Pau Monné wrote:
-> > > > On Mon, Feb 17, 2020 at 11:05:53PM +0000, Anchal Agarwal wrote:
-> > > > > On Mon, Feb 17, 2020 at 11:05:09AM +0100, Roger Pau Monné wrote:
-> > > > > > On Fri, Feb 14, 2020 at 11:25:34PM +0000, Anchal Agarwal wrote:
-> > > > > Quiescing the queue seemed a better option here as we want to make
-> > sure ongoing
-> > > > > requests dispatches are totally drained.
-> > > > > I should accept that some of these notion is borrowed from how nvme
-> > freeze/unfreeze
-> > > > > is done although its not apple to apple comparison.
-> > > >
-> > > > That's fine, but I would still like to requests that you use the same
-> > > > logic (as much as possible) for both the Xen and the PM initiated
-> > > > suspension.
-> > > >
-> > > > So you either apply this freeze/unfreeze to the Xen suspension (and
-> > > > drop the re-issuing of requests on resume) or adapt the same approach
-> > > > as the Xen initiated suspension. Keeping two completely different
-> > > > approaches to suspension / resume on blkfront is not suitable long
-> > > > term.
-> > > >
-> > > I agree with you on overhaul of xen suspend/resume wrt blkfront is a
-> > good
-> > > idea however, IMO that is a work for future and this patch series should
-> > > not be blocked for it. What do you think?
-> > 
-> > It's not so much that I think an overhaul of suspend/resume in
-> > blkfront is needed, it's just that I don't want to have two completely
-> > different suspend/resume paths inside blkfront.
-> > 
-> > So from my PoV I think the right solution is to either use the same
-> > code (as much as possible) as it's currently used by Xen initiated
-> > suspend/resume, or to also switch Xen initiated suspension to use the
-> > newly introduced code.
-> > 
-> > Having two different approaches to suspend/resume in the same driver
-> > is a recipe for disaster IMO: it adds complexity by forcing developers
-> > to take into account two different suspend/resume approaches when
-> > there's no need for it.
+> > Thanks for letting us know that you've fixed it now.
 > 
-> I disagree. S3 or S4 suspend/resume (or perhaps we should call them power state transitions to avoid confusion) are quite different from Xen suspend/resume.
-> Power state transitions ought to be, and indeed are, visible to the software running inside the guest. Applications, as well as drivers, can receive notification and take whatever action they deem appropriate.
-> Xen suspend/resume OTOH is used when a guest is migrated and the code should go to all lengths possible to make any software running inside the guest (other than Xen specific enlightened code, such as PV drivers) completely unaware that anything has actually happened.
+> Sure thing, I've submitted a Debian patch, and was pointed to an existing
+> Debian bug with the same issue and patch, so hopefully that will get
+> incorporated soon. I'll also keep an eye on OpenWRT when they move to an
+> affected kernel version to make sure it's included.
+> 
+> One lingering question that wasn't clear to me is the apparent inconsistency
+> in default enablement for PHYs in drivers/phy/marvell/Kconfig. Is there a
+> technical reason why PHY_MVEBU_A3700_COMPHY defaults to 'y' but
+> PHY_MVEBU_A38X_COMPHY (and PHY_MVEBU_CP110_COMPHY) default to 'n', or is it
+> just an artifact of being added at different times? Similarly, is there a
+> reason that PHY_MVEBU_A3700_COMPHY and PHY_MVEBU_A3700_UTMI default to 'y'
+> instead of 'm' for all ARCH_MVEBU builds? In my testing, building with
+> PHY_MVEBU_A38X_COMPHY as a module still seemed to autoload the module as
+> needed on boot, so modules for different platforms seems off-hand more
+> lightweight that building the driver in for all MVEBU boards which don't use
+> all drivers.
+> 
+> With the current defaults, it seems like PHY_MVEBU_CP110_COMPHY may be
+> affected in Debian the same way as PHY_MVEBU_A38X_COMPHY, but I don't have
+> available Armada 7K/8K hardware yet to confirm.
 
-So from what you say above PM state transitions are notified to all
-drivers, and Xen suspend/resume is only notified to PV drivers, and
-here we are speaking about blkfront which is a PV driver, and should
-get notified in both cases. So I'm unsure why the same (or at least
-very similar) approach can't be used in both cases.
+There is no clear answer to whether should something default to Y,
+M or N - different people have different ideas and different levels
+of frustration with which-ever are picked.
 
-The suspend/resume approach proposed by this patch is completely
-different than the one used by a xenbus initiated suspend/resume, and
-I don't see a technical reason that warrants this difference.
+The root problem is that there are way too many configuration
+options that it's become quite time consuming to put together the
+proper kernel configuration for any particular platform, and things
+get even more interesting when it comes to a kernel supporting
+multiple platforms, where one may wish to avoid having a huge
+kernel image, but want to use modules for the platform specific
+bits.
 
-I'm not saying that the approach used here is wrong, it's just that I
-don't see the point in having two different ways to do suspend/resume
-in the same driver, unless there's a technical reason for it, which I
-don't think has been provided.
+I wonder whether we ought to be considering something like:
 
-I would be fine with switching xenbus initiated suspend/resume to also
-use the approach proposed here: freeze the queues and drain the shared
-rings before suspending.
+menuconfig ARCH_MVEBU_DEFAULTS
+	tristate "Marvell Engineering Business Unit (MVEBU) SoCs"
 
-> So, whilst it may be possible to use common routines to, for example, re-establish PV frontend/backend communication, PV frontend code should be acutely aware of the circumstances they are operating in. I can cite example code in the Windows PV driver, which have supported guest S3/S4 power state transitions since day 1.
+config ARCH_MVEBU
+	def_bool y if ARCH_MVEBU_DEFAULTS
+	...
 
-Hm, please bear with me, as I'm not sure I fully understand. Why isn't
-the current suspend/resume logic suitable for PM transitions?
+and then have mvebu drivers default to the state of
+ARCH_MVEBU_DEFAULTS.  That means, if you want to build the
+platform with modular drivers, or built-in drivers there's one top
+level config that will default all the appropriate options that way,
+and any new drivers added later can pick up on the state of that
+option.
 
-As said above, I'm happy to switch xenbus initiated suspend/resume to
-use the logic in this patch, but unless there's a technical reason for
-it I don't see why blkfront should have two completely different
-approaches to suspend/resume depending on whether it's a PM or a
-xenbus state change.
+Just a thought.
 
-Thanks, Roger.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
