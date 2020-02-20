@@ -2,176 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F31B1666B5
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A20D41666D2
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 20:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728646AbgBTS4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 13:56:37 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:40404 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728315AbgBTS4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:56:37 -0500
-Received: by mail-ed1-f65.google.com with SMTP id p3so34983949edx.7
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 10:56:35 -0800 (PST)
+        id S1728813AbgBTTFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 14:05:21 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:35150 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728383AbgBTTFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 14:05:21 -0500
+Received: by mail-lj1-f193.google.com with SMTP id q8so5384696ljb.2;
+        Thu, 20 Feb 2020 11:05:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rDypTbH+9vLwcwTJ8MhBs87yG6i/YUKCou/2+LcnIUE=;
-        b=ellr/JKeIG8traXtVc3Rb0aRHeGEQWDw89HJaHXn8jrk8Xv+CZxW9be7vqLlzR/2K8
-         yBpNte3xEv6c6X3PWO/efQjQOOuYY0dWKAnONNpgBHBRWut+92sbuHSFanXDvBDiEmwR
-         +pH86d46fev19lMW3cFBki45ixdvQFoMSisdFikeMmi9qc2BCe1kkyvWJlrSlnh8SDwn
-         OMeTK2p1+i0ZsqbhPQSWS/07FzzfVxNZPUGVI5isMWzlhjUA1wvQ7P7143sNC2Jln1g9
-         olJvXD3XcVJ7FUrPYM1Ebu8Xp5ivErMC1D59Y0GZzJQ0bDfI8hTP6ozTR6WEuQkl8ZxU
-         itOA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R9raQUjDDhmLv9P7ko9b+c9Z7E107qXdSV56UnvmDfQ=;
+        b=rFvcUUrDGcvFDa65GDNyAy26T83xiiD3ab1ytYaVrmtfFSu8YaQ+csr8AWbyD9TyLs
+         lguy+6fmt4lug+vTr53Nq0sgG0tyYxpQJaZ7ujn0ChG3oe+kgYczcLZyI5Wfb2Px9K93
+         oN6UZ6jh1AX2xN9LTwOi0cbmMPcIEDvw4yQClbgQorzQRUEwEdE7u89dUs+p+i/3p7iY
+         27Sr60qP8D/bmX3SuE2rUloK4LN+4chitpBLPdh58FlbG1EnvLatvtDBcEbfDgdu5YT5
+         y1kOaefdt2tojRf038PEMT0/rgve7PZryjr1Yz05tssg0pnoowFDeelgkMLxKgJcF/Ae
+         S7DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rDypTbH+9vLwcwTJ8MhBs87yG6i/YUKCou/2+LcnIUE=;
-        b=YY5KF6fG+GuZ2bgMVRBChOQDsLYtX29ZE0bwyqVn8SVUrgp2Go4uJbdm4p2D3fq/SE
-         8DMLl4DUPFM8Q1TcSMjp8sDg7vW/1mYVd6FOb4NQ1TToTmuyy/gQG788MdXo8RcS4C/j
-         YYTo4UHm3oN/yxpb/0Sau+18SLkNdx4a3xSUlx5p/T2KfxwVjUItR4Shhg5mZsXsmhUg
-         ebQr5tLyqD4OQE+Km+4nlPz8hT9pWDkMJoWZS+GuhXFpDQzlzVvcNdlkMxclN+Rv/JlI
-         +B+hwX8EtZq3eX7JfBlsON3M8Xnqfpj3Zcqu3YDGSkPMxUbLskmFnv0Y6HDJmmQmQx2T
-         JERg==
-X-Gm-Message-State: APjAAAUC0e2Tks53fxnrAxS0rLHr/d3EZ7gYUoWR1txjlwSr56bRuKUm
-        ADntaylk+M1B0j3iMmoGrL9HpnLa
-X-Google-Smtp-Source: APXvYqw3K5E79w1u4acQNokgfzQwVPcCYyDTuHGIt3hWVC/hqaAO4+GbT7Rxd0srBd9rafd/M+hpKw==
-X-Received: by 2002:a17:906:3ce2:: with SMTP id d2mr31099523ejh.292.1582224994488;
-        Thu, 20 Feb 2020 10:56:34 -0800 (PST)
-Received: from [10.67.49.41] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x10sm25082ejf.77.2020.02.20.10.56.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Feb 2020 10:56:33 -0800 (PST)
-Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
-References: <20200218114515.GL18808@shell.armlinux.org.uk>
- <e2b53d14-7258-0137-79bc-b0a21ccc7b8f@gmail.com>
- <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
- <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
- <20200219231528.GS25745@shell.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
-Date:   Thu, 20 Feb 2020 10:56:17 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R9raQUjDDhmLv9P7ko9b+c9Z7E107qXdSV56UnvmDfQ=;
+        b=DIOVLfHKgPPcfz/pUSUOjl2uENBfV5mywEavd04tHoRmmYS+SYEFro+XSlffgNXjZ9
+         nBOfzIWesF9jl+YzhTGBtD+OtOPgjETUKAtwrJ8SytcsBTSCzd2Fgqi1D7fTzh1DU5WH
+         HKiAcQ2UIK8IuLPLTSe/0dL186qMfuvw7bnqICNGTvQwopeRv6CUTAW78s5xTqZGTTI4
+         ifiersUl8Q4ZlYsplGDiGq7rjNWoFj6Rz6PB1xniP1UA4qeC/Z8DLnzwFkC4aslPX1qP
+         Kt+YanHvqfr666/wqxDTTVmY/JYwVLoR6kt7BSvE1Ap7OTzSSM68x1ANsHYyNmjjHJQ/
+         YD5A==
+X-Gm-Message-State: APjAAAU6VBOqIezs124ROknAY6Qi7DxRIniEx+lVVySHJ7umWyU+mPLo
+        39kSMRtTDbLbmJj9JYi8lwQtIwXd0+RZuJIEEGw=
+X-Google-Smtp-Source: APXvYqzR8vtIr8uBPqaGAKGtUEgLts5LL/+NZ+o29/gqGp3vSEQFUktE+us4AJmewsw8Kw0RYFBfyNgqRhTNKn2UHgE=
+X-Received: by 2002:a2e:a404:: with SMTP id p4mr20331638ljn.234.1582225518868;
+ Thu, 20 Feb 2020 11:05:18 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200219231528.GS25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200220062635.1497872-1-andriin@fb.com>
+In-Reply-To: <20200220062635.1497872-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 20 Feb 2020 11:05:07 -0800
+Message-ID: <CAADnVQJdONoTQmu8WugEXLsiZOzbb9Kiw-Q9ZVC+pDiSUufTOQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: relax check whether BTF is mandatory
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Julia Kartseva <hex@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/19/20 3:15 PM, Russell King - ARM Linux admin wrote:
-> On Wed, Feb 19, 2020 at 11:18:17AM -0800, Florian Fainelli wrote:
->> On 2/19/20 10:52 AM, Vladimir Oltean wrote:
->>> On Wed, 19 Feb 2020 at 02:02, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>>>
->>>> Why not just revert 2ea7a679ca2abd251c1ec03f20508619707e1749 ("net: dsa:
->>>> Don't add vlans when vlan filtering is disabled")? If a driver wants to
->>>> veto the programming of VLANs while it has ports enslaved to a bridge
->>>> that does not have VLAN filtering, it should have enough information to
->>>> not do that operation.
->>>> --
->>>> Florian
->>>
->>> It would be worth mentioning that for sja1105 and hypothetical other
->>> users of DSA_TAG_PROTO_8021Q, DSA doing that automatically was
->>> helpful. VLAN manipulations are still being done from tag_8021q.c for
->>> the purpose of DSA tagging, but the fact that the VLAN EtherType is
->>> not 0x8100 means that from the perspective of real VLAN traffic, the
->>> switch is VLAN unaware. DSA was the easiest place to disseminate
->>> between VLAN requests of its own and VLAN requests coming from
->>> switchdev.
->>> Without that logic in DSA, a vlan-unaware bridge would be able to
->>> destroy the configuration done for source port decoding.
->>> Just saying - with enough logic in .port_vlan_prepare, I should still
->>> be able to accept only what's whitelisted to work for tagging, and
->>> then it won't matter who issued that VLAN command.
->>
->> I suppose I am fine with Russell's approach, but maybe its meaning
->> should be reversed, that is, you get VLAN objects notifications by
->> default for a  VLAN unaware bridge and if you do set a specific
->> dsa_switch flag, then you do not get those.
-> 
-> If we reverse it, I'll need someone to tell me which DSA switches
-> should not get the vlan object notifications.  Maybe also in that
-> case, we should deny the ability to toggle the state of
-> vlan_filtering as well?
-> 
+On Wed, Feb 19, 2020 at 10:27 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> If BPF program is using BTF-defined maps, BTF is required only for
+> libbpf itself to process map definitions. If after that BTF fails to
+> be loaded into kernel (e.g., if it doesn't support BTF at all), this
+> shouldn't prevent valid BPF program from loading. Existing
+> retry-without-BTF logic for creating maps will succeed to create such
+> maps without any problems. So, presence of .maps section shouldn't make
+> BTF required for kernel. Update the check accordingly.
+>
+> Validated by ensuring simple BPF program with BTF-defined maps is still
+> loaded on old kernel without BTF support and map is correctly parsed and
+> created.
+>
+> Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
+> Reported-by: Julia Kartseva <hex@fb.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Let's get your patch series merged. If you re-spin while addressing
-Vivien's comment not to use the term "vtu", I think I would be fine with
-the current approach of having to go after each driver and enabling them
-where necessary.
-
-Thanks
--- 
-Florian
+Applied. Thanks
