@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D921165832
+	by mail.lfdr.de (Postfix) with ESMTP id D7865165833
 	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 08:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgBTHIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 02:08:34 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:45405 "EHLO
+        id S1726893AbgBTHIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 02:08:37 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36587 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726856AbgBTHIe (ORCPT
+        by vger.kernel.org with ESMTP id S1726880AbgBTHIe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 02:08:34 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 40EA221ACE;
-        Thu, 20 Feb 2020 02:08:33 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 731D62108A;
+        Thu, 20 Feb 2020 02:08:34 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:33 -0500
+  by compute3.internal (MEProxy); Thu, 20 Feb 2020 02:08:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=C+CN+mii/6+Ixf7I/k9EsbrmltvlaDD2duFR75TACVE=; b=aCBpArhp
-        QWcL0H8/287t8wF/OA+EmYCZAor/YvYsKzkZ5a+BZGxMM0OqlotooJvibfRgaxz4
-        25owxnpp8USZ+a9gn+WiSfsAZbF/v7HUeP1uy4QBt+KkLzjeZKlFEG3cRyK/PZ6L
-        R1gKlrdUHWvgJ6B96LvWxJQEt4FQ4eQy8vBgHfgHNvgLjRZMXKe+sdKzVcWd+hMs
-        //uQT9P505SjiOczeLdxo3GKS4qrx9W2SO8e4OAW9YyvSpkFfn287NBP4OlLCFgw
-        x38fJdZ/lfPm3x/FtXOpYv+YOdMpYwSJGhyOuxwQIBRhX9JSOinmI3gtTz6p06k8
-        GjzvBc1fKI+EZw==
-X-ME-Sender: <xms:cTBOXmvr8Lry6_OvON7mUtp4YFFMRfmTEhiSQizOQO1FJRtb5bBBVQ>
+        fm2; bh=3g1163+pM9j3m2WhWq2tV1uy+QzPKysqXSryo7xeq1Y=; b=qEiri9HA
+        sQcBiPuaxQDoR2S7w2gVaf5x9wl8aaPlR8xwBsIDHojzMHWBeodE8FPNSVWFmKvU
+        5M2h/jXGMpv83V7LVMPDtLSjXPWwxwiEwXu1ITdtCzf3+TnbSf33DEadgSNcK13r
+        8GOgWKyYSfDHbdpDx47MZqHzTORoZh0uXLtwDTnVZDgu31W48oAaiKk9S1UuZ91B
+        xkDLYhTx3WiAfjjDkrGpY3mA6dSZqHHlIdBy1bVHo+DYm9RK5I0rTB5ELiA5Hok4
+        JH1PUfXatu7mWKrvuMRUWv72D08tFj/Zq6ulU62kbDDX8BMmT6gbNeOuhLvzlVdv
+        pbqqdAMeHqlL1Q==
+X-ME-Sender: <xms:cjBOXh2vKq0QI76L6hmKDEMr-9XgYNdyrLBoOVF-BzqS9tEYNx7Yxg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkedugddutdegucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucevlhhushhtvg
     hrufhiiigvpeelnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
     tghhrdhorhhg
-X-ME-Proxy: <xmx:cTBOXrp6D5qxaiZUvnQp9kNL26duCliQ0ud1muwMPhbdG4pNIlgH7Q>
-    <xmx:cTBOXkbCNUSOyikePZxEh4uCcJjD7HL2JTE-skm3R5ZP0DuA0Pussg>
-    <xmx:cTBOXsySdnpKBaaMwN0FaJTXw98liL76dSABgcdcE_acPig9JynENg>
-    <xmx:cTBOXnvAk_QtCld4lQkp0wZHxkNC6G-ExKV-G6YLjCS3n-9xBs1dHw>
+X-ME-Proxy: <xmx:cjBOXkvp2OWcS_UnImh_Sd2JjT_PSExj3RuOygrTJToPxB8Scdrd3A>
+    <xmx:cjBOXoQcOX6LahIDg-gfbBA7xqc39qmlaMSQFkUPexGRbderzta0JQ>
+    <xmx:cjBOXotSLa35ZgHxQV5ZWw54S2polQV6qIToc3gDZ_1jKu1bWX44bg>
+    <xmx:cjBOXueJMqEB3DBb4qYYK1CMHITVgoA_ZREOfdkMBiLWULTqilByhA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 283743060C21;
-        Thu, 20 Feb 2020 02:08:32 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 58D603060C28;
+        Thu, 20 Feb 2020 02:08:33 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 11/15] mlxsw: spectrum_router: Prepare function for router lock introduction
-Date:   Thu, 20 Feb 2020 09:07:56 +0200
-Message-Id: <20200220070800.364235-12-idosch@idosch.org>
+Subject: [PATCH net-next 12/15] mlxsw: spectrum_router: Prepare function for router lock introduction
+Date:   Thu, 20 Feb 2020 09:07:57 +0200
+Message-Id: <20200220070800.364235-13-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200220070800.364235-1-idosch@idosch.org>
 References: <20200220070800.364235-1-idosch@idosch.org>
@@ -61,13 +61,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-The function removes the FDB entry that directs the macvlan's MAC to the
-router port. It is called from both the netdev notifier block and the
-inetaddr notifier block that will soon hold the router lock.
+The function de-associates the port-vlan from its router interface
+(RIF). It is called both from the netdev notifier block and the inetaddr
+notifier block that will soon hold the router lock.
 
-Make sure that only the netdev notifier calls the exported version, so
-that is will take the router lock, which will already be held by the
-inetaddr notifier.
+Make sure that router code calls the internal version, as it will
+already have the router lock held when the function is called.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
@@ -76,39 +75,39 @@ Acked-by: Jiri Pirko <jiri@mellanox.com>
  1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 000aa68e7e31..e18d54ad6d87 100644
+index e18d54ad6d87..5c4b28a81b07 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -6873,8 +6873,8 @@ static int mlxsw_sp_rif_macvlan_add(struct mlxsw_sp *mlxsw_sp,
+@@ -6656,8 +6656,8 @@ mlxsw_sp_port_vlan_router_join(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan,
  	return err;
  }
  
--void mlxsw_sp_rif_macvlan_del(struct mlxsw_sp *mlxsw_sp,
--			      const struct net_device *macvlan_dev)
-+static void __mlxsw_sp_rif_macvlan_del(struct mlxsw_sp *mlxsw_sp,
-+				       const struct net_device *macvlan_dev)
+-void
+-mlxsw_sp_port_vlan_router_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
++static void
++__mlxsw_sp_port_vlan_router_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
  {
- 	struct macvlan_dev *vlan = netdev_priv(macvlan_dev);
- 	struct mlxsw_sp_rif *rif;
-@@ -6891,6 +6891,12 @@ void mlxsw_sp_rif_macvlan_del(struct mlxsw_sp *mlxsw_sp,
- 			    mlxsw_sp_fid_index(rif->fid), false);
+ 	struct mlxsw_sp_port *mlxsw_sp_port = mlxsw_sp_port_vlan->mlxsw_sp_port;
+ 	struct mlxsw_sp_fid *fid = mlxsw_sp_port_vlan->fid;
+@@ -6675,6 +6675,12 @@ mlxsw_sp_port_vlan_router_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
+ 	mlxsw_sp_rif_subport_put(rif);
  }
  
-+void mlxsw_sp_rif_macvlan_del(struct mlxsw_sp *mlxsw_sp,
-+			      const struct net_device *macvlan_dev)
++void
++mlxsw_sp_port_vlan_router_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
 +{
-+	__mlxsw_sp_rif_macvlan_del(mlxsw_sp, macvlan_dev);
++	__mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port_vlan);
 +}
 +
- static int mlxsw_sp_inetaddr_macvlan_event(struct mlxsw_sp *mlxsw_sp,
- 					   struct net_device *macvlan_dev,
- 					   unsigned long event,
-@@ -6900,7 +6906,7 @@ static int mlxsw_sp_inetaddr_macvlan_event(struct mlxsw_sp *mlxsw_sp,
- 	case NETDEV_UP:
- 		return mlxsw_sp_rif_macvlan_add(mlxsw_sp, macvlan_dev, extack);
+ static int mlxsw_sp_inetaddr_port_vlan_event(struct net_device *l3_dev,
+ 					     struct net_device *port_dev,
+ 					     unsigned long event, u16 vid,
+@@ -6692,7 +6698,7 @@ static int mlxsw_sp_inetaddr_port_vlan_event(struct net_device *l3_dev,
+ 		return mlxsw_sp_port_vlan_router_join(mlxsw_sp_port_vlan,
+ 						      l3_dev, extack);
  	case NETDEV_DOWN:
--		mlxsw_sp_rif_macvlan_del(mlxsw_sp, macvlan_dev);
-+		__mlxsw_sp_rif_macvlan_del(mlxsw_sp, macvlan_dev);
+-		mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port_vlan);
++		__mlxsw_sp_port_vlan_router_leave(mlxsw_sp_port_vlan);
  		break;
  	}
  
