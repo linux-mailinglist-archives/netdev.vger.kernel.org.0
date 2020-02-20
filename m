@@ -2,201 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB77E1666B0
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:55:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F31B1666B5
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 19:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728907AbgBTSze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 13:55:34 -0500
-Received: from mga01.intel.com ([192.55.52.88]:13322 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728315AbgBTSzd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 13:55:33 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2020 10:55:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,465,1574150400"; 
-   d="scan'208";a="259370585"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Feb 2020 10:55:31 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 20 Feb 2020 10:55:32 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 20 Feb 2020 10:55:31 -0800
-Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 20 Feb 2020 10:55:31 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 20 Feb 2020 10:55:30 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M4h/XO1qLdcXmKFRFLRbuTkhl1nHLIm8T+SHI/CO1yMQ4em9P7hOURaNyCZZj4M9UAjoXHuhm8fS5EIEj84Z3ZH5+66gB9HeSR3YGC1XKY72MqKr+5H0scL722t8SEsWKQvUM04oxQkBaEHkNvFiB9/48I3y4HvtbaLtj7EdmpYpgV2TJ+4pIYg99NCUkC8BodTk8/HaK5uutQvzQrYOnIkv5M5a+pg8hK8QnfVxrPhhLCoNqM9PjgHYKdFv8RHaYxdVJydINCHYAdN59YOFeAl/sx8lGVzklt63xZPSYqxLr936GI7igjfierLPTe+30A+mkTKujAoA/Rwht1o1Ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TgfqOz52FM+Vn2K4a+57HTjuQuSBWTAUOovC4F4rdT8=;
- b=UW9VFXeS79vPAQBaZYVIqzezeEbXC55s1AfWuCAyXsSzYMPfTa0NB6OhnvCiMY3uH9iqnc784Dr3v/5fvtze+vkAfzt0AqWP+R+M5GES6o1FERN8fhpNsII1HWRaPBk9bxqh9rMqY6AjMw/Db/gQaEHFiTu1Ur+/fzJhk98uiMyBxq2UMoEI/xC5O6AJgU3PO0pldzI7OFoT/+Uel3PXFRoC6W8tVTa22iClxuZ5hzB10cb3JUcU8MQHhgGnc0tU01hQVcN68jvdLBkhhMQd0xCw1KEAoX/ECVROks9TtLskinToEwcQqShxDXafLXBV7kwOn8pAV4zzQ576E/LAMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TgfqOz52FM+Vn2K4a+57HTjuQuSBWTAUOovC4F4rdT8=;
- b=jR8xJ9/PW19ciiEvL/VX4qJaq55JORBLkrn0ClAy4/BS0H/eHmCROkSfs27mGggy005dgJCTw0IZwC+rM0Zlr5rBgBWbuMKiePS0cqKP7oUS8ulXrtc9UHbTIQZ5bdjxndeBNJ2UJM+4HE13oBTENw+D57E8d4Cm2y8I7aTftnQ=
-Received: from DM6PR11MB2841.namprd11.prod.outlook.com (20.176.100.32) by
- DM6PR11MB3033.namprd11.prod.outlook.com (20.177.218.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.23; Thu, 20 Feb 2020 18:55:28 +0000
-Received: from DM6PR11MB2841.namprd11.prod.outlook.com
- ([fe80::f01a:b54b:1bc2:5a80]) by DM6PR11MB2841.namprd11.prod.outlook.com
- ([fe80::f01a:b54b:1bc2:5a80%2]) with mapi id 15.20.2750.016; Thu, 20 Feb 2020
- 18:55:28 +0000
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        "yishaih@mellanox.com" <yishaih@mellanox.com>,
-        "leonro@mellanox.com" <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: RE: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
-Thread-Topic: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHV4di3ExrbLjUlh0qs0H324/35rqga7W8AgAA7ToCAAALRAIAJTjgg
-Date:   Thu, 20 Feb 2020 18:55:28 +0000
-Message-ID: <DM6PR11MB2841DDF7EEA187B368FFDE53DD130@DM6PR11MB2841.namprd11.prod.outlook.com>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
- <20200212191424.1715577-2-jeffrey.t.kirsher@intel.com>
- <20200214170240.GA4034785@kroah.com> <20200214203455.GX31668@ziepe.ca>
- <20200214204500.GC4086224@kroah.com>
-In-Reply-To: <20200214204500.GC4086224@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODgwZjY2ZDYtYmE1ZS00ZTNhLWE2YjAtYmNlNDZmMjc5ZDkxIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiZkYrY1hhNUo5Qm9vdUlcLzZVNG85MHdobXlNaHpITEtIRjRtY2ZyYU5jcmdJalZrVFlRbmJmS2N3RzRSc0tVQ3EifQ==
-x-ctpclassification: CTP_NT
-dlp-reaction: no-action
-dlp-version: 11.2.0.6
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=david.m.ertman@intel.com; 
-x-originating-ip: [134.134.136.217]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4e1616b0-badd-4087-9340-08d7b63673f7
-x-ms-traffictypediagnostic: DM6PR11MB3033:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB303315BD7353419A5B24E059DD130@DM6PR11MB3033.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 031996B7EF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(346002)(366004)(376002)(39860400002)(136003)(199004)(189003)(8936002)(71200400001)(53546011)(7696005)(6506007)(8676002)(81156014)(81166006)(66476007)(66556008)(66946007)(66446008)(316002)(186003)(64756008)(26005)(2906002)(76116006)(54906003)(86362001)(55016002)(9686003)(110136005)(33656002)(478600001)(107886003)(52536014)(5660300002)(4326008)(7416002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR11MB3033;H:DM6PR11MB2841.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UMXbQH4+9QwEyuA3fNJyO6ho5zkeuWpgJEByycCKMZdGQOWMxkexMZ5+Y94uEAYhpKkYAfz3XOmsuiYoOvoRj1URaoofdmFYIB9qcKE/tKIpkGlbNDlq/bCvydJ3fMTXGiAlExTHCXSeZeLwGHLu/dlTNRc/rAZDhXXUHQbAyQFLrseDHXb/FQgUKhn7ELpTdwetCGbBH0BPTKpa4LqIUOclB8OdFi/jAvvDHeGzHD9b1tUGSxI+5qHeytWcJ+qRg1SEornIwwP1HrisL59TbbDWvwoyLpH6GjwQoU1kcfmwxb6kTgcU0bAIZaL8EXPZVwQDfG/fmN5YKedsrC2OWULpxF6dGlfbQ4z5UrcMPeTQIL6+h1Ncx0gPJw5h29LPEGpHM2GmQd9v/1/U1AYq2b6QeO5o3SsaojVnmIIiyHgv0JTJWrb10mHgsTVPZMOt
-x-ms-exchange-antispam-messagedata: 8KRoGZwzlr/6fu/Td/N7h4NHPCKAyUTvgAckIXL1qprATTfI6w+Mr9ESgl5bxKvEruXQLkWp6OWZI87sy3w7A4EN+1JOZyP9nz4CRW3oLahDCoP8dP+S8djLFfzYOuZmLiYPKrisfP4dvwl4RbPzFQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728646AbgBTS4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 13:56:37 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:40404 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728315AbgBTS4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 13:56:37 -0500
+Received: by mail-ed1-f65.google.com with SMTP id p3so34983949edx.7
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 10:56:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rDypTbH+9vLwcwTJ8MhBs87yG6i/YUKCou/2+LcnIUE=;
+        b=ellr/JKeIG8traXtVc3Rb0aRHeGEQWDw89HJaHXn8jrk8Xv+CZxW9be7vqLlzR/2K8
+         yBpNte3xEv6c6X3PWO/efQjQOOuYY0dWKAnONNpgBHBRWut+92sbuHSFanXDvBDiEmwR
+         +pH86d46fev19lMW3cFBki45ixdvQFoMSisdFikeMmi9qc2BCe1kkyvWJlrSlnh8SDwn
+         OMeTK2p1+i0ZsqbhPQSWS/07FzzfVxNZPUGVI5isMWzlhjUA1wvQ7P7143sNC2Jln1g9
+         olJvXD3XcVJ7FUrPYM1Ebu8Xp5ivErMC1D59Y0GZzJQ0bDfI8hTP6ozTR6WEuQkl8ZxU
+         itOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=rDypTbH+9vLwcwTJ8MhBs87yG6i/YUKCou/2+LcnIUE=;
+        b=YY5KF6fG+GuZ2bgMVRBChOQDsLYtX29ZE0bwyqVn8SVUrgp2Go4uJbdm4p2D3fq/SE
+         8DMLl4DUPFM8Q1TcSMjp8sDg7vW/1mYVd6FOb4NQ1TToTmuyy/gQG788MdXo8RcS4C/j
+         YYTo4UHm3oN/yxpb/0Sau+18SLkNdx4a3xSUlx5p/T2KfxwVjUItR4Shhg5mZsXsmhUg
+         ebQr5tLyqD4OQE+Km+4nlPz8hT9pWDkMJoWZS+GuhXFpDQzlzVvcNdlkMxclN+Rv/JlI
+         +B+hwX8EtZq3eX7JfBlsON3M8Xnqfpj3Zcqu3YDGSkPMxUbLskmFnv0Y6HDJmmQmQx2T
+         JERg==
+X-Gm-Message-State: APjAAAUC0e2Tks53fxnrAxS0rLHr/d3EZ7gYUoWR1txjlwSr56bRuKUm
+        ADntaylk+M1B0j3iMmoGrL9HpnLa
+X-Google-Smtp-Source: APXvYqw3K5E79w1u4acQNokgfzQwVPcCYyDTuHGIt3hWVC/hqaAO4+GbT7Rxd0srBd9rafd/M+hpKw==
+X-Received: by 2002:a17:906:3ce2:: with SMTP id d2mr31099523ejh.292.1582224994488;
+        Thu, 20 Feb 2020 10:56:34 -0800 (PST)
+Received: from [10.67.49.41] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id x10sm25082ejf.77.2020.02.20.10.56.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Feb 2020 10:56:33 -0800 (PST)
+Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+ <e2b53d14-7258-0137-79bc-b0a21ccc7b8f@gmail.com>
+ <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
+ <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
+ <20200219231528.GS25745@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
+Date:   Thu, 20 Feb 2020 10:56:17 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e1616b0-badd-4087-9340-08d7b63673f7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Feb 2020 18:55:28.4519
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Iph3wI+pfMhlKZDYAVrodwup5MExwfEhS+25ttSpABfXK+QQC1hHGgGtoluE6WA0e8NaXN3hFgEbf2H7cUxDY6p2oUB52gn9H6NT7huXtIg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3033
-X-OriginatorOrg: intel.com
+In-Reply-To: <20200219231528.GS25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Greg KH <gregkh@linuxfoundation.org>
-> Sent: Friday, February 14, 2020 12:45 PM
-> To: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net=
-;
-> Ertman, David M <david.m.ertman@intel.com>; netdev@vger.kernel.org;
-> linux-rdma@vger.kernel.org; nhorman@redhat.com;
-> sassmann@redhat.com; parav@mellanox.com; galpress@amazon.com;
-> selvin.xavier@broadcom.com; sriharsha.basavapatna@broadcom.com;
-> benve@cisco.com; bharat@chelsio.com; xavier.huwei@huawei.com;
-> yishaih@mellanox.com; leonro@mellanox.com; mkalderon@marvell.com;
-> aditr@vmware.com; Patil, Kiran <kiran.patil@intel.com>; Bowers, AndrewX
-> <andrewx.bowers@intel.com>
-> Subject: Re: [RFC PATCH v4 01/25] virtual-bus: Implementation of Virtual =
-Bus
->=20
-> On Fri, Feb 14, 2020 at 04:34:55PM -0400, Jason Gunthorpe wrote:
-> > On Fri, Feb 14, 2020 at 09:02:40AM -0800, Greg KH wrote:
-> > > > +	put_device(&vdev->dev);
-> > > > +	ida_simple_remove(&virtbus_dev_ida, vdev->id);
-> > >
-> > > You need to do this before put_device().
-> >
-> > Shouldn't it be in the release function? The ida index should not be
-> > re-used until the kref goes to zero..
+On 2/19/20 3:15 PM, Russell King - ARM Linux admin wrote:
+> On Wed, Feb 19, 2020 at 11:18:17AM -0800, Florian Fainelli wrote:
+>> On 2/19/20 10:52 AM, Vladimir Oltean wrote:
+>>> On Wed, 19 Feb 2020 at 02:02, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>>>
+>>>> Why not just revert 2ea7a679ca2abd251c1ec03f20508619707e1749 ("net: dsa:
+>>>> Don't add vlans when vlan filtering is disabled")? If a driver wants to
+>>>> veto the programming of VLANs while it has ports enslaved to a bridge
+>>>> that does not have VLAN filtering, it should have enough information to
+>>>> not do that operation.
+>>>> --
+>>>> Florian
+>>>
+>>> It would be worth mentioning that for sja1105 and hypothetical other
+>>> users of DSA_TAG_PROTO_8021Q, DSA doing that automatically was
+>>> helpful. VLAN manipulations are still being done from tag_8021q.c for
+>>> the purpose of DSA tagging, but the fact that the VLAN EtherType is
+>>> not 0x8100 means that from the perspective of real VLAN traffic, the
+>>> switch is VLAN unaware. DSA was the easiest place to disseminate
+>>> between VLAN requests of its own and VLAN requests coming from
+>>> switchdev.
+>>> Without that logic in DSA, a vlan-unaware bridge would be able to
+>>> destroy the configuration done for source port decoding.
+>>> Just saying - with enough logic in .port_vlan_prepare, I should still
+>>> be able to accept only what's whitelisted to work for tagging, and
+>>> then it won't matter who issued that VLAN command.
+>>
+>> I suppose I am fine with Russell's approach, but maybe its meaning
+>> should be reversed, that is, you get VLAN objects notifications by
+>> default for a  VLAN unaware bridge and if you do set a specific
+>> dsa_switch flag, then you do not get those.
+> 
+> If we reverse it, I'll need someone to tell me which DSA switches
+> should not get the vlan object notifications.  Maybe also in that
+> case, we should deny the ability to toggle the state of
+> vlan_filtering as well?
+> 
 
-The IDA should not be reused until the virtbus_device is unregistered.  We
-don't want another device with the same name and same IDA to be registered,
-so the IDA has to remain unique until the device is unregistered, that is w=
-hy
-I am moving it to before put_device, but remember, this index is just to
-ensure unique naming among the devices registered on the bus.  There could
-(and will) be several foo_rdma devices created (one per PF) and we need to =
-keep
-them all straight.
+Let's get your patch series merged. If you re-spin while addressing
+Vivien's comment not to use the term "vtu", I think I would be fine with
+the current approach of having to go after each driver and enabling them
+where necessary.
 
->=20
-> Doesn't really matter, once you have unregistered it, you can reuse it.
-> But yes, putting it in release() is the safest thing to do.
->=20
-> > > > +struct virtbus_device {
-> > > > +	struct device dev;
-> > > > +	const char *name;
-> > > > +	void (*release)(struct virtbus_device *);
-> > > > +	int id;
-> > > > +	const struct virtbus_dev_id *matched_element;
-> > > > +};
-> > >
-> > > Any reason you need to make "struct virtbus_device" a public structur=
-e
-> > > at all?
-> >
-> > The general point of this scheme is to do this in a public header:
-> >
-> > +struct iidc_virtbus_object {
-> > +	struct virtbus_device vdev;
-> > +	struct iidc_peer_dev *peer_dev;
-> > +};
-> >
-> > And then this when the driver binds:
->=20
-> Ah, yes, nevermind, I missed that.
->=20
-> greg k-h
-
-
--DaveE
+Thanks
+-- 
+Florian
