@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA33165796
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 07:26:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5169F1657A5
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 07:31:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbgBTG0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 01:26:47 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1310 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725942AbgBTG0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 01:26:46 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01K6PcXw029246
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 22:26:46 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=IXpJ9hl7vCDT0Qh+irXKQWElg6tkm6FkFFlOMabWx+Q=;
- b=U0xGAFjtJ4SLQf5ynNUKTiCWDjExl7D1KD+SyoTGF1xbZqtfXsDMExFbEvooQaODDMRy
- 2RmqK9nlXMccpQztCsN0dzt8KA83EPMo5CZ6Ajwi+rUQNBCPsApbKbjjZ8knmjpo6R8F
- CfRIl2D5ozLtoxuOzoIdTPd3VlYkwHL/oIw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2y8ubw6y88-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 22:26:46 -0800
-Received: from intmgw001.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 19 Feb 2020 22:26:44 -0800
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 391B2862D08; Wed, 19 Feb 2020 22:26:41 -0800 (PST)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <hex@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next] libbpf: relax check whether BTF is mandatory
-Date:   Wed, 19 Feb 2020 22:26:35 -0800
-Message-ID: <20200220062635.1497872-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726877AbgBTGbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 01:31:15 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:54241 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726788AbgBTGbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 01:31:15 -0500
+Received: by mail-il1-f199.google.com with SMTP id d3so2243690ilg.20
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 22:31:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=DDqMJ8JPj7oJO/ZR8xGUg6VFAFuonxwUf5QT8gnpMlI=;
+        b=neisGOOyb9J+mSa3pP3uweX/hHkew1FQzUIV9jl2e4XvwjByYvZ9g3VfRaMUUSMvO/
+         2E9Z0Sa/kK8TjrLXFplo5XPyWPM/Yl9P+i0C4vz2KL2oiv1SXt0k/OVHBjoPB2gyZVFy
+         gUCGdJUvt+3wLC1dXSjZbtMshdev9AjuO6HlXsD73quRnMlWNYCFOgdFHuw0B67t9Yoi
+         /4nY8eyPBkp/TZ7C1BFI4W7CQ8IMjYoVheSZBGZpYtOhPf8mX9ka05Y5LoOhjX//OQlD
+         RmHoc9kElDbVuNZAHdkSOE/solc2rjdpUx++VOVRTrmmqi5nUR4ybgzosX3Ofo38MNDW
+         38zQ==
+X-Gm-Message-State: APjAAAUGBeEw9piQXlQE0P9SEMZ385NnCE4TfHLmxYd1gbEQ/1Le9UEA
+        JXiEFk7XXnqmaaU0CfGJKpPcvE5+HAI71RHs5NfXF8UlYwGq
+X-Google-Smtp-Source: APXvYqxOsNiTKh+qdqttr1Rz5Xoag30BA+Qf5UFs3ZfyNMV1nBh7iGpymuj0iWTB8mx5mFnbL62z472NbkKQFR/ecoPKcwCxKaZz
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-20_01:2020-02-19,2020-02-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 spamscore=0
- phishscore=0 bulkscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0
- suspectscore=8 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2002200046
-X-FB-Internal: deliver
+X-Received: by 2002:a92:cb8c:: with SMTP id z12mr26095480ilo.5.1582180274590;
+ Wed, 19 Feb 2020 22:31:14 -0800 (PST)
+Date:   Wed, 19 Feb 2020 22:31:14 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003cdd26059efc0db3@google.com>
+Subject: KASAN: null-ptr-deref Write in kcm_tx_work
+From:   syzbot <syzbot+867331f5ea7690d840b4@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        jslaby@suse.cz, kafai@fb.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, willy@infradead.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If BPF program is using BTF-defined maps, BTF is required only for
-libbpf itself to process map definitions. If after that BTF fails to
-be loaded into kernel (e.g., if it doesn't support BTF at all), this
-shouldn't prevent valid BPF program from loading. Existing
-retry-without-BTF logic for creating maps will succeed to create such
-maps without any problems. So, presence of .maps section shouldn't make
-BTF required for kernel. Update the check accordingly.
+Hello,
 
-Validated by ensuring simple BPF program with BTF-defined maps is still
-loaded on old kernel without BTF support and map is correctly parsed and
-created.
+syzbot found the following crash on:
 
-Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
-Reported-by: Julia Kartseva <hex@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+HEAD commit:    2019fc96 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=159f2701e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=735296e4dd620b10
+dashboard link: https://syzkaller.appspot.com/bug?extid=867331f5ea7690d840b4
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+867331f5ea7690d840b4@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: null-ptr-deref in clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+BUG: KASAN: null-ptr-deref in kcm_tx_work+0x10e/0x170 net/kcm/kcmsock.c:743
+Write of size 8 at addr 0000000000000008 by task kworker/u4:4/280
+
+CPU: 0 PID: 280 Comm: kworker/u4:4 Not tainted 5.6.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: kkcmd kcm_tx_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ __kasan_report.cold+0x5/0x32 mm/kasan/report.c:510
+ kasan_report+0x12/0x20 mm/kasan/common.c:641
+ check_memory_region_inline mm/kasan/generic.c:185 [inline]
+ check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+ __kasan_check_write+0x14/0x20 mm/kasan/common.c:101
+ clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+ kcm_tx_work+0x10e/0x170 net/kcm/kcmsock.c:743
+ process_one_work+0xa05/0x17a0 kernel/workqueue.c:2264
+ worker_thread+0x98/0xe40 kernel/workqueue.c:2410
+ kthread+0x361/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+==================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 280 Comm: kworker/u4:4 Tainted: G    B             5.6.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: kkcmd kcm_tx_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ end_report+0x47/0x4f mm/kasan/report.c:96
+ __kasan_report.cold+0xe/0x32 mm/kasan/report.c:513
+ kasan_report+0x12/0x20 mm/kasan/common.c:641
+ check_memory_region_inline mm/kasan/generic.c:185 [inline]
+ check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+ __kasan_check_write+0x14/0x20 mm/kasan/common.c:101
+ clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
+ kcm_tx_work+0x10e/0x170 net/kcm/kcmsock.c:743
+ process_one_work+0xa05/0x17a0 kernel/workqueue.c:2264
+ worker_thread+0x98/0xe40 kernel/workqueue.c:2410
+ kthread+0x361/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
 ---
- tools/lib/bpf/libbpf.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 514b1a524abb..0eb10b681413 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2280,9 +2280,7 @@ static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
- 
- static bool bpf_object__is_btf_mandatory(const struct bpf_object *obj)
- {
--	return obj->efile.btf_maps_shndx >= 0 ||
--		obj->efile.st_ops_shndx >= 0 ||
--		obj->nr_extern > 0;
-+	return obj->efile.st_ops_shndx >= 0 || obj->nr_extern > 0;
- }
- 
- static int bpf_object__init_btf(struct bpf_object *obj,
--- 
-2.17.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
