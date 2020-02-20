@@ -2,109 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDA2165531
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 03:42:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A47F1165585
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 04:17:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbgBTCmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Feb 2020 21:42:49 -0500
-Received: from mga02.intel.com ([134.134.136.20]:48607 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727211AbgBTCmt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Feb 2020 21:42:49 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Feb 2020 18:42:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,462,1574150400"; 
-   d="scan'208";a="229327721"
-Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.74])
-  by orsmga008.jf.intel.com with ESMTP; 19 Feb 2020 18:42:42 -0800
-Date:   Thu, 20 Feb 2020 10:42:21 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, shahafs@mellanox.com,
-        rob.miller@broadcom.com, haotian.wang@sifive.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        rdunlap@infradead.org, hch@infradead.org, jiri@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com,
-        maxime.coquelin@redhat.com, lingshan.zhu@intel.com,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-Subject: Re: [PATCH] vhost: introduce vDPA based backend
-Message-ID: <20200220024220.GA43609@___>
-References: <20200131033651.103534-1-tiwei.bie@intel.com>
- <20200218135359.GA9608@ziepe.ca>
- <20200219025217.GA971968@___>
- <20200219131102.GN31668@ziepe.ca>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200219131102.GN31668@ziepe.ca>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1727954AbgBTDRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Feb 2020 22:17:41 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:38486 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727208AbgBTDRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Feb 2020 22:17:41 -0500
+Received: by mail-pj1-f73.google.com with SMTP id 14so352235pjo.3
+        for <netdev@vger.kernel.org>; Wed, 19 Feb 2020 19:17:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=i2O9M22wRHGvAOZAL5G1kwDrP71Yc5DXVKcI6ikT/o0=;
+        b=dlpnFhTJuppuR+7jhHOrc29QhJDsFb/a9lebelLf5+HpvXJAn1SQBioq39Qk8Vm3AQ
+         CaUiiTHkAgza79JX7dXl3SCPyyIwwCB2Zj6DbBTVEGF8c5wauY6xKMi8xxVKZw//JS2H
+         3jDmVyKsKRudtiC4BeHrWuJZBL7iFYElm8LYKpLUaScuxhcalPyXP634Spg/cogqQq8j
+         35xfj0nCeAwlfsWLTdbma6cb6Xzb82XaO/bSzayA2HwEPYyOQefA3WQvS7F/X8tFzwn+
+         PZl1jwhrpg0riUoXF0V61wIeJb0iKteX2/MQYwSMrRU6X8BqMrFqbojtUyrLd10crM2Z
+         1fdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=i2O9M22wRHGvAOZAL5G1kwDrP71Yc5DXVKcI6ikT/o0=;
+        b=NKfSynNqW7lIktG9c2IqjQGLB5gsGOR84YT6EpsjMjmuKQED7QAuaNpT9FFBg+cX8x
+         SAKy5IJK3OouXlMInjz9xIkbhRWIo0omJn6tI6yWdw8epbsreBodyVQ7WTEM+MiqaDuh
+         NNPy4ifXp+6p79vWqDm5TK3H1JmxtN2OgKBSfQqigJsvfnLAGQ6RYzNyFqvIe+vDp0U7
+         1XHXIrO6OEnNK/rOwrGJvqUwz7jC+AO/FRIZKhOAsQTp0g6MCnFf1kfdujLPBxXCBU+5
+         WjBndVMCnvwRtj+moPomByVwn1q/JCQiTiRZezKIFIev8IGhFs8eC2iAKldEd5L01Zvi
+         qEww==
+X-Gm-Message-State: APjAAAVV5+pUL3+TQPqDL4tPvdjtQG4uVVw9tAlPZ5QZBlF7aCVhD6Gs
+        8HKqIWf07CsDeu1dlC0dmCzJVDzgCRVPih4EZg==
+X-Google-Smtp-Source: APXvYqwhfiEKlSr0AAX/yDJjQ+IOrKLdHL+H7bLrG4jZblws54K3aApuo2mh5mWRFYU+RaFoM5HXxjPpmsEXHnHDtw==
+X-Received: by 2002:a63:b250:: with SMTP id t16mr29658302pgo.18.1582168660404;
+ Wed, 19 Feb 2020 19:17:40 -0800 (PST)
+Date:   Thu, 20 Feb 2020 11:17:29 +0800
+Message-Id: <20200220111711.Bluez.v3.1.I145f6c5bbf2437a6f6afc28d3db2b876c034c2d8@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [Bluez PATCH v3] bluetooth: fix passkey uninitialized when used
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        kbuild test robot <lkp@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 09:11:02AM -0400, Jason Gunthorpe wrote:
-> On Wed, Feb 19, 2020 at 10:52:38AM +0800, Tiwei Bie wrote:
-> > > > +static int __init vhost_vdpa_init(void)
-> > > > +{
-> > > > +	int r;
-> > > > +
-> > > > +	idr_init(&vhost_vdpa.idr);
-> > > > +	mutex_init(&vhost_vdpa.mutex);
-> > > > +	init_waitqueue_head(&vhost_vdpa.release_q);
-> > > > +
-> > > > +	/* /dev/vhost-vdpa/$vdpa_device_index */
-> > > > +	vhost_vdpa.class = class_create(THIS_MODULE, "vhost-vdpa");
-> > > > +	if (IS_ERR(vhost_vdpa.class)) {
-> > > > +		r = PTR_ERR(vhost_vdpa.class);
-> > > > +		goto err_class;
-> > > > +	}
-> > > > +
-> > > > +	vhost_vdpa.class->devnode = vhost_vdpa_devnode;
-> > > > +
-> > > > +	r = alloc_chrdev_region(&vhost_vdpa.devt, 0, MINORMASK + 1,
-> > > > +				"vhost-vdpa");
-> > > > +	if (r)
-> > > > +		goto err_alloc_chrdev;
-> > > > +
-> > > > +	cdev_init(&vhost_vdpa.cdev, &vhost_vdpa_fops);
-> > > > +	r = cdev_add(&vhost_vdpa.cdev, vhost_vdpa.devt, MINORMASK + 1);
-> > > > +	if (r)
-> > > > +		goto err_cdev_add;
-> > > 
-> > > It is very strange, is the intention to create a single global char
-> > > dev?
-> > 
-> > No. It's to create a per-vdpa char dev named
-> > vhost-vdpa/$vdpa_device_index in dev.
-> > 
-> > I followed the code in VFIO which creates char dev
-> > vfio/$GROUP dynamically, e.g.:
-> > 
-> > https://github.com/torvalds/linux/blob/b1da3acc781c/drivers/vfio/vfio.c#L2164-L2180
-> > https://github.com/torvalds/linux/blob/b1da3acc781c/drivers/vfio/vfio.c#L373-L387
-> > https://github.com/torvalds/linux/blob/b1da3acc781c/drivers/vfio/vfio.c#L1553
-> > 
-> > Is it something unwanted?
-> 
-> Yes it is unwanted. This is some special pattern for vfio's unique
-> needs. 
-> 
-> Since this has a struct device for each char dev instance please use
-> the normal cdev_device_add() driven pattern here, or justify why it
-> needs to be special like this.
+This patch fix the issue: warning:variable 'passkey' is uninitialized
+when used here
 
-I see. Thanks! I will embed the cdev in each vhost_vdpa
-structure directly.
+Link: https://groups.google.com/forum/#!topic/clang-built-linux/kyRKCjRsGoU
 
-Regards,
-Tiwei
+Reported-by: kbuild test robot <lkp@intel.com>
 
-> 
-> Jason
+Suggested-by: Marcel Holtmann <marcel@holtmann.org>
+
+Signed-off-by: Howard Chung <howardchung@google.com>
+
+---
+
+Changes in v3:
+- rephrase the commit message
+
+Changes in v2:
+- refactor code
+
+ net/bluetooth/smp.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 50e0ac692ec4..929e0bebaf80 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -2115,7 +2115,7 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 	struct l2cap_chan *chan = conn->smp;
+ 	struct smp_chan *smp = chan->data;
+ 	struct hci_conn *hcon = conn->hcon;
+-	u8 *pkax, *pkbx, *na, *nb;
++	u8 *pkax, *pkbx, *na, *nb, confirm_hint;
+ 	u32 passkey;
+ 	int err;
+ 
+@@ -2179,13 +2179,12 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 		 */
+ 		if (hci_find_ltk(hcon->hdev, &hcon->dst, hcon->dst_type,
+ 				 hcon->role)) {
+-			err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+-							hcon->type,
+-							hcon->dst_type,
+-							passkey, 1);
+-			if (err)
+-				return SMP_UNSPECIFIED;
+-			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
++			/* Set passkey to 0. The value can be any number since
++			 * it'll be ignored anyway.
++			 */
++			passkey = 0;
++			confirm_hint = 1;
++			goto confirm;
+ 		}
+ 	}
+ 
+@@ -2206,9 +2205,11 @@ static u8 smp_cmd_pairing_random(struct l2cap_conn *conn, struct sk_buff *skb)
+ 	err = smp_g2(smp->tfm_cmac, pkax, pkbx, na, nb, &passkey);
+ 	if (err)
+ 		return SMP_UNSPECIFIED;
++	confirm_hint = 0;
+ 
++confirm:
+ 	err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst, hcon->type,
+-					hcon->dst_type, passkey, 0);
++					hcon->dst_type, passkey, confirm_hint);
+ 	if (err)
+ 		return SMP_UNSPECIFIED;
+ 
+-- 
+2.25.0.265.gbab2e86ba0-goog
+
