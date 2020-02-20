@@ -2,260 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A67D71659AD
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 09:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDFD61659DD
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 10:09:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbgBTIz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 03:55:58 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:38239 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgBTIz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 03:55:57 -0500
-Received: by mail-pl1-f194.google.com with SMTP id t6so1290628plj.5;
-        Thu, 20 Feb 2020 00:55:57 -0800 (PST)
+        id S1726878AbgBTJJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 04:09:02 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:39843 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbgBTJJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 04:09:02 -0500
+Received: by mail-lf1-f67.google.com with SMTP id t23so2465307lfk.6
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 01:09:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dP0Z87CkXINV1ZhQ5TGeCzcU6kns51QhnUdWFKav+rY=;
-        b=valEnfgU/nd2Y4yFnPgzTEIc7dtwMV0slu4mk8Dz8bep0kgP+w+vMhIeKFJ4gS/JSl
-         F/M5PJ2O3/B16f7B4HZrt44YYsaWnWUaxvUD7LjYYA9PXTThG9C9tTKuviZa3EpzoIHf
-         ifuV1JT9Q1LRmOT7n+yftdY22FyfCzkfcVW0QIROM2MBr09yI0lQhDc6EjMFgjP2nRsT
-         8t4ERmTDMPNzhN954vRvM9tA6r7kmSBXChDXEncXMLR6RHMuxOhyDC07rQ/vqHYSP2GX
-         KbYfEUIRc8ROVgh3ay7msTreKOmvdm7IiUIhwjj6ajab396OpXRIddvIjFz4swLWdrCB
-         aE5g==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KFjjOM/ATxcLGNdaN9di1npOi28u97TQGyXHv0wmFXw=;
+        b=eadWqpkp5Vo1b81QGCZOyn4AynMqBeEj3XDArEaOELEQ3U0I0zewuEynz/bmC025ac
+         GycxMBYJad0D+XjtuJc1uRjnnMCx0rJuGW1I7LGzc3+spyoab2ZsFNYMtYSpU854pH+V
+         THZl66rl/WCzH1AGKSDVzE9Qt7MDZD70wH3fU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dP0Z87CkXINV1ZhQ5TGeCzcU6kns51QhnUdWFKav+rY=;
-        b=kJUNZXs3h7CBpplDxDQvb98UrnNvtd3ubi+6q8GfWrGZcCy/6HZdjNIWgO6ebMsbSZ
-         JwIPEyNl8uJ3A+9P+5MmjtRvJU7BEob8AihjcYgEsAkeEdrv64Pfht//Z6xz2Kh6De76
-         dU473sl6/8smuJyuHYAfo1NWBOW2vIF0fdWRt9LPmN8+mqaWF31mXr6giErMm0XxKsKo
-         UaE5i3jrqezHS3x26SlkoRSbGZrMaFyXhSxLH7e1KGMbjp4mijHJfUEcg/UtOq/2PY9j
-         x6UM5KkihwYGlYfT3Fl5XGA4lhBHT8CkbtJTtY3w3tWwLp8/5j0vGPd0qNGy5XnMEuf1
-         kQ/g==
-X-Gm-Message-State: APjAAAWzLh9VQngTv5JpH4FJ4OZrMxaoKNajamuYLghf0hhY6WVwtfuA
-        i8BMnAuHBrCUYEegCC/NApk=
-X-Google-Smtp-Source: APXvYqw6htsz+OYrdOJdOhJcOxfgKL/86sJsV5kZo4Q7KNDgjhrKgeY/WAmQCMOgxjP5exrlq6rQGA==
-X-Received: by 2002:a17:90a:c78f:: with SMTP id gn15mr2358709pjb.64.1582188956706;
-        Thu, 20 Feb 2020 00:55:56 -0800 (PST)
-Received: from localhost.localdomain ([103.202.217.14])
-        by smtp.gmail.com with ESMTPSA id x11sm2386742pfn.53.2020.02.20.00.55.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 00:55:56 -0800 (PST)
-From:   Yuya Kusakabe <yuya.kusakabe@gmail.com>
-To:     jasowang@redhat.com
-Cc:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
-        yuya.kusakabe@gmail.com
-Subject: [PATCH bpf-next v5] virtio_net: add XDP meta data support
-Date:   Thu, 20 Feb 2020 17:55:49 +0900
-Message-Id: <20200220085549.269795-1-yuya.kusakabe@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <0c5eaba2-dd5a-fc3f-0e8f-154f7ad52881@redhat.com>
-References: <0c5eaba2-dd5a-fc3f-0e8f-154f7ad52881@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KFjjOM/ATxcLGNdaN9di1npOi28u97TQGyXHv0wmFXw=;
+        b=kWaT7NCYyX+0CiQMHIu5Fi/04L7NCFChOm/UsRlhomvqQDfUVc8OsA0l4Z6f/8PS+5
+         VIlkUGQZr8HoexcOz0UX1KLAc4YPMKWaF45o/ozUGPP+f7Ab0bMxs/AWac3jU5kLrNu9
+         CkAbwOYDClK6OKT8BC77u/kNHK7Z4M1g4+uhSKL9cgEYz66u98+sFwd1yRz83pSRcjnK
+         a7XtminNffxGVnOgL9KjpWVkXS1nldOjyQ1/PIHtoQeAheg5tHpuhuTaPFwA4QJvunux
+         CNzWsz0110tscHMOSwvAM98FFIW5lQoKNxFaEXKiELHDy4UEvYS3A84FKJFnE2gNms7r
+         J4HQ==
+X-Gm-Message-State: APjAAAVRO0fcl2Y4YRvTJQUJVwP+eRvF+wDIl+SKgPqm2TriUW3avnOV
+        FviSgyGRkGpPS0JM4etKuiRNFg==
+X-Google-Smtp-Source: APXvYqy45/4Ap6BjwajnmmM6G5U9Ws6yAE795RDfSZGhdc4380Z2tcYVCRQyqKGvGmzI8k/CRfGmKw==
+X-Received: by 2002:a05:6512:3284:: with SMTP id p4mr2007451lfe.166.1582189740582;
+        Thu, 20 Feb 2020 01:09:00 -0800 (PST)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id w8sm1457501lfk.75.2020.02.20.01.08.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Feb 2020 01:09:00 -0800 (PST)
+Subject: Re: [RFC net-next v3 03/10] net: bridge: mrp: Add MRP interface used
+ by netlink
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        jiri@resnulli.us, ivecera@redhat.com, davem@davemloft.net,
+        roopa@cumulusnetworks.com, anirudh.venkataramanan@intel.com,
+        olteanv@gmail.com, jeffrey.t.kirsher@intel.com,
+        UNGLinuxDriver@microchip.com
+References: <20200124161828.12206-1-horatiu.vultur@microchip.com>
+ <20200124161828.12206-4-horatiu.vultur@microchip.com>
+ <20200124174315.GC13647@lunn.ch>
+ <20200125113726.ousbmm4n3ab4xnqt@soft-dev3.microsemi.net>
+ <20200125152023.GA18311@lunn.ch>
+ <20200125191612.5dlzlvb7g2bucqna@lx-anielsen.microsemi.net>
+ <20200126132843.k4rzn7vfti7lqvos@soft-dev3.microsemi.net>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <08c2d3f8-8d70-730c-95d5-8493e6919f3e@cumulusnetworks.com>
+Date:   Thu, 20 Feb 2020 11:08:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200126132843.k4rzn7vfti7lqvos@soft-dev3.microsemi.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement support for transferring XDP meta data into skb for
-virtio_net driver; before calling into the program, xdp.data_meta points
-to xdp.data, where on program return with pass verdict, we call
-into skb_metadata_set().
+On 26/01/2020 15:28, Horatiu Vultur wrote:
+> The 01/25/2020 20:16, Allan W. Nielsen wrote:
+>> On 25.01.2020 16:20, Andrew Lunn wrote:
+>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>
+>>> On Sat, Jan 25, 2020 at 12:37:26PM +0100, Horatiu Vultur wrote:
+>>>> The 01/24/2020 18:43, Andrew Lunn wrote:
+>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>>>
+>>>>>> br_mrp_flush - will flush the FDB.
+>>>>>
+>>>>> How does this differ from a normal bridge flush? I assume there is a
+>>>>> way for user space to flush the bridge FDB.
+>>>>
+>>>> Hi,
+>>>>
+>>>> If I seen corectly the normal bridge flush will clear the entire FDB for
+>>>> all the ports of the bridge. In this case it is require to clear FDB
+>>>> entries only for the ring ports.
+>>>
+>>> Maybe it would be better to extend the current bridge netlink call to
+>>> be able to pass an optional interface to be flushed?  I'm not sure it
+>>> is a good idea to have two APIs doing very similar things.
+>> I agree.
+> I would look over this.
+> 
 
-Tested with the script at
-https://github.com/higebu/virtio_net-xdp-metadata-test.
+There's already a way to flush FDBs per-port - IFLA_BRPORT_FLUSH.
 
-Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
----
-v5:
- - page_to_skb(): copy vnet header if hdr_valid without checking metasize.
- - receive_small(): do not copy vnet header if xdp_prog is availavle.
- - __virtnet_xdp_xmit_one(): remove the xdp_set_data_meta_invalid().
- - improve comments.
-v4:
- - improve commit message
-v3:
- - fix preserve the vnet header in receive_small().
-v2:
- - keep copy untouched in page_to_skb().
- - preserve the vnet header in receive_small().
- - fix indentation.
----
- drivers/net/virtio_net.c | 54 ++++++++++++++++++++++++----------------
- 1 file changed, 33 insertions(+), 21 deletions(-)
+>>
+>> And when looking at this again, I start to think that we should have
+>> extended the existing netlink interface with new commands, instead of
+>> adding a generic netlink.
+> We could do also that. The main reason why I have added a new generic
+> netlink was that I thought it would be clearer what commands are for MRP
+> configuration. But if you think that we should go forward by extending
+> existing netlink interface, that is perfectly fine for me.
+> 
+>>
+>> /Allan
+>>
+> 
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2fe7a3188282..4ea0ae60c000 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 				   struct receive_queue *rq,
- 				   struct page *page, unsigned int offset,
- 				   unsigned int len, unsigned int truesize,
--				   bool hdr_valid)
-+				   bool hdr_valid, unsigned int metasize)
- {
- 	struct sk_buff *skb;
- 	struct virtio_net_hdr_mrg_rxbuf *hdr;
-@@ -393,6 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 	else
- 		hdr_padded_len = sizeof(struct padded_vnet_hdr);
- 
-+	/* hdr_valid means no XDP, so we can copy the vnet header */
- 	if (hdr_valid)
- 		memcpy(hdr, p, hdr_len);
- 
-@@ -405,6 +406,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 		copy = skb_tailroom(skb);
- 	skb_put_data(skb, p, copy);
- 
-+	if (metasize) {
-+		__skb_pull(skb, metasize);
-+		skb_metadata_set(skb, metasize);
-+	}
-+
- 	len -= copy;
- 	offset += copy;
- 
-@@ -450,10 +456,6 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 	struct virtio_net_hdr_mrg_rxbuf *hdr;
- 	int err;
- 
--	/* virtqueue want to use data area in-front of packet */
--	if (unlikely(xdpf->metasize > 0))
--		return -EOPNOTSUPP;
--
- 	if (unlikely(xdpf->headroom < vi->hdr_len))
- 		return -EOVERFLOW;
- 
-@@ -644,6 +646,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	unsigned int delta = 0;
- 	struct page *xdp_page;
- 	int err;
-+	unsigned int metasize = 0;
- 
- 	len -= vi->hdr_len;
- 	stats->bytes += len;
-@@ -683,8 +686,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 
- 		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
- 		xdp.data = xdp.data_hard_start + xdp_headroom;
--		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + len;
-+		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 		orig_data = xdp.data;
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-@@ -695,6 +698,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			/* Recalculate length in case bpf program changed it */
- 			delta = orig_data - xdp.data;
- 			len = xdp.data_end - xdp.data;
-+			metasize = xdp.data - xdp.data_meta;
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
-@@ -735,11 +739,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	}
- 	skb_reserve(skb, headroom - delta);
- 	skb_put(skb, len);
--	if (!delta) {
-+	if (!xdp_prog) {
- 		buf += header_offset;
- 		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
- 	} /* keep zeroed vnet hdr since packet was changed by bpf */
- 
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
-+
- err:
- 	return skb;
- 
-@@ -760,8 +767,8 @@ static struct sk_buff *receive_big(struct net_device *dev,
- 				   struct virtnet_rq_stats *stats)
- {
- 	struct page *page = buf;
--	struct sk_buff *skb = page_to_skb(vi, rq, page, 0, len,
--					  PAGE_SIZE, true);
-+	struct sk_buff *skb =
-+		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0);
- 
- 	stats->bytes += len - vi->hdr_len;
- 	if (unlikely(!skb))
-@@ -793,6 +800,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	unsigned int truesize;
- 	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
- 	int err;
-+	unsigned int metasize = 0;
- 
- 	head_skb = NULL;
- 	stats->bytes += len - vi->hdr_len;
-@@ -839,8 +847,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		data = page_address(xdp_page) + offset;
- 		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
- 		xdp.data = data + vi->hdr_len;
--		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + (len - vi->hdr_len);
-+		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-@@ -848,24 +856,27 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 
- 		switch (act) {
- 		case XDP_PASS:
-+			metasize = xdp.data - xdp.data_meta;
-+
- 			/* recalculate offset to account for any header
--			 * adjustments. Note other cases do not build an
--			 * skb and avoid using offset
-+			 * adjustments and minus the metasize to copy the
-+			 * metadata in page_to_skb(). Note other cases do not
-+			 * build an skb and avoid using offset
- 			 */
--			offset = xdp.data -
--					page_address(xdp_page) - vi->hdr_len;
-+			offset = xdp.data - page_address(xdp_page) -
-+				 vi->hdr_len - metasize;
- 
--			/* recalculate len if xdp.data or xdp.data_end were
--			 * adjusted
-+			/* recalculate len if xdp.data, xdp.data_end or
-+			 * xdp.data_meta were adjusted
- 			 */
--			len = xdp.data_end - xdp.data + vi->hdr_len;
-+			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
- 			/* We can only create skb based on xdp_page. */
- 			if (unlikely(xdp_page != page)) {
- 				rcu_read_unlock();
- 				put_page(page);
--				head_skb = page_to_skb(vi, rq, xdp_page,
--						       offset, len,
--						       PAGE_SIZE, false);
-+				head_skb = page_to_skb(vi, rq, xdp_page, offset,
-+						       len, PAGE_SIZE, false,
-+						       metasize);
- 				return head_skb;
- 			}
- 			break;
-@@ -921,7 +932,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		goto err_skb;
- 	}
- 
--	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog);
-+	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
-+			       metasize);
- 	curr_skb = head_skb;
- 
- 	if (unlikely(!curr_skb))
--- 
-2.24.1
+I don't mind extending the current netlink interface but the bridge already has
+a huge (the largest) set of options and each time we add a new option we have
+to adjust RTNL_MAX_TYPE. If you do decide to go this way maybe look into nesting
+all the MRP options under one master MRP element into the bridge options, example:
+[IFLA_BR_MRP]
+  [IFLA_BR_MRP_X]
+  [IFLA_BR_MRP_Y]
+  ...
 
+To avoid increasing the stack usage and bumping the max rtnl type too much.
+
+Cheers,
+ Nik
