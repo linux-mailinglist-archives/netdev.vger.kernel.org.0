@@ -2,91 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C70166A59
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 23:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C612166A69
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 23:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbgBTW0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 17:26:55 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37297 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727845AbgBTW0z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 17:26:55 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p14so96485pfn.4
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 14:26:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sUyMlFbRRGR/Od/yvQ4X4umEQFvI7SXuzbnwFNE55aU=;
-        b=Abj8RfD4pM5G65znD0OBeJx5NDJDuxmATz7rtTsWnTClwqi/pEuNMTbRuWU+NnVJVD
-         t7RLZ4fvmX9lG4NaChKnjHBk61a0CiTSY82mV+7L+JhpU+4PRuHV1/m1FjB35Lv4O16n
-         G3bw0ocml8S6fW8Qr1ce2J9ANIq1hkehBlPj4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=sUyMlFbRRGR/Od/yvQ4X4umEQFvI7SXuzbnwFNE55aU=;
-        b=Qyw51Mo4R/9Mx/i65jNbbmAbxhxZOtCp0mDQQEBne3IjZdTU7dDHGuIsJZqTi4j5c9
-         p7iOTpU7i8K/3XTAwL0JYoOGqOxoh3xlrxXAs0UzMptMF/QI83It5CTIdKwv//V8fYEG
-         8XB47fazVyMoyGm1cKJUa6RS+HOd/XKY9d/OOaamUkq63aoQtMj0AJZZX8p2JZjHytLD
-         7nE1ylfSunlgEpfl6RhcM+HVfhFzWtSem5zZyTpwcbCAjAfGNVc7SXLzxV60LH/vXTUJ
-         6VHgzhSfp1Wg2NgeHK+bzDr9FDidL/3mhoFd+S8oKaay3Ly/RpJuczuswN9zQWliCG/r
-         2XfA==
-X-Gm-Message-State: APjAAAUIWyJY/h2RbdpsFxilKmh9H+2NVLg+LvUQPF2pXrlAOpeIyykM
-        o+IHN4HETNgRIGnIRwBqP/ZGayuXU0I=
-X-Google-Smtp-Source: APXvYqyz81i7ZcblSF5lOvu4gr7c2PoxMR60W0rgdTSF3Y+cGAGIw5Qml41rhoHTy+ogGH+TWqQ3Dw==
-X-Received: by 2002:a63:565b:: with SMTP id g27mr35357078pgm.309.1582237614368;
-        Thu, 20 Feb 2020 14:26:54 -0800 (PST)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c26sm607831pfj.8.2020.02.20.14.26.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Feb 2020 14:26:53 -0800 (PST)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net 2/2] bnxt_en: Issue PCIe FLR in kdump kernel to cleanup pending DMAs.
-Date:   Thu, 20 Feb 2020 17:26:35 -0500
-Message-Id: <1582237595-10503-3-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1582237595-10503-1-git-send-email-michael.chan@broadcom.com>
-References: <1582237595-10503-1-git-send-email-michael.chan@broadcom.com>
+        id S1729229AbgBTWih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 17:38:37 -0500
+Received: from smtp.uniroma2.it ([160.80.6.23]:58786 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729006AbgBTWih (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Feb 2020 17:38:37 -0500
+Received: from utente-Aspire-V3-572G ([160.80.225.138])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with SMTP id 01KMXax2031786;
+        Thu, 20 Feb 2020 23:33:41 +0100
+Date:   Thu, 20 Feb 2020 23:33:36 +0100
+From:   Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ahmed.abdelsalam@gssi.it,
+        dav.lebrun@gmail.com, andrea.mayer@uniroma2.it,
+        paolo.lungaroni@cnit.it, hiroki.shirokura@linecorp.com
+Subject: Re: [net-next 1/2] Perform IPv4 FIB lookup in a predefined FIB
+ table
+Message-Id: <20200220233336.53eda87e7a76ed24317e0165@uniroma2.it>
+In-Reply-To: <a39867b0-c40f-e588-6cf9-1524581bb145@gmail.com>
+References: <20200213010932.11817-1-carmine.scarpitta@uniroma2.it>
+        <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
+        <7302c1f7-b6d1-90b7-5df1-3e5e0ba98f53@gmail.com>
+        <20200219005007.23d724b7f717ef89ad3d75e5@uniroma2.it>
+        <cd18410f-7065-ebea-74c5-4c016a3f1436@gmail.com>
+        <20200219034924.272d991505ee68d95566ff8d@uniroma2.it>
+        <a39867b0-c40f-e588-6cf9-1524581bb145@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-unknown-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Hi David,
 
-If crashed kernel does not shutdown the NIC properly, PCIe FLR
-is required in the kdump kernel in order to initialize all the
-functions properly.
+Regarding your question. 
 
-Fixes: d629522e1d66 ("bnxt_en: Reduce memory usage when running in kdump kernel.")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Our use-case is more than doing lookup into a VRF. 
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 2ad007e..fd6e0e4 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11786,6 +11786,14 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (version_printed++ == 0)
- 		pr_info("%s", version);
+What we are working on a multi-tenant automated DC fabric that supports 
+overlay, traffic engineering (TE) and service function chaining (SFC). 
+We are leveraging the SRv6 implementation in Linux. 
  
-+	/* Clear any pending DMA transactions from crash kernel
-+	 * while loading driver in capture kernel.
-+	 */
-+	if (is_kdump_kernel()) {
-+		pci_clear_master(pdev);
-+		pcie_flr(pdev);
-+	}
-+
- 	max_irqs = bnxt_get_max_irq(pdev);
- 	dev = alloc_etherdev_mq(sizeof(*bp), max_irqs);
- 	if (!dev)
--- 
-2.5.1
+For the overlay we leverage: 
+- SRv6 T.Encaps to encapsulate both IPv4 and IPv6 traffic of the tenant 
+   (T.Encaps is supported since kernel 4.10) 
+- SRv6 End.DT4 to decapsulate the overlay encapsulation and does the 
+lookup inside the tenants VRF (this is the only missing piece)
 
+For TE we leverage: 
+- SRv6 End and End.X functions to steer traffic through one or more midpoints
+to avoid congested links, etc. (End and End.X are supported since kernel 4.14)
+
+For SFC we leverage some network functions that supports SRv6: 
+- iptables already supports matching SRv6 header since kernel 4.16. 
+- There is some work in progress of adding support to nftables as well. 
+
+On top of that we are using BGP as a control plane to advertise the VPN/Egress 
+tunnel endpoints. 
+
+Part of this is already running in production at LINE corporation [1]. 
+
+As you can see, what is missing is having SRv6 End.DT4 supported to do 
+decapsulation and VRF lookup.  
+
+We introduced this flag to avoid duplicating the IPv4 FIB lookup code. 
+
+For the "tbl_known" flag, we can wrap the check of the flag inside 
+a "#ifdef CONFIG_IP_MULTIPLE_TABLES" directive. 
+If CONFIG_IP_MULTIPLE_TABLES is not set, we won't do any check.  
+
+Thanks, 
+Carmine 
+
+
+[1] https://speakerdeck.com/line_developers/line-data-center-networking-with-srv6
+
+
+On Tue, 18 Feb 2020 21:29:31 -0700
+David Ahern <dsahern@gmail.com> wrote:
+
+> On 2/18/20 7:49 PM, Carmine Scarpitta wrote:
+> > Hi David,
+> > Thanks for the reply.
+> > 
+> > The problem is not related to the table lookup. Calling fib_table_lookup and then rt_dst_alloc from seg6_local.c is good.
+> > 
+> 
+> you did not answer my question. Why do all of the existing policy
+> options (mark, L3 domains, uid) to direct the lookup to the table of
+> interest not work for this use case?
+> 
+> What you want is not unique. There are many ways to make it happen.
+> Bleeding policy details to route.c and adding a flag that is always
+> present and checked even when not needed (e.g.,
+> CONFIG_IP_MULTIPLE_TABLES is disabled) is not the right way to do it.
+
+
+-- 
+Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
