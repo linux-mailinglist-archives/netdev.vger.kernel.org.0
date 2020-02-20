@@ -2,126 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D3E166ABD
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:06:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22AA4166AD2
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 00:12:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729335AbgBTXGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 18:06:16 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46653 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727135AbgBTXGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 18:06:16 -0500
-Received: by mail-qk1-f196.google.com with SMTP id u124so143232qkh.13
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 15:06:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XkOTAOMcNc1IVEFTEsYF74ee6aJfy0dk3qnKTOfIb+o=;
-        b=k0B6QsU55aXc/tAkmdquBVptl49yQdaKZ842RKzr52WaHd7dULw3IdWH/3cD4DX2Ct
-         vzgkZvQQy1Uq+0syRXXzE72WJgnVuY88aFThQrEaG4B/UWwhEIbp5Vie+oejLeImU6bB
-         ePQcuOiX6cLkW9ioPjlECqEpDzd9cX7zHiIUmiXrKGaPXhcq9LcUsopdBx9NMlRPM0Vb
-         BS+KnuoGiC9z0iYbX4qUK/zb/tVNIO5oLQLRRaBuXdYjQA1N6X9mPUrnwxAfxmD9hdh+
-         jU9Y/CLVckBWfm2hwFxcZdrb9NCExxBFXTIEQyLrEP1KkPx1CWCta5ycN78qhn1JTcfx
-         aiIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XkOTAOMcNc1IVEFTEsYF74ee6aJfy0dk3qnKTOfIb+o=;
-        b=K5URa1mBkoX3e6PEpAKkUDPQt1bFrnNwtKkyz7xytDpazntHFj5GwMyAfilo/NwSJO
-         RRKbVpEW01iYWlpTkbwaqsUzWWxhcje9NmwPGkJ24RitdxnhaudUjYqBJ5UTY2K+Roaw
-         L5KrwCdVb71pCyWjpHZu8m15VKufDJqztJ+mTRSkIin0xUgXYgoQN1GHoXTgFiNl3Yrx
-         koxbj5YcijY48MS+XTHQQvfPf2fOS9j2MTpECok7OUtj5OR+3bXTDuSGo9zloRiSnC77
-         SvCN+IDJQ1GervTH1RtDiVzoPtFAorF9kYA/MTXCZN6J9AsnxVbfz2Et4b3gZrxGzGHf
-         dNew==
-X-Gm-Message-State: APjAAAVDAn9xgm2oNRicIUQaNMHpiYYUGr3Dr/kr474/4vkKq2NVl16E
-        /3HC/qNei5DRa+TBFMjqQxYbxqgRC6bwDQ==
-X-Google-Smtp-Source: APXvYqyWOy7fG5gEgq1f8u7XI/wrD9auB5FL3ePxqOteIFSD2ZS6mfTCkbk/jTsqRKHx4mECWkaJYQ==
-X-Received: by 2002:a37:4a16:: with SMTP id x22mr30918089qka.88.1582239975412;
-        Thu, 20 Feb 2020 15:06:15 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id 65sm542770qtf.95.2020.02.20.15.06.14
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 20 Feb 2020 15:06:14 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j4uta-0002gS-9M; Thu, 20 Feb 2020 19:06:14 -0400
-Date:   Thu, 20 Feb 2020 19:06:14 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: Re: [RFC PATCH v4 10/25] RDMA/irdma: Add driver framework definitions
-Message-ID: <20200220230614.GF31668@ziepe.ca>
-References: <20200212191424.1715577-1-jeffrey.t.kirsher@intel.com>
- <20200212191424.1715577-11-jeffrey.t.kirsher@intel.com>
- <6f01d517-3196-1183-112e-8151b821bd72@mellanox.com>
- <9DD61F30A802C4429A01CA4200E302A7C60C94AF@fmsmsx124.amr.corp.intel.com>
- <AM0PR05MB4866395BD477FAD269BCAE07D1130@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        id S1729335AbgBTXMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 18:12:40 -0500
+Received: from ozlabs.org ([203.11.71.1]:38461 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729027AbgBTXMk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Feb 2020 18:12:40 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48Nr382l3Sz9sPk;
+        Fri, 21 Feb 2020 10:12:36 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1582240356;
+        bh=9q6mRNIp03dcqTokBVM+57+us+Lfs23/8GR9JHEgJnI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TdDjBgqCXTJ+Q4VMJ95puLVMlZFFgOjsIMfbnW2+V2udyMnmoLqhuiq9wnXdla900
+         xAU5WkUQU9cJpCehqNaKUK1s3MiaapJYz2nNake0RUtR9FFTQaePylNynrzCJhLYfa
+         os21j+z89s87vSZjjjDzq2z+2tB9pXds/xAktfWSYpUOdQ5IRryaV5Co6XfJkoPLv7
+         +K0c3iOJDmuOnIagX7re0Nd46pSNuadcn7RYRFAAsHm5PgEfwhBhd1vU7WxHULGYTg
+         t70mGoHTpf+PpKfSK+fXfod2VCAps1mxh24nh8YNgm0zYeBWazAd5boRIK5DbT8feV
+         wTeFUaRSG9mKw==
+Date:   Fri, 21 Feb 2020 10:12:35 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Brett Creeley <brett.creeley@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200221101235.3db4fc56@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR05MB4866395BD477FAD269BCAE07D1130@AM0PR05MB4866.eurprd05.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/signed; boundary="Sig_/8kFVcoFSaXg35pzhBJbQ1WN";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 10:24:05PM +0000, Parav Pandit wrote:
-> 
-> 
-> > From: Saleem, Shiraz <shiraz.saleem@intel.com>
-> > Sent: Tuesday, February 18, 2020 2:43 PM
-> > To: Parav Pandit <parav@mellanox.com>; Kirsher, Jeffrey T
-> > <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
-> > gregkh@linuxfoundation.org
-> > Cc: Ismail, Mustafa <mustafa.ismail@intel.com>; netdev@vger.kernel.org;
-> > linux-rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> > jgg@ziepe.ca
-> > Subject: RE: [RFC PATCH v4 10/25] RDMA/irdma: Add driver framework
-> > definitions
-> > 
-> > [..]
-> > 
-> > > > +static int irdma_devlink_reload_up(struct devlink *devlink,
-> > > > +				   struct netlink_ext_ack *extack) {
-> > > > +	struct irdma_dl_priv *priv = devlink_priv(devlink);
-> > > > +	union devlink_param_value saved_value;
-> > > > +	const struct virtbus_dev_id *id = priv->vdev->matched_element;
-> > >
-> > > Like irdma_probe(), struct iidc_virtbus_object *vo is accesible for the given
-> > priv.
-> > > Please use struct iidc_virtbus_object for any sharing between two drivers.
-> > > matched_element modification inside the virtbus match() function and
-> > > accessing pointer to some driver data between two driver through this
-> > > matched_element is not appropriate.
-> > 
-> > We can possibly avoid matched_element and driver data look up here.
-> > But fundamentally, at probe time (see irdma_gen_probe) the irdma driver
-> > needs to know which generation type of vdev we bound to. i.e. i40e or ice ?
-> > since we support both.
-> > And based on it, extract the driver specific virtbus device object, i.e
-> > i40e_virtbus_device vs iidc_virtbus_object and init that device.
-> > 
-> > Accessing driver_data off the vdev matched entry in irdma_virtbus_id_table
-> > is how we know this generation info and make the decision.
-> > 
-> If there is single irdma driver for two different virtbus device
-> types, it is better to have two instances of
-> virtbus_register_driver() with different matching string/id.
+--Sig_/8kFVcoFSaXg35pzhBJbQ1WN
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I think this also makes sense
+Hi all,
 
-The probe mechanism should include the entry pointer like PCI does for
-probe so that the driver knows what to do.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Jason
+  drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+
+between commit:
+
+  c54d209c78b8 ("ice: Wait for VF to be reset/ready before configuration")
+
+from the net tree and commits:
+
+  b093841f9ac9 ("ice: Refactor port vlan configuration for the VF")
+  61c9ce86a6f5 ("ice: Fix Port VLAN priority bits")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 75c70d432c72,a21f9d2edbbb..000000000000
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@@ -2738,7 -2786,8 +2828,8 @@@ ice_set_vf_port_vlan(struct net_device=20
+  	struct ice_vsi *vsi;
+  	struct device *dev;
+  	struct ice_vf *vf;
++ 	u16 vlanprio;
+ -	int ret =3D 0;
+ +	int ret;
+ =20
+  	dev =3D ice_pf_to_dev(pf);
+  	if (ice_validate_vf_id(pf, vf_id))
+@@@ -2756,47 -2806,58 +2848,59 @@@
+ =20
+  	vf =3D &pf->vf[vf_id];
+  	vsi =3D pf->vsi[vf->lan_vsi_idx];
+ -	if (ice_check_vf_init(pf, vf))
+ -		return -EBUSY;
+ +
+ +	ret =3D ice_check_vf_ready_for_cfg(vf);
+ +	if (ret)
+ +		return ret;
+ =20
+- 	if (le16_to_cpu(vsi->info.pvid) =3D=3D vlanprio) {
++ 	vlanprio =3D vlan_id | (qos << VLAN_PRIO_SHIFT);
++=20
++ 	if (vf->port_vlan_info =3D=3D vlanprio) {
+  		/* duplicate request, so just return success */
+  		dev_dbg(dev, "Duplicate pvid %d request\n", vlanprio);
+ -		return ret;
+ +		return 0;
+  	}
+ =20
+- 	/* If PVID, then remove all filters on the old VLAN */
+- 	if (vsi->info.pvid)
+- 		ice_vsi_kill_vlan(vsi, (le16_to_cpu(vsi->info.pvid) &
+- 				  VLAN_VID_MASK));
+-=20
+  	if (vlan_id || qos) {
++ 		/* remove VLAN 0 filter set by default when transitioning from
++ 		 * no port VLAN to a port VLAN. No change to old port VLAN on
++ 		 * failure.
++ 		 */
++ 		ret =3D ice_vsi_kill_vlan(vsi, 0);
++ 		if (ret)
++ 			return ret;
+  		ret =3D ice_vsi_manage_pvid(vsi, vlanprio, true);
+  		if (ret)
+  			return ret;
+  	} else {
+- 		ice_vsi_manage_pvid(vsi, 0, false);
+- 		vsi->info.pvid =3D 0;
++ 		/* add VLAN 0 filter back when transitioning from port VLAN to
++ 		 * no port VLAN. No change to old port VLAN on failure.
++ 		 */
++ 		ret =3D ice_vsi_add_vlan(vsi, 0);
++ 		if (ret)
++ 			return ret;
++ 		ret =3D ice_vsi_manage_pvid(vsi, 0, false);
++ 		if (ret)
+ -			goto error_manage_pvid;
+++			return ret;
+  	}
+ =20
+  	if (vlan_id) {
+  		dev_info(dev, "Setting VLAN %d, QoS 0x%x on VF %d\n",
+  			 vlan_id, qos, vf_id);
+ =20
+- 		/* add new VLAN filter for each MAC */
++ 		/* add VLAN filter for the port VLAN */
+  		ret =3D ice_vsi_add_vlan(vsi, vlan_id);
+  		if (ret)
+ -			goto error_manage_pvid;
+ +			return ret;
+  	}
++ 	/* remove old port VLAN filter with valid VLAN ID or QoS fields */
++ 	if (vf->port_vlan_info)
++ 		ice_vsi_kill_vlan(vsi, vf->port_vlan_info & VLAN_VID_MASK);
+ =20
+- 	/* The Port VLAN needs to be saved across resets the same as the
+- 	 * default LAN MAC address.
+- 	 */
+- 	vf->port_vlan_id =3D le16_to_cpu(vsi->info.pvid);
++ 	/* keep port VLAN information persistent on resets */
++ 	vf->port_vlan_info =3D le16_to_cpu(vsi->info.pvid);
+ =20
+ -error_manage_pvid:
+ -	return ret;
+ +	return 0;
+  }
+ =20
+  /**
+
+--Sig_/8kFVcoFSaXg35pzhBJbQ1WN
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5PEmMACgkQAVBC80lX
+0Gzoqwf9FP4eMWnPBiWV08yZ3C7pb8dz5+Azf24h1tq8kFFCrDYcB/F7H3QDEUFk
+gKie/4sunhaV93GKs9nQwJLwV0IQU1CbtZAdIj4vqK/ERzr8MwxgBNFA05PFjiUm
+51UkjkMNDBSBxwsDXpFMpZS4VJw8EvVAmT3cC9VrlwU1wnJQiPmFSIFq7I9ZD//k
+BPqbPCGlDI0g4hBN/DO10vfsFM382UVlrqEy9jj8xgfO3ccmkaG+ZyGZ8pN8kMKf
+ad2Wq5oRvtZ75gdM9AAvCw7hCer7qrOHj46tjUBcJOLo/S5WqWu7XdPAGwsnCPSX
+mubFsy0nZRZ1DZwR+KFCdohrAUpyog==
+=OU+m
+-----END PGP SIGNATURE-----
+
+--Sig_/8kFVcoFSaXg35pzhBJbQ1WN--
