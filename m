@@ -2,86 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3931663F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 18:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BDE91663F5
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 18:08:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgBTRHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 12:07:51 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:50956 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728768AbgBTRHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 12:07:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582218467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fRyl+HNCJYGuzif7UHbBNmoq+TguvgwSchvSmXTT2m8=;
-        b=giUHMUtfIAB0HemHQWmprLxqBb5rPV6Kp6+MEPN2dWwBtGo+ZL3ggisJjLdiIw6hkntwNn
-        e+FBi/TY/0gbeligtFHiyER+7m3jhFhm7o1HaF+crlbQfXQ+6jbu1y3waJi/baKoCcM8AU
-        BCIczJnJFZMJDaimAuasbIm+PHZ00Uw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-387-o5UPWaBQMDeQ-SMDPVJK3A-1; Thu, 20 Feb 2020 12:07:44 -0500
-X-MC-Unique: o5UPWaBQMDeQ-SMDPVJK3A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E3649800EB4;
-        Thu, 20 Feb 2020 17:07:38 +0000 (UTC)
-Received: from redhatnow.users.ipa.redhat.com (ovpn-117-1.phx2.redhat.com [10.3.117.1])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A06D90F65;
-        Thu, 20 Feb 2020 17:07:29 +0000 (UTC)
-Subject: Re: [RFC PATCH 02/11] ata: Remove Calxeda AHCI driver
-To:     Rob Herring <robh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        id S1728791AbgBTRHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 12:07:48 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37987 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728173AbgBTRHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 12:07:47 -0500
+Received: by mail-wm1-f67.google.com with SMTP id a9so2881449wmj.3;
+        Thu, 20 Feb 2020 09:07:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=37niT//lDaILKiAgLmVPycHnKOoR/1yOuQ3A2inzDzc=;
+        b=QEux0/eakJEJPRRBSy1DQ6l5a06ZagxVBvGVuOCMSFWIsHeD2cwNQoGNgd9VlMx6op
+         zcAqKt4+NATcE1Hv2LynemAgW2pR/xcddfiX1iktQDIfEPXfXnp1NA0M597F0YSqwvx1
+         MYcBz/H7zS1i6a142ioxHZXZHHbTteEe5Rn3j2NCCML7NjCpr5MOZ6/ZeJo4/m2CzDzR
+         GS+qD7c8szn3Cd/+vDole5anHZrN5DFkK+fZtI4m/08LkJP4NQv7aUT1BxFFSBZbq1TO
+         /WaI4O1m2w98WleIHpxsPKarvZhlR1b0exnc1NTzmOo7wHy5spZMS49Vc8sj+VeprJwy
+         vfZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=37niT//lDaILKiAgLmVPycHnKOoR/1yOuQ3A2inzDzc=;
+        b=Hkqf20WOC2lfV4sdhDtlL6jT2jvlSmydpNCCY/5NQNcik6m5qtkpn8cvZHyiHAZaEr
+         /i/20eEiTZroGrVq6wHPGsjoAiJsbc3kKHPl/JY9BoGWULpwijkZhuvOgo9m7XRXXnMc
+         QOgHoyHV04UEydqrUpzrZOKDHPPlaG8crTVJSKqGIu39BbuFKbU4IlyAqS2Dt71pp7J8
+         LBVsfAjTdQk3NZ8/QAZhIUN0hUVLxtdUJhl5APq8dFIfcqY4P3HUssrjMe+duySORADa
+         WGQcqON+OP7oCF5CsUfWv2DVsMyozOMeiga84xhl9Zcf/MLIg0ZxZqGBlF27WTcBPXn9
+         3viQ==
+X-Gm-Message-State: APjAAAVW1ixWG8SvGHawDwYu9tdEfFlmCNNhqiXEp72FXaNoQLudPaFV
+        bSZ76f38/TvnZ2dPJSKXeek=
+X-Google-Smtp-Source: APXvYqwR7P069VhMerWiRTx40KIARgMf/C2Ty0f48VwkRBQcE79u5/YkJkbiR2A7GlGkhkjAqT+wAQ==
+X-Received: by 2002:a1c:cc11:: with SMTP id h17mr5446322wmb.19.1582218465545;
+        Thu, 20 Feb 2020 09:07:45 -0800 (PST)
+Received: from Ansuel-XPS.localdomain (93-39-149-95.ip76.fastwebnet.it. [93.39.149.95])
+        by smtp.googlemail.com with ESMTPSA id o77sm5817883wme.34.2020.02.20.09.07.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 09:07:45 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        iommu@lists.linux-foundation.org,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Will Deacon <will@kernel.org>
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218171321.30990-3-robh@kernel.org>
-From:   Mark Langsdorf <mlangsdo@redhat.com>
-Message-ID: <bf1291f2-597e-bff9-6780-ec233f5c2a20@redhat.com>
-Date:   Thu, 20 Feb 2020 11:07:29 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/2] Documentation: devictree: Add ipq806x mdio bindings
+Date:   Thu, 20 Feb 2020 18:07:29 +0100
+Message-Id: <20200220170732.12741-2-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200220170732.12741-1-ansuelsmth@gmail.com>
+References: <20200220170732.12741-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200218171321.30990-3-robh@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/20 11:13 AM, Rob Herring wrote:
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: linux-ide@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+Add documentations for ipq806x mdio driver.
 
-Acked-by: Mark Langsdorf <mark.langsdorf@gmail.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ .../bindings/net/qcom,ipq8064-mdio.yaml       | 52 +++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+new file mode 100644
+index 000000000000..c5a21c0b5325
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/qcom,ipq8064-mdio.txt
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm ipq806x MDIO bus controller
++
++description: |+
++  The ipq806x soc have a MDIO dedicated controller that is
++  used to comunicate with the gmac phy conntected.
++  Child nodes of this MDIO bus controller node are standard
++  Ethernet PHY device nodes as described in
++  Documentation/devicetree/bindings/net/phy.txt
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    const: qcom,ipq8064-mdio
++  reg:
++    maxItems: 1
++    description: address and length of the register set for the device
++  clocks:
++    maxItems: 1
++    description: A reference to the clock supplying the MDIO bus controller
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#address-cells"
++  - "#size-cells"
++
++examples:
++  - |
++    mdio@37000000 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        compatible = "qcom,ipq8064-mdio", "syscon";
++        reg = <0x37000000 0x200000>;
++        resets = <&gcc GMAC_CORE1_RESET>;
++        reset-names = "stmmaceth";
++        clocks = <&gcc GMAC_CORE1_CLK>;
++
++        switch@10 {
++            compatible = "qca,qca8337";
++            ...
++        }
++    };
+\ No newline at end of file
+-- 
+2.25.0
 
