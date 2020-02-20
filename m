@@ -2,163 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5A616612A
-	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64A49166133
+	for <lists+netdev@lfdr.de>; Thu, 20 Feb 2020 16:43:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728460AbgBTPkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 10:40:55 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64672 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728305AbgBTPkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:40:55 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01KFdqDj005513;
-        Thu, 20 Feb 2020 07:40:41 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=z4/Y2RKqxlrE9f+tNnFoxR506Q9kNivJJi+sOCKQTlY=;
- b=NocTA30zHf8n0gYRruK3mouIm/KyiaqhIxMpYqhxhBjwt+g8tfH2+bzZle6Isabok/yV
- 1+tH7KbXsV2C1cVvtWaH8A3xB6YeB/WEg0FuGOFXxyAHW+qnIKDsinYOk+qytWM75cFz
- UFB5rHge3cNPV8Vud9eoYIf9p51e5AEv8vuige9zZXe+F7s7OC6LYlhYeysTLt/TR8li
- jnGa6DsTniITEel20PTvNKXidcuJTvfyipx2wUT20EddMv6qHrl+Wipbm67DNxA+mrWK
- 46aeB2XAE0bVGxQjuUuLLRmANmGVe6HDUclUPq8EUuOwYVbXM9/EgOfHKJfuWPFG1pXd tQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2y8ubv82aj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Feb 2020 07:40:41 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 20 Feb
- 2020 07:40:39 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
- by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 20 Feb 2020 07:40:39 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ImshT0JplBfJC7TcIlblNNkxaOrFPXYzqX6JsIkRus8aFKJ09e0yldQqWIAd7IsX7FRDAmtovEFdsA5Bo6j8+X4Bma36wpaAspDm8b3y7eMqFCtee8tAQJ7eHlnhCXB6NFnJYPPg33hTDtaufRlWUoTQ6x0O7xAUnUNsCvwZeXsd132auvwfx/LCRCdPcpOmmzDbRbn05y57AiWbq99We+WcqZ5EcuiuX4mrVBHSQn6dVxe404Z+JVhEyaMd4sllKAlGcvHY1FSwn5s/VcCFN8vNEoB+t4JqYpwscoWATCLpmwdLeG47Y8gG+6jF2h2y6hczvhpcY/QHubJqUvF8ew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z4/Y2RKqxlrE9f+tNnFoxR506Q9kNivJJi+sOCKQTlY=;
- b=BWnTeir1gP/QhKJUSz/Os+IATcGK5/rS7cm9w1Af3B39ohPmbccPUbZzx7XQhysyTm7XphHXhqqGVOYqDolCnfM1IRvUPfPGmOeLq94Ti24Eyt8MnoiwqueSDfsQK3xojCFmvOdsyaRM+zCr8rwmGon+HIqsZajypsf2eTlFw6/FMtK6wpjk7H9PzJr9/hbkgyXEK/xo2erZBuELbG9+HR8IezAHflcMPuw8nL15NIIi5Phpr2OaMWvIyLck353qY+NRg7hxq9Yjr6TR2DFhhGNwBLP2PBec4uXYDLa/VVmhdkuPjKpisNPE34BKYnlo//zoQAuMSTe+TjYkWh5WAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S1728463AbgBTPnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 10:43:53 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46880 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728305AbgBTPnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 10:43:53 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z7so5099524wrl.13
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 07:43:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z4/Y2RKqxlrE9f+tNnFoxR506Q9kNivJJi+sOCKQTlY=;
- b=oF9Qqd0k3cRCZCfDY/2vuTouspWTaVSz7Jmwx51RPxWF6JuTTXtZCo/7OdKI7VInEBLtLMG8c0rbBLzl1i1zJ9C/vwvHfYi+RAHl0NYmZhRuo0noQZJIZPz8CiC5WVNUX3nTZ6Wn5oW73w1+H7dOIzoajXbHSBnekq+/j628Afk=
-Received: from DM5PR18MB2215.namprd18.prod.outlook.com (2603:10b6:4:b7::18) by
- DM5PR18MB1212.namprd18.prod.outlook.com (2603:10b6:3:b9::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2750.17; Thu, 20 Feb 2020 15:40:38 +0000
-Received: from DM5PR18MB2215.namprd18.prod.outlook.com
- ([fe80::bc55:e2d3:1159:1a1a]) by DM5PR18MB2215.namprd18.prod.outlook.com
- ([fe80::bc55:e2d3:1159:1a1a%5]) with mapi id 15.20.2729.033; Thu, 20 Feb 2020
- 15:40:38 +0000
-From:   Ariel Elior <aelior@marvell.com>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "it+linux-netdev@molgen.mpg.de" <it+linux-netdev@molgen.mpg.de>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: RE: [EXT] Re: bnx2x: Latest firmware requirement breaks no regression
- policy
-Thread-Topic: [EXT] Re: bnx2x: Latest firmware requirement breaks no
- regression policy
-Thread-Index: AQHV5wGCvUlGLJk7UUybWaBU9BXeqKgidnIAgAFYngCAAGbFwA==
-Date:   Thu, 20 Feb 2020 15:40:37 +0000
-Message-ID: <DM5PR18MB221508B070C5C2DAE8ADB053C4130@DM5PR18MB2215.namprd18.prod.outlook.com>
-References: <ffbcf99c-8274-eca1-5166-efc0828ca05b@molgen.mpg.de>
- <MN2PR18MB2528C681601B34D05100DF89D3100@MN2PR18MB2528.namprd18.prod.outlook.com>
- <8daadcd1-3ff2-2448-7957-827a71ae4d2e@molgen.mpg.de>
- <MN2PR18MB2528EC91E410FD1BE9FC3EF5D3130@MN2PR18MB2528.namprd18.prod.outlook.com>
-In-Reply-To: <MN2PR18MB2528EC91E410FD1BE9FC3EF5D3130@MN2PR18MB2528.namprd18.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [199.203.130.254]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: eb378971-a546-4844-243c-08d7b61b3bdd
-x-ms-traffictypediagnostic: DM5PR18MB1212:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB1212AED2971FCF64287FD991C4130@DM5PR18MB1212.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 031996B7EF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39840400004)(136003)(376002)(346002)(396003)(199004)(189003)(316002)(52536014)(64756008)(66446008)(6506007)(53546011)(966005)(66946007)(6636002)(66476007)(76116006)(110136005)(66556008)(4326008)(81166006)(9686003)(33656002)(478600001)(8936002)(5660300002)(8676002)(186003)(7696005)(54906003)(2906002)(26005)(71200400001)(86362001)(55016002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB1212;H:DM5PR18MB2215.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NfbfXTC1Pc6Qf0SSQlhqZhjYLClXzjAKBROZs1qUhSJGQIzTVWGWGUxcQta3EWUFli7KLFasfraCOj9yiJ/yXmlirDBk9UWaUep0IINDgRdUnzIpuqyQ0mhPzhAcLdpStv0tkUqFz7Lxw3tbMhnfTny2ylM/EqXWJe+1UGoagHMpJab1HM1hLlBC8OIzVKNlGLwqWFVctbEJgXn+k75lKScBHHtdBWnVCAl4MQopO7Mcabm9s9iejjkLHXC3SGI3tQB8fZXr3jjyQtfJHA/r7r0lJM7HDVMwkVRDdSYds9IuaGfhY5AYipIu010bmwfG3hR8hw1cA8qxNPo8pxY51Q8aXMRokxlF4N3kXCcjuvcFXUvNKUK/J6ydXmxyXGO4MBjEMDt+Rk89GkBUWqTPHFYOHYn9GqtnMX1sFVwJK5f/3qfyiP80vbOtIQ1/rUY4Es5hgn9hWnKm+x6xQGLDRDpL+wz0q59CFnYxrJFwRD2LLxX80OrasOtdJjI6tyJsmWvEAU7WuUzLpzzrXjbKlA==
-x-ms-exchange-antispam-messagedata: Y1N+BnWoHlyNJwnQkDSypzo5nS/6APrx9j0mFZAXU2/GDjFa9/5BHiDFbicFDx6mIf0fbKbI4qnwiXOOuGlL0C6zHUrWSchmVzd5VkW09jJgNhVuMME2/XPtTij9K1KU8TNZ/pVhtkJo+Lyk37dO4w==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g07+/zW+qR6sRAlzczaxrYAwuX1nnBEsZiVPXU+iLe8=;
+        b=HWuThVHk/458EnWPQm/IaiQbV6Vl/wlQbg6Ewy9jZW5OGAFFCrSCEnALGWFuUeUo8g
+         G6ScCC7o23B046z56Z6BjPeiYGwFYXDQdKN4HDMaRGPGI2JR1ir9LLJEUwDiAaaAfovr
+         cGyuqkpVTnWM82twPOjnVDGOI9iqdNK4yb2KItnRO8VbZjfsBDOnLgxdsTrHNP6z3tnn
+         9+9JhlcMKZz5EpGmvV6/9euZFESzU9RxvMp7i21CT6Or2uTimds4yfi/4TlPjbo4wNEB
+         gGhwv46T507C+2dgUAthlSpqOvdjmsJdle5dgJD3WSCQUVCnBgIW0BrBpAXRfmHUonVS
+         sRrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g07+/zW+qR6sRAlzczaxrYAwuX1nnBEsZiVPXU+iLe8=;
+        b=gP7ZM/rXho42TAVxsCuafWhtYhdkaPeCvUJWa41uqcl50ObK4jCX4zw3rRKyaz/wUw
+         N6hyXexohvFTz4J9drfbVMalfURpD/91nqsBHf4gL70Yknkv8mdmV1UvGiYENW1RDXeA
+         MP0kU/lUIQ8FNxEmHb9UtY8xXdfbPqNCbF+GBKBqtSLgR3ThUdm/bqdrKOJFdOYwiuE4
+         S/CZY1/tdkUkuUb1lpTUCGzUv1spE5s3FynPTmV58RamidRm9UcYYKEvBAbUMoxu8ib9
+         TK31Ln43zx5aUNR4DPqxWEHJUwG0UTymnfPmMT73WkPgzFt9Xqa8QNPTuPI9bPPLGbyg
+         S4GA==
+X-Gm-Message-State: APjAAAXbnqwL6gvkfZ8PblebS52T0qZY5+sdxMyD1TNHrH/WhxS9PlQc
+        ww3NkLFFRGfnm7XxJHW6YjxcnuyRBLAs/r5fVVA=
+X-Google-Smtp-Source: APXvYqyh6kxirB7XDIP2xm0rhgWyPUtiFR6TaoEoV4oKVXy+FyhXFAnWaG2qQTlwxFH29ikGIcyXms6tJWRmhMS+Rwo=
+X-Received: by 2002:adf:fac7:: with SMTP id a7mr15383060wrs.299.1582213429534;
+ Thu, 20 Feb 2020 07:43:49 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb378971-a546-4844-243c-08d7b61b3bdd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Feb 2020 15:40:37.9076
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hgmhOtEPPsnqgVCxxe5jHLOkOqjk/gwZ7U6AuaGzXNminO25aR6hKpzE4JmrVBy/AbzZ6e9ox1fX3W5C4rkgYg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB1212
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-20_04:2020-02-19,2020-02-20 signatures=0
+References: <1565595162-1383-1-git-send-email-ying.xue@windriver.com>
+ <1565595162-1383-4-git-send-email-ying.xue@windriver.com> <CACT4Y+Z6mxvuC4+cmWc++zrJrXWPNDVuguHRHyeEp-teuJ_yNA@mail.gmail.com>
+ <CACT4Y+ZN_1OPukSwp6U4Z7o=8g5SsDhFZD9rtnD8CRObYZgYYg@mail.gmail.com>
+In-Reply-To: <CACT4Y+ZN_1OPukSwp6U4Z7o=8g5SsDhFZD9rtnD8CRObYZgYYg@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 20 Feb 2020 23:44:55 +0800
+Message-ID: <CADvbK_cPqbBRvm3qGGdG_9jcShXG8Xyy6BXqzEKC-RMttHXNNw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] tipc: fix issue of calling smp_processor_id() in preemptible
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Ying Xue <ying.xue@windriver.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Hillf Danton <hdanton@sina.com>,
+        tipc-discussion@lists.sourceforge.net,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        jmaloy@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTdWRhcnNhbmEgUmVkZHkgS2Fs
-bHVydSA8c2thbGx1cnVAbWFydmVsbC5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBGZWJydWFyeSAy
-MCwgMjAyMCAxMToxNyBBTQ0KPiBUbzogUGF1bCBNZW56ZWwgPHBtZW56ZWxAbW9sZ2VuLm1wZy5k
-ZT47IEFyaWVsIEVsaW9yDQo+IDxhZWxpb3JAbWFydmVsbC5jb20+OyBHUi1ldmVyZXN0LWxpbnV4
-LWwyIDxHUi1ldmVyZXN0LWxpbnV4LQ0KPiBsMkBtYXJ2ZWxsLmNvbT4NCj4gQ2M6IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmc7IExLTUwgPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBpdCts
-aW51eC0NCj4gbmV0ZGV2QG1vbGdlbi5tcGcuZGU7IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2
-ZW1sb2Z0Lm5ldD4NCj4gU3ViamVjdDogUkU6IFtFWFRdIFJlOiBibngyeDogTGF0ZXN0IGZpcm13
-YXJlIHJlcXVpcmVtZW50IGJyZWFrcyBubyByZWdyZXNzaW9uDQo+IHBvbGljeQ0KPiANCj4gSGkg
-UGF1bCwNCj4gICAgIEJueDJ4IGRyaXZlciBhbmQgdGhlIHN0b3JtIEZXIGFyZSB0aWdodGx5IGNv
-dXBsZWQsIGFuZCB0aGUgaW5mbyBpcyBleGNoYW5nZWQNCj4gYmV0d2VlbiB0aGVtIHZpYSBzaG1l
-bSAoaS5lLiwgY29tbW9uIHN0cnVjdHVyZXMgd2hpY2ggbWlnaHQgY2hhbmdlDQo+IGJldHdlZW4g
-dGhlIHJlbGVhc2VzKS4gQWxzbywgRlcgcHJvdmlkZXMgc29tZSBvZmZzZXQgYWRkcmVzc2VzIHRv
-IHRoZSBkcml2ZXINCj4gd2hpY2ggY291bGQgY2hhbmdlIGJldHdlZW4gdGhlIEZXIHJlbGVhc2Vz
-LCBmb2xsb3dpbmcgaXMgb25lIHN1Y2ggY29tbWl0LA0KPiAJaHR0cHM6Ly93d3cuc3Bpbmljcy5u
-ZXQvbGlzdHMvbmV0ZGV2L21zZzYwOTg4OS5odG1sDQo+IEhlbmNlIGl0J3Mgbm90IHZlcnkgc3Ry
-YWlnaHQgZm9yd2FyZCB0byBwcm92aWRlIHRoZSBiYWNrd2FyZCBjb21wYXRpYmlsaXR5IGkuZS4s
-DQo+IG5ld2VyICh1cGRhdGVkKSBrZXJuZWwgZHJpdmVyIHdpdGggdGhlIG9sZGVyIEZXLg0KPiBD
-dXJyZW50bHkgd2UgZG9u4oCZdCBoYXZlIHBsYW5zIHRvIGltcGxlbWVudCB0aGUgbmV3IG1vZGVs
-IG1lbnRpb25lZCBiZWxvdy4NCj4gDQo+IFRoYW5rcywNCj4gU3VkYXJzYW5hDQpIaSwNClRoZXJl
-IGFyZSBhZGRpdGlvbmFsIHJlYXNvbnMgd2h5IGJhY2t3YXJkcy9mb3J3YXJkcyBjb21wYXRpYmls
-aXR5IGNvbnNpZGVyYXRpb25zDQphcmUgbm90IGFwcGxpY2FibGUgaGVyZS4gVGhpcyBGdyBpcyBu
-b3QgbnZyYW0gYmFzZWQsIGFuZCBkb2VzIG5vdCByZXNpZGUgaW4gdGhlDQpkZXZpY2UuIEl0IGlz
-IHByb2dyYW1lZCB0byB0aGUgZGV2aWNlIG9uIGV2ZXJ5IGRyaXZlciBsb2FkLiBUaGUgZHJpdmVy
-IHdpbGwNCm5ldmVyIGZhY2UgYSBkZXZpY2UgImFscmVhZHkgaW5pdGlhbGl6ZWQiIHdpdGggYSB2
-ZXJzaW9uIG9mIEZXIGl0IGlzIG5vdA0KZmFtaWxpYXIgd2l0aC4NClRoZSBkZXZpY2UgYWxzbyBo
-YXMgdHJhZGl0aW9uYWwgbWFuYWdlbWVudCBGVyBpbiBudnJhbSBpbiB0aGUgZGV2aWNlIHdpdGgg
-d2hpY2gNCndlIGhhdmUgYSBiYWNrd2FyZHMgYW5kIGZvcndhcmRzIGNvbXBhdGliaWxpdHkgbWVj
-aGFuaXNtLCB3aGljaCB3b3JrcyBqdXN0DQpmaW5lLg0KQnV0IHRoZSBGVyB1bmRlciBkaXNjdXNz
-aW9uIGlzIGZhc3RwYXRoIEZ3LCB1c2VkIHRvIGNyYWZ0IGV2ZXJ5IHBhY2tldCBnb2luZyBvdXQN
-Cm9mIHRoZSBkZXZpY2UgYW5kIGFuYWx5emUgYW5kIHBsYWNlIGV2ZXJ5IHBhY2tldCBjb21pbmcg
-aW50byB0aGUgZGV2aWNlLg0KU3VwcG9ydGluZyBtdWx0aXBsZSB2ZXJzaW9ucyBvZiBGVyB3b3Vs
-ZCBiZSB0YW50YW1vdW50IHRvIGltcGxlbWVudGluZyBkb3plbnMgb2YNCnZlcnNpb25zIG9mIHN0
-YXJ0X3htaXQgYW5kIG5hcGlfcG9sbCBpbiB0aGUgZHJpdmVyIChub3QgdG8gbWVudGlvbiBtdWx0
-aXBsZQ0KZmFzdHBhdGggaGFuZGxlcyBvZiBhbGwgdGhlIG9mZmxvYWRzIHRoZSBkZXZpY2Ugc3Vw
-cG9ydHMsIHJvY2UsIGlzY3NpLCBmY29lIGFuZA0KaXdhcnAsIGFzIGFsbCBvZiB0aGVzZSBhcmUg
-b2ZmbG9hZGVkIGJ5IHRoZSBGVykuDQpUaGUgZW50aXJlIGRldmljZSBpbml0aWFsaXphdGlvbiBz
-ZXF1ZW5jZSBhbHNvIGNoYW5nZXMgc2lnbmlmaWNhbnRseSBmcm9tIG9uZSBGVw0KdmVyc2lvbiB0
-byB0aGUgTmV4dC4gQWxsIG9mIHRoZXNlIGRpZmZlcmVuY2VzIGFyZSBhYnN0cmFjdGVkIGF3YXkg
-aW4gdGhlIEZXDQpmaWxlLCB3aGljaCBpbmNsdWRlcyB0aGUgaW5pdCBzZXF1ZW5jZSBhbmQgdGhl
-IGNvbXBpbGVkIEZXLiBUaGUgYW1vdW50IG9mDQpjaGFuZ2VzIHJlcXVpcmVkIGluIGRyaXZlciBh
-cmUgdmVyeSBzaWduaWZpY2FudCB3aGVuIG1vdmluZyBmcm9tIG9uZSB2ZXJzaW9uIHRvDQp0aGUg
-bmV4dC4gVHJ5aW5nIHRvIGtlZXAgYWxsIHRob3NlIHZlcnNpb25zIGFsaXZlIGNvbmN1cnJlbnRs
-eSB3b3VsZCBjYXVzZSB0aGlzDQphbHJlYWR5IHZlcnkgbGFyZ2UgZHJpdmVyIHRvIGJlIDIweCBs
-YXJnZXIuDQpXZSBkb24ndCBoYXZlIGEgbWV0aG9kIG9mIGtlZXBpbmcgdGhlIGRldmljZSBvcGVy
-YXRpb25hbCBpZiB0aGUga2VybmVsIHdhcw0KdXBncmFkZWQgYnV0IGZpcm13YXJlIHRyZWUgd2Fz
-IG5vdCB1cGRhdGVkLiBUaGUgYmVzdCB0aGF0IGNhbiBiZSBkb25lIGlzIHJlcG9ydA0KdGhlIHBy
-b2JsZW0sIHdoaWNoIGlzIHdoYXQgd2UgZG8uDQpUaGFua3MsDQpBcmllbA0K
+On Wed, Feb 19, 2020 at 4:34 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Wed, Feb 19, 2020 at 9:29 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> >
+> > On Mon, Aug 12, 2019 at 9:44 AM Ying Xue <ying.xue@windriver.com> wrote:
+> > >
+> > > syzbot found the following issue:
+> > >
+> > > [   81.119772][ T8612] BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor834/8612
+> > > [   81.136212][ T8612] caller is dst_cache_get+0x3d/0xb0
+> > > [   81.141450][ T8612] CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
+> > > [   81.149435][ T8612] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > [   81.159480][ T8612] Call Trace:
+> > > [   81.162789][ T8612]  dump_stack+0x172/0x1f0
+> > > [   81.167123][ T8612]  debug_smp_processor_id+0x251/0x280
+> > > [   81.172479][ T8612]  dst_cache_get+0x3d/0xb0
+> > > [   81.176928][ T8612]  tipc_udp_xmit.isra.0+0xc4/0xb80
+> > > [   81.182046][ T8612]  ? kasan_kmalloc+0x9/0x10
+> > > [   81.186531][ T8612]  ? tipc_udp_addr2str+0x170/0x170
+> > > [   81.191641][ T8612]  ? __copy_skb_header+0x2e8/0x560
+> > > [   81.196750][ T8612]  ? __skb_checksum_complete+0x3f0/0x3f0
+> > > [   81.202364][ T8612]  ? netdev_alloc_frag+0x1b0/0x1b0
+> > > [   81.207452][ T8612]  ? skb_copy_header+0x21/0x2b0
+> > > [   81.212282][ T8612]  ? __pskb_copy_fclone+0x516/0xc90
+> > > [   81.217470][ T8612]  tipc_udp_send_msg+0x29a/0x4b0
+In tipc_bearer_xmit_skb(), b->media->send_msg()/tipc_udp_send_msg()
+is called under rcu_read_lock(), which is already ensure it's a
+non-preemptible context.
+
+What I saw here is imbalance rcu_read_(un)lock() call somewhere.
+
+> > > [   81.222400][ T8612]  tipc_bearer_xmit_skb+0x16c/0x360
+> > > [   81.227585][ T8612]  tipc_enable_bearer+0xabe/0xd20
+> > > [   81.232606][ T8612]  ? __nla_validate_parse+0x2d0/0x1ee0
+> > > [   81.238048][ T8612]  ? tipc_bearer_xmit_skb+0x360/0x360
+> > > [   81.243401][ T8612]  ? nla_memcpy+0xb0/0xb0
+> > > [   81.247710][ T8612]  ? nla_memcpy+0xb0/0xb0
+> > > [   81.252020][ T8612]  ? __nla_parse+0x43/0x60
+> > > [   81.256417][ T8612]  __tipc_nl_bearer_enable+0x2de/0x3a0
+> > > [   81.261856][ T8612]  ? __tipc_nl_bearer_enable+0x2de/0x3a0
+> > > [   81.267467][ T8612]  ? tipc_nl_bearer_disable+0x40/0x40
+> > > [   81.272848][ T8612]  ? unwind_get_return_address+0x58/0xa0
+> > > [   81.278501][ T8612]  ? lock_acquire+0x16f/0x3f0
+> > > [   81.283190][ T8612]  tipc_nl_bearer_enable+0x23/0x40
+> > > [   81.288300][ T8612]  genl_family_rcv_msg+0x74b/0xf90
+> > > [   81.293404][ T8612]  ? genl_unregister_family+0x790/0x790
+> > > [   81.298935][ T8612]  ? __lock_acquire+0x54f/0x5490
+> > > [   81.303852][ T8612]  ? __netlink_lookup+0x3fa/0x7b0
+> > > [   81.308865][ T8612]  genl_rcv_msg+0xca/0x16c
+> > > [   81.313266][ T8612]  netlink_rcv_skb+0x177/0x450
+> > > [   81.318043][ T8612]  ? genl_family_rcv_msg+0xf90/0xf90
+> > > [   81.323311][ T8612]  ? netlink_ack+0xb50/0xb50
+> > > [   81.327906][ T8612]  ? lock_acquire+0x16f/0x3f0
+> > > [   81.332589][ T8612]  ? kasan_check_write+0x14/0x20
+> > > [   81.337511][ T8612]  genl_rcv+0x29/0x40
+> > > [   81.341485][ T8612]  netlink_unicast+0x531/0x710
+> > > [   81.346268][ T8612]  ? netlink_attachskb+0x770/0x770
+> > > [   81.351374][ T8612]  ? _copy_from_iter_full+0x25d/0x8c0
+> > > [   81.356765][ T8612]  ? __sanitizer_cov_trace_cmp8+0x18/0x20
+> > > [   81.362479][ T8612]  ? __check_object_size+0x3d/0x42f
+> > > [   81.367667][ T8612]  netlink_sendmsg+0x8ae/0xd70
+> > > [   81.372415][ T8612]  ? netlink_unicast+0x710/0x710
+> > > [   81.377520][ T8612]  ? aa_sock_msg_perm.isra.0+0xba/0x170
+> > > [   81.383051][ T8612]  ? apparmor_socket_sendmsg+0x2a/0x30
+> > > [   81.388530][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
+> > > [   81.394775][ T8612]  ? security_socket_sendmsg+0x8d/0xc0
+> > > [   81.400240][ T8612]  ? netlink_unicast+0x710/0x710
+> > > [   81.405161][ T8612]  sock_sendmsg+0xd7/0x130
+> > > [   81.409561][ T8612]  ___sys_sendmsg+0x803/0x920
+> > > [   81.414220][ T8612]  ? copy_msghdr_from_user+0x430/0x430
+> > > [   81.419667][ T8612]  ? _raw_spin_unlock_irqrestore+0x6b/0xe0
+> > > [   81.425461][ T8612]  ? debug_object_active_state+0x25d/0x380
+> > > [   81.431255][ T8612]  ? __lock_acquire+0x54f/0x5490
+> > > [   81.436174][ T8612]  ? kasan_check_read+0x11/0x20
+> > > [   81.441208][ T8612]  ? _raw_spin_unlock_irqrestore+0xa4/0xe0
+> > > [   81.447008][ T8612]  ? mark_held_locks+0xf0/0xf0
+> > > [   81.451768][ T8612]  ? __call_rcu.constprop.0+0x28b/0x720
+> > > [   81.457298][ T8612]  ? call_rcu+0xb/0x10
+> > > [   81.461353][ T8612]  ? __sanitizer_cov_trace_const_cmp4+0x16/0x20
+> > > [   81.467589][ T8612]  ? __fget_light+0x1a9/0x230
+> > > [   81.472249][ T8612]  ? __fdget+0x1b/0x20
+> > > [   81.476301][ T8612]  ? __sanitizer_cov_trace_const_cmp8+0x18/0x20
+> > > [   81.482545][ T8612]  __sys_sendmsg+0x105/0x1d0
+> > > [   81.487115][ T8612]  ? __ia32_sys_shutdown+0x80/0x80
+> > > [   81.492208][ T8612]  ? blkcg_maybe_throttle_current+0x5e2/0xfb0
+> > > [   81.498272][ T8612]  ? trace_hardirqs_on_thunk+0x1a/0x1c
+> > > [   81.503726][ T8612]  ? do_syscall_64+0x26/0x680
+> > > [   81.508385][ T8612]  ? entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > > [   81.514444][ T8612]  ? do_syscall_64+0x26/0x680
+> > > [   81.519110][ T8612]  __x64_sys_sendmsg+0x78/0xb0
+> > > [   81.523862][ T8612]  do_syscall_64+0xfd/0x680
+> > > [   81.528352][ T8612]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > > [   81.534234][ T8612] RIP: 0033:0x444679
+> > > [   81.538114][ T8612] Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> > > [   81.557709][ T8612] RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > > [   81.566147][ T8612] RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
+> > > [   81.574108][ T8612] RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
+> > > [   81.582152][ T8612] RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
+> > > [   81.590113][ T8612] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
+> > > [   81.598089][ T8612] R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
+> > >
+> > > In commit e9c1a793210f ("tipc: add dst_cache support for udp media")
+> > > dst_cache_get() was introduced to be called in tipc_udp_xmit(). But
+> > > smp_processor_id() called by dst_cache_get() cannot be invoked in
+> > > preemptible context, as a result, the complaint above was reported.
+> > >
+> > > Fixes: e9c1a793210f ("tipc: add dst_cache support for udp media")
+> > > Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
+> > > Signed-off-by: Hillf Danton <hdanton@sina.com>
+> > > Signed-off-by: Ying Xue <ying.xue@windriver.com>
+> >
+> > Hi,
+> >
+> > Was this ever merged?
+> > The bug is still open, alive and kicking:
+> > https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
+> >
+> > and one of the top crashers currently.
+> > Along with few other top crashers, these bugs prevent most of the
+> > other kernel testing from happening.
+>
+> /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+>
+> +jmaloy new email address
+>
+> > > ---
+> > >  net/tipc/udp_media.c | 12 +++++++++---
+> > >  1 file changed, 9 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+> > > index 287df687..ca3ae2e 100644
+> > > --- a/net/tipc/udp_media.c
+> > > +++ b/net/tipc/udp_media.c
+> > > @@ -224,6 +224,8 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
+> > >         struct udp_bearer *ub;
+> > >         int err = 0;
+> > >
+> > > +       local_bh_disable();
+> > > +
+> > >         if (skb_headroom(skb) < UDP_MIN_HEADROOM) {
+> > >                 err = pskb_expand_head(skb, UDP_MIN_HEADROOM, 0, GFP_ATOMIC);
+> > >                 if (err)
+> > > @@ -237,9 +239,12 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
+> > >                 goto out;
+> > >         }
+> > >
+> > > -       if (addr->broadcast != TIPC_REPLICAST_SUPPORT)
+> > > -               return tipc_udp_xmit(net, skb, ub, src, dst,
+> > > -                                    &ub->rcast.dst_cache);
+> > > +       if (addr->broadcast != TIPC_REPLICAST_SUPPORT) {
+> > > +               err = tipc_udp_xmit(net, skb, ub, src, dst,
+> > > +                                   &ub->rcast.dst_cache);
+> > > +               local_bh_enable();
+> > > +               return err;
+> > > +       }
+> > >
+> > >         /* Replicast, send an skb to each configured IP address */
+> > >         list_for_each_entry_rcu(rcast, &ub->rcast.list, list) {
+> > > @@ -259,6 +264,7 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
+> > >         err = 0;
+> > >  out:
+> > >         kfree_skb(skb);
+> > > +       local_bh_enable();
+> > >         return err;
+> > >  }
+> > >
+> > > --
+> > > 2.7.4
+> > >
+> > > --
+> > > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> > > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/1565595162-1383-4-git-send-email-ying.xue%40windriver.com.
