@@ -2,290 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D08168022
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 15:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2709F168041
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 15:32:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728939AbgBUOYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 09:24:18 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:57316 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728312AbgBUOYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 09:24:18 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 01LEO4lU085797;
-        Fri, 21 Feb 2020 08:24:04 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1582295044;
-        bh=15N8zWLORDmnGs7RDBa6ODbKVeHGFcdp+UVeeu3/p+E=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=sMAwRf6n5HWOUKOsawIhxpmOYk3T6wwOcWggB+X7xV1Pv9v9gzmVIBJ2picu0F2Mp
-         Tr1bX0sH4KaIpfP1R8fPGFnKn+4AIhgcYq1CZyixIoMJml2Ba4ohQ1OTKuFJmpR9US
-         GYoedWU36kRaN8DUeUyR+zTxhLBiR+kaD07XMPeM=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 01LEO4eO072663
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 21 Feb 2020 08:24:04 -0600
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 21
- Feb 2020 08:24:03 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 21 Feb 2020 08:24:03 -0600
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 01LEO2YH007676;
-        Fri, 21 Feb 2020 08:24:03 -0600
-Subject: Re: [PATCH net-next v3] net: phy: dp83867: Add speed optimization
- feature
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>
-CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200218141130.28825-1-dmurphy@ti.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <f7512515-f684-4086-200c-2b7326183d19@ti.com>
-Date:   Fri, 21 Feb 2020 08:18:55 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1728668AbgBUOcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 09:32:01 -0500
+Received: from esa5.hc3370-68.iphmx.com ([216.71.155.168]:39257 "EHLO
+        esa5.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727851AbgBUOcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 09:32:01 -0500
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Feb 2020 09:32:00 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1582295520;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5V6wc+9mpRmkGpMuMTV0BZEnZVMwxN1rjEGXohUW4aU=;
+  b=SYYuD1DyW6nqIcAqv2Xho6I6j7cZ80OUMMb/J7v0zSR18pKEN4v4a5FI
+   Nj/GBN6oiwboXlpjTnG351e1p9Z4rbwBjy+PdK0MZNWcRhzIYhxHevOlI
+   p9qeICCc2ETBevF2VBq5kkKeBKXQrozg8h2wreJGrzAWFf1Cmyii3zTwS
+   Q=;
+Authentication-Results: esa5.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
+Received-SPF: None (esa5.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
+  receiver=esa5.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa5.hc3370-68.iphmx.com: domain of
+  roger.pau@citrix.com designates 162.221.158.21 as permitted
+  sender) identity=mailfrom; client-ip=162.221.158.21;
+  receiver=esa5.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
+  ip4:168.245.78.127 ~all"
+Received-SPF: None (esa5.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@mail.citrix.com) identity=helo;
+  client-ip=162.221.158.21; receiver=esa5.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="postmaster@mail.citrix.com";
+  x-conformance=sidf_compatible
+IronPort-SDR: y8RSahKbtmuA+ejK3hSCJcCTV55gfvG8rZeZN6TdFVwt04Ma9pf7AlAws+kUAiG0upZFUcg7+/
+ gUsgrWpPuCp8BFMcGaNAS3INbpdzW9ielDy0b4uKNh1xpMtYbK/obK8NeMDyTsxfyjeUQC8+XT
+ lz/bv7VFxepsDa2CRJe1izjDrWTbhwYZe+tBx6cw/uQ2td/MVMa/AieyA8rvUf9RHc9pgZvvfP
+ emjIhmU535ZkYSo71v6vIWzFBt/g/gVcWFp1rquVByq8voL1a6WEZ2O2Oc18SI2agQw+MzKaCC
+ 0Y4=
+X-SBRS: 2.7
+X-MesageID: 13176928
+X-Ironport-Server: esa5.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.70,468,1574139600"; 
+   d="scan'208";a="13176928"
+Date:   Fri, 21 Feb 2020 15:24:45 +0100
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
+        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
+        <linux-mm@kvack.org>, <kamatam@amazon.com>,
+        <sstabellini@kernel.org>, <konrad.wilk@oracle.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>,
+        <benh@kernel.crashing.org>
+Subject: Re: [RFC PATCH v3 06/12] xen-blkfront: add callbacks for PM suspend
+ and hibernation
+Message-ID: <20200221142445.GZ4679@Air-de-Roger>
+References: <cover.1581721799.git.anchalag@amazon.com>
+ <890c404c585d7790514527f0c021056a7be6e748.1581721799.git.anchalag@amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <20200218141130.28825-1-dmurphy@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <890c404c585d7790514527f0c021056a7be6e748.1581721799.git.anchalag@amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
+ AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bump
-
-On 2/18/20 8:11 AM, Dan Murphy wrote:
-> Set the speed optimization bit on the DP83867 PHY.
-> This feature can also be strapped on the 64 pin PHY devices
-> but the 48 pin devices do not have the strap pin available to enable
-> this feature in the hardware.  PHY team suggests to have this bit set.
->
-> With this bit set the PHY will auto negotiate and report the link
-> parameters in the PHYSTS register.  This register provides a single
-> location within the register set for quick access to commonly accessed
-> information.
->
-> In this case when auto negotiation is on the PHY core reads the bits
-> that have been configured or if auto negotiation is off the PHY core
-> reads the BMCR register and sets the phydev parameters accordingly.
->
-> This Giga bit PHY can throttle the speed to 100Mbps or 10Mbps to accomodate a
-> 4-wire cable.  If this should occur the PHYSTS register contains the
-> current negotiated speed and duplex mode.
->
-> In overriding the genphy_read_status the dp83867_read_status will do a
-> genphy_read_status to setup the LP and pause bits.  And then the PHYSTS
-> register is read and the phydev speed and duplex mode settings are
-> updated.
->
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+On Fri, Feb 14, 2020 at 11:25:34PM +0000, Anchal Agarwal wrote:
+> From: Munehisa Kamata <kamatam@amazon.com
+> 
+> Add freeze, thaw and restore callbacks for PM suspend and hibernation
+> support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
+> events, need to implement these xenbus_driver callbacks.
+> The freeze handler stops a block-layer queue and disconnect the
+> frontend from the backend while freeing ring_info and associated resources.
+> The restore handler re-allocates ring_info and re-connect to the
+> backend, so the rest of the kernel can continue to use the block device
+> transparently. Also, the handlers are used for both PM suspend and
+> hibernation so that we can keep the existing suspend/resume callbacks for
+> Xen suspend without modification. Before disconnecting from backend,
+> we need to prevent any new IO from being queued and wait for existing
+> IO to complete. Freeze/unfreeze of the queues will guarantee that there
+> are no requests in use on the shared ring.
+> 
+> Note:For older backends,if a backend doesn't have commit'12ea729645ace'
+> xen/blkback: unmap all persistent grants when frontend gets disconnected,
+> the frontend may see massive amount of grant table warning when freeing
+> resources.
+> [   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
+> [   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
+> 
+> In this case, persistent grants would need to be disabled.
+> 
+> [Anchal Changelog: Removed timeout/request during blkfront freeze.
+> Fixed major part of the code to work with blk-mq]
+> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 > ---
->
-> v3 - Add the tunable feature into the driver for downshift.  Change speed optimization
-> nomenclature to dwonshift
->
->   drivers/net/phy/dp83867.c | 150 ++++++++++++++++++++++++++++++++++++++
->   1 file changed, 150 insertions(+)
->
-> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-> index 967f57ed0b65..13f7f2d5a2ea 100644
-> --- a/drivers/net/phy/dp83867.c
-> +++ b/drivers/net/phy/dp83867.c
-> @@ -14,6 +14,7 @@
->   #include <linux/delay.h>
->   #include <linux/netdevice.h>
->   #include <linux/etherdevice.h>
-> +#include <linux/bitfield.h>
->   
->   #include <dt-bindings/net/ti-dp83867.h>
->   
-> @@ -21,6 +22,7 @@
->   #define DP83867_DEVADDR		0x1f
->   
->   #define MII_DP83867_PHYCTRL	0x10
-> +#define MII_DP83867_PHYSTS	0x11
->   #define MII_DP83867_MICR	0x12
->   #define MII_DP83867_ISR		0x13
->   #define DP83867_CFG2		0x14
-> @@ -118,6 +120,24 @@
->   #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
->   #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
->   
-> +/* PHY STS bits */
-> +#define DP83867_PHYSTS_1000			BIT(15)
-> +#define DP83867_PHYSTS_100			BIT(14)
-> +#define DP83867_PHYSTS_DUPLEX			BIT(13)
-> +#define DP83867_PHYSTS_LINK			BIT(10)
-> +
-> +/* CFG2 bits */
-> +#define DP83867_DOWNSHIFT_EN		(BIT(8) | BIT(9))
-> +#define DP83867_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
-> +#define DP83867_DOWNSHIFT_1_COUNT_VAL	0
-> +#define DP83867_DOWNSHIFT_2_COUNT_VAL	1
-> +#define DP83867_DOWNSHIFT_4_COUNT_VAL	2
-> +#define DP83867_DOWNSHIFT_8_COUNT_VAL	3
-> +#define DP83867_DOWNSHIFT_1_COUNT	1
-> +#define DP83867_DOWNSHIFT_2_COUNT	2
-> +#define DP83867_DOWNSHIFT_4_COUNT	4
-> +#define DP83867_DOWNSHIFT_8_COUNT	8
-> +
->   /* CFG3 bits */
->   #define DP83867_CFG3_INT_OE			BIT(7)
->   #define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-> @@ -287,6 +307,126 @@ static int dp83867_config_intr(struct phy_device *phydev)
->   	return phy_write(phydev, MII_DP83867_MICR, micr_status);
->   }
->   
-> +static int dp83867_read_status(struct phy_device *phydev)
-> +{
-> +	int status = phy_read(phydev, MII_DP83867_PHYSTS);
-> +	int ret;
-> +
-> +	ret = genphy_read_status(phydev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (status < 0)
-> +		return status;
-> +
-> +	if (status & DP83867_PHYSTS_DUPLEX)
-> +		phydev->duplex = DUPLEX_FULL;
-> +	else
-> +		phydev->duplex = DUPLEX_HALF;
-> +
-> +	if (status & DP83867_PHYSTS_1000)
-> +		phydev->speed = SPEED_1000;
-> +	else if (status & DP83867_PHYSTS_100)
-> +		phydev->speed = SPEED_100;
-> +	else
-> +		phydev->speed = SPEED_10;
-> +
-> +	return 0;
+>  drivers/block/xen-blkfront.c | 119 ++++++++++++++++++++++++++++++++---
+>  1 file changed, 112 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+> index 478120233750..d715ed3cb69a 100644
+> --- a/drivers/block/xen-blkfront.c
+> +++ b/drivers/block/xen-blkfront.c
+> @@ -47,6 +47,8 @@
+>  #include <linux/bitmap.h>
+>  #include <linux/list.h>
+>  #include <linux/workqueue.h>
+> +#include <linux/completion.h>
+> +#include <linux/delay.h>
+>  
+>  #include <xen/xen.h>
+>  #include <xen/xenbus.h>
+> @@ -79,6 +81,8 @@ enum blkif_state {
+>  	BLKIF_STATE_DISCONNECTED,
+>  	BLKIF_STATE_CONNECTED,
+>  	BLKIF_STATE_SUSPENDED,
+> +	BLKIF_STATE_FREEZING,
+> +	BLKIF_STATE_FROZEN
+>  };
+>  
+>  struct grant {
+> @@ -220,6 +224,7 @@ struct blkfront_info
+>  	struct list_head requests;
+>  	struct bio_list bio_list;
+>  	struct list_head info_list;
+> +	struct completion wait_backend_disconnected;
+>  };
+>  
+>  static unsigned int nr_minors;
+> @@ -261,6 +266,7 @@ static DEFINE_SPINLOCK(minor_lock);
+>  static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo);
+>  static void blkfront_gather_backend_features(struct blkfront_info *info);
+>  static int negotiate_mq(struct blkfront_info *info);
+> +static void __blkif_free(struct blkfront_info *info);
+
+I'm not particularly found of adding underscore prefixes to functions,
+I would rather use a more descriptive name if possible.
+blkif_free_{queues/rings} maybe?
+
+>  
+>  static int get_id_from_freelist(struct blkfront_ring_info *rinfo)
+>  {
+> @@ -995,6 +1001,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+>  	info->sector_size = sector_size;
+>  	info->physical_sector_size = physical_sector_size;
+>  	blkif_set_queue_limits(info);
+> +	init_completion(&info->wait_backend_disconnected);
+>  
+>  	return 0;
+>  }
+> @@ -1218,6 +1225,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
+>  /* Already hold rinfo->ring_lock. */
+>  static inline void kick_pending_request_queues_locked(struct blkfront_ring_info *rinfo)
+>  {
+> +	if (unlikely(rinfo->dev_info->connected == BLKIF_STATE_FREEZING))
+> +		return;
+
+Do you really need this check here?
+
+The queue will be frozen and quiesced in blkfront_freeze when the state
+is set to BLKIF_STATE_FREEZING, and then the call to
+blk_mq_start_stopped_hw_queues is just a noop as long as the queue is
+quiesced (see blk_mq_run_hw_queue).
+
+>  	if (!RING_FULL(&rinfo->ring))
+>  		blk_mq_start_stopped_hw_queues(rinfo->dev_info->rq, true);
+>  }
+> @@ -1341,8 +1350,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+>  
+>  static void blkif_free(struct blkfront_info *info, int suspend)
+>  {
+> -	unsigned int i;
+> -
+>  	/* Prevent new requests being issued until we fix things up. */
+>  	info->connected = suspend ?
+>  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
+> @@ -1350,6 +1357,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+>  	if (info->rq)
+>  		blk_mq_stop_hw_queues(info->rq);
+>  
+> +	__blkif_free(info);
 > +}
 > +
-> +static int dp83867_get_downshift(struct phy_device *phydev, u8 *data)
+> +static void __blkif_free(struct blkfront_info *info)
 > +{
-> +	int val, cnt, enable, count;
+> +	unsigned int i;
 > +
-> +	val = phy_read(phydev, DP83867_CFG2);
-> +	if (val < 0)
-> +		return val;
-> +
-> +	enable = FIELD_GET(DP83867_DOWNSHIFT_EN, val);
-> +	cnt = FIELD_GET(DP83867_DOWNSHIFT_ATTEMPT_MASK, val);
-> +
-> +	switch (cnt) {
-> +	case DP83867_DOWNSHIFT_1_COUNT_VAL:
-> +		count = DP83867_DOWNSHIFT_1_COUNT;
-> +		break;
-> +	case DP83867_DOWNSHIFT_2_COUNT_VAL:
-> +		count = DP83867_DOWNSHIFT_2_COUNT;
-> +		break;
-> +	case DP83867_DOWNSHIFT_4_COUNT_VAL:
-> +		count = DP83867_DOWNSHIFT_4_COUNT;
-> +		break;
-> +	case DP83867_DOWNSHIFT_8_COUNT_VAL:
-> +		count = DP83867_DOWNSHIFT_8_COUNT;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	};
-> +
-> +	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
-> +
-> +	return 0;
-> +}
-> +
-> +static int dp83867_set_downshift(struct phy_device *phydev, u8 cnt)
-> +{
-> +	int val, count;
-> +
-> +	if (cnt > DP83867_DOWNSHIFT_8_COUNT)
-> +		return -E2BIG;
-> +
-> +	if (!cnt)
-> +		return phy_clear_bits(phydev, DP83867_CFG2,
-> +				      DP83867_DOWNSHIFT_EN);
-> +
-> +	switch (cnt) {
-> +		case DP83867_DOWNSHIFT_1_COUNT:
-> +			count = DP83867_DOWNSHIFT_1_COUNT_VAL;
-> +			break;
-> +		case DP83867_DOWNSHIFT_2_COUNT:
-> +			count = DP83867_DOWNSHIFT_2_COUNT_VAL;
-> +			break;
-> +		case DP83867_DOWNSHIFT_4_COUNT:
-> +			count = DP83867_DOWNSHIFT_4_COUNT_VAL;
-> +			break;
-> +		case DP83867_DOWNSHIFT_8_COUNT:
-> +			count = DP83867_DOWNSHIFT_8_COUNT_VAL;
-> +			break;
-> +		default:
-> +			phydev_err(phydev,
-> +				   "Downshift count must be 1, 2, 4 or 8\n");
-> +			return -EINVAL;
-> +	};
-> +
-> +	val = DP83867_DOWNSHIFT_EN;
-> +	val |= FIELD_PREP(DP83867_DOWNSHIFT_ATTEMPT_MASK, count);
-> +
-> +	return phy_modify(phydev, DP83867_CFG2,
-> +			  DP83867_DOWNSHIFT_EN | DP83867_DOWNSHIFT_ATTEMPT_MASK,
-> +			  val);
-> +}
-> +
-> +static int dp83867_get_tunable(struct phy_device *phydev,
-> +				struct ethtool_tunable *tuna, void *data)
-> +{
-> +	switch (tuna->id) {
-> +	case ETHTOOL_PHY_DOWNSHIFT:
-> +		return dp83867_get_downshift(phydev, data);
-> +	default:
-> +		return -EOPNOTSUPP;
+>  	for (i = 0; i < info->nr_rings; i++)
+>  		blkif_free_ring(&info->rinfo[i]);
+>  
+> @@ -1553,8 +1567,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+>  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+>  	struct blkfront_info *info = rinfo->dev_info;
+>  
+> -	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
+> -		return IRQ_HANDLED;
+> +	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
+> +		if (info->connected != BLKIF_STATE_FREEZING)
+
+Please fold this into the previous if condition:
+
+if (unlikely(info->connected != BLKIF_STATE_CONNECTED &&
+             info->connected != BLKIF_STATE_FREEZING))
+	return IRQ_HANDLED;
+
 > +	}
-> +}
+>  
+>  	spin_lock_irqsave(&rinfo->ring_lock, flags);
+>   again:
+> @@ -2020,6 +2036,7 @@ static int blkif_recover(struct blkfront_info *info)
+>  	struct bio *bio;
+>  	unsigned int segs;
+>  
+> +	bool frozen = info->connected == BLKIF_STATE_FROZEN;
+
+Please place this together with the rest of the local variable
+declarations.
+
+>  	blkfront_gather_backend_features(info);
+>  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
+>  	blkif_set_queue_limits(info);
+> @@ -2046,6 +2063,9 @@ static int blkif_recover(struct blkfront_info *info)
+>  		kick_pending_request_queues(rinfo);
+>  	}
+>  
+> +	if (frozen)
+> +		return 0;
+
+I have to admit my memory is fuzzy here, but don't you need to
+re-queue requests in case the backend has different limits of indirect
+descriptors per request for example?
+
+Or do we expect that the frontend is always going to be resumed on the
+same backend, and thus features won't change?
+
 > +
-> +static int dp83867_set_tunable(struct phy_device *phydev,
-> +				struct ethtool_tunable *tuna, const void *data)
+>  	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
+>  		/* Requeue pending requests (flush or discard) */
+>  		list_del_init(&req->queuelist);
+> @@ -2359,6 +2379,7 @@ static void blkfront_connect(struct blkfront_info *info)
+>  
+>  		return;
+>  	case BLKIF_STATE_SUSPENDED:
+> +	case BLKIF_STATE_FROZEN:
+>  		/*
+>  		 * If we are recovering from suspension, we need to wait
+>  		 * for the backend to announce it's features before
+> @@ -2476,12 +2497,37 @@ static void blkback_changed(struct xenbus_device *dev,
+>  		break;
+>  
+>  	case XenbusStateClosed:
+> -		if (dev->state == XenbusStateClosed)
+> +		if (dev->state == XenbusStateClosed) {
+> +			if (info->connected == BLKIF_STATE_FREEZING) {
+> +				__blkif_free(info);
+> +				info->connected = BLKIF_STATE_FROZEN;
+> +				complete(&info->wait_backend_disconnected);
+> +				break;
+> +			}
+> +
+>  			break;
+> +		}
+> +
+> +		/*
+> +		 * We may somehow receive backend's Closed again while thawing
+> +		 * or restoring and it causes thawing or restoring to fail.
+> +		 * Ignore such unexpected state anyway.
+> +		 */
+> +		if (info->connected == BLKIF_STATE_FROZEN &&
+> +				dev->state == XenbusStateInitialised) {
+
+I'm not sure you need the extra dev->state == XenbusStateInitialised.
+If the frotnend is in state BLKIF_STATE_FROZEN you can likely ignore
+the notification of the backend switched to closed state, regardless
+of the frontend state?
+
+> +			dev_dbg(&dev->dev,
+> +					"ignore the backend's Closed state: %s",
+> +					dev->nodename);
+> +			break;
+> +		}
+>  		/* fall through */
+>  	case XenbusStateClosing:
+> -		if (info)
+> -			blkfront_closing(info);
+> +		if (info) {
+> +			if (info->connected == BLKIF_STATE_FREEZING)
+> +				xenbus_frontend_closed(dev);
+> +			else
+> +				blkfront_closing(info);
+> +		}
+>  		break;
+>  	}
+>  }
+> @@ -2625,6 +2671,62 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+>  	mutex_unlock(&blkfront_mutex);
+>  }
+>  
+> +static int blkfront_freeze(struct xenbus_device *dev)
 > +{
-> +	switch (tuna->id) {
-> +	case ETHTOOL_PHY_DOWNSHIFT:
-> +		return dp83867_set_downshift(phydev, *(const u8 *)data);
-> +	default:
-> +		return -EOPNOTSUPP;
+> +	unsigned int i;
+> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> +	struct blkfront_ring_info *rinfo;
+> +	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
+> +	unsigned int timeout = 5 * HZ;
+> +	int err = 0;
+> +
+> +	info->connected = BLKIF_STATE_FREEZING;
+> +
+> +	blk_mq_freeze_queue(info->rq);
+> +	blk_mq_quiesce_queue(info->rq);
+
+Don't you need to also drain the queue and make sure it's empty?
+
+> +
+> +	for (i = 0; i < info->nr_rings; i++) {
+> +		rinfo = &info->rinfo[i];
+> +
+> +		gnttab_cancel_free_callback(&rinfo->callback);
+> +		flush_work(&rinfo->work);
 > +	}
+> +
+> +	/* Kick the backend to disconnect */
+> +	xenbus_switch_state(dev, XenbusStateClosing);
+> +
+> +	/*
+> +	 * We don't want to move forward before the frontend is diconnected
+> +	 * from the backend cleanly.
+> +	 */
+> +	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
+> +					      timeout);
+> +	if (!timeout) {
+> +		err = -EBUSY;
+> +		xenbus_dev_error(dev, err, "Freezing timed out;"
+> +				 "the device may become inconsistent state");
+> +	}
+> +
+> +	return err;
 > +}
 > +
->   static int dp83867_config_port_mirroring(struct phy_device *phydev)
->   {
->   	struct dp83867_private *dp83867 =
-> @@ -467,6 +607,12 @@ static int dp83867_config_init(struct phy_device *phydev)
->   	int ret, val, bs;
->   	u16 delay;
->   
-> +	/* Force speed optimization for the PHY even if it strapped */
-> +	ret = phy_modify(phydev, DP83867_CFG2, DP83867_DOWNSHIFT_EN,
-> +			 DP83867_DOWNSHIFT_EN);
-> +	if (ret)
-> +		return ret;
+> +static int blkfront_restore(struct xenbus_device *dev)
+> +{
+> +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> +	int err = 0;
 > +
->   	ret = dp83867_verify_rgmii_cfg(phydev);
->   	if (ret)
->   		return ret;
-> @@ -655,6 +801,10 @@ static struct phy_driver dp83867_driver[] = {
->   		.config_init	= dp83867_config_init,
->   		.soft_reset	= dp83867_phy_reset,
->   
-> +		.read_status	= dp83867_read_status,
-> +		.get_tunable	= dp83867_get_tunable,
-> +		.set_tunable	= dp83867_set_tunable,
+> +	err = talk_to_blkback(dev, info);
+> +	blk_mq_unquiesce_queue(info->rq);
+> +	blk_mq_unfreeze_queue(info->rq);
 > +
->   		.get_wol	= dp83867_get_wol,
->   		.set_wol	= dp83867_set_wol,
->   
+> +	if (err)
+> +		goto out;
+
+There's no need for an out label here, just return err, or even
+simpler:
+
+if (!err)
+	blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
+
+return err;
+
+Thanks, Roger.
