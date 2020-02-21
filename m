@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF75E168976
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C16D168977
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbgBUVqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 16:46:07 -0500
+        id S1728405AbgBUVqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 16:46:09 -0500
 Received: from mail-eopbgr140079.outbound.protection.outlook.com ([40.107.14.79]:9220
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726683AbgBUVqG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 16:46:06 -0500
+        id S1728253AbgBUVqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 16:46:09 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KKjfh9BUVju7Qk5syoBY4CwWXABT/eo4Zm7jk1FG/maR1ythhZoIcZOnixw+iEoNHQIu6JbWMgGXwcpXDfXo79t2Fqof4Xgup0pKx8XTACuGw2lZbHzolxDUDntrR+c4ifJd6WEv3iuD8Q0WoettLnW22weJEfURlA/rSs4MxhMKGI/IB4DfPHotMRcri635xpU95lFIW3iYziArR5Ic3UQZmzxvbMz3C7xA3n8LiaFNA6RsHvcJ9KLffwkOYXphc+I8SrbvXwX9N1zIK6xR+ymj8Nml+lbV8EFbcbjGda9Aan9JbhVvQy98POwD8RdMQ/IQAADQF0/o+tYav0tMWg==
+ b=BObw6JT94v0fVRN01xz80FgIxh65R72RVxdnHUhb68UvH6g4Farlpq/FdDEBOuqyEbaoz8FRMBzosfu9ICcgLO7SlP3rUR7hfg53YxjK2/dHmr9sV8ri7avCuqe0wbG8e8ZFTAkjLDO3VIdQVVo1oGyhaefVCnqLGTWc07MwvQO/Zyk+IbBzxzZmpdcQVA6VUq5ooto93gIauZxgkquOWgeheCAv+fDzBQYvYHK6Dmu/i7+vuSKh7faJSjE7Rhe2rU/L8FzHM8yB9887oHaxnY26YibFZFcejUZKYn0UOIXeLp8+VxAof4eJsYCxkIfQAjpHxdNgjxpiO5cx/al2Xg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nsAjWLTxIkCSglEV1abhAJq7T4O/DDtXer1CG/x67rw=;
- b=W9gYvYQyboA6ldJU2VeBrCek3fFNvMBKqViTkZmtJBcQEmiYGZBAr8cuf34bpkuwaBgGNuzCL7doEuOgO++MkYe3E7HbpuvjgF35w0h/Io9m3ctA5JLg4wpxPhDPR6VJJr7GH/2YFmBefhT+eZC3z4kWKYnFZxyOBetetnX7KZLh2eqMREZBkVWqI5BwQpyinPHmSOQT467VNfvla3Wj6hpyg6I/U3j/h46vf5V4MOoIMVvzXU9GMZEFmh6qql/kQ4KZwW04jZxiqh5GeUhqGMQhwfvC+eyFaQsN5ce/Mpc5Jc9zMcuLrlSNyELB4mF9BQImTpCimo7C4xgIEQqvHg==
+ bh=cIcI41F7f/dYBym36fPExGwNLlIv6PJbGmB5/lTYNEc=;
+ b=Ct7IRB2dvwljPjv+tJv+18IAvdhrSpdCzIGT2WBCQzjqBFSZs75VQMShL3juV8mVKTxWonIDxCSZ7Mdw9WERbSY7pDheHXzukBrFOpvRCydHmrXhjF9/Y/2oK6gsiomUwydO4dV3PeN8AbcCbbc7USsSoJqh6br69fs4zUKTAOrKOlxJ4jhg8/2dypkeCtPej937FJT96HaaUwcAGLIq9RmwyigSlDg4zghDCavvbNOEVuDyk1VhRlXEYt5ADWPG2EqrKVqbuyCAWqgA5eaTfh3PE3KcuvV7HJxVRVm+gRnCd9gsr9VcK8JoBX+kKu4pb8HheoxmVdhIuKDeAfz/7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nsAjWLTxIkCSglEV1abhAJq7T4O/DDtXer1CG/x67rw=;
- b=A8SQy8wh/UKmOIyGBjeP03Bipc1b4yOZWDkUuvJNZ5zG0YULRmCvNIFHHJYqcKdimAzHqLQZBrgcPvR6cMqDvzxEyieEXxckWkQRY0HZo1v+dv3V7JOe03wPGhCYiPtyz/T3zEjaCzrcFneTk5jg3LRD1UABryeHe7b5XOQlafY=
+ bh=cIcI41F7f/dYBym36fPExGwNLlIv6PJbGmB5/lTYNEc=;
+ b=e8K1kjoBDNEW/TmimMz06DwtBCMjXUWWP06ISvpQMaBelDMvGKW5GyaNjoHGrIwWXxhZh7QQRZ6yqGs9/0oz2NqM/FdQgW8fR4aUB6zWWEmztjpnvi/4XbP+Y4cwhn9DlNpuoq4+MBpbU/lyVpgHVUGmC53gFtUdp2nEF6xmiDo=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB6927.eurprd05.prod.outlook.com (10.141.234.211) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2750.17; Fri, 21 Feb 2020 21:46:00 +0000
+ 15.20.2750.17; Fri, 21 Feb 2020 21:46:03 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2729.033; Fri, 21 Feb 2020
- 21:45:59 +0000
-Received: from smtp.office365.com (209.116.155.178) by BY5PR16CA0021.namprd16.prod.outlook.com (2603:10b6:a03:1a0::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Fri, 21 Feb 2020 21:45:58 +0000
+ 21:46:03 +0000
+Received: from smtp.office365.com (209.116.155.178) by BY5PR16CA0021.namprd16.prod.outlook.com (2603:10b6:a03:1a0::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Fri, 21 Feb 2020 21:46:00 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next V2 2/7] net/mlxfw: Improve FSM err message reporting
- and return codes
-Thread-Topic: [PATCH net-next V2 2/7] net/mlxfw: Improve FSM err message
- reporting and return codes
-Thread-Index: AQHV6QBO03R6ivB8CUCxH6CPRN/CCw==
-Date:   Fri, 21 Feb 2020 21:45:59 +0000
-Message-ID: <20200221214536.20265-3-saeedm@mellanox.com>
+Subject: [PATCH net-next V2 3/7] net/mlxfw: More error messages coverage
+Thread-Topic: [PATCH net-next V2 3/7] net/mlxfw: More error messages coverage
+Thread-Index: AQHV6QBQF35JeTstNESGfQKVaucSrg==
+Date:   Fri, 21 Feb 2020 21:46:03 +0000
+Message-ID: <20200221214536.20265-4-saeedm@mellanox.com>
 References: <20200221214536.20265-1-saeedm@mellanox.com>
 In-Reply-To: <20200221214536.20265-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -66,171 +63,148 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: afe97bbe-100a-4f4e-c0c1-08d7b717708d
+x-ms-office365-filtering-correlation-id: da9b429f-785b-47e9-aa98-08d7b717718b
 x-ms-traffictypediagnostic: VI1PR05MB6927:|VI1PR05MB6927:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB69277BFF737DC5C6FB69C233BE120@VI1PR05MB6927.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:236;
+x-microsoft-antispam-prvs: <VI1PR05MB692710E2227CA7106F46C045BE120@VI1PR05MB6927.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:451;
 x-forefront-prvs: 0320B28BE1
 x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(189003)(199004)(186003)(6512007)(8936002)(54906003)(2616005)(316002)(16526019)(956004)(4326008)(478600001)(107886003)(6506007)(110136005)(52116002)(6486002)(26005)(86362001)(1076003)(66946007)(64756008)(66446008)(66476007)(81156014)(81166006)(5660300002)(8676002)(15650500001)(36756003)(71200400001)(2906002)(66556008)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6927;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EspeT3sPMR4qvQuf1Bd2dhPT8xNYqe/k38VUW5g1cXqf8Ul9eFJx9EDUwyZnSghLjz1VVnXSAirrUpB8crKkAGORlRLUfrvI56OYRfjdcBAfHRiZn2bUfa3eFxB9rQTk1DpeMauomFDmXjJ7+N9XaIS3E4gJnFSHH1Um2lJDli3uQECVKvlF4VX1v5GZ8SvuFAj+SkdjRYrpsCITpn4l71/P/RuQLl1B/i64tO1vj9iXqxl0JTzsXMjGmUVSX/vup6oH7ChjUM+sidHPEg9FGREBww4rg2a02gZ1xLbSOA8Mp2mMm6B31H0lBe082eB2tJccImftCDQ1wHSS1SwRgNjZTJrs9liQI8o0VfIzRTGXgJz5eiAewGuLS7nItg65v4hUBwi4mXWVAJOKLPXLpQZ7BxGtaVieWd7E2HW7dh3y9PvbfvW5qi1AZZxRWZXc/2lfdRYgkks9vXFpaBJZjJsahNr8/gXm4Mo1uT9oUJeYYLbEjwTuuGcQjmxjzrbhgUVJzy6oy8z1QYvGTfYUBptXsQaT7vSR/3L6WZLuNAM=
-x-ms-exchange-antispam-messagedata: jwU+lB54RFLL+FwACJSjZ2kyxxpK+vCTdfCDOzD81RGBYgDZ9JE3e7nrjUGFmc22WCw2ShT4NH4oqORh+YOMFt7BKz1doXg5cdvCd2gMADyRfb/4KaxUQjyEctwVf5uO0EGGCh00QfTm0ZFyOOjyfw==
+x-microsoft-antispam-message-info: w8nFfguudkZmA2hIZtMYwv5xWKXq+uKSueZ1aM8W4p5p90nR3BwBQ2VkaXQYi+SBnSSl1vVn4s4LX9v3uZXJFOZI6JlKTQqyQzMNjwpUdb4txiEmshnpX/bcTIsKv8h/GAX5lgzmaQ5pSTPe2ag9/3UNsmYS992NtnVE8/oroilKdblGYbLWeTRA+p3/XUfU1WXvtZUKIjWaGWJat72atrmGVVyLcrQbJAU8oT7nzUNBrcWLMFC0QZKsd2pAffdYkicHC/YNaggQIyk3UEvoP1hph2RBWFqJw5KagprP06FzqDQPKq8wi2spOwaGCkq/R/dGw4OzJktHXNwYUygKBaME4Cm/iJGHq4zaaVD+gnxH094xi2LYbrfq7IDfnKTaW9gakcuolVwQDoy9D/lrVLssVbuAjt9JpFH4gVs8mmOJ9wpcDPNvYB4M+3uDd00ge03LbwL7ME2YAXAL3Vz/jjCd2Z9h50ZXskq88nvknYwwc8JLac+/JgNEq5jUfgLT1limuh0GSUxYT9mFcRJkRzH4yJDOaLv8wHZUveKTFUQ=
+x-ms-exchange-antispam-messagedata: egIaazX5wat7Tp24cIWXhEM9SmtnahrGLXSH8xrO8okKJKM8lKv6Mi8DgbQM/Nls4BqPbXrjlWYsP5yiPcc8RQWHaUtB7GxL2hy10O3d3rMyTpomX0h4LfUDSs1dITlzDh076m4PyQukTubI4GiEhg==
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afe97bbe-100a-4f4e-c0c1-08d7b717708d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2020 21:45:59.9152
+X-MS-Exchange-CrossTenant-Network-Message-Id: da9b429f-785b-47e9-aa98-08d7b717718b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2020 21:46:03.5541
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mGUJyDM0VWjgl5ymQoeSkRBNk+RjfZvaORgb2EsxnQbO2giDS4U6SpOOQo8hlelPBeEOSIyIpTEEykiMvV8GVA==
+X-MS-Exchange-CrossTenant-userprincipalname: m0Svw74naN+WRFzZ9h8uD78QLStXjx+Kiue+o/LTEY1YC8g+99i+Hxa9egdshRtYVYH1T18OePmcdZhY/MYmfA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6927
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report unique and standard error codes corresponding to the specific
-FW flash error. In addition, add a more detailed error messages to
-netlink.
-
-Before:
-$ devlink dev flash pci/0000:05:00.0 file ...
-Error: mlxfw: Firmware flash failed.
-devlink answers: Invalid argument
-
-After:
-$ devlink dev flash pci/0000:05:00.0 file ...
-Error: mlxfw: Firmware flash failed: pending reset.
-devlink answers: Device busy
+Make sure mlxfw_firmware_flash reports a detailed user readable error
+message in every possible error path, basically every time
+mlxfw_dev->ops->*() is called and an error is returned, or when image
+initialization is failed.
 
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-Reviewed-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   | 94 +++++++++++++------
- 1 file changed, 65 insertions(+), 29 deletions(-)
+ .../net/ethernet/mellanox/mlxfw/mlxfw_fsm.c   | 35 ++++++++++++++-----
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c b/drivers/net/=
 ethernet/mellanox/mlxfw/mlxfw_fsm.c
-index 55211ad1c39d..cc5ea5ffdbba 100644
+index cc5ea5ffdbba..422619e21183 100644
 --- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
 +++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
-@@ -16,27 +16,68 @@
- 	(MLXFW_FSM_STATE_WAIT_TIMEOUT_MS / MLXFW_FSM_STATE_WAIT_CYCLE_MS)
- #define MLXFW_FSM_MAX_COMPONENT_SIZE (10 * (1 << 20))
-=20
--static const char * const mlxfw_fsm_state_err_str[] =3D {
--	[MLXFW_FSM_STATE_ERR_ERROR] =3D
--		"general error",
--	[MLXFW_FSM_STATE_ERR_REJECTED_DIGEST_ERR] =3D
--		"component hash mismatch",
--	[MLXFW_FSM_STATE_ERR_REJECTED_NOT_APPLICABLE] =3D
--		"component not applicable",
--	[MLXFW_FSM_STATE_ERR_REJECTED_UNKNOWN_KEY] =3D
--		"unknown key",
--	[MLXFW_FSM_STATE_ERR_REJECTED_AUTH_FAILED] =3D
--		"authentication failed",
--	[MLXFW_FSM_STATE_ERR_REJECTED_UNSIGNED] =3D
--		"component was not signed",
--	[MLXFW_FSM_STATE_ERR_REJECTED_KEY_NOT_APPLICABLE] =3D
--		"key not applicable",
--	[MLXFW_FSM_STATE_ERR_REJECTED_BAD_FORMAT] =3D
--		"bad format",
--	[MLXFW_FSM_STATE_ERR_BLOCKED_PENDING_RESET] =3D
--		"pending reset",
--	[MLXFW_FSM_STATE_ERR_MAX] =3D
--		"unknown error"
-+static const int mlxfw_fsm_state_errno[] =3D {
-+	[MLXFW_FSM_STATE_ERR_ERROR] =3D -EIO,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_DIGEST_ERR] =3D -EBADMSG,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_NOT_APPLICABLE] =3D -ENOENT,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_UNKNOWN_KEY] =3D -ENOKEY,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_AUTH_FAILED] =3D -EACCES,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_UNSIGNED] =3D -EKEYREVOKED,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_KEY_NOT_APPLICABLE] =3D -EKEYREJECTED,
-+	[MLXFW_FSM_STATE_ERR_REJECTED_BAD_FORMAT] =3D -ENOEXEC,
-+	[MLXFW_FSM_STATE_ERR_BLOCKED_PENDING_RESET] =3D -EBUSY,
-+	[MLXFW_FSM_STATE_ERR_MAX] =3D -EINVAL
-+};
-+
-+#define MLXFW_ERR_PRFX "Firmware flash failed: "
-+#define MLXFW_ERR_MSG(extack, msg, err) do { \
-+	pr_err("%s, err (%d)\n", MLXFW_ERR_PRFX msg, err); \
-+	NL_SET_ERR_MSG_MOD(extack, MLXFW_ERR_PRFX msg); \
-+} while (0)
-+
-+static int mlxfw_fsm_state_err(struct netlink_ext_ack *extack,
-+			       enum mlxfw_fsm_state_err err)
-+{
-+	enum mlxfw_fsm_state_err fsm_state_err;
-+
-+	fsm_state_err =3D min_t(enum mlxfw_fsm_state_err, err,
-+			      MLXFW_FSM_STATE_ERR_MAX);
-+
-+	switch (fsm_state_err) {
-+	case MLXFW_FSM_STATE_ERR_ERROR:
-+		MLXFW_ERR_MSG(extack, "general error", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_DIGEST_ERR:
-+		MLXFW_ERR_MSG(extack, "component hash mismatch", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_NOT_APPLICABLE:
-+		MLXFW_ERR_MSG(extack, "component not applicable", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_UNKNOWN_KEY:
-+		MLXFW_ERR_MSG(extack, "unknown key", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_AUTH_FAILED:
-+		MLXFW_ERR_MSG(extack, "authentication failed", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_UNSIGNED:
-+		MLXFW_ERR_MSG(extack, "component was not signed", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_KEY_NOT_APPLICABLE:
-+		MLXFW_ERR_MSG(extack, "key not applicable", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_REJECTED_BAD_FORMAT:
-+		MLXFW_ERR_MSG(extack, "bad format", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_BLOCKED_PENDING_RESET:
-+		MLXFW_ERR_MSG(extack, "pending reset", err);
-+		break;
-+	case MLXFW_FSM_STATE_ERR_OK: /* fall through */
-+	case MLXFW_FSM_STATE_ERR_MAX:
-+		MLXFW_ERR_MSG(extack, "unknown error", err);
-+		break;
-+	};
-+
-+	return mlxfw_fsm_state_errno[fsm_state_err];
- };
-=20
- static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_dev, u32 fwhandle,
-@@ -55,14 +96,9 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_=
+@@ -93,8 +93,10 @@ static int mlxfw_fsm_state_wait(struct mlxfw_dev *mlxfw_=
 dev, u32 fwhandle,
- 	if (err)
+ retry:
+ 	err =3D mlxfw_dev->ops->fsm_query_state(mlxfw_dev, fwhandle,
+ 					      &curr_fsm_state, &fsm_state_err);
+-	if (err)
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "FSM state query failed");
  		return err;
++	}
 =20
--	if (fsm_state_err !=3D MLXFW_FSM_STATE_ERR_OK) {
--		fsm_state_err =3D min_t(enum mlxfw_fsm_state_err,
--				      fsm_state_err, MLXFW_FSM_STATE_ERR_MAX);
--		pr_err("Firmware flash failed: %s\n",
--		       mlxfw_fsm_state_err_str[fsm_state_err]);
--		NL_SET_ERR_MSG_MOD(extack, "Firmware flash failed");
--		return -EINVAL;
--	}
-+	if (fsm_state_err !=3D MLXFW_FSM_STATE_ERR_OK)
-+		return mlxfw_fsm_state_err(extack, fsm_state_err);
-+
- 	if (curr_fsm_state !=3D fsm_state) {
- 		if (--times =3D=3D 0) {
- 			pr_err("Timeout reached on FSM state change");
+ 	if (fsm_state_err !=3D MLXFW_FSM_STATE_ERR_OK)
+ 		return mlxfw_fsm_state_err(extack, fsm_state_err);
+@@ -142,8 +144,10 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlx=
+fw_dev,
+ 	err =3D mlxfw_dev->ops->component_query(mlxfw_dev, comp->index,
+ 					      &comp_max_size, &comp_align_bits,
+ 					      &comp_max_write_size);
+-	if (err)
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "FSM component query failed");
+ 		return err;
++	}
+=20
+ 	comp_max_size =3D min_t(u32, comp_max_size, MLXFW_FSM_MAX_COMPONENT_SIZE)=
+;
+ 	if (comp->data_size > comp_max_size) {
+@@ -161,8 +165,10 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlx=
+fw_dev,
+ 	err =3D mlxfw_dev->ops->fsm_component_update(mlxfw_dev, fwhandle,
+ 						   comp->index,
+ 						   comp->data_size);
+-	if (err)
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "FSM component update failed");
+ 		return err;
++	}
+=20
+ 	err =3D mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
+ 				   MLXFW_FSM_STATE_DOWNLOAD, extack);
+@@ -181,8 +187,10 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlx=
+fw_dev,
+ 		err =3D mlxfw_dev->ops->fsm_block_download(mlxfw_dev, fwhandle,
+ 							 block_ptr, block_size,
+ 							 offset);
+-		if (err)
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack, "Component download failed");
+ 			goto err_out;
++		}
+ 		mlxfw_status_notify(mlxfw_dev, "Downloading component",
+ 				    comp_name, offset + block_size,
+ 				    comp->data_size);
+@@ -192,8 +200,10 @@ static int mlxfw_flash_component(struct mlxfw_dev *mlx=
+fw_dev,
+ 	mlxfw_status_notify(mlxfw_dev, "Verifying component", comp_name, 0, 0);
+ 	err =3D mlxfw_dev->ops->fsm_component_verify(mlxfw_dev, fwhandle,
+ 						   comp->index);
+-	if (err)
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "FSM component verify failed");
+ 		goto err_out;
++	}
+=20
+ 	err =3D mlxfw_fsm_state_wait(mlxfw_dev, fwhandle,
+ 				   MLXFW_FSM_STATE_LOCKED, extack);
+@@ -228,8 +238,11 @@ static int mlxfw_flash_components(struct mlxfw_dev *ml=
+xfw_dev, u32 fwhandle,
+=20
+ 		comp =3D mlxfw_mfa2_file_component_get(mfa2_file, mlxfw_dev->psid,
+ 						     mlxfw_dev->psid_size, i);
+-		if (IS_ERR(comp))
+-			return PTR_ERR(comp);
++		if (IS_ERR(comp)) {
++			err =3D PTR_ERR(comp);
++			NL_SET_ERR_MSG_MOD(extack, "Failed to get MFA2 component");
++			return err;
++		}
+=20
+ 		pr_info("Flashing component type %d\n", comp->index);
+ 		err =3D mlxfw_flash_component(mlxfw_dev, fwhandle, comp, extack);
+@@ -255,8 +268,12 @@ int mlxfw_firmware_flash(struct mlxfw_dev *mlxfw_dev,
+ 	}
+=20
+ 	mfa2_file =3D mlxfw_mfa2_file_init(firmware);
+-	if (IS_ERR(mfa2_file))
+-		return PTR_ERR(mfa2_file);
++	if (IS_ERR(mfa2_file)) {
++		err =3D PTR_ERR(mfa2_file);
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Failed to initialize MFA2 firmware file");
++		return err;
++	}
+=20
+ 	pr_info("Initialize firmware flash process\n");
+ 	devlink_flash_update_begin_notify(mlxfw_dev->devlink);
 --=20
 2.24.1
 
