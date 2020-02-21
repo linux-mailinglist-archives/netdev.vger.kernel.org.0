@@ -2,122 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1BD1675D3
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 09:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C0771675CF
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 09:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387676AbgBUIb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 03:31:28 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:41651 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387621AbgBUIbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 03:31:24 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1j53iK-0006kK-Ge; Fri, 21 Feb 2020 09:31:12 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad] (unknown [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B31CD4BCCD0;
-        Fri, 21 Feb 2020 08:31:09 +0000 (UTC)
-Subject: Re: [PATCH v2 1/3] dt-bindings: m_can: Add Documentation for
- transceiver regulator
-To:     Faiz Abbas <faiz_abbas@ti.com>, Rob Herring <robh@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, broonie@kernel.org, lgirdwood@gmail.com,
-        catalin.marinas@arm.com, mark.rutland@arm.com, wg@grandegger.com,
-        sriram.dash@samsung.com, dmurphy@ti.com
-References: <20200217142836.23702-1-faiz_abbas@ti.com>
- <20200217142836.23702-2-faiz_abbas@ti.com> <20200219203529.GA21085@bogus>
- <a987bcd7-ca1c-dfda-72f3-cd2004a87ea5@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <20b86553-9b98-1a9d-3757-54174aa67c62@pengutronix.de>
-Date:   Fri, 21 Feb 2020 09:31:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2387674AbgBUIbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 03:31:22 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34657 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728972AbgBUIbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 03:31:21 -0500
+Received: by mail-lj1-f196.google.com with SMTP id x7so1327372ljc.1
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 00:31:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FFQje1M1A7U1I64GsMso5PY+ZAZ2Zo81JUXOG0rTgLI=;
+        b=g+T8ocO1DQVNdW1OO6QR8D67rH6yki1sgPU+6PQVtUP8cU22O4usG9Jn8r9idkxNXi
+         3M5C9oWtGtKkNivZBCWSt7QzJUzPEWJ9S6NZMuoGGpYdyokV5VaZfJ80M9ebg0vLmDUK
+         Tsqs6+/7GducYR8VCa6c1L6WIleBzsdb4Rnyo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FFQje1M1A7U1I64GsMso5PY+ZAZ2Zo81JUXOG0rTgLI=;
+        b=aLbI4ljtSIwOGwCc0LRekM0h1K9CFcpgH7A4PKLVVt5u2voqEp+pw+iRV1HewttqJU
+         Xjf6LcuaDGVflU2szRK42xgI03IaCCJiiF8LhCPB0tAM19ZkPB4nFfK4CqpoAH2AAPwL
+         s21xevjZ1Z1t+a/HPvdriu2ydGfbq941yr4aMJqrt8EfV7jJKdZSoj9qIf73OM2ptun6
+         JlTempThe2NmAN1WjhKOMLxblkG2L+VtczeBrbBfB/hlmjKlqYSyUsuQA0zAMEzI25rU
+         gGrQwzYfHa5LecqKrs/kKNlboB0K4lsbrfaz5i8yySOOc+bIYGZiWr6/Ub87+pr3XRrp
+         xeXQ==
+X-Gm-Message-State: APjAAAU6rfFTLyl3KeDOpV+9KTU9Dpjn1pU7qkRvlkszmfXIkeW6IOFG
+        1nA2B0/btdL5nWnjAuRfbe17Hw==
+X-Google-Smtp-Source: APXvYqxiFW9ZBPNa3PK3tbw4I38N8AKPpIyl8nzWl3mi1oCo1HTpeppOmYg6mC75upAYsRN1ruiwBA==
+X-Received: by 2002:a2e:93c9:: with SMTP id p9mr20786031ljh.136.1582273879131;
+        Fri, 21 Feb 2020 00:31:19 -0800 (PST)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id m3sm1196972lfl.97.2020.02.21.00.31.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Feb 2020 00:31:18 -0800 (PST)
+Subject: Re: [PATCH net] net: netlink: cap max groups which will be considered
+ in netlink_bind()
+To:     David Ahern <dsahern@gmail.com>, David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, christophe.leroy@c-s.fr, rgb@redhat.com,
+        erhard_f@mailbox.org
+References: <20200220144213.860206-1-nikolay@cumulusnetworks.com>
+ <20200220.160255.1955114765293599857.davem@davemloft.net>
+ <30fda8d9-0020-0fa7-d00d-42acdf44f245@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <509c952b-483f-3a35-6d6b-4655a8b513be@cumulusnetworks.com>
+Date:   Fri, 21 Feb 2020 10:31:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <a987bcd7-ca1c-dfda-72f3-cd2004a87ea5@ti.com>
+In-Reply-To: <30fda8d9-0020-0fa7-d00d-42acdf44f245@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/21/20 9:31 AM, Faiz Abbas wrote:
-> Hi Rob,
+On 21/02/2020 04:55, David Ahern wrote:
+> On 2/20/20 5:02 PM, David Miller wrote:
+>>
+>>> Dave it is not necessary to queue this fix for stable releases since
+>>> NETLINK_ROUTE is the first to reach more groups after I added the vlan
+>>> notification changes and I don't think we'll ever backport new groups. :)
+>>> Up to you of course.
 > 
-> On 20/02/20 2:05 am, Rob Herring wrote:
->> On Mon, Feb 17, 2020 at 07:58:34PM +0530, Faiz Abbas wrote:
->>> Some CAN transceivers have a standby line that needs to be asserted
->>> before they can be used. Model this GPIO lines as an optional
->>> fixed-regulator node. Document bindings for the same.
->>>
->>> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
->>> ---
->>>  Documentation/devicetree/bindings/net/can/m_can.txt | 3 +++
->>>  1 file changed, 3 insertions(+)
->>
->> This has moved to DT schema in my tree, so please adjust it and resend.
+> RTNLGRP_NEXTHOP was the first to overflow; RTNLGRP_NEXTHOP = 32.
 > 
-> Ok.
->>
->>> diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt b/Documentation/devicetree/bindings/net/can/m_can.txt
->>> index ed614383af9c..f17e2a5207dc 100644
->>> --- a/Documentation/devicetree/bindings/net/can/m_can.txt
->>> +++ b/Documentation/devicetree/bindings/net/can/m_can.txt
->>> @@ -48,6 +48,9 @@ Optional Subnode:
->>>  			  that can be used for CAN/CAN-FD modes. See
->>>  			  Documentation/devicetree/bindings/net/can/can-transceiver.txt
->>>  			  for details.
->>> +
->>> +- xceiver-supply: Regulator that powers the CAN transceiver.
->>
->> The supply for a transceiver should go in the transceiver node.
->>
+> Apparently my comment about overflowing the groups was only in the
+> iproute2 commit (e7cd93e7afe1a0407ccb94b9124bbd56b87b8660)
 > 
-> Marc, while I have you here, do you agree with this?
 
-I'll look into the details later today.
-
-Marc
-
--- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+While that is true, RTNLGRP_MAX == (__RTNLGRP_MAX - 1) == RTNLGRP_NEXTHOP == 32
+which is fine. You just can't bind to the group via netlink_bind() but the loop
+is capped at 32 again and the test_bit() shouldn't access anything beyond because
+it's a strict less than.
