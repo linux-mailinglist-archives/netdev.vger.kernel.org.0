@@ -2,76 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 355BE166CA7
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 03:06:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 902B8166D2C
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 03:55:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729413AbgBUCGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 21:06:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728992AbgBUCGl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 21:06:41 -0500
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A0DA820659;
-        Fri, 21 Feb 2020 02:06:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582250801;
-        bh=ciW7M4/rpadPpVKzgkZKDKV7BnaACSF1idCdnwPCl3o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MP9a5xmDUW5hQK1KvM9LCnP1gqsoFlDTxTQGjDAn6mQe9ELcu306poIK7AB3hClSn
-         YxpaidMCtDrG5F2UIFij+4+/c1AUD7JH0dYTWJDA/UUUbNhMoTFh/DFBfAgZbnqDNg
-         bXIJwM94iJgYRNxqg3hY0jMX+R9XY+sI4dwGfIQU=
-Received: by mail-lj1-f169.google.com with SMTP id d10so514446ljl.9;
-        Thu, 20 Feb 2020 18:06:40 -0800 (PST)
-X-Gm-Message-State: APjAAAW1CwsUaqGbIhJj5whzitUuBZwkwCoKBSAC3Gz5HdcRYzNzixUv
-        3IaNcosvj1HUUmnXwL2Q0U3N1q/c9Hdvddxl6nM=
-X-Google-Smtp-Source: APXvYqyvqTaR0KZNS11sCSscS9XUGP/WAqsTX/fVy1NDPevEDaEcaOKeJMwiNhyPinin4nlbwpWEtyHARmacvrnpehs=
-X-Received: by 2002:a05:651c:8f:: with SMTP id 15mr1708671ljq.109.1582250798788;
- Thu, 20 Feb 2020 18:06:38 -0800 (PST)
+        id S1729539AbgBUCzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 21:55:04 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34651 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729371AbgBUCzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 21:55:04 -0500
+Received: by mail-qk1-f193.google.com with SMTP id c20so613500qkm.1
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 18:55:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Hm5cZO5A5LlROhOZwVO/vlhdLha4EGFV0wsm23YI7GQ=;
+        b=RkxzzLDrXtF7VIw+Kh+xc+oL8D5OYxDdIyj3dV2ncoMh9HzbuZtNrHNXUxxkWctyE+
+         xdrOEnNGNkJ1PmMwzRqTgWa5+t2YENsSa1iOuQCe4eEzmrpjcUnywB+VX7eSzrZ9H4mT
+         14rTLUBYVkVwiTm6G8SG8Qut0HnuDTNjRKUxiKoBvqMJ1puq7QhXsh9W+uthyhdylCBX
+         eRX2aevxoy+nkXFfBuLIJUnvRpOjaob7WaCPCVNWFA1cUGz8IUxBxGMplkqFGMT6ognA
+         4ZF4UC8v6EE3keunxNhldKR9BZNP23bBc7ioJQCYZuhaFg6KAT0PEa49RnPregJ4Hb5N
+         gk5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Hm5cZO5A5LlROhOZwVO/vlhdLha4EGFV0wsm23YI7GQ=;
+        b=Hq6oI/VQ03Q5kR7q4/bBjl0r6ufvvK4TVaqjAhK7IniwSVboCi0qo93LTeNIlPb8GT
+         qwLF6/yccAhFG3iZheDrDvJZZqk1oboI8R6H2Wv+23xHMFxoBNzfuLnNOx+EyrZL1Un6
+         RAMwwVE9gPD39ShEycEp1tziohNSJ33AKkqg5OHC71xy0C6dFufNVrg9V0bC/8sKrIKL
+         CyRDcrGUcz256mIdAz2zccfdqTpFKE1GfyEKig9B/3PGHBxMYzQtzx64oQKMynmsqSLC
+         tS7IGUSl2/OfJu6Ap/mBCXmx8rgI6+1hVPr22H+c61hbC69GzKQKzdYzBM5/2zo10j0a
+         xGlA==
+X-Gm-Message-State: APjAAAUvpxjgFsl1L9krBjBTDmAHS5bG7rIk5piDaiuUID/3Sw5y48hX
+        GzYh2d/xhBl+dgM3XjDw1Yw=
+X-Google-Smtp-Source: APXvYqx1l8NaWy8nFJ11DsH0LzR3da8GtaReymp0wnxk07PwQWBIqSEdEsgWQOYP3w3iGXfTKTzBEg==
+X-Received: by 2002:a05:620a:cec:: with SMTP id c12mr30610213qkj.151.1582253703836;
+        Thu, 20 Feb 2020 18:55:03 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:5475:f560:8951:8d4f? ([2601:282:803:7700:5475:f560:8951:8d4f])
+        by smtp.googlemail.com with ESMTPSA id m17sm791093qki.128.2020.02.20.18.55.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Feb 2020 18:55:03 -0800 (PST)
+Subject: Re: [PATCH net] net: netlink: cap max groups which will be considered
+ in netlink_bind()
+To:     David Miller <davem@davemloft.net>, nikolay@cumulusnetworks.com
+Cc:     netdev@vger.kernel.org, christophe.leroy@c-s.fr, rgb@redhat.com,
+        erhard_f@mailbox.org
+References: <20200220144213.860206-1-nikolay@cumulusnetworks.com>
+ <20200220.160255.1955114765293599857.davem@davemloft.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <30fda8d9-0020-0fa7-d00d-42acdf44f245@gmail.com>
+Date:   Thu, 20 Feb 2020 19:55:01 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.2
 MIME-Version: 1.0
-References: <20200220230546.769250-1-andriin@fb.com>
-In-Reply-To: <20200220230546.769250-1-andriin@fb.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 20 Feb 2020 18:06:27 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW60BM0JjTBLyE3mYea+W-5CFPouveMfEwkbMEwQUbNbZg@mail.gmail.com>
-Message-ID: <CAPhsuW60BM0JjTBLyE3mYea+W-5CFPouveMfEwkbMEwQUbNbZg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix trampoline_count clean up logic
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200220.160255.1955114765293599857.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 3:07 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Libbpf's Travis CI tests caught this issue. Ensure bpf_link and bpf_object
-> clean up is performed correctly.
->
-> Fixes: d633d57902a5 ("selftest/bpf: Add test for allowed trampolines count")
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  .../bpf/prog_tests/trampoline_count.c         | 25 +++++++++++++------
->  1 file changed, 18 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> index 1f6ccdaed1ac..781c8d11604b 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> @@ -55,31 +55,40 @@ void test_trampoline_count(void)
->         /* attach 'allowed' 40 trampoline programs */
->         for (i = 0; i < MAX_TRAMP_PROGS; i++) {
->                 obj = bpf_object__open_file(object, NULL);
-> -               if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-> +               if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj))) {
-> +                       obj = NULL;
+On 2/20/20 5:02 PM, David Miller wrote:
+> 
+>> Dave it is not necessary to queue this fix for stable releases since
+>> NETLINK_ROUTE is the first to reach more groups after I added the vlan
+>> notification changes and I don't think we'll ever backport new groups. :)
+>> Up to you of course.
 
-I think we don't need obj and link in cleanup? Did I miss anything?
+RTNLGRP_NEXTHOP was the first to overflow; RTNLGRP_NEXTHOP = 32.
+
+Apparently my comment about overflowing the groups was only in the
+iproute2 commit (e7cd93e7afe1a0407ccb94b9124bbd56b87b8660)
