@@ -2,117 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C1C1166E75
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 05:23:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E89166E78
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 05:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729632AbgBUEX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 23:23:26 -0500
-Received: from mail-pf1-f173.google.com ([209.85.210.173]:34879 "EHLO
-        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729280AbgBUEX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 23:23:26 -0500
-Received: by mail-pf1-f173.google.com with SMTP id i19so539312pfa.2
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 20:23:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v6sQMsvrCgInHKEMWD8iMvxZ8avQGsorvk/oeGxOFQc=;
-        b=zfX5v6t2NI7zkfKpDJxMgLXRq3vPqzqNfPhebGYxIimcknLsbGLOEAJhPgqGJBRXy3
-         uZXt0Txu9bflgGIBX237ms7XZqwwFVP5hotmFSporLkMZKPJsmEPAQZieBc1nYO8DB+r
-         qQjX0rd6aG1CBJHGqMwz03BdkPT9TCFSgRRVwJbUOIiiQIldFZJX1vToDKgpabxH23IZ
-         eA3VV9qn8UCVIqp9uCIEq/OYEe85Ye5FDDeWN6VjfRYxQCROUMpa8XImvPui9i+r0DGS
-         JMTU5VnQX/ubZ2sXnPcZkwCxD0+g6y+Ym+qkb3N/qLc46ezCQv/jLsAYNNLIBQXMEOyy
-         u+xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v6sQMsvrCgInHKEMWD8iMvxZ8avQGsorvk/oeGxOFQc=;
-        b=fZp8NzAvmzjU3C0DdbF0/SoGISOo0DpBvzwFGdVE2EbryKuRXQDsWUmM4z2RF+QOVR
-         n4qJeICbMfLmi2hR13JyigsDLOE1NtWJ2nLGf8bt0Ljhru53yFm4Sl6Dsy8O499ylyBf
-         2l1C9J1WopE96WL7/gtzim1p1Jp9UqiLspoQ9N3AE9P9rnf52fyjQjelLQ8yFJw9AAHO
-         4tJNAq+P8f0FFdUVQ5NHLD3LPoDznv5kkznotABbbI65cjG0ye/VJdETy/WfhcSs99wP
-         rj0JwbNj/dEEY3vKegP5OVjb8wYwUyD9JOmvMFTMBfESmeI4rmsbKILorgbt6+wx+hrl
-         Cdng==
-X-Gm-Message-State: APjAAAUM7bR8NsE7capbZ+c50WFeH2IJFtgSE+bAp4qLVFA28xQR3xrY
-        C4FTfHS23/I5seRpwPkT8rp1KYanLbY=
-X-Google-Smtp-Source: APXvYqzVqDVcTftx0jdafKzf6JScAfhsvhiSH2NEz6wgPR/2tKf7AmKxhVzp1OAMIxzp/trmWEeKlA==
-X-Received: by 2002:a63:381a:: with SMTP id f26mr37706248pga.40.1582259005157;
-        Thu, 20 Feb 2020 20:23:25 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id r3sm1120619pfg.145.2020.02.20.20.23.24
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 20:23:24 -0800 (PST)
-Date:   Thu, 20 Feb 2020 20:23:14 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 206615] New: WARNING: CPU: 1 PID: 0 at
- net/sched/sch_generic.c:447 dev_watchdog+0x232/0x240
-Message-ID: <20200220202314.32be327f@hermes.lan>
+        id S1729656AbgBUEX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 23:23:57 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27843 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729547AbgBUEX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 23:23:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582259035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9uOXUdcAkm4uECVzyjBcZ9Jj9pBC2hIUjFUbk2PSZpc=;
+        b=A9BhZrLno2l0icEoErsgfsfQY64MMlHgSZGeWpxGXkPrQBkq6jS3sUvJ+DyPdNPl7lsPEv
+        DLHiZLVf94Acum543A6pjHYz+nNJhOnzJuOF8pa8xxcUlYqKJgkNt8hR+76KLGwBT7V2TI
+        4CpF277nT0Ok4zKb9mmiEcjS/ZnGlbw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-292-iZ-dekTJOpmppp2BwkCNNA-1; Thu, 20 Feb 2020 23:23:47 -0500
+X-MC-Unique: iZ-dekTJOpmppp2BwkCNNA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EE0BF189F766;
+        Fri, 21 Feb 2020 04:23:44 +0000 (UTC)
+Received: from [10.72.13.208] (ovpn-13-208.pek2.redhat.com [10.72.13.208])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A82835DA76;
+        Fri, 21 Feb 2020 04:23:33 +0000 (UTC)
+Subject: Re: [PATCH bpf-next v5] virtio_net: add XDP meta data support
+To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>
+Cc:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
+References: <0c5eaba2-dd5a-fc3f-0e8f-154f7ad52881@redhat.com>
+ <20200220085549.269795-1-yuya.kusakabe@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5bf11065-6b85-8253-8548-683c01c98ac1@redhat.com>
+Date:   Fri, 21 Feb 2020 12:23:31 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200220085549.269795-1-yuya.kusakabe@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This looks like both a hardware/driver issue and a more generic problem
-with the use of warnings in the network stack. The network code has a lot
-of warnings that should really be notices, to prevent issues with panic on warn.
 
-Begin forwarded message:
+On 2020/2/20 =E4=B8=8B=E5=8D=884:55, Yuya Kusakabe wrote:
+> Implement support for transferring XDP meta data into skb for
+> virtio_net driver; before calling into the program, xdp.data_meta point=
+s
+> to xdp.data, where on program return with pass verdict, we call
+> into skb_metadata_set().
+>
+> Tested with the script at
+> https://github.com/higebu/virtio_net-xdp-metadata-test.
+>
+> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
 
-Date: Fri, 21 Feb 2020 01:06:57 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 206615] New: WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:447 dev_watchdog+0x232/0x240
+
+I'm not sure this is correct since virtio-net claims to not support=20
+metadata by calling xdp_set_data_meta_invalid()?
 
 
-https://bugzilla.kernel.org/show_bug.cgi?id=206615
+> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+> ---
+> v5:
+>   - page_to_skb(): copy vnet header if hdr_valid without checking metas=
+ize.
+>   - receive_small(): do not copy vnet header if xdp_prog is availavle.
+>   - __virtnet_xdp_xmit_one(): remove the xdp_set_data_meta_invalid().
+>   - improve comments.
+> v4:
+>   - improve commit message
+> v3:
+>   - fix preserve the vnet header in receive_small().
+> v2:
+>   - keep copy untouched in page_to_skb().
+>   - preserve the vnet header in receive_small().
+>   - fix indentation.
+> ---
+>   drivers/net/virtio_net.c | 54 ++++++++++++++++++++++++---------------=
+-
+>   1 file changed, 33 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 2fe7a3188282..4ea0ae60c000 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_i=
+nfo *vi,
+>   				   struct receive_queue *rq,
+>   				   struct page *page, unsigned int offset,
+>   				   unsigned int len, unsigned int truesize,
+> -				   bool hdr_valid)
+> +				   bool hdr_valid, unsigned int metasize)
+>   {
+>   	struct sk_buff *skb;
+>   	struct virtio_net_hdr_mrg_rxbuf *hdr;
+> @@ -393,6 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_i=
+nfo *vi,
+>   	else
+>   		hdr_padded_len =3D sizeof(struct padded_vnet_hdr);
+>  =20
+> +	/* hdr_valid means no XDP, so we can copy the vnet header */
+>   	if (hdr_valid)
+>   		memcpy(hdr, p, hdr_len);
+>  =20
+> @@ -405,6 +406,11 @@ static struct sk_buff *page_to_skb(struct virtnet_=
+info *vi,
+>   		copy =3D skb_tailroom(skb);
+>   	skb_put_data(skb, p, copy);
+>  =20
+> +	if (metasize) {
+> +		__skb_pull(skb, metasize);
+> +		skb_metadata_set(skb, metasize);
+> +	}
+> +
+>   	len -=3D copy;
+>   	offset +=3D copy;
+>  =20
+> @@ -450,10 +456,6 @@ static int __virtnet_xdp_xmit_one(struct virtnet_i=
+nfo *vi,
+>   	struct virtio_net_hdr_mrg_rxbuf *hdr;
+>   	int err;
+>  =20
+> -	/* virtqueue want to use data area in-front of packet */
+> -	if (unlikely(xdpf->metasize > 0))
+> -		return -EOPNOTSUPP;
+> -
+>   	if (unlikely(xdpf->headroom < vi->hdr_len))
+>   		return -EOVERFLOW;
+>  =20
+> @@ -644,6 +646,7 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+>   	unsigned int delta =3D 0;
+>   	struct page *xdp_page;
+>   	int err;
+> +	unsigned int metasize =3D 0;
+>  =20
+>   	len -=3D vi->hdr_len;
+>   	stats->bytes +=3D len;
+> @@ -683,8 +686,8 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+>  =20
+>   		xdp.data_hard_start =3D buf + VIRTNET_RX_PAD + vi->hdr_len;
+>   		xdp.data =3D xdp.data_hard_start + xdp_headroom;
+> -		xdp_set_data_meta_invalid(&xdp);
+>   		xdp.data_end =3D xdp.data + len;
+> +		xdp.data_meta =3D xdp.data;
+>   		xdp.rxq =3D &rq->xdp_rxq;
+>   		orig_data =3D xdp.data;
+>   		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> @@ -695,6 +698,7 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+>   			/* Recalculate length in case bpf program changed it */
+>   			delta =3D orig_data - xdp.data;
+>   			len =3D xdp.data_end - xdp.data;
+> +			metasize =3D xdp.data - xdp.data_meta;
+>   			break;
+>   		case XDP_TX:
+>   			stats->xdp_tx++;
+> @@ -735,11 +739,14 @@ static struct sk_buff *receive_small(struct net_d=
+evice *dev,
+>   	}
+>   	skb_reserve(skb, headroom - delta);
+>   	skb_put(skb, len);
+> -	if (!delta) {
+> +	if (!xdp_prog) {
+>   		buf +=3D header_offset;
+>   		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
+>   	} /* keep zeroed vnet hdr since packet was changed by bpf */
 
-            Bug ID: 206615
-           Summary: WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:447
-                    dev_watchdog+0x232/0x240
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.4.19
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: alec@onelabs.com
-        Regression: No
 
-Created attachment 287525
-  --> https://bugzilla.kernel.org/attachment.cgi?id=287525&action=edit  
-kernel panic on warn message
+I prefer to make this an independent patch and cc stable.
 
-Hi,
+Other looks good.
 
-After a few hours/minutes/days (incredibly random) one of my servers keeps
-crashing (panic_on_warn is enabled for security purposes.)
+Thanks
 
-I have tried adding `acpi=off` `pcie_aspm=off` and `nowatchdog` to the kernel
-params but nothing solves it for good. I disabled SMP in the BIOS as well, CPU
-is an AMD Athlon II X2 B28.
 
-Panic trace attached, server is a minimal Slackware system, nothing fancy. This
-problem just started happening recently, server has been up for the past year
-with no issue.
+>  =20
+> +	if (metasize)
+> +		skb_metadata_set(skb, metasize);
+> +
+>   err:
+>   	return skb;
+>  =20
+> @@ -760,8 +767,8 @@ static struct sk_buff *receive_big(struct net_devic=
+e *dev,
+>   				   struct virtnet_rq_stats *stats)
+>   {
+>   	struct page *page =3D buf;
+> -	struct sk_buff *skb =3D page_to_skb(vi, rq, page, 0, len,
+> -					  PAGE_SIZE, true);
+> +	struct sk_buff *skb =3D
+> +		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0);
+>  =20
+>   	stats->bytes +=3D len - vi->hdr_len;
+>   	if (unlikely(!skb))
+> @@ -793,6 +800,7 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   	unsigned int truesize;
+>   	unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
+>   	int err;
+> +	unsigned int metasize =3D 0;
+>  =20
+>   	head_skb =3D NULL;
+>   	stats->bytes +=3D len - vi->hdr_len;
+> @@ -839,8 +847,8 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   		data =3D page_address(xdp_page) + offset;
+>   		xdp.data_hard_start =3D data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
+>   		xdp.data =3D data + vi->hdr_len;
+> -		xdp_set_data_meta_invalid(&xdp);
+>   		xdp.data_end =3D xdp.data + (len - vi->hdr_len);
+> +		xdp.data_meta =3D xdp.data;
+>   		xdp.rxq =3D &rq->xdp_rxq;
+>  =20
+>   		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> @@ -848,24 +856,27 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+>  =20
+>   		switch (act) {
+>   		case XDP_PASS:
+> +			metasize =3D xdp.data - xdp.data_meta;
+> +
+>   			/* recalculate offset to account for any header
+> -			 * adjustments. Note other cases do not build an
+> -			 * skb and avoid using offset
+> +			 * adjustments and minus the metasize to copy the
+> +			 * metadata in page_to_skb(). Note other cases do not
+> +			 * build an skb and avoid using offset
+>   			 */
+> -			offset =3D xdp.data -
+> -					page_address(xdp_page) - vi->hdr_len;
+> +			offset =3D xdp.data - page_address(xdp_page) -
+> +				 vi->hdr_len - metasize;
+>  =20
+> -			/* recalculate len if xdp.data or xdp.data_end were
+> -			 * adjusted
+> +			/* recalculate len if xdp.data, xdp.data_end or
+> +			 * xdp.data_meta were adjusted
+>   			 */
+> -			len =3D xdp.data_end - xdp.data + vi->hdr_len;
+> +			len =3D xdp.data_end - xdp.data + vi->hdr_len + metasize;
+>   			/* We can only create skb based on xdp_page. */
+>   			if (unlikely(xdp_page !=3D page)) {
+>   				rcu_read_unlock();
+>   				put_page(page);
+> -				head_skb =3D page_to_skb(vi, rq, xdp_page,
+> -						       offset, len,
+> -						       PAGE_SIZE, false);
+> +				head_skb =3D page_to_skb(vi, rq, xdp_page, offset,
+> +						       len, PAGE_SIZE, false,
+> +						       metasize);
+>   				return head_skb;
+>   			}
+>   			break;
+> @@ -921,7 +932,8 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   		goto err_skb;
+>   	}
+>  =20
+> -	head_skb =3D page_to_skb(vi, rq, page, offset, len, truesize, !xdp_pr=
+og);
+> +	head_skb =3D page_to_skb(vi, rq, page, offset, len, truesize, !xdp_pr=
+og,
+> +			       metasize);
+>   	curr_skb =3D head_skb;
+>  =20
+>   	if (unlikely(!curr_skb))
 
-Same problem occurs on kernel version 5.4.20 as well.
-
-Thanks!
-
-Alec
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
