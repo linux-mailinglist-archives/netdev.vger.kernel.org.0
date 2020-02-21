@@ -2,56 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C07167D5C
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 13:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7877167D86
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 13:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgBUMWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 07:22:49 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:38465 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726989AbgBUMWt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 07:22:49 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ae69edc7;
-        Fri, 21 Feb 2020 12:19:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=uhQCAVDb4364mtjJv6SpTB65UHI=; b=W2LUF+
-        cv8YS3So0N9HhPcAaDjEC3yO7K9nXdhN3Ra/LCX6BzXlputceFhbmqhbowO4pJOs
-        U7RIWQ06Vd+4ZFxaiDK/l/0YLbLnLsw+dFMbDEVmg5nR0ykQ1/urB+d2CbyL00IM
-        pIEozkJikuT+7Rl0LzFG7iPs6KCJK1MJ50iGFNvucQAyTRpsjVly428cVeeAcv6i
-        pznknhVrmpUhCPXjyd9VlF9oBrgGJDDcqErvQ7U6cb09Y3Eep0lHLoHNHtWeHtNW
-        SjLbFgMGjfNngCv+fr7AkCCh6cHU6cwlEaGZ1BazexiFn+TCcfEIJLbNwtWBYfsj
-        W5qK8D4XQhEMAxag==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dfc282aa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Fri, 21 Feb 2020 12:19:46 +0000 (UTC)
-Received: by mail-oi1-f170.google.com with SMTP id l136so1393238oig.1;
-        Fri, 21 Feb 2020 04:22:46 -0800 (PST)
-X-Gm-Message-State: APjAAAXI0+QiGxe/eQRMI/2FQG68MCX8av3gp4V650EQJFQgwhhcCMp1
-        289WXvZEqHkh4Gi4PGfQ+99VR3Ai+8X5FvLWLm0=
-X-Google-Smtp-Source: APXvYqx/gekI9G4Z55x1wRyYB/MJ/2qeEFf/kPEOn+vk71fqK0y/SAfYdl5pBHlDGpLivFV6vx8dxGdDCMMxdyIgJ28=
-X-Received: by 2002:aca:815:: with SMTP id 21mr1815304oii.52.1582287766123;
- Fri, 21 Feb 2020 04:22:46 -0800 (PST)
+        id S1728112AbgBUMax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 07:30:53 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10668 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727063AbgBUMax (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 07:30:53 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 624C54482AD94FDFCB19;
+        Fri, 21 Feb 2020 20:30:50 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 21 Feb 2020 20:30:43 +0800
+From:   Chen Zhou <chenzhou10@huawei.com>
+To:     <stas.yakovlev@gmail.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenzhou10@huawei.com>
+Subject: [PATCH -next] ipw2x00: Use bitwise instead of arithmetic operator for flags
+Date:   Fri, 21 Feb 2020 20:24:13 +0800
+Message-ID: <20200221122413.149787-1-chenzhou10@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200221072209.10612-1-yuehaibing@huawei.com>
-In-Reply-To: <20200221072209.10612-1-yuehaibing@huawei.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 21 Feb 2020 13:22:35 +0100
-X-Gmail-Original-Message-ID: <CAHmME9po5q_EYiy0yX0VxcnTdiQe1Aa74WLXsYMmxepasUHtww@mail.gmail.com>
-Message-ID: <CAHmME9po5q_EYiy0yX0VxcnTdiQe1Aa74WLXsYMmxepasUHtww@mail.gmail.com>
-Subject: Re: [PATCH net-next] wireguard: selftests: remove duplicated include <sys/types.h>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     Shuah Khan <shuah@kernel.org>, David Miller <davem@davemloft.net>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 8:23 AM YueHaibing <yuehaibing@huawei.com> wrote:
->
-> Remove duplicated include.
+This silences the following coccinelle warning:
 
-Thanks. Applied to the wireguard-linux tree.
+"WARNING: sum of probable bitmasks, consider |"
+
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+---
+ drivers/net/wireless/intel/ipw2x00/libipw_rx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
+index 0cb36d1..15f8119 100644
+--- a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
++++ b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
+@@ -871,7 +871,7 @@ void libipw_rx_any(struct libipw_device *ieee,
+ 	case IW_MODE_ADHOC:
+ 		/* our BSS and not from/to DS */
+ 		if (ether_addr_equal(hdr->addr3, ieee->bssid))
+-		if ((fc & (IEEE80211_FCTL_TODS+IEEE80211_FCTL_FROMDS)) == 0) {
++		if ((fc & (IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) == 0) {
+ 			/* promisc: get all */
+ 			if (ieee->dev->flags & IFF_PROMISC)
+ 				is_packet_for_us = 1;
+@@ -886,7 +886,7 @@ void libipw_rx_any(struct libipw_device *ieee,
+ 	case IW_MODE_INFRA:
+ 		/* our BSS (== from our AP) and from DS */
+ 		if (ether_addr_equal(hdr->addr2, ieee->bssid))
+-		if ((fc & (IEEE80211_FCTL_TODS+IEEE80211_FCTL_FROMDS)) == IEEE80211_FCTL_FROMDS) {
++		if ((fc & (IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) == IEEE80211_FCTL_FROMDS) {
+ 			/* promisc: get all */
+ 			if (ieee->dev->flags & IFF_PROMISC)
+ 				is_packet_for_us = 1;
+-- 
+2.7.4
+
