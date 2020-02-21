@@ -2,144 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA0FA16837E
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 17:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C77FB168388
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 17:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727740AbgBUQby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 11:31:54 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39018 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726710AbgBUQbx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 11:31:53 -0500
-Received: by mail-pg1-f193.google.com with SMTP id j15so1226164pgm.6;
-        Fri, 21 Feb 2020 08:31:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WX2WYYSv0iGbbGsCTHBnzJ72VLJUgoA9ZtgP3tfSRRI=;
-        b=kBc+K4z/6t8YLwNHCqZ42IK0+LDaIHx6FTbN7m5NJg7BhmFsfpJaNz6lgng+n9eRyZ
-         E9UCVyAlYqgJhLYBYxF3gP8sduWB6mrplWN/Q5qY45fsViKFbXZoCyjp4P3ACmH4V5XX
-         wB/4jWf8mOnzDXskyVFVg1JBCU3CeSRr4Qs1Heyh0SdImhaZPYXCEz7qUDXEshQYprfV
-         zaHuCo4OOt8aKWlqC/Iw/6BIu5zK0o6xtTu1h6347+mndVJYSE5DXM+vBffB6VZ5vywo
-         fwz/GdZY6fZUgy9g+nW0PM2IrEgVkxjFv61wrBLnaKtTt5hHphH38eOsl1tvrO0X55ao
-         vyag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=WX2WYYSv0iGbbGsCTHBnzJ72VLJUgoA9ZtgP3tfSRRI=;
-        b=UM1C9gpr/9w/isEJMBPn2efubHxZAhGlYtpKEtwIMD5RoIylhIiBkRz/EmStk1WZK0
-         /kqn7hylLVOT03kJbFxAmxoy1aFEQ+hix8Tcpm7hu6e/4G3V2UO/pY5Y71v+lfzAcHEn
-         5hT2sg7JXV5GFVs0g5uuXvDnQD7e7ueXSziaKZRBwPHEGGz7T1Hai/R/tsT6gOtogmXa
-         +NCaLW0Y2xjspJGpVmWiSILrVtLVI6UIWzpYVDRUQTBtBwFYMUs/BjKa0lNqmU83d06v
-         XkEjDa6mZSSDFIxOg011G8bSGn8qnHFwODTPKIw2650WxuB8JksA9zYAo/LlsK6/XRz7
-         JEsA==
-X-Gm-Message-State: APjAAAWaXljHWCz0QgruJMR4Nw6jU6SlbdJUaW/Jk15pd8nxmx9aD6+S
-        TApfKLhBfUlSRxUqjMqcNcvB8PM7
-X-Google-Smtp-Source: APXvYqw7jUAoLi3q1XF4YwjarvfGWTSWPHxEVe4BFAsfah7wzipz4826gHT9AZFO0uJ4YUzc5aUuGg==
-X-Received: by 2002:a65:621a:: with SMTP id d26mr38133258pgv.151.1582302712372;
-        Fri, 21 Feb 2020 08:31:52 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y6sm2955964pgc.10.2020.02.21.08.31.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Feb 2020 08:31:51 -0800 (PST)
-Subject: Re: [PATCH v4 1/2] net: mdio: add ipq8064 mdio driver
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200221132834.20719-1-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <b3a66d32-aea0-a548-2e7b-70c99e0a4e97@gmail.com>
-Date:   Fri, 21 Feb 2020 08:31:49 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726946AbgBUQdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 11:33:14 -0500
+Received: from mail-bn8nam12on2136.outbound.protection.outlook.com ([40.107.237.136]:37251
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726393AbgBUQdO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 11:33:14 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MVJvMkkT3sDPfnWefX28Wu5Xr6oFr1tr4D+TQiXnNRGCLS4vHZr3hYtDF5YPe3aUpNmx4yQ7A5X1mcojZgOLq7fI0DgOooLa0WaqrDAGteoXag8Z3r5ttGX0dRY1+TIMWdCMTWKDunSZUgdRDsFxhkZDpFddFdC1Hj/UWmMtSH16xnFuIneS+lcfVA+sX+bnvY+oTX/uCft1zxIF22HcQ6XxTIcb3V7qL8qhfI96Ts5t1/auSx9pBATXaOz30WBvJwt1R3NaSHP30TYmud0Nf1zkzGxsuvKKeLPjKzUonOChuAvG0K2W6Gs2mUetvkpVTHX7+f8TFBAkoKL9UjNoyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=91W/YNxy7KdLwBwjVKKOhcMkqnYvOALOdWuHUTPZPpA=;
+ b=dKJAJfMOGaHgeFq7HzGBRjSAf3tiQR61qvo0H7Oqz1Pu0H1suwQTi9xU4p4dt6WoQemyaOe65heH1sbX3tfqkECDPI0RsVrLg1FxQdEBiDLOLWgLVKzntuHaf0o8iGMSZoxg+1CHU8nfGa7hWKywsUO9bdjIYt/DtxJMa1Gi/8SpKo8pvX/OqiO+YP+ZsYin4hLz9c/sKugS+sZjoJd6oIm5m6g65WTaYlP7iDtqDBVOqwdBI9qp6GyOTs9/SLrFNqHBO+wFpufbOwZSrD2oRcoc2RUuat6xKmHgxK+oKggCkEjoFfQCQvIQQsNUUoivm9MJ9trVI6StM3NkViczJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=91W/YNxy7KdLwBwjVKKOhcMkqnYvOALOdWuHUTPZPpA=;
+ b=DnF8UDKPeo+p9Ebduh2/wJOEcJ2sV6aEcbDlOyUIa4Uix7JAfYIg5lYUf7HxIJnaSh9ua5dez3U45KAsRxqPnbVNZ51uSFW+H0zo05zry9WQPd3mJW8I2eynMlWg1zAbUwbZzaaczn/KUstSCFgWQNHBMg+FSAx3+/a3ytR1rZs=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=lkmlhyz@microsoft.com; 
+Received: from DM5PR2101MB0901.namprd21.prod.outlook.com (52.132.132.158) by
+ DM5PR2101MB1079.namprd21.prod.outlook.com (52.132.130.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.4; Fri, 21 Feb 2020 16:33:10 +0000
+Received: from DM5PR2101MB0901.namprd21.prod.outlook.com
+ ([fe80::b51c:186a:8630:127e]) by DM5PR2101MB0901.namprd21.prod.outlook.com
+ ([fe80::b51c:186a:8630:127e%9]) with mapi id 15.20.2750.000; Fri, 21 Feb 2020
+ 16:33:10 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
+        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+Subject: [net PATCH] hv_netvsc: Fix unwanted wakeup in netvsc_attach()
+Date:   Fri, 21 Feb 2020 08:32:18 -0800
+Message-Id: <1582302738-24352-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: CO2PR04CA0131.namprd04.prod.outlook.com
+ (2603:10b6:104:7::33) To DM5PR2101MB0901.namprd21.prod.outlook.com
+ (2603:10b6:4:a7::30)
 MIME-Version: 1.0
-In-Reply-To: <20200221132834.20719-1-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 2
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by CO2PR04CA0131.namprd04.prod.outlook.com (2603:10b6:104:7::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Fri, 21 Feb 2020 16:33:07 +0000
+X-Mailer: git-send-email 1.8.3.1
+X-Originating-IP: [13.77.154.182]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8f96a27c-695a-4cf4-e5e4-08d7b6ebbb7c
+X-MS-TrafficTypeDiagnostic: DM5PR2101MB1079:|DM5PR2101MB1079:|DM5PR2101MB1079:
+X-MS-Exchange-Transport-Forked: True
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM5PR2101MB1079190B2A4D81E73B5EAA1FAC120@DM5PR2101MB1079.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-Forefront-PRVS: 0320B28BE1
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(199004)(189003)(8936002)(6666004)(186003)(6512007)(26005)(16526019)(6506007)(7846003)(2906002)(6486002)(66476007)(316002)(66556008)(956004)(36756003)(66946007)(2616005)(8676002)(478600001)(10290500003)(52116002)(5660300002)(81166006)(81156014)(4326008)(26123001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR2101MB1079;H:DM5PR2101MB0901.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K9a8jqrNaFOo0K0wgFuQGLlbXlot2Ae7pVPF6q2BoNM9IvRrpw3UTN4VOawHP+1mODQcrUv82eNkbDfsKkne5iwaJupZAhdexgoFhbGdm0PKzJ3sPKKLMcZzc/G1R7A7aYDYZ4+yvTzDzXidQakIF2M6x1EI8Iysw4ZY5gAtsI/v0AdrMqadn6MRerh7zdifk+ZRrgL1wAvLjgJW2ACKei9r6a6KiGlv+XQFWqMhxXClD0pGlTY3Is+uPdhj/oUcoKhzYq4jOWOoazkw04DBvtvfwbPA1O7Nizk1EPseT+mbf59k+Ce2xmXGC/sKWzqxCRUpyCMArKBEk0FQYP0z5sdEr1EuIt5sVGUbI4nxVGEwxbTqwGFODDrF6rYGxnoMD+omS5EUCeHJGzZlT3gWQwev7CMiqDVxKyEfnA2Y7zEClr9E4j7DsMyYb4ZXKI9g7WfEPKiARlVYVCCz0mm7P10eG942BC8S9O5QgC66/csA+VQwIX+fAeECQL3zRFhJ
+X-MS-Exchange-AntiSpam-MessageData: SimskdsE69HmdMpnAeimShRE54ALwmn/kyuELKqm2vAAGJFFxQndwVORvlcdZFDs93Y8u2gPWmy4UkNe0JYbRFKCz2+s0hg/NK8WAbidcdtn82CVWTVOIXpk2HsS1sHoFvpG1CdrGQcBU4oc1ZTifg==
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f96a27c-695a-4cf4-e5e4-08d7b6ebbb7c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2020 16:33:10.4941
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GBNzm+XtUCFJBUB11Ca4fYMSW8uCoIi0strNmboMi1dSqf8jxvDu6b2tu22fI2DIISHhFfip/LO6nMf55h6rZQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR2101MB1079
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When netvsc_attach() is called by operations like changing MTU, etc.,
+an extra wakeup may happen while netvsc_attach() calling
+rndis_filter_device_add() which sends rndis messages when queue is
+stopped in netvsc_detach(). The completion message will wake up queue 0.
 
+We can reproduce the issue by changing MTU etc., then the wake_queue
+counter from "ethtool -S" will increase beyond stop_queue counter:
+     stop_queue: 0
+     wake_queue: 1
+The issue causes queue wake up, and counter increment, no other ill
+effects in current code. So we didn't see any network problem for now.
 
-On 2/21/2020 5:28 AM, Ansuel Smith wrote:
-> Currently ipq806x soc use generi bitbang driver to
+To fix this, initialize tx_disable to true, and set it to false when
+the NIC is ready to be attached or registered.
 
-generic
+Fixes: 7b2ee50c0cd5 ("hv_netvsc: common detach logic")
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-> comunicate with the gmac ethernet interface.
-> Add a dedicated driver created by chunkeey to fix this.
+---
+ drivers/net/hyperv/netvsc.c     | 2 +-
+ drivers/net/hyperv/netvsc_drv.c | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-Since chunkeey refers to himself as Christian Lamparter and we got an
-email how about making this:
-
-Co-developped-by: Christian Lamparter <chunkeey@gmail.com>
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index ae3f308..1b320bc 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -99,7 +99,7 @@ static struct netvsc_device *alloc_net_device(void)
+ 
+ 	init_waitqueue_head(&net_device->wait_drain);
+ 	net_device->destroy = false;
+-	net_device->tx_disable = false;
++	net_device->tx_disable = true;
+ 
+ 	net_device->max_pkt = RNDIS_MAX_PKT_DEFAULT;
+ 	net_device->pkt_align = RNDIS_PKT_ALIGN_DEFAULT;
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 65e12cb..2c0a24c 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1068,6 +1068,7 @@ static int netvsc_attach(struct net_device *ndev,
+ 	}
+ 
+ 	/* In any case device is now ready */
++	nvdev->tx_disable = false;
+ 	netif_device_attach(ndev);
+ 
+ 	/* Note: enable and attach happen when sub-channels setup */
+@@ -2476,6 +2477,8 @@ static int netvsc_probe(struct hv_device *dev,
+ 	else
+ 		net->max_mtu = ETH_DATA_LEN;
+ 
++	nvdev->tx_disable = false;
++
+ 	ret = register_netdevice(net);
+ 	if (ret != 0) {
+ 		pr_err("Unable to register netdev.\n");
 -- 
-Florian
+1.8.3.1
+
