@@ -2,81 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4081687EA
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 20:54:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4141687F7
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 20:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbgBUTyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 14:54:25 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:32817 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgBUTyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 14:54:24 -0500
-Received: by mail-qk1-f196.google.com with SMTP id h4so3001990qkm.0
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 11:54:24 -0800 (PST)
+        id S1726773AbgBUT5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 14:57:05 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43108 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbgBUT5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 14:57:05 -0500
+Received: by mail-pf1-f194.google.com with SMTP id s1so1779134pfh.10
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 11:57:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4MzZUSLi4kkVsnFo1IE1or3Z7NEYEsWVAso27bEBY1Q=;
-        b=R139HaRemh3nVL2bQIB+n4/QKg2bhNfvpwS8Z6LOc5i1xLkUr1txTya8h6ZYThAZew
-         won/KDybrgHIOhw8iteUPFf5BiaKZIjHijtSowYKLbDSK0/sv4tJOOqZ3SIWMT1qA1v9
-         aj+6ekw95a1A/JbGVXJ9VCqczKfALAguQ1+JkNsZDR6wWdt3qQ3Dxavfu68ZV8sYY96w
-         5u7cm0vc8/aE+t2UloZesaHCQjfvvuBXbsEN6q8N5R5UzoSZ6ELpw/6kRaMhWpkh7qS0
-         ARnSuRK3e6oK0pjRsXJmD4MNWy6kZpdJRVyr8q6eVSucSOMeJahb1/lcAhcxGVjGHQry
-         HTXQ==
+        d=es-iitr-ac-in.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=btdpP75zyRVNd2zdgzUEwBQJP+VyfWPJzrchDwkOdOs=;
+        b=PEKn2MBcmvOEnkpWiIbdjv9ZxqEbvv+hAMODBy0nzIAv4StveA+VGLTeX2JDlTFEJp
+         tdcNhIA+M1Nwm3hEkKkVeDapbpCcNaSrHKuMod09Ej5rITU1adajdij1pqlZmVx6EBXW
+         XTq2YspggUFvNn91B6mYvitzYdXAxxYC71zP2AKUql8n6+wROY/qu9O6X4LSv2gUcnpa
+         +0RZ8xM8AriE5vZgEyNnHmHJjsDRAjqb7dg0Vo4c//+95R+IaT/Dl9GQtEL7I/RraezV
+         nE4xMHTV6ZhGG5KkmN7W51vDD9/utKvHatkX0CHIh/mYu7r0cYaA3Mgk2D1gEfFCSP9R
+         fbbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4MzZUSLi4kkVsnFo1IE1or3Z7NEYEsWVAso27bEBY1Q=;
-        b=gFRpZeUcL692V3cRhMVW6GhJRDOH0FyMiamsWJ33jYQ7iYsa+aqiTuTT2WNjf7RnBN
-         BP11npU9CwoXLyUPpk43+0A5ayXWn8EDsKfPyQBq4CubRtxDYosX4MU/ieTtj2V/sJrR
-         6qIfBmULWptMOgMqKpjF7s/0PugzRcCwswG+xGEYdvOimT+mZ0fArrAQBB7y4OaGjUif
-         9NXNZdClfJL+OmpBiBDN1yhsENCjR7blh3GDv3T8DQAzvnBW2ywV7ezrloSZ8THhb6CI
-         fS9SUH+zZSyDDbYZd2jaFou05f+H58N/cuLhhnxzphgI3i43gH+3kttxsg4Njbp/RE/u
-         e9Fw==
-X-Gm-Message-State: APjAAAW9uz0eWwS0D0t5CRPxJLiJmjRF9mDWnEM3qsqij1ZiUx1YMVp+
-        48GtQrLGAfNDHpAnQH18Uv1emAsF
-X-Google-Smtp-Source: APXvYqz8cmlpemOf9qhCq6NwbnI9Fi7EZMR48qYPtI+snwr8LiO3/HtY1gEJPw0c9bm1QJ69O9Ynxg==
-X-Received: by 2002:a37:4a48:: with SMTP id x69mr34051000qka.57.1582314864057;
-        Fri, 21 Feb 2020 11:54:24 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:6191:8310:a1b6:e817? ([2601:282:803:7700:6191:8310:a1b6:e817])
-        by smtp.googlemail.com with ESMTPSA id 132sm2019266qkn.109.2020.02.21.11.54.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Feb 2020 11:54:23 -0800 (PST)
-Subject: Re: [PATCH net-next] tun: Remove unnecessary BUG_ON check in
- tun_net_xmit
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Jason Wang <jasowang@redhat.com>
-References: <20200221195309.72955-1-dsahern@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <064afb26-2a46-3d29-66fe-8db5e24f8989@gmail.com>
-Date:   Fri, 21 Feb 2020 12:54:21 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=btdpP75zyRVNd2zdgzUEwBQJP+VyfWPJzrchDwkOdOs=;
+        b=LNNsoXKSbMusg47nuk2HynOHZtzh7OpOs8CF1lEvDCWomWt0rAmeMP9VuyAzk0C9cQ
+         JCyhiupFRSwvXWitRk5f6GqGhTZM62hYigEGj6niCoZWeh7An54whDGsR2Tc2vNQsjKC
+         lclzEChRdn6i/vsuaDTnxowdpnadeRkRve0u+3UeYeCqcknAIz34OoHBOEZNC30nDuAR
+         1O4sX4sPuLsPbhJrXb42r0wFkzVf4kZ1/CWoz1m/j6wVKXwUb4kI7L+ItCwRZ/E+S99Y
+         Q9A6qYNJ3iyHB8S2TB/oZ7KBcpFkhPoIuaWC3PIE1lLPOYg/PJeoAuMkoglJ0DNWplUh
+         MAiA==
+X-Gm-Message-State: APjAAAWuCFT7JfFArT0O2xjoo9qnWWkKVun3BlLQ8sbwQq8PzGyZ+dGL
+        IMqv9cNpAqmQl0/N2CD8RecUgQ==
+X-Google-Smtp-Source: APXvYqyuzt+qh+/9qPz7Xo4v2MMC+7vbZxDZI/rp3+7oRsDVJjoc9KxF/5d1CXRa9xg4vob5FiB3Tg==
+X-Received: by 2002:a63:487:: with SMTP id 129mr39862540pge.193.1582315019992;
+        Fri, 21 Feb 2020 11:56:59 -0800 (PST)
+Received: from kaaira-HP-Pavilion-Notebook ([103.37.201.178])
+        by smtp.gmail.com with ESMTPSA id x28sm3274324pgc.83.2020.02.21.11.56.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 21 Feb 2020 11:56:59 -0800 (PST)
+Date:   Sat, 22 Feb 2020 01:26:49 +0530
+From:   Kaaira Gupta <kgupta@es.iitr.ac.in>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: add braces around macro arguments
+Message-ID: <20200221195649.GA18450@kaaira-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-In-Reply-To: <20200221195309.72955-1-dsahern@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/21/20 12:53 PM, David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
-> 
-> The BUG_ON for NULL tfile is now redundant due to a recently
-> added null check after the rcu_dereference. Remove the BUG_ON.
-> 
-> Cc: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
->  drivers/net/tun.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
+Fix checkpatch.pl warnings of adding braces around macro arguments to
+prevent precedence issues by adding braces in qlge_dbg.c
 
-D'oh. Forgot the net-next  label
+Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
+---
+ drivers/staging/qlge/qlge_dbg.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index 8cf39615c520..c7af2548d119 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -1525,7 +1525,7 @@ void ql_dump_regs(struct ql_adapter *qdev)
+ #ifdef QL_STAT_DUMP
+ 
+ #define DUMP_STAT(qdev, stat)	\
+-	pr_err("%s = %ld\n", #stat, (unsigned long)qdev->nic_stats.stat)
++	pr_err("%s = %ld\n", #stat, (unsigned long)(qdev)->nic_stats.stat)
+ 
+ void ql_dump_stat(struct ql_adapter *qdev)
+ {
+@@ -1578,12 +1578,12 @@ void ql_dump_stat(struct ql_adapter *qdev)
+ #ifdef QL_DEV_DUMP
+ 
+ #define DUMP_QDEV_FIELD(qdev, type, field)		\
+-	pr_err("qdev->%-24s = " type "\n", #field, qdev->field)
++	pr_err("qdev->%-24s = " type "\n", #field, (qdev)->(field))
+ #define DUMP_QDEV_DMA_FIELD(qdev, field)		\
+ 	pr_err("qdev->%-24s = %llx\n", #field, (unsigned long long)qdev->field)
+ #define DUMP_QDEV_ARRAY(qdev, type, array, index, field) \
+ 	pr_err("%s[%d].%s = " type "\n",		 \
+-	       #array, index, #field, qdev->array[index].field);
++	       #array, index, #field, (qdev)->array[index].field);
+ void ql_dump_qdev(struct ql_adapter *qdev)
+ {
+ 	int i;
+-- 
+2.17.1
+
