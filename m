@@ -2,96 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5512168622
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 19:10:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE0A168634
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 19:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726946AbgBUSJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 13:09:56 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:56242 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbgBUSJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 13:09:56 -0500
-Received: by mail-pj1-f68.google.com with SMTP id d5so1086657pjz.5;
-        Fri, 21 Feb 2020 10:09:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YnVHKaoJO1HX1P3NwrYh2l54OzBJ4vkSrlh4+CAHtGg=;
-        b=hO+B1xyxXHmcprcyOZM3Cy0x+2O3VQsdZjPTe+ekQC7GFiaiWjd8FyaNONdKkg3T/t
-         +2NAXkZ6mbo4wtvB8xBdIV4NrJs8TgXNSfzBUAAH2A9ZOR0gyFmB8mk+R4bGgM/sRkkT
-         KF3fmjik6hIhZFmPnqUH9EhRaJFnTE08Xg13MVZzcLSJCbEZq8KPvt59pr6NLkMfMj2y
-         IWgl1BCkSi7UPCaEdwwSkCyef472NQWEcpc/VBIZ1fKdf/m0/x1J3a7QsHCKZ19beETK
-         ZKAjShshl2w5hRyoJS2BZ6GFLemmWtsnNQzsQ91/yMUmQtK21LLt7FECYeEWnVqgwGk0
-         7e9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YnVHKaoJO1HX1P3NwrYh2l54OzBJ4vkSrlh4+CAHtGg=;
-        b=ryDgeQ7fjWudArEwSD4UJ27ssQ/ONAkD3S3SBBMLOYuuJwb6vdkNphFEj6AalqzpHp
-         CbftHzT2XBwp3LiKijSoxZ/NlTNDlB/2AO7U0mFV3NyhqYDMujms0TE8G6u9+Q7h10rF
-         fkRVI+aVkmwH1u4VtmEC2kUAodDh549GqCJSgnpVGz50YZBykXgy7z5FnWA8A+Mht/35
-         oHzRWgXPPFiL3zHsSyVGqFB1u1exwVz0Rj7WhoTtavy/GEiGfNx+WVMeJCSmRF25B2XT
-         +2z2SLrk5S+nxAdej7DE5JDkof3FAzLACqR017DSvHsbe7R873oaEKDHACRnkbIbSkLG
-         9bNg==
-X-Gm-Message-State: APjAAAV2Hl+tr0LGzI+T3/d5CKCErzRsHCPCbpwjdJaUdPjwU8mXhl3h
-        MKZZvi4sEwvfD4wbhPuo2uhISV8=
-X-Google-Smtp-Source: APXvYqwJhe7ghkmt0lMpu8J3qCpPScB3kKurmtqaq6raB9yrlGmcE021hxheks/b4wl7pzkD7yAQYg==
-X-Received: by 2002:a17:902:ab81:: with SMTP id f1mr38545653plr.5.1582308594745;
-        Fri, 21 Feb 2020 10:09:54 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee0:fe5e:d03d:769b:c838:c146])
-        by smtp.gmail.com with ESMTPSA id x65sm3639043pfb.171.2020.02.21.10.09.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 10:09:54 -0800 (PST)
-From:   madhuparnabhowmik10@gmail.com
-To:     jiri@mellanox.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joel@joelfernandes.org, frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH] net: core: devlink.c: Hold devlink->lock from the beginning of devlink_dpipe_table_register()
-Date:   Fri, 21 Feb 2020 23:39:43 +0530
-Message-Id: <20200221180943.17415-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726783AbgBUSQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 13:16:25 -0500
+Received: from mx2.suse.de ([195.135.220.15]:37660 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725947AbgBUSQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 13:16:25 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 1BB4EAC50;
+        Fri, 21 Feb 2020 18:16:23 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 7F839E0099; Fri, 21 Feb 2020 19:16:22 +0100 (CET)
+Date:   Fri, 21 Feb 2020 19:16:22 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Cris Forno <cforno12@linux.vnet.ibm.com>, mst@redhat.com,
+        jasowang@redhat.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, sashal@kernel.org, tlfalcon@linux.ibm.com,
+        davem@davemloft.net, willemdebruijn.kernel@gmail.com,
+        kuba@kernel.org
+Subject: Re: [PATCH, net-next, v5, 2/2] net/ethtool: Introduce link_ksettings
+ API for virtual network devices
+Message-ID: <20200221181622.GD5607@unicorn.suse.cz>
+References: <20200218175227.8511-1-cforno12@linux.vnet.ibm.com>
+ <20200218175227.8511-3-cforno12@linux.vnet.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200218175227.8511-3-cforno12@linux.vnet.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+On Tue, Feb 18, 2020 at 11:52:27AM -0600, Cris Forno wrote:
+> With get/set link settings functions in core/ethtool.c, ibmveth,
+> netvsc, and virtio now use the core's helper function.
+> 
+> Funtionality changes that pertain to ibmveth driver include:
+> 
+>   1. Changed the initial hardcoded link speed to 1GB.
+> 
+>   2. Added support for allowing a user to change the reported link
+>   speed via ethtool.
+> 
+> Changes to the netvsc driver include:
+> 
+>   1. When netvsc_get_link_ksettings is called, it will defer to the VF
+>   device if it exists to pull accelerated networking values, otherwise
+>   pull default or user-defined values.
+> 
+>   2. Similarly, if netvsc_set_link_ksettings called and a VF device
+>   exists, the real values of speed and duplex are changed.
+> 
+> Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
+> ---
+[...]
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index 65e12cb..f733ec5 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+[...]
+> @@ -1187,18 +1193,19 @@ static int netvsc_set_link_ksettings(struct net_device *dev,
+>  				     const struct ethtool_link_ksettings *cmd)
+>  {
+>  	struct net_device_context *ndc = netdev_priv(dev);
+> -	u32 speed;
+> +	struct net_device *vf_netdev = rtnl_dereference(ndc->vf_netdev);
+>  
+> -	speed = cmd->base.speed;
+> -	if (!ethtool_validate_speed(speed) ||
+> -	    !ethtool_validate_duplex(cmd->base.duplex) ||
+> -	    !netvsc_validate_ethtool_ss_cmd(cmd))
+> -		return -EINVAL;
+> +	if (vf_netdev) {
+> +		if (!vf_netdev->ethtool_ops->set_link_ksettings)
+> +			return -EOPNOTSUPP;
+>  
+> -	ndc->speed = speed;
+> -	ndc->duplex = cmd->base.duplex;
+> +		return vf_netdev->ethtool_ops->set_link_ksettings(vf_netdev,
+> +								  cmd);
+> +	}
+>  
+> -	return 0;
+> +	return ethtool_virtdev_set_link_ksettings(dev, cmd,
+> +						  &ndc->speed, &ndc->duplex,
+> +						  &netvsc_validate_ethtool_ss_cmd);
+>  }
 
-devlink_dpipe_table_find() should be called under either
-rcu_read_lock() or devlink->lock. devlink_dpipe_table_register()
-calls devlink_dpipe_table_find() without holding the lock
-and acquires it later. Therefore hold the devlink->lock
-from the beginning of devlink_dpipe_table_register().
+I may be missing something obvious but I cannot see how does
+netvsc_validate_ethtool_ss_cmd() differ from ethtool_virtdev_validate_cmd().
+If it does, it would be probably worth a comment at the function.
 
-Suggested-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
- net/core/devlink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3e8c94155d93..d54e1f156b6f 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6840,6 +6840,8 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- {
- 	struct devlink_dpipe_table *table;
- 
-+	mutex_lock(&devlink->lock);
-+
- 	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name))
- 		return -EEXIST;
- 
-@@ -6855,7 +6857,6 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- 	table->priv = priv;
- 	table->counter_control_extern = counter_control_extern;
- 
--	mutex_lock(&devlink->lock);
- 	list_add_tail_rcu(&table->list, &devlink->dpipe_table_list);
- 	mutex_unlock(&devlink->lock);
- 	return 0;
--- 
-2.17.1
-
+Michal Kubecek
