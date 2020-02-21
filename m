@@ -2,103 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B55B1685A1
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:54:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC9F1685BC
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbgBURyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 12:54:40 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40842 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726701AbgBURyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:54:39 -0500
-Received: by mail-wm1-f65.google.com with SMTP id t14so2818471wmi.5
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 09:54:38 -0800 (PST)
+        id S1728442AbgBUR55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 12:57:57 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42869 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725947AbgBUR54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:57:56 -0500
+Received: by mail-pg1-f195.google.com with SMTP id w21so1336445pgl.9;
+        Fri, 21 Feb 2020 09:57:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xIoPJC89gVWFrNtFw0AHmOeVBRfBncDtaR7CYLx5/Dg=;
-        b=HMPZ83NG9rwiQMFLrYVIV0XarG2yWBarAaYn0Or5vkNGo0gR6DPadrWYKJedIyWa/F
-         VDgnkJ6P4JpsRgH8kGhl+10HQHX6TSvl9GyowzdP8yYq70W6phN5Cb63/hOdgQbcu6Tx
-         YkdLfWx0HxrDj7fkgtG0WSO1onF1bWSHeJ8XdRiJqqE+rm1yLbOB6tSj6slBfjHUJA81
-         ner9fe3wnAZCTC0/zTIXmNjLemvcjc0X77JXFfVN7cVJTwWQRgTCKw03OS58T4dQocCW
-         OeqSWb+7aDsP0Bs+Azg4p85XZFNxPPM2WOX1NIg1ifNOQJRCrbbB/KUDp5Vkv4iw39hB
-         wIsQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/D8p3umAJnu2Rmie5wIDoJw/XtMw5bg4kYLl7SwrZqU=;
+        b=Ww5wf2M+U9Q9PdbDPXvGrX8xRuaMm0OJNS0dg5taavKaGzja/6wQ3vcI5viCda1hJs
+         lT90s9PxizSUnPh3GM6n7qW+L3P2b19jUVhx2RfEwGHYN5izqrmRByIp/87hBfNltO8L
+         2SUidAyZB5hV0u7D/3L+t/gBL0725j/KTFVW8YciNMCupa5X8m0xJpz+hBaOwEDO3j0M
+         D70mPvxlyGYUSS7hCu9AF9eReMfQR1OCoJub8D0zPtzVxw+LsuGB5Bqdx0sjEpijjpN+
+         Zt7HxKVu/v4sDrpVaLWN+j95T8BCuWMRsMOScR551d1agjYGg6MXaD679cRGftp+HHcn
+         VkOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xIoPJC89gVWFrNtFw0AHmOeVBRfBncDtaR7CYLx5/Dg=;
-        b=UHMagb/m1Z20TTIBC2RiH9IPP09fjecXPpYExc+MkrlfFrjcj9MXuFr0HzyDfZPuUO
-         HKPPvsoXE/fBPruhcBRUIPtfvMvX2zxfcL4FMCVyc4pEPHQKyFdCFmAVnrfS00WjMw4c
-         ux4m15N5gdCxrTNumEA/Tf1JONG3XcOOu63XCcCHTau2eKsW0ZXNeLJxxo5mVYvz2v2J
-         dySYzdwxnIoKItbORk3G4JU1pyyEhs/61Gl5kdWEjZkef8Dph0vjvgvQOxSrT3yakjjE
-         csTVqXTptnk3QPkc2zSg74ifokjrp0OHOcyDYGqLDBXTffEcndFTCadiaM9hktUctfbA
-         b9kw==
-X-Gm-Message-State: APjAAAW/7pMNN5dtboIiL3e+P/6fDH08oS4uOU5HhlJmo/ZcmrkcqFVg
-        D4bhekcK9xZf2xdVEWS1bL9C7ZNzJ7A=
-X-Google-Smtp-Source: APXvYqyDP0cz6luS0Fl6H3aL1bf+0QT5FEG4EgdaFEKW3zTlqWaHiJiVlOY6fjWQWE7rSFcxzNOAMA==
-X-Received: by 2002:a05:600c:21c4:: with SMTP id x4mr5079128wmj.147.1582307677644;
-        Fri, 21 Feb 2020 09:54:37 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id j5sm4914621wrw.24.2020.02.21.09.54.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/D8p3umAJnu2Rmie5wIDoJw/XtMw5bg4kYLl7SwrZqU=;
+        b=g3ISJIYU0QssCYzAPuPadxvkhJQvylD5d3uWNq7bUToMpDcAubfYdXmImlGOZwidyX
+         X3GETyP+v40RxOADWxt8lqfc3p1mSPOY1YsdG9/JForiHXAWLRph88mka226dEl5rf1W
+         /Fw6ZTHy2+1hfCholCE8S3CC4Ug696lW/gWx9zA1+nUWiAciiVvwl/uwTWsiJomqOReF
+         fCiII/1PmhbUVNzp4PfnEYH8WsRvZ7QMn9TJ6NALGMBtJzDywpHRIfulAKQOrZ0vGWzp
+         +7mhG2b5S3Wk/7CyZqwPXdgoSrUkmMK+C/cckrkSbnKtRjiMpCm+QKbdXtdU2qC7ULR9
+         W3Sw==
+X-Gm-Message-State: APjAAAU03dEkT5YSc2c6973jKLZ7xDzMeaQeigXoeLi5aqIHTo+d+c9T
+        7it20/THd2JAL7BDF2l7uCU=
+X-Google-Smtp-Source: APXvYqyuPt2CUyWo6GMoDeY5O469l5MPv7Qd2vF+TA+kyd9ggfinqj2ZrCDRKtEIY+r/Ko20/RKbnA==
+X-Received: by 2002:a63:cd03:: with SMTP id i3mr40862108pgg.257.1582307874467;
+        Fri, 21 Feb 2020 09:57:54 -0800 (PST)
+Received: from localhost.localdomain ([103.87.57.170])
+        by smtp.googlemail.com with ESMTPSA id t19sm3128544pgg.23.2020.02.21.09.57.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 09:54:37 -0800 (PST)
-Date:   Fri, 21 Feb 2020 18:54:36 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Cc:     jiri@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
-Subject: Re: [PATCH] net: core: devlink.c: Use built-in RCU list checking
-Message-ID: <20200221175436.GB2181@nanopsycho>
-References: <20200221165141.24630-1-madhuparnabhowmik10@gmail.com>
- <20200221172008.GA2181@nanopsycho>
- <20200221173533.GA13198@madhuparna-HP-Notebook>
+        Fri, 21 Feb 2020 09:57:54 -0800 (PST)
+From:   Amol Grover <frextrite@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH] tcp: ipv4: Pass lockdep expression to RCU lists
+Date:   Fri, 21 Feb 2020 23:27:14 +0530
+Message-Id: <20200221175713.2112-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200221173533.GA13198@madhuparna-HP-Notebook>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 21, 2020 at 06:35:34PM CET, madhuparnabhowmik10@gmail.com wrote:
->On Fri, Feb 21, 2020 at 06:20:08PM +0100, Jiri Pirko wrote:
->> Fri, Feb 21, 2020 at 05:51:41PM CET, madhuparnabhowmik10@gmail.com wrote:
->> >From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
->> >
->> >list_for_each_entry_rcu() has built-in RCU and lock checking.
->> >
->> >Pass cond argument to list_for_each_entry_rcu() to silence
->> >false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
->> >by default.
->> >
->> >Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
->> 
->> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
->> 
->> Thanks.
->> 
->> However, there is a callpath where not devlink lock neither rcu read is
->> taken:
->> devlink_dpipe_table_register()->devlink_dpipe_table_find()
->>
->Hi,
->
->Yes I had noticed this, but I was not sure if there is some other lock
->which is being used.
->
->If yes, then can you please tell me which lock is held in this case,
->and I can add that condition as well to list_for_each_entry_rcu() usage.
->
->And if no lock or rcu_read_lock is held then may be we should
->use rcu_read_lock/unlock here.
->
->Let me know what you think about this.
+md5sig->head maybe traversed using hlist_for_each_entry_rcu
+outside an RCU read-side critical section but under the protection
+of socket lock.
 
-devlink->lock should be held since the beginning of
-devlink_dpipe_table_register()
+Hence, add corresponding lockdep expression to silence false-positive
+warnings, and harden RCU lists.
+
+Signed-off-by: Amol Grover <frextrite@gmail.com>
+---
+ net/ipv4/tcp_ipv4.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 1c7326e04f9b..6519429f32cd 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1000,7 +1000,8 @@ struct tcp_md5sig_key *__tcp_md5_do_lookup(const struct sock *sk,
+ 	if (!md5sig)
+ 		return NULL;
+ 
+-	hlist_for_each_entry_rcu(key, &md5sig->head, node) {
++	hlist_for_each_entry_rcu(key, &md5sig->head, node,
++				 lockdep_sock_is_held(sk)) {
+ 		if (key->family != family)
+ 			continue;
+ 
+@@ -1043,7 +1044,8 @@ static struct tcp_md5sig_key *tcp_md5_do_lookup_exact(const struct sock *sk,
+ 	if (family == AF_INET6)
+ 		size = sizeof(struct in6_addr);
+ #endif
+-	hlist_for_each_entry_rcu(key, &md5sig->head, node) {
++	hlist_for_each_entry_rcu(key, &md5sig->head, node,
++				 lockdep_sock_is_held(sk)) {
+ 		if (key->family != family)
+ 			continue;
+ 		if (!memcmp(&key->addr, addr, size) &&
+-- 
+2.24.1
 
