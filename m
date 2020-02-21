@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B605F16745C
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 09:23:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E4C1677CB
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 09:44:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388179AbgBUIUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 03:20:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59838 "EHLO mail.kernel.org"
+        id S1731131AbgBUIo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 03:44:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50220 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388171AbgBUIUk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 03:20:40 -0500
+        id S1729267AbgBUHwY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 02:52:24 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60B3224697;
-        Fri, 21 Feb 2020 08:20:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1E6B120578;
+        Fri, 21 Feb 2020 07:52:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582273239;
-        bh=+PkrT4iG1T7Rl6JWmdEM27E+WQtpZRSY2P7dpNAA9Wc=;
+        s=default; t=1582271543;
+        bh=6tbLCWnpf1qdG/ZfEExJsIDCvHtX8M011tK0lJqgro0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vdErMCkWx6jd9nwhNWY4pG0Bkr4GJtSTye19seYd0BlJ44CHGDDvlCytzMR27onLz
-         oAKXjllKGLsjPqDDWZgk2LEKWEnKx1d5Q0V/ziWPbwWmJdWSMiBEODBtdVBQbRDvXd
-         59xk3t3wvPsnRp5d2SMLWaOFXgloZT0ZbcerDr4I=
+        b=TADtCVr4qZ5qCSaQyEQjkVnVu/W6+KP3EIFA5QnEU8D3LeXRP0tpPeDRpUETtJnR3
+         vxd7X1+VO3j4w91wl/m6+ULJ4xqPpc36djBKBPH+kNOEiM6RZNUKAlCjVfTdKpMUcc
+         E/0n+BJq7nnkOTXpN13sM6IgrBwigSxzA6oxz52k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,12 +39,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 098/191] tools lib api fs: Fix gcc9 stringop-truncation compilation error
-Date:   Fri, 21 Feb 2020 08:41:11 +0100
-Message-Id: <20200221072302.916269809@linuxfoundation.org>
+Subject: [PATCH 5.5 207/399] tools lib api fs: Fix gcc9 stringop-truncation compilation error
+Date:   Fri, 21 Feb 2020 08:38:52 +0100
+Message-Id: <20200221072423.010626148@linuxfoundation.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200221072250.732482588@linuxfoundation.org>
-References: <20200221072250.732482588@linuxfoundation.org>
+In-Reply-To: <20200221072402.315346745@linuxfoundation.org>
+References: <20200221072402.315346745@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -92,7 +92,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
-index 7aba8243a0e7c..bd021a0eeef8c 100644
+index 11b3885e833ed..027b18f7ed8cf 100644
 --- a/tools/lib/api/fs/fs.c
 +++ b/tools/lib/api/fs/fs.c
 @@ -210,6 +210,7 @@ static bool fs__env_override(struct fs *fs)
