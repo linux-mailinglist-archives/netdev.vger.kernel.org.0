@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D7D166DC4
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 04:33:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9461166DEC
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 04:42:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729643AbgBUDdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 22:33:38 -0500
-Received: from mail-pj1-f52.google.com ([209.85.216.52]:50347 "EHLO
-        mail-pj1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727944AbgBUDdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 22:33:38 -0500
-Received: by mail-pj1-f52.google.com with SMTP id r67so126976pjb.0;
-        Thu, 20 Feb 2020 19:33:38 -0800 (PST)
+        id S1729747AbgBUDmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 22:42:19 -0500
+Received: from mail-pf1-f175.google.com ([209.85.210.175]:35973 "EHLO
+        mail-pf1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729630AbgBUDmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 22:42:18 -0500
+Received: by mail-pf1-f175.google.com with SMTP id 185so490934pfv.3;
+        Thu, 20 Feb 2020 19:42:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=uVDXWSOoE3NIUlB15U8IMoPrpK+RxsWu+4UikNAI7L8=;
-        b=CTM8VZbwOWtkxzdnuhCVPjPWLAzjC49zcyIKrPnqEKXJAHYO51CicZs+PtCSbPIhqG
-         ypuBYuqiUxdkPQUScW5/2MKtEB0XztvXVa3ec81COZSEpw+hMNa6yquknxLRNEPQ2Who
-         vejuR+ZO2lmujRtMgbPk3DNMh7+gdvsYMNUB+ju7jmt8fsDxjbzRnYHgifOhvMyDjqr9
-         P4GtwniIrf4cR7lqvH5DTqRzbbiNtPB4HEP0kjEzGy+dMxAzG74DWyy0g3KQDkFaj4vS
-         QflPfKpXofQHHNepqDgmdF6UsqL55NuYbWtZlJApgkvcj5NYZNt5QEvNb4dF+oLwN1m+
-         PzYw==
+        bh=XhnbVQ6ApCQV5aoHFuO+2Cja+mfXqcArMCHp54JsVvI=;
+        b=e5iUfQdb2gUF9y8o1xFdciMpxJNE5PlVOmMZPJVsoS+u6wE5+JUUHghJ+1KMBe+ydt
+         BW3Y0JhInwMvPlXupbHARDSYs1wRXNTvYGOVGe1yq8Y38EW3pbZrtXsMLPS65L7hG/yw
+         hbX/sUGULqzQA9uFCM+r30k+RX9A0da5ImLAm30pp9Qr9edUMbBOzwIREda+2FPlxfTx
+         uLLyOF6RYkGM6PpQu88Ti8sgXtyfd4NazYm5svCUdcSkx9BZuwUDxi9+nN3WRt6i76AT
+         kMN47lsbcoeKNucXW/3r2fZg7fsz9RaWTDV7U1b9cEQko/4y4JtToDzjd4Z5rjzw4PFm
+         /8yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=uVDXWSOoE3NIUlB15U8IMoPrpK+RxsWu+4UikNAI7L8=;
-        b=Di6HkKjiwsBDZODcxQBIleSqbyb7V2hKck6CkP8BkNKn7DPVA/XNVYu/o08ddGa8yE
-         ZE6hW5adl7bToj9pTo2flOkAjEQBnoRT6yeA8YFRRY13xVX8n87aQJ474NLaFGnYlEyS
-         zqlYHT3cHnE/Vhe691csvdba3QNGP63s3K82fYnQ4tNlUbWgZ4fyDySKzjXSV9lnVL3T
-         ECNz1BzinE/h5WmgrnNqWTn7tANcVviwwZ3/gltFrYl1n9/KRKmjmGxBwCc5nfQmAy37
-         G81+sZB0TZeFpsKW0HmIpUBQxa5j/6UJTNyaEp5BxirsQo2OelEcWtiNf4f8FH4AWxc/
-         IgGg==
-X-Gm-Message-State: APjAAAWUVJC3hCOnPNzAbz+dWP86PvVRRq+jwB90tsB/5k4HkuoJx9px
-        HPe2smnwud8AojuS62+d9/M=
-X-Google-Smtp-Source: APXvYqzkBphWmsVxodaI54/Gjsyh9+sYWNtDOzTxSh8qqCH74zzhPc3d+rheToNZL0MG47DAIqK7wA==
-X-Received: by 2002:a17:90a:30a4:: with SMTP id h33mr549545pjb.50.1582256017887;
-        Thu, 20 Feb 2020 19:33:37 -0800 (PST)
+        bh=XhnbVQ6ApCQV5aoHFuO+2Cja+mfXqcArMCHp54JsVvI=;
+        b=t1VgfJC8+qGmVuy/vPS7TJUGNDgz54KkZQbCAGe48FhqXnfLpBFJINJEkw75abd39A
+         oWGZFaopvSg0TafUSvalM8ug8n323Mqsz/i8x3VT48qXF0Pw2IAQkYzDG8KhbF1YE20U
+         fLaGJIGWuGam+bwgkrNxKHmjTp3awvUs0VYEgsmDFVtOoBt6NJ+uJ/uvIwZP8MsEJIQU
+         jrIGyLl5VDzkYPcKJI/j67n92pETBihCmV8kMhnTAd+46VLXGrgJVrHx0iF97RQ7+RIh
+         A3BBv5/8b2irD2/6fo8zbi8PU2nCUhL2z1BF4RvuoWnPKvI91o2rV0zTcDjJ8myWmVXT
+         tNGw==
+X-Gm-Message-State: APjAAAXNAWAc2GoxysUEPfE6FuTaR6wt2Rcp3pPe6+T71oNqUVo71el5
+        TL5aP9TyT2PvMsNoaRTZKAQ=
+X-Google-Smtp-Source: APXvYqwaVUZ9E1tXVsZ8AQOx7AbV+ZjGWX/+voclKbNemfLAi/AKqWOcR7MyiqQrheJZST3B55+t/A==
+X-Received: by 2002:a63:3117:: with SMTP id x23mr3895286pgx.269.1582256536677;
+        Thu, 20 Feb 2020 19:42:16 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id e1sm981936pfl.98.2020.02.20.19.33.35
+        by smtp.gmail.com with ESMTPSA id b18sm1018191pfb.116.2020.02.20.19.42.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 19:33:37 -0800 (PST)
-Date:   Thu, 20 Feb 2020 19:33:30 -0800
+        Thu, 20 Feb 2020 19:42:15 -0800 (PST)
+Date:   Thu, 20 Feb 2020 19:42:07 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
         Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
-Message-ID: <5e4f4f8a876c8_18d22b0a1febc5b87e@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200218171023.844439-5-jakub@cloudflare.com>
+Message-ID: <5e4f518fea591_18d22b0a1febc5b85b@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200218171023.844439-6-jakub@cloudflare.com>
 References: <20200218171023.844439-1-jakub@cloudflare.com>
- <20200218171023.844439-5-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf-next v7 04/11] bpf, sockmap: Allow inserting listening
- TCP sockets into sockmap
+ <20200218171023.844439-6-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next v7 05/11] bpf, sockmap: Don't set up upcalls and
+ progs for listening sockets
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -66,19 +66,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Jakub Sitnicki wrote:
-> In order for sockmap/sockhash types to become generic collections for
-> storing TCP sockets we need to loosen the checks during map update, while
-> tightening the checks in redirect helpers.
+> Now that sockmap/sockhash can hold listening sockets, when setting up the
+> psock we will (i) grab references to verdict/parser progs, and (2) override
+> socket upcalls sk_data_ready and sk_write_space.
 > 
-> Currently sock{map,hash} require the TCP socket to be in established state,
-> which prevents inserting listening sockets.
+> However, since we cannot redirect to listening sockets so we don't need to
+> link the socket to the BPF progs. And more importantly we don't want the
+> listening socket to have overridden upcalls because they would get
+> inherited by child sockets cloned from it.
 > 
-> Change the update pre-checks so the socket can also be in listening state.
-> 
-> Since it doesn't make sense to redirect with sock{map,hash} to listening
-> sockets, add appropriate socket state checks to BPF redirect helpers too.
+> Introduce a separate initialization path for listening sockets that does
+> not change the upcalls and ignores the BPF progs.
 > 
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
+>  net/core/sock_map.c | 52 +++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 45 insertions(+), 7 deletions(-)
+> 
+
+Interesting, so after this with listen and established socks in
+the same map some will inherit the programs attached to the map and
+some will not... I think this is OK when socks are added we know their
+state so can reason about it. Anyways the same can happen by attaching
+programs after socks are added.
+
+It would probably be more confusing to reject listen socks when progs
+are attached so seems like the right design choice to me.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
