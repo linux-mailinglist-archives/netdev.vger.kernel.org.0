@@ -2,171 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 831CD1689F0
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 23:29:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFC0168A14
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 23:44:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729066AbgBUW3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 17:29:16 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58052 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726725AbgBUW3Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 17:29:16 -0500
-Received: from 192.42.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.42.192] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j5GnC-0006If-8E; Fri, 21 Feb 2020 23:29:06 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2020-02-21
-Date:   Fri, 21 Feb 2020 23:29:05 +0100
-Message-Id: <20200221222905.1663-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1729379AbgBUWoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 17:44:34 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36630 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726802AbgBUWoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 17:44:34 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 185so2035099pfv.3;
+        Fri, 21 Feb 2020 14:44:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cceSZ0xIZFt7SCWYZAxl6HnAJNJskJe6R45L26XdHHI=;
+        b=DGdclY8PMu9ZY48vwOeL9Ml2QxiHkti6cZiLDRtZM/wfub/2HtAMzIQtAoR2GSgiLv
+         rKjMNChLWqTh/sChQgR1n4wis8lVKY7FJt2gxrc9pREV9qYD7axGSoD36F8wH7hqNDPs
+         zNIDmVrFwwBiQB5PRevrRve1l50OtDwl8mQpZpy4yFPpTL5JeTn3hBkfSNnBPsJyTUtl
+         f8EZI05Apr62Q4k5dO0g9Ldfn/c+LkpwXgcXzgepYI1SxrM6uorSffXOHnZkE+dZAHbj
+         karztfLtXOzh87cAFT8ZIXU33RBAAOv4j95AyFw848T6FposDdrpXR0BdItWJ34NsXqg
+         GlNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cceSZ0xIZFt7SCWYZAxl6HnAJNJskJe6R45L26XdHHI=;
+        b=hUdK8Vy4/sZkziY7Y0rIB8gcOV1lb4HP+3iRz4wsWQBK2bHMLJ9YkNKFq25cJ3e4LG
+         i9Gcc3614RUpuTVVQJPXZHX/Fowvx7kH40yZ3ne7T5Sad+G30J26H3sB0VLYn0d0fMgr
+         FWPQLrkYSISjKv73ZsG2CRC5Bzs3KAFi8Fb59VDFBXGBkJvlpHFWSsgr+plIFyb09l3v
+         9aPlT2vbtOsO5e08xNO6g4VJazYP9Xqou9VISTPjJ8ChHwvUpL1GcF5py/EK4hPR5aYT
+         MLO0d8Vb8hytnydqu/GOdhPKh6+dRBcdgr+bONQQhJNIcYPtPovgT5O3Uyo2Ht3D7Zjb
+         T7Sw==
+X-Gm-Message-State: APjAAAV1ZC/1koNxoJlsIiXLv0MilgflJeRhtCDV9Z5MUyJ60h9o0qYx
+        yIoIfzpObIFkvebhSG4OSXxy7tXS
+X-Google-Smtp-Source: APXvYqywhe5FhZO4n/XaE0Tp4SIYAomGQLeICnq7qU6/uFXNx/HGcprxcWeNj5d3FYmq405bVP3F1w==
+X-Received: by 2002:a63:3c1b:: with SMTP id j27mr40324813pga.152.1582325073170;
+        Fri, 21 Feb 2020 14:44:33 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:500::4:d448])
+        by smtp.gmail.com with ESMTPSA id t28sm3931342pfq.122.2020.02.21.14.44.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Feb 2020 14:44:32 -0800 (PST)
+Date:   Fri, 21 Feb 2020 14:44:29 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 2/5] bpftool: Make probes which emit dmesg
+ warnings optional
+Message-ID: <20200221224428.plbxav3scv6og6kv@ast-mbp>
+References: <20200221031702.25292-1-mrostecki@opensuse.org>
+ <20200221031702.25292-3-mrostecki@opensuse.org>
+ <7ab56bb6-0ddb-2c3c-d116-fc01feddba5e@isovalent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.1/25730/Fri Feb 21 13:08:06 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ab56bb6-0ddb-2c3c-d116-fc01feddba5e@isovalent.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Fri, Feb 21, 2020 at 11:28:05AM +0000, Quentin Monnet wrote:
+> 
+> "trace" sounds too generic. If filters are applied again to prog and map
+> types in the future (as you had in v1), this would catch tracepoint and
+> raw_tracepoint program types and stack_trace map type. Or if new helpers
+> with "trace" in their name are added, we skip them too. Can we use something
+> more specific, probably "trace_printk"?
 
-The following pull-request contains BPF updates for your *net-next* tree.
++1
 
-We've added 25 non-merge commits during the last 4 day(s) which contain
-a total of 33 files changed, 2433 insertions(+), 161 deletions(-).
+> Thanks for the patch! While I understand you want to keep the changes you
+> have done to use regex, I do not really think they bring much in this
+> version of the patch. As we only want to filter out two specific helpers, it
+> seems to me that it would be much simpler to just compare helper names
+> instead of introducing regular expressions that are not used otherwise. What
+> do you think?
 
-The main changes are:
-
-1) Allow for adding TCP listen sockets into sock_map/hash so they can be used
-   with reuseport BPF programs, from Jakub Sitnicki.
-
-2) Add a new bpf_program__set_attach_target() helper for adding libbpf support
-   to specify the tracepoint/function dynamically, from Eelco Chaudron.
-
-3) Add bpf_read_branch_records() BPF helper which helps use cases like profile
-   guided optimizations, from Daniel Xu.
-
-4) Enable bpf_perf_event_read_value() in all tracing programs, from Song Liu.
-
-5) Relax BTF mandatory check if only used for libbpf itself e.g. to process
-   BTF defined maps, from Andrii Nakryiko.
-
-6) Move BPF selftests -mcpu compilation attribute from 'probe' to 'v3' as it has
-   been observed that former fails in envs with low memlock, from Yonghong Song.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, John Fastabend, Julia Kartseva, Martin KaFai Lau, Song 
-Liu, Toke Høiland-Jørgensen
-
-----------------------------------------------------------------
-
-The following changes since commit b182a66792feb706c62e50c31db8546ca4ff168e:
-
-  net: ena: remove set but not used variable 'hash_key' (2020-02-17 22:32:50 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to eb1e1478b6f4e70d99fee3f49bb7f7143c8c871d:
-
-  Merge branch 'bpf-sockmap-listen' (2020-02-21 22:31:41 +0100)
-
-----------------------------------------------------------------
-Alexei Starovoitov (3):
-      Merge branch 'bpf_read_branch_records'
-      selftests/bpf: Fix build of sockmap_ktls.c
-      Merge branch 'set_attach_target'
-
-Andrii Nakryiko (2):
-      libbpf: Relax check whether BTF is mandatory
-      selftests/bpf: Fix trampoline_count clean up logic
-
-Daniel Borkmann (2):
-      Merge branch 'bpf-skmsg-simplify-restore'
-      Merge branch 'bpf-sockmap-listen'
-
-Daniel Xu (2):
-      bpf: Add bpf_read_branch_records() helper
-      selftests/bpf: Add bpf_read_branch_records() selftest
-
-Eelco Chaudron (3):
-      libbpf: Bump libpf current version to v0.0.8
-      libbpf: Add support for dynamic program attach target
-      selftests/bpf: Update xdp_bpf2bpf test to use new set_attach_target API
-
-Jakub Sitnicki (14):
-      bpf, sk_msg: Let ULP restore sk_proto and write_space callback
-      bpf, sk_msg: Don't clear saved sock proto on restore
-      selftests/bpf: Test unhashing kTLS socket after removing from map
-      net, sk_msg: Annotate lockless access to sk_prot on clone
-      net, sk_msg: Clear sk_user_data pointer on clone if tagged
-      tcp_bpf: Don't let child socket inherit parent protocol ops on copy
-      bpf, sockmap: Allow inserting listening TCP sockets into sockmap
-      bpf, sockmap: Don't set up upcalls and progs for listening sockets
-      bpf, sockmap: Return socket cookie on lookup from syscall
-      bpf, sockmap: Let all kernel-land lookup values in SOCKMAP/SOCKHASH
-      bpf: Allow selecting reuseport socket from a SOCKMAP/SOCKHASH
-      net: Generate reuseport group ID on group creation
-      selftests/bpf: Extend SK_REUSEPORT tests to cover SOCKMAP/SOCKHASH
-      selftests/bpf: Tests for sockmap/sockhash holding listening sockets
-
-Song Liu (1):
-      bpf: Allow bpf_perf_event_read_value in all BPF programs
-
-Yonghong Song (2):
-      selftests/bpf: Change llvm flag -mcpu=probe to -mcpu=v3
-      docs/bpf: Update bpf development Q/A file
-
- Documentation/bpf/bpf_devel_QA.rst                 |   29 +-
- include/linux/skmsg.h                              |   20 +-
- include/net/sock.h                                 |   37 +-
- include/net/sock_reuseport.h                       |    2 -
- include/net/tcp.h                                  |    7 +
- include/uapi/linux/bpf.h                           |   25 +-
- kernel/bpf/reuseport_array.c                       |    5 -
- kernel/bpf/verifier.c                              |   10 +-
- kernel/trace/bpf_trace.c                           |   45 +-
- net/core/filter.c                                  |   27 +-
- net/core/skmsg.c                                   |    2 +-
- net/core/sock.c                                    |   14 +-
- net/core/sock_map.c                                |  167 ++-
- net/core/sock_reuseport.c                          |   50 +-
- net/ipv4/tcp_bpf.c                                 |   18 +-
- net/ipv4/tcp_minisocks.c                           |    2 +
- net/ipv4/tcp_ulp.c                                 |    3 +-
- net/tls/tls_main.c                                 |    3 +-
- tools/include/uapi/linux/bpf.h                     |   25 +-
- tools/lib/bpf/libbpf.c                             |   38 +-
- tools/lib/bpf/libbpf.h                             |    4 +
- tools/lib/bpf/libbpf.map                           |    5 +
- tools/testing/selftests/bpf/Makefile               |    4 +-
- .../selftests/bpf/prog_tests/perf_branches.c       |  170 +++
- .../selftests/bpf/prog_tests/select_reuseport.c    |   63 +-
- .../selftests/bpf/prog_tests/sockmap_ktls.c        |  124 ++
- .../selftests/bpf/prog_tests/sockmap_listen.c      | 1496 ++++++++++++++++++++
- .../selftests/bpf/prog_tests/trampoline_count.c    |   25 +-
- .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   16 +-
- .../selftests/bpf/progs/test_perf_branches.c       |   50 +
- .../selftests/bpf/progs/test_sockmap_listen.c      |   98 ++
- .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |    4 +-
- tools/testing/selftests/bpf/test_maps.c            |    6 +-
- 33 files changed, 2433 insertions(+), 161 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_branches.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_ktls.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_perf_branches.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_listen.c
++1
+I was thinking the same.
+Or filter by specific integer id of the helper.
