@@ -2,92 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76FAA167D47
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 13:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67C07167D5C
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 13:22:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727699AbgBUMTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 07:19:10 -0500
-Received: from mail-out.elkdata.ee ([185.7.252.64]:54224 "EHLO
-        mail-out.elkdata.ee" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726909AbgBUMTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 07:19:10 -0500
-X-Greylist: delayed 448 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Feb 2020 07:19:08 EST
-Received: from mail-relay2.elkdata.ee (unknown [185.7.252.69])
-        by mail-out.elkdata.ee (Postfix) with ESMTP id 79CAC372A95;
-        Fri, 21 Feb 2020 14:11:38 +0200 (EET)
-Received: from mail-relay2.elkdata.ee (unknown [185.7.252.69])
-        by mail-relay2.elkdata.ee (Postfix) with ESMTP id 74F028309AA;
-        Fri, 21 Feb 2020 14:11:38 +0200 (EET)
-X-Virus-Scanned: amavisd-new at elkdata.ee
-Received: from mail-relay2.elkdata.ee ([185.7.252.69])
-        by mail-relay2.elkdata.ee (mail-relay2.elkdata.ee [185.7.252.69]) (amavisd-new, port 10024)
-        with ESMTP id Dv7M9TrqqmTv; Fri, 21 Feb 2020 14:11:36 +0200 (EET)
-Received: from mail.elkdata.ee (unknown [185.7.252.68])
-        by mail-relay2.elkdata.ee (Postfix) with ESMTP id 23BB88309AC;
-        Fri, 21 Feb 2020 14:11:36 +0200 (EET)
-Received: from mail.meie.biz (21-182-190-90.sta.estpak.ee [90.190.182.21])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: leho@jaanalind.ee)
-        by mail.elkdata.ee (Postfix) with ESMTPSA id 1926560BF52;
-        Fri, 21 Feb 2020 14:11:36 +0200 (EET)
-Received: by mail.meie.biz (Postfix, from userid 500)
-        id 004D3B7C6A4; Fri, 21 Feb 2020 14:11:35 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kraav.com; s=mail;
-        t=1582287096; bh=233+khcaWZ9tc+fOJUrTd3ddqOMhHE2+qhQGuN3aNAQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=UW9yvUDehx6+hgJ8hn7C3g7CkIUDQXX+wFiPw4NZl4JxVDC5KEeKEgTpW5r9CdN1I
-         vvVxs1mWp/EcaAVhxI8t8FwvsSeyqBbP/r22IeZbsAZjmK0CKFUqDRPuPgyeBztocv
-         JU6PfccIGMZkX6xRZZI3xd//0RRqcyu8YHWO6qCY=
-Received: from papaya (papaya-vpn.meie.biz [192.168.48.157])
-        by mail.meie.biz (Postfix) with ESMTPSA id B1A03B7C69C;
-        Fri, 21 Feb 2020 14:11:35 +0200 (EET)
-Authentication-Results: mail.meie.biz; dmarc=fail (p=none dis=none) header.from=kraav.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kraav.com; s=mail;
-        t=1582287095; bh=233+khcaWZ9tc+fOJUrTd3ddqOMhHE2+qhQGuN3aNAQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=Y+/xdoNoetHFP/OmkiU8wXTTBx8klll0NqDNHDnTV5d3FdVOxam8VhhY15v7FQheB
-         0CGV7Fu0AQGWbpOw40gpUihxAO5OtQYfJR8EF01Rk44Irj2zcWO0hT/SCv/Ux5dCVg
-         4qs44UD+K8giTSQFOiu+XWEAuhNX7AK91Nf08ZiE=
-Received: (nullmailer pid 12685 invoked by uid 1000);
-        Fri, 21 Feb 2020 12:11:35 -0000
-Date:   Fri, 21 Feb 2020 14:11:35 +0200
-From:   Leho Kraav <leho@kraav.com>
-To:     "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iwlwifi: pcie: restore support for Killer Qu C0 NICs
-Message-ID: <20200221121135.GA9056@papaya>
-References: <20191224051639.6904-1-jan.steffens@gmail.com>
+        id S1727876AbgBUMWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 07:22:49 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:38465 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726989AbgBUMWt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 07:22:49 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ae69edc7;
+        Fri, 21 Feb 2020 12:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=uhQCAVDb4364mtjJv6SpTB65UHI=; b=W2LUF+
+        cv8YS3So0N9HhPcAaDjEC3yO7K9nXdhN3Ra/LCX6BzXlputceFhbmqhbowO4pJOs
+        U7RIWQ06Vd+4ZFxaiDK/l/0YLbLnLsw+dFMbDEVmg5nR0ykQ1/urB+d2CbyL00IM
+        pIEozkJikuT+7Rl0LzFG7iPs6KCJK1MJ50iGFNvucQAyTRpsjVly428cVeeAcv6i
+        pznknhVrmpUhCPXjyd9VlF9oBrgGJDDcqErvQ7U6cb09Y3Eep0lHLoHNHtWeHtNW
+        SjLbFgMGjfNngCv+fr7AkCCh6cHU6cwlEaGZ1BazexiFn+TCcfEIJLbNwtWBYfsj
+        W5qK8D4XQhEMAxag==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dfc282aa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Fri, 21 Feb 2020 12:19:46 +0000 (UTC)
+Received: by mail-oi1-f170.google.com with SMTP id l136so1393238oig.1;
+        Fri, 21 Feb 2020 04:22:46 -0800 (PST)
+X-Gm-Message-State: APjAAAXI0+QiGxe/eQRMI/2FQG68MCX8av3gp4V650EQJFQgwhhcCMp1
+        289WXvZEqHkh4Gi4PGfQ+99VR3Ai+8X5FvLWLm0=
+X-Google-Smtp-Source: APXvYqx/gekI9G4Z55x1wRyYB/MJ/2qeEFf/kPEOn+vk71fqK0y/SAfYdl5pBHlDGpLivFV6vx8dxGdDCMMxdyIgJ28=
+X-Received: by 2002:aca:815:: with SMTP id 21mr1815304oii.52.1582287766123;
+ Fri, 21 Feb 2020 04:22:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20191224051639.6904-1-jan.steffens@gmail.com>
-X-Bogosity: Unsure, tests=bogofilter, spamicity=0.500000, version=1.2.4
+References: <20200221072209.10612-1-yuehaibing@huawei.com>
+In-Reply-To: <20200221072209.10612-1-yuehaibing@huawei.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 21 Feb 2020 13:22:35 +0100
+X-Gmail-Original-Message-ID: <CAHmME9po5q_EYiy0yX0VxcnTdiQe1Aa74WLXsYMmxepasUHtww@mail.gmail.com>
+Message-ID: <CAHmME9po5q_EYiy0yX0VxcnTdiQe1Aa74WLXsYMmxepasUHtww@mail.gmail.com>
+Subject: Re: [PATCH net-next] wireguard: selftests: remove duplicated include <sys/types.h>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     Shuah Khan <shuah@kernel.org>, David Miller <davem@davemloft.net>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 24, 2019 at 06:16:39AM +0100, Jan Alexander Steffens (heftig) wrote:
-> Commit 809805a820c6 ("iwlwifi: pcie: move some cfg mangling from
-> trans_pcie_alloc to probe") refactored the cfg mangling. Unfortunately,
-> in this process the lines which picked the right cfg for Killer Qu C0
-> NICs after C0 detection were lost. These lines were added by commit
-> b9500577d361 ("iwlwifi: pcie: handle switching killer Qu B0 NICs to
-> C0").
-> 
-> I suspect this is more of the "merge damage" which commit 7cded5658329
-> ("iwlwifi: pcie: fix merge damage on making QnJ exclusive") talks about.
-> 
-> Restore the missing lines so the driver loads the right firmware for
-> these NICs.
+On Fri, Feb 21, 2020 at 8:23 AM YueHaibing <yuehaibing@huawei.com> wrote:
+>
+> Remove duplicated include.
 
-This seems real, as upgrading 5.5.0 -> 5.5.5 just broke my iwlwifi on XPS 7390.
-How come?
+Thanks. Applied to the wireguard-linux tree.
