@@ -2,83 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A53B716865F
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 19:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7405116869F
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 19:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729556AbgBUSWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 13:22:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34238 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727966AbgBUSWD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 13:22:03 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3630C206E2;
-        Fri, 21 Feb 2020 18:22:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582309323;
-        bh=EB3RCy+KkbrCa0bZvqvuVZ+vD2rifSO3C97ioE4E808=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OMrbdBxiSCuSen5OTFY5Uj3YZzdkbztZ5qpMsMmI2MJ97LJHqF/jniBNa5bZZjM5m
-         ShMgtMhqTda93WYql5cAiQakSKoB9IrmLH7G9jnTa0aAYWFDYhISpyZBsNMvlN8oSf
-         mTYQYnaBlwLDXsogyl3Kbm0VFVGP6JpaOaZc5eho=
-Date:   Fri, 21 Feb 2020 10:22:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org, mlxsw@mellanox.com,
-        Edward Cree <ecree@solarflare.com>
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW
- stats type
-Message-ID: <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200221095643.6642-1-jiri@resnulli.us>
-References: <20200221095643.6642-1-jiri@resnulli.us>
+        id S1729305AbgBUS1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 13:27:10 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54955 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726066AbgBUS1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 13:27:10 -0500
+Received: by mail-wm1-f68.google.com with SMTP id n3so2761825wmk.4
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 10:27:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=o7kNlA5mSft9lOyBBTg7S02ERgx2VYcl+CqjsPgYuKo=;
+        b=lFO94BPIg27Sx1ZMGEP7cq5pMKCErXNtn8f1tuFYdkBJlZyoYQntn4qHvIDo45+vJ3
+         jhH6ZhU17ACYI8zfqaA+HXrHIZUEew3XHM7ErVcmIPIlBauDW1JxunXiiCd83N646/wQ
+         XYkyY47CkGPVQYlb1ZBbuuVQJmxzokJcorOnAS/hIEywgeytaosZ8GeW/cSfQ2yUxwuo
+         su9ZidQsDXX+FDSRtwMfEGEhGy1P/yrbz9iaWrag0m84rI4moZ/l5EG9cWeQE8IicBVU
+         w9OjZQ2mPMzLbWZcvH+anQyIjGPBlQ4fMCy6Qdnrc4L9t40s+/c8ne6ELjhX6PtM5w9b
+         4K1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=o7kNlA5mSft9lOyBBTg7S02ERgx2VYcl+CqjsPgYuKo=;
+        b=JFvzsfXnhcRlss2Una+HspClRPoXMziWOnfxN+PwKIC+l/8HNdnUzxYdCvLaDfJkKC
+         8h71Zkgzgvfe1FV0BC43RqeYGRRDGaGV/ZiY84mG8NVTQKk+f9YjDDYrJlCCy4OkWUQ2
+         QT4GUicpizbZnCFG1aXyqzlohNCNqVvf9jkefUe2vk9s40d8pEoQMkaO6pEeAvGduWCJ
+         hLgiZ3bA7q3DDHHSHppUSgeVRVCwC5gQAnrQ3t5EB7lXfHV/1qNCbbA7jHvOuivKH34k
+         uXp0L/PFBUKNrY0tP3yqiw98oeSwLeBrL3ksfQ4kyG4qXDSVgpBrJAFvxpcx5BMs2Umr
+         sF6g==
+X-Gm-Message-State: APjAAAUoJKFHHfLcBVrJFfKDWYn2PMM/e7PFUr9pdHFBBHOouKXVsDPc
+        tCOXh0mslpA1Iq0gdlEP8Jwj3pNy
+X-Google-Smtp-Source: APXvYqzz17GIwTQQ7uxYoj2y/B9gkPW0+St6PhEBnw5cYN9sFl/H7kGjNbSuR8Wp6VKAxm6bxEe/3w==
+X-Received: by 2002:a1c:6588:: with SMTP id z130mr5114470wmb.0.1582309627579;
+        Fri, 21 Feb 2020 10:27:07 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:6c09:1a13:c773:a439? (p200300EA8F2960006C091A13C773A439.dip0.t-ipconnect.de. [2003:ea:8f29:6000:6c09:1a13:c773:a439])
+        by smtp.googlemail.com with ESMTPSA id g17sm5310021wru.13.2020.02.21.10.27.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Feb 2020 10:27:07 -0800 (PST)
+To:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: remove RTL_EVENT_NAPI constants
+Message-ID: <497bd68c-712e-20cc-facd-3c9a1bd22124@gmail.com>
+Date:   Fri, 21 Feb 2020 19:27:00 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Feb 2020 10:56:33 +0100 Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Currently, when user adds a TC filter and the filter gets offloaded,
-> the user expects the HW stats to be counted and included in stats dump.
-> However, since drivers may implement different types of counting, there
-> is no way to specify which one the user is interested in.
-> 
-> For example for mlx5, only delayed counters are available as the driver
-> periodically polls for updated stats.
-> 
-> In case of mlxsw, the counters are queried on dump time. However, the
-> HW resources for this type of counters is quite limited (couple of
-> thousands). This limits the amount of supported offloaded filters
-> significantly. Without counter assigned, the HW is capable to carry
-> millions of those.
-> 
-> On top of that, mlxsw HW is able to support delayed counters as well in
-> greater numbers. That is going to be added in a follow-up patch.
-> 
-> This patchset allows user to specify one of the following types of HW
-> stats for added fitler:
-> any - current default, user does not care about the type, just expects
->       any type of stats.
-> immediate - queried during dump time
-> delayed - polled from HW periodically or sent by HW in async manner
-> disabled - no stats needed
+These constants are used in one place only, so we can remove them and
+use the values directly.
 
-Hmm, but the statistics are on actions, it feels a little bit like we
-are perpetuating the mistake of counting on filters here.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Would it not work to share actions between filters which don't need
-fine grained stats if HW can do more filters than stats?
-
-Let's CC Ed on this.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 267b7ae05..cc4b6fd60 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1308,10 +1308,6 @@ static void rtl_irq_disable(struct rtl8169_private *tp)
+ 	tp->irq_enabled = 0;
+ }
+ 
+-#define RTL_EVENT_NAPI_RX	(RxOK | RxErr)
+-#define RTL_EVENT_NAPI_TX	(TxOK | TxErr)
+-#define RTL_EVENT_NAPI		(RTL_EVENT_NAPI_RX | RTL_EVENT_NAPI_TX)
+-
+ static void rtl_irq_enable(struct rtl8169_private *tp)
+ {
+ 	tp->irq_enabled = 1;
+@@ -5113,7 +5109,7 @@ static const struct net_device_ops rtl_netdev_ops = {
+ 
+ static void rtl_set_irq_mask(struct rtl8169_private *tp)
+ {
+-	tp->irq_mask = RTL_EVENT_NAPI | LinkChg;
++	tp->irq_mask = RxOK | RxErr | TxOK | TxErr | LinkChg;
+ 
+ 	if (tp->mac_version <= RTL_GIGA_MAC_VER_06)
+ 		tp->irq_mask |= SYSErr | RxOverflow | RxFIFOOver;
+-- 
+2.25.1
 
