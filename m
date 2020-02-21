@@ -2,332 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7274166D4E
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 04:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C80B166DA6
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 04:28:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729739AbgBUDQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 22:16:41 -0500
-Received: from mx2.suse.de ([195.135.220.15]:59654 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729721AbgBUDQk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Feb 2020 22:16:40 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 28A52ADA3;
-        Fri, 21 Feb 2020 03:16:37 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-To:     bpf@vger.kernel.org
-Cc:     Michal Rostecki <mrostecki@opensuse.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        id S1729832AbgBUD2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 22:28:43 -0500
+Received: from mail-pf1-f172.google.com ([209.85.210.172]:42450 "EHLO
+        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729725AbgBUD2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 22:28:40 -0500
+Received: by mail-pf1-f172.google.com with SMTP id 4so461456pfz.9;
+        Thu, 20 Feb 2020 19:28:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=8+0Ca6vkf+ttBL2H8QYsjAwrxnDG0wb4opbsFtoqt7g=;
+        b=BcEj+pHCttkH5VSVtX1ZuTBqTQwrgTMYf8jvlNlyopwWz2gyVR1kb5DJ3LPaDmLNBi
+         +0KOgDPh1nJ1gFij981sS2qgJWGPWpApdUUFKP80DkyNoRrAZsA7Rg89HiNZ1vuLIAap
+         8onXSZHrNAo0U9TpD5Ij8sDGMuyaELJiiGXRuWtPum2Ejx8Hlg3fJCfyLTf/IIOr+npy
+         1tviaGfi27cnygjYVB3k2+yjJ8+ybDW5gAJtYMlrGd8FJDe+JGkZtdZm3LN7qCWGNnBd
+         iJgLSVsmRLCVK9g8+9n21rmJkF1t+TKbq2t4ITGo2UWaiHAnJgCMYRLgdn6gEH5BFf+U
+         n6Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=8+0Ca6vkf+ttBL2H8QYsjAwrxnDG0wb4opbsFtoqt7g=;
+        b=KHwR6ksX8gL/x0VUg2x/Ws+H5VHiB6Kz+Wn5TgIZf0VzShKZYft8k73rGpyrH29VYr
+         k4oe/Cx1mPyT19fukiYwyE3lDFVosLTA1U8m+7c5hUZtsmjm5m+RtoT14K0s/jPBd0i8
+         l9VRHJU1Au899I4MGCs0Qery2HXwyKUZsyNs9G5KvtGo6fH1aYOf8mx34dZXbohgfJ8p
+         uCJ10U5+uRASMtjAmD48dvvzi0Q5Aaea3M/EtHZLK5CtoGGAoknllLU/sqN5nnIiJK2X
+         Du5ikGv7peIFX1VU3IjDhAwVh+pYtDv0cJ2FblUmQaY5A04cDVKrmktEKnoHYkrDT/bO
+         UdPQ==
+X-Gm-Message-State: APjAAAV2ElZr+Qm5oeDxHtUXleqFPMwwA+WCFZlIrXs03eAgDwu56Q64
+        TBkZ8bkUw8FHxyZuKc/cDN6TDjoR
+X-Google-Smtp-Source: APXvYqzNK1AS04Hz8hdfHrO0McRpZDmJapObT9xs76DHKZEtr+n3P7a/i5ukocCPzf0wrdmkbWWvrg==
+X-Received: by 2002:a63:1044:: with SMTP id 4mr37537094pgq.412.1582255719900;
+        Thu, 20 Feb 2020 19:28:39 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g13sm667103pgh.82.2020.02.20.19.28.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 19:28:39 -0800 (PST)
+Date:   Thu, 20 Feb 2020 19:28:29 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
-Subject: [PATCH bpf-next v2 5/5] selftests/bpf: Add test for "bpftool feature" command
-Date:   Fri, 21 Feb 2020 04:17:00 +0100
-Message-Id: <20200221031702.25292-6-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200221031702.25292-1-mrostecki@opensuse.org>
-References: <20200221031702.25292-1-mrostecki@opensuse.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>,
+        eric.dumazet@gmail.com
+Message-ID: <5e4f4e5dbc315_18d22b0a1febc5b82a@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200218171023.844439-4-jakub@cloudflare.com>
+References: <20200218171023.844439-1-jakub@cloudflare.com>
+ <20200218171023.844439-4-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next v7 03/11] tcp_bpf: Don't let child socket inherit
+ parent protocol ops on copy
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Python module with tests for "bpftool feature" command, which mainly
-wheck whether the "full" option is working properly.
+Jakub Sitnicki wrote:
+> Prepare for cloning listening sockets that have their protocol callbacks
+> overridden by sk_msg. Child sockets must not inherit parent callbacks that
+> access state stored in sk_user_data owned by the parent.
+> 
+> Restore the child socket protocol callbacks before it gets hashed and any
+> of the callbacks can get invoked.
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
 
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
----
- tools/testing/selftests/.gitignore          |   5 +-
- tools/testing/selftests/bpf/Makefile        |   3 +-
- tools/testing/selftests/bpf/test_bpftool.py | 228 ++++++++++++++++++++
- tools/testing/selftests/bpf/test_bpftool.sh |   5 +
- 4 files changed, 239 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
- create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
+Looks reasonable to me. CC'ing Eric as well.
 
-diff --git a/tools/testing/selftests/.gitignore b/tools/testing/selftests/.gitignore
-index 61df01cdf0b2..304fdf1a21dc 100644
---- a/tools/testing/selftests/.gitignore
-+++ b/tools/testing/selftests/.gitignore
-@@ -3,4 +3,7 @@ gpiogpio-hammer
- gpioinclude/
- gpiolsgpio
- tpm2/SpaceTest.log
--tpm2/*.pyc
-+
-+# Python bytecode and cache
-+__pycache__/
-+*.py[cod]
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 257a1aaaa37d..e7d822259c50 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -62,7 +62,8 @@ TEST_PROGS := test_kmod.sh \
- 	test_tc_tunnel.sh \
- 	test_tc_edt.sh \
- 	test_xdping.sh \
--	test_bpftool_build.sh
-+	test_bpftool_build.sh \
-+	test_bpftool.sh
- 
- TEST_PROGS_EXTENDED := with_addr.sh \
- 	with_tunnels.sh \
-diff --git a/tools/testing/selftests/bpf/test_bpftool.py b/tools/testing/selftests/bpf/test_bpftool.py
-new file mode 100644
-index 000000000000..7f545feaec98
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpftool.py
-@@ -0,0 +1,228 @@
-+# Copyright (c) 2020 SUSE LLC.
-+#
-+# This software is licensed under the GNU General License Version 2,
-+# June 1991 as shown in the file COPYING in the top-level directory of this
-+# source tree.
-+#
-+# THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
-+# WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
-+# BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-+# FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
-+# OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
-+# THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-+
-+import collections
-+import functools
-+import json
-+import os
-+import socket
-+import subprocess
-+import unittest
-+
-+
-+# Add the source tree of bpftool and /usr/local/sbin to PATH
-+cur_dir = os.path.dirname(os.path.realpath(__file__))
-+bpftool_dir = os.path.abspath(os.path.join(cur_dir, "..", "..", "..", "..",
-+                                           "tools", "bpf", "bpftool"))
-+os.environ["PATH"] = bpftool_dir + ":/usr/local/sbin:" + os.environ["PATH"]
-+
-+# Probe sections
-+SECTION_SYSTEM_CONFIG_PATTERN = b"Scanning system configuration..."
-+SECTION_SYSCALL_CONFIG_PATTERN = b"Scanning system call availability..."
-+SECTION_PROGRAM_TYPES_PATTERN = b"Scanning eBPF program types..."
-+SECTION_MAP_TYPES_PATTERN = b"Scanning eBPF map types..."
-+SECTION_HELPERS_PATTERN = b"Scanning eBPF helper functions..."
-+SECTION_MISC_PATTERN = b"Scanning miscellaneous eBPF features..."
-+
-+
-+class IfaceNotFoundError(Exception):
-+    pass
-+
-+
-+class UnprivilegedUserError(Exception):
-+    pass
-+
-+
-+def _bpftool(args, json=True):
-+    _args = ["bpftool"]
-+    if json:
-+        _args.append("-j")
-+    _args.extend(args)
-+
-+    res = subprocess.run(_args, capture_output=True)
-+    return res.stdout
-+
-+
-+def bpftool(args):
-+    return _bpftool(args, json=False)
-+
-+
-+def bpftool_json(args):
-+    res = _bpftool(args)
-+    return json.loads(res)
-+
-+
-+def get_default_iface():
-+    for iface in socket.if_nameindex():
-+        if iface[1] != "lo":
-+            return iface[1]
-+    raise IfaceNotFoundError("Could not find any network interface to probe")
-+
-+
-+def default_iface(f):
-+    @functools.wraps(f)
-+    def wrapper(*args, **kwargs):
-+        iface = get_default_iface()
-+        return f(*args, iface, **kwargs)
-+    return wrapper
-+
-+
-+class TestBpftool(unittest.TestCase):
-+    @classmethod
-+    def setUpClass(cls):
-+        if os.getuid() != 0:
-+            raise UnprivilegedUserError("This test suite eeeds root privileges")
-+
-+    def _assert_pattern_not_in_dict(self, dct, pattern, check_keys=False):
-+        """Check if all string values inside dictionary do not containe the
-+        given pattern.
-+        """
-+        for key, value in dct.items():
-+            if check_keys:
-+                self.assertNotIn(pattern, key)
-+            if isinstance(value, dict):
-+                self._assert_pattern_not_in_dict(value, pattern,
-+                                                 check_keys=True)
-+            elif isinstance(value, str):
-+                self.assertNotIn(pattern, value)
-+
-+    @default_iface
-+    def test_feature_dev(self, iface):
-+        expected_patterns = [
-+            SECTION_SYSCALL_CONFIG_PATTERN,
-+            SECTION_PROGRAM_TYPES_PATTERN,
-+            SECTION_MAP_TYPES_PATTERN,
-+            SECTION_HELPERS_PATTERN,
-+            SECTION_MISC_PATTERN,
-+        ]
-+        unexpected_patterns = [
-+            b"bpf_trace_printk",
-+            b"bpf_probe_write_user",
-+        ]
-+
-+        res = bpftool(["feature", "probe", "dev", iface])
-+        for pattern in expected_patterns:
-+            self.assertIn(pattern, res)
-+        for pattern in unexpected_patterns:
-+            self.assertNotIn(pattern, res)
-+
-+    @default_iface
-+    def test_feature_dev_json(self, iface):
-+        expected_keys = [
-+            "syscall_config",
-+            "program_types",
-+            "map_types",
-+            "helpers",
-+            "misc",
-+        ]
-+        unexpected_values = [
-+            "bpf_trace_printk",
-+            "bpf_probe_write_user",
-+        ]
-+
-+        res = bpftool_json(["feature", "probe", "dev", iface])
-+        self.assertCountEqual(res.keys(), expected_keys)
-+        for value in unexpected_values:
-+            self._assert_pattern_not_in_dict(res, value)
-+
-+    def test_feature_kernel(self):
-+        expected_patterns = [
-+            SECTION_SYSTEM_CONFIG_PATTERN,
-+            SECTION_SYSCALL_CONFIG_PATTERN,
-+            SECTION_PROGRAM_TYPES_PATTERN,
-+            SECTION_MAP_TYPES_PATTERN,
-+            SECTION_HELPERS_PATTERN,
-+            SECTION_MISC_PATTERN,
-+        ]
-+        unexpected_patterns = [
-+            b"bpf_trace_printk",
-+            b"bpf_probe_write_user",
-+        ]
-+
-+        res_default1 = bpftool(["feature"])
-+        res_default2 = bpftool(["feature", "probe"])
-+        res = bpftool(["feature", "probe", "kernel"])
-+
-+        for pattern in expected_patterns:
-+            self.assertIn(pattern, res_default1)
-+            self.assertIn(pattern, res_default2)
-+            self.assertIn(pattern, res)
-+        for pattern in unexpected_patterns:
-+            self.assertNotIn(pattern, res_default1)
-+            self.assertNotIn(pattern, res_default2)
-+            self.assertNotIn(pattern, res)
-+
-+    def test_feature_kernel_full(self):
-+        expected_patterns = [
-+            SECTION_SYSTEM_CONFIG_PATTERN,
-+            SECTION_SYSCALL_CONFIG_PATTERN,
-+            SECTION_PROGRAM_TYPES_PATTERN,
-+            SECTION_MAP_TYPES_PATTERN,
-+            SECTION_HELPERS_PATTERN,
-+            SECTION_MISC_PATTERN,
-+            b"bpf_trace_printk",
-+            b"bpf_probe_write_user",
-+        ]
-+
-+        res_default = bpftool(["feature", "probe", "full"])
-+        res = bpftool(["feature", "probe", "kernel", "full"])
-+
-+        for pattern in expected_patterns:
-+            self.assertIn(pattern, res_default)
-+            self.assertIn(pattern, res)
-+
-+    def test_feature_kernel_json(self):
-+        expected_keys = [
-+            "system_config",
-+            "syscall_config",
-+            "program_types",
-+            "map_types",
-+            "helpers",
-+            "misc",
-+        ]
-+        unexpected_values = [
-+            "bpf_trace_printk",
-+            "bpf_probe_write_user",
-+        ]
-+
-+        res_default1 = bpftool_json(["feature"])
-+        self.assertCountEqual(res_default1.keys(), expected_keys)
-+        for value in unexpected_values:
-+            self._assert_pattern_not_in_dict(res_default1, value)
-+
-+        res_default2 = bpftool_json(["feature", "probe"])
-+        self.assertCountEqual(res_default2.keys(), expected_keys)
-+        for value in unexpected_values:
-+            self._assert_pattern_not_in_dict(res_default2, value)
-+
-+        res = bpftool_json(["feature", "probe", "kernel"])
-+        self.assertCountEqual(res.keys(), expected_keys)
-+        for value in unexpected_values:
-+            self._assert_pattern_not_in_dict(res, value)
-+
-+    def test_feature_macros(self):
-+        expected_patterns = [
-+            b"/\*\*\* System call availability \*\*\*/",
-+            b"#define HAVE_BPF_SYSCALL",
-+            b"/\*\*\* eBPF program types \*\*\*/",
-+            b"#define HAVE.*PROG_TYPE",
-+            b"/\*\*\* eBPF map types \*\*\*/",
-+            b"#define HAVE.*MAP_TYPE",
-+            b"/\*\*\* eBPF helper functions \*\*\*/",
-+            b"#define HAVE.*HELPER",
-+            b"/\*\*\* eBPF misc features \*\*\*/",
-+        ]
-+
-+        res = bpftool(["feature", "probe", "macros"])
-+        for pattern in expected_patterns:
-+            self.assertRegex(res, pattern)
-diff --git a/tools/testing/selftests/bpf/test_bpftool.sh b/tools/testing/selftests/bpf/test_bpftool.sh
-new file mode 100755
-index 000000000000..66690778e36d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpftool.sh
-@@ -0,0 +1,5 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2020 SUSE LLC.
-+
-+python3 -m unittest -v test_bpftool.TestBpftool
--- 
-2.25.0
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
