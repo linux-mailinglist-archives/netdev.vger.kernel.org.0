@@ -2,245 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D5B16791B
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 10:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B707167947
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 10:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbgBUJP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 04:15:26 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:34498 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbgBUJP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 04:15:26 -0500
-Received: by mail-wr1-f65.google.com with SMTP id n10so1133259wrm.1
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 01:15:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TxxSnyYULy31ye4slCZ0UKkMICv2WaiLzeBlhrAm/Lk=;
-        b=r67TCv7Gjp8BGvtPZuJjhmaKUvdHmGbYyMC55enMP8s1UQMrijYC0N82Q/9+BygY17
-         4IQKIfv44uLX0ptU5srpFtaeSK0mqsxOhBUPAoHRRlyll96rX2OsGLZv/6NSKIGkDx5t
-         62ESfAZk/xyxXF4wuNU8SMeg4bUXUpYry/sBd1mVezjQ1WpTAdJEFvUvEgzfr0nsr5pK
-         /iqUIXlu3A4YgFqfdtRTf+G0wLO7mKq1xuWZQEpwO9m6AU7Gcg4N2wO78okZWWvhGo+6
-         tJhkgKJJ/ubaBJZc0jxhIX2UtuHxaD5Nw8NM5yGG0Z6Nn5z5h4J4CcZvfZRTQJ3IIe/a
-         7xmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TxxSnyYULy31ye4slCZ0UKkMICv2WaiLzeBlhrAm/Lk=;
-        b=gEttyqigz/iG2oICEnzvKn/SF/O7Xc1fZslrsIWc+SwZQnIQGvJ9aJgzAZplXY5sat
-         1KcZ+D1M11X+pcFnGBUmqeTnf/6tqgaxmwqFpez9TtXu3t2sjCmpJPRljUlo7weUJegj
-         +BWewWgnay+ON7xsZOdLPrA+ccA5b7Y9gYR2GAGCKD7FIbtw+2sTNW737LwezHuPUZTg
-         sxSCZF+qBUTVdQmJ2JBSToaA1TFUMiBjwqu+6ZjUIVJPVXsZGr8m8VQFA5fcGB4Moo5v
-         L9pOokw4kjd8w03KIv2s3xiSD25Zm+wPZjlEM3jwcVV19E1MCQlyyMrHV0U9e3ZnFoxg
-         Qtxg==
-X-Gm-Message-State: APjAAAWxi0P2nYTMxXvbyym0en2fLsca0HFHAO3+YkcXjVKfVVg4rnDZ
-        vXhe6kpWCQnzP3BMvWnpe/29bg==
-X-Google-Smtp-Source: APXvYqzo3X93WchVM19vxvzOgreYHiynt6iOqCwd4wMmQWt/hFrHQpQfJv5qLMOkEfEECl2RztupfA==
-X-Received: by 2002:adf:a1d9:: with SMTP id v25mr46599879wrv.160.1582276523835;
-        Fri, 21 Feb 2020 01:15:23 -0800 (PST)
-Received: from apalos.home ([2a02:587:4655:3a80:2e56:dcff:fe9a:8f06])
-        by smtp.gmail.com with ESMTPSA id d16sm3350815wrg.27.2020.02.21.01.15.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 01:15:23 -0800 (PST)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     brouer@redhat.com, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     lorenzo@kernel.org, rdunlap@infradead.org, toke@redhat.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [PATCH net-next v3] net: page_pool: Add documentation on page_pool API
-Date:   Fri, 21 Feb 2020 11:15:19 +0200
-Message-Id: <20200221091519.916438-1-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        id S1727887AbgBUJWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 04:22:32 -0500
+Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:43788 "EHLO
+        esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726244AbgBUJWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 04:22:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1582276950;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=1o0dm0wP/9Dz9LlBZ6U1xeJE27JCYBLNrNyaJmSV7RA=;
+  b=MFoYi+tEl5BCR2wNmd5aWhFrnUXQDbqy9EzmBv+5Ij7a2pw+5LkAKqTj
+   yMl30d4+G1sbV3yQyvVXRX+8QwCBzC31Z+jjtbegpsndmqzOe6rOv7TUG
+   7nE42Yp91W0NmDeaoZoSdAWJULlCdPmhpfdMAR6T/QYJQlYWArAe/cLCh
+   0=;
+Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa4.hc3370-68.iphmx.com: domain of
+  roger.pau@citrix.com designates 162.221.158.21 as permitted
+  sender) identity=mailfrom; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
+  ip4:168.245.78.127 ~all"
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@mail.citrix.com) identity=helo;
+  client-ip=162.221.158.21; receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="postmaster@mail.citrix.com";
+  x-conformance=sidf_compatible
+IronPort-SDR: 2naM2fLXRcIEz8ci/DVJT0B1w7DqJ7CFF6pH3dGfAg8IDJnxKdg4pAIVGMLNM76zeD8JWQiYPu
+ aCowGjUBDV4/+Jj8d2GFJ4juB5ltAKhgt2ZeugZnWy0t88xKRc5q2rSJI1SB5tCEG1FWZ5nlZw
+ 0XpRIC+ckYLXsDK6/kM0cf6X8gOnCHMrrpTTVSe0V89LPhDLMpjyrXTuK2k0XFmXbmtzAWf1Tw
+ ayuQD7J/bhQRq21Khs7UiVOkrPP/IlfRq6ASzfvfe513kMpID3AZbDw7cSKFXRHGtJyy5X4TFQ
+ hfE=
+X-SBRS: 2.7
+X-MesageID: 13431188
+X-Ironport-Server: esa4.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.70,467,1574139600"; 
+   d="scan'208";a="13431188"
+Date:   Fri, 21 Feb 2020 10:22:19 +0100
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
+CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "hpa@zytor.com" <hpa@zytor.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "fllinden@amaozn.com" <fllinden@amaozn.com>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>
+Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
+ PM suspend and hibernation
+Message-ID: <20200221092219.GU4679@Air-de-Roger>
+References: <20200217100509.GE4679@Air-de-Roger>
+ <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200218091611.GN4679@Air-de-Roger>
+ <20200219180424.GA17584@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200220083904.GI4679@Air-de-Roger>
+ <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
+ <20200220154507.GO4679@Air-de-Roger>
+ <c9662397256a4568a5cc7d70a84940e5@EX13D32EUC003.ant.amazon.com>
+ <20200220164839.GR4679@Air-de-Roger>
+ <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
+ AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation explaining the basic functionality and design
-principles of the API
+On Thu, Feb 20, 2020 at 05:01:52PM +0000, Durrant, Paul wrote:
+> > > Hopefully what I said above illustrates why it may not be 100% common.
+> > 
+> > Yes, that's fine. I don't expect it to be 100% common (as I guess
+> > that the hooks will have different prototypes), but I expect
+> > that routines can be shared, and that the approach taken can be the
+> > same.
+> > 
+> > For example one necessary difference will be that xenbus initiated
+> > suspend won't close the PV connection, in case suspension fails. On PM
+> > suspend you seem to always close the connection beforehand, so you
+> > will always have to re-negotiate on resume even if suspension failed.
+> > 
+> > What I'm mostly worried about is the different approach to ring
+> > draining. Ie: either xenbus is changed to freeze the queues and drain
+> > the shared rings, or PM uses the already existing logic of not
+> > flushing the rings an re-issuing in-flight requests on resume.
+> > 
+> 
+> Yes, that's needs consideration. I don’t think the same semantic can be suitable for both. E.g. in a xen-suspend we need to freeze with as little processing as possible to avoid dirtying RAM late in the migration cycle, and we know that in-flight data can wait. But in a transition to S4 we need to make sure that at least all the in-flight blkif requests get completed, since they probably contain bits of the guest's memory image and that's not going to get saved any other way.
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
-Changes since:
-v1:
-- Rephrase sentences that didn't make sense (Randy)
-- Removed trailing whitespaces (Randy)
-v2:
-- Changed order^n pages description to 2^order which is the correct description
- for the lage allocator (Randy)
+Thanks, that makes sense and something along this lines should be
+added to the commit message IMO.
 
- Documentation/networking/page_pool.rst | 159 +++++++++++++++++++++++++
- 1 file changed, 159 insertions(+)
- create mode 100644 Documentation/networking/page_pool.rst
+Wondering about S4, shouldn't we expect the queues to already be
+empty? As any subsystem that wanted to store something to disk should
+make sure requests have been successfully completed before
+suspending.
 
-diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-new file mode 100644
-index 000000000000..43088ddf95e4
---- /dev/null
-+++ b/Documentation/networking/page_pool.rst
-@@ -0,0 +1,159 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=============
-+Page Pool API
-+=============
-+
-+The page_pool allocator is optimized for the XDP mode that uses one frame
-+per-page, but it can fallback on the regular page allocator APIs.
-+
-+Basic use involves replacing alloc_pages() calls with the
-+page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages()
-+replacing dev_alloc_pages().
-+
-+API keeps track of inflight pages, in order to let API user know
-+when it is safe to free a page_pool object.  Thus, API users
-+must run page_pool_release_page() when a page is leaving the page_pool or
-+call page_pool_put_page() where appropriate in order to maintain correct
-+accounting.
-+
-+API user must call page_pool_put_page() once on a page, as it
-+will either recycle the page, or in case of refcnt > 1, it will
-+release the DMA mapping and inflight state accounting.
-+
-+Architecture overview
-+=====================
-+
-+.. code-block:: none
-+
-+    +------------------+
-+    |       Driver     |
-+    +------------------+
-+            ^
-+            |
-+            |
-+            |
-+            v
-+    +--------------------------------------------+
-+    |                request memory              |
-+    +--------------------------------------------+
-+        ^                                  ^
-+        |                                  |
-+        | Pool empty                       | Pool has entries
-+        |                                  |
-+        v                                  v
-+    +-----------------------+     +------------------------+
-+    | alloc (and map) pages |     |  get page from cache   |
-+    +-----------------------+     +------------------------+
-+                                    ^                    ^
-+                                    |                    |
-+                                    | cache available    | No entries, refill
-+                                    |                    | from ptr-ring
-+                                    |                    |
-+                                    v                    v
-+                          +-----------------+     +------------------+
-+                          |   Fast cache    |     |  ptr-ring cache  |
-+                          +-----------------+     +------------------+
-+
-+API interface
-+=============
-+The number of pools created **must** match the number of hardware queues
-+unless hardware restrictions make that impossible. This would otherwise beat the
-+purpose of page pool, which is allocate pages fast from cache without locking.
-+This lockless guarantee naturally comes from running under a NAPI softirq.
-+The protection doesn't strictly have to be NAPI, any guarantee that allocating
-+a page will cause no race conditions is enough.
-+
-+* page_pool_create(): Create a pool.
-+    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
-+    * order:      2^order pages on allocation
-+    * pool_size:  size of the ptr_ring
-+    * nid:        preferred NUMA node for allocation
-+    * dev:        struct device. Used on DMA operations
-+    * dma_dir:    DMA direction
-+    * max_len:    max DMA sync memory size
-+    * offset:     DMA address offset
-+
-+* page_pool_put_page(): The outcome of this depends on the page refcnt. If the
-+  driver bumps the refcnt > 1 this will unmap the page. If the page refcnt is 1
-+  the allocator owns the page and will try to recycle it in one of the pool
-+  caches. If PP_FLAG_DMA_SYNC_DEV is set, the page will be synced for_device
-+  using dma_sync_single_range_for_device().
-+
-+* page_pool_put_full_page(): Similar to page_pool_put_page(), but will DMA sync
-+  for the entire memory area configured in area pool->max_len.
-+
-+* page_pool_recycle_direct(): Similar to page_pool_put_full_page() but caller
-+  must guarantee safe context (e.g NAPI), since it will recycle the page
-+  directly into the pool fast cache.
-+
-+* page_pool_release_page(): Unmap the page (if mapped) and account for it on
-+  inflight counters.
-+
-+* page_pool_dev_alloc_pages(): Get a page from the page allocator or page_pool
-+  caches.
-+
-+* page_pool_get_dma_addr(): Retrieve the stored DMA address.
-+
-+* page_pool_get_dma_dir(): Retrieve the stored DMA direction.
-+
-+Coding examples
-+===============
-+
-+Registration
-+------------
-+
-+.. code-block:: c
-+
-+    /* Page pool registration */
-+    struct page_pool_params pp_params = { 0 };
-+    struct xdp_rxq_info xdp_rxq;
-+    int err;
-+
-+    pp_params.order = 0;
-+    /* internal DMA mapping in page_pool */
-+    pp_params.flags = PP_FLAG_DMA_MAP;
-+    pp_params.pool_size = DESC_NUM;
-+    pp_params.nid = NUMA_NO_NODE;
-+    pp_params.dev = priv->dev;
-+    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-+    page_pool = page_pool_create(&pp_params);
-+
-+    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
-+    if (err)
-+        goto err_out;
-+
-+    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
-+    if (err)
-+        goto err_out;
-+
-+NAPI poller
-+-----------
-+
-+
-+.. code-block:: c
-+
-+    /* NAPI Rx poller */
-+    enum dma_data_direction dma_dir;
-+
-+    dma_dir = page_pool_get_dma_dir(dring->page_pool);
-+    while (done < budget) {
-+        if (some error)
-+            page_pool_recycle_direct(page_pool, page);
-+        if (packet_is_xdp) {
-+            if XDP_DROP:
-+                page_pool_recycle_direct(page_pool, page);
-+        } else (packet_is_skb) {
-+            page_pool_release_page(page_pool, page);
-+            new_page = page_pool_dev_alloc_pages(page_pool);
-+        }
-+    }
-+
-+Driver unload
-+-------------
-+
-+.. code-block:: c
-+
-+    /* Driver unload */
-+    page_pool_put_full_page(page_pool, page, false);
-+    xdp_rxq_info_unreg(&xdp_rxq);
--- 
-2.25.1
-
+Thanks, Roger.
