@@ -2,48 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B112216831F
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 17:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E57AB168329
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 17:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728938AbgBUQSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 11:18:55 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38464 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727352AbgBUQSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 11:18:55 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DCAA4121103EB;
-        Fri, 21 Feb 2020 08:18:54 -0800 (PST)
-Date:   Fri, 21 Feb 2020 08:18:54 -0800 (PST)
-Message-Id: <20200221.081854.677544975097982654.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     claudiu.manoil@nxp.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] enetc: remove "depends on (ARCH_LAYERSCAPE ||
- COMPILE_TEST)"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200221144624.20289-1-olteanv@gmail.com>
-References: <20200221144624.20289-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 21 Feb 2020 08:18:55 -0800 (PST)
+        id S1728690AbgBUQVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 11:21:34 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:54642 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727213AbgBUQVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 11:21:34 -0500
+Received: by mail-pj1-f67.google.com with SMTP id dw13so952118pjb.4;
+        Fri, 21 Feb 2020 08:21:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=JyA56Sz4rDYUzhUKZvP6bdIvgdElbbaajnOFHJnaXLc=;
+        b=DE+SrDBPDDTb1TICMcYIxzYdqSDYAiveqSaQQvK4xYbNYQrkmkO3WErz1+/yhArJPk
+         ZzWT7gaLw2np4/JB9+AZDLNiYB+ohDTEJhXPjkXUHmxJ5b/QhbAjMchUAQmJLJ03wuMo
+         FMoSfPkDz5CscZa217W/Qk9bjgHhYDniErdBHlGDZJS1p555vqsMg/rRpsK3N0PG8WCN
+         ZZh2aDcsREILdE753ELtLSyt+pye1kQ0+mL4v7N0cMIAYEi5mZL3NDlCcZ7JcBGpQezL
+         JGyZJd8jQf97o6Qd7kGLc/T5e3F2847OD23UKX20gkd4EqMgXd9CFDX/VO2dkqEVMQVr
+         856A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JyA56Sz4rDYUzhUKZvP6bdIvgdElbbaajnOFHJnaXLc=;
+        b=tesQURX3KVk8pZn7qDSMF9cEEYyAsyC/bFqtfpliAtlCqFRxeikTgPZ/Q1ZUY43wor
+         m+4Q4dE+/2NAOneAbfi1maHfXD3vnD0vgd+TkAVVAUaYNju66o/haG2IpbvUojvwuy+i
+         A6FdbT2hFZjbDNlZsldt2Xz5suffjOwQ89Mw4EpNl83i794XHBZOD4+9Qj64edgOE/Xh
+         jm8tjVytq+Y7ZudbfBEOimJBFLd2toUBQwHYp95faV+9IkIWkopQ7z2tW+8O+cgIPUNK
+         o03xmjAb0QLeN8hqzBJ+X9HExepQ9ESqZaD8RO9Dm40oQndbZAVIGMwedr9+uY2J8lgI
+         2WIQ==
+X-Gm-Message-State: APjAAAWusyH9lO9/cDOGzFbm/NXl8VL1PDEIcxF3T08590ElinlhGz7O
+        Bjo7i7TsxeklkJ5lhvu3tQ==
+X-Google-Smtp-Source: APXvYqwXCzQMECdVFGJVUJX++W20f3DOsoPhx7ymDk5W84p9+jpmBSJLZBPQFXOtSP4alzuXmkRpHA==
+X-Received: by 2002:a17:90a:5d97:: with SMTP id t23mr3957136pji.61.1582302093578;
+        Fri, 21 Feb 2020 08:21:33 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee0:fe5e:d03d:769b:c838:c146])
+        by smtp.gmail.com with ESMTPSA id j15sm2440183pga.11.2020.02.21.08.21.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Feb 2020 08:21:32 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        tglx@linutronix.de, allison@lohutok.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joel@joelfernandes.org, frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] net: 802: psnap.c: Use built-in RCU list checking
+Date:   Fri, 21 Feb 2020 21:49:47 +0530
+Message-Id: <20200221161947.11536-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Fri, 21 Feb 2020 16:46:24 +0200
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> ARCH_LAYERSCAPE isn't needed for this driver, it builds and
-> sends/receives traffic without this config option just fine.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+list_for_each_entry_rcu() has built-in RCU and lock checking.
 
-Applied, thanks.
+Pass cond argument to list_for_each_entry_rcu() to silence
+false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
+by default.
+
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ net/802/psnap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/802/psnap.c b/net/802/psnap.c
+index 40ab2aea7b31..4492e8d7ad20 100644
+--- a/net/802/psnap.c
++++ b/net/802/psnap.c
+@@ -30,7 +30,7 @@ static struct datalink_proto *find_snap_client(const unsigned char *desc)
+ {
+ 	struct datalink_proto *proto = NULL, *p;
+ 
+-	list_for_each_entry_rcu(p, &snap_list, node) {
++	list_for_each_entry_rcu(p, &snap_list, node, lockdep_is_held(&snap_lock)) {
+ 		if (!memcmp(p->type, desc, 5)) {
+ 			proto = p;
+ 			break;
+-- 
+2.17.1
+
