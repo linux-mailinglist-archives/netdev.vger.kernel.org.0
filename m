@@ -2,153 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A398916845E
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:05:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E90FE16847F
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:10:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727720AbgBURF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 12:05:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57528 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726150AbgBURF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 12:05:27 -0500
-Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 654AE206E2;
-        Fri, 21 Feb 2020 17:05:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582304726;
-        bh=eoKDzIN9lKqgVbCG2R5htVsHB/0oozAUa6vbbSh0YkY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rA6zE3U9/JO/jHzI+C8gVPKBuI4yDr/rGRHqqJcWW33OfHu7F/0g4KHCVy8g6SgWi
-         QJYBnvC53CyzFgGjo9zVem1h/Cmo7bF44h3p7tTnBpr4CVENuf0NCPD/jRPWCInBTm
-         RtCAo5K2ERdDvqHEJ5GApsxGmPVSzc3UnThOZCNM=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     ilias.apalodimas@linaro.org, davem@davemloft.net,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com,
-        grygorii.strashko@ti.com
-Subject: [RFC/RFT net-next] net: ethernet: ti: fix netdevice stats for XDP
-Date:   Fri, 21 Feb 2020 18:05:08 +0100
-Message-Id: <82f23afa31395a8ba2a324fcec2e90e45563f9c7.1582304311.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1728361AbgBURKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 12:10:38 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:51614 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727469AbgBURKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:10:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=bp1lWcxGkXI1dOKZa2p+oi0pswujYwX0tBwQBCst0zM=; b=REgQwD+8Du6hBrxoBK+zFIs0Z
+        6A92OGFjwvYnNCRJJ4qpiWJuwucUoi9OHxhYoVQDQTqgVMyaLdK99gZoOtjJRNalWF75yRLvkGVrx
+        INHqGMXfpmgKCx6R82YcA0tWuC5c2i3Gq6M97zYis9unSS1TXNpFEWC36zXygXPLHbv2SQJGmJDmd
+        KvyqZZIlkf0TWJOJ8yKuJ+dKNLqFI2LVLkvRj1wRGfas03zBgiNIX56pOMgwo8RJPrpZ9XpuWF5QC
+        DJ2P8BGlVXy6JKxT8HFqs342ASPkC203Kc66tMqLZ746HkX28SgQ2NBwi7bw1sDQUIoQKdUuKpu3w
+        VaFWa05lQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43400)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j5Bop-0002S1-IA; Fri, 21 Feb 2020 17:10:27 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j5Bom-0003fn-Jw; Fri, 21 Feb 2020 17:10:24 +0000
+Date:   Fri, 21 Feb 2020 17:10:24 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: macb: Properly handle phylink on at91rm9200
+Message-ID: <20200221171024.GK25745@shell.armlinux.org.uk>
+References: <20200217104348.43164-1-alexandre.belloni@bootlin.com>
+ <661c1e61-11c8-0c54-83a2-5e81674246e0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <661c1e61-11c8-0c54-83a2-5e81674246e0@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Align netdevice statistics when the device is running in XDP mode
-to other upstream drivers. In particular reports to user-space rx
-packets even if they are not forwarded to the networking stack
-(XDP_PASS) but they are redirected (XDP_REDIRECT), dropped (XDP_DROP)
-or sent back using the same interface (XDP_TX). This patch allows the
-system administrator to very the device is receiving data correctly.
+On Mon, Feb 17, 2020 at 02:03:47PM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 2/17/2020 2:43 AM, Alexandre Belloni wrote:
+> > at91ether_init was handling the phy mode and speed but since the switch to
+> > phylink, the NCFGR register got overwritten by macb_mac_config().
+> > 
+> > Add new phylink callbacks to handle emac and at91rm9200 properly.
+> > 
+> > Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > ---
+> 
+> [snip]
+> 
+> > +static void at91ether_mac_link_up(struct phylink_config *config,
+> > +				  unsigned int mode,
+> > +				  phy_interface_t interface,
+> > +				  struct phy_device *phy)
+> > +{
+> > +	struct net_device *ndev = to_net_dev(config->dev);
+> > +	struct macb *bp = netdev_priv(ndev);
+> > +
+> > +	/* Enable Rx and Tx */
+> > +	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(RE) | MACB_BIT(TE));
+> > +
+> > +	netif_tx_wake_all_queues(ndev);
+> 
+> So this happens to be copied from the mvpp2 driver, if this is a
+> requirement, should not this be moved to the phylink implementation
+> since it already manages the carrier? Those two drivers are the only
+> ones doing this.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
-- this patch is compile-only tested
----
- drivers/net/ethernet/ti/cpsw.c      |  4 +---
- drivers/net/ethernet/ti/cpsw_new.c  |  5 ++---
- drivers/net/ethernet/ti/cpsw_priv.c | 13 +++++++++++--
- drivers/net/ethernet/ti/cpsw_priv.h |  2 +-
- 4 files changed, 15 insertions(+), 9 deletions(-)
+Looking at mvneta, it does stuff with managing the queues itself, and
+I suspect adding that into phylink will mess that driver up.  Maybe
+someone with more knowledge can take a look.
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 6ae4a72e6f43..fe3fd33f56f7 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -408,12 +408,10 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		xdp.rxq = &priv->xdp_rxq[ch];
- 
- 		port = priv->emac_port + cpsw->data.dual_emac;
--		ret = cpsw_run_xdp(priv, ch, &xdp, page, port);
-+		ret = cpsw_run_xdp(priv, ch, &xdp, page, port, &len);
- 		if (ret != CPSW_XDP_PASS)
- 			goto requeue;
- 
--		/* XDP prog might have changed packet data and boundaries */
--		len = xdp.data_end - xdp.data;
- 		headroom = xdp.data - xdp.data_hard_start;
- 
- 		/* XDP prog can modify vlan tag, so can't use encap header */
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 71215db7934b..050496e814c3 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -349,12 +349,11 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		xdp.data_hard_start = pa;
- 		xdp.rxq = &priv->xdp_rxq[ch];
- 
--		ret = cpsw_run_xdp(priv, ch, &xdp, page, priv->emac_port);
-+		ret = cpsw_run_xdp(priv, ch, &xdp, page,
-+				   priv->emac_port, &len);
- 		if (ret != CPSW_XDP_PASS)
- 			goto requeue;
- 
--		/* XDP prog might have changed packet data and boundaries */
--		len = xdp.data_end - xdp.data;
- 		headroom = xdp.data - xdp.data_hard_start;
- 
- 		/* XDP prog can modify vlan tag, so can't use encap header */
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 97a058ca60ac..a41da48db40b 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1317,7 +1317,7 @@ int cpsw_xdp_tx_frame(struct cpsw_priv *priv, struct xdp_frame *xdpf,
- }
- 
- int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
--		 struct page *page, int port)
-+		 struct page *page, int port, int *len)
- {
- 	struct cpsw_common *cpsw = priv->cpsw;
- 	struct net_device *ndev = priv->ndev;
-@@ -1335,10 +1335,13 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 	}
- 
- 	act = bpf_prog_run_xdp(prog, xdp);
-+	/* XDP prog might have changed packet data and boundaries */
-+	*len = xdp.data_end - xdp.data;
-+
- 	switch (act) {
- 	case XDP_PASS:
- 		ret = CPSW_XDP_PASS;
--		break;
-+		goto out;
- 	case XDP_TX:
- 		xdpf = convert_to_xdp_frame(xdp);
- 		if (unlikely(!xdpf))
-@@ -1364,8 +1367,14 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 		trace_xdp_exception(ndev, prog, act);
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
-+		ndev->stats.rx_bytes += *len;
-+		ndev->stats.rx_packets++;
- 		goto drop;
- 	}
-+
-+	ndev->stats.rx_bytes += *len;
-+	ndev->stats.rx_packets++;
-+
- out:
- 	rcu_read_unlock();
- 	return ret;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index b8d7b924ee3d..54efd773e033 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -439,7 +439,7 @@ int cpsw_ndo_bpf(struct net_device *ndev, struct netdev_bpf *bpf);
- int cpsw_xdp_tx_frame(struct cpsw_priv *priv, struct xdp_frame *xdpf,
- 		      struct page *page, int port);
- int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
--		 struct page *page, int port);
-+		 struct page *page, int port, int *len);
- irqreturn_t cpsw_tx_interrupt(int irq, void *dev_id);
- irqreturn_t cpsw_rx_interrupt(int irq, void *dev_id);
- int cpsw_tx_mq_poll(struct napi_struct *napi_tx, int budget);
+But, IMHO, two drivers doing something is not grounds for moving it
+into higher layers.
+
 -- 
-2.24.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
