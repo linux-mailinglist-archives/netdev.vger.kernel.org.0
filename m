@@ -2,213 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B17D8166FD0
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 07:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221BC167012
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 08:13:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727755AbgBUGsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 01:48:02 -0500
-Received: from first.geanix.com ([116.203.34.67]:55440 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726410AbgBUGsC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 01:48:02 -0500
-Received: from localhost (87-49-45-242-mobile.dk.customer.tdc.net [87.49.45.242])
-        by first.geanix.com (Postfix) with ESMTPSA id BA1EFAEB4D;
-        Fri, 21 Feb 2020 06:47:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1582267678; bh=C6ldIWGff5T8O4HfbemgNQNVmUkFjfJUuuR+sw4Z36I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=f6uD2QwqPaGqlBPWb77tKNPtvgUki/99sA2qGfEsCVviAs3B69DuhQNNxzdhzzKfJ
-         cefu9iWzttf08ePuGff5VIZuVxRdFm7jDb+/SQxDeYWWMCWm85XfrLZ4bK6KWoMDWH
-         dvhvPqHwNqw9bjUsImIFl0KknSudsplJgr0NnUZUdrPkidqxz+FPoT3R80fF9qKLDU
-         Ul1r+hvgx68L9S3a4bQk4JuuAekDVN3y5bcDY3ASQmSMYedXr+6D1EogxEctfFTGnI
-         3WANSs4OjCwJ3ZuuR/x46OAwawFmBYW0AzOThx/7svC5T6yf1aoKqwo5dNg2TU/ArX
-         4fZshi2Bay9HA==
-From:   Esben Haabendal <esben@geanix.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
-Subject: [PATCH net v2 4/4] net: ll_temac: Handle DMA halt condition caused by buffer underrun
-Date:   Fri, 21 Feb 2020 07:47:58 +0100
-Message-Id: <9d7cb658d37577895b9755a434eacba36a62f580.1582267079.git.esben@geanix.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <cover.1582267079.git.esben@geanix.com>
-References: <cover.1582108989.git.esben@geanix.com> <cover.1582267079.git.esben@geanix.com>
+        id S1727053AbgBUHNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 02:13:01 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35811 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbgBUHNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 02:13:00 -0500
+Received: by mail-wm1-f68.google.com with SMTP id b17so552344wmb.0
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 23:12:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PhFfdTwDXpPikpaVyPBZxGv4NKL4I6GEFhIiAHj3uZ8=;
+        b=imvfsasF2yvo+vTK8t9U4Mb5mXxGtnR4RWTTHnlJ0d/ijPjTde0qDmVioz8Diewb89
+         zDaKGJdOWkjqXmJZQgkwqwNcJ9L5xYa7UoLC9qQfBPpbg8L9WsRrup14+B2P8zOd1QwM
+         +yKfBEKbvyibSYlcxldekYJ5dXJhikLEQ/Crp/tmCE2Udnvj3O+odvF0T9NhJ1ZIzhT3
+         o09dVVt+TFUg6jSK1Dp/WuVvulr/Q7fuhl5D+UIUUM/y7YLQFe1hMAVz4GAC3q3DdvDf
+         uT6HlharLXWaSCHai8YsdBGLDJNbd1DDMa8VvqXyLMPyt1+nP3XuId6s7pQABGtQH4+b
+         GDWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PhFfdTwDXpPikpaVyPBZxGv4NKL4I6GEFhIiAHj3uZ8=;
+        b=iniPy7vVf9vUdamzBKE6Vb1hKpIAIovBQS2HsyBN1NJyc6lNpARoJO7vlWLMyca3GI
+         gXOA2GsJM3RNDijBzoaxeQxTOJdCOilrY+CquASgmisYCFnCOsIERpeYr/N0TykBqDvK
+         YSCoVasK16Pk90FnK4PXst5mD5aZO56WWKMSC4dJ28eYtlXPHZTu4+H7SrRpUBT1UXZT
+         iN4PKIkS0cGSkJOQzEOH6Em6Y0YBoX6ZSLPj8V16TEwcpQajiJzRsW7omOL22ftCv/ka
+         EPCB54huLq4+Jgsm3WHzj7owNq47Kjv6uETKFNh64a9xBjGAMlDZm01wlm4hoe/bTsH3
+         edRg==
+X-Gm-Message-State: APjAAAUrqNAa/iP1ZRWqvfrskQmmL4A2J0zFDDdzuFaQ9yYY5dTCfkRF
+        50YJ2d2q2CpFdIPDW4+taFdUqziNalE=
+X-Google-Smtp-Source: APXvYqwwo1I9zyJUV/xFKRmdiSAbNS0HOulHqXlu/IYkxv9F7aSw92+JQWSNcez5WkAHScP0EPk1Jw==
+X-Received: by 2002:a1c:6189:: with SMTP id v131mr1893014wmb.185.1582269178736;
+        Thu, 20 Feb 2020 23:12:58 -0800 (PST)
+Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
+        by smtp.gmail.com with ESMTPSA id 5sm2789979wrc.75.2020.02.20.23.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 23:12:57 -0800 (PST)
+Date:   Fri, 21 Feb 2020 09:12:55 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     brouer@redhat.com, davem@davemloft.net, netdev@vger.kernel.org,
+        lorenzo@kernel.org, toke@redhat.com
+Subject: Re: [PATCH net-next] net: page_pool: Add documentation for page_pool
+ API
+Message-ID: <20200221071255.GA863284@apalos.home>
+References: <20200220182521.859730-1-ilias.apalodimas@linaro.org>
+ <0bfe362b-276d-21ad-24b9-67813c0cd50a@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=4.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on 05ff821c8cf1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0bfe362b-276d-21ad-24b9-67813c0cd50a@infradead.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SDMA engine used by TEMAC halts operation when it has finished
-processing of the last buffer descriptor in the buffer ring.
-Unfortunately, no interrupt event is generated when this happens,
-so we need to setup another mechanism to make sure DMA operation is
-restarted when enough buffers have been added to the ring.
+Hi Randy, 
+On Thu, Feb 20, 2020 at 04:14:00PM -0800, Randy Dunlap wrote:
+> Hi again Ilias,
+> 
+> On 2/20/20 10:25 AM, Ilias Apalodimas wrote:
+> > Add documentation explaining the basic functionality and design
+> > principles of the API
+> > 
+> > Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> > ---
+> >  Documentation/networking/page_pool.rst | 159 +++++++++++++++++++++++++
+> >  1 file changed, 159 insertions(+)
+> >  create mode 100644 Documentation/networking/page_pool.rst
+> > 
+> > diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+> > new file mode 100644
+> > index 000000000000..098d339ef272
+> > --- /dev/null
+> > +++ b/Documentation/networking/page_pool.rst
+> > @@ -0,0 +1,159 @@
+> > +.. SPDX-License-Identifier: GPL-2.0
+> > +
+> > +=============
+> > +Page Pool API
+> > +=============
+> > +
+> > +The page_pool allocator is optimized for the XDP mode that uses one frame
+> > +per-page, but it can fallback on the regular page allocator APIs.
+> > +
+> > +Basic use involve replacing alloc_pages() calls with the
+> 
+>              involves
+> 
 
-Fixes: 92744989533c ("net: add Xilinx ll_temac device driver")
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/net/ethernet/xilinx/ll_temac.h      |  3 ++
- drivers/net/ethernet/xilinx/ll_temac_main.c | 58 +++++++++++++++++++--
- 2 files changed, 56 insertions(+), 5 deletions(-)
+Ok
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac.h b/drivers/net/ethernet/xilinx/ll_temac.h
-index 99fe059e5c7f..53fb8141f1a6 100644
---- a/drivers/net/ethernet/xilinx/ll_temac.h
-+++ b/drivers/net/ethernet/xilinx/ll_temac.h
-@@ -380,6 +380,9 @@ struct temac_local {
- 	/* DMA channel control setup */
- 	u32 tx_chnl_ctrl;
- 	u32 rx_chnl_ctrl;
-+	u8 coalesce_count_rx;
-+
-+	struct delayed_work restart_work;
- };
- 
- /* Wrappers for temac_ior()/temac_iow() function pointers above */
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 255207f2fd27..9461acec6f70 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -51,6 +51,7 @@
- #include <linux/ip.h>
- #include <linux/slab.h>
- #include <linux/interrupt.h>
-+#include <linux/workqueue.h>
- #include <linux/dma-mapping.h>
- #include <linux/processor.h>
- #include <linux/platform_data/xilinx-ll-temac.h>
-@@ -866,8 +867,11 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	skb_dma_addr = dma_map_single(ndev->dev.parent, skb->data,
- 				      skb_headlen(skb), DMA_TO_DEVICE);
- 	cur_p->len = cpu_to_be32(skb_headlen(skb));
--	if (WARN_ON_ONCE(dma_mapping_error(ndev->dev.parent, skb_dma_addr)))
--		return NETDEV_TX_BUSY;
-+	if (WARN_ON_ONCE(dma_mapping_error(ndev->dev.parent, skb_dma_addr))) {
-+		dev_kfree_skb_any(skb);
-+		ndev->stats.tx_dropped++;
-+		return NETDEV_TX_OK;
-+	}
- 	cur_p->phys = cpu_to_be32(skb_dma_addr);
- 	ptr_to_txbd((void *)skb, cur_p);
- 
-@@ -897,7 +901,9 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 			dma_unmap_single(ndev->dev.parent,
- 					 be32_to_cpu(cur_p->phys),
- 					 skb_headlen(skb), DMA_TO_DEVICE);
--			return NETDEV_TX_BUSY;
-+			dev_kfree_skb_any(skb);
-+			ndev->stats.tx_dropped++;
-+			return NETDEV_TX_OK;
- 		}
- 		cur_p->phys = cpu_to_be32(skb_dma_addr);
- 		cur_p->len = cpu_to_be32(skb_frag_size(frag));
-@@ -920,6 +926,17 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	return NETDEV_TX_OK;
- }
- 
-+static int ll_temac_recv_buffers_available(struct temac_local *lp)
-+{
-+	int available;
-+
-+	if (!lp->rx_skb[lp->rx_bd_ci])
-+		return 0;
-+	available = 1 + lp->rx_bd_tail - lp->rx_bd_ci;
-+	if (available <= 0)
-+		available += RX_BD_NUM;
-+	return available;
-+}
- 
- static void ll_temac_recv(struct net_device *ndev)
- {
-@@ -990,6 +1007,18 @@ static void ll_temac_recv(struct net_device *ndev)
- 			lp->rx_bd_ci = 0;
- 	} while (rx_bd != lp->rx_bd_tail);
- 
-+	/* DMA operations will halt when the last buffer descriptor is
-+	 * processed (ie. the one pointed to by RX_TAILDESC_PTR).
-+	 * When that happens, no more interrupt events will be
-+	 * generated.  No IRQ_COAL or IRQ_DLY, and not even an
-+	 * IRQ_ERR.  To avoid stalling, we schedule a delayed work
-+	 * when there is a potential risk of that happening.  The work
-+	 * will call this function, and thus re-schedule itself until
-+	 * enough buffers are available again.
-+	 */
-+	if (ll_temac_recv_buffers_available(lp) < lp->coalesce_count_rx)
-+		schedule_delayed_work(&lp->restart_work, HZ / 1000);
-+
- 	/* Allocate new buffers for those buffer descriptors that were
- 	 * passed to network stack.  Note that GFP_ATOMIC allocations
- 	 * can fail (e.g. when a larger burst of GFP_ATOMIC
-@@ -1045,6 +1074,18 @@ static void ll_temac_recv(struct net_device *ndev)
- 	spin_unlock_irqrestore(&lp->rx_lock, flags);
- }
- 
-+/* Function scheduled to ensure a restart in case of DMA halt
-+ * condition caused by running out of buffer descriptors.
-+ */
-+static void ll_temac_restart_work_func(struct work_struct *work)
-+{
-+	struct temac_local *lp = container_of(work, struct temac_local,
-+					      restart_work.work);
-+	struct net_device *ndev = lp->ndev;
-+
-+	ll_temac_recv(ndev);
-+}
-+
- static irqreturn_t ll_temac_tx_irq(int irq, void *_ndev)
- {
- 	struct net_device *ndev = _ndev;
-@@ -1137,6 +1178,8 @@ static int temac_stop(struct net_device *ndev)
- 
- 	dev_dbg(&ndev->dev, "temac_close()\n");
- 
-+	cancel_delayed_work_sync(&lp->restart_work);
-+
- 	free_irq(lp->tx_irq, ndev);
- 	free_irq(lp->rx_irq, ndev);
- 
-@@ -1258,6 +1301,7 @@ static int temac_probe(struct platform_device *pdev)
- 	lp->dev = &pdev->dev;
- 	lp->options = XTE_OPTION_DEFAULTS;
- 	spin_lock_init(&lp->rx_lock);
-+	INIT_DELAYED_WORK(&lp->restart_work, ll_temac_restart_work_func);
- 
- 	/* Setup mutex for synchronization of indirect register access */
- 	if (pdata) {
-@@ -1364,6 +1408,7 @@ static int temac_probe(struct platform_device *pdev)
- 		 */
- 		lp->tx_chnl_ctrl = 0x10220000;
- 		lp->rx_chnl_ctrl = 0xff070000;
-+		lp->coalesce_count_rx = 0x07;
- 
- 		/* Finished with the DMA node; drop the reference */
- 		of_node_put(dma_np);
-@@ -1395,11 +1440,14 @@ static int temac_probe(struct platform_device *pdev)
- 				(pdata->tx_irq_count << 16);
- 		else
- 			lp->tx_chnl_ctrl = 0x10220000;
--		if (pdata->rx_irq_timeout || pdata->rx_irq_count)
-+		if (pdata->rx_irq_timeout || pdata->rx_irq_count) {
- 			lp->rx_chnl_ctrl = (pdata->rx_irq_timeout << 24) |
- 				(pdata->rx_irq_count << 16);
--		else
-+			lp->coalesce_count_rx = pdata->rx_irq_count;
-+		} else {
- 			lp->rx_chnl_ctrl = 0xff070000;
-+			lp->coalesce_count_rx = 0x07;
-+		}
- 	}
- 
- 	/* Error handle returned DMA RX and TX interrupts */
--- 
-2.25.0
+> > +page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages()
+> > +replacing dev_alloc_pages().
+> > +
+> ...
+> 
+> > +
+> > +Architecture overview
+> > +=====================
+> > +
+> > +.. code-block:: none
+> > +
+> ...
+> 
+> > +
+> > +API interface
+> > +=============
+> > +The number of pools created **must** match the number of hardware queues
+> > +unless hardware restrictions make that impossible. This would otherwise beat the
+> > +purpose of page pool, which is allocate pages fast from cache without locking.
+> > +This lockless guarantee naturally comes from running under a NAPI softirq.
+> > +The protection doesn't strictly have to be NAPI, any guarantee that allocating
+> > +a page will cause no race conditions is enough.
+> > +
+> > +* page_pool_create(): Create a pool.
+> > +    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
+> > +    * order:      order^n pages on allocation
+> 
+> what is "n" above?
+> My quick reading of mm/page_alloc.c suggests that order is the power of 2
+> that should be used for the memory allocation... ???
 
+Yes this must change to 2^order
+
+> 
+> > +    * pool_size:  size of the ptr_ring
+> > +    * nid:        preferred NUMA node for allocation
+> > +    * dev:        struct device. Used on DMA operations
+> > +    * dma_dir:    DMA direction
+> > +    * max_len:    max DMA sync memory size
+> > +    * offset:     DMA address offset
+> > +
+> ...
+> 
+> > +
+> > +Coding examples
+> > +===============
+> > +
+> > +Registration
+> > +------------
+> > +
+> > +.. code-block:: c
+> > +
+> > +    /* Page pool registration */
+> > +    struct page_pool_params pp_params = { 0 };
+> > +    struct xdp_rxq_info xdp_rxq;
+> > +    int err;
+> > +
+> > +    pp_params.order = 0;
+> 
+> so 0^n?
+
+See above!
+
+> 
+> > +    /* internal DMA mapping in page_pool */
+> > +    pp_params.flags = PP_FLAG_DMA_MAP;
+> > +    pp_params.pool_size = DESC_NUM;
+> > +    pp_params.nid = NUMA_NO_NODE;
+> > +    pp_params.dev = priv->dev;
+> > +    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+> > +    page_pool = page_pool_create(&pp_params);
+> > +
+> > +    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
+> > +    if (err)
+> > +        goto err_out;
+> > +
+> > +    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
+> > +    if (err)
+> > +        goto err_out;
+> > +
+> > +NAPI poller
+> > +-----------
+> 
+> thanks.
+
+Thanks again for taking the time
+
+> -- 
+> ~Randy
+> 
+
+Cheers
+/Ilias
