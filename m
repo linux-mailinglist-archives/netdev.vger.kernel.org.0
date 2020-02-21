@@ -2,133 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FE6167C1C
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 12:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D70A167CA1
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 12:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728137AbgBUL3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 06:29:35 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42214 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726989AbgBUL3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 06:29:34 -0500
-Received: by mail-wr1-f65.google.com with SMTP id k11so1623472wrd.9
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 03:29:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ISb1ahsdqyDpNndMm9k4MryKRAmuNFLa5XvM/5lEHrM=;
-        b=dpFq32bbS0i4OObcZqRN90dmE8bmajzsSxDy61W8dRwMlROs5qvrRFewu5bvvNGQwH
-         evC7XBjXob68qVSuMV/FMf4yN3XuF28WTjpUOFuriHFkV7abah/OQ4jbUb9sPFzDwGYB
-         yU7wKUd9dWBI7g+Mq4OI88Hj3IWl+IpYk2PP1N4JGVytif996cxOMj8SU4B7cTewf8aZ
-         AXYvPiHn3UbgKBkRwxBXF2pqjJfMpUxF0nTh5UwWjwZuE2gzSKEcWpawwR/7TcZ68FYs
-         a1FngtGWi1XoJwbhc1fz2QPf8MHto/MwLRz6drRhsvH+kkCAaYBglHURSEsCVdyJ1RSy
-         nH2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ISb1ahsdqyDpNndMm9k4MryKRAmuNFLa5XvM/5lEHrM=;
-        b=HAcR1sO29E7HZXYUOXWPUEGrj7EyhUPKftTRGuFDBSzN9F46aiXEUAeC3TZg29qTWJ
-         PTv8CqqegJpDPN0sjghQoaULVJFXUzs8WNGYIEWuroIFWe+gQKkNY2efNSIRzHUIa4+K
-         PALuMFiQrJ4kLW9STuuhDN5nEINBAtZ9E9AnPTKtUp9Pp42VcnhdTKOkgpiF2lNoXkn+
-         SIH9WPxa2vv2eSXDq0FvycoX6gh3d8w3OWN08mDcAzTfHcRx6kJdZ4ruHxix2AdDFSE4
-         e/WakT5pGm5S9RyyS4fSsNc0Nincu2eemXPNarCQrT9JygtoLKAaf4ilv9wSx41aOpcy
-         4XjA==
-X-Gm-Message-State: APjAAAWvKU0yIpfR8LiFHaeiqcbc40l/euluTGrG/1mbpAUnVUip5bdJ
-        44rV7z4ZXnTryjiuZldSq9hDBQ==
-X-Google-Smtp-Source: APXvYqwo/wcsiFTfCaz7K7GiNYnP+aK8Ly6FiMLPGG1YRCamaaEnYkndZlGCFD7DwIS5uBFCL1v9wg==
-X-Received: by 2002:a05:6000:10c:: with SMTP id o12mr49019570wrx.106.1582284571520;
-        Fri, 21 Feb 2020 03:29:31 -0800 (PST)
-Received: from [192.168.1.23] ([91.143.66.155])
-        by smtp.gmail.com with ESMTPSA id b13sm3838699wrq.48.2020.02.21.03.29.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Feb 2020 03:29:31 -0800 (PST)
-Subject: Re: [PATCH bpf-next v2 4/5] bpftool: Update bash completion for
- "bpftool feature" command
-To:     Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-References: <20200221031702.25292-1-mrostecki@opensuse.org>
- <20200221031702.25292-5-mrostecki@opensuse.org>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <7e37246c-a154-1cd6-fbae-ed29497903e8@isovalent.com>
-Date:   Fri, 21 Feb 2020 11:29:30 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1728259AbgBULvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 06:51:15 -0500
+Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:7892 "EHLO
+        esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728186AbgBULvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 06:51:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1582285872;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=rkTHwapBz7ayghLmZpskUOnKPxyODDcUxzL7ge8Xcgw=;
+  b=OZLTIKh1todi/eF9m5Zuw3e9FZEB208cvD/izr6fF51TJPS2N0TSYqR4
+   6Ap5YuK1xxh7K19MUlsOXe4oNWYUWCoqTG1Wx0Q1yqjdhxWGXldm55R3G
+   KiNjwjVU3w7qy4AllGqLyTaLsITZY3VdlftLBuZo8vrRaw3FpH1v/N+4V
+   8=;
+Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa4.hc3370-68.iphmx.com: domain of
+  roger.pau@citrix.com designates 162.221.158.21 as permitted
+  sender) identity=mailfrom; client-ip=162.221.158.21;
+  receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
+  ip4:168.245.78.127 ~all"
+Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@mail.citrix.com) identity=helo;
+  client-ip=162.221.158.21; receiver=esa4.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="postmaster@mail.citrix.com";
+  x-conformance=sidf_compatible
+IronPort-SDR: Iy6vkmYvTTmAxcv0sDnk287OqaApR945+t3bbH8+KbvqO+kHUjaYPybqDsL2Uz3ckkNdz7m7Ij
+ Y/kSARbsrffvGwZ0DdF9joLHQxzx+xK9WlQ/XDSamvWxHYxvaUCzUm0cfcLxehNY2mp7FjoWjT
+ D4xjlWsuciis2JlVC9Q0xgZJzdXhb7ZyOnQTX4w+09xcbPdlJMXCastv+6vAPcXH/ReEzapMJk
+ MexwEdNGylwcSepie7bUtm+7uwAyQBY4nMkkPM9+s4Fdfth/Af4mJg7YaOlCyON2+hTYr7itc9
+ ax0=
+X-SBRS: 2.7
+X-MesageID: 13435837
+X-Ironport-Server: esa4.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.70,468,1574139600"; 
+   d="scan'208";a="13435837"
+Date:   Fri, 21 Feb 2020 12:51:03 +0100
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
+CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "hpa@zytor.com" <hpa@zytor.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "fllinden@amaozn.com" <fllinden@amaozn.com>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>
+Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
+ PM suspend and hibernation
+Message-ID: <20200221115103.GY4679@Air-de-Roger>
+References: <20200220083904.GI4679@Air-de-Roger>
+ <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
+ <20200220154507.GO4679@Air-de-Roger>
+ <c9662397256a4568a5cc7d70a84940e5@EX13D32EUC003.ant.amazon.com>
+ <20200220164839.GR4679@Air-de-Roger>
+ <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
+ <20200221092219.GU4679@Air-de-Roger>
+ <5ddf980a3fba4fb39571184e688cefc5@EX13D32EUC003.ant.amazon.com>
+ <20200221102130.GW4679@Air-de-Roger>
+ <66a211bae1de4be9861ef8393607d1b3@EX13D32EUC003.ant.amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <20200221031702.25292-5-mrostecki@opensuse.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <66a211bae1de4be9861ef8393607d1b3@EX13D32EUC003.ant.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
+ AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-02-21 04:16 UTC+0100 ~ Michal Rostecki <mrostecki@opensuse.org>
-> Update bash completion for "bpftool feature" command with the new
-> argument: "full".
+On Fri, Feb 21, 2020 at 10:33:42AM +0000, Durrant, Paul wrote:
+> > -----Original Message-----
+> > From: Roger Pau Monné <roger.pau@citrix.com>
+> > Sent: 21 February 2020 10:22
+> > To: Durrant, Paul <pdurrant@amazon.co.uk>
+> > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
+> > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
+> > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
+> > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de; sstabellini@kernel.org;
+> > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
+> > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
+> > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
+> > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
+> > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
+> > linux-kernel@vger.kernel.org; vkuznets@redhat.com; davem@davemloft.net;
+> > Woodhouse, David <dwmw@amazon.co.uk>
+> > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks
+> > for PM suspend and hibernation
+> > 
+> > On Fri, Feb 21, 2020 at 09:56:54AM +0000, Durrant, Paul wrote:
+> > > > -----Original Message-----
+> > > > From: Roger Pau Monné <roger.pau@citrix.com>
+> > > > Sent: 21 February 2020 09:22
+> > > > To: Durrant, Paul <pdurrant@amazon.co.uk>
+> > > > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
+> > > > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
+> > > > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
+> > > > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de;
+> > sstabellini@kernel.org;
+> > > > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
+> > > > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
+> > > > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
+> > > > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
+> > > > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
+> > > > linux-kernel@vger.kernel.org; vkuznets@redhat.com;
+> > davem@davemloft.net;
+> > > > Woodhouse, David <dwmw@amazon.co.uk>
+> > > > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add
+> > callbacks
+> > > > for PM suspend and hibernation
+> > > >
+> > > > On Thu, Feb 20, 2020 at 05:01:52PM +0000, Durrant, Paul wrote:
+> > > > > > > Hopefully what I said above illustrates why it may not be 100%
+> > > > common.
+> > > > > >
+> > > > > > Yes, that's fine. I don't expect it to be 100% common (as I guess
+> > > > > > that the hooks will have different prototypes), but I expect
+> > > > > > that routines can be shared, and that the approach taken can be
+> > the
+> > > > > > same.
+> > > > > >
+> > > > > > For example one necessary difference will be that xenbus initiated
+> > > > > > suspend won't close the PV connection, in case suspension fails.
+> > On PM
+> > > > > > suspend you seem to always close the connection beforehand, so you
+> > > > > > will always have to re-negotiate on resume even if suspension
+> > failed.
+> > > > > >
+> > > > > > What I'm mostly worried about is the different approach to ring
+> > > > > > draining. Ie: either xenbus is changed to freeze the queues and
+> > drain
+> > > > > > the shared rings, or PM uses the already existing logic of not
+> > > > > > flushing the rings an re-issuing in-flight requests on resume.
+> > > > > >
+> > > > >
+> > > > > Yes, that's needs consideration. I don’t think the same semantic can
+> > be
+> > > > suitable for both. E.g. in a xen-suspend we need to freeze with as
+> > little
+> > > > processing as possible to avoid dirtying RAM late in the migration
+> > cycle,
+> > > > and we know that in-flight data can wait. But in a transition to S4 we
+> > > > need to make sure that at least all the in-flight blkif requests get
+> > > > completed, since they probably contain bits of the guest's memory
+> > image
+> > > > and that's not going to get saved any other way.
+> > > >
+> > > > Thanks, that makes sense and something along this lines should be
+> > > > added to the commit message IMO.
+> > > >
+> > > > Wondering about S4, shouldn't we expect the queues to already be
+> > > > empty? As any subsystem that wanted to store something to disk should
+> > > > make sure requests have been successfully completed before
+> > > > suspending.
+> > >
+> > > What about writing the suspend image itself? Normal filesystem I/O
+> > > will have been flushed of course, but whatever vestigial kernel
+> > > actually writes out the hibernation file may well expect a final
+> > > D0->D3 on the storage device to cause a flush.
+> > 
+> > Hm, I have no idea really. I think whatever writes to the disk before
+> > suspend should actually make sure requests have completed, but what
+> > you suggest might also be a possibility.
+> > 
+> > Can you figure out whether there are requests on the ring or in the
+> > queue before suspending?
 > 
-> Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
-> ---
->   tools/bpf/bpftool/bash-completion/bpftool | 27 ++++++++++++++++-------
->   1 file changed, 19 insertions(+), 8 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index 754d8395e451..f2bcc4bacee2 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> @@ -981,14 +981,25 @@ _bpftool()
->           feature)
->               case $command in
->                   probe)
-> -                    [[ $prev == "prefix" ]] && return 0
-> -                    if _bpftool_search_list 'macros'; then
-> -                        COMPREPLY+=( $( compgen -W 'prefix' -- "$cur" ) )
-> -                    else
-> -                        COMPREPLY+=( $( compgen -W 'macros' -- "$cur" ) )
-> -                    fi
-> -                    _bpftool_one_of_list 'kernel dev'
-> -                    return 0
-> +                    case $prev in
-> +                        $command)
-> +                            COMPREPLY+=( $( compgen -W 'kernel dev full macros' -- \
-> +                                "$cur" ) )
-> +                            return 0
-> +                            ;;
-> +                        prefix)
-> +                            return 0
-> +                            ;;
-> +                        macros)
-> +                            COMPREPLY+=( $( compgen -W 'prefix' -- "$cur" ) )
-> +                            return 0
+> Well there's clearly pending stuff in the ring if rsp_prod != req_prod :-)
 
-I have not tested, but I think because of the "return 0" this will 
-propose only "prefix" after "macros". But "kernel" or "dev" should also 
-be in the list.
+Right, I assume there's no document that states what's the expected
+state for queues &c when switching PM states, so we have to assume
+that there might be in-flight requests on the ring and in the driver
+queues.
 
-Maybe just add "_bpftool_once_attr 'full'" under the 
-"_bpftool_one_of_list 'kernel dev'" instead of changing to the "case 
-$prev in" structure?
+> As for internal queues, I don't know how blkfront manages that (or whether it has any pending work queue at all).
 
-> +                            ;;
-> +                        *)
-> +                            _bpftool_one_of_list 'kernel dev'
-> +                            _bpftool_once_attr 'full macros'
-> +                            return 0
-> +                            ;;
-> +                    esac
->                       ;;
->                   *)
->                       [[ $prev == $object ]] && \
-> 
+There are no internal queues, just the generic ones from blk_mq which
+every block device has IIRC.
 
+Thanks, Roger.
