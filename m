@@ -2,225 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D70A167CA1
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 12:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9774167CBA
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 12:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728259AbgBULvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 06:51:15 -0500
-Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:7892 "EHLO
-        esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728186AbgBULvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 06:51:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1582285872;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=rkTHwapBz7ayghLmZpskUOnKPxyODDcUxzL7ge8Xcgw=;
-  b=OZLTIKh1todi/eF9m5Zuw3e9FZEB208cvD/izr6fF51TJPS2N0TSYqR4
-   6Ap5YuK1xxh7K19MUlsOXe4oNWYUWCoqTG1Wx0Q1yqjdhxWGXldm55R3G
-   KiNjwjVU3w7qy4AllGqLyTaLsITZY3VdlftLBuZo8vrRaw3FpH1v/N+4V
-   8=;
-Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
-Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
-  receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="roger.pau@citrix.com";
-  x-conformance=sidf_compatible
-Received-SPF: Pass (esa4.hc3370-68.iphmx.com: domain of
-  roger.pau@citrix.com designates 162.221.158.21 as permitted
-  sender) identity=mailfrom; client-ip=162.221.158.21;
-  receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="roger.pau@citrix.com";
-  x-conformance=sidf_compatible; x-record-type="v=spf1";
-  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
-  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
-  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
-  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
-  ip4:168.245.78.127 ~all"
-Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@mail.citrix.com) identity=helo;
-  client-ip=162.221.158.21; receiver=esa4.hc3370-68.iphmx.com;
-  envelope-from="roger.pau@citrix.com";
-  x-sender="postmaster@mail.citrix.com";
-  x-conformance=sidf_compatible
-IronPort-SDR: Iy6vkmYvTTmAxcv0sDnk287OqaApR945+t3bbH8+KbvqO+kHUjaYPybqDsL2Uz3ckkNdz7m7Ij
- Y/kSARbsrffvGwZ0DdF9joLHQxzx+xK9WlQ/XDSamvWxHYxvaUCzUm0cfcLxehNY2mp7FjoWjT
- D4xjlWsuciis2JlVC9Q0xgZJzdXhb7ZyOnQTX4w+09xcbPdlJMXCastv+6vAPcXH/ReEzapMJk
- MexwEdNGylwcSepie7bUtm+7uwAyQBY4nMkkPM9+s4Fdfth/Af4mJg7YaOlCyON2+hTYr7itc9
- ax0=
-X-SBRS: 2.7
-X-MesageID: 13435837
-X-Ironport-Server: esa4.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.70,468,1574139600"; 
-   d="scan'208";a="13435837"
-Date:   Fri, 21 Feb 2020 12:51:03 +0100
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
-CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "hpa@zytor.com" <hpa@zytor.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "fllinden@amaozn.com" <fllinden@amaozn.com>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>
-Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
- PM suspend and hibernation
-Message-ID: <20200221115103.GY4679@Air-de-Roger>
-References: <20200220083904.GI4679@Air-de-Roger>
- <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
- <20200220154507.GO4679@Air-de-Roger>
- <c9662397256a4568a5cc7d70a84940e5@EX13D32EUC003.ant.amazon.com>
- <20200220164839.GR4679@Air-de-Roger>
- <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
- <20200221092219.GU4679@Air-de-Roger>
- <5ddf980a3fba4fb39571184e688cefc5@EX13D32EUC003.ant.amazon.com>
- <20200221102130.GW4679@Air-de-Roger>
- <66a211bae1de4be9861ef8393607d1b3@EX13D32EUC003.ant.amazon.com>
+        id S1728359AbgBULvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 06:51:32 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:45950 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728330AbgBULvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 06:51:31 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 2so1070586pfg.12;
+        Fri, 21 Feb 2020 03:51:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WnHYv3vr0Vwr6SMzoPca2DWynWDX4pzqXsyYD0aAcdw=;
+        b=tlMLwZAeuQrDyJX8AZNoeIo2YfboK9p4SE46ZRQpG4+pfzDSpdE1ISp8jEXZI4v5za
+         4RyDc8e880iVMBjW49x5i6ae1xaMKsbZOAQSUoq/UIVQShyl6gPunQlONAITjCSwAyjs
+         qwWkxxOpKOO0nc5lwsVJ0o2ZztkmBdUEVBvsuhJUpKmFtKLK34snMz1rUqk3ZX06/aZA
+         Pqc+WHWyuWmWru3hH/VqGNUq/H6HjSg5CC9iMj6yE4/9QZDmmZuaOa0Hkiwcq3z6OSQf
+         A9q6Z+ir2W2yZd4dt0i2MORgk+uMxDh8XFlqTqb1qYnNJI00HcrMXoxAheoD3tsXA/EK
+         gW+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WnHYv3vr0Vwr6SMzoPca2DWynWDX4pzqXsyYD0aAcdw=;
+        b=QKWSajq5QLrXRwhcJc1LR6kut6zTIglfuy8W9cp6GvafsTyqdMHuRCRHFcdq5rYmHg
+         fskhUd1IBZwMYX/vMeC5Dw/NTD/g3ddmBomjW4B+9hzo8UmFu39k8DEKq84ibUn7wdw/
+         ntD9KQ/YmVQbfmM7hTTlk6N7yLN6w4onh6E1GTd/87IsCJ2i2qONzlEBt2doh9KOwY6O
+         +JJPnGGbiiy83rQgmxldTNtUZyckD0kBWYqToJBR0aJA5+7fneliy9uu14IG2pkTZlRt
+         OqHhLte5E+RJw5HHFarbzDDNXdTVwfdwz/IILpFdKQ/GL8LMoBza/ofbmUnf6MwLNLQR
+         PBYg==
+X-Gm-Message-State: APjAAAUAyOzVFtzhqL844eEeeQQCWiAwNdaIW6TI6XkWmLgg3z49wYym
+        dnkD0IiWw6rU2EM6fkjRbGaf0Ufw
+X-Google-Smtp-Source: APXvYqzBmSYxsK4Bi3JUNs8UL8dCVaqVjKL77TmqJ5dRRRq9CNPBnKKjLJyvdlzQsGr09gwcowROyg==
+X-Received: by 2002:a63:e50a:: with SMTP id r10mr27377086pgh.27.1582285890946;
+        Fri, 21 Feb 2020 03:51:30 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id 196sm2706469pfy.86.2020.02.21.03.51.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Feb 2020 03:51:30 -0800 (PST)
+Date:   Fri, 21 Feb 2020 03:51:28 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     min.li.xe@renesas.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 2/2] ptp: Add a ptp clock driver for IDT
+ 82P33 SMU.
+Message-ID: <20200221115128.GA1692@localhost>
+References: <1582234109-6296-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <66a211bae1de4be9861ef8393607d1b3@EX13D32EUC003.ant.amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
- AMSPEX02CL01.citrite.net (10.69.22.125)
+In-Reply-To: <1582234109-6296-1-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 10:33:42AM +0000, Durrant, Paul wrote:
-> > -----Original Message-----
-> > From: Roger Pau Monné <roger.pau@citrix.com>
-> > Sent: 21 February 2020 10:22
-> > To: Durrant, Paul <pdurrant@amazon.co.uk>
-> > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
-> > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
-> > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
-> > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de; sstabellini@kernel.org;
-> > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
-> > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
-> > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
-> > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
-> > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
-> > linux-kernel@vger.kernel.org; vkuznets@redhat.com; davem@davemloft.net;
-> > Woodhouse, David <dwmw@amazon.co.uk>
-> > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks
-> > for PM suspend and hibernation
-> > 
-> > On Fri, Feb 21, 2020 at 09:56:54AM +0000, Durrant, Paul wrote:
-> > > > -----Original Message-----
-> > > > From: Roger Pau Monné <roger.pau@citrix.com>
-> > > > Sent: 21 February 2020 09:22
-> > > > To: Durrant, Paul <pdurrant@amazon.co.uk>
-> > > > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
-> > > > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
-> > > > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
-> > > > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de;
-> > sstabellini@kernel.org;
-> > > > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
-> > > > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
-> > > > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
-> > > > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
-> > > > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
-> > > > linux-kernel@vger.kernel.org; vkuznets@redhat.com;
-> > davem@davemloft.net;
-> > > > Woodhouse, David <dwmw@amazon.co.uk>
-> > > > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add
-> > callbacks
-> > > > for PM suspend and hibernation
-> > > >
-> > > > On Thu, Feb 20, 2020 at 05:01:52PM +0000, Durrant, Paul wrote:
-> > > > > > > Hopefully what I said above illustrates why it may not be 100%
-> > > > common.
-> > > > > >
-> > > > > > Yes, that's fine. I don't expect it to be 100% common (as I guess
-> > > > > > that the hooks will have different prototypes), but I expect
-> > > > > > that routines can be shared, and that the approach taken can be
-> > the
-> > > > > > same.
-> > > > > >
-> > > > > > For example one necessary difference will be that xenbus initiated
-> > > > > > suspend won't close the PV connection, in case suspension fails.
-> > On PM
-> > > > > > suspend you seem to always close the connection beforehand, so you
-> > > > > > will always have to re-negotiate on resume even if suspension
-> > failed.
-> > > > > >
-> > > > > > What I'm mostly worried about is the different approach to ring
-> > > > > > draining. Ie: either xenbus is changed to freeze the queues and
-> > drain
-> > > > > > the shared rings, or PM uses the already existing logic of not
-> > > > > > flushing the rings an re-issuing in-flight requests on resume.
-> > > > > >
-> > > > >
-> > > > > Yes, that's needs consideration. I don’t think the same semantic can
-> > be
-> > > > suitable for both. E.g. in a xen-suspend we need to freeze with as
-> > little
-> > > > processing as possible to avoid dirtying RAM late in the migration
-> > cycle,
-> > > > and we know that in-flight data can wait. But in a transition to S4 we
-> > > > need to make sure that at least all the in-flight blkif requests get
-> > > > completed, since they probably contain bits of the guest's memory
-> > image
-> > > > and that's not going to get saved any other way.
-> > > >
-> > > > Thanks, that makes sense and something along this lines should be
-> > > > added to the commit message IMO.
-> > > >
-> > > > Wondering about S4, shouldn't we expect the queues to already be
-> > > > empty? As any subsystem that wanted to store something to disk should
-> > > > make sure requests have been successfully completed before
-> > > > suspending.
-> > >
-> > > What about writing the suspend image itself? Normal filesystem I/O
-> > > will have been flushed of course, but whatever vestigial kernel
-> > > actually writes out the hibernation file may well expect a final
-> > > D0->D3 on the storage device to cause a flush.
-> > 
-> > Hm, I have no idea really. I think whatever writes to the disk before
-> > suspend should actually make sure requests have completed, but what
-> > you suggest might also be a possibility.
-> > 
-> > Can you figure out whether there are requests on the ring or in the
-> > queue before suspending?
-> 
-> Well there's clearly pending stuff in the ring if rsp_prod != req_prod :-)
+On Thu, Feb 20, 2020 at 04:28:29PM -0500, min.li.xe@renesas.com wrote:
 
-Right, I assume there's no document that states what's the expected
-state for queues &c when switching PM states, so we have to assume
-that there might be in-flight requests on the ring and in the driver
-queues.
+> +module_param(phase_snap_threshold, uint, 0);
+> +MODULE_PARM_DESC(phase_snap_threshold,
+> +"threshold in nanosecond below which adjtime would ignore and do nothing");
 
-> As for internal queues, I don't know how blkfront manages that (or whether it has any pending work queue at all).
+If it is important not to snap small offsets, can't the driver
+calculate the threshold itself?  It will be difficult for users to
+guess this value.
 
-There are no internal queues, just the generic ones from blk_mq which
-every block device has IIRC.
+> +/* static function declaration for ptp_clock_info*/
+> +
+> +static int idt82p33_enable(struct ptp_clock_info *ptp,
+> +			   struct ptp_clock_request *rq, int on);
+> +
+> +static int idt82p33_adjfreq(struct ptp_clock_info *ptp, s32 ppb);
+> +
+> +static int idt82p33_settime(struct ptp_clock_info *ptp,
+> +			    const struct timespec64 *ts);
+> +
+> +static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns);
+> +
+> +static int idt82p33_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts);
+> +
+> +static void idt82p33_sync_tod_work_handler(struct work_struct *work);
 
-Thanks, Roger.
+As a matter of coding style, forward declarations are to be avoided in
+network drivers.  You can avoid these by moving the functions,
+idt82p33_channel_init() and idt82p33_caps_init() further down.
+
+> +static void idt82p33_byte_array_to_timespec(struct timespec64 *ts,
+> +static void idt82p33_timespec_to_byte_array(struct timespec64 const *ts,
+> +static int idt82p33_xfer(struct idt82p33 *idt82p33,
+
+These three are identical to the functions in ptp_clockmatrix.c.  Why
+not introduce a common, shared source file to refactor this code?
+
+> +static int idt82p33_page_offset(struct idt82p33 *idt82p33, unsigned char val)
+> +static int idt82p33_rdwr(struct idt82p33 *idt82p33, unsigned int regaddr,
+> +static int idt82p33_read(struct idt82p33 *idt82p33, unsigned int regaddr,
+> +static int idt82p33_write(struct idt82p33 *idt82p33, unsigned int regaddr,
+
+If I am not wrong, these are identical as well.
+
+> +static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index)
+> +{
+> +	struct idt82p33_channel *channel;
+> +	int err;
+> +
+> +	if (!(index < MAX_PHC_PLL))
+> +		return -EINVAL;
+> +
+> +	channel = &idt82p33->channel[index];
+> +
+> +	err = idt82p33_channel_init(channel, index);
+> +	if (err)
+> +		return err;
+> +
+> +	channel->idt82p33 = idt82p33;
+> +
+> +	idt82p33_caps_init(&channel->caps);
+> +	snprintf(channel->caps.name, sizeof(channel->caps.name),
+> +		 "IDT 82P33 PLL%u", index);
+> +	channel->caps.n_per_out = hweight8(channel->output_mask);
+> +
+> +	err = idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
+> +	if (err)
+> +		return err;
+> +
+> +	err = idt82p33_enable_tod(channel);
+> +	if (err)
+> +		return err;
+> +
+> +	channel->ptp_clock = ptp_clock_register(&channel->caps, NULL);
+> +
+> +	if (IS_ERR(channel->ptp_clock)) {
+> +		err = PTR_ERR(channel->ptp_clock);
+> +		channel->ptp_clock = NULL;
+> +		return err;
+> +	}
+
+The function, ptp_clock_register(), can also return NULL.  Please
+handle that case as well.
+
+> +
+> +	if (!channel->ptp_clock)
+> +		return -ENOTSUPP;
+> +
+> +	dev_info(&idt82p33->client->dev, "PLL%d registered as ptp%d\n",
+> +		 index, channel->ptp_clock->index);
+> +
+> +	return 0;
+> +}
+
+
+> +static int idt82p33_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
+> +{
+
+Please implement the .adjfine() method instead.  It offers better
+resolution.
+
+(The .adjfreq() method is deprecated.)
+
+> +	struct idt82p33_channel *channel =
+> +			container_of(ptp, struct idt82p33_channel, caps);
+> +	struct idt82p33 *idt82p33 = channel->idt82p33;
+> +	int err;
+> +
+> +	mutex_lock(&idt82p33->reg_lock);
+> +	err = _idt82p33_adjfreq(channel, ppb);
+> +	mutex_unlock(&idt82p33->reg_lock);
+> +
+> +	return err;
+> +}
+
+Thanks,
+Richard
