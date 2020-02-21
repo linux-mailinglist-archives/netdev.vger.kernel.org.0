@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99D18166C86
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 02:53:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA17A166C9A
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 03:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729644AbgBUBxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 20:53:34 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34014 "EHLO
+        id S1729412AbgBUCEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 21:04:15 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42598 "EHLO
         mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729635AbgBUBxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 20:53:34 -0500
-Received: by mail-pg1-f196.google.com with SMTP id j4so194588pgi.1;
-        Thu, 20 Feb 2020 17:53:33 -0800 (PST)
+        with ESMTP id S1728992AbgBUCEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 21:04:15 -0500
+Received: by mail-pg1-f196.google.com with SMTP id w21so177652pgl.9;
+        Thu, 20 Feb 2020 18:04:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=o2r/RVnu6JO7pTVZiTaUWHa/HbQRPtHWj89M7roS6GI=;
-        b=dSe6K11513cVUh9uiJyjLj34TB0NpRXV9jWK64RP00cgIjt3qqc6HQkoDQoLZ7WnFI
-         c8XPUmdoI2MaUs5KJZ9VgZRBGff5f5dY3wy+JwqHr0oO8WgdyLGGE1yXuCOKqQlPZkPN
-         SUDRtdhK0D2zl+87cC0UTSTN0yWCA0hsDGXqW936eaMkt14IT0gl2x+Lawh++5OVWsrP
-         kAGzpLn5BHPSyQA03XePzwuyiUToUvu4Uu5/bcyacOmqJLy7OzMlR+HGNcfvKvhCFI84
-         pl79+5uH56Ggx3FlTrpDSdHQbHZV+HIfu7YJ2SjyBkeosrmiLQBmfUMT9J88ry7H+Lmf
-         T8ZQ==
+        bh=wG07xj0gemVpvN5Lxcnyi/UowJtv5uE39R01BYALXNg=;
+        b=hELWAMN9u+CA4u8BWfuoMK0nasxUCYWIPrMq5nH93eJ2Id7/Ue7v5LlufRLLufsTV/
+         CnqcZ5KYTY8ttPwQgRD8VZW/1JfRN+NxAt6U2MdSJPpK74tbTxKlyt68O6QzEopAT1G5
+         +2J+RemYV0SMN5jPz0VUDvL+1wzVWFYkq+T7rLZIEx+AOMUdXUU+0zhSFD4/0Frw3YqS
+         iCo77g83ZViejoaOXnwmFXDh33oOPy46+M+Nc3rRFxn3An5KUIm9PriwTgRgEndo5Ef+
+         wkI1JI5wHXoGOSjytPXHDDj1u6VsIjFw5xrJwdpus57sHwfG952JBzNmwHj+R/4M2522
+         FH3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=o2r/RVnu6JO7pTVZiTaUWHa/HbQRPtHWj89M7roS6GI=;
-        b=bZeh9nADuZ2IGJbBtBIliYVK71ju6NONx4ZMdC4rVD8eViwMY0Kg3d5Pf2k74Ktmyb
-         HKGeXWeacSfVxa18RAIBdUoPQBNNQiHmmHXfo9twc0UfmaVvpuKUGb5urxyFVWFfqI3e
-         +6iYWIaFk3bHptfdRMFWTDgFCHrNgcZaPpJRkI3uwe+dZAi12VL7f2UDdzEmG1EuH70A
-         osSsESqtlw4TDbD77HRI7TOUomyRcx7Ziqj9nRjxkVE8aNvL/Yol/B4b81dmH2MICPax
-         ljcQnVx2DQWxc63/SG7RywNoHiopm3XHuUYWHoMIVUlA47rpqUfZ3JBLpbBF5HzSTsnC
-         K3HQ==
-X-Gm-Message-State: APjAAAUS5+/eWvPqWVkV0iKd85NITdWk8T22oFx1p7lyxegznilEZMHc
-        7ZoB6rfN80+tvTyYfSS+7lQ=
-X-Google-Smtp-Source: APXvYqzklwtFzRgCK6l8Rv9BCooVoZ0TxHTxFsqJ8lu06D1D0B8VejWjSx2VM3SxUOgk3C3Mo1dkSQ==
-X-Received: by 2002:a63:18d:: with SMTP id 135mr10183325pgb.32.1582250013375;
-        Thu, 20 Feb 2020 17:53:33 -0800 (PST)
+        bh=wG07xj0gemVpvN5Lxcnyi/UowJtv5uE39R01BYALXNg=;
+        b=ofsX+mzjICIZI2hK7RvXYbs7zl3np+W5SqRcPOI2Izlyicm1kMlQipB4WpgDEXi67k
+         vdFrD06Ek4MZKvWegY17kclQHuz16RsUPBBr3i0kPE/EuXUXACCq2CaQRcVOnDlKBsl9
+         TAq1K5K3otAPdEZjBZsVEhjIn5y5LLT+91d39gtRORnMxKB9TINpcTqAwIPnrwyxqouG
+         Pha27yEelGw0dLs72AgOpBNNeRPseyAOXcqkdZZDMHXJIHj7evy411t1gOTlKxatBwVJ
+         hLFYug+lxYQ04vmPOuoMXgy0akLc6bvWmCxlY7JpcY+3Q+fv9ytXbu0W1GIixiqndfZT
+         Mw1w==
+X-Gm-Message-State: APjAAAVjzTE+mQPJZN67VRpCL3XqbcuBnUJmGwVOhWqU5OZBfTauEG14
+        Wbo8UItzlTqz9sHZPLSGJv0=
+X-Google-Smtp-Source: APXvYqzIQ2zizyk/l2CjXJ6fyC1yVuUj0QbSwfrbqBovwHJ0GPSdPDRvfg8XFuFoM2IPAF+NHOeJsQ==
+X-Received: by 2002:a63:fe43:: with SMTP id x3mr37557621pgj.119.1582250654463;
+        Thu, 20 Feb 2020 18:04:14 -0800 (PST)
 Received: from ast-mbp ([2620:10d:c090:500::5:f03d])
-        by smtp.gmail.com with ESMTPSA id b25sm849061pfo.38.2020.02.20.17.53.31
+        by smtp.gmail.com with ESMTPSA id 18sm881639pfj.20.2020.02.20.18.04.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Feb 2020 17:53:32 -0800 (PST)
-Date:   Thu, 20 Feb 2020 17:53:30 -0800
+        Thu, 20 Feb 2020 18:04:13 -0800 (PST)
+Date:   Thu, 20 Feb 2020 18:04:11 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com, toke@redhat.com
-Subject: Re: [PATCH bpf-next v5 0/3] libbpf: Add support for dynamic program
- attach target
-Message-ID: <20200221015328.czidhbsau2xmyg7e@ast-mbp>
-References: <158220517358.127661.1514720920408191215.stgit@xdp-tutorial>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix trampoline_count clean up
+ logic
+Message-ID: <20200221020409.asorthc47wavqlzj@ast-mbp>
+References: <20200220230546.769250-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <158220517358.127661.1514720920408191215.stgit@xdp-tutorial>
+In-Reply-To: <20200220230546.769250-1-andriin@fb.com>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 01:26:13PM +0000, Eelco Chaudron wrote:
-> Currently when you want to attach a trace program to a bpf program
-> the section name needs to match the tracepoint/function semantics.
+On Thu, Feb 20, 2020 at 03:05:46PM -0800, Andrii Nakryiko wrote:
+> Libbpf's Travis CI tests caught this issue. Ensure bpf_link and bpf_object
+> clean up is performed correctly.
 > 
-> However the addition of the bpf_program__set_attach_target() API
-> allows you to specify the tracepoint/function dynamically.
+> Fixes: d633d57902a5 ("selftest/bpf: Add test for allowed trampolines count")
+> Cc: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
 Applied, Thanks
