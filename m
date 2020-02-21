@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 053FD168774
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 20:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32167168795
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 20:42:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgBUTfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 14:35:21 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:40370 "EHLO
+        id S1726875AbgBUTmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 14:42:53 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:40460 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgBUTfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 14:35:21 -0500
+        with ESMTP id S1726160AbgBUTmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 14:42:53 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9F439141C8A46;
-        Fri, 21 Feb 2020 11:35:20 -0800 (PST)
-Date:   Fri, 21 Feb 2020 11:35:20 -0800 (PST)
-Message-Id: <20200221.113520.1105280751683846601.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     leon@kernel.org, leonro@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 00/16] Clean driver, module and FW versions
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AA4F914648EEE;
+        Fri, 21 Feb 2020 11:42:52 -0800 (PST)
+Date:   Fri, 21 Feb 2020 11:42:52 -0800 (PST)
+Message-Id: <20200221.114252.1572219458583551651.davem@davemloft.net>
+To:     hkallweit1@gmail.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, linux@armlinux.org.uk,
+        nic_swsd@realtek.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] net: phy: unregister MDIO bus in
+ _devm_mdiobus_free if needed
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200220171714.60a70238@kicinski-fedora-PC1C0HJN>
-References: <20200220145855.255704-1-leon@kernel.org>
-        <20200220171714.60a70238@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <15ee7621-0e74-a3c1-0778-ca4fa6c2e3c6@gmail.com>
+References: <15ee7621-0e74-a3c1-0778-ca4fa6c2e3c6@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 21 Feb 2020 11:35:20 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 21 Feb 2020 11:42:52 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Thu, 20 Feb 2020 17:17:14 -0800
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Date: Mon, 17 Feb 2020 21:34:10 +0100
 
-> A few minor nit picks I registered, IDK how hard we want to press 
-> on these:
+> If using managed MDIO bus handling (devm_mdiobus_alloc et al) we still
+> have to manually unregister the MDIO bus. For drivers that don't depend
+> on unregistering the MDIO bus at a specific, earlier point in time we
+> can make driver author's life easier by automagically unregistering
+> the MDIO bus. This extension is transparent to existing drivers.
 > 
->  - it seems in couple places you remove the last user of DRV_RELDATE,
->    but not the define. In case of bonding maybe we can remove the date
->    too. IDK what value it brings in the description, other than perhaps
->    humoring people;
->  - we should probably give people a heads up by CCing maintainers
->    (regardless of how dumb we find not bothering to read the ML as
->    a maintainer);
->  - one on the FW below..
-> 
->> As part of this series, I deleted various creative attempts to mark
->> absence of FW. There is no need to set "N/A" in ethtool ->fw_version
->> field and it is enough to do not set it.
-> 
-> These seem reasonable to me, although in abundance of caution it could
-> be a good idea to have them as separate commits so we can revert more
-> easily. Worse come to worst.
+> Heiner Kallweit (2):
+>   net: phy: unregister MDIO bus in _devm_mdiobus_free if needed
+>   r8169: let managed MDIO bus handling unregister the MDIO bus
 
-Leon please address this feedback as it seems reasonable to me.
+Heiner, I'm going to defer on this.
+
+The existing behavior, this proposal, and the alternatives you
+described with Andrew Lunn in the patch #1 discussion all seem
+equally cumbersome and awkward to me.
