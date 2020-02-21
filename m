@@ -2,162 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E788166B79
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E875E166B86
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729484AbgBUAUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 19:20:48 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:33954 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729439AbgBUAUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:20:45 -0500
-Received: by mail-pj1-f66.google.com with SMTP id f2so1627389pjq.1
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 16:20:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Plslq0a/WlH9+0wsRfxUN/LmRsw3WQkY4fgXi9ixwsc=;
-        b=FkpuTNQLtoitah5hPi0YUKeg08H4CsA2euPhDcAkduZeFH/lBTvyv7io4vwS17q84B
-         l1Sc/iSRu2T1VNHZHJ7j620/J86Ss52l7jHQbG9hZu38KIdCJ4qKJAZb6Zh8B4felH78
-         4AhXAmizgyeP7Po6ZqhRnh/9JAR/OuzwwoVm4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Plslq0a/WlH9+0wsRfxUN/LmRsw3WQkY4fgXi9ixwsc=;
-        b=SBOc0wRI+CDx+9Q1R3gOBlXk+HOH4MWEE5AvbN0/YDZLtvHQgmEOMCOaHCqDvcolDC
-         b/XR13yFJvPl2DDhYMkqNXnGUj1tbr28FhkH4RQXkqlLDpzMeiw4ua2zT76Qpk9wzP3U
-         MO7zu2NovrXSg5nYxM1ZmPbsNMuAF3ucinWgopCmXnc9kIZkeKbyo0BxNslS+V8zviwJ
-         5epfrNG1ARHlfrYJpeykCGhEXjNFekeVUr9YIwts7xS9qC9o/DHs31g17sNoWHcDcWZv
-         +P7nuByod/gT/1zV7E5M5WK0/oeZ3J/xfYl9FJzWwk2njM5VfluQRIzz3vBA5Z9lxcUC
-         pNIg==
-X-Gm-Message-State: APjAAAVCIOQ4SWW+aeMyYvISID8a4LTd68FSLIoRD+uzqyHhMEn9byYm
-        YUnr6veGidL8UsH2cZP0q9TKsg==
-X-Google-Smtp-Source: APXvYqzqh/Pw6jbdTL7oDjQkv3YylBIF/nuO3giT5bTVTu7eSdsKg0IVHAgVcKWmbpqCQoqcpsVKTg==
-X-Received: by 2002:a17:902:321:: with SMTP id 30mr35390771pld.130.1582244442771;
-        Thu, 20 Feb 2020 16:20:42 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f9sm698180pfd.141.2020.02.20.16.20.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 16:20:41 -0800 (PST)
-Date:   Thu, 20 Feb 2020 16:20:40 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, Will Drewry <wad@chromium.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: Re: [RFC patch 09/19] bpf: Use BPF_PROG_RUN_PIN_ON_CPU() at simple
- call sites.
-Message-ID: <202002201616.21FA55E@keescook>
-References: <20200214133917.304937432@linutronix.de>
- <20200214161503.804093748@linutronix.de>
- <87a75ftkwu.fsf@linux.intel.com>
- <875zg3q7cn.fsf@nanos.tec.linutronix.de>
+        id S1729545AbgBUAVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 19:21:35 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39808 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729506AbgBUAVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:21:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=PpDpqLMI5GZaRXgjdMLLurC9v3AnJZ35dT9GSagwDBA=; b=Mqn5Q4cr15sgWQle8xS46s4G7
+        2SorT2x0XVWwBVDCGflcVaP03aJ+OeYwzZUnKARGAGz4FuMoOo9gFYx4rHl9YQ5YMWDDbx0oGb54I
+        aFMQsCi4PefD2UJwOeIuN08gSM+XCNUyTy69zk1lMoyVTQCvWAoccenX8EWp7Q7qbck3c+OZ82PE+
+        ZQYtPa8hgPOwA7ITELHYa0E1mlSm8aHrMlFiggfeZGuTadswwkBFx1k89mpwuvH6HanPPP3qtz7pV
+        FN34viBQBYtQQpG9IOu3pO8PtYV3FvEEGoJ/qtamNHekbk0SjxPQ9zShKV2KN7Lad+dkzuYT2wall
+        Imk8/cmzw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50614)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j4w4B-0006Me-RG; Fri, 21 Feb 2020 00:21:15 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j4w47-0002xS-11; Fri, 21 Feb 2020 00:21:11 +0000
+Date:   Fri, 21 Feb 2020 00:21:11 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
+Message-ID: <20200221002110.GE25745@shell.armlinux.org.uk>
+References: <20200218114515.GL18808@shell.armlinux.org.uk>
+ <e2b53d14-7258-0137-79bc-b0a21ccc7b8f@gmail.com>
+ <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
+ <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
+ <20200219231528.GS25745@shell.armlinux.org.uk>
+ <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <875zg3q7cn.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 10:00:56AM +0100, Thomas Gleixner wrote:
-> Vinicius Costa Gomes <vinicius.gomes@intel.com> writes:
-> 
-> Cc+: seccomp folks 
-> 
-> > Thomas Gleixner <tglx@linutronix.de> writes:
-> >
-> >> From: David Miller <davem@davemloft.net>
-> 
-> Leaving content for reference
-> 
-> >> All of these cases are strictly of the form:
-> >>
-> >> 	preempt_disable();
-> >> 	BPF_PROG_RUN(...);
-> >> 	preempt_enable();
-> >>
-> >> Replace this with BPF_PROG_RUN_PIN_ON_CPU() which wraps BPF_PROG_RUN()
-> >> with:
-> >>
-> >> 	migrate_disable();
-> >> 	BPF_PROG_RUN(...);
-> >> 	migrate_enable();
-> >>
-> >> On non RT enabled kernels this maps to preempt_disable/enable() and on RT
-> >> enabled kernels this solely prevents migration, which is sufficient as
-> >> there is no requirement to prevent reentrancy to any BPF program from a
-> >> preempting task. The only requirement is that the program stays on the same
-> >> CPU.
-> >>
-> >> Therefore, this is a trivially correct transformation.
-> >>
-> >> [ tglx: Converted to BPF_PROG_RUN_PIN_ON_CPU() ]
-> >>
-> >> Signed-off-by: David S. Miller <davem@davemloft.net>
-> >> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> >>
-> >> ---
-> >>  include/linux/filter.h    |    4 +---
-> >>  kernel/seccomp.c          |    4 +---
-> >>  net/core/flow_dissector.c |    4 +---
-> >>  net/core/skmsg.c          |    8 ++------
-> >>  net/kcm/kcmsock.c         |    4 +---
-> >>  5 files changed, 6 insertions(+), 18 deletions(-)
-> >>
-> >> --- a/include/linux/filter.h
-> >> +++ b/include/linux/filter.h
-> >> @@ -713,9 +713,7 @@ static inline u32 bpf_prog_run_clear_cb(
-> >>  	if (unlikely(prog->cb_access))
-> >>  		memset(cb_data, 0, BPF_SKB_CB_LEN);
-> >>  
-> >> -	preempt_disable();
-> >> -	res = BPF_PROG_RUN(prog, skb);
-> >> -	preempt_enable();
-> >> +	res = BPF_PROG_RUN_PIN_ON_CPU(prog, skb);
-> >>  	return res;
-> >>  }
-> >>  
-> >> --- a/kernel/seccomp.c
-> >> +++ b/kernel/seccomp.c
-> >> @@ -268,16 +268,14 @@ static u32 seccomp_run_filters(const str
-> >>  	 * All filters in the list are evaluated and the lowest BPF return
-> >>  	 * value always takes priority (ignoring the DATA).
-> >>  	 */
-> >> -	preempt_disable();
-> >>  	for (; f; f = f->prev) {
-> >> -		u32 cur_ret = BPF_PROG_RUN(f->prog, sd);
-> >> +		u32 cur_ret = BPF_PROG_RUN_PIN_ON_CPU(f->prog, sd);
-> >>
-> >
-> > More a question really, isn't the behavior changing here? i.e. shouldn't
-> > migrate_disable()/migrate_enable() be moved to outside the loop? Or is
-> > running seccomp filters on different cpus not a problem?
-> 
-> In my understanding this is a list of filters and they are independent
-> of each other.
-> 
-> Kees, Will. Andy?
+On Thu, Feb 20, 2020 at 10:56:17AM -0800, Florian Fainelli wrote:
+> Let's get your patch series merged. If you re-spin while addressing
+> Vivien's comment not to use the term "vtu", I think I would be fine with
+> the current approach of having to go after each driver and enabling them
+> where necessary.
 
-They're technically independent, but they are related to each
-other. (i.e. order matters, process hierarchy matters, etc). There's no
-reason I can see that we can't switch CPUs between running them, though.
-(AIUI, nothing here would suddenly make these run in parallel, right?)
-
-As long as "current" is still "current", and they run in the same order,
-we'll get the same final result as far as seccomp is concerned.
+The question then becomes what to call it.  "always_allow_vlans" or
+"always_allow_vlan_config" maybe?
 
 -- 
-Kees Cook
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
