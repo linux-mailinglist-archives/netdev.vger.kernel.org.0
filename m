@@ -2,120 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 940D216812A
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 16:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1613B168130
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 16:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729111AbgBUPHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 10:07:54 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:44597 "EHLO
+        id S1729082AbgBUPJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 10:09:33 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:41145 "EHLO
         relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728974AbgBUPHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 10:07:53 -0500
+        with ESMTP id S1728690AbgBUPJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 10:09:33 -0500
 X-Originating-IP: 86.201.231.92
 Received: from localhost (lfbn-tou-1-149-92.w86-201.abo.wanadoo.fr [86.201.231.92])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 8F8FA1C0014;
-        Fri, 21 Feb 2020 15:07:51 +0000 (UTC)
-Date:   Fri, 21 Feb 2020 16:07:51 +0100
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 750921C000C;
+        Fri, 21 Feb 2020 15:09:31 +0000 (UTC)
+Date:   Fri, 21 Feb 2020 16:09:30 +0100
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     Igor Russkikh <irusskikh@marvell.com>
 Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Antoine Tenart <antoine.tenart@bootlin.com>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Dmitry Bogdanov <dbogdanov@marvell.com>
-Subject: Re: [RFC 06/18] net: macsec: invoke mdo_upd_secy callback when mac
- address changed
-Message-ID: <20200221150751.GB3530@kwain>
+Subject: Re: [RFC 05/18] net: macsec: init secy pointer in macsec_context
+Message-ID: <20200221150930.GC3530@kwain>
 References: <20200214150258.390-1-irusskikh@marvell.com>
- <20200214150258.390-7-irusskikh@marvell.com>
+ <20200214150258.390-6-irusskikh@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200214150258.390-7-irusskikh@marvell.com>
+In-Reply-To: <20200214150258.390-6-irusskikh@marvell.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Fri, Feb 14, 2020 at 06:02:46PM +0300, Igor Russkikh wrote:
+On Fri, Feb 14, 2020 at 06:02:45PM +0300, Igor Russkikh wrote:
 > From: Dmitry Bogdanov <dbogdanov@marvell.com>
 > 
-> Change SCI according to the new MAC address, because it must contain MAC
-> in its first 6 octets.
-> Also notify the offload engine about MAC address change to reconfigure it
-> accordingly.
-
-It seems you're making two different changes in a single commit, you
-could split it.
-
-Updating the SCI according to the new MAC address applies here to both
-the s/w implementation and the offloaded ones: it looks like this is
-fixing an issue when the MAC address is updated. If so, could you send
-it accordingly (as a fix)?
-
-Thanks!
-Antoine
-
+> This patch adds secy pointer initialization in the macsec_context.
+> It will be used by MAC drivers in offloading operations.
+> 
 > Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 > Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 > Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+
+Reviewed-by: Antoine Tenart <antoine.tenart@bootlin.com>
+
 > ---
->  drivers/net/macsec.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
+>  drivers/net/macsec.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-> index af41887d9a1e..973b09401099 100644
+> index a88b41a79103..af41887d9a1e 100644
 > --- a/drivers/net/macsec.c
 > +++ b/drivers/net/macsec.c
-> @@ -433,6 +433,11 @@ static struct macsec_eth_header *macsec_ethhdr(struct sk_buff *skb)
->  	return (struct macsec_eth_header *)skb_mac_header(skb);
->  }
+> @@ -1692,6 +1692,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
 >  
-> +static sci_t dev_to_sci(struct net_device *dev, __be16 port)
-> +{
-> +	return make_sci(dev->dev_addr, port);
-> +}
-> +
->  static void __macsec_pn_wrapped(struct macsec_secy *secy,
->  				struct macsec_tx_sa *tx_sa)
->  {
-> @@ -3291,6 +3296,21 @@ static int macsec_set_mac_address(struct net_device *dev, void *p)
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.rx_sa = rx_sa;
+> +		ctx.secy = secy;
+>  		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
+>  		       MACSEC_KEYID_LEN);
 >  
->  out:
->  	ether_addr_copy(dev->dev_addr, addr->sa_data);
-> +
-> +	macsec->secy.sci = dev_to_sci(dev, MACSEC_PORT_ES);
-> +
-> +	/* If h/w offloading is available, propagate to the device */
-> +	if (macsec_is_offloaded(macsec)) {
-> +		const struct macsec_ops *ops;
-> +		struct macsec_context ctx;
-> +
-> +		ops = macsec_get_ops(macsec, &ctx);
+> @@ -1733,6 +1734,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
+>  	struct nlattr **attrs = info->attrs;
+>  	struct macsec_rx_sc *rx_sc;
+>  	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
+> +	struct macsec_secy *secy;
+>  	bool was_active;
+>  	int ret;
+>  
+> @@ -1752,6 +1754,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
+>  		return PTR_ERR(dev);
+>  	}
+>  
+> +	secy = &macsec_priv(dev)->secy;
+>  	sci = nla_get_sci(tb_rxsc[MACSEC_RXSC_ATTR_SCI]);
+>  
+>  	rx_sc = create_rx_sc(dev, sci);
+> @@ -1775,6 +1778,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
+>  		}
+>  
+>  		ctx.rx_sc = rx_sc;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_add_rxsc, &ctx);
+>  		if (ret)
+> @@ -1900,6 +1904,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+>  
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.tx_sa = tx_sa;
+> +		ctx.secy = secy;
+>  		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
+>  		       MACSEC_KEYID_LEN);
+>  
+> @@ -1969,6 +1974,7 @@ static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
+>  
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.rx_sa = rx_sa;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_del_rxsa, &ctx);
+>  		if (ret)
+> @@ -2034,6 +2040,7 @@ static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
+>  		}
+>  
+>  		ctx.rx_sc = rx_sc;
+> +		ctx.secy = secy;
+>  		ret = macsec_offload(ops->mdo_del_rxsc, &ctx);
+>  		if (ret)
+>  			goto cleanup;
+> @@ -2092,6 +2099,7 @@ static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
+>  
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.tx_sa = tx_sa;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_del_txsa, &ctx);
+>  		if (ret)
+> @@ -2189,6 +2197,7 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
+>  
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.tx_sa = tx_sa;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_upd_txsa, &ctx);
+>  		if (ret)
+> @@ -2269,6 +2278,7 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
+>  
+>  		ctx.sa.assoc_num = assoc_num;
+>  		ctx.sa.rx_sa = rx_sa;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_upd_rxsa, &ctx);
+>  		if (ret)
+> @@ -2339,6 +2349,7 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
+>  		}
+>  
+>  		ctx.rx_sc = rx_sc;
+> +		ctx.secy = secy;
+>  
+>  		ret = macsec_offload(ops->mdo_upd_rxsc, &ctx);
+>  		if (ret)
+> @@ -3184,6 +3195,7 @@ static int macsec_dev_open(struct net_device *dev)
+>  			goto clear_allmulti;
+>  		}
+>  
+> +		ctx.secy = &macsec->secy;
+>  		err = macsec_offload(ops->mdo_dev_open, &ctx);
+>  		if (err)
+>  			goto clear_allmulti;
+> @@ -3215,8 +3227,10 @@ static int macsec_dev_stop(struct net_device *dev)
+>  		struct macsec_context ctx;
+>  
+>  		ops = macsec_get_ops(macsec, &ctx);
+> -		if (ops)
 > +		if (ops) {
 > +			ctx.secy = &macsec->secy;
-> +			macsec_offload(ops->mdo_upd_secy, &ctx);
+>  			macsec_offload(ops->mdo_dev_stop, &ctx);
 > +		}
-> +	}
-> +
->  	return 0;
->  }
+>  	}
 >  
-> @@ -3615,11 +3635,6 @@ static bool sci_exists(struct net_device *dev, sci_t sci)
->  	return false;
->  }
->  
-> -static sci_t dev_to_sci(struct net_device *dev, __be16 port)
-> -{
-> -	return make_sci(dev->dev_addr, port);
-> -}
-> -
->  static int macsec_add_dev(struct net_device *dev, sci_t sci, u8 icv_len)
->  {
->  	struct macsec_dev *macsec = macsec_priv(dev);
+>  	dev_mc_unsync(real_dev, dev);
 > -- 
 > 2.17.1
 > 
