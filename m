@@ -2,130 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F86C166ED5
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 06:15:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B604166F27
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 06:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgBUFOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 00:14:42 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:32786 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbgBUFOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 00:14:42 -0500
-Received: by mail-ed1-f67.google.com with SMTP id r21so884158edq.0
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 21:14:41 -0800 (PST)
+        id S1726366AbgBUFYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 00:24:52 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:37903 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbgBUFYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 00:24:52 -0500
+Received: by mail-oi1-f195.google.com with SMTP id r137so473044oie.5;
+        Thu, 20 Feb 2020 21:24:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rZtA4eIpQlC4bRsbTidHDU6QtXv/4fTjELciyQG7MoY=;
-        b=JPj1wlgs49rZL5AW14Yg9PGBrLriNYRrUuQogk9qOElkbV3MfN3TGLtwQ6hYgd4bbl
-         zUGvOlP9cJPS3ZTNMuOjrDl6Arzw+Ka6U94zlWFqlIL8YVnd593I1sTA73RfXiFO2+9U
-         lxOenFxeNFFTzHQlZ4S/9EZEzU2C0t+NQ4cRLawoD7a+qraXtYchAqS+XHSjrPu3JQOj
-         PzcFX3pepKcSK7tdZmfpkn28L5JULxhgGOshP7uI5VKMZKz05aKa9jriZelcM9AbV32a
-         Eq83ZbxOpOfC1ddIgWh21wepfpUKl1d0zGO8dbkaU7BmK9XXino8aZloAUiX3uYYcJ7V
-         sWPA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x/k1sZ+cnmOUANpT53mM2H5yfgMY19H5epCa2pIy6TU=;
+        b=HBd4QMBcVXIf55/hE9c/wiNETb99mXC1ejXxvSxH4yfwxEfPXNsnJ1UV9I97pNluQS
+         bmhdUz46epWDZJav+GITaDud6DkLzyb17bWvJxNuUzi43JGaI5ihh0lXlFnWt9Ihqr2N
+         0LUWssAJqSfJ3gWxROrSLGYKEkp3KPtgcBPE5VJYbpEFgt4J1XtFbfaahG7WMBTwhP6n
+         4yDcNYj/F7AqEZf52K577MuFYTPhZ+DAOX6Nw5SK54fY/4vgJHhJazqgaOvjEL6vjKO7
+         gHkHop7dVAJHR3CWvew4cEsS7uZhmkx7644Yf39qRI8Q9IvNWbM0jT6wPxyWBHkUFdu5
+         DPiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=rZtA4eIpQlC4bRsbTidHDU6QtXv/4fTjELciyQG7MoY=;
-        b=ZO6eq9PW9um5m0GdD/t14a682ooPljU2fXPPE9owfJlX8NA6kRg4uTu/iEI8dwxfra
-         z5DYR5EHopq2OtGivZdXJ8nZO4V0rh5MvKhHurssoEXJDgrsyk9P3w5uJyx3Y9CQR09P
-         OI7gQxxHV56DFGflnarLYcJzbEKY5pV7Y8bLdIq7eUiJ2cXeeVIJok+d9r2VsJpeWDcu
-         6ZonuD+A8nHCLkAtjNVAEME2JoZBqZiq4b6vrhxsxu1Ej7HteBCvl08fvadYEPn+MoCN
-         b3OKMWv/gMf3AGqixRKHfW+CFuWc/7EIQnYuh6NguW6bmhaofMUCeRO4weEF8+n7aYI5
-         rQZA==
-X-Gm-Message-State: APjAAAVphARuzkl/Wpmrh/9qQwlILUB8XGX+KM6TB037FF/CwQvVniLw
-        odgGaRXS9PAN15Xon81eZZnKRzwG
-X-Google-Smtp-Source: APXvYqyAWUzjuLWsPZh1t0MFzbDNeP1svFdrI2F1GDoY8+WN7DWwozg3NLliILoRFx/Yym6N4Jdtfg==
-X-Received: by 2002:a05:6402:799:: with SMTP id d25mr31882540edy.221.1582262080722;
-        Thu, 20 Feb 2020 21:14:40 -0800 (PST)
-Received: from blr-ykodiche02.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.googlemail.com with ESMTPSA id l11sm188238edi.28.2020.02.20.21.14.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 20 Feb 2020 21:14:39 -0800 (PST)
-From:   Yadu Kishore <kyk.segfault@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Yadu Kishore <kyk.segfault@gmail.com>
-Subject: [PATCH] net: Make skb_segment not to compute checksum if network controller supports checksumming
-Date:   Fri, 21 Feb 2020 10:43:59 +0530
-Message-Id: <1582262039-25359-1-git-send-email-kyk.segfault@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <CA+FuTSeYGYr3Umij+Mezk9CUcaxYwqEe5sPSuXF8jPE2yMFJAw@mail.gmail.com>
-References: <CA+FuTSeYGYr3Umij+Mezk9CUcaxYwqEe5sPSuXF8jPE2yMFJAw@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x/k1sZ+cnmOUANpT53mM2H5yfgMY19H5epCa2pIy6TU=;
+        b=MLtUS/pZpjBD+4XWRD1TF0EyIvmRA9uGm+wYmC8MysXaIykvuTNGVJTorbS0tChiC7
+         SZ3Iz9HHFzQkSgUWU4x7lk9wm68jpRJcdsFzNJxbIoL08l7+EM28sbq+F91Qx69vyu9w
+         Ehd0PhYsB79ck+jzPFfJx7FxRNbg6rifjLj/4TFDqfw+Y/rXjj3Tp+Yrjf5P1AUvPayM
+         Ott14uL+istK9oPV8EyRJ/iRD3mnmBBmmVwNo7zwa7eK9eRm8D22eShRUCN2qt7b31w7
+         VsV7vLYZbMBRWc6ycK5rZkvsKCsqSxozMHHR7UCO6FcBeXAT/5EDcitKwzRoU37zWTzL
+         wASg==
+X-Gm-Message-State: APjAAAWJtKG80lLGWVSOPXRKMDkFX0nQ0DjGYo95LBV71cxYB6tevV5L
+        Y8aMVkXGZDgghwmOo/Gzwvl2sFmnU+Y=
+X-Google-Smtp-Source: APXvYqwvfB6MwrssVhb4WD21BdS03tdh97HJpq0IW01xj307MOXolcQaSO2bmc2/TWKtfw+kq3KT3w==
+X-Received: by 2002:aca:4a0b:: with SMTP id x11mr582391oia.37.1582262690999;
+        Thu, 20 Feb 2020 21:24:50 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id i2sm661408oth.39.2020.02.20.21.24.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 21:24:50 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     Aya Levin <ayal@mellanox.com>, Moshe Shemesh <moshe@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH net-next] net/mlx5: Fix header guard in rsc_dump.h
+Date:   Thu, 20 Feb 2020 22:24:37 -0700
+Message-Id: <20200221052437.2884-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Problem:
-TCP checksum in the output path is not being offloaded during GSO
-in the following case:
-The network driver does not support scatter-gather but supports
-checksum offload with NETIF_F_HW_CSUM.
+Clang warns:
 
-Cause:
-skb_segment calls skb_copy_and_csum_bits if the network driver
-does not announce NETIF_F_SG. It does not check if the driver
-supports NETIF_F_HW_CSUM.
-So for devices which might want to offload checksum but do not support SG
-there is currently no way to do so if GSO is enabled.
+ In file included from
+ ../drivers/net/ethernet/mellanox/mlx5/core/main.c:73:
+ ../drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h:4:9: warning:
+ '__MLX5_RSC_DUMP_H' is used as a header guard here, followed by #define
+ of a different macro [-Wheader-guard]
+ #ifndef __MLX5_RSC_DUMP_H
+         ^~~~~~~~~~~~~~~~~
+ ../drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h:5:9: note:
+ '__MLX5_RSC_DUMP__H' is defined here; did you mean '__MLX5_RSC_DUMP_H'?
+ #define __MLX5_RSC_DUMP__H
+         ^~~~~~~~~~~~~~~~~~
+         __MLX5_RSC_DUMP_H
+ 1 warning generated.
 
-Solution:
-In skb_segment check if the network controller does checksum and if so
-call skb_copy_bits instead of skb_copy_and_csum_bits.
+Make them match to get the intended behavior and remove the warning.
 
-Testing:
-Without the patch, ran iperf TCP traffic with NETIF_F_HW_CSUM enabled
-in the network driver. Observed the TCP checksum offload is not happening
-since the skbs received by the driver in the output path have
-skb->ip_summed set to CHECKSUM_NONE.
-
-With the patch ran iperf TCP traffic and observed that TCP checksum
-is being offloaded with skb->ip_summed set to CHECKSUM_PARTIAL.
-Also tested with the patch by disabling NETIF_F_HW_CSUM in the driver
-to cover the newly introduced if-else code path in skb_segment.
-
-In-Reply-To: CABGOaVTY6BrzJTYEtVXwawzP7-D8sb1KASDWFk15v0QFaJVbUg@mail.gmail.com
-Signed-off-by: Yadu Kishore <kyk.segfault@gmail.com>
+Fixes: 12206b17235a ("net/mlx5: Add support for resource dump")
+Link: https://github.com/ClangBuiltLinux/linux/issues/897
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
- net/core/skbuff.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1365a55..82a5b53 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3926,14 +3926,22 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 			goto perform_csum_check;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
+index 3b7573461a45..148270073e71 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.h
+@@ -2,7 +2,7 @@
+ /* Copyright (c) 2019 Mellanox Technologies. */
  
- 		if (!sg) {
--			if (!nskb->remcsum_offload)
--				nskb->ip_summed = CHECKSUM_NONE;
--			SKB_GSO_CB(nskb)->csum =
--				skb_copy_and_csum_bits(head_skb, offset,
--						       skb_put(nskb, len),
--						       len, 0);
--			SKB_GSO_CB(nskb)->csum_start =
--				skb_headroom(nskb) + doffset;
-+			if (!csum) {
-+				if (!nskb->remcsum_offload)
-+					nskb->ip_summed = CHECKSUM_NONE;
-+				SKB_GSO_CB(nskb)->csum =
-+					skb_copy_and_csum_bits(head_skb, offset,
-+							       skb_put(nskb,
-+								       len),
-+							       len, 0);
-+				SKB_GSO_CB(nskb)->csum_start =
-+					skb_headroom(nskb) + doffset;
-+			} else {
-+				nskb->ip_summed = CHECKSUM_PARTIAL;
-+				skb_copy_bits(head_skb, offset,
-+					      skb_put(nskb, len),
-+					      len);
-+			}
- 			continue;
- 		}
+ #ifndef __MLX5_RSC_DUMP_H
+-#define __MLX5_RSC_DUMP__H
++#define __MLX5_RSC_DUMP_H
  
+ #include <linux/mlx5/driver.h>
+ #include "mlx5_core.h"
 -- 
-2.7.4
+2.25.1
 
