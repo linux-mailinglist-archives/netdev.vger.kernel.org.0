@@ -2,99 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11A0E1680A6
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 15:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8A11680F8
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 15:57:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbgBUOqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 09:46:32 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40700 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728791AbgBUOqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 09:46:32 -0500
-Received: by mail-wm1-f67.google.com with SMTP id t14so2172020wmi.5
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 06:46:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DgIei8lwFhjFPY7Bp+tiiWlUhaELYCBMIv4p/cERHeE=;
-        b=XczP7BzgZ77IXmvKimyGWlXml6McItLga8UZjo1ZXyxx0Vb69iYLa0P1suvuPvHsN8
-         CXw6f2OHYiosGT4FCh+qidRNCkarlCKEQigYwwU0sRq8EBPPHNlM+is6twcC0yCfj6tt
-         6wM5EVSp0tdGfhFhptB2YKHzlM7bDmAjVMeToew916DsuCepeBKZ6tN6ZC+dkD31Q181
-         Sx7SV9/JymPKWiVuPgdis407gpn8yO52Z3BFBlzW6hyg1kNX2r9n0t+p4Np6xlALkJDg
-         5SJXSvvxSdWk3KkbECb4WF4wPT7fBFuQIn886FfureDys4bFv+cbvAchadz1BstBcvUf
-         DNow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DgIei8lwFhjFPY7Bp+tiiWlUhaELYCBMIv4p/cERHeE=;
-        b=Im4UWgD7kAW0Or2FTSX1IFy5srTvQ6qkkkQ/niVFjTI1UsVzcnyVXwXGri2zKQBDKw
-         oQpCrifX3omYH2/GuFo/ekBTIU7iD7mwHukCS9FcAESTBsFQE5j1e/WCNo4q5ypzu91k
-         tcyQrbHFRhXQN2GmDi/BLvbVfPmNo8r90wZL0TTnRJUtDwwmMaiCm1h5HBBUdGhNq3MA
-         vqzb9DQw9N72j2eWV6wFWOAO72mtMNaHCWNRgkKmH8f+4QaNaGIWR3ARPjiQAMdJju7H
-         u9iF63DGguvxesu5iC/mSHnVMdzJDm/vT2YP2jRq+nZjAomrWRC4POO9vocS7/7fhnc0
-         73Gg==
-X-Gm-Message-State: APjAAAU1IeK4vvdHazuC5KBi4V9+UWmcjnDSl7tbKaBuiixFVfCc/R+g
-        8T0bcvad9jdunsJ9ZQTrTr0=
-X-Google-Smtp-Source: APXvYqyNhDkK88kU/YBgyFnqiqM+IALD6scwl4EB1pOLviacqmF98EJLutrri66hmLAL2UzhZhXA7Q==
-X-Received: by 2002:a1c:4341:: with SMTP id q62mr4268563wma.107.1582296388436;
-        Fri, 21 Feb 2020 06:46:28 -0800 (PST)
-Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id q1sm4147502wrw.5.2020.02.21.06.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 06:46:27 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     claudiu.manoil@nxp.com, netdev@vger.kernel.org
-Subject: [PATCH net-next] enetc: remove "depends on (ARCH_LAYERSCAPE || COMPILE_TEST)"
-Date:   Fri, 21 Feb 2020 16:46:24 +0200
-Message-Id: <20200221144624.20289-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728910AbgBUO5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 09:57:55 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:46861 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728264AbgBUO5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 09:57:55 -0500
+X-Originating-IP: 86.201.231.92
+Received: from localhost (lfbn-tou-1-149-92.w86-201.abo.wanadoo.fr [86.201.231.92])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id D15951BF211;
+        Fri, 21 Feb 2020 14:57:51 +0000 (UTC)
+Date:   Fri, 21 Feb 2020 15:57:51 +0100
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>, sd@queasysnail.net
+Subject: Re: [RFC 00/18] net: atlantic: MACSec support for AQC devices
+Message-ID: <20200221145751.GA3530@kwain>
+References: <20200214150258.390-1-irusskikh@marvell.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200214150258.390-1-irusskikh@marvell.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hello Igor,
 
-ARCH_LAYERSCAPE isn't needed for this driver, it builds and
-sends/receives traffic without this config option just fine.
+Thanks for sending this series!
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Please Cc Sabrina Dubroca <sd@queasysnail.net> (the IEEE 802.1AE driver
+author) on such series.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
-index fe942de19597..f86283411f4d 100644
---- a/drivers/net/ethernet/freescale/enetc/Kconfig
-+++ b/drivers/net/ethernet/freescale/enetc/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- config FSL_ENETC
- 	tristate "ENETC PF driver"
--	depends on PCI && PCI_MSI && (ARCH_LAYERSCAPE || COMPILE_TEST)
-+	depends on PCI && PCI_MSI
- 	select FSL_ENETC_MDIO
- 	select PHYLIB
- 	help
-@@ -13,7 +13,7 @@ config FSL_ENETC
- 
- config FSL_ENETC_VF
- 	tristate "ENETC VF driver"
--	depends on PCI && PCI_MSI && (ARCH_LAYERSCAPE || COMPILE_TEST)
-+	depends on PCI && PCI_MSI
- 	select PHYLIB
- 	help
- 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
-@@ -23,7 +23,7 @@ config FSL_ENETC_VF
- 
- config FSL_ENETC_MDIO
- 	tristate "ENETC MDIO driver"
--	depends on PCI && (ARCH_LAYERSCAPE || COMPILE_TEST)
-+	depends on PCI
- 	help
- 	  This driver supports NXP ENETC Central MDIO controller as a PCIe
- 	  physical function (PF) device.
+Antoine
+
+On Fri, Feb 14, 2020 at 06:02:40PM +0300, Igor Russkikh wrote:
+> This RFC patchset introduces MACSec HW offloading support in
+> Marvell(Aquantia) AQC atlantic driver.
+> 
+> This implementation is a joint effort of Marvell developers on top of
+> the work started by Antoine Tenart.
+> 
+> Several patches introduce backward-incompatible changes and are
+> subject for discussion/drop:
+> 
+> 1) patch 0008:
+>   multicast/broadcast when offloading is needed to handle ARP requests,
+>   because they have broadcast destination address;
+>   With this patch we also match and encrypt/decrypt packets between macsec
+>   hw and realdev based on device's mac address.
+>   This potentially can be used to support multiple macsec offloaded interfaces
+>   on top of one realdev.
+>   On some environments however this could lead to problems, e.g. bridge over
+>   macsec configuration will expect packets with unknown src MAC
+>   should come through macsec.
+>   The patch is questionable, we've used it because our current hw setup and
+>   requirements assumes decryption is only done based on mac address match.
+>   This could be changed by encrypting/decripting all the traffic (except control).
+> 
+> 2) patch 0010:
+>    HW offloading is enabled by default. This is a workaround for the fact
+>    that macsec offload can't be configured at the moment of macsec device
+>    creation. This causes side effects on atlantic device. The best way to
+>    resolve this is to implement an option in ip tools to specify macsec
+>    offload type immediately inside the command where it is created.
+>    Such a comment was proposed in ip tools discussion.
+> 
+> 3) patch 0011:
+>   real_dev features are now propagated to macsec device (when HW
+>   offloading is enabled), otherwise feature set might lead to HW
+>   reconfiguration during MACSec configuration.
+>   Also, HW offloaded macsec should be able to keep LRO LSO features,
+>   since they are transparent for macsec engine (at least in our hardware).
+> 
+> Antoine Tenart (4):
+>   net: introduce the MACSEC netdev feature
+>   net: add a reference to MACsec ops in net_device
+>   net: macsec: allow to reference a netdev from a MACsec context
+>   net: macsec: add support for offloading to the MAC
+> 
+> Dmitry Bogdanov (9):
+>   net: macsec: init secy pointer in macsec_context
+>   net: macsec: invoke mdo_upd_secy callback when mac address changed
+>   net: macsec: allow multiple macsec devices with offload
+>   net: macsec: add support for getting offloaded stats
+>   net: atlantic: MACSec offload skeleton
+>   net: atlantic: MACSec egress offload HW bindings
+>   net: atlantic: MACSec egress offload implementation
+>   net: atlantic: MACSec offload statistics HW bindings
+>   net: atlantic: MACSec offload statistics implementation
+> 
+> Mark Starovoytov (5):
+>   net: macsec: support multicast/broadcast when offloading
+>   net: macsec: enable HW offloading by default (when available)
+>   net: macsec: report real_dev features when HW offloading is enabled
+>   net: atlantic: MACSec ingress offload HW bindings
+>   net: atlantic: MACSec ingress offload implementation
+> 
+>  .../net/ethernet/aquantia/atlantic/Makefile   |    6 +-
+>  .../ethernet/aquantia/atlantic/aq_ethtool.c   |  160 +-
+>  .../net/ethernet/aquantia/atlantic/aq_hw.h    |    6 +
+>  .../ethernet/aquantia/atlantic/aq_macsec.c    | 1842 +++++++++++
+>  .../ethernet/aquantia/atlantic/aq_macsec.h    |  138 +
+>  .../net/ethernet/aquantia/atlantic/aq_nic.c   |   21 +-
+>  .../net/ethernet/aquantia/atlantic/aq_nic.h   |    6 +-
+>  .../ethernet/aquantia/atlantic/aq_pci_func.c  |    5 +
+>  .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   51 +-
+>  .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |   69 +
+>  .../atlantic/macsec/MSS_Egress_registers.h    |   78 +
+>  .../atlantic/macsec/MSS_Ingress_registers.h   |   82 +
+>  .../aquantia/atlantic/macsec/macsec_api.c     | 2938 +++++++++++++++++
+>  .../aquantia/atlantic/macsec/macsec_api.h     |  328 ++
+>  .../aquantia/atlantic/macsec/macsec_struct.h  |  919 ++++++
+>  drivers/net/macsec.c                          |  510 ++-
+>  include/linux/netdev_features.h               |    3 +
+>  include/linux/netdevice.h                     |    9 +
+>  include/net/macsec.h                          |   29 +-
+>  include/uapi/linux/if_link.h                  |    1 +
+>  net/ethtool/common.c                          |    1 +
+>  tools/include/uapi/linux/if_link.h            |    1 +
+>  22 files changed, 7018 insertions(+), 185 deletions(-)
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_macsec.h
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/MSS_Egress_registers.h
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/MSS_Ingress_registers.h
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h
+>  create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h
+> 
+> -- 
+> 2.17.1
+> 
+
 -- 
-2.17.1
-
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
