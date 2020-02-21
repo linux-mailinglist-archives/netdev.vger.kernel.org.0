@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3931685AC
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:55:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6DF1685AE
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729397AbgBURzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 12:55:00 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58039 "EHLO
+        id S1729421AbgBURzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 12:55:02 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:56303 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729270AbgBURyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:54:55 -0500
+        by vger.kernel.org with ESMTP id S1729169AbgBURy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:54:56 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C97272208A;
-        Fri, 21 Feb 2020 12:54:53 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9FE32217DD;
+        Fri, 21 Feb 2020 12:54:55 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 21 Feb 2020 12:54:53 -0500
+  by compute3.internal (MEProxy); Fri, 21 Feb 2020 12:54:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=Tp0IXEyaWOCM/y6Sn6yddzROg+bePF8U7+i0/3GV7hw=; b=kIkOs6hn
-        ziGi2YcKIoQ8QbXXDqOncvDQwlLdbEJyVlrocg/wsYwI09NRQQMH5BFHIFg1VRS5
-        bpBZH1uKojEWG+UdJp3/XqMV127YOOxFMTdeQJKEiFnksMvzR48rzGamCaFp82Oy
-        yPVxvGYEB/j41AVs8FdLOk+c1Ab5Vav/DtvU0/1DlVxCGud8ZyPqE4sGZ8+E5FRQ
-        XTCy9G6bBVJB8pVA0VwFpGQto+cJBzVI9mK2D4HoJRXBvNE0DUD/K2Srt0icn4Pj
-        0Kh1p7Bva348WhmoRUfDQI6xZs4ERMap+ghHN7B+ip0p616k8yLGgMGQUqaFxNdU
-        4/SmlweN0pKtlw==
-X-ME-Sender: <xms:bRlQXvZLpir8EcBj3bsfeGSn8mcBD89elGS3PB-_EAAj8fcUpMh6HQ>
+        fm2; bh=/Ie5nd9/VvZwBIi7a05QKYd+BWzNUSN6vGy1bnWStr8=; b=fh2XjWac
+        FDhs4gpNnMUBbTajciKaFpXuipumBr8y1XdMNUf+27IIOxrvS+SZepTQV1bu8B9r
+        b945C68vLn0Cr/gEb1EEuIY+/tIyYnIdgj70n8TaG5YV+HXrMCndBIpgscMuWtas
+        hflSXShV61Q+MbWcJXaaFkMlucK1WBb6xjZpK/iAPiToPop1v7Uob1Li8H0Ju1vl
+        Pu4T0D6nH59VDZ/BgzQ7GFY6aV1RwboKTk6FEZ9rIwn7qnQWTxxr1+lh7gBewFyE
+        TZ6lSvA/1fGRjCiTnom11Z2WeqMJDux8tTdDQn+N4Qg5mClBtyPleyr3jCrSupXk
+        4vbUmAxuOTmorQ==
+X-ME-Sender: <xms:bxlQXgqIIqQEEpGannLH6W2xy43Qh3eYtJMQTKUWVxqhlegYUXC56Q>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkeeggddutdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkeeggddutdeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppedutdelrdeiiedruddvrdehvdenucevlhhushhtvghruf
     hiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
     rdhorhhg
-X-ME-Proxy: <xmx:bRlQXqtIgK0pQoduxR4ntSx54tuKnd707J_eXJoFNHCjmI_HdiccMw>
-    <xmx:bRlQXkuci3euNc3rFEdWZK_6M_Zyo0PaV8IZWO-idIMFzrny5sj9MA>
-    <xmx:bRlQXneNlEwmd6nDqfYrMxr79Kca3XoxrbNqLhcUysJ2K0G6kP5WMw>
-    <xmx:bRlQXqq0Zai7V7YepGZLPExoa6YIcGHxrpaeKpCGpsSSOfc5MymRJg>
+X-ME-Proxy: <xmx:bxlQXvQrc_W8iYX5mtvTzleRLq9F5jmonW8mRbQQ2RTgY0a7dn36Mg>
+    <xmx:bxlQXsrBWw-HFIdL8-3SCsA2tmpmo3mEoQlyjGvcCghE1EOUyTSuHg>
+    <xmx:bxlQXh0aMJyWVfL55QkYSdqcBMqZCgbnYMhujgG_qfDLRW2BiHD4NQ>
+    <xmx:bxlQXsBROVbRpubP7ZFlGp-5oh68PypbPQRw0lvid8YVyCBccqGGbA>
 Received: from localhost.localdomain (bzq-109-66-12-52.red.bezeqint.net [109.66.12.52])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 499613060F09;
-        Fri, 21 Feb 2020 12:54:52 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0E9133060FCB;
+        Fri, 21 Feb 2020 12:54:53 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 07/12] mlxsw: spectrum_router: Take router lock from inside routing code
-Date:   Fri, 21 Feb 2020 19:54:10 +0200
-Message-Id: <20200221175415.390884-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/12] mlxsw: spectrum_dpipe: Take router lock from dpipe code
+Date:   Fri, 21 Feb 2020 19:54:11 +0200
+Message-Id: <20200221175415.390884-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200221175415.390884-1-idosch@idosch.org>
 References: <20200221175415.390884-1-idosch@idosch.org>
@@ -61,158 +61,160 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-There are several work items in the routing code that currently rely on
-RTNL lock to guard against concurrent changes. Have these work items
-acquire the router lock in preparation for the removal for RTNL lock
-from the routing code.
+The dpipe code traverses internal router structures such as neighbours
+and adjacency entries and dumps them to user space via netlink. Up until
+now the routing code did not have its own locks and relied on RTNL lock
+to serialize access. This is going to change with the introduction of
+the router lock.
+
+Take the router lock in the code paths where RTNL lock is currently
+taken so that the latter could be removed by subsequent patches.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 24 +++++++++++++------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_dpipe.c   | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index e2ddb6164f6c..601fa4a1abbb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -2278,10 +2278,9 @@ __mlxsw_sp_router_neighs_update_rauhtd(struct mlxsw_sp *mlxsw_sp,
- 	int i, num_rec;
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
+index 2dc0978428e6..63fc1f56ef00 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
+@@ -2,6 +2,7 @@
+ /* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
  
--	/* Make sure the neighbour's netdev isn't removed in the
--	 * process.
--	 */
+ #include <linux/kernel.h>
++#include <linux/mutex.h>
+ #include <net/devlink.h>
+ 
+ #include "spectrum.h"
+@@ -211,6 +212,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
+ 
+ 	rif_count = MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS);
  	rtnl_lock();
-+	/* Ensure the RIF we read from the device does not change mid-dump. */
 +	mutex_lock(&mlxsw_sp->router->lock);
- 	do {
- 		mlxsw_reg_rauhtd_pack(rauhtd_pl, type);
- 		err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(rauhtd),
-@@ -2295,6 +2294,7 @@ __mlxsw_sp_router_neighs_update_rauhtd(struct mlxsw_sp *mlxsw_sp,
- 			mlxsw_sp_router_neigh_rec_process(mlxsw_sp, rauhtd_pl,
- 							  i);
- 	} while (mlxsw_sp_router_rauhtd_is_full(rauhtd_pl));
+ 	i = 0;
+ start_again:
+ 	err = devlink_dpipe_entry_ctx_prepare(dump_ctx);
+@@ -241,6 +243,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
+ 	devlink_dpipe_entry_ctx_close(dump_ctx);
+ 	if (i != rif_count)
+ 		goto start_again;
 +	mutex_unlock(&mlxsw_sp->router->lock);
  	rtnl_unlock();
  
+ 	devlink_dpipe_entry_clear(&entry);
+@@ -248,6 +251,7 @@ mlxsw_sp_dpipe_table_erif_entries_dump(void *priv, bool counters_enabled,
+ err_entry_append:
+ err_entry_get:
+ err_ctx_prepare:
++	mutex_unlock(&mlxsw_sp->router->lock);
+ 	rtnl_unlock();
+ 	devlink_dpipe_entry_clear(&entry);
  	return err;
-@@ -2326,14 +2326,15 @@ static void mlxsw_sp_router_neighs_update_nh(struct mlxsw_sp *mlxsw_sp)
- {
- 	struct mlxsw_sp_neigh_entry *neigh_entry;
- 
--	/* Take RTNL mutex here to prevent lists from changes */
- 	rtnl_lock();
-+	mutex_lock(&mlxsw_sp->router->lock);
- 	list_for_each_entry(neigh_entry, &mlxsw_sp->router->nexthop_neighs_list,
- 			    nexthop_neighs_list_node)
- 		/* If this neigh have nexthops, make the kernel think this neigh
- 		 * is active regardless of the traffic.
- 		 */
- 		neigh_event_send(neigh_entry->key.n, NULL);
-+	mutex_unlock(&mlxsw_sp->router->lock);
- 	rtnl_unlock();
- }
- 
-@@ -2374,14 +2375,14 @@ static void mlxsw_sp_router_probe_unresolved_nexthops(struct work_struct *work)
- 	 * the nexthop wouldn't get offloaded until the neighbor is resolved
- 	 * but it wouldn't get resolved ever in case traffic is flowing in HW
- 	 * using different nexthop.
--	 *
--	 * Take RTNL mutex here to prevent lists from changes.
- 	 */
- 	rtnl_lock();
-+	mutex_lock(&router->lock);
- 	list_for_each_entry(neigh_entry, &router->nexthop_neighs_list,
- 			    nexthop_neighs_list_node)
- 		if (!neigh_entry->connected)
- 			neigh_event_send(neigh_entry->key.n, NULL);
-+	mutex_unlock(&router->lock);
- 	rtnl_unlock();
- 
- 	mlxsw_core_schedule_dw(&router->nexthop_probe_dw,
-@@ -2521,6 +2522,7 @@ static void mlxsw_sp_router_neigh_event_work(struct work_struct *work)
- 	read_unlock_bh(&n->lock);
+@@ -259,6 +263,7 @@ static int mlxsw_sp_dpipe_table_erif_counters_update(void *priv, bool enable)
+ 	int i;
  
  	rtnl_lock();
 +	mutex_lock(&mlxsw_sp->router->lock);
- 	mlxsw_sp_span_respin(mlxsw_sp);
+ 	for (i = 0; i < MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS); i++) {
+ 		struct mlxsw_sp_rif *rif = mlxsw_sp_rif_by_index(mlxsw_sp, i);
  
- 	entry_connected = nud_state & NUD_VALID && !dead;
-@@ -2542,6 +2544,7 @@ static void mlxsw_sp_router_neigh_event_work(struct work_struct *work)
- 		mlxsw_sp_neigh_entry_destroy(mlxsw_sp, neigh_entry);
- 
- out:
-+	mutex_unlock(&mlxsw_sp->router->lock);
- 	rtnl_unlock();
- 	neigh_release(n);
- 	kfree(net_work);
-@@ -5949,8 +5952,8 @@ static void mlxsw_sp_router_fib4_event_work(struct work_struct *work)
- 	struct mlxsw_sp *mlxsw_sp = fib_work->mlxsw_sp;
- 	int err;
- 
--	/* Protect internal structures from changes */
- 	rtnl_lock();
-+	mutex_lock(&mlxsw_sp->router->lock);
- 	mlxsw_sp_span_respin(mlxsw_sp);
- 
- 	switch (fib_work->event) {
-@@ -5972,6 +5975,7 @@ static void mlxsw_sp_router_fib4_event_work(struct work_struct *work)
- 		fib_info_put(fib_work->fnh_info.fib_nh->nh_parent);
- 		break;
+@@ -271,6 +276,7 @@ static int mlxsw_sp_dpipe_table_erif_counters_update(void *priv, bool enable)
+ 			mlxsw_sp_rif_counter_free(mlxsw_sp, rif,
+ 						  MLXSW_SP_RIF_COUNTER_EGRESS);
  	}
 +	mutex_unlock(&mlxsw_sp->router->lock);
  	rtnl_unlock();
- 	kfree(fib_work);
+ 	return 0;
  }
-@@ -5984,6 +5988,7 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
+@@ -547,6 +553,7 @@ mlxsw_sp_dpipe_table_host_entries_get(struct mlxsw_sp *mlxsw_sp,
  	int err;
  
  	rtnl_lock();
 +	mutex_lock(&mlxsw_sp->router->lock);
- 	mlxsw_sp_span_respin(mlxsw_sp);
+ 	i = 0;
+ 	rif_count = MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS);
+ start_again:
+@@ -602,11 +609,13 @@ mlxsw_sp_dpipe_table_host_entries_get(struct mlxsw_sp *mlxsw_sp,
+ 	if (i != rif_count)
+ 		goto start_again;
  
- 	switch (fib_work->event) {
-@@ -6010,6 +6015,7 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
- 		mlxsw_sp_router_fib6_work_fini(&fib_work->fib6_work);
- 		break;
++	mutex_unlock(&mlxsw_sp->router->lock);
+ 	rtnl_unlock();
+ 	return 0;
+ 
+ err_ctx_prepare:
+ err_entry_append:
++	mutex_unlock(&mlxsw_sp->router->lock);
+ 	rtnl_unlock();
+ 	return err;
+ }
+@@ -663,6 +672,7 @@ mlxsw_sp_dpipe_table_host_counters_update(struct mlxsw_sp *mlxsw_sp,
+ 	int i;
+ 
+ 	rtnl_lock();
++	mutex_lock(&mlxsw_sp->router->lock);
+ 	for (i = 0; i < MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS); i++) {
+ 		struct mlxsw_sp_rif *rif = mlxsw_sp_rif_by_index(mlxsw_sp, i);
+ 		struct mlxsw_sp_neigh_entry *neigh_entry;
+@@ -684,6 +694,7 @@ mlxsw_sp_dpipe_table_host_counters_update(struct mlxsw_sp *mlxsw_sp,
+ 							    enable);
+ 		}
  	}
 +	mutex_unlock(&mlxsw_sp->router->lock);
  	rtnl_unlock();
- 	kfree(fib_work);
  }
-@@ -6023,6 +6029,7 @@ static void mlxsw_sp_router_fibmr_event_work(struct work_struct *work)
+ 
+@@ -702,6 +713,7 @@ mlxsw_sp_dpipe_table_host_size_get(struct mlxsw_sp *mlxsw_sp, int type)
+ 	int i;
+ 
+ 	rtnl_lock();
++	mutex_lock(&mlxsw_sp->router->lock);
+ 	for (i = 0; i < MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS); i++) {
+ 		struct mlxsw_sp_rif *rif = mlxsw_sp_rif_by_index(mlxsw_sp, i);
+ 		struct mlxsw_sp_neigh_entry *neigh_entry;
+@@ -721,6 +733,7 @@ mlxsw_sp_dpipe_table_host_size_get(struct mlxsw_sp *mlxsw_sp, int type)
+ 			size++;
+ 		}
+ 	}
++	mutex_unlock(&mlxsw_sp->router->lock);
+ 	rtnl_unlock();
+ 
+ 	return size;
+@@ -1094,6 +1107,7 @@ mlxsw_sp_dpipe_table_adj_entries_get(struct mlxsw_sp *mlxsw_sp,
  	int err;
  
  	rtnl_lock();
 +	mutex_lock(&mlxsw_sp->router->lock);
- 	switch (fib_work->event) {
- 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
- 	case FIB_EVENT_ENTRY_ADD:
-@@ -6051,6 +6058,7 @@ static void mlxsw_sp_router_fibmr_event_work(struct work_struct *work)
- 		dev_put(fib_work->ven_info.dev);
- 		break;
- 	}
+ 	nh_count_max = mlxsw_sp_dpipe_table_adj_size(mlxsw_sp);
+ start_again:
+ 	err = devlink_dpipe_entry_ctx_prepare(dump_ctx);
+@@ -1130,12 +1144,14 @@ mlxsw_sp_dpipe_table_adj_entries_get(struct mlxsw_sp *mlxsw_sp,
+ 	devlink_dpipe_entry_ctx_close(dump_ctx);
+ 	if (nh_count != nh_count_max)
+ 		goto start_again;
 +	mutex_unlock(&mlxsw_sp->router->lock);
  	rtnl_unlock();
- 	kfree(fib_work);
+ 
+ 	return 0;
+ 
+ err_ctx_prepare:
+ err_entry_append:
++	mutex_unlock(&mlxsw_sp->router->lock);
+ 	rtnl_unlock();
+ 	return err;
  }
-@@ -7063,6 +7071,7 @@ static void mlxsw_sp_inet6addr_event_work(struct work_struct *work)
- 	struct mlxsw_sp_rif *rif;
+@@ -1207,7 +1223,9 @@ mlxsw_sp_dpipe_table_adj_size_get(void *priv)
+ 	u64 size;
  
  	rtnl_lock();
 +	mutex_lock(&mlxsw_sp->router->lock);
- 
- 	rif = mlxsw_sp_rif_find_by_dev(mlxsw_sp, dev);
- 	if (!mlxsw_sp_rif_should_config(rif, dev, event))
-@@ -7070,6 +7079,7 @@ static void mlxsw_sp_inet6addr_event_work(struct work_struct *work)
- 
- 	__mlxsw_sp_inetaddr_event(mlxsw_sp, dev, event, NULL);
- out:
+ 	size = mlxsw_sp_dpipe_table_adj_size(mlxsw_sp);
 +	mutex_unlock(&mlxsw_sp->router->lock);
  	rtnl_unlock();
- 	dev_put(dev);
- 	kfree(inet6addr_work);
+ 
+ 	return size;
 -- 
 2.24.1
 
