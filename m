@@ -2,99 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BF1168925
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D67168929
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728346AbgBUVS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 16:18:56 -0500
-Received: from mail-eopbgr140085.outbound.protection.outlook.com ([40.107.14.85]:27874
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726707AbgBUVSz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Feb 2020 16:18:55 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h3IQ2wKBnanBSOC5OpHhH1kiQGBTxV2Fhu9w0ezsfnG8+jSzQ4k8t13nYCjwoH018kjjZnOB2ElIdsXRoYeEViqOgRikcdza+FPaHp3oJqA0at7immKiACRgyE2mej/h3IWMOJnTCGA2DHl1ACBMJ6UOA3qMWVriboJZaE+lnY+wbhsmfXK6bWQdIGvPiJAd2QO+RM2itDN5/9b5ApmYyyiQbZq9te0SgldYBQ88+0tetLUWmlLw/W6eTJTlcWDq2bTMwlcvqaSOaW3Ro5R6njLudYIyj75QkpC6oLR5frXS5P/zkaP1qBikJNlasH2ztZnfAEYvzAZZNMSHu6bvVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ylySu8SNz5xzwJ1nUeCiylVqkldI7YdMgzthFSn9zSM=;
- b=MfGzZC81KydXhszmfXyaSJXdemIGGmvUAcjwFIzaNhBxL/fmdq5V/B9pCyvcSkXqOYfMIqvl3CKMXvE5k66WBLl5FHn2lvG9sV7QZsmMN2yPdUaaP9i21rsx9oI4puj1w4V+wtpf+vr423cmhmxgzvQHofUQhWuQSmzyIfGbrukJvaXhywTBxXKHJorH8r2r872OjGJA26F+Udc4famhnoO4vIrP7wh4XBpJsy07N58BHS49jrucXe/2MfgX3ccDKCFLPSDs+wcmOfRQxEIaoUFHkULLyoWwN8M1euJgydK2QYMZ2mYze8OJ7jJcvDI7x7Gf2yRnK4C7XoGPCwiwmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ylySu8SNz5xzwJ1nUeCiylVqkldI7YdMgzthFSn9zSM=;
- b=iucAm4bnp6fRCS+eI00TcvN4CE1Shzg2dZzJtky0LD2cWtAxuMl3WuUT97DcjpswlZjieyfgl8nFcSJEpNFwQSvCr+zSD9xcKb7TmetHM9c/Zj82FsYWvB9WAwrPmjKx/QgqIzXlKhPHEtCYj/+SCFnux/G2qH+QRJ/h1CtNUVU=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB5455.eurprd05.prod.outlook.com (20.177.63.222) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2729.22; Fri, 21 Feb 2020 21:18:52 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2729.033; Fri, 21 Feb 2020
- 21:18:52 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>
-CC:     Eran Ben Elisha <eranbe@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 6/7] net/mlxfw: Add reactivate flow support to
- FSM burn flow
-Thread-Topic: [PATCH net-next 6/7] net/mlxfw: Add reactivate flow support to
- FSM burn flow
-Thread-Index: AQHV55UUl3+0pqx360O1hrNERl4EzagjnIMAgAKNT4A=
-Date:   Fri, 21 Feb 2020 21:18:51 +0000
-Message-ID: <530b50907a437d22eefdf1c26a35cf2dce373afb.camel@mellanox.com>
-References: <20200220022502.38262-1-saeedm@mellanox.com>
-         <20200220022502.38262-7-saeedm@mellanox.com>
-         <20200219222026.296b3780@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200219222026.296b3780@kicinski-fedora-PC1C0HJN>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.3 (3.34.3-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 98d8aaed-1c3e-4da9-4475-08d7b713a664
-x-ms-traffictypediagnostic: VI1PR05MB5455:|VI1PR05MB5455:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5455450246A683416F3B4795BE120@VI1PR05MB5455.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 0320B28BE1
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(136003)(376002)(396003)(199004)(189003)(81166006)(66446008)(71200400001)(8676002)(64756008)(66476007)(66556008)(8936002)(4326008)(2906002)(81156014)(36756003)(2616005)(66946007)(5660300002)(26005)(6916009)(6486002)(478600001)(91956017)(558084003)(6512007)(316002)(186003)(86362001)(54906003)(76116006)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5455;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zvud7Wrm0AQ/VbsMrSIHQxZvbqiCyIgkR4OnS2ZRQyPMpONg7Y06pOJ8tAHNv2M/OqRb1RzIl9hQiT7wRzl+Tjqzrl3SqAOS21ObzWdkTGBIw3WRf3gFs4p6tPyk0lA29XfoutFDN0lCzjWA8GmGhVHslsLzF06vR99zNIFOVJM/tD6i0GInROoSO2GS8zt+isBHQI9xV7TYgR/yaoeB6fJbfSf4vFuPbGibwvtjnoGRqqnmqrnMgf3C+sldmPCbbPUyNr+IGeqt+WTAR4yJL+q2hUZpsHhjJVm1h1wAy/M8crailGN8QKqhFIpIyZ7/zFp/keznZYEV3Z5KqCwp1JfwlWDPiBIZqu4b7CYvVRUeN5T35Lbn6NrQXTw7T2kjCQcl23EcFJOZDGRJWMmEVlCLJw+OsMu1rcT2dnM+VoqHZIDiFpde+F0aNe4UQldR
-x-ms-exchange-antispam-messagedata: DOZHNt4BvL036mTyYGidyY16eKVS4bEAuF7BJfJikCV4y/li6E2NgUXhOhzwATnJbloeMGD+Yas1e2F9WYEk2Ms/8U6pRF746yPMumB8qwcUxfz1oWhGzWKjBd9S7P4tRx81FoLUYdJ8wD22e8d6ZA==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <254FC49A1CAE9B45ACC2F8EB55C04448@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728423AbgBUVV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 16:21:56 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50270 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726707AbgBUVVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 16:21:55 -0500
+Received: by mail-wm1-f68.google.com with SMTP id a5so3204914wmb.0
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 13:21:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kCojeGCbYv0/Jqi1Rd5ewidQhYyqj8mEtyF/C7SM9lk=;
+        b=NL6MH+w3h66AF/fbLXBfLwROsxIucUAMI15KKfXzR/bjcLk7MjH1WsJyyFwj9hfSWz
+         8/pSnkfVszwgvNdnucLGdGEDJLnEn5UdkBURH4nmqLbce/DZXXTgbKe8dm5aNnhJop+O
+         ZKOtZCN2M97yV42SA365i5rERAKLHaQmOwtziZa3kPbZ4fdMINpcuRt3hZ6gYR0V6uOd
+         032oVnIO6dQAabLiFwxYRWxbsWU5NCwy/QDSXOAh1s6hlqcVu4uyWtJFSxbDL1ZTEt4x
+         1ftLdmMPBJecGa9ShdGOa/MzIeW76Mbyq4lywFEjIcZW0Zt+cvm3OIQBwSARJSKZcn9n
+         Rbtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kCojeGCbYv0/Jqi1Rd5ewidQhYyqj8mEtyF/C7SM9lk=;
+        b=Bsh2nYhfwGFVrfRvpcs6aO7g+2btC302s0s4oPNG1n/fqvMZsqlaJZfeEn2RJLTQnm
+         IjHpa1ERxAew8jr4KuFl98oUNWQdNq/c6LYvKqC9TO3HpoOIAWc2ZAfWFcxF+5FoVxzj
+         WnY72dp3Ami+OB0CJ2JFBpDMXJxkDjk4PiWO+hy3F+MjMbxHhwAKQzjuqPARF0rUhRBL
+         1TUBjUgWbeQVFenkvYzut6MsGcPnm3ypwqKN7IybqDw628dgXcbKeI0DirVF2Rxjfm/a
+         llEvWM2j2/hABG2nC63CwaJn4fx0yf2axyihLPCEkE9qAe/kuum4ynDgTvuuBWRpYQgm
+         Z5Uw==
+X-Gm-Message-State: APjAAAWYJ/JPw9cys3m/DpGD/1iU0lcPQjOEWRK2l5xvqFFjJbPBCX96
+        +pUtWBvEc6kDGslY3cbXIbOjj+tW33/ybkJa10MNAwTjSDE=
+X-Google-Smtp-Source: APXvYqxE/EEAuIfMxsuKqyKNpPlbuOrTCH3lN/BG7Y9t6z5GtbVJvPvIoOpIDYg1Q+XjoPAigvlw+UbYmrxJh1kctJQ=
+X-Received: by 2002:a1c:541b:: with SMTP id i27mr6113814wmb.137.1582320113195;
+ Fri, 21 Feb 2020 13:21:53 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98d8aaed-1c3e-4da9-4475-08d7b713a664
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2020 21:18:51.9185
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UwJRgpQsjNXkZzIcDHubXLr9k1vSwP4YRI/F/clMUphHHZgFsBlnCDH/nM6GMUvtdTRY+4WLKaHGBMu8AKAFGw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5455
+References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+ <20200128025958.43490-3-arjunroy.kdev@gmail.com> <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
+ <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
+In-Reply-To: <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Fri, 21 Feb 2020 13:21:41 -0800
+Message-ID: <CAOFY-A0G+NOpi7r=gnrLNsJ-OHYnGKCJ0mJ5PWwH5m7_99bD5w@mail.gmail.com>
+Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
+ vm_insert_pages() for tcp rcv zerocopy.
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTAyLTE5IGF0IDIyOjIwIC0wODAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gVGh1LCAyMCBGZWIgMjAyMCAwMjoyNTo1NSArMDAwMCBTYWVlZCBNYWhhbWVlZCB3cm90
-ZToNCj4gPiArCQkJCSAgICAgICJGU00gY29tcG9uZW50IHVwZGF0ZSBmYWlsZWQsIEZXDQo+ID4g
-cmVhY3RpdmF0ZSBpcyBub3Qgc3VwcG9lcnRlZCIsDQo+IA0KPiBzdXBwb3J0ZWQNCg0KVGhhbmtz
-ICEgd2lsbCBmaXggdGhpcy4NCg==
+Andrew, David -
+
+I remain a bit concerned regarding the merge process for this specific
+patch (0003, the net/ipv4/tcp.c change) since I have other in-flight
+changes for TCP receive zerocopy that I'd like to upstream for
+net-next - and would like to avoid weird merge issues.
+
+So perhaps the following could work:
+
+1. Andrew, perhaps we could remove this particular patch (0003, the
+net/ipv4/tcp.c change) from mm-next; that way we merge
+vm_insert_pages() but not the call-site within TCP, for now.
+2. net-next will eventually pick vm_insert_pages() up.
+3. I can modify the zerocopy code to use it at that point?
+
+Else I'm concerned a complicated merge situation may result.
+
+What do you all think?
+
+Thanks,
+-Arjun
+
+On Sun, Feb 16, 2020 at 6:49 PM Arjun Roy <arjunroy@google.com> wrote:
+>
+> On Wed, Feb 12, 2020 at 6:56 PM Andrew Morton <akpm@linux-foundation.org>=
+ wrote:
+> >
+> > On Mon, 27 Jan 2020 18:59:58 -0800 Arjun Roy <arjunroy.kdev@gmail.com> =
+wrote:
+> >
+> > > Use vm_insert_pages() for tcp receive zerocopy. Spin lock cycles
+> > > (as reported by perf) drop from a couple of percentage points
+> > > to a fraction of a percent. This results in a roughly 6% increase in
+> > > efficiency, measured roughly as zerocopy receive count divided by CPU
+> > > utilization.
+> > >
+> > > The intention of this patch-set is to reduce atomic ops for
+> > > tcp zerocopy receives, which normally hits the same spinlock multiple
+> > > times consecutively.
+> >
+> > For some reason the patch causes this:
+> >
+> > In file included from ./arch/x86/include/asm/atomic.h:5:0,
+> >                  from ./include/linux/atomic.h:7,
+> >                  from ./include/linux/crypto.h:15,
+> >                  from ./include/crypto/hash.h:11,
+> >                  from net/ipv4/tcp.c:246:
+> > net/ipv4/tcp.c: In function =E2=80=98do_tcp_getsockopt.isra.29=E2=80=99=
+:
+> > ./include/linux/compiler.h:225:31: warning: =E2=80=98tp=E2=80=99 may be=
+ used uninitialized in this function [-Wmaybe-uninitialized]
+> >   case 4: *(volatile __u32 *)p =3D *(__u32 *)res; break;
+> >           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+> > net/ipv4/tcp.c:1779:19: note: =E2=80=98tp=E2=80=99 was declared here
+> >   struct tcp_sock *tp;
+> >                    ^~
+> >
+> > It's a false positive.  gcc-7.2.0
+> >
+> > : out:
+> > :        up_read(&current->mm->mmap_sem);
+> > :        if (length) {
+> > :                WRITE_ONCE(tp->copied_seq, seq);
+> >
+> > but `length' is zero here.
+> >
+> > This suppresses it:
+> >
+> > --- a/net/ipv4/tcp.c~net-zerocopy-use-vm_insert_pages-for-tcp-rcv-zeroc=
+opy-fix
+> > +++ a/net/ipv4/tcp.c
+> > @@ -1788,6 +1788,8 @@ static int tcp_zerocopy_receive(struct s
+> >
+> >         sock_rps_record_flow(sk);
+> >
+> > +       tp =3D tcp_sk(sk);
+> > +
+> >         down_read(&current->mm->mmap_sem);
+> >
+> >         ret =3D -EINVAL;
+> > @@ -1796,7 +1798,6 @@ static int tcp_zerocopy_receive(struct s
+> >                 goto out;
+> >         zc->length =3D min_t(unsigned long, zc->length, vma->vm_end - a=
+ddress);
+> >
+> > -       tp =3D tcp_sk(sk);
+> >         seq =3D tp->copied_seq;
+> >         inq =3D tcp_inq(sk);
+> >         zc->length =3D min_t(u32, zc->length, inq);
+> >
+> > and I guess it's zero-cost.
+> >
+> >
+> > Anyway, I'll sit on this lot for a while, hoping for a davem ack?
+>
+> Actually, speaking of the ack on the networking side:
+>
+> I guess this patch set is a bit weird since it requires some
+> non-trivial coordination between mm and net-next? Not sure what the
+> normal approach is in this case.
+>
+> -Arjun
