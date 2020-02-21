@@ -2,81 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0450B166FB5
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 07:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11FA3166FC0
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 07:47:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726325AbgBUGj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 01:39:29 -0500
-Received: from dpmailmta03-35.doteasy.com ([65.61.219.55]:34012 "EHLO
-        dpmailmta03.doteasy.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726100AbgBUGj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 01:39:29 -0500
-X-Default-Received-SPF: pass (skip=forwardok (res=PASS)) x-ip-name=192.168.101.84;
-Received: from dpmailrp04.doteasy.com (unverified [192.168.101.84]) 
-        by dpmailmta03.doteasy.com (DEO) with ESMTP id 54806286-1393314 
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 22:39:28 -0800
-Received: from dpmail22.doteasy.com (dpmail22.doteasy.com [192.168.101.22])
-        by dpmailrp04.doteasy.com (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id 01L6dR65013403
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 22:39:27 -0800
-X-SmarterMail-Authenticated-As: trev@larock.ca
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49]) by dpmail22.doteasy.com with SMTP;
-   Thu, 20 Feb 2020 22:39:12 -0800
-Received: by mail-lf1-f49.google.com with SMTP id n25so676131lfl.0
-        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 22:39:03 -0800 (PST)
-X-Gm-Message-State: APjAAAWFa2TnVqwFjbjl5/EO8RzPTW2IgI2tUbZ53F7Ln4UfKirb2zF/
-        10OU/U81awi64K3axB9+ArUM7lXou5RtZV88M6k=
-X-Google-Smtp-Source: APXvYqyTR4FgeoPS6cyWu4IcPmJkXLe5Nvq2HQmrB5Z3xtXtSAxa2DdYvX5iK/vvPXkNE8sy2jtRptXClStGc/qCs3c=
-X-Received: by 2002:a2e:9b03:: with SMTP id u3mr20949715lji.87.1582260782183;
- Thu, 20 Feb 2020 20:53:02 -0800 (PST)
+        id S1727103AbgBUGrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 01:47:13 -0500
+Received: from first.geanix.com ([116.203.34.67]:55352 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726100AbgBUGrN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 01:47:13 -0500
+Received: from localhost (87-49-45-242-mobile.dk.customer.tdc.net [87.49.45.242])
+        by first.geanix.com (Postfix) with ESMTPSA id 845BDAEB4D;
+        Fri, 21 Feb 2020 06:47:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1582267630; bh=v8hfyWw4kbOSf4Vr8iOqNpwVN5vkMHP3BbYopvXwRbo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=fwDB4CLntBUZXODVM2cahRr/VQAtZPn9lNpIVIiNpOosKQMFtOvNweEJwPzrQFEqz
+         Ej22eU/HJg+Stttbh4O+BGQL2Oz9L+X0uhqlsyxSW/75MM61yAuPH1lXmG1bXqcaKB
+         tF5R9LhsLcCTV7qCLodEdc/W52+THIAcHgbwhQL5oRVSYDuPbnY/68GZ2o7gOv9xb/
+         9GN0tBryV5QcONGfisqhk9N4RnENk3oC24JC5nR0JNP2sksliUajyqCfl+7/lRU+Ag
+         HrwnJZN/HTr11ASBMKqVtl8Yc6W9NGNIUY+QnhdRdG1CkyuHii+aaht1d2RrTqom43
+         CPmXrxArJA32g==
+From:   Esben Haabendal <esben@geanix.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+Subject: [PATCH net v2 0/4] net: ll_temac: Bugfixes
+Date:   Fri, 21 Feb 2020 07:47:09 +0100
+Message-Id: <cover.1582267079.git.esben@geanix.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <cover.1582108989.git.esben@geanix.com>
+References: <cover.1582108989.git.esben@geanix.com>
 MIME-Version: 1.0
-References: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
- <ff36e5d0-0b01-9683-1698-474468067402@gmail.com> <CAHgT=KcQb4ngBmhU82cc+XbW_2RvYfi0OwH5ROstkw9DD8G3mA@mail.gmail.com>
- <5e8522fb-d383-c0ea-f013-8625f204c4ce@gmail.com> <CAHgT=KdW3hNy4pE+prSA1WyKNu0Ni8qg0SSbxWQ_Dx0RjcPLdA@mail.gmail.com>
- <9777beb0-0c9c-ef8b-22f0-81373b635e50@candelatech.com> <fe7ec5d0-73ed-aa8b-3246-39894252fec7@gmail.com>
- <CAHgT=KePvNSg9uU7SdG-9LwmwZZJkH7_FSXW+Yd5Y8G-Bd3gtA@mail.gmail.com> <523c649c-4857-0d17-104e-fb4dc4876cc1@gmail.com>
-In-Reply-To: <523c649c-4857-0d17-104e-fb4dc4876cc1@gmail.com>
-From:   Trev Larock <trev@larock.ca>
-Date:   Thu, 20 Feb 2020 23:52:51 -0500
-X-Gmail-Original-Message-ID: <CAHgT=KcMoUysPzGL2NkWXbbdUTKZ2EViHyOjsZkTtowVwpM_BA@mail.gmail.com>
-Message-ID: <CAHgT=KcMoUysPzGL2NkWXbbdUTKZ2EViHyOjsZkTtowVwpM_BA@mail.gmail.com>
-Subject: Re: VRF + ip xfrm, egress ESP packet looping when qdisc configured
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Trev Larock <trev@larock.ca>, Ben Greear <greearb@candelatech.com>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Exim-Id: CAHgT=KcMoUysPzGL2NkWXbbdUTKZ2EViHyOjsZkTtowVwpM_BA
-X-Bayes-Prob: 0.0001 (Score 0, tokens from: base:default, @@RPTN)
-X-Spam-Score: 0.00 () [Hold at 5.00] 
-X-CanIt-Geo: No geolocation information available for 192.168.101.22
-X-CanItPRO-Stream: base:default
-X-Canit-Stats-ID: 0125iDrO3 - fb3b0962699f - 20200220
-X-Scanned-By: CanIt (www . roaringpenguin . com) on 192.168.101.84
-X-To-Not-Matched: true
-X-Originating-IP: 192.168.101.84
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=4.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UNPARSEABLE_RELAY,URIBL_BLOCKED
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on 05ff821c8cf1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 2, 2020 at 11:04 PM David Ahern <dsahern@gmail.com> wrote:
-> I understand the problem you are facing. It is limited to xfrm +        qdisc
-> on VRF device. I have a proposal for how to fix it:
->
->     https://github.com/dsahern/linux vrf-qdisc-xfrm
+Fix a number of bugs which have been present since the first commit.
 
-Thanks I tried the fixes on fedora31/ kernel 5.3.8, it did resolve
-the qdisc looping packet issue.
+The bugs fixed in patch 1,2 and 4 have all been observed in real systems, and
+was relatively easy to reproduce given an appropriate stress setup.
 
-> Right now I am stuck on debugging related xfrm cases - like xfrm
-> devices, vrf device in the selector, and vti device. I feel like I need
-> to get all of them working before sending patches, I just lack enough time.
->
+Changes since v1:
 
-Yes the vrf device in selector issue is still a puzzle.
-Without the dev in selector the policy is triggered by the ip4_datagram_connect
-call to xfrm_lookup, and there seems no xfrm_lookup call from vrf.c.
+- Changed error handling of of dma_map_single() in temac_start_xmit() to drop
+  packet instead of returning NETDEV_TX_BUSY.
 
-With a policy having vrf dev vrf0 in selector, just plaintext packets go out.
-For that to trigger properly, should vrf.c be calling xfrm_lookup with the
-vrf0 oif, or should that happen elsewhere?
+Esben Haabendal (4):
+  net: ll_temac: Fix race condition causing TX hang
+  net: ll_temac: Add more error handling of dma_map_single() calls
+  net: ll_temac: Fix RX buffer descriptor handling on GFP_ATOMIC
+    pressure
+  net: ll_temac: Handle DMA halt condition caused by buffer underrun
+
+ drivers/net/ethernet/xilinx/ll_temac.h      |   4 +
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 209 ++++++++++++++++----
+ 2 files changed, 175 insertions(+), 38 deletions(-)
+
+-- 
+2.25.0
 
