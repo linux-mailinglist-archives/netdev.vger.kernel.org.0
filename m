@@ -2,347 +2,425 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB3B166C1E
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94025166C20
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729552AbgBUAt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 19:49:57 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:30835 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729365AbgBUAt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:49:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1582246195; x=1613782195;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=qRqtgWJ22u776YSg9bBd/tmHHyG23FJttVIZIbK7Qjg=;
-  b=THoQF2kIComy5jty6Q6+GQWXnZhM6ZYPEs/QQR8AgHdZqnN8uD0J0o3P
-   KF5+51q1G4fgGg4YLU52SHRdds42aERbuV33PvlxyNPDtGnGyWTTv5lar
-   FROBXRVUDUrJKBpamyiF5kPBtP+MUeSdhWTidBaXZ2tRLGKOKhh8nDI/R
-   g=;
-IronPort-SDR: gzePQYfqEPTZB8zTuoMfAHP5kckORrS0AjiPhCAQdmbC8ZYb9592+GYxfDANdINrFvc+nfM1z6
- 7Si0suEHsbUw==
-X-IronPort-AV: E=Sophos;i="5.70,466,1574121600"; 
-   d="scan'208";a="18222658"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 21 Feb 2020 00:49:42 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 1A7FAA1E57;
-        Fri, 21 Feb 2020 00:49:35 +0000 (UTC)
-Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 21 Feb 2020 00:49:19 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Feb 2020 00:49:19 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Fri, 21 Feb 2020 00:49:18 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id A95C4401AF; Fri, 21 Feb 2020 00:49:18 +0000 (UTC)
-Date:   Fri, 21 Feb 2020 00:49:18 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     "Durrant, Paul" <pdurrant@amazon.co.uk>,
-        Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>
-CC:     Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pavel@ucw.cz" <pavel@ucw.cz>, "hpa@zytor.com" <hpa@zytor.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "fllinden@amaozn.com" <fllinden@amaozn.com>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>, <anchalag@amazon.com>
-Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
- PM suspend and hibernation
-Message-ID: <20200221004918.GA13221@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <20200217100509.GE4679@Air-de-Roger>
- <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200218091611.GN4679@Air-de-Roger>
- <20200219180424.GA17584@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200220083904.GI4679@Air-de-Roger>
- <f986b845491b47cc8469d88e2e65e2a7@EX13D32EUC003.ant.amazon.com>
- <20200220154507.GO4679@Air-de-Roger>
- <c9662397256a4568a5cc7d70a84940e5@EX13D32EUC003.ant.amazon.com>
- <20200220164839.GR4679@Air-de-Roger>
- <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        id S1729583AbgBUAuP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Feb 2020 19:50:15 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:60686 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729365AbgBUAuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:50:15 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1E01C133F0B08;
+        Thu, 20 Feb 2020 16:50:14 -0800 (PST)
+Date:   Thu, 20 Feb 2020 16:50:05 -0800 (PST)
+Message-Id: <20200220.165005.109882010805629679.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 20 Feb 2020 16:50:14 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 10:01:52AM -0700, Durrant, Paul wrote:
-> > -----Original Message-----
-> > From: Roger Pau MonnÃ© <roger.pau@citrix.com>
-> > Sent: 20 February 2020 16:49
-> > To: Durrant, Paul <pdurrant@amazon.co.uk>
-> > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
-> > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
-> > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
-> > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de; sstabellini@kernel.org;
-> > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
-> > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
-> > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
-> > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
-> > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
-> > linux-kernel@vger.kernel.org; vkuznets@redhat.com; davem@davemloft.net;
-> > Woodhouse, David <dwmw@amazon.co.uk>
-> > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks
-> > for PM suspend and hibernation
-> > 
-> > On Thu, Feb 20, 2020 at 04:23:13PM +0000, Durrant, Paul wrote:
-> > > > -----Original Message-----
-> > > > From: Roger Pau MonnÃ© <roger.pau@citrix.com>
-> > > > Sent: 20 February 2020 15:45
-> > > > To: Durrant, Paul <pdurrant@amazon.co.uk>
-> > > > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
-> > > > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
-> > > > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
-> > > > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de;
-> > sstabellini@kernel.org;
-> > > > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
-> > > > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
-> > > > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
-> > > > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
-> > > > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
-> > > > linux-kernel@vger.kernel.org; vkuznets@redhat.com;
-> > davem@davemloft.net;
-> > > > Woodhouse, David <dwmw@amazon.co.uk>
-> > > > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add
-> > callbacks
-> > > > for PM suspend and hibernation
-> > > >
-> > > > On Thu, Feb 20, 2020 at 08:54:36AM +0000, Durrant, Paul wrote:
-> > > > > > -----Original Message-----
-> > > > > > From: Xen-devel <xen-devel-bounces@lists.xenproject.org> On Behalf
-> > Of
-> > > > > > Roger Pau MonnÃ©
-> > > > > > Sent: 20 February 2020 08:39
-> > > > > > To: Agarwal, Anchal <anchalag@amazon.com>
-> > > > > > Cc: Valentin, Eduardo <eduval@amazon.com>; len.brown@intel.com;
-> > > > > > peterz@infradead.org; benh@kernel.crashing.org; x86@kernel.org;
-> > linux-
-> > > > > > mm@kvack.org; pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de;
-> > > > > > sstabellini@kernel.org; fllinden@amaozn.com; Kamata, Munehisa
-> > > > > > <kamatam@amazon.com>; mingo@redhat.com; xen-
-> > > > devel@lists.xenproject.org;
-> > > > > > Singh, Balbir <sblbir@amazon.com>; axboe@kernel.dk;
-> > > > > > konrad.wilk@oracle.com; bp@alien8.de; boris.ostrovsky@oracle.com;
-> > > > > > jgross@suse.com; netdev@vger.kernel.org; linux-pm@vger.kernel.org;
-> > > > > > rjw@rjwysocki.net; linux-kernel@vger.kernel.org;
-> > vkuznets@redhat.com;
-> > > > > > davem@davemloft.net; Woodhouse, David <dwmw@amazon.co.uk>
-> > > > > > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add
-> > > > callbacks
-> > > > > > for PM suspend and hibernation
-> > > > > >
-> > > > > > Thanks for this work, please see below.
-> > > > > >
-> > > > > > On Wed, Feb 19, 2020 at 06:04:24PM +0000, Anchal Agarwal wrote:
-> > > > > > > On Tue, Feb 18, 2020 at 10:16:11AM +0100, Roger Pau MonnÃ© wrote:
-> > > > > > > > On Mon, Feb 17, 2020 at 11:05:53PM +0000, Anchal Agarwal
-> > wrote:
-> > > > > > > > > On Mon, Feb 17, 2020 at 11:05:09AM +0100, Roger Pau MonnÃ©
-> > wrote:
-> > > > > > > > > > On Fri, Feb 14, 2020 at 11:25:34PM +0000, Anchal Agarwal
-> > > > wrote:
-> > > > > > > > > Quiescing the queue seemed a better option here as we want
-> > to
-> > > > make
-> > > > > > sure ongoing
-> > > > > > > > > requests dispatches are totally drained.
-> > > > > > > > > I should accept that some of these notion is borrowed from
-> > how
-> > > > nvme
-> > > > > > freeze/unfreeze
-> > > > > > > > > is done although its not apple to apple comparison.
-> > > > > > > >
-> > > > > > > > That's fine, but I would still like to requests that you use
-> > the
-> > > > same
-> > > > > > > > logic (as much as possible) for both the Xen and the PM
-> > initiated
-> > > > > > > > suspension.
-> > > > > > > >
-> > > > > > > > So you either apply this freeze/unfreeze to the Xen suspension
-> > > > (and
-> > > > > > > > drop the re-issuing of requests on resume) or adapt the same
-> > > > approach
-> > > > > > > > as the Xen initiated suspension. Keeping two completely
-> > different
-> > > > > > > > approaches to suspension / resume on blkfront is not suitable
-> > long
-> > > > > > > > term.
-> > > > > > > >
-> > > > > > > I agree with you on overhaul of xen suspend/resume wrt blkfront
-> > is a
-> > > > > > good
-> > > > > > > idea however, IMO that is a work for future and this patch
-> > series
-> > > > should
-> > > > > > > not be blocked for it. What do you think?
-> > > > > >
-> > > > > > It's not so much that I think an overhaul of suspend/resume in
-> > > > > > blkfront is needed, it's just that I don't want to have two
-> > completely
-> > > > > > different suspend/resume paths inside blkfront.
-> > > > > >
-> > > > > > So from my PoV I think the right solution is to either use the
-> > same
-> > > > > > code (as much as possible) as it's currently used by Xen initiated
-> > > > > > suspend/resume, or to also switch Xen initiated suspension to use
-> > the
-> > > > > > newly introduced code.
-> > > > > >
-> > > > > > Having two different approaches to suspend/resume in the same
-> > driver
-> > > > > > is a recipe for disaster IMO: it adds complexity by forcing
-> > developers
-> > > > > > to take into account two different suspend/resume approaches when
-> > > > > > there's no need for it.
-> > > > >
-> > > > > I disagree. S3 or S4 suspend/resume (or perhaps we should call them
-> > > > power state transitions to avoid confusion) are quite different from
-> > Xen
-> > > > suspend/resume.
-> > > > > Power state transitions ought to be, and indeed are, visible to the
-> > > > software running inside the guest. Applications, as well as drivers,
-> > can
-> > > > receive notification and take whatever action they deem appropriate.
-> > > > > Xen suspend/resume OTOH is used when a guest is migrated and the
-> > code
-> > > > should go to all lengths possible to make any software running inside
-> > the
-> > > > guest (other than Xen specific enlightened code, such as PV drivers)
-> > > > completely unaware that anything has actually happened.
-> > > >
-> > > > So from what you say above PM state transitions are notified to all
-> > > > drivers, and Xen suspend/resume is only notified to PV drivers, and
-> > > > here we are speaking about blkfront which is a PV driver, and should
-> > > > get notified in both cases. So I'm unsure why the same (or at least
-> > > > very similar) approach can't be used in both cases.
-> > > >
-> > > > The suspend/resume approach proposed by this patch is completely
-> > > > different than the one used by a xenbus initiated suspend/resume, and
-> > > > I don't see a technical reason that warrants this difference.
-> > > >
-> > >
-> > > Within an individual PV driver it may well be ok to use common
-> > mechanisms for connecting to the backend but issues will arise if any
-> > subsequent action is visible to the guest. E.g. a network frontend needs
-> > to issue gratuitous ARPs without anything else in the network stack (or
-> > monitoring the network stack) knowing that it has happened.
-> > >
-> > > > I'm not saying that the approach used here is wrong, it's just that I
-> > > > don't see the point in having two different ways to do suspend/resume
-> > > > in the same driver, unless there's a technical reason for it, which I
-> > > > don't think has been provided.
-> > >
-> > > The technical justification is that the driver needs to know what kind
-> > of suspend or resume it is doing, so that it doesn't do the wrong thing.
-> > There may also be differences in the state of the system e.g. in Windows,
-> > at least some of the resume-from-xen-suspend code runs with interrupts
-> > disabled (which is necessary to make sure enough state is restored before
-> > things become visible to other kernel code).
-> > >
-> > > >
-> > > > I would be fine with switching xenbus initiated suspend/resume to also
-> > > > use the approach proposed here: freeze the queues and drain the shared
-> > > > rings before suspending.
-> > > >
-> > >
-> > > I think abstracting away at the xenbus level to some degree is probably
-> > feasible, but some sort of flag should be passed to the individual drivers
-> > so they know what circumstances they are operating under.
-> > >
-> > > > > So, whilst it may be possible to use common routines to, for
-> > example,
-> > > > re-establish PV frontend/backend communication, PV frontend code
-> > should be
-> > > > acutely aware of the circumstances they are operating in. I can cite
-> > > > example code in the Windows PV driver, which have supported guest
-> > S3/S4
-> > > > power state transitions since day 1.
-> > > >
-> > > > Hm, please bear with me, as I'm not sure I fully understand. Why isn't
-> > > > the current suspend/resume logic suitable for PM transitions?
-> > > >
-> > >
-> > > I donâ€™t know the details for Linux but it may well be to do with
-> > assumptions made about the system e.g. the ability to block waiting for
-> > something to happen on another CPU (which may have already been quiesced
-> > in a PM context).
-> > >
-> > > > As said above, I'm happy to switch xenbus initiated suspend/resume to
-> > > > use the logic in this patch, but unless there's a technical reason for
-> > > > it I don't see why blkfront should have two completely different
-> > > > approaches to suspend/resume depending on whether it's a PM or a
-> > > > xenbus state change.
-> > > >
-> > >
-> > > Hopefully what I said above illustrates why it may not be 100% common.
-> > 
-> > Yes, that's fine. I don't expect it to be 100% common (as I guess
-> > that the hooks will have different prototypes), but I expect
-> > that routines can be shared, and that the approach taken can be the
-> > same.
-> > 
-> > For example one necessary difference will be that xenbus initiated
-> > suspend won't close the PV connection, in case suspension fails. On PM
-> > suspend you seem to always close the connection beforehand, so you
-> > will always have to re-negotiate on resume even if suspension failed.
-> >
-I don't get what you mean, 'suspension failure' during disconnecting frontend from 
-backend? [as in this case we mark frontend closed and then wait for completion]
-Or do you mean suspension fail in general post bkacend is disconnected from
-frontend for blkfront? 
 
-In case of later, if anything fails after the dpm_suspend(),
-things need to be thawed or set back up so it should ok to always 
-re-negotitate just to avoid errors. 
+1) Limit xt_hashlimit hash table size to avoid OOM or hung tasks, from
+   Cong Wang.
 
-> > What I'm mostly worried about is the different approach to ring
-> > draining. Ie: either xenbus is changed to freeze the queues and drain
-> > the shared rings, or PM uses the already existing logic of not
-> > flushing the rings an re-issuing in-flight requests on resume.
-> > 
-> 
-> Yes, that's needs consideration. I donâ€™t think the same semantic can be suitable for both. E.g. in a xen-suspend we need to freeze with as little processing as possible to avoid dirtying RAM late in the migration cycle, and we know that in-flight data can wait. But in a transition to S4 we need to make sure that at least all the in-flight blkif requests get completed, since they probably contain bits of the guest's memory image and that's not going to get saved any other way.
-> 
->   Paul
-I agree with Paul here. Just so as you know, I did try a hacky way in the past 
-to re-queue requests in the past and failed miserably.
-I doubt[just from my experimentation]re-queuing the requests will work for PM 
-Hibernation for the same reason Paul mentioned above unless you give me pressing
-reason why it should work.
-Also, won't it effect the migration time if we start waiting for all the
-inflight requests to complete[last min page faults] ?
+2) Fix deadlock in xsk by publishing global consumer pointers when NAPI
+   is finished, from Magnus Karlsson.
 
+3) Set table field properly to RT_TABLE_COMPAT when necessary, from Jethro
+   Beekman.
 
-Thanks,
-Anchal
+4) NLA_STRING attributes are not necessary NULL terminated, deal wiht
+   that in IFLA_ALT_IFNAME.  From Eric Dumazet.
+
+5) Fix checksum handling in atlantic driver, from Dmitry Bezrukov.
+
+6) Handle mtu==0 devices properly in wireguard, from Jason A. Donenfeld.
+
+7) Fix several lockdep warnings in bonding, from Taehee Yoo.
+
+8) Fix cls_flower port blocking, from Jason Baron.
+
+9) Sanitize internal map names in libbpf, from Toke Høiland-Jørgensen.
+
+10) Fix RDMA race in qede driver, from Michal Kalderon.
+
+11) Fix several false lockdep warnings by adding conditions to
+    list_for_each_entry_rcu(), from Madhuparna Bhowmik.
+
+12) Fix sleep in atomic in mlx5 driver, from Huy Nguyen.
+
+13) Fix potential deadlock in bpf_map_do_batch(), from Yonghong Song.
+
+14) Hey, variables declared in switch statement before any case statements
+    are not initialized.  I learn something every day.  Get rids of this
+    stuff in several parts of the networking, from Kees Cook.
+
+Please pull, thanks a lot!
+
+The following changes since commit 2019fc96af228b412bdb2e8e0ad4b1fc12046a51:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-02-14 12:40:38 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
+
+for you to fetch changes up to 36a44bcdd8df092d76c11bc213e81c5817d4e302:
+
+  Merge branch 'bnxt_en-shutdown-and-kexec-kdump-related-fixes' (2020-02-20 16:05:42 -0800)
+
+----------------------------------------------------------------
+Alexandra Winter (1):
+      s390/qeth: vnicc Fix EOPNOTSUPP precedence
+
+Alexandre Belloni (3):
+      net: macb: ensure interface is not suspended on at91rm9200
+      net: cnic: fix spelling mistake "reserverd" -> "reserved"
+      net: macb: Properly handle phylink on at91rm9200
+
+Amol Grover (1):
+      net: hsr: Pass lockdep expression to RCU lists
+
+Arun Parameswaran (1):
+      net: phy: restore mdio regs in the iproc mdio driver
+
+Aya Levin (2):
+      net/mlx5e: Reset RQ doorbell counter before moving RQ state from RST to RDY
+      net/mlx5e: Fix crash in recovery flow without devlink reporter
+
+Benjamin Poirier (2):
+      ipv6: Fix route replacement with dev-only route
+      ipv6: Fix nlmsg_flags when splitting a multipath route
+
+Brett Creeley (2):
+      ice: Don't reject odd values of usecs set by user
+      ice: Wait for VF to be reset/ready before configuration
+
+Brian Vazquez (1):
+      bpf: Do not grab the bucket spinlock by default on htab batch ops
+
+Christophe JAILLET (1):
+      NFC: pn544: Fix a typo in a debug message
+
+Cong Wang (2):
+      netfilter: xt_hashlimit: reduce hashlimit_mutex scope for htable_put()
+      netfilter: xt_hashlimit: limit the max size of hashtable
+
+David S. Miller (9):
+      Merge branch 'atlantic-fixes'
+      Merge branch 'wireguard-fixes'
+      Merge branch 'bonding-fix-bonding-interface-bugs'
+      Merge git://git.kernel.org/.../pablo/nf
+      Merge tag 'mlx5-fixes-2020-02-18' of git://git.kernel.org/.../saeed/linux
+      Merge branch '100GbE' of git://git.kernel.org/.../jkirsher/net-queue
+      Merge git://git.kernel.org/.../bpf/bpf
+      Merge branch 's390-fixes'
+      Merge branch 'bnxt_en-shutdown-and-kexec-kdump-related-fixes'
+
+Dmitry Bezrukov (1):
+      net: atlantic: checksum compat issue
+
+Dmitry Bogdanov (1):
+      net: atlantic: fix out of range usage of active_vlans array
+
+Dmitry Osipenko (1):
+      nfc: pn544: Fix occasional HW initialization failure
+
+Dmytro Linkin (1):
+      net/mlx5e: Don't clear the whole vf config when switching modes
+
+Egor Pomozov (1):
+      net: atlantic: ptp gpio adjustments
+
+Erez Shitrit (1):
+      net/mlx5: DR, Handle reformat capability over sw-steering tables
+
+Eric Dumazet (2):
+      net: rtnetlink: fix bugs in rtnl_alt_ifname()
+      net: add strict checks in netdev_name_node_alt_destroy()
+
+Florian Fainelli (1):
+      net: dsa: b53: Ensure the default VID is untagged
+
+Florian Westphal (6):
+      netfilter: flowtable: skip offload setup if disabled
+      netfilter: conntrack: remove two args from resolve_clash
+      netfilter: conntrack: place confirm-bit setting in a helper
+      netfilter: conntrack: split resolve_clash function
+      netfilter: conntrack: allow insertion of clashing entries
+      mptcp: fix bogus socket flag values
+
+Hamdan Igbaria (1):
+      net/mlx5: DR, Fix matching on vport gvmi
+
+Hangbin Liu (3):
+      selftests: forwarding: use proto icmp for {gretap, ip6gretap}_mac testing
+      selftests: forwarding: vxlan_bridge_1d: fix tos value
+      selftests: forwarding: vxlan_bridge_1d: use more proper tos value
+
+Hongbo Yao (1):
+      bpf: Make btf_check_func_type_match() static
+
+Horatiu Vultur (1):
+      net: mscc: fix in frame extraction
+
+Huy Nguyen (1):
+      net/mlx5: Fix sleep while atomic in mlx5_eswitch_get_vepa
+
+Igor Russkikh (1):
+      net: atlantic: check rpc result and wait for rpc address
+
+Jakub Sitnicki (1):
+      selftests/bpf: Mark SYN cookie test skipped for UDP sockets
+
+Jason A. Donenfeld (4):
+      wireguard: selftests: reduce complexity and fix make races
+      wireguard: receive: reset last_under_load to zero
+      wireguard: send: account for mtu=0 devices
+      wireguard: socket: remove extra call to synchronize_net
+
+Jason Baron (1):
+      net: sched: correct flower port blocking
+
+Jethro Beekman (1):
+      net: fib_rules: Correctly set table field when table number exceeds 8 bits
+
+Johannes Krude (1):
+      bpf, offload: Replace bitwise AND by logical AND in bpf_prog_offload_info_fill
+
+John Fastabend (1):
+      bpf: Selftests build error in sockmap_basic.c
+
+Jonathan Neuschäfer (1):
+      net: phy: broadcom: Fix a typo ("firsly")
+
+Julian Wiedmann (2):
+      s390/qeth: don't warn for napi with 0 budget
+      s390/qeth: fix off-by-one in RX copybreak check
+
+Kees Cook (3):
+      net: core: Distribute switch variables for initialization
+      net: ip6_gre: Distribute switch variables for initialization
+      openvswitch: Distribute switch variables for initialization
+
+Leon Romanovsky (1):
+      net/rds: Track user mapped pages through special API
+
+Madhuparna Bhowmik (7):
+      net: netlabel: Use built-in RCU list checking
+      netlabel_domainhash.c: Use built-in RCU list checking
+      meter.c: Use built-in RCU list checking
+      vport.c: Use built-in RCU list checking
+      datapath.c: Use built-in RCU list checking
+      flow_table.c: Use built-in RCU list checking
+      bridge: br_stp: Use built-in RCU list checking
+
+Magnus Karlsson (1):
+      xsk: Publish global consumer pointers when NAPI is finished
+
+Marek Vasut (3):
+      net: ks8851-ml: Remove 8-bit bus accessors
+      net: ks8851-ml: Fix 16-bit data access
+      net: ks8851-ml: Fix 16-bit IO operation
+
+Martin KaFai Lau (1):
+      selftests/bpf: Fix error checking on reading the tcp_fastopen sysctl
+
+Mat Martineau (1):
+      mptcp: Protect subflow socket options before connection completes
+
+Matthieu Baerts (1):
+      mptcp: select CRYPTO
+
+Michal Kalderon (1):
+      qede: Fix race between rdma destroy workqueue and link change event
+
+Michal Kubecek (1):
+      ethtool: fix application of verbose no_mask bitset
+
+Michal Swiatkowski (1):
+      ice: Don't tell the OS that link is going down
+
+Nikita Danilov (1):
+      net: atlantic: better loopback mode handling
+
+Nikolay Aleksandrov (1):
+      net: netlink: cap max groups which will be considered in netlink_bind()
+
+Paolo Abeni (1):
+      Revert "net: dev: introduce support for sch BYPASS for lockless qdisc"
+
+Paul Blakey (1):
+      net/mlx5: Fix lowest FDB pool size
+
+Paul Cercueil (1):
+      net: ethernet: dm9000: Handle -EPROBE_DEFER in dm9000_parse_dt()
+
+Pavel Belous (3):
+      net: atlantic: fix use after free kasan warn
+      net: atlantic: fix potential error handling
+      net: atlantic: possible fault in transition to hibernation
+
+Randy Dunlap (3):
+      net/sock.h: fix all kernel-doc warnings
+      skbuff: remove stale bit mask comments
+      skbuff.h: fix all kernel-doc warnings
+
+Rohit Maheshwari (1):
+      net/tls: Fix to avoid gettig invalid tls record
+
+Roman Kiryanov (1):
+      net: disable BRIDGE_NETFILTER by default
+
+Shannon Nelson (1):
+      ionic: fix fw_status read
+
+Stefano Brivio (2):
+      netfilter: nft_set_pipapo: Fix mapping table example in comments
+      netfilter: nft_set_pipapo: Don't abuse unlikely() in pipapo_refill()
+
+Taehee Yoo (3):
+      bonding: add missing netdev_update_lockdep_key()
+      net: export netdev_next_lower_dev_rcu()
+      bonding: fix lockdep warning in bond_get_stats()
+
+Tim Harvey (1):
+      net: thunderx: workaround BGX TX Underflow issue
+
+Toke Høiland-Jørgensen (2):
+      bpf, uapi: Remove text about bpf_redirect_map() giving higher performance
+      libbpf: Sanitise internal map names so they are not rejected by the kernel
+
+Vasundhara Volam (2):
+      bnxt_en: Improve device shutdown method.
+      bnxt_en: Issue PCIe FLR in kdump kernel to cleanup pending DMAs.
+
+Willem de Bruijn (1):
+      udp: rehash on disconnect
+
+Xin Long (1):
+      sctp: move the format error check out of __sctp_sf_do_9_1_abort
+
+Yonghong Song (1):
+      bpf: Fix a potential deadlock with bpf_map_do_batch
+
+ drivers/net/bonding/bond_main.c                     |  55 +++++-
+ drivers/net/bonding/bond_options.c                  |   2 +
+ drivers/net/dsa/b53/b53_common.c                    |   3 +
+ drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c |   5 +
+ drivers/net/ethernet/aquantia/atlantic/aq_filters.c |   2 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_hw.h      |   2 +
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c     |   8 +-
+ .../net/ethernet/aquantia/atlantic/aq_pci_func.c    |  13 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c    |  10 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.h    |   3 +-
+ .../ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c   |  22 ++-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c         |  19 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c    |  12 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c           |  12 +-
+ drivers/net/ethernet/broadcom/cnic_defs.h           |   4 +-
+ drivers/net/ethernet/cadence/macb.h                 |   1 +
+ drivers/net/ethernet/cadence/macb_main.c            |  66 +++----
+ drivers/net/ethernet/cavium/thunder/thunder_bgx.c   |  62 ++++++-
+ drivers/net/ethernet/cavium/thunder/thunder_bgx.h   |   9 +
+ drivers/net/ethernet/davicom/dm9000.c               |   2 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c        |  56 ++++--
+ drivers/net/ethernet/intel/ice/ice_txrx.h           |   2 +-
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c    | 134 +++++++-------
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h    |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/health.c |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h   |   8 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c   |  20 +--
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c  |   4 +-
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c    |   2 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c   |   5 +-
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c    |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/wq.c        |  39 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/wq.h        |   2 +
+ drivers/net/ethernet/micrel/ks8851_mll.c            |  53 +-----
+ drivers/net/ethernet/mscc/ocelot_board.c            |   8 +
+ drivers/net/ethernet/pensando/ionic/ionic_dev.c     |  11 +-
+ drivers/net/ethernet/pensando/ionic/ionic_if.h      |   1 +
+ drivers/net/ethernet/qlogic/qede/qede.h             |   2 +
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c        |  29 +++-
+ drivers/net/phy/broadcom.c                          |   4 +-
+ drivers/net/phy/mdio-bcm-iproc.c                    |  20 +++
+ drivers/net/wireguard/device.c                      |   7 +-
+ drivers/net/wireguard/receive.c                     |   7 +-
+ drivers/net/wireguard/send.c                        |  16 +-
+ drivers/net/wireguard/socket.c                      |   1 -
+ drivers/nfc/pn544/i2c.c                             |   1 +
+ drivers/nfc/pn544/pn544.c                           |   2 +-
+ drivers/s390/net/qeth_core_main.c                   |   3 +-
+ drivers/s390/net/qeth_l2_main.c                     |  29 ++--
+ include/linux/mlx5/mlx5_ifc.h                       |   5 +-
+ include/linux/netdevice.h                           |   7 +-
+ include/linux/rculist_nulls.h                       |   7 +
+ include/linux/skbuff.h                              |  30 ++++
+ include/net/flow_dissector.h                        |   9 +
+ include/net/sock.h                                  |  38 +++-
+ include/uapi/linux/bpf.h                            |  16 +-
+ include/uapi/linux/netfilter/nf_conntrack_common.h  |  12 +-
+ kernel/bpf/btf.c                                    |   6 +-
+ kernel/bpf/hashtab.c                                |  58 ++++++-
+ kernel/bpf/offload.c                                |   2 +-
+ net/Kconfig                                         |   1 -
+ net/bridge/br_stp.c                                 |   3 +-
+ net/core/dev.c                                      |  34 ++--
+ net/core/fib_rules.c                                |   2 +-
+ net/core/rtnetlink.c                                |  26 ++-
+ net/core/skbuff.c                                   |   6 +-
+ net/ethtool/bitset.c                                |   3 +
+ net/hsr/hsr_framereg.c                              |   3 +-
+ net/ipv4/udp.c                                      |   6 +-
+ net/ipv6/ip6_fib.c                                  |   7 +-
+ net/ipv6/ip6_gre.c                                  |   8 +-
+ net/ipv6/ip6_tunnel.c                               |  13 +-
+ net/ipv6/route.c                                    |   1 +
+ net/mptcp/Kconfig                                   |   1 +
+ net/mptcp/protocol.c                                |  48 ++----
+ net/mptcp/protocol.h                                |   4 +-
+ net/netfilter/nf_conntrack_core.c                   | 192 ++++++++++++++++++---
+ net/netfilter/nf_conntrack_proto_udp.c              |  20 ++-
+ net/netfilter/nf_flow_table_offload.c               |   6 +-
+ net/netfilter/nft_set_pipapo.c                      |   6 +-
+ net/netfilter/xt_hashlimit.c                        |  22 ++-
+ net/netlabel/netlabel_domainhash.c                  |   3 +-
+ net/netlabel/netlabel_unlabeled.c                   |   3 +-
+ net/netlink/af_netlink.c                            |   5 +-
+ net/openvswitch/datapath.c                          |   9 +-
+ net/openvswitch/flow_netlink.c                      |  18 +-
+ net/openvswitch/flow_table.c                        |   6 +-
+ net/openvswitch/meter.c                             |   3 +-
+ net/openvswitch/vport.c                             |   3 +-
+ net/rds/rdma.c                                      |  24 +--
+ net/sched/cls_flower.c                              |   1 +
+ net/sctp/sm_statefuns.c                             |  29 +++-
+ net/tls/tls_device.c                                |  20 ++-
+ net/xdp/xsk.c                                       |   2 +
+ net/xdp/xsk_queue.h                                 |   3 +-
+ tools/include/uapi/linux/bpf.h                      |  16 +-
+ tools/lib/bpf/libbpf.c                              |   8 +-
+ .../selftests/bpf/prog_tests/select_reuseport.c     |   8 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c        |   5 +
+ tools/testing/selftests/net/fib_tests.sh            |   6 +
+ .../testing/selftests/net/forwarding/mirror_gre.sh  |  25 +--
+ .../selftests/net/forwarding/vxlan_bridge_1d.sh     |   6 +-
+ tools/testing/selftests/wireguard/qemu/Makefile     |  38 ++--
+ 104 files changed, 1132 insertions(+), 506 deletions(-)
