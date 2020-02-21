@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B707167947
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 10:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 210EE1679BA
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 10:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgBUJWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 04:22:32 -0500
-Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:43788 "EHLO
+        id S1728279AbgBUJro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 04:47:44 -0500
+Received: from esa4.hc3370-68.iphmx.com ([216.71.155.144]:45069 "EHLO
         esa4.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726244AbgBUJWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 04:22:31 -0500
+        with ESMTP id S1727592AbgBUJro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 04:47:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1582276950;
+  d=citrix.com; s=securemail; t=1582278463;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=1o0dm0wP/9Dz9LlBZ6U1xeJE27JCYBLNrNyaJmSV7RA=;
-  b=MFoYi+tEl5BCR2wNmd5aWhFrnUXQDbqy9EzmBv+5Ij7a2pw+5LkAKqTj
-   yMl30d4+G1sbV3yQyvVXRX+8QwCBzC31Z+jjtbegpsndmqzOe6rOv7TUG
-   7nE42Yp91W0NmDeaoZoSdAWJULlCdPmhpfdMAR6T/QYJQlYWArAe/cLCh
-   0=;
+  bh=GGvy69JckNgFz+hczURopPTJOBE9gpMRPOIkan44JhQ=;
+  b=VCCjy4dYV0EZTkVSv56tLk6En85Tlo8p9dU+qrzMiiBQBx8Rdh08ubVq
+   7FNCnPhvYf7Yc3dfRce2D+MkfqHzR4r812XSWvv1USUsLclPpeiA/MeIt
+   AYUrf4AtrT2javLdJcDKmycZFXzQk+ahpCTHjo65Y3beNEk7bOV15ZLXU
+   c=;
 Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
 Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
   authenticity information available from domain of
@@ -47,22 +47,22 @@ Received-SPF: None (esa4.hc3370-68.iphmx.com: no sender
   envelope-from="roger.pau@citrix.com";
   x-sender="postmaster@mail.citrix.com";
   x-conformance=sidf_compatible
-IronPort-SDR: 2naM2fLXRcIEz8ci/DVJT0B1w7DqJ7CFF6pH3dGfAg8IDJnxKdg4pAIVGMLNM76zeD8JWQiYPu
- aCowGjUBDV4/+Jj8d2GFJ4juB5ltAKhgt2ZeugZnWy0t88xKRc5q2rSJI1SB5tCEG1FWZ5nlZw
- 0XpRIC+ckYLXsDK6/kM0cf6X8gOnCHMrrpTTVSe0V89LPhDLMpjyrXTuK2k0XFmXbmtzAWf1Tw
- ayuQD7J/bhQRq21Khs7UiVOkrPP/IlfRq6ASzfvfe513kMpID3AZbDw7cSKFXRHGtJyy5X4TFQ
- hfE=
+IronPort-SDR: RbCXnuRrHuq0rKPJfUulfq14400bSrZsUVVOUEIBDlqmlN8pUmdWOt6Bofx+4GBNKTj7tXep72
+ 9vxVJK+d0ivzIZkgMrlGXeox5zAu1OCeEr2Ez4mnpXvI5PIgQ1hTg8ewMgvN1n8c2bl48r5ETn
+ 7JSiKBwC4qAktm3GNIEwjNvzqWy+D/Pjf4pr8wWc2sJoRDpZ6VqXhZpJu6EM01eFLHZixtanzu
+ 4kLP5nzJUewYYv90/U34x9c3+1srhcr+v+hpLMGf+rXn1PkrRxSVxMp1R3+2iSbpig8r41NJzc
+ xbc=
 X-SBRS: 2.7
-X-MesageID: 13431188
+X-MesageID: 13431981
 X-Ironport-Server: esa4.hc3370-68.iphmx.com
 X-Remote-IP: 162.221.158.21
 X-Policy: $RELAYED
 X-IronPort-AV: E=Sophos;i="5.70,467,1574139600"; 
-   d="scan'208";a="13431188"
-Date:   Fri, 21 Feb 2020 10:22:19 +0100
+   d="scan'208";a="13431981"
+Date:   Fri, 21 Feb 2020 10:47:35 +0100
 From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
-CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     "Durrant, Paul" <pdurrant@amazon.co.uk>,
         "Valentin, Eduardo" <eduval@amazon.com>,
         "len.brown@intel.com" <len.brown@intel.com>,
         "peterz@infradead.org" <peterz@infradead.org>,
@@ -91,9 +91,8 @@ CC:     "Agarwal, Anchal" <anchalag@amazon.com>,
         "Woodhouse, David" <dwmw@amazon.co.uk>
 Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks for
  PM suspend and hibernation
-Message-ID: <20200221092219.GU4679@Air-de-Roger>
-References: <20200217100509.GE4679@Air-de-Roger>
- <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Message-ID: <20200221094735.GV4679@Air-de-Roger>
+References: <20200217230553.GA8100@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
  <20200218091611.GN4679@Air-de-Roger>
  <20200219180424.GA17584@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
  <20200220083904.GI4679@Air-de-Roger>
@@ -102,11 +101,12 @@ References: <20200217100509.GE4679@Air-de-Roger>
  <c9662397256a4568a5cc7d70a84940e5@EX13D32EUC003.ant.amazon.com>
  <20200220164839.GR4679@Air-de-Roger>
  <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
+ <20200221004918.GA13221@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e42fa35800f04b6f953e4af87f2c1a02@EX13D32EUC003.ant.amazon.com>
+In-Reply-To: <20200221004918.GA13221@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
  AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
@@ -114,33 +114,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 05:01:52PM +0000, Durrant, Paul wrote:
-> > > Hopefully what I said above illustrates why it may not be 100% common.
-> > 
-> > Yes, that's fine. I don't expect it to be 100% common (as I guess
-> > that the hooks will have different prototypes), but I expect
-> > that routines can be shared, and that the approach taken can be the
-> > same.
-> > 
-> > For example one necessary difference will be that xenbus initiated
-> > suspend won't close the PV connection, in case suspension fails. On PM
-> > suspend you seem to always close the connection beforehand, so you
-> > will always have to re-negotiate on resume even if suspension failed.
-> > 
-> > What I'm mostly worried about is the different approach to ring
-> > draining. Ie: either xenbus is changed to freeze the queues and drain
-> > the shared rings, or PM uses the already existing logic of not
-> > flushing the rings an re-issuing in-flight requests on resume.
-> > 
+On Fri, Feb 21, 2020 at 12:49:18AM +0000, Anchal Agarwal wrote:
+> On Thu, Feb 20, 2020 at 10:01:52AM -0700, Durrant, Paul wrote:
+> > > -----Original Message-----
+> > > From: Roger Pau Monné <roger.pau@citrix.com>
+> > > Sent: 20 February 2020 16:49
+> > > To: Durrant, Paul <pdurrant@amazon.co.uk>
+> > > Cc: Agarwal, Anchal <anchalag@amazon.com>; Valentin, Eduardo
+> > > <eduval@amazon.com>; len.brown@intel.com; peterz@infradead.org;
+> > > benh@kernel.crashing.org; x86@kernel.org; linux-mm@kvack.org;
+> > > pavel@ucw.cz; hpa@zytor.com; tglx@linutronix.de; sstabellini@kernel.org;
+> > > fllinden@amaozn.com; Kamata, Munehisa <kamatam@amazon.com>;
+> > > mingo@redhat.com; xen-devel@lists.xenproject.org; Singh, Balbir
+> > > <sblbir@amazon.com>; axboe@kernel.dk; konrad.wilk@oracle.com;
+> > > bp@alien8.de; boris.ostrovsky@oracle.com; jgross@suse.com;
+> > > netdev@vger.kernel.org; linux-pm@vger.kernel.org; rjw@rjwysocki.net;
+> > > linux-kernel@vger.kernel.org; vkuznets@redhat.com; davem@davemloft.net;
+> > > Woodhouse, David <dwmw@amazon.co.uk>
+> > > Subject: Re: [Xen-devel] [RFC PATCH v3 06/12] xen-blkfront: add callbacks
+> > > for PM suspend and hibernation
+> > > For example one necessary difference will be that xenbus initiated
+> > > suspend won't close the PV connection, in case suspension fails. On PM
+> > > suspend you seem to always close the connection beforehand, so you
+> > > will always have to re-negotiate on resume even if suspension failed.
+> > >
+> I don't get what you mean, 'suspension failure' during disconnecting frontend from 
+> backend? [as in this case we mark frontend closed and then wait for completion]
+> Or do you mean suspension fail in general post bkacend is disconnected from
+> frontend for blkfront? 
+
+I don't think you strictly need to disconnect from the backend when
+suspending. Just waiting for all requests to finish should be enough.
+
+This has the benefit of not having to renegotiate if the suspension
+fails, and thus you can recover from suspension faster in case of
+failure. Since you haven't closed the connection with the backend just
+unfreezing the queues should get you working again, and avoids all the
+renegotiation.
+
+> In case of later, if anything fails after the dpm_suspend(),
+> things need to be thawed or set back up so it should ok to always 
+> re-negotitate just to avoid errors. 
 > 
-> Yes, that's needs consideration. I don’t think the same semantic can be suitable for both. E.g. in a xen-suspend we need to freeze with as little processing as possible to avoid dirtying RAM late in the migration cycle, and we know that in-flight data can wait. But in a transition to S4 we need to make sure that at least all the in-flight blkif requests get completed, since they probably contain bits of the guest's memory image and that's not going to get saved any other way.
+> > > What I'm mostly worried about is the different approach to ring
+> > > draining. Ie: either xenbus is changed to freeze the queues and drain
+> > > the shared rings, or PM uses the already existing logic of not
+> > > flushing the rings an re-issuing in-flight requests on resume.
+> > > 
+> > 
+> > Yes, that's needs consideration. I don’t think the same semantic can be suitable for both. E.g. in a xen-suspend we need to freeze with as little processing as possible to avoid dirtying RAM late in the migration cycle, and we know that in-flight data can wait. But in a transition to S4 we need to make sure that at least all the in-flight blkif requests get completed, since they probably contain bits of the guest's memory image and that's not going to get saved any other way.
+> > 
+> >   Paul
+> I agree with Paul here. Just so as you know, I did try a hacky way in the past 
+> to re-queue requests in the past and failed miserably.
 
-Thanks, that makes sense and something along this lines should be
-added to the commit message IMO.
+Well, it works AFAIK for xenbus initiated suspension, so I would be
+interested to know why it doesn't work with PM suspension.
 
-Wondering about S4, shouldn't we expect the queues to already be
-empty? As any subsystem that wanted to store something to disk should
-make sure requests have been successfully completed before
-suspending.
+> I doubt[just from my experimentation]re-queuing the requests will work for PM 
+> Hibernation for the same reason Paul mentioned above unless you give me pressing
+> reason why it should work.
 
-Thanks, Roger.
+My main reason is that I don't want to maintain two different
+approaches to suspend/resume without a technical argument for it. I'm
+not happy to take a bunch of new code just because the current one
+doesn't seem to work in your use-case.
+
+That being said, if there's a justification for doing it differently
+it needs to be stated clearly in the commit. From the current commit
+message I didn't gasp that there was a reason for not using the
+current xenbus suspend/resume logic.
+
+> Also, won't it effect the migration time if we start waiting for all the
+> inflight requests to complete[last min page faults] ?
+
+Well, it's going to dirty pages that would have to be re-send to the
+destination side.
+
+Roger.
