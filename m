@@ -2,128 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B22EC16851D
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB6B16856E
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:48:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgBURgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 12:36:19 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37524 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726342AbgBURgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:36:19 -0500
-Received: by mail-pj1-f65.google.com with SMTP id m13so1060279pjb.2;
-        Fri, 21 Feb 2020 09:36:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xCuUVG8i9sUDnafZb9V7mQjHX9/dckJtwGg3rmaaHo4=;
-        b=I7JCJhFZz8SRs2jNQKKGxgwzmYk7nx4qwqEm8xoUGhzbEX+jz77yNShT8//TUNew7o
-         m9B2eLslNGYfGQ2F335wUDgqaUROFv6w8orB6SPR2bL80icZ6IVgKkbAHw/OZP9m0W42
-         jJqOp8HalM194W7hG3xcHHTwJcZko+ncvfVT5MDko2o3akKrx3F2KNPPghDsPPu9NGvQ
-         oj85orP2I77EIa0H3YQq71kOdC+jULP1NmHTZN/Fm2lgda/i7xjO+iwgfxDY5+Gu0gfP
-         BZjn0BMzUEWVqzP3qGhtYJg/72AvYi60eYSO7NNZxmb+gqgGNoFeppczIl2n2chtkzzA
-         UPag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xCuUVG8i9sUDnafZb9V7mQjHX9/dckJtwGg3rmaaHo4=;
-        b=svwfsmAN6hxv2Xdch4/9S6q9YV1Iyr9m7IwKeMZIJhy64QVtGqb88jyHL7eC70pdfd
-         ct6EQ9WKxCaDBTmGPVargjzLZjHdXprZPRHFpaJvdChrXh5AJ/4PgkkheF7nqJadu5In
-         Zr+b3SK0sjyHd2WAN2bUeKQAek5i35lCTCY+oGwwmXN5KHih8kJ8jncii2pjGaOT++tw
-         K4388clMRN2O2+UeHL8CpYy+Zhl7QU/ZtqBfu2Ona2PCidj8EGKnGwMMmO7j/F8ZMD6s
-         0H+ZF/JvceTmHhGne0I3wr5gHCfaR1nuybcQ0eTNUz14PmsE5VT2P5cQPxZFAYxEnKyG
-         tQ3A==
-X-Gm-Message-State: APjAAAXQ9cBoE4ttnfqH/EF/XuFw6g05hxU3Z/kS9AwIAng/Uy8XLx3e
-        Ypj4dEOtgOdZj7l4XB3WLA==
-X-Google-Smtp-Source: APXvYqyViuIGu2NMjKXfV2oi5e71Y2nv4Ub8Ajrnm77/jV9pFx3oWcpx0XVU8lPi+Cpf68UC7E4Sjg==
-X-Received: by 2002:a17:90a:c084:: with SMTP id o4mr4192690pjs.35.1582306578445;
-        Fri, 21 Feb 2020 09:36:18 -0800 (PST)
-Received: from madhuparna-HP-Notebook ([2402:3a80:1ee0:fe5e:d03d:769b:c838:c146])
-        by smtp.gmail.com with ESMTPSA id l15sm3044096pgi.31.2020.02.21.09.35.54
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 21 Feb 2020 09:36:17 -0800 (PST)
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
-Date:   Fri, 21 Feb 2020 23:05:34 +0530
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     madhuparnabhowmik10@gmail.com, jiri@mellanox.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
-Subject: Re: [PATCH] net: core: devlink.c: Use built-in RCU list checking
-Message-ID: <20200221173533.GA13198@madhuparna-HP-Notebook>
-References: <20200221165141.24630-1-madhuparnabhowmik10@gmail.com>
- <20200221172008.GA2181@nanopsycho>
+        id S1729425AbgBURs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 12:48:29 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:42101 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729411AbgBURs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:48:27 -0500
+X-Originating-IP: 92.184.108.100
+Received: from localhost (unknown [92.184.108.100])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id EDFB9FF806;
+        Fri, 21 Feb 2020 17:48:23 +0000 (UTC)
+Date:   Fri, 21 Feb 2020 18:48:20 +0100
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>
+Subject: Re: [RFC 09/18] net: macsec: add support for getting offloaded stats
+Message-ID: <20200221174820.GD3530@kwain>
+References: <20200214150258.390-1-irusskikh@marvell.com>
+ <20200214150258.390-10-irusskikh@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200221172008.GA2181@nanopsycho>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200214150258.390-10-irusskikh@marvell.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 06:20:08PM +0100, Jiri Pirko wrote:
-> Fri, Feb 21, 2020 at 05:51:41PM CET, madhuparnabhowmik10@gmail.com wrote:
-> >From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> >
-> >list_for_each_entry_rcu() has built-in RCU and lock checking.
-> >
-> >Pass cond argument to list_for_each_entry_rcu() to silence
-> >false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
-> >by default.
-> >
-> >Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Hello,
+
+On Fri, Feb 14, 2020 at 06:02:49PM +0300, Igor Russkikh wrote:
+> From: Dmitry Bogdanov <dbogdanov@marvell.com>
 > 
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> 
-> Thanks.
-> 
-> However, there is a callpath where not devlink lock neither rcu read is
-> taken:
-> devlink_dpipe_table_register()->devlink_dpipe_table_find()
->
-Hi,
+> report sw stats only if offloaded stats are not supported
 
-Yes I had noticed this, but I was not sure if there is some other lock
-which is being used.
+Please improve the changelog.
 
-If yes, then can you please tell me which lock is held in this case,
-and I can add that condition as well to list_for_each_entry_rcu() usage.
+> -static int copy_tx_sa_stats(struct sk_buff *skb,
+> -			    struct macsec_tx_sa_stats __percpu *pstats)
+> +static void get_tx_sa_stats(struct net_device *dev, int an,
+> +			    struct macsec_tx_sa *tx_sa,
+> +			    struct macsec_tx_sa_stats *sum)
+>  {
+> -	struct macsec_tx_sa_stats sum = {0, };
+> +	struct macsec_dev *macsec = macsec_priv(dev);
+> +	int err = -EOPNOTSUPP;
+>  	int cpu;
+>  
+> +	/* If h/w offloading is available, propagate to the device */
+> +	if (macsec_is_offloaded(macsec)) {
+> +		const struct macsec_ops *ops;
+> +		struct macsec_context ctx;
+> +
+> +		ops = macsec_get_ops(macsec, &ctx);
+> +		if (ops) {
+> +			ctx.sa.assoc_num = an;
+> +			ctx.sa.tx_sa = tx_sa;
+> +			ctx.stats.tx_sa_stats = sum;
+> +			ctx.secy = &macsec_priv(dev)->secy;
+> +			err = macsec_offload(ops->mdo_get_tx_sa_stats, &ctx);
+> +		}
+> +	}
+> +
+> +	if (err != -EOPNOTSUPP)
+> +		return;
 
-And if no lock or rcu_read_lock is held then may be we should
-use rcu_read_lock/unlock here.
+If offloading is enabled and ops->mdo_get_tx_sa_stats is returning
+-EOPNOTSUPP, do we really want to return the s/w stats as they'll be
+wrong and out of sync with the hardware anyway?
 
-Let me know what you think about this.
+(The same applies for the other statistics retrieval in the same patch).
 
-Thank you,
-Madhuparna
+> +
+>  	for_each_possible_cpu(cpu) {
+> -		const struct macsec_tx_sa_stats *stats = per_cpu_ptr(pstats, cpu);
+> +		const struct macsec_tx_sa_stats *stats =
+> +			per_cpu_ptr(tx_sa->stats, cpu);
+>  
+> -		sum.OutPktsProtected += stats->OutPktsProtected;
+> -		sum.OutPktsEncrypted += stats->OutPktsEncrypted;
+> +		sum->OutPktsProtected += stats->OutPktsProtected;
+> +		sum->OutPktsEncrypted += stats->OutPktsEncrypted;
+>  	}
+> +}
 
-> I guess that was not the trace you were seeing, right?
-> 
-> 
-> >---
-> > net/core/devlink.c | 3 ++-
-> > 1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/net/core/devlink.c b/net/core/devlink.c
-> >index 4c63c9a4c09e..3e8c94155d93 100644
-> >--- a/net/core/devlink.c
-> >+++ b/net/core/devlink.c
-> >@@ -2107,7 +2107,8 @@ devlink_dpipe_table_find(struct list_head *dpipe_tables,
-> > {
-> > 	struct devlink_dpipe_table *table;
-> > 
-> >-	list_for_each_entry_rcu(table, dpipe_tables, list) {
-> >+	list_for_each_entry_rcu(table, dpipe_tables, list,
-> >+				lockdep_is_held(&devlink->lock)) {
-> > 		if (!strcmp(table->name, table_name))
-> > 			return table;
-> > 	}
-> >-- 
-> >2.17.1
-> >
+Thanks!
+Antoine
+
+-- 
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
