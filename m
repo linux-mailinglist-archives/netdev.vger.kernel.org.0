@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F45D1685A5
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158D81685A6
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 18:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729205AbgBURyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 12:54:49 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:43339 "EHLO
+        id S1729258AbgBURyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 12:54:51 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52623 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729096AbgBURys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:54:48 -0500
+        by vger.kernel.org with ESMTP id S1726955AbgBURyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 12:54:49 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D12202208A;
-        Fri, 21 Feb 2020 12:54:46 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 7756721E50;
+        Fri, 21 Feb 2020 12:54:48 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 21 Feb 2020 12:54:46 -0500
+  by compute3.internal (MEProxy); Fri, 21 Feb 2020 12:54:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=TVgG+c4XxPTmmWC5EbeqRblWbhOKfLkAKRandS3P6so=; b=0N1lPcjv
-        0oLca+ouOuHA07eUjZ9M8JjwQYU0Rt9OOTCVGv2umA/Zo9MMhZV2vxXiXYHROwDA
-        2YSqSsN3JEIjIlPU9gS7EK8cPGTtEpEDhV2z7dIxWpm3AfD5fIwYM3Rh4X1QPwOX
-        +bbHpRRIkA0rAZFpvkR/WnbEYmZBnZMOvCtdkaC8HzLSUDauv9MHtJ3u+eE83oma
-        /Grq7Y98E7IXuXAX5wpBsZjmrcBflE/407kVQDKpaGh++kYm1C4ulCB1FNwdJU2L
-        QZjFR+ilDFSxTdUbVSXCEum4dPeQkJZaZYtEpOX1hzJ5aYvTP4aAakoFG6WGWGtJ
-        TC9FNCPjR2dyfA==
-X-ME-Sender: <xms:ZhlQXr-6TJ57Iao2IJJDgYoMGRRj5lUrn7Jw5HwHEkOMKfXo5uYT0g>
+        fm2; bh=InkvFz7I6BqERTGjHbOoFHRB73kffaixxM51lCmVIiA=; b=kdSTmpIH
+        3ZZPjuCx4CAVP3dcb4BTvyVRmsiAKUdBriTu1awljf+QbN4+X4C+GN1i9DGjjyoK
+        0iUYgG5wGBLFB9w4/42qvJlaFOhMIGUDnRUzoarioj/dzlaa79PPCW15Ciu2wEtS
+        H8qkwWvinLri62XjkHflofEGRR2PAQv2zqa0wP31fBPFF+g1IyezP4zdGAYM6I/w
+        z3xllBix4Y7PRjuSMiiugGzT98kssv2mDprmFqNwkEUIb1C5hklc5jZ2pigHmML+
+        Ty3Q+7AeuHgvP3jCZUh2bdoCBU4Jb2LQZPmj9HPGvQG3qEd/uqSX0cfEdoSoHkrG
+        pARoc6WWwV8bUg==
+X-ME-Sender: <xms:aBlQXpoFWr51SEiX2rcD6qqVpqysJnPNwQIys9_VqD2cjjrx2VRd8Q>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkeeggddutdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkeeggddutdeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppedutdelrdeiiedruddvrdehvdenucevlhhushhtvghruf
     hiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
     rdhorhhg
-X-ME-Proxy: <xmx:ZhlQXr8SrMF-VAnC5pm5xPresGx4cfvvu_8YU33c6mIm1bL4xTV1kA>
-    <xmx:ZhlQXkCC2rpIquH02BCDRg3-oqAnJQn1qTCfq0s5vYHhWwWq60jVnA>
-    <xmx:ZhlQXrz-DYJ6ADz-U95ygY3FT1uRysFXjFl5P7jHcMQX3uSKuhXgPA>
-    <xmx:ZhlQXvu7-OcdxVlzBFnXyGmfPFGqY6KcctGIvvwEfLZuLNlkAa-3Mw>
+X-ME-Proxy: <xmx:aBlQXuu_ydNat8uhyQWcs9DrZDtNKlhj4de-i1oBrDwe8CnnWRsang>
+    <xmx:aBlQXg2xFYKVc7OThRbm945lr53XbqFX5jiWOkYcr2YyUJDZinVKnQ>
+    <xmx:aBlQXhGITDfTLdyAIhkeWtoR-qsUIq-FdzRCoI2JFy8Sqg5V3nmMig>
+    <xmx:aBlQXvy3n5oh4QN091F54p0RjTf8pbfKAS3OWkrlTeH35w8G8AdaVw>
 Received: from localhost.localdomain (bzq-109-66-12-52.red.bezeqint.net [109.66.12.52])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 395963060BD1;
-        Fri, 21 Feb 2020 12:54:45 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EC91A3060BD1;
+        Fri, 21 Feb 2020 12:54:46 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 03/12] mlxsw: spectrum_mr: Protect multicast route list with a lock
-Date:   Fri, 21 Feb 2020 19:54:06 +0200
-Message-Id: <20200221175415.390884-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/12] mlxsw: spectrum_router: Expose router struct to internal users
+Date:   Fri, 21 Feb 2020 19:54:07 +0200
+Message-Id: <20200221175415.390884-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200221175415.390884-1-idosch@idosch.org>
 References: <20200221175415.390884-1-idosch@idosch.org>
@@ -61,124 +61,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Protect the per-table multicast route list with a lock and remove RTNL
-from the delayed work that periodically updates the kernel about packets
-and bytes statistics from each multicast route.
+The dpipe code accesses internal router data structures and acquires
+RTNL to protect against their changes. Subsequent patches will remove
+reliance on RTNL and introduce a dedicated lock to protect router data
+structures.
+
+Publish the router struct to internal users such as the dpipe, so that
+they could acquire it instead of RTNL.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_mr.c | 24 +++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 33 -------------------
+ .../ethernet/mellanox/mlxsw/spectrum_router.h | 33 +++++++++++++++++++
+ 2 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-index 0d64d8c4038b..085d9676e34b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-@@ -68,6 +68,7 @@ struct mlxsw_sp_mr_table {
- 	u32 vr_id;
- 	struct mlxsw_sp_mr_vif vifs[MAXVIFS];
- 	struct list_head route_list;
-+	struct mutex route_list_lock; /* Protects route_list */
- 	struct rhashtable route_ht;
- 	const struct mlxsw_sp_mr_table_ops *ops;
- 	char catchall_route_priv[];
-@@ -372,6 +373,8 @@ static void mlxsw_sp_mr_mfc_offload_update(struct mlxsw_sp_mr_route *mr_route)
- static void __mlxsw_sp_mr_route_del(struct mlxsw_sp_mr_table *mr_table,
- 				    struct mlxsw_sp_mr_route *mr_route)
- {
-+	WARN_ON_ONCE(!mutex_is_locked(&mr_table->route_list_lock));
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 634a9a949777..991095f66fc2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -48,39 +48,6 @@ struct mlxsw_sp_vr;
+ struct mlxsw_sp_lpm_tree;
+ struct mlxsw_sp_rif_ops;
+ 
+-struct mlxsw_sp_router {
+-	struct mlxsw_sp *mlxsw_sp;
+-	struct mlxsw_sp_rif **rifs;
+-	struct mlxsw_sp_vr *vrs;
+-	struct rhashtable neigh_ht;
+-	struct rhashtable nexthop_group_ht;
+-	struct rhashtable nexthop_ht;
+-	struct list_head nexthop_list;
+-	struct {
+-		/* One tree for each protocol: IPv4 and IPv6 */
+-		struct mlxsw_sp_lpm_tree *proto_trees[2];
+-		struct mlxsw_sp_lpm_tree *trees;
+-		unsigned int tree_count;
+-	} lpm;
+-	struct {
+-		struct delayed_work dw;
+-		unsigned long interval;	/* ms */
+-	} neighs_update;
+-	struct delayed_work nexthop_probe_dw;
+-#define MLXSW_SP_UNRESOLVED_NH_PROBE_INTERVAL 5000 /* ms */
+-	struct list_head nexthop_neighs_list;
+-	struct list_head ipip_list;
+-	bool aborted;
+-	struct notifier_block fib_nb;
+-	struct notifier_block netevent_nb;
+-	struct notifier_block inetaddr_nb;
+-	struct notifier_block inet6addr_nb;
+-	const struct mlxsw_sp_rif_ops **rif_ops_arr;
+-	const struct mlxsw_sp_ipip_ops **ipip_ops_arr;
+-	u32 adj_discard_index;
+-	bool adj_discard_index_valid;
+-};
+-
+ struct mlxsw_sp_rif {
+ 	struct list_head nexthop_list;
+ 	struct list_head neigh_list;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index c9b94f435cdd..b2554727d8ee 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -7,6 +7,39 @@
+ #include "spectrum.h"
+ #include "reg.h"
+ 
++struct mlxsw_sp_router {
++	struct mlxsw_sp *mlxsw_sp;
++	struct mlxsw_sp_rif **rifs;
++	struct mlxsw_sp_vr *vrs;
++	struct rhashtable neigh_ht;
++	struct rhashtable nexthop_group_ht;
++	struct rhashtable nexthop_ht;
++	struct list_head nexthop_list;
++	struct {
++		/* One tree for each protocol: IPv4 and IPv6 */
++		struct mlxsw_sp_lpm_tree *proto_trees[2];
++		struct mlxsw_sp_lpm_tree *trees;
++		unsigned int tree_count;
++	} lpm;
++	struct {
++		struct delayed_work dw;
++		unsigned long interval;	/* ms */
++	} neighs_update;
++	struct delayed_work nexthop_probe_dw;
++#define MLXSW_SP_UNRESOLVED_NH_PROBE_INTERVAL 5000 /* ms */
++	struct list_head nexthop_neighs_list;
++	struct list_head ipip_list;
++	bool aborted;
++	struct notifier_block fib_nb;
++	struct notifier_block netevent_nb;
++	struct notifier_block inetaddr_nb;
++	struct notifier_block inet6addr_nb;
++	const struct mlxsw_sp_rif_ops **rif_ops_arr;
++	const struct mlxsw_sp_ipip_ops **ipip_ops_arr;
++	u32 adj_discard_index;
++	bool adj_discard_index_valid;
++};
 +
- 	mlxsw_sp_mr_mfc_offload_set(mr_route, false);
- 	rhashtable_remove_fast(&mr_table->route_ht, &mr_route->ht_node,
- 			       mlxsw_sp_mr_route_ht_params);
-@@ -423,7 +426,9 @@ int mlxsw_sp_mr_route_add(struct mlxsw_sp_mr_table *mr_table,
- 		goto err_mr_route_write;
- 
- 	/* Put it in the table data-structures */
-+	mutex_lock(&mr_table->route_list_lock);
- 	list_add_tail(&mr_route->node, &mr_table->route_list);
-+	mutex_unlock(&mr_table->route_list_lock);
- 	err = rhashtable_insert_fast(&mr_table->route_ht,
- 				     &mr_route->ht_node,
- 				     mlxsw_sp_mr_route_ht_params);
-@@ -443,7 +448,9 @@ int mlxsw_sp_mr_route_add(struct mlxsw_sp_mr_table *mr_table,
- 	return 0;
- 
- err_rhashtable_insert:
-+	mutex_lock(&mr_table->route_list_lock);
- 	list_del(&mr_route->node);
-+	mutex_unlock(&mr_table->route_list_lock);
- 	mlxsw_sp_mr_route_erase(mr_table, mr_route);
- err_mr_route_write:
- err_no_orig_route:
-@@ -461,8 +468,11 @@ void mlxsw_sp_mr_route_del(struct mlxsw_sp_mr_table *mr_table,
- 	mr_table->ops->key_create(mr_table, &key, mfc);
- 	mr_route = rhashtable_lookup_fast(&mr_table->route_ht, &key,
- 					  mlxsw_sp_mr_route_ht_params);
--	if (mr_route)
-+	if (mr_route) {
-+		mutex_lock(&mr_table->route_list_lock);
- 		__mlxsw_sp_mr_route_del(mr_table, mr_route);
-+		mutex_unlock(&mr_table->route_list_lock);
-+	}
- }
- 
- /* Should be called after the VIF struct is updated */
-@@ -911,6 +921,7 @@ struct mlxsw_sp_mr_table *mlxsw_sp_mr_table_create(struct mlxsw_sp *mlxsw_sp,
- 	mr_table->proto = proto;
- 	mr_table->ops = &mlxsw_sp_mr_table_ops_arr[proto];
- 	INIT_LIST_HEAD(&mr_table->route_list);
-+	mutex_init(&mr_table->route_list_lock);
- 
- 	err = rhashtable_init(&mr_table->route_ht,
- 			      &mlxsw_sp_mr_route_ht_params);
-@@ -936,6 +947,7 @@ struct mlxsw_sp_mr_table *mlxsw_sp_mr_table_create(struct mlxsw_sp *mlxsw_sp,
- err_ops_route_create:
- 	rhashtable_destroy(&mr_table->route_ht);
- err_route_rhashtable_init:
-+	mutex_destroy(&mr_table->route_list_lock);
- 	kfree(mr_table);
- 	return ERR_PTR(err);
- }
-@@ -952,6 +964,7 @@ void mlxsw_sp_mr_table_destroy(struct mlxsw_sp_mr_table *mr_table)
- 	mr->mr_ops->route_destroy(mlxsw_sp, mr->priv,
- 				  &mr_table->catchall_route_priv);
- 	rhashtable_destroy(&mr_table->route_ht);
-+	mutex_destroy(&mr_table->route_list_lock);
- 	kfree(mr_table);
- }
- 
-@@ -960,8 +973,10 @@ void mlxsw_sp_mr_table_flush(struct mlxsw_sp_mr_table *mr_table)
- 	struct mlxsw_sp_mr_route *mr_route, *tmp;
- 	int i;
- 
-+	mutex_lock(&mr_table->route_list_lock);
- 	list_for_each_entry_safe(mr_route, tmp, &mr_table->route_list, node)
- 		__mlxsw_sp_mr_route_del(mr_table, mr_route);
-+	mutex_unlock(&mr_table->route_list_lock);
- 
- 	for (i = 0; i < MAXVIFS; i++) {
- 		mr_table->vifs[i].dev = NULL;
-@@ -1005,14 +1020,15 @@ static void mlxsw_sp_mr_stats_update(struct work_struct *work)
- 	struct mlxsw_sp_mr_route *mr_route;
- 	unsigned long interval;
- 
--	rtnl_lock();
- 	mutex_lock(&mr->table_list_lock);
--	list_for_each_entry(mr_table, &mr->table_list, node)
-+	list_for_each_entry(mr_table, &mr->table_list, node) {
-+		mutex_lock(&mr_table->route_list_lock);
- 		list_for_each_entry(mr_route, &mr_table->route_list, node)
- 			mlxsw_sp_mr_route_stats_update(mr_table->mlxsw_sp,
- 						       mr_route);
-+		mutex_unlock(&mr_table->route_list_lock);
-+	}
- 	mutex_unlock(&mr->table_list_lock);
--	rtnl_unlock();
- 
- 	interval = msecs_to_jiffies(MLXSW_SP_MR_ROUTES_COUNTER_UPDATE_INTERVAL);
- 	mlxsw_core_schedule_dw(&mr->stats_update_dw, interval);
+ struct mlxsw_sp_rif_ipip_lb;
+ struct mlxsw_sp_rif_ipip_lb_config {
+ 	enum mlxsw_reg_ritr_loopback_ipip_type lb_ipipt;
 -- 
 2.24.1
 
