@@ -2,158 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CA5166B5E
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:14:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E788166B79
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 01:20:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729429AbgBUAOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Feb 2020 19:14:03 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:57090 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729416AbgBUAOD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:14:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=hl2GPzrt5tb1QgNeUKbjy8zbDJVp2hFuVIssZQ2kG18=; b=TxRpIh9UGNphPByn50vHrFoELY
-        RReJ97XLMO1uV+LuHMbRddBW2m9zq7yltzWAQ7r9v9Hhir57OW3H5mgAZK1kyT1s+nkP7mNRKzJ1G
-        JVhO9Ih313O9wYp8DTZykmf/6me60rj8ZwujNtLIcjCZBkm4khzGKWfrgtyGNRi5335q9aybuEswA
-        pS3tIETkfsTHK3WiqZpFdvLDiVuhTuZr7CFF8ePkjjao094DDW6MIvxTvPp6kyWU28WzloeTYwhYC
-        lIMbGzaRWB+ZoHaw3eUpG8g/TKib1aTLegiWqN/N2VLVWmx61Rj0G+3X5eHr5A4YYNoEYtaKH7KJW
-        XOrvLxcw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j4vxC-000877-0C; Fri, 21 Feb 2020 00:14:02 +0000
-Subject: Re: [PATCH net-next] net: page_pool: Add documentation for page_pool
- API
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>, brouer@redhat.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     lorenzo@kernel.org, toke@redhat.com
-References: <20200220182521.859730-1-ilias.apalodimas@linaro.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0bfe362b-276d-21ad-24b9-67813c0cd50a@infradead.org>
-Date:   Thu, 20 Feb 2020 16:14:00 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1729484AbgBUAUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Feb 2020 19:20:48 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:33954 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729439AbgBUAUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Feb 2020 19:20:45 -0500
+Received: by mail-pj1-f66.google.com with SMTP id f2so1627389pjq.1
+        for <netdev@vger.kernel.org>; Thu, 20 Feb 2020 16:20:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Plslq0a/WlH9+0wsRfxUN/LmRsw3WQkY4fgXi9ixwsc=;
+        b=FkpuTNQLtoitah5hPi0YUKeg08H4CsA2euPhDcAkduZeFH/lBTvyv7io4vwS17q84B
+         l1Sc/iSRu2T1VNHZHJ7j620/J86Ss52l7jHQbG9hZu38KIdCJ4qKJAZb6Zh8B4felH78
+         4AhXAmizgyeP7Po6ZqhRnh/9JAR/OuzwwoVm4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Plslq0a/WlH9+0wsRfxUN/LmRsw3WQkY4fgXi9ixwsc=;
+        b=SBOc0wRI+CDx+9Q1R3gOBlXk+HOH4MWEE5AvbN0/YDZLtvHQgmEOMCOaHCqDvcolDC
+         b/XR13yFJvPl2DDhYMkqNXnGUj1tbr28FhkH4RQXkqlLDpzMeiw4ua2zT76Qpk9wzP3U
+         MO7zu2NovrXSg5nYxM1ZmPbsNMuAF3ucinWgopCmXnc9kIZkeKbyo0BxNslS+V8zviwJ
+         5epfrNG1ARHlfrYJpeykCGhEXjNFekeVUr9YIwts7xS9qC9o/DHs31g17sNoWHcDcWZv
+         +P7nuByod/gT/1zV7E5M5WK0/oeZ3J/xfYl9FJzWwk2njM5VfluQRIzz3vBA5Z9lxcUC
+         pNIg==
+X-Gm-Message-State: APjAAAVCIOQ4SWW+aeMyYvISID8a4LTd68FSLIoRD+uzqyHhMEn9byYm
+        YUnr6veGidL8UsH2cZP0q9TKsg==
+X-Google-Smtp-Source: APXvYqzqh/Pw6jbdTL7oDjQkv3YylBIF/nuO3giT5bTVTu7eSdsKg0IVHAgVcKWmbpqCQoqcpsVKTg==
+X-Received: by 2002:a17:902:321:: with SMTP id 30mr35390771pld.130.1582244442771;
+        Thu, 20 Feb 2020 16:20:42 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id f9sm698180pfd.141.2020.02.20.16.20.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Feb 2020 16:20:41 -0800 (PST)
+Date:   Thu, 20 Feb 2020 16:20:40 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sebastian Sewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Clark Williams <williams@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>, Will Drewry <wad@chromium.org>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: Re: [RFC patch 09/19] bpf: Use BPF_PROG_RUN_PIN_ON_CPU() at simple
+ call sites.
+Message-ID: <202002201616.21FA55E@keescook>
+References: <20200214133917.304937432@linutronix.de>
+ <20200214161503.804093748@linutronix.de>
+ <87a75ftkwu.fsf@linux.intel.com>
+ <875zg3q7cn.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20200220182521.859730-1-ilias.apalodimas@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875zg3q7cn.fsf@nanos.tec.linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi again Ilias,
-
-On 2/20/20 10:25 AM, Ilias Apalodimas wrote:
-> Add documentation explaining the basic functionality and design
-> principles of the API
+On Wed, Feb 19, 2020 at 10:00:56AM +0100, Thomas Gleixner wrote:
+> Vinicius Costa Gomes <vinicius.gomes@intel.com> writes:
 > 
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> ---
->  Documentation/networking/page_pool.rst | 159 +++++++++++++++++++++++++
->  1 file changed, 159 insertions(+)
->  create mode 100644 Documentation/networking/page_pool.rst
+> Cc+: seccomp folks 
 > 
-> diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-> new file mode 100644
-> index 000000000000..098d339ef272
-> --- /dev/null
-> +++ b/Documentation/networking/page_pool.rst
-> @@ -0,0 +1,159 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=============
-> +Page Pool API
-> +=============
-> +
-> +The page_pool allocator is optimized for the XDP mode that uses one frame
-> +per-page, but it can fallback on the regular page allocator APIs.
-> +
-> +Basic use involve replacing alloc_pages() calls with the
+> > Thomas Gleixner <tglx@linutronix.de> writes:
+> >
+> >> From: David Miller <davem@davemloft.net>
+> 
+> Leaving content for reference
+> 
+> >> All of these cases are strictly of the form:
+> >>
+> >> 	preempt_disable();
+> >> 	BPF_PROG_RUN(...);
+> >> 	preempt_enable();
+> >>
+> >> Replace this with BPF_PROG_RUN_PIN_ON_CPU() which wraps BPF_PROG_RUN()
+> >> with:
+> >>
+> >> 	migrate_disable();
+> >> 	BPF_PROG_RUN(...);
+> >> 	migrate_enable();
+> >>
+> >> On non RT enabled kernels this maps to preempt_disable/enable() and on RT
+> >> enabled kernels this solely prevents migration, which is sufficient as
+> >> there is no requirement to prevent reentrancy to any BPF program from a
+> >> preempting task. The only requirement is that the program stays on the same
+> >> CPU.
+> >>
+> >> Therefore, this is a trivially correct transformation.
+> >>
+> >> [ tglx: Converted to BPF_PROG_RUN_PIN_ON_CPU() ]
+> >>
+> >> Signed-off-by: David S. Miller <davem@davemloft.net>
+> >> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> >>
+> >> ---
+> >>  include/linux/filter.h    |    4 +---
+> >>  kernel/seccomp.c          |    4 +---
+> >>  net/core/flow_dissector.c |    4 +---
+> >>  net/core/skmsg.c          |    8 ++------
+> >>  net/kcm/kcmsock.c         |    4 +---
+> >>  5 files changed, 6 insertions(+), 18 deletions(-)
+> >>
+> >> --- a/include/linux/filter.h
+> >> +++ b/include/linux/filter.h
+> >> @@ -713,9 +713,7 @@ static inline u32 bpf_prog_run_clear_cb(
+> >>  	if (unlikely(prog->cb_access))
+> >>  		memset(cb_data, 0, BPF_SKB_CB_LEN);
+> >>  
+> >> -	preempt_disable();
+> >> -	res = BPF_PROG_RUN(prog, skb);
+> >> -	preempt_enable();
+> >> +	res = BPF_PROG_RUN_PIN_ON_CPU(prog, skb);
+> >>  	return res;
+> >>  }
+> >>  
+> >> --- a/kernel/seccomp.c
+> >> +++ b/kernel/seccomp.c
+> >> @@ -268,16 +268,14 @@ static u32 seccomp_run_filters(const str
+> >>  	 * All filters in the list are evaluated and the lowest BPF return
+> >>  	 * value always takes priority (ignoring the DATA).
+> >>  	 */
+> >> -	preempt_disable();
+> >>  	for (; f; f = f->prev) {
+> >> -		u32 cur_ret = BPF_PROG_RUN(f->prog, sd);
+> >> +		u32 cur_ret = BPF_PROG_RUN_PIN_ON_CPU(f->prog, sd);
+> >>
+> >
+> > More a question really, isn't the behavior changing here? i.e. shouldn't
+> > migrate_disable()/migrate_enable() be moved to outside the loop? Or is
+> > running seccomp filters on different cpus not a problem?
+> 
+> In my understanding this is a list of filters and they are independent
+> of each other.
+> 
+> Kees, Will. Andy?
 
-             involves
+They're technically independent, but they are related to each
+other. (i.e. order matters, process hierarchy matters, etc). There's no
+reason I can see that we can't switch CPUs between running them, though.
+(AIUI, nothing here would suddenly make these run in parallel, right?)
 
-> +page_pool_alloc_pages() call.  Drivers should use page_pool_dev_alloc_pages()
-> +replacing dev_alloc_pages().
-> +
-...
+As long as "current" is still "current", and they run in the same order,
+we'll get the same final result as far as seccomp is concerned.
 
-> +
-> +Architecture overview
-> +=====================
-> +
-> +.. code-block:: none
-> +
-...
-
-> +
-> +API interface
-> +=============
-> +The number of pools created **must** match the number of hardware queues
-> +unless hardware restrictions make that impossible. This would otherwise beat the
-> +purpose of page pool, which is allocate pages fast from cache without locking.
-> +This lockless guarantee naturally comes from running under a NAPI softirq.
-> +The protection doesn't strictly have to be NAPI, any guarantee that allocating
-> +a page will cause no race conditions is enough.
-> +
-> +* page_pool_create(): Create a pool.
-> +    * flags:      PP_FLAG_DMA_MAP, PP_FLAG_DMA_SYNC_DEV
-> +    * order:      order^n pages on allocation
-
-what is "n" above?
-My quick reading of mm/page_alloc.c suggests that order is the power of 2
-that should be used for the memory allocation... ???
-
-> +    * pool_size:  size of the ptr_ring
-> +    * nid:        preferred NUMA node for allocation
-> +    * dev:        struct device. Used on DMA operations
-> +    * dma_dir:    DMA direction
-> +    * max_len:    max DMA sync memory size
-> +    * offset:     DMA address offset
-> +
-...
-
-> +
-> +Coding examples
-> +===============
-> +
-> +Registration
-> +------------
-> +
-> +.. code-block:: c
-> +
-> +    /* Page pool registration */
-> +    struct page_pool_params pp_params = { 0 };
-> +    struct xdp_rxq_info xdp_rxq;
-> +    int err;
-> +
-> +    pp_params.order = 0;
-
-so 0^n?
-
-> +    /* internal DMA mapping in page_pool */
-> +    pp_params.flags = PP_FLAG_DMA_MAP;
-> +    pp_params.pool_size = DESC_NUM;
-> +    pp_params.nid = NUMA_NO_NODE;
-> +    pp_params.dev = priv->dev;
-> +    pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-> +    page_pool = page_pool_create(&pp_params);
-> +
-> +    err = xdp_rxq_info_reg(&xdp_rxq, ndev, 0);
-> +    if (err)
-> +        goto err_out;
-> +
-> +    err = xdp_rxq_info_reg_mem_model(&xdp_rxq, MEM_TYPE_PAGE_POOL, page_pool);
-> +    if (err)
-> +        goto err_out;
-> +
-> +NAPI poller
-> +-----------
-
-thanks.
 -- 
-~Randy
-
+Kees Cook
