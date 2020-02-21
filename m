@@ -2,209 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF662168915
-	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:16:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D58BA16887E
+	for <lists+netdev@lfdr.de>; Fri, 21 Feb 2020 22:01:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgBUVQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 16:16:30 -0500
-Received: from gateway30.websitewelcome.com ([50.116.127.1]:38418 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726683AbgBUVQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 16:16:30 -0500
-X-Greylist: delayed 1322 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Feb 2020 16:16:29 EST
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id E7AC56094
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 14:54:26 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 5FJajYSeOvBMd5FJajVIMw; Fri, 21 Feb 2020 14:54:26 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HyOlPcJh0SxpUhdQMtn3AZCmhvZ+AcOeThCG2uDWLq0=; b=uKCawyr1v1M42UphMwBTTBsBUz
-        eLKY+keye06OnohB5TsXi4GQU0dq01p6hft4YJ0S+ddE5Ejxkjsqs6CSrOJZH+3IIinRPqx81C1qL
-        +U/AQtoR3HXCUqu7bHL909o1d5InpPXKrQ+v7ND3b9V6BzByA+AmG6cNnDoTUA6AdHgcMl1YBFarE
-        yhU/iOgl3WPdKR5pOcKQktY2lHfN8sMqvkz2ii+vD7Le0uOeOX3jC+mkIThJGMdYg/ICYqCwRwR+h
-        TGOTflzd+B2Y+0CA+qY/VFpzG7QNlRNdSRvKPhqtU3PnYVWh/Mj0Te33rgnxnGlrfJ8sPfGOopNaf
-        GzYvCdWg==;
-Received: from [200.68.140.54] (port=13534 helo=[192.168.43.131])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j5FJa-0020Rw-HS; Fri, 21 Feb 2020 14:54:26 -0600
-Subject: Re: [PATCH] staging: qlge: add braces on all arms of if-else
-To:     Kaaira Gupta <kgupta@es.iitr.ac.in>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-References: <20200221202904.GA19627@kaaira-HP-Pavilion-Notebook>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <11d2a5c5-789b-c371-0173-575b14e4d980@embeddedor.com>
-Date:   Fri, 21 Feb 2020 14:57:10 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726989AbgBUVB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 16:01:28 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:54182 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726683AbgBUVB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 16:01:27 -0500
+Received: by mail-wm1-f65.google.com with SMTP id s10so3160877wmh.3
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 13:01:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KS7zlHKpGTKzoxtsGkUNB+4+DXIvXSlSQHumfEw5VSY=;
+        b=hL4ORJtDIKXyd5puwRvgOG76uw0Hm8uKlh2zAgonrmmrpJvdnIUWXRREx7DFXbJIPn
+         +XzJFOR7AqAj5oOQm8PWWtKQt4EhL4Po9QYk8lFuMFYW074vSkAUX//GUt4bbbcNZK4I
+         3AmUqfmmnN4Ah1/S/5N0y2D3usKBfPz3R1kTUJJaU3QsCXhojzoFW6fc+765t4spdlez
+         q0jVjF9dsRPrqq21gFHmFLvfUubwZgm7d2zo3MN0B/BCQ1rlneD1MGR0gm4dICtLEjfx
+         EsBVeg4kiI8OTGnG0Na96NYIYLquRL7d/6BNWhLMqVbi+PfqfVX0HUaUXbfc+IV+Ek5t
+         I2XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KS7zlHKpGTKzoxtsGkUNB+4+DXIvXSlSQHumfEw5VSY=;
+        b=TZ6H5c+E+ill5Co4lww1dR+0w0ilRoyccoG5ymA7+NK35tLiN4m037zWzHYFt+y/Jp
+         WdpyRfUV/Igt0Xfsf5VB9GYTmvhqlCzFVXydFTeKmabzfmbJihfVS47PlfEj/3eRh5MJ
+         n4CBItMxWj+q8toxUv0763F2jn4yXVWiGvEjRhd4HRYhpJmcAojRr0LsGbmzjs4ahLxe
+         P4HEi82/tu7b0V8p1bsYvDAePezh3T7gFZe3RdhDwVK2KxizLKviSYzEufQ3EjRXyfDd
+         4zLMKtk3+1O6D2uyKm0NXkhu+IQRxnWdnK2pfWVNcHif9vf/f1c4ZMtOyu51U98Udh1u
+         izJg==
+X-Gm-Message-State: APjAAAWUbQ0Csn3azq4T8VCQdxWL7/O2ob59x77Qz/3dybf7iG2yYTN5
+        gMIJDDUeZ9g/MPGUu0Mb11ykQxWH
+X-Google-Smtp-Source: APXvYqxHzllh6m/4nattXUMqyb1pnMFsmVVKYhazjPjzY1h7GVmwB0c0jPluO6dPdJLK+FDZ+zQDMw==
+X-Received: by 2002:a1c:9a0d:: with SMTP id c13mr5489780wme.41.1582318884201;
+        Fri, 21 Feb 2020 13:01:24 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:b575:3371:21d5:d8aa? (p200300EA8F296000B575337121D5D8AA.dip0.t-ipconnect.de. [2003:ea:8f29:6000:b575:3371:21d5:d8aa])
+        by smtp.googlemail.com with ESMTPSA id x21sm5000949wmi.30.2020.02.21.13.01.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Feb 2020 13:01:23 -0800 (PST)
+Subject: Re: About r8169 regression 5.4
+To:     Vincas Dargis <vindrg@gmail.com>,
+        Salvatore Bonaccorso <carnil@debian.org>
+Cc:     netdev@vger.kernel.org
+References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
+ <9e865e39-0406-d5e0-5022-9978ef4ec6ac@gmail.com>
+ <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
+ <20200215161247.GA179065@eldamar.local>
+ <269f588f-78f2-4acf-06d3-eeefaa5d8e0f@gmail.com>
+ <3ad8a76d-5da1-eb62-689e-44ea0534907f@gmail.com>
+ <74c2d5db-3396-96c4-cbb3-744046c55c46@gmail.com>
+ <81548409-2fd3-9645-eeaf-ab8f7789b676@gmail.com>
+ <e0c43868-8201-fe46-9e8b-5e38c2611340@gmail.com>
+ <badbb4f9-9fd2-3f7b-b7eb-92bd960769d9@gmail.com>
+ <d2b5d904-61e1-6c14-f137-d4d5a803dcf6@gmail.com>
+ <356588e8-b46a-e0bb-e05b-89af81824dfa@gmail.com>
+ <86a87b0e-0a5b-46c7-50f5-5395a0de4a52@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <11c9c70f-5192-9f02-c622-f6e03db7dfb2@gmail.com>
+Date:   Fri, 21 Feb 2020 22:01:16 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200221202904.GA19627@kaaira-HP-Pavilion-Notebook>
+In-Reply-To: <86a87b0e-0a5b-46c7-50f5-5395a0de4a52@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 200.68.140.54
-X-Source-L: No
-X-Exim-ID: 1j5FJa-0020Rw-HS
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.43.131]) [200.68.140.54]:13534
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/21/20 14:29, Kaaira Gupta wrote:
-> fix all checkpatch.pl warnings of 'braces {} should be used on all arms
-> of this statement' in the file qlge_ethtool.c by adding the braces.
+On 21.02.2020 21:21, Vincas Dargis wrote:
+> 2020-02-20 20:32, Heiner Kallweit rašė:
+>> It would be great if you could test one more thing. Few chip versions have a hw issue with tx checksumming
+>> for very small packets. Maybe your chip version suffers from the same issue.
+>> Could you please test the following patch (with all features enabled, TSO and checksumming)?
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 8442b8767..bee90af57 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -4345,6 +4345,7 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>>               case RTL_GIGA_MAC_VER_12:
+>>               case RTL_GIGA_MAC_VER_17:
+>>               case RTL_GIGA_MAC_VER_34:
+>> +            case RTL_GIGA_MAC_VER_44:
+>>                   features &= ~NETIF_F_CSUM_MASK;
+>>                   break;
+>>               default:
+>>
 > 
-> Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
+> Sadly, network got hanged after ~1.5h of usage. I've built it with Debian's "debian/bin/test-patches" helper (kernel is now named 5.4.19-1a~test),
+> double-checked that line was actually added in source. `ethtool -K enp5s0f1 tx on sg on tso on` was executed after boot.
 
-Acked-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-
-Thanks for you patch.
---
-Gustavo
-
-> ---
->  drivers/staging/qlge/qlge_ethtool.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlge_ethtool.c
-> index 790997aff995..592ca7edfc44 100644
-> --- a/drivers/staging/qlge/qlge_ethtool.c
-> +++ b/drivers/staging/qlge/qlge_ethtool.c
-> @@ -259,8 +259,9 @@ static void ql_update_stats(struct ql_adapter *qdev)
->  				  "Error reading status register 0x%.04x.\n",
->  				  i);
->  			goto end;
-> -		} else
-> +		} else {
->  			*iter = data;
-> +		}
->  		iter++;
->  	}
->  
-> @@ -273,8 +274,9 @@ static void ql_update_stats(struct ql_adapter *qdev)
->  				  "Error reading status register 0x%.04x.\n",
->  				  i);
->  			goto end;
-> -		} else
-> +		} else {
->  			*iter = data;
-> +		}
->  		iter++;
->  	}
->  
-> @@ -290,8 +292,9 @@ static void ql_update_stats(struct ql_adapter *qdev)
->  				  "Error reading status register 0x%.04x.\n",
->  				  i);
->  			goto end;
-> -		} else
-> +		} else {
->  			*iter = data;
-> +		}
->  		iter++;
->  	}
->  
-> @@ -304,8 +307,9 @@ static void ql_update_stats(struct ql_adapter *qdev)
->  				  "Error reading status register 0x%.04x.\n",
->  				  i);
->  			goto end;
-> -		} else
-> +		} else {
->  			*iter = data;
-> +		}
->  		iter++;
->  	}
->  
-> @@ -316,8 +320,9 @@ static void ql_update_stats(struct ql_adapter *qdev)
->  		netif_err(qdev, drv, qdev->ndev,
->  			  "Error reading status register 0x%.04x.\n", i);
->  		goto end;
-> -	} else
-> +	} else {
->  		*iter = data;
-> +	}
->  end:
->  	ql_sem_unlock(qdev, qdev->xg_sem_mask);
->  quit:
-> @@ -488,8 +493,9 @@ static int ql_start_loopback(struct ql_adapter *qdev)
->  	if (netif_carrier_ok(qdev->ndev)) {
->  		set_bit(QL_LB_LINK_UP, &qdev->flags);
->  		netif_carrier_off(qdev->ndev);
-> -	} else
-> +	} else {
->  		clear_bit(QL_LB_LINK_UP, &qdev->flags);
-> +	}
->  	qdev->link_config |= CFG_LOOPBACK_PCS;
->  	return ql_mb_set_port_cfg(qdev);
->  }
-> 
+OK, thanks anyway for testing. I forwarded your testing results with Realtek's r8168 driver to Realtek,
+let's see whether they can identify the root cause of the problem.
