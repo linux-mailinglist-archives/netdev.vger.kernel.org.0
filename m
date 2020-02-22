@@ -2,136 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B80D9168B7B
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 02:13:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A85168BD3
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 02:49:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727506AbgBVBNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 20:13:14 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:48046 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726852AbgBVBNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 20:13:13 -0500
-Received: by mail-il1-f198.google.com with SMTP id x69so4409751ill.14
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 17:13:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6eLAPqtZ8c5EdwJf7EVWvvnHhrg/3kPG4gMqHFy5v4A=;
-        b=D6+nV/NTWa+K78XB1/0pXQv8dy2CEa9QcLQ+dXHR6ZbCL0IN4cgMP0McLF+dKR+LIO
-         7umqcxDNiZIU1hIJ14lTYeMzflA0qUJs470lAm5iVizzSKCq11Hold/bsGs6uzRoIy4b
-         R5QyHiUvAIm7Y5Msf0PD7Ev9hRHpU+VNwSKpURw/VxoEQZWHKuqI4BFdseVN5O9tul6F
-         CsFHsWbiQdr1WFMPxTiQCi9HlXux69t8BH/bp0gHxWV0CE4aYMJbYJGlceBfYDHz6Zgq
-         iQK9Y+k6S/V36obYoPGiBdQ3WozcJVjA/AXqbVDkkydair+l6oXheKY2R1nPwKXrtdQy
-         yORQ==
-X-Gm-Message-State: APjAAAW6g6p0gjxVQapZmBzlTaiQ+/NhlG0dEcW4MlB+sLmA3cYdV+Em
-        LUmxKUzkUNBGaUQIHfW372Z8Pf+PC0YieCwct3QMCsUgHbVF
-X-Google-Smtp-Source: APXvYqzbaMogp/HG01MNtFex4blRaUgwqV4zRTvObvGHWAiNFmsEDRlx2xNtXRh0TW9qSQF6PSZLllmHa9ms9GXF7vKm0O5NRTl6
+        id S1727876AbgBVBtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 20:49:35 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46792 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726842AbgBVBtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 20:49:35 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01M1hs4j003729;
+        Fri, 21 Feb 2020 17:48:58 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=qaCHoO3Hx8ii8y4696cDDAIrLmta3a/xTthGEakzKgU=;
+ b=gLP3WY2v/mRB/odoRVOslO1LtjjjDpSUdkTXWn5r5JczTOpQo/sKZ9toYAZ/a1YJrg52
+ J7mzsRcJnalaWqoGnK0jNC2m+SNdhNrKkHeyBi25QMoS055ns/S9mr7hyHOzbFh3T66d
+ Lkbk5x4rW27PNTUJXj45KHjvzic+V4TWrHU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yaj9u2m2r-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 21 Feb 2020 17:48:58 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 21 Feb 2020 17:48:56 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SV683sRa1IBpzwrHV1iFH2Q23rLbceKqef3G1fHYQXnFNuj+uT979xTbstsXTZJnqjqTZZgQ1MCvzscq5K86Muml/86IqnxZ+lgTgNk3fEo33f5e8LFKIa/ggotpbDPaHMgSfI9xl2KQnJ0fEjXYVrBY/1RQdMW0b1r8PU3PCXbOMfAypATJsr5votM8Co8OvcBMOulmW3pbViISkSP1GABQmcd2edYRTixqIZGrtVzhVp8j3ypygQOp9GbEKH4F/GJ1qSnDCS1u6e9WGgGa2Alnf6rNWfEHn5su5vjxQ69Bqn0wLYdzOMVcIJ1LnXUy3dJv7RZx9D3mGSc+AoUalA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qaCHoO3Hx8ii8y4696cDDAIrLmta3a/xTthGEakzKgU=;
+ b=N/ta35LfoRmu6HmauOhPsVEvtOTLfbPVawwmI2bGm+lsg14oSV0rGjU2xuYn6L1ZIdxvNeSD0pCpxBM76LkCQrzYvOn+Ceh+L3Q83tYlVdioc2/3ekMEYqtkjKyv0Ht2yB/6PFzF09TjV0JjVNcQ5KGFT3AEyNHk6CAX9Ti4wq82PpTmwFZ6m45t3+Dcl5KwK9jSq2ZFSQWbZvAdNAHx8kYmFfoaD7ZaJ4RWlLZSZrzNQdLktUUU5Dr893WpdtuwU/KrScXMPNTQ1nQe77OXD5jki5hNkA+AyMK/6pRSC8faCQCHoZ74p6DkrANr+PkwuvH1UskF98cwFhP8xi6cEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qaCHoO3Hx8ii8y4696cDDAIrLmta3a/xTthGEakzKgU=;
+ b=C6LdtplguHRegvR5PC9KeOW8c82X0uVsKxpKNx8BJcTBv9ZrdYygPC4zb8+9LBHIQCLk6IsOdUvuajMWo4Twms271Q+xKJCqcHCAN/921zthSx2MmSnwlhvoydaQoWo8Ax/IFC+IwQwxSGIeab5UVBTrXougKiDDQJfOONdXHt8=
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com (20.179.155.147) by
+ BYAPR15MB2199.namprd15.prod.outlook.com (52.135.193.156) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.18; Sat, 22 Feb 2020 01:48:55 +0000
+Received: from BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::ccb6:a331:77d8:d308]) by BYAPR15MB2631.namprd15.prod.outlook.com
+ ([fe80::ccb6:a331:77d8:d308%7]) with mapi id 15.20.2729.033; Sat, 22 Feb 2020
+ 01:48:55 +0000
+Date:   Fri, 21 Feb 2020 17:48:50 -0800
+From:   Roman Gushchin <guro@fb.com>
+To:     Shakeel Butt <shakeelb@google.com>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        <netdev@vger.kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        <linux-mm@kvack.org>, <cgroups@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: memcg: late association of sock to memcg
+Message-ID: <20200222014850.GC459391@carbon.DHCP.thefacebook.com>
+References: <20200222010456.40635-1-shakeelb@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200222010456.40635-1-shakeelb@google.com>
+X-ClientProxiedBy: CO1PR15CA0063.namprd15.prod.outlook.com
+ (2603:10b6:101:1f::31) To BYAPR15MB2631.namprd15.prod.outlook.com
+ (2603:10b6:a03:150::19)
 MIME-Version: 1.0
-X-Received: by 2002:a6b:740c:: with SMTP id s12mr36894580iog.108.1582333992768;
- Fri, 21 Feb 2020 17:13:12 -0800 (PST)
-Date:   Fri, 21 Feb 2020 17:13:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008e18fb059f1fd725@google.com>
-Subject: kernel BUG at arch/x86/mm/physaddr.c:LINE! (4)
-From:   syzbot <syzbot+1f4d90ead370d72e450b@syzkaller.appspotmail.com>
-To:     eparis@redhat.com, linux-audit@redhat.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        paul@paul-moore.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Received: from carbon.DHCP.thefacebook.com (2620:10d:c090:400::5:c751) by CO1PR15CA0063.namprd15.prod.outlook.com (2603:10b6:101:1f::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Sat, 22 Feb 2020 01:48:53 +0000
+X-Originating-IP: [2620:10d:c090:400::5:c751]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 60c548c2-145a-4437-f917-08d7b7395ffa
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2199:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2199C076FE25847558085EE7BEEE0@BYAPR15MB2199.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-Forefront-PRVS: 03218BFD9F
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(376002)(39860400002)(136003)(396003)(366004)(199004)(189003)(6916009)(86362001)(7416002)(1076003)(2906002)(33656002)(4326008)(6506007)(9686003)(66556008)(66946007)(5660300002)(66476007)(55016002)(7696005)(8936002)(186003)(16526019)(8676002)(81156014)(81166006)(54906003)(316002)(478600001)(52116002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2199;H:BYAPR15MB2631.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4lQ2RYDFsNoM3jcvjHJXaUpmJd2UH5vyMfnJXGj2PIsqggu6fmC/4Nif54BXhiDmOsnDA4OECg7bMgDtIDrMmWlxo2HC0LqsLoi1PNH4V8t3BJSyheYI+iGrYwKo7a60VYVC/XNgMKghz4mrkOgPgJTsV6yj1NI+cU47Pufhfnq0IzkDeQRivEIwCckU3xPkvFjoaLrMmKKNHS7JTQJies2tAYp4d+Dw1WRoKEiWRRgjjnaIo06YEeXF/Nl0qrZlg8/C8jqvky+i2UgKjpgDuJ6y9XE1neg6Gq5vWHRvwBsMe7BWd8tCAw/duCPAumMYdy4aqMV0mJJ9Z/lhrS3nG3w5jxr1F2KrQlSQapCDIJn0733znKYJXDvF9luwhW1LlnlJFj8BQVsrqaoe81wXozP6P47cfoAdfAJ8JZoC9C37hTpaeh49OpclfgWlKgqp
+X-MS-Exchange-AntiSpam-MessageData: Y//ARKAQgofHYwFuiPsDLG5yFCx5KNu7yo2rLOAaA1bNskDDVynhr3X4NA0SMrXgb+azM0DqYavxzQTGlF7EhevKRKa1d2OCD5holSBPSCSKTBBp1OFBEbNB/USz2K7PIeGksA9c8xivVnTtiTIXOqj6e5hX5vWXCm0zI5aMH+eqL41rtSSgTM6XSegddS4z
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60c548c2-145a-4437-f917-08d7b7395ffa
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2020 01:48:54.9865
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DDtadEIMefPC0kxFBAslBUM9E/kVgT08PhRkq6/DhT9Fobk+kuS8iqX8e2lg5OsU
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2199
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-21_09:2020-02-21,2020-02-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 phishscore=0 suspectscore=1 clxscore=1011
+ mlxlogscore=999 impostorscore=0 mlxscore=0 adultscore=0 spamscore=0
+ bulkscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2001150001 definitions=main-2002220011
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Feb 21, 2020 at 05:04:56PM -0800, Shakeel Butt wrote:
+> If a TCP socket is allocated in IRQ context or cloned from unassociated
+> (i.e. not associated to a memcg) in IRQ context then it will remain
+> unassociated for its whole life. Almost half of the TCPs created on the
+> system are created in IRQ context, so, memory used by suck sockets will
+> not be accounted by the memcg.
+> 
+> This issue is more widespread in cgroup v1 where network memory
+> accounting is opt-in but it can happen in cgroup v2 if the source socket
+> for the cloning was created in root memcg.
+> 
+> To fix the issue, just do the late association of the unassociated
+> sockets at accept() time in the process context and then force charge
+> the memory buffer already reserved by the socket.
+> 
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
 
-syzbot found the following crash on:
+Hello, Shakeel!
 
-HEAD commit:    36a44bcd Merge branch 'bnxt_en-shutdown-and-kexec-kdump-re..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=12524265e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=768cc3d3e277cc16
-dashboard link: https://syzkaller.appspot.com/bug?extid=1f4d90ead370d72e450b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=123d9de9e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1648fe09e00000
+> ---
+>  net/ipv4/inet_connection_sock.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index a4db79b1b643..df9c8ef024a2 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -482,6 +482,13 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
+>  		}
+>  		spin_unlock_bh(&queue->fastopenq.lock);
+>  	}
+> +
+> +	if (mem_cgroup_sockets_enabled && !newsk->sk_memcg) {
+> +		mem_cgroup_sk_alloc(newsk);
+> +		if (newsk->sk_memcg)
+> +			mem_cgroup_charge_skmem(newsk->sk_memcg,
+> +					sk_mem_pages(newsk->sk_forward_alloc));
+> +	}
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1f4d90ead370d72e450b@syzkaller.appspotmail.com
+Looks good for me from the memcg side. Let's see what networking people will say...
 
-------------[ cut here ]------------
-kernel BUG at arch/x86/mm/physaddr.c:28!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9873 Comm: syz-executor039 Not tainted 5.6.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__phys_addr+0xb3/0x120 arch/x86/mm/physaddr.c:28
-Code: 09 4c 89 e3 31 ff 48 d3 eb 48 89 de e8 36 e2 40 00 48 85 db 75 0f e8 8c e0 40 00 4c 89 e0 5b 41 5c 41 5d 5d c3 e8 7d e0 40 00 <0f> 0b e8 76 e0 40 00 48 c7 c0 10 50 a7 89 48 ba 00 00 00 00 00 fc
-RSP: 0018:ffffc90005b47490 EFLAGS: 00010093
-RAX: ffff8880944f4600 RBX: 0000000002777259 RCX: ffffffff8134ad32
-RDX: 0000000000000000 RSI: ffffffff8134ad93 RDI: 0000000000000006
-RBP: ffffc90005b474a8 R08: ffff8880944f4600 R09: ffffed1015d2707c
-R10: ffffed1015d2707b R11: ffff8880ae9383db R12: 0000778002777259
-R13: 0000000082777259 R14: ffff88809a765000 R15: 0000000000000010
-FS:  0000000001436880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200004c0 CR3: 0000000096da8000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- virt_to_head_page include/linux/mm.h:721 [inline]
- virt_to_cache mm/slab.h:472 [inline]
- kfree+0x7b/0x2c0 mm/slab.c:3749
- audit_free_lsm_field kernel/auditfilter.c:76 [inline]
- audit_free_rule kernel/auditfilter.c:91 [inline]
- audit_data_to_entry+0xb7b/0x25f0 kernel/auditfilter.c:603
- audit_rule_change+0x6b5/0x1130 kernel/auditfilter.c:1130
- audit_receive_msg+0xda5/0x28b0 kernel/audit.c:1368
- audit_receive+0x114/0x230 kernel/audit.c:1513
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4401a9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd66553d28 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401a9
-RDX: 0000000000000000 RSI: 00000000200004c0 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a30
-R13: 0000000000401ac0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 1e4db35053a9d748 ]---
-RIP: 0010:__phys_addr+0xb3/0x120 arch/x86/mm/physaddr.c:28
-Code: 09 4c 89 e3 31 ff 48 d3 eb 48 89 de e8 36 e2 40 00 48 85 db 75 0f e8 8c e0 40 00 4c 89 e0 5b 41 5c 41 5d 5d c3 e8 7d e0 40 00 <0f> 0b e8 76 e0 40 00 48 c7 c0 10 50 a7 89 48 ba 00 00 00 00 00 fc
-RSP: 0018:ffffc90005b47490 EFLAGS: 00010093
-RAX: ffff8880944f4600 RBX: 0000000002777259 RCX: ffffffff8134ad32
-RDX: 0000000000000000 RSI: ffffffff8134ad93 RDI: 0000000000000006
-RBP: ffffc90005b474a8 R08: ffff8880944f4600 R09: ffffed1015d2707c
-R10: ffffed1015d2707b R11: ffff8880ae9383db R12: 0000778002777259
-R13: 0000000082777259 R14: ffff88809a765000 R15: 0000000000000010
-FS:  0000000001436880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200004c0 CR3: 0000000096da8000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Btw, do you plan to make a separate patch for associating the socket with the default
+cgroup on the unified hierarchy? I mean cgroup_sk_alloc().
 
+Thank you for working on it!
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Roman
