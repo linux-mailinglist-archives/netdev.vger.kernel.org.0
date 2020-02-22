@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC72F168ECD
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 13:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBFD168ED1
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 13:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbgBVMXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 07:23:20 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:41085 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726763AbgBVMXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 07:23:19 -0500
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id C45594E5
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 07:23:18 -0500 (EST)
-Received: from imap21 ([10.202.2.71])
-  by compute7.internal (MEProxy); Sat, 22 Feb 2020 07:23:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yawnt.com; h=
-        mime-version:message-id:date:from:to:subject:content-type; s=
-        fm3; bh=hLytwwhfW5V857QfH4hqKIQdRB5b9ER5LrSuT+Ri3Lk=; b=p1qd+jh4
-        WnwBS0bi/EOvu4S/VdwHyqzUB82V5qYcwn83BQCfbue3pi9BCXwUMHaIIRTIEpqg
-        RfcbSD79Uvf/b1XGY4d/CLgePI0omrUdcsz23BU1a9/QapPJPSmr7IFSJg1S2gzO
-        ovorPohyCPMiNfyiT/lYAiCHNZDxdIbhI1Zo7SP7HgWqsSfKOw7VL5mBv4F4N3+R
-        b6Z/uwtFqfHTgtPbvca8djHJ/Z13Ym6uaX4F4Q+XHfQUn3yZ8v4wA/cMLXu4q4Jc
-        dnQ2YUy0Y6X53piohc/zD7JCbz8Nsl91YIY/nqvLOVKOLkwbFQR27lGuccrrPxMp
-        hMA/LJMwRU21mA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=content-type:date:from:message-id
-        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=hLytwwhfW5V857QfH4hqKIQdRB5b9
-        ER5LrSuT+Ri3Lk=; b=rUAZ6S1M0K5s00iBM2VeamQzfIGAVzFTIc4BMbsDEPzZn
-        YoWeqQi2kYw6ku+Uur3igUzmdA2VwXiLLM5hyOJ5/P1iqV2QaB5gbLLe70xHhgPj
-        lo+vepXz9VABTA60laUitTmOuJNFOc5ypFp1hfX2j/FPquzvz8eEEA14wWGDbmIC
-        7Y7tA6+spB33zPPF4XM1Qsp8m2bx2a68eQ6Qlto/VHVrLKl1w+k6VbD/dddfu1WQ
-        sC3bZAWVPfn00JhUXz0nruWLDsRfxVH5mSp/0NS8XFILVbEXG7sE4Tn9ACzo/Le+
-        hFpJigzCEK3nhcfFhLV5sPa7Eu/T6ZVngGgLupu6A==
-X-ME-Sender: <xms:Nh1RXr99k1IJj-MvNuDLADR13WEsxofdM6yVWSYYUGXlUJT60LWdrw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrkeeigdegtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepofgfggfkfffhvffutgesthdtredtre
-    ertdenucfhrhhomhepfdfiihgrnhhluhgtrgcuufhtihhvrghnfdcuoehmvgeshigrfihn
-    thdrtghomheqnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepmhgvseihrgifnhhtrdgtohhm
-X-ME-Proxy: <xmx:Nh1RXv40TPyoGODtbgIs3FHwf0PltYKjYAJvAREVeYzEsooPGHLzhw>
-    <xmx:Nh1RXkmGsYv_Z5yKnWJf4qLxpuCj6DaOmCLpPDQJq0e_hFrwxYpOdQ>
-    <xmx:Nh1RXiFJAHVTc__NnTxxMwb480vsRhbqVRVNEw_1kLOJdOSiF64UQw>
-    <xmx:Nh1RXsXyM7g7XXcR3wAH_Na9LkIZNZVuh2XaszSebiqm4HsZg3iRqA>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 34C2C660069; Sat, 22 Feb 2020 07:23:18 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.1.7-802-g7a41c81-fmstable-20200203v1
-Mime-Version: 1.0
-Message-Id: <cfd2e094-2346-4d6d-bc53-0db1ae72b8c3@www.fastmail.com>
-Date:   Sat, 22 Feb 2020 12:22:57 +0000
-From:   "Gianluca Stivan" <me@yawnt.com>
-To:     netdev@vger.kernel.org
-Subject: question about ip rule uidrange
-Content-Type: text/plain
+        id S1727259AbgBVMZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 07:25:50 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:35841 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbgBVMZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 07:25:50 -0500
+Received: by mail-ed1-f67.google.com with SMTP id j17so5903038edp.3;
+        Sat, 22 Feb 2020 04:25:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Y50RHD2QGihstG7fjd8c2NdZnfKYGCwsRvJsD3a51U=;
+        b=NhTbOsAtlr89Xk/roSZUnzFyZi5buN3T9l38N0HrufP0cibwbgBJAtd3Y6AwlCm2H4
+         RhzUVdn6aK6roKwiZuRD6a6mQ6b6K7MdCI3UGhk/0trmFnf9vnNzDjFhTo2wsFgy1l8x
+         yujA86FhM08935s665nOaSZB5pgb3+HjNlnPQyCseTvVPOldvQgQmuxY0/C4syo+Qlmw
+         SvpcKC832vgrQLLbEHYpP7qUChKzkzBlizGq9uAQonHYQCdyulva0IyA/SOW51d01veR
+         /KRKZxsBRRM9cfuODq3hZH+O3r/UI/1dSDADAkxc7imMvh9rjJ1GMoca0tHYb+y4k7kP
+         19ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Y50RHD2QGihstG7fjd8c2NdZnfKYGCwsRvJsD3a51U=;
+        b=n5NMSLPTHvhAAWTobjpYP5hVN/T5s909xLXuJc/dBfXB4+8t6orAobukmh0waxn1N3
+         QjxBhr72KzC/5pc5knNWT4fxHkR/HBNsjLVpoytRdwfp90/k0O0wdOUxFj53zhjjQHAM
+         s6dUydgVCzyo2i9t6HZvxIZmvqkRX+tBWjWIh/IV19ekQJDPOv7rEai4IN7b6iNI3Qp3
+         XeM9I06pQOmf1p2JQKthk/lN7nT3aoPuif7K7/tJUm9izRXUsHxtsC8BpUy0Yhtu+0+W
+         50Munqyh/62Ejb/T+JDApdL0yqB4+Xe5cNMI2nN0DVVz1k5fi4XhH9pNHlgYa3mZvlOR
+         vDCw==
+X-Gm-Message-State: APjAAAWpGSDD9r6qGy7Hp/l1stZn0beV4BsCa3EyWq80TxGQ8DgN5r0/
+        e6yByTbAaVCvnn1ew1ZLleYBwwFvUUWu/Vki9ms=
+X-Google-Smtp-Source: APXvYqzhOH4Kn2D97bedbpm09NJOhnwoJKeOv6yPa5hiGs62R53VqNZ52MVlBTpVEDOAJf57+r1mHqsaj9Z6lZAengs=
+X-Received: by 2002:a05:6402:3132:: with SMTP id dd18mr38997644edb.118.1582374346881;
+ Sat, 22 Feb 2020 04:25:46 -0800 (PST)
+MIME-Version: 1.0
+References: <20200219151259.14273-5-olteanv@gmail.com> <20200222113829.32431-1-michael@walle.cc>
+In-Reply-To: <20200222113829.32431-1-michael@walle.cc>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 22 Feb 2020 14:25:36 +0200
+Message-ID: <CA+h21hpCBjo18zHc-SvMj5Y=C+e=rna5MUgp7SW1u0btma+wfg@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next/devicetree 4/5] arm64: dts: fsl: ls1028a: add
+ node for Felix switch
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        netdev <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-I'm trying to setup routing based on uidrange, and I seem to keep hitting the same issue. My understanding is that if a certain user is running a process, the corresponding table is looked up when the uid is in the uidrange.
+Hi Michael,
 
-$ whoami
-yawnt
-$ id
-uid=1000(yawnt) 
-$ ip rule list
-0:	from all lookup local
-32765:	from all uidrange 1000-1000 lookup custom
-32766:	from all lookup main
-32767:	from all lookup default
-$ ip route list table custom
-default via 192.168.1.1 dev wlp4s0 proto dhcp metric 600
+On Sat, 22 Feb 2020 at 13:38, Michael Walle <michael@walle.cc> wrote:
+>
+> Hi,
+>
 
-With this configuration, there is no internet connection. Traceroute just hangs. On a TCP level, I see SYN being sent, SYN/ACK being received, but then no ACK being sent from my computer.
+> > +
+> > +                     enetc_port2: ethernet@0,2 {
+> > +                             compatible = "fsl,enetc";
+> > +                             reg = <0x000200 0 0 0 0>;
+> > +                             phy-mode = "gmii";
+> Can we disable this port by default in this dtsi? As mentioned in the other
+> mail, I'd prefer to have all ports disabled because it doesn't make sense
+> to have this port while having all the external ports disabled.
+>
 
-However, if I change 32675 to "from all lookup custom", then it works.
+Ok. What would you want to happen with the "ethernet" property? Do you
+want the board dts to set that too?
 
-$ sudo ip rule del uidrange 1000-1000
-$ sudo ip rule add lookup custom
-$ ip rule list
-0:	from all lookup local
-32765:	from all lookup custom
-32766:	from all lookup main
-32767:	from all lookup default
-$ curl google.com
-<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
-...
+> > +                                     /* Internal port with DSA tagging */
+> > +                                     mscc_felix_port4: port@4 {
+> > +                                             reg = <4>;
+> > +                                             phy-mode = "internal";
+> > +                                             ethernet = <&enetc_port2>;
+> Likewise, I'd prefer to have this disabled.
+>
 
-I'm running ArchLinux with iproute2 version 5.5.0. I wonder if I'm doing something wrong or this is a bug?
+Ok.
 
-Thanks in advance!
-Best,
+> > +                     enetc_port3: ethernet@0,6 {
+> > +                             compatible = "fsl,enetc";
+> > +                             reg = <0x000600 0 0 0 0>;
+> > +                             status = "disabled";
+> > +                             phy-mode = "gmii";
+> shouldn't the status be after the phy-mode property?
 
-Gianluca
+Why?
+
+>
+> -michael
+>
+
+Regards,
+-Vladimir
