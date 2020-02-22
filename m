@@ -2,124 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1681691F5
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 22:51:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B599A16923D
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 00:16:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgBVVvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 16:51:20 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:51872 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgBVVvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 16:51:19 -0500
-Received: by mail-pj1-f65.google.com with SMTP id fa20so2337745pjb.1
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 13:51:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=es-iitr-ac-in.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=HBCqjg0a+bhil4nBIBy5bJmpduFEbhGT3Aouisb2vJA=;
-        b=lMUystimAw6OmezUONtF3S/Asq3N5V4IfXfMbTiTTOHzas3ksvIBM+MpZNJM5D9JF7
-         74eDu8fC9jCAlBLpsUZODamJ5JRFAp7hSz8uZXzc5N3logQGnFRr2fFjtkdbzDpNezW5
-         Cuj36DdAOEfpYeklXAJZEq93ks8JMbwTjTpMcEYiPYNnvN507bag4Xc0Ey/08+uF2kzM
-         xZoawnbhTv+AP3wPizcMp+YIh2GuuSWsg3OcAlnsB4xYw7Ye05cizQWymJeIr3pCQ027
-         65/M3m9cotB7cTGXxVDlHVfx+ZyOM2JgRBirjDs0SpEYjH16RTRPISvdKexmaBZxdrJS
-         G/yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=HBCqjg0a+bhil4nBIBy5bJmpduFEbhGT3Aouisb2vJA=;
-        b=hOB2Kzti5O0X0iZdVnuMNTvfB/WpdRx9SGtu2QvSI2oRzJsU+zi8op0jKMevqbt8jH
-         jVvHXZOwK+yxd6ynDNf9ap/3wdgFO+3zR+sVhf2+NPMGSXhaL3u1pWDhlwcqAvL4/h7g
-         yjzxPEbXeAPhqcD3DdZnlgXI7n0uHBv2+BpsOSZhtth1Iz83wVJhsqMKLdAGWyENPtkf
-         Dqh5MaNaPXSsMXZFjSRJaReiF6xm+SE45Aw89Jt+xtEZ2j+Ec5kA8igbyLENVqLUXawg
-         L8wllFlhMv2WxmS4J9xyJqhL5pVgqMdXTvqCGYPM5zeHiCE30KMV1fKzGk1W7q5z29yy
-         +0QQ==
-X-Gm-Message-State: APjAAAXAnGTZktJEimf4TiLCgCBaxzSXp8oC17s06hrUs92ka02bjLgy
-        rMGOogFp3VRJQDbQlwyygHJj5w==
-X-Google-Smtp-Source: APXvYqzEs91Ql9UUx7rtBSIQ+QLy850ElKz8CsOBfYyqFaA2Jjc3JnMQqsgpkfrU1HGw11ilZP0vkQ==
-X-Received: by 2002:a17:90a:a617:: with SMTP id c23mr11647984pjq.32.1582408277086;
-        Sat, 22 Feb 2020 13:51:17 -0800 (PST)
-Received: from kaaira-HP-Pavilion-Notebook ([103.37.201.177])
-        by smtp.gmail.com with ESMTPSA id f3sm7384821pfg.115.2020.02.22.13.51.13
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Feb 2020 13:51:16 -0800 (PST)
-Date:   Sun, 23 Feb 2020 03:21:09 +0530
-From:   Kaaira Gupta <kgupta@es.iitr.ac.in>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        id S1727151AbgBVXQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 18:16:27 -0500
+Received: from smtprelay0050.hostedemail.com ([216.40.44.50]:55813 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726884AbgBVXQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 18:16:27 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 81D4D182251C0;
+        Sat, 22 Feb 2020 23:16:25 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:69:196:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3874:4321:4605:5007:6119:9040:10004:10400:10848:11026:11232:11473:11658:11914:12043:12048:12296:12297:12740:12760:12895:13069:13161:13229:13311:13357:13439:14181:14659:14721:21080:21451:21611:21622:21740:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: girls48_37ed54b61044f
+X-Filterd-Recvd-Size: 2924
+Received: from XPS-9350.home (unknown [47.151.143.254])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 22 Feb 2020 23:16:24 +0000 (UTC)
+Message-ID: <45de570ce9afcec576ed521ddad343e6ae46fd0f.camel@perches.com>
+Subject: Re: [PATCH v2] staging: qlge: emit debug and dump at same level
+From:   Joe Perches <joe@perches.com>
+To:     Kaaira Gupta <kgupta@es.iitr.ac.in>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2] staging: qlge: emit debug and dump at same level
-Message-ID: <20200222215109.GA18727@kaaira-HP-Pavilion-Notebook>
+Date:   Sat, 22 Feb 2020 15:14:57 -0800
+In-Reply-To: <20200222215109.GA18727@kaaira-HP-Pavilion-Notebook>
+References: <20200222215109.GA18727@kaaira-HP-Pavilion-Notebook>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Write a macro QLGE_DUMP_DBG having a function print_hex_dump so that
-the debug and dump are emitted at the same KERN_<LEVEL> and code becomes
-simpler. Write a macro instead of calling the function directly in
-ql_mpi_core_to_log() to go according to the coding practices followed in
-other drivers such as nvec and vc04_services.
+On Sun, 2020-02-23 at 03:21 +0530, Kaaira Gupta wrote:
+> Write a macro QLGE_DUMP_DBG having a function print_hex_dump so that
+> the debug and dump are emitted at the same KERN_<LEVEL> and code becomes
+> simpler. Write a macro instead of calling the function directly in
+> ql_mpi_core_to_log() to go according to the coding practices followed in
+> other drivers such as nvec and vc04_services.
+> 
+> Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
+> ---
+> 
+> changes since v1: make code of ql_mpi_core_to_log() simpler.
+> 
+> ----
+> ---
+>  drivers/staging/qlge/qlge_dbg.c | 25 +++++--------------------
+>  1 file changed, 5 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+[]
+> @@ -1,5 +1,8 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +#define QLGE_DUMP_DBG(str, buf, len)			    \
+> +	print_hex_dump(KERN_DEBUG, str, DUMP_PREFIX_OFFSET, \
+> +			32, 4, buf, len, false)
 
-Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
----
+There is no need to create a used-once macro.
+Just code the one use in-place.
 
-changes since v1: make code of ql_mpi_core_to_log() simpler.
-
-----
----
- drivers/staging/qlge/qlge_dbg.c | 25 +++++--------------------
- 1 file changed, 5 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index c7af2548d119..f4440670bc46 100644
---- a/drivers/staging/qlge/qlge_dbg.c
-+++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -1,5 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+#define QLGE_DUMP_DBG(str, buf, len)			    \
-+	print_hex_dump(KERN_DEBUG, str, DUMP_PREFIX_OFFSET, \
-+			32, 4, buf, len, false)
- 
- #include <linux/slab.h>
- 
-@@ -1324,27 +1327,9 @@ void ql_mpi_core_to_log(struct work_struct *work)
- {
- 	struct ql_adapter *qdev =
- 		container_of(work, struct ql_adapter, mpi_core_to_log.work);
--	u32 *tmp, count;
--	int i;
- 
--	count = sizeof(struct ql_mpi_coredump) / sizeof(u32);
--	tmp = (u32 *)qdev->mpi_coredump;
--	netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
--		     "Core is dumping to log file!\n");
--
--	for (i = 0; i < count; i += 8) {
--		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
--			"%.08x %.08x %.08x\n", i,
--			tmp[i + 0],
--			tmp[i + 1],
--			tmp[i + 2],
--			tmp[i + 3],
--			tmp[i + 4],
--			tmp[i + 5],
--			tmp[i + 6],
--			tmp[i + 7]);
--		msleep(5);
--	}
-+	QLGE_DUMP_DBG("Core is dumping to log file!\n", qdev->mpi_coredump,
-+		      sizeof(*qdev->mpi_coredump));
- }
- 
- #ifdef QL_REG_DUMP
--- 
-2.17.1
+>  #include <linux/slab.h>
+>  
+> @@ -1324,27 +1327,9 @@ void ql_mpi_core_to_log(struct work_struct *work)
+>  {
+>  	struct ql_adapter *qdev =
+>  		container_of(work, struct ql_adapter, mpi_core_to_log.work);
+> -	u32 *tmp, count;
+> -	int i;
+>  
+> -	count = sizeof(struct ql_mpi_coredump) / sizeof(u32);
+> -	tmp = (u32 *)qdev->mpi_coredump;
+> -	netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
+> -		     "Core is dumping to log file!\n");
+> -
+> -	for (i = 0; i < count; i += 8) {
+> -		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
+> -			"%.08x %.08x %.08x\n", i,
+> -			tmp[i + 0],
+> -			tmp[i + 1],
+> -			tmp[i + 2],
+> -			tmp[i + 3],
+> -			tmp[i + 4],
+> -			tmp[i + 5],
+> -			tmp[i + 6],
+> -			tmp[i + 7]);
+> -		msleep(5);
+> -	}
+> +	QLGE_DUMP_DBG("Core is dumping to log file!\n", qdev->mpi_coredump,
+> +		      sizeof(*qdev->mpi_coredump));
+>  }
+>  
+>  #ifdef QL_REG_DUMP
 
