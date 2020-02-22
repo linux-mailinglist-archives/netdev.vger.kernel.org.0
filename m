@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFBFD168ED1
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 13:26:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE55A168EDB
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 13:33:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727259AbgBVMZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 07:25:50 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35841 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726763AbgBVMZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 07:25:50 -0500
-Received: by mail-ed1-f67.google.com with SMTP id j17so5903038edp.3;
-        Sat, 22 Feb 2020 04:25:47 -0800 (PST)
+        id S1727184AbgBVMdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 07:33:18 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43416 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbgBVMdS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 07:33:18 -0500
+Received: by mail-ed1-f65.google.com with SMTP id dc19so5877805edb.10;
+        Sat, 22 Feb 2020 04:33:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/Y50RHD2QGihstG7fjd8c2NdZnfKYGCwsRvJsD3a51U=;
-        b=NhTbOsAtlr89Xk/roSZUnzFyZi5buN3T9l38N0HrufP0cibwbgBJAtd3Y6AwlCm2H4
-         RhzUVdn6aK6roKwiZuRD6a6mQ6b6K7MdCI3UGhk/0trmFnf9vnNzDjFhTo2wsFgy1l8x
-         yujA86FhM08935s665nOaSZB5pgb3+HjNlnPQyCseTvVPOldvQgQmuxY0/C4syo+Qlmw
-         SvpcKC832vgrQLLbEHYpP7qUChKzkzBlizGq9uAQonHYQCdyulva0IyA/SOW51d01veR
-         /KRKZxsBRRM9cfuODq3hZH+O3r/UI/1dSDADAkxc7imMvh9rjJ1GMoca0tHYb+y4k7kP
-         19ZA==
+        bh=Oi8wtUJc/ZugTi+ijz3fdth5kIyS+1a0ZDxcmMSZ+Ww=;
+        b=UPC1RCXaaTRucYrzIsJUBYFQPRozFLRYPaby3m4gsIOM+Wok5jFCsijg++GMLkTgcD
+         emjQAgGbeGTDKCuEgy708ZwH8nsHR8SLDIKSSFeORVERTU221fsQHzp7QM1/gFYz4Ueb
+         SNuT79hDLJUmE8Ejt7rGYfAlTvV9ZjrqTBN2kfauVapGP+jAUsRL+lFFfjcq26Ar9PXJ
+         KI66coEmGbl5YnC20VwY0y7uwJOMbJhQF41vyVYsiRewTF2NdSLtuQ3YiPxpZR9b9EJu
+         zfEmlMSZbXLIVImjIIIxOqicZ8jy3y/jckgIDh7n3r1W78+1vHaoz/CIlqnT3Wj/TEKW
+         obYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/Y50RHD2QGihstG7fjd8c2NdZnfKYGCwsRvJsD3a51U=;
-        b=n5NMSLPTHvhAAWTobjpYP5hVN/T5s909xLXuJc/dBfXB4+8t6orAobukmh0waxn1N3
-         QjxBhr72KzC/5pc5knNWT4fxHkR/HBNsjLVpoytRdwfp90/k0O0wdOUxFj53zhjjQHAM
-         s6dUydgVCzyo2i9t6HZvxIZmvqkRX+tBWjWIh/IV19ekQJDPOv7rEai4IN7b6iNI3Qp3
-         XeM9I06pQOmf1p2JQKthk/lN7nT3aoPuif7K7/tJUm9izRXUsHxtsC8BpUy0Yhtu+0+W
-         50Munqyh/62Ejb/T+JDApdL0yqB4+Xe5cNMI2nN0DVVz1k5fi4XhH9pNHlgYa3mZvlOR
-         vDCw==
-X-Gm-Message-State: APjAAAWpGSDD9r6qGy7Hp/l1stZn0beV4BsCa3EyWq80TxGQ8DgN5r0/
-        e6yByTbAaVCvnn1ew1ZLleYBwwFvUUWu/Vki9ms=
-X-Google-Smtp-Source: APXvYqzhOH4Kn2D97bedbpm09NJOhnwoJKeOv6yPa5hiGs62R53VqNZ52MVlBTpVEDOAJf57+r1mHqsaj9Z6lZAengs=
-X-Received: by 2002:a05:6402:3132:: with SMTP id dd18mr38997644edb.118.1582374346881;
- Sat, 22 Feb 2020 04:25:46 -0800 (PST)
+        bh=Oi8wtUJc/ZugTi+ijz3fdth5kIyS+1a0ZDxcmMSZ+Ww=;
+        b=pR4cNWxKiakjzQX4JyFE2GcnyWa+qWO9ko8RP+t/Xx87t+73eI+cTXfgAvpZkxZzjN
+         E4L6mUzfpbXotjZOFiSbqhwHES63ULwLJsepPYo3lSsMteh8jG9O9QfhMSozQ/qmXVqc
+         7ZVU/hyepDNdqCnnJAGo9/cHdsNZtVleY3W4ofTDDQ6F4OlqwbBfhNZ0x0Sm1mAABb47
+         WxTwgvY1AwzpmCa/e8ewZg1KibAUlvDepxAArcpADKU6CJSnFtAnj4OtYfy8/xWST3kr
+         BOOUHBcVgfU6cMcypUT1xWfKvFbYEJGnOVQRzshruNKRml3B+4/dWdNEidohxuXSNx/j
+         W+JQ==
+X-Gm-Message-State: APjAAAUDThjVeysqd3TDUapzmfRI6s9x34dkBZ9AxJ6wJpFrotYFcy/O
+        dvG01AtMFvtvIjMMXcQUJ4cPIL899PCI1+XK6n0=
+X-Google-Smtp-Source: APXvYqxZOaxYQ2aJT+V+cev2nVAQE4ak0/DAh9KbLNirVUNjfgjAqdVfgOUCrvX6Tl1imqGzGxeJM8UVPW50MiKWAYA=
+X-Received: by 2002:a17:906:1e48:: with SMTP id i8mr36633456ejj.189.1582374796161;
+ Sat, 22 Feb 2020 04:33:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20200219151259.14273-5-olteanv@gmail.com> <20200222113829.32431-1-michael@walle.cc>
-In-Reply-To: <20200222113829.32431-1-michael@walle.cc>
+References: <20200219151259.14273-4-olteanv@gmail.com> <20200222112841.29927-1-michael@walle.cc>
+In-Reply-To: <20200222112841.29927-1-michael@walle.cc>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sat, 22 Feb 2020 14:25:36 +0200
-Message-ID: <CA+h21hpCBjo18zHc-SvMj5Y=C+e=rna5MUgp7SW1u0btma+wfg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next/devicetree 4/5] arm64: dts: fsl: ls1028a: add
- node for Felix switch
+Date:   Sat, 22 Feb 2020 14:33:05 +0200
+Message-ID: <CA+h21hroaskWAmCcv7UuMDEXSVAAmbX+JGTLr-pBqN-kj-=fGg@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next/devicetree 3/5] dt-bindings: net: dsa: ocelot:
+ document the vsc9959 core
 To:     Michael Walle <michael@walle.cc>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
@@ -67,46 +67,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Michael,
 
-On Sat, 22 Feb 2020 at 13:38, Michael Walle <michael@walle.cc> wrote:
+On Sat, 22 Feb 2020 at 13:28, Michael Walle <michael@walle.cc> wrote:
 >
-> Hi,
+> > +Any port can be disabled, but the CPU port should be kept enabled.
 >
-
-> > +
-> > +                     enetc_port2: ethernet@0,2 {
-> > +                             compatible = "fsl,enetc";
-> > +                             reg = <0x000200 0 0 0 0>;
-> > +                             phy-mode = "gmii";
-> Can we disable this port by default in this dtsi? As mentioned in the other
-> mail, I'd prefer to have all ports disabled because it doesn't make sense
-> to have this port while having all the external ports disabled.
->
-
-Ok. What would you want to happen with the "ethernet" property? Do you
-want the board dts to set that too?
-
-> > +                                     /* Internal port with DSA tagging */
-> > +                                     mscc_felix_port4: port@4 {
-> > +                                             reg = <4>;
-> > +                                             phy-mode = "internal";
-> > +                                             ethernet = <&enetc_port2>;
-> Likewise, I'd prefer to have this disabled.
->
-
-Ok.
-
-> > +                     enetc_port3: ethernet@0,6 {
-> > +                             compatible = "fsl,enetc";
-> > +                             reg = <0x000600 0 0 0 0>;
-> > +                             status = "disabled";
-> > +                             phy-mode = "gmii";
-> shouldn't the status be after the phy-mode property?
-
-Why?
-
+> What is the reason for this? Do you mean if you actually want to use it? In
+> fact, I'd would like to see it disabled by default in the .dtsi file. It
+> doesn't make sense to just have the CPU port enabled, but not any of the
+> outgoing ports. It'd just confuse the user if there is an additional
+> network port which cannot be used.
 >
 > -michael
 >
 
-Regards,
+I can disable all internal ports by default, but there is one
+configuration which will not work: enabling only eno3 and switch port
+5. This is because the switch PCS registers belong to eno2, and if
+that is disabled, the memory accesses will be invalid. So providing a
+configuration with eno2 disabled by default is more likely to produce
+confusion. But I'll try to clarify better next time.
+
+> > --
+> > 2.17.1
+>
+>
+
+Thanks,
 -Vladimir
