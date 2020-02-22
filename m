@@ -2,147 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53949168AE9
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 01:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA7F4168AFB
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 01:30:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbgBVAVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 19:21:48 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:38097 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbgBVAVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 19:21:48 -0500
-Received: by mail-qv1-f68.google.com with SMTP id g6so1781859qvy.5;
-        Fri, 21 Feb 2020 16:21:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yFY3ILLk6reG7reBIyS4OQDforKAa8H5TmzpyxdGoYs=;
-        b=iY9TwESNJ0Sz0tzjeYWX1hVlLm6IxTHRnpTyuxH+4+/MZ4P1n8aSN/eiKZcX99iFDH
-         DIU0YcfDygLOWncRThbyW5oqM6vHZn//0OntLK2kuwjTx3m6v8r5Yk8unIi4nl0WJMby
-         a3yHeTIwYmgthFlwyn43K3mmlJC+jWmuiSYYqqfAPS7U61yknVIhC8MFscOIr8w3nvk8
-         OS4aEvxfuLjvQKiiTgam0KypHqdDXL7fq9T+EQ1DtqqCUGNorGFj0C0l1KETorpUSqz9
-         QcRTQoRIhRewltvQPQABR8oarXVnR8GZFylirRWJA386GjxDuGynzY5o5ZYTlCxWVj6l
-         k4KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yFY3ILLk6reG7reBIyS4OQDforKAa8H5TmzpyxdGoYs=;
-        b=tJ/leETHtVdVoASaQdv/nUhrv4oUPxTNuN85C0JopiV7b2C1GFyxhFz1XziKaqqf7c
-         z5Mnvo5HpUqx7CX49f4Sbt0d9sQ+aNTHLAYrgUaNg/JigbgD0oq2WOSAxupEJCFqAlYd
-         GQ0rEqNs8ifYJoc3XCcCUvw0Plf485dydqhA+1q37bqgNKVJksGpTfDCT9z6sOduTa+Y
-         JUEsYFanGQByYRSxTJSqNJIydBCbRFWofK8WnPDh731hney57CbnU/BQZP39O9XL6FOn
-         nN5uHmvHFTwNGpRLVg5KckuinfkUeIi9y9IRI+cGY86p7FryXb+VQdnSUSgHCGl/cuE+
-         jPQA==
-X-Gm-Message-State: APjAAAXZHoKxlCVSKsh1mixw02Te6KE+gON1oo7Rb4ijri5Et0J4r/Ok
-        YS5wNWfdH8SzZq2ABRDdvBVTgMW8/AWWZ0naw3M=
-X-Google-Smtp-Source: APXvYqxw54q0lr9jdmtBg6+w4Cf5rUNAFAIzSCm5ZWH8MwTY6VO8PNlKPftoNXfuDvXWryRGDAIJt39AnmR7YZRGzMo=
-X-Received: by 2002:a05:6214:8cb:: with SMTP id da11mr31015915qvb.228.1582330906998;
- Fri, 21 Feb 2020 16:21:46 -0800 (PST)
+        id S1726907AbgBVAa0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 21 Feb 2020 19:30:26 -0500
+Received: from mga12.intel.com ([192.55.52.136]:57313 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726697AbgBVAa0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Feb 2020 19:30:26 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Feb 2020 16:30:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,470,1574150400"; 
+   d="scan'208";a="437123404"
+Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2020 16:30:22 -0800
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.43]) by
+ ORSMSX107.amr.corp.intel.com ([169.254.1.106]) with mapi id 14.03.0439.000;
+ Fri, 21 Feb 2020 16:30:22 -0800
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH v3 1/2] igb: Use device_lock() insead
+ of rtnl_lock()
+Thread-Topic: [Intel-wired-lan] [PATCH v3 1/2] igb: Use device_lock() insead
+ of rtnl_lock()
+Thread-Index: AQHV3Z7TQowGVpsUH068d9CcjdELQKgmcBOA
+Date:   Sat, 22 Feb 2020 00:30:22 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B971F9210@ORSMSX103.amr.corp.intel.com>
+References: <20200207101005.4454-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20200207101005.4454-1-kai.heng.feng@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20200220230546.769250-1-andriin@fb.com> <87eeuo5jgg.fsf@cloudflare.com>
-In-Reply-To: <87eeuo5jgg.fsf@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 21 Feb 2020 16:21:36 -0800
-Message-ID: <CAEf4BzYuMr56P3EVyvdr4mvV3qbx496GMgfAU1Gd4aJo5RUR2A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix trampoline_count clean up logic
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>, Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 2:21 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> On Thu, Feb 20, 2020 at 11:05 PM GMT, Andrii Nakryiko wrote:
-> > Libbpf's Travis CI tests caught this issue. Ensure bpf_link and bpf_object
-> > clean up is performed correctly.
-> >
-> > Fixes: d633d57902a5 ("selftest/bpf: Add test for allowed trampolines count")
-> > Cc: Jiri Olsa <jolsa@kernel.org>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  .../bpf/prog_tests/trampoline_count.c         | 25 +++++++++++++------
-> >  1 file changed, 18 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> > index 1f6ccdaed1ac..781c8d11604b 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-> > @@ -55,31 +55,40 @@ void test_trampoline_count(void)
-> >       /* attach 'allowed' 40 trampoline programs */
-> >       for (i = 0; i < MAX_TRAMP_PROGS; i++) {
-> >               obj = bpf_object__open_file(object, NULL);
-> > -             if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-> > +             if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj))) {
-> > +                     obj = NULL;
-> >                       goto cleanup;
-> > +             }
-> >
-> >               err = bpf_object__load(obj);
-> >               if (CHECK(err, "obj_load", "err %d\n", err))
-> >                       goto cleanup;
-> >               inst[i].obj = obj;
-> > +             obj = NULL;
-> >
-> >               if (rand() % 2) {
-> > -                     link = load(obj, fentry_name);
-> > -                     if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link)))
-> > +                     link = load(inst[i].obj, fentry_name);
-> > +                     if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link))) {
-> > +                             link = NULL;
-> >                               goto cleanup;
-> > +                     }
-> >                       inst[i].link_fentry = link;
-> >               } else {
-> > -                     link = load(obj, fexit_name);
-> > -                     if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link)))
-> > +                     link = load(inst[i].obj, fexit_name);
-> > +                     if (CHECK(IS_ERR(link), "attach prog", "err %ld\n", PTR_ERR(link))) {
-> > +                             link = NULL;
-> >                               goto cleanup;
-> > +                     }
-> >                       inst[i].link_fexit = link;
-> >               }
-> >       }
-> >
-> >       /* and try 1 extra.. */
-> >       obj = bpf_object__open_file(object, NULL);
-> > -     if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-> > +     if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj))) {
-> > +             obj = NULL;
-> >               goto cleanup;
-> > +     }
-> >
-> >       err = bpf_object__load(obj);
-> >       if (CHECK(err, "obj_load", "err %d\n", err))
-> > @@ -104,7 +113,9 @@ void test_trampoline_count(void)
-> >  cleanup_extra:
-> >       bpf_object__close(obj);
-> >  cleanup:
-> > -     while (--i) {
-> > +     if (i >= MAX_TRAMP_PROGS)
-> > +             i = MAX_TRAMP_PROGS - 1;
-> > +     for (; i >= 0; i--) {
-> >               bpf_link__destroy(inst[i].link_fentry);
-> >               bpf_link__destroy(inst[i].link_fexit);
-> >               bpf_object__close(inst[i].obj);
->
-> I'm not sure I'm grasping what the fix is about.
->
-> We don't access obj or link from cleanup, so what is the point of
-> setting them to NULL before jumping there?
->
-> Or is it all just an ancillary change to clamping the loop index
-> variable to (MAX_TRAMP_PROGS - 1)?
 
-Yeah, mostly ancillary. But this is not just clamping to
-MAX_TRAMP_PROGS-1. As Jiri pointed out, it's also handling a case of i
-== 0.
+
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Kai-Heng Feng
+> Sent: Friday, February 7, 2020 2:10 AM
+> To: davem@davemloft.net; mkubecek@suse.cz; Kirsher, Jeffrey T
+> <jeffrey.t.kirsher@intel.com>
+> Cc: open list:NETWORKING DRIVERS <netdev@vger.kernel.org>; Kai-Heng
+> Feng <kai.heng.feng@canonical.com>; moderated list:INTEL ETHERNET
+> DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-
+> kernel@vger.kernel.org>
+> Subject: [Intel-wired-lan] [PATCH v3 1/2] igb: Use device_lock() insead of
+> rtnl_lock()
+> 
+> Commit 9474933caf21 ("igb: close/suspend race in netif_device_detach")
+> fixed race condition between close and power management ops by using
+> rtnl_lock().
+> 
+> However we can achieve the same by using device_lock() since all power
+> management ops are protected by device_lock().
+> 
+> This fix is a preparation for next patch, to prevent a dead lock under
+> rtnl_lock() when calling runtime resume routine.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v3:
+>  - Fix unreleased lock reported by 0-day test bot.
+> v2:
+>  - No change.
+> 
+>  drivers/net/ethernet/intel/igb/igb_main.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+
+This patch introduces the following call trace / RIP when I sleep / resume (via rtcwake) a system that has an igb port with link up:  I'm not sure if it introduces the issue or just exposes / displays it as it only shows up on the first sleep / resume cycle and the systems I have that were stable for many sleep / resume cycles (arbitrarily 50+) continue to be so.  
+-------------------------------------------------------------------------------------------------
+...
+[   50.279436] usb usb3: root hub lost power or was reset
+[   50.279437] usb usb4: root hub lost power or was reset
+[   50.279491] sd 1:0:0:0: [sda] Starting disk
+[   50.317691] ------------[ cut here ]------------
+[   50.317692] RTNL: assertion failed at net/core/dev.c (2867)
+[   50.317700] WARNING: CPU: 6 PID: 5287 at net/core/dev.c:2867 netif_set_real_num_tx_queues+0x184/0x1a0
+[   50.317701] Modules linked in: rfcomm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_rej
+ect_ipv4 nft_counter nft_compat nf_tables nfnetlink tun bridge stp llc cmac bnep iTCO_wdt intel_wmi_thunderbolt iT
+CO_vendor_support mxm_wmi wmi_bmof x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_hda_codec_hdmi kvm
+ snd_hda_codec_realtek irqbypass snd_hda_codec_generic ledtrig_audio btusb btrtl btbcm snd_hda_intel btintel snd_i
+ntel_dspcfg snd_hda_codec bluetooth snd_hwdep snd_hda_core snd_seq crct10dif_pclmul crc32_pclmul joydev snd_seq_de
+vice ghash_clmulni_intel intel_cstate snd_pcm mei_me intel_uncore snd_timer ecdh_generic snd ecc pcspkr mei rfkill
+ i2c_i801 soundcore intel_rapl_perf sg wmi acpi_pad intel_pmc_core nfsd auth_rpcgss nfs_acl lockd grace sunrpc ip_
+tables xfs libcrc32c sr_mod sd_mod cdrom t10_pi i915 intel_gtt drm_kms_helper syscopyarea sysfillrect sysimgblt fb
+_sys_fops cec drm igb ahci libahci e1000e libata crc32c_intel dca i2c_algo_bit video
+[   50.317719] CPU: 6 PID: 5287 Comm: kworker/u24:17 Not tainted 5.6.0-rc2_next-queue_dev-queue_81b6341+ #5
+[   50.317720] Hardware name: Gigabyte Technology Co., Ltd. Z370 AORUS Gaming 5/Z370 AORUS Gaming 5-CF, BIOS F6 04
+/03/2018
+[   50.317722] Workqueue: events_unbound async_run_entry_fn
+[   50.317723] RIP: 0010:netif_set_real_num_tx_queues+0x184/0x1a0
+[   50.317724] Code: 43 1e e7 00 00 0f 85 fc fe ff ff ba 33 0b 00 00 48 c7 c6 92 57 9a bd 48 c7 c7 e0 a4 91 bd c6
+05 23 1e e7 00 01 e8 57 3c 97 ff <0f> 0b e9 d6 fe ff ff 41 be ea ff ff ff e9 a4 fe ff ff 66 2e 0f 1f
+[   50.317724] RSP: 0018:ffffb57fc1347d38 EFLAGS: 00010282
+[   50.317725] RAX: 0000000000000000 RBX: ffff995a9e3e4000 RCX: 0000000000000007
+[   50.317725] RDX: 0000000000000007 RSI: 0000000000000002 RDI: ffff995abe398f40
+[   50.317725] RBP: 0000000000000004 R08: 0000000000000002 R09: 000000000002b500
+[   50.317726] R10: 0000003a9dc62fa1 R11: 0000000000fed278 R12: 0000000000000004
+[   50.317726] R13: 0000000000000004 R14: ffff995a9e3e4000 R15: ffff995a9e3e4000
+[   50.317727] FS:  0000000000000000(0000) GS:ffff995abe380000(0000) knlGS:0000000000000000
+[   50.317727] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   50.317727] CR2: 00007f4dbd7fae20 CR3: 0000000efbe0a004 CR4: 00000000003606e0
+[   50.317728] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   50.317728] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   50.317728] Call Trace:
+[   50.317734]  __igb_open+0x1ee/0x5c0 [igb]
+[   50.317737]  igb_resume+0x193/0x1c0 [igb]
+[   50.317739]  ? pci_pm_thaw+0x80/0x80
+[   50.317741]  dpm_run_callback+0x4f/0x140
+[   50.317742]  device_resume+0x107/0x180
+[   50.317743]  async_resume+0x19/0x50
+[   50.317744]  async_run_entry_fn+0x39/0x160
+[   50.317746]  process_one_work+0x1a7/0x370
+[   50.317747]  worker_thread+0x30/0x380
+[   50.317748]  ? process_one_work+0x370/0x370
+[   50.317749]  kthread+0x10c/0x130
+[   50.317750]  ? kthread_park+0x80/0x80
+[   50.317751]  ret_from_fork+0x35/0x40
+[   50.317752] ---[ end trace 45a9ec6b02347b6e ]---
+[   50.317753] ------------[ cut here ]------------
+[   50.317753] RTNL: assertion failed at net/core/dev.c (2913)
+[   50.317756] WARNING: CPU: 6 PID: 5287 at net/core/dev.c:2913 netif_set_real_num_rx_queues+0x79/0x80
+[   50.317757] Modules linked in: rfcomm xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_rej
+ect_ipv4 nft_counter nft_compat nf_tables nfnetlink tun bridge stp llc cmac bnep iTCO_wdt intel_wmi_thunderbolt iT
+CO_vendor_support mxm_wmi wmi_bmof x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel snd_hda_codec_hdmi kvm
+ snd_hda_codec_realtek irqbypass snd_hda_codec_generic ledtrig_audio btusb btrtl btbcm snd_hda_intel btintel snd_i
+ntel_dspcfg snd_hda_codec bluetooth snd_hwdep snd_hda_core snd_seq crct10dif_pclmul crc32_pclmul joydev snd_seq_de
+vice ghash_clmulni_intel intel_cstate snd_pcm mei_me intel_uncore snd_timer ecdh_generic snd ecc pcspkr mei rfkill
+ i2c_i801 soundcore intel_rapl_perf sg wmi acpi_pad intel_pmc_core nfsd auth_rpcgss nfs_acl lockd grace sunrpc ip_
+tables xfs libcrc32c sr_mod sd_mod cdrom t10_pi i915 intel_gtt drm_kms_helper syscopyarea sysfillrect sysimgblt fb
+_sys_fops cec drm igb ahci libahci e1000e libata crc32c_intel dca i2c_algo_bit video
+[   50.317766] CPU: 6 PID: 5287 Comm: kworker/u24:17 Tainted: G        W         5.6.0-rc2_next-queue_dev-queue_81
+b6341+ #5
+[   50.317766] Hardware name: Gigabyte Technology Co., Ltd. Z370 AORUS Gaming 5/Z370 AORUS Gaming 5-CF, BIOS F6 04
+/03/2018
+[   50.317767] Workqueue: events_unbound async_run_entry_fn
+[   50.317768] RIP: 0010:netif_set_real_num_rx_queues+0x79/0x80
+[   50.317768] Code: ff c3 80 3d 89 6c e7 00 00 75 db ba 61 0b 00 00 48 c7 c6 92 57 9a bd 48 c7 c7 e0 a4 91 bd c6
+05 6d 6c e7 00 01 e8 a2 8a 97 ff <0f> 0b eb b8 0f 1f 00 0f 1f 44 00 00 53 f0 48 0f ba af d8 00 00 00
+[   50.317769] RSP: 0018:ffffb57fc1347d58 EFLAGS: 00010282
+[   50.317769] RAX: 0000000000000000 RBX: ffff995a9e3e4000 RCX: 0000000000000007
+[   50.317769] RDX: 0000000000000007 RSI: 0000000000000002 RDI: ffff995abe398f40
+[   50.317770] RBP: 0000000000000004 R08: 0000000000000002 R09: 000000000002b500
+[   50.317770] R10: 0000003a9dc92851 R11: 0000000000fec568 R12: 0000000000000000
+[   50.317770] R13: 0000000000000001 R14: ffff995a9e3e4000 R15: ffff995a9e3e4000
+[   50.317771] FS:  0000000000000000(0000) GS:ffff995abe380000(0000) knlGS:0000000000000000
+[   50.317771] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   50.317771] CR2: 00007f4dbd7fae20 CR3: 0000000efbe0a004 CR4: 00000000003606e0
+[   50.317772] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   50.317772] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   50.317772] Call Trace:
+[   50.317775]  __igb_open+0x208/0x5c0 [igb]
+[   50.317777]  igb_resume+0x193/0x1c0 [igb]
+[   50.317777]  ? pci_pm_thaw+0x80/0x80
+[   50.317778]  dpm_run_callback+0x4f/0x140
+[   50.317779]  device_resume+0x107/0x180
+[   50.317780]  async_resume+0x19/0x50
+[   50.317781]  async_run_entry_fn+0x39/0x160
+[   50.317782]  process_one_work+0x1a7/0x370
+[   50.317783]  worker_thread+0x30/0x380
+[   50.317784]  ? process_one_work+0x370/0x370
+[   50.317785]  kthread+0x10c/0x130
+[   50.317785]  ? kthread_park+0x80/0x80
+[   50.317786]  ret_from_fork+0x35/0x40
+[   50.317787] ---[ end trace 45a9ec6b02347b6f ]---
+[   50.560158] OOM killer enabled.
+[   50.560158] Restarting tasks ... done.
+[   50.560713] video LNXVIDEO:00: Restoring backlight state
+[   50.560714] PM: suspend exit
+[   50.601179] ata5: SATA link down (SStatus 4 SControl 300)
+[   50.601201] ata4: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+...
