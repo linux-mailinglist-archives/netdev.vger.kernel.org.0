@@ -2,120 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85ED1169038
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 17:18:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3431316903B
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 17:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgBVQSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 11:18:11 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:47250 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgBVQSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 11:18:11 -0500
-Received: by mail-io1-f71.google.com with SMTP id 13so5080617iof.14
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 08:18:09 -0800 (PST)
+        id S1726758AbgBVQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 11:21:19 -0500
+Received: from mail-qv1-f73.google.com ([209.85.219.73]:47922 "EHLO
+        mail-qv1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbgBVQVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 11:21:18 -0500
+Received: by mail-qv1-f73.google.com with SMTP id dr18so3483384qvb.14
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 08:21:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=vny/6Afl5ywHpcf9AtK1W+WKvgD2XxXsQnq8LJ8H39I=;
+        b=gu0e21F4GPRNamKe56slOFqcrJc/Z8iusHwgcngE7Izsi1CF5sU086QsGzSL41pjs8
+         gUdI6yAspW+OaxGhMAo/isbKIjEG+8DSaGqxyQY+ERK7Nsia4ByV5m3kwH/w52gHl3dQ
+         uHSIhN8Q+2QlNljY0bBkn/gspfHBCipj8cSvaBuZwo+k2Z4VKSMIbj6Eha18WXHW3Ylr
+         F8iZ0XAZBmPRCwmr97L9YNyMR5rD8HUDaTT7gLDFYM3NBSlkRiiwv6LYm3IneM1Nf1wk
+         jNgDEkbZftR9MSq/TbzhcfHBQ5Cz/Jxb6Gqir/s9WN4S8wghjSYWT5QbDYCBWKITWv4l
+         nDPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Q5WXcymNK0iXLaBPmc/IaN0k5lkicg+bQcyotVKvKB0=;
-        b=TRULd3vBhPm1gnyIgPe8sdFXa4HwfozjRCLgQlmoW6L8VR2gbXWE0/zWc+W+/NSrPN
-         TMdV7/PF//Nwn0KBp80r5St+wxZ1cLx/RkDCnEK0MWa4uyS504BQ6gYwh4AZ3xB3g765
-         8urYrFbl1mfaHhnHWv+3yY/DxUtuM8Z0PSHIlmQ/l7pwUNoox7BHbWMhs49KafrCiy0F
-         UG24a2BWEwuK9V736d6/Lu9dPu4fKKhupw+NTGWmFjSvij2EF4b3gC8FHxc5VHHvh8Iy
-         3Oj+lejiyLfBM176lkU6qUiIL0oMMB/1/GT1VcbUAJhyz4z3xMCrwBTPu58xV1sjXGGC
-         rDLg==
-X-Gm-Message-State: APjAAAUUPhf/wul648/EQxgMVyVoRgqxiZYRxv1CmwSVbCkk9Kn5qQ84
-        Df4GzYPjmaeTckSAkrjc3usjaEPVehTGGyIUWT2145xUrECx
-X-Google-Smtp-Source: APXvYqwWx5iFusHoDsY4SnJEiNdRCrpAU5DWoTP+SeoLzwE3OOC6e3KWiGMxWwQ3SZ+I2FhhRkvjif9JZT2G0kiG/yYGtSPGJdo/
-MIME-Version: 1.0
-X-Received: by 2002:a92:ca82:: with SMTP id t2mr45884845ilo.242.1582388289189;
- Sat, 22 Feb 2020 08:18:09 -0800 (PST)
-Date:   Sat, 22 Feb 2020 08:18:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dfc074059f2c7b57@google.com>
-Subject: KMSAN: uninit-value in nf_flow_table_offload_setup
-From:   syzbot <syzbot+8fbe17d9bdd5c8815211@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        glider@google.com, kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=vny/6Afl5ywHpcf9AtK1W+WKvgD2XxXsQnq8LJ8H39I=;
+        b=T1agcS39PoakFTaqtzCvK46KW7Le7KIbQAMs6ZeHf6Q69uMxY2frV7eQlxXH8mX+2u
+         PrjA4Mu0BO+OQsycz8+JbDBSwzNDMCVm15IBfnj+ZubV/92txYYPZ36q1dncjRe0PatU
+         ekLh5sAYxIsnrHjXn8SahfbcSEJwY9vOZy+NLvZMs2KJzMOqEycRopwOvz1Uu3nq29kq
+         +2/Hw9PTtAXeYt8vwB7nkAIT1nhHXFyrklMPdXRgcMfITmmqwRN1vIzVpVMVK+bMtiVu
+         zlYDhUIce8VHjH/qoMXJ7T4XPlGzsfKqRgKkHGjPaCgNXrOiFqi8bJz8YjPOfMLoygBc
+         RiDQ==
+X-Gm-Message-State: APjAAAUxKnI3n0cGbuQYxhQnxW00FLNnL6qt8AirZiep7o6tXhnzyF2E
+        M55GwR1VbrBbEEzLBUZaj8Widkz8OiCk6ZQ=
+X-Google-Smtp-Source: APXvYqyciZKcyJOs1t39FkYngcoIq/9cvpXnSx5/9DShf7Tt3ElqDoHN18ENOPfoRZE17q90P7Z8EniL+Q0q/JI=
+X-Received: by 2002:ad4:478b:: with SMTP id z11mr36094400qvy.185.1582388477266;
+ Sat, 22 Feb 2020 08:21:17 -0800 (PST)
+Date:   Sat, 22 Feb 2020 11:21:15 -0500
+Message-Id: <20200222162116.148681-1-ncardwell@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
+Subject: [PATCH net] tcp: fix TFO SYNACK undo to avoid double-timestamp-undo
+From:   Neal Cardwell <ncardwell@google.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+In a rare corner case the new logic for undo of SYNACK RTO could
+result in triggering the warning in tcp_fastretrans_alert() that says:
+        WARN_ON(tp->retrans_out != 0);
 
-syzbot found the following crash on:
+The warning looked like:
 
-HEAD commit:    8bbbc5cf kmsan: don't compile memmove
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=17325b4ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cd0e9a6b0e555cc3
-dashboard link: https://syzkaller.appspot.com/bug?extid=8fbe17d9bdd5c8815211
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c39881e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11924edde00000
+WARNING: CPU: 1 PID: 1 at net/ipv4/tcp_input.c:2818 tcp_ack+0x13e0/0x3270
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+8fbe17d9bdd5c8815211@syzkaller.appspotmail.com
+The sequence that tickles this bug is:
+ - Fast Open server receives TFO SYN with data, sends SYNACK
+ - (client receives SYNACK and sends ACK, but ACK is lost)
+ - server app sends some data packets
+ - (N of the first data packets are lost)
+ - server receives client ACK that has a TS ECR matching first SYNACK,
+   and also SACKs suggesting the first N data packets were lost
+    - server performs TS undo of SYNACK RTO, then immediately
+      enters recovery
+    - buggy behavior then performed a *second* undo that caused
+      the connection to be in CA_Open with retrans_out != 0
 
-batman_adv: batadv0: Interface activated: batadv_slave_1
-=====================================================
-BUG: KMSAN: uninit-value in list_splice include/linux/list.h:437 [inline]
-BUG: KMSAN: uninit-value in nf_flow_table_block_setup net/netfilter/nf_flow_table_offload.c:826 [inline]
-BUG: KMSAN: uninit-value in nf_flow_table_offload_setup+0x964/0xac0 net/netfilter/nf_flow_table_offload.c:883
-CPU: 1 PID: 11672 Comm: syz-executor942 Not tainted 5.6.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- list_splice include/linux/list.h:437 [inline]
- nf_flow_table_block_setup net/netfilter/nf_flow_table_offload.c:826 [inline]
- nf_flow_table_offload_setup+0x964/0xac0 net/netfilter/nf_flow_table_offload.c:883
- nft_register_flowtable_net_hooks net/netfilter/nf_tables_api.c:6185 [inline]
- nf_tables_newflowtable+0x233c/0x3e30 net/netfilter/nf_tables_api.c:6302
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:433 [inline]
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
- nfnetlink_rcv+0x155e/0x3ab0 net/netfilter/nfnetlink.c:561
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2343
- ___sys_sendmsg net/socket.c:2397 [inline]
- __sys_sendmsg+0x451/0x5f0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2437
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2437
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x443709
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffe96ae538 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443709
-RDX: 0000000000000000 RSI: 0000000020003e00 RDI: 0000000000000003
-RBP: 00007fffe96ae550 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000404ca0 R14: 0000000000000000 R15: 0000000000000000
+Basically, the incoming ACK packet with SACK blocks causes us to first
+undo the cwnd reduction from the SYNACK RTO, but then immediately
+enters fast recovery, which then makes us eligible for undo again. And
+then tcp_rcv_synrecv_state_fastopen() accidentally performs an undo
+using a "mash-up" of state from two different loss recovery phases: it
+uses the timestamp info from the ACK of the original SYNACK, and the
+undo_marker from the fast recovery.
 
-Local variable ----bo@nf_flow_table_offload_setup created at:
- nf_flow_table_offload_setup+0xba/0xac0 net/netfilter/nf_flow_table_offload.c:876
- nf_flow_table_offload_setup+0xba/0xac0 net/netfilter/nf_flow_table_offload.c:876
-=====================================================
+This fix refines the logic to only invoke the tcp_try_undo_loss()
+inside tcp_rcv_synrecv_state_fastopen() if the connection is still in
+CA_Loss.  If peer SACKs triggered fast recovery, then
+tcp_rcv_synrecv_state_fastopen() can't safely undo.
 
-
+Fixes: 794200d66273 ("tcp: undo cwnd on Fast Open spurious SYNACK retransmit")
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/ipv4/tcp_input.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 316ebdf8151d..6b6b57000dad 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6124,7 +6124,11 @@ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
+ {
+ 	struct request_sock *req;
+ 
+-	tcp_try_undo_loss(sk, false);
++	/* If we are still handling the SYNACK RTO, see if timestamp ECR allows
++	 * undo. If peer SACKs triggered fast recovery, we can't undo here.
++	 */
++	if (inet_csk(sk)->icsk_ca_state == TCP_CA_Loss)
++		tcp_try_undo_loss(sk, false);
+ 
+ 	/* Reset rtx states to prevent spurious retransmits_timed_out() */
+ 	tcp_sk(sk)->retrans_stamp = 0;
+-- 
+2.25.0.265.gbab2e86ba0-goog
+
