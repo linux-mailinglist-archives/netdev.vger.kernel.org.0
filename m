@@ -2,139 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D628168F2D
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 14:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7264E168F35
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 14:50:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727445AbgBVNjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 08:39:39 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33470 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727046AbgBVNji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 08:39:38 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n7so2839381pfn.0;
-        Sat, 22 Feb 2020 05:39:36 -0800 (PST)
+        id S1727357AbgBVNuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 08:50:00 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40060 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727266AbgBVNuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 08:50:00 -0500
+Received: by mail-lj1-f194.google.com with SMTP id n18so5200040ljo.7
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 05:49:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vpxT9jClDrKoKxPt0kmgtgiiuZoHxIxpAJPkebvXON0=;
-        b=GXLKlRfcHhBTYgl1ilH4o6mibl1xTvcNCPXZFQNec8/NOTrpQtsfA1JP8KaNs3aYYg
-         IKfHktkagA44VixY1m/yaksXVZI5mnnwvskjvQ1JJWZKSVnvNsI/JcinID87RR5f7yjq
-         rHGb0hKXst4/I4k0njMJlneWTL1tuJdQbyMx/seEwj0Zf3U4AsBFvjnM2hGQyFL6APOV
-         TtrndIYAHC20+ueeYgIK9XVKf6e1xpCSPWecjH8LXHahEI3yc98+initYn99IdzOFo27
-         yid+lJqWR0oJoKtaGJcH7Tp8DfuMUG4Vdg6vkiq9v8McSlvmfVPiknC3XDMcYiyKlgA6
-         ASdQ==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=0+clKuYh7KPvWqzrnI6AakWzmOHJogBn0b1gTuFVo7o=;
+        b=FvYszws9VA4gn8vxUjwgHHZiNH5agadj/BOL0SFYiK7f1ixMQMJQA7MchGJwkLDG0Q
+         xClcRoOIoAROktIFwqQvhvwI/ChoVWu3jwE9GvMyhA02qZMTnJk7WGS3zqBqwZOOnsn7
+         ++bHoFvvSJFFQ17KV2drIZA3Ky9NHw5cwXxrc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vpxT9jClDrKoKxPt0kmgtgiiuZoHxIxpAJPkebvXON0=;
-        b=mr+7nvDcu/+zJwSEOSpAms3QJdZJ4/bXNBfYJf5Ne5yrHhuKxFEF/U0zgz5/fv67uC
-         2uAv05UOdF7hyFPUc9p1Bs+jWCtKguincnNl8ZSsJfHfU1cQ+P5DBG96AqzKndc3da7i
-         9CC4EkRo7KzDGM8cUBMzsmdhLJp7YFmpzNWr+5SO76X3NGHnR+vxt0x5gqjX7zFg09r4
-         vFq7wbKjB4lJ7BpigwXOARjmp75wOS19vVYuceTxFNtXtiSqTKVhYbGuaspB+wAOugBe
-         XQyUfXTIs7NhrqRTp0A9LclFU/SBmNUjfaCMJKc97xWEU+aCMhnkMXlLH8CLG9RNrtmu
-         AGeg==
-X-Gm-Message-State: APjAAAUkLars2E33PNLm6aqvtFeiAaXMNdhJe2Qhm8OtPa1dRqpXlsHN
-        FdtjVXS92p6ayZPgYhPT3Q==
-X-Google-Smtp-Source: APXvYqwEKQ41EVLj6CR4+LTHf/M95sWALC35qShHEDBl/TpwOUcje2MB0Kb3HNksVa1H25ZDOgRBJg==
-X-Received: by 2002:a62:f243:: with SMTP id y3mr43858640pfl.146.1582378776499;
-        Sat, 22 Feb 2020 05:39:36 -0800 (PST)
-Received: from madhuparna-HP-Notebook ([42.109.145.199])
-        by smtp.gmail.com with ESMTPSA id b12sm6517235pfr.26.2020.02.22.05.39.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Feb 2020 05:39:35 -0800 (PST)
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
-Date:   Sat, 22 Feb 2020 19:09:28 +0530
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     madhuparnabhowmik10@gmail.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
-Subject: Re: [PATCH] net: mac80211: rx.c: Use built-in RCU list checking
-Message-ID: <20200222133928.GA10397@madhuparna-HP-Notebook>
-References: <20200222101831.8001-1-madhuparnabhowmik10@gmail.com>
- <f1913847671d0b7e19aaa9bef1e1eb89febfa942.camel@sipsolutions.net>
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=0+clKuYh7KPvWqzrnI6AakWzmOHJogBn0b1gTuFVo7o=;
+        b=AOjcz77/gZH90Snwfo31mH8BchArjwj+UbNSTxKa/QHzGiW13EUBr6a4robinnS8K3
+         FIa1YMQ/nfvXeARFmVNn7VkNN+fjXRnogW8+I4SoCzDAmjL8wZhk7QAStd30t1ho1e9B
+         OSqp2RPCMBxtYEpJ2Tye/aj3Sj/GiqsWGe8A1XU1B4i6cLTIrwEvUKp845S5BXubg/1P
+         WHFAputDtS+KjoQrB21Byyizamq4Ao60lAE52iMSWXIn+EPGRDKmEJx0n1ExoR26a0uI
+         XgygggXwsRsO4s9MViVVE18iRQRsuWTaQLMUkgqJr8Iz1y0PlMrSvRybKbzGf0Qkz2ZZ
+         fbtA==
+X-Gm-Message-State: APjAAAUzIrJ/Cp1mv2LUWral+P23XZjV//FGuEg9h6nxY7k/sTAzSXyG
+        BmbKC2A9zlaj2/ugspAdhCXuyg==
+X-Google-Smtp-Source: APXvYqy09JWNZOnCO5lbS6bNZy01zOlQiTyFsElMSYd8XaJeRQWhmARC+4HQ62uci8x7lNZnk52Dow==
+X-Received: by 2002:a2e:9110:: with SMTP id m16mr24874270ljg.140.1582379397071;
+        Sat, 22 Feb 2020 05:49:57 -0800 (PST)
+Received: from cloudflare.com (user-5-173-1-230.play-internet.pl. [5.173.1.230])
+        by smtp.gmail.com with ESMTPSA id g25sm3265934ljn.107.2020.02.22.05.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Feb 2020 05:49:56 -0800 (PST)
+References: <20200218171023.844439-1-jakub@cloudflare.com> <c86784f5-ef2c-cfd6-cb75-a67af7e11c3c@iogearbox.net> <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v7 00/11] Extend SOCKMAP/SOCKHASH to store listening sockets
+In-reply-to: <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
+Date:   Sat, 22 Feb 2020 13:49:52 +0000
+Message-ID: <87d0a668an.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1913847671d0b7e19aaa9bef1e1eb89febfa942.camel@sipsolutions.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 22, 2020 at 01:53:25PM +0100, Johannes Berg wrote:
-> On Sat, 2020-02-22 at 15:48 +0530, madhuparnabhowmik10@gmail.com wrote:
-> > From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> > 
-> > list_for_each_entry_rcu() has built-in RCU and lock checking.
-> > 
-> > Pass cond argument to list_for_each_entry_rcu() to silence
-> > false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled
-> > by default.
-> 
-> Umm. What warning?
+Hi Alexei,
+
+On Sat, Feb 22, 2020 at 12:47 AM GMT, Alexei Starovoitov wrote:
+> On Fri, Feb 21, 2020 at 1:41 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> On 2/18/20 6:10 PM, Jakub Sitnicki wrote:
+>> > This patch set turns SOCK{MAP,HASH} into generic collections for TCP
+>> > sockets, both listening and established. Adding support for listening
+>> > sockets enables us to use these BPF map types with reuseport BPF programs.
+>> >
+>> > Why? SOCKMAP and SOCKHASH, in comparison to REUSEPORT_SOCKARRAY, allow the
+>> > socket to be in more than one map at the same time.
+>> >
+>> > Having a BPF map type that can hold listening sockets, and gracefully
+>> > co-exist with reuseport BPF is important if, in the future, we want
+>> > BPF programs that run at socket lookup time [0]. Cover letter for v1 of
+>> > this series tells the full story of how we got here [1].
+>> >
+>> > Although SOCK{MAP,HASH} are not a drop-in replacement for SOCKARRAY just
+>> > yet, because UDP support is lacking, it's a step in this direction. We're
+>> > working with Lorenz on extending SOCK{MAP,HASH} to hold UDP sockets, and
+>> > expect to post RFC series for sockmap + UDP in the near future.
+>> >
+>> > I've dropped Acks from all patches that have been touched since v6.
+>> >
+>> > The audit for missing READ_ONCE annotations for access to sk_prot is
+>> > ongoing. Thus far I've found one location specific to TCP listening sockets
+>> > that needed annotating. This got fixed it in this iteration. I wonder if
+>> > sparse checker could be put to work to identify places where we have
+>> > sk_prot access while not holding sk_lock...
+>> >
+>> > The patch series depends on another one, posted earlier [2], that has been
+>> > split out of it.
+>> >
+>> > Thanks,
+>> > jkbs
+>> >
+>> > [0] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudflare.com/
+>> > [1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
+>> > [2] https://lore.kernel.org/bpf/20200217121530.754315-1-jakub@cloudflare.com/
+>> >
+>> > v6 -> v7:
+>> >
+>> > - Extended the series to cover SOCKHASH. (patches 4-8, 10-11) (John)
+>> >
+>> > - Rebased onto recent bpf-next. Resolved conflicts in recent fixes to
+>> >    sk_state checks on sockmap/sockhash update path. (patch 4)
+>> >
+>> > - Added missing READ_ONCE annotation in sock_copy. (patch 1)
+>> >
+>> > - Split out patches that simplify sk_psock_restore_proto [2].
+>>
+>> Applied, thanks!
 >
-If list_for_each_entry_rcu() is called from non rcu protection
-i.e without holding rcu_read_lock, but under the protection of
-a different lock then we can pass that as the condition for lockdep checking
-because otherwise lockdep will complain if list_for_each_entry_rcu()
-is used without rcu protection. So, if we do not pass this argument
-(cond) it may lead to false lockdep warnings.
-
-> > +++ b/net/mac80211/rx.c
-> > @@ -3547,7 +3547,8 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
-> >  	skb->pkt_type = PACKET_OTHERHOST;
-> >  	skb->protocol = htons(ETH_P_802_2);
-> >  
-> > -	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-> > +	list_for_each_entry_rcu(sdata, &local->interfaces, list,
-> > +				lockdep_is_held(&rx->local->rx_path_lock)) {
-> >  		if (!ieee80211_sdata_running(sdata))
-> >  			continue;
-> 
-> This is not related at all.
-
-I analysed the following traces:
-ieee80211_rx_handlers() -> ieee80211_rx_handlers_result() -> ieee80211_rx_cooked_monitor()
-
-here ieee80211_rx_handlers() is holding the rx->local->rx_path_lock and
-therefore I used this for the cond argument.
-
- If this is not right, can you help me in figuring out that which other
- lock is held?
-
-and 
-__ieee80211_rx_handle_packet() -> ieee80211_prepare_and_rx_handle() -> ieee80211_invoke_rx_handlers() -> 
-ieee80211_rx_handlers_result() -> ieee80211_rx_cooked_monitor()
-
-Here __ieee80211_rx_handle_packet() should be called under
-rcu_read_lock protection.
-So this trace seems okay and no need to pass any cond.
-
-I may have missed something, please correct me in that case.
-
-> > @@ -4114,7 +4115,8 @@ void __ieee80211_check_fast_rx_iface(struct ieee80211_sub_if_data *sdata)
-> >  
-> >  	lockdep_assert_held(&local->sta_mtx);
-> >  
-> > -	list_for_each_entry_rcu(sta, &local->sta_list, list) {
-> > +	list_for_each_entry_rcu(sta, &local->sta_list, list,
-> > +				lockdep_is_held(&local->sta_mtx)) {
-> 
-> And this isn't even a real RCU iteration, since we _must_ hold the mutex
-> here.
+> Jakub,
 >
-Yeah exactly, dropping _rcu (use list_for_each_entry()) would be a good option in this case.
-Let me know if that is alright and I will send a new patch with all the
-changes required.
+> what is going on here?
+> # test_progs -n 40
+> #40 select_reuseport:OK
+> Summary: 1/126 PASSED, 30 SKIPPED, 0 FAILED
+>
+> Does it mean nothing was actually tested?
+> I really don't like to see 30 skipped tests.
+> Is it my environment?
+> If so please make them hard failures.
+> I will fix whatever I need to fix in my setup.
 
-Thank you,
-Madhuparna
+The UDP tests for sock{map,hash} are marked as skipped, because UDP
+support is not implemented yet. Sorry for the confusion.
 
-> johannes
-> 
+Having read the recent thread about BPF selftests [0] I now realize that
+this is not the best idea. It sends the wrong signal to the developer.
+
+I propose to exclude the UDP tests w/ sock{map,hash} by not registering
+them with test__start_subtest at all. Failing them would indicate a
+regression, which is not true. While skipping them points to a potential
+problem with the test environment, which isn't true, either.
+
+I'll follow up with a patch for this, if that sounds good to you.
+
+[0] https://lore.kernel.org/bpf/20200220191845.u62nhohgzngbrpib@ast-mbp/T/#t
