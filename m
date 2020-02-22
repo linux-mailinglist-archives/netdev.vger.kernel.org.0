@@ -2,67 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1F2B1691D3
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 21:53:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1681691F5
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 22:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgBVUxz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 22 Feb 2020 15:53:55 -0500
-Received: from mail1.bemta25.messagelabs.com ([195.245.230.65]:56621 "EHLO
-        mail1.bemta25.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726828AbgBVUxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 15:53:54 -0500
-Received: from [100.112.199.4] (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256 bits))
-        by server-1.bemta.az-b.eu-west-1.aws.symcld.net id 52/3C-41576-7D4915E5; Sat, 22 Feb 2020 20:53:43 +0000
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCJsWRWlGSWpSXmKPExsVi93Vmku61KYF
-  xBj87jSx+NqxntLj65B+zxcu1UhafFxlbHFwxmd3i1MMvLBbP3k9ntbjZOZ/J4vPZ+WwW33bf
-  Z7N4dvwzk8Wxb6dZLT4828NocXnXHDaLRUuPAZVs0rM4tkDM4kDDaRaLS3eeszoIe+w82cLic
-  e7wLxaPB/NbWTyuztrE5jFj/2dGj1+Tuxg9vh1cxewxbeY/Ro+3pw+xeDTcXcnqcePpOVaPay
-  2+Ho2fTzN6XOk6yu7xeZNcAH8Ua2ZeUn5FAmtGz+4LbAUMFSCqgZGhi5GLQ0hgK6PEg81LmLs
-  YOTmYBfQkbkydwgZi8woISpyc+YQFIq4tsWzha6AaDiBbTeJrVwlIWFjATuLdv3nsILaIgKrE
-  1z0zWUFsNgEZiZ9Hd4PFWYDiN9//BhsvJKAo8XbdRqjxfhI/X5xng4k3N60AsyWA7KXX2lggb
-  CuJbUva2SFsTYn175azg5wgIaAg8XmGMURYXuLjhRmMExgFZyF5YBaSB2YheWAWwgMLGFlWMV
-  okFWWmZ5TkJmbm6BoaGOgaGhrpGlqa6Roam+slVukm6aWW6panFpfoGuollhfrFVfmJuek6OW
-  llmxiBCaGlIIjnTsYf695r3eIUZKDSUmUV3diYJwQX1J+SmVGYnFGfFFpTmrxIUYTDg6Bzucf
-  VjMKXDj78BOjwJUPn5qYpFjy8vNSlSR4LScD9QgWpaanVqRl5gCTGkybBAePkggvG8hI3uKCx
-  NzizHSI1ClGS457T+YuYubYeHQekJy9ffEiZiGweVLivK9B5gmANGSU5sGNgyXeS4yyUsK8jA
-  wMDEI8BalFuZklqPKvGMU5GJWEeRsmAU3hycwrgdv6CuggJqCDlDkCQA4qSURISTUw+TI5z+b
-  5u7xIQUn/8Sbhz5GugXlSu1mZHk8qnRCefk5V/tXDvTf1eTh0FlrKqDwp+mBk8tFibYDz+ph2
-  OTHpa8fftnyu8o/r3brYIMfh6sXj+t31U25/O7rRsMNm/rypId/u3jg7a27o8uzrmpxz9nQIL
-  v/KfWmHX+kb7s4Jl66ck1UIKVeXWS7w++isqfnTfLccrHDVYOB2mjhDNGhmYypPTeAjxusWSb
-  rTlZu3X197tGP/1EyzT1J7a41vGtatezWfv2S6ps5B5cfCxzbvnVqg/KZR198p9fHhhd/irlw
-  My6i53li/uNx9wrXdmx/brjCbNfHj+pOV13SZdFcwV7xf6iK4JfrPhWMTGmKNY5RYijMSDbWY
-  i4oTAfCoIaE3BAAA
-X-Env-Sender: michael.larcher@rothof.de
-X-Msg-Ref: server-12.tower-288.messagelabs.com!1582404820!1797956!5
-X-Originating-IP: [62.245.153.98]
-X-SYMC-ESS-Client-Auth: outbound-route-from=fail
-X-StarScan-Received: 
-X-StarScan-Version: 9.44.25; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 28940 invoked from network); 22 Feb 2020 20:53:42 -0000
-Received: from host-62-245-153-98.customer.m-online.net (HELO Sport-Exchange.ROTHOF.local) (62.245.153.98)
-  by server-12.tower-288.messagelabs.com with ECDHE-RSA-AES256-SHA encrypted SMTP; 22 Feb 2020 20:53:42 -0000
-Received: from jmapnzin.host-stage-dns.com (188.165.89.95) by
- Sport-Exchange.ROTHOF.local (192.168.100.3) with Microsoft SMTP Server id
- 14.3.123.3; Sat, 22 Feb 2020 21:53:32 +0100
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726930AbgBVVvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 16:51:20 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:51872 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726828AbgBVVvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 16:51:19 -0500
+Received: by mail-pj1-f65.google.com with SMTP id fa20so2337745pjb.1
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 13:51:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=es-iitr-ac-in.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=HBCqjg0a+bhil4nBIBy5bJmpduFEbhGT3Aouisb2vJA=;
+        b=lMUystimAw6OmezUONtF3S/Asq3N5V4IfXfMbTiTTOHzas3ksvIBM+MpZNJM5D9JF7
+         74eDu8fC9jCAlBLpsUZODamJ5JRFAp7hSz8uZXzc5N3logQGnFRr2fFjtkdbzDpNezW5
+         Cuj36DdAOEfpYeklXAJZEq93ks8JMbwTjTpMcEYiPYNnvN507bag4Xc0Ey/08+uF2kzM
+         xZoawnbhTv+AP3wPizcMp+YIh2GuuSWsg3OcAlnsB4xYw7Ye05cizQWymJeIr3pCQ027
+         65/M3m9cotB7cTGXxVDlHVfx+ZyOM2JgRBirjDs0SpEYjH16RTRPISvdKexmaBZxdrJS
+         G/yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=HBCqjg0a+bhil4nBIBy5bJmpduFEbhGT3Aouisb2vJA=;
+        b=hOB2Kzti5O0X0iZdVnuMNTvfB/WpdRx9SGtu2QvSI2oRzJsU+zi8op0jKMevqbt8jH
+         jVvHXZOwK+yxd6ynDNf9ap/3wdgFO+3zR+sVhf2+NPMGSXhaL3u1pWDhlwcqAvL4/h7g
+         yjzxPEbXeAPhqcD3DdZnlgXI7n0uHBv2+BpsOSZhtth1Iz83wVJhsqMKLdAGWyENPtkf
+         Dqh5MaNaPXSsMXZFjSRJaReiF6xm+SE45Aw89Jt+xtEZ2j+Ec5kA8igbyLENVqLUXawg
+         L8wllFlhMv2WxmS4J9xyJqhL5pVgqMdXTvqCGYPM5zeHiCE30KMV1fKzGk1W7q5z29yy
+         +0QQ==
+X-Gm-Message-State: APjAAAXAnGTZktJEimf4TiLCgCBaxzSXp8oC17s06hrUs92ka02bjLgy
+        rMGOogFp3VRJQDbQlwyygHJj5w==
+X-Google-Smtp-Source: APXvYqzEs91Ql9UUx7rtBSIQ+QLy850ElKz8CsOBfYyqFaA2Jjc3JnMQqsgpkfrU1HGw11ilZP0vkQ==
+X-Received: by 2002:a17:90a:a617:: with SMTP id c23mr11647984pjq.32.1582408277086;
+        Sat, 22 Feb 2020 13:51:17 -0800 (PST)
+Received: from kaaira-HP-Pavilion-Notebook ([103.37.201.177])
+        by smtp.gmail.com with ESMTPSA id f3sm7384821pfg.115.2020.02.22.13.51.13
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 22 Feb 2020 13:51:16 -0800 (PST)
+Date:   Sun, 23 Feb 2020 03:21:09 +0530
+From:   Kaaira Gupta <kgupta@es.iitr.ac.in>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: qlge: emit debug and dump at same level
+Message-ID: <20200222215109.GA18727@kaaira-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Re: I have a business for you, if you are interested!
-To:     Recipients <michael@ROTHOF.local>
-From:   <michael@ROTHOF.local>
-Date:   Sun, 23 Feb 2020 04:53:34 +0800
-Reply-To: <lizawong@infohsbc.net>
-Message-ID: <2cd0ee45-30f1-4b5b-8307-84e9badb9f6f@SPORT-EXCHANGE.ROTHOF.local>
-X-Originating-IP: [188.165.89.95]
-X-TM-AS-Product-Ver: SMEX-11.7.0.1065-8.500.1020-25246.005
-X-TM-AS-Result: Yes-48.583700-5.000000-31
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Write a macro QLGE_DUMP_DBG having a function print_hex_dump so that
+the debug and dump are emitted at the same KERN_<LEVEL> and code becomes
+simpler. Write a macro instead of calling the function directly in
+ql_mpi_core_to_log() to go according to the coding practices followed in
+other drivers such as nvec and vc04_services.
+
+Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
+---
+
+changes since v1: make code of ql_mpi_core_to_log() simpler.
+
+----
+---
+ drivers/staging/qlge/qlge_dbg.c | 25 +++++--------------------
+ 1 file changed, 5 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index c7af2548d119..f4440670bc46 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -1,5 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#define QLGE_DUMP_DBG(str, buf, len)			    \
++	print_hex_dump(KERN_DEBUG, str, DUMP_PREFIX_OFFSET, \
++			32, 4, buf, len, false)
+ 
+ #include <linux/slab.h>
+ 
+@@ -1324,27 +1327,9 @@ void ql_mpi_core_to_log(struct work_struct *work)
+ {
+ 	struct ql_adapter *qdev =
+ 		container_of(work, struct ql_adapter, mpi_core_to_log.work);
+-	u32 *tmp, count;
+-	int i;
+ 
+-	count = sizeof(struct ql_mpi_coredump) / sizeof(u32);
+-	tmp = (u32 *)qdev->mpi_coredump;
+-	netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
+-		     "Core is dumping to log file!\n");
+-
+-	for (i = 0; i < count; i += 8) {
+-		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
+-			"%.08x %.08x %.08x\n", i,
+-			tmp[i + 0],
+-			tmp[i + 1],
+-			tmp[i + 2],
+-			tmp[i + 3],
+-			tmp[i + 4],
+-			tmp[i + 5],
+-			tmp[i + 6],
+-			tmp[i + 7]);
+-		msleep(5);
+-	}
++	QLGE_DUMP_DBG("Core is dumping to log file!\n", qdev->mpi_coredump,
++		      sizeof(*qdev->mpi_coredump));
+ }
+ 
+ #ifdef QL_REG_DUMP
+-- 
+2.17.1
 
