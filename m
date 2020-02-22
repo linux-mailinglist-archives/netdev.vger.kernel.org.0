@@ -2,113 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D1A168CFC
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 07:53:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E16168CFE
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 07:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbgBVGxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 01:53:09 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37813 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726706AbgBVGxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 01:53:09 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p14so2465547pfn.4;
-        Fri, 21 Feb 2020 22:53:08 -0800 (PST)
+        id S1726992AbgBVGyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 01:54:44 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:54460 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726726AbgBVGyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 01:54:44 -0500
+Received: by mail-wm1-f65.google.com with SMTP id z12so766349wmi.4
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 22:54:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=O8dGjw47rBMTaYq9ZdIJC+Ct6bZIAQqAuCZjvsrgZq8=;
-        b=UWf3o/nEx+XZVQxA8TbPakPz+HWWS1vWyxffSLKKOmh+vtB76WPi9666TVY80DE/54
-         yg78oRlOJ2rdlUSabRRdLed8VYF+rMDwp5eKKRnbaaXgAgu3f7/Chf8CK/lukAacHOF/
-         P6AQsNmXhOlxvgTgdWidnw0QYm/ZpAj8NLRccYR+wWCODSJPt+HRtt88Z+3YNwSmf0mc
-         FvgILHFFOr+fHt13B30aqvt4SFTrhr3udX6vMgo75SeWR3aXipNHfm0W6r7rUi+izf+z
-         y3Piw82miHXfGGz9IWG9hzgrsuBOswaCUIDloVHoPfjDMD8+b5CRhlP//O6kGC3nGYMl
-         6rAw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rWp/7B6Yp6ADrgOXQPIgQbkYpc4oxjVruU2G/eBlbn0=;
+        b=ngmtQjYGrLMN8QGyNCLLU5p8972wNtKY2OINll/2ldCvwqwtTINSW9uJ8HyDcCfITg
+         DI2J6zS0Im4tFlbOjHoEvJpRyBkPq1CF6Aant293GJjtSs5ppb4NpsMUnheQeXthmK1G
+         KTvaXo1ynmFs5JHezQ7V/G1695GrCfcdFMzjst6X96WX1OczEWw6oc2WkTFw+GsnmxCM
+         dIGYpevYs8jyAN8GurZRjBUO5eiVEqZr7eg7T9Jb0/XwB9khm+dpACCEebfvOeVT1Tq3
+         e+LOGEMQ0VO46gxDtQpgFeETaEEB4PXZjnUVRsUymQ9h5w1VXICSYBJkmX+0GGgU5/lL
+         isEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=O8dGjw47rBMTaYq9ZdIJC+Ct6bZIAQqAuCZjvsrgZq8=;
-        b=XMQn7ki7BJeGNuz0UeObzvK/If+4ML6m9LVXR7TCwcy5CoTAyBxvzivXFcnm71L3s5
-         JIxXmpTVzmEqGDQ01GSfZwdxqqnG+Dh2Zr/yF2WfamAMcJ+mdsZ0yNfdW5xSakyxkvlH
-         MZ6hGYRZEapmjHCrltZBwcncDs5Bce6SXevN4mGiceu878Gziyh0bFfZuUhZ1krw7XEo
-         YgpEwfg//+SI0bAM2U3t1MWZDzdazDJ/TFqkcoi04VUX6y3tZ4ONJJ16gARpHo/nrx+H
-         CwvYlyQaIXY4ZXdIasWFbBjDJV7jHRN0KvHNJoKURgnaa//YBcGAsRLOOnGetyetOBfd
-         GxcA==
-X-Gm-Message-State: APjAAAX+o51JdRntTULEAYCmH8BlJhNLMru93nOOQALH603cwEJ/ENqK
-        XImLc6XcLZX/YVySXzn+Iw==
-X-Google-Smtp-Source: APXvYqxCu6MyWMp3NdwLGo82GJR7m2KUSumjYRTil3dfhsgIWR7CGlVVNIztSQdZsszDa4hWCju4GA==
-X-Received: by 2002:a63:5e07:: with SMTP id s7mr41011057pgb.261.1582354388478;
-        Fri, 21 Feb 2020 22:53:08 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:536:efd4:3cf2:2ab1:f2dc:185c])
-        by smtp.gmail.com with ESMTPSA id d14sm4708631pjz.12.2020.02.21.22.53.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rWp/7B6Yp6ADrgOXQPIgQbkYpc4oxjVruU2G/eBlbn0=;
+        b=PxSuYtAx/nHgwY/dwzIZd8hYmekTk9PGcnlgPuFSTVM/CIfr2e2xGu6rSxWdfaWct2
+         fnqlbB10tnCZyqNigI1McXvTfTuFvwpyKmGTmudyEuiYfF8YlX6lH5B3TTGVoCpDbi2v
+         clKJEF5LCzLx+W/vRcp5I6EfA2ZHZO/BVH9uzuNYJcXJ3UrlXbQMMOXnaMEXHsajKfqe
+         Qyi2O/o9CmEPRc6SzHfqV2ACyIWiWo2ar4nwqfR8vuDR3VdEvohumQrkQfjAQGgrSR/m
+         bBIrH0Mbgmx/rSwY/Rd7foY4ktW8LpbLrQf9QWjzYa3Vo5Hg5+gidcDMvnMZ3c2zxGXp
+         NDlA==
+X-Gm-Message-State: APjAAAX0A1JYvdXMuVkD9DkvHYJ9mVFdk0VlkSD8Oy4A207kUSDkTZMu
+        b5FMZ0tNormILBLPDUDVNId7Aw==
+X-Google-Smtp-Source: APXvYqwj58zVTMKE7cRS0lk18Fd+gZw+oUl4y9AkmysWcLC95uMAuDeIhEM/xsjvmYRavMOYRdpyLw==
+X-Received: by 2002:a1c:7907:: with SMTP id l7mr8136783wme.37.1582354483100;
+        Fri, 21 Feb 2020 22:54:43 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id l17sm7155554wro.77.2020.02.21.22.54.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 22:53:07 -0800 (PST)
-From:   madhuparnabhowmik10@gmail.com
-To:     jiri@mellanox.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joel@joelfernandes.org, frextrite@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH] net: core: devlink.c: Hold devlink->lock from the beginning of devlink_dpipe_table_register()
-Date:   Sat, 22 Feb 2020 12:22:34 +0530
-Message-Id: <20200222065234.8829-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 21 Feb 2020 22:54:42 -0800 (PST)
+Date:   Sat, 22 Feb 2020 07:54:42 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net] net: genetlink: return the error code when attribute
+ parsing fails.
+Message-ID: <20200222065442.GC2228@nanopsycho>
+References: <933cec10232417777c5a214e25a31d1f299d1489.1582310461.git.pabeni@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <933cec10232417777c5a214e25a31d1f299d1489.1582310461.git.pabeni@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Fri, Feb 21, 2020 at 07:42:13PM CET, pabeni@redhat.com wrote:
+>Currently if attribute parsing fails and the genl family
+>does not support parallel operation, the error code returned
+>by __nlmsg_parse() is discarded by genl_family_rcv_msg_attrs_parse().
+>
+>Be sure to report the error for all genl families.
+>
+>Fixes: c10e6cf85e7d ("net: genetlink: push attrbuf allocation and parsing to a separate function")
+>Fixes: ab5b526da048 ("net: genetlink: always allocate separate attrs for dumpit ops")
+>Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-devlink_dpipe_table_find() should be called under either
-rcu_read_lock() or devlink->lock. devlink_dpipe_table_register()
-calls devlink_dpipe_table_find() without holding the lock
-and acquires it later. Therefore hold the devlink->lock
-from the beginning of devlink_dpipe_table_register().
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 
-Suggested-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
- net/core/devlink.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 3e8c94155d93..ba9dd8cb98c3 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6840,22 +6840,29 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- {
- 	struct devlink_dpipe_table *table;
- 
--	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name))
-+	mutex_lock(&devlink->lock);
-+
-+	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name)) {
-+		mutex_unlock(&devlink->lock);
- 		return -EEXIST;
-+	}
- 
--	if (WARN_ON(!table_ops->size_get))
-+	if (WARN_ON(!table_ops->size_get)) {
-+		mutex_unlock(&devlink->lock);
- 		return -EINVAL;
-+	}
- 
- 	table = kzalloc(sizeof(*table), GFP_KERNEL);
--	if (!table)
-+	if (!table) {
-+		mutex_unlock(&devlink->lock);
- 		return -ENOMEM;
-+	}
- 
- 	table->name = table_name;
- 	table->table_ops = table_ops;
- 	table->priv = priv;
- 	table->counter_control_extern = counter_control_extern;
- 
--	mutex_lock(&devlink->lock);
- 	list_add_tail_rcu(&table->list, &devlink->dpipe_table_list);
- 	mutex_unlock(&devlink->lock);
- 	return 0;
--- 
-2.17.1
-
+Thanks!
