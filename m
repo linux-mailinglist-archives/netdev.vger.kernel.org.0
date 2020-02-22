@@ -2,132 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B865168B0F
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 01:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C74168B39
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 01:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbgBVAgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 19:36:11 -0500
-Received: from smtprelay0146.hostedemail.com ([216.40.44.146]:60201 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726672AbgBVAgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 19:36:10 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 7A25A1801870D;
-        Sat, 22 Feb 2020 00:36:09 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:69:355:379:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3874:4321:4605:5007:6119:7903:9040:10004:10400:10848:11026:11232:11473:11658:11914:12043:12048:12296:12297:12555:12740:12760:12895:13439:14181:14659:14721:21080:21611:21627:21740:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: bun08_6fc9d6b00412a
-X-Filterd-Recvd-Size: 3435
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf13.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 22 Feb 2020 00:36:08 +0000 (UTC)
-Message-ID: <4a2a109b5b7c5ce5e62bba4d39270abb855b2052.camel@perches.com>
-Subject: Re: [PATCH] staging: qlge: unify multi-line string
-From:   Joe Perches <joe@perches.com>
-To:     Kaaira Gupta <kgupta@es.iitr.ac.in>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 21 Feb 2020 16:34:44 -0800
-In-Reply-To: <20200221185012.GA16841@kaaira-HP-Pavilion-Notebook>
-References: <20200221185012.GA16841@kaaira-HP-Pavilion-Notebook>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1727695AbgBVAry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Feb 2020 19:47:54 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36907 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgBVAry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 19:47:54 -0500
+Received: by mail-lj1-f193.google.com with SMTP id q23so4060876ljm.4;
+        Fri, 21 Feb 2020 16:47:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6CWSp9D95/ClcPNludIOVS8ECeBxf6G5kqK9VdBzJ0Y=;
+        b=UwO5yd6rjp7TB+TZ3xUBL/hwFSU9gy1ve8t/WbXOlFluTOQeWGfXgDaHIu2LkSaHJA
+         tH5KegakZwlVsXdW+8c7JLhIPJBnxjj1gdPr1aAe9BJ5vmUQa9lizaWUP065uhzZX0FS
+         NF9v5klfpT4bTqa+pN+LoAur+fnh+aBhUubAdStexWySdyAKqJkKFMwjCdAbNvfEDtaQ
+         YajQJf2gKIXDKPfk/dfGPviJJHhpPWnCqQwUQIWMV0idtYrK1CmDbEI+v4BzjCGj37uJ
+         RSJ/jccQwcDWj6YIit/gZek32muriFNQrJBn4Hph7BejdaWR0vLRadNhB4rfs45VfZoi
+         3JqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6CWSp9D95/ClcPNludIOVS8ECeBxf6G5kqK9VdBzJ0Y=;
+        b=nMj+9pBacY95p0BXHFaTAUa8snc1U7NXh1b+A2hxHagsl4HEruNSv7ES762OVdUeLa
+         x2gLD7lvHxBp6mkRWFA+0b9BuVvBy52Y2i/ffXDCkIRch3DqL1Aww5tMf9xv9oS4okIZ
+         43XK/D2HljDEhlJjCRyRqmgi/j00RDrqnigHWxhWMYss/rq9qGS2Lp0+UistSgfM83Ju
+         bqTKPOis+MnbxN1VYNqfkmKR9zY68Md5MIZCp6h1oQiTXloQ2UxtjULcv+2Yr96laQhB
+         zGXH71f/Tg6H23bAidgAiFLpK5kjOZUFwh8XzgpQ+v4UHsVgftDdPRph/QpeY15ezuNf
+         /6jw==
+X-Gm-Message-State: APjAAAWmqDWlTtZAEScyBVlq69/1DdTWHTH8cfItJI8XAUh1Poe94zei
+        c2K41EJuWbT0nGfowsYvRPoPaYuBFMEU1g66mRM=
+X-Google-Smtp-Source: APXvYqxsSnDlzQCyabpGJTgevyCIs0lHIu+pOYrWRrCitfPuqasfjdGY+aNgVvUsEABoUmDFsGhKWpuXJJ0Ah6jzJ+g=
+X-Received: by 2002:a2e:8145:: with SMTP id t5mr23907862ljg.144.1582332471492;
+ Fri, 21 Feb 2020 16:47:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200218171023.844439-1-jakub@cloudflare.com> <c86784f5-ef2c-cfd6-cb75-a67af7e11c3c@iogearbox.net>
+In-Reply-To: <c86784f5-ef2c-cfd6-cb75-a67af7e11c3c@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 21 Feb 2020 16:47:40 -0800
+Message-ID: <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 00/11] Extend SOCKMAP/SOCKHASH to store
+ listening sockets
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-02-22 at 00:20 +0530, Kaaira Gupta wrote:
-> Fix checkpatch.pl warning of 'quoted string split across lines' in
-> qlge_dbg.c by merging the strings in one line. Fixing this warning is
-> necessary to ease grep-ing the source for printk.
-[]
-> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-[]
-> @@ -1333,16 +1333,16 @@ void ql_mpi_core_to_log(struct work_struct *work)
->  		     "Core is dumping to log file!\n");
->  
->  	for (i = 0; i < count; i += 8) {
-> -		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
-> -			"%.08x %.08x %.08x\n", i,
-> -			tmp[i + 0],
-> -			tmp[i + 1],
-> -			tmp[i + 2],
-> -			tmp[i + 3],
-> -			tmp[i + 4],
-> -			tmp[i + 5],
-> -			tmp[i + 6],
-> -			tmp[i + 7]);
-> +		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x %.08x %.08x %.08x\n",
-> +		       i,
-> +		       tmp[i + 0],
-> +		       tmp[i + 1],
-> +		       tmp[i + 2],
-> +		       tmp[i + 3],
-> +		       tmp[i + 4],
-> +		       tmp[i + 5],
-> +		       tmp[i + 6],
-> +		       tmp[i + 7]);
+On Fri, Feb 21, 2020 at 1:41 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 2/18/20 6:10 PM, Jakub Sitnicki wrote:
+> > This patch set turns SOCK{MAP,HASH} into generic collections for TCP
+> > sockets, both listening and established. Adding support for listening
+> > sockets enables us to use these BPF map types with reuseport BPF programs.
+> >
+> > Why? SOCKMAP and SOCKHASH, in comparison to REUSEPORT_SOCKARRAY, allow the
+> > socket to be in more than one map at the same time.
+> >
+> > Having a BPF map type that can hold listening sockets, and gracefully
+> > co-exist with reuseport BPF is important if, in the future, we want
+> > BPF programs that run at socket lookup time [0]. Cover letter for v1 of
+> > this series tells the full story of how we got here [1].
+> >
+> > Although SOCK{MAP,HASH} are not a drop-in replacement for SOCKARRAY just
+> > yet, because UDP support is lacking, it's a step in this direction. We're
+> > working with Lorenz on extending SOCK{MAP,HASH} to hold UDP sockets, and
+> > expect to post RFC series for sockmap + UDP in the near future.
+> >
+> > I've dropped Acks from all patches that have been touched since v6.
+> >
+> > The audit for missing READ_ONCE annotations for access to sk_prot is
+> > ongoing. Thus far I've found one location specific to TCP listening sockets
+> > that needed annotating. This got fixed it in this iteration. I wonder if
+> > sparse checker could be put to work to identify places where we have
+> > sk_prot access while not holding sk_lock...
+> >
+> > The patch series depends on another one, posted earlier [2], that has been
+> > split out of it.
+> >
+> > Thanks,
+> > jkbs
+> >
+> > [0] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudflare.com/
+> > [1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
+> > [2] https://lore.kernel.org/bpf/20200217121530.754315-1-jakub@cloudflare.com/
+> >
+> > v6 -> v7:
+> >
+> > - Extended the series to cover SOCKHASH. (patches 4-8, 10-11) (John)
+> >
+> > - Rebased onto recent bpf-next. Resolved conflicts in recent fixes to
+> >    sk_state checks on sockmap/sockhash update path. (patch 4)
+> >
+> > - Added missing READ_ONCE annotation in sock_copy. (patch 1)
+> >
+> > - Split out patches that simplify sk_psock_restore_proto [2].
+>
+> Applied, thanks!
 
-This should probably instead use
+Jakub,
 
-	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 4,
-		       qdev->mpi_coredump, sizeof(*qdev->mpi_coredump), false);
+what is going on here?
+# test_progs -n 40
+#40 select_reuseport:OK
+Summary: 1/126 PASSED, 30 SKIPPED, 0 FAILED
 
-So that the debug and the dump are emitted at the
-same KERN_<LEVEL> and the code is simpler.
-
->  		msleep(5);
-
-And the msleep seems unnecessary.
-
->  	}
->  }
-
-
-Perhaps:
----
- drivers/staging/qlge/qlge_dbg.c | 19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index 8cf3961..a4cd91 100644
---- a/drivers/staging/qlge/qlge_dbg.c
-+++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -1324,27 +1324,12 @@ void ql_mpi_core_to_log(struct work_struct *work)
- {
- 	struct ql_adapter *qdev =
- 		container_of(work, struct ql_adapter, mpi_core_to_log.work);
--	u32 *tmp, count;
--	int i;
- 
--	count = sizeof(struct ql_mpi_coredump) / sizeof(u32);
--	tmp = (u32 *)qdev->mpi_coredump;
- 	netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
- 		     "Core is dumping to log file!\n");
- 
--	for (i = 0; i < count; i += 8) {
--		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
--			"%.08x %.08x %.08x\n", i,
--			tmp[i + 0],
--			tmp[i + 1],
--			tmp[i + 2],
--			tmp[i + 3],
--			tmp[i + 4],
--			tmp[i + 5],
--			tmp[i + 6],
--			tmp[i + 7]);
--		msleep(5);
--	}
-+	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 4,
-+		       qdev->mpi_coredump, sizeof(*qdev->mpi_coredump), false);
- }
- 
- #ifdef QL_REG_DUMP
-
+Does it mean nothing was actually tested?
+I really don't like to see 30 skipped tests.
+Is it my environment?
+If so please make them hard failures.
+I will fix whatever I need to fix in my setup.
