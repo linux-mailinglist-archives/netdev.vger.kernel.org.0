@@ -2,109 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 960FB168D3A
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 08:32:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B1C168D7D
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 09:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgBVHcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 02:32:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57848 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726689AbgBVHco (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Feb 2020 02:32:44 -0500
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 65ECE2071E;
-        Sat, 22 Feb 2020 07:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582356764;
-        bh=L/jvcTZBRjqDoBnzeDmLUIsHlvPZeu/vCb6oPctl9Fk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Exu4zKkHiaWt8HWIgzPXZ4qQDtQn/chs+Tl0/7xYo09VP8fJV6Vy5qlEKGRk2MNx7
-         bVsAckOsQmN9szB+zvSO3ocMJnGAEF2HbA/AqcPgkaiCeoTa5DRvqBCNlnDY6rXR8X
-         8Nx/0235hsIFparQaY+0yr86nkL98GZIlgT367VE=
-Date:   Sat, 22 Feb 2020 09:32:41 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Hans Wippel <ndev@hwipl.net>
-Cc:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [RFC net-next] net/smc: improve peer ID in CLC decline for SMC-R
-Message-ID: <20200222073241.GH209126@unreal>
-References: <20200221130805.5988-1-ndev@hwipl.net>
+        id S1727134AbgBVIHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 03:07:32 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:37165 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbgBVIHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 03:07:32 -0500
+Received: by mail-lf1-f67.google.com with SMTP id b15so3215774lfc.4
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 00:07:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hzC+iG/oyJjv3THfv1I/jf7+K3Zw7rQSSMvCn0Q5wek=;
+        b=dElYs2s/V6VdvlppVTRrTTqkQ6NalURs6E4P5uWaVXhGgqcYqgDUIhWycCtfvW6lyZ
+         7gyFE1fHN857VolJTjhR5CK7nDuJh1LF5wrelD92DfzMg0dY4wuKSXE0cp/J3G8M5rJ9
+         JvrlMmsKtT3JkhyLby9h1ClV2MOCJoTarHGs85+FHr+0hNhMunBreE/sVXnsIqVrlmWj
+         WpLpaKOIJO6RsFlyBC4EsHjZTNg+3z93PGRbv3oLKpe0UfKy6QWf/o5ljynvlejAXRzk
+         Kd8VGYUi+jHFieZoDfXTBdrEi7oB8k2InHd2rBDXiUFWa8XvnX1bfr/7Bzh9te041WPI
+         81HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hzC+iG/oyJjv3THfv1I/jf7+K3Zw7rQSSMvCn0Q5wek=;
+        b=Indxvpi1rj44MY3RupIswnt/F//7kBspQrWK5tBU8wa7Kwz+fI24MfP0r3uN/pqawb
+         oT3JlDSYp03EL370GlvnaNoJKY3a4DrQ8Y4fPmxrRcJQIy5wmX5c3ab4+G6MWG26Bw4V
+         truOtdIuPjc3Rr+2dBM/HAFHDdhnJ4BqX0rlCeJdUHxPOLbFuc4hGPxnBYwIn/Uowtbu
+         xwLOGDxOsDn4+a2hoFr+8EXnKm+hogTJNSy1vUJ0fw3/kHwg38HeFS8kedkDGPlQ75OK
+         pzD6YVawBn8m55U/6WjWcKIhYgKbt+D0hAtfQcfk9ePQPBQqxPk8BtHoIK2JvLy3EdMy
+         fOqQ==
+X-Gm-Message-State: APjAAAWZxo5gQBRcy2kLr1qirNA27yvxypgrtB/YBE+jWgztXWr1eJqv
+        gLQLeGLxloDRU/s12+8JTDK+hg==
+X-Google-Smtp-Source: APXvYqzrOTDVbMsnuFI9EFJOpT0pOc45Y/1L+cmOupEr5lb/sygY12rElWpGxSLE8SViRIKZw2oTBA==
+X-Received: by 2002:a19:dc1e:: with SMTP id t30mr21888399lfg.34.1582358848504;
+        Sat, 22 Feb 2020 00:07:28 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:802:eb36:9ce2:7d3:5a4d:6f62? ([2a00:1fa0:802:eb36:9ce2:7d3:5a4d:6f62])
+        by smtp.gmail.com with ESMTPSA id u16sm2813938ljo.22.2020.02.22.00.07.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Feb 2020 00:07:27 -0800 (PST)
+Subject: Re: [net PATCH] net: Fix Tx hash bound checking
+To:     Amritha Nambiar <amritha.nambiar@intel.com>,
+        netdev@vger.kernel.org, davem@davemloft.net
+Cc:     alexander.h.duyck@intel.com, sridhar.samudrala@intel.com
+References: <158233736265.6609.6785259084260258418.stgit@anambiarhost.jf.intel.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <c0740c47-8b2e-8554-c78d-90461dde1177@cogentembedded.com>
+Date:   Sat, 22 Feb 2020 11:07:24 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200221130805.5988-1-ndev@hwipl.net>
+In-Reply-To: <158233736265.6609.6785259084260258418.stgit@anambiarhost.jf.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 02:08:05PM +0100, Hans Wippel wrote:
-> According to RFC 7609, all CLC messages contain a peer ID that consists
-> of a unique instance ID and the MAC address of one of the host's RoCE
-> devices. But if a SMC-R connection cannot be established, e.g., because
-> no matching pnet table entry is found, the current implementation uses a
-> zero value in the CLC decline message although the host's peer ID is set
-> to a proper value.
->
-> This patch changes the peer ID handling in two ways:
->
-> (1) If no RoCE and no ISM device is usable for a connection, there is no
-> LGR and the LGR check in smc_clc_send_decline() prevents that the peer
-> ID is copied into the CLC decline message for both SMC-D and SMC-R. So,
-> this patch modifies the check to also accept the case of no LGR. Also,
-> only a valid peer ID is copied into the decline message.
->
-> (2) The patch initializes the peer ID to a random instance ID and a zero
-> MAC address. If a RoCE device is in the host, the MAC address part of
-> the peer ID is overwritten with the respective address. Also, a function
-> for checking if the peer ID is valid is added. A peer ID is considered
-> valid if the MAC address part contains a non-zero MAC address.
->
-> Signed-off-by: Hans Wippel <ndev@hwipl.net>
-> ---
->  net/smc/smc_clc.c |  9 ++++++---
->  net/smc/smc_ib.c  | 19 ++++++++++++-------
->  net/smc/smc_ib.h  |  1 +
->  3 files changed, 19 insertions(+), 10 deletions(-)
->
-> diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-> index 3e16b887cfcf..e2d3b5b95632 100644
-> --- a/net/smc/smc_clc.c
-> +++ b/net/smc/smc_clc.c
-> @@ -372,9 +372,12 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info)
->  	dclc.hdr.length = htons(sizeof(struct smc_clc_msg_decline));
->  	dclc.hdr.version = SMC_CLC_V1;
->  	dclc.hdr.flag = (peer_diag_info == SMC_CLC_DECL_SYNCERR) ? 1 : 0;
-> -	if (smc->conn.lgr && !smc->conn.lgr->is_smcd)
-> -		memcpy(dclc.id_for_peer, local_systemid,
-> -		       sizeof(local_systemid));
-> +	if (!smc->conn.lgr || !smc->conn.lgr->is_smcd) {
-> +		if (smc_ib_is_valid_local_systemid()) {
-> +			memcpy(dclc.id_for_peer, local_systemid,
-> +			       sizeof(local_systemid));
-> +		}
-> +	}
->  	dclc.peer_diagnosis = htonl(peer_diag_info);
->  	memcpy(dclc.trl.eyecatcher, SMC_EYECATCHER, sizeof(SMC_EYECATCHER));
->
-> diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-> index 6756bd5a3fe4..203dd05d7113 100644
-> --- a/net/smc/smc_ib.c
-> +++ b/net/smc/smc_ib.c
-> @@ -37,11 +37,7 @@ struct smc_ib_devices smc_ib_devices = {	/* smc-registered ib devices */
->  	.list = LIST_HEAD_INIT(smc_ib_devices.list),
->  };
->
-> -#define SMC_LOCAL_SYSTEMID_RESET	"%%%%%%%"
-> -
-> -u8 local_systemid[SMC_SYSTEMID_LEN] = SMC_LOCAL_SYSTEMID_RESET;	/* unique system
-> -								 * identifier
-> -								 */
-> +u8 local_systemid[SMC_SYSTEMID_LEN] = {0};	/* unique system identifier */
+Hello!
 
-There is no need to assign 0 for global variables, they are initialized
-to zero by default.
+On 22.02.2020 5:09, Amritha Nambiar wrote:
 
-Thanks
+> Fixes: commit 1b837d489e06 ("net: Revoke export for __skb_tx_hash, update it to just be static skb_tx_hash")
+> Fixes: commit eadec877ce9c ("net: Add support for subordinate traffic classes to netdev_pick_tx")
+
+    No need to say "commit" here. And All tags should be together (below the 
+patch description).
+
+> Fixes the lower and upper bounds when there are multiple TCs and
+> traffic is on the the same TC on the same device.
+> 
+> The lower bound is represented by 'qoffset' and the upper limit for
+> hash value is 'qcount + qoffset'. This gives a clean Rx to Tx queue
+> mapping when there are multiple TCs, as the queue indices for upper TCs
+> will be offset by 'qoffset'.
+> 
+> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+[...]
+
+MBR, Sergei
