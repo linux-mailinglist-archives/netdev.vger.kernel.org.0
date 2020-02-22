@@ -2,228 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC10168C55
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 05:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36159168CDE
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 07:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727584AbgBVE3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Feb 2020 23:29:23 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:38329 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbgBVE3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Feb 2020 23:29:23 -0500
-Received: by mail-pl1-f195.google.com with SMTP id t6so1731173plj.5;
-        Fri, 21 Feb 2020 20:29:23 -0800 (PST)
+        id S1726992AbgBVG0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 01:26:45 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34836 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726578AbgBVG0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 01:26:45 -0500
+Received: by mail-wr1-f67.google.com with SMTP id w12so4419334wrt.2
+        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 22:26:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=PQjtRg2D+YOC6LQJMq1KINxDIr5LnRlZetCwtD0Vi38=;
-        b=pBS22jpp9wcAGM/vhbL/qfOoUEUz53/ZZxc78EYC3/qj9W+TxVvlUce2ekRwrj4jYk
-         vQ7em5uYrWtP/uzC5X4LHZr1CnheDcX/whXy3A5qW0vzDuG2lQYbtfs1hud/EhFDXE1n
-         3VvbHhteeNHqdJ5anEjGOfMaKwtNhGZWEDIPi52RPljJBOYaCDlzXPnlKeMGzF+vTp4S
-         EHrCjXvzb+mOnNoA+la8EjOzUwuqlPOrTM9FOT9sBqhmJY2OHNvEV9TVOvMsVzWKy12+
-         AydFje5jUabvi/VsWWKWd6yos8Gthd9Ln241LAcgm9yP8Kd6CWRoVX+Pj51Ttz54jzjU
-         4o5w==
+         :content-disposition:in-reply-to;
+        bh=/59J0H3GMLZGQBLxUb/P9gfXRVxPokMyJCYkW6dkkKw=;
+        b=YgYqaaBlYOEfNDyadkILBH204HirajE3Z3I6L46m+XYGL+RnnSyqssH5LRBF8pMbnD
+         rQtwZBIeDF3K2aQKN4zQ444s8Sa7e3aV9hEH9D40u5crwSoUAh4FqtgVnSwoPWKNubm6
+         wO7MwJntiLJZyKKaytoOmia6jISJjJbEjGHXFc/G2TxotGF4hDPK5hAGgR27FMYX5otV
+         i+u9jQB+XjJ4GnYQKIpoAbPpId20EBlfrdC0atRKSbwC7cx8qdAKuptu/8+DYGQZGI3X
+         U124fcx9wtju0mIA7qZIyGSUQsER9a9jIctkjwhvw/ASrxNdJ4jsgL/H2veTEWvaZyeM
+         m9Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=PQjtRg2D+YOC6LQJMq1KINxDIr5LnRlZetCwtD0Vi38=;
-        b=Zg3UWDztQbbTdWT1QMks2MOvzckrd7IL6ZmnXU4fISEBON1ZxEFfX5rTyuivfkDMEA
-         X8JIA9xRXShVxr+E2RPT2I6/iu1hczMkaHc0J1TvMMDau2by/q57RUiX70NJQesy2zlR
-         PVNlxlVRs+Xvb/xj385ECUNZ5hN4l7W6mFd3AfQK2+/gciDBhkBYc+lu+HcTsFpbtXw4
-         60ZbOyVs5tzYnWVlXFDTn5mE5qZSMP+hKapaZgdJ00N6DuXaVA7C5HFJWYWvuBfviohp
-         xWMDJlGVkc5XPOyTG6Q9oIIKPIpG4KLYZZcO140y1U5mv7W2YgMOHVH8nRs++vtWKtY6
-         OBPw==
-X-Gm-Message-State: APjAAAUmyZettZ89Y8IgJpR8M6+pXpEsUtnSE99CYQ0rjq6pQTy8zfIY
-        FpwbTPpPkVT/gLAQw/z14uGA7i9W
-X-Google-Smtp-Source: APXvYqxKXIjDBN7OZnDKOwPbjIMmZYyn+yK6hSWZkIP5ekA9p6l3VOAZyUShHMNfMhLl71ijHsRGug==
-X-Received: by 2002:a17:90a:f0d1:: with SMTP id fa17mr6887514pjb.90.1582345762489;
-        Fri, 21 Feb 2020 20:29:22 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:889f])
-        by smtp.gmail.com with ESMTPSA id 13sm4337384pfj.68.2020.02.21.20.29.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Feb 2020 20:29:21 -0800 (PST)
-Date:   Fri, 21 Feb 2020 20:29:18 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [patch V2 01/20] bpf: Enforce preallocation for all
- instrumentation programs
-Message-ID: <20200222042916.k3r5dj5njoo2ywyj@ast-mbp>
-References: <20200220204517.863202864@linutronix.de>
- <20200220204617.440152945@linutronix.de>
+         :mime-version:content-disposition:in-reply-to;
+        bh=/59J0H3GMLZGQBLxUb/P9gfXRVxPokMyJCYkW6dkkKw=;
+        b=iBRQyOsimGRaiqGzHk1BrCHeWh7Lf6rUcP6WErjckBH89SmIuUL9jZEpYGj7cOBUjT
+         /XZfGtINMTuvTRfenEAOID0F1Ly/OO/5QuP5n3NKKAonm4M8ABV8hltxuyAkeuZK5VMz
+         P+Np7ZdvLYOtJKdftwbcTcAxShPJeDGqP6lxG0uFZ24QJSEmH4m+Tb5w97Sj/3qlIA6k
+         ygFNhHuf7b7DpkaDByCsqQ9v9HD1sRgpZNAR5wTuEC6KijVtLLVSZljBTx6HaEH4FUcx
+         WYewbJjsgYNK91aoCBdwuGplYEKg0LMCzHErLBcWPXsTm39g81OTrs4Gb3gTIHmRot7f
+         NB0g==
+X-Gm-Message-State: APjAAAUQtvJDruxL26w/CpYc5IG+0PDBarxo5AluJnxCgFxZ4+LoKjv8
+        E8zS3Psb9hLbl1TYVINwqI8BbA==
+X-Google-Smtp-Source: APXvYqzJCvVsgqjVymg7udnn6kagPdqKPFB6BfUwZSDat3KQhYu5qWhke/ZVlGCJiAG2QeUeiqvJhw==
+X-Received: by 2002:a5d:4687:: with SMTP id u7mr51024980wrq.176.1582352801556;
+        Fri, 21 Feb 2020 22:26:41 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id h5sm7655640wmf.8.2020.02.21.22.26.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Feb 2020 22:26:41 -0800 (PST)
+Date:   Sat, 22 Feb 2020 07:26:40 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     madhuparnabhowmik10@gmail.com
+Cc:     jiri@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
+Subject: Re: [PATCH] net: core: devlink.c: Hold devlink->lock from the
+ beginning of devlink_dpipe_table_register()
+Message-ID: <20200222062640.GA2228@nanopsycho>
+References: <20200221180943.17415-1-madhuparnabhowmik10@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200220204617.440152945@linutronix.de>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20200221180943.17415-1-madhuparnabhowmik10@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 09:45:18PM +0100, Thomas Gleixner wrote:
-> The assumption that only programs attached to perf NMI events can deadlock
-> on memory allocators is wrong. Assume the following simplified callchain:
+Fri, Feb 21, 2020 at 07:09:43PM CET, madhuparnabhowmik10@gmail.com wrote:
+>From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+>
+>devlink_dpipe_table_find() should be called under either
+>rcu_read_lock() or devlink->lock. devlink_dpipe_table_register()
+>calls devlink_dpipe_table_find() without holding the lock
+>and acquires it later. Therefore hold the devlink->lock
+>from the beginning of devlink_dpipe_table_register().
+>
+>Suggested-by: Jiri Pirko <jiri@mellanox.com>
+>Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+>---
+> net/core/devlink.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/net/core/devlink.c b/net/core/devlink.c
+>index 3e8c94155d93..d54e1f156b6f 100644
+>--- a/net/core/devlink.c
+>+++ b/net/core/devlink.c
+>@@ -6840,6 +6840,8 @@ int devlink_dpipe_table_register(struct devlink *devlink,
+> {
+> 	struct devlink_dpipe_table *table;
 > 
->  kmalloc() from regular non BPF context
->   cache empty
->    freelist empty
->     lock(zone->lock);
->      tracepoint or kprobe
->       BPF()
->        update_elem()
->         lock(bucket)
->           kmalloc()
->            cache empty
->             freelist empty
->              lock(zone->lock);  <- DEADLOCK
+>+	mutex_lock(&devlink->lock);
+>+
+> 	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name))
+> 		return -EEXIST;
+
+You have to handle the error path.
+
+
 > 
-> There are other ways which do not involve locking to create wreckage:
+>@@ -6855,7 +6857,6 @@ int devlink_dpipe_table_register(struct devlink *devlink,
+> 	table->priv = priv;
+> 	table->counter_control_extern = counter_control_extern;
 > 
->  kmalloc() from regular non BPF context
->   local_irq_save();
->    ...
->     obj = percpu_slab_first();
->      kprobe()
->       BPF()
->        update_elem()
->         lock(bucket)
->          kmalloc()
->           local_irq_save();
->            ...
->             obj = percpu_slab_first(); <- Same object as above ...
-> 
-> So preallocation _must_ be enforced for all variants of intrusive
-> instrumentation.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
-> V2: New patch
-> ---
->  kernel/bpf/verifier.c |   18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
-> 
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -8144,19 +8144,23 @@ static int check_map_prog_compatibility(
->  					struct bpf_prog *prog)
->  
->  {
-> -	/* Make sure that BPF_PROG_TYPE_PERF_EVENT programs only use
-> -	 * preallocated hash maps, since doing memory allocation
-> -	 * in overflow_handler can crash depending on where nmi got
-> -	 * triggered.
-> +	/*
-> +	 * Make sure that trace type programs only use preallocated hash
-> +	 * maps. Perf programs obviously can't do memory allocation in NMI
-> +	 * context and all other types can deadlock on a memory allocator
-> +	 * lock when a tracepoint/kprobe triggers a BPF program inside a
-> +	 * lock held region or create inconsistent state when the probe is
-> +	 * within an interrupts disabled critical region in the memory
-> +	 * allocator.
->  	 */
-> -	if (prog->type == BPF_PROG_TYPE_PERF_EVENT) {
-> +	if ((is_tracing_prog_type(prog->type)) {
-
-This doesn't build.
-I assumed the typo somehow sneaked in and proceeded, but it broke
-a bunch of tests:
-Summary: 1526 PASSED, 0 SKIPPED, 54 FAILED
-One can argue that the test are unsafe and broken.
-We used to test all those tests with and without prealloc:
-map_flags = 0;
-run_all_tests();
-map_flags = BPF_F_NO_PREALLOC;
-run_all_tests();
-Then 4 years ago commit 5aa5bd14c5f866 switched hashmap to be no_prealloc
-always and that how it stayed since then. We can adjust the tests to use
-prealloc with tracing progs, but this breakage shows that there could be plenty
-of bpf users that also use BPF_F_NO_PREALLOC with tracing. It could simply
-be because they know that their kprobes are in a safe spot (and kmalloc is ok)
-and they want to save memory. They could be using large max_entries parameter
-for worst case hash map usage, but typical load is low. In general hashtables
-don't perform well after 50%, so prealloc is wasting half of the memory. Since
-we cannot control where kprobes are placed I'm not sure what is the right fix
-here. It feels that if we proceed with this patch somebody will complain and we
-would have to revert, but I'm willing to take this risk if we cannot come up
-with an alternative fix.
-
-Going further with the patchset.
-
-Patch 9 "bpf: Use bpf_prog_run_pin_on_cpu() at simple call sites."
-adds new warning:
-../kernel/seccomp.c: In function ‘seccomp_run_filters’:
-../kernel/seccomp.c:272:50: warning: passing argument 2 of ‘bpf_prog_run_pin_on_cpu’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-   u32 cur_ret = bpf_prog_run_pin_on_cpu(f->prog, sd);
-
-I fixed it up and proceeded, but patch 16 failed to apply:
-
-Applying: bpf: Factor out hashtab bucket lock operations
-error: sha1 information is lacking or useless (kernel/bpf/hashtab.c).
-error: could not build fake ancestor
-Patch failed at 0001 bpf: Factor out hashtab bucket lock operations
-
-I patched it in manually:
-patch -p1 < a.patch
-patching file kernel/bpf/hashtab.c
-Hunk #1 succeeded at 1333 (offset 14 lines).
-Hunk #2 succeeded at 1361 with fuzz 1 (offset 24 lines).
-Hunk #3 succeeded at 1372 with fuzz 1 (offset 27 lines).
-Hunk #4 succeeded at 1442 (offset 48 lines).
-patching file kernel/bpf/syscall.c
-
-and it looks correct.
-
-But patch 17 failed completely:
-patch -p1 < b.patch
-patching file kernel/bpf/hashtab.c
-Hunk #1 succeeded at 88 (offset 1 line).
-Hunk #2 succeeded at 374 (offset 12 lines).
-Hunk #3 succeeded at 437 (offset 12 lines).
-Hunk #4 succeeded at 645 (offset 12 lines).
-Hunk #5 succeeded at 653 (offset 12 lines).
-Hunk #6 succeeded at 919 (offset 12 lines).
-Hunk #7 succeeded at 960 (offset 12 lines).
-Hunk #8 succeeded at 998 (offset 12 lines).
-Hunk #9 succeeded at 1017 (offset 12 lines).
-Hunk #10 succeeded at 1052 (offset 12 lines).
-Hunk #11 succeeded at 1075 (offset 12 lines).
-Hunk #12 succeeded at 1115 (offset 12 lines).
-Hunk #13 succeeded at 1137 (offset 12 lines).
-Hunk #14 succeeded at 1175 (offset 12 lines).
-Hunk #15 succeeded at 1185 (offset 12 lines).
-Hunk #16 succeeded at 1207 (offset 12 lines).
-Hunk #17 succeeded at 1216 (offset 12 lines).
-Hunk #18 FAILED at 1349.
-Hunk #19 FAILED at 1358.
-Hunk #20 FAILED at 1366.
-Hunk #21 FAILED at 1407.
-4 out of 21 hunks FAILED -- saving rejects to file kernel/bpf/hashtab.c.rej
-
-That's where I gave up.
-
-I pulled sched-for-bpf-2020-02-20 branch from tip and pushed it into bpf-next.
-Could you please rebase your set on top of bpf-next and repost?
-The logic in all patches looks good.
-
-For now I propose to drop patch 1 and get the rest merged while we're
-figuring out what to do.
-
-Thanks!
+>-	mutex_lock(&devlink->lock);
+> 	list_add_tail_rcu(&table->list, &devlink->dpipe_table_list);
+> 	mutex_unlock(&devlink->lock);
+> 	return 0;
+>-- 
+>2.17.1
+>
