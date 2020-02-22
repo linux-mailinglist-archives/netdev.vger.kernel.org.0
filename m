@@ -2,143 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7264E168F35
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 14:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F20B168F3D
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 14:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbgBVNuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 08:50:00 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:40060 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727266AbgBVNuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 08:50:00 -0500
-Received: by mail-lj1-f194.google.com with SMTP id n18so5200040ljo.7
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 05:49:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=0+clKuYh7KPvWqzrnI6AakWzmOHJogBn0b1gTuFVo7o=;
-        b=FvYszws9VA4gn8vxUjwgHHZiNH5agadj/BOL0SFYiK7f1ixMQMJQA7MchGJwkLDG0Q
-         xClcRoOIoAROktIFwqQvhvwI/ChoVWu3jwE9GvMyhA02qZMTnJk7WGS3zqBqwZOOnsn7
-         ++bHoFvvSJFFQ17KV2drIZA3Ky9NHw5cwXxrc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=0+clKuYh7KPvWqzrnI6AakWzmOHJogBn0b1gTuFVo7o=;
-        b=AOjcz77/gZH90Snwfo31mH8BchArjwj+UbNSTxKa/QHzGiW13EUBr6a4robinnS8K3
-         FIa1YMQ/nfvXeARFmVNn7VkNN+fjXRnogW8+I4SoCzDAmjL8wZhk7QAStd30t1ho1e9B
-         OSqp2RPCMBxtYEpJ2Tye/aj3Sj/GiqsWGe8A1XU1B4i6cLTIrwEvUKp845S5BXubg/1P
-         WHFAputDtS+KjoQrB21Byyizamq4Ao60lAE52iMSWXIn+EPGRDKmEJx0n1ExoR26a0uI
-         XgygggXwsRsO4s9MViVVE18iRQRsuWTaQLMUkgqJr8Iz1y0PlMrSvRybKbzGf0Qkz2ZZ
-         fbtA==
-X-Gm-Message-State: APjAAAUzIrJ/Cp1mv2LUWral+P23XZjV//FGuEg9h6nxY7k/sTAzSXyG
-        BmbKC2A9zlaj2/ugspAdhCXuyg==
-X-Google-Smtp-Source: APXvYqy09JWNZOnCO5lbS6bNZy01zOlQiTyFsElMSYd8XaJeRQWhmARC+4HQ62uci8x7lNZnk52Dow==
-X-Received: by 2002:a2e:9110:: with SMTP id m16mr24874270ljg.140.1582379397071;
-        Sat, 22 Feb 2020 05:49:57 -0800 (PST)
-Received: from cloudflare.com (user-5-173-1-230.play-internet.pl. [5.173.1.230])
-        by smtp.gmail.com with ESMTPSA id g25sm3265934ljn.107.2020.02.22.05.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2020 05:49:56 -0800 (PST)
-References: <20200218171023.844439-1-jakub@cloudflare.com> <c86784f5-ef2c-cfd6-cb75-a67af7e11c3c@iogearbox.net> <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v7 00/11] Extend SOCKMAP/SOCKHASH to store listening sockets
-In-reply-to: <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
-Date:   Sat, 22 Feb 2020 13:49:52 +0000
-Message-ID: <87d0a668an.fsf@cloudflare.com>
+        id S1727714AbgBVNzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 08:55:03 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:59284 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726839AbgBVNzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 08:55:03 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1j5VF2-000nAx-QM; Sat, 22 Feb 2020 14:54:48 +0100
+Message-ID: <229913c0b0481c3572032b2f64ce0202f5c66c23.camel@sipsolutions.net>
+Subject: Re: [PATCH] net: mac80211: rx.c: Use built-in RCU list checking
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joel@joelfernandes.org, frextrite@gmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org
+Date:   Sat, 22 Feb 2020 14:54:47 +0100
+In-Reply-To: <20200222133928.GA10397@madhuparna-HP-Notebook> (sfid-20200222_143938_994762_F2980624)
+References: <20200222101831.8001-1-madhuparnabhowmik10@gmail.com>
+         <f1913847671d0b7e19aaa9bef1e1eb89febfa942.camel@sipsolutions.net>
+         <20200222133928.GA10397@madhuparna-HP-Notebook>
+         (sfid-20200222_143938_994762_F2980624)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
 
-On Sat, Feb 22, 2020 at 12:47 AM GMT, Alexei Starovoitov wrote:
-> On Fri, Feb 21, 2020 at 1:41 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> On 2/18/20 6:10 PM, Jakub Sitnicki wrote:
->> > This patch set turns SOCK{MAP,HASH} into generic collections for TCP
->> > sockets, both listening and established. Adding support for listening
->> > sockets enables us to use these BPF map types with reuseport BPF programs.
->> >
->> > Why? SOCKMAP and SOCKHASH, in comparison to REUSEPORT_SOCKARRAY, allow the
->> > socket to be in more than one map at the same time.
->> >
->> > Having a BPF map type that can hold listening sockets, and gracefully
->> > co-exist with reuseport BPF is important if, in the future, we want
->> > BPF programs that run at socket lookup time [0]. Cover letter for v1 of
->> > this series tells the full story of how we got here [1].
->> >
->> > Although SOCK{MAP,HASH} are not a drop-in replacement for SOCKARRAY just
->> > yet, because UDP support is lacking, it's a step in this direction. We're
->> > working with Lorenz on extending SOCK{MAP,HASH} to hold UDP sockets, and
->> > expect to post RFC series for sockmap + UDP in the near future.
->> >
->> > I've dropped Acks from all patches that have been touched since v6.
->> >
->> > The audit for missing READ_ONCE annotations for access to sk_prot is
->> > ongoing. Thus far I've found one location specific to TCP listening sockets
->> > that needed annotating. This got fixed it in this iteration. I wonder if
->> > sparse checker could be put to work to identify places where we have
->> > sk_prot access while not holding sk_lock...
->> >
->> > The patch series depends on another one, posted earlier [2], that has been
->> > split out of it.
->> >
->> > Thanks,
->> > jkbs
->> >
->> > [0] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudflare.com/
->> > [1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
->> > [2] https://lore.kernel.org/bpf/20200217121530.754315-1-jakub@cloudflare.com/
->> >
->> > v6 -> v7:
->> >
->> > - Extended the series to cover SOCKHASH. (patches 4-8, 10-11) (John)
->> >
->> > - Rebased onto recent bpf-next. Resolved conflicts in recent fixes to
->> >    sk_state checks on sockmap/sockhash update path. (patch 4)
->> >
->> > - Added missing READ_ONCE annotation in sock_copy. (patch 1)
->> >
->> > - Split out patches that simplify sk_psock_restore_proto [2].
->>
->> Applied, thanks!
->
-> Jakub,
->
-> what is going on here?
-> # test_progs -n 40
-> #40 select_reuseport:OK
-> Summary: 1/126 PASSED, 30 SKIPPED, 0 FAILED
->
-> Does it mean nothing was actually tested?
-> I really don't like to see 30 skipped tests.
-> Is it my environment?
-> If so please make them hard failures.
-> I will fix whatever I need to fix in my setup.
+> If list_for_each_entry_rcu() is called from non rcu protection
+> i.e without holding rcu_read_lock, but under the protection of
+> a different lock then we can pass that as the condition for lockdep checking
+> because otherwise lockdep will complain if list_for_each_entry_rcu()
+> is used without rcu protection. So, if we do not pass this argument
+> (cond) it may lead to false lockdep warnings.
 
-The UDP tests for sock{map,hash} are marked as skipped, because UDP
-support is not implemented yet. Sorry for the confusion.
+Sure. But what's the specific warning you see?
 
-Having read the recent thread about BPF selftests [0] I now realize that
-this is not the best idea. It sends the wrong signal to the developer.
+> > > -	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > > +	list_for_each_entry_rcu(sdata, &local->interfaces, list,
+> > > +				lockdep_is_held(&rx->local->rx_path_lock)) {
+> > >  		if (!ieee80211_sdata_running(sdata))
+> > >  			continue;
+> > 
+> > This is not related at all.
+> 
+> I analysed the following traces:
+> ieee80211_rx_handlers() -> ieee80211_rx_handlers_result() -> ieee80211_rx_cooked_monitor()
+> 
+> here ieee80211_rx_handlers() is holding the rx->local->rx_path_lock and
+> therefore I used this for the cond argument.
+> 
+>  If this is not right, can you help me in figuring out that which other
+>  lock is held?
 
-I propose to exclude the UDP tests w/ sock{map,hash} by not registering
-them with test__start_subtest at all. Failing them would indicate a
-regression, which is not true. While skipping them points to a potential
-problem with the test environment, which isn't true, either.
+It's _clearly_ not right, that's the RX spinlock, it has nothing to do
+with the interface list.
 
-I'll follow up with a patch for this, if that sounds good to you.
+But I'd have to see the warning. Perhaps the driver you're using is
+wrongly calling something in the stack.
 
-[0] https://lore.kernel.org/bpf/20200220191845.u62nhohgzngbrpib@ast-mbp/T/#t
+> > >  	lockdep_assert_held(&local->sta_mtx);
+> > >  
+> > > -	list_for_each_entry_rcu(sta, &local->sta_list, list) {
+> > > +	list_for_each_entry_rcu(sta, &local->sta_list, list,
+> > > +				lockdep_is_held(&local->sta_mtx)) {
+> > 
+> > And this isn't even a real RCU iteration, since we _must_ hold the mutex
+> > here.
+> > 
+> Yeah exactly, dropping _rcu (use list_for_each_entry()) would be a good option in this case.
+> Let me know if that is alright and I will send a new patch with all the
+> changes required.
+
+Seems fine, also better to split the patches anyway.
+
+johannes
+
