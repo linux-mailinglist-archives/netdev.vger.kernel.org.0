@@ -2,124 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1588D168CE4
-	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 07:38:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 294BD168CE8
+	for <lists+netdev@lfdr.de>; Sat, 22 Feb 2020 07:42:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgBVGid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 01:38:33 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52840 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726684AbgBVGid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 01:38:33 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so3947682wmc.2
-        for <netdev@vger.kernel.org>; Fri, 21 Feb 2020 22:38:31 -0800 (PST)
+        id S1726992AbgBVGmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 01:42:12 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:44370 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726684AbgBVGmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Feb 2020 01:42:11 -0500
+Received: by mail-pf1-f195.google.com with SMTP id y5so2438060pfb.11;
+        Fri, 21 Feb 2020 22:42:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QgCFlHvm4fLTi5GvxA3T6cQ6OUDJLQ9Y8WqEbsncuTo=;
-        b=gBNGsbA+2BlA4abpO5FpbnYKYATPgO3WMNzqnCU6UqTF5APTf1zmEhgwbiJ38oMXJk
-         XEhIcbMA5bDa6eZJy0UFUG5sgpcjlHhptsp2wVpY59RFRtHaYL6Rc4YhSVugVBEcou/f
-         BDgpb19EEpGxTa6wm1e28Nt5co8pD2SNk7OqYG5RF+RtLFI0319welNn5Wb7OvASUVTS
-         M/eF7Rirp26Fl2tBf2oOfFT6VepZQTyGgv85ZLvpzujD/WmwOwIc2Cbqs1by8Q/NC7uJ
-         ASFedsVH9BwXb1TRwL03arIm3iakCO0nKoeMC4m9LnShinyNwj3DtW9496vSk7JMmB1A
-         ZfpA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O6NOWgkJuVNBzcRIWQKK+1L2R6ELyCXl3BZEpc2cyyg=;
+        b=FqRdB+56woJ+aqiLb2Cd0+dDu3Rnbt4s70LQ8+EbM106IRfJasluEqi2KryUpycnpa
+         q46Pq0kb0YYO4m1Eo9qos5zs55uz/HYlEiPssXEfy33wSj5in56o1Mw0y49vLcmJS0SY
+         KOTH5triN05mU1FQJYa8AJqZsid6Aonj/ufDlabhYcxsGlsumxffcFpMUDxWLnL7pr6X
+         0NyVv9KrUsBpfk2Ha2RdaczyDdXY9OoGLoN+oazdrGPJHmXtTPYKfgVT6KW0BL/sOZbz
+         p53x+j7OfmyjxxNdXL1y2/YbXE19bh+x/h6q2IwQ6BwfPUi0JCZPZU8zOtK1LS1pEVFh
+         rD1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QgCFlHvm4fLTi5GvxA3T6cQ6OUDJLQ9Y8WqEbsncuTo=;
-        b=rdyFVezqrH4887VnW5dNHxsMhkzdYJyPibh00721RIoN/LbOEIMN4wefgR9pSbU9+d
-         WH4NapGXExd5mem1P0PoCJMh1/ZlNutUQJPJW5omKpcHl2C17lpST26ESc5KCeSymvXh
-         Rv3976R+6xmTZqOOa3h8JWJl/gwa0Jd2tBjh6v6W5BivZZKzGAuSJ2MVWwWsqncZJT12
-         gxroLyUqwGpBoZFjxKRWCdc9y4GJPden0W4aSjo7A4tyuPbGt9nlV+re1uz9ibtPwu0Z
-         pq1mKiMpxBDkWEmNmSlgcwbVOwFb6kVnIhPRBwW9sCiF7/h19WXMbeU0xDZQu+fCg4FY
-         zNtw==
-X-Gm-Message-State: APjAAAWetL3AH37Y/sOXkmTlsYmglnPg4DE4XUwv+0x5nqKsWuRUdzbo
-        iyA4W3Hdg2QuqdOjNPzliUDnTg==
-X-Google-Smtp-Source: APXvYqxqtfHn65UH+ElfBusEJTgHTfnfEu752clqz7AlK5xw1Whysq7ctGMehyQX7LH8a146nkOnDA==
-X-Received: by 2002:a7b:ce18:: with SMTP id m24mr8325869wmc.123.1582353510747;
-        Fri, 21 Feb 2020 22:38:30 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id f8sm7228575wrt.28.2020.02.21.22.38.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O6NOWgkJuVNBzcRIWQKK+1L2R6ELyCXl3BZEpc2cyyg=;
+        b=h0EixJphnExxQ4PoJSWJmhHQhgw+8rhVGBhgjGeZdeEiTIljOAJ0fb0jkapeCsahhG
+         QG7mI69bUtbnRg/WjznbQfpH3wB1GyfoI9ZHtW/klzZzrULSHETpt194CXP1aF9diRcH
+         PbBa/akioy+y54839J74hL4v8/HVOeYWTfSAfCRazri4TMJdHd3TLR07MSwssFq4xFB/
+         hm+lxtk+uAa/atyPZzFJ0lQsh5EAC1457rLC0/MQz7YTrzdCT3uIJ46IKoJNIcXWTOpA
+         hw3hZO7zh/zfPDVt0rVcRYYXdwlJmNglaHLpf86LYvmzjwWazBvfm1v0KtuvQEpa0VfL
+         djnQ==
+X-Gm-Message-State: APjAAAXsmXovDhb8/O6A21lrPUskiW1w3XXG/EifURk7gE5aJE6xA8vy
+        IFu4J3FaVPyAL+QDnFAmht8=
+X-Google-Smtp-Source: APXvYqzDbgRAfSah8enAHJuCFgRyyBPFc5qmEZEwMTAKxSh/dXWKbXLbH0Ui0FVikX6GYWQ+VW/dWg==
+X-Received: by 2002:a65:5a42:: with SMTP id z2mr1036184pgs.213.1582353729466;
+        Fri, 21 Feb 2020 22:42:09 -0800 (PST)
+Received: from localhost.localdomain ([103.87.57.201])
+        by smtp.googlemail.com with ESMTPSA id k5sm4455071pju.29.2020.02.21.22.42.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Feb 2020 22:38:30 -0800 (PST)
-Date:   Sat, 22 Feb 2020 07:38:29 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org, mlxsw@mellanox.com,
-        Edward Cree <ecree@solarflare.com>
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW
- stats type
-Message-ID: <20200222063829.GB2228@nanopsycho>
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
+        Fri, 21 Feb 2020 22:42:08 -0800 (PST)
+From:   Amol Grover <frextrite@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH 1/2] ipmr: Fix RCU list debugging warning
+Date:   Sat, 22 Feb 2020 12:08:35 +0530
+Message-Id: <20200222063835.14328-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 21, 2020 at 07:22:00PM CET, kuba@kernel.org wrote:
->On Fri, 21 Feb 2020 10:56:33 +0100 Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Currently, when user adds a TC filter and the filter gets offloaded,
->> the user expects the HW stats to be counted and included in stats dump.
->> However, since drivers may implement different types of counting, there
->> is no way to specify which one the user is interested in.
->> 
->> For example for mlx5, only delayed counters are available as the driver
->> periodically polls for updated stats.
->> 
->> In case of mlxsw, the counters are queried on dump time. However, the
->> HW resources for this type of counters is quite limited (couple of
->> thousands). This limits the amount of supported offloaded filters
->> significantly. Without counter assigned, the HW is capable to carry
->> millions of those.
->> 
->> On top of that, mlxsw HW is able to support delayed counters as well in
->> greater numbers. That is going to be added in a follow-up patch.
->> 
->> This patchset allows user to specify one of the following types of HW
->> stats for added fitler:
->> any - current default, user does not care about the type, just expects
->>       any type of stats.
->> immediate - queried during dump time
->> delayed - polled from HW periodically or sent by HW in async manner
->> disabled - no stats needed
->
->Hmm, but the statistics are on actions, it feels a little bit like we
->are perpetuating the mistake of counting on filters here.
+ipmr_for_each_table() macro uses list_for_each_entry_rcu()
+for traversing outside of an RCU read side critical section
+but under the protection of rtnl_mutex. Hence, add the
+corresponding lockdep expression to silence the following
+false-positive warning at boot:
 
-You are right, the stats in tc are per-action. However, in both mlxsw
-and mlx5, the stats are per-filter. What hw_stats does is that it
-basically allows the user to set the type for all the actions in the
-filter at once. 
+[    4.319347] =============================
+[    4.319349] WARNING: suspicious RCU usage
+[    4.319351] 5.5.4-stable #17 Tainted: G            E
+[    4.319352] -----------------------------
+[    4.319354] net/ipv4/ipmr.c:1757 RCU-list traversed in non-reader section!!
 
-Could you imagine a usecase that would use different HW stats type for
-different actions in one action-chain?
+Signed-off-by: Amol Grover <frextrite@gmail.com>
+---
+ net/ipv4/ipmr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Plus, if the fine grained setup is ever needed, the hw_stats could be in
-future easilyt extended to be specified per-action too overriding
-the per-filter setup only for specific action. What do you think?
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 6e68def66822..99c864eb6e34 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -110,7 +110,8 @@ static void ipmr_expire_process(struct timer_list *t);
+ 
+ #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
+ #define ipmr_for_each_table(mrt, net) \
+-	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
++	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
++				lockdep_rtnl_is_held())
+ 
+ static struct mr_table *ipmr_mr_table_iter(struct net *net,
+ 					   struct mr_table *mrt)
+-- 
+2.24.1
 
-
->
->Would it not work to share actions between filters which don't need
->fine grained stats if HW can do more filters than stats?
-
-For mlxsw it would work, if the action chain would be identical. For
-that you don't need the per-action granularity of setting type hw_stats.
-
->
->Let's CC Ed on this.
->
