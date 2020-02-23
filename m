@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D45169412
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFD3169404
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729145AbgBWC1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 21:27:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54474 "EHLO mail.kernel.org"
+        id S1729304AbgBWCYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 21:24:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728068AbgBWCY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Feb 2020 21:24:29 -0500
+        id S1729271AbgBWCYb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Feb 2020 21:24:31 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7801620707;
-        Sun, 23 Feb 2020 02:24:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9BD121D56;
+        Sun, 23 Feb 2020 02:24:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582424669;
-        bh=/l4ZPkeE0i6ZByZlmN83M820iYF0kgTGc+JH5BDsacg=;
+        s=default; t=1582424670;
+        bh=Pv0mYHJqRQPBcqFiSkeRze6rrtkqGvVxOzr/xV44Gyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I5O1AVnw2iy2/HTgudEtWTM1uF5GBDHkOttPuba6tLnA66gd550YH39xRu2kwI5Dc
-         3R9Odo2IE5S1V4lrDM77R7eNq51quXdRvwEp3rOCVaj+KLQDpyrSwoVbexBUu+IwlJ
-         B5xeiSRDEPV0P+os6zY+Rp+5a31Uq4mxi6gL10gs=
+        b=Vzp3AjG+v1odk9o0O7NkIlJHngm7AOBWSfZBawiuSygjyiLEpZ9iicvoomLVdSeBZ
+         S5mDCQ/jE7TlQnYyDJoaLpKfZkZTftRzeJY4bNLKVFaMG5do8B4gK6paRp6bQa/J97
+         N9CsmpOnii0gGQ9bjXjlN0P3IbSBLLKm6qvBYUPE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Arthur Kiyanovski <akiyano@amazon.com>,
         Sameeh Jubran <sameehj@amazon.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 14/21] net: ena: rss: store hash function as values and not bits
-Date:   Sat, 22 Feb 2020 21:24:04 -0500
-Message-Id: <20200223022411.2159-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 15/21] net: ena: fix incorrectly saving queue numbers when setting RSS indirection table
+Date:   Sat, 22 Feb 2020 21:24:05 -0500
+Message-Id: <20200223022411.2159-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200223022411.2159-1-sashal@kernel.org>
 References: <20200223022411.2159-1-sashal@kernel.org>
@@ -46,25 +46,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-[ Upstream commit 4844470d472d660c26149ad764da2406adb13423 ]
+[ Upstream commit 92569fd27f5cb0ccbdf7c7d70044b690e89a0277 ]
 
-The device receives, stores and retrieves the hash function value as bits
-and not as their enum value.
+The indirection table has the indices of the Rx queues. When we store it
+during set indirection operation, we convert the indices to our internal
+representation of the indices.
 
-The bug:
-* In ena_com_set_hash_function() we set
-  cmd.u.flow_hash_func.selected_func to the bit value of rss->hash_func.
- (1 << rss->hash_func)
-* In ena_com_get_hash_function() we retrieve the hash function and store
-  it's bit value in rss->hash_func. (Now the bit value of rss->hash_func
-  is stored in rss->hash_func instead of it's enum value)
+Our internal representation of the indices is: even indices for Tx and
+uneven indices for Rx, where every Tx/Rx pair are in a consecutive order
+starting from 0. For example if the driver has 3 queues (3 for Tx and 3
+for Rx) then the indices are as follows:
+0  1  2  3  4  5
+Tx Rx Tx Rx Tx Rx
 
-The fix:
-This commit fixes the issue by converting the retrieved hash function
-values from the device to the matching enum value of the set bit using
-ffs(). ffs() finds the first set bit's index in a word. Since the function
-returns 1 for the LSB's index, we need to subtract 1 from the returned
-value (note that BIT(0) is 1).
+The BUG:
+The issue is that when we satisfy a get request for the indirection
+table, we don't convert the indices back to the original representation.
+
+The FIX:
+Simply apply the inverse function for the indices of the indirection
+table after we set it.
 
 Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
@@ -72,26 +73,65 @@ Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 24 ++++++++++++++++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  2 ++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index c5df80f31005f..552db5399503f 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -2128,7 +2128,11 @@ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
- 	if (unlikely(rc))
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 7ca7bade1c090..9601ddc274274 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -648,6 +648,28 @@ static u32 ena_get_rxfh_key_size(struct net_device *netdev)
+ 	return ENA_HASH_KEY_SIZE;
+ }
+ 
++static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
++{
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++	int i, rc;
++
++	if (!indir)
++		return 0;
++
++	rc = ena_com_indirect_table_get(ena_dev, indir);
++	if (rc)
++		return rc;
++
++	/* Our internal representation of the indices is: even indices
++	 * for Tx and uneven indices for Rx. We need to convert the Rx
++	 * indices to be consecutive
++	 */
++	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++)
++		indir[i] = ENA_IO_RXQ_IDX_TO_COMBINED_IDX(indir[i]);
++
++	return rc;
++}
++
+ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 			u8 *hfunc)
+ {
+@@ -656,7 +678,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 	u8 func;
+ 	int rc;
+ 
+-	rc = ena_com_indirect_table_get(adapter->ena_dev, indir);
++	rc = ena_indirection_table_get(adapter, indir);
+ 	if (rc)
  		return rc;
  
--	rss->hash_func = get_resp.u.flow_hash_func.selected_func;
-+	/* ffs() returns 1 in case the lsb is set */
-+	rss->hash_func = ffs(get_resp.u.flow_hash_func.selected_func);
-+	if (rss->hash_func)
-+		rss->hash_func--;
-+
- 	if (func)
- 		*func = rss->hash_func;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 3404376c28ca3..5a72267b858b1 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -113,6 +113,8 @@
  
+ #define ENA_IO_TXQ_IDX(q)	(2 * (q))
+ #define ENA_IO_RXQ_IDX(q)	(2 * (q) + 1)
++#define ENA_IO_TXQ_IDX_TO_COMBINED_IDX(q)	((q) / 2)
++#define ENA_IO_RXQ_IDX_TO_COMBINED_IDX(q)	(((q) - 1) / 2)
+ 
+ #define ENA_MGMNT_IRQ_IDX		0
+ #define ENA_IO_IRQ_FIRST_IDX		1
 -- 
 2.20.1
 
