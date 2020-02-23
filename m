@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F06AE169409
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73714169406
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728873AbgBWC1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 21:27:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54532 "EHLO mail.kernel.org"
+        id S1729390AbgBWC1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 21:27:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729280AbgBWCYc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Feb 2020 21:24:32 -0500
+        id S1729303AbgBWCYd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Feb 2020 21:24:33 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF62D22525;
-        Sun, 23 Feb 2020 02:24:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E3D7720707;
+        Sun, 23 Feb 2020 02:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582424671;
-        bh=NMUthfhve5dk4Fxr53AUfDVdU9WEEE2r2cZ48UukxO4=;
+        s=default; t=1582424672;
+        bh=48Ff+NoyKa1P0b7HzCLp1S+TOTotXs2IW3XmCzsQd4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OUrIrcS6O+YMdOucwcqifsFs1W5bjjkaELp9/ROpYguPm+MxllB4pIHBSoOj9tnt5
-         CHl72QxbvBEgXy47v4BwrdjMHD4zy8XQ1xD7GKC3E7TAfubYj5IYxnBzqNG+Y8bWvU
-         9NeKzVK5H+SYJdJSC2b0+SCjn3NNj/OsU3LW88dI=
+        b=efBqXouIoCS7WNQcDwaexnLmhmqHHxd3SNG97pPH/5KfRJht7J2IZNJfNUjInVwOr
+         G2sR/GhNblh+SdY98v/7edOgX13IYIZJr5VR1xNxwLDOlPMPyB/xdzN+H707ZCNJYw
+         Eg/LSH3e5iw4pg3mncvvJ24q2zaKy5ZsON2EHvSU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sameeh Jubran <sameehj@amazon.com>,
+Cc:     Arthur Kiyanovski <akiyano@amazon.com>,
+        Sameeh Jubran <sameehj@amazon.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 16/21] net: ena: ethtool: use correct value for crc32 hash
-Date:   Sat, 22 Feb 2020 21:24:06 -0500
-Message-Id: <20200223022411.2159-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 17/21] net: ena: ena-com.c: prevent NULL pointer dereference
+Date:   Sat, 22 Feb 2020 21:24:07 -0500
+Message-Id: <20200223022411.2159-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200223022411.2159-1-sashal@kernel.org>
 References: <20200223022411.2159-1-sashal@kernel.org>
@@ -43,43 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+From: Arthur Kiyanovski <akiyano@amazon.com>
 
-[ Upstream commit 886d2089276e40d460731765083a741c5c762461 ]
+[ Upstream commit c207979f5ae10ed70aff1bb13f39f0736973de99 ]
 
-Up till kernel 4.11 there was no enum defined for crc32 hash in ethtool,
-thus the xor enum was used for supporting crc32.
+comp_ctx can be NULL in a very rare case when an admin command is executed
+during the execution of ena_remove().
+
+The bug scenario is as follows:
+
+* ena_destroy_device() sets the comp_ctx to be NULL
+* An admin command is executed before executing unregister_netdev(),
+  this can still happen because our device can still receive callbacks
+  from the netdev infrastructure such as ethtool commands.
+* When attempting to access the comp_ctx, the bug occurs since it's set
+  to NULL
+
+Fix:
+Added a check that comp_ctx is not NULL
 
 Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 9601ddc274274..22238f25e0713 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -705,7 +705,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
- 		func = ETH_RSS_HASH_TOP;
- 		break;
- 	case ENA_ADMIN_CRC32:
--		func = ETH_RSS_HASH_XOR;
-+		func = ETH_RSS_HASH_CRC32;
- 		break;
- 	default:
- 		netif_err(adapter, drv, netdev,
-@@ -751,7 +751,7 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	case ETH_RSS_HASH_TOP:
- 		func = ENA_ADMIN_TOEPLITZ;
- 		break;
--	case ETH_RSS_HASH_XOR:
-+	case ETH_RSS_HASH_CRC32:
- 		func = ENA_ADMIN_CRC32;
- 		break;
- 	default:
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index 552db5399503f..31e0cf1442012 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -199,6 +199,11 @@ static inline void comp_ctxt_release(struct ena_com_admin_queue *queue,
+ static struct ena_comp_ctx *get_comp_ctxt(struct ena_com_admin_queue *queue,
+ 					  u16 command_id, bool capture)
+ {
++	if (unlikely(!queue->comp_ctx)) {
++		pr_err("Completion context is NULL\n");
++		return NULL;
++	}
++
+ 	if (unlikely(command_id >= queue->q_depth)) {
+ 		pr_err("command id is larger than the queue size. cmd_id: %u queue size %d\n",
+ 		       command_id, queue->q_depth);
 -- 
 2.20.1
 
