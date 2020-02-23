@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E19CC1696A4
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:32:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4C01696A5
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:32:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbgBWHcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 02:32:02 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41264 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727170AbgBWHb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 02:31:58 -0500
-Received: by mail-wr1-f68.google.com with SMTP id c9so6660376wrw.8
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:57 -0800 (PST)
+        id S1727265AbgBWHcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 02:32:09 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:32966 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727109AbgBWHcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 02:32:01 -0500
+Received: by mail-wm1-f67.google.com with SMTP id m10so8338121wmc.0
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=v/imzZD4h2wg5T3TmojPrsDRQ7BGfPFIf0wSK6Ur8vo=;
-        b=cO2cQI18pO304Jep7MnDwd7gn0EjyZqK0OzCAoUWM6xAnHwLSV+tp72n43DZNcGvkR
-         qU7ks8TUMCjYjvBX5Iozodk6Gb2JYg+YlMeVxiGPdgfsqvJGX2Md+3F2vtztbMlu4rJW
-         jZ1Ynt1BEK72nAZou/Fh3aNjHHxXbqVtW3SmU8Dz7Qjpoesv0VgvjqO8n2zdm0TZWew2
-         FeR8b6uwnuLWqS0vcR2z3nTL+Cof0dpiqLSHkKQLX7/2CwPPl73RLllAW+B7ZEjPjiUG
-         usk8vGQ5YFu6KV4dyM+7EaPZ1GjGesT/IwUZkTAIk896Fo5RS5yDh7ru+Ie5Z45O6swM
-         Emgg==
+        bh=4Uw1/fD7YPwtNQcffV1jDM31kknDn5olQFO06u9ASrw=;
+        b=PUcOfOqE6aPj/dpFY7t/61/D/0cMmx2naWuXOSa2rSyPnfw3aLqYD7QYfa2Q/DFbH6
+         YJ1IrHUpPkwoWyu9e/j6WjAqusrUj5YhQ/vNvpikbEN8P3PYVgogtDSMGiDqPw1srV9e
+         3ucrCaCP/ipEMEQMsD6J/lJX20HxiqFNGoTaA6XPAVD0KGhOb9xv6+QGn5d3jvj4CuDB
+         8OQOKf7y0RbCCLF/vwV6W8sjDsYxRtFZakUVxtZG5o6kmK/EfmQMkmESJoUWiPbmC3kn
+         3QFOvN054vKpYdM4BE4Xfk5+JqPSnxx8ir8j2HDcIj+KzlqPENDiMGxKDIvuUpJv2OBi
+         g/yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=v/imzZD4h2wg5T3TmojPrsDRQ7BGfPFIf0wSK6Ur8vo=;
-        b=IiKE6utsUs1JxmFLCm11Oqlk4Yw1Wt3SJ+nPgIYI3LvzsruhjfoVYEg0MAdbGIyNSr
-         FNwSyEmUxjhSWMib7Ornbnn23KbxPo7v5cEh9ZVWrQ4yEbC+tpXhk9b+nKzcVrnzQvm+
-         pxi1Nox+AgvNoeEl76vjtt+9NhutKYuOFsli/o159sH+w8ovOrNMRRtBWtWSRCZxYiw4
-         Q7Z2FSMj91Tc0ufcxa1PwMXIIVeR3Gdx8OOvjfGtQnvbI1Mxajc5/9F+5+RF89MSnA/j
-         Uk2Eicm16KCRAzOnvSeM/siN1mHCNqLVyQEDQbaKdhS18CHCpxq6BEf4d6hvqqCVuMUn
-         JTlA==
-X-Gm-Message-State: APjAAAWhUIgbEI9bTDwacw3QjNrQmAEi49fAZUoPVOECen8pna760ujW
-        4x0sfyzVZ7Q1vHhDO+awpUIRZtIbiO4=
-X-Google-Smtp-Source: APXvYqxjI+nyUujduEYxIPv8M4KVmAG0X0073EyHH3j22DsPtxUYZeAx8v6+BPuX/pLcRiFXu9gfpg==
-X-Received: by 2002:adf:efc4:: with SMTP id i4mr2161387wrp.225.1582443117091;
-        Sat, 22 Feb 2020 23:31:57 -0800 (PST)
+        bh=4Uw1/fD7YPwtNQcffV1jDM31kknDn5olQFO06u9ASrw=;
+        b=hJ9JV5ltTp1Kp0ChQeNtJhud3MxkD6zND1ptlpZx8DA5MvqUyKK9WXUMdtUmwVUhcQ
+         n6GrYHQ/GPx6d7iPF9B/SulKMe26FDgH+XnHfQfze7hW2MNwOM1ckgT7MtnVpHX32yFT
+         uY6z23GlfBzO4f49XM5NTDrOqF2gwTQNp/k2ihgR93FMtbJj/gAxatKMYGWcVROua0K7
+         +wZsE8mfHLWfx4j7hLNU9JxgPdVJlJvHLzI1kZkRvPkAkzuwWIjp/NvL2NGho57AEnHM
+         V5zciCDTCm71W1kjhh5Ks59mfAHG3l67xjDxbA0ZZu+z39K+fW/zGxcSPo2DQge8xGLu
+         HFlA==
+X-Gm-Message-State: APjAAAVkWW+wefQpMRrOUVT3o3gvFTUGsQ3J7C6EjnTbseUZWbbJ/3w5
+        Up5BwMdrEoBdVarcrCKFT1P2KDO6h98=
+X-Google-Smtp-Source: APXvYqxoeVZ8j8HbJoi30s3Il2NS/FcCNkgsXCE3LNnLZbOwv9zd//Cs3pdNwMijYpCB4SwuC4MZ3A==
+X-Received: by 2002:a05:600c:2503:: with SMTP id d3mr14186539wma.84.1582443118278;
+        Sat, 22 Feb 2020 23:31:58 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id b10sm9246963wmj.48.2020.02.22.23.31.56
+        by smtp.gmail.com with ESMTPSA id j14sm12295376wrn.32.2020.02.22.23.31.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2020 23:31:56 -0800 (PST)
+        Sat, 22 Feb 2020 23:31:57 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 10/12] mlxsw: spectrum_acl: Make block arg const where appropriate
-Date:   Sun, 23 Feb 2020 08:31:42 +0100
-Message-Id: <20200223073144.28529-11-jiri@resnulli.us>
+Subject: [patch net-next 11/12] mlxsw: core: Remove priv from listener equality comparison
+Date:   Sun, 23 Feb 2020 08:31:43 +0100
+Message-Id: <20200223073144.28529-12-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200223073144.28529-1-jiri@resnulli.us>
 References: <20200223073144.28529-1-jiri@resnulli.us>
@@ -63,82 +63,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-There are couple of places where block pointer as a function argument
-can be const. So make those const.
+During packet receive, only the first matching RX listener
+in rx_listener_list is going to get the packet. So there is no
+meaning in registering two equal listeners with different privs.
+Remove priv from equality comparison and disable possibility
+of doing it.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h     |  7 ++++---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c | 10 ++++++----
- 2 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 34 +++++++++-------------
+ drivers/net/ethernet/mellanox/mlxsw/core.h |  6 ++--
+ 2 files changed, 15 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index bb02a0361bfd..9335f6a01b87 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -670,10 +670,11 @@ struct mlxsw_sp_acl_block {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 1ad959de909d..4b92ba574073 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1457,14 +1457,12 @@ static bool __is_rx_listener_equal(const struct mlxsw_rx_listener *rxl_a,
  
- struct mlxsw_afk *mlxsw_sp_acl_afk(struct mlxsw_sp_acl *acl);
- struct mlxsw_sp *mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block);
--unsigned int mlxsw_sp_acl_block_rule_count(struct mlxsw_sp_acl_block *block);
-+unsigned int
-+mlxsw_sp_acl_block_rule_count(const struct mlxsw_sp_acl_block *block);
- void mlxsw_sp_acl_block_disable_inc(struct mlxsw_sp_acl_block *block);
- void mlxsw_sp_acl_block_disable_dec(struct mlxsw_sp_acl_block *block);
--bool mlxsw_sp_acl_block_disabled(struct mlxsw_sp_acl_block *block);
-+bool mlxsw_sp_acl_block_disabled(const struct mlxsw_sp_acl_block *block);
- struct mlxsw_sp_acl_block *mlxsw_sp_acl_block_create(struct mlxsw_sp *mlxsw_sp,
- 						     struct net *net);
- void mlxsw_sp_acl_block_destroy(struct mlxsw_sp_acl_block *block);
-@@ -686,7 +687,7 @@ int mlxsw_sp_acl_block_unbind(struct mlxsw_sp *mlxsw_sp,
- 			      struct mlxsw_sp_acl_block *block,
- 			      struct mlxsw_sp_port *mlxsw_sp_port,
- 			      bool ingress);
--bool mlxsw_sp_acl_block_is_egress_bound(struct mlxsw_sp_acl_block *block);
-+bool mlxsw_sp_acl_block_is_egress_bound(const struct mlxsw_sp_acl_block *block);
- struct mlxsw_sp_acl_ruleset *
- mlxsw_sp_acl_ruleset_lookup(struct mlxsw_sp *mlxsw_sp,
- 			    struct mlxsw_sp_acl_block *block, u32 chain_index,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index 9368b93dab38..7b460c08f779 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -99,7 +99,8 @@ struct mlxsw_sp *mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block)
- 	return block->mlxsw_sp;
- }
- 
--unsigned int mlxsw_sp_acl_block_rule_count(struct mlxsw_sp_acl_block *block)
-+unsigned int
-+mlxsw_sp_acl_block_rule_count(const struct mlxsw_sp_acl_block *block)
+ static struct mlxsw_rx_listener_item *
+ __find_rx_listener_item(struct mlxsw_core *mlxsw_core,
+-			const struct mlxsw_rx_listener *rxl,
+-			void *priv)
++			const struct mlxsw_rx_listener *rxl)
  {
- 	return block ? block->rule_count : 0;
- }
-@@ -116,12 +117,12 @@ void mlxsw_sp_acl_block_disable_dec(struct mlxsw_sp_acl_block *block)
- 		block->disable_count--;
- }
+ 	struct mlxsw_rx_listener_item *rxl_item;
  
--bool mlxsw_sp_acl_block_disabled(struct mlxsw_sp_acl_block *block)
-+bool mlxsw_sp_acl_block_disabled(const struct mlxsw_sp_acl_block *block)
+ 	list_for_each_entry(rxl_item, &mlxsw_core->rx_listener_list, list) {
+-		if (__is_rx_listener_equal(&rxl_item->rxl, rxl) &&
+-		    rxl_item->priv == priv)
++		if (__is_rx_listener_equal(&rxl_item->rxl, rxl))
+ 			return rxl_item;
+ 	}
+ 	return NULL;
+@@ -1476,7 +1474,7 @@ int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
  {
- 	return block->disable_count;
- }
+ 	struct mlxsw_rx_listener_item *rxl_item;
  
--bool mlxsw_sp_acl_block_is_egress_bound(struct mlxsw_sp_acl_block *block)
-+bool mlxsw_sp_acl_block_is_egress_bound(const struct mlxsw_sp_acl_block *block)
+-	rxl_item = __find_rx_listener_item(mlxsw_core, rxl, priv);
++	rxl_item = __find_rx_listener_item(mlxsw_core, rxl);
+ 	if (rxl_item)
+ 		return -EEXIST;
+ 	rxl_item = kmalloc(sizeof(*rxl_item), GFP_KERNEL);
+@@ -1491,12 +1489,11 @@ int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
+ EXPORT_SYMBOL(mlxsw_core_rx_listener_register);
+ 
+ void mlxsw_core_rx_listener_unregister(struct mlxsw_core *mlxsw_core,
+-				       const struct mlxsw_rx_listener *rxl,
+-				       void *priv)
++				       const struct mlxsw_rx_listener *rxl)
  {
- 	struct mlxsw_sp_acl_block_binding *binding;
+ 	struct mlxsw_rx_listener_item *rxl_item;
  
-@@ -163,7 +164,8 @@ mlxsw_sp_acl_ruleset_unbind(struct mlxsw_sp *mlxsw_sp,
- 			    binding->mlxsw_sp_port, binding->ingress);
- }
+-	rxl_item = __find_rx_listener_item(mlxsw_core, rxl, priv);
++	rxl_item = __find_rx_listener_item(mlxsw_core, rxl);
+ 	if (!rxl_item)
+ 		return;
+ 	list_del_rcu(&rxl_item->list);
+@@ -1534,14 +1531,12 @@ static bool __is_event_listener_equal(const struct mlxsw_event_listener *el_a,
  
--static bool mlxsw_sp_acl_ruleset_block_bound(struct mlxsw_sp_acl_block *block)
-+static bool
-+mlxsw_sp_acl_ruleset_block_bound(const struct mlxsw_sp_acl_block *block)
+ static struct mlxsw_event_listener_item *
+ __find_event_listener_item(struct mlxsw_core *mlxsw_core,
+-			   const struct mlxsw_event_listener *el,
+-			   void *priv)
++			   const struct mlxsw_event_listener *el)
  {
- 	return block->ruleset_zero;
+ 	struct mlxsw_event_listener_item *el_item;
+ 
+ 	list_for_each_entry(el_item, &mlxsw_core->event_listener_list, list) {
+-		if (__is_event_listener_equal(&el_item->el, el) &&
+-		    el_item->priv == priv)
++		if (__is_event_listener_equal(&el_item->el, el))
+ 			return el_item;
+ 	}
+ 	return NULL;
+@@ -1559,7 +1554,7 @@ int mlxsw_core_event_listener_register(struct mlxsw_core *mlxsw_core,
+ 		.trap_id = el->trap_id,
+ 	};
+ 
+-	el_item = __find_event_listener_item(mlxsw_core, el, priv);
++	el_item = __find_event_listener_item(mlxsw_core, el);
+ 	if (el_item)
+ 		return -EEXIST;
+ 	el_item = kmalloc(sizeof(*el_item), GFP_KERNEL);
+@@ -1586,8 +1581,7 @@ int mlxsw_core_event_listener_register(struct mlxsw_core *mlxsw_core,
+ EXPORT_SYMBOL(mlxsw_core_event_listener_register);
+ 
+ void mlxsw_core_event_listener_unregister(struct mlxsw_core *mlxsw_core,
+-					  const struct mlxsw_event_listener *el,
+-					  void *priv)
++					  const struct mlxsw_event_listener *el)
+ {
+ 	struct mlxsw_event_listener_item *el_item;
+ 	const struct mlxsw_rx_listener rxl = {
+@@ -1596,10 +1590,10 @@ void mlxsw_core_event_listener_unregister(struct mlxsw_core *mlxsw_core,
+ 		.trap_id = el->trap_id,
+ 	};
+ 
+-	el_item = __find_event_listener_item(mlxsw_core, el, priv);
++	el_item = __find_event_listener_item(mlxsw_core, el);
+ 	if (!el_item)
+ 		return;
+-	mlxsw_core_rx_listener_unregister(mlxsw_core, &rxl, el_item);
++	mlxsw_core_rx_listener_unregister(mlxsw_core, &rxl);
+ 	list_del(&el_item->list);
+ 	kfree(el_item);
  }
+@@ -1625,12 +1619,10 @@ static void mlxsw_core_listener_unregister(struct mlxsw_core *mlxsw_core,
+ {
+ 	if (listener->is_event)
+ 		mlxsw_core_event_listener_unregister(mlxsw_core,
+-						     &listener->event_listener,
+-						     priv);
++						     &listener->event_listener);
+ 	else
+ 		mlxsw_core_rx_listener_unregister(mlxsw_core,
+-						  &listener->rx_listener,
+-						  priv);
++						  &listener->rx_listener);
+ }
+ 
+ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index c5890e35fd2f..5773e25ecf98 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -116,15 +116,13 @@ int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
+ 				    const struct mlxsw_rx_listener *rxl,
+ 				    void *priv);
+ void mlxsw_core_rx_listener_unregister(struct mlxsw_core *mlxsw_core,
+-				       const struct mlxsw_rx_listener *rxl,
+-				       void *priv);
++				       const struct mlxsw_rx_listener *rxl);
+ 
+ int mlxsw_core_event_listener_register(struct mlxsw_core *mlxsw_core,
+ 				       const struct mlxsw_event_listener *el,
+ 				       void *priv);
+ void mlxsw_core_event_listener_unregister(struct mlxsw_core *mlxsw_core,
+-					  const struct mlxsw_event_listener *el,
+-					  void *priv);
++					  const struct mlxsw_event_listener *el);
+ 
+ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
+ 			     const struct mlxsw_listener *listener,
 -- 
 2.21.1
 
