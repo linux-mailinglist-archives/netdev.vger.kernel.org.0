@@ -2,83 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 920D91699E4
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 21:19:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B698169A14
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 21:48:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgBWUTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 15:19:35 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56518 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgBWUTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 15:19:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=VKpyWUJ7gW4E+h1Y5//iHVzFJTXsAhZvji90FqZCHZ0=; b=Bo1BWpsMUXHWoFmIvPDEszdUn
-        JEq8dcLY9j8yHx6HijJLxLxZpPJk5BHAkvNiVKvr/FI1rx/ZJbi6VZrMknyTHObwNDOaJkjBhEomn
-        TMo/C1bocYASl49lrI5X9yrB+dXHSJCNtxtxepUOlkNDxqadtuByghMavnC/wxprEe1mZKfoNu0m7
-        /oJWPyGUvCrwpw3PM+7U5jCrMcqI52rw3oymW4MlBkii1/60Kf1ULuumqjx4zjAjs587EFHHuaRVH
-        0pO5uNDqE0DZchOll+pR5DPzkfNhxGgcUvjKR9GF42YvGaWiJ3Cp7A5O1hyIKUZpfWnm4jqnB6h+9
-        79ii2fnYQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44320)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j5xii-0006sy-HP; Sun, 23 Feb 2020 20:19:20 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j5xie-0005j2-CE; Sun, 23 Feb 2020 20:19:16 +0000
-Date:   Sun, 23 Feb 2020 20:19:16 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/2] net: mdio: add ipq8064 mdio driver
-Message-ID: <20200223201916.GO25745@shell.armlinux.org.uk>
-References: <20200222161629.1862-1-ansuelsmth@gmail.com>
- <4475595.vek7CkyBFf@debian64>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4475595.vek7CkyBFf@debian64>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727151AbgBWUr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 15:47:26 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35819 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726302AbgBWUrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 15:47:25 -0500
+Received: by mail-wr1-f66.google.com with SMTP id w12so8014974wrt.2;
+        Sun, 23 Feb 2020 12:47:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=dYvDaxnK7N8VHnHWyAqlhoUjikl2bpEp/fZaR4PA5yI=;
+        b=HQEpLHI94p2qFtS2zhPoDbgf7BLmlTYTOQZ9X++aii+fJNKVXufaaXWZcENMIABVNO
+         +dgyaNAnajZiAbt3mtZgqFqCvGtTNeLVDUI50bGIIFNa95moYomyNFbucadEID3U7D6S
+         7NbLPnqLvxIcCelF+e3RUJZMCAxVUIAUjdTCl22LHcx7efKshdE+ux1FpWoGoGHGC0dF
+         zeSvUpRinmdKFJJiVHVx3d8PqeRI0BStazS7M6QRnNV8/KQuL7utvWHPdkT7RwiKClWY
+         CC6V+2XLvMbWF5qyHBLb9KKYc1vGK3oXJWwwVMJWTG2zw/HDgf/cOTqxMgnbtCTAc+C9
+         y9/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dYvDaxnK7N8VHnHWyAqlhoUjikl2bpEp/fZaR4PA5yI=;
+        b=VXibfa/DaUhmMhX0s9CvsHNdOAUfTgWj4OJYiYk2l+yTxqwjnoZRM9b9OUWgoSYjs0
+         2goEQ+xviLf4HhVHIp2IO+BOP+R4IsFVrH8aHUjGcLSZfq4mXSz9CCl7hN/Ar59HmaOj
+         /qHdrcdE9grqNa3Bk4uL1DxWa+n8JTyvEY1pMqHqyDmc52CEm+L6gefB34G8UwcP1V2V
+         skALOi46vPYaw96zInGci4AIr1vdeBWVeU1xbxsbzOg1o1M5AEB2geKiA/FDwrhEIQd1
+         4VG+1+1LvdLIBYOP/G8e5WlArLk1h/0/naiogll4BTjWsaNGzf/wkk/myBeIs8p+sm5d
+         KJ6w==
+X-Gm-Message-State: APjAAAUmL6gpZ/WBu+TYaS02jip1TAuixXYiVtwtq/lCTlcqyDL2eOdN
+        pjgxgONZ+Ymeewme07aYg5U=
+X-Google-Smtp-Source: APXvYqzOIbfDcyi3z4DPafb4aEFDR4g29HJ/uXN0DH7JH7MyLQr8+ujIF3HOvRWBmOdNtfhzulHh/g==
+X-Received: by 2002:adf:dfc7:: with SMTP id q7mr8868933wrn.45.1582490843420;
+        Sun, 23 Feb 2020 12:47:23 -0800 (PST)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id z8sm14817927wrq.22.2020.02.23.12.47.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 12:47:22 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     shawnguo@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        michael@walle.cc, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 devicetree 0/6] DT bindings for Felix DSA switch on LS1028A
+Date:   Sun, 23 Feb 2020 22:47:10 +0200
+Message-Id: <20200223204716.26170-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 23, 2020 at 12:47:40AM +0100, Christian Lamparter wrote:
-> > +static int
-> > +ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
-> > +{
-> > +	struct ipq8064_mdio *priv = bus->priv;
-> > +	u32 miiaddr = MII_BUSY | MII_CLKRANGE_250_300M;
-> > +	u32 ret_val;
-> > +	int err;
-> > +
-> > +	/* Reject clause 45 */
-> > +	if (reg_offset & MII_ADDR_C45)
-> > +		return -EOPNOTSUPP;
-> Heh, C45 on IPQ806X? Ok, anyone know the hardware or is this some fancy
-> forward-thinking future-proofing?
+This series officializes the device tree bindings for the embedded
+Ethernet switch on NXP LS1028A (and for the reference design board).
+The driver has been in the tree since v5.4-rc6.
 
-Quite simply, the driver as written does not support C45, so it should
-reject it, rather than truncating the "reg_offset" and issuing C22
-cycles instead.
+It also performs some DT binding changes and minor cleanup, as per
+feedback received in v1 and v2:
+
+- I've changed the DT bindings for the internal ports from "gmii" to
+  "internal". This means changing the ENETC phy-mode as well, for
+  uniformity. So I would like the entire series to be merged through a
+  single tree, probably the devicetree one - something which David
+  Miller has aggreed to, here [0].
+- Disabled all Ethernet ports in the LS1028A DTSI by default, which
+  means not only the newly introduced switch ports, but also RGMII
+  standalone port 1.
+
+[0]: https://lkml.org/lkml/2020/2/19/973
+
+Claudiu Manoil (2):
+  arm64: dts: fsl: ls1028a: add node for Felix switch
+  arm64: dts: fsl: ls1028a: enable switch PHYs on RDB
+
+Vladimir Oltean (4):
+  arm64: dts: fsl: ls1028a: delete extraneous #interrupt-cells for ENETC
+    RCIE
+  arm64: dts: fsl: ls1028a: disable all enetc ports by default
+  net: dsa: felix: Use PHY_INTERFACE_MODE_INTERNAL instead of GMII
+  dt-bindings: net: dsa: ocelot: document the vsc9959 core
+
+ .../devicetree/bindings/net/dsa/ocelot.txt    | 116 ++++++++++++++++++
+ .../boot/dts/freescale/fsl-ls1028a-qds.dts    |   1 +
+ .../boot/dts/freescale/fsl-ls1028a-rdb.dts    |  61 ++++++++-
+ .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  89 +++++++++++++-
+ drivers/net/dsa/ocelot/felix.c                |   3 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |   3 +-
+ 6 files changed, 265 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/ocelot.txt
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.17.1
+
