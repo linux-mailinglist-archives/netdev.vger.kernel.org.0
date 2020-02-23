@@ -2,127 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D2D1696E2
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 09:54:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 100A21696E9
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 10:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbgBWIyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 03:54:55 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:25805 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbgBWIyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 03:54:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1582448094; x=1613984094;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=SNDZqfsE1FeOVBV0ERULQsptio2vQqgGGVSaYknQC7I=;
-  b=I9Ql0ZMeqSatLEDs7KwmG7K8tTNe46aMRgLetl6Xs2me8Q7i5auIB2G6
-   5Cy21v3rur0uetHWAWfRp4L9rGryDI9lG/VNzMgyornwyq9KJ2kM+TqdH
-   Ec/XSTbjdK54S0pBROwUHLskVVhRgi0dBvVkfgdxL1cmagldlgdv0880o
-   g=;
-IronPort-SDR: c82jz6Qgt65E+lfYqeJbLjpDsmSinWdIX10ZVssmhRNvSmzcoZRoRiQJ4BOJIgHNSzHvp4o97p
- i/RMoRJeU3zA==
-X-IronPort-AV: E=Sophos;i="5.70,475,1574121600"; 
-   d="scan'208";a="18472173"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-715bee71.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 23 Feb 2020 08:54:42 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-715bee71.us-east-1.amazon.com (Postfix) with ESMTPS id 9D671A2872;
-        Sun, 23 Feb 2020 08:54:40 +0000 (UTC)
-Received: from EX13D19EUB003.ant.amazon.com (10.43.166.69) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Sun, 23 Feb 2020 08:54:39 +0000
-Received: from 8c85908914bf.ant.amazon.com (10.43.160.8) by
- EX13D19EUB003.ant.amazon.com (10.43.166.69) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 23 Feb 2020 08:54:34 +0000
-Subject: Re: [PATCH net-next 11/16] net/amazon: Ensure that driver version is
- aligned to the linux kernel
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Zorik Machulsky <zorik@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Alexander Matushevsky <matua@amazon.com>,
-        Sameeh Jubran <sameehj@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>
-References: <20200220145855.255704-1-leon@kernel.org>
- <20200220145855.255704-12-leon@kernel.org>
-From:   Gal Pressman <galpress@amazon.com>
-Message-ID: <fb459df1-a1f7-964c-74a9-2f8e7a4ba26b@amazon.com>
-Date:   Sun, 23 Feb 2020 10:54:29 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1726592AbgBWJAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 04:00:03 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:40264 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgBWJAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 04:00:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=RNB2J+mEHhCNl0xuNBvvHTB/2tWC60YI0L4tSd1QRB0=; b=GPUn5ur3nKI8vkZxD9zlfePIvg
+        nYQ2HGRdonyN9ziEioizfW8K80tgKNBfd+diHIFZUweMFwqc1qBhNnrvWnDQYRQRweDIGMArB4v2R
+        v6ePauHBnkFdZOFIc5sohI/3kse56yFR8eovN5pOAhfbC54SgEifNm83aPwU30wOWH4s0LI3By36A
+        n/n8EW/0d9bB7jm+3kwbbRMXlGYQCtzmwyDKZ39c29i6Bt//Z2koUTUB0xvv3Jgx9bQp+y/cMWTIY
+        vkp5MjPItSg6CGw8DTU5zxNqBviQ0LONpxkFW9gmzxIHd5u6CP8jMAOjEmpa4vjcYQ8K0BbK3fo2Y
+        7r/GfDXA==;
+Received: from [80.156.29.194] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1j5n7F-0007ZW-MS; Sun, 23 Feb 2020 08:59:57 +0000
+Received: from mchehab by bombadil.infradead.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@bombadil.infradead.org>)
+        id 1j5n7D-001RYm-3q; Sun, 23 Feb 2020 09:59:55 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Piotr Sroka <piotrs@cadence.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: [PATCH] docs: dt: fix several broken doc references
+Date:   Sun, 23 Feb 2020 09:59:53 +0100
+Message-Id: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200220145855.255704-12-leon@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.43.160.8]
-X-ClientProxiedBy: EX13D14UWC002.ant.amazon.com (10.43.162.214) To
- EX13D19EUB003.ant.amazon.com (10.43.166.69)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/02/2020 16:58, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> 
-> Upstream drivers are managed inside global repository and released all
-> together, this ensure that driver version is the same as linux kernel,
-> so update amazon drivers to properly reflect it.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> ---
->  drivers/net/ethernet/amazon/ena/ena_ethtool.c |  1 -
->  drivers/net/ethernet/amazon/ena/ena_netdev.c  | 17 ++---------------
->  drivers/net/ethernet/amazon/ena/ena_netdev.h  | 11 -----------
->  3 files changed, 2 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> index ced1d577b62a..19262f37db84 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> @@ -404,7 +404,6 @@ static void ena_get_drvinfo(struct net_device *dev,
->  	struct ena_adapter *adapter = netdev_priv(dev);
-> 
->  	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
-> -	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
->  	strlcpy(info->bus_info, pci_name(adapter->pdev),
->  		sizeof(info->bus_info));
->  }
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 0b2fd96b93d7..4faf81c456d8 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -49,12 +49,9 @@
->  #include <linux/bpf_trace.h>
->  #include "ena_pci_id_tbl.h"
-> 
-> -static char version[] = DEVICE_NAME " v" DRV_MODULE_VERSION "\n";
-> -
->  MODULE_AUTHOR("Amazon.com, Inc. or its affiliates");
->  MODULE_DESCRIPTION(DEVICE_NAME);
->  MODULE_LICENSE("GPL");
-> -MODULE_VERSION(DRV_MODULE_VERSION);
-> 
->  /* Time in jiffies before concluding the transmitter is hung. */
->  #define TX_TIMEOUT  (5 * HZ)
-> @@ -3093,11 +3090,7 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev,
->  	host_info->os_dist = 0;
->  	strncpy(host_info->os_dist_str, utsname()->release,
->  		sizeof(host_info->os_dist_str) - 1);
-> -	host_info->driver_version =
-> -		(DRV_MODULE_VER_MAJOR) |
-> -		(DRV_MODULE_VER_MINOR << ENA_ADMIN_HOST_INFO_MINOR_SHIFT) |
-> -		(DRV_MODULE_VER_SUBMINOR << ENA_ADMIN_HOST_INFO_SUB_MINOR_SHIFT) |
-> -		("K"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
-> +	host_info->driver_version = LINUX_VERSION_CODE;
+There are several DT doc references that require manual fixes.
+I found 3 cases fixed on this patch:
 
-Hey Leon,
-I'm not sure it's safe to replace this one, adding ENA people..
+	- directory named "binding/" instead of "bindings/";
+	- .txt to .yaml renames;
+	- file renames (still on txt format);
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ .../devicetree/bindings/mtd/cadence-nand-controller.txt       | 2 +-
+ .../devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt      | 2 +-
+ Documentation/devicetree/bindings/sound/st,stm32-sai.txt      | 2 +-
+ Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt  | 2 +-
+ Documentation/devicetree/bindings/spi/st,stm32-spi.yaml       | 2 +-
+ MAINTAINERS                                                   | 4 ++--
+ .../devicetree/bindings/net/wireless/siliabs,wfx.txt          | 2 +-
+ 7 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mtd/cadence-nand-controller.txt b/Documentation/devicetree/bindings/mtd/cadence-nand-controller.txt
+index f3893c4d3c6a..d2eada5044b2 100644
+--- a/Documentation/devicetree/bindings/mtd/cadence-nand-controller.txt
++++ b/Documentation/devicetree/bindings/mtd/cadence-nand-controller.txt
+@@ -27,7 +27,7 @@ Required properties of NAND chips:
+   - reg: shall contain the native Chip Select ids from 0 to max supported by
+     the cadence nand flash controller
+ 
+-See Documentation/devicetree/bindings/mtd/nand.txt for more details on
++See Documentation/devicetree/bindings/mtd/nand-controller.yaml for more details on
+ generic bindings.
+ 
+ Example:
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt b/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
+index 48a7f916c5e4..88b57b0ca1f4 100644
+--- a/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
++++ b/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
+@@ -45,7 +45,7 @@ Optional properties:
+   switch queue
+ 
+ - resets: a single phandle and reset identifier pair. See
+-  Documentation/devicetree/binding/reset/reset.txt for details.
++  Documentation/devicetree/bindings/reset/reset.txt for details.
+ 
+ - reset-names: If the "reset" property is specified, this property should have
+   the value "switch" to denote the switch reset line.
+diff --git a/Documentation/devicetree/bindings/sound/st,stm32-sai.txt b/Documentation/devicetree/bindings/sound/st,stm32-sai.txt
+index 944743dd9212..c42b91e525fa 100644
+--- a/Documentation/devicetree/bindings/sound/st,stm32-sai.txt
++++ b/Documentation/devicetree/bindings/sound/st,stm32-sai.txt
+@@ -36,7 +36,7 @@ SAI subnodes required properties:
+   - clock-names: Must contain "sai_ck".
+ 	Must also contain "MCLK", if SAI shares a master clock,
+ 	with a SAI set as MCLK clock provider.
+-  - dmas: see Documentation/devicetree/bindings/dma/stm32-dma.txt
++  - dmas: see Documentation/devicetree/bindings/dma/st,stm32-dma.yaml
+   - dma-names: identifier string for each DMA request line
+ 	"tx": if sai sub-block is configured as playback DAI
+ 	"rx": if sai sub-block is configured as capture DAI
+diff --git a/Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt b/Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt
+index 33826f2459fa..ca9101777c44 100644
+--- a/Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt
++++ b/Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt
+@@ -10,7 +10,7 @@ Required properties:
+   - clock-names: must contain "kclk"
+   - interrupts: cpu DAI interrupt line
+   - dmas: DMA specifiers for audio data DMA and iec control flow DMA
+-    See STM32 DMA bindings, Documentation/devicetree/bindings/dma/stm32-dma.txt
++    See STM32 DMA bindings, Documentation/devicetree/bindings/dma/st,stm32-dma.yaml
+   - dma-names: two dmas have to be defined, "rx" and "rx-ctrl"
+ 
+ Optional properties:
+diff --git a/Documentation/devicetree/bindings/spi/st,stm32-spi.yaml b/Documentation/devicetree/bindings/spi/st,stm32-spi.yaml
+index f0d979664f07..e49ecbf715ba 100644
+--- a/Documentation/devicetree/bindings/spi/st,stm32-spi.yaml
++++ b/Documentation/devicetree/bindings/spi/st,stm32-spi.yaml
+@@ -49,7 +49,7 @@ properties:
+   dmas:
+     description: |
+       DMA specifiers for tx and rx dma. DMA fifo mode must be used. See
+-      the STM32 DMA bindings Documentation/devicetree/bindings/dma/stm32-dma.txt.
++      the STM32 DMA bindings Documentation/devicetree/bindings/dma/st,stm32-dma.yaml.
+     items:
+       - description: rx DMA channel
+       - description: tx DMA channel
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d81701ea3336..6b30a58bd77b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4480,7 +4480,7 @@ L:	linux-media@vger.kernel.org
+ T:	git git://linuxtv.org/media_tree.git
+ S:	Maintained
+ F:	drivers/media/platform/sunxi/sun6i-csi/
+-F:	Documentation/devicetree/bindings/media/sun6i-csi.txt
++F:	Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+ 
+ CW1200 WLAN driver
+ M:	Solomon Peachy <pizza@shaftnet.org>
+@@ -15955,7 +15955,7 @@ F:	drivers/*/stm32-*timer*
+ F:	drivers/pwm/pwm-stm32*
+ F:	include/linux/*/stm32-*tim*
+ F:	Documentation/ABI/testing/*timer-stm32
+-F:	Documentation/devicetree/bindings/*/stm32-*timer*
++F:	Documentation/devicetree/bindings/*/*stm32-*timer*
+ F:	Documentation/devicetree/bindings/pwm/pwm-stm32*
+ 
+ STMMAC ETHERNET DRIVER
+diff --git a/drivers/staging/wfx/Documentation/devicetree/bindings/net/wireless/siliabs,wfx.txt b/drivers/staging/wfx/Documentation/devicetree/bindings/net/wireless/siliabs,wfx.txt
+index ffec79c14786..17db67559f5e 100644
+--- a/drivers/staging/wfx/Documentation/devicetree/bindings/net/wireless/siliabs,wfx.txt
++++ b/drivers/staging/wfx/Documentation/devicetree/bindings/net/wireless/siliabs,wfx.txt
+@@ -94,5 +94,5 @@ Some properties are recognized either by SPI and SDIO versions:
+    Must contains 64 hexadecimal digits. Not supported in current version.
+ 
+ WFx driver also supports `mac-address` and `local-mac-address` as described in
+-Documentation/devicetree/binding/net/ethernet.txt
++Documentation/devicetree/bindings/net/ethernet.txt
+ 
+-- 
+2.24.1
+
