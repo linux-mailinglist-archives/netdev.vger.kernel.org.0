@@ -2,159 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A8F169A2A
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 22:09:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70724169A49
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 22:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727027AbgBWVG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 16:06:58 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:33733 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgBWVG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 16:06:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1582492017; x=1614028017;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=rKs4hdy8HchQxtjEJyVCGVAU1D/Z9zl5JGO+nG2cS4U=;
-  b=mZnnnnHckGqFFImiRu7ECTS15NmZBMimOrFkXEzDMsCAaLKeT05+9Ori
-   kHZa9mWFNBoTDQWZXv3e5hj+urjgOKO7Q5ycnhRwH50cBLdhh/smr6MjA
-   GYPkwl/1+v6P6s3PotrsrCWZWdRbjY6RGntxh0vVcmB4YG3wYBx0i8LPm
-   o=;
-IronPort-SDR: ey3VGhbF9XcF4DIMbK0h5ZpclVIRR0NBICYLVYzKX4FyYFrHzuF9aP0LhxuLc9akr1xNjONCRk
- RY1+LKG21mQQ==
-X-IronPort-AV: E=Sophos;i="5.70,477,1574121600"; 
-   d="scan'208";a="17780433"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 23 Feb 2020 21:06:55 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 37CDDA2165;
-        Sun, 23 Feb 2020 21:06:53 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 23 Feb 2020 21:06:53 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.108) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 23 Feb 2020 21:06:49 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kuniyu@amazon.co.jp>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
-        <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
-        <osa-contribution-log@amazon.com>, <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH net-next 0/3] Improve bind(addr, 0) behaviour.
-Date:   Mon, 24 Feb 2020 06:06:45 +0900
-Message-ID: <20200223210645.34584-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20200222010749.75690-1-kuniyu@amazon.co.jp>
-References: <20200222010749.75690-1-kuniyu@amazon.co.jp>
+        id S1727064AbgBWVjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 16:39:31 -0500
+Received: from correo.us.es ([193.147.175.20]:51212 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726302AbgBWVjb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Feb 2020 16:39:31 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id A281FEBAC7
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 22:39:22 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 94597DA8E6
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 22:39:22 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 8962CDA736; Sun, 23 Feb 2020 22:39:22 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id ABC69DA801;
+        Sun, 23 Feb 2020 22:39:20 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 23 Feb 2020 22:39:20 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 8417142EF4E0;
+        Sun, 23 Feb 2020 22:39:20 +0100 (CET)
+Date:   Sun, 23 Feb 2020 22:39:25 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Oz Shlomo <ozsh@mellanox.com>, Majd Dibbiny <majd@mellanox.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: flowtable: Use nf_flow_offload_tuple
+ for stats as well
+Message-ID: <20200223213925.kfcrgdorlkh6uzoj@salvia>
+References: <1580400918-9632-1-git-send-email-paulb@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.108]
-X-ClientProxiedBy: EX13d09UWA002.ant.amazon.com (10.43.160.186) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1580400918-9632-1-git-send-email-paulb@mellanox.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Date:   Sat, 22 Feb 2020 10:07:49 +0900
-> I also tested with two users. I am sorry about having tested in python,
-> I will rewrite it in C later.
-> 
-> Both of user-a and user-b can get the same port, but one of them failed to
-> call listen().
+On Thu, Jan 30, 2020 at 06:15:18PM +0200, Paul Blakey wrote:
+> This patch doesn't change any functionality.
 
-I wrote a test in C and the result was the same.
-If all of the sockets bound to the same port have SO_REUSEADDR and
-SO_REUSEPORT enabled, two users can bind(), but can only one user listen().
-
-If you would think these patches are safe, I'll respin the patches with
-the correct conditon of the 3rd patch.
-
-Thanks.
-
-=====
-#include <arpa/inet.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-
-int main(void) {
-	struct sockaddr_in local_addr;
-	uid_t euid[2] = {1001, 1002};
-	int fd[2], error, i, port;
-	int len = sizeof(local_addr);
-	int reuseaddr = 1, reuseport = 1;
-	char ip_str[16];
-
-	for (i = 0; i < 2; i++) {
-		if (seteuid(euid[i]) != 0)
-			goto error;
-
-		fd[i] = socket(AF_INET, SOCK_STREAM, 0);
-
-		setsockopt(fd[i], SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(int));
-		setsockopt(fd[i], SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(int));
-
-		local_addr.sin_family = AF_INET;
-		local_addr.sin_addr.s_addr = inet_addr("10.0.2.15");
-		local_addr.sin_port = 0;
-
-		error = bind(fd[i], (struct sockaddr *)&local_addr, len);
-
-		memset(&local_addr, 0, sizeof(local_addr));
-		getsockname(fd[i], (struct sockaddr *)&local_addr, &len);
-		inet_ntop(AF_INET, &local_addr.sin_addr, ip_str, sizeof(ip_str));
-		port = ntohs(local_addr.sin_port);
-
-		printf("euid: %d\tbound to %s:%u\n", euid[i], ip_str, port);
-
-		if (error != 0)
-			goto error;
-
-		if (seteuid(0) != 0)
-			goto error;
-	}
-
-	for (i = 0; i < 2; i++) {
-		if (seteuid(euid[i]) != 0)
-			goto error;
-
-		error = listen(fd[i], 5);
-
-		if (error < 0)
-			printf("euid: %d\tlisten failed\n", euid[i]);
-		else
-			printf("euid: %d\tlisten succeeded\n", euid[i]);
-
-		if (seteuid(0) != 0)
-			goto error;		
-	}
-
-	return 0;
-error:
-	printf("error: %d, %s\n", errno, strerror(errno));
-	return -1;
-}
-=====
-
-===result===
-# id user-a
-uid=1001(user-a) gid=1001(user-a) groups=1001(user-a)
-# id user-b
-uid=1002(user-b) gid=1002(user-b) groups=1002(user-b)
-# sysctl -w net.ipv4.ip_local_port_range="32768 32768"
-[   30.060036] ip_local_port_range: prefer different parity for start/end values.
-net.ipv4.ip_local_port_range = 32768 32768
-# ./seteuid 
-euid: 1001	bound to 10.0.2.15:32768
-euid: 1002	bound to 10.0.2.15:32768
-euid: 1001	listen succeeded
-euid: 1002	listen failed
-============
+Applied, thanks.
