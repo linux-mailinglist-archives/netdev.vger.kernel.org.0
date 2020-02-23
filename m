@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C5D16951F
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:36:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A8516951C
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 03:36:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728438AbgBWCfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Feb 2020 21:35:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50998 "EHLO mail.kernel.org"
+        id S1728382AbgBWCfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Feb 2020 21:35:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727959AbgBWCWH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Feb 2020 21:22:07 -0500
+        id S1728014AbgBWCWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Feb 2020 21:22:09 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 403F0208C3;
-        Sun, 23 Feb 2020 02:22:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 714B720707;
+        Sun, 23 Feb 2020 02:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582424526;
-        bh=kAmeCMn1hi+tsY9/6rwz8rAJRjGcHO2DvZ5YLO9aTio=;
+        s=default; t=1582424529;
+        bh=d3tCGsaHvyFa1WvXXX3zicSLN3cuLKdXuBZl6y3jaP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eu6WcxfZ4FRxnR/GKfdhxVNp0cQO/mnU45XzJpFd92zvBOYOPrl/UcuWLzrEQo/KX
-         6zxa4pA/txPTWcELUzZ68fNDqUZcLz4jdiJbQYjdpKP+3JLLqxESGLt7TKWcxvcklM
-         8bHRRr8avxbSALRwJY9jsoAu1gwuW290TpIt/uFQ=
+        b=JW1l77BE1GFhCj9xPwvCvl28VmhdOZA0/chhTEcKGDH30aggFPpEKl6WloxPqys/q
+         SoV4uIdTHI09+20TBLDcBXEY7OQG/C+ZvcVGVRRjGIJVmsfEKj4DV9r/pRwLWITemG
+         9H+XxgL6Wd3d/uMwaFeysqtAI+AiQ7/j5G5qr/Xw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sameeh Jubran <sameehj@amazon.com>,
+Cc:     Firo Yang <firo.yang@suse.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 39/58] net: ena: ethtool: use correct value for crc32 hash
-Date:   Sat, 22 Feb 2020 21:21:00 -0500
-Message-Id: <20200223022119.707-39-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 41/58] enic: prevent waking up stopped tx queues over watchdog reset
+Date:   Sat, 22 Feb 2020 21:21:02 -0500
+Message-Id: <20200223022119.707-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200223022119.707-1-sashal@kernel.org>
 References: <20200223022119.707-1-sashal@kernel.org>
@@ -43,43 +43,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+From: Firo Yang <firo.yang@suse.com>
 
-[ Upstream commit 886d2089276e40d460731765083a741c5c762461 ]
+[ Upstream commit 0f90522591fd09dd201065c53ebefdfe3c6b55cb ]
 
-Up till kernel 4.11 there was no enum defined for crc32 hash in ethtool,
-thus the xor enum was used for supporting crc32.
+Recent months, our customer reported several kernel crashes all
+preceding with following message:
+NETDEV WATCHDOG: eth2 (enic): transmit queue 0 timed out
+Error message of one of those crashes:
+BUG: unable to handle kernel paging request at ffffffffa007e090
 
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+After analyzing severl vmcores, I found that most of crashes are
+caused by memory corruption. And all the corrupted memory areas
+are overwritten by data of network packets. Moreover, I also found
+that the tx queues were enabled over watchdog reset.
+
+After going through the source code, I found that in enic_stop(),
+the tx queues stopped by netif_tx_disable() could be woken up over
+a small time window between netif_tx_disable() and the
+napi_disable() by the following code path:
+napi_poll->
+  enic_poll_msix_wq->
+     vnic_cq_service->
+        enic_wq_service->
+           netif_wake_subqueue(enic->netdev, q_number)->
+              test_and_clear_bit(__QUEUE_STATE_DRV_XOFF, &txq->state)
+In turn, upper netowrk stack could queue skb to ENIC NIC though
+enic_hard_start_xmit(). And this might introduce some race condition.
+
+Our customer comfirmed that this kind of kernel crash doesn't occur over
+90 days since they applied this patch.
+
+Signed-off-by: Firo Yang <firo.yang@suse.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cisco/enic/enic_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 610a7c63e1742..4ad69066e7846 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -693,7 +693,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
- 		func = ETH_RSS_HASH_TOP;
- 		break;
- 	case ENA_ADMIN_CRC32:
--		func = ETH_RSS_HASH_XOR;
-+		func = ETH_RSS_HASH_CRC32;
- 		break;
- 	default:
- 		netif_err(adapter, drv, netdev,
-@@ -739,7 +739,7 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	case ETH_RSS_HASH_TOP:
- 		func = ENA_ADMIN_TOEPLITZ;
- 		break;
--	case ETH_RSS_HASH_XOR:
-+	case ETH_RSS_HASH_CRC32:
- 		func = ENA_ADMIN_CRC32;
- 		break;
- 	default:
+diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
+index acb2856936d20..6e2ab10ad2e6f 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_main.c
++++ b/drivers/net/ethernet/cisco/enic/enic_main.c
+@@ -2013,10 +2013,10 @@ static int enic_stop(struct net_device *netdev)
+ 		napi_disable(&enic->napi[i]);
+ 
+ 	netif_carrier_off(netdev);
+-	netif_tx_disable(netdev);
+ 	if (vnic_dev_get_intr_mode(enic->vdev) == VNIC_DEV_INTR_MODE_MSIX)
+ 		for (i = 0; i < enic->wq_count; i++)
+ 			napi_disable(&enic->napi[enic_cq_wq(enic, i)]);
++	netif_tx_disable(netdev);
+ 
+ 	if (!enic_is_dynamic(enic) && !enic_is_sriov_vf(enic))
+ 		enic_dev_del_station_addr(enic);
 -- 
 2.20.1
 
