@@ -2,74 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1E41697E7
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 14:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B46B169817
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 15:33:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbgBWNlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 08:41:04 -0500
-Received: from canardo.mork.no ([148.122.252.1]:51357 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726208AbgBWNlD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Feb 2020 08:41:03 -0500
-Received: from miraculix.mork.no (ti0136a430-4331.bb.online.no [80.213.107.248])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 01NDeudj024858
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sun, 23 Feb 2020 14:40:56 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1582465256; bh=B1r3vsmiyMC3FCbqyArVqXmIUybokSxxlEfgZ5SJV2A=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=M8Z2LYITKJ8JLHYmQEDQT5rgkQgAVKkjXkg5ol3KPbdGNVDV2NAKrVhZ7Yny1CQd7
-         ssbCDK3Kp1G8Mz6ltJAPSXCCCf4Dz2Q+P6RGSZXhWIo5IhfLVxWSdJtvc79YFTXg5c
-         vX9nlINbO/5swgCy8Xhv4amXjaj31U6L008jFjeQ=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1j5rV5-00075G-Be; Sun, 23 Feb 2020 14:40:51 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: restore mtu min/max values after raw_ip switch
-Organization: m
-References: <20200221131705.26053-1-dnlplm@gmail.com>
-Date:   Sun, 23 Feb 2020 14:40:51 +0100
-In-Reply-To: <20200221131705.26053-1-dnlplm@gmail.com> (Daniele Palmas's
-        message of "Fri, 21 Feb 2020 14:17:05 +0100")
-Message-ID: <87eeul5sm4.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.1 at canardo
-X-Virus-Status: Clean
+        id S1727072AbgBWOdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 09:33:39 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37123 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726490AbgBWOdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 09:33:38 -0500
+Received: by mail-pg1-f195.google.com with SMTP id z12so3634809pgl.4;
+        Sun, 23 Feb 2020 06:33:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=69Yk8P/qFbghht4lzUdI2eecmMcH8qqFHN3OCd/EKwg=;
+        b=Tzd5nWYAGM+SEbceVpNuxrtzJNBo6OWJtbzTWSSb8B6JOQDE7q1k4sST0MYxVD2+xs
+         2iK7yNmaAAJtAzhb1bgTlS1WZ4XjfBFpo3NlirNP4b0eRhFmiCw1NxM4QfbzBmSqlZJk
+         Nb0HQa24AlWfm19Z0ZNXNxlXn4yHYtK0VCGI+gDXvCsvN25LlU0CiYt8OawGL8tWGWmT
+         M7XkNiOBJMZ2MQ84PWQPVccL31kGSP1XWGwUHPD+wiVQt9FzCkCaujuYVdGiM3r4q0ea
+         B9Ywz1Kd2d2Q1ub9oZJDGE2XXcwTXdv5KNtSN+iXmrFEYuY0VFFFLCQU6qGRlaoLSvgE
+         4HAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=69Yk8P/qFbghht4lzUdI2eecmMcH8qqFHN3OCd/EKwg=;
+        b=S/lSxKBKN4AdSf9gH1zgGt629mnIBGyf7fPu+tyFdPMLpuGLrDJcGz6xfsfyBKxO/L
+         LS3FAzdQ2cpPh8jDBej+hyalI4K1/ZeZeX+qg895ptGu3giLS6q/9P95o9V0O2IAbLuD
+         prm4PhQK5uUQvkUyApVlWyHgZZDHU4sfJQ4anMc7xXwKUHlwSHYyrm2kk104hMemgbZD
+         2QUyfRxwe35HoE0Ax/nU8HGpIr4XUUMA62OuscdUk1ISttKtZaiJsBCleFV4Am26kLwT
+         vxaJla8RTfSrNVJPE7pKq4s1sHOI9eufNq1/w30fMN1izwCZjz9dH7vjryvjuX9DWyUT
+         7S6w==
+X-Gm-Message-State: APjAAAXhRwX9Eta+EG26aCaXHqROEV5mIUImfwmb89NDiJ5cf4k9AJJM
+        EdeXJ0FywbyR9x1lNXmIIg==
+X-Google-Smtp-Source: APXvYqyuMpfNWCcshVyT4hEGm5SAscjVG1tHFK7wvKEg/Dned1vNx6tuY0HjyvEZJtwbMpUFvuJAVg==
+X-Received: by 2002:a62:7945:: with SMTP id u66mr47940144pfc.82.1582468418248;
+        Sun, 23 Feb 2020 06:33:38 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee1:fa2c:caf:386d:b081:f71d])
+        by smtp.gmail.com with ESMTPSA id y2sm9576879pff.139.2020.02.23.06.33.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 06:33:37 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     johannes@sipsolutions.net, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        frextrite@gmail.com,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] net: mac80211: rx.c: Avoid RCU list traversal under mutex
+Date:   Sun, 23 Feb 2020 20:03:02 +0530
+Message-Id: <20200223143302.15390-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniele Palmas <dnlplm@gmail.com> writes:
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-> usbnet creates network interfaces with min_mtu =3D 0 and
-> max_mtu =3D ETH_MAX_MTU.
->
-> These values are not modified by qmi_wwan when the network interface
-> is created initially, allowing, for example, to set mtu greater than 1500.
->
-> When a raw_ip switch is done (raw_ip set to 'Y', then set to 'N') the mtu
-> values for the network interface are set through ether_setup, with
-> min_mtu =3D ETH_MIN_MTU and max_mtu =3D ETH_DATA_LEN, not allowing anymor=
-e to
-> set mtu greater than 1500 (error: mtu greater than device maximum).
->
-> The patch restores the original min/max mtu values set by usbnet after a
-> raw_ip switch.
->
-> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+local->sta_mtx is held in __ieee80211_check_fast_rx_iface().
+No need to use list_for_each_entry_rcu() as it also requires
+a cond argument to avoid false lockdep warnings when not used in
+RCU read-side section (with CONFIG_PROVE_RCU_LIST).
+Therefore use list_for_each_entry();
 
-Great! I tried to look up the origin of this bug, and it seems to be a
-hard-to-spot fallout from the 'centralized MTU checking'.  Not easy to
-see the hidden connection in usbnet.c and eth.c. Thanks for finding and
-fixing it!
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ net/mac80211/rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This should probably go to stable as well?
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 0e05ff037672..0ba98ad9bc85 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4114,7 +4114,7 @@ void __ieee80211_check_fast_rx_iface(struct ieee80211_sub_if_data *sdata)
+ 
+ 	lockdep_assert_held(&local->sta_mtx);
+ 
+-	list_for_each_entry_rcu(sta, &local->sta_list, list) {
++	list_for_each_entry(sta, &local->sta_list, list) {
+ 		if (sdata != sta->sdata &&
+ 		    (!sta->sdata->bss || sta->sdata->bss != sdata->bss))
+ 			continue;
+-- 
+2.17.1
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
