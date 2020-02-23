@@ -2,255 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B021169760
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 12:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 574441697BF
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 14:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727355AbgBWLpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 06:45:45 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47926 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727227AbgBWLpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 06:45:43 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 23 Feb 2020 13:45:36 +0200
-Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 01NBjZEZ006598;
-        Sun, 23 Feb 2020 13:45:36 +0200
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next 6/6] net/sched: act_ct: Software offload of established flows
-Date:   Sun, 23 Feb 2020 13:45:07 +0200
-Message-Id: <1582458307-17067-7-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
-References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
+        id S1726592AbgBWNZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 08:25:00 -0500
+Received: from mail-lj1-f177.google.com ([209.85.208.177]:35298 "EHLO
+        mail-lj1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbgBWNZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 08:25:00 -0500
+Received: by mail-lj1-f177.google.com with SMTP id q8so7057831ljb.2
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 05:24:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Kd+cJgeFqcMOy4ak2OVFmkgg/wkZeLcdrbvrkc+sT4M=;
+        b=lBeCcYZfnQakTyxOz4gY7LAUSI1XV1OPsXh6JUcCWsgM/zBy/zf0wuKE+HPbMXGuQI
+         C958sr2K7aWkySCvVrxYOu4BJfdIrGWAM4Tr0CXX2ujEwjcDqPj1GdjJihB4izH4lODy
+         yR+4Cjijx+Y5HaTk2K96zRiD2JzpKu0ZDg07OvuZBDin6XjYiXXL8ZWAUakSK70x7nI/
+         TnpKnswq8LsYQy9Hg2O/MqyjMcQaVqBD5RN4nRX9iiTJOZyl8tgu3MQ7m5t9R/gZYI1j
+         m4btLy1HYXRtoKln1Ku3eEvfJtdrdaSBK8tXLqot3C34Mg/B47QMaKx/WACFwgvCVG+X
+         ZNoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Kd+cJgeFqcMOy4ak2OVFmkgg/wkZeLcdrbvrkc+sT4M=;
+        b=MM1jfhE9UcdA3taIernt1E/Yixno4z8n9rK6naQv/1stVjSY2aygqmiTLjZ12MPfQt
+         0UT1trvMtDWxiJv/lhaRnzXu2Gn7ECrPhUU5hV1puoIqy2npAdFBxhKYeGxRHY9256Ao
+         4JIHwirSMnXtUNgg8bQmvfwEisEY8lGuWpWrVKRjHOOuXt0BBdH2lhXSVW6RWDqI8sAB
+         Z3MrSWhqjuSmKU5DeuuE1ML8ebcFewSEEk0xAxhqulqPCtEvqr0pN8v4q5E1U+Ql3/u3
+         sW0CjAx0F3/odImyUAUxdkMSpsnn7XlWCJO/bC9e3EGj5DxkmpPnZEbeLE3gi4Ra8IqK
+         Mxgg==
+X-Gm-Message-State: APjAAAWZoiEDYKJh39q6abDQo+YFlXrKhDO0a3GULGzKdhiPG/GcMX3D
+        UQPbXwnNHqh3TMatNHj6GMCTeLaU
+X-Google-Smtp-Source: APXvYqz3EHfI7sXBf7Wgm6WWfvdbnzxzp9RESDZyE+qK9LH0oTzrvQXbpMlu8vyJj7U9LqPQqxbGHw==
+X-Received: by 2002:a2e:a553:: with SMTP id e19mr27417762ljn.64.1582464296796;
+        Sun, 23 Feb 2020 05:24:56 -0800 (PST)
+Received: from [192.168.1.10] (hst-227-49.splius.lt. [62.80.227.49])
+        by smtp.gmail.com with ESMTPSA id c27sm4413839lfh.62.2020.02.23.05.24.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Feb 2020 05:24:56 -0800 (PST)
+Subject: Re: About r8169 regression 5.4
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Salvatore Bonaccorso <carnil@debian.org>
+Cc:     netdev@vger.kernel.org
+References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
+ <9e865e39-0406-d5e0-5022-9978ef4ec6ac@gmail.com>
+ <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
+ <20200215161247.GA179065@eldamar.local>
+ <269f588f-78f2-4acf-06d3-eeefaa5d8e0f@gmail.com>
+ <3ad8a76d-5da1-eb62-689e-44ea0534907f@gmail.com>
+ <74c2d5db-3396-96c4-cbb3-744046c55c46@gmail.com>
+ <81548409-2fd3-9645-eeaf-ab8f7789b676@gmail.com>
+ <e0c43868-8201-fe46-9e8b-5e38c2611340@gmail.com>
+ <badbb4f9-9fd2-3f7b-b7eb-92bd960769d9@gmail.com>
+ <d2b5d904-61e1-6c14-f137-d4d5a803dcf6@gmail.com>
+ <356588e8-b46a-e0bb-e05b-89af81824dfa@gmail.com>
+ <86a87b0e-0a5b-46c7-50f5-5395a0de4a52@gmail.com>
+ <11c9c70f-5192-9f02-c622-f6e03db7dfb2@gmail.com>
+From:   Vincas Dargis <vindrg@gmail.com>
+Message-ID: <49a18ff2-a156-f2af-fa70-ca9657382a73@gmail.com>
+Date:   Sun, 23 Feb 2020 15:24:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <11c9c70f-5192-9f02-c622-f6e03db7dfb2@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offload nf conntrack processing by looking up the 5-tuple in the
-zone's flow table.
+2020-02-21 23:01, Heiner Kallweit rašė:
+> OK, thanks anyway for testing. I forwarded your testing results with Realtek's r8168 driver to Realtek,
+> let's see whether they can identify the root cause of the problem.
 
-The nf conntrack module will process the packets until a connection is
-in established state. Once in established state, the ct state pointer
-(nf_conn) will be restored on the skb from a successful ft lookup.
-
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- net/sched/act_ct.c | 163 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 160 insertions(+), 3 deletions(-)
-
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index b2bc885..3592e24 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -211,6 +211,157 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
- 	tcf_ct_flow_table_add(ct_ft, ct, tcp);
- }
- 
-+static bool
-+tcf_ct_flow_table_fill_tuple_ipv4(struct sk_buff *skb,
-+				  struct flow_offload_tuple *tuple)
-+{
-+	struct flow_ports *ports;
-+	unsigned int thoff;
-+	struct iphdr *iph;
-+
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return false;
-+
-+	iph = ip_hdr(skb);
-+	thoff = iph->ihl * 4;
-+
-+	if (ip_is_fragment(iph) ||
-+	    unlikely(thoff != sizeof(struct iphdr)))
-+		return false;
-+
-+	if (iph->protocol != IPPROTO_TCP &&
-+	    iph->protocol != IPPROTO_UDP)
-+		return false;
-+
-+	if (iph->ttl <= 1)
-+		return false;
-+
-+	thoff = iph->ihl * 4;
-+	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
-+		return false;
-+
-+	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
-+
-+	tuple->src_v4.s_addr = iph->saddr;
-+	tuple->dst_v4.s_addr = iph->daddr;
-+	tuple->src_port = ports->source;
-+	tuple->dst_port = ports->dest;
-+	tuple->l3proto = AF_INET;
-+	tuple->l4proto = iph->protocol;
-+
-+	return true;
-+}
-+
-+static bool
-+tcf_ct_flow_table_fill_tuple_ipv6(struct sk_buff *skb,
-+				  struct flow_offload_tuple *tuple)
-+{
-+	struct flow_ports *ports;
-+	struct ipv6hdr *ip6h;
-+	unsigned int thoff;
-+
-+	if (!pskb_may_pull(skb, sizeof(*ip6h)))
-+		return false;
-+
-+	ip6h = ipv6_hdr(skb);
-+
-+	if (ip6h->nexthdr != IPPROTO_TCP &&
-+	    ip6h->nexthdr != IPPROTO_UDP)
-+		return false;
-+
-+	if (ip6h->hop_limit <= 1)
-+		return false;
-+
-+	thoff = sizeof(*ip6h);
-+	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
-+		return false;
-+
-+	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
-+
-+	tuple->src_v6 = ip6h->saddr;
-+	tuple->dst_v6 = ip6h->daddr;
-+	tuple->src_port = ports->source;
-+	tuple->dst_port = ports->dest;
-+	tuple->l3proto = AF_INET6;
-+	tuple->l4proto = ip6h->nexthdr;
-+
-+	return true;
-+}
-+
-+static bool tcf_ct_flow_table_check_tcp(struct flow_offload *flow, int proto,
-+					struct sk_buff *skb,
-+					unsigned int thoff)
-+{
-+	struct tcphdr *tcph;
-+
-+	if (proto != IPPROTO_TCP)
-+		return true;
-+
-+	if (!pskb_may_pull(skb, thoff + sizeof(*tcph)))
-+		return false;
-+
-+	tcph = (void *)(skb_network_header(skb) + thoff);
-+	if (unlikely(tcph->fin || tcph->rst)) {
-+		flow_offload_teardown(flow);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
-+				     struct sk_buff *skb,
-+				     u8 family)
-+{
-+	struct nf_flowtable *nf_ft = &p->ct_ft->nf_ft;
-+	struct flow_offload_tuple_rhash *tuplehash;
-+	struct flow_offload_tuple tuple = {};
-+	enum ip_conntrack_info ctinfo;
-+	struct flow_offload *flow;
-+	struct nf_conn *ct;
-+	unsigned int thoff;
-+	u8 dir;
-+
-+	/* Previously seen or loopback */
-+	ct = nf_ct_get(skb, &ctinfo);
-+	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
-+		return false;
-+
-+	switch (family) {
-+	case NFPROTO_IPV4:
-+		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple))
-+			return false;
-+		break;
-+	case NFPROTO_IPV6:
-+		if (!tcf_ct_flow_table_fill_tuple_ipv6(skb, &tuple))
-+			return false;
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	tuplehash = flow_offload_lookup(nf_ft, &tuple);
-+	if (!tuplehash)
-+		return false;
-+
-+	dir = tuplehash->tuple.dir;
-+	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
-+	ct = flow->ct;
-+
-+	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
-+						    IP_CT_ESTABLISHED_REPLY;
-+
-+	thoff = ip_hdr(skb)->ihl * 4;
-+	if (!tcf_ct_flow_table_check_tcp(flow, ip_hdr(skb)->protocol, skb,
-+					 thoff))
-+		return false;
-+
-+	nf_conntrack_get(&ct->ct_general);
-+	nf_ct_set(skb, ct, ctinfo);
-+
-+	return true;
-+}
-+
- static int tcf_ct_flow_tables_init(void)
- {
- 	return rhashtable_init(&zones_ht, &zones_params);
-@@ -579,6 +730,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	struct nf_hook_state state;
- 	int nh_ofs, err, retval;
- 	struct tcf_ct_params *p;
-+	bool skip_add = false;
- 	struct nf_conn *ct;
- 	u8 family;
- 
-@@ -628,6 +780,11 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	 */
- 	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
- 	if (!cached) {
-+		if (!commit && tcf_ct_flow_table_lookup(p, skb, family)) {
-+			skip_add = true;
-+			goto do_nat;
-+		}
-+
- 		/* Associate skb with specified zone. */
- 		if (tmpl) {
- 			ct = nf_ct_get(skb, &ctinfo);
-@@ -645,6 +802,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 			goto out_push;
- 	}
- 
-+do_nat:
- 	ct = nf_ct_get(skb, &ctinfo);
- 	if (!ct)
- 		goto out_push;
-@@ -662,9 +820,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 		 * even if the connection is already confirmed.
- 		 */
- 		nf_conntrack_confirm(skb);
--	}
--
--	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
-+	} else if (!skip_add)
-+		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
- 
- out_push:
- 	skb_push_rcsum(skb, nh_ofs);
--- 
-1.8.3.1
-
+Just a sec.. did I had to apply that single-line patch AND use Realtek's driver (r8168-dkms package in Debian)? I assumed not..?
