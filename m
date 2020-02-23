@@ -2,294 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B388D1696C3
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 09:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B524C1696CB
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 09:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725980AbgBWIPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 03:15:02 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:41023 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726236AbgBWIPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 03:15:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582445700;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PwdD0natVuJxLWn8vGJsJeHYLsiMkR1Di0XtxpWtDAY=;
-        b=gMjr2qHJawm2O2Q4JIL0FIQ/Ed38MC1t8z1qqxn2K873ytfx2YCJLU8IkCSNoybJSmvesa
-        X0z3ubJMxGO1teNVCfK+61cOpj3/wNKT7D6W1c5tKguqTT6Gx/Qy1yoqlTZxUpCLezz2wo
-        nBVjM0QcKfbK7c6zRz1wPwzeO4FJoA8=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-310-UTdNjuJiMzyJYhzKe2mFxw-1; Sun, 23 Feb 2020 03:14:51 -0500
-X-MC-Unique: UTdNjuJiMzyJYhzKe2mFxw-1
-Received: by mail-wr1-f71.google.com with SMTP id v17so3630307wrm.17
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 00:14:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PwdD0natVuJxLWn8vGJsJeHYLsiMkR1Di0XtxpWtDAY=;
-        b=D96x7HbdIfxktrKyQoJmuU8ulkbxls0HN69GczeKq3GF5VRAniNdmNGV1AAgVLm4R7
-         pOmIT8G5HzEs2IgHzgxAlUa6qPnmkFEIU0I5knsMOxbcXljwdlgGdDaR176tbM43cHHu
-         fOhviUrTbEdYe49Fa5CwUNgoNw0lzP25T02PW6mexlXbPMk+07eO94eYi3176vQAF7A5
-         nw6QqQQpG0ea2YJZIuT+d8DWI12jNcX41htcBmPMNQBUvwMHTRpu8mwCgikNPrARiVke
-         WlrBFdtOa8au6GAflqYwxHkz3eGWQzJ4CJt4PUqgmAAwwHWtg4hmtZUzSn89OrfHJ5+e
-         J3sg==
-X-Gm-Message-State: APjAAAUSvXV4uSdYYLKlkXohGCLszPLE9gO1RbIjfpuuJJuEScoSH/VJ
-        lLWPZsmRtORL3l1vVuK5Q9Hg/vJvik2sKVRitLqRwEEitmclr9RJMaaScYxkpTyaCPIlwIMdMpD
-        5BiM/cD2GTLGS3Vh2
-X-Received: by 2002:adf:fa05:: with SMTP id m5mr8951894wrr.352.1582445689540;
-        Sun, 23 Feb 2020 00:14:49 -0800 (PST)
-X-Google-Smtp-Source: APXvYqw4eV7SBMcOtXhDZvtzF7yFJB1onfszcmg2n527AAqxUWr/dFnENHw2O+XbecHUjY91BorlJg==
-X-Received: by 2002:adf:fa05:: with SMTP id m5mr8951854wrr.352.1582445689169;
-        Sun, 23 Feb 2020 00:14:49 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id t10sm11858301wmi.40.2020.02.23.00.14.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 00:14:48 -0800 (PST)
-Date:   Sun, 23 Feb 2020 03:14:45 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Cc:     Jason Wang <jasowang@redhat.com>, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
-Subject: Re: [PATCH bpf-next v5] virtio_net: add XDP meta data support
-Message-ID: <20200223031314-mutt-send-email-mst@kernel.org>
-References: <0c5eaba2-dd5a-fc3f-0e8f-154f7ad52881@redhat.com>
- <20200220085549.269795-1-yuya.kusakabe@gmail.com>
- <5bf11065-6b85-8253-8548-683c01c98ac1@redhat.com>
- <8fafd23d-4c80-539d-9f74-bc5cda0d5575@gmail.com>
+        id S1726661AbgBWISx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 03:18:53 -0500
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:47801 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgBWISx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 03:18:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1582445933; x=1613981933;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lJpZC5KAlrc4p42H46vyeZRIHSsfwTTCCbgXBQtq3zc=;
+  b=dN8jZcoeUzWSeVCchC5ZVatLAhpCbhj+U2Y+/uydFdcid5d34cFhswjs
+   AYSpjeMorTDbKTKGiyYtXnitRHo8uLlk9ILN+PGvVBvhzClOP6PZigXVw
+   FbDozNMuNij7SIkzAaNVS6ZlaIkdCfPiYLH/Fb928yf2/8IaKzqsvEhDm
+   I=;
+IronPort-SDR: 45bi3yPsTHE2T47scwqq36EDV/qoBzhf0NvDWHNacA7cqqAW5I8icyK+mPCCX8zCNUpucdnMjE
+ F+E7wzeTX8ZQ==
+X-IronPort-AV: E=Sophos;i="5.70,475,1574121600"; 
+   d="scan'208";a="18174763"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 23 Feb 2020 08:18:40 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com (Postfix) with ESMTPS id D615FA220B;
+        Sun, 23 Feb 2020 08:18:38 +0000 (UTC)
+Received: from EX13D08EUB003.ant.amazon.com (10.43.166.117) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Sun, 23 Feb 2020 08:18:38 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D08EUB003.ant.amazon.com (10.43.166.117) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 23 Feb 2020 08:18:37 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1367.000;
+ Sun, 23 Feb 2020 08:18:37 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     Colin King <colin.king@canonical.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: ena: ethtool: remove redundant non-zero check on rc
+Thread-Topic: [PATCH] net: ena: ethtool: remove redundant non-zero check on rc
+Thread-Index: AQHV6Q6eGTNDoYnNxkWpPBJDZgkWjKgob4sQ
+Date:   Sun, 23 Feb 2020 08:18:13 +0000
+Deferred-Delivery: Sun, 23 Feb 2020 08:17:16 +0000
+Message-ID: <0e46020a1433409a8daccb829902280b@EX13D11EUB003.ant.amazon.com>
+References: <20200221232653.33134-1-colin.king@canonical.com>
+In-Reply-To: <20200221232653.33134-1-colin.king@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.118]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8fafd23d-4c80-539d-9f74-bc5cda0d5575@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 05:36:08PM +0900, Yuya Kusakabe wrote:
-> On 2/21/20 1:23 PM, Jason Wang wrote:
-> > 
-> > On 2020/2/20 下午4:55, Yuya Kusakabe wrote:
-> >> Implement support for transferring XDP meta data into skb for
-> >> virtio_net driver; before calling into the program, xdp.data_meta points
-> >> to xdp.data, where on program return with pass verdict, we call
-> >> into skb_metadata_set().
-> >>
-> >> Tested with the script at
-> >> https://github.com/higebu/virtio_net-xdp-metadata-test.
-> >>
-> >> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-> > 
-> > 
-> > I'm not sure this is correct since virtio-net claims to not support metadata by calling xdp_set_data_meta_invalid()?
-> 
-> virtio_net doesn't support by calling xdp_set_data_meta_invalid() for now.
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/drivers/net/virtio_net.c?id=e42da4c62abb547d9c9138e0e7fcd1f36057b5e8#n686
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/drivers/net/virtio_net.c?id=e42da4c62abb547d9c9138e0e7fcd1f36057b5e8#n842
-> 
-> And xdp_set_data_meta_invalid() are added by de8f3a83b0a0.
-> 
-> $ git blame ./drivers/net/virtio_net.c | grep xdp_set_data_meta_invalid
-> de8f3a83b0a0f (Daniel Borkmann           2017-09-25 02:25:51 +0200  686)                xdp_set_data_meta_invalid(&xdp);
-> de8f3a83b0a0f (Daniel Borkmann           2017-09-25 02:25:51 +0200  842)                xdp_set_data_meta_invalid(&xdp);
-> 
-> So I added `Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")` to the comment.
-> 
-> > 
-> > 
-> >> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
-> >> ---
-> >> v5:
-> >>   - page_to_skb(): copy vnet header if hdr_valid without checking metasize.
-> >>   - receive_small(): do not copy vnet header if xdp_prog is availavle.
-> >>   - __virtnet_xdp_xmit_one(): remove the xdp_set_data_meta_invalid().
-> >>   - improve comments.
-> >> v4:
-> >>   - improve commit message
-> >> v3:
-> >>   - fix preserve the vnet header in receive_small().
-> >> v2:
-> >>   - keep copy untouched in page_to_skb().
-> >>   - preserve the vnet header in receive_small().
-> >>   - fix indentation.
-> >> ---
-> >>   drivers/net/virtio_net.c | 54 ++++++++++++++++++++++++----------------
-> >>   1 file changed, 33 insertions(+), 21 deletions(-)
-> >>
-> >> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> >> index 2fe7a3188282..4ea0ae60c000 100644
-> >> --- a/drivers/net/virtio_net.c
-> >> +++ b/drivers/net/virtio_net.c
-> >> @@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> >>                      struct receive_queue *rq,
-> >>                      struct page *page, unsigned int offset,
-> >>                      unsigned int len, unsigned int truesize,
-> >> -                   bool hdr_valid)
-> >> +                   bool hdr_valid, unsigned int metasize)
-> >>   {
-> >>       struct sk_buff *skb;
-> >>       struct virtio_net_hdr_mrg_rxbuf *hdr;
-> >> @@ -393,6 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> >>       else
-> >>           hdr_padded_len = sizeof(struct padded_vnet_hdr);
-> >>   +    /* hdr_valid means no XDP, so we can copy the vnet header */
-> >>       if (hdr_valid)
-> >>           memcpy(hdr, p, hdr_len);
-> >>   @@ -405,6 +406,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> >>           copy = skb_tailroom(skb);
-> >>       skb_put_data(skb, p, copy);
-> >>   +    if (metasize) {
-> >> +        __skb_pull(skb, metasize);
-> >> +        skb_metadata_set(skb, metasize);
-> >> +    }
-> >> +
-> >>       len -= copy;
-> >>       offset += copy;
-> >>   @@ -450,10 +456,6 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
-> >>       struct virtio_net_hdr_mrg_rxbuf *hdr;
-> >>       int err;
-> >>   -    /* virtqueue want to use data area in-front of packet */
-> >> -    if (unlikely(xdpf->metasize > 0))
-> >> -        return -EOPNOTSUPP;
-> >> -
-> >>       if (unlikely(xdpf->headroom < vi->hdr_len))
-> >>           return -EOVERFLOW;
-> >>   @@ -644,6 +646,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
-> >>       unsigned int delta = 0;
-> >>       struct page *xdp_page;
-> >>       int err;
-> >> +    unsigned int metasize = 0;
-> >>         len -= vi->hdr_len;
-> >>       stats->bytes += len;
-> >> @@ -683,8 +686,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
-> >>             xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
-> >>           xdp.data = xdp.data_hard_start + xdp_headroom;
-> >> -        xdp_set_data_meta_invalid(&xdp);
-> >>           xdp.data_end = xdp.data + len;
-> >> +        xdp.data_meta = xdp.data;
-> >>           xdp.rxq = &rq->xdp_rxq;
-> >>           orig_data = xdp.data;
-> >>           act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> >> @@ -695,6 +698,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
-> >>               /* Recalculate length in case bpf program changed it */
-> >>               delta = orig_data - xdp.data;
-> >>               len = xdp.data_end - xdp.data;
-> >> +            metasize = xdp.data - xdp.data_meta;
-> >>               break;
-> >>           case XDP_TX:
-> >>               stats->xdp_tx++;
-> >> @@ -735,11 +739,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
-> >>       }
-> >>       skb_reserve(skb, headroom - delta);
-> >>       skb_put(skb, len);
-> >> -    if (!delta) {
-> >> +    if (!xdp_prog) {
-> >>           buf += header_offset;
-> >>           memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
-> >>       } /* keep zeroed vnet hdr since packet was changed by bpf */
-> > 
-> > 
-> > I prefer to make this an independent patch and cc stable.
-> > 
-> > Other looks good.
-> > 
-> > Thanks
-> 
-> I see. So I need to revert to delta from xdp_prog?
-> 
-> Thank you.
-
-So maybe send a 2 patch series: 1/2 is this chunk with the appropriate
-description. Actually for netdev David prefers that people do not
-cc stable directly, just include Fixes tag and mention in the
-commit log it's also needed for stable. Patch 2/2 is the rest
-handling metadata.
-
-> > 
-> >>   +    if (metasize)
-> >> +        skb_metadata_set(skb, metasize);
-> >> +
-> >>   err:
-> >>       return skb;
-> >>   @@ -760,8 +767,8 @@ static struct sk_buff *receive_big(struct net_device *dev,
-> >>                      struct virtnet_rq_stats *stats)
-> >>   {
-> >>       struct page *page = buf;
-> >> -    struct sk_buff *skb = page_to_skb(vi, rq, page, 0, len,
-> >> -                      PAGE_SIZE, true);
-> >> +    struct sk_buff *skb =
-> >> +        page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0);
-> >>         stats->bytes += len - vi->hdr_len;
-> >>       if (unlikely(!skb))
-> >> @@ -793,6 +800,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >>       unsigned int truesize;
-> >>       unsigned int headroom = mergeable_ctx_to_headroom(ctx);
-> >>       int err;
-> >> +    unsigned int metasize = 0;
-> >>         head_skb = NULL;
-> >>       stats->bytes += len - vi->hdr_len;
-> >> @@ -839,8 +847,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >>           data = page_address(xdp_page) + offset;
-> >>           xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
-> >>           xdp.data = data + vi->hdr_len;
-> >> -        xdp_set_data_meta_invalid(&xdp);
-> >>           xdp.data_end = xdp.data + (len - vi->hdr_len);
-> >> +        xdp.data_meta = xdp.data;
-> >>           xdp.rxq = &rq->xdp_rxq;
-> >>             act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> >> @@ -848,24 +856,27 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >>             switch (act) {
-> >>           case XDP_PASS:
-> >> +            metasize = xdp.data - xdp.data_meta;
-> >> +
-> >>               /* recalculate offset to account for any header
-> >> -             * adjustments. Note other cases do not build an
-> >> -             * skb and avoid using offset
-> >> +             * adjustments and minus the metasize to copy the
-> >> +             * metadata in page_to_skb(). Note other cases do not
-> >> +             * build an skb and avoid using offset
-> >>                */
-> >> -            offset = xdp.data -
-> >> -                    page_address(xdp_page) - vi->hdr_len;
-> >> +            offset = xdp.data - page_address(xdp_page) -
-> >> +                 vi->hdr_len - metasize;
-> >>   -            /* recalculate len if xdp.data or xdp.data_end were
-> >> -             * adjusted
-> >> +            /* recalculate len if xdp.data, xdp.data_end or
-> >> +             * xdp.data_meta were adjusted
-> >>                */
-> >> -            len = xdp.data_end - xdp.data + vi->hdr_len;
-> >> +            len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
-> >>               /* We can only create skb based on xdp_page. */
-> >>               if (unlikely(xdp_page != page)) {
-> >>                   rcu_read_unlock();
-> >>                   put_page(page);
-> >> -                head_skb = page_to_skb(vi, rq, xdp_page,
-> >> -                               offset, len,
-> >> -                               PAGE_SIZE, false);
-> >> +                head_skb = page_to_skb(vi, rq, xdp_page, offset,
-> >> +                               len, PAGE_SIZE, false,
-> >> +                               metasize);
-> >>                   return head_skb;
-> >>               }
-> >>               break;
-> >> @@ -921,7 +932,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >>           goto err_skb;
-> >>       }
-> >>   -    head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog);
-> >> +    head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
-> >> +                   metasize);
-> >>       curr_skb = head_skb;
-> >>         if (unlikely(!curr_skb))
-> > 
-
+QWNrLCBUaGFua3MNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBDb2xp
+biBLaW5nIDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+DQo+IFNlbnQ6IFNhdHVyZGF5LCBGZWJy
+dWFyeSAyMiwgMjAyMCAxOjI3IEFNDQo+IFRvOiBCZWxnYXphbCwgTmV0YW5lbCA8bmV0YW5lbEBh
+bWF6b24uY29tPjsgS2l5YW5vdnNraSwgQXJ0aHVyDQo+IDxha2l5YW5vQGFtYXpvbi5jb20+OyBU
+emFsaWssIEd1eSA8Z3R6YWxpa0BhbWF6b24uY29tPjsgQnNoYXJhLCBTYWVlZA0KPiA8c2FlZWRi
+QGFtYXpvbi5jb20+OyBNYWNodWxza3ksIFpvcmlrIDx6b3Jpa0BhbWF6b24uY29tPjsgRGF2aWQg
+UyAuDQo+IE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEp1YnJhbiwgU2FtaWggPHNhbWVl
+aGpAYW1hem9uLmNvbT47DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGtlcm5lbC1q
+YW5pdG9yc0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4g
+U3ViamVjdDogW1BBVENIXSBuZXQ6IGVuYTogZXRodG9vbDogcmVtb3ZlIHJlZHVuZGFudCBub24t
+emVybyBjaGVjayBvbiByYw0KPiANCj4gRnJvbTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdA
+Y2Fub25pY2FsLmNvbT4NCj4gDQo+IFRoZSBub24temVybyBjaGVjayBvbiByYyBpcyByZWR1bmRh
+bnQgYXMgYSBwcmV2aW91cyBub24temVybyBjaGVjayBvbiByYyB3aWxsDQo+IGFsd2F5cyByZXR1
+cm4gYW5kIHRoZSBzZWNvbmQgY2hlY2sgaXMgbmV2ZXIgcmVhY2hlZCwgaGVuY2UgaXQgaXMgcmVk
+dW5kYW50DQo+IGFuZCBjYW4gYmUgcmVtb3ZlZC4gIEFsc28gcmVtb3ZlIGEgYmxhbmsgbGluZS4N
+Cj4gDQo+IEFkZHJlc3Nlcy1Db3Zlcml0eTogKCJMb2dpY2FsbHkgZGVhZCBjb2RlIikNCj4gU2ln
+bmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCj4g
+LS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9hbWF6b24vZW5hL2VuYV9ldGh0b29sLmMgfCA0
+IC0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX2V0aHRvb2wuYw0KPiBiL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX2V0aHRvb2wuYw0KPiBpbmRleCBjZWQx
+ZDU3N2I2MmEuLjFlMzg5MzAzNTNmMiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvYW1hem9uL2VuYS9lbmFfZXRodG9vbC5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L2FtYXpvbi9lbmEvZW5hX2V0aHRvb2wuYw0KPiBAQCAtNjc0LDcgKzY3NCw2IEBAIHN0YXRpYyBp
+bnQgZW5hX2dldF9yeGZoKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRkZXYsDQo+IHUzMiAqaW5kaXIs
+IHU4ICprZXksDQo+ICAJICogc3VwcG9ydHMgZ2V0dGluZy9zZXR0aW5nIHRoZSBoYXNoIGZ1bmN0
+aW9uLg0KPiAgCSAqLw0KPiAgCXJjID0gZW5hX2NvbV9nZXRfaGFzaF9mdW5jdGlvbihhZGFwdGVy
+LT5lbmFfZGV2LCAmZW5hX2Z1bmMsDQo+IGtleSk7DQo+IC0NCj4gIAlpZiAocmMpIHsNCj4gIAkJ
+aWYgKHJjID09IC1FT1BOT1RTVVBQKSB7DQo+ICAJCQlrZXkgPSBOVUxMOw0KPiBAQCAtNjg1LDkg
+KzY4NCw2IEBAIHN0YXRpYyBpbnQgZW5hX2dldF9yeGZoKHN0cnVjdCBuZXRfZGV2aWNlICpuZXRk
+ZXYsDQo+IHUzMiAqaW5kaXIsIHU4ICprZXksDQo+ICAJCXJldHVybiByYzsNCj4gIAl9DQo+IA0K
+PiAtCWlmIChyYykNCj4gLQkJcmV0dXJuIHJjOw0KPiAtDQo+ICAJc3dpdGNoIChlbmFfZnVuYykg
+ew0KPiAgCWNhc2UgRU5BX0FETUlOX1RPRVBMSVRaOg0KPiAgCQlmdW5jID0gRVRIX1JTU19IQVNI
+X1RPUDsNCj4gLS0NCj4gMi4yNS4wDQoNCg==
