@@ -2,171 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9297C169A0A
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 21:47:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A8F169A2A
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 22:09:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727275AbgBWUri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 15:47:38 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54749 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727238AbgBWUrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 15:47:33 -0500
-Received: by mail-wm1-f67.google.com with SMTP id z12so3809615wmi.4;
-        Sun, 23 Feb 2020 12:47:31 -0800 (PST)
+        id S1727027AbgBWVG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 16:06:58 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:33733 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726302AbgBWVG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 16:06:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nlEamf3Bb75llXd1Mhw/lOhQJYbINGDlRtFSVygDuDU=;
-        b=gon4KZhzPKlehdd0aPjjxxDnjn7tFM/owUqv/JfmkGPd6K0fNde3p7dUyOImYCLoh+
-         c6nmG5tT4DpwnqSgHS75lzDybHm/p1TshgeQOt0cjnQZLav6IcfBjjw9A+Gz6D9Z0W6A
-         bSaLikGpID0JGmsAvtl2atuaOZPZCkRe4GJxT27Eg+eUL84g53pmb8+d5nMTy+pRsQBw
-         u6zOTnAysaALtKAZINy2yup3zcdwu+0QT8jeGEU9/m/qu1CFLn0j64iMwsXKuioQBMR9
-         97+Z8nZuOjaLC2SuIfOoCW2tTK/imCMEvZ/Fute2lvMU7bxKGxEhE60gpM12cHMZ5SgP
-         NV4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=nlEamf3Bb75llXd1Mhw/lOhQJYbINGDlRtFSVygDuDU=;
-        b=cJ9Z0mAW8AsNmOdVmvh8hTOn6m50O66Kau+miiYhffWqI4sx2r48+5ayCGrsIP73Et
-         d3b2ltVqVFOXqVEq64ahkigOCgL6vTghgbon9feLewROupusiXe0UZuPmuMRxWSMoz3j
-         lca6T3R6Xzy9bPsF/QCw9aiNCuJHqH4WL4jCHqE2fMXCMVVEw9Ws0eKEd0nuhvzpgnaq
-         FkuGzHOXno54bySXO0q95knXdmu0CV897OA7v4XKNFrcYcRTqV0EfSruZyxdW7FTyOt7
-         TiAmQw97vVUX45XURWnp+MYMsPBLyDw4Bzh924oHYsu43AdGBbn0sSELI4hDI58P7XYI
-         qzDg==
-X-Gm-Message-State: APjAAAUX++RTXfT0gmgz4I5FKyxRmJ7xZzFNmHtVRPkWr73d/fHEqglN
-        btpJD3LdwQqwEHfhXtdusbM=
-X-Google-Smtp-Source: APXvYqz/cf1PBssq3BPpoP9LiziohZ60js7tzpnfBEbSAsDu30hCL3wVYhOkSpBgx2WVvxjB0CNi1g==
-X-Received: by 2002:a1c:4c8:: with SMTP id 191mr17418212wme.148.1582490850929;
-        Sun, 23 Feb 2020 12:47:30 -0800 (PST)
-Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id z8sm14817927wrq.22.2020.02.23.12.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 12:47:30 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     shawnguo@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        michael@walle.cc, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 devicetree 6/6] arm64: dts: fsl: ls1028a: enable switch PHYs on RDB
-Date:   Sun, 23 Feb 2020 22:47:16 +0200
-Message-Id: <20200223204716.26170-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200223204716.26170-1-olteanv@gmail.com>
-References: <20200223204716.26170-1-olteanv@gmail.com>
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1582492017; x=1614028017;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=rKs4hdy8HchQxtjEJyVCGVAU1D/Z9zl5JGO+nG2cS4U=;
+  b=mZnnnnHckGqFFImiRu7ECTS15NmZBMimOrFkXEzDMsCAaLKeT05+9Ori
+   kHZa9mWFNBoTDQWZXv3e5hj+urjgOKO7Q5ycnhRwH50cBLdhh/smr6MjA
+   GYPkwl/1+v6P6s3PotrsrCWZWdRbjY6RGntxh0vVcmB4YG3wYBx0i8LPm
+   o=;
+IronPort-SDR: ey3VGhbF9XcF4DIMbK0h5ZpclVIRR0NBICYLVYzKX4FyYFrHzuF9aP0LhxuLc9akr1xNjONCRk
+ RY1+LKG21mQQ==
+X-IronPort-AV: E=Sophos;i="5.70,477,1574121600"; 
+   d="scan'208";a="17780433"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 23 Feb 2020 21:06:55 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 37CDDA2165;
+        Sun, 23 Feb 2020 21:06:53 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 23 Feb 2020 21:06:53 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.108) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 23 Feb 2020 21:06:49 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
+        <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
+        <osa-contribution-log@amazon.com>, <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH net-next 0/3] Improve bind(addr, 0) behaviour.
+Date:   Mon, 24 Feb 2020 06:06:45 +0900
+Message-ID: <20200223210645.34584-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20200222010749.75690-1-kuniyu@amazon.co.jp>
+References: <20200222010749.75690-1-kuniyu@amazon.co.jp>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.108]
+X-ClientProxiedBy: EX13d09UWA002.ant.amazon.com (10.43.160.186) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Claudiu Manoil <claudiu.manoil@nxp.com>
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Date:   Sat, 22 Feb 2020 10:07:49 +0900
+> I also tested with two users. I am sorry about having tested in python,
+> I will rewrite it in C later.
+> 
+> Both of user-a and user-b can get the same port, but one of them failed to
+> call listen().
 
-Link the switch PHY nodes to the central MDIO controller PCIe endpoint
-node on LS1028A (implemented as PF3) so that PHYs are accessible via
-MDIO.
+I wrote a test in C and the result was the same.
+If all of the sockets bound to the same port have SO_REUSEADDR and
+SO_REUSEPORT enabled, two users can bind(), but can only one user listen().
 
-Enable SGMII AN on the Felix PCS by telling PHYLINK that the VSC8514
-quad PHY is capable of in-band-status.
+If you would think these patches are safe, I'll respin the patches with
+the correct conditon of the 3rd patch.
 
-The PHYs are used in poll mode due to an issue with the interrupt line
-on current revisions of the LS1028A-RDB board.
+Thanks.
 
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-Changes in v3:
-- Set and enable the CPU port and DSA master from the board-specific
-  fsl-ls1028a-rdb.dts.
-- Move the "status" property to last.
+=====
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
-Changes in v2:
-None.
 
- .../boot/dts/freescale/fsl-ls1028a-rdb.dts    | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
+int main(void) {
+	struct sockaddr_in local_addr;
+	uid_t euid[2] = {1001, 1002};
+	int fd[2], error, i, port;
+	int len = sizeof(local_addr);
+	int reuseaddr = 1, reuseport = 1;
+	char ip_str[16];
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-index 14efe3b06042..6d05b76c2c7a 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-@@ -177,6 +177,25 @@
- 	status = "okay";
- };
- 
-+&enetc_mdio_pf3 {
-+	/* VSC8514 QSGMII quad PHY */
-+	qsgmii_phy0: ethernet-phy@10 {
-+		reg = <0x10>;
-+	};
-+
-+	qsgmii_phy1: ethernet-phy@11 {
-+		reg = <0x11>;
-+	};
-+
-+	qsgmii_phy2: ethernet-phy@12 {
-+		reg = <0x12>;
-+	};
-+
-+	qsgmii_phy3: ethernet-phy@13 {
-+		reg = <0x13>;
-+	};
-+};
-+
- &enetc_port0 {
- 	phy-handle = <&sgmii_phy0>;
- 	phy-connection-type = "sgmii";
-@@ -191,6 +210,47 @@
- 	};
- };
- 
-+&enetc_port2 {
-+	status = "okay";
-+};
-+
-+&mscc_felix_port0 {
-+	label = "swp0";
-+	managed = "in-band-status";
-+	phy-handle = <&qsgmii_phy0>;
-+	phy-mode = "qsgmii";
-+	status = "okay";
-+};
-+
-+&mscc_felix_port1 {
-+	label = "swp1";
-+	managed = "in-band-status";
-+	phy-handle = <&qsgmii_phy1>;
-+	phy-mode = "qsgmii";
-+	status = "okay";
-+};
-+
-+&mscc_felix_port2 {
-+	label = "swp2";
-+	managed = "in-band-status";
-+	phy-handle = <&qsgmii_phy2>;
-+	phy-mode = "qsgmii";
-+	status = "okay";
-+};
-+
-+&mscc_felix_port3 {
-+	label = "swp3";
-+	managed = "in-band-status";
-+	phy-handle = <&qsgmii_phy3>;
-+	phy-mode = "qsgmii";
-+	status = "okay";
-+};
-+
-+&mscc_felix_port4 {
-+	ethernet = <&enetc_port2>;
-+	status = "okay";
-+};
-+
- &sai4 {
- 	status = "okay";
- };
--- 
-2.17.1
+	for (i = 0; i < 2; i++) {
+		if (seteuid(euid[i]) != 0)
+			goto error;
 
+		fd[i] = socket(AF_INET, SOCK_STREAM, 0);
+
+		setsockopt(fd[i], SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(int));
+		setsockopt(fd[i], SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(int));
+
+		local_addr.sin_family = AF_INET;
+		local_addr.sin_addr.s_addr = inet_addr("10.0.2.15");
+		local_addr.sin_port = 0;
+
+		error = bind(fd[i], (struct sockaddr *)&local_addr, len);
+
+		memset(&local_addr, 0, sizeof(local_addr));
+		getsockname(fd[i], (struct sockaddr *)&local_addr, &len);
+		inet_ntop(AF_INET, &local_addr.sin_addr, ip_str, sizeof(ip_str));
+		port = ntohs(local_addr.sin_port);
+
+		printf("euid: %d\tbound to %s:%u\n", euid[i], ip_str, port);
+
+		if (error != 0)
+			goto error;
+
+		if (seteuid(0) != 0)
+			goto error;
+	}
+
+	for (i = 0; i < 2; i++) {
+		if (seteuid(euid[i]) != 0)
+			goto error;
+
+		error = listen(fd[i], 5);
+
+		if (error < 0)
+			printf("euid: %d\tlisten failed\n", euid[i]);
+		else
+			printf("euid: %d\tlisten succeeded\n", euid[i]);
+
+		if (seteuid(0) != 0)
+			goto error;		
+	}
+
+	return 0;
+error:
+	printf("error: %d, %s\n", errno, strerror(errno));
+	return -1;
+}
+=====
+
+===result===
+# id user-a
+uid=1001(user-a) gid=1001(user-a) groups=1001(user-a)
+# id user-b
+uid=1002(user-b) gid=1002(user-b) groups=1002(user-b)
+# sysctl -w net.ipv4.ip_local_port_range="32768 32768"
+[   30.060036] ip_local_port_range: prefer different parity for start/end values.
+net.ipv4.ip_local_port_range = 32768 32768
+# ./seteuid 
+euid: 1001	bound to 10.0.2.15:32768
+euid: 1002	bound to 10.0.2.15:32768
+euid: 1001	listen succeeded
+euid: 1002	listen failed
+============
