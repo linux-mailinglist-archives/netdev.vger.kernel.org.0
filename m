@@ -2,151 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C33F0169A55
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 22:43:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B85169A67
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 23:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbgBWVnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 16:43:37 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45356 "EHLO
+        id S1727180AbgBWWIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 17:08:39 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39655 "EHLO
         mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgBWVnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 16:43:37 -0500
-Received: by mail-pl1-f194.google.com with SMTP id b22so3184364pls.12;
-        Sun, 23 Feb 2020 13:43:35 -0800 (PST)
+        with ESMTP id S1726302AbgBWWIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 17:08:39 -0500
+Received: by mail-pl1-f194.google.com with SMTP id g6so3213520plp.6;
+        Sun, 23 Feb 2020 14:08:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=EYFt7TCGJFdSzBv48/uvMOjnjmgQwm23vB0vjtbvkQc=;
-        b=gHkNxhjb22CGhIX8m5Y+yevQzK/nm2UrJrtUv8kzQ8orsoVNccXn3SurRR2Ww7xZ4d
-         yxnUYDaHJHAbjcNkdxCXAh+7n2dBl2qZiESjK5tUz0vx2539wVlLvUcY4jQ8V4POgzVS
-         wEI54DXBXEbslGxD1abTUqgJy7quDZqPVEYSHQ8Z6ozfs7HTELZdxOOBROo70UE1L82/
-         Mh3DtxwQN9pYtBJDHcWDSwBXj+S3U+xgY5NtY0mN3jFqVcwmi+H/nKQc9hMBUPfvx3/K
-         pRZdygpO7/yfW7W7/NzLWZ3yhlM+y6lnOd+V10ib3mq9LqUCttN6GSJW/XSoOMmb6B67
-         8wpw==
+        bh=XVT/YiAQAM+tR2353qmEjurEX/hNonF51dX4WWwf8g0=;
+        b=M8icaUOjj6WKkl3lO0YEn6n/6EFNlzQtFCC1eFpfB0A/m+Ex3zZ0wgszkR/VJkfPfY
+         vkhN/78yQlMZK6/fc9T3IPSoXy49baEQSfWx2y3JQr0mhinh0oa2x6NB9RxioM/4Ldi4
+         spbiARX9wvnniO6CsAIo5vEnxjdcDvP8AWrukLg3eyPu6zdvPM2goDQBZbjupndIK+wS
+         qKCHAVQHVY8L0oVJxCO6xS02Vj1eRzdExi0jg23VKL0QcHM9/kb+QlRbXHIS3gEt3Us+
+         EgZ/z2QDare/fFMjLb5UiIF0UNCTmWaijATJjPLxc7uwMLOlWQoOMahJVUe6r/P0jJo4
+         UUCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EYFt7TCGJFdSzBv48/uvMOjnjmgQwm23vB0vjtbvkQc=;
-        b=APu6PYSUxxsICB92mF/3aVuB8yxHwL6hYl2tM2BvorRC+gfK5XXeGnbvVGcAJmw7dA
-         CJMxriqMBddyKQei5S83412ZfEgxb11gnL6ECTCCqKG30dN8XCdTPhHA/po3m7/voFT2
-         fqdjf0PfKyoOkjs1d4yPih9zZZ+RxtfIWHdKRu1/D3lhmw3aWvWmBMLDyG33XvtE9Q05
-         Y5XW3+kIeNJhyKac/BEja/6iligWbZYilBNMIsmswLdxbUaeDnG/zZXY8nWo0/ukI/gl
-         a2cSeMNtffR4JsJEm3W4sBVWLV3sqaWdFgGi9LGnPbDenW+hfEjd7WJ4j6xaEdD6R7uE
-         PIOQ==
-X-Gm-Message-State: APjAAAUc0DH8kFToEY8gNrkD52cJelAiCoz8Xi2OAfVaKta7ycS4mOm3
-        31B0ixEbyEiyTIdghNbgOTI=
-X-Google-Smtp-Source: APXvYqzco61O+NZf1hs63O+Y6TeuPW2YCJ2oKs0bMaWBDu1PS8SQvRB3ZqTNSH/mLAc2CjCz0mX8ig==
-X-Received: by 2002:a17:902:8642:: with SMTP id y2mr46231747plt.306.1582494214609;
-        Sun, 23 Feb 2020 13:43:34 -0800 (PST)
+        bh=XVT/YiAQAM+tR2353qmEjurEX/hNonF51dX4WWwf8g0=;
+        b=V9i0Z8uUYzWiwPvJifes07YpyszzRZTWTlp7pL6GSJLtCCPmDJb1TuA8eDgu9YYp0v
+         JXjTZZ/htuQbBxa6yDm90mmFjxdL0Q1RuCxVL7gPMKZiX5aQA3zDwh0FnO7G1lqGUHdQ
+         uFVq3YwQLu9WmUvhufG+j8Ij+IxE0+waE8Ma5xRbYa3XkvHfdc4sK01lIrdW+MXCqhDG
+         YIpbmG4cyT8WiCLTzMBgt/qMvMMbSnfExLbD6dZCZOU8IHE5rCNXZb7IODNU/krCee5Y
+         pGoWQRrRIp2JlAEz0umCeIrcA1fyMjQy8jysFCCk6xZ69VsXqplhrKnubm/VMWY/ejU/
+         s3+Q==
+X-Gm-Message-State: APjAAAVxmhkbr7qITZ3WUtdUPBkUZlqePtSepBUp7GZjKT5WF6FZTobS
+        cATdulJaVjoOJlRjPA5sASzw1Qzs
+X-Google-Smtp-Source: APXvYqw7avgJ0mrUniGFD86P47DGUntXTbl/vC8rO4/qWXHTyo+kuYAaxDPE5aTYyMY/O+FutHGfxQ==
+X-Received: by 2002:a17:90a:5289:: with SMTP id w9mr16774328pjh.95.1582495718321;
+        Sun, 23 Feb 2020 14:08:38 -0800 (PST)
 Received: from ast-mbp ([2620:10d:c090:400::5:7207])
-        by smtp.gmail.com with ESMTPSA id o73sm9608971pje.7.2020.02.23.13.43.32
+        by smtp.gmail.com with ESMTPSA id v8sm9840160pfn.172.2020.02.23.14.08.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 23 Feb 2020 13:43:33 -0800 (PST)
-Date:   Sun, 23 Feb 2020 13:43:31 -0800
+        Sun, 23 Feb 2020 14:08:37 -0800 (PST)
+Date:   Sun, 23 Feb 2020 14:08:34 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, Martin Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v7 00/11] Extend SOCKMAP/SOCKHASH to store
- listening sockets
-Message-ID: <20200223214329.2djcyztfze3d34g5@ast-mbp>
-References: <20200218171023.844439-1-jakub@cloudflare.com>
- <c86784f5-ef2c-cfd6-cb75-a67af7e11c3c@iogearbox.net>
- <CAADnVQJrsfpsT47SqyCTM6=MSkeMESZACZR12Kx+0kRGBnRbvg@mail.gmail.com>
- <87d0a668an.fsf@cloudflare.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        KP Singh <kpsingh@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        James Morris <jmorris@namei.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 3/8] bpf: lsm: provide attachment points for
+ BPF LSM programs
+Message-ID: <20200223220833.wdhonzvven7payaw@ast-mbp>
+References: <20200220175250.10795-1-kpsingh@chromium.org>
+ <20200220175250.10795-4-kpsingh@chromium.org>
+ <0ef26943-9619-3736-4452-fec536a8d169@schaufler-ca.com>
+ <202002211946.A23A987@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87d0a668an.fsf@cloudflare.com>
+In-Reply-To: <202002211946.A23A987@keescook>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 22, 2020 at 01:49:52PM +0000, Jakub Sitnicki wrote:
-> Hi Alexei,
+On Fri, Feb 21, 2020 at 08:22:59PM -0800, Kees Cook wrote:
 > 
-> On Sat, Feb 22, 2020 at 12:47 AM GMT, Alexei Starovoitov wrote:
-> > On Fri, Feb 21, 2020 at 1:41 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >>
-> >> On 2/18/20 6:10 PM, Jakub Sitnicki wrote:
-> >> > This patch set turns SOCK{MAP,HASH} into generic collections for TCP
-> >> > sockets, both listening and established. Adding support for listening
-> >> > sockets enables us to use these BPF map types with reuseport BPF programs.
-> >> >
-> >> > Why? SOCKMAP and SOCKHASH, in comparison to REUSEPORT_SOCKARRAY, allow the
-> >> > socket to be in more than one map at the same time.
-> >> >
-> >> > Having a BPF map type that can hold listening sockets, and gracefully
-> >> > co-exist with reuseport BPF is important if, in the future, we want
-> >> > BPF programs that run at socket lookup time [0]. Cover letter for v1 of
-> >> > this series tells the full story of how we got here [1].
-> >> >
-> >> > Although SOCK{MAP,HASH} are not a drop-in replacement for SOCKARRAY just
-> >> > yet, because UDP support is lacking, it's a step in this direction. We're
-> >> > working with Lorenz on extending SOCK{MAP,HASH} to hold UDP sockets, and
-> >> > expect to post RFC series for sockmap + UDP in the near future.
-> >> >
-> >> > I've dropped Acks from all patches that have been touched since v6.
-> >> >
-> >> > The audit for missing READ_ONCE annotations for access to sk_prot is
-> >> > ongoing. Thus far I've found one location specific to TCP listening sockets
-> >> > that needed annotating. This got fixed it in this iteration. I wonder if
-> >> > sparse checker could be put to work to identify places where we have
-> >> > sk_prot access while not holding sk_lock...
-> >> >
-> >> > The patch series depends on another one, posted earlier [2], that has been
-> >> > split out of it.
-> >> >
-> >> > Thanks,
-> >> > jkbs
-> >> >
-> >> > [0] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudflare.com/
-> >> > [1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
-> >> > [2] https://lore.kernel.org/bpf/20200217121530.754315-1-jakub@cloudflare.com/
-> >> >
-> >> > v6 -> v7:
-> >> >
-> >> > - Extended the series to cover SOCKHASH. (patches 4-8, 10-11) (John)
-> >> >
-> >> > - Rebased onto recent bpf-next. Resolved conflicts in recent fixes to
-> >> >    sk_state checks on sockmap/sockhash update path. (patch 4)
-> >> >
-> >> > - Added missing READ_ONCE annotation in sock_copy. (patch 1)
-> >> >
-> >> > - Split out patches that simplify sk_psock_restore_proto [2].
-> >>
-> >> Applied, thanks!
-> >
-> > Jakub,
-> >
-> > what is going on here?
-> > # test_progs -n 40
-> > #40 select_reuseport:OK
-> > Summary: 1/126 PASSED, 30 SKIPPED, 0 FAILED
-> >
-> > Does it mean nothing was actually tested?
-> > I really don't like to see 30 skipped tests.
-> > Is it my environment?
-> > If so please make them hard failures.
-> > I will fix whatever I need to fix in my setup.
+> If I'm understanding this correctly, there are two issues:
 > 
-> The UDP tests for sock{map,hash} are marked as skipped, because UDP
-> support is not implemented yet. Sorry for the confusion.
-> 
-> Having read the recent thread about BPF selftests [0] I now realize that
-> this is not the best idea. It sends the wrong signal to the developer.
-> 
-> I propose to exclude the UDP tests w/ sock{map,hash} by not registering
-> them with test__start_subtest at all. Failing them would indicate a
-> regression, which is not true. While skipping them points to a potential
-> problem with the test environment, which isn't true, either.
+> 1- BPF needs to be run last due to fexit trampolines (?)
 
-So the tests are ready, but kernel support is missing?
-Please don't run those tests then since they're guaranteed to fail atm.
+no.
+The placement of nop call can be anywhere.
+BPF trampoline is automagically converting nop call into a sequence
+of directly invoked BPF programs.
+No link list traversals and no indirect calls in run-time.
+
+> 2- BPF hooks don't know what may be attached at any given time, so
+>    ALL LSM hooks need to be universally hooked. THIS turns out to create
+>    a measurable performance problem in that the cost of the indirect call
+>    on the (mostly/usually) empty BPF policy is too high.
+
+also no.
+
+> So, trying to avoid the indirect calls is, as you say, an optimization,
+> but it might be a needed one due to the other limitations.
+
+I'm convinced that avoiding the cost of retpoline in critical path is a
+requirement for any new infrastructure in the kernel.
+Not only for security, but for any new infra.
+Networking stack converted all such places to conditional calls.
+In BPF land we converted indirect calls to direct jumps and direct calls.
+It took two years to do so. Adding new indirect calls is not an option.
+I'm eagerly waiting for Peter's static_call patches to land to convert
+a lot more indirect calls. May be existing LSMs will take advantage
+of static_call patches too, but static_call is not an option for BPF.
+That's why we introduced BPF trampoline in the last kernel release.
+
+> b) Would there actually be a global benefit to using the static keys
+>    optimization for other LSMs?
+
+Yes. Just compiling with CONFIG_SECURITY adds "if (hlist_empty)" check
+for every hook. Some of those hooks are in critical path. This load+cmp
+can be avoided with static_key optimization. I think it's worth doing.
+
+> If static keys are justified for KRSI
+
+I really like that KRSI costs absolutely zero when it's not enabled.
+Attaching BPF prog to one hook preserves zero cost for all other hooks.
+And when one hook is BPF powered it's using direct call instead of
+super expensive retpoline.
+
+Overall this patch set looks good to me. There was a minor issue with prog
+accounting. I expect only that bit to be fixed in v5.
