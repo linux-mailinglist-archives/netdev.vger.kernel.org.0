@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE891696A2
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:32:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CFA1696A1
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbgBWHcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 02:32:06 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37668 "EHLO
+        id S1727221AbgBWHcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 02:32:02 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:34131 "EHLO
         mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgBWHb5 (ORCPT
+        with ESMTP id S1727166AbgBWHb5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 02:31:57 -0500
-Received: by mail-wr1-f65.google.com with SMTP id l5so2391923wrx.4
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:55 -0800 (PST)
+Received: by mail-wr1-f65.google.com with SMTP id n10so6694701wrm.1
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cA3wZF6GuH65vDB8IdJdVfBkN3kQeFAWoRSoX27WtQI=;
-        b=UfWMW/s9y6ZKUrqL9i0UUKe++9NIrHLKpRDjG2+Bou7Q9DDA250uN9ufL45Nc9OdwS
-         GGWWFAPqamGcpdm7PyUiV8X/4UFo9r0QdaBJms8KuLXyTy0TWEQ39oa0ta+/ckHH0ZIm
-         JoK8InDsNCUv6L1to/PFBwKG9qcb0OE6rwpoXPBkcuBlk2F1nTSvtQbA3NujLGohgi4T
-         bnJ7Axh3lgGQrbXNkMmo+1oRX2jARV89afbM/bZU/gWtrXYvwiQpQz1grej0+DApT5NM
-         79niTZNULpSl/MML8ZrP8JcYmV+tp72LYjrcbHmZO+kvd+h0jzyncpYndub07kCH1gRR
-         o/sQ==
+        bh=UYqYR89l8BFIJtR9mul68iSWj4t0DjjeF40zV1Ja8sU=;
+        b=2LxeY4/sIl1NSjsBaoY9UtZZ97C8eW+SXmzgavXz3kMaC3WYyDKf6x82cRp7o+gbq9
+         gzKGhOGkb9zBNmWYLm4uHyGQ3LjwsXHLEK7Pfge1SwkRCGipU1TWLHtIRSPZzE7j/Tgm
+         +MF1pm3p49yiNOKXOgZkB8LcEjot80xDHlHy6vlj8BGOYsK454+0vdp3JamF1l7zcD12
+         5vEog+XpPds6SOPIroU+NbxNfZalH/4gv3vkc/a8o6weh5cGX/WLw38CWg97pzx/XxL/
+         YmStKl5wlr4N9bY1mh4hxm5SeqldHCxUzFrHu1VjV/XM+NqQCrw13tURMQwUpMZLnsMo
+         nqcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cA3wZF6GuH65vDB8IdJdVfBkN3kQeFAWoRSoX27WtQI=;
-        b=bPh0Y7j1JkKCCKIp8aaQsQJ0OoDVwfqvigY1KxzyqYJUoHuE4Q+U64kf27zO7xy5SD
-         AC2Du1RCkzHbNPFIs93ed6Hf9Ul5K96QrIZlJMPrhuIKrVAVCXuH2JXvTegup+eD6Sh5
-         C6asIgFsjECpM2woZYH9nyAeQQVD09SSmKOb4R1hjO3i+ii0M6xw75O+4CeK/ZV9HjxO
-         5HbHpGnPdJXo9g7fWyWhsNrjFKwO5llqFdT/gmxHINadJpkeUctIythiS1I1h9WnCDu1
-         1u44Yf+zXgx9royk3fciNXGS4e2dtnYjqd9nxB5Ne7xbpY59AmQGlSfZ5r41n+ExXNXG
-         WMIw==
-X-Gm-Message-State: APjAAAW6cjaKEFxS9ufydVSCAq03sqeP3QHpAVoNeORvquTtiAMvxmPQ
-        Jl6OC0P7xQdsIswHmI5ferHAI70//wk=
-X-Google-Smtp-Source: APXvYqznVksGNJcHtAJ/m2BBVw8ii0h15zhilPkZcgF/wUlYEGpbPB7ws3wU7TJeYkzfxTflZJcHqw==
-X-Received: by 2002:adf:f6c1:: with SMTP id y1mr57588282wrp.17.1582443114854;
-        Sat, 22 Feb 2020 23:31:54 -0800 (PST)
+        bh=UYqYR89l8BFIJtR9mul68iSWj4t0DjjeF40zV1Ja8sU=;
+        b=PyRCAPEZpa83dgNo16aU5aKfnyn2AJhkbMTG8dWVFn2uP9DqjSo/rV7HzjaKrqXtt6
+         O73ZV+Hw2cXtaJaGFczXg5NTTlnIYjD5VAC98hd2h5DRjpizXXkDo1l10+PUQTuUWTbQ
+         l1atRykuFyoLZsgCOyrx8uyai3o0HnyAMWEEFTX75vOJVb16feajQJDYrVQsAPhaRzPf
+         V7z1CsUCCABYQurgcZzYk1/jR7DNTvh0yyRhi00YkcJ33O6VrwJ5Xl+66/39mBYh6aKC
+         XdXW9Ps/Up5OaCn6XYxKleN1Mhp47XTIpqIkq4fGJBkDBkL78NC4Kr0MCqQ1nXuyRCV1
+         p1zg==
+X-Gm-Message-State: APjAAAVmxFiOd+dZDLgxDePh3m1oudpJy8xj4H78hqF9zK2yvkdvkSxK
+        pjCNkcYK3IqgbpEPWRF9Lnqb7H/RpOw=
+X-Google-Smtp-Source: APXvYqyzkix0LFUbFvBGZWqtymOXzVb0oZIZa/SVeyEACR5xSVWE9MqFf9zCLFGPGYePdJT1t9xRWQ==
+X-Received: by 2002:adf:eec3:: with SMTP id a3mr55865404wrp.337.1582443115995;
+        Sat, 22 Feb 2020 23:31:55 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id u23sm12592527wmu.14.2020.02.22.23.31.54
+        by smtp.gmail.com with ESMTPSA id s23sm12298665wra.15.2020.02.22.23.31.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2020 23:31:54 -0800 (PST)
+        Sat, 22 Feb 2020 23:31:55 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 08/12] mlxsw: core: Remove initialization to false of mlxsw_listener struct
-Date:   Sun, 23 Feb 2020 08:31:40 +0100
-Message-Id: <20200223073144.28529-9-jiri@resnulli.us>
+Subject: [patch net-next 09/12] mlxsw: spectrum_trap: Make global arrays const as they should be
+Date:   Sun, 23 Feb 2020 08:31:41 +0100
+Message-Id: <20200223073144.28529-10-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200223073144.28529-1-jiri@resnulli.us>
 References: <20200223073144.28529-1-jiri@resnulli.us>
@@ -63,34 +63,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-No need to initialize to false, so remove it.
+The global arrays are treated as const, they should be const, so make
+them const.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.h | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 76c0d6e975db..c5890e35fd2f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -97,7 +97,6 @@ struct mlxsw_listener {
- 		.unreg_action = MLXSW_REG_HPKT_ACTION_##_unreg_action,	\
- 		.trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_trap_group,	\
- 		.is_ctrl = _is_ctrl,					\
--		.is_event = false,					\
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 871bd609b0c9..2f2ddc751f3d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -125,7 +125,7 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
+ 	MLXSW_RXL(mlxsw_sp_rx_exception_listener, _id,			      \
+ 		   _action, false, SP_##_group_id, DISCARD)
  
- #define MLXSW_EVENTL(_func, _trap_id, _trap_group)			\
-@@ -110,7 +109,6 @@ struct mlxsw_listener {
- 		},							\
- 		.action = MLXSW_REG_HPKT_ACTION_TRAP_TO_CPU,		\
- 		.trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_trap_group,	\
--		.is_ctrl = false,					\
- 		.is_event = true,					\
- 	}
+-static struct devlink_trap mlxsw_sp_traps_arr[] = {
++static const struct devlink_trap mlxsw_sp_traps_arr[] = {
+ 	MLXSW_SP_TRAP_DROP(SMAC_MC, L2_DROPS),
+ 	MLXSW_SP_TRAP_DROP(VLAN_TAG_MISMATCH, L2_DROPS),
+ 	MLXSW_SP_TRAP_DROP(INGRESS_VLAN_FILTER, L2_DROPS),
+@@ -156,7 +156,7 @@ static struct devlink_trap mlxsw_sp_traps_arr[] = {
+ 	MLXSW_SP_TRAP_DROP(OVERLAY_SMAC_MC, TUNNEL_DROPS),
+ };
  
+-static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
++static const struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+ 	MLXSW_SP_RXL_DISCARD(ING_PACKET_SMAC_MC, L2_DISCARDS),
+ 	MLXSW_SP_RXL_DISCARD(ING_SWITCH_VTAG_ALLOW, L2_DISCARDS),
+ 	MLXSW_SP_RXL_DISCARD(ING_SWITCH_VLAN, L2_DISCARDS),
+@@ -201,7 +201,7 @@ static struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
+  * be mapped to the same devlink trap. Order is according to
+  * 'mlxsw_sp_listeners_arr'.
+  */
+-static u16 mlxsw_sp_listener_devlink_map[] = {
++static const u16 mlxsw_sp_listener_devlink_map[] = {
+ 	DEVLINK_TRAP_GENERIC_ID_SMAC_MC,
+ 	DEVLINK_TRAP_GENERIC_ID_VLAN_TAG_MISMATCH,
+ 	DEVLINK_TRAP_GENERIC_ID_INGRESS_VLAN_FILTER,
+@@ -280,7 +280,7 @@ int mlxsw_sp_trap_init(struct mlxsw_core *mlxsw_core,
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
+-		struct mlxsw_listener *listener;
++		const struct mlxsw_listener *listener;
+ 		int err;
+ 
+ 		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
+@@ -301,7 +301,7 @@ void mlxsw_sp_trap_fini(struct mlxsw_core *mlxsw_core,
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
+-		struct mlxsw_listener *listener;
++		const struct mlxsw_listener *listener;
+ 
+ 		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
+ 			continue;
+@@ -318,8 +318,8 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
++		const struct mlxsw_listener *listener;
+ 		enum mlxsw_reg_hpkt_action hw_action;
+-		struct mlxsw_listener *listener;
+ 		int err;
+ 
+ 		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
 -- 
 2.21.1
 
