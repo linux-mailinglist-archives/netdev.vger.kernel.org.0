@@ -2,136 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9486E1697E3
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 14:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1E41697E7
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 14:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbgBWNiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 08:38:54 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:41544 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726208AbgBWNix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 08:38:53 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48QR9h6hKwz1qr4x;
-        Sun, 23 Feb 2020 14:38:45 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48QR9d6J5Rz1r0cN;
-        Sun, 23 Feb 2020 14:38:45 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id ebCWh7-Rq8qo; Sun, 23 Feb 2020 14:38:44 +0100 (CET)
-X-Auth-Info: /jqsAtzJ2fVC8MNoLiaDRBNeyneHjPfDMUL6E1+yjqc=
-Received: from desktop.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun, 23 Feb 2020 14:38:44 +0100 (CET)
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] net: ks8851-ml: Fix IRQ handling and locking
-Date:   Sun, 23 Feb 2020 14:38:40 +0100
-Message-Id: <20200223133840.318025-1-marex@denx.de>
-X-Mailer: git-send-email 2.25.0
+        id S1726614AbgBWNlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 08:41:04 -0500
+Received: from canardo.mork.no ([148.122.252.1]:51357 "EHLO canardo.mork.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726208AbgBWNlD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Feb 2020 08:41:03 -0500
+Received: from miraculix.mork.no (ti0136a430-4331.bb.online.no [80.213.107.248])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 01NDeudj024858
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Sun, 23 Feb 2020 14:40:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1582465256; bh=B1r3vsmiyMC3FCbqyArVqXmIUybokSxxlEfgZ5SJV2A=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=M8Z2LYITKJ8JLHYmQEDQT5rgkQgAVKkjXkg5ol3KPbdGNVDV2NAKrVhZ7Yny1CQd7
+         ssbCDK3Kp1G8Mz6ltJAPSXCCCf4Dz2Q+P6RGSZXhWIo5IhfLVxWSdJtvc79YFTXg5c
+         vX9nlINbO/5swgCy8Xhv4amXjaj31U6L008jFjeQ=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@mork.no>)
+        id 1j5rV5-00075G-Be; Sun, 23 Feb 2020 14:40:51 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: restore mtu min/max values after raw_ip switch
+Organization: m
+References: <20200221131705.26053-1-dnlplm@gmail.com>
+Date:   Sun, 23 Feb 2020 14:40:51 +0100
+In-Reply-To: <20200221131705.26053-1-dnlplm@gmail.com> (Daniele Palmas's
+        message of "Fri, 21 Feb 2020 14:17:05 +0100")
+Message-ID: <87eeul5sm4.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.1 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The KS8851 requires that packet RX and TX are mutually exclusive.
-Currently, the driver hopes to achieve this by disabling interrupt
-from the card by writing the card registers and by disabling the
-interrupt on the interrupt controller. This however is racy on SMP.
+Daniele Palmas <dnlplm@gmail.com> writes:
 
-Replace this approach by expanding the spinlock used around the
-ks_start_xmit() TX path to ks_irq() RX path to assure true mutual
-exclusion and remove the interrupt enabling/disabling, which is
-now not needed anymore. Furthermore, disable interrupts also in
-ks_net_stop(), which was missing before.
+> usbnet creates network interfaces with min_mtu =3D 0 and
+> max_mtu =3D ETH_MAX_MTU.
+>
+> These values are not modified by qmi_wwan when the network interface
+> is created initially, allowing, for example, to set mtu greater than 1500.
+>
+> When a raw_ip switch is done (raw_ip set to 'Y', then set to 'N') the mtu
+> values for the network interface are set through ether_setup, with
+> min_mtu =3D ETH_MIN_MTU and max_mtu =3D ETH_DATA_LEN, not allowing anymor=
+e to
+> set mtu greater than 1500 (error: mtu greater than device maximum).
+>
+> The patch restores the original min/max mtu values set by usbnet after a
+> raw_ip switch.
+>
+> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 
-Note that a massive improvement here would be to re-use the KS8851
-driver approach, which is to move the TX path into a worker thread,
-interrupt handling to threaded interrupt, and synchronize everything
-with mutexes, but that would be a much bigger rework, for a separate
-patch.
+Great! I tried to look up the origin of this bug, and it seems to be a
+hard-to-spot fallout from the 'centralized MTU checking'.  Not easy to
+see the hidden connection in usbnet.c and eth.c. Thanks for finding and
+fixing it!
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Petr Stetiar <ynezz@true.cz>
-Cc: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/micrel/ks8851_mll.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+This should probably go to stable as well?
 
-diff --git a/drivers/net/ethernet/micrel/ks8851_mll.c b/drivers/net/ethernet/micrel/ks8851_mll.c
-index 1c9e70c8cc30..58579baf3f7a 100644
---- a/drivers/net/ethernet/micrel/ks8851_mll.c
-+++ b/drivers/net/ethernet/micrel/ks8851_mll.c
-@@ -513,14 +513,17 @@ static irqreturn_t ks_irq(int irq, void *pw)
- {
- 	struct net_device *netdev = pw;
- 	struct ks_net *ks = netdev_priv(netdev);
-+	unsigned long flags;
- 	u16 status;
- 
-+	spin_lock_irqsave(&ks->statelock, flags);
- 	/*this should be the first in IRQ handler */
- 	ks_save_cmd_reg(ks);
- 
- 	status = ks_rdreg16(ks, KS_ISR);
- 	if (unlikely(!status)) {
- 		ks_restore_cmd_reg(ks);
-+		spin_unlock_irqrestore(&ks->statelock, flags);
- 		return IRQ_NONE;
- 	}
- 
-@@ -546,6 +549,7 @@ static irqreturn_t ks_irq(int irq, void *pw)
- 		ks->netdev->stats.rx_over_errors++;
- 	/* this should be the last in IRQ handler*/
- 	ks_restore_cmd_reg(ks);
-+	spin_unlock_irqrestore(&ks->statelock, flags);
- 	return IRQ_HANDLED;
- }
- 
-@@ -615,6 +619,7 @@ static int ks_net_stop(struct net_device *netdev)
- 
- 	/* shutdown RX/TX QMU */
- 	ks_disable_qmu(ks);
-+	ks_disable_int(ks);
- 
- 	/* set powermode to soft power down to save power */
- 	ks_set_powermode(ks, PMECR_PM_SOFTDOWN);
-@@ -671,10 +676,9 @@ static netdev_tx_t ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
- {
- 	netdev_tx_t retv = NETDEV_TX_OK;
- 	struct ks_net *ks = netdev_priv(netdev);
-+	unsigned long flags;
- 
--	disable_irq(netdev->irq);
--	ks_disable_int(ks);
--	spin_lock(&ks->statelock);
-+	spin_lock_irqsave(&ks->statelock, flags);
- 
- 	/* Extra space are required:
- 	*  4 byte for alignment, 4 for status/length, 4 for CRC
-@@ -688,9 +692,7 @@ static netdev_tx_t ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		dev_kfree_skb(skb);
- 	} else
- 		retv = NETDEV_TX_BUSY;
--	spin_unlock(&ks->statelock);
--	ks_enable_int(ks);
--	enable_irq(netdev->irq);
-+	spin_unlock_irqrestore(&ks->statelock, flags);
- 	return retv;
- }
- 
--- 
-2.25.0
-
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
