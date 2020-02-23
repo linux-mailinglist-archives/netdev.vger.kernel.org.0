@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72B5716969C
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:31:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E04EE16969F
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 08:31:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgBWHbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 02:31:51 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:47071 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgBWHbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 02:31:50 -0500
-Received: by mail-wr1-f67.google.com with SMTP id g4so302806wro.13
-        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:49 -0800 (PST)
+        id S1727106AbgBWHby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 02:31:54 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34648 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbgBWHbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 02:31:52 -0500
+Received: by mail-wm1-f67.google.com with SMTP id s144so8334099wme.1
+        for <netdev@vger.kernel.org>; Sat, 22 Feb 2020 23:31:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kDExAOIcp25G09pBXDJNlOJ9aEAOTIlXyiKqJO7MOes=;
-        b=wf/ypj+WvHxZgHVzE5DbB8lJpHULiFU3xRLEgEComr5O+Ffbq/+KGxXte45bGydRFe
-         CzbOhaH+bm4CNwAefEEXOjwezN/lMgIfNKeJlJTtAKpamr8on7cTKnZf/VZ2N1fF+jde
-         06vnqKdllFemDvhrnrYlsuWk05ckK9yYR2ods9FmLhkA4xUpbCpYeSWCoLDlNfRy+qNa
-         W5LT0ROd0wGO+YXG17xMDSvO103WBzAgv6+YZG5QCU4mgFXHZn1/MUXQNZv6HtHUrohE
-         2WwTR++RpW3ao60xotF4gd2l5NXPBbH9zDgzmArxG+wIgR+/dHMgw4LikqcqGWHzhK3o
-         7n0Q==
+        bh=0/eIAQnep/cBCkQsz+EkI/3vfMg6HFJN3+XbfVu9oGg=;
+        b=SVRRcnNYiXmBhAgv0YuygyQF/dfbE1oBN1jBAJCSMRi/QGS/HO2SkZJjOysVkxFplt
+         NmNjERg/H/lPe/1byn8hP0LWznZBhX7ZB9SAZLT7VEai7Cyd0utVWxnorw9UTC9sJOyN
+         +mr9qLVrKcmZvy6OhhQAek9fSX3TnyIKxGCaicPHjfivFaOmAu+ZBaykCeCMcOSHHM3q
+         zfFwoxitS2YHqy2ydX598Z8j9Q1MLuotc8Gm5fNYDj3CJ7l4pLsRNkbfshwrCt60GHHY
+         K5XIgbwwAevYOKob1R7zJSKK0FoEhzx5M1bdx968SF3eGPqUBflSasL2YTcDmXOhGodX
+         f8IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kDExAOIcp25G09pBXDJNlOJ9aEAOTIlXyiKqJO7MOes=;
-        b=gaCR0uNSuYCQ+T0WhUsuEvSW7jLIfiUrIFFUS1yFOQUbDQJ5yBTzOAR5q+eAiLZjAJ
-         B5NsrIcK4mee32g3A69Q4d+6bOkcddOJQs1K4cu0zSwHMpjRHpR/3fbUF2yLY0HfS6Nf
-         fNeV6TgzMzIut33eAjDAAKAkNbWLHZe0OcfbBwZvzoVEjc+0DshJw1knRhcRyAayXNHk
-         L+JWNaUe6SHGedMLjQBkmb13z1tCpzdcDtx4ioak+URA/ZVvZEHYiy54l32PKYtdQ3LY
-         wUZM9MY84tvg9iHMUIq1ziO+BkEIeSfx0let1KLiImzAIE/sfXvhH8j8moOApF9AgDSY
-         zsOQ==
-X-Gm-Message-State: APjAAAXNuxDeavtBCytsJASuWo1VZOFLpLLFsHdVn7P9TtU5FjrpPoEQ
-        EGpsQL8nIIPRRjARCdI9rablFQSw8eE=
-X-Google-Smtp-Source: APXvYqzQ2rCr/VGhLYYSSnp3rTWA1L1kL7mlk9GSzGs2PHfBUsNHeC9q7Npr8G1t+bMNrdtn8J3R0A==
-X-Received: by 2002:adf:bc87:: with SMTP id g7mr59964564wrh.121.1582443108191;
-        Sat, 22 Feb 2020 23:31:48 -0800 (PST)
+        bh=0/eIAQnep/cBCkQsz+EkI/3vfMg6HFJN3+XbfVu9oGg=;
+        b=QfdLRMDhSAn2u2vPOP1wqdDFUAh241tpSAiKlnAmYkFK/nWoR+txwYJfdjGvQrSloL
+         cgVYrUE3/dpmbW82CENDrfLRQrnlOqEat0Thj6phnDDL4JVHLOgZUcOFFeAcgXh4iJBC
+         B5bKEl9VXVVx9Gm9gBofb/7xchJg8HYo44yDo6X7258lS/VSSmCCkB7qafIxHLURrQpA
+         zHl8ALY4vBXbM/1rJaI3G9QnUtpkYxT5F2iu6vUkdmORBCVECNQONKxwkTT8y2Qj8JcP
+         8X4OwcMaYSlShhkuv1+TNTB5v2wNCyZIryWcqv6kay+KcAazt+eXyrbOXVnVHzV+X1GZ
+         BqyA==
+X-Gm-Message-State: APjAAAUqT1HqJjnznnAKQI4kmb3qrR4S20sIWehLj+6eLL0Y0hu4UH1z
+        nX4Ql4zpK4YsSkxV/Yc/aVaLJHaP7u4=
+X-Google-Smtp-Source: APXvYqwTvx+Ldv/6iKTSMDOBkcJtobszKywCmgRJ2iMrwA7Y14E7pH+m+PmebttXe3OQ+SoQ/oh3nA==
+X-Received: by 2002:a1c:6a15:: with SMTP id f21mr14268189wmc.126.1582443109332;
+        Sat, 22 Feb 2020 23:31:49 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id 133sm13074299wmd.5.2020.02.22.23.31.47
+        by smtp.gmail.com with ESMTPSA id h128sm11692927wmh.33.2020.02.22.23.31.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2020 23:31:47 -0800 (PST)
+        Sat, 22 Feb 2020 23:31:48 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 02/12] mlxsw: spectrum_trap: Move functions to avoid their forward declarations
-Date:   Sun, 23 Feb 2020 08:31:34 +0100
-Message-Id: <20200223073144.28529-3-jiri@resnulli.us>
+Subject: [patch net-next 03/12] mlxsw: core_acl_flex_actions: Rename Trap / Discard Action to Trap Action
+Date:   Sun, 23 Feb 2020 08:31:35 +0100
+Message-Id: <20200223073144.28529-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200223073144.28529-1-jiri@resnulli.us>
 References: <20200223073144.28529-1-jiri@resnulli.us>
@@ -63,186 +63,196 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-No need to have forward declarations for mlxsw_sp_rx_drop_listener()
-and mlxsw_sp_rx_exception_listener(). Just move them up and avoid it.
+The Trap / Discard Action action got renamed in PRM, so rename it in the
+code as well.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 151 +++++++++---------
- 1 file changed, 73 insertions(+), 78 deletions(-)
+ .../mellanox/mlxsw/core_acl_flex_actions.c    | 103 +++++++++---------
+ 1 file changed, 49 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 28d2c09c867e..4f38681afa34 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -25,10 +25,81 @@ enum {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+index c51b2adfc1e1..b9e2193848dd 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+@@ -747,97 +747,94 @@ int mlxsw_afa_block_append_vlan_modify(struct mlxsw_afa_block *block,
+ }
+ EXPORT_SYMBOL(mlxsw_afa_block_append_vlan_modify);
  
- #define MLXSW_SP_TRAP_METADATA DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT
+-/* Trap / Discard Action
+- * ---------------------
+- * The Trap / Discard action enables trapping / mirroring packets to the CPU
++/* Trap Action
++ * -----------
++ * The Trap action enables trapping / mirroring packets to the CPU
+  * as well as discarding packets.
+  * The ACL Trap / Discard separates the forward/discard control from CPU
+  * trap control. In addition, the Trap / Discard action enables activating
+  * SPAN (port mirroring).
+  */
  
-+static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
-+				u8 local_port,
-+				struct mlxsw_sp_port *mlxsw_sp_port)
-+{
-+	struct mlxsw_sp_port_pcpu_stats *pcpu_stats;
-+
-+	if (unlikely(!mlxsw_sp_port)) {
-+		dev_warn_ratelimited(mlxsw_sp->bus_info->dev, "Port %d: skb received for non-existent port\n",
-+				     local_port);
-+		kfree_skb(skb);
-+		return -EINVAL;
-+	}
-+
-+	skb->dev = mlxsw_sp_port->dev;
-+
-+	pcpu_stats = this_cpu_ptr(mlxsw_sp_port->pcpu_stats);
-+	u64_stats_update_begin(&pcpu_stats->syncp);
-+	pcpu_stats->rx_packets++;
-+	pcpu_stats->rx_bytes += skb->len;
-+	u64_stats_update_end(&pcpu_stats->syncp);
-+
-+	skb->protocol = eth_type_trans(skb, skb->dev);
-+
-+	return 0;
-+}
-+
- static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
--				      void *priv);
-+				      void *trap_ctx)
-+{
-+	struct devlink_port *in_devlink_port;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct mlxsw_sp *mlxsw_sp;
-+	struct devlink *devlink;
-+	int err;
-+
-+	mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
-+	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+
-+	err = mlxsw_sp_rx_listener(mlxsw_sp, skb, local_port, mlxsw_sp_port);
-+	if (err)
-+		return;
-+
-+	devlink = priv_to_devlink(mlxsw_sp->core);
-+	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
-+							   local_port);
-+	skb_push(skb, ETH_HLEN);
-+	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
-+	consume_skb(skb);
-+}
-+
- static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
--					   void *trap_ctx);
-+					   void *trap_ctx)
-+{
-+	struct devlink_port *in_devlink_port;
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct mlxsw_sp *mlxsw_sp;
-+	struct devlink *devlink;
-+	int err;
-+
-+	mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
-+	mlxsw_sp_port = mlxsw_sp->ports[local_port];
-+
-+	err = mlxsw_sp_rx_listener(mlxsw_sp, skb, local_port, mlxsw_sp_port);
-+	if (err)
-+		return;
-+
-+	devlink = priv_to_devlink(mlxsw_sp->core);
-+	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
-+							   local_port);
-+	skb_push(skb, ETH_HLEN);
-+	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
-+	skb_pull(skb, ETH_HLEN);
-+	skb->offload_fwd_mark = 1;
-+	netif_receive_skb(skb);
-+}
+-#define MLXSW_AFA_TRAPDISC_CODE 0x03
+-#define MLXSW_AFA_TRAPDISC_SIZE 1
++#define MLXSW_AFA_TRAP_CODE 0x03
++#define MLXSW_AFA_TRAP_SIZE 1
  
- #define MLXSW_SP_TRAP_DROP(_id, _group_id)				      \
- 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				      \
-@@ -166,82 +237,6 @@ static u16 mlxsw_sp_listener_devlink_map[] = {
- 	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
+-enum mlxsw_afa_trapdisc_trap_action {
+-	MLXSW_AFA_TRAPDISC_TRAP_ACTION_NOP = 0,
+-	MLXSW_AFA_TRAPDISC_TRAP_ACTION_TRAP = 2,
++enum mlxsw_afa_trap_trap_action {
++	MLXSW_AFA_TRAP_TRAP_ACTION_NOP = 0,
++	MLXSW_AFA_TRAP_TRAP_ACTION_TRAP = 2,
  };
  
--static int mlxsw_sp_rx_listener(struct mlxsw_sp *mlxsw_sp, struct sk_buff *skb,
--				u8 local_port,
--				struct mlxsw_sp_port *mlxsw_sp_port)
--{
--	struct mlxsw_sp_port_pcpu_stats *pcpu_stats;
--
--	if (unlikely(!mlxsw_sp_port)) {
--		dev_warn_ratelimited(mlxsw_sp->bus_info->dev, "Port %d: skb received for non-existent port\n",
--				     local_port);
--		kfree_skb(skb);
--		return -EINVAL;
--	}
--
--	skb->dev = mlxsw_sp_port->dev;
--
--	pcpu_stats = this_cpu_ptr(mlxsw_sp_port->pcpu_stats);
--	u64_stats_update_begin(&pcpu_stats->syncp);
--	pcpu_stats->rx_packets++;
--	pcpu_stats->rx_bytes += skb->len;
--	u64_stats_update_end(&pcpu_stats->syncp);
--
--	skb->protocol = eth_type_trans(skb, skb->dev);
--
--	return 0;
--}
--
--static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
--				      void *trap_ctx)
--{
--	struct devlink_port *in_devlink_port;
--	struct mlxsw_sp_port *mlxsw_sp_port;
--	struct mlxsw_sp *mlxsw_sp;
--	struct devlink *devlink;
--	int err;
--
--	mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
--	mlxsw_sp_port = mlxsw_sp->ports[local_port];
--
--	err = mlxsw_sp_rx_listener(mlxsw_sp, skb, local_port, mlxsw_sp_port);
--	if (err)
--		return;
--
--	devlink = priv_to_devlink(mlxsw_sp->core);
--	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
--							   local_port);
--	skb_push(skb, ETH_HLEN);
--	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
--	consume_skb(skb);
--}
--
--static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
--					   void *trap_ctx)
--{
--	struct devlink_port *in_devlink_port;
--	struct mlxsw_sp_port *mlxsw_sp_port;
--	struct mlxsw_sp *mlxsw_sp;
--	struct devlink *devlink;
--	int err;
--
--	mlxsw_sp = devlink_trap_ctx_priv(trap_ctx);
--	mlxsw_sp_port = mlxsw_sp->ports[local_port];
--
--	err = mlxsw_sp_rx_listener(mlxsw_sp, skb, local_port, mlxsw_sp_port);
--	if (err)
--		return;
--
--	devlink = priv_to_devlink(mlxsw_sp->core);
--	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
--							   local_port);
--	skb_push(skb, ETH_HLEN);
--	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
--	skb_pull(skb, ETH_HLEN);
--	skb->offload_fwd_mark = 1;
--	netif_receive_skb(skb);
--}
--
- int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
+-/* afa_trapdisc_trap_action
++/* afa_trap_trap_action
+  * Trap Action.
+  */
+-MLXSW_ITEM32(afa, trapdisc, trap_action, 0x00, 24, 4);
++MLXSW_ITEM32(afa, trap, trap_action, 0x00, 24, 4);
+ 
+-enum mlxsw_afa_trapdisc_forward_action {
+-	MLXSW_AFA_TRAPDISC_FORWARD_ACTION_FORWARD = 1,
+-	MLXSW_AFA_TRAPDISC_FORWARD_ACTION_DISCARD = 3,
++enum mlxsw_afa_trap_forward_action {
++	MLXSW_AFA_TRAP_FORWARD_ACTION_FORWARD = 1,
++	MLXSW_AFA_TRAP_FORWARD_ACTION_DISCARD = 3,
+ };
+ 
+-/* afa_trapdisc_forward_action
++/* afa_trap_forward_action
+  * Forward Action.
+  */
+-MLXSW_ITEM32(afa, trapdisc, forward_action, 0x00, 0, 4);
++MLXSW_ITEM32(afa, trap, forward_action, 0x00, 0, 4);
+ 
+-/* afa_trapdisc_trap_id
++/* afa_trap_trap_id
+  * Trap ID to configure.
+  */
+-MLXSW_ITEM32(afa, trapdisc, trap_id, 0x04, 0, 9);
++MLXSW_ITEM32(afa, trap, trap_id, 0x04, 0, 9);
+ 
+-/* afa_trapdisc_mirror_agent
++/* afa_trap_mirror_agent
+  * Mirror agent.
+  */
+-MLXSW_ITEM32(afa, trapdisc, mirror_agent, 0x08, 29, 3);
++MLXSW_ITEM32(afa, trap, mirror_agent, 0x08, 29, 3);
+ 
+-/* afa_trapdisc_mirror_enable
++/* afa_trap_mirror_enable
+  * Mirror enable.
+  */
+-MLXSW_ITEM32(afa, trapdisc, mirror_enable, 0x08, 24, 1);
++MLXSW_ITEM32(afa, trap, mirror_enable, 0x08, 24, 1);
+ 
+ static inline void
+-mlxsw_afa_trapdisc_pack(char *payload,
+-			enum mlxsw_afa_trapdisc_trap_action trap_action,
+-			enum mlxsw_afa_trapdisc_forward_action forward_action,
+-			u16 trap_id)
++mlxsw_afa_trap_pack(char *payload,
++		    enum mlxsw_afa_trap_trap_action trap_action,
++		    enum mlxsw_afa_trap_forward_action forward_action,
++		    u16 trap_id)
  {
- 	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
+-	mlxsw_afa_trapdisc_trap_action_set(payload, trap_action);
+-	mlxsw_afa_trapdisc_forward_action_set(payload, forward_action);
+-	mlxsw_afa_trapdisc_trap_id_set(payload, trap_id);
++	mlxsw_afa_trap_trap_action_set(payload, trap_action);
++	mlxsw_afa_trap_forward_action_set(payload, forward_action);
++	mlxsw_afa_trap_trap_id_set(payload, trap_id);
+ }
+ 
+ static inline void
+-mlxsw_afa_trapdisc_mirror_pack(char *payload, bool mirror_enable,
+-			       u8 mirror_agent)
++mlxsw_afa_trap_mirror_pack(char *payload, bool mirror_enable,
++			   u8 mirror_agent)
+ {
+-	mlxsw_afa_trapdisc_mirror_enable_set(payload, mirror_enable);
+-	mlxsw_afa_trapdisc_mirror_agent_set(payload, mirror_agent);
++	mlxsw_afa_trap_mirror_enable_set(payload, mirror_enable);
++	mlxsw_afa_trap_mirror_agent_set(payload, mirror_agent);
+ }
+ 
+ int mlxsw_afa_block_append_drop(struct mlxsw_afa_block *block)
+ {
+-	char *act = mlxsw_afa_block_append_action(block,
+-						  MLXSW_AFA_TRAPDISC_CODE,
+-						  MLXSW_AFA_TRAPDISC_SIZE);
++	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
++						  MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+-	mlxsw_afa_trapdisc_pack(act, MLXSW_AFA_TRAPDISC_TRAP_ACTION_NOP,
+-				MLXSW_AFA_TRAPDISC_FORWARD_ACTION_DISCARD, 0);
++	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_NOP,
++			    MLXSW_AFA_TRAP_FORWARD_ACTION_DISCARD, 0);
+ 	return 0;
+ }
+ EXPORT_SYMBOL(mlxsw_afa_block_append_drop);
+ 
+ int mlxsw_afa_block_append_trap(struct mlxsw_afa_block *block, u16 trap_id)
+ {
+-	char *act = mlxsw_afa_block_append_action(block,
+-						  MLXSW_AFA_TRAPDISC_CODE,
+-						  MLXSW_AFA_TRAPDISC_SIZE);
++	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
++						  MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+-	mlxsw_afa_trapdisc_pack(act, MLXSW_AFA_TRAPDISC_TRAP_ACTION_TRAP,
+-				MLXSW_AFA_TRAPDISC_FORWARD_ACTION_DISCARD,
+-				trap_id);
++	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_TRAP,
++			    MLXSW_AFA_TRAP_FORWARD_ACTION_DISCARD, trap_id);
+ 	return 0;
+ }
+ EXPORT_SYMBOL(mlxsw_afa_block_append_trap);
+@@ -845,15 +842,13 @@ EXPORT_SYMBOL(mlxsw_afa_block_append_trap);
+ int mlxsw_afa_block_append_trap_and_forward(struct mlxsw_afa_block *block,
+ 					    u16 trap_id)
+ {
+-	char *act = mlxsw_afa_block_append_action(block,
+-						  MLXSW_AFA_TRAPDISC_CODE,
+-						  MLXSW_AFA_TRAPDISC_SIZE);
++	char *act = mlxsw_afa_block_append_action(block, MLXSW_AFA_TRAP_CODE,
++						  MLXSW_AFA_TRAP_SIZE);
+ 
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+-	mlxsw_afa_trapdisc_pack(act, MLXSW_AFA_TRAPDISC_TRAP_ACTION_TRAP,
+-				MLXSW_AFA_TRAPDISC_FORWARD_ACTION_FORWARD,
+-				trap_id);
++	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_TRAP,
++			    MLXSW_AFA_TRAP_FORWARD_ACTION_FORWARD, trap_id);
+ 	return 0;
+ }
+ EXPORT_SYMBOL(mlxsw_afa_block_append_trap_and_forward);
+@@ -920,13 +915,13 @@ mlxsw_afa_block_append_allocated_mirror(struct mlxsw_afa_block *block,
+ 					u8 mirror_agent)
+ {
+ 	char *act = mlxsw_afa_block_append_action(block,
+-						  MLXSW_AFA_TRAPDISC_CODE,
+-						  MLXSW_AFA_TRAPDISC_SIZE);
++						  MLXSW_AFA_TRAP_CODE,
++						  MLXSW_AFA_TRAP_SIZE);
+ 	if (IS_ERR(act))
+ 		return PTR_ERR(act);
+-	mlxsw_afa_trapdisc_pack(act, MLXSW_AFA_TRAPDISC_TRAP_ACTION_NOP,
+-				MLXSW_AFA_TRAPDISC_FORWARD_ACTION_FORWARD, 0);
+-	mlxsw_afa_trapdisc_mirror_pack(act, true, mirror_agent);
++	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_NOP,
++			    MLXSW_AFA_TRAP_FORWARD_ACTION_FORWARD, 0);
++	mlxsw_afa_trap_mirror_pack(act, true, mirror_agent);
+ 	return 0;
+ }
+ 
 -- 
 2.21.1
 
