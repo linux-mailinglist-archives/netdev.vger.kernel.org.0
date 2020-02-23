@@ -2,141 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F7D169A80
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 23:40:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C47169AE0
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 00:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgBWWkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 17:40:52 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41912 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgBWWkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 17:40:52 -0500
-Received: by mail-pg1-f196.google.com with SMTP id 70so4085572pgf.8;
-        Sun, 23 Feb 2020 14:40:52 -0800 (PST)
+        id S1727253AbgBWXSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 18:18:00 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35757 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727207AbgBWXR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 18:17:59 -0500
+Received: by mail-wm1-f66.google.com with SMTP id b17so7457625wmb.0;
+        Sun, 23 Feb 2020 15:17:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=j2mYDc1i3ua7STLlJCa6Hdc5WmjYOywz/EKCcFwocXo=;
-        b=mFToI9xjI4QQ9dypWcrCsgTEWlSEJ6HCXy8z1JYt1MFng6K1F8VTZeGlZhW0+SLGA3
-         4Ga5OgTGeaSZwIyGp87GNUhQ01M2Q3GXMhtRdvs1YmCiXaaVk/2GBwL8zWHwrka9Sa2i
-         uP14yCI5z8L+/b1/JbAi6Vzpf8y+kCyitXPVleKmPNsEq3jrBkf2k9GJUKXBNIwbPr8N
-         yXFQKfR0AVJ7lNqiw5XQs0yuRXpBUQGbppEwIDeLwf/y/8UZxhyMtrEDX46Cyxbp4v0o
-         B4W+pB7ia/IFGgBnAK9/vQwqZw+HDTsIkKZxTd2BPaf1vKrs246j/FhiXU4GDz4NWUem
-         IP+w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IxPYnFwdm6HYoZarbVA1a85F6D8H58D7m4Xg57cuQ3I=;
+        b=hJEfNdUlRN46gddN4A6STA4svNTqFZlPSiI77hwK1jiYQT1XP65YDz+AlW4FiOnLUN
+         ryNH7h1lp3DKqmBLABQWCa6SRfyU6cw/+F3UExOapJkj5Ne3LsP5wFvLnv4tOXXQP1ki
+         eDO3INSfT9gfjsTUH//R3yOJp3akeoG1nSenyKm4m+HF1PQEG+xajZLxI/yX+B0t96FB
+         RmQC58oGzsCLkL+uqrlzEOEQ9uQNCPtzNiyr9tSw/NFW/is5v9cGV0MFw80AoOqUEsOm
+         ptSZae0ykgit8MCCAJhThawefmjmu6NO2oo7cluWhqsRvQpB0yCxRWj0ixjsef5SnY6S
+         LX5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=j2mYDc1i3ua7STLlJCa6Hdc5WmjYOywz/EKCcFwocXo=;
-        b=ftgzxoVwi34IRoAVWjoN57om8UULRt9ncA2/HYgB90bm3jc3yBIElj5fGUS4CzNlZJ
-         n8N2dY3KrCy0JWf74T6h6ANEvbH5edsf4xwzoyCjc5s2zVH9TP7JrDntsaJjMYf5cg6F
-         SXqXVmoQxmRDJWg9HxZ0rduLxomAgwaO01I0DOOlBhNaR4y5V2btCDo1puok++4+0FCF
-         Ine6xwriumVkmrjgMsJXhQ+eU3imISombplQH2C6XaRTfCL7b+v1r+hsajC+ZZMDN5Ma
-         454FF6nTHhOWvFQAQEO2FeMmzuRYTLsJGV2OyOJoMAU16qS67z5F5Sk41vy0cRQ6uCnS
-         PE5w==
-X-Gm-Message-State: APjAAAU+viqLENDEwv6EXBWrvZZro6YjiTQjPBKD88RTGNA5yxq0JNQE
-        21KYR8Kfk1QFqfV41je4jew=
-X-Google-Smtp-Source: APXvYqxzYVkwsh8iybt5JEDibUnTgddsvfUWsaYYvbMj8IkRablUTnWOw5fdtlt39H18Ky0wJcLsDw==
-X-Received: by 2002:a63:2cd6:: with SMTP id s205mr49190694pgs.258.1582497651814;
-        Sun, 23 Feb 2020 14:40:51 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:7207])
-        by smtp.gmail.com with ESMTPSA id t19sm9864351pgg.23.2020.02.23.14.40.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 23 Feb 2020 14:40:51 -0800 (PST)
-Date:   Sun, 23 Feb 2020 14:40:48 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [patch V2 01/20] bpf: Enforce preallocation for all
- instrumentation programs
-Message-ID: <20200223224046.o6ynykpvg6kl75ar@ast-mbp>
-References: <20200222042916.k3r5dj5njoo2ywyj@ast-mbp>
- <87o8tr3thx.fsf@nanos.tec.linutronix.de>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IxPYnFwdm6HYoZarbVA1a85F6D8H58D7m4Xg57cuQ3I=;
+        b=OJLpB0vEepckurDFnPiY1QkRfm3tS0aqc+CuuqAN9JNSy3+uUjzcA8XGnRvuCoAOxv
+         CxSxnp3qI2IPssSzBgHv8VKjTwGXAeACL4RXHDWZ3HUCQ2N4q+MdFjQ0ImTlZXrE7aOC
+         mtDBMWbc2MqMtpQTIFCXtOEuYG0C7p7X47Ct9svOddx1nok2yYrKeGKBxPqxKuQROtHv
+         8pUPWOCTLj91gHDHOsFoh77FsazNm1K7Wd3/TWikR6+7/fEFX/HqGYA0d6FcHD6+puNE
+         CX9z8fcpHC0SBMtO6SB9vsoZWCofwpgtOlXVgYa2MPVurhcHi1tLeBrTP2w40SIdOcO9
+         mIxQ==
+X-Gm-Message-State: APjAAAUQGvg9NQ+9aqK9M1s388QUSsIivr4DsDCN/ZJ1443rwwX/p2i5
+        fJPdWvl60hGzyXbh0zIJuQ==
+X-Google-Smtp-Source: APXvYqxlb5IshkvipPzCa0LMPNtrPnq+GZC2IYdqSD+wKq4wzMM1mhHnt/y8zw+TO/+8uNI6Og3k1w==
+X-Received: by 2002:a1c:df09:: with SMTP id w9mr17047688wmg.143.1582499877478;
+        Sun, 23 Feb 2020 15:17:57 -0800 (PST)
+Received: from ninjahost.lan (host-2-102-13-223.as13285.net. [2.102.13.223])
+        by smtp.googlemail.com with ESMTPSA id q6sm8968203wrf.67.2020.02.23.15.17.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 15:17:57 -0800 (PST)
+From:   Jules Irenge <jbi.octave@gmail.com>
+To:     boqun.feng@gmail.com
+Cc:     jbi.octave@gmail.com, linux-kernel@vger.kernel.org,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-sctp@vger.kernel.org (open list:SCTP PROTOCOL),
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
+Subject: [PATCH 04/30] sctp: Add missing annotation for sctp_err_finish()
+Date:   Sun, 23 Feb 2020 23:16:45 +0000
+Message-Id: <20200223231711.157699-5-jbi.octave@gmail.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200223231711.157699-1-jbi.octave@gmail.com>
+References: <0/30>
+ <20200223231711.157699-1-jbi.octave@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o8tr3thx.fsf@nanos.tec.linutronix.de>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 22, 2020 at 09:40:10AM +0100, Thomas Gleixner wrote:
-> Alexei,
-> 
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> > On Thu, Feb 20, 2020 at 09:45:18PM +0100, Thomas Gleixner wrote:
-> >> The assumption that only programs attached to perf NMI events can deadlock
-> >> on memory allocators is wrong. Assume the following simplified callchain:
-> >>  	 */
-> >> -	if (prog->type == BPF_PROG_TYPE_PERF_EVENT) {
-> >> +	if ((is_tracing_prog_type(prog->type)) {
-> >
-> > This doesn't build.
-> > I assumed the typo somehow sneaked in and proceeded, but it broke
-> > a bunch of tests:
-> > Summary: 1526 PASSED, 0 SKIPPED, 54 FAILED
-> > One can argue that the test are unsafe and broken.
-> > We used to test all those tests with and without prealloc:
-> > map_flags = 0;
-> > run_all_tests();
-> > map_flags = BPF_F_NO_PREALLOC;
-> > run_all_tests();
-> > Then 4 years ago commit 5aa5bd14c5f866 switched hashmap to be no_prealloc
-> > always and that how it stayed since then. We can adjust the tests to use
-> > prealloc with tracing progs, but this breakage shows that there could be plenty
-> > of bpf users that also use BPF_F_NO_PREALLOC with tracing. It could simply
-> > be because they know that their kprobes are in a safe spot (and kmalloc is ok)
-> > and they want to save memory. They could be using large max_entries parameter
-> > for worst case hash map usage, but typical load is low. In general hashtables
-> > don't perform well after 50%, so prealloc is wasting half of the memory. Since
-> > we cannot control where kprobes are placed I'm not sure what is the right fix
-> > here. It feels that if we proceed with this patch somebody will complain and we
-> > would have to revert, but I'm willing to take this risk if we cannot come up
-> > with an alternative fix.
-> 
-> Having something which is known to be broken exposed is not a good option
-> either.
-> 
-> Just assume that someone is investigating a kernel issue. BOFH who is
-> stuck in the 90's uses perf, kprobes and tracepoints. Now he goes on
-> vacation and the new kid in the team decides to flip that over to BPF.
-> So now instead of getting information he deadlocks or crashes the
-> machine.
-> 
-> You can't just tell him, don't do that then. It's broken by design and
-> you really can't tell which probes are safe and which are not because
-> the allocator calls out into whatever functions which might look
-> completely unrelated.
-> 
-> So one way to phase this out would be:
-> 
-> 	if (is_tracing()) {
->         	if (is_perf() || IS_ENABLED(RT))
->                 	return -EINVAL;
->                 WARN_ONCE(.....)
->         }
-> 
-> And clearly write in the warning that this is dangerous, broken and
-> about to be forbidden. Hmm?
+Sparse reports a warning at sctp_err_finish()
+warning: context imbalance in sctp_err_finish() - unexpected unlock
 
-Yeah. Let's start with WARN_ONCE and verbose(env, "dangerous, broken")
-so the users see it in the verifier log and people who maintain
-servers (like kernel-team-s in fb, goog, etc) see it as well
-in their dmesg logs. So the motivation will be on both sides.
-Then in few kernel releases we can flip it to disable.
-Or we'll find a way to make it work without pre-allocating.
+The root cause is a missing annotation at sctp_err_finish()
+Add the missing  __releases(&((__sk)->sk_lock.slock)) annotation
+
+Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
+---
+ net/sctp/input.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index efaaefc3bb1c..55d4fc6f371d 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -548,6 +548,7 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
+ 
+ /* Common cleanup code for icmp/icmpv6 error handler. */
+ void sctp_err_finish(struct sock *sk, struct sctp_transport *t)
++	__releases(&((__sk)->sk_lock.slock))
+ {
+ 	bh_unlock_sock(sk);
+ 	sctp_transport_put(t);
+-- 
+2.24.1
+
