@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49654169A10
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 21:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03FED169A0E
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 21:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727326AbgBWUrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 15:47:55 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46646 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727188AbgBWUr3 (ORCPT
+        id S1727218AbgBWUr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 15:47:29 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35823 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727190AbgBWUr3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 15:47:29 -0500
-Received: by mail-wr1-f65.google.com with SMTP id g4so1645131wro.13;
-        Sun, 23 Feb 2020 12:47:26 -0800 (PST)
+Received: by mail-wr1-f66.google.com with SMTP id w12so8015058wrt.2;
+        Sun, 23 Feb 2020 12:47:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Sv8jsEDNCFEDM8odFJWiRtPKsZJBV3sbBHzIM26MUDA=;
-        b=LByWPWncpyh0fl9q5MQGiNZ3TN0DL0kQn3wDO4l+kNOmL+BQivgXgiM+ZF31Ot7Pvp
-         pICQTxBM+xWe3/Usw+HtBNBRZp2j/8uD3Z0nOCsPFvkHh/txrSID4s65V0RhLUKWn3C5
-         Occ25OJ60b50E4E2vtinwe62G84STsrgi/6av4FhFftk24sB517U/t1MeQ0mh4NegGXH
-         v9rowHIkBfldL7dXflYQvrkGP7Wl94BqHwTcJdHdIgGtzbB9lrau71SHXRd3de6UHWWs
-         Dzz3S20a5IKidkaurR3+O45/wISKw1jivmhISgEd9hIQly5ktWY6li0M1dez4mYOBs1d
-         Ap2Q==
+        bh=QZjZXAIJGmhzIoJIXLLcQGATRWxRcQcmbOZU2XUvhr8=;
+        b=FBcUEWtHHdC03wzlf5lOzaeabI5rY7dNTvBXsGVuHv6J7MVi2E/uGnJD4a5eQeSXsB
+         KjDZyemAlBZNe4aQxdzHSzOT1dWMdWNqQ77sozG7WjNLXc+YV/fBmTh/7MUEttAHanR9
+         Jsn1aza9iZCS/Zz7pFw75NHtnyXlY8m+udFgo/T7qqBWULbF0OO3g8JdbenVkYVjf7km
+         7RKuWc5KQSGrYn483r1iY5fLdVKLriMxdn1+Hjnds2O5ueFGY7/T3oG4RfiuZKWGM8KX
+         qOiNdKnfauQQAmCcXMEOO0mx4fpHsDcu9Jo7lljwYXBqOQEltJJ4Z+TYOEBmUwVuUK7u
+         Glhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Sv8jsEDNCFEDM8odFJWiRtPKsZJBV3sbBHzIM26MUDA=;
-        b=HwSSKn99IE1BSjTtpx74+WLPy9U7mVKd3Uh0ETNRXIbeZbnbQQVkEdzHH1A9UVW/bG
-         4xzkjAM2TPa7VWoDIsquJgRvnI+jZ7s6oeYAqmLj7xvvwIDcoXSrNoPl5sO4OZWwDd7u
-         sF4ifKu7FDsw9m99//EMN7SQop1udsIQB7QF64k5rRdrGrsfJOt0xnz+C+iWZDmkKW6m
-         5SdSxaoyRJ/zv2GHz8oK49mjkkDiL0zsc1C2hM8IMi9FXFEnDl+VkIgYSfr40k3/B0Ro
-         FtPv7tqFAiTq+Mu+Zw/GzBJE1iI6FU+b/N/FNtEmoESty6OfCeBTbaRtvXcqIaVARaql
-         gqbQ==
-X-Gm-Message-State: APjAAAWtFM9OzMkJbwoh/vhNyIVYgEdC1e3DzOBMydR7NMAQYc3qFMIy
-        ciLNEj1P4zOoJEd8f7F/JiU=
-X-Google-Smtp-Source: APXvYqz9BRcLgtmNXrCiLnXwc44nHuiohUPLa+G7d5UwS5JCClSsN/2vlwkClCklXj7ED3Fyrxo6qg==
-X-Received: by 2002:adf:ea42:: with SMTP id j2mr3149619wrn.377.1582490845979;
-        Sun, 23 Feb 2020 12:47:25 -0800 (PST)
+        bh=QZjZXAIJGmhzIoJIXLLcQGATRWxRcQcmbOZU2XUvhr8=;
+        b=EoTxNHw9U6/YFJFp2a19TYsou/vaAi2Dv3Uwi4zTE/gyVVTgS2cBiIZk1bUQZS3Oh7
+         +DLpCqxcJvslw4Yf1EtQCugz2OA9lmyHk23ZRe6hR2tlc5Vl9jLof8qHxqTxYWrzDRAw
+         CA9516tphsI3SZR4XGTB2VzdtfAwEO1IC81txqmC/9ulvgkW17HxFPPqcjIhHvSwgZb1
+         7pdDj0tKD4+h7+qLoi59T78NNo1xGo+7lcaby5hvNqIHG5IdOCOJvXDojWI/Wnx1gphj
+         w9EH78s2+cKu63JY5UVfnXVvga9madiwVaAGQOca9vJtZq+rzbHdKB9R5yFedHnQkF8T
+         N+fA==
+X-Gm-Message-State: APjAAAXvxZ55GC65RJ5OlRmkMc0XEpDH0c4rz7hKiwNIZ6Mxco2Twj4r
+        3E06zjDPhtMsaddckOO8ZhQ=
+X-Google-Smtp-Source: APXvYqwui9MKPbwXd20NXyO7coHBC44a229d+ygMe0+oWAsi8GGbCfVA7032TrEIAXA89yiBWxpQ0g==
+X-Received: by 2002:adf:f744:: with SMTP id z4mr57099002wrp.318.1582490847193;
+        Sun, 23 Feb 2020 12:47:27 -0800 (PST)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id z8sm14817927wrq.22.2020.02.23.12.47.24
+        by smtp.gmail.com with ESMTPSA id z8sm14817927wrq.22.2020.02.23.12.47.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 12:47:25 -0800 (PST)
+        Sun, 23 Feb 2020 12:47:26 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     shawnguo@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
         devicetree@vger.kernel.org
@@ -50,9 +50,9 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         michael@walle.cc, davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 devicetree 2/6] arm64: dts: fsl: ls1028a: disable all enetc ports by default
-Date:   Sun, 23 Feb 2020 22:47:12 +0200
-Message-Id: <20200223204716.26170-3-olteanv@gmail.com>
+Subject: [PATCH v3 devicetree 3/6] net: dsa: felix: Use PHY_INTERFACE_MODE_INTERNAL instead of GMII
+Date:   Sun, 23 Feb 2020 22:47:13 +0200
+Message-Id: <20200223204716.26170-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200223204716.26170-1-olteanv@gmail.com>
 References: <20200223204716.26170-1-olteanv@gmail.com>
@@ -63,82 +63,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-There are few boards that enable all ENETC ports, so instead of having
-board DTs disable them, do so in the DTSI and have the boards enable the
-ports they use.
+phy-mode = "gmii" is confusing because it may mean that the port
+supports the 8-bit-wide parallel data interface pinout, which it
+doesn't.
+
+It may also be confusing because one of the "gmii" internal ports is
+actually overclocked to run at 2.5Gbps (even though, yes, as far as the
+switch MAC is concerned, it still thinks it's gigabit).
+
+So use the phy-mode = "internal" property to describe the internal ports
+inside the NXP LS1028A chip (the ones facing the ENETC). The change
+should be fine, because the device tree bindings document is yet to be
+introduced, and there are no stable DT blobs in use.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Tested-by: Michael Walle <michael@walle.cc>
 ---
 Changes in v3:
+None.
+
+Changes in v2:
 Patch is new.
 
- arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 1 +
- arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts | 5 +----
- arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi    | 5 +++++
- 3 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 3 +--
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index ca409d907b36..dd69c5b821e9 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -225,6 +225,7 @@
- &enetc_port1 {
- 	phy-handle = <&qds_phy1>;
- 	phy-connection-type = "rgmii-id";
-+	status = "okay";
- };
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 3257962c147e..35124ef7e75b 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -176,8 +176,7 @@ static void felix_phylink_validate(struct dsa_switch *ds, int port,
+ 	phylink_set(mask, 100baseT_Full);
+ 	phylink_set(mask, 1000baseT_Full);
  
- &sai1 {
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-index afb55653850d..14efe3b06042 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-@@ -180,6 +180,7 @@
- &enetc_port0 {
- 	phy-handle = <&sgmii_phy0>;
- 	phy-connection-type = "sgmii";
-+	status = "okay";
- 
- 	mdio {
- 		#address-cells = <1>;
-@@ -190,10 +191,6 @@
- 	};
- };
- 
--&enetc_port1 {
--	status = "disabled";
--};
--
- &sai4 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-index dfead691e509..1b330b7cce62 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-@@ -705,17 +705,22 @@
- 			enetc_port0: ethernet@0,0 {
- 				compatible = "fsl,enetc";
- 				reg = <0x000000 0 0 0 0>;
-+				status = "disabled";
- 			};
-+
- 			enetc_port1: ethernet@0,1 {
- 				compatible = "fsl,enetc";
- 				reg = <0x000100 0 0 0 0>;
-+				status = "disabled";
- 			};
-+
- 			enetc_mdio_pf3: mdio@0,3 {
- 				compatible = "fsl,enetc-mdio";
- 				reg = <0x000300 0 0 0 0>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 			};
-+
- 			ethernet@0,4 {
- 				compatible = "fsl,enetc-ptp";
- 				reg = <0x000400 0 0 0 0>;
+-	/* The internal ports that run at 2.5G are overclocked GMII */
+-	if (state->interface == PHY_INTERFACE_MODE_GMII ||
++	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
+ 	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
+ 	    state->interface == PHY_INTERFACE_MODE_USXGMII) {
+ 		phylink_set(mask, 2500baseT_Full);
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 2c812b481778..93800e81cdd4 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -955,8 +955,7 @@ static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
+ 					phy_interface_t phy_mode)
+ {
+ 	switch (phy_mode) {
+-	case PHY_INTERFACE_MODE_GMII:
+-		/* Only supported on internal to-CPU ports */
++	case PHY_INTERFACE_MODE_INTERNAL:
+ 		if (port != 4 && port != 5)
+ 			return -ENOTSUPP;
+ 		return 0;
 -- 
 2.17.1
 
