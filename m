@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E31C41698B3
-	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 17:55:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0F91698CE
+	for <lists+netdev@lfdr.de>; Sun, 23 Feb 2020 18:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgBWQz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 11:55:26 -0500
-Received: from bonobo.elm.relay.mailchannels.net ([23.83.212.22]:48376 "EHLO
-        bonobo.elm.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726208AbgBWQz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 11:55:26 -0500
-X-Sender-Id: dreamhost|x-authsender|craig@zhatt.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id AEFEC920916
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 16:47:18 +0000 (UTC)
-Received: from pdx1-sub0-mail-a55.g.dreamhost.com (100-96-0-13.trex.outbound.svc.cluster.local [100.96.0.13])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 3668092086C
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 16:47:18 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|craig@zhatt.com
-Received: from pdx1-sub0-mail-a55.g.dreamhost.com ([TEMPUNAVAIL].
- [64.90.62.162])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
-        by 0.0.0.0:2500 (trex/5.18.5);
-        Sun, 23 Feb 2020 16:47:18 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|craig@zhatt.com
-X-MailChannels-Auth-Id: dreamhost
-X-Minister-Rock: 27c9d99b4f8773c8_1582476438427_4271670727
-X-MC-Loop-Signature: 1582476438426:2483662335
-X-MC-Ingress-Time: 1582476438426
-Received: from pdx1-sub0-mail-a55.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a55.g.dreamhost.com (Postfix) with ESMTP id 57912801C6
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 08:47:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zhatt.com; h=mime-version
-        :from:date:message-id:subject:to:content-type; s=zhatt.com; bh=o
-        koi4AQnz/oDtL/v/NUc0WVr7zw=; b=hlEYjIUFc7gmFGydUHb6s/tCLPy++8f16
-        /aMqe/Z2wO+RdyIb8Ymq38l0fjNEPb8NCKuSEHaK20tBlfwAypNm7Gji3YleFpCi
-        VaX3uEOO5CX4DfKFi8y49EI20lFWnE+S03jkC7bdVZlLmLwlT+OtNTFFaHbP76TF
-        9mlGrbfPfw=
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: craig@zhatt.com)
-        by pdx1-sub0-mail-a55.g.dreamhost.com (Postfix) with ESMTPSA id 0C6397F603
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 08:47:13 -0800 (PST)
-Received: by mail-wm1-f45.google.com with SMTP id q9so6644367wmj.5
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 08:47:13 -0800 (PST)
-X-Gm-Message-State: APjAAAVy3YpwJ+OrOyvzCLBCenv7u3j7JNw/SBFdUa2+szLi2HhiwbOD
-        KU7sayn8JeA4sd8EDs7EHEkOX0EuI5XALKOK2Sg=
-X-Google-Smtp-Source: APXvYqyYSfzDLjwIUrqhkXcfgKZQLID7gfPXRw8B4x1ycU2wzUQ7no/mNAzOv92LpjZMuoy4Md5Hh53d8y+iOI3lh0I=
-X-Received: by 2002:a05:600c:22d3:: with SMTP id 19mr17481732wmg.92.1582476432312;
- Sun, 23 Feb 2020 08:47:12 -0800 (PST)
+        id S1727084AbgBWRUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 12:20:21 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33141 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726208AbgBWRUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Feb 2020 12:20:21 -0500
+Received: by mail-pl1-f195.google.com with SMTP id ay11so3026476plb.0;
+        Sun, 23 Feb 2020 09:20:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MUfs7lyaep1+x1XygloZl4yBc6FlYxcZEd+NqGjQwiM=;
+        b=K2tC5sIvThPq+B1y9vvTpJ7jDeA5hkzOt3jM1gpmMFemAmqb2DZ13w/miPvObBb9s4
+         f+fYuH1up+UuDtdTWIoQB7wbpkfOO1WWyFo3mXzs2vDP5+RFnt9U45shdE3HEou5MZ78
+         HUtsEwyuz3mGc6vzuZ3tqIkOkHcgAZEoOSeqxIubgspZcBWnZMYZw9w0o6i90ps7ZmOQ
+         XMXuMUCOsMAoret4ITR+0aS2xSQK3F4dv7+Ha9M0X3OtCr5WrjEJV26jpgA5shrfM8Fv
+         KFxh8UcR8tuZdt8jlArw+CieGDz3+ZrX2pYpDptX6J4gIx8IeSF7/3xZssGRaf7pMaGn
+         r4KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MUfs7lyaep1+x1XygloZl4yBc6FlYxcZEd+NqGjQwiM=;
+        b=F+6t81up++JtQ3tYBQLqUgODVID4YxBwryjGO5db228x96h7oe1rd3k1iYiebZKEn5
+         bvCiuCl/eYW1ucEa6wgQ0Zcmc7cEB1xF9Gm2obvrQ6KPpkQ1Ymh6VykkLrp5M7oc6By8
+         Tp9htmgfEb97DA3zS9c2V4W7TzY08M39gEKyD8DliP0/KZGdNJCg+r4bpr+aHMhVR/F0
+         v6KyC4Bm2NxcPFghnvO4PYmaDN8KpyIhq22+4XL2HDw0OpomayU6iyS/N6KMaVtMbDfP
+         ewlxx+Zpcjq9ooCEk0f6VpOdSiXVBkS4kGZwXvV4u9oDW5HTR/rsEkWGl/h2pTvk3Wou
+         Eqqg==
+X-Gm-Message-State: APjAAAXbb4GVNPnD7WctZtuJOkSRWJJpz7YyylJ6NYYom39EW3hQYaEc
+        16INPu3+rwtw8Fj0p1Q+CT8=
+X-Google-Smtp-Source: APXvYqybLZBvG94s/8G7V0fd+jZvZdno/xiWU3JfXcc3IQ+YviQtpNXXBQra6Ll5xFmSqG4cefrHSw==
+X-Received: by 2002:a17:902:8eca:: with SMTP id x10mr45052337plo.94.1582478419297;
+        Sun, 23 Feb 2020 09:20:19 -0800 (PST)
+Received: from localhost.localdomain ([103.87.57.33])
+        by smtp.googlemail.com with ESMTPSA id 13sm9505424pfj.68.2020.02.23.09.20.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 09:20:18 -0800 (PST)
+From:   Amol Grover <frextrite@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH 1/2] netfilter: Pass lockdep expression to __instance_lookup traversal
+Date:   Sun, 23 Feb 2020 22:49:45 +0530
+Message-Id: <20200223171945.11391-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-DH-BACKEND: pdx1-sub0-mail-a55
-From:   Craig Robson <craig@zhatt.com>
-Date:   Sun, 23 Feb 2020 08:46:56 -0800
-X-Gmail-Original-Message-ID: <CAK0T-BKRWOLR8h7uaFV6pYfkYcG8qb0CrzLXSvcpNWafWcA_dg@mail.gmail.com>
-Message-ID: <CAK0T-BKRWOLR8h7uaFV6pYfkYcG8qb0CrzLXSvcpNWafWcA_dg@mail.gmail.com>
-Subject: Subject: [PATCH net-next] bonding: Fix hashing byte order
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-VR-OUT-STATUS: OK
-X-VR-OUT-SCORE: 0
-X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedugedrkeekgdelfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucggtfgfnhhsuhgsshgtrhhisggvpdfftffgtefojffquffvnecuuegrihhlohhuthemuceftddtnecunecujfgurhepggfhfffkuffvtgesthdtredttddtjeenucfhrhhomhepvehrrghighcutfhosghsohhnuceotghrrghighesiihhrghtthdrtghomheqnecukfhppedvtdelrdekhedruddvkedrgeehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhppdhhvghlohepmhgrihhlqdifmhduqdhfgeehrdhgohhoghhlvgdrtghomhdpihhnvghtpedvtdelrdekhedruddvkedrgeehpdhrvghtuhhrnhdqphgrthhhpeevrhgrihhgucftohgsshhonhcuoegtrhgrihhgseiihhgrthhtrdgtohhmqedpmhgrihhlfhhrohhmpegtrhgrihhgseiihhgrthhtrdgtohhmpdhnrhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change to use host order bytes when hashing IP address.
+log->instance_table[] may be traversed outside RCU read-side
+critical section but under the protection of log->instances_lock.
+
+Hence, add the corresponding lockdep expression to silence
+false-positive warnings.
+
+Signed-off-by: Amol Grover <frextrite@gmail.com>
 ---
- drivers/net/bonding/bond_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/netfilter/nfnetlink_log.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index fef599eb822b..6f9a0758c54f 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3274,8 +3274,8 @@ u32 bond_xmit_hash(struct bonding *bond, struct
-sk_buff *skb)
-                hash = bond_eth_hash(skb);
-        else
-                hash = (__force u32)flow.ports.ports;
--       hash ^= (__force u32)flow_get_u32_dst(&flow) ^
--               (__force u32)flow_get_u32_src(&flow);
-+       hash ^= ntohl((__force u32)flow_get_u32_dst(&flow)) ^
-+               ntohl((__force u32)flow_get_u32_src(&flow));
-        hash ^= (hash >> 16);
-        hash ^= (hash >> 8);
-
+diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
+index 0ba020ca38e6..09acc579b566 100644
+--- a/net/netfilter/nfnetlink_log.c
++++ b/net/netfilter/nfnetlink_log.c
+@@ -104,7 +104,8 @@ __instance_lookup(struct nfnl_log_net *log, u_int16_t group_num)
+ 	struct nfulnl_instance *inst;
+ 
+ 	head = &log->instance_table[instance_hashfn(group_num)];
+-	hlist_for_each_entry_rcu(inst, head, hlist) {
++	hlist_for_each_entry_rcu(inst, head, hlist,
++				 lockdep_is_held(&log->instances_lock)) {
+ 		if (inst->group_num == group_num)
+ 			return inst;
+ 	}
 -- 
 2.24.1
+
