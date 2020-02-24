@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC7316A032
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B2816A046
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727426AbgBXIii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:38:38 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42361 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726216AbgBXIii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:38:38 -0500
-Received: by mail-qk1-f196.google.com with SMTP id o28so7988776qkj.9
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:38:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=oDOHsVBllGLqzPGxFKFlfVXiTsWDTxesE0vuR1/hyrQ=;
-        b=AaeBJj5BzViS7CnZaS7cDZn98qibPevI8sJ2Fr8x1H8QSZtnf5irt56hIilIeya8R3
-         Ak3+d4zf7JPjxt5Ae0ShCLpdcvcJr+4DTWYl/S6VbQ4+l51evya/G24Rk998XQTiwzxk
-         yxmLvJ9nCHUn3pQ0XbuzjEyIy6dgNkFPg30VMQTj+K5cSogGnvT87QsIc9o8yVG+0flf
-         n00lBAcWBxOaqP5cpCGrpBCw8RZ5+JwbAeMY6Dd3GMstkQW3fAV1jsUgrhYFbT6vN1Kj
-         ahi2EBazoAM3KVxT80oU7+BoQY4WQ62+qQ/s/Un6vuXWOmJalIuz3V84gbokoxU6L1ae
-         Rc1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=oDOHsVBllGLqzPGxFKFlfVXiTsWDTxesE0vuR1/hyrQ=;
-        b=dh2CxfoVLGSwr76EGqN3DhvqajY+jqnf8A6xBRuem3qaJvh1eScPb/wKm/dcoPhMII
-         21G/Eo2w63NVqDZWQS8oAdt8CH8WJrf/FrBZ5wxLYUJS5rlGwZza5J1B+AeS3S4zaDX7
-         EPKdwXZQaJ+lcZINRph604TvxH1/tlz/6ZTUu9bug+OuQFkngTyYJsafkQ174I8KAqXe
-         n8WqNWhLPCkd1byv2gceYeDG2fVkltMGmSLMUcoflMfGbfVdZN4gxSDG9928z1VVvVMW
-         W3arPMsuwwvu1SnnRsbPZ90SdR+ULQPHUqWqzU5MBURw6XK42EYDbgYyjrg8qpp1AWLA
-         aYrA==
-X-Gm-Message-State: APjAAAVC16/GMhOP5BNxMpsXTsRrTwB6imsMXmJ+Yd96m7hhK3r8I43G
-        wxk7FzHHxZqHMEaiUetdasMt4u7dFpQhwkWhlzPQEwGBakE=
-X-Google-Smtp-Source: APXvYqzvp4yiCGy0vtYQyqTNEOog+Ws+lAj3WZIhdFaudL3LYvN3JFeOriQtymtbXSbnt4i8q4j+1JXgVJZMjTha6r4=
-X-Received: by 2002:a37:6343:: with SMTP id x64mr30515652qkb.469.1582533516842;
- Mon, 24 Feb 2020 00:38:36 -0800 (PST)
+        id S1727170AbgBXIpu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Feb 2020 03:45:50 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:34669 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726509AbgBXIpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:45:49 -0500
+X-Originating-IP: 86.201.231.92
+Received: from xps13 (lfbn-tou-1-149-92.w86-201.abo.wanadoo.fr [86.201.231.92])
+        (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id B8DBF60015;
+        Mon, 24 Feb 2020 08:45:44 +0000 (UTC)
+Date:   Mon, 24 Feb 2020 09:45:44 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Piotr Sroka <piotrs@cadence.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: Re: [PATCH] docs: dt: fix several broken doc references
+Message-ID: <20200224094544.63f10b7c@xps13>
+In-Reply-To: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+References: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20200221131705.26053-1-dnlplm@gmail.com> <87eeul5sm4.fsf@miraculix.mork.no>
-In-Reply-To: <87eeul5sm4.fsf@miraculix.mork.no>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Mon, 24 Feb 2020 09:38:25 +0100
-Message-ID: <CAGRyCJFj--vTTiJcQ2L3WjXYmu-Xkbyx=4Mfy+xoY0+zZK1eLg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] net: usb: qmi_wwan: restore mtu min/max values after
- raw_ip switch
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il giorno dom 23 feb 2020 alle ore 14:41 Bj=C3=B8rn Mork <bjorn@mork.no> ha=
- scritto:
->
-> Daniele Palmas <dnlplm@gmail.com> writes:
->
-> > usbnet creates network interfaces with min_mtu =3D 0 and
-> > max_mtu =3D ETH_MAX_MTU.
-> >
-> > These values are not modified by qmi_wwan when the network interface
-> > is created initially, allowing, for example, to set mtu greater than 15=
-00.
-> >
-> > When a raw_ip switch is done (raw_ip set to 'Y', then set to 'N') the m=
-tu
-> > values for the network interface are set through ether_setup, with
-> > min_mtu =3D ETH_MIN_MTU and max_mtu =3D ETH_DATA_LEN, not allowing anym=
-ore to
-> > set mtu greater than 1500 (error: mtu greater than device maximum).
-> >
-> > The patch restores the original min/max mtu values set by usbnet after =
-a
-> > raw_ip switch.
-> >
-> > Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
->
-> Great! I tried to look up the origin of this bug, and it seems to be a
-> hard-to-spot fallout from the 'centralized MTU checking'.  Not easy to
-> see the hidden connection in usbnet.c and eth.c. Thanks for finding and
-> fixing it!
->
-> This should probably go to stable as well?
->
+Hi Mauro,
 
-Yes, I think it won't hurt.
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote on Sun, 23 Feb
+2020 09:59:53 +0100:
+
+> There are several DT doc references that require manual fixes.
+> I found 3 cases fixed on this patch:
+> 
+> 	- directory named "binding/" instead of "bindings/";
+> 	- .txt to .yaml renames;
+> 	- file renames (still on txt format);
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  .../devicetree/bindings/mtd/cadence-nand-controller.txt       | 2 +-
+>  .../devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt      | 2 +-
+>  Documentation/devicetree/bindings/sound/st,stm32-sai.txt      | 2 +-
+>  Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt  | 2 +-
+>  Documentation/devicetree/bindings/spi/st,stm32-spi.yaml       | 2 +-
+>  MAINTAINERS                                                   | 4 ++--
+>  .../devicetree/bindings/net/wireless/siliabs,wfx.txt          | 2 +-
+>  7 files changed, 8 insertions(+), 8 deletions(-)
+
+For the Cadence file,
+
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
 Thanks,
-Daniele
-
-> Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+Miquèl
