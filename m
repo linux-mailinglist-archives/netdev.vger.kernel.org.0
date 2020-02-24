@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C279169ECB
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 07:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F16DF169EE4
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbgBXGtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 01:49:14 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59033 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727277AbgBXGtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 01:49:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582526952;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OFrZl6Sw3yEf+caSATqePnmBvtnNQFZ6PQ2MTTPkWY4=;
-        b=ZPUPeHm7W7bYUdLzxTLyCr/4UluFXuIVJj3AewnyRmTYQnCzMb2yOIRCyCEAnXam55Gfxh
-        J9JAqxZ6BTpOmeurmPNNDpX8KOqZNoaU67nTlKK+k5p5HnTT6qb2qXzPCkqPuVlMqLkMK6
-        pxpXLOoFT3779sf3VvExMkMVmiFliOU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-103-2pKoJM5WNTO2krrL8cQnhw-1; Mon, 24 Feb 2020 01:49:10 -0500
-X-MC-Unique: 2pKoJM5WNTO2krrL8cQnhw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB5E0800D54;
-        Mon, 24 Feb 2020 06:49:07 +0000 (UTC)
-Received: from [10.72.13.147] (ovpn-13-147.pek2.redhat.com [10.72.13.147])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4035A5C21B;
-        Mon, 24 Feb 2020 06:48:49 +0000 (UTC)
-Subject: Re: [PATCH V4 3/5] vDPA: introduce vDPA bus
-To:     Harpreet Singh Anand <hanand@xilinx.com>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "jgg@mellanox.com" <jgg@mellanox.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "shahafs@mellanox.com" <shahafs@mellanox.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-References: <20200220061141.29390-1-jasowang@redhat.com>
- <20200220061141.29390-4-jasowang@redhat.com>
- <BY5PR02MB63714A03B7135F8C4054C1E8BBEC0@BY5PR02MB6371.namprd02.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d6ea5dcb-3933-920b-523e-a494d323ef8a@redhat.com>
-Date:   Mon, 24 Feb 2020 14:48:48 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726744AbgBXHCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 02:02:32 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41660 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726509AbgBXHCc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:02:32 -0500
+Received: by mail-wr1-f65.google.com with SMTP id c9so8986949wrw.8
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:02:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3oO9LdaDkUb+0hGjr6jAjsrZrAjI19aWDb4hbRbnuaE=;
+        b=EsEpzn2HHhzqo0EIEK4PfMiMcBJJ4+/9VeqUhdFFFiz/yIBAe+kIMMk4jM59I5tVrz
+         aBys1us1Iel2VL4FVEhcGuXhyoTXkZUHgnU+N+s6cmgw9VWyVS0vg9VmK9AyOzLfKAT8
+         WkMhLk8zQUfr0fT1PMHR4b1KVCZ9uJgtWZPyUfG3hFjNF3HPGmlmIrotE/cL6Flv2KB+
+         /XnNUdVIPShL6O5B4sAxiS8o0fpJrG5pph2OT5Oh/gcNKOXLgiTkBkxE5K4E84oa421A
+         zGJvKA02JoGthudbMXOkOW7GifrDUGRKdfYBu5dJwHLMSZr7zt8K5tRWq6I9Od6GJkFa
+         gpQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3oO9LdaDkUb+0hGjr6jAjsrZrAjI19aWDb4hbRbnuaE=;
+        b=NGeHxfO7UniZbtk93AVRgIO6tkVTZf3akhIprZTCskhs/VEuNF01j54lNIzdD4f0bw
+         l0PLB3loOgmy9XbC5xARhjlXrqsfqr08WTsB21L7fhDIEf1X3+VXyBRL3Gv03XURQ7iB
+         5aOJPXpb/0n/Lj7QxHxHwbvzDDG0s0fa34+COoPem8s2ULDemIGOmEuQ3ZK3+sbF8eN5
+         vZ7LVbseUA2TTgsNFyAtt9/rhkA0mFWjSfkesKnGp9s/yfhrBWz6Sn+4sVulzzhCdx6K
+         VApLYyI3i038mzyzwcJa3f0JKWgyNhXLcVF7KW67QGTfh2XoN3cHIvHnb217D5WuWPIa
+         +h7A==
+X-Gm-Message-State: APjAAAUo94SikMGqJPL1EKGPgjE8lCYOG5d0oWHykTNiat94WmnzMsGW
+        FHJuIN27XNjuV/rZufYwQtkgVg==
+X-Google-Smtp-Source: APXvYqzxV/alViSQMOvg9tweT1vy9Pic4/BcCj+ChkhktRArv+jPk0j/9UuLQ1L+2SCrsA8o71zfHg==
+X-Received: by 2002:a5d:4f89:: with SMTP id d9mr64929908wru.391.1582527750045;
+        Sun, 23 Feb 2020 23:02:30 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id h18sm17912506wrv.78.2020.02.23.23.02.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 23:02:29 -0800 (PST)
+Date:   Mon, 24 Feb 2020 08:02:28 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, idosch@mellanox.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next 00/12] mlxsw: Cosmetic fixes
+Message-ID: <20200224070228.GA16270@nanopsycho>
+References: <20200223073144.28529-1-jiri@resnulli.us>
+ <20200223.161311.2119739902658169966.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <BY5PR02MB63714A03B7135F8C4054C1E8BBEC0@BY5PR02MB6371.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200223.161311.2119739902658169966.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/2/24 =E4=B8=8B=E5=8D=882:14, Harpreet Singh Anand wrote:
-> Is there a plan to add an API in vDPA_config_ops for getting the notifi=
-cation area from the VDPA device (something similar to get_notify_area in=
- the VDPA DPDK case)? This will make the notifications from the guest  (v=
-host_vdpa use case) to the VDPA device more efficient - at least for virt=
-io 1.0+ drivers in the VM.
+Mon, Feb 24, 2020 at 01:13:11AM CET, davem@davemloft.net wrote:
+>From: Jiri Pirko <jiri@resnulli.us>
+>Date: Sun, 23 Feb 2020 08:31:32 +0100
 >
-> I believe this would require enhancement to the vhost ioctl (something =
-similar to the  VHOST_USER_SLAVE_VRING_HOST_NOTIFIER_MSG).
-
-
-Yes, we plan to add that on top. Basically, here's what we plan to do:=20
-(sorted by urgency)
-
-1) direct doorbell mapping as you asked here
-2) direct interrupt injection (when platform support, e.g through posted=20
-interrupt)
-3) control virtqueue support
-
-Thanks
-
-
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> This is a set of mainly action/trap related cosmetic fixes.
+>> No functional changes.
 >
+>Series applied, thanks Jiri.
 >
-> Regards,
-> Harpreet
->
+>The final patch removing unused PCI values didn't apply cleanly and
+>had some fuzz...
 
+Ah, you are right, there is a patch targetted to -net in our queue
+changing MLXSW_PCI_SW_RESET_WAIT_MSECS value. That's the reason for the
+fuzz. No problem.
+
+Thanks!
