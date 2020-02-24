@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D09516B4B4
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B0C16B4B6
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:59:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728048AbgBXW6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 17:58:48 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:40679 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727851AbgBXW6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:58:48 -0500
-Received: by mail-pj1-f65.google.com with SMTP id 12so398151pjb.5;
-        Mon, 24 Feb 2020 14:58:47 -0800 (PST)
+        id S1728390AbgBXW7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 17:59:19 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:44857 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727851AbgBXW7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:59:18 -0500
+Received: by mail-pf1-f193.google.com with SMTP id y5so6103861pfb.11;
+        Mon, 24 Feb 2020 14:59:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=u8hAxMnSaeavPHQXCQXBwomhtEyfLjsKJULimT0e4pw=;
-        b=XGFmjDYrf2dpXKsDTtEKFgtBDRch31aGqQkKLVL840tyAvRut7+rEdVX9fXqWiWgvn
-         1r/gvtSsrBGo9pm0tGoI94K8MZcWpNm6/TkszSYzKSh9NJPjG6j3xHpZUxd7j/9cNrkg
-         QWTpOh89rLhpoTov7fvACVTd6FZ6fsVzNQuHRsF3Z0GoeG12CcQi+DfWV/RLQwTaHrEu
-         pwRah515a/fkW51K7+R6NTDdRIKXcJ2qLuWP8X2eM9NDT+jqQ8Q2FB7fl7VJug9McAAC
-         fxMACQUjLZgHtKIT9KS6UiJ5VxUWI2eBP/ZoBzfgShtkWjenW567xxpdkYDmU4myueAN
-         dB+A==
+        bh=7n1f8PXgKiN2HxVnJO8P5H6ffZPF6cawFE5AUei1Bbc=;
+        b=F/Yz03CzLY3VaRkDUWGz7ujpyS9Pc6ivOTxkZI50+r8CHlxO2CIwtp2cPRWybzXpPX
+         F+fyqT5O6PrVlLZoN7mKikEO4DVs+wtoled3FBkXb6Ad/gN/RC1nJX6DJsDXHdsFoG72
+         Ef1V952eAjOdM6lzjKmSU83Dv9edrzv8rlcRSxSWQU2O5mjvNXih/I6Gaf/BTvHszfrQ
+         EZ698RCVHYdRVFgCvEd28medC3trBRKDjvI++i8hP5JgxAhkEtxyxfNH5K5j1XJV5HaO
+         r2O/6N2OSXowEQZQ7URNDN3jvIOWmj8IGDI/YcV+Xl2zN48d/3+vaPQIdWl+zSIZuNJq
+         QBGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=u8hAxMnSaeavPHQXCQXBwomhtEyfLjsKJULimT0e4pw=;
-        b=MwYcZopq+gupZYZlY3+akANYtRs55c/D6YTeRXIOgbUOQS8vHlgAoA0kM+E7BGumPQ
-         Ed4WzZtDhacrWu2XRbOIKb4d3qefLyBC8UOlMA976YCSusKfnK91/nPdv680C3HqO95e
-         ykm2J0tGArZHRKNQmUi3Ky5EFIsPzX9e+AtoUAHTTrdUHOX9PVsToZWWZYmrc9dus6UC
-         +OYMltX38URmo18PXaSiBXhuPLBdBh6E2ILahdqwJ1ulh2nNKusb7Qw0ph+LhbfgPA2m
-         wdngFOewHky6OjXF2mnQkgszm6ESQMbgZ6qRWeIb1y3nMdVvNtxELrF2jdUpLHckFMW0
-         16Iw==
-X-Gm-Message-State: APjAAAWys2sofR8YovhCCk4wzoMJM3FDKzmDpbQi6o9h9oPF98c6p+Y4
-        IYA0yK9+tDuCTQXHFjnFybU=
-X-Google-Smtp-Source: APXvYqwDFa3ls7Amlm9slRLWpdI0qa9uoaATOPGXmJJn3Oh7wXFTkwaFcpnvy/+bcPc2vmFUyrm6/A==
-X-Received: by 2002:a17:90a:f317:: with SMTP id ca23mr1572264pjb.20.1582585127154;
-        Mon, 24 Feb 2020 14:58:47 -0800 (PST)
+        bh=7n1f8PXgKiN2HxVnJO8P5H6ffZPF6cawFE5AUei1Bbc=;
+        b=cwImnVWlbdaF4XvE0cb1fecVLNNIoeU2O9/YUh94bPjPyLUaYYcWrxpS7pbbF40N3m
+         0oMJpw4MDfK8GKbVWpHOrdQMdXk+IMRQGpjustFrUlYoQP4nLnqR3Q+dCX6Zc1IimTJu
+         eGim/UHGiBhBbfZSsb14Z5Tp95cns+HowQzqTDXPXKFYwzB9f7sihdr8J/OuimCMzssg
+         pVyY1TCvS+RwyykOtQZdt6sRrWKtEdMA8ff1A1xpzw1N5rvOSBDkDZNUb/52WXSNB3lH
+         PxPGCb7jEiieU6E0An9Nf+cezRUIZxawp879TEh7lvGYYGjjXyStrqdTETEucDM8QJWc
+         rsMQ==
+X-Gm-Message-State: APjAAAWVWHikipX2bW1J2HBaznRTZZCc/BZB3xTPhgb7uEAhAHZdPGZI
+        WJczJP7vSDlhMMizonTVRA4=
+X-Google-Smtp-Source: APXvYqyi1I5Wy8dl4NBVmG3oopYs+lKhYH2FaBoe7S4O9h65DgFX1H9muLhUjrp4h8CCbjyQDgGE6g==
+X-Received: by 2002:a63:3802:: with SMTP id f2mr53426529pga.395.1582585156394;
+        Mon, 24 Feb 2020 14:59:16 -0800 (PST)
 Received: from [10.67.50.18] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g72sm14555738pfb.11.2020.02.24.14.58.46
+        by smtp.googlemail.com with ESMTPSA id o29sm14263224pfp.124.2020.02.24.14.59.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2020 14:58:46 -0800 (PST)
-Subject: Re: [PATCH v2 4/6] net: bcmgenet: Initial bcmgenet ACPI support
+        Mon, 24 Feb 2020 14:59:15 -0800 (PST)
+Subject: Re: [PATCH v2 1/6] mdio_bus: Add generic mdio_find_bus()
 To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
 Cc:     opendmb@gmail.com, davem@davemloft.net,
         bcm-kernel-feedback-list@broadcom.com,
         linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
         hkallweit1@gmail.com
 References: <20200224225403.1650656-1-jeremy.linton@arm.com>
- <20200224225403.1650656-5-jeremy.linton@arm.com>
+ <20200224225403.1650656-2-jeremy.linton@arm.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <7a02e45d-4a9e-c300-022c-5295708f87d2@gmail.com>
-Date:   Mon, 24 Feb 2020 14:58:45 -0800
+Message-ID: <914461be-8321-abea-dbac-d172882ef27f@gmail.com>
+Date:   Mon, 24 Feb 2020 14:59:13 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200224225403.1650656-5-jeremy.linton@arm.com>
+In-Reply-To: <20200224225403.1650656-2-jeremy.linton@arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,15 +122,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/20 2:54 PM, Jeremy Linton wrote:
-> The rpi4 is capable of booting in ACPI mode with the latest
-> edk2-platform commits. As such it would be helpful if the genet
-> platform device were usable.
+On 2/24/20 2:53 PM, Jeremy Linton wrote:
+> It appears most ethernet drivers follow one of two main strategies
+> for mdio bus/phy management. A monolithic model where the net driver
+> itself creates, probes and uses the phy, and one where an external
+> mdio/phy driver instantiates the mdio bus/phy and the net driver
+> only attaches to a known phy. Usually in this latter model the phys
+> are discovered via DT relationships or simply phy name/address
+> hardcoding.
 > 
-> To achieve this we add a new MODULE_DEVICE_TABLE, and convert
-> a few dt specific methods to their generic device_ calls. Until
-> the next patch, ACPI based machines will fallback on random
-> mac addresses.
+> This is a shame because modern well behaved mdio buses are self
+> describing and can be probed. The mdio layer itself is fully capable
+> of this, yet there isn't a clean way for a standalone net driver
+> to attach and enumerate the discovered devices. This is because
+> outside of of_mdio_find_bus() there isn't a straightforward way
+> to acquire the mii_bus pointer.
+> 
+> So, lets add a mdio_find_bus which can return the mii_bus based
+> only on its name.
 > 
 > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
 
