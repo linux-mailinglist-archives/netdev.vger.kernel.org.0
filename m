@@ -2,86 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BCDC16B47F
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DE916B4A9
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728235AbgBXWrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 17:47:19 -0500
-Received: from ozlabs.org ([203.11.71.1]:33421 "EHLO ozlabs.org"
+        id S1728048AbgBXWyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 17:54:10 -0500
+Received: from foss.arm.com ([217.140.110.172]:43852 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbgBXWrT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 17:47:19 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48RHJ54KSbz9sPR;
-        Tue, 25 Feb 2020 09:47:17 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1582584437;
-        bh=vfJOx5tLhhMomws9ueSanwVw/zLkBBGcyCECo+XL7EE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=D1Nb9GkFHHoYso8VO2hzVDarY4ayYPEIaHCSvftsIN4iKcTMmUYfp0icyWhelT3jk
-         pVcnGj3FJll26r/gL2IXExj+Saa8NXG0hr505VkNpUbhKWeZnCdV8phwYIRl40bZBv
-         FVsMIjDmHFzR57BLiwjHwLwKe8qrDaklaAjFcdT3kMwMDwq018V5Xmsmx1CXcO6UM5
-         YYMmv5Q5kdthvVpHVPjjT0FDjsFljLdkGQPb6VZY/hdhxl+gr2cTiS4uCw1pIQyxlI
-         Yg3HQDvOSBlL8uuN5ED4TAkyAGo9gK6+Sspsvi5GCbMIosKASiUdBAF3Uq6In8BJXt
-         5DDry5CrY/tdQ==
-Date:   Tue, 25 Feb 2020 09:47:17 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.varghese@nokia.com,
-        willemb@google.com
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Message-ID: <20200225094717.241cef90@canb.auug.org.au>
-In-Reply-To: <20200224.144243.1485587034182183004.davem@davemloft.net>
-References: <20200225092736.137df206@canb.auug.org.au>
-        <20200224.144243.1485587034182183004.davem@davemloft.net>
+        id S1726651AbgBXWyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 17:54:10 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B713D30E;
+        Mon, 24 Feb 2020 14:54:09 -0800 (PST)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AEC4B3F534;
+        Mon, 24 Feb 2020 14:54:09 -0800 (PST)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
+        hkallweit1@gmail.com, Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH v2 0/6] Add ACPI bindings to the genet
+Date:   Mon, 24 Feb 2020 16:53:57 -0600
+Message-Id: <20200224225403.1650656-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/7WdfuLsgSNjHxudAQ3i4qO6";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/7WdfuLsgSNjHxudAQ3i4qO6
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This patch series allows the BCM GENET, as used on the RPi4,
+to attach when booted in an ACPI environment. The DSDT entry to
+trigger this is seen below. Of note, the first patch adds a
+small extension to the mdio layer which allows drivers to find
+the mii_bus without firmware assistance. The fifth patch in
+the set retrieves the MAC address from the umac registers
+rather than carrying it directly in the DSDT. This of course
+requires the firmware to pre-program it, so we continue to fall
+back on a random one if it appears to be garbage.
 
-Hi Dave,
+v1 -> v2:
+     fail on missing phy-mode property
+     replace phy-mode internal property read string with
+     	     device_get_phy_mode() equivalent
+     rework mac address detection logic so that it merges
+     	    the acpi/DT case into device_get_mac_address()
+	    allowing _DSD mac address properties.
+     some commit messages justifying why phy_find_first()
+     	    isn't the worst choice for this driver.
 
-On Mon, 24 Feb 2020 14:42:43 -0800 (PST) David Miller <davem@davemloft.net>=
- wrote:
->
-> Sorry, my compiler didn't show this.
++    Device (ETH0)
++    {
++      Name (_HID, "BCM6E4E")
++      Name (_UID, 0)
++      Name (_CCA, 0x0)
++      Method (_STA)
++      {
++        Return (0xf)
++      }
++      Method (_CRS, 0x0, Serialized)
++      {
++        Name (RBUF, ResourceTemplate ()
++        {
++          Memory32Fixed (ReadWrite, 0xFd580000, 0x10000, )
++          Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 0xBD }
++          Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 0xBE }
++        })
++        Return (RBUF)
++      }
++      Name (_DSD, Package () {
++        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++          Package () {
++          Package () { "phy-mode", "rgmii-rxid" },
++        }
++      })
++    }
 
-Yeah, these ones especially change with compiler version.  I am
-currently running gcc v9.2.1 if it matters.
+Jeremy Linton (6):
+  mdio_bus: Add generic mdio_find_bus()
+  net: bcmgenet: refactor phy mode configuration
+  net: bcmgenet: enable automatic phy discovery
+  net: bcmgenet: Initial bcmgenet ACPI support
+  net: bcmgenet: Fetch MAC address from the adapter
+  net: bcmgenet: reduce severity of missing clock warnings
 
-> I've committed the following into net-next, hopefully it does the trick:
+ .../net/ethernet/broadcom/genet/bcmgenet.c    | 62 +++++++++-----
+ drivers/net/ethernet/broadcom/genet/bcmmii.c  | 82 ++++++++++++++-----
+ drivers/net/phy/mdio_bus.c                    | 17 ++++
+ include/linux/phy.h                           |  1 +
+ 4 files changed, 120 insertions(+), 42 deletions(-)
 
-Thanks.
+-- 
+2.24.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/7WdfuLsgSNjHxudAQ3i4qO6
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5UUnUACgkQAVBC80lX
-0GyJcwf+OpfhwXjW2MtUL3rY/Aup9ojzEyDatjhR7JjeW7LxMavSo/ZJkq9Xctr9
-zOHUk9NznLJrg1JA5SXkO/h8nvPzYhB78bOZ79KgkNwepDjc4Ip71z0RpwLFv0x9
-Y6jFHlX/Y+LoWSCrUrrc00B0dJKiE4yXcmBfn8Cu2BEGBG3s0KGATTNkmFYxQuha
-JhyGgd336Ik48fG1CE967vfjomfKTQSbQEkrzPS+UkY5o9xtzFTXDOjDbaAF3Xcg
-L+5NS0if9VXhwlrM+TgkiWW7e2ystAXD37Tf3sGQpHg1FiVCnc91kgDN+Nn2K1oU
-o7CPaxN6r9GFRGx/AlCTLkoq3oBuuA==
-=vP2X
------END PGP SIGNATURE-----
-
---Sig_/7WdfuLsgSNjHxudAQ3i4qO6--
