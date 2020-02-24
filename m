@@ -2,158 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB2B16AA63
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:46:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 954D716AA7B
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:50:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727960AbgBXPqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 10:46:00 -0500
-Received: from mail-io1-f42.google.com ([209.85.166.42]:34092 "EHLO
-        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727797AbgBXPqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:46:00 -0500
-Received: by mail-io1-f42.google.com with SMTP id 13so10162997iou.1
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 07:45:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E+DgbknlwiU6yyG30rDrjXfOHnZwS8rANqwXxEZKuu8=;
-        b=DxUscNQzZelROVMEy5kPR5F6zPdWWbydVAZ9FcJw6VAZymXF/lqPhKPHTO4of5kcwV
-         gX90iUdkNAq3EB48Rlf/R+ofsb7K0nnywU+diA8rgqam95piiZNJAr+VhmA95erVQH2N
-         TF4JPQpWYOFu3EoXTt/hmC3W3SrGzHGSVoFDa18MHtjbI1gtGp5TELlEjCGeMb+dlpjD
-         GUoXF+sB84raXxiyfIA2RnjCbuFyfiLU5bWAFeiYk++b7xBke2BAG+ngl++GHckAjBLC
-         XuzRf3q7hRGrfXDI+fOEbxhTYSbl+3LStCp+XazYfToeG+pW5nVMCehE2EwJ2IDeSt7E
-         KZ6Q==
+        id S1727932AbgBXPuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 10:50:14 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:44311 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727804AbgBXPuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:50:13 -0500
+Received: by mail-il1-f200.google.com with SMTP id h87so19049094ild.11
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 07:50:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E+DgbknlwiU6yyG30rDrjXfOHnZwS8rANqwXxEZKuu8=;
-        b=VAt5zqLOWKkA1ldK7uwKZjiuCVg3GCWTYxzSzpZ66KsclWvYFqfwkkxgTBg2CdjH4F
-         R2jeXenZOT/u+JJkKvUcKuAi8va7TK5+IXUN6dCH93D56/NUH29s+I8H3fIgaOLVgLq8
-         UF7blLWJjMtOlrJUrgZbmrLwkvO9WLfK3J/7Pq/HAYYUMbcmiq6JnG/4vgsw/tZ2iMh/
-         +mIwl6pq9aaZPDvv7gwaqRhPDfEqgNNxhUXKQEj81wlR/BvmchoF7TcGOZ7G1fk0poB6
-         HLK+N62t2QTEP+v5Al3BNAYw+3iHk8PSA89bXnNo5upf0sV/NevfpUcRDqm7+dFCDabi
-         NPMw==
-X-Gm-Message-State: APjAAAUpwXp4jtYuOBrlh814bIff3a1KK9oCPJwundhPN7b+n875v8Ye
-        PKivi4LE3qwQyc/JpPSU3MQJew==
-X-Google-Smtp-Source: APXvYqz67PgQcfCb3+f4UTUyxgnSKJg2ARdWz5JD3wPxqbavRoe4qnX210bmZPcHZm4s89Eozfh+Dw==
-X-Received: by 2002:a05:6602:2591:: with SMTP id p17mr50459523ioo.38.1582559159541;
-        Mon, 24 Feb 2020 07:45:59 -0800 (PST)
-Received: from [10.0.0.194] ([64.26.149.125])
-        by smtp.googlemail.com with ESMTPSA id r7sm3089880ioo.7.2020.02.24.07.45.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2020 07:45:58 -0800 (PST)
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW stats
- type
-To:     Jiri Pirko <jiri@resnulli.us>, Edward Cree <ecree@solarflare.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, saeedm@mellanox.com, leon@kernel.org,
-        michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, xiyou.wangcong@gmail.com,
-        pablo@netfilter.org, mlxsw@mellanox.com
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
- <20200222063829.GB2228@nanopsycho>
- <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
- <20200224131101.GC16270@nanopsycho>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
-Date:   Mon, 24 Feb 2020 10:45:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0SPr26mI+Ln+VEGi2ZBkQ06IkHYjWyiRTey+U7CAMzI=;
+        b=HCz2ep7CdMTziJq9NOZJWepliffXPjcBVJSFuaS39LgpgcA/hZO1JmcgBJE+sbsMel
+         4dGNm3nINcCrWRr/+6BnQ+V+WTDe1FO41s/u/+RQdtk38B7CjL4QXx8lRW0VtBnYl12w
+         oM0BEyKn2AODjOlfeqEcG5TII6iKGoxYNL/xQYm16djIADSOEVhdqaVmPOyMfLDiYMAr
+         N3TyB71sd4utMk62dCcjYjuVd4WxuoPa807GQRoJsadXxOnQ+XlAmGGrV0V5H0neXhmN
+         li3PgX93qiyhdNUbaZdw/33F1jHpqn8n9X4Jv7M7SNobjOIY2JwyIQ0JdnxdmxICw2Y+
+         U2hQ==
+X-Gm-Message-State: APjAAAUT1Uz2uYA0nf0SFUo7xowmzuuDVvtuKMgJEwciE6Y5HQr8FMSH
+        zn7pzFCeL0UJacXWHxvn9binXmXha+myMARlU+iWChEDbGBE
+X-Google-Smtp-Source: APXvYqw8l+W5ul1p0y8OZ7F3acv+6dm6McJK460la8gPyOWNNrGQ8+HpzuwTA3I8Sjoe3TrlWO955kYHB2Gd+qamKrawFaqXHjCj
 MIME-Version: 1.0
-In-Reply-To: <20200224131101.GC16270@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:9188:: with SMTP id t130mr48740603iod.215.1582559413092;
+ Mon, 24 Feb 2020 07:50:13 -0800 (PST)
+Date:   Mon, 24 Feb 2020 07:50:13 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a74731059f545387@google.com>
+Subject: WARNING in tracepoint_probe_register_prio (4)
+From:   syzbot <syzbot+1b2f76c6fb6f549f728b@syzkaller.appspotmail.com>
+To:     allison@lohutok.net, gregkh@linuxfoundation.org,
+        gustavo@embeddedor.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, rfontana@redhat.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-02-24 8:11 a.m., Jiri Pirko wrote:
-> Mon, Feb 24, 2020 at 12:38:20PM CET, ecree@solarflare.com wrote:
->> On 22/02/2020 06:38, Jiri Pirko wrote:
+Hello,
 
-[..]
->> Potentially a user could only want stats on one action and disable them
->>   on another.  For instance, if their action chain does delivery to the
->>   'customer' and also mirrors the packets for monitoring, they might only
->>   want stats on the first delivery (e.g. for billing) and not want to
->>   waste a counter on the mirror.
-> 
-> Okay.
-> 
+syzbot found the following crash on:
 
-+1  very important for telco billing use cases i am familiar with.
+HEAD commit:    50089780 selftests/bpf: Fix build of sockmap_ktls.c
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13087de9e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=768cc3d3e277cc16
+dashboard link: https://syzkaller.appspot.com/bug?extid=1b2f76c6fb6f549f728b
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Ancient ACL implementations that had only one filter and
-one action (drop/accept) didnt need more than one counter.
-But not anymore in my opinion.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-There's also a requirement for the concept of "sharing" - think
-"family plans" or "small bussiness plan".
-Counters may be shared across multiple filter-action chains for example.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+1b2f76c6fb6f549f728b@syzkaller.appspotmail.com
 
-> 
->>
->>> Plus, if the fine grained setup is ever needed, the hw_stats could be in
->>> future easilyt extended to be specified per-action too overriding
->>> the per-filter setup only for specific action. What do you think?
->> I think this is improper; the stats type should be defined per-action in
->>   the uapi, even if userland initially only has UI to set it across the
->>   entire filter.  (I imagine `tc action` would grow the corresponding UI
->>   pretty quickly.)  Then on the driver side, you must determine whether
->>   your hardware can support the user's request, and if not, return an
->>   appropriate error code.
->>
->> Let's try not to encourage people (users, future HW & driver developers)
->>   to keep thinking of stats as per-filter entities.
-> > Okay, but in that case, it does not make sense to have "UI to set it
-> across the entire filter". The UI would have to set it per-action too.
-> Othewise it would make people think it is per-filter entity.
-> But I guess the tc cmdline is chatty already an it can take other
-> repetitive cmdline options.
-> 
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 25402 at kernel/tracepoint.c:243 tracepoint_add_func kernel/tracepoint.c:243 [inline]
+WARNING: CPU: 1 PID: 25402 at kernel/tracepoint.c:243 tracepoint_probe_register_prio+0x217/0x790 kernel/tracepoint.c:315
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 25402 Comm: syz-executor.3 Not tainted 5.6.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x3e kernel/panic.c:582
+ report_bug+0x289/0x300 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:tracepoint_add_func kernel/tracepoint.c:243 [inline]
+RIP: 0010:tracepoint_probe_register_prio+0x217/0x790 kernel/tracepoint.c:315
+Code: 48 89 f8 48 c1 e8 03 80 3c 08 00 0f 85 bf 04 00 00 48 8b 45 b8 49 3b 45 08 0f 85 21 ff ff ff 41 bd ef ff ff ff e8 d9 7b fe ff <0f> 0b e8 d2 7b fe ff 48 c7 c7 e0 5d be 89 e8 16 52 78 06 44 89 e8
+RSP: 0018:ffffc90001617a68 EFLAGS: 00010212
+RAX: 0000000000040000 RBX: ffffffff8aa13ec0 RCX: ffffc9001009d000
+RDX: 000000000000191d RSI: ffffffff81771237 RDI: ffff888090ad3d30
+RBP: ffffc90001617ac0 R08: ffff88809ae4e600 R09: fffffbfff137cbbd
+R10: ffffc90001617a58 R11: ffffffff89be5de7 R12: ffff888090ad3d10
+R13: 00000000ffffffef R14: 00000000ffffffff R15: ffffffff81505c80
+ tracepoint_probe_register+0x2b/0x40 kernel/tracepoint.c:335
+ trace_event_reg+0x299/0x350 kernel/trace/trace_events.c:301
+ perf_trace_event_reg kernel/trace/trace_event_perf.c:129 [inline]
+ perf_trace_event_init+0x564/0x9c0 kernel/trace/trace_event_perf.c:204
+ perf_trace_init+0x189/0x250 kernel/trace/trace_event_perf.c:228
+ perf_tp_event_init+0xa6/0x120 kernel/events/core.c:9020
+ perf_try_init_event+0x135/0x590 kernel/events/core.c:10471
+ perf_init_event kernel/events/core.c:10523 [inline]
+ perf_event_alloc.part.0+0x158f/0x3710 kernel/events/core.c:10803
+ perf_event_alloc kernel/events/core.c:11170 [inline]
+ __do_sys_perf_event_open+0x6f6/0x2c00 kernel/events/core.c:11286
+ __se_sys_perf_event_open kernel/events/core.c:11160 [inline]
+ __x64_sys_perf_event_open+0xbe/0x150 kernel/events/core.c:11160
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45c449
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f5cb81c1c78 EFLAGS: 00000246 ORIG_RAX: 000000000000012a
+RAX: ffffffffffffffda RBX: 00007f5cb81c26d4 RCX: 000000000045c449
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000000002025c000
+RBP: 000000000076bfc0 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffffffffffff R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000812 R14: 00000000004ca890 R15: 000000000076bfcc
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-I normally visualize policy as a dag composed of filter(s) +
-actions. The UI and uAPI has to be able to express that.
 
-I am not sure if mlxsw works this way, but:
-Most hardware i have encountered tends to have a separate
-stats/counter table. The stats table is indexed.
-
-Going backwards and looking at your example in this stanza:
 ---
-   in_hw in_hw_count 2
-   hw_stats immediate
-         action order 1: gact action drop
-          random type none pass val 0
-          index 1 ref 1 bind 1 installed 14 sec used 7 sec
-         Action statistics:
-----
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Guessing from "in_hw in_hw_count 2" - 2 is a hw stats table index?
-If you have enough counters in hardware, the "stats table index"
-essentially can be directly mapped to the action "index" attribute.
-
-Sharing then becomes a matter of specifying the same drop action
-with the correct index across multiple filters.
-
-If you dont have enough hw counters - then perhaps a scheme to show
-separate hardware counter index and software counter index (aka action
-index) is needed.
-
-cheers,
-jamal
-
-> What do you think?
-> 
-> 
-> Thanks!
-> 
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
