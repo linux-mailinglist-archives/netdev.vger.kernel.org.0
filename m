@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C7D16B210
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 22:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2746B16B25A
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 22:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727959AbgBXVUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 16:20:38 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:32793 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726722AbgBXVUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 16:20:38 -0500
-Received: by mail-wr1-f65.google.com with SMTP id u6so12181117wrt.0;
-        Mon, 24 Feb 2020 13:20:36 -0800 (PST)
+        id S1728298AbgBXV3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 16:29:48 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40608 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727479AbgBXV3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 16:29:46 -0500
+Received: by mail-wm1-f66.google.com with SMTP id t14so891833wmi.5;
+        Mon, 24 Feb 2020 13:29:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=qscCkCYLPIYQvGQ0vp/FXoAcwoUcoJvhzgh3zcuzI6c=;
-        b=LOid8p+1VpBpxox0zBcpa3C4jmGSWxAgqiCFZ/nqlJ2r7iqyEsIl53tJ1PgxQu+wb9
-         ZOokU5+fmv6r2aEP599La6oj6x3uwdku2wNHgS6zuFkYq2wXnK9aPUfeDTvAkzAyoZuz
-         8vQ8Do61R23Bg9MIaE5IxdKzUrfPwy4h4DbHy8D/+Vwx56sepLNKOL4Bs5mDfZ+cjBOe
-         /q45gFnr9CrlCAzf4l7BqLUyN3t+tlYDk7sn4vLs0UcQD/w0ePhrt7PSBqfA4tNwwGSk
-         92s39pxazQZeZSVPMH/+7cjvSjjsLi735EsPRVf4G5uQYm82ebyMR640JuPQJzLMdRSV
-         9dQg==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cq/SO7uTxQFQRkUdTESCHn0ibY8lprisVUmHlf5Q8N8=;
+        b=KRGL7Dfw9AmYBgTT355/arXlkJj94zoHK4aI5FwEBCgeAAHABMXyXfeqml3pUhVNqi
+         nbVsnJkyvruO/bKeeCsXGMJTlD+IjpGOc4c0bZZm1K/gOKpZ5BZhrCHeBPRp0E/gH1PI
+         6tY12nlIUMHfEL15oIz9d1D2ALTLN3Mv4pW3ycJUIbI4yrF+KHehSosxsAUwr5vhkLgL
+         orLqvKoV2BqyS5frnEfJx4hYZyWZ3mlSoCymHVaEaWUnHXaD+paWtJrvnNmuM1RHQzrH
+         GczYFDXRaH5muw0O9X/QupgIKxJv2hJ84RY9Y9vYBHxk441PX8UVYQt0no9ICxnz8CpN
+         9G3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=qscCkCYLPIYQvGQ0vp/FXoAcwoUcoJvhzgh3zcuzI6c=;
-        b=XznUBE25XuwBZWopD8owugFFQCSf1H0fRCJP8LvPTjyOWwGyVY9hmMvpk0NTAQPEiI
-         DEQm87L/74Cx+w14WoYRU1EmiBzxHpxxQKo1o9+FwDNFcNL7oKklMesYWYj9ODLSDy+K
-         ix5zt6VaSUGNCE5POrQ0DV0L9VZ24B3oUvW/YUURUQ0FZxonaTYhYrO1pnpu7Oy7kHgt
-         m0BwFgM9S4TFW9SfNKjKKDlK7IYDo+MwGZTdQhXxv1A3Bl+dGVQfwjSt2eaG3v0pO23e
-         j8GophiyBDWuf7rExnfN+3wJvB4+ErwUlGmQo8h8Q/Uq4Nz3nP5DAo0zxbT8bkVYck6R
-         2fBw==
-X-Gm-Message-State: APjAAAUQxwH5WZXJ0w+gZOfdfbYWi1pPxtEo5Ltjjz1hSFFZ1QnGevBW
-        gbsXCiNy93Sdzf8/CqabXvU=
-X-Google-Smtp-Source: APXvYqxcUPq9UhEbUhugSPEWSY77F4KTVHa1q68vrxMdTNGDidiJeqhAeANXCqtvqr51K8TKN+4eUg==
-X-Received: by 2002:adf:e686:: with SMTP id r6mr69503287wrm.177.1582579236173;
-        Mon, 24 Feb 2020 13:20:36 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cq/SO7uTxQFQRkUdTESCHn0ibY8lprisVUmHlf5Q8N8=;
+        b=XjTT4hFUzBOgFSipO/nGGhWC9GQQLdCV9b9RW7Na/MnWEEiMHfg7Vq+bz7P1pl06Se
+         LvG07kzGw3Q6KEwjNGjmfbJTaJYPyQHrizZ70kZbGULOC/Su8pbZC2+cUvAlFS/mfL5T
+         de0xJrWfIF83AHw3ZGYCG8ocQjm0F4EZfH68V2ObEsl0tV6mbwpmAeAXZdG0MEnZf1BI
+         h8hcFIOUNpmc07E2G7cOvDhk1E1k+8BWhts2XPZqrjxyqeOx1o6+ZvR53Lrz155GZb1D
+         2EwJS+O6K5P9qS4GFoL/oY5S8A2Y09OJZ2wsbeTIFdzH60iRdW0sHp2G2kzyM/kxvwyk
+         WtNQ==
+X-Gm-Message-State: APjAAAUbqsF9Jjwm1lt+MBESQDuX87dD2LkaMNm45NVvpDHW6BvkCsMV
+        unHfE2dhNUQbf3lOm3ZbnMVsr2s1
+X-Google-Smtp-Source: APXvYqz1pSYPGX7ya+KOU9Qz2kP/11cBDByqV1RM+qFHBF3nwF57XPovbTgCNy3mmiS4bOicy9H/ew==
+X-Received: by 2002:a7b:c147:: with SMTP id z7mr945164wmi.168.1582579783841;
+        Mon, 24 Feb 2020 13:29:43 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:3d90:eff:31bc:c6a9? (p200300EA8F2960003D900EFF31BCC6A9.dip0.t-ipconnect.de. [2003:ea:8f29:6000:3d90:eff:31bc:c6a9])
-        by smtp.googlemail.com with ESMTPSA id b7sm12321269wrs.97.2020.02.24.13.20.35
+        by smtp.googlemail.com with ESMTPSA id v17sm19784361wrt.91.2020.02.24.13.29.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2020 13:20:35 -0800 (PST)
+        Mon, 24 Feb 2020 13:29:43 -0800 (PST)
+Subject: [PATCH 2/8] PCI: add pci_status_get_and_clear_errors
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>,
@@ -55,14 +58,13 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         alsa-devel@alsa-project.org
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH 0/9] PCI: add and use constant PCI_STATUS_ERROR_BITS and
- helper pci_status_get_and_clear_errors
-Message-ID: <5939f711-92aa-e7ed-2a26-4f1e4169f786@gmail.com>
-Date:   Mon, 24 Feb 2020 22:20:08 +0100
+References: <5939f711-92aa-e7ed-2a26-4f1e4169f786@gmail.com>
+Message-ID: <cf7fce71-1711-2756-38e2-2d08a6c496d2@gmail.com>
+Date:   Mon, 24 Feb 2020 22:23:55 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <5939f711-92aa-e7ed-2a26-4f1e4169f786@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,46 +73,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Few drivers have own definitions for this constant, so move it to the
-PCI core. In addition there are several places where the following
-code sequence is used:
+Few drivers use the following code sequence:
 1. Read PCI_STATUS
 2. Mask out non-error bits
-3. Action based on set error bits
+3. Action based on error bits set
 4. Write back set error bits to clear them
 
 As this is a repeated pattern, add a helper to the PCI core.
 
-Most affected drivers are network drivers. But as it's about core
-PCI functionality, I suppose the series should go through the PCI
-tree.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/pci/pci.c   | 23 +++++++++++++++++++++++
+ include/linux/pci.h |  1 +
+ 2 files changed, 24 insertions(+)
 
-Heiner Kallweit (8):
-  PCI: add constant PCI_STATUS_ERROR_BITS
-  PCI: add pci_status_get_and_clear_errors
-  r8169: use pci_status_get_and_clear_errors
-  net: cassini: use pci_status_get_and_clear_errors
-  net: sungem: use pci_status_get_and_clear_errors
-  net: skfp: use PCI_STATUS_ERROR_BITS
-  PCI: pci-bridge-emul: use PCI_STATUS_ERROR_BITS
-  sound: bt87x: use pci_status_get_and_clear_errors
-
- drivers/net/ethernet/marvell/skge.h       |  6 -----
- drivers/net/ethernet/marvell/sky2.h       |  6 -----
- drivers/net/ethernet/realtek/r8169_main.c | 15 +++++-------
- drivers/net/ethernet/sun/cassini.c        | 28 ++++++++-------------
- drivers/net/ethernet/sun/sungem.c         | 30 +++++++----------------
- drivers/net/fddi/skfp/drvfbi.c            |  2 +-
- drivers/net/fddi/skfp/h/skfbi.h           |  5 ----
- drivers/pci/pci-bridge-emul.c             | 14 ++---------
- drivers/pci/pci.c                         | 23 +++++++++++++++++
- include/linux/pci.h                       |  1 +
- include/uapi/linux/pci_regs.h             |  7 ++++++
- sound/pci/bt87x.c                         |  7 +-----
- 12 files changed, 60 insertions(+), 84 deletions(-)
-
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index d828ca835..c16b0ba2a 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -173,6 +173,29 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
+ }
+ EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
+ 
++/**
++ * pci_status_get_and_clear_errors - return and clear error bits in PCI_STATUS
++ * @pdev: the PCI device
++ *
++ * Returns error bits set in PCI_STATUS and clears them.
++ */
++int pci_status_get_and_clear_errors(struct pci_dev *pdev)
++{
++	u16 status;
++	int ret;
++
++	ret = pci_read_config_word(pdev, PCI_STATUS, &status);
++	if (ret != PCIBIOS_SUCCESSFUL)
++		return -EIO;
++
++	status &= PCI_STATUS_ERROR_BITS;
++	if (status)
++		pci_write_config_word(pdev, PCI_STATUS, status);
++
++	return status;
++}
++EXPORT_SYMBOL_GPL(pci_status_get_and_clear_errors);
++
+ #ifdef CONFIG_HAS_IOMEM
+ void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
+ {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 3840a541a..7a75aae04 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1203,6 +1203,7 @@ int pci_select_bars(struct pci_dev *dev, unsigned long flags);
+ bool pci_device_is_present(struct pci_dev *pdev);
+ void pci_ignore_hotplug(struct pci_dev *dev);
+ struct pci_dev *pci_real_dma_dev(struct pci_dev *dev);
++int pci_status_get_and_clear_errors(struct pci_dev *pdev);
+ 
+ int __printf(6, 7) pci_request_irq(struct pci_dev *dev, unsigned int nr,
+ 		irq_handler_t handler, irq_handler_t thread_fn, void *dev_id,
 -- 
 2.25.1
-
 
 
