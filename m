@@ -2,110 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E2B416A6D7
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F7E16A6EC
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727486AbgBXNHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 08:07:41 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:47029 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbgBXNHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:07:41 -0500
-Received: by mail-lj1-f193.google.com with SMTP id x14so9970185ljd.13
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 05:07:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mChaMVvWNoAtZi1nGZc55W0b1jW6bAc+WtjlbD6LhY0=;
-        b=TR5eC0USeU6oHi0apikX1wcNfk3mz1J8HDHbv0m2R5/3V7m8B7lB6BstgHCOw80Lhb
-         v/wWZiuDFlyTWepMzzkvYTroUVlKIkhBky8nmVDqmUWQ0s963F45OgFicE7/TmqCh5KE
-         fg9r761XKu3hAa/jWqyJ7vHmnEnc4uNjexd+A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mChaMVvWNoAtZi1nGZc55W0b1jW6bAc+WtjlbD6LhY0=;
-        b=Lj5mN3Z4SOM8nBX9yjzX86OUe0H5Zk5X/wokL8LfgV29xz0U6+ySYhq0hxD1mlivZa
-         fAt6XLpkaoLJQUyaaKpCHhV0whDHwVm2xSWfYtCzi5M5Lsxl/3b3yKoohLe+PLb4jfJ8
-         kp9N6buazAYuyM7KOp35292cIBbm2+fmonnx/29Ht9QeuVFnxfBoupHFpOicTuLJkoUL
-         3avRnfVGqC4GEZ/Mz8ZxonL2leC2/MRrhmfiBCE2X/A/0u9FyYel4rmlZBEZ03ggZCma
-         Mto3QuBpR3nq9mbs31WimmaPrXTbIv4Cfg9RKfXF+Tng7dQ3n704qHaiVLTb2LRrnVtq
-         eRdQ==
-X-Gm-Message-State: APjAAAWg8Sd6AbjpNlI8flG7k4v+fSwDRlhjKAPzBxNC7DLuo17OF05a
-        TRjgdOcHyEE7/S+ytoxgIML3VifitoM=
-X-Google-Smtp-Source: APXvYqy7enhY1nUpwuiC4uB6pGMocRAbpJn5qLa/q1pLmunxc7PhA7lTtXUbrWHp0F7Uyk96A8kfyg==
-X-Received: by 2002:a2e:556:: with SMTP id 83mr30277524ljf.127.1582549657707;
-        Mon, 24 Feb 2020 05:07:37 -0800 (PST)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t21sm6187772ljh.14.2020.02.24.05.07.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 05:07:37 -0800 (PST)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        syzbot+18c8b623c66fc198c493@syzkaller.appspotmail.com
-Subject: [PATCH net] net: bridge: fix stale eth hdr pointer in br_dev_xmit
-Date:   Mon, 24 Feb 2020 15:07:15 +0200
-Message-Id: <20200224130715.1446935-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <08a2e28b-fcf5-b26c-da75-97df67f51c7c@cumulusnetworks.com>
-References: <08a2e28b-fcf5-b26c-da75-97df67f51c7c@cumulusnetworks.com>
+        id S1727515AbgBXNII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 08:08:08 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60823 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727299AbgBXNIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:08:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582549687;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8hYIHZTnTP03p6Yp4LlShbTvxf4UyOXsFmmyMPgeaYI=;
+        b=ggAX4k2X/nrSgbEhTp+FSzWVvJrMksYG+aQw/fFewmeopr8t5GVMxVo8Ko0zK+ubk8SGlF
+        slcxuKjlsB4HV3HQwEEAPxAoRubW2aGHP3ny957SSRsMQ4nXgMxVuNFfuWmPsz8ZWuE8fb
+        Xrsh5GL39M8Fa5iDWYLTVJ0mm+w/AAE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-463-1KFA4pPFOt-nSzxZ1v6H2w-1; Mon, 24 Feb 2020 08:08:01 -0500
+X-MC-Unique: 1KFA4pPFOt-nSzxZ1v6H2w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A47AB107ACCA;
+        Mon, 24 Feb 2020 13:07:55 +0000 (UTC)
+Received: from [10.36.116.59] (ovpn-116-59.ams2.redhat.com [10.36.116.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BF3FB909E9;
+        Mon, 24 Feb 2020 13:07:44 +0000 (UTC)
+Subject: Re: [RFC PATCH 01/11] vfio: Remove Calxeda XGMAC reset driver
+To:     Rob Herring <robh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Robert Richter <rrichter@marvell.com>,
+        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Mark Langsdorf <mlangsdo@redhat.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
+        James Morse <james.morse@arm.com>,
+        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+        kvm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Will Deacon <will@kernel.org>
+References: <20200218171321.30990-1-robh@kernel.org>
+ <20200218171321.30990-2-robh@kernel.org>
+From:   Auger Eric <eric.auger@redhat.com>
+Message-ID: <23fda074-149e-9c77-5eee-4d6b591a6ebf@redhat.com>
+Date:   Mon, 24 Feb 2020 14:07:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200218171321.30990-2-robh@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
-if the packet has the vlan header inside (e.g. bridge with disabled
-tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
-to extract the vid before filtering which in turn calls pskb_may_pull()
-and we may end up with a stale eth pointer. Moreover the cached eth header
-pointer will generally be wrong after that operation. Remove the eth header
-caching and just use eth_hdr() directly, the compiler does the right thing
-and calculates it only once so we don't lose anything.
+Hi Rob, Alex,
 
-Reported-by: syzbot+18c8b623c66fc198c493@syzkaller.appspotmail.com
-Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/bridge/br_device.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+On 2/18/20 6:13 PM, Rob Herring wrote:
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: kvm@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Do not apply yet.
+> 
+>  drivers/vfio/platform/reset/Kconfig           |  8 --
+>  drivers/vfio/platform/reset/Makefile          |  2 -
+>  .../reset/vfio_platform_calxedaxgmac.c        | 74 -------------------
+>  3 files changed, 84 deletions(-)
+>  delete mode 100644 drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> 
+> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> index 1edbe9ee7356..3668d1d92909 100644
+> --- a/drivers/vfio/platform/reset/Kconfig
+> +++ b/drivers/vfio/platform/reset/Kconfig
+> @@ -1,12 +1,4 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> -config VFIO_PLATFORM_CALXEDAXGMAC_RESET
+> -	tristate "VFIO support for calxeda xgmac reset"
+> -	depends on VFIO_PLATFORM
+> -	help
+> -	  Enables the VFIO platform driver to handle reset for Calxeda xgmac
+> -
+> -	  If you don't know what to do here, say N.
+> -
+>  config VFIO_PLATFORM_AMDXGBE_RESET
+>  	tristate "VFIO support for AMD XGBE reset"
+>  	depends on VFIO_PLATFORM
+> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+> index 7294c5ea122e..be7960ce5dbc 100644
+> --- a/drivers/vfio/platform/reset/Makefile
+> +++ b/drivers/vfio/platform/reset/Makefile
+> @@ -1,7 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -vfio-platform-calxedaxgmac-y := vfio_platform_calxedaxgmac.o
+>  vfio-platform-amdxgbe-y := vfio_platform_amdxgbe.o
+> 
+> -obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
+>  obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+> diff --git a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c b/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> deleted file mode 100644
+> index 09a9453b75c5..000000000000
+> --- a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> +++ /dev/null
+> @@ -1,74 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0-only
+> -/*
+> - * VFIO platform driver specialized for Calxeda xgmac reset
+> - * reset code is inherited from calxeda xgmac native driver
+> - *
+> - * Copyright 2010-2011 Calxeda, Inc.
+> - * Copyright (c) 2015 Linaro Ltd.
+> - *              www.linaro.org
+> - */
+> -
+> -#include <linux/module.h>
+> -#include <linux/kernel.h>
+> -#include <linux/init.h>
+> -#include <linux/io.h>
+> -
+> -#include "../vfio_platform_private.h"
+> -
+> -#define DRIVER_VERSION  "0.1"
+> -#define DRIVER_AUTHOR   "Eric Auger <eric.auger@linaro.org>"
+> -#define DRIVER_DESC     "Reset support for Calxeda xgmac vfio platform device"
+> -
+> -/* XGMAC Register definitions */
+> -#define XGMAC_CONTROL           0x00000000      /* MAC Configuration */
+> -
+> -/* DMA Control and Status Registers */
+> -#define XGMAC_DMA_CONTROL       0x00000f18      /* Ctrl (Operational Mode) */
+> -#define XGMAC_DMA_INTR_ENA      0x00000f1c      /* Interrupt Enable */
+> -
+> -/* DMA Control registe defines */
+> -#define DMA_CONTROL_ST          0x00002000      /* Start/Stop Transmission */
+> -#define DMA_CONTROL_SR          0x00000002      /* Start/Stop Receive */
+> -
+> -/* Common MAC defines */
+> -#define MAC_ENABLE_TX           0x00000008      /* Transmitter Enable */
+> -#define MAC_ENABLE_RX           0x00000004      /* Receiver Enable */
+> -
+> -static inline void xgmac_mac_disable(void __iomem *ioaddr)
+> -{
+> -	u32 value = readl(ioaddr + XGMAC_DMA_CONTROL);
+> -
+> -	value &= ~(DMA_CONTROL_ST | DMA_CONTROL_SR);
+> -	writel(value, ioaddr + XGMAC_DMA_CONTROL);
+> -
+> -	value = readl(ioaddr + XGMAC_CONTROL);
+> -	value &= ~(MAC_ENABLE_TX | MAC_ENABLE_RX);
+> -	writel(value, ioaddr + XGMAC_CONTROL);
+> -}
+> -
+> -static int vfio_platform_calxedaxgmac_reset(struct vfio_platform_device *vdev)
+> -{
+> -	struct vfio_platform_region *reg = &vdev->regions[0];
+> -
+> -	if (!reg->ioaddr) {
+> -		reg->ioaddr =
+> -			ioremap(reg->addr, reg->size);
+> -		if (!reg->ioaddr)
+> -			return -ENOMEM;
+> -	}
+> -
+> -	/* disable IRQ */
+> -	writel(0, reg->ioaddr + XGMAC_DMA_INTR_ENA);
+> -
+> -	/* Disable the MAC core */
+> -	xgmac_mac_disable(reg->ioaddr);
+> -
+> -	return 0;
+> -}
+> -
+> -module_vfio_reset_handler("calxeda,hb-xgmac", vfio_platform_calxedaxgmac_reset);
+> -
+> -MODULE_VERSION(DRIVER_VERSION);
+> -MODULE_LICENSE("GPL v2");
+> -MODULE_AUTHOR(DRIVER_AUTHOR);
+> -MODULE_DESCRIPTION(DRIVER_DESC);
+> --
+> 2.20.1
+> 
+I do not have access to this HW anymore and I use Seattle to test
+vfio-platform. So
 
-diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index dc3d2c1dd9d5..0e3dbc5f3c34 100644
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -34,7 +34,6 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	const struct nf_br_ops *nf_ops;
- 	u8 state = BR_STATE_FORWARDING;
- 	const unsigned char *dest;
--	struct ethhdr *eth;
- 	u16 vid = 0;
- 
- 	rcu_read_lock();
-@@ -54,15 +53,14 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	BR_INPUT_SKB_CB(skb)->frag_max_size = 0;
- 
- 	skb_reset_mac_header(skb);
--	eth = eth_hdr(skb);
- 	skb_pull(skb, ETH_HLEN);
- 
- 	if (!br_allowed_ingress(br, br_vlan_group_rcu(br), skb, &vid, &state))
- 		goto out;
- 
- 	if (IS_ENABLED(CONFIG_INET) &&
--	    (eth->h_proto == htons(ETH_P_ARP) ||
--	     eth->h_proto == htons(ETH_P_RARP)) &&
-+	    (eth_hdr(skb)->h_proto == htons(ETH_P_ARP) ||
-+	     eth_hdr(skb)->h_proto == htons(ETH_P_RARP)) &&
- 	    br_opt_get(br, BROPT_NEIGH_SUPPRESS_ENABLED)) {
- 		br_do_proxy_suppress_arp(skb, br, vid, NULL);
- 	} else if (IS_ENABLED(CONFIG_IPV6) &&
--- 
-2.24.1
+Acked-by: Eric Auger <eric.auger@redhat.com>
+
+Thanks
+
+Eric
 
