@@ -2,83 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B2816A046
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:45:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6ADF16A061
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:48:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727170AbgBXIpu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Feb 2020 03:45:50 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:34669 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726509AbgBXIpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:45:49 -0500
-X-Originating-IP: 86.201.231.92
-Received: from xps13 (lfbn-tou-1-149-92.w86-201.abo.wanadoo.fr [86.201.231.92])
-        (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id B8DBF60015;
-        Mon, 24 Feb 2020 08:45:44 +0000 (UTC)
-Date:   Mon, 24 Feb 2020 09:45:44 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Piotr Sroka <piotrs@cadence.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        id S1727252AbgBXIse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:48:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33864 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727193AbgBXIse (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 03:48:34 -0500
+Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3043A2080D;
+        Mon, 24 Feb 2020 08:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582534113;
+        bh=yvIzmLig8t+2r3suHxGs4IkD4tc1IS5MA9kFdFLwcPE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=x1oAUQXUjY0n1B7WuYJEssdl5g/YAMYC1c/F/fL8g7/1+z1RsSdQdSWS7iJFw39fI
+         zQhQdwJ5yekwXC3pGUPLCde5o/BsCnG5Vf9JoVJelunpHRydifOjKgfoU0Ow8BRCr1
+         gGEkNf/BWHz7HYcqi2CWRYWYzidohQYcbGk00sks=
+Date:   Mon, 24 Feb 2020 16:48:27 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: Re: [PATCH] docs: dt: fix several broken doc references
-Message-ID: <20200224094544.63f10b7c@xps13>
-In-Reply-To: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
-References: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next/devicetree 0/5] DT bindings for Felix DSA
+ switch on LS1028A
+Message-ID: <20200224084826.GE27688@dragon>
+References: <20200219151259.14273-1-olteanv@gmail.com>
+ <20200224063154.GK27688@dragon>
+ <CA+h21hok4V_-uarhnyBkdXqnwRdXpgRJWLSvuuVn8K3VRMtrcA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hok4V_-uarhnyBkdXqnwRdXpgRJWLSvuuVn8K3VRMtrcA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mauro,
-
-Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote on Sun, 23 Feb
-2020 09:59:53 +0100:
-
-> There are several DT doc references that require manual fixes.
-> I found 3 cases fixed on this patch:
+On Mon, Feb 24, 2020 at 09:59:53AM +0200, Vladimir Oltean wrote:
+> Hi Shawn,
 > 
-> 	- directory named "binding/" instead of "bindings/";
-> 	- .txt to .yaml renames;
-> 	- file renames (still on txt format);
+> On Mon, 24 Feb 2020 at 08:32, Shawn Guo <shawnguo@kernel.org> wrote:
+> >
+> > On Wed, Feb 19, 2020 at 05:12:54PM +0200, Vladimir Oltean wrote:
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > As per feedback received in v1, I've changed the DT bindings for the
+> > > internal ports from "gmii" to "internal". So I would like the entire
+> > > series to be merged through a single tree, be it net-next or devicetree.
+> >
+> > Will applying the patches via different trees as normal cause any
+> > issue like build breakage or regression on either tree?  Otherwise, I do
+> > not see the series needs to go in through a single tree.
+> >
+> > Shawn
+> >
 > 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  .../devicetree/bindings/mtd/cadence-nand-controller.txt       | 2 +-
->  .../devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt      | 2 +-
->  Documentation/devicetree/bindings/sound/st,stm32-sai.txt      | 2 +-
->  Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt  | 2 +-
->  Documentation/devicetree/bindings/spi/st,stm32-spi.yaml       | 2 +-
->  MAINTAINERS                                                   | 4 ++--
->  .../devicetree/bindings/net/wireless/siliabs,wfx.txt          | 2 +-
->  7 files changed, 8 insertions(+), 8 deletions(-)
+> No, the point is that I've made some changes in the device tree
+> bindings validation in the driver, which make the driver without those
+> changes incompatible with the bindings themselves that I'm
+> introducing. So I would like the driver to be operational on the
+> actual commit that introduces the bindings, at least in your tree. I
+> don't expect merge conflicts to occur in that area of the code.
 
-For the Cadence file,
+The dt-bindings patch is supposed to go through subsystem tree together
+with driver changes by nature.  That said, patch #1 and #2 are for
+David, and I will pick up the rest (DTS ones).
 
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
-
-Thanks,
-Miquèl
+Shawn
