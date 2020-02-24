@@ -2,132 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C75169FDD
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47943169FE9
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727168AbgBXISP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:18:15 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:54585 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726216AbgBXISO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:18:14 -0500
-Received: by mail-il1-f199.google.com with SMTP id t4so16872379ili.21
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:18:14 -0800 (PST)
+        id S1726925AbgBXIY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:24:57 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36529 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgBXIY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:24:56 -0500
+Received: by mail-pf1-f195.google.com with SMTP id 185so4973116pfv.3
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:24:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=es-iitr-ac-in.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=lhlKxXAIvhacc2714cSl7CgN47VyLjNdXE5+TJ+pWfc=;
+        b=iVRInhr+0XNetO76iReb1HcqRUj2veJmpOz2VGFnl2Wxi+8TPSjiu/xM/adgh6XmCK
+         8Vk6u/EjOINY+qvQ7ISa91IkBrWENxEMunIgH0aMBekN48kC+rBPr5JyAEUo45egz+Tp
+         cAfVlus1c+zANML1yovm8FDV01jcNS6RpGQajOVBDCK+/Jjc/UJNt13m1yDXbJXfPS4M
+         QAqcA/H6ZQ2ZJC+3y7NBZgnRHOcGHpQmT90FXX4cLkHmg4AhWA2om8knIKC7EegqlEK1
+         HwC07FQ6y/BIblr71lhZuxonaXOkd4NCVQG97jtEN56rZ5z7djSpq3XiLZDJB2BvC/Ns
+         iMGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JLPU87tnj1f/dwZOZUf4sgSYUIjyyQgE9NDCtchiKHg=;
-        b=HEpJAlp+e5de7zmQTvkLuZGycVah2HUjt9aObWQAzOmV/Ae/1/w7L+DsBRjt81pBfN
-         p7SWZOwDRC2wiUd2d+wsFkTvrSeEuot8hUvBPyqgHCN9bfsbrHHKzAnmHgF58b4UGulU
-         vJKomaHIMy+GIzJBB+hhKcFvEiOMwgpi7FeNV6NByPp6gkedYfMFH5JSQrRQigBf9e1B
-         3vnqV1QuTeciB7ItURF0jRlvQVQbZajbpnLDpOer+Dpb8UXoeHr0iTqBR0ZnnPQuB9e0
-         nkspTU/DCNqJjiEEWOIMnJeTCVqw5yi8vGpOdSwjS2Jimdmzl8FKnrZTionMOA9IecpZ
-         Q6cg==
-X-Gm-Message-State: APjAAAWvxvkJr7b5+gW8M668DUIltprPqqzSwfsErhNWf2epgRQhDOt/
-        bnfubNk74Gu+LKiOzHjivjIQuk5Mn/NU0temQzkmX6Oyl8dV
-X-Google-Smtp-Source: APXvYqweqrylK3pukroyPFpF1CqM/vmRCGM+KOrt5PclygW/HBOfAPZfaJMekDpiEsgrLRmdG8dMFShCCyW/LuXmtBU0b3/BSwvs
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=lhlKxXAIvhacc2714cSl7CgN47VyLjNdXE5+TJ+pWfc=;
+        b=d6+6ckPsoCNJp5COxT0/1epzJ1H2Oi0manLQYP+VT+Za+Kp7Ec4zTwTNTcB7LUUexP
+         pbWcTVpWeX8Z/3dvQBMmeBf8f+pO3xZNn77yAKT+AN1aQtMT1oJeASAjZPNCg2XHxBtu
+         K2LNCHQJ3nueg/v5pfAPDCmOKjgTu9h7VJkubqvc5a0p8oj8+YSXMb04IcWTX8JCF/JW
+         6xviMb/fB++t9sNnH+yNXT8DgnkaYW34wuM3Zf/tPZrlHGfFmZEBP/X/iLiH71sSXwsU
+         sPuLiI5SygcWEv5m48XzggVVl4Ova+L28mEhwHV2nZF23eNWWFPBrt+Ip1xuc/4zAvHY
+         6jng==
+X-Gm-Message-State: APjAAAX/SCg7TsSmJDVxBv4ROKqqvrayNivzXjgvPT2NIqgNV+FgjhON
+        57oH/5jSKO8kbFhdKbxwFSOpnA==
+X-Google-Smtp-Source: APXvYqw7fF7F0dn1XMTNUKU+SpQUH74ObcV+LpB7LmVe/J4gIU4K/TSo0CCwfrQ6XOBMin29oU+CKw==
+X-Received: by 2002:aa7:84c4:: with SMTP id x4mr50338458pfn.144.1582532696231;
+        Mon, 24 Feb 2020 00:24:56 -0800 (PST)
+Received: from kaaira-HP-Pavilion-Notebook ([103.37.201.170])
+        by smtp.gmail.com with ESMTPSA id g12sm11515210pfh.170.2020.02.24.00.24.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 24 Feb 2020 00:24:55 -0800 (PST)
+Date:   Mon, 24 Feb 2020 13:54:48 +0530
+From:   Kaaira Gupta <kgupta@es.iitr.ac.in>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] staging: qlge: emit debug and dump at same level
+Message-ID: <20200224082448.GA6826@kaaira-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-X-Received: by 2002:a92:3a07:: with SMTP id h7mr57387937ila.203.1582532294128;
- Mon, 24 Feb 2020 00:18:14 -0800 (PST)
-Date:   Mon, 24 Feb 2020 00:18:14 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003cbb40059f4e0346@google.com>
-Subject: kernel panic: audit: backlog limit exceeded
-From:   syzbot <syzbot+9a5e789e4725b9ef1316@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        dan.carpenter@oracle.com, davem@davemloft.net, eparis@redhat.com,
-        fzago@cray.com, gregkh@linuxfoundation.org, john.hammond@intel.com,
-        linux-audit@redhat.com, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        paul@paul-moore.com, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Simplify code in ql_mpi_core_to_log() by calling print_hex_dump()
+instead of existing functions so that the debug and dump are
+emitted at the same KERN_<LEVEL>
 
-syzbot found the following crash on:
-
-HEAD commit:    36a44bcd Merge branch 'bnxt_en-shutdown-and-kexec-kdump-re..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=148bfdd9e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=768cc3d3e277cc16
-dashboard link: https://syzkaller.appspot.com/bug?extid=9a5e789e4725b9ef1316
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=151b1109e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=128bfdd9e00000
-
-The bug was bisected to:
-
-commit 0c1b9970ddd4cc41002321c3877e7f91aacb896d
-Author: Dan Carpenter <dan.carpenter@oracle.com>
-Date:   Fri Jul 28 14:42:27 2017 +0000
-
-    staging: lustre: lustre: Off by two in lmv_fid2path()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17e6c3e9e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=1416c3e9e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1016c3e9e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9a5e789e4725b9ef1316@syzkaller.appspotmail.com
-Fixes: 0c1b9970ddd4 ("staging: lustre: lustre: Off by two in lmv_fid2path()")
-
-audit: audit_backlog=13 > audit_backlog_limit=7
-audit: audit_lost=1 audit_rate_limit=0 audit_backlog_limit=7
-Kernel panic - not syncing: audit: backlog limit exceeded
-CPU: 1 PID: 9913 Comm: syz-executor024 Not tainted 5.6.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- audit_panic.cold+0x32/0x32 kernel/audit.c:307
- audit_log_lost kernel/audit.c:377 [inline]
- audit_log_lost+0x8b/0x180 kernel/audit.c:349
- audit_log_start kernel/audit.c:1788 [inline]
- audit_log_start+0x70e/0x7c0 kernel/audit.c:1745
- audit_log+0x95/0x120 kernel/audit.c:2345
- xt_replace_table+0x61d/0x830 net/netfilter/x_tables.c:1413
- __do_replace+0x1da/0x950 net/ipv6/netfilter/ip6_tables.c:1084
- do_replace net/ipv6/netfilter/ip6_tables.c:1157 [inline]
- do_ip6t_set_ctl+0x33a/0x4c8 net/ipv6/netfilter/ip6_tables.c:1681
- nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
- nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
- ipv6_setsockopt net/ipv6/ipv6_sockglue.c:949 [inline]
- ipv6_setsockopt+0x147/0x180 net/ipv6/ipv6_sockglue.c:933
- tcp_setsockopt net/ipv4/tcp.c:3165 [inline]
- tcp_setsockopt+0x8f/0xe0 net/ipv4/tcp.c:3159
- sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
- __sys_setsockopt+0x261/0x4c0 net/socket.c:2130
- __do_sys_setsockopt net/socket.c:2146 [inline]
- __se_sys_setsockopt net/socket.c:2143 [inline]
- __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2143
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x44720a
-Code: 49 89 ca b8 37 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 1a e0 fb ff c3 66 0f 1f 84 00 00 00 00 00 49 89 ca b8 36 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 fa df fb ff c3 66 0f 1f 84 00 00 00 00 00
-RSP: 002b:00007ffd032dec78 EFLAGS: 00000286 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000044720a
-RDX: 0000000000000040 RSI: 0000000000000029 RDI: 0000000000000003
-RBP: 00007ffd032deda0 R08: 00000000000003b8 R09: 0000000000004000
-R10: 00000000006d7b40 R11: 0000000000000286 R12: 00007ffd032deca0
-R13: 00000000006d9d60 R14: 0000000000000029 R15: 00000000006d7ba0
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
+Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+changes since v1: make code of ql_mpi_core_to_log() simpler.
+changes since v2: directly call the function instead of defining a
+macro.
+changes since v3: Remove prefix string.
+
+----
+---
+ drivers/staging/qlge/qlge_dbg.c | 23 +++--------------------
+ 1 file changed, 3 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index c7af2548d119..0c5f6859e645 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -1324,27 +1324,10 @@ void ql_mpi_core_to_log(struct work_struct *work)
+ {
+ 	struct ql_adapter *qdev =
+ 		container_of(work, struct ql_adapter, mpi_core_to_log.work);
+-	u32 *tmp, count;
+-	int i;
+ 
+-	count = sizeof(struct ql_mpi_coredump) / sizeof(u32);
+-	tmp = (u32 *)qdev->mpi_coredump;
+-	netif_printk(qdev, drv, KERN_DEBUG, qdev->ndev,
+-		     "Core is dumping to log file!\n");
+-
+-	for (i = 0; i < count; i += 8) {
+-		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
+-			"%.08x %.08x %.08x\n", i,
+-			tmp[i + 0],
+-			tmp[i + 1],
+-			tmp[i + 2],
+-			tmp[i + 3],
+-			tmp[i + 4],
+-			tmp[i + 5],
+-			tmp[i + 6],
+-			tmp[i + 7]);
+-		msleep(5);
+-	}
++	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET,
++		       32, 4, qdev->mpi_coredump,
++		       sizeof(*qdev->mpi_coredump), false);
+ }
+ 
+ #ifdef QL_REG_DUMP
+-- 
+2.17.1
+
