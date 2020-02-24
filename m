@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA9A169FFB
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6015B169FF6
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:28:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgBXI2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:28:51 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36686 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbgBXI2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:28:14 -0500
-Received: by mail-il1-f197.google.com with SMTP id d22so17097526ild.3
+        id S1727487AbgBXI2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:28:39 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:37721 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgBXI2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:28:15 -0500
+Received: by mail-io1-f71.google.com with SMTP id p4so14226879ioo.4
         for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:28:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Ki7/rIQ43NZNL7i9XZxO5j0m7be84RSH01sLpgV+brk=;
-        b=kTcst3sYQcXF7LEXalN6ks24d29alF8vfLmhDFyJzFRIm0WsMEcsgcCSCYFMXRLu77
-         jnAaRnllHJ7scs/n09zsWKa/6/D0XGVh6NTeL+7l+Fg1K23MGh36CrZg5yD6CWxFzmIZ
-         dYH/4ahgtjYSh9tF/uW6/7VMZShtiKVstcdjvzZfdOcHSZpo5nKABoH3jEqGrcVbCx4H
-         DNWBTnQCjc7ggn5GqaVjMQVBwUOPMRVwS6kxaxzFzk9hn3b7/QkG1R2zcHPxwqLiJlBg
-         kE3QjOuIn/AVIiuAokDbpZWcMMh7GoBKPyZ/mgG8d6eIojPkML4qp3Np+5bZj6q4zGdh
-         fYsQ==
-X-Gm-Message-State: APjAAAVjMQMUwbup4bz1Vtyl8N7lLY2OfjZsF6cXvf9vgcKrd2Rxb6oX
-        VOLlJhvPcDeQdTpSXhugOrxm4eoxXZCCdoV0P54ANUjBSebU
-X-Google-Smtp-Source: APXvYqx6wSbvdhrhgLyvmokd++y+Rr8y2docF4cg58sfgAgwCXjrlPkJ3+tNBtiKM07na6bLEgVBv8Ai9YVKymV9PgGfH/n4Q+Xj
+        bh=PMsLDG7qU8qRbJ/q4t0/FAebmEODLGmxDY1JVYSqgwU=;
+        b=EC1tJdB2cXjEtzt68XPVwyX8E67BcKTOBGNqPlDpzT57/2UDyS7HyXxv6zOPdITD8t
+         BYEb8Mavs/AWRsKytTkjR1tJFvfZNBBCPQl/NuXKlT/+uZuz4yHxC2A6QaURZxvH3Q4I
+         GMsBBkZb07QmzkYHnHZIQitaFSL+HW0XMG86ObQN7ICiUbUivZqgk7s1hkV9ZdNodyHk
+         kmGK67f4L+PJ40OIB5kjL5+WwZzGeKZUate42F3/XjcSOcaNNg/4XdtEP3GEf6jcCeA2
+         Y/BqA3QZbCMXapMH3F4U49SuFqOKZQ9Qby1oD767HEfY9hJs653woOsJE+mUHIjPYxXq
+         xbJw==
+X-Gm-Message-State: APjAAAV0RG38UmUiowYHGMyivjzUBTjKs4Nx/3ruMtmutTPJIx0fjZf6
+        e3yzQPT1PRyDV1kig73o26CtUrmQ0TN+EA+a26ZydvTCaBt+
+X-Google-Smtp-Source: APXvYqxUWPfqxFQ3tf3i/uCWa7zXyz386/ink98iJ3mtu7gCUROGiwSVh282XG5tGuAhmd/WMlyKUs4FXOucJmFWjwWrY7ZFgBye
 MIME-Version: 1.0
-X-Received: by 2002:a02:c787:: with SMTP id n7mr50309193jao.85.1582532894078;
+X-Received: by 2002:a05:6e02:e8b:: with SMTP id t11mr52637692ilj.159.1582532894517;
  Mon, 24 Feb 2020 00:28:14 -0800 (PST)
 Date:   Mon, 24 Feb 2020 00:28:14 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ff4686059f4e26ac@google.com>
-Subject: general protection fault in smc_ib_remove_dev
-From:   syzbot <syzbot+84484ccebdd4e5451d91@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, arvid.brodin@alten.se,
-        davem@davemloft.net, hch@lst.de, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        ubraun@linux.ibm.com
+Message-ID: <00000000000005efef059f4e27e1@google.com>
+Subject: KASAN: use-after-free Read in ethnl_update_bitset32
+From:   syzbot <syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mkubecek@suse.cz,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,97 +48,123 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    36a44bcd Merge branch 'bnxt_en-shutdown-and-kexec-kdump-re..
+HEAD commit:    0c0ddd6a Merge tag 'linux-watchdog-5.6-rc3' of git://www.l..
 git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=15b5774ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=768cc3d3e277cc16
-dashboard link: https://syzkaller.appspot.com/bug?extid=84484ccebdd4e5451d91
+console output: https://syzkaller.appspot.com/x/log.txt?x=12f41c81e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
+dashboard link: https://syzkaller.appspot.com/bug?extid=709b7a64d57978247e44
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=100eda7ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11c3fdd9e00000
-
-The bug was bisected to:
-
-commit cbd34da7dc9afd521e0bea5e7d12701f4a9da7c7
-Author: Christoph Hellwig <hch@lst.de>
-Date:   Fri Jul 12 03:57:28 2019 +0000
-
-    mm: move the powerpc hugepd code to mm/gup.c
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15ea4265e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=17ea4265e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13ea4265e00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13885de9e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1518127ee00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+84484ccebdd4e5451d91@syzkaller.appspotmail.com
-Fixes: cbd34da7dc9a ("mm: move the powerpc hugepd code to mm/gup.c")
+Reported-by: syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com
 
-infiniband syz1: RDMA CMA: cma_listen_on_dev, error -98
-netlink: 'syz-executor837': attribute type 1 has an invalid length.
-netlink: 21 bytes leftover after parsing attributes in process `syz-executor837'.
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 9928 Comm: syz-executor837 Not tainted 5.6.0-rc1-syzkaller #0
+==================================================================
+BUG: KASAN: use-after-free in ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
+BUG: KASAN: use-after-free in ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
+BUG: KASAN: use-after-free in ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
+Read of size 4 at addr ffff8880a8adf43c by task syz-executor290/9875
+
+CPU: 1 PID: 9875 Comm: syz-executor290 Not tainted 5.6.0-rc2-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__list_del_entry_valid+0x22/0xf5 lib/list_debug.c:42
-Code: 0e fe 48 8b 75 e8 eb b2 48 b8 00 00 00 00 00 fc ff df 55 48 89 e5 41 56 49 89 fe 48 83 c7 08 48 89 fa 41 55 48 c1 ea 03 41 54 <80> 3c 02 00 0f 85 a1 00 00 00 4c 89 f2 4d 8b 66 08 48 b8 00 00 00
-RSP: 0018:ffffc900053d7440 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffffffff87b4e490 RCX: ffffffff815c1ba9
-RDX: 0000000000000001 RSI: 0000000000000004 RDI: 0000000000000008
-RBP: ffffc900053d7458 R08: 0000000000000004 R09: fffff52000a7ae7b
-R10: fffff52000a7ae7a R11: 0000000000000003 R12: 0000000000000000
-R13: 0000000000000008 R14: 0000000000000000 R15: ffffffff8a98b880
-FS:  0000000000ea3880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020003028 CR3: 0000000091874000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- __list_del_entry include/linux/list.h:132 [inline]
- list_del_init include/linux/list.h:204 [inline]
- smc_ib_remove_dev+0x52/0x2e0 net/smc/smc_ib.c:578
- remove_client_context+0xc7/0x120 drivers/infiniband/core/device.c:724
- disable_device+0x14c/0x230 drivers/infiniband/core/device.c:1268
- __ib_unregister_device+0x9c/0x190 drivers/infiniband/core/device.c:1435
- ib_unregister_device_and_put+0x5f/0x80 drivers/infiniband/core/device.c:1498
- nldev_dellink+0x222/0x340 drivers/infiniband/core/nldev.c:1568
- rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
- rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
- rdma_nl_rcv+0x5d9/0x980 drivers/infiniband/core/netlink.c:259
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+ __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
+ kasan_report+0x12/0x20 mm/kasan/common.c:641
+ __asan_report_load4_noabort+0x14/0x20 mm/kasan/generic_report.c:134
+ ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
+ ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
+ ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
+ ethnl_update_bitset32 net/ethtool/bitset.c:562 [inline]
+ ethnl_update_bitset+0x4d/0x67 net/ethtool/bitset.c:734
+ ethnl_update_linkmodes net/ethtool/linkmodes.c:303 [inline]
+ ethnl_set_linkmodes+0x461/0xc30 net/ethtool/linkmodes.c:357
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
+ genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
+ netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2478
+ genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
  netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
  sock_sendmsg_nosec net/socket.c:652 [inline]
  sock_sendmsg+0xd7/0x130 net/socket.c:672
- __sys_sendto+0x262/0x380 net/socket.c:1998
- __do_sys_sendto net/socket.c:2010 [inline]
- __se_sys_sendto net/socket.c:2006 [inline]
- __x64_sys_sendto+0xe1/0x1a0 net/socket.c:2006
+ ____sys_sendmsg+0x753/0x880 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
+ __do_sys_sendmsg net/socket.c:2439 [inline]
+ __se_sys_sendmsg net/socket.c:2437 [inline]
+ __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4404d9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdb793fb28 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004404d9
-RDX: 0000000000010a73 RSI: 0000000020000000 RDI: 0000000000000004
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 4b6ae4f95a5de35b
-R10: 00000000000008c0 R11: 0000000000000246 R12: 0000000000401d60
-R13: 0000000000401df0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 79db9bfdece7383f ]---
-RIP: 0010:__list_del_entry_valid+0x22/0xf5 lib/list_debug.c:42
-Code: 0e fe 48 8b 75 e8 eb b2 48 b8 00 00 00 00 00 fc ff df 55 48 89 e5 41 56 49 89 fe 48 83 c7 08 48 89 fa 41 55 48 c1 ea 03 41 54 <80> 3c 02 00 0f 85 a1 00 00 00 4c 89 f2 4d 8b 66 08 48 b8 00 00 00
-RSP: 0018:ffffc900053d7440 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffffffff87b4e490 RCX: ffffffff815c1ba9
-RDX: 0000000000000001 RSI: 0000000000000004 RDI: 0000000000000008
-RBP: ffffc900053d7458 R08: 0000000000000004 R09: fffff52000a7ae7b
-R10: fffff52000a7ae7a R11: 0000000000000003 R12: 0000000000000000
-R13: 0000000000000008 R14: 0000000000000000 R15: ffffffff8a98b880
-FS:  0000000000ea3880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020003028 CR3: 0000000091874000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+RIP: 0033:0x445b39
+Code: e8 ac cb 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 ab cc fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff3694a5d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000445b39
+RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 00000000bb1414ac
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 9724:
+ save_stack+0x23/0x90 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc mm/kasan/common.c:515 [inline]
+ __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:488
+ kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:523
+ slab_post_alloc_hook mm/slab.h:584 [inline]
+ slab_alloc mm/slab.c:3320 [inline]
+ kmem_cache_alloc+0x121/0x710 mm/slab.c:3484
+ kmem_cache_zalloc include/linux/slab.h:659 [inline]
+ __alloc_file+0x27/0x340 fs/file_table.c:101
+ alloc_empty_file+0x72/0x170 fs/file_table.c:151
+ path_openat+0xef/0x3490 fs/namei.c:3596
+ do_filp_open+0x192/0x260 fs/namei.c:3637
+ do_sys_openat2+0x5eb/0x7e0 fs/open.c:1149
+ do_sys_open+0xf2/0x180 fs/open.c:1165
+ ksys_open include/linux/syscalls.h:1386 [inline]
+ __do_sys_open fs/open.c:1171 [inline]
+ __se_sys_open fs/open.c:1169 [inline]
+ __x64_sys_open+0x7e/0xc0 fs/open.c:1169
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 0:
+ save_stack+0x23/0x90 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0x102/0x150 mm/kasan/common.c:476
+ kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
+ __cache_free mm/slab.c:3426 [inline]
+ kmem_cache_free+0x86/0x320 mm/slab.c:3694
+ file_free_rcu+0x98/0xe0 fs/file_table.c:50
+ rcu_do_batch kernel/rcu/tree.c:2186 [inline]
+ rcu_core+0x5e1/0x1390 kernel/rcu/tree.c:2410
+ rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2419
+ __do_softirq+0x262/0x98c kernel/softirq.c:292
+
+The buggy address belongs to the object at ffff8880a8adf300
+ which belongs to the cache filp of size 456
+The buggy address is located 316 bytes inside of
+ 456-byte region [ffff8880a8adf300, ffff8880a8adf4c8)
+The buggy address belongs to the page:
+page:ffffea0002a2b7c0 refcount:1 mapcount:0 mapping:ffff8880aa5f88c0 index:0xffff8880a8adfa80
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea00028884c8 ffffea000299ec88 ffff8880aa5f88c0
+raw: ffff8880a8adfa80 ffff8880a8adf080 0000000100000005 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880a8adf300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a8adf380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff8880a8adf400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                        ^
+ ffff8880a8adf480: fb fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc
+ ffff8880a8adf500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
 
 ---
@@ -151,6 +174,5 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
