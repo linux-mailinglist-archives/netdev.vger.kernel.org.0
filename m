@@ -2,104 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEBC716A931
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E428616A9E1
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728172AbgBXPDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 10:03:55 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:50221 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727888AbgBXPDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:03:24 -0500
-Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j6FFz-00054v-Ti; Mon, 24 Feb 2020 16:02:52 +0100
-Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 28C3F10409E;
-        Mon, 24 Feb 2020 16:02:45 +0100 (CET)
-Message-Id: <20200224145644.708960317@linutronix.de>
-User-Agent: quilt/0.65
-Date:   Mon, 24 Feb 2020 15:01:53 +0100
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [patch V3 22/22] bpf/stackmap: Dont trylock mmap_sem with PREEMPT_RT and interrupts disabled
-References: <20200224140131.461979697@linutronix.de>
+        id S1728137AbgBXPVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 10:21:05 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:53263 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727701AbgBXPVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:21:04 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1j6FXZ-00054z-Cl; Mon, 24 Feb 2020 15:21:01 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     mlxsw@mellanox.com, "David S . Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net/mlxfw: fix spelling mistake: "progamming" -> "programming"
+Date:   Mon, 24 Feb 2020 15:21:01 +0000
+Message-Id: <20200224152101.361648-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net>
+From: Colin Ian King <colin.king@canonical.com>
 
-In a RT kernel down_read_trylock() cannot be used from NMI context and
-up_read_non_owner() is another problematic issue.
+There is a spelling mistake in a literal string. Fix it.
 
-So in such a configuration, simply elide the annotated stackmap and
-just report the raw IPs.
-
-In the longer term, it might be possible to provide a atomic friendly
-versions of the page cache traversal which will at least provide the info
-if the pages are resident and don't need to be paged in.
-
-[ tglx: Use IS_ENABLED() to avoid the #ifdeffery, fixup the irq work
-  	callback and add a comment ]
-
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- kernel/bpf/stackmap.c |   18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -40,6 +40,9 @@ static void do_up_read(struct irq_work *
- {
- 	struct stack_map_irq_work *work;
- 
-+	if (WARN_ON_ONCE(IS_ENABLED(CONFIG_PREEMPT_RT)))
-+		return;
-+
- 	work = container_of(entry, struct stack_map_irq_work, irq_work);
- 	up_read_non_owner(work->sem);
- 	work->sem = NULL;
-@@ -288,10 +291,19 @@ static void stack_map_get_build_id_offse
- 	struct stack_map_irq_work *work = NULL;
- 
- 	if (irqs_disabled()) {
--		work = this_cpu_ptr(&up_read_work);
--		if (atomic_read(&work->irq_work.flags) & IRQ_WORK_BUSY)
--			/* cannot queue more up_read, fallback */
-+		if (!IS_ENABLED(CONFIG_PREEMPT_RT)) {
-+			work = this_cpu_ptr(&up_read_work);
-+			if (atomic_read(&work->irq_work.flags) & IRQ_WORK_BUSY) {
-+				/* cannot queue more up_read, fallback */
-+				irq_work_busy = true;
-+			}
-+		} else {
-+			/*
-+			 * PREEMPT_RT does not allow to trylock mmap sem in
-+			 * interrupt disabled context. Force the fallback code.
-+			 */
- 			irq_work_busy = true;
-+		}
- 	}
- 
- 	/*
+diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
+index c7e882eb8f35..046a0cb82ed8 100644
+--- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
++++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_fsm.c
+@@ -150,7 +150,7 @@ mlxfw_fsm_reactivate_err(struct mlxfw_dev *mlxfw_dev,
+ 		MLXFW_REACT_ERR("device reset required", err);
+ 		break;
+ 	case MLXFW_FSM_REACTIVATE_STATUS_ERR_FW_PROGRAMMING_NEEDED:
+-		MLXFW_REACT_ERR("fw progamming needed", err);
++		MLXFW_REACT_ERR("fw programming needed", err);
+ 		break;
+ 	case MLXFW_FSM_REACTIVATE_STATUS_FW_ALREADY_ACTIVATED:
+ 		MLXFW_REACT_ERR("fw already activated", err);
+-- 
+2.25.0
 
