@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4081D16AF11
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 19:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F18C16AF40
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 19:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727964AbgBXS15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 13:27:57 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:34240 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727483AbgBXS15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 13:27:57 -0500
-Received: by mail-oi1-f195.google.com with SMTP id l136so9885896oig.1;
-        Mon, 24 Feb 2020 10:27:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8b3MliEDFbDrUpBm8jGhwYqreoGs6m8FNnF/yNIueEU=;
-        b=BkRg2/6gEsYakveiAVaz5/SLu28xZ5uKrq6Zg22HgyTQAjavyWMUPy8gNAfUV4xorW
-         E++f5oMa/9O5R6BH3cxB/tP1qodo6qjrXebTii0dtv0aI9Q4qcn7fuXtC8DF8A1HGlOI
-         0PcZFnSVYDSJxwgi4xl53s550fCKeqh4rmkcykM17IsyJn1MZU6Po3uujNL1SWDFxkOW
-         kYRia9cw9SWa0lSLVJ49ng5z4RTTDYDuISpOExK1XcLnn8CDW6Mf41jIX/p+3KkGJsAS
-         Bvw4iR593L59oPXqYg2TPTOHhHwZ+YqmzHe9ip0zWM6ZdYyD3HIRnBed5GKcYXh/TRBL
-         +kmw==
-X-Gm-Message-State: APjAAAWzU2PAOj6NnKUk0FWL4zDcNmVEmfkyRHNsA2p6PVA9OADeof/1
-        CyzdZRNMreOwTzLvaZqPjQ==
-X-Google-Smtp-Source: APXvYqyzy4iiGXu+ZZ3t2yBP3j4K/yU2pKb0H/blTr6+iujeHVCL8mJihe7tO3CjLAVcADKqUCNWGQ==
-X-Received: by 2002:aca:bfc2:: with SMTP id p185mr318449oif.57.1582568876626;
-        Mon, 24 Feb 2020 10:27:56 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id v10sm4255017oic.32.2020.02.24.10.27.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 10:27:56 -0800 (PST)
-Received: (nullmailer pid 13156 invoked by uid 1000);
-        Mon, 24 Feb 2020 18:27:55 -0000
-Date:   Mon, 24 Feb 2020 12:27:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Piotr Sroka <piotrs@cadence.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: Re: [PATCH] docs: dt: fix several broken doc references
-Message-ID: <20200224182755.GB27161@bogus>
-References: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+        id S1727797AbgBXSev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 13:34:51 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:41994 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgBXSev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 13:34:51 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1j6IZ6-007NT1-Ei; Mon, 24 Feb 2020 19:34:48 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next next-2020-02-24
+Date:   Mon, 24 Feb 2020 19:34:41 +0100
+Message-Id: <20200224183442.82066-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 23, 2020 at 09:59:53AM +0100, Mauro Carvalho Chehab wrote:
-> There are several DT doc references that require manual fixes.
-> I found 3 cases fixed on this patch:
-> 
-> 	- directory named "binding/" instead of "bindings/";
-> 	- .txt to .yaml renames;
-> 	- file renames (still on txt format);
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  .../devicetree/bindings/mtd/cadence-nand-controller.txt       | 2 +-
->  .../devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt      | 2 +-
->  Documentation/devicetree/bindings/sound/st,stm32-sai.txt      | 2 +-
->  Documentation/devicetree/bindings/sound/st,stm32-spdifrx.txt  | 2 +-
->  Documentation/devicetree/bindings/spi/st,stm32-spi.yaml       | 2 +-
->  MAINTAINERS                                                   | 4 ++--
->  .../devicetree/bindings/net/wireless/siliabs,wfx.txt          | 2 +-
->  7 files changed, 8 insertions(+), 8 deletions(-)
+Hi,
 
-Applied.
+Some new updates - initial beacon protection support and TID
+configuration are the interesting parts, but need drivers to
+fill in, so that'll come from Kalle later :)
 
-Rob
+Please pull and let me know if there's any problem.
+
+Thanks,
+johannes
+
+
+
+The following changes since commit 92df9f8a745ee9b8cc250514272345cb2e74e7ef:
+
+  Merge branch 'mvneta-xdp-ethtool-stats' (2020-02-16 20:04:42 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2020-02-24
+
+for you to fetch changes up to 370f51d5edac83bfdb9a078d7098f06403dfa4bc:
+
+  mac80211: Add api to support configuring TID specific configuration (2020-02-24 14:07:01 +0100)
+
+----------------------------------------------------------------
+A new set of changes:
+ * lots of small documentation fixes, from Jérôme Pouiller
+ * beacon protection (BIGTK) support from Jouni Malinen
+ * some initial code for TID configuration, from Tamizh chelvam
+ * I reverted some new API before it's actually used, because
+   it's wrong to mix controlled port and preauth
+ * a few other cleanups/fixes
+
+----------------------------------------------------------------
+Amol Grover (1):
+      cfg80211: Pass lockdep expression to RCU lists
+
+Emmanuel Grumbach (1):
+      cfg80211: remove support for adjacent channel compensation
+
+Johannes Berg (4):
+      mac80211: check vif pointer before airtime calculation
+      Revert "mac80211: support NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211_MAC_ADDRS"
+      Revert "nl80211: add src and dst addr attributes for control port tx/rx"
+      nl80211: modify TID-config API
+
+Jouni Malinen (7):
+      cfg80211: More error messages for key addition failures
+      cfg80211: Support key configuration for Beacon protection (BIGTK)
+      mac80211: Support BIGTK configuration for Beacon protection
+      mac80211: Update BIP to support Beacon frames
+      mac80211: Beacon protection using the new BIGTK (AP)
+      mac80211: Beacon protection using the new BIGTK (STA)
+      mac80211_hwsim: enable Beacon protection
+
+Jérôme Pouiller (9):
+      cfg80211: drop duplicated documentation of field "probe_resp_offload"
+      cfg80211: drop duplicated documentation of field "privid"
+      cfg80211: drop duplicated documentation of field "registered"
+      cfg80211: drop duplicated documentation of field "_net"
+      cfg80211: drop duplicated documentation of field "perm_addr"
+      cfg80211: drop duplicated documentation of field "reg_notifier"
+      cfg80211: merge documentations of field "debugfsdir"
+      cfg80211: merge documentations of field "dev"
+      cfg80211: fix indentation errors
+
+Tamizh chelvam (5):
+      nl80211: Add NL command to support TID speicific configurations
+      nl80211: Add support to configure TID specific retry configuration
+      nl80211: Add support to configure TID specific AMPDU configuration
+      nl80211: Add support to configure TID specific RTSCTS configuration
+      mac80211: Add api to support configuring TID specific configuration
+
+ drivers/net/wireless/mac80211_hwsim.c |   1 +
+ include/net/cfg80211.h                | 122 +++++++++-----
+ include/net/mac80211.h                |  10 ++
+ include/uapi/linux/nl80211.h          | 114 +++++++++++--
+ net/mac80211/aes_cmac.c               |  21 ++-
+ net/mac80211/aes_gmac.c               |  24 ++-
+ net/mac80211/cfg.c                    |  71 +++++++-
+ net/mac80211/debugfs_key.c            |  31 ++++
+ net/mac80211/debugfs_key.h            |  10 ++
+ net/mac80211/driver-ops.h             |  27 +++
+ net/mac80211/ieee80211_i.h            |   9 +-
+ net/mac80211/key.c                    |  40 ++++-
+ net/mac80211/key.h                    |   3 +
+ net/mac80211/main.c                   |   2 -
+ net/mac80211/rx.c                     |  79 +++++++--
+ net/mac80211/scan.c                   |   3 +-
+ net/mac80211/sta_info.h               |   4 +-
+ net/mac80211/tx.c                     |  35 +++-
+ net/wireless/nl80211.c                | 298 ++++++++++++++++++++++++++++++----
+ net/wireless/rdev-ops.h               |  45 ++++-
+ net/wireless/scan.c                   |  11 +-
+ net/wireless/sme.c                    |  11 +-
+ net/wireless/trace.h                  |  81 +++++++--
+ net/wireless/util.c                   |   7 +-
+ 24 files changed, 909 insertions(+), 150 deletions(-)
+
