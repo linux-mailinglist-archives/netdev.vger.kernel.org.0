@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8459F16B58A
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBFC16B5A2
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:32:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728412AbgBXX3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 18:29:20 -0500
-Received: from mga18.intel.com ([134.134.136.126]:21404 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728020AbgBXX3T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 18:29:19 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Feb 2020 15:29:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,481,1574150400"; 
-   d="scan'208";a="230823501"
-Received: from wtczc53028gn.jf.intel.com (HELO skl-build) ([10.54.87.17])
-  by orsmga008.jf.intel.com with ESMTP; 24 Feb 2020 15:29:19 -0800
-Date:   Mon, 24 Feb 2020 15:29:09 -0800
-From:   "Christopher S. Hall" <christopher.s.hall@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tglx@linutronix.de, hpa@zytor.com,
-        mingo@redhat.com, x86@kernel.org, davem@davemloft.net,
-        sean.v.kelley@intel.com
-Subject: Re: [Intel PMC TGPIO Driver 1/5] drivers/ptp: Add Enhanced handling
- of reserve fields
-Message-ID: <20200224232909.GF1508@skl-build>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <20191211214852.26317-2-christopher.s.hall@intel.com>
- <0f868a7e-5806-4976-80b5-0185a64b42a0@intel.com>
- <20200203014544.GA3516@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200203014544.GA3516@localhost>
+        id S1728528AbgBXXbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 18:31:49 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:40100 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728316AbgBXXbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:31:49 -0500
+Received: from localhost (unknown [50.226.181.18])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DA8DF124CE3EA;
+        Mon, 24 Feb 2020 15:31:47 -0800 (PST)
+Date:   Mon, 24 Feb 2020 15:31:46 -0800 (PST)
+Message-Id: <20200224.153146.125327154283545636.davem@davemloft.net>
+To:     f.fainelli@gmail.com
+Cc:     jeremy.linton@arm.com, netdev@vger.kernel.org, opendmb@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH v2 0/6] Add ACPI bindings to the genet
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <5cc69c8e-69e0-0ee6-af1f-3fb22df957ca@gmail.com>
+References: <20200224225403.1650656-1-jeremy.linton@arm.com>
+        <5cc69c8e-69e0-0ee6-af1f-3fb22df957ca@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Feb 2020 15:31:48 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 02, 2020 at 05:45:44PM -0800, Richard Cochran wrote:
-> On Fri, Jan 31, 2020 at 08:54:19AM -0800, Jacob Keller wrote:
-> > 
-> > Not that it's a big deal, but I think this might read more clearly if
-> > this was "cmd == PTP_PIN_GETFUNC2 && check_rsv_field(pd.rsv)"
-> 
-> +1
+From: Florian Fainelli <f.fainelli@gmail.com>
+Date: Mon, 24 Feb 2020 15:09:36 -0800
 
-Yes. Good point.
+> On 2/24/20 2:53 PM, Jeremy Linton wrote:
+>> This patch series allows the BCM GENET, as used on the RPi4,
+>> to attach when booted in an ACPI environment. The DSDT entry to
+>> trigger this is seen below. Of note, the first patch adds a
+>> small extension to the mdio layer which allows drivers to find
+>> the mii_bus without firmware assistance. The fifth patch in
+>> the set retrieves the MAC address from the umac registers
+>> rather than carrying it directly in the DSDT. This of course
+>> requires the firmware to pre-program it, so we continue to fall
+>> back on a random one if it appears to be garbage.
+> 
+> Thanks for your persistence on this I was able to apply this to the
+> latest net-next tree and give this a spin on a STB chip (which uses DT)
+> and did not see any issues, so:
+> 
+> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Series applied, thanks everyone.
