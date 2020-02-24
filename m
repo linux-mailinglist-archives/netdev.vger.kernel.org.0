@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE5616B49C
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:54:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65EB916B49A
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:54:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728385AbgBXWyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 17:54:16 -0500
-Received: from foss.arm.com ([217.140.110.172]:43916 "EHLO foss.arm.com"
+        id S1728420AbgBXWyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 17:54:17 -0500
+Received: from foss.arm.com ([217.140.110.172]:43928 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728361AbgBXWyN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 17:54:13 -0500
+        id S1728405AbgBXWyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 17:54:16 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F1B431B;
-        Mon, 24 Feb 2020 14:54:13 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88BB431B;
+        Mon, 24 Feb 2020 14:54:16 -0800 (PST)
 Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3E32B3F534;
-        Mon, 24 Feb 2020 14:54:13 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 809533F534;
+        Mon, 24 Feb 2020 14:54:16 -0800 (PST)
 From:   Jeremy Linton <jeremy.linton@arm.com>
 To:     netdev@vger.kernel.org
 Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
         bcm-kernel-feedback-list@broadcom.com,
         linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
-        hkallweit1@gmail.com, Jeremy Linton <jeremy.linton@arm.com>
-Subject: [PATCH v2 5/6] net: bcmgenet: Fetch MAC address from the adapter
-Date:   Mon, 24 Feb 2020 16:54:02 -0600
-Message-Id: <20200224225403.1650656-6-jeremy.linton@arm.com>
+        hkallweit1@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v2 6/6] net: bcmgenet: reduce severity of missing clock warnings
+Date:   Mon, 24 Feb 2020 16:54:03 -0600
+Message-Id: <20200224225403.1650656-7-jeremy.linton@arm.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200224225403.1650656-1-jeremy.linton@arm.com>
 References: <20200224225403.1650656-1-jeremy.linton@arm.com>
@@ -36,107 +37,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ARM/ACPI machines should utilize self describing hardware
-when possible. The MAC address on the BCMGENET can be
-read from the adapter if a full featured firmware has already
-programmed it. Lets try using the address already programmed,
-if it appears to be valid.
+If one types "failed to get enet clock" or similar into google
+there are ~370k hits. The vast majority are people debugging
+problems unrelated to this adapter, or bragging about their
+rpi's. Further, the DT clock bindings here are optional.
 
-It should be noted that while we move the macaddr logic below
-the clock and power logic in the driver, none of that code will
-ever be active in an ACPI environment as the device will be
-attached to the acpi power domain, and brought to full power
-with all clocks enabled immediately before the device probe
-routine is called.
-
-One side effect of the above tweak is that while its now
-possible to read the MAC address via _DSD properties, it should
-be avoided.
+Given that its not a fatal situation with common DT based
+systems, lets reduce the severity so people aren't seeing failure
+messages in everyday operation.
 
 Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../net/ethernet/broadcom/genet/bcmgenet.c    | 39 +++++++++++++------
- 1 file changed, 27 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 179855171918..412156745b5c 100644
+index 412156745b5c..80feb20a2e53 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -2772,6 +2772,21 @@ static void bcmgenet_set_hw_addr(struct bcmgenet_priv *priv,
- 	bcmgenet_umac_writel(priv, (addr[4] << 8) | addr[5], UMAC_MAC1);
- }
+@@ -3562,7 +3562,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
  
-+static void bcmgenet_get_hw_addr(struct bcmgenet_priv *priv,
-+				 unsigned char *addr)
-+{
-+	u32 addr_tmp;
-+
-+	addr_tmp = bcmgenet_umac_readl(priv, UMAC_MAC0);
-+	addr[0] = addr_tmp >> 24;
-+	addr[1] = (addr_tmp >> 16) & 0xff;
-+	addr[2] = (addr_tmp >>	8) & 0xff;
-+	addr[3] = addr_tmp & 0xff;
-+	addr_tmp = bcmgenet_umac_readl(priv, UMAC_MAC1);
-+	addr[4] = (addr_tmp >> 8) & 0xff;
-+	addr[5] = addr_tmp & 0xff;
-+}
-+
- /* Returns a reusable dma control register value */
- static u32 bcmgenet_dma_disable(struct bcmgenet_priv *priv)
- {
-@@ -3467,7 +3482,6 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 	const struct bcmgenet_plat_data *pdata;
- 	struct bcmgenet_priv *priv;
- 	struct net_device *dev;
--	const void *macaddr = NULL;
- 	unsigned int i;
- 	int err = -EIO;
- 
-@@ -3498,11 +3512,6 @@ static int bcmgenet_probe(struct platform_device *pdev)
+ 	priv->clk = devm_clk_get(&priv->pdev->dev, "enet");
+ 	if (IS_ERR(priv->clk)) {
+-		dev_warn(&priv->pdev->dev, "failed to get enet clock\n");
++		dev_dbg(&priv->pdev->dev, "failed to get enet clock\n");
+ 		priv->clk = NULL;
  	}
- 	priv->wol_irq = platform_get_irq_optional(pdev, 2);
  
--	if (dn)
--		macaddr = of_get_mac_address(dn);
--	else if (pd)
--		macaddr = pd->mac_address;
--
- 	priv->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(priv->base)) {
- 		err = PTR_ERR(priv->base);
-@@ -3513,12 +3522,6 @@ static int bcmgenet_probe(struct platform_device *pdev)
+@@ -3586,13 +3586,13 @@ static int bcmgenet_probe(struct platform_device *pdev)
  
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	dev_set_drvdata(&pdev->dev, dev);
--	if (IS_ERR_OR_NULL(macaddr) || !is_valid_ether_addr(macaddr)) {
--		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
--		eth_hw_addr_random(dev);
--	} else {
--		ether_addr_copy(dev->dev_addr, macaddr);
--	}
- 	dev->watchdog_timeo = 2 * HZ;
- 	dev->ethtool_ops = &bcmgenet_ethtool_ops;
- 	dev->netdev_ops = &bcmgenet_netdev_ops;
-@@ -3599,6 +3602,18 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 	if (device_get_phy_mode(&pdev->dev) == PHY_INTERFACE_MODE_INTERNAL)
- 		bcmgenet_power_up(priv, GENET_POWER_PASSIVE);
+ 	priv->clk_wol = devm_clk_get(&priv->pdev->dev, "enet-wol");
+ 	if (IS_ERR(priv->clk_wol)) {
+-		dev_warn(&priv->pdev->dev, "failed to get enet-wol clock\n");
++		dev_dbg(&priv->pdev->dev, "failed to get enet-wol clock\n");
+ 		priv->clk_wol = NULL;
+ 	}
  
-+	if ((pd) && (!IS_ERR_OR_NULL(pd->mac_address)))
-+		ether_addr_copy(dev->dev_addr, pd->mac_address);
-+	else
-+		if (!device_get_mac_address(&pdev->dev, dev->dev_addr, ETH_ALEN))
-+			if (has_acpi_companion(&pdev->dev))
-+				bcmgenet_get_hw_addr(priv, dev->dev_addr);
-+
-+	if (!is_valid_ether_addr(dev->dev_addr)) {
-+		dev_warn(&pdev->dev, "using random Ethernet MAC\n");
-+		eth_hw_addr_random(dev);
-+	}
-+
- 	reset_umac(priv);
+ 	priv->clk_eee = devm_clk_get(&priv->pdev->dev, "enet-eee");
+ 	if (IS_ERR(priv->clk_eee)) {
+-		dev_warn(&priv->pdev->dev, "failed to get enet-eee clock\n");
++		dev_dbg(&priv->pdev->dev, "failed to get enet-eee clock\n");
+ 		priv->clk_eee = NULL;
+ 	}
  
- 	err = bcmgenet_mii_init(dev);
 -- 
 2.24.1
 
