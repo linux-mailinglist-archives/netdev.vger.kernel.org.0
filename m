@@ -2,90 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C985F16A564
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:45:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60BFE16A56C
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:46:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727299AbgBXLpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 06:45:35 -0500
-Received: from foss.arm.com ([217.140.110.172]:35818 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727183AbgBXLpe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 06:45:34 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12FB530E;
-        Mon, 24 Feb 2020 03:45:34 -0800 (PST)
-Received: from localhost (unknown [10.37.6.21])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 66C063F534;
-        Mon, 24 Feb 2020 03:45:33 -0800 (PST)
-Date:   Mon, 24 Feb 2020 11:45:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Piotr Sroka <piotrs@cadence.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: Re: [PATCH] docs: dt: fix several broken doc references
-Message-ID: <20200224114532.GC6215@sirena.org.uk>
-References: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+        id S1727520AbgBXLqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 06:46:02 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:56595 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727183AbgBXLqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 06:46:02 -0500
+Received: by mail-il1-f200.google.com with SMTP id p67so17794149ili.23
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 03:46:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TPDa8vA3dA5ocPrn3u12l+xTYIvr8/gY5caMU69qWlU=;
+        b=VfTcKnYPCnlbVnDbP4Bwelx8QQOJTTdloLDp2FeVWYWeFb++A8MXJ+v7kDA1425D4u
+         aJBdWHRhP6qm89VKGZDlkqtaLgBaOTz9e8FdRnsQdNURW1r6k32XL5egua4z8P4jQwJq
+         G1M5bsH7FwrLqSI4hBIXaSBJNw3OPdRLIX4i6xvVt3DSx1thKWa8oeFbzN+gnw3MKKaG
+         FmjH0RsN41AENpwoPY2zg2dFujL9Qzi+p625LHH0WqKi86OO9V6W00XiWTrQ2pQYqCSY
+         5d3FxcyvXWEwC9FIzcGC8JLNzQQU9U8fIDzoiQLR7/BSolji5r/NaWXtU37DtrS14p6v
+         2wCg==
+X-Gm-Message-State: APjAAAUtgdb0MVeViHJreTjo/gTYqOb6LUUQ5rSwmC2pQ4QZcxdmT5lf
+        CAvwpDAyH2thpSZYWAfRQzE+tBg7cnvWjfJxu7Nf7oDtsJQg
+X-Google-Smtp-Source: APXvYqw8hJLLKQWy7t1wn0gt4p/CBTAWcz0u7a08HT32PVYseKb6Zst8oSvvhVBG6HkcXdOrZxccOixjo3lFs6l0GucGK/G5V7q9
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DIOMP1UsTsWJauNi"
-Content-Disposition: inline
-In-Reply-To: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
-X-Cookie: How you look depends on where you go.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a6b:730c:: with SMTP id e12mr48673976ioh.4.1582544761598;
+ Mon, 24 Feb 2020 03:46:01 -0800 (PST)
+Date:   Mon, 24 Feb 2020 03:46:01 -0800
+In-Reply-To: <00000000000005efef059f4e27e1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005b46ba059f50ea17@google.com>
+Subject: Re: KASAN: use-after-free Read in ethnl_update_bitset32
+From:   syzbot <syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mkubecek@suse.cz,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has bisected this bug to:
 
---DIOMP1UsTsWJauNi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit bfbcfe2032e70bd8598d680d39ac177d507e39ac
+Author: Michal Kubecek <mkubecek@suse.cz>
+Date:   Fri Dec 27 14:56:13 2019 +0000
 
-On Sun, Feb 23, 2020 at 09:59:53AM +0100, Mauro Carvalho Chehab wrote:
-> There are several DT doc references that require manual fixes.
-> I found 3 cases fixed on this patch:
->=20
-> 	- directory named "binding/" instead of "bindings/";
-> 	- .txt to .yaml renames;
-> 	- file renames (still on txt format);
+    ethtool: set link modes related data with LINKMODES_SET request
 
-This seems like it should've been split up a bit.  :/
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16d59109e00000
+start commit:   0c0ddd6a Merge tag 'linux-watchdog-5.6-rc3' of git://www.l..
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15d59109e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11d59109e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
+dashboard link: https://syzkaller.appspot.com/bug?extid=709b7a64d57978247e44
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13885de9e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1518127ee00000
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Reported-by: syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com
+Fixes: bfbcfe2032e7 ("ethtool: set link modes related data with LINKMODES_SET request")
 
---DIOMP1UsTsWJauNi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5Tt1sACgkQJNaLcl1U
-h9CeXgf/ee/xxhTgqVSMNL+gDYl+cgPqn0CVS5ynzTQm6XlCEEXDBneO8oAyMs9Q
-B35qG/r62a8QVrA/l3LzqVMhLlv8zL4iGOheD5+eZ6gHnMv7lPajWNmGOfnMJd9H
-UKLDbTT2i5G+9z8eCMtms1XURh+HwDOazAYv0AivApzVodTmO2psgQP1QLL2OzJL
-LPC4wm0qrtgar4rno/OfhGR/wyJfJKLE7MqnJ73wcaO5fZ48mtXx0mZwh3aJqtxe
-3inu1PkxuHNSlxEIMHFKg8Tvg/cGD1vngJEwsEZ8AJ+bTOcI8HX+goLuAyNwTG6F
-VynhL1Jdiscm+V62nRat6prHHhzWBw==
-=WoRy
------END PGP SIGNATURE-----
-
---DIOMP1UsTsWJauNi--
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
