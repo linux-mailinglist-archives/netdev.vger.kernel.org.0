@@ -2,47 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9A616AFFF
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 20:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3034316B015
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 20:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbgBXTL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 14:11:57 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:51516 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726216AbgBXTL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 14:11:57 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1j6J90-0003Hk-Ep; Mon, 24 Feb 2020 20:11:54 +0100
-Date:   Mon, 24 Feb 2020 20:11:54 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: Re: [PATCH nf] netfilter: ensure rcu_read_lock() in
- ipv4_find_option()
-Message-ID: <20200224191154.GH19559@breakpoint.cc>
-References: <20200224185529.50530-1-mcroce@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200224185529.50530-1-mcroce@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727282AbgBXTN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 14:13:56 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:36882 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbgBXTN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 14:13:56 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 99D7B11E3C074;
+        Mon, 24 Feb 2020 11:13:55 -0800 (PST)
+Date:   Mon, 24 Feb 2020 11:13:55 -0800 (PST)
+Message-Id: <20200224.111355.456289899614012541.davem@davemloft.net>
+To:     nikolay@cumulusnetworks.com
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net v2] net: bridge: fix stale eth hdr pointer in
+ br_dev_xmit
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200224164622.1472051-1-nikolay@cumulusnetworks.com>
+References: <83cadec7-d659-cf2a-c0c0-a85d2f6503bc@cumulusnetworks.com>
+        <20200224164622.1472051-1-nikolay@cumulusnetworks.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Feb 2020 11:13:55 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matteo Croce <mcroce@redhat.com> wrote:
-> As in commit c543cb4a5f07 ("ipv4: ensure rcu_read_lock() in ipv4_link_failure()")
-> and commit 3e72dfdf8227 ("ipv4: ensure rcu_read_lock() in cipso_v4_error()"),
-> __ip_options_compile() must be called under rcu protection.
+From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Date: Mon, 24 Feb 2020 18:46:22 +0200
 
-This is not needed, all netfilter hooks run with rcu_read_lock held.
+> In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
+> if the packet has the vlan header inside (e.g. bridge with disabled
+> tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
+> to extract the vid before filtering which in turn calls pskb_may_pull()
+> and we may end up with a stale eth pointer. Moreover the cached eth header
+> pointer will generally be wrong after that operation. Remove the eth header
+> caching and just use eth_hdr() directly, the compiler does the right thing
+> and calculates it only once so we don't lose anything.
+> 
+> Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> ---
+> v2: remove syzbot's reported-by tag, this seems to be a different bug
 
+Applied and queued up for -stable, thanks Nikolay.
