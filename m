@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD14F16A956
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D59716A963
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727859AbgBXPDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 10:03:21 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:50176 "EHLO
+        id S1727849AbgBXPFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 10:05:18 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:50177 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726762AbgBXPDU (ORCPT
+        with ESMTP id S1727359AbgBXPDU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:03:20 -0500
 Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1j6FFo-0004s1-Lj; Mon, 24 Feb 2020 16:02:40 +0100
+        id 1j6FFo-0004s2-S2; Mon, 24 Feb 2020 16:02:40 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 4EDAFFFB71;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 85B9410408E;
         Mon, 24 Feb 2020 16:02:40 +0100 (CET)
-Message-Id: <20200224140131.461979697@linutronix.de>
+Message-Id: <20200224145642.540542802@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Mon, 24 Feb 2020 15:01:31 +0100
+Date:   Mon, 24 Feb 2020 15:01:32 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
@@ -36,72 +36,120 @@ Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [patch V3 00/22] bpf: Make BPF and PREEMPT_RT co-exist
+Subject: [patch V3 01/22] bpf: Tighten the requirements for preallocated hash maps
+References: <20200224140131.461979697@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+The assumption that only programs attached to perf NMI events can deadlock
+on memory allocators is wrong. Assume the following simplified callchain:
 
-This is the third version of the BPF/RT patch set which makes both coexist
-nicely. The long explanation can be found in the cover letter of the V1
-submission:
+ kmalloc() from regular non BPF context
+  cache empty
+   freelist empty
+    lock(zone->lock);
+     tracepoint or kprobe
+      BPF()
+       update_elem()
+        lock(bucket)
+          kmalloc()
+           cache empty
+            freelist empty
+             lock(zone->lock);  <- DEADLOCK
 
-  https://lore.kernel.org/r/20200214133917.304937432@linutronix.de
+There are other ways which do not involve locking to create wreckage:
 
-V2 is here:
+ kmalloc() from regular non BPF context
+  local_irq_save();
+   ...
+    obj = slab_first();
+     kprobe()
+      BPF()
+       update_elem()
+        lock(bucket)
+         kmalloc()
+          local_irq_save();
+           ...
+            obj = slab_first(); <- Same object as above ...
 
-  https://lore.kernel.org/r/20200220204517.863202864@linutronix.de
+So preallocation _must_ be enforced for all variants of intrusive
+instrumentation.
 
-The following changes vs. V2 have been made:
+Unfortunately immediate enforcement would break backwards compatibility, so
+for now such programs still are allowed to run, but a one time warning is
+emitted in dmesg and the verifier emits a warning in the verifier log as
+well so developers are made aware about this and can fix their programs
+before the enforcement becomes mandatory.
 
-  - Rebased to bpf-next, adjusted to the lock changes in the hashmap code.
-
-  - Split the preallocation enforcement patch for instrumentation type BPF
-    programs into two pieces:
-
-    1) Emit a one-time warning on !RT kernels when any instrumentation type
-       BPF program uses run-time allocation. Emit also a corresponding
-       warning in the verifier log. But allow the program to run for
-       backward compatibility sake. After a grace period this should be
-       enforced.
-
-    2) On RT reject such programs because on RT the memory allocator cannot
-       be called from truly atomic contexts.
-       
-  - Fixed the fallout from V2 as reported by Alexei and 0-day
-
-  - Removed the redundant preempt_disable() from trace_call_bpf()
-
-  - Removed the unused export of trace_call_bpf()
-
-The series applies on top of:
-
- git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-
-Selftest result:
-  # Summary: 1580 PASSED, 0 SKIPPED, 0 FAILED
-
-Thanks,
-
-	tglx
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- include/linux/bpf.h          |   38 ++++++++-
- include/linux/filter.h       |   37 +++++++--
- kernel/bpf/hashtab.c         |  172 ++++++++++++++++++++++++++++++-------------
- kernel/bpf/lpm_trie.c        |   12 +--
- kernel/bpf/percpu_freelist.c |   20 ++---
- kernel/bpf/stackmap.c        |   18 +++-
- kernel/bpf/syscall.c         |   27 ++----
- kernel/bpf/trampoline.c      |    9 +-
- kernel/bpf/verifier.c        |   40 +++++++---
- kernel/events/core.c         |    2 
- kernel/seccomp.c             |    4 -
- kernel/trace/bpf_trace.c     |    7 -
- lib/test_bpf.c               |    4 -
- net/bpf/test_run.c           |    8 +-
- net/core/flow_dissector.c    |    4 -
- net/core/skmsg.c             |    8 --
- net/kcm/kcmsock.c            |    4 -
- 17 files changed, 274 insertions(+), 140 deletions(-)
+V3: Still allow run-time allocation for !RT. Emit warnings. Split
+    out the RT part as this really should be backported to stable
+    kernels.
+V2: New patch
+---
+ kernel/bpf/verifier.c |   39 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 11 deletions(-)
+
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -8143,26 +8143,43 @@ static bool is_tracing_prog_type(enum bp
+ 	}
+ }
+ 
++static bool is_preallocated_map(struct bpf_map *map)
++{
++	if (!check_map_prealloc(map))
++		return false;
++	if (map->inner_map_meta && !check_map_prealloc(map->inner_map_meta))
++		return false;
++	return true;
++}
++
+ static int check_map_prog_compatibility(struct bpf_verifier_env *env,
+ 					struct bpf_map *map,
+ 					struct bpf_prog *prog)
+ 
+ {
+-	/* Make sure that BPF_PROG_TYPE_PERF_EVENT programs only use
+-	 * preallocated hash maps, since doing memory allocation
+-	 * in overflow_handler can crash depending on where nmi got
+-	 * triggered.
++	/*
++	 * Validate that trace type programs use preallocated hash maps.
++	 *
++	 * For programs attached to PERF events this is mandatory as the
++	 * perf NMI can hit any arbitrary code sequence.
++	 *
++	 * All other trace types using preallocated hash maps are unsafe as
++	 * well because tracepoint or kprobes can be inside locked regions
++	 * of the memory allocator or at a place where a recursion into the
++	 * memory allocator would see inconsistent state.
++	 *
++	 * For now running such programs is allowed for backwards
++	 * compatibility reasons, but warnings are emitted so developers are
++	 * made aware of the unsafety and can fix their programs before this
++	 * is enforced.
+ 	 */
+-	if (prog->type == BPF_PROG_TYPE_PERF_EVENT) {
+-		if (!check_map_prealloc(map)) {
++	if (is_tracing_prog_type(prog->type) && !is_preallocated_map(map)) {
++		if (prog->type == BPF_PROG_TYPE_PERF_EVENT) {
+ 			verbose(env, "perf_event programs can only use preallocated hash map\n");
+ 			return -EINVAL;
+ 		}
+-		if (map->inner_map_meta &&
+-		    !check_map_prealloc(map->inner_map_meta)) {
+-			verbose(env, "perf_event programs can only use preallocated inner hash map\n");
+-			return -EINVAL;
+-		}
++		WARN_ONCE(1, "trace type BPF program uses run-time allocation\n");
++		verbose(env, "trace type programs with run-time allocated hash maps are unsafe. Switch to preallocated hash maps.\n");
+ 	}
+ 
+ 	if ((is_tracing_prog_type(prog->type) ||
+
