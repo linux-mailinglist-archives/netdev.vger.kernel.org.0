@@ -2,109 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3627F16A670
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 13:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5842716A6B9
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbgBXMvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 07:51:13 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:48490 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727290AbgBXMvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 07:51:12 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6DCV-0005cj-GO; Mon, 24 Feb 2020 12:51:07 +0000
-Received: from jain.kot-begemot.co.uk ([192.168.3.3])
-        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6DCT-0007nS-51; Mon, 24 Feb 2020 12:51:07 +0000
-Subject: Re: [PATCH v2] virtio: Work around frames incorrectly marked as gso
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-um@lists.infradead.org, jasowang@redhat.com,
-        eric.dumazet@gmail.com
-References: <20200224101912.14074-1-anton.ivanov@cambridgegreys.com>
- <20200224074516-mutt-send-email-mst@kernel.org>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Message-ID: <ca0ca1b6-b453-cba0-adb0-42a9517743e9@cambridgegreys.com>
-Date:   Mon, 24 Feb 2020 12:51:05 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727464AbgBXNBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 08:01:32 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40298 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727357AbgBXNBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:01:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=h+3s0EUrRBksVeRKHsOpEHk0OsUdcbcFmyIf7lBNhVM=; b=wJkVsMngh1Jrz8dcG8Lqs1NAm
+        /VgObCegzrsxkD+qitQkA9efPrHot0fZMcl+SbxFIQCYrKYjfTZR5Rn0gma7y1DsWYMavDHPelqXw
+        l6tuoIA+Q8/DOvT+bsQQQpz19Zs+hzStgeVtCRiXVtLnwp0M/miaSTGjvBUz2RRzd/KZBeZKBRP1V
+        Av9KqPUdPSrdnlKkwIDVqxVXIawhdQMysiYhBTeQnH14fbWTo2YrPA5BmAFhhlTCZH/PeX+2y7I7Z
+        hMLHuEEjCYTo08znh2zuNqKYPU8Ya9a9Z2z//D58cSlwZi3X4UwQSRZt0+A2qXVsp91McEXSc2SPI
+        9KyNV9iQQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44630)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j6DMQ-0002pF-KV; Mon, 24 Feb 2020 13:01:22 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j6DMM-0006Rj-PS; Mon, 24 Feb 2020 13:01:18 +0000
+Date:   Mon, 24 Feb 2020 13:01:18 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [CFT 4/8] net: axienet: use resolved link config in mac_link_up()
+Message-ID: <20200224130118.GR25745@shell.armlinux.org.uk>
+References: <20200217172242.GZ25745@shell.armlinux.org.uk>
+ <E1j3k7t-00072J-RS@rmk-PC.armlinux.org.uk>
+ <20200224122421.616c8271@donnerap.cambridge.arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200224074516-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Score: -0.7
-X-Spam-Score: -0.7
-X-Clacks-Overhead: GNU Terry Pratchett
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200224122421.616c8271@donnerap.cambridge.arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 24, 2020 at 12:24:21PM +0000, Andre Przywara wrote:
+> On Mon, 17 Feb 2020 17:24:09 +0000
+> Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> 
+> Hi Russell,
+> 
+> > Convert the Xilinx AXI ethernet driver to use the finalised link
+> > parameters in mac_link_up() rather than the parameters in mac_config().
+> 
+> Many thanks for this series, a quite neat solution for the problems I saw!
+> 
+> I picked 1/8 and 4/8 on top of net-next/master as of today: c3e042f54107376 ("igmp: remove unused macro IGMP_Vx_UNSOLICITED_REPORT_INTERVAL") and it worked great on my FPGA board using SGMII (but no in-band negotiation over that link). I had the 64-bit DMA patches on top, but that doesn't affect this series.
+> 
+> Tested-by: Andre Przywara <andre.przywara@arm.com>
 
+Great, thanks for testing!
 
-On 24/02/2020 12:46, Michael S. Tsirkin wrote:
-> On Mon, Feb 24, 2020 at 10:19:12AM +0000, anton.ivanov@cambridgegreys.com wrote:
->> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>
->> Some of the locally generated frames marked as GSO which
->> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
->> fragments (data_len = 0) and length significantly shorter
->> than the MTU (752 in my experiments).
->>
->> This is observed on raw sockets reading off vEth interfaces
->> in all 4.x and 5.x kernels I tested.
-> 
-> A bit more info on how to reproduce couldn't hurt here.
+> Is this heading for 5.7?
 
-Will do, a v3 will follow shortly.
-
-> 
->>
->> These frames are reported as invalid while they are in fact
->> gso-less frames.
->>
->> This patch marks the vnet header as no-GSO for them instead
->> of reporting it as invalid.
->>
->> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-> 
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> Eric - as you looked at this in the past, would you mind acking please?
-> 
->> ---
->>   include/linux/virtio_net.h | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
->> index 0d1fe9297ac6..94fb78c3a2ab 100644
->> --- a/include/linux/virtio_net.h
->> +++ b/include/linux/virtio_net.h
->> @@ -100,8 +100,8 @@ static inline int virtio_net_hdr_from_skb(const struct sk_buff *skb,
->>   {
->>   	memset(hdr, 0, sizeof(*hdr));   /* no info leak */
->>   
->> -	if (skb_is_gso(skb)) {
->> -		struct skb_shared_info *sinfo = skb_shinfo(skb);
->> +	struct skb_shared_info *sinfo = skb_shinfo(skb);
-
-I need to move this a few lines up - the kernel build robot is quite rightfully complaining.
-
->> +	if (skb_is_gso(skb) && sinfo->gso_type) {
->>   
->>   		/* This is a hint as to how much should be linear. */
->>   		hdr->hdr_len = __cpu_to_virtio16(little_endian,
->> -- 
->> 2.20.1
-> 
-> 
+Yes, that is my hope.
 
 -- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
