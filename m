@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE5316AAAC
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 17:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C39516AB31
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 17:19:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbgBXQET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 11:04:19 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:58952 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726806AbgBXQES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 11:04:18 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 455F480082;
-        Mon, 24 Feb 2020 16:04:17 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 24 Feb
- 2020 16:04:10 +0000
-Subject: Re: [PATCH net-next 6/6] net/sched: act_ct: Software offload of
- established flows
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "Oz Shlomo" <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
- <1582458307-17067-7-git-send-email-paulb@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <00bede7c-1140-f2ec-05c5-f9db855ca90f@solarflare.com>
-Date:   Mon, 24 Feb 2020 16:04:08 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727501AbgBXQTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 11:19:48 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44134 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727299AbgBXQTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 11:19:48 -0500
+Received: by mail-wr1-f67.google.com with SMTP id m16so11056247wrx.11
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 08:19:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=19j0trO9Mv3wrvKzfdH1BS//FW2UKY+OrcE5cOGi9/I=;
+        b=Cw1HT55FGFoyD6E0iMpdCHp8w7pAVLI/g2wPIpKjKTb5pxUdt8pOFFjBbPq6CJb5i9
+         0itvZmEqL7fK3eAzrENC65BmVO6yoTEs11jci0P6njUwvEWxMWj0xoNQBJuNSHN6E3Oq
+         u5A5CEANEG3NWiQdRBvexVujjFefbakQ/SsuE92Zn3sQdrnXofC0osFBZaFt4VYs+5or
+         YU1dMFj5bNqKknCv4/NbiQYavhyLEWv2dMu0oPkkr2EBTTlKZyOhjway8ig8zsYdb8aT
+         eIgu7CPIzZgyylRUyzAWyZEhYZbMiZ4Ed7tKAL7IyEgnig86CdOj1G/oe8UtsjVbuO7i
+         bZfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=19j0trO9Mv3wrvKzfdH1BS//FW2UKY+OrcE5cOGi9/I=;
+        b=qkH4R08MUDcei7w9nC+oM6/7c2nmcgsjah3aq5eZG3f/eAx1WJZ/N1gazwwqFdw2kE
+         6jiyAdIN3CbjCb19TuWuEwb8rbLKdttukIE4aYJdBCqCK8pX82H3rV54NyHRajL58xYm
+         cB9OAgorxewg7S+s+0bjuYj3s/P4RnYOkgOubah/sS5W7rt1ZXvUk3w2XPu98khQ+irL
+         2x3OTCYvwJgZ5QDhP59JsUk3gikZxtkAoRJZTnZ4Ct/Xbu1rocnuJOq3RqAf6DdVW0lv
+         y6VRscL+uUsppQ9KefU9X7Ls1CqezjWQqIvR9ZXolXtvIggpaigRoWsk/PaDtH6ILihk
+         iM7g==
+X-Gm-Message-State: APjAAAV2Be+WQChdlZCh0s4fzUEyqe9hUIpCriwkDvjuwE1PBDZMIioN
+        +FQwc8E5BMlkISSL7AyVBygkMUgnqVUSS6/NqTN29Q==
+X-Google-Smtp-Source: APXvYqxU9FUwoF+m5Q66zIMPAB7qaBWxrQS7ZCHR00X4HQuD5lXLTm339u0a6mc2/vAuanTvw3mbbCusDtmw7SArI30=
+X-Received: by 2002:adf:dfcc:: with SMTP id q12mr66447402wrn.171.1582561184425;
+ Mon, 24 Feb 2020 08:19:44 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1582458307-17067-7-git-send-email-paulb@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25250.003
-X-TM-AS-Result: No-7.466300-8.000000-10
-X-TMASE-MatchedRID: VPleTT1nwdTAIiGVQCd+FvZvT2zYoYOwC/ExpXrHizyzU0R+5DbDbMMy
-        cr0b1vBAm8P3v96SVAT3kTwbsL5T2UkCYvX2c9GkuwdUMMznEA+rcyxAHgzswgdkFovAReUoaUX
-        s6FguVy2rQYgRWAo7NATr53V4VI0b3Nbo+e3gGSTp9R8QuoVQfzVfUuzvrtymdPj9LUBj/ktFwU
-        mNE9YYouLzNWBegCW2RYvisGWbbS+3sNbcHjySQd0H8LFZNFG7CKFCmhdu5cVe4tuGw1UcSBUOO
-        Q6pXLylKb+AxN9hm+IkgZRduRW747PXoIp9J+1ZRcIGM+LZIY5gyNXjTItnvEksKHaRZzS+MQRk
-        cyKwE69YcqTGA0A88Q/QLt7G/oc63pgQ4q/O6wuOSonfQdQNip6oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.466300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25250.003
-X-MDID: 1582560258-A1rqpEJCRByN
+References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+ <20200128025958.43490-3-arjunroy.kdev@gmail.com> <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
+ <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
+ <CAOFY-A0G+NOpi7r=gnrLNsJ-OHYnGKCJ0mJ5PWwH5m7_99bD5w@mail.gmail.com> <20200223193710.596fb5d9ebb23959a3fee187@linux-foundation.org>
+In-Reply-To: <20200223193710.596fb5d9ebb23959a3fee187@linux-foundation.org>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Mon, 24 Feb 2020 08:19:33 -0800
+Message-ID: <CAOFY-A1oBMCJ=2-ZTC7x78p0Oc9hdMBJd1z1hd3MFFK0AZo6ng@mail.gmail.com>
+Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
+ vm_insert_pages() for tcp rcv zerocopy.
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/02/2020 11:45, Paul Blakey wrote:
-> Offload nf conntrack processing by looking up the 5-tuple in the
-> zone's flow table.
+On Sun, Feb 23, 2020 at 7:37 PM Andrew Morton <akpm@linux-foundation.org> wrote:
 >
-> The nf conntrack module will process the packets until a connection is
-> in established state. Once in established state, the ct state pointer
-> (nf_conn) will be restored on the skb from a successful ft lookup.
+> On Fri, 21 Feb 2020 13:21:41 -0800 Arjun Roy <arjunroy@google.com> wrote:
 >
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  net/sched/act_ct.c | 163 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 160 insertions(+), 3 deletions(-)
+> > I remain a bit concerned regarding the merge process for this specific
+> > patch (0003, the net/ipv4/tcp.c change) since I have other in-flight
+> > changes for TCP receive zerocopy that I'd like to upstream for
+> > net-next - and would like to avoid weird merge issues.
+> >
+> > So perhaps the following could work:
+> >
+> > 1. Andrew, perhaps we could remove this particular patch (0003, the
+> > net/ipv4/tcp.c change) from mm-next; that way we merge
+> > vm_insert_pages() but not the call-site within TCP, for now.
+> > 2. net-next will eventually pick vm_insert_pages() up.
+> > 3. I can modify the zerocopy code to use it at that point?
+> >
+> > Else I'm concerned a complicated merge situation may result.
+> >
+> > What do you all think?
 >
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index b2bc885..3592e24 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-<snip>
-> @@ -645,6 +802,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  			goto out_push;
->  	}
->  
-> +do_nat:
->  	ct = nf_ct_get(skb, &ctinfo);
->  	if (!ct)
->  		goto out_push;
-> @@ -662,9 +820,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  		 * even if the connection is already confirmed.
->  		 */
->  		nf_conntrack_confirm(skb);
-> -	}
-> -
-> -	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
-> +	} else if (!skip_add)
-> +		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
->  
-Elseif body should be enclosed in braces, since if body was.
--ed
+> We could do that.
+>
+> For now, I'll stage the entire patch series after linux-next and shall
+> wait and see whether things which appear in linux-next cause serious
+> merge issues to occur.  Sound OK?
+
+Sounds good for now; the conflict itself would be easy enough to fix
+when it does crop up.
+
+Thanks,
+-Arjun
