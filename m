@@ -2,188 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7433616A724
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E16CB16A742
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbgBXNSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 08:18:23 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:49625 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727275AbgBXNSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:18:23 -0500
-Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j6Dcq-0005Wj-K9; Mon, 24 Feb 2020 13:18:20 +0000
-Date:   Mon, 24 Feb 2020 14:18:19 +0100
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH net-next v3 5/9] device: add device_change_owner()
-Message-ID: <20200224131819.gos6xlqwlrnqc7gt@wittgenstein>
-References: <20200218162943.2488012-1-christian.brauner@ubuntu.com>
- <20200218162943.2488012-6-christian.brauner@ubuntu.com>
- <20200220112513.GH3374196@kroah.com>
+        id S1727108AbgBXN0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 08:26:09 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:48604 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726762AbgBXN0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:26:08 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6DkI-0005jE-6t; Mon, 24 Feb 2020 13:26:06 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6Dk9-0000Yj-0t; Mon, 24 Feb 2020 13:25:57 +0000
+From:   anton.ivanov@cambridgegreys.com
+To:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-um@lists.infradead.org
+Cc:     mst@redhat.com, jasowang@redhat.com, eric.dumazet@gmail.com,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Subject: [PATCH v3] virtio: Work around frames incorrectly marked as gso
+Date:   Mon, 24 Feb 2020 13:25:50 +0000
+Message-Id: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200220112513.GH3374196@kroah.com>
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 12:25:13PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Feb 18, 2020 at 05:29:39PM +0100, Christian Brauner wrote:
-> > Add a helper to change the owner of a device's sysfs entries. This
-> > needs to happen when the ownership of a device is changed, e.g. when
-> > moving network devices between network namespaces.
-> > This function will be used to correctly account for ownership changes,
-> > e.g. when moving network devices between network namespaces.
-> > 
-> > Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-> > ---
-> > /* v2 */
-> > unchanged
-> > 
-> > /* v3 */
-> > -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
-> >    - Add explicit uid/gid parameters.
-> > ---
-> >  drivers/base/core.c    | 80 ++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/device.h |  1 +
-> >  2 files changed, 81 insertions(+)
-> > 
-> > diff --git a/drivers/base/core.c b/drivers/base/core.c
-> > index 42a672456432..ec0d5e8cfd0f 100644
-> > --- a/drivers/base/core.c
-> > +++ b/drivers/base/core.c
-> > @@ -3458,6 +3458,86 @@ int device_move(struct device *dev, struct device *new_parent,
-> >  }
-> >  EXPORT_SYMBOL_GPL(device_move);
-> >  
-> > +static int device_attrs_change_owner(struct device *dev, kuid_t kuid,
-> > +				     kgid_t kgid)
-> > +{
-> > +	struct kobject *kobj = &dev->kobj;
-> > +	struct class *class = dev->class;
-> > +	const struct device_type *type = dev->type;
-> > +	int error;
-> > +
-> > +	if (class) {
-> > +		error = sysfs_groups_change_owner(kobj, class->dev_groups, kuid,
-> > +						  kgid);
-> > +		if (error)
-> > +			return error;
-> > +	}
-> > +
-> > +	if (type) {
-> > +		error = sysfs_groups_change_owner(kobj, type->groups, kuid,
-> > +						  kgid);
-> > +		if (error)
-> > +			return error;
-> > +	}
-> > +
-> > +	error = sysfs_groups_change_owner(kobj, dev->groups, kuid, kgid);
-> > +	if (error)
-> > +		return error;
-> > +
-> > +	if (device_supports_offline(dev) && !dev->offline_disabled) {
-> > +		error = sysfs_file_change_owner_by_name(
-> > +			kobj, dev_attr_online.attr.name, kuid, kgid);
-> > +		if (error)
-> > +			return error;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +/**
-> > + * device_change_owner - change the owner of an existing device.
-> 
-> The "owner" and what else gets changed here?  Please document this
-> better.
-> 
-> 
-> > + * @dev: device.
-> > + * @kuid: new owner's kuid
-> > + * @kgid: new owner's kgid
-> > + */
-> > +int device_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
-> > +{
-> > +	int error;
-> > +	struct kobject *kobj = &dev->kobj;
-> > +
-> > +	dev = get_device(dev);
-> > +	if (!dev)
-> > +		return -EINVAL;
-> > +
-> > +	error = sysfs_change_owner(kobj, kuid, kgid);
-> 
-> the kobject of the device is changed, good.
-> 
-> > +	if (error)
-> > +		goto out;
-> > +
-> > +	error = sysfs_file_change_owner_by_name(kobj, dev_attr_uevent.attr.name,
-> > +						kuid, kgid);
-> 
-> Why call out the uevent file explicitly here?
+From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
-This again, mirrors the creation of a kobject in sysfs. The uevent file
-is created separately and thus should be chowned separately.
+Some of the locally generated frames marked as GSO which
+arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
+fragments (data_len = 0) and length significantly shorter
+than the MTU (752 in my experiments).
 
-> 
-> > +	if (error)
-> > +		goto out;
-> > +
-> > +	error = device_attrs_change_owner(dev, kuid, kgid);
-> > +	if (error)
-> > +		goto out;
-> 
-> Doesn't this also change the uevent file?
+This is observed on raw sockets reading off vEth interfaces
+in all 4.x and 5.x kernels. The frames are reported as
+invalid, while they are in fact gso-less frames.
 
-No, not as far as I can tell. The uevent file is created in an extra
-step when the kobject/sysfs entries are created.
+The easiest way to reproduce is to connect a User Mode
+Linux instance to the host using the vector raw transport
+and a vEth interface. Vector raw uses recvmmsg/sendmmsg
+with virtio headers on af_packet sockets. When running iperf
+between the UML and the host, UML regularly complains about
+EINVAL return from recvmmsg.
 
-> 
-> > +
-> > +#ifdef CONFIG_BLOCK
-> > +	if (sysfs_deprecated && dev->class == &block_class)
-> > +		goto out;
-> > +#endif
-> 
-> Ugh, we still need this?
+This patch marks the vnet header as non-GSO instead of
+reporting it as invalid.
 
-Yeah, apparently. It's what I gather from how a device is added.
+Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+---
+ include/linux/virtio_net.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> 
-> > +
-> > +	error = sysfs_link_change_owner(&dev->class->p->subsys.kobj, &dev->kobj,
-> > +					dev_name(dev), kuid, kgid);
-> 
-> Now what is this changing?
+diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+index 0d1fe9297ac6..2c99c752cb20 100644
+--- a/include/linux/virtio_net.h
++++ b/include/linux/virtio_net.h
+@@ -98,10 +98,11 @@ static inline int virtio_net_hdr_from_skb(const struct sk_buff *skb,
+ 					  bool has_data_valid,
+ 					  int vlan_hlen)
+ {
++	struct skb_shared_info *sinfo = skb_shinfo(skb);
++
+ 	memset(hdr, 0, sizeof(*hdr));   /* no info leak */
+ 
+-	if (skb_is_gso(skb)) {
+-		struct skb_shared_info *sinfo = skb_shinfo(skb);
++	if (skb_is_gso(skb) && sinfo->gso_type) {
+ 
+ 		/* This is a hint as to how much should be linear. */
+ 		hdr->hdr_len = __cpu_to_virtio16(little_endian,
+-- 
+2.20.1
 
-So, this changed the ownership of the class link for the device to match
-the directory entry for that device, so e.g. given a network device
-symlink (or any other type) that points to the actual directory entry
-for that device:
-
-/sys/class/net/my-dev -> ../../devices/virtual/net/my-dev
-
-it makes my-dev show the same permissions as the directory my-dev has.
-If we don't do this this will look weird, because the symlink will show
-different permissions than the target it is pointoing to.
-
-> 
-> Again, more documentation please as to exactly what is being changed in
-> this function is needed.
-
-Sure!
