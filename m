@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7165116B586
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:29:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0504316B58B
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:29:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728528AbgBXX2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 18:28:51 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59420 "EHLO
+        id S1728575AbgBXX3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 18:29:25 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62596 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728454AbgBXX2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:28:51 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01ONSjKF016921
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 15:28:49 -0800
+        by vger.kernel.org with ESMTP id S1728020AbgBXX3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:29:24 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01ONQX8r008141
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 15:29:23 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2ycm5f9ajv-7
+        by m0089730.ppops.net with ESMTP id 2yb0p5jyyb-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 15:28:49 -0800
-Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 15:29:23 -0800
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 24 Feb 2020 15:28:27 -0800
+ 15.1.1779.2; Mon, 24 Feb 2020 15:29:21 -0800
 Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id BD0E915F14DDC; Mon, 24 Feb 2020 15:28:26 -0800 (PST)
+        id 77F8A15F14F43; Mon, 24 Feb 2020 15:29:09 -0800 (PST)
 Smtp-Origin-Hostprefix: devvm
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
         <michael.chan@broadcom.com>
-CC:     <kernel-team@fb.com>
+CC:     <kernel-team@fb.com>, <kuba@kernel.org>
 Smtp-Origin-Cluster: vll1c12
 Subject: [PATCH] bnxt_en: add newline to netdev_*() format strings
-Date:   Mon, 24 Feb 2020 15:28:26 -0800
-Message-ID: <20200224232826.2309246-1-jonathan.lemon@gmail.com>
+Date:   Mon, 24 Feb 2020 15:29:09 -0800
+Message-ID: <20200224232909.2311486-1-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.17.1
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-02-24_12:2020-02-21,2020-02-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 clxscore=1034 adultscore=0 impostorscore=0 mlxscore=0
- bulkscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0
- suspectscore=2 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1034
+ bulkscore=0 priorityscore=1501 mlxlogscore=999 suspectscore=2
+ malwarescore=0 adultscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2001150001 definitions=main-2002240175
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
