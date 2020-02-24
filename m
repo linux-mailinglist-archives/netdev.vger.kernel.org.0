@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F15D169F8C
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:52:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C39169F95
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727329AbgBXHwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 02:52:46 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37143 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727307AbgBXHwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:52:43 -0500
-Received: by mail-pl1-f194.google.com with SMTP id c23so3717661plz.4
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:52:38 -0800 (PST)
+        id S1727278AbgBXHzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 02:55:43 -0500
+Received: from mail-yw1-f54.google.com ([209.85.161.54]:36372 "EHLO
+        mail-yw1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbgBXHzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:55:43 -0500
+Received: by mail-yw1-f54.google.com with SMTP id n184so4835734ywc.3
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:55:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=es-iitr-ac-in.20150623.gappssmtp.com; s=20150623;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JijnfBoe2ezLgS/FxMC63FZES23LOalpXpAlXAEnkhA=;
-        b=DcLj9+eR5e8Z4uahIyGYgjyx4asQksO/6H7tqTCiZ6ERfAPF/l2l4Gx20nc21kdKSf
-         Ovh7VLoKklpjR93rugpizvQciSbhNyatHlCpE8Ic4SvsREmGNVU9Kw3tIsUI8/KQnx9g
-         Ok6nza4rtKo7fJTnSCu6r3udQea/Wi/osvs4JG7f+B4fZkvENiQA88Imd9D0A9wPHuaR
-         tFB8FmVTv97otuDupeQIpaBmgoslav9LgPUwXsQB+e6NczzgMDJ64HBPfgeZOltQkSDR
-         Xk9UIgv1f4PUZ38jiTxjrAkwEO8my1L2wo2oyEJiYGoa/1FCP7KsOf+GYhzpEbCdMB2R
-         c9cg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NwDglkCE3KCGCr8mSWguqia//IgT+7ZlD/tzIEgVMjE=;
+        b=L7gh2BQs5BCZTVrXeYnBFwr5hScC44bLJ9/knaANW1FDQUreTHdUyhmuYYoWWlP+Ks
+         kNUSegeoWwZDuFfEsGcECrGHO8qfVAWLJrRrFCK64h9jULogE374jMfvISfPUBgg7yWc
+         MMUDITb019/4bMmnla9ueP+h3mSIsULgVoPmFPJubAEvR0LUUtoat5v6fDR4/1WaKwSN
+         qiHBBBrjKxDd7u3I52jcrCnb6ueM++a/AdVPqe836aObvQ/edIr/s9aiv22hENHkZIKy
+         rJR6Tm5yoR1fMdhjiVwNJJ8LJzdeVgXunz9V5Ez9fxsD754ZUDNWC47RnOtSLLhPMmep
+         yFfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JijnfBoe2ezLgS/FxMC63FZES23LOalpXpAlXAEnkhA=;
-        b=fghcW+DcWFmsP+PU0NV/Zx5QuWLkyMyvucQSCEp4ILK2v6PCiyTFf5/Zbad3r9c0yE
-         fQtdg4fAE491fnbkgMSGUlsaNCalVRLD2ibHh/pZsT6kIBNDZraUL6lWbwVMTPmOMurC
-         kD6bgRqnJaajHiD32vw/rB5UCWETgtdfqp8jTwQkT3+Lo5LLbmb/wVcZnVliYf8Tgrwu
-         Qkl73uSa1TmSUQ4fcheuGhhsPkOnx+/rGo1+ZCG6oT+cmqEYPN1eSk1WqbDIuCuXyHkU
-         gbvSqLcjgtHWmieqemQY08wtxOFhb4mLJJHUu/QbDBq9gGJp9xHlc1UBo3G3Y+fnA3JF
-         ijmQ==
-X-Gm-Message-State: APjAAAWcCcTkRJmlLcGFBMaDkFwLkEWXC2p/TFHxlPUSLIetgugVnrea
-        +GnKjXD7Nz9d9UhD9Zo39jkivw==
-X-Google-Smtp-Source: APXvYqxzheO72TA6WZPdEj47HYIj6iN5kdSApzc51FTGN+6EQ9pY76cexAxwtDaeyiTiJzQsK9ooOw==
-X-Received: by 2002:a17:90a:da03:: with SMTP id e3mr19005507pjv.57.1582530757523;
-        Sun, 23 Feb 2020 23:52:37 -0800 (PST)
-Received: from kaaira-HP-Pavilion-Notebook ([103.37.201.171])
-        by smtp.gmail.com with ESMTPSA id z10sm11442677pgz.88.2020.02.23.23.52.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 23 Feb 2020 23:52:36 -0800 (PST)
-From:   Kaaira Gupta <kgupta@es.iitr.ac.in>
-X-Google-Original-From: Kaaira Gupta <Kaairakgupta@es.iitr.ac.in>
-Date:   Mon, 24 Feb 2020 13:22:31 +0530
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linxfoundation.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: add braces around macro arguments
-Message-ID: <20200224075231.GA4806@kaaira-HP-Pavilion-Notebook>
-References: <20200221195649.GA18450@kaaira-HP-Pavilion-Notebook>
- <20200224053225.GB312634@f3>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NwDglkCE3KCGCr8mSWguqia//IgT+7ZlD/tzIEgVMjE=;
+        b=YxGDIoTW1b0KqrgoocDDDd9h4nxa5JE92aumrXjLUDgfF22oUweXDAMJLOPmIDnaiX
+         vizWQIPqD6fRgb0aLbQA+Ij1tW0EEzsCziuTDETFxVMldCswNNUPeLLLwph9mNuwHyyW
+         s5eDsRXwTyND8myhMRbg3k7pgLSqdYZJFWYN0tZGV8zHJ1q8cZ2mjN21NP5F8XbzJJN/
+         A1Miw+k5XMKHd8tw7IRqCLRGwqfgUcUbstC5PiQBebYOjQBYdzTC59r6+6LilKqV5f/K
+         SSkUDUTrZxnGyOv8qOpBRe1UugEIsuBRxyuxmknrqiLGTFstYqPVLEnm22Qg6DoWYXiF
+         p3YA==
+X-Gm-Message-State: APjAAAUna41U1qdgr5lShedTVcvkLmyHJpizJ6ivW+2/WbjUxCweCELC
+        yrrC3glAsbJwMZz8rgfELuUqNDtcCBgjXRHY4m4gkg==
+X-Google-Smtp-Source: APXvYqwlvVEzzcdlgbN/oopHn9KsTFPn9Uoo6MO2DmmJEHjo/UsaMiXV3MGkskmuRdumOU3RMhS+MxBaZ0NfwTFE03Y=
+X-Received: by 2002:a81:3845:: with SMTP id f66mr44395590ywa.220.1582530941173;
+ Sun, 23 Feb 2020 23:55:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200224053225.GB312634@f3>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <CABLYT9ixWZu2NckMg689NdCTO08=-+UOHbALYrQFHCY26Bw91Q@mail.gmail.com>
+ <CADVnQyn8t7EiorqHjGQe7wqH6jQy_sgK=M=gieb7JMjWqvbBHw@mail.gmail.com>
+ <b390a9ed-84a7-d6ef-0647-107259fbd787@gmail.com> <CABLYT9jCD-FPZkJwsKP4gtgGaA8=P5DVtJkzUhuX9YoA5LLdww@mail.gmail.com>
+In-Reply-To: <CABLYT9jCD-FPZkJwsKP4gtgGaA8=P5DVtJkzUhuX9YoA5LLdww@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 23 Feb 2020 23:55:29 -0800
+Message-ID: <CANn89i+r0r2WcKf9cGQVCQHFdmWhvVdDOFXVfdS9vkq0BPTjhg@mail.gmail.com>
+Subject: Re: warning messages for net/ipv4/tcp_output.c
+To:     Vieri Di Paola <vieridipaola@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 02:32:25PM +0900, Benjamin Poirier wrote:
-> On 2020/02/22 01:26 +0530, Kaaira Gupta wrote:
-> > Fix checkpatch.pl warnings of adding braces around macro arguments to
-> > prevent precedence issues by adding braces in qlge_dbg.c
-> > 
-> > Signed-off-by: Kaaira Gupta <kgupta@es.iitr.ac.in>
-> > ---
-> >  drivers/staging/qlge/qlge_dbg.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> > index 8cf39615c520..c7af2548d119 100644
-> > --- a/drivers/staging/qlge/qlge_dbg.c
-> > +++ b/drivers/staging/qlge/qlge_dbg.c
-> > @@ -1525,7 +1525,7 @@ void ql_dump_regs(struct ql_adapter *qdev)
-> >  #ifdef QL_STAT_DUMP
-> >  
-> >  #define DUMP_STAT(qdev, stat)	\
-> > -	pr_err("%s = %ld\n", #stat, (unsigned long)qdev->nic_stats.stat)
-> > +	pr_err("%s = %ld\n", #stat, (unsigned long)(qdev)->nic_stats.stat)
-> >  
-> >  void ql_dump_stat(struct ql_adapter *qdev)
-> >  {
-> > @@ -1578,12 +1578,12 @@ void ql_dump_stat(struct ql_adapter *qdev)
-> >  #ifdef QL_DEV_DUMP
-> >  
-> >  #define DUMP_QDEV_FIELD(qdev, type, field)		\
-> > -	pr_err("qdev->%-24s = " type "\n", #field, qdev->field)
-> > +	pr_err("qdev->%-24s = " type "\n", #field, (qdev)->(field))
-> >  #define DUMP_QDEV_DMA_FIELD(qdev, field)		\
-> >  	pr_err("qdev->%-24s = %llx\n", #field, (unsigned long long)qdev->field)
->                                                                    ^^^^
-> You missed one.
+On Fri, Feb 21, 2020 at 2:11 PM Vieri Di Paola <vieridipaola@gmail.com> wrote:
+>
+> On Wed, Feb 12, 2020 at 4:47 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> > >> I get a lot of messages regarding net/ipv4/tcp_output.c in syslog.
+>
+> Hi,
+>
+> These warning messages were triggered by the Suricata IDS/IPS software
+> when used in NFQUEUE "repeat mode".
+> I've found a workaround, so I don't know if this issue needs to be addressed.
+>
 
-It makes the line characaters greater than 80. Shall I still add braces?
-I mean it's better that I add them to prevent precedence issues, but it
-adds another warning, hence I wasn't sure.
+I would contact netfilter team ( netfilter-devel@vger.kernel.org )
+since this looks like a netfilter issue.
+
+Thanks.
+
+> Regards,
+>
+> Vieri
