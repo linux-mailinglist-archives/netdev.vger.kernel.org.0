@@ -2,91 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B7B16AA29
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:33:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B5C416AA2E
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 16:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgBXPd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 10:33:27 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:33668 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727359AbgBXPd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:33:26 -0500
-Received: by mail-lj1-f194.google.com with SMTP id y6so10627658lji.0
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 07:33:25 -0800 (PST)
+        id S1727885AbgBXPe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 10:34:59 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41799 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727877AbgBXPe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 10:34:59 -0500
+Received: by mail-wr1-f66.google.com with SMTP id c9so10896092wrw.8
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 07:34:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IsWWcPyBf3Yi34lCJhNXBqNSjABC9oJnrYvhguJN/qE=;
-        b=FoFsf33IZOWzsyNS7fdSHYnzIKST5V6Kudqlt2JufrGEns68j7i4T1e0+7Km2xoipc
-         UQSwhGUlbG+/eOdXXYMgJFqno/85I46tSTjPt61ll43iEYRcdxTRQOcHfVhY3ENf5Bv5
-         3JeSo0V8XqdhlbYuaNXG2DKYfM1QYlQZeOb4I=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cKtQiC2jd1yHgZJ7fPi8wzadBigquuIjK2HJ0Aes9KA=;
+        b=ScemivkC9RbWDm/VQ75Iks1Ojdp8A7snVMM+mmpfk0gyHI9NZgvNleLBstjftIk1oI
+         /z3GqiH5bcmkuIiurrEujPHemgzjhV0+FCtgqv9aMHIROw4cLmhSzPu1pSYftS2DDE8a
+         +VQY0yR36RH4YHBxjfPC638rybmTLNg2aNwUPv1/U7xOKsX4wadp2qKR8IxwJZ3c3FTu
+         O3Z0BVxBzCKyg4ee6fTazZKokKLpUEjGU3IT5NrZ2dC7CrPwlyymu1AmC9Rn1Mfq2w6F
+         bDDBIhbcgZMD7kfwdZshkiLlx0iVL3KpJ/dD6r9Mck8G6h8Pm+JhYmjTF91Hp9kuSIjG
+         +zRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IsWWcPyBf3Yi34lCJhNXBqNSjABC9oJnrYvhguJN/qE=;
-        b=YADlDtLZJ4ljqZDRykD8QRTR8nUjexykJLcFrN0zhjzg5mFeIqNOJtNY5htij2vW3Z
-         O28UeaZXg3Ek0dfVCYVGxCl+KVYBJeleVlqrCxT0GLP4gLRti2KX1hz3+noOYf20Gscu
-         AbPIe5T66I+lmxiSaTqVzlrByyKgmI32ncElYX0sb/sRQjQRaV6kQ4y+byx5gIAZ/fTV
-         ufw7cKn0FpAde5nhGWBNSN2EQ8Q9iNMeJXwCpIOIcpyuyNIAlLzb55VDJnDbI1II+Skr
-         1DT7o9ISrbEFiU3m/qA+SK0XtOFIcdOH12s1SGFcNgTnaBJ7AJYhwzNX0yRF9+Rq+x+a
-         zsAA==
-X-Gm-Message-State: APjAAAXzAm+OnaI6Nuf6bYa4kYy2RuWOQ/XxtxqFLggvSgEuirFjJeVH
-        O8iaV1837TVOlh4dv+N+b69dZ0oBq6s=
-X-Google-Smtp-Source: APXvYqy2zENuYBWFwIPXgaEjxxvxsjiG32ayrIsTzQ0V9kg0nAvD17DFlov68V/fdF5S/3QbipQoXw==
-X-Received: by 2002:a2e:9b03:: with SMTP id u3mr31026984lji.87.1582558404519;
-        Mon, 24 Feb 2020 07:33:24 -0800 (PST)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 14sm6390845ljj.32.2020.02.24.07.33.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2020 07:33:23 -0800 (PST)
-Subject: Re: [PATCH net] net: bridge: fix stale eth hdr pointer in br_dev_xmit
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        syzbot+18c8b623c66fc198c493@syzkaller.appspotmail.com
-References: <08a2e28b-fcf5-b26c-da75-97df67f51c7c@cumulusnetworks.com>
- <20200224130715.1446935-1-nikolay@cumulusnetworks.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <83cadec7-d659-cf2a-c0c0-a85d2f6503bc@cumulusnetworks.com>
-Date:   Mon, 24 Feb 2020 17:33:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cKtQiC2jd1yHgZJ7fPi8wzadBigquuIjK2HJ0Aes9KA=;
+        b=SJioSxHuYpkqY6W9bc4ofWVAuV3LO6kT90pOP+aGLJKwcGNeBAk+3v/5y4gNaaczg7
+         CuhVALhV+Efe1rh7+scWhwIkvRzI4rdlFnMxFyI22NK5wbOKYMcoXGlyFrpDkvgOYM6h
+         1kfLMZd6FX5KbneFf+Ggk10JTsazW3TUoAErT+Tk0GtWEbgN8RXyQv+n8S+uK74f3fbD
+         07UUw87VTWUKjcaA7Nc6F+BEvK0BEG/DhMCYB5TKhK6Yty/mlLyyeVTxr8qXR6Qkbrpa
+         fENygo5CfMl0o6Pst/nTt441Dtegt3xLhDSqi9dgPesi6SptBy/2Q59nHLbivJPQKISI
+         Eq8Q==
+X-Gm-Message-State: APjAAAVScb7Vvj7WiwD79uYSC+RHzFEM2Ki1WqmbsSWZhABVoPOn01y5
+        g7DNoRdAeZESO50kR4MuiajbRg==
+X-Google-Smtp-Source: APXvYqz2CYfmMRAZAp4q7TrUnRG/LEy/Ye+UkeR9wkGAOqbL5Ct95FcHtF+c0ImPSHec7EKAX+iZRQ==
+X-Received: by 2002:adf:a746:: with SMTP id e6mr67033827wrd.329.1582558497396;
+        Mon, 24 Feb 2020 07:34:57 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id v5sm19443753wrv.86.2020.02.24.07.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 07:34:56 -0800 (PST)
+Date:   Mon, 24 Feb 2020 16:34:56 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Colin King <colin.king@canonical.com>
+Cc:     mlxsw@mellanox.com, "David S . Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net/mlxfw: fix spelling mistake: "progamming" ->
+ "programming"
+Message-ID: <20200224153456.GD16270@nanopsycho>
+References: <20200224152101.361648-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20200224130715.1446935-1-nikolay@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200224152101.361648-1-colin.king@canonical.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/02/2020 15:07, Nikolay Aleksandrov wrote:
-> In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
-> if the packet has the vlan header inside (e.g. bridge with disabled
-> tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
-> to extract the vid before filtering which in turn calls pskb_may_pull()
-> and we may end up with a stale eth pointer. Moreover the cached eth header
-> pointer will generally be wrong after that operation. Remove the eth header
-> caching and just use eth_hdr() directly, the compiler does the right thing
-> and calculates it only once so we don't lose anything.
-> 
-> Reported-by: syzbot+18c8b623c66fc198c493@syzkaller.appspotmail.com
-> Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
->  net/bridge/br_device.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
+Mon, Feb 24, 2020 at 04:21:01PM CET, colin.king@canonical.com wrote:
+>From: Colin Ian King <colin.king@canonical.com>
+>
+>There is a spelling mistake in a literal string. Fix it.
+>
+>Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Funny but this might turn out to be a totally unrelated bug to the one reported by syzbot.
-I just noticed it's saying uninit instead of use-after-free. I'm now building the
-whole syz environment mentioned in the report to check it out.
-That being said - the bug that I'm fixing here exists, we just might have to drop the
-Reported-by: tag if it turns out the uninit bug is a different one. :)
-
-I'll report back when I'm able to reproduce the syz uninit bug.
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
