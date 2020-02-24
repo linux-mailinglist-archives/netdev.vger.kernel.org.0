@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C65FE169F5A
+	by mail.lfdr.de (Postfix) with ESMTP id 5522E169F59
 	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727426AbgBXHgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 02:36:16 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35804 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727324AbgBXHgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:36:07 -0500
-Received: by mail-wm1-f68.google.com with SMTP id b17so8196614wmb.0
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:36:05 -0800 (PST)
+        id S1727421AbgBXHgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 02:36:15 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38925 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727325AbgBXHgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:36:08 -0500
+Received: by mail-wm1-f66.google.com with SMTP id c84so8194050wme.4
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:36:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vSVqmRDoeGtXqy1fT3V/prdd3MtQml78TjJPvMzCblw=;
-        b=U8p8NUbLMJmcGy6KDei/m3wkeVg5wQd4a4SU17zUQ7DNpOf7ljtyKTIvAFlrHALoV9
-         kP8Lj8rm+Rn7OogDMJ4IiyPYkY24lQacCcA13o5Do/P9v3DCJsX1A/iEtuLKOQVEMGnr
-         e615yhUWRztUobzjI6lVhiukGYMHGQTziMrDJyo7Cl4yibZa7wdMWg69YlCjBOVA0NdR
-         6Vu4W2Yk9OrTOAKGTkNIX2t8XhXhgSYy/wtphJxqD6UhYWlF9SG+PtZu5W78phYcwcid
-         3i9B0zPOMzP4UYYu/c+o1PEkAGExIFzQgnTkwSn+YT7zHv9kNMBz36rci+BfwzrzmWeE
-         jNiQ==
+        bh=1VufEhKPNHGR/xZhVO09DMXHV775aoYxmHQB0H4BEhs=;
+        b=wz/EtSeWXTv1W7KHT7HuBQbmUmjlVnjKjX+yehVAUhCpResQ9BKiTF8CkSKAzWzVnb
+         ILg48O5DZXot2Uh/V4QbEtZBgYppS2RcF1WWLVFrnJ95/XXuhvj+va71S+UheEXHkCP1
+         F4UygawH4H/4GYNfWGqlkH0mnxfVuKindrE1VN4SAGSD8AsHa4VUzCap2nHr6k8EDr/7
+         tCA05hNpjLqzl1IHu8Ek9ldOMxHqP3jhKqCuQdzRMP+B3D7alP5DXpIxYqnj+PNu7WWf
+         fKbDRmwqJKdsMWbq43mbkTtfHRyeoIM//IqSx4czvnRtPygBIZdbFNRL0oCeS670HURA
+         tPYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vSVqmRDoeGtXqy1fT3V/prdd3MtQml78TjJPvMzCblw=;
-        b=LtVtPz1d96UZI5+YxnuvMZxqMg9jqb5fpjKV841PoVlOCS3JFOKv7RRnR0kXPvv4ch
-         nq21nfLURPS5Y1U74YbkQpWVui6mYYeJBJog1nLFCfJGsTACcMoM4JtdsrG2/sDJAHdy
-         JtN9vou8w+IenD+zb32qaxd/LOtIUvZlM0/EJeC7ze2zVd96ReDk8wWtwTR05m6TCiRL
-         rima/8FjuGG/Zh59oWPdk4BrjmQ8F0///06dXUkp2QFaUBYjkTcUJVnca9w/3Jyqj3hf
-         vGAOXjjIy4+oWcKA5vPDgHIuGSk9w+D2mUD9xaTrEEo/XEZCm2mzoi2N4YFjNzJzU3P+
-         A4Ug==
-X-Gm-Message-State: APjAAAUt2I5tuU1twucl6WuV7wy5UEVvKgQQVSL/2+VEVyqghIOZl1JI
-        E4WYDkDmMTW+e9CPUGBMQBfH+u4OwEo=
-X-Google-Smtp-Source: APXvYqzG7xw9GryBrS5mdM8yQJqiyJKTVfat0ISXX5CFbLDwcVlb9dc8rZuavrMnPEfyVgp1BmoWnw==
-X-Received: by 2002:a7b:c190:: with SMTP id y16mr20790882wmi.107.1582529764410;
-        Sun, 23 Feb 2020 23:36:04 -0800 (PST)
+        bh=1VufEhKPNHGR/xZhVO09DMXHV775aoYxmHQB0H4BEhs=;
+        b=qeFu+ryljjS814V3idYz0CQ+bHnqqwkhst1zSVzd4OWMtxjH8LHA6tJP4eWZ6ZtgiE
+         oOOlmrEAFuBq1tSZSDq+eCTI8H2aahqt6R8+QMuzAWKUb/QDB0yM5IwvI56sNXsTnYL0
+         07MCtAWYu4mW+U0Hpd9rvqKbuz56pFxQpMOW011p2jUdcK39ZedIluZX2aJttSbe5YiB
+         +Zf3IqbOBMqHwZYSn71GCqRTNTCERLwlB60GH2pxcT4cYvKyxwV+3GoyrI76ec5AXfO0
+         fOERxexG9KvFiVgPThX1vjvE0AOkNXw+XILHhAanaoFWZG5T/aFhIKaPJ5mFDH9Z8Zfl
+         7elw==
+X-Gm-Message-State: APjAAAXmaABt1rh26XVL5j1vVFVK1rbeCYkL1YhCqCUGgelddCKKa9VU
+        A2j3UUW3eZzlcsc5Nr8Iu0gxJHamZbI=
+X-Google-Smtp-Source: APXvYqxTFChMrchSGUtqeNXbNCT4/lB7+XHyJ1FvqhF+bbPNxgub5dbVqWs2OG0XfKNvkbqrhS/T/Q==
+X-Received: by 2002:a1c:7fd7:: with SMTP id a206mr20435348wmd.171.1582529765454;
+        Sun, 23 Feb 2020 23:36:05 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id z16sm31059wrp.33.2020.02.23.23.36.03
+        by smtp.gmail.com with ESMTPSA id z4sm17494293wrt.47.2020.02.23.23.36.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 23:36:04 -0800 (PST)
+        Sun, 23 Feb 2020 23:36:05 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 04/16] mlxsw: spectrum_trap: Prepare mlxsw_core_trap_action_set() to handle not only action
-Date:   Mon, 24 Feb 2020 08:35:46 +0100
-Message-Id: <20200224073558.26500-5-jiri@resnulli.us>
+Subject: [patch net-next 05/16] devlink: add ACL generic packet traps
+Date:   Mon, 24 Feb 2020 08:35:47 +0100
+Message-Id: <20200224073558.26500-6-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200224073558.26500-1-jiri@resnulli.us>
 References: <20200224073558.26500-1-jiri@resnulli.us>
@@ -63,98 +63,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Rename function mlxsw_core_trap_action_set() to
-mlxsw_core_trap_state_set() and pass bool enabled instead of action.
-Figure out the action according to the enabled state there.
+Add packet traps that can report packets that were dropped during ACL
+processing.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c          | 10 ++++++----
- drivers/net/ethernet/mellanox/mlxsw/core.h          |  6 +++---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 11 ++++-------
- 3 files changed, 13 insertions(+), 14 deletions(-)
+ Documentation/networking/devlink/devlink-trap.rst | 9 +++++++++
+ include/net/devlink.h                             | 9 +++++++++
+ net/core/devlink.c                                | 3 +++
+ 3 files changed, 21 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index a01868282008..167df7e4d678 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1669,17 +1669,19 @@ void mlxsw_core_trap_unregister(struct mlxsw_core *mlxsw_core,
- }
- EXPORT_SYMBOL(mlxsw_core_trap_unregister);
+diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
+index 47a429bb8658..63350e7332ce 100644
+--- a/Documentation/networking/devlink/devlink-trap.rst
++++ b/Documentation/networking/devlink/devlink-trap.rst
+@@ -238,6 +238,12 @@ be added to the following table:
+      - ``drop``
+      - Traps NVE packets that the device decided to drop because their overlay
+        source MAC is multicast
++   * - ``ingress_flow_action_drop``
++     - ``drop``
++     - Traps packets dropped during processing of ingress flow action drop
++   * - ``egress_flow_action_drop``
++     - ``drop``
++     - Traps packets dropped during processing of egress flow action drop
  
--int mlxsw_core_trap_action_set(struct mlxsw_core *mlxsw_core,
--			       const struct mlxsw_listener *listener,
--			       enum mlxsw_reg_hpkt_action action)
-+int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
-+			      const struct mlxsw_listener *listener,
-+			      bool enabled)
- {
-+	enum mlxsw_reg_hpkt_action action;
- 	char hpkt_pl[MLXSW_REG_HPKT_LEN];
+ Driver-specific Packet Traps
+ ============================
+@@ -277,6 +283,9 @@ narrow. The description of these groups must be added to the following table:
+    * - ``tunnel_drops``
+      - Contains packet traps for packets that were dropped by the device during
+        tunnel encapsulation / decapsulation
++   * - ``acl_drops``
++     - Contains packet traps for packets that were dropped by the device during
++       ACL processing
  
-+	action = enabled ? listener->en_action : listener->dis_action;
- 	mlxsw_reg_hpkt_pack(hpkt_pl, action, listener->trap_id,
- 			    listener->trap_group, listener->is_ctrl);
- 	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
- }
--EXPORT_SYMBOL(mlxsw_core_trap_action_set);
-+EXPORT_SYMBOL(mlxsw_core_trap_state_set);
+ Testing
+ =======
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 149c108be66f..07923e619206 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -596,6 +596,8 @@ enum devlink_trap_generic_id {
+ 	DEVLINK_TRAP_GENERIC_ID_NON_ROUTABLE,
+ 	DEVLINK_TRAP_GENERIC_ID_DECAP_ERROR,
+ 	DEVLINK_TRAP_GENERIC_ID_OVERLAY_SMAC_MC,
++	DEVLINK_TRAP_GENERIC_ID_INGRESS_FLOW_ACTION_DROP,
++	DEVLINK_TRAP_GENERIC_ID_EGRESS_FLOW_ACTION_DROP,
  
- static u64 mlxsw_core_tid_get(struct mlxsw_core *mlxsw_core)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 9c4ce3f65944..b6e57cbc084e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -145,9 +145,9 @@ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
- void mlxsw_core_trap_unregister(struct mlxsw_core *mlxsw_core,
- 				const struct mlxsw_listener *listener,
- 				void *priv);
--int mlxsw_core_trap_action_set(struct mlxsw_core *mlxsw_core,
--			       const struct mlxsw_listener *listener,
--			       enum mlxsw_reg_hpkt_action action);
-+int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
-+			      const struct mlxsw_listener *listener,
-+			      bool enabled);
+ 	/* Add new generic trap IDs above */
+ 	__DEVLINK_TRAP_GENERIC_ID_MAX,
+@@ -610,6 +612,7 @@ enum devlink_trap_group_generic_id {
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_L3_DROPS,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_BUFFER_DROPS,
+ 	DEVLINK_TRAP_GROUP_GENERIC_ID_TUNNEL_DROPS,
++	DEVLINK_TRAP_GROUP_GENERIC_ID_ACL_DROPS,
  
- typedef void mlxsw_reg_trans_cb_t(struct mlxsw_core *mlxsw_core, char *payload,
- 				  size_t payload_len, unsigned long cb_priv);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 7c6a9634cdbc..afd3f28ec9f6 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -320,26 +320,23 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
+ 	/* Add new generic trap group IDs above */
+ 	__DEVLINK_TRAP_GROUP_GENERIC_ID_MAX,
+@@ -671,6 +674,10 @@ enum devlink_trap_group_generic_id {
+ 	"decap_error"
+ #define DEVLINK_TRAP_GENERIC_NAME_OVERLAY_SMAC_MC \
+ 	"overlay_smac_is_mc"
++#define DEVLINK_TRAP_GENERIC_NAME_INGRESS_FLOW_ACTION_DROP \
++	"ingress_flow_action_drop"
++#define DEVLINK_TRAP_GENERIC_NAME_EGRESS_FLOW_ACTION_DROP \
++	"egress_flow_action_drop"
  
- 	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener_devlink_map); i++) {
- 		const struct mlxsw_listener *listener;
--		enum mlxsw_reg_hpkt_action hw_action;
-+		bool enabled;
- 		int err;
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_L2_DROPS \
+ 	"l2_drops"
+@@ -680,6 +687,8 @@ enum devlink_trap_group_generic_id {
+ 	"buffer_drops"
+ #define DEVLINK_TRAP_GROUP_GENERIC_NAME_TUNNEL_DROPS \
+ 	"tunnel_drops"
++#define DEVLINK_TRAP_GROUP_GENERIC_NAME_ACL_DROPS \
++	"acl_drops"
  
- 		if (mlxsw_sp_listener_devlink_map[i] != trap->id)
- 			continue;
- 		listener = &mlxsw_sp_listeners_arr[i];
--
- 		switch (action) {
- 		case DEVLINK_TRAP_ACTION_DROP:
--			hw_action = listener->dis_action;
-+			enabled = false;
- 			break;
- 		case DEVLINK_TRAP_ACTION_TRAP:
--			hw_action = listener->en_action;
-+			enabled = true;
- 			break;
- 		default:
- 			return -EINVAL;
- 		}
--
--		err = mlxsw_core_trap_action_set(mlxsw_core, listener,
--						 hw_action);
-+		err = mlxsw_core_trap_state_set(mlxsw_core, listener, enabled);
- 		if (err)
- 			return err;
- 	}
+ #define DEVLINK_TRAP_GENERIC(_type, _init_action, _id, _group, _metadata_cap) \
+ 	{								      \
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 216bdd25ce39..0d7c5d3443d2 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -7795,6 +7795,8 @@ static const struct devlink_trap devlink_trap_generic[] = {
+ 	DEVLINK_TRAP(NON_ROUTABLE, DROP),
+ 	DEVLINK_TRAP(DECAP_ERROR, EXCEPTION),
+ 	DEVLINK_TRAP(OVERLAY_SMAC_MC, DROP),
++	DEVLINK_TRAP(INGRESS_FLOW_ACTION_DROP, DROP),
++	DEVLINK_TRAP(EGRESS_FLOW_ACTION_DROP, DROP),
+ };
+ 
+ #define DEVLINK_TRAP_GROUP(_id)						      \
+@@ -7808,6 +7810,7 @@ static const struct devlink_trap_group devlink_trap_group_generic[] = {
+ 	DEVLINK_TRAP_GROUP(L3_DROPS),
+ 	DEVLINK_TRAP_GROUP(BUFFER_DROPS),
+ 	DEVLINK_TRAP_GROUP(TUNNEL_DROPS),
++	DEVLINK_TRAP_GROUP(ACL_DROPS),
+ };
+ 
+ static int devlink_trap_generic_verify(const struct devlink_trap *trap)
 -- 
 2.21.1
 
