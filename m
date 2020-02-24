@@ -2,117 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A24CC169F41
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9654E169F53
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbgBXH3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 02:29:18 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:44071 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgBXH3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:29:17 -0500
-Received: by mail-yw1-f65.google.com with SMTP id t141so4788680ywc.11
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:29:17 -0800 (PST)
+        id S1727193AbgBXHgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 02:36:02 -0500
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:43288 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgBXHgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:36:02 -0500
+Received: by mail-wr1-f52.google.com with SMTP id r11so9068534wrq.10
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:36:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pu7YZUk9S4E/pNGkKq9v6WlWWKovjGT+ogGtMRUpTlY=;
-        b=cT1aVW9aEmNffyJsbSnpD1pePBSTJmnbrzeS1G1xYMa+f/EI6Ix7TCrDA2k7COPesT
-         nCNnqeSTzMOzj9Dop4WbLhHHv4N6u/cpIlGFjewYNHHviMvEopaL5JfcJWNiNYOy828a
-         5q0KS5TdQWwz9hJAk7r952F3mLit5GROR1edHOg1LGu+yE8oWQ3LB3TLurElJ+N/IUhS
-         yJOqnGyl9XxLMZrwR8wmW/j6Hkht8FySi7RJe6fJtKM5dYhMdn9bTuo8r9THb3skjq7K
-         /3mYHGC5MFfzeDS085t/m1H8wI9bVvbmxd3lRfq7AH9PkcpWJXQWmBQKz0NmH5Zm2SVy
-         CC+g==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7SFParyE2pUEqCppZexl4SaZpVZqE2G7fiK9Rx4wVMc=;
+        b=nxvhzt8Jc8HcaUS+j6ljRomynckVZ1+tEXszgT3HJvGsQB3guAFyRReoxdboo9LyPK
+         erv/W8Xx1iVWVhzhjj1vNWsxRh1XRMGnyevYZ1GKjIsPvT9rfhtqPuad/ru1mp2dSvOm
+         hibutb131AeOjCgzW8y8nWTP3m3DMVb8LV7fG6dvilSqF6T5O1K9GQaWpvdFWNvjzdQE
+         yc5d3/ot5Xdt4tGnvGh03dHjXEJ9jFBEXTAKOGvjf3+V363jJ73QKTt9JAnEf3vlJJyv
+         39kTlGWjZG+4/a5KPe3ZbgrNYpmoUod62k+9JJ7qYyQTRuT0nZiZgyEMii/sV6RGgO/n
+         +xiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pu7YZUk9S4E/pNGkKq9v6WlWWKovjGT+ogGtMRUpTlY=;
-        b=UNxTfDOt/Bmm/ybnoBKeTw2ezihnXJPEXbQ+CDhfDTCKjHkAKKU/YY2FdDbaGtR9o0
-         6UfcKTteOmuaSF16O9FKPuscOc0y4qdqFEi9yWpbSvjW0QL2qtZVMHFjYCpJEd+1UjXi
-         RRBKolWyLuv8GyEPCoZZp6HfG2RWcXnEd+fYMjXYpHgmjd3riDgzyfBwms+VWImVQVsX
-         KyeEEK4kyYWWJd/iOsaPIdmhIgUv3wVU7OiVJa2c/J/75xL0NE5MnsWrg4HNz4iD7P+A
-         TEMD2lcYbC1JdDJiuaE8krJaLNKCpRSM2ZIrN2ZRoW4b9tQtzCnnrBp8C0Dn6Y1edpSO
-         +Dvw==
-X-Gm-Message-State: APjAAAWrP1StOHkf927pYDkb/lJBtjZGUVY49VQtFDyEfEndKGze9H8y
-        jZdN7M8R1RLtqqFbyMM4nRElP+dQMvGZxfa6Ed7flg==
-X-Google-Smtp-Source: APXvYqxZIwuqqBEDmmlfQUkUBgpzYL2C3CpS2lE4a1qMVtMJH7Paj2i9si0t8xcdBW8R0TX6IMVC8K2dWXRjAM3RHXU=
-X-Received: by 2002:a81:3a06:: with SMTP id h6mr39722556ywa.170.1582529356484;
- Sun, 23 Feb 2020 23:29:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7SFParyE2pUEqCppZexl4SaZpVZqE2G7fiK9Rx4wVMc=;
+        b=pvOaXYZ8UXdCnSkaM95nSdTznKkgTMb2qzfW9MmTkMw0CjtZ65IdS3n9TZgkSq2tdm
+         DYYE4MqRf3F4Juo4E7CaHzyZZ2TNjqLthfsyB4aN26ryHCUNhWxDLkzWCIFhhZ3wKhwn
+         iysznwz7Yj1gxS3PfNl0HjMUS2I8I3fKnyns6an14J8R5eFTyb2m9LtO0cPId+xOZSzA
+         vYFgmLbtjMGLHynca1Kza/rr2ByzaChLqxkPQGS3Ybpn9BlcCaOYM54x4+RqC5T7mp9Y
+         6xdejfU+2qq4+4tWIuEW5pRcE5uxDdE9NtTnXzQgCwBcjK/U5vJIDTYPYMn8+a2meQ3k
+         mUig==
+X-Gm-Message-State: APjAAAV/3rwMh7m7Nji9nFT5PnO5vPd3hLyqjUqX7lyAz4JQMNOOpaoI
+        f/Hj3+XWu9y6EEgQhNqc9A97CIU16N8=
+X-Google-Smtp-Source: APXvYqx+g3ViIjYYu2K7gy7WMj5l2vlEeXRqubzPexSiv9IGQXNsIYUsBBbFmKAfUC9DIdamBKdHtA==
+X-Received: by 2002:adf:f103:: with SMTP id r3mr65104872wro.295.1582529759917;
+        Sun, 23 Feb 2020 23:35:59 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id u8sm17254596wmm.15.2020.02.23.23.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Feb 2020 23:35:59 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next 00/16] mlxsw: Introduce ACL traps
+Date:   Mon, 24 Feb 2020 08:35:42 +0100
+Message-Id: <20200224073558.26500-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-References: <20200222010456.40635-1-shakeelb@google.com>
-In-Reply-To: <20200222010456.40635-1-shakeelb@google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 23 Feb 2020 23:29:04 -0800
-Message-ID: <CANn89iJ2CWSeLp-+mfBLWKNdS2vw=r1iLFtWhyzav_SYcjFrAg@mail.gmail.com>
-Subject: Re: [PATCH] net: memcg: late association of sock to memcg
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Roman Gushchin <guro@fb.com>, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        netdev <netdev@vger.kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        linux-mm <linux-mm@kvack.org>, Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 21, 2020 at 5:05 PM Shakeel Butt <shakeelb@google.com> wrote:
->
-> If a TCP socket is allocated in IRQ context or cloned from unassociated
-> (i.e. not associated to a memcg) in IRQ context then it will remain
-> unassociated for its whole life. Almost half of the TCPs created on the
-> system are created in IRQ context, so, memory used by suck sockets will
-> not be accounted by the memcg.
->
-> This issue is more widespread in cgroup v1 where network memory
-> accounting is opt-in but it can happen in cgroup v2 if the source socket
-> for the cloning was created in root memcg.
->
-> To fix the issue, just do the late association of the unassociated
-> sockets at accept() time in the process context and then force charge
-> the memory buffer already reserved by the socket.
->
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> ---
->  net/ipv4/inet_connection_sock.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index a4db79b1b643..df9c8ef024a2 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -482,6 +482,13 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
->                 }
->                 spin_unlock_bh(&queue->fastopenq.lock);
->         }
-> +
-> +       if (mem_cgroup_sockets_enabled && !newsk->sk_memcg) {
-> +               mem_cgroup_sk_alloc(newsk);
-> +               if (newsk->sk_memcg)
-> +                       mem_cgroup_charge_skmem(newsk->sk_memcg,
-> +                                       sk_mem_pages(newsk->sk_forward_alloc));
+From: Jiri Pirko <jiri@mellanox.com>
 
-I am not sure what you  are trying to do here.
+This patchset allows to track packets that are dropped in HW by ACL.
 
-sk->sk_forward_alloc is not the total amount of memory used by a TCP socket.
-It is only some part that has been reserved, but not yet consumed.
+Unlike the existing mlxsw traps, ACL traps are "source traps".
+That means the action is not controlled by HPKT register but directly
+in ACL TRAP action. When devlink user changes action from drop to trap
+and vice versa, it would be needed to go over all instances of ACL TRAP
+action and do change. That does not scale. Instead, resolve this
+by introducing "dummy" group with "thin" policer. The purpose of
+this policer is to drop as many packets as possible. The ones
+that pass through are going to be dropped in devlink code - patch #6
+takes care of that.
 
-For example, every skb that has been stored in TCP receive queue or
-out-of-order queue might have
-used memory.
+First four patches are preparation for introduction of ACL traps in mlxsw
+so it possible to easily change from drop to trap for source traps
+as well - by changing group to "dummy" and back.
 
-I guess that if we assume that  a not yet accepted socket can not have
-any outstanding data in its transmit queue,
-you need to use sk->sk_rmem_alloc as well.
+Jiri Pirko (16):
+  mlxsw: spectrum_trap: Set unreg_action to be SET_FW_DEFAULT
+  mlxsw: core: Allow to register disabled traps using MLXSW_RXL_DIS
+  mlxsw: spectrum_trap: Use listener->en/dis_action instead of
+    hard-coded values
+  mlxsw: spectrum_trap: Prepare mlxsw_core_trap_action_set() to handle
+    not only action
+  devlink: add ACL generic packet traps
+  mlxsw: spectrum_acl: Track ingress and egress block bindings
+  mlxsw: spectrum_flower: Disable mixed bound blocks to contain action
+    drop
+  mlxsw: spectrum_acl: Pass the ingress indication down to flex action
+  mlxsw: acl_flex_actions: Trap all ACL dropped packets to DISCARD_*_ACL
+    traps
+  mlxsw: core: Allow to enable/disable rx_listener for trap
+  mlxsw: core: Extend MLXSW_RXL_DIS to register disabled trap group
+  mlxsw: spectrum_trap: Introduce dummy group with thin policer
+  mlxsw: spectrum_trap: Add ACL devlink-trap support
+  selftests: introduce test for mlxsw tc flower restrictions
+  selftests: pass pref and handle to devlink_trap_drop_* helpers
+  selftests: devlink_trap_acl_drops: Add ACL traps test
 
-To test this patch, make sure to add a delay before accept(), so that
-2MB worth of data can be queued before accept() happens.
+ .../networking/devlink/devlink-trap.rst       |   9 ++
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  77 ++++++---
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  83 ++++++----
+ .../mellanox/mlxsw/core_acl_flex_actions.c    |   8 +-
+ .../mellanox/mlxsw/core_acl_flex_actions.h    |   2 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |   2 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   9 +-
+ .../ethernet/mellanox/mlxsw/spectrum_acl.c    |  37 ++++-
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c |  21 ++-
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  59 +++++--
+ drivers/net/ethernet/mellanox/mlxsw/trap.h    |   2 +
+ include/net/devlink.h                         |   9 ++
+ net/core/devlink.c                            |   3 +
+ .../net/mlxsw/devlink_trap_acl_drops.sh       | 151 ++++++++++++++++++
+ .../net/mlxsw/devlink_trap_l2_drops.sh        |  28 ++--
+ .../net/mlxsw/devlink_trap_l3_drops.sh        |  44 ++---
+ .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    |   4 +-
+ .../net/mlxsw/tc_flower_restrictions.sh       | 100 ++++++++++++
+ .../selftests/net/forwarding/devlink_lib.sh   |   7 +-
+ 19 files changed, 539 insertions(+), 116 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_acl_drops.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_flower_restrictions.sh
 
-Thanks.
+-- 
+2.21.1
+
