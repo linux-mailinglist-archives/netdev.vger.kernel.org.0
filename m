@@ -2,95 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C39516AB31
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 17:19:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C32F16AB49
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 17:25:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgBXQTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 11:19:48 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44134 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727299AbgBXQTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 11:19:48 -0500
-Received: by mail-wr1-f67.google.com with SMTP id m16so11056247wrx.11
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 08:19:45 -0800 (PST)
+        id S1727733AbgBXQZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 11:25:26 -0500
+Received: from mail-wm1-f43.google.com ([209.85.128.43]:39142 "EHLO
+        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727160AbgBXQZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 11:25:26 -0500
+Received: by mail-wm1-f43.google.com with SMTP id c84so10107464wme.4
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 08:25:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=19j0trO9Mv3wrvKzfdH1BS//FW2UKY+OrcE5cOGi9/I=;
-        b=Cw1HT55FGFoyD6E0iMpdCHp8w7pAVLI/g2wPIpKjKTb5pxUdt8pOFFjBbPq6CJb5i9
-         0itvZmEqL7fK3eAzrENC65BmVO6yoTEs11jci0P6njUwvEWxMWj0xoNQBJuNSHN6E3Oq
-         u5A5CEANEG3NWiQdRBvexVujjFefbakQ/SsuE92Zn3sQdrnXofC0osFBZaFt4VYs+5or
-         YU1dMFj5bNqKknCv4/NbiQYavhyLEWv2dMu0oPkkr2EBTTlKZyOhjway8ig8zsYdb8aT
-         eIgu7CPIzZgyylRUyzAWyZEhYZbMiZ4Ed7tKAL7IyEgnig86CdOj1G/oe8UtsjVbuO7i
-         bZfw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=tIAZFaTvIkd6nXh7LxgqD08IpO2vAcFJgZssf5DGn/Y=;
+        b=oB6In5JtzdrOSoTk9D1vawrh8KwKlnCOHwr33t9dyRJ3GAVC5zQV2g8qrXGPgdNUtK
+         /fIcJjJRfbWlsBI7ic4wZAaAvz1cgmdKDcKw/vQW+23gf1wcEmojxNfb49mJL+dOQxKX
+         LrKAlFshq/Gv0H5z+tbWi9c7MRZN3bIl63MP89N/KS9CzwJEJ8rei6NL+4QninEH6efi
+         0Yq7cdcXbtQH19HRchhDn7ojrSNlLniAbJk7yvZi+Kj0GPq+yW0F6m+G+vBcZGEdLREp
+         erOiZ8H3Q81VOSea8gc5mU4yHU/ixN2KhaFh98XKyq4EvAwHHLUcptcKeU/WgFiMyLew
+         AVvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=19j0trO9Mv3wrvKzfdH1BS//FW2UKY+OrcE5cOGi9/I=;
-        b=qkH4R08MUDcei7w9nC+oM6/7c2nmcgsjah3aq5eZG3f/eAx1WJZ/N1gazwwqFdw2kE
-         6jiyAdIN3CbjCb19TuWuEwb8rbLKdttukIE4aYJdBCqCK8pX82H3rV54NyHRajL58xYm
-         cB9OAgorxewg7S+s+0bjuYj3s/P4RnYOkgOubah/sS5W7rt1ZXvUk3w2XPu98khQ+irL
-         2x3OTCYvwJgZ5QDhP59JsUk3gikZxtkAoRJZTnZ4Ct/Xbu1rocnuJOq3RqAf6DdVW0lv
-         y6VRscL+uUsppQ9KefU9X7Ls1CqezjWQqIvR9ZXolXtvIggpaigRoWsk/PaDtH6ILihk
-         iM7g==
-X-Gm-Message-State: APjAAAV2Be+WQChdlZCh0s4fzUEyqe9hUIpCriwkDvjuwE1PBDZMIioN
-        +FQwc8E5BMlkISSL7AyVBygkMUgnqVUSS6/NqTN29Q==
-X-Google-Smtp-Source: APXvYqxU9FUwoF+m5Q66zIMPAB7qaBWxrQS7ZCHR00X4HQuD5lXLTm339u0a6mc2/vAuanTvw3mbbCusDtmw7SArI30=
-X-Received: by 2002:adf:dfcc:: with SMTP id q12mr66447402wrn.171.1582561184425;
- Mon, 24 Feb 2020 08:19:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=tIAZFaTvIkd6nXh7LxgqD08IpO2vAcFJgZssf5DGn/Y=;
+        b=ejT1+FSFgzaVXhJMErZjFBFngHkBscTHOBFKBOLJtpXd6CbKFzoFwg0D9RpufIJHww
+         cNX/QXqwpYQ+qmMLEGWVqLIBOndWVdhB6+GRDoppOV4whfw3aLdvNvhf2yjnoqpQRwG1
+         5trQrh36uMT+FJF1Z+hLcJRA+0XU4oN5K+QBmo0Kfxg8nL3XWVLEc5PpptnRcau9p4Jw
+         rxr8OelSRA3QOkHzPqC6p/uZ8KWRZ6iMzxFwijpYtKnfb0M3pywUBb29aktPr5DG7z2q
+         bX6vdzVrJAYcluZ6gOEepGd0xbxeoUG5Ai7SiZkrnmGD3E7JOKKXCalxh3UcHRebwnhG
+         4Bdg==
+X-Gm-Message-State: APjAAAWl3fFUZdMnT8YTqe+wHatHdqj+cJ6J189R+alNZnAGewnmAxyZ
+        B6K8aZzlDlN/ZS52+fAQlKVXpw==
+X-Google-Smtp-Source: APXvYqydo5BzoQ15eoqIXkPuJjgWwIAwHmi8engPksMVizxnPGOJmp4dYtVxBYdUSBEGyD6nGUnTGA==
+X-Received: by 2002:a7b:cab1:: with SMTP id r17mr22810609wml.116.1582561523113;
+        Mon, 24 Feb 2020 08:25:23 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id s8sm20394028wrt.57.2020.02.24.08.25.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 08:25:22 -0800 (PST)
+Date:   Mon, 24 Feb 2020 17:25:21 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, saeedm@mellanox.com, leon@kernel.org,
+        michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, xiyou.wangcong@gmail.com,
+        pablo@netfilter.org, mlxsw@mellanox.com
+Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW
+ stats type
+Message-ID: <20200224162521.GE16270@nanopsycho>
+References: <20200221095643.6642-1-jiri@resnulli.us>
+ <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
+ <20200222063829.GB2228@nanopsycho>
+ <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
+ <20200224131101.GC16270@nanopsycho>
+ <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
 MIME-Version: 1.0
-References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
- <20200128025958.43490-3-arjunroy.kdev@gmail.com> <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
- <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
- <CAOFY-A0G+NOpi7r=gnrLNsJ-OHYnGKCJ0mJ5PWwH5m7_99bD5w@mail.gmail.com> <20200223193710.596fb5d9ebb23959a3fee187@linux-foundation.org>
-In-Reply-To: <20200223193710.596fb5d9ebb23959a3fee187@linux-foundation.org>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Mon, 24 Feb 2020 08:19:33 -0800
-Message-ID: <CAOFY-A1oBMCJ=2-ZTC7x78p0Oc9hdMBJd1z1hd3MFFK0AZo6ng@mail.gmail.com>
-Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
- vm_insert_pages() for tcp rcv zerocopy.
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-mm@kvack.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 23, 2020 at 7:37 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+Mon, Feb 24, 2020 at 04:45:57PM CET, jhs@mojatatu.com wrote:
+>On 2020-02-24 8:11 a.m., Jiri Pirko wrote:
+>> Mon, Feb 24, 2020 at 12:38:20PM CET, ecree@solarflare.com wrote:
+>> > On 22/02/2020 06:38, Jiri Pirko wrote:
 >
-> On Fri, 21 Feb 2020 13:21:41 -0800 Arjun Roy <arjunroy@google.com> wrote:
+>[..]
+>> > Potentially a user could only want stats on one action and disable them
+>> >   on another.  For instance, if their action chain does delivery to the
+>> >   'customer' and also mirrors the packets for monitoring, they might only
+>> >   want stats on the first delivery (e.g. for billing) and not want to
+>> >   waste a counter on the mirror.
+>> 
+>> Okay.
+>> 
 >
-> > I remain a bit concerned regarding the merge process for this specific
-> > patch (0003, the net/ipv4/tcp.c change) since I have other in-flight
-> > changes for TCP receive zerocopy that I'd like to upstream for
-> > net-next - and would like to avoid weird merge issues.
-> >
-> > So perhaps the following could work:
-> >
-> > 1. Andrew, perhaps we could remove this particular patch (0003, the
-> > net/ipv4/tcp.c change) from mm-next; that way we merge
-> > vm_insert_pages() but not the call-site within TCP, for now.
-> > 2. net-next will eventually pick vm_insert_pages() up.
-> > 3. I can modify the zerocopy code to use it at that point?
-> >
-> > Else I'm concerned a complicated merge situation may result.
-> >
-> > What do you all think?
+>+1  very important for telco billing use cases i am familiar with.
 >
-> We could do that.
+>Ancient ACL implementations that had only one filter and
+>one action (drop/accept) didnt need more than one counter.
+>But not anymore in my opinion.
 >
-> For now, I'll stage the entire patch series after linux-next and shall
-> wait and see whether things which appear in linux-next cause serious
-> merge issues to occur.  Sound OK?
+>There's also a requirement for the concept of "sharing" - think
+>"family plans" or "small bussiness plan".
+>Counters may be shared across multiple filter-action chains for example.
 
-Sounds good for now; the conflict itself would be easy enough to fix
-when it does crop up.
+In hardware, we have a separate "counter" action with counter index.
+You can reuse this index in multiple counter action instances.
+However, in tc there is implicit separate counter for every action.
 
-Thanks,
--Arjun
+The counter is limited resource. So we overcome this mismatch in mlxsw
+by having action "counter" always first for every rule inserted:
+rule->action_counter,the_actual_action,the_actual_action2,...the_actual_actionN
+
+and we report stats from action_counter for all the_actual_actionX.
+
+
+>
+>> 
+>> > 
+>> > > Plus, if the fine grained setup is ever needed, the hw_stats could be in
+>> > > future easilyt extended to be specified per-action too overriding
+>> > > the per-filter setup only for specific action. What do you think?
+>> > I think this is improper; the stats type should be defined per-action in
+>> >   the uapi, even if userland initially only has UI to set it across the
+>> >   entire filter.  (I imagine `tc action` would grow the corresponding UI
+>> >   pretty quickly.)  Then on the driver side, you must determine whether
+>> >   your hardware can support the user's request, and if not, return an
+>> >   appropriate error code.
+>> > 
+>> > Let's try not to encourage people (users, future HW & driver developers)
+>> >   to keep thinking of stats as per-filter entities.
+>> > Okay, but in that case, it does not make sense to have "UI to set it
+>> across the entire filter". The UI would have to set it per-action too.
+>> Othewise it would make people think it is per-filter entity.
+>> But I guess the tc cmdline is chatty already an it can take other
+>> repetitive cmdline options.
+>> 
+>
+>I normally visualize policy as a dag composed of filter(s) +
+>actions. The UI and uAPI has to be able to express that.
+>
+>I am not sure if mlxsw works this way, but:
+>Most hardware i have encountered tends to have a separate
+>stats/counter table. The stats table is indexed.
+>
+>Going backwards and looking at your example in this stanza:
+>---
+>  in_hw in_hw_count 2
+>  hw_stats immediate
+>        action order 1: gact action drop
+>         random type none pass val 0
+>         index 1 ref 1 bind 1 installed 14 sec used 7 sec
+>        Action statistics:
+>----
+>
+>Guessing from "in_hw in_hw_count 2" - 2 is a hw stats table index?
+>If you have enough counters in hardware, the "stats table index"
+>essentially can be directly mapped to the action "index" attribute.
+
+>
+>Sharing then becomes a matter of specifying the same drop action
+>with the correct index across multiple filters.
+>
+>If you dont have enough hw counters - then perhaps a scheme to show
+>separate hardware counter index and software counter index (aka action
+>index) is needed.
+
+I don't, that is the purpose of this patchset, to be able to avoid the
+"action_counter" from the example I wrote above.
+
+Note that I don't want to share, there is still separate "last_hit"
+record in hw I expose in "used X sec". Interestingly enough, in
+Spectrum-1 this is per rule, in Spectrum-2,3 this is per action block :)
+
+
+>
+>cheers,
+>jamal
+>
+>> What do you think?
+>> 
+>> 
+>> Thanks!
+>> 
+>
