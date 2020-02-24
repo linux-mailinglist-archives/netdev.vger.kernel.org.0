@@ -2,140 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0059716A506
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:38:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C985F16A564
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbgBXLic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 06:38:32 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:35573 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbgBXLib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 06:38:31 -0500
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 8123C22F00;
-        Mon, 24 Feb 2020 12:38:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1582544309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ATJ7FEy8mNyFSf7mhjpZz7vvqF1vlw/dfVmlo7ml+8I=;
-        b=nZYC8M/aCrC+rIryhmGaMHYYKK0YbOA2Ghg3VEpxrmxItu0RVkt5amPnhs4SEW9Mcrqvol
-        EZdxmg2J5fXFTfjYW3LznIRbxzlQNJydD/3VqQSqpvff3Fi18WH69ka3ldWbJBw6hLueNQ
-        Nc9a1Vzkrfnl/KKUa/RLAelYQeGNuKM=
+        id S1727299AbgBXLpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 06:45:35 -0500
+Received: from foss.arm.com ([217.140.110.172]:35818 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727183AbgBXLpe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 06:45:34 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12FB530E;
+        Mon, 24 Feb 2020 03:45:34 -0800 (PST)
+Received: from localhost (unknown [10.37.6.21])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 66C063F534;
+        Mon, 24 Feb 2020 03:45:33 -0800 (PST)
+Date:   Mon, 24 Feb 2020 11:45:32 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Piotr Sroka <piotrs@cadence.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: Re: [PATCH] docs: dt: fix several broken doc references
+Message-ID: <20200224114532.GC6215@sirena.org.uk>
+References: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 24 Feb 2020 12:38:26 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, robh+dt@kernel.org,
-        mark.rutland@arm.com, devicetree@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 devicetree 0/6] DT bindings for Felix DSA switch on
- LS1028A
-In-Reply-To: <20200224112026.GF27688@dragon>
-References: <20200223204716.26170-1-olteanv@gmail.com>
- <20200224112026.GF27688@dragon>
-Message-ID: <f92f01d60589d94bb25a38dd828200b0@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.3.10
-X-Spamd-Bar: /
-X-Spam-Status: No, score=-0.10
-X-Rspamd-Server: web
-X-Spam-Score: -0.10
-X-Rspamd-Queue-Id: 8123C22F00
-X-Spamd-Result: default: False [-0.10 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[dt];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_TWELVE(0.00)[13];
-         NEURAL_HAM(-0.00)[-0.684];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         FREEMAIL_CC(0.00)[gmail.com,kernel.org,arm.com,vger.kernel.org,lunn.ch,nxp.com,davemloft.net];
-         MID_RHS_MATCH_FROM(0.00)[]
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DIOMP1UsTsWJauNi"
+Content-Disposition: inline
+In-Reply-To: <0e530494349b37eb2eab4a8eccf56626e0b18e6d.1582448388.git.mchehab+huawei@kernel.org>
+X-Cookie: How you look depends on where you go.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shawn,
 
-Am 2020-02-24 12:20, schrieb Shawn Guo:
-> On Sun, Feb 23, 2020 at 10:47:10PM +0200, Vladimir Oltean wrote:
->> This series officializes the device tree bindings for the embedded
->> Ethernet switch on NXP LS1028A (and for the reference design board).
->> The driver has been in the tree since v5.4-rc6.
->> 
->> It also performs some DT binding changes and minor cleanup, as per
->> feedback received in v1 and v2:
->> 
->> - I've changed the DT bindings for the internal ports from "gmii" to
->>   "internal". This means changing the ENETC phy-mode as well, for
->>   uniformity. So I would like the entire series to be merged through a
->>   single tree, probably the devicetree one - something which David
->>   Miller has aggreed to, here [0].
->> - Disabled all Ethernet ports in the LS1028A DTSI by default, which
->>   means not only the newly introduced switch ports, but also RGMII
->>   standalone port 1.
->> 
->> [0]: https://lkml.org/lkml/2020/2/19/973
->> 
->> Claudiu Manoil (2):
->>   arm64: dts: fsl: ls1028a: add node for Felix switch
->>   arm64: dts: fsl: ls1028a: enable switch PHYs on RDB
->> 
->> Vladimir Oltean (4):
->>   arm64: dts: fsl: ls1028a: delete extraneous #interrupt-cells for 
->> ENETC
->>     RCIE
->>   arm64: dts: fsl: ls1028a: disable all enetc ports by default
-> 
-> I applied these 4 DTS patches with changing prefix to 'arm64: dts: 
-> ls1028a: '.
+--DIOMP1UsTsWJauNi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Oh, then the kontron-sl28 boards won't have ethernet because the nodes 
-are
-disabled now. I'll send a patch shortly which explicitly sets the status 
-to
-"okay", hopefully you can pick it up so it'll end up in the same pull 
-request
-as this one:
+On Sun, Feb 23, 2020 at 09:59:53AM +0100, Mauro Carvalho Chehab wrote:
+> There are several DT doc references that require manual fixes.
+> I found 3 cases fixed on this patch:
+>=20
+> 	- directory named "binding/" instead of "bindings/";
+> 	- .txt to .yaml renames;
+> 	- file renames (still on txt format);
 
-   arm64: dts: fsl: ls1028a: disable all enetc ports by default
+This seems like it should've been split up a bit.  :/
 
--michael
+Acked-by: Mark Brown <broonie@kernel.org>
 
-> 
-> Shawn
-> 
->>   net: dsa: felix: Use PHY_INTERFACE_MODE_INTERNAL instead of GMII
->>   dt-bindings: net: dsa: ocelot: document the vsc9959 core
->> 
->>  .../devicetree/bindings/net/dsa/ocelot.txt    | 116 
->> ++++++++++++++++++
->>  .../boot/dts/freescale/fsl-ls1028a-qds.dts    |   1 +
->>  .../boot/dts/freescale/fsl-ls1028a-rdb.dts    |  61 ++++++++-
->>  .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  89 +++++++++++++-
->>  drivers/net/dsa/ocelot/felix.c                |   3 +-
->>  drivers/net/dsa/ocelot/felix_vsc9959.c        |   3 +-
->>  6 files changed, 265 insertions(+), 8 deletions(-)
->>  create mode 100644 
->> Documentation/devicetree/bindings/net/dsa/ocelot.txt
->> 
->> --
->> 2.17.1
->> 
+--DIOMP1UsTsWJauNi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5Tt1sACgkQJNaLcl1U
+h9CeXgf/ee/xxhTgqVSMNL+gDYl+cgPqn0CVS5ynzTQm6XlCEEXDBneO8oAyMs9Q
+B35qG/r62a8QVrA/l3LzqVMhLlv8zL4iGOheD5+eZ6gHnMv7lPajWNmGOfnMJd9H
+UKLDbTT2i5G+9z8eCMtms1XURh+HwDOazAYv0AivApzVodTmO2psgQP1QLL2OzJL
+LPC4wm0qrtgar4rno/OfhGR/wyJfJKLE7MqnJ73wcaO5fZ48mtXx0mZwh3aJqtxe
+3inu1PkxuHNSlxEIMHFKg8Tvg/cGD1vngJEwsEZ8AJ+bTOcI8HX+goLuAyNwTG6F
+VynhL1Jdiscm+V62nRat6prHHhzWBw==
+=WoRy
+-----END PGP SIGNATURE-----
+
+--DIOMP1UsTsWJauNi--
