@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0797C169C82
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 04:07:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D86169CAA
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 04:37:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727177AbgBXDHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Feb 2020 22:07:19 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:10673 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727156AbgBXDHS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Feb 2020 22:07:18 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 287F8574C0289CFD71E5;
-        Mon, 24 Feb 2020 11:07:15 +0800 (CST)
-Received: from [127.0.0.1] (10.133.210.141) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Mon, 24 Feb 2020
- 11:06:49 +0800
-Subject: Re: [PATCH 4.4-stable] slip: stop double free sl->dev in slip_open
-To:     <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200222094649.10933-1-yangerkun@huawei.com>
-From:   yangerkun <yangerkun@huawei.com>
-Message-ID: <4e89e339-e161-fd8e-85e0-e59cdcc9688f@huawei.com>
-Date:   Mon, 24 Feb 2020 11:06:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200222094649.10933-1-yangerkun@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+        id S1727187AbgBXDhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Feb 2020 22:37:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47724 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727156AbgBXDhL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Feb 2020 22:37:11 -0500
+Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E9ED720658;
+        Mon, 24 Feb 2020 03:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582515431;
+        bh=bMWinYyvGT80w5oedT9Rbs/engnkzF2JnlWfsVIxAuo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YqrqJt4l8GfWNjwMJZacU2i237vH9VE9qQ2bX5hH/AQWu11v2lPCUnwB8Khb+3d2Q
+         FcCypZYTJfmPT7CG+IvMIdZAQe9AMoT9QRHtp13A8I1tLQGghZvfOBBSS6sd5okbtu
+         HpcwrrJDyVsKyo5KzhcqfNkDcETpa12TqalyEt7o=
+Date:   Sun, 23 Feb 2020 19:37:10 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: Re: [PATCH resend mm,net-next 3/3] net-zerocopy: Use
+ vm_insert_pages() for tcp rcv zerocopy.
+Message-Id: <20200223193710.596fb5d9ebb23959a3fee187@linux-foundation.org>
+In-Reply-To: <CAOFY-A0G+NOpi7r=gnrLNsJ-OHYnGKCJ0mJ5PWwH5m7_99bD5w@mail.gmail.com>
+References: <20200128025958.43490-1-arjunroy.kdev@gmail.com>
+        <20200128025958.43490-3-arjunroy.kdev@gmail.com>
+        <20200212185605.d89c820903b7aa9fbbc060b2@linux-foundation.org>
+        <CAOFY-A1o0L_D7Oyi1S=+Ng+2dK35-QHSSUQ9Ct3EA5y-DfWaXA@mail.gmail.com>
+        <CAOFY-A0G+NOpi7r=gnrLNsJ-OHYnGKCJ0mJ5PWwH5m7_99bD5w@mail.gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.133.210.141]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cc David and netdev mail list too.
+On Fri, 21 Feb 2020 13:21:41 -0800 Arjun Roy <arjunroy@google.com> wrote:
 
-On 2020/2/22 17:46, yangerkun wrote:
-> After commit e4c157955483 ("slip: Fix use-after-free Read in slip_open"),
-> we will double free sl->dev since sl_free_netdev will free sl->dev too.
-> It's fine for mainline since sl_free_netdev in mainline won't free
-> sl->dev.
+> I remain a bit concerned regarding the merge process for this specific
+> patch (0003, the net/ipv4/tcp.c change) since I have other in-flight
+> changes for TCP receive zerocopy that I'd like to upstream for
+> net-next - and would like to avoid weird merge issues.
 > 
-> Signed-off-by: yangerkun <yangerkun@huawei.com>
-> ---
->   drivers/net/slip/slip.c | 1 -
->   1 file changed, 1 deletion(-)
+> So perhaps the following could work:
 > 
-> diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-> index ef6b25ec75a1..7fe9183fad0e 100644
-> --- a/drivers/net/slip/slip.c
-> +++ b/drivers/net/slip/slip.c
-> @@ -861,7 +861,6 @@ err_free_chan:
->   	tty->disc_data = NULL;
->   	clear_bit(SLF_INUSE, &sl->flags);
->   	sl_free_netdev(sl->dev);
-> -	free_netdev(sl->dev);
->   
->   err_exit:
->   	rtnl_unlock();
+> 1. Andrew, perhaps we could remove this particular patch (0003, the
+> net/ipv4/tcp.c change) from mm-next; that way we merge
+> vm_insert_pages() but not the call-site within TCP, for now.
+> 2. net-next will eventually pick vm_insert_pages() up.
+> 3. I can modify the zerocopy code to use it at that point?
 > 
+> Else I'm concerned a complicated merge situation may result.
+> 
+> What do you all think?
 
+We could do that.
+
+For now, I'll stage the entire patch series after linux-next and shall
+wait and see whether things which appear in linux-next cause serious
+merge issues to occur.  Sound OK?
