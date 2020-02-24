@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D714716B613
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:56:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43EEE16B61A
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728359AbgBXX4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 18:56:40 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35152 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726651AbgBXX4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:56:40 -0500
-Received: by mail-wm1-f67.google.com with SMTP id m3so1053139wmi.0;
-        Mon, 24 Feb 2020 15:56:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=CqieUl+jBlAbwvJufoMKdaWiCvMyZZmPHn8pxLLM7h8=;
-        b=H4QmnGRqnIsqApz0w95u5syLy4ZXEp7B6h+/NcX774qJfNa338N4qQ1XN6glS90Ltl
-         s8yf9WcShB47P+eEGXTUPaPVHPKWhhADeb4MnIkXO3xN5S8ETcxiFSsxKWEPZ9smy6ne
-         qXzkhn6EnqqT/d9CCZafOmRvrJB5jKjRloJfNt4NsY4GAhaOVj0KsUbluiKlHZUYuTss
-         N7XFUu1NN7WzBCm5DUaNhZ7H8DKvfsLSw9Vp+JzXc07+EJeGFegHtysQB8sgZ7e199S/
-         UEqRuhXykIJ6z2qH9B0WUf9Zh0grv7cbwT4T5884KTo/EuA88IAidAjwYwRJOpW0nJVk
-         v4Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CqieUl+jBlAbwvJufoMKdaWiCvMyZZmPHn8pxLLM7h8=;
-        b=CsMP4dLfFcPdh/hEKnMjx7nm0kcac8/2A4msej8b0YCB3IZ3HOPb2pO5kF3RM9WeNL
-         b4MUBUWjdsx8VAMwLgFnhJiqCu0kIIldMOlaHYcvw5Wg/ZNVnZCHUhsYi4KPlgggfZzD
-         3vitMDzumQp4hHt6SLtd0Y2lhkiUk63yfIxEmPK64I1e3E9IGpuNX98tDgFNi5egKEE2
-         3QBdsNBRSanauoaDlw2ntxWa38y2G6yd01Awx3Xz1ZGBr3Jy0T4RZ3Y7582BnCs8fkOe
-         V2AJ3pXhMjfIwh0B0iCDyIIhb84N3L1u9/EqIjvwqjnPzTiN3OKJijSZSd9Ha+Tdr2S0
-         0y6w==
-X-Gm-Message-State: APjAAAVOFx2agrlg02jia8nvgTclbOJ1DTSq++uQi7y1DpP0jpmXmcSV
-        UykFd3AZqv6pvS9XiU/hJYh7M3oR
-X-Google-Smtp-Source: APXvYqyB703UxFv3cQK5R0yMqnHpiLTlcrDKONLVyyjb8dqcZ1vBqdBHbXTyuhEvv5yHuhdTQ68W0g==
-X-Received: by 2002:a05:600c:1007:: with SMTP id c7mr1419958wmc.158.1582588597682;
-        Mon, 24 Feb 2020 15:56:37 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d9sm21424459wrx.94.2020.02.24.15.56.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 15:56:37 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: dsa: bcm_sf2: Forcibly configure IMP port for 1Gb/sec
-Date:   Mon, 24 Feb 2020 15:56:32 -0800
-Message-Id: <20200224235632.5163-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728464AbgBXX7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 18:59:40 -0500
+Received: from mout.kundenserver.de ([217.72.192.73]:44101 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727976AbgBXX7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:59:40 -0500
+Received: from kiste.fritz.box ([94.134.180.186]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N2VCb-1jYkPd1AaN-013x3E; Tue, 25 Feb 2020 00:59:30 +0100
+From:   Hans Wippel <ndev@hwipl.net>
+To:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Hans Wippel <ndev@hwipl.net>
+Subject: [PATCH net-next 0/2] net/smc: improve peer ID in CLC decline
+Date:   Tue, 25 Feb 2020 00:58:59 +0100
+Message-Id: <20200224235901.304311-1-ndev@hwipl.net>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:AMWT+5Ipvh1xDnUysvMRuW6la6gxzxiOiGioZ7hTVL2HNYLTPMx
+ J9b4YwHeTzH5db1vIzzZIyhUdOZoyLmqy6bnrh4SizzRoidgEkqdXN7Ew+pKTFH3XQtuAAl
+ 9eQylePvtIn9yPgUjvRz2E6cZ3okLpFOGkYL+DCWKY1ND//PGvY8bURb8QfjJZ1QTyC79Mx
+ Os2C44HLIfZwYY+rGBBmA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Mlzzsvl64t0=:oxTfo6w0Sz0nDRfscM6E7o
+ evEEIwp0VWCW6+SnSwYZ1Pv7yP5RqkUDVCKrcoMzeFF9cAwlrb86FZe5EZ19OJxgxp+AkhGq4
+ ax5AccUK3kwuU75mJMzsC7g5bW64I7wfw6y824FJHsVNaWuctVpO+8wX2o2NPWMvRhCYxoD6Q
+ VVxK13Nl6v8Hzke1VBg2df4LDobQ2N4uB6li4Bv0orRx6ezHiLjPYQjRRDorKeW7CtiY0nVNI
+ CuNZ95G0c55BistdlH8M2rlNs9IuWjiltzuuOIdD2xpMrvFzBcfZUImM6s2H40WIeZtPtXPBN
+ o6TIduXWmqmde+X6LdM5JKoNw7wL7bxPPcfKTA5+/Dl9lsIzt0KKF96UPX5kde5Svi7rfZh/x
+ MpCabdg6TSigJjzsAebYTOsaukwUubYfhVoGE2jkfVzbFvp7JltbWikgRlSU2Sx5D2GqN1yIA
+ dvJ/Tvx8v7ZwMZ7gdUcO9v5osudfw0kw/NvqMhh94H0qoxqTSD2PDbC1pncnNMzLpmT3gZsd2
+ 58LbhDfr1v+ZP0pz+2eKnndLhY1mYcUph4+BjCyXAjF8jIuencVjYoLnpOwGPSHFMxLtqRfVj
+ w4PJTFDfzSmupAGwj0el3brLfd5gUcAWRcl8hf8Gv68Px4l7CiGQq3ManVxeFc+6/Co139ORp
+ 1isAw+qd/voB3LvVeCo++AVDw8EQtkgpL+FVXYhPxioM6qeK5MB4OJsUH8fc3QSa2jTgzWhw+
+ wTS5ftVHHiY/vOY+9UAjlDMsbNPGu8hF9LbsUjPKNdkeg8KpQVkSht0ES2IXQ9BtwHcXmXlFf
+ hOU6IyWojrigu4tJyXhYx8G/fOSLDOHmtkv9gobgYZg+kA5gL+i2vZ0+gBzCAHnQcmvc2wn
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are still experiencing some packet loss with the existing advanced
-congestion buffering (ACB) settings with the IMP port configured for
-2Gb/sec, so revert to conservative link speeds that do not produce
-packet loss until this is resolved.
+The following two patches improve the peer ID in CLC decline messages if
+RoCE devices are present in the host but no suitable device is found for
+a connection. The first patch reworks the peer ID initialization. The
+second patch contains the actual changes of the CLC decline messages.
 
-Fixes: 8f1880cbe8d0 ("net: dsa: bcm_sf2: Configure IMP port for 2Gb/sec")
-Fixes: de34d7084edd ("net: dsa: bcm_sf2: Only 7278 supports 2Gb/sec IMP port")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/bcm_sf2.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Changes since the RFC version:
+* split the patch into two parts
+* removed zero assignment to global variable (thanks Leon)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index d1955543acd1..b0f5280a83cb 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -69,8 +69,7 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
- 		/* Force link status for IMP port */
- 		reg = core_readl(priv, offset);
- 		reg |= (MII_SW_OR | LINK_STS);
--		if (priv->type == BCM7278_DEVICE_ID)
--			reg |= GMII_SPEED_UP_2G;
-+		reg &= ~GMII_SPEED_UP_2G;
- 		core_writel(priv, reg, offset);
- 
- 		/* Enable Broadcast, Multicast, Unicast forwarding to IMP port */
+Thanks to Leon Romanovsky and Karsten Graul for the feedback!
+
+Hans Wippel (2):
+  net/smc: rework peer ID handling
+  net/smc: improve peer ID in CLC decline for SMC-R
+
+ net/smc/smc_clc.c |  9 ++++++---
+ net/smc/smc_ib.c  | 19 ++++++++++++-------
+ net/smc/smc_ib.h  |  1 +
+ 3 files changed, 19 insertions(+), 10 deletions(-)
+
 -- 
-2.17.1
+2.25.1
 
