@@ -2,193 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 371CD16A100
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 10:04:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81EBA16A0F9
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 10:03:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727314AbgBXJE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 04:04:28 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:38429 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726765AbgBXJE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 04:04:28 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1j69f4-0000HH-4S; Mon, 24 Feb 2020 10:04:22 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad] (unknown [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0355F4BF396;
-        Mon, 24 Feb 2020 08:54:19 +0000 (UTC)
-Subject: Re: KMSAN: uninit-value in number (2)
-To:     syzbot <syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-References: <0000000000000955df059f4e276f@google.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <545255e6-0ad1-bdcd-c421-9823833326f3@pengutronix.de>
-Date:   Mon, 24 Feb 2020 09:54:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727252AbgBXJDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 04:03:37 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:13470 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbgBXJDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 04:03:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1582535016; x=1614071016;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=z4Mr/248p1hw1BvUjxn6zKfGNBtagnBghZHZx6e9Gck=;
+  b=Zy5BmYuHm8X4w1s6GPjAcD8sq4XJSKAi176J8MazEEAYOVpB47X/22V3
+   9F+BrtQsMo2mSR9NUn9RaSsMs+zENGgORH/FiZ5vTpxptuMg0PtunHybE
+   Wl8K2gufGSFn531Kwp0LbZsxr3AE/HWE15aohTppin5YOD2omJyiyq9zK
+   M=;
+IronPort-SDR: XHB4nR3i9Q1mSyYVdNqR60HqbElrSc6VYayvZ+Iv1lTrU9pd84N7NPRE4xruK925VVclquLG+Y
+ kAxpKnAQ8KjQ==
+X-IronPort-AV: E=Sophos;i="5.70,479,1574121600"; 
+   d="scan'208";a="18650010"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-168cbb73.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 24 Feb 2020 09:03:34 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2c-168cbb73.us-west-2.amazon.com (Postfix) with ESMTPS id 62099A1DF7;
+        Mon, 24 Feb 2020 09:03:32 +0000 (UTC)
+Received: from EX13D06EUA001.ant.amazon.com (10.43.165.229) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Mon, 24 Feb 2020 09:03:31 +0000
+Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
+ EX13D06EUA001.ant.amazon.com (10.43.165.229) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 24 Feb 2020 09:03:30 +0000
+Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
+ EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1367.000;
+ Mon, 24 Feb 2020 09:03:30 +0000
+From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Leon Romanovsky <leonro@mellanox.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        "Don Fry" <pcnet32@frontier.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        "Jay Vosburgh" <j.vosburgh@gmail.com>,
+        "linux-acenic@sunsite.dk" <linux-acenic@sunsite.dk>,
+        Maxime Ripard <mripard@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        "linux-rockchip@lists.infradead.org" 
+        <linux-rockchip@lists.infradead.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        David Dillow <dave@thedillows.org>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thor Thayer <thor.thayer@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ion Badulescu <ionut@badula.org>,
+        "Jes Sorensen" <jes@trained-monkey.org>,
+        "nios2-dev@lists.rocketboards.org" <nios2-dev@lists.rocketboards.org>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: RE: [PATCH net-next v1 12/18] net/amazon: Ensure that driver version
+ is aligned to the linux kernel
+Thread-Topic: [PATCH net-next v1 12/18] net/amazon: Ensure that driver version
+ is aligned to the linux kernel
+Thread-Index: AQHV6vAVx5/0sGcsSkmtGfOI/rIICKgqC69w
+Date:   Mon, 24 Feb 2020 09:03:14 +0000
+Deferred-Delivery: Mon, 24 Feb 2020 09:03:11 +0000
+Message-ID: <79ed2b392b4e413faef03f4bb2f8d562@EX13D22EUA004.ant.amazon.com>
+References: <20200224085311.460338-1-leon@kernel.org>
+ <20200224085311.460338-13-leon@kernel.org>
+In-Reply-To: <20200224085311.460338-13-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.10]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <0000000000000955df059f4e276f@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/20 9:28 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    8bbbc5cf kmsan: don't compile memmove
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1661da7ee00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=cd0e9a6b0e555cc3
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9bcb0c9409066696d3aa
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111141a1e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ad5245e00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com
-> 
-> =====================================================
-> BUG: KMSAN: uninit-value in number+0x9f8/0x2000 lib/vsprintf.c:459
-> CPU: 1 PID: 11897 Comm: syz-executor136 Not tainted 5.6.0-rc2-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x1c9/0x220 lib/dump_stack.c:118
->  kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
->  __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
->  number+0x9f8/0x2000 lib/vsprintf.c:459
->  vsnprintf+0x1d85/0x31b0 lib/vsprintf.c:2640
->  vscnprintf+0xc2/0x180 lib/vsprintf.c:2677
->  vprintk_store+0xef/0x11d0 kernel/printk/printk.c:1917
->  vprintk_emit+0x2c0/0x860 kernel/printk/printk.c:1984
->  vprintk_default+0x90/0xa0 kernel/printk/printk.c:2029
->  vprintk_func+0x636/0x820 kernel/printk/printk_safe.c:386
->  printk+0x18b/0x1d3 kernel/printk/printk.c:2062
->  canfd_rcv+0x370/0x3a0 net/can/af_can.c:697
->  __netif_receive_skb_one_core net/core/dev.c:5198 [inline]
->  __netif_receive_skb net/core/dev.c:5312 [inline]
->  netif_receive_skb_internal net/core/dev.c:5402 [inline]
->  netif_receive_skb+0xe77/0xf20 net/core/dev.c:5461
->  tun_rx_batched include/linux/skbuff.h:4321 [inline]
->  tun_get_user+0x6aef/0x6f60 drivers/net/tun.c:1997
->  tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
->  call_write_iter include/linux/fs.h:1901 [inline]
->  new_sync_write fs/read_write.c:483 [inline]
->  __vfs_write+0xa5a/0xca0 fs/read_write.c:496
->  vfs_write+0x44a/0x8f0 fs/read_write.c:558
->  ksys_write+0x267/0x450 fs/read_write.c:611
->  __do_sys_write fs/read_write.c:623 [inline]
->  __se_sys_write+0x92/0xb0 fs/read_write.c:620
->  __x64_sys_write+0x4a/0x70 fs/read_write.c:620
->  do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x440239
-> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007ffd3d6d1f28 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 0000000000003172 RCX: 0000000000440239
-> RDX: 0000000000000004 RSI: 0000000020000200 RDI: 0000000000000003
-> RBP: 656c6c616b7a7973 R08: 0000000000401ac0 R09: 0000000000401ac0
-> R10: 0000000000401ac0 R11: 0000000000000246 R12: 0000000000401ac0
-> R13: 0000000000401b50 R14: 0000000000000000 R15: 0000000000000000
-> 
-> Uninit was created at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
->  kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
->  kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
->  slab_alloc_node mm/slub.c:2793 [inline]
->  __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4401
->  __kmalloc_reserve net/core/skbuff.c:142 [inline]
->  __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
->  alloc_skb include/linux/skbuff.h:1051 [inline]
->  alloc_skb_with_frags+0x18c/0xa70 net/core/skbuff.c:5766
->  sock_alloc_send_pskb+0xada/0xc60 net/core/sock.c:2242
->  tun_alloc_skb drivers/net/tun.c:1529 [inline]
->  tun_get_user+0x10ae/0x6f60 drivers/net/tun.c:1843
->  tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
->  call_write_iter include/linux/fs.h:1901 [inline]
->  new_sync_write fs/read_write.c:483 [inline]
->  __vfs_write+0xa5a/0xca0 fs/read_write.c:496
->  vfs_write+0x44a/0x8f0 fs/read_write.c:558
->  ksys_write+0x267/0x450 fs/read_write.c:611
->  __do_sys_write fs/read_write.c:623 [inline]
->  __se_sys_write+0x92/0xb0 fs/read_write.c:620
->  __x64_sys_write+0x4a/0x70 fs/read_write.c:620
->  do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> =====================================================
 
-> static int canfd_rcv(struct sk_buff *skb, struct net_device *dev,
->                      struct packet_type *pt, struct net_device *orig_dev)
-> {
->         struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-> 
->         if (unlikely(dev->type != ARPHRD_CAN || skb->len != CANFD_MTU ||
->                      cfd->len > CANFD_MAX_DLEN)) {
->                 pr_warn_once("PF_CAN: dropped non conform CAN FD skbuf: dev type %d, len %d, datalen %d\n",
->                              dev->type, skb->len, cfd->len);
-                                                    ^^^^^^^^
 
-If the skb is to short, we'll access the skb->data out of bounds, when
-dereferencing cfd. I think we have to remove the "datalen" from the
-warning message.
+> -----Original Message-----
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Monday, February 24, 2020 10:53 AM
+> To: David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.or=
+g>
+> Cc: Leon Romanovsky <leonro@mellanox.com>; Tom Lendacky
+> <thomas.lendacky@amd.com>; Keyur Chudgar
+> <keyur@os.amperecomputing.com>; Don Fry <pcnet32@frontier.com>;
+> Veaceslav Falico <vfalico@gmail.com>; Jay Vosburgh <j.vosburgh@gmail.com>=
+;
+> linux-acenic@sunsite.dk; Maxime Ripard <mripard@kernel.org>; Heiko Stuebn=
+er
+> <heiko@sntech.de>; Mark Einon <mark.einon@gmail.com>; Chris Snook
+> <chris.snook@gmail.com>; linux-rockchip@lists.infradead.org; Iyappan
+> Subramanian <iyappan@os.amperecomputing.com>; Igor Russkikh
+> <irusskikh@marvell.com>; David Dillow <dave@thedillows.org>; Belgazal,
+> Netanel <netanel@amazon.com>; Quan Nguyen
+> <quan@os.amperecomputing.com>; Jay Cliburn <jcliburn@gmail.com>; Lino
+> Sanfilippo <LinoSanfilippo@gmx.de>; linux-arm-kernel@lists.infradead.org;
+> Andreas Larsson <andreas@gaisler.com>; Andy Gospodarek
+> <andy@greyhouse.net>; netdev@vger.kernel.org; Thor Thayer
+> <thor.thayer@linux.intel.com>; linux-kernel@vger.kernel.org; Ion Badulesc=
+u
+> <ionut@badula.org>; Kiyanovski, Arthur <akiyano@amazon.com>; Jes Sorensen
+> <jes@trained-monkey.org>; nios2-dev@lists.rocketboards.org; Chen-Yu Tsai
+> <wens@csie.org>
+> Subject: [PATCH net-next v1 12/18] net/amazon: Ensure that driver version=
+ is
+> aligned to the linux kernel
+>=20
+> From: Leon Romanovsky <leonro@mellanox.com>
+>=20
+> Upstream drivers are managed inside global repository and released all
+> together, this ensure that driver version is the same as linux kernel, so=
+ update
+> amazon drivers to properly reflect it.
+>=20
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_ethtool.c |  1 -
+> drivers/net/ethernet/amazon/ena/ena_netdev.c  | 17 ++---------------
+> drivers/net/ethernet/amazon/ena/ena_netdev.h  | 11 -----------
+>  3 files changed, 2 insertions(+), 27 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> index ced1d577b62a..19262f37db84 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> @@ -404,7 +404,6 @@ static void ena_get_drvinfo(struct net_device *dev,
+>  	struct ena_adapter *adapter =3D netdev_priv(dev);
+>=20
+>  	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
+> -	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
+>  	strlcpy(info->bus_info, pci_name(adapter->pdev),
+>  		sizeof(info->bus_info));
+>  }
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index 0b2fd96b93d7..4faf81c456d8 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -49,12 +49,9 @@
+>  #include <linux/bpf_trace.h>
+>  #include "ena_pci_id_tbl.h"
+>=20
+> -static char version[] =3D DEVICE_NAME " v" DRV_MODULE_VERSION "\n";
+> -
+>  MODULE_AUTHOR("Amazon.com, Inc. or its affiliates");
+> MODULE_DESCRIPTION(DEVICE_NAME);  MODULE_LICENSE("GPL"); -
+> MODULE_VERSION(DRV_MODULE_VERSION);
+>=20
+>  /* Time in jiffies before concluding the transmitter is hung. */  #defin=
+e
+> TX_TIMEOUT  (5 * HZ) @@ -3093,11 +3090,7 @@ static void
+> ena_config_host_info(struct ena_com_dev *ena_dev,
+>  	host_info->os_dist =3D 0;
+>  	strncpy(host_info->os_dist_str, utsname()->release,
+>  		sizeof(host_info->os_dist_str) - 1);
+> -	host_info->driver_version =3D
+> -		(DRV_MODULE_VER_MAJOR) |
+> -		(DRV_MODULE_VER_MINOR <<
+> ENA_ADMIN_HOST_INFO_MINOR_SHIFT) |
+> -		(DRV_MODULE_VER_SUBMINOR <<
+> ENA_ADMIN_HOST_INFO_SUB_MINOR_SHIFT) |
+> -		("K"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
+> +	host_info->driver_version =3D LINUX_VERSION_CODE;
+>  	host_info->num_cpus =3D num_online_cpus();
+>=20
+>  	host_info->driver_supported_features =3D @@ -3476,9 +3469,7 @@
+> static int ena_restore_device(struct ena_adapter *adapter)
+>  		netif_carrier_on(adapter->netdev);
+>=20
+>  	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
+> -	dev_err(&pdev->dev,
+> -		"Device reset completed successfully, Driver info: %s\n",
+> -		version);
+> +	dev_err(&pdev->dev, "Device reset completed successfully\n");
+>=20
+>  	return rc;
+>  err_disable_msix:
+> @@ -4116,8 +4107,6 @@ static int ena_probe(struct pci_dev *pdev, const
+> struct pci_device_id *ent)
+>=20
+>  	dev_dbg(&pdev->dev, "%s\n", __func__);
+>=20
+> -	dev_info_once(&pdev->dev, "%s", version);
+> -
+>  	rc =3D pci_enable_device_mem(pdev);
+>  	if (rc) {
+>  		dev_err(&pdev->dev, "pci_enable_device_mem() failed!\n");
+> @@ -4429,8 +4418,6 @@ static struct pci_driver ena_pci_driver =3D {
+>=20
+>  static int __init ena_init(void)
+>  {
+> -	pr_info("%s", version);
+> -
+>  	ena_wq =3D create_singlethread_workqueue(DRV_MODULE_NAME);
+>  	if (!ena_wq) {
+>  		pr_err("Failed to create workqueue\n"); diff --git
+> a/drivers/net/ethernet/amazon/ena/ena_netdev.h
+> b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+> index 8795e0b1dc3c..74c7f10b60dd 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+> @@ -45,18 +45,7 @@
+>  #include "ena_com.h"
+>  #include "ena_eth_com.h"
+>=20
+> -#define DRV_MODULE_VER_MAJOR	2
+> -#define DRV_MODULE_VER_MINOR	1
+> -#define DRV_MODULE_VER_SUBMINOR 0
+> -
+>  #define DRV_MODULE_NAME		"ena"
+> -#ifndef DRV_MODULE_VERSION
+> -#define DRV_MODULE_VERSION \
+> -	__stringify(DRV_MODULE_VER_MAJOR) "."	\
+> -	__stringify(DRV_MODULE_VER_MINOR) "."	\
+> -	__stringify(DRV_MODULE_VER_SUBMINOR) "K"
+> -#endif
+> -
+>  #define DEVICE_NAME	"Elastic Network Adapter (ENA)"
+>=20
+>  /* 1 for AENQ + ADMIN */
+> --
+> 2.24.1
 
->                 kfree_skb(skb);
->                 return NET_RX_DROP;
->         }
-> 
->         can_receive(skb, dev);
->         return NET_RX_SUCCESS;
-> }
+Hi Leon, David,
 
-Marc
+This patch is not good for the ENA driver as it breaks the interface with t=
+he FW of the ENA device in ena_config_host_info(), host_info is later repor=
+ted to the FW.
+Please do not merge it yet.
+We are now working on altering your patch so that it won't break this inter=
+face and will send it to you in the next few hours.
 
--- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Thanks,
+Arthur
+
