@@ -2,216 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F7E16A6EC
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:08:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C900316A6F4
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727515AbgBXNII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 08:08:08 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60823 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727299AbgBXNIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:08:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582549687;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8hYIHZTnTP03p6Yp4LlShbTvxf4UyOXsFmmyMPgeaYI=;
-        b=ggAX4k2X/nrSgbEhTp+FSzWVvJrMksYG+aQw/fFewmeopr8t5GVMxVo8Ko0zK+ubk8SGlF
-        slcxuKjlsB4HV3HQwEEAPxAoRubW2aGHP3ny957SSRsMQ4nXgMxVuNFfuWmPsz8ZWuE8fb
-        Xrsh5GL39M8Fa5iDWYLTVJ0mm+w/AAE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-463-1KFA4pPFOt-nSzxZ1v6H2w-1; Mon, 24 Feb 2020 08:08:01 -0500
-X-MC-Unique: 1KFA4pPFOt-nSzxZ1v6H2w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A47AB107ACCA;
-        Mon, 24 Feb 2020 13:07:55 +0000 (UTC)
-Received: from [10.36.116.59] (ovpn-116-59.ams2.redhat.com [10.36.116.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BF3FB909E9;
-        Mon, 24 Feb 2020 13:07:44 +0000 (UTC)
-Subject: Re: [RFC PATCH 01/11] vfio: Remove Calxeda XGMAC reset driver
-To:     Rob Herring <robh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Will Deacon <will@kernel.org>
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218171321.30990-2-robh@kernel.org>
-From:   Auger Eric <eric.auger@redhat.com>
-Message-ID: <23fda074-149e-9c77-5eee-4d6b591a6ebf@redhat.com>
-Date:   Mon, 24 Feb 2020 14:07:42 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <20200218171321.30990-2-robh@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        id S1727487AbgBXNJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 08:09:18 -0500
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:34559 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727393AbgBXNJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:09:17 -0500
+Received: by mail-wr1-f50.google.com with SMTP id z15so1982767wrl.1
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 05:09:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=bhuIl+17VUgpf2ATNHegtuFbFe3Mjz5cWKUzembtYZo=;
+        b=XbX5fPz0rNuefkbQVxYpCHvhLgvv478H9PFSdoSBWYFscVmwPVVbWGxA7cez96baqW
+         IeO9mwzAQZWOlIz2NPrjlaaovkoon+AqPi7Jkb+NtS8tdzbWWov0jgjD2yuNJEgrajFd
+         nt7jdoYsqNO4hsjVovXjhUKemE3RCrs+ZxgzdAp7qX/yMNiFk71suO7t01kGrwsq99Ht
+         yPlh68dXl1wS9Q822tSbh0FcPpkske+ZtfC+henbCRGhDfbVslBduYN+XEh84yxA5PvC
+         IciTUGK2n7OTcnnaRk/fG3VsSJtDPksdiRi9teYnTr1CwklicqaPOggsdUoWDybwoTnD
+         kcow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bhuIl+17VUgpf2ATNHegtuFbFe3Mjz5cWKUzembtYZo=;
+        b=H/uSbhevaETCHhs4oxe2uQLXQ2WSbEOoNXmU5EB6lrZ+yVbUmJXCwkqKuhXPJIFfxR
+         Q+LKsD2Zsu+52YeR11XN4dyN8y3WQcDx6Y8A2iQjAUZ7m8wwGZWH0GvBT/1zlydwKEgC
+         1juyjoOJytMva1qDMUYWN8FSyekgJQU8vEIcZkEO0BY79jjLgorp/vtADUromIMX5GFw
+         uqJ8t1EjrHcECBT1oiJSad63o7mwBA4R1ymz9YrBFBMnr8B/FsDT3j5jGkr2N8XnUUbQ
+         iO5/3So0FH4r+M4AOQXUs5fSfpfYy7KVMwZBwMw+6jUL55Zwg4XP0Bqek86wa+oci1EC
+         WtHg==
+X-Gm-Message-State: APjAAAWZMUTv4d+N0S4QlPXOsucjg86rzSubex4+iNSoH1R/Iu5DFkZf
+        XjaoiFABy8UqdNvgcQXCNnC28VeeKmQ=
+X-Google-Smtp-Source: APXvYqyEc0gF9poSRsAH9K8daLlZa2NXScJDcwxY8SZOI1b3DqF9ISsh4Il87/4LWgMEGLofmqB2tg==
+X-Received: by 2002:adf:e686:: with SMTP id r6mr67644470wrm.177.1582549755807;
+        Mon, 24 Feb 2020 05:09:15 -0800 (PST)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id i204sm18089298wma.44.2020.02.24.05.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 05:09:14 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com,
+        jiri@mellanox.com, idosch@idosch.org, kuba@kernel.org
+Subject: [PATCH net-next 00/10] Wire up Ocelot tc-flower to Felix DSA
+Date:   Mon, 24 Feb 2020 15:08:21 +0200
+Message-Id: <20200224130831.25347-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob, Alex,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On 2/18/20 6:13 PM, Rob Herring wrote:
-> Cc: Eric Auger <eric.auger@redhat.com>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Cc: Cornelia Huck <cohuck@redhat.com>
-> Cc: kvm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> Do not apply yet.
-> 
->  drivers/vfio/platform/reset/Kconfig           |  8 --
->  drivers/vfio/platform/reset/Makefile          |  2 -
->  .../reset/vfio_platform_calxedaxgmac.c        | 74 -------------------
->  3 files changed, 84 deletions(-)
->  delete mode 100644 drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
-> 
-> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
-> index 1edbe9ee7356..3668d1d92909 100644
-> --- a/drivers/vfio/platform/reset/Kconfig
-> +++ b/drivers/vfio/platform/reset/Kconfig
-> @@ -1,12 +1,4 @@
->  # SPDX-License-Identifier: GPL-2.0-only
-> -config VFIO_PLATFORM_CALXEDAXGMAC_RESET
-> -	tristate "VFIO support for calxeda xgmac reset"
-> -	depends on VFIO_PLATFORM
-> -	help
-> -	  Enables the VFIO platform driver to handle reset for Calxeda xgmac
-> -
-> -	  If you don't know what to do here, say N.
-> -
->  config VFIO_PLATFORM_AMDXGBE_RESET
->  	tristate "VFIO support for AMD XGBE reset"
->  	depends on VFIO_PLATFORM
-> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
-> index 7294c5ea122e..be7960ce5dbc 100644
-> --- a/drivers/vfio/platform/reset/Makefile
-> +++ b/drivers/vfio/platform/reset/Makefile
-> @@ -1,7 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> -vfio-platform-calxedaxgmac-y := vfio_platform_calxedaxgmac.o
->  vfio-platform-amdxgbe-y := vfio_platform_amdxgbe.o
-> 
-> -obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
->  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
->  obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
-> diff --git a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c b/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
-> deleted file mode 100644
-> index 09a9453b75c5..000000000000
-> --- a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
-> +++ /dev/null
-> @@ -1,74 +0,0 @@
-> -// SPDX-License-Identifier: GPL-2.0-only
-> -/*
-> - * VFIO platform driver specialized for Calxeda xgmac reset
-> - * reset code is inherited from calxeda xgmac native driver
-> - *
-> - * Copyright 2010-2011 Calxeda, Inc.
-> - * Copyright (c) 2015 Linaro Ltd.
-> - *              www.linaro.org
-> - */
-> -
-> -#include <linux/module.h>
-> -#include <linux/kernel.h>
-> -#include <linux/init.h>
-> -#include <linux/io.h>
-> -
-> -#include "../vfio_platform_private.h"
-> -
-> -#define DRIVER_VERSION  "0.1"
-> -#define DRIVER_AUTHOR   "Eric Auger <eric.auger@linaro.org>"
-> -#define DRIVER_DESC     "Reset support for Calxeda xgmac vfio platform device"
-> -
-> -/* XGMAC Register definitions */
-> -#define XGMAC_CONTROL           0x00000000      /* MAC Configuration */
-> -
-> -/* DMA Control and Status Registers */
-> -#define XGMAC_DMA_CONTROL       0x00000f18      /* Ctrl (Operational Mode) */
-> -#define XGMAC_DMA_INTR_ENA      0x00000f1c      /* Interrupt Enable */
-> -
-> -/* DMA Control registe defines */
-> -#define DMA_CONTROL_ST          0x00002000      /* Start/Stop Transmission */
-> -#define DMA_CONTROL_SR          0x00000002      /* Start/Stop Receive */
-> -
-> -/* Common MAC defines */
-> -#define MAC_ENABLE_TX           0x00000008      /* Transmitter Enable */
-> -#define MAC_ENABLE_RX           0x00000004      /* Receiver Enable */
-> -
-> -static inline void xgmac_mac_disable(void __iomem *ioaddr)
-> -{
-> -	u32 value = readl(ioaddr + XGMAC_DMA_CONTROL);
-> -
-> -	value &= ~(DMA_CONTROL_ST | DMA_CONTROL_SR);
-> -	writel(value, ioaddr + XGMAC_DMA_CONTROL);
-> -
-> -	value = readl(ioaddr + XGMAC_CONTROL);
-> -	value &= ~(MAC_ENABLE_TX | MAC_ENABLE_RX);
-> -	writel(value, ioaddr + XGMAC_CONTROL);
-> -}
-> -
-> -static int vfio_platform_calxedaxgmac_reset(struct vfio_platform_device *vdev)
-> -{
-> -	struct vfio_platform_region *reg = &vdev->regions[0];
-> -
-> -	if (!reg->ioaddr) {
-> -		reg->ioaddr =
-> -			ioremap(reg->addr, reg->size);
-> -		if (!reg->ioaddr)
-> -			return -ENOMEM;
-> -	}
-> -
-> -	/* disable IRQ */
-> -	writel(0, reg->ioaddr + XGMAC_DMA_INTR_ENA);
-> -
-> -	/* Disable the MAC core */
-> -	xgmac_mac_disable(reg->ioaddr);
-> -
-> -	return 0;
-> -}
-> -
-> -module_vfio_reset_handler("calxeda,hb-xgmac", vfio_platform_calxedaxgmac_reset);
-> -
-> -MODULE_VERSION(DRIVER_VERSION);
-> -MODULE_LICENSE("GPL v2");
-> -MODULE_AUTHOR(DRIVER_AUTHOR);
-> -MODULE_DESCRIPTION(DRIVER_DESC);
-> --
-> 2.20.1
-> 
-I do not have access to this HW anymore and I use Seattle to test
-vfio-platform. So
+This series is a proposal on how to wire up the tc-flower callbacks into
+DSA. The example taken is the Microchip Felix switch, whose core
+implementation is actually located in drivers/net/ethernet/mscc/.
 
-Acked-by: Eric Auger <eric.auger@redhat.com>
+The proposal is largely a compromise solution. The DSA middle layer
+handles just enough to get to the interesting stuff (FLOW_CLS_REPLACE,
+FLOW_CLS_DESTROY, FLOW_CLS_STATS), but also thin enough to let drivers
+decide what filter keys and actions they support without worrying that
+the DSA middle layer will grow exponentially. I am far from being an
+expert, so I am asking reviewers to please voice your opinion if you
+think it can be done differently, with better results.
 
-Thanks
+The bulk of the work was actually refactoring the ocelot driver enough
+to allow the VCAP (Versatile Content-Aware Processor) code for vsc7514
+and the vsc9959 switch cores to live together.
 
-Eric
+Flow block offloads have not been tested yet, only filters attached to a
+single port. It might be as simple as replacing ocelot_ace_rule_create
+with something smarter, it might be more complicated, I haven't tried
+yet.
+
+I should point out that the tc-matchall filter offload is not
+implemented in the same manner in current mainline. Florian has already
+went all the way down into exposing actual per-action callbacks,
+starting with port mirroring. Because currently only mirred is supported
+by this DSA mid layer, everything else will return -EOPNOTSUPP. So even
+though ocelot supports matchall (aka port-based) policers, we don't have
+a call path to call into them.  Personally I think that this is not
+going to scale for tc-matchall (there may be policers, traps, drops,
+VLAN retagging, etc etc), and that we should consider replacing the port
+mirroring callbacks in DSA with simple accessors to
+TC_CLSMATCHALL_REPLACE and TC_CLSMATCHALL_DESTROY, just like for flower.
+That means that drivers which currently implement the port mirroring
+callbacks will need to have some extra "if" conditions now, in order for
+them to call their port mirroring implementations.
+
+Vladimir Oltean (9):
+  net: mscc: ocelot: simplify tc-flower offload structures
+  net: mscc: ocelot: replace "rule" and "ocelot_rule" variable names
+    with "ace"
+  net: mscc: ocelot: return directly in
+    ocelot_cls_flower_{replace,destroy}
+  net: mscc: ocelot: don't rely on preprocessor for vcap key/action
+    packing
+  net: mscc: ocelot: remove port_pcs_init indirection for VSC7514
+  net: mscc: ocelot: parameterize the vcap_is2 properties
+  net: dsa: Refactor matchall mirred action to separate function
+  net: dsa: Add bypass operations for the flower classifier-action
+    filter
+  net: dsa: felix: Wire up the ocelot cls_flower methods
+
+Yangbo Lu (1):
+  net: mscc: ocelot: make ocelot_ace_rule support multiple ports
+
+ drivers/net/dsa/ocelot/felix.c            |  31 ++
+ drivers/net/dsa/ocelot/felix.h            |   3 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c    | 126 ++++++
+ drivers/net/ethernet/mscc/ocelot.c        |  20 +-
+ drivers/net/ethernet/mscc/ocelot_ace.c    | 472 +++++++++++-----------
+ drivers/net/ethernet/mscc/ocelot_ace.h    |  26 +-
+ drivers/net/ethernet/mscc/ocelot_board.c  | 151 +++++--
+ drivers/net/ethernet/mscc/ocelot_flower.c | 256 ++++--------
+ drivers/net/ethernet/mscc/ocelot_tc.c     |  22 +-
+ drivers/net/ethernet/mscc/ocelot_vcap.h   | 403 ------------------
+ include/net/dsa.h                         |   6 +
+ include/soc/mscc/ocelot.h                 |  20 +-
+ include/soc/mscc/ocelot_vcap.h            | 205 ++++++++++
+ net/dsa/slave.c                           | 128 ++++--
+ 14 files changed, 954 insertions(+), 915 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mscc/ocelot_vcap.h
+ create mode 100644 include/soc/mscc/ocelot_vcap.h
+
+-- 
+2.17.1
 
