@@ -2,116 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5705C16B556
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:24:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B305F16B55C
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 00:26:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728376AbgBXXXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 18:23:54 -0500
-Received: from mga02.intel.com ([134.134.136.20]:62441 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727081AbgBXXXy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 18:23:54 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Feb 2020 15:23:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,481,1574150400"; 
-   d="scan'208";a="237481968"
-Received: from wtczc53028gn.jf.intel.com (HELO skl-build) ([10.54.87.17])
-  by orsmga003.jf.intel.com with ESMTP; 24 Feb 2020 15:23:53 -0800
-Date:   Mon, 24 Feb 2020 15:23:43 -0800
-From:   "Christopher S. Hall" <christopher.s.hall@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
-        x86@kernel.org, jacob.e.keller@intel.com, davem@davemloft.net,
-        sean.v.kelley@intel.com
-Subject: Re: [Intel PMC TGPIO Driver 1/5] drivers/ptp: Add Enhanced handling
- of reserve fields
-Message-ID: <20200224232343.GE1508@skl-build>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <20191211214852.26317-2-christopher.s.hall@intel.com>
- <20200203012700.GA2354@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200203012700.GA2354@localhost>
+        id S1728104AbgBXX0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 18:26:37 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:40008 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727081AbgBXX0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 18:26:37 -0500
+Received: from localhost (unknown [50.226.181.18])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A3A45124CE3CD;
+        Mon, 24 Feb 2020 15:26:36 -0800 (PST)
+Date:   Mon, 24 Feb 2020 15:26:35 -0800 (PST)
+Message-Id: <20200224.152635.883427110923588122.davem@davemloft.net>
+To:     gustavo@embeddedor.com
+Cc:     vishal@chelsio.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] chelsio: Replace zero-length array with
+ flexible-array member
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200224163024.GA27867@embeddedor>
+References: <20200224163024.GA27867@embeddedor>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Feb 2020 15:26:36 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Date: Mon, 24 Feb 2020 10:30:24 -0600
 
-Thanks for the detailed review.
-
-On Sun, Feb 02, 2020 at 05:27:00PM -0800, Richard Cochran wrote:
-> On Wed, Dec 11, 2019 at 01:48:48PM -0800, christopher.s.hall@intel.com wrote:
-> > diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
-> > index 9d72ab593f13..f9ad6df57fa5 100644
-> > --- a/drivers/ptp/ptp_chardev.c
-> > +++ b/drivers/ptp/ptp_chardev.c
-> > @@ -12,6 +12,7 @@
-> >  #include <linux/timekeeping.h>
-> >  
-> >  #include <linux/nospec.h>
-> > +#include <linux/string.h>
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
 > 
-> Please group these two includes with the others, above, in
-> alphabetical order.
-
-OK. Done.
-
-> >  #include "ptp_private.h"
-> >  
-> > @@ -106,6 +107,28 @@ int ptp_open(struct posix_clock *pc, fmode_t fmode)
-> >  	return 0;
-> >  }
-> >  
-> > +/* Returns -1 if any reserved fields are non-zero */
-> > +static inline int _check_rsv_field(unsigned int *field, size_t size)
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
 > 
-> How about _check_reserved_field() instead?
-
-No problem. Sounds good.
-
-> > +{
-> > +	unsigned int *iter;
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
 > 
-> Ugh, 'ptr' please.
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
 > 
-> > +	int ret = 0;
-> > +
-> > +	for (iter = field; iter < field+size && ret == 0; ++iter)
-> > +		ret = *iter == 0 ? 0 : -1;
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
 > 
-> Please use the "early out" pattern:
+> This issue was found with the help of Coccinelle.
 > 
-> 	for (ptr = field; ptr < field + size; ptr++) {
-> 		if (*ptr) {
-> 			return -1;
-> 		}
-> 	}
-> 	return 0;
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
 > 
-> Note:  field + size
-> Note:  ptr++
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-OK for both of these.
-
-> > +
-> > +	return ret;
-> > +}
-> > +#define check_rsv_field(field) _check_rsv_field(field, ARRAY_SIZE(field))
-> 
-> And check_reserved_field() here.  No need to abbreviate.
-
-OK. Done.
-
-> Thanks,
-> Richard
-
-Thanks,
-Chris
+Applied.
