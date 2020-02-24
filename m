@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6015B169FF6
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:28:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2450169FED
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727487AbgBXI2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:28:39 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:37721 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbgBXI2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:28:15 -0500
-Received: by mail-io1-f71.google.com with SMTP id p4so14226879ioo.4
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:28:14 -0800 (PST)
+        id S1727337AbgBXI2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:28:20 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:48521 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727304AbgBXI2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:28:17 -0500
+Received: by mail-il1-f198.google.com with SMTP id u14so17063501ilq.15
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:28:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=PMsLDG7qU8qRbJ/q4t0/FAebmEODLGmxDY1JVYSqgwU=;
-        b=EC1tJdB2cXjEtzt68XPVwyX8E67BcKTOBGNqPlDpzT57/2UDyS7HyXxv6zOPdITD8t
-         BYEb8Mavs/AWRsKytTkjR1tJFvfZNBBCPQl/NuXKlT/+uZuz4yHxC2A6QaURZxvH3Q4I
-         GMsBBkZb07QmzkYHnHZIQitaFSL+HW0XMG86ObQN7ICiUbUivZqgk7s1hkV9ZdNodyHk
-         kmGK67f4L+PJ40OIB5kjL5+WwZzGeKZUate42F3/XjcSOcaNNg/4XdtEP3GEf6jcCeA2
-         Y/BqA3QZbCMXapMH3F4U49SuFqOKZQ9Qby1oD767HEfY9hJs653woOsJE+mUHIjPYxXq
-         xbJw==
-X-Gm-Message-State: APjAAAV0RG38UmUiowYHGMyivjzUBTjKs4Nx/3ruMtmutTPJIx0fjZf6
-        e3yzQPT1PRyDV1kig73o26CtUrmQ0TN+EA+a26ZydvTCaBt+
-X-Google-Smtp-Source: APXvYqxUWPfqxFQ3tf3i/uCWa7zXyz386/ink98iJ3mtu7gCUROGiwSVh282XG5tGuAhmd/WMlyKUs4FXOucJmFWjwWrY7ZFgBye
+        bh=zPnGdhYe6fx/GA1y4l3lAwfwfLNCOo6iSouDNT5vfw0=;
+        b=GXBBVgNMIhQgz/1CKnZ/tlKylF0hWSq2Inm8q79a/g70KtUvFDbGmUSfw0heGpwd/P
+         0p5zPvgzj+srkW/Zawv0/eoNg6mIHjZ2vvZImTy34FcEQOd9hKFx40LfxETbJOr8NaTs
+         4FCwiIezvrGmSxgarkiSxFnW4+PIrlej2uUDZjxoeGFHf6ofo7As3OlXbv7hYb9IKglk
+         dPkASzbiJ60lCWX6k1rocK8PcM1FGw6LOi6d8W7QBd4uOpNONYAcZ4NuBw0Z53mtM4Up
+         xmwFZBUhcZyb1OvUU5XlgZe7V5J+koYqhmw8LRjgrdd/7db/2lLFWmqNQnMbjB8FNSwT
+         QP/g==
+X-Gm-Message-State: APjAAAVks9d8B5khbIxN4285+ys5iCiEWfDVtzaR0ee0ijZKYX4KgpQF
+        Nw9CCi9KAQJ+TYMHSUGJhuyp95h9EKwBqlRvSCPWyDDSfF5L
+X-Google-Smtp-Source: APXvYqwjfTMec2vNK5//uIvwTzm0pcHaYTeC1+EaGLWrGBFccLzIF/ifYG9oXPoiMpuifFdYc7ZA6MDqjneRpTBqEbyKn+cP7pcR
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:e8b:: with SMTP id t11mr52637692ilj.159.1582532894517;
- Mon, 24 Feb 2020 00:28:14 -0800 (PST)
-Date:   Mon, 24 Feb 2020 00:28:14 -0800
+X-Received: by 2002:a92:7301:: with SMTP id o1mr56267048ilc.272.1582532895280;
+ Mon, 24 Feb 2020 00:28:15 -0800 (PST)
+Date:   Mon, 24 Feb 2020 00:28:15 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000005efef059f4e27e1@google.com>
-Subject: KASAN: use-after-free Read in ethnl_update_bitset32
-From:   syzbot <syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com>
+Message-ID: <00000000000011953b059f4e27f7@google.com>
+Subject: KASAN: slab-out-of-bounds Read in ethnl_update_bitset32
+From:   syzbot <syzbot+983cb8fb2d17a7af549d@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
         linux-kernel@vger.kernel.org, mkubecek@suse.cz,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
@@ -48,25 +48,24 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    0c0ddd6a Merge tag 'linux-watchdog-5.6-rc3' of git://www.l..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=12f41c81e00000
+HEAD commit:    d2eee258 Merge tag 'for-5.6-rc2-tag' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11199109e00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
-dashboard link: https://syzkaller.appspot.com/bug?extid=709b7a64d57978247e44
+dashboard link: https://syzkaller.appspot.com/bug?extid=983cb8fb2d17a7af549d
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13885de9e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1518127ee00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1399a3d9e00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+709b7a64d57978247e44@syzkaller.appspotmail.com
+Reported-by: syzbot+983cb8fb2d17a7af549d@syzkaller.appspotmail.com
 
 ==================================================================
-BUG: KASAN: use-after-free in ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
-BUG: KASAN: use-after-free in ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
-BUG: KASAN: use-after-free in ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
-Read of size 4 at addr ffff8880a8adf43c by task syz-executor290/9875
+BUG: KASAN: slab-out-of-bounds in ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
+BUG: KASAN: slab-out-of-bounds in ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
+BUG: KASAN: slab-out-of-bounds in ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
+Read of size 4 at addr ffff8880a9750c3c by task syz-executor.0/9818
 
-CPU: 1 PID: 9875 Comm: syz-executor290 Not tainted 5.6.0-rc2-syzkaller #0
+CPU: 0 PID: 9818 Comm: syz-executor.0 Not tainted 5.6.0-rc2-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
@@ -100,16 +99,16 @@ Call Trace:
  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x445b39
-Code: e8 ac cb 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 ab cc fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff3694a5d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000445b39
+RIP: 0033:0x45c429
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:0000000000c7fb78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000289b914 RCX: 000000000045c429
 RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000000 R09: 00000000bb1414ac
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+RBP: 000000000076bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000904 R14: 00000000004d4f90 R15: 000000000076bf2c
 
-Allocated by task 9724:
+Allocated by task 4801:
  save_stack+0x23/0x90 mm/kasan/common.c:72
  set_track mm/kasan/common.c:80 [inline]
  __kasan_kmalloc mm/kasan/common.c:515 [inline]
@@ -119,16 +118,12 @@ Allocated by task 9724:
  slab_alloc mm/slab.c:3320 [inline]
  kmem_cache_alloc+0x121/0x710 mm/slab.c:3484
  kmem_cache_zalloc include/linux/slab.h:659 [inline]
- __alloc_file+0x27/0x340 fs/file_table.c:101
- alloc_empty_file+0x72/0x170 fs/file_table.c:151
- path_openat+0xef/0x3490 fs/namei.c:3596
- do_filp_open+0x192/0x260 fs/namei.c:3637
- do_sys_openat2+0x5eb/0x7e0 fs/open.c:1149
- do_sys_open+0xf2/0x180 fs/open.c:1165
- ksys_open include/linux/syscalls.h:1386 [inline]
- __do_sys_open fs/open.c:1171 [inline]
- __se_sys_open fs/open.c:1169 [inline]
- __x64_sys_open+0x7e/0xc0 fs/open.c:1169
+ copy_signal kernel/fork.c:1558 [inline]
+ copy_process+0x2155/0x7290 kernel/fork.c:2078
+ _do_fork+0x146/0x1090 kernel/fork.c:2430
+ __do_sys_clone kernel/fork.c:2585 [inline]
+ __se_sys_clone kernel/fork.c:2566 [inline]
+ __x64_sys_clone+0x19a/0x260 kernel/fork.c:2566
  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
@@ -140,30 +135,34 @@ Freed by task 0:
  kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
  __cache_free mm/slab.c:3426 [inline]
  kmem_cache_free+0x86/0x320 mm/slab.c:3694
- file_free_rcu+0x98/0xe0 fs/file_table.c:50
+ free_signal_struct kernel/fork.c:728 [inline]
+ put_signal_struct kernel/fork.c:734 [inline]
+ __put_task_struct+0x327/0x530 kernel/fork.c:748
+ put_task_struct include/linux/sched/task.h:122 [inline]
+ delayed_put_task_struct+0x253/0x3c0 kernel/exit.c:182
  rcu_do_batch kernel/rcu/tree.c:2186 [inline]
  rcu_core+0x5e1/0x1390 kernel/rcu/tree.c:2410
  rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2419
  __do_softirq+0x262/0x98c kernel/softirq.c:292
 
-The buggy address belongs to the object at ffff8880a8adf300
- which belongs to the cache filp of size 456
-The buggy address is located 316 bytes inside of
- 456-byte region [ffff8880a8adf300, ffff8880a8adf4c8)
+The buggy address belongs to the object at ffff8880a97506c0
+ which belongs to the cache signal_cache of size 1328
+The buggy address is located 76 bytes to the right of
+ 1328-byte region [ffff8880a97506c0, ffff8880a9750bf0)
 The buggy address belongs to the page:
-page:ffffea0002a2b7c0 refcount:1 mapcount:0 mapping:ffff8880aa5f88c0 index:0xffff8880a8adfa80
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea00028884c8 ffffea000299ec88 ffff8880aa5f88c0
-raw: ffff8880a8adfa80 ffff8880a8adf080 0000000100000005 0000000000000000
+page:ffffea0002a5d400 refcount:1 mapcount:0 mapping:ffff88821bc468c0 index:0xffff8880a9750100 compound_mapcount: 0
+flags: 0xfffe0000010200(slab|head)
+raw: 00fffe0000010200 ffffea0002636888 ffffea00029fa308 ffff88821bc468c0
+raw: ffff8880a9750100 ffff8880a9750100 0000000100000002 0000000000000000
 page dumped because: kasan: bad access detected
 
 Memory state around the buggy address:
- ffff8880a8adf300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a8adf380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880a8adf400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a9750b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a9750b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+>ffff8880a9750c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
                                         ^
- ffff8880a8adf480: fb fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc
- ffff8880a8adf500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8880a9750c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a9750d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
 ==================================================================
 
 
