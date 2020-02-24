@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7298216B4B2
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:58:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D09516B4B4
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728356AbgBXW6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 17:58:10 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37027 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728018AbgBXW6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:58:10 -0500
-Received: by mail-pl1-f195.google.com with SMTP id q4so523679pls.4;
-        Mon, 24 Feb 2020 14:58:09 -0800 (PST)
+        id S1728048AbgBXW6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 17:58:48 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:40679 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727851AbgBXW6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:58:48 -0500
+Received: by mail-pj1-f65.google.com with SMTP id 12so398151pjb.5;
+        Mon, 24 Feb 2020 14:58:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=viB2V6LqQRx/U5mPkOWAgud5bEcOh4YFuvW1hmobMto=;
-        b=o69gntJ3NDNY01N7AJT0ECJjtN8hOPzxTPRRv0oij1usPf4NR+7ZtHfrTNhMZODHGw
-         qmmVxbnIu7Cjvh6/l3jXWz3wv3SfYtWoAldTYUsEDobadhDci1pWWxU7jHfGNGfIGFVE
-         74oDCQDw8OmNYw+hwgM+1+dENHI7CbsuVQOdvj0M2tMUkxl4VBvoyVJyVXTFmdxhIoMO
-         8LkNp+MjU2bvk0lqMvMvZU4XdTWlXNrVWb+/Xrm/2cKC43x5J8vRtd1W6txBWTu9kcDR
-         RudBtJcm45y8GyudlEA+1DWcxS90dglXwMNpWcNcGaHPlZbai93mBtmk3HvQ6fANi20V
-         HvTA==
+        bh=u8hAxMnSaeavPHQXCQXBwomhtEyfLjsKJULimT0e4pw=;
+        b=XGFmjDYrf2dpXKsDTtEKFgtBDRch31aGqQkKLVL840tyAvRut7+rEdVX9fXqWiWgvn
+         1r/gvtSsrBGo9pm0tGoI94K8MZcWpNm6/TkszSYzKSh9NJPjG6j3xHpZUxd7j/9cNrkg
+         QWTpOh89rLhpoTov7fvACVTd6FZ6fsVzNQuHRsF3Z0GoeG12CcQi+DfWV/RLQwTaHrEu
+         pwRah515a/fkW51K7+R6NTDdRIKXcJ2qLuWP8X2eM9NDT+jqQ8Q2FB7fl7VJug9McAAC
+         fxMACQUjLZgHtKIT9KS6UiJ5VxUWI2eBP/ZoBzfgShtkWjenW567xxpdkYDmU4myueAN
+         dB+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=viB2V6LqQRx/U5mPkOWAgud5bEcOh4YFuvW1hmobMto=;
-        b=Gyz3gmrKNFlBVPjuQxRGQZab0H2w5aKFHNrosOrNlq5fDnDhr+NuqqX2TL8XlL8XIr
-         zMg7VsviN/yVeC1RQRAEzFLiBc0PPX5l5hoMub6JzE1U1CRGsyIFypPVYcGbLioThiim
-         bTfUH+Fn59Cnj4TsMK12RW31C2rx2+VLc6l5Y6m14+IXC8PiBLi3i4bcJ9Aa5nuaGsYm
-         1NhtJ0LOhdFOdXf61cAHxOZbYltTX2du2whVUJ7f7KRvLcN+izi7UOAhwxXbVQJutfOk
-         kotJTtOkI0becNl3kiNb72uZ+I+OXaH538v6bnjNgHKKR9TJbcc72F6BSzfJB1SgdgcI
-         eEDg==
-X-Gm-Message-State: APjAAAUI/R8qXM3zUax58+w7Jeq2k4Sq6cKbCw8ekeKSjr1V74XQFZW/
-        2NERUY+MsSi5lPGHiocF4bU=
-X-Google-Smtp-Source: APXvYqwHAHlQ27RT5ojmTA+t5DTHujM4VV2VXN0WVj5NrlUDKNSP/UCAtzq9idzxyBr+iiKljLI5yQ==
-X-Received: by 2002:a17:90a:1697:: with SMTP id o23mr1629852pja.62.1582585089016;
-        Mon, 24 Feb 2020 14:58:09 -0800 (PST)
+        bh=u8hAxMnSaeavPHQXCQXBwomhtEyfLjsKJULimT0e4pw=;
+        b=MwYcZopq+gupZYZlY3+akANYtRs55c/D6YTeRXIOgbUOQS8vHlgAoA0kM+E7BGumPQ
+         Ed4WzZtDhacrWu2XRbOIKb4d3qefLyBC8UOlMA976YCSusKfnK91/nPdv680C3HqO95e
+         ykm2J0tGArZHRKNQmUi3Ky5EFIsPzX9e+AtoUAHTTrdUHOX9PVsToZWWZYmrc9dus6UC
+         +OYMltX38URmo18PXaSiBXhuPLBdBh6E2ILahdqwJ1ulh2nNKusb7Qw0ph+LhbfgPA2m
+         wdngFOewHky6OjXF2mnQkgszm6ESQMbgZ6qRWeIb1y3nMdVvNtxELrF2jdUpLHckFMW0
+         16Iw==
+X-Gm-Message-State: APjAAAWys2sofR8YovhCCk4wzoMJM3FDKzmDpbQi6o9h9oPF98c6p+Y4
+        IYA0yK9+tDuCTQXHFjnFybU=
+X-Google-Smtp-Source: APXvYqwDFa3ls7Amlm9slRLWpdI0qa9uoaATOPGXmJJn3Oh7wXFTkwaFcpnvy/+bcPc2vmFUyrm6/A==
+X-Received: by 2002:a17:90a:f317:: with SMTP id ca23mr1572264pjb.20.1582585127154;
+        Mon, 24 Feb 2020 14:58:47 -0800 (PST)
 Received: from [10.67.50.18] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h13sm533401pjc.9.2020.02.24.14.58.07
+        by smtp.googlemail.com with ESMTPSA id g72sm14555738pfb.11.2020.02.24.14.58.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2020 14:58:08 -0800 (PST)
-Subject: Re: [PATCH v2 2/6] net: bcmgenet: refactor phy mode configuration
+        Mon, 24 Feb 2020 14:58:46 -0800 (PST)
+Subject: Re: [PATCH v2 4/6] net: bcmgenet: Initial bcmgenet ACPI support
 To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
 Cc:     opendmb@gmail.com, davem@davemloft.net,
         bcm-kernel-feedback-list@broadcom.com,
         linux-kernel@vger.kernel.org, wahrenst@gmx.net, andrew@lunn.ch,
         hkallweit1@gmail.com
 References: <20200224225403.1650656-1-jeremy.linton@arm.com>
- <20200224225403.1650656-3-jeremy.linton@arm.com>
+ <20200224225403.1650656-5-jeremy.linton@arm.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <20b9ba61-b5c9-a62d-dfed-8b27f60d5744@gmail.com>
-Date:   Mon, 24 Feb 2020 14:58:07 -0800
+Message-ID: <7a02e45d-4a9e-c300-022c-5295708f87d2@gmail.com>
+Date:   Mon, 24 Feb 2020 14:58:45 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200224225403.1650656-3-jeremy.linton@arm.com>
+In-Reply-To: <20200224225403.1650656-5-jeremy.linton@arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,10 +122,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/20 2:53 PM, Jeremy Linton wrote:
-> The DT phy mode is similar to what we want for ACPI
-> lets factor it out of the of path, and change the
-> of_ call to device_.
+On 2/24/20 2:54 PM, Jeremy Linton wrote:
+> The rpi4 is capable of booting in ACPI mode with the latest
+> edk2-platform commits. As such it would be helpful if the genet
+> platform device were usable.
+> 
+> To achieve this we add a new MODULE_DEVICE_TABLE, and convert
+> a few dt specific methods to their generic device_ calls. Until
+> the next patch, ACPI based machines will fallback on random
+> mac addresses.
 > 
 > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
 
