@@ -2,57 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3034316B015
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 20:13:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1488916B02B
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 20:20:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727282AbgBXTN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 14:13:56 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:36882 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbgBXTN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 14:13:56 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 99D7B11E3C074;
-        Mon, 24 Feb 2020 11:13:55 -0800 (PST)
-Date:   Mon, 24 Feb 2020 11:13:55 -0800 (PST)
-Message-Id: <20200224.111355.456289899614012541.davem@davemloft.net>
-To:     nikolay@cumulusnetworks.com
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net v2] net: bridge: fix stale eth hdr pointer in
- br_dev_xmit
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200224164622.1472051-1-nikolay@cumulusnetworks.com>
-References: <83cadec7-d659-cf2a-c0c0-a85d2f6503bc@cumulusnetworks.com>
-        <20200224164622.1472051-1-nikolay@cumulusnetworks.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Feb 2020 11:13:55 -0800 (PST)
+        id S1727177AbgBXTU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 14:20:28 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:32889 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725860AbgBXTU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 14:20:28 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1j6JHC-0004v7-VH; Mon, 24 Feb 2020 19:20:23 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Huazhong Tan <tanhuazhong@huawei.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][V2] net: hns3: remove redundant initialization of pointer 'client'
+Date:   Mon, 24 Feb 2020 19:20:22 +0000
+Message-Id: <20200224192022.407524-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Date: Mon, 24 Feb 2020 18:46:22 +0200
+From: Colin Ian King <colin.king@canonical.com>
 
-> In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
-> if the packet has the vlan header inside (e.g. bridge with disabled
-> tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
-> to extract the vid before filtering which in turn calls pskb_may_pull()
-> and we may end up with a stale eth pointer. Moreover the cached eth header
-> pointer will generally be wrong after that operation. Remove the eth header
-> caching and just use eth_hdr() directly, the compiler does the right thing
-> and calculates it only once so we don't lose anything.
-> 
-> Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
-> v2: remove syzbot's reported-by tag, this seems to be a different bug
+The pointer 'client' is being initialized with a value that is never
+read, it is being updated later on. The initialization is redundant
+and can be removed.
 
-Applied and queued up for -stable, thanks Nikolay.
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+
+V2: use reverse christmas tree ordering of local variables
+
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 51399dbed77a..89d352385260 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -9076,8 +9076,8 @@ static int hclge_init_nic_client_instance(struct hnae3_ae_dev *ae_dev,
+ static int hclge_init_roce_client_instance(struct hnae3_ae_dev *ae_dev,
+ 					   struct hclge_vport *vport)
+ {
+-	struct hnae3_client *client = vport->roce.client;
+ 	struct hclge_dev *hdev = ae_dev->priv;
++	struct hnae3_client *client;
+ 	int rst_cnt;
+ 	int ret;
+ 
+-- 
+2.25.0
+
