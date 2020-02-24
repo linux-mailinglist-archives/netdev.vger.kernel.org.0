@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFAD516A6F6
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 909E816A6F7
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 14:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727724AbgBXNJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 08:09:23 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34762 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727378AbgBXNJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:09:22 -0500
-Received: by mail-wm1-f65.google.com with SMTP id s144so10655657wme.1
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 05:09:20 -0800 (PST)
+        id S1727734AbgBXNJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 08:09:24 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34949 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727275AbgBXNJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 08:09:23 -0500
+Received: by mail-wr1-f67.google.com with SMTP id w12so10323390wrt.2
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 05:09:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gThMWOLdRD0jVo4EuHWI6K0yxQhqvMwqHmK06xkGnYw=;
-        b=HvwjPTz0gWvRVG3QbQ4RCPh4cUlaFAR23N9kx3en6rn0wwBKddMLYoEh7TyJdtx0GN
-         f6RkUge5fnSrgivwa5sJr+BmFGcrCAUraUCPyANlq8ogRjjDkezx4YySLGlsjhwLVNwF
-         pjwltl4NlE8zQisJ/CO8TGYsQzISxMIIVvGnoxY86zJXx7lWC7rHGpLw/bLgj8+ieJ73
-         KtB+ZSVmM2G4vcMKK2OOnS9okM8z2uTvThXpqnciMMoNw/GkYSfNkRqnFsBelUFUKyi4
-         mRwJDZpz5MI+0t/mBnB6v5dlbOtWekgFXt36l8HpsqS7AkQEFA3Xsg6QMOSx4+vgctAQ
-         y22Q==
+        bh=Uz/eEXKpHtFspqpag++UbAN6+IZHU4paQXO5ZhiOoO8=;
+        b=rSkCBZKrM8QcOsFN9AyJu04yQtbO/J+1AbQ6mRYQnMZ8MVYfyAp1T50PK7viE6fEnW
+         dITsxxVg5OL1n6MnPlOHNTE4jayb4e1aPZzhrYSjz8PNNIQYQMCTPeY2BjOSBdfUOY5x
+         Lb49IyllWuRuZAwxldP0/2ILMhbU4C9Q2wMvVFl6PVgWcJDG6JEypvkeH6b5LVthJtqi
+         66gtyFF9BZAd5QChF+uPxkOTH2K2VxcFMSIUYl7Anl93yz3gRzChYfAJGjbszDWNP36F
+         z7bt2Bf/7QCeEPWpYeWGxOAGPynZ6Xz6vt0e0oblb5aajUiCA7PFGABfe4jZh59Z+tJA
+         DhMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=gThMWOLdRD0jVo4EuHWI6K0yxQhqvMwqHmK06xkGnYw=;
-        b=G7IZKS4+9QQO52QfT7lrlqaaGcpCnRP81zpX2q/d97xzmKlyjDyGaFsCSux9wuJKPO
-         xvR2/j1sX4uTQI8qkDnpov9ICfRkA/SGQv9gObBVcxxxp0G+NRxKEquOSjAXTEilzmKv
-         0GylXI/8mpbkF30ryNWRTimcgnTpEJlUWMyetsG4RbaJ7klIdI6s8DxwK8+jgzjY2sXm
-         2PsARR0YRTr5DQ1mFeFYsVcdFyvn52c2hP6qkmYax1d30+Xpnmq+l0AoMxe+cCRs5e5U
-         Wv5Gvmf6sWZVCCoVXI6Vnhye3sa5L4/oWqFn3APdJRTpBvxE4vw4yNCYIZRUSQdM7Loa
-         uI7g==
-X-Gm-Message-State: APjAAAXOA0nKxtDLPbF3G99AVayoqb6Onvr/hL+slb/eAfg9sstgKaZX
-        LSZ2Eng21rlibiF8tR1Sjas=
-X-Google-Smtp-Source: APXvYqwUoD0QPvVekLf/tKqsgbiNJ/DmANbeS6PT7bErQQaJ5vOblzl6qu4NMwMVqx9qPooYyuy5ow==
-X-Received: by 2002:a1c:a9c7:: with SMTP id s190mr21345335wme.97.1582549759975;
-        Mon, 24 Feb 2020 05:09:19 -0800 (PST)
+        bh=Uz/eEXKpHtFspqpag++UbAN6+IZHU4paQXO5ZhiOoO8=;
+        b=uKzJFfiNUkkFJpIvdJn76SVYPxTOdm4pbGKtgokwHKCKf/zL55Q5sYwMzCLLn9WdmU
+         4fFN0c3NMKV4NAiwjRqX7LVJ4dkUgheudVjqkeH50TO8Rto7lukbB6GU1Gmf/OuvhCk1
+         CABeXJpxbLfZXvdHOYnSkA8Jx7/jlH/F3Dmn9A2wTt+S4BwEwAanHv67XRP5UV6LmtKz
+         9CPpNTMTcpxZvXeWGW2h03R7+x8HdgIbIVHZ6VsYu/1Wdx3cHmwuCVJllQC2tleJJ987
+         i80aA6oN3BWgJJJ6j++O+/bzVatZm/YeztLAFlC4TNehJgkGafxQKct6fUy+oWjV3zXe
+         JN5w==
+X-Gm-Message-State: APjAAAWdOVlpzBReoW2bUZgYjAplh9NzCp3A46Jd0TagXaETQB/hp9lu
+        SMctSsxJbmi9LKaKgsaa1UxO/ZZ7/tA=
+X-Google-Smtp-Source: APXvYqwmHiZb0zA2jSqvoe7zPxLFXHOLs9vEl7/9z6E/e9ZByHy5+lwOiq3MEEhHx5P93w7oxbBAuw==
+X-Received: by 2002:a5d:4709:: with SMTP id y9mr66838128wrq.412.1582549761397;
+        Mon, 24 Feb 2020 05:09:21 -0800 (PST)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id i204sm18089298wma.44.2020.02.24.05.09.18
+        by smtp.gmail.com with ESMTPSA id i204sm18089298wma.44.2020.02.24.05.09.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 05:09:19 -0800 (PST)
+        Mon, 24 Feb 2020 05:09:20 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
@@ -52,9 +52,9 @@ Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
         UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
         xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com,
         jiri@mellanox.com, idosch@idosch.org, kuba@kernel.org
-Subject: [PATCH net-next 03/10] net: mscc: ocelot: replace "rule" and "ocelot_rule" variable names with "ace"
-Date:   Mon, 24 Feb 2020 15:08:24 +0200
-Message-Id: <20200224130831.25347-4-olteanv@gmail.com>
+Subject: [PATCH net-next 04/10] net: mscc: ocelot: return directly in ocelot_cls_flower_{replace,destroy}
+Date:   Mon, 24 Feb 2020 15:08:25 +0200
+Message-Id: <20200224130831.25347-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200224130831.25347-1-olteanv@gmail.com>
 References: <20200224130831.25347-1-olteanv@gmail.com>
@@ -65,247 +65,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The "ocelot_rule" variable name is both annoyingly long trying to
-distinguish itself from struct flow_rule *rule =
-flow_cls_offload_flow_rule(f), as well as actually different from the
-"ace" variable name which is used all over the place in ocelot_ace.c and
-is referring to the same structure.
-
-And the "rule" variable name is, confusingly, different from f->rule,
-but sometimes one has to look up to the beginning of the function to get
-an understanding of what structure type is actually being handled.
-
-So let's use the "ace" name wherever possible ("Access Control Entry").
+There is no need to check the "ret" variable, one can just return the
+function result back to the caller.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_flower.c | 102 +++++++++++-----------
- 1 file changed, 51 insertions(+), 51 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_flower.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index b9673df6dbc5..698e9fee6b1a 100644
+index 698e9fee6b1a..8993dadf063c 100644
 --- a/drivers/net/ethernet/mscc/ocelot_flower.c
 +++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -9,7 +9,7 @@
- #include "ocelot_ace.h"
+@@ -192,11 +192,7 @@ int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
+ 		return ret;
+ 	}
  
- static int ocelot_flower_parse_action(struct flow_cls_offload *f,
--				      struct ocelot_ace_rule *rule)
-+				      struct ocelot_ace_rule *ace)
- {
- 	const struct flow_action_entry *a;
- 	int i;
-@@ -20,10 +20,10 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
- 	flow_action_for_each(i, a, &f->rule->action) {
- 		switch (a->id) {
- 		case FLOW_ACTION_DROP:
--			rule->action = OCELOT_ACL_ACTION_DROP;
-+			ace->action = OCELOT_ACL_ACTION_DROP;
- 			break;
- 		case FLOW_ACTION_TRAP:
--			rule->action = OCELOT_ACL_ACTION_TRAP;
-+			ace->action = OCELOT_ACL_ACTION_TRAP;
- 			break;
- 		default:
- 			return -EOPNOTSUPP;
-@@ -34,7 +34,7 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
+-	ret = ocelot_ace_rule_offload_add(ocelot, ace);
+-	if (ret)
+-		return ret;
+-
+-	return 0;
++	return ocelot_ace_rule_offload_add(ocelot, ace);
  }
+ EXPORT_SYMBOL_GPL(ocelot_cls_flower_replace);
  
- static int ocelot_flower_parse(struct flow_cls_offload *f,
--			       struct ocelot_ace_rule *ocelot_rule)
-+			       struct ocelot_ace_rule *ace)
- {
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
- 	struct flow_dissector *dissector = rule->match.dissector;
-@@ -79,14 +79,14 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
- 			return -EOPNOTSUPP;
- 
- 		flow_rule_match_eth_addrs(rule, &match);
--		ocelot_rule->type = OCELOT_ACE_TYPE_ETYPE;
--		ether_addr_copy(ocelot_rule->frame.etype.dmac.value,
-+		ace->type = OCELOT_ACE_TYPE_ETYPE;
-+		ether_addr_copy(ace->frame.etype.dmac.value,
- 				match.key->dst);
--		ether_addr_copy(ocelot_rule->frame.etype.smac.value,
-+		ether_addr_copy(ace->frame.etype.smac.value,
- 				match.key->src);
--		ether_addr_copy(ocelot_rule->frame.etype.dmac.mask,
-+		ether_addr_copy(ace->frame.etype.dmac.mask,
- 				match.mask->dst);
--		ether_addr_copy(ocelot_rule->frame.etype.smac.mask,
-+		ether_addr_copy(ace->frame.etype.smac.mask,
- 				match.mask->src);
- 		goto finished_key_parsing;
- 	}
-@@ -96,17 +96,17 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
- 
- 		flow_rule_match_basic(rule, &match);
- 		if (ntohs(match.key->n_proto) == ETH_P_IP) {
--			ocelot_rule->type = OCELOT_ACE_TYPE_IPV4;
--			ocelot_rule->frame.ipv4.proto.value[0] =
-+			ace->type = OCELOT_ACE_TYPE_IPV4;
-+			ace->frame.ipv4.proto.value[0] =
- 				match.key->ip_proto;
--			ocelot_rule->frame.ipv4.proto.mask[0] =
-+			ace->frame.ipv4.proto.mask[0] =
- 				match.mask->ip_proto;
- 		}
- 		if (ntohs(match.key->n_proto) == ETH_P_IPV6) {
--			ocelot_rule->type = OCELOT_ACE_TYPE_IPV6;
--			ocelot_rule->frame.ipv6.proto.value[0] =
-+			ace->type = OCELOT_ACE_TYPE_IPV6;
-+			ace->frame.ipv6.proto.value[0] =
- 				match.key->ip_proto;
--			ocelot_rule->frame.ipv6.proto.mask[0] =
-+			ace->frame.ipv6.proto.mask[0] =
- 				match.mask->ip_proto;
- 		}
- 	}
-@@ -117,16 +117,16 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
- 		u8 *tmp;
- 
- 		flow_rule_match_ipv4_addrs(rule, &match);
--		tmp = &ocelot_rule->frame.ipv4.sip.value.addr[0];
-+		tmp = &ace->frame.ipv4.sip.value.addr[0];
- 		memcpy(tmp, &match.key->src, 4);
- 
--		tmp = &ocelot_rule->frame.ipv4.sip.mask.addr[0];
-+		tmp = &ace->frame.ipv4.sip.mask.addr[0];
- 		memcpy(tmp, &match.mask->src, 4);
- 
--		tmp = &ocelot_rule->frame.ipv4.dip.value.addr[0];
-+		tmp = &ace->frame.ipv4.dip.value.addr[0];
- 		memcpy(tmp, &match.key->dst, 4);
- 
--		tmp = &ocelot_rule->frame.ipv4.dip.mask.addr[0];
-+		tmp = &ace->frame.ipv4.dip.mask.addr[0];
- 		memcpy(tmp, &match.mask->dst, 4);
- 	}
- 
-@@ -139,60 +139,60 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
- 		struct flow_match_ports match;
- 
- 		flow_rule_match_ports(rule, &match);
--		ocelot_rule->frame.ipv4.sport.value = ntohs(match.key->src);
--		ocelot_rule->frame.ipv4.sport.mask = ntohs(match.mask->src);
--		ocelot_rule->frame.ipv4.dport.value = ntohs(match.key->dst);
--		ocelot_rule->frame.ipv4.dport.mask = ntohs(match.mask->dst);
-+		ace->frame.ipv4.sport.value = ntohs(match.key->src);
-+		ace->frame.ipv4.sport.mask = ntohs(match.mask->src);
-+		ace->frame.ipv4.dport.value = ntohs(match.key->dst);
-+		ace->frame.ipv4.dport.mask = ntohs(match.mask->dst);
- 	}
- 
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
- 		struct flow_match_vlan match;
- 
- 		flow_rule_match_vlan(rule, &match);
--		ocelot_rule->type = OCELOT_ACE_TYPE_ANY;
--		ocelot_rule->vlan.vid.value = match.key->vlan_id;
--		ocelot_rule->vlan.vid.mask = match.mask->vlan_id;
--		ocelot_rule->vlan.pcp.value[0] = match.key->vlan_priority;
--		ocelot_rule->vlan.pcp.mask[0] = match.mask->vlan_priority;
-+		ace->type = OCELOT_ACE_TYPE_ANY;
-+		ace->vlan.vid.value = match.key->vlan_id;
-+		ace->vlan.vid.mask = match.mask->vlan_id;
-+		ace->vlan.pcp.value[0] = match.key->vlan_priority;
-+		ace->vlan.pcp.mask[0] = match.mask->vlan_priority;
- 	}
- 
- finished_key_parsing:
--	ocelot_rule->prio = f->common.prio;
--	ocelot_rule->id = f->cookie;
--	return ocelot_flower_parse_action(f, ocelot_rule);
-+	ace->prio = f->common.prio;
-+	ace->id = f->cookie;
-+	return ocelot_flower_parse_action(f, ace);
- }
- 
- static
- struct ocelot_ace_rule *ocelot_ace_rule_create(struct ocelot *ocelot, int port,
- 					       struct flow_cls_offload *f)
- {
--	struct ocelot_ace_rule *rule;
-+	struct ocelot_ace_rule *ace;
- 
--	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
--	if (!rule)
-+	ace = kzalloc(sizeof(*ace), GFP_KERNEL);
-+	if (!ace)
- 		return NULL;
- 
--	rule->ingress_port_mask = BIT(port);
--	return rule;
-+	ace->ingress_port_mask = BIT(port);
-+	return ace;
- }
- 
- int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
+@@ -204,16 +200,11 @@ int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
  			      struct flow_cls_offload *f, bool ingress)
  {
--	struct ocelot_ace_rule *rule;
-+	struct ocelot_ace_rule *ace;
- 	int ret;
+ 	struct ocelot_ace_rule ace;
+-	int ret;
  
--	rule = ocelot_ace_rule_create(ocelot, port, f);
--	if (!rule)
-+	ace = ocelot_ace_rule_create(ocelot, port, f);
-+	if (!ace)
- 		return -ENOMEM;
+ 	ace.prio = f->common.prio;
+ 	ace.id = f->cookie;
  
--	ret = ocelot_flower_parse(f, rule);
-+	ret = ocelot_flower_parse(f, ace);
- 	if (ret) {
--		kfree(rule);
-+		kfree(ace);
- 		return ret;
- 	}
- 
--	ret = ocelot_ace_rule_offload_add(ocelot, rule);
-+	ret = ocelot_ace_rule_offload_add(ocelot, ace);
- 	if (ret)
- 		return ret;
- 
-@@ -203,13 +203,13 @@ EXPORT_SYMBOL_GPL(ocelot_cls_flower_replace);
- int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
- 			      struct flow_cls_offload *f, bool ingress)
- {
--	struct ocelot_ace_rule rule;
-+	struct ocelot_ace_rule ace;
- 	int ret;
- 
--	rule.prio = f->common.prio;
--	rule.id = f->cookie;
-+	ace.prio = f->common.prio;
-+	ace.id = f->cookie;
- 
--	ret = ocelot_ace_rule_offload_del(ocelot, &rule);
-+	ret = ocelot_ace_rule_offload_del(ocelot, &ace);
- 	if (ret)
- 		return ret;
- 
-@@ -220,16 +220,16 @@ EXPORT_SYMBOL_GPL(ocelot_cls_flower_destroy);
- int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
- 			    struct flow_cls_offload *f, bool ingress)
- {
--	struct ocelot_ace_rule rule;
-+	struct ocelot_ace_rule ace;
- 	int ret;
- 
--	rule.prio = f->common.prio;
--	rule.id = f->cookie;
--	ret = ocelot_ace_rule_stats_update(ocelot, &rule);
-+	ace.prio = f->common.prio;
-+	ace.id = f->cookie;
-+	ret = ocelot_ace_rule_stats_update(ocelot, &ace);
- 	if (ret)
- 		return ret;
- 
--	flow_stats_update(&f->stats, 0x0, rule.stats.pkts, 0x0);
-+	flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0);
- 	return 0;
+-	ret = ocelot_ace_rule_offload_del(ocelot, &ace);
+-	if (ret)
+-		return ret;
+-
+-	return 0;
++	return ocelot_ace_rule_offload_del(ocelot, &ace);
  }
- EXPORT_SYMBOL_GPL(ocelot_cls_flower_stats);
+ EXPORT_SYMBOL_GPL(ocelot_cls_flower_destroy);
+ 
 -- 
 2.17.1
 
