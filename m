@@ -2,113 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5E116AF7C
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 19:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CD216AF8D
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 19:45:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727980AbgBXSmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 13:42:21 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:50947 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727689AbgBXSmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 13:42:20 -0500
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j6Ify-0002Ue-0v; Mon, 24 Feb 2020 19:41:54 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 614FA104088; Mon, 24 Feb 2020 19:41:53 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [patch V4 10/22] bpf: Provide bpf_prog_run_pin_on_cpu() helper
-In-Reply-To: <20200224145643.474592620@linutronix.de>
-References: <20200224140131.461979697@linutronix.de> <20200224145643.474592620@linutronix.de>
-Date:   Mon, 24 Feb 2020 19:41:53 +0100
-Message-ID: <87pne3n7ym.fsf@nanos.tec.linutronix.de>
+        id S1727855AbgBXSoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 13:44:54 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:39694 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgBXSox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 13:44:53 -0500
+Received: by mail-oi1-f196.google.com with SMTP id 18so6974999oij.6;
+        Mon, 24 Feb 2020 10:44:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZXEayj8xf3Si4hv36edVPHio/K5x1RomX601FJVG5oI=;
+        b=ZlOuwycup5L1p69xG1io6qfLLxvRFP4SdgX8JWXA4WeDjpniNPjPuYkInXpUrkI8D7
+         yg1MwLhJuJguZDogPMmcj3Wxa+GAj9hVWZOkuw6F9O/QuQLTOQ7cIx2HQQFiG84epdCa
+         78WonXFnAv//8+zxm/qkySXjdpK5+UulQsn5J6VUH2wu45taOXtydUcy88HmmnujHNaQ
+         T75ZaVO+wIbFdto0FrnEM7u1KI1hLy8Go0qv1N+CZl3RuOVEi1X6+thdmVpq+CK4Oq/B
+         XmhNZhs95gq/wcTkh2uvz4O2oDbwN9TXxpZSftFw0VlE2Wu0CgNoorgguwbw0D0H/wTP
+         mskg==
+X-Gm-Message-State: APjAAAUfKQlIQN5oZ50krroGmzAd/mOj4i+h4DQjHDm/AgcmjBbSn9V+
+        Xv82X2YRslFO5LdhoC9pNFG9MF4=
+X-Google-Smtp-Source: APXvYqyQEk9IgcxUJXQaTD6Vy2Stx22qTLXqchW+luQSCrCnqBcUEm3Nwg6USR5r2OPJI7LIO3oQeQ==
+X-Received: by 2002:aca:1108:: with SMTP id 8mr343387oir.127.1582569892915;
+        Mon, 24 Feb 2020 10:44:52 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id t203sm4318661oig.39.2020.02.24.10.44.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 10:44:52 -0800 (PST)
+Received: (nullmailer pid 14849 invoked by uid 1000);
+        Mon, 24 Feb 2020 18:44:51 -0000
+Date:   Mon, 24 Feb 2020 12:44:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     min.li.xe@renesas.com
+Cc:     mark.rutland@arm.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 1/2] dt-bindings: ptp: Add device tree
+ binding for IDT 82P33 based PTP clock
+Message-ID: <20200224184451.GA13180@bogus>
+References: <1582321718-27516-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1582321718-27516-1-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF programs require to run on one CPU to completion as they use per CPU
-storage, but according to Alexei they don't need reentrancy protection as
-obviously BPF programs running in thread context can always be 'preempted'
-by hard and soft interrupts and instrumentation and the same program can
-run concurrently on a different CPU.
+On Fri, Feb 21, 2020 at 04:48:38PM -0500, min.li.xe@renesas.com wrote:
+> From: Min Li <min.li.xe@renesas.com>
+> 
+> Add device tree binding doc for the PTP clock based on IDT 82P33
+> Synchronization Management Unit (SMU).
+> 
+> Changes since v1:
+>  - As suggested by Rob Herring:
+>    1. Drop reg description for i2c
+>    2. Replace i2c@1 with i2c
+>    3. Add addtionalProperties: false
+> 
+> Signed-off-by: Min Li <min.li.xe@renesas.com>
+> ---
+>  .../devicetree/bindings/ptp/ptp-idt82p33.yaml      | 45 ++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idt82p33.yaml
 
-The currently used mechanism to ensure CPUness is to wrap the invocation
-into a preempt_disable/enable() pair. Disabling preemption is also
-disabling migration for a task.
-
-preempt_disable/enable() is used because there is no explicit way to
-reliably disable only migration.
-
-Provide a separate macro to invoke a BPF program which can be used in
-migrateable task context.
-
-It wraps BPF_PROG_RUN() in a migrate_disable/enable() pair which maps on
-non RT enabled kernels to preempt_disable/enable(). On RT enabled kernels
-this merely disables migration. Both methods ensure that the invoked BPF
-program runs on one CPU to completion.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
-V4: Make it const for real
-V3: Make the 'ctx' argument const to unbreak the build
-V2: Use an inline function (Mathieu)
----
- include/linux/filter.h |   26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
-
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -576,8 +576,30 @@ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabl
- 	}								\
- 	ret; })
- 
--#define BPF_PROG_RUN(prog, ctx) __BPF_PROG_RUN(prog, ctx,		\
--					       bpf_dispatcher_nopfunc)
-+#define BPF_PROG_RUN(prog, ctx)						\
-+	__BPF_PROG_RUN(prog, ctx, bpf_dispatcher_nopfunc)
-+
-+/*
-+ * Use in preemptible and therefore migratable context to make sure that
-+ * the execution of the BPF program runs on one CPU.
-+ *
-+ * This uses migrate_disable/enable() explicitly to document that the
-+ * invocation of a BPF program does not require reentrancy protection
-+ * against a BPF program which is invoked from a preempting task.
-+ *
-+ * For non RT enabled kernels migrate_disable/enable() maps to
-+ * preempt_disable/enable(), i.e. it disables also preemption.
-+ */
-+static inline u32 bpf_prog_run_pin_on_cpu(const struct bpf_prog *prog,
-+					  const void *ctx)
-+{
-+	u32 ret;
-+
-+	migrate_disable();
-+	ret = __BPF_PROG_RUN(prog, ctx, bpf_dispatcher_nopfunc);
-+	migrate_enable();
-+	return ret;
-+}
- 
- #define BPF_SKB_CB_LEN QDISC_CB_PRIV_LEN
- 
+Reviewed-by: Rob Herring <robh@kernel.org>
