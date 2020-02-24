@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C3416B186
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 22:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E5716B187
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 22:08:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727910AbgBXVIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 16:08:09 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34132 "EHLO
+        id S1727932AbgBXVIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 16:08:10 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43574 "EHLO
         mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727459AbgBXVIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 16:08:07 -0500
-Received: by mail-wr1-f67.google.com with SMTP id z15so3775811wrl.1
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 13:08:06 -0800 (PST)
+        with ESMTP id S1727891AbgBXVII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 16:08:08 -0500
+Received: by mail-wr1-f67.google.com with SMTP id r11so12105690wrq.10
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 13:08:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XBhkMU0qEazeCTxrnAQgNmenz7/lwCQE+0Tz/F5+3KU=;
-        b=TCr7TlJrLZEabxgDDrcs1STyHu3F/7M8TMM8n6kR8VESzu/HnCkznjIquCKM3cq6cU
-         q8zZmn+KD6x8CpDLsVNtT9TbG5RR3acBH9lL4jMtpOFQjK42qVkoUx9HuaO11kQGWR6r
-         yeafpTEaK7VCKZCYuquqaQvz3lrmeu002NFb6+UDjTVW5+vhuTXLJe3zrorhSRnpiPGg
-         7pkO6vubGQoyhfkLiZMIqeUOa3s9Ba4j+OJMENkAP/yAV67bHjC+6FBN42r1xFQzY+NI
-         1LQBysvDbukYOEHgElPwaN8ZhJdU2qj6LJ7wB01seUa24TWfoLQ+bXZ8CEBuyoh78zuv
-         D+4Q==
+        bh=zHMa5uRfXauRxVZHxXo1hn0OuQImAgMVG7rq6bvn8lE=;
+        b=ne6Ixy3BkYtmZf/cpVH0FHisd0jTTMwWAyr9ov/Mo9SlVkwzv0VRjS7NJD6aWz/ftm
+         sncKL0oLGyl7PxEzXk+6SJEbf8BYn+RIB5RytPVWaU6f9DsYXZseBjFhstCRfSONjtMM
+         3QNiGb3os8Zenk9gN2zQCjOvHRF0qIcn/SzT7SyOaYcy67qAuMBCT+C/1tsERZHjLZsE
+         FUlZoCdWPaGQt2+zHN5U7SaTCPyjBLgUT7AiuVFMqC4qrW3iOOVfwFbO/c7i/0ria/Tu
+         HiMQkqZdEczXg691JeLnLSvTQqHRk5Jar5OtPDJ/iw0LSABJ/xO3O1WHjqMJ5pobvCeO
+         43Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XBhkMU0qEazeCTxrnAQgNmenz7/lwCQE+0Tz/F5+3KU=;
-        b=M6K3G634gAhVKIGOxM1ATZSxO6Lilb+F+BysaNaI0JmDtEiK4FT3/qQ2py+r4yz/dl
-         srOmgFz7Y71buc1N8PHBXzcfHV0BMGk+FB2wwHxgDEyXtxIWXnT780BMZxj8LByVmhqe
-         3dE2b/CVotupovOU1R93esMCBWtoN4KioxW7shqZxCkz9469yzmEAfFD5g6HhYJtWUFC
-         3dVvjkOKHMl2WZN7GdN7v4G7fF49dXTXr/zP4pRgQ90onM2nRD2OPQculTuo9dk6obZ+
-         U8ploAZQJVSmsPJVGMlGhYFytJdq4jhy1kexYF3ExQmA9QveGbpHYoYp0psJlwvYbGr8
-         qPPQ==
-X-Gm-Message-State: APjAAAWt+sAm1OopGwVxRfnQnnG6/kNCHHUUh1S66K3/ejNHZGeOdVJl
-        YvMLLjDuzI1mEK4L8gza3po5f9BHeKg=
-X-Google-Smtp-Source: APXvYqz3gaS/R393Kp0krDwVECns63lvj8EIUo5eN/boZNlB2LBaSVkdaho+hrPIDSUPNxGRYU477g==
-X-Received: by 2002:adf:f084:: with SMTP id n4mr68183810wro.200.1582578485243;
-        Mon, 24 Feb 2020 13:08:05 -0800 (PST)
+        bh=zHMa5uRfXauRxVZHxXo1hn0OuQImAgMVG7rq6bvn8lE=;
+        b=piJcSCYG7zfRdsB9220xOr1UrBzqJFADzJqFJh+cfsX2VL7tf1acmWT9NdUMBmm+e0
+         Wy2n4C3+q7487wtvolXNM04JpFkdDvD+y5qd/s6dOGqne6XD+wGh/w7esknQh2kQrbt1
+         W4zAXFMCHsYzd32eNmy9qr0YUHgL/MExNhYM2b+8d5erqOWkZGQo5TNuBLeaqCMNAvYs
+         H9K2yhQ92O9WJkXxKBBfGvOYPtQMi6DRNLG4th1ZYsnUFM86ugtULAROpWNtErVbJanw
+         4fVCob8Zec2fsut0S/loAcZIPXnVvFK4Yqchw/wcz1BESPiTB2EkWWufEy0pi4TwcpFC
+         vgFA==
+X-Gm-Message-State: APjAAAU8OO7w2zNUdU6BN8CEJLoET3Yhig9t7Tdf455VPIC4e0U/foQZ
+        AHeZFn4f7FS8V+Jm8q6SXholH57Hy2A=
+X-Google-Smtp-Source: APXvYqwP+GdZRXZYkwGvVsIQ03n4m6pN5dcLwvC30L+Rj4pG2h66udKkAszNqC8LGo/vbJxHGmg6dw==
+X-Received: by 2002:a5d:410e:: with SMTP id l14mr65582179wrp.238.1582578486511;
+        Mon, 24 Feb 2020 13:08:06 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id b192sm872142wmb.40.2020.02.24.13.08.04
+        by smtp.gmail.com with ESMTPSA id t131sm944894wmb.13.2020.02.24.13.08.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 13:08:04 -0800 (PST)
+        Mon, 24 Feb 2020 13:08:06 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 04/10] devlink: extend devlink_trap_report() to accept cookie and pass
-Date:   Mon, 24 Feb 2020 22:07:52 +0100
-Message-Id: <20200224210758.18481-5-jiri@resnulli.us>
+Subject: [patch net-next 05/10] mlxsw: core_acl_flex_actions: Add trap with userdef action
+Date:   Mon, 24 Feb 2020 22:07:53 +0100
+Message-Id: <20200224210758.18481-6-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200224210758.18481-1-jiri@resnulli.us>
 References: <20200224210758.18481-1-jiri@resnulli.us>
@@ -64,121 +64,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Add cookie argument to devlink_trap_report() allowing driver to pass in
-the user cookie. Pass on the cookie down to drop monitor code.
+Expose "Trap action with userdef". It is the same as already
+defined "Trap action" with a difference that it would ask the policy
+engine to pass arbitrary value (userdef) alongside with received packets.
+This would be later on used to carry cookie index.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c |  4 ++--
- drivers/net/netdevsim/dev.c                         |  2 +-
- include/net/devlink.h                               |  7 ++++---
- net/core/devlink.c                                  | 11 ++++++++---
- 4 files changed, 15 insertions(+), 9 deletions(-)
+ .../mellanox/mlxsw/core_acl_flex_actions.c    | 30 +++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 04f2445f6d43..a55577a50e90 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -71,7 +71,7 @@ static void mlxsw_sp_rx_drop_listener(struct sk_buff *skb, u8 local_port,
- 	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
- 							   local_port);
- 	skb_push(skb, ETH_HLEN);
--	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
-+	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port, NULL);
- 	consume_skb(skb);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+index 424ef26e6cca..b7a846dd8f32 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+@@ -747,18 +747,25 @@ int mlxsw_afa_block_append_vlan_modify(struct mlxsw_afa_block *block,
  }
+ EXPORT_SYMBOL(mlxsw_afa_block_append_vlan_modify);
  
-@@ -95,7 +95,7 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
- 	in_devlink_port = mlxsw_core_port_devlink_port_get(mlxsw_sp->core,
- 							   local_port);
- 	skb_push(skb, ETH_HLEN);
--	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port);
-+	devlink_trap_report(devlink, skb, trap_ctx, in_devlink_port, NULL);
- 	skb_pull(skb, ETH_HLEN);
- 	skb->offload_fwd_mark = 1;
- 	netif_receive_skb(skb);
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index d7706a0346f2..aa17533c06e1 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -385,7 +385,7 @@ static void nsim_dev_trap_report(struct nsim_dev_port *nsim_dev_port)
- 		 */
- 		local_bh_disable();
- 		devlink_trap_report(devlink, skb, nsim_trap_item->trap_ctx,
--				    &nsim_dev_port->devlink_port);
-+				    &nsim_dev_port->devlink_port, NULL);
- 		local_bh_enable();
- 		consume_skb(skb);
- 	}
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 014a8b3d1499..c9ca86b054bc 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -16,6 +16,7 @@
- #include <linux/workqueue.h>
- #include <linux/refcount.h>
- #include <net/net_namespace.h>
-+#include <net/flow_offload.h>
- #include <uapi/linux/devlink.h>
- 
- struct devlink_ops;
-@@ -1050,9 +1051,9 @@ int devlink_traps_register(struct devlink *devlink,
- void devlink_traps_unregister(struct devlink *devlink,
- 			      const struct devlink_trap *traps,
- 			      size_t traps_count);
--void devlink_trap_report(struct devlink *devlink,
--			 struct sk_buff *skb, void *trap_ctx,
--			 struct devlink_port *in_devlink_port);
-+void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
-+			 void *trap_ctx, struct devlink_port *in_devlink_port,
-+			 const struct flow_action_cookie *fa_cookie);
- void *devlink_trap_ctx_priv(void *trap_ctx);
- 
- #if IS_ENABLED(CONFIG_NET_DEVLINK)
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 12e6ef749b8a..49706031ab45 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8205,12 +8205,14 @@ devlink_trap_stats_update(struct devlink_stats __percpu *trap_stats,
- static void
- devlink_trap_report_metadata_fill(struct net_dm_hw_metadata *hw_metadata,
- 				  const struct devlink_trap_item *trap_item,
--				  struct devlink_port *in_devlink_port)
-+				  struct devlink_port *in_devlink_port,
-+				  const struct flow_action_cookie *fa_cookie)
- {
- 	struct devlink_trap_group_item *group_item = trap_item->group_item;
- 
- 	hw_metadata->trap_group_name = group_item->group->name;
- 	hw_metadata->trap_name = trap_item->trap->name;
-+	hw_metadata->fa_cookie = fa_cookie;
- 
- 	spin_lock(&in_devlink_port->type_lock);
- 	if (in_devlink_port->type == DEVLINK_PORT_TYPE_ETH)
-@@ -8224,9 +8226,12 @@ devlink_trap_report_metadata_fill(struct net_dm_hw_metadata *hw_metadata,
-  * @skb: Trapped packet.
-  * @trap_ctx: Trap context.
-  * @in_devlink_port: Input devlink port.
-+ * @fa_cookie: Flow action cookie. Could be NULL.
+-/* Trap Action
+- * -----------
++/* Trap Action / Trap With Userdef Action
++ * --------------------------------------
+  * The Trap action enables trapping / mirroring packets to the CPU
+  * as well as discarding packets.
+  * The ACL Trap / Discard separates the forward/discard control from CPU
+  * trap control. In addition, the Trap / Discard action enables activating
+  * SPAN (port mirroring).
++ *
++ * The Trap with userdef action action has the same functionality as
++ * the Trap action with addition of user defined value that can be set
++ * and used by higher layer applications.
   */
- void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
--			 void *trap_ctx, struct devlink_port *in_devlink_port)
-+			 void *trap_ctx, struct devlink_port *in_devlink_port,
-+			 const struct flow_action_cookie *fa_cookie)
-+
- {
- 	struct devlink_trap_item *trap_item = trap_ctx;
- 	struct net_dm_hw_metadata hw_metadata = {};
-@@ -8235,7 +8240,7 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
- 	devlink_trap_stats_update(trap_item->group_item->stats, skb->len);
  
- 	devlink_trap_report_metadata_fill(&hw_metadata, trap_item,
--					  in_devlink_port);
-+					  in_devlink_port, fa_cookie);
- 	net_dm_hw_report(skb, &hw_metadata);
+ #define MLXSW_AFA_TRAP_CODE 0x03
+ #define MLXSW_AFA_TRAP_SIZE 1
+ 
++#define MLXSW_AFA_TRAPWU_CODE 0x04
++#define MLXSW_AFA_TRAPWU_SIZE 2
++
+ enum mlxsw_afa_trap_trap_action {
+ 	MLXSW_AFA_TRAP_TRAP_ACTION_NOP = 0,
+ 	MLXSW_AFA_TRAP_TRAP_ACTION_TRAP = 2,
+@@ -794,6 +801,15 @@ MLXSW_ITEM32(afa, trap, mirror_agent, 0x08, 29, 3);
+  */
+ MLXSW_ITEM32(afa, trap, mirror_enable, 0x08, 24, 1);
+ 
++/* user_def_val
++ * Value for the SW usage. Can be used to pass information of which
++ * rule has caused a trap. This may be overwritten by later traps.
++ * This field does a set on the packet's user_def_val only if this
++ * is the first trap_id or if the trap_id has replaced the previous
++ * packet's trap_id.
++ */
++MLXSW_ITEM32(afa, trap, user_def_val, 0x0C, 0, 20);
++
+ static inline void
+ mlxsw_afa_trap_pack(char *payload,
+ 		    enum mlxsw_afa_trap_trap_action trap_action,
+@@ -805,6 +821,16 @@ mlxsw_afa_trap_pack(char *payload,
+ 	mlxsw_afa_trap_trap_id_set(payload, trap_id);
  }
- EXPORT_SYMBOL_GPL(devlink_trap_report);
+ 
++static inline void
++mlxsw_afa_trapwu_pack(char *payload,
++		      enum mlxsw_afa_trap_trap_action trap_action,
++		      enum mlxsw_afa_trap_forward_action forward_action,
++		      u16 trap_id, u32 user_def_val)
++{
++	mlxsw_afa_trap_pack(payload, trap_action, forward_action, trap_id);
++	mlxsw_afa_trap_user_def_val_set(payload, user_def_val);
++}
++
+ static inline void
+ mlxsw_afa_trap_mirror_pack(char *payload, bool mirror_enable,
+ 			   u8 mirror_agent)
 -- 
 2.21.1
 
