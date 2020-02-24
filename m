@@ -2,151 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A0B16A24E
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 10:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3852916A2C0
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 10:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbgBXJah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 04:30:37 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:33541 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbgBXJah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 04:30:37 -0500
-Received: by mail-pj1-f68.google.com with SMTP id m7so3872656pjs.0;
-        Mon, 24 Feb 2020 01:30:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=TzHPIC1N5lujx/c4PdrT0qr3lBEBYRGEgiiSQgfxX0Q=;
-        b=F+kebht7CIAgDDYDNVPs2fj7BHGZsc+fhhFSV+NHv2vm5iiUu2tp/euw0/qQG4I5FM
-         p+pXewsBFekfJ6VLvLbOqKIBI+ORiDTkEhWjUyDXmeo3tCHMEhZ64xHe5jl6gWGnbHiN
-         E6hlBEgdffHZk/lQbYUfeMa/joFXOhtyNEnCMY0k0ALp/FhBJll+X0lf5wS/CL4NSsZH
-         2vDlrCjxS1uYnuhdFwz2eZDgSifrkcAo1dgVgt8oHYxaMIMPd+jJDfwnkm/8TkP/1reO
-         Ep7+E+L0zseAiflDfxekb3+X5tLnk+dY2er5czPgHZnaoe43dqoZBX7sFCHBzmMVKC3r
-         8XfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=TzHPIC1N5lujx/c4PdrT0qr3lBEBYRGEgiiSQgfxX0Q=;
-        b=QpH/QtauDv/OObeG+PIPDn4gOoO4afeEzDd+uM77nTOT+ipinItJZe09SXjuj+wTRW
-         6msxZkiG7+JZbzt8sH/WLgP0B7JQldoq3Hrj6qzGxqbcpZCXTJSMh9AhtuyqUTeACWZS
-         S+2YiL6J6PfPhGemMpKQX0BIhHFgKTXSEOWH0E/obacOlNyFyTvEteky50VLHGQAN8sU
-         YjyD2/K20dFekOAfLKmQsjaLQl9xA1MMEzHyYKjTBNi/YbcW9SiienuhUyUKfTYL0Wdj
-         4sFGs8U9C66YXdmap4V0o50keZQo7pBLohmR0zaEuFI6rWC1ffwtHuldh/KjOK8UWM0U
-         RMpw==
-X-Gm-Message-State: APjAAAXQGmhSyxgeUfOSwKMzQeZNSRgi21dz3Y4byw8UrelbZSThXSik
-        k2GQuciRqvvdh7bfT3ngeQ==
-X-Google-Smtp-Source: APXvYqwKi/xOhNp1DVmUj92WivktpNFQDkOR3l3um1lBMxrFlN6G4zpoD6kqG/y6XoPfmYGnQAxcGg==
-X-Received: by 2002:a17:902:fe8d:: with SMTP id x13mr50387571plm.232.1582536635071;
-        Mon, 24 Feb 2020 01:30:35 -0800 (PST)
-Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee7:f49b:e8e5:803b:cde8:bccc])
-        by smtp.gmail.com with ESMTPSA id 11sm12119680pfz.25.2020.02.24.01.30.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 01:30:33 -0800 (PST)
-From:   madhuparnabhowmik10@gmail.com
-To:     jiri@mellanox.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joel@joelfernandes.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        frextrite@gmail.com, paulmck@kernel.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH] net: core: devlink.c: Use built-in RCU list checking
-Date:   Mon, 24 Feb 2020 15:00:13 +0530
-Message-Id: <20200224093013.25700-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727189AbgBXJlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 04:41:06 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42735 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726744AbgBXJlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 04:41:06 -0500
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1j6AEY-0000DT-VS; Mon, 24 Feb 2020 10:41:03 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "linux-can @ vger . kernel . org" <linux-can@vger.kernel.org>
+Cc:     kernel@pengutronix.de, glider@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com
+Subject: [RFC] can: af_can: can_rcv() canfd_rcv(): Fix access of uninitialized memory or out of bounds
+Date:   Mon, 24 Feb 2020 10:41:00 +0100
+Message-Id: <20200224094100.2431262-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Syzbot found the use of uninitialzied memory when injecting non conformant
+CANFD frames via a tun device into the kernel:
 
-list_for_each_entry_rcu() has built-in RCU and lock checking.
+| BUG: KMSAN: uninit-value in number+0x9f8/0x2000 lib/vsprintf.c:459
+| CPU: 1 PID: 11897 Comm: syz-executor136 Not tainted 5.6.0-rc2-syzkaller #0
+| Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+| Call Trace:
+|  __dump_stack lib/dump_stack.c:77 [inline]
+|  dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+|  kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+|  __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+|  number+0x9f8/0x2000 lib/vsprintf.c:459
+|  vsnprintf+0x1d85/0x31b0 lib/vsprintf.c:2640
+|  vscnprintf+0xc2/0x180 lib/vsprintf.c:2677
+|  vprintk_store+0xef/0x11d0 kernel/printk/printk.c:1917
+|  vprintk_emit+0x2c0/0x860 kernel/printk/printk.c:1984
+|  vprintk_default+0x90/0xa0 kernel/printk/printk.c:2029
+|  vprintk_func+0x636/0x820 kernel/printk/printk_safe.c:386
+|  printk+0x18b/0x1d3 kernel/printk/printk.c:2062
+|  canfd_rcv+0x370/0x3a0 net/can/af_can.c:697
+|  __netif_receive_skb_one_core net/core/dev.c:5198 [inline]
+|  __netif_receive_skb net/core/dev.c:5312 [inline]
+|  netif_receive_skb_internal net/core/dev.c:5402 [inline]
+|  netif_receive_skb+0xe77/0xf20 net/core/dev.c:5461
+|  tun_rx_batched include/linux/skbuff.h:4321 [inline]
+|  tun_get_user+0x6aef/0x6f60 drivers/net/tun.c:1997
+|  tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+|  call_write_iter include/linux/fs.h:1901 [inline]
+|  new_sync_write fs/read_write.c:483 [inline]
+|  __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+|  vfs_write+0x44a/0x8f0 fs/read_write.c:558
+|  ksys_write+0x267/0x450 fs/read_write.c:611
+|  __do_sys_write fs/read_write.c:623 [inline]
+|  __se_sys_write+0x92/0xb0 fs/read_write.c:620
+|  __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+|  do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+|  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Pass cond argument to list_for_each_entry_rcu() to silence
-false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
+In canfd_rcv() the non conformant CANFD frame (i.e. skb too short) is detected,
+but the pr_warn_once() accesses uninitialized memory or the skb->data out of
+bounds to print the warning message.
 
-The devlink->lock is held when devlink_dpipe_table_find()
-is called in non RCU read side section. Therefore, pass struct devlink
-to devlink_dpipe_table_find() for lockdep checking.
+This problem exists in both can_rcv() and canfd_rcv(). This patch removes the
+access to the skb->data from the pr_warn_once() in both functions.
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Reported-by: syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/core/devlink.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ net/can/af_can.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e82750bdc496..dadf5fa79bb1 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -2103,11 +2103,11 @@ static int devlink_dpipe_entry_put(struct sk_buff *skb,
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index 7511bfae2e0d..bd37922b0c9e 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -677,8 +677,8 @@ static int can_rcv(struct sk_buff *skb, struct net_device *dev,
  
- static struct devlink_dpipe_table *
- devlink_dpipe_table_find(struct list_head *dpipe_tables,
--			 const char *table_name)
-+			 const char *table_name, struct devlink *devlink)
- {
- 	struct devlink_dpipe_table *table;
--
--	list_for_each_entry_rcu(table, dpipe_tables, list) {
-+	list_for_each_entry_rcu(table, dpipe_tables, list,
-+				lockdep_is_held(&devlink->lock)) {
- 		if (!strcmp(table->name, table_name))
- 			return table;
+ 	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CAN_MTU ||
+ 		     cfd->len > CAN_MAX_DLEN)) {
+-		pr_warn_once("PF_CAN: dropped non conform CAN skbuf: dev type %d, len %d, datalen %d\n",
+-			     dev->type, skb->len, cfd->len);
++		pr_warn_once("PF_CAN: dropped non conform CAN skbuf: dev type %d, len %d\n",
++			     dev->type, skb->len);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
  	}
-@@ -2226,7 +2226,7 @@ static int devlink_nl_cmd_dpipe_entries_get(struct sk_buff *skb,
+@@ -694,8 +694,8 @@ static int canfd_rcv(struct sk_buff *skb, struct net_device *dev,
  
- 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name);
-+					 table_name, devlink);
- 	if (!table)
- 		return -EINVAL;
- 
-@@ -2382,7 +2382,7 @@ static int devlink_dpipe_table_counters_set(struct devlink *devlink,
- 	struct devlink_dpipe_table *table;
- 
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name);
-+					 table_name, devlink);
- 	if (!table)
- 		return -EINVAL;
- 
-@@ -6814,7 +6814,7 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
- 
- 	rcu_read_lock();
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name);
-+					 table_name, devlink);
- 	enabled = false;
- 	if (table)
- 		enabled = table->counters_enabled;
-@@ -6845,7 +6845,7 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- 
- 	mutex_lock(&devlink->lock);
- 
--	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name)) {
-+	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name, devlink)) {
- 		err = -EEXIST;
- 		goto unlock;
+ 	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CANFD_MTU ||
+ 		     cfd->len > CANFD_MAX_DLEN)) {
+-		pr_warn_once("PF_CAN: dropped non conform CAN FD skbuf: dev type %d, len %d, datalen %d\n",
+-			     dev->type, skb->len, cfd->len);
++		pr_warn_once("PF_CAN: dropped non conform CAN FD skbuf: dev type %d, len %d\n",
++			     dev->type, skb->len);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
  	}
-@@ -6881,7 +6881,7 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
- 
- 	mutex_lock(&devlink->lock);
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name);
-+					 table_name, devlink);
- 	if (!table)
- 		goto unlock;
- 	list_del_rcu(&table->list);
-@@ -7038,7 +7038,7 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
- 
- 	mutex_lock(&devlink->lock);
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name);
-+					 table_name, devlink);
- 	if (!table) {
- 		err = -EINVAL;
- 		goto out;
 -- 
-2.17.1
+2.25.0
 
