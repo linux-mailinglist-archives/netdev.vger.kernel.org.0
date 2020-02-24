@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2450169FED
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 442A416A02A
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbgBXI2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:28:20 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:48521 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727304AbgBXI2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:28:17 -0500
-Received: by mail-il1-f198.google.com with SMTP id u14so17063501ilq.15
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:28:15 -0800 (PST)
+        id S1727310AbgBXIiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:38:15 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:56363 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727283AbgBXIiO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 03:38:14 -0500
+Received: by mail-io1-f72.google.com with SMTP id d13so14194333ioo.23
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 00:38:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zPnGdhYe6fx/GA1y4l3lAwfwfLNCOo6iSouDNT5vfw0=;
-        b=GXBBVgNMIhQgz/1CKnZ/tlKylF0hWSq2Inm8q79a/g70KtUvFDbGmUSfw0heGpwd/P
-         0p5zPvgzj+srkW/Zawv0/eoNg6mIHjZ2vvZImTy34FcEQOd9hKFx40LfxETbJOr8NaTs
-         4FCwiIezvrGmSxgarkiSxFnW4+PIrlej2uUDZjxoeGFHf6ofo7As3OlXbv7hYb9IKglk
-         dPkASzbiJ60lCWX6k1rocK8PcM1FGw6LOi6d8W7QBd4uOpNONYAcZ4NuBw0Z53mtM4Up
-         xmwFZBUhcZyb1OvUU5XlgZe7V5J+koYqhmw8LRjgrdd/7db/2lLFWmqNQnMbjB8FNSwT
-         QP/g==
-X-Gm-Message-State: APjAAAVks9d8B5khbIxN4285+ys5iCiEWfDVtzaR0ee0ijZKYX4KgpQF
-        Nw9CCi9KAQJ+TYMHSUGJhuyp95h9EKwBqlRvSCPWyDDSfF5L
-X-Google-Smtp-Source: APXvYqwjfTMec2vNK5//uIvwTzm0pcHaYTeC1+EaGLWrGBFccLzIF/ifYG9oXPoiMpuifFdYc7ZA6MDqjneRpTBqEbyKn+cP7pcR
+        bh=GsrXjmJeGikYtB/cB8yddymFCfJV2BF6AAZhIaBbNF4=;
+        b=EkHiQbu1Vmc+6iER1jQlHG2PXcr1zqfstZPIu8HqDbsmaxnw2r9PlRTUkbtepSlB9h
+         SKHivqH9IUyZTRde7Z4Siwob8RVWq/pv7LblSSGchTz1TUgzFQwWjQT7RvZL1iphnfcw
+         ENpK7rWd5nwkI8iCDSUK8vFW+8xU7qyGXf+pXK29V6LhP/3KLLByX/sHY72R/up9OhWl
+         bUCoOneQGvqRie9RqDgpTZUxvY21ikKMtO/QpIaf1rn/h5CxXQRHUjmtOnEzrnaFUFi4
+         AacGzHdIHF3tBor0u3hPCCo8nh2mRJ6ui5xLy3gtBPwLBscMWAMDPI70TahfViz1vyzu
+         IX8g==
+X-Gm-Message-State: APjAAAWFEC+hf3VEseFwcs0vQk68HQ0M7g1tP14FmwrAeEdqlyTsdF2C
+        6FdXq3qhdItJ3DTSRi/yXIiKuLwo0ja6jhKpPwcHa4JYINrv
+X-Google-Smtp-Source: APXvYqzy47V2csfPLyZ4K4CJj8Vfu2iPewOTbfW2itGqslEdeiHMx1tm2n/SeT/W4cM9uLNHwYYp1/q6sw/knHXinEv5R43hdh2o
 MIME-Version: 1.0
-X-Received: by 2002:a92:7301:: with SMTP id o1mr56267048ilc.272.1582532895280;
- Mon, 24 Feb 2020 00:28:15 -0800 (PST)
-Date:   Mon, 24 Feb 2020 00:28:15 -0800
+X-Received: by 2002:a02:708f:: with SMTP id f137mr49636155jac.4.1582533493717;
+ Mon, 24 Feb 2020 00:38:13 -0800 (PST)
+Date:   Mon, 24 Feb 2020 00:38:13 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000011953b059f4e27f7@google.com>
-Subject: KASAN: slab-out-of-bounds Read in ethnl_update_bitset32
-From:   syzbot <syzbot+983cb8fb2d17a7af549d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mkubecek@suse.cz,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000bd0208059f4e4a87@google.com>
+Subject: KMSAN: uninit-value in batadv_get_vid
+From:   syzbot <syzbot+0adb190024de0a0e265b@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, glider@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,122 +50,87 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    d2eee258 Merge tag 'for-5.6-rc2-tag' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11199109e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
-dashboard link: https://syzkaller.appspot.com/bug?extid=983cb8fb2d17a7af549d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1399a3d9e00000
+HEAD commit:    8bbbc5cf kmsan: don't compile memmove
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=15471109e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cd0e9a6b0e555cc3
+dashboard link: https://syzkaller.appspot.com/bug?extid=0adb190024de0a0e265b
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1247c109e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1349a779e00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+983cb8fb2d17a7af549d@syzkaller.appspotmail.com
+Reported-by: syzbot+0adb190024de0a0e265b@syzkaller.appspotmail.com
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
-BUG: KASAN: slab-out-of-bounds in ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
-BUG: KASAN: slab-out-of-bounds in ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
-Read of size 4 at addr ffff8880a9750c3c by task syz-executor.0/9818
-
-CPU: 0 PID: 9818 Comm: syz-executor.0 Not tainted 5.6.0-rc2-syzkaller #0
+=====================================================
+BUG: KMSAN: uninit-value in batadv_get_vid+0x1fd/0x340 net/batman-adv/main.c:650
+CPU: 0 PID: 12317 Comm: syz-executor026 Not tainted 5.6.0-rc2-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
- __kasan_report.cold+0x1b/0x32 mm/kasan/report.c:506
- kasan_report+0x12/0x20 mm/kasan/common.c:641
- __asan_report_load4_noabort+0x14/0x20 mm/kasan/generic_report.c:134
- ethnl_bitmap32_not_zero net/ethtool/bitset.c:112 [inline]
- ethnl_compact_sanity_checks net/ethtool/bitset.c:529 [inline]
- ethnl_update_bitset32.part.0+0x8db/0x1820 net/ethtool/bitset.c:572
- ethnl_update_bitset32 net/ethtool/bitset.c:562 [inline]
- ethnl_update_bitset+0x4d/0x67 net/ethtool/bitset.c:734
- ethnl_update_linkmodes net/ethtool/linkmodes.c:303 [inline]
- ethnl_set_linkmodes+0x461/0xc30 net/ethtool/linkmodes.c:357
- genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
- genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2478
- genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c429
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:0000000000c7fb78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000289b914 RCX: 000000000045c429
-RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 000000000076bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000904 R14: 00000000004d4f90 R15: 000000000076bf2c
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ batadv_get_vid+0x1fd/0x340 net/batman-adv/main.c:650
+ batadv_interface_tx+0x30a/0x2450 net/batman-adv/soft-interface.c:212
+ __netdev_start_xmit include/linux/netdevice.h:4524 [inline]
+ netdev_start_xmit include/linux/netdevice.h:4538 [inline]
+ xmit_one net/core/dev.c:3470 [inline]
+ dev_hard_start_xmit+0x531/0xab0 net/core/dev.c:3486
+ __dev_queue_xmit+0x37de/0x4220 net/core/dev.c:4063
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4096
+ __bpf_tx_skb net/core/filter.c:2061 [inline]
+ __bpf_redirect_common net/core/filter.c:2100 [inline]
+ __bpf_redirect+0x11d5/0x1440 net/core/filter.c:2107
+ ____bpf_clone_redirect net/core/filter.c:2140 [inline]
+ bpf_clone_redirect+0x466/0x620 net/core/filter.c:2112
+ bpf_prog_bb15b996d00816f9+0x7a4/0x1000
+ bpf_dispatcher_nopfunc include/linux/bpf.h:521 [inline]
+ bpf_test_run+0x60c/0xe50 net/bpf/test_run.c:48
+ bpf_prog_test_run_skb+0xcab/0x24a0 net/bpf/test_run.c:388
+ bpf_prog_test_run kernel/bpf/syscall.c:2572 [inline]
+ __do_sys_bpf+0xa684/0x13510 kernel/bpf/syscall.c:3414
+ __se_sys_bpf kernel/bpf/syscall.c:3355 [inline]
+ __ia32_sys_bpf+0xdb/0x120 kernel/bpf/syscall.c:3355
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+RIP: 0023:0xf7fc8d99
+Code: 90 e8 0b 00 00 00 f3 90 0f ae e8 eb f9 8d 74 26 00 89 3c 24 c3 90 90 90 90 90 90 90 90 90 90 90 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000ff9adc0c EFLAGS: 00000246 ORIG_RAX: 0000000000000165
+RAX: ffffffffffffffda RBX: 000000000000000a RCX: 0000000020000280
+RDX: 0000000000000040 RSI: 0000000000000000 RDI: 000000000000005b
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
-Allocated by task 4801:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:515 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:488
- kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:523
- slab_post_alloc_hook mm/slab.h:584 [inline]
- slab_alloc mm/slab.c:3320 [inline]
- kmem_cache_alloc+0x121/0x710 mm/slab.c:3484
- kmem_cache_zalloc include/linux/slab.h:659 [inline]
- copy_signal kernel/fork.c:1558 [inline]
- copy_process+0x2155/0x7290 kernel/fork.c:2078
- _do_fork+0x146/0x1090 kernel/fork.c:2430
- __do_sys_clone kernel/fork.c:2585 [inline]
- __se_sys_clone kernel/fork.c:2566 [inline]
- __x64_sys_clone+0x19a/0x260 kernel/fork.c:2566
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 0:
- save_stack+0x23/0x90 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:337 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:476
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:485
- __cache_free mm/slab.c:3426 [inline]
- kmem_cache_free+0x86/0x320 mm/slab.c:3694
- free_signal_struct kernel/fork.c:728 [inline]
- put_signal_struct kernel/fork.c:734 [inline]
- __put_task_struct+0x327/0x530 kernel/fork.c:748
- put_task_struct include/linux/sched/task.h:122 [inline]
- delayed_put_task_struct+0x253/0x3c0 kernel/exit.c:182
- rcu_do_batch kernel/rcu/tree.c:2186 [inline]
- rcu_core+0x5e1/0x1390 kernel/rcu/tree.c:2410
- rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2419
- __do_softirq+0x262/0x98c kernel/softirq.c:292
-
-The buggy address belongs to the object at ffff8880a97506c0
- which belongs to the cache signal_cache of size 1328
-The buggy address is located 76 bytes to the right of
- 1328-byte region [ffff8880a97506c0, ffff8880a9750bf0)
-The buggy address belongs to the page:
-page:ffffea0002a5d400 refcount:1 mapcount:0 mapping:ffff88821bc468c0 index:0xffff8880a9750100 compound_mapcount: 0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea0002636888 ffffea00029fa308 ffff88821bc468c0
-raw: ffff8880a9750100 ffff8880a9750100 0000000100000002 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a9750b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a9750b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
->ffff8880a9750c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                        ^
- ffff8880a9750c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a9750d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
+ slab_alloc_node mm/slub.c:2793 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4401
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ pskb_expand_head+0x20b/0x1b00 net/core/skbuff.c:1629
+ skb_ensure_writable+0x3ea/0x490 net/core/skbuff.c:5453
+ __bpf_try_make_writable net/core/filter.c:1635 [inline]
+ bpf_try_make_writable net/core/filter.c:1641 [inline]
+ bpf_try_make_head_writable net/core/filter.c:1649 [inline]
+ ____bpf_clone_redirect net/core/filter.c:2134 [inline]
+ bpf_clone_redirect+0x251/0x620 net/core/filter.c:2112
+ bpf_prog_bb15b996d00816f9+0x7a4/0x1000
+ bpf_dispatcher_nopfunc include/linux/bpf.h:521 [inline]
+ bpf_test_run+0x60c/0xe50 net/bpf/test_run.c:48
+ bpf_prog_test_run_skb+0xcab/0x24a0 net/bpf/test_run.c:388
+ bpf_prog_test_run kernel/bpf/syscall.c:2572 [inline]
+ __do_sys_bpf+0xa684/0x13510 kernel/bpf/syscall.c:3414
+ __se_sys_bpf kernel/bpf/syscall.c:3355 [inline]
+ __ia32_sys_bpf+0xdb/0x120 kernel/bpf/syscall.c:3355
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+=====================================================
 
 
 ---
