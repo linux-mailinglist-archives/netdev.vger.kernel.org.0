@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D4016A080
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:53:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62EB916A095
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 09:54:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727709AbgBXIxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 03:53:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36974 "EHLO mail.kernel.org"
+        id S1727938AbgBXIyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 03:54:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38186 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727655AbgBXIxp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 03:53:45 -0500
+        id S1727922AbgBXIyT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 03:54:19 -0500
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 28FC2217F4;
-        Mon, 24 Feb 2020 08:53:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 71FB02467B;
+        Mon, 24 Feb 2020 08:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582534425;
-        bh=+JIpHlGXogS4+daEblPn5BSF0HuOG4JYDa5oxAD5hew=;
+        s=default; t=1582534459;
+        bh=7CICMqnQF7xoeXIcHQwwcYQyrJAiXAKQVpcrdIOkVs0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j1Zttk1kJhM3Hj0TFsM2w9mHiyAsPqgLjc2gRGjor+Ms/Z4pAJiaeaLwQ16IEI8dT
-         HMryrOFqoN2ALr7uzjQqUUfFYPdZhJhxcwvks//FRX9c0ssGXhXwx44+gHk5F48qVA
-         9Yhy0gXjPfjZ84UwLuRn7v0G7FDBV6RMgzzFmVlU=
+        b=JJTAeR9ayq/7gpoqTs0ucBNF6RjjiUfWLGqKFQotgasYidscHQDypnj0noNXhKuKc
+         6YxHl2uZXwI/55RAxsonoICXoxR/Cq8iThS3AjjsrqmiMVnXhJE7YCa8lrIqA7YrNl
+         4Iry43nvcx2moeiY/pbbjrYEsj5hBFt4fSWZRu10=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -52,9 +52,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Arthur Kiyanovski <akiyano@amazon.com>,
         Jes Sorensen <jes@trained-monkey.org>,
         nios2-dev@lists.rocketboards.org, Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH net-next v1 08/18] net/alacritech: Delete driver version
-Date:   Mon, 24 Feb 2020 10:53:01 +0200
-Message-Id: <20200224085311.460338-9-leon@kernel.org>
+Subject: [PATCH net-next v1 09/18] net/allwinner: Remove driver version
+Date:   Mon, 24 Feb 2020 10:53:02 +0200
+Message-Id: <20200224085311.460338-10-leon@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200224085311.460338-1-leon@kernel.org>
 References: <20200224085311.460338-1-leon@kernel.org>
@@ -67,38 +67,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@mellanox.com>
 
-Use standard variant of the driver version.
+There is no need in custom driver version for in-tree code.
 
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/ethernet/alacritech/slicoss.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/allwinner/sun4i-emac.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/alacritech/slicoss.c b/drivers/net/ethernet/alacritech/slicoss.c
-index 9daef4c8feef..6234fcd844ee 100644
---- a/drivers/net/ethernet/alacritech/slicoss.c
-+++ b/drivers/net/ethernet/alacritech/slicoss.c
-@@ -26,7 +26,6 @@
- #include "slic.h"
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
+index 22cadfbeedfb..18d3b4340bd4 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.c
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
+@@ -33,7 +33,6 @@
+ #include "sun4i-emac.h"
 
- #define DRV_NAME			"slicoss"
--#define DRV_VERSION			"1.0"
+ #define DRV_NAME		"sun4i-emac"
+-#define DRV_VERSION		"1.02"
 
- static const struct pci_device_id slic_id_tbl[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_ALACRITECH,
-@@ -1533,7 +1532,6 @@ static void slic_get_drvinfo(struct net_device *dev,
- 	struct slic_device *sdev = netdev_priv(dev);
+ #define EMAC_MAX_FRAME_LEN	0x0600
 
+@@ -212,7 +211,6 @@ static void emac_get_drvinfo(struct net_device *dev,
+ 			      struct ethtool_drvinfo *info)
+ {
  	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 -	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
- 	strlcpy(info->bus_info, pci_name(sdev->pdev), sizeof(info->bus_info));
+ 	strlcpy(info->bus_info, dev_name(&dev->dev), sizeof(info->bus_info));
  }
 
-@@ -1852,4 +1850,3 @@ module_pci_driver(slic_driver);
- MODULE_DESCRIPTION("Alacritech non-accelerated SLIC driver");
- MODULE_AUTHOR("Lino Sanfilippo <LinoSanfilippo@gmx.de>");
- MODULE_LICENSE("GPL");
--MODULE_VERSION(DRV_VERSION);
 --
 2.24.1
 
