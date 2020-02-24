@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4D54169F5C
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:36:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31DEA169F5D
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 08:36:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727459AbgBXHgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 02:36:17 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38175 "EHLO
+        id S1727464AbgBXHgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 02:36:18 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35820 "EHLO
         mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727282AbgBXHgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:36:14 -0500
-Received: by mail-wm1-f65.google.com with SMTP id a9so8195919wmj.3
-        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:36:12 -0800 (PST)
+        with ESMTP id S1727389AbgBXHgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 02:36:15 -0500
+Received: by mail-wm1-f65.google.com with SMTP id b17so8197094wmb.0
+        for <netdev@vger.kernel.org>; Sun, 23 Feb 2020 23:36:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=C9GvRaR50sjqBJaESB/Hh1cnB1xFvMEc/AC25ErEplg=;
-        b=GZorwqdD9VjEXfQwiJPSNc+ELzW92gX1vNyq/gOM9BCSf6FgPy2qibtHoJhZFQqtj2
-         qefS7Mmnv9tku7/yu88jVR2ntYa+NCGOecCFSLH7uW6k/I5Zon4ej+VaMg+wmdAXrZ1H
-         hPQ78NSAXwJsM/R7J6ovbSHVyzunbXV+KRz4PxQ5xgBSk1l9yW6cnZ2n4YWcUV79nf7P
-         0VygRL46fTTX1cq9GBTrXOk79fKzgMlrp9CTYP4vEHx/URiE7N4EEVPn006tRKYUwLUi
-         uGfIai2elw02XOYMyfDKdb7IijbeLZafKEWYNsnTgBw2GR4nAI8IxN1eeKVpr0wwKdT5
-         pbMw==
+        bh=F9bOMQiAK7bVuExScsTD27UUV0HJfVXPxB8XbGsyMlQ=;
+        b=ltG+1DBDAx7j80ECZzVDPPTuSeqOCQQHMKAlOOLeHCnNnAtrM92l7+Ve1pckoEEBP0
+         6zi8Cx0W4GFNmO7GTJH5Qbc/7QJkdpIyr5Xaog7j1k/pGWV2S5tLTUUHEsvbyECDz+nm
+         v/ZRVD/725pyKj8KF+qwbOp3b2wjujwpIsN5qEq7ZhFtJMfgExtdIS82Zn5/lhJMxalx
+         8lkG4Axq+HdKnX1QOIlgVnqQBS+4O2lHRqyrSRKUa7UcZCrNvLLxS2qR1ijojDOEkxIf
+         fV1wCDUjgPyt7Z489oX9WQASV/jGtUK0JgjfOHj5YpAJvVNzTR22aIzNueFRla5hwCGd
+         oSXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=C9GvRaR50sjqBJaESB/Hh1cnB1xFvMEc/AC25ErEplg=;
-        b=clKHcY3riruEmpq84JXfrbgzUhVP5M2hVhjQxU2/oVM7OsDM2MFeSEwju4FXBu9Cwm
-         LfvyZYMOsWnphqeVtyWFitFNxWbrmNob3SOvRgxy5YLJ7X8qRFQfSheVhIwa3SLa4e38
-         oa0TLuFg7NhZ5U1eaSCNMJ7nXo5k936eX7sA8VUj1/VJSh+oLZAUboHjneU7sXm7auO9
-         fxErO00qKcgKvks3Cm75N66NN4pgSTIM9mATK9ZldFquvOlXuLWffT+qssWvh/OYK4Vb
-         EAa5i3j5NVXd3OP02c3tUOR1Qvt7crgZqVPTSmdHP9eOp27h4/o2CpmwtC9Qmt+gorzh
-         O21g==
-X-Gm-Message-State: APjAAAXLTKNplnDPZqhlKZYHtKVeG2ED0L1iDEscHZrsxCdQ4NqMyt70
-        dm8hbmH1TfRvDish0dZSZcA8M1HvHnI=
-X-Google-Smtp-Source: APXvYqwsr/Mvs6u+DCPbKTVZw9lnKxTBUWQ98eFprLv8jRLaf5LlMBsPlm4HnxBzwb3tHnAB2P7QyA==
-X-Received: by 2002:a1c:41c4:: with SMTP id o187mr20234155wma.24.1582529771931;
-        Sun, 23 Feb 2020 23:36:11 -0800 (PST)
+        bh=F9bOMQiAK7bVuExScsTD27UUV0HJfVXPxB8XbGsyMlQ=;
+        b=bjzyQ8BDyZE8+dWeFjw1L0sN8MPCuF+pGGAbTPoh6KfeJN0bcZZhl+5IJUH4Pkmd/U
+         wG5QjaLcR2JwP0vB8mGua3970GO8V3ixLcmq8mVRNpJ0ryAnoVymHV3hgefIYeq4SKNP
+         QL+E/xJmGew3esHijHD0HQK2d+yvMcRkmgX6uu3tPXgAKgaOSKiBB7HI1mZOKqRAP4VD
+         gTYJM+/hD9hdYOhKMH40BXrl0lTWAe4f4BRNzqTy4SDGQHGpmrjR2mZ+kX3jTmX6W2t3
+         uWSY3Rjn5vwVW86g6vM9DS076tOiY/FK5kMt3ncawz+OO7i/+sbscJrwNn649BMXiFaD
+         LTSQ==
+X-Gm-Message-State: APjAAAWc9NJiYW5vI4pwXDQBNL9FuoH2ATDJyPzhqRHqAxt6Xkhgpzd/
+        Mqjj3GfA7FLgrSUeP7Z4B/ARKBiKfhw=
+X-Google-Smtp-Source: APXvYqxDVM8/YCiZtZYBbThhuXKAzzEmNe5Lcg0UMv5s/XHfGBtElrG8U1syFErviP3bwLVIZvLlZg==
+X-Received: by 2002:a1c:e246:: with SMTP id z67mr21569578wmg.52.1582529772942;
+        Sun, 23 Feb 2020 23:36:12 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id c4sm16557371wml.7.2020.02.23.23.36.11
+        by smtp.gmail.com with ESMTPSA id v5sm17565581wrv.86.2020.02.23.23.36.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 23:36:11 -0800 (PST)
+        Sun, 23 Feb 2020 23:36:12 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next 10/16] mlxsw: core: Allow to enable/disable rx_listener for trap
-Date:   Mon, 24 Feb 2020 08:35:52 +0100
-Message-Id: <20200224073558.26500-11-jiri@resnulli.us>
+Subject: [patch net-next 11/16] mlxsw: core: Extend MLXSW_RXL_DIS to register disabled trap group
+Date:   Mon, 24 Feb 2020 08:35:53 +0100
+Message-Id: <20200224073558.26500-12-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200224073558.26500-1-jiri@resnulli.us>
 References: <20200224073558.26500-1-jiri@resnulli.us>
@@ -63,157 +63,181 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-For source traps, the "thin policer" is going to be used in order
-to reduce the amount of trapped packets to minimum. However, there
-will be still small number of packets coming in that need to be dropped
-in the driver. Allow to enable/disable rx_listener related to specific
-trap in order to prevent unwanted packets to go up the stack.
+Extend the mlxsw_listener struct to contain trap group for disabled
+traps too. Rename the original "trap_group" item to "en_trap_group" as
+it represents enabled state. Let both groups be the same for MLXSW_RXL
+however extend MLXSW_RXL_DIS to register separate groups for enable and
+disable.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 48 ++++++++++++++++++----
- drivers/net/ethernet/mellanox/mlxsw/core.h |  2 +-
- 2 files changed, 40 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 12 +++-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    | 72 ++++++++++---------
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  2 +-
+ 3 files changed, 47 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index 167df7e4d678..2a451f7e1fea 100644
+index 2a451f7e1fea..3da2a4bde2b8 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -142,6 +142,7 @@ struct mlxsw_rx_listener_item {
- 	struct list_head list;
- 	struct mlxsw_rx_listener rxl;
- 	void *priv;
-+	bool enabled;
- };
- 
- struct mlxsw_event_listener_item {
-@@ -1470,7 +1471,7 @@ __find_rx_listener_item(struct mlxsw_core *mlxsw_core,
- 
- int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
- 				    const struct mlxsw_rx_listener *rxl,
--				    void *priv)
-+				    void *priv, bool enabled)
+@@ -1645,6 +1645,7 @@ static void mlxsw_core_listener_unregister(struct mlxsw_core *mlxsw_core,
+ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
+ 			     const struct mlxsw_listener *listener, void *priv)
  {
- 	struct mlxsw_rx_listener_item *rxl_item;
- 
-@@ -1482,6 +1483,7 @@ int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
- 		return -ENOMEM;
- 	rxl_item->rxl = *rxl;
- 	rxl_item->priv = priv;
-+	rxl_item->enabled = enabled;
- 
- 	list_add_rcu(&rxl_item->list, &mlxsw_core->rx_listener_list);
- 	return 0;
-@@ -1502,6 +1504,19 @@ void mlxsw_core_rx_listener_unregister(struct mlxsw_core *mlxsw_core,
- }
- EXPORT_SYMBOL(mlxsw_core_rx_listener_unregister);
- 
-+static void
-+mlxsw_core_rx_listener_state_set(struct mlxsw_core *mlxsw_core,
-+				 const struct mlxsw_rx_listener *rxl,
-+				 bool enabled)
-+{
-+	struct mlxsw_rx_listener_item *rxl_item;
-+
-+	rxl_item = __find_rx_listener_item(mlxsw_core, rxl);
-+	if (WARN_ON(!rxl_item))
-+		return;
-+	rxl_item->enabled = enabled;
-+}
-+
- static void mlxsw_core_event_listener_func(struct sk_buff *skb, u8 local_port,
- 					   void *priv)
- {
-@@ -1563,7 +1578,7 @@ int mlxsw_core_event_listener_register(struct mlxsw_core *mlxsw_core,
- 	el_item->el = *el;
- 	el_item->priv = priv;
- 
--	err = mlxsw_core_rx_listener_register(mlxsw_core, &rxl, el_item);
-+	err = mlxsw_core_rx_listener_register(mlxsw_core, &rxl, el_item, true);
- 	if (err)
- 		goto err_rx_listener_register;
- 
-@@ -1601,16 +1616,18 @@ EXPORT_SYMBOL(mlxsw_core_event_listener_unregister);
- 
- static int mlxsw_core_listener_register(struct mlxsw_core *mlxsw_core,
- 					const struct mlxsw_listener *listener,
--					void *priv)
-+					void *priv, bool enabled)
- {
--	if (listener->is_event)
-+	if (listener->is_event) {
-+		WARN_ON(!enabled);
- 		return mlxsw_core_event_listener_register(mlxsw_core,
- 						&listener->event_listener,
- 						priv);
--	else
-+	} else {
- 		return mlxsw_core_rx_listener_register(mlxsw_core,
- 						&listener->rx_listener,
--						priv);
-+						priv, enabled);
-+	}
- }
- 
- static void mlxsw_core_listener_unregister(struct mlxsw_core *mlxsw_core,
-@@ -1632,7 +1649,8 @@ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
- 	char hpkt_pl[MLXSW_REG_HPKT_LEN];
- 	int err;
- 
--	err = mlxsw_core_listener_register(mlxsw_core, listener, priv);
-+	err = mlxsw_core_listener_register(mlxsw_core, listener, priv,
-+					   listener->enabled_on_register);
- 	if (err)
- 		return err;
- 
-@@ -1675,11 +1693,22 @@ int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
- {
++	enum mlxsw_reg_htgt_trap_group trap_group;
  	enum mlxsw_reg_hpkt_action action;
  	char hpkt_pl[MLXSW_REG_HPKT_LEN];
-+	int err;
-+
-+	/* Not supported for event listener */
-+	if (WARN_ON(listener->is_event))
-+		return -EINVAL;
+ 	int err;
+@@ -1656,8 +1657,10 @@ int mlxsw_core_trap_register(struct mlxsw_core *mlxsw_core,
+ 
+ 	action = listener->enabled_on_register ? listener->en_action :
+ 						 listener->dis_action;
++	trap_group = listener->enabled_on_register ? listener->en_trap_group :
++						     listener->dis_trap_group;
+ 	mlxsw_reg_hpkt_pack(hpkt_pl, action, listener->trap_id,
+-			    listener->trap_group, listener->is_ctrl);
++			    trap_group, listener->is_ctrl);
+ 	err = mlxsw_reg_write(mlxsw_core,  MLXSW_REG(hpkt), hpkt_pl);
+ 	if (err)
+ 		goto err_trap_set;
+@@ -1678,7 +1681,7 @@ void mlxsw_core_trap_unregister(struct mlxsw_core *mlxsw_core,
+ 
+ 	if (!listener->is_event) {
+ 		mlxsw_reg_hpkt_pack(hpkt_pl, listener->dis_action,
+-				    listener->trap_id, listener->trap_group,
++				    listener->trap_id, listener->dis_trap_group,
+ 				    listener->is_ctrl);
+ 		mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
+ 	}
+@@ -1691,6 +1694,7 @@ int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
+ 			      const struct mlxsw_listener *listener,
+ 			      bool enabled)
+ {
++	enum mlxsw_reg_htgt_trap_group trap_group;
+ 	enum mlxsw_reg_hpkt_action action;
+ 	char hpkt_pl[MLXSW_REG_HPKT_LEN];
+ 	int err;
+@@ -1700,8 +1704,10 @@ int mlxsw_core_trap_state_set(struct mlxsw_core *mlxsw_core,
+ 		return -EINVAL;
  
  	action = enabled ? listener->en_action : listener->dis_action;
++	trap_group = enabled ? listener->en_trap_group :
++			       listener->dis_trap_group;
  	mlxsw_reg_hpkt_pack(hpkt_pl, action, listener->trap_id,
- 			    listener->trap_group, listener->is_ctrl);
--	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
-+	err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
-+	if (err)
-+		return err;
-+
-+	mlxsw_core_rx_listener_state_set(mlxsw_core, &listener->rx_listener,
-+					 enabled);
-+	return 0;
- }
- EXPORT_SYMBOL(mlxsw_core_trap_state_set);
- 
-@@ -1939,7 +1968,8 @@ void mlxsw_core_skb_receive(struct mlxsw_core *mlxsw_core, struct sk_buff *skb,
- 		if ((rxl->local_port == MLXSW_PORT_DONT_CARE ||
- 		     rxl->local_port == local_port) &&
- 		    rxl->trap_id == rx_info->trap_id) {
--			found = true;
-+			if (rxl_item->enabled)
-+				found = true;
- 			break;
- 		}
- 	}
+-			    listener->trap_group, listener->is_ctrl);
++			    trap_group, listener->is_ctrl);
+ 	err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(hpkt), hpkt_pl);
+ 	if (err)
+ 		return err;
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index b6e57cbc084e..b1c2ad214191 100644
+index b1c2ad214191..00e44e778aca 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -129,7 +129,7 @@ struct mlxsw_listener {
+@@ -78,7 +78,8 @@ struct mlxsw_listener {
+ 	};
+ 	enum mlxsw_reg_hpkt_action en_action; /* Action when enabled */
+ 	enum mlxsw_reg_hpkt_action dis_action; /* Action when disabled */
+-	u8 trap_group;
++	u8 en_trap_group; /* Trap group when enabled */
++	u8 dis_trap_group; /* Trap group when disabled */
+ 	u8 is_ctrl:1, /* should go via control buffer or not */
+ 	   is_event:1,
+ 	   enabled_on_register:1; /* Trap should be enabled when listener
+@@ -86,45 +87,46 @@ struct mlxsw_listener {
+ 				   */
+ };
+ 
+-#define __MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,	\
+-		    _dis_action, _enabled_on_register)			\
+-	{								\
+-		.trap_id = MLXSW_TRAP_ID_##_trap_id,			\
+-		.rx_listener =						\
+-		{							\
+-			.func = _func,					\
+-			.local_port = MLXSW_PORT_DONT_CARE,		\
+-			.trap_id = MLXSW_TRAP_ID_##_trap_id,		\
+-		},							\
+-		.en_action = MLXSW_REG_HPKT_ACTION_##_en_action,	\
+-		.dis_action = MLXSW_REG_HPKT_ACTION_##_dis_action,	\
+-		.trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_trap_group,	\
+-		.is_ctrl = _is_ctrl,					\
+-		.enabled_on_register = _enabled_on_register,		\
++#define __MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
++		    _dis_action, _enabled_on_register, _dis_trap_group)		\
++	{									\
++		.trap_id = MLXSW_TRAP_ID_##_trap_id,				\
++		.rx_listener =							\
++		{								\
++			.func = _func,						\
++			.local_port = MLXSW_PORT_DONT_CARE,			\
++			.trap_id = MLXSW_TRAP_ID_##_trap_id,			\
++		},								\
++		.en_action = MLXSW_REG_HPKT_ACTION_##_en_action,		\
++		.dis_action = MLXSW_REG_HPKT_ACTION_##_dis_action,		\
++		.en_trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_en_trap_group,	\
++		.dis_trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_dis_trap_group,	\
++		.is_ctrl = _is_ctrl,						\
++		.enabled_on_register = _enabled_on_register,			\
+ 	}
+ 
+ #define MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,		\
+ 		  _dis_action)							\
+ 	__MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,		\
+-		    _dis_action, true)
+-
+-#define MLXSW_RXL_DIS(_func, _trap_id, _en_action, _is_ctrl, _trap_group,	\
+-		      _dis_action)						\
+-	__MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _trap_group,		\
+-		    _dis_action, false)
+-
+-#define MLXSW_EVENTL(_func, _trap_id, _trap_group)			\
+-	{								\
+-		.trap_id = MLXSW_TRAP_ID_##_trap_id,			\
+-		.event_listener =					\
+-		{							\
+-			.func = _func,					\
+-			.trap_id = MLXSW_TRAP_ID_##_trap_id,		\
+-		},							\
+-		.en_action = MLXSW_REG_HPKT_ACTION_TRAP_TO_CPU,		\
+-		.trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_trap_group,	\
+-		.is_event = true,					\
+-		.enabled_on_register = true,				\
++		    _dis_action, true, _trap_group)
++
++#define MLXSW_RXL_DIS(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
++		      _dis_action, _dis_trap_group)				\
++	__MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
++		    _dis_action, false, _dis_trap_group)
++
++#define MLXSW_EVENTL(_func, _trap_id, _trap_group)				\
++	{									\
++		.trap_id = MLXSW_TRAP_ID_##_trap_id,				\
++		.event_listener =						\
++		{								\
++			.func = _func,						\
++			.trap_id = MLXSW_TRAP_ID_##_trap_id,			\
++		},								\
++		.en_action = MLXSW_REG_HPKT_ACTION_TRAP_TO_CPU,			\
++		.en_trap_group = MLXSW_REG_HTGT_TRAP_GROUP_##_trap_group,	\
++		.is_event = true,						\
++		.enabled_on_register = true,					\
+ 	}
  
  int mlxsw_core_rx_listener_register(struct mlxsw_core *mlxsw_core,
- 				    const struct mlxsw_rx_listener *rxl,
--				    void *priv);
-+				    void *priv, bool enabled);
- void mlxsw_core_rx_listener_unregister(struct mlxsw_core *mlxsw_core,
- 				       const struct mlxsw_rx_listener *rxl);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index afd3f28ec9f6..f36d61ce59b2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -120,7 +120,7 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
+ #define MLXSW_SP_RXL_DISCARD(_id, _group_id)				      \
+ 	MLXSW_RXL_DIS(mlxsw_sp_rx_drop_listener, DISCARD_##_id,		      \
+ 		      TRAP_EXCEPTION_TO_CPU, false, SP_##_group_id,	      \
+-		      SET_FW_DEFAULT)
++		      SET_FW_DEFAULT, SP_##_group_id)
  
+ #define MLXSW_SP_RXL_EXCEPTION(_id, _group_id, _action)			      \
+ 	MLXSW_RXL(mlxsw_sp_rx_exception_listener, _id,			      \
 -- 
 2.21.1
 
