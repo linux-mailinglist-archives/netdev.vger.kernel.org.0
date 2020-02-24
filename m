@@ -2,137 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9084C16A4EF
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7563916A507
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 12:38:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbgBXLc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 06:32:26 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37463 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727240AbgBXLc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 06:32:26 -0500
-Received: by mail-ed1-f66.google.com with SMTP id t7so11502400edr.4;
-        Mon, 24 Feb 2020 03:32:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AfrimxhNpVIP3+bGsNCdKoq84x3eL8XHOriR3+8j0Ms=;
-        b=OZsng7PbGu7nmQgVf0EtJ4UWk9brlGfX7GQV6ScV8Un4zIbnEmMQo3K75kfZv2R4de
-         xn5deO8iu6mqROEspIXv4C7rytvd5C0l81vNnQ68QvJE/3rUTisCUF13AeFSF/ItpxLl
-         5+WzaVr95eOKF1VDrIwhwlQYOyo3rsiwqBRiwvZYpIQTtHGoBpL3vTWEe1ot1PvW8sVj
-         gLGBY3nytSKGi+JjFUhai8H+diT/G7IqNMgelKUAYJC2dD1glW01knXX957H1t72VZlB
-         Vg9twX8zXS+4S5y1bcD4RGzTFKaISbSHlUJ/SxtszwziKDtnEv3CZT1Uibr+BQkrcOIk
-         awgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AfrimxhNpVIP3+bGsNCdKoq84x3eL8XHOriR3+8j0Ms=;
-        b=Y2LGRI6hWRb8H89sCLBIv9vKYXo/jnO6CXe/fjB4qJ37CBtdpTmEYLn1DZXQGS0GOc
-         5OcdLzBDLpOS4YY+/zCWrLMeMxWz9890+jKH51ZtAr1x+iO9cOwqMIVU1sWZJQqzVATw
-         V4MbbTlXFhstH83I072WMLAHYOWr/FcGTvXOl0cJbQ9WE0+2b4pMKVtRP91beelDlEny
-         EGQzd+hG3Rv6t0tvsVLbUHi+uduepKY9Mztcbt8fkAUn94HE4+6uuauc9OTtDVCC3NDi
-         CHbGIkFxdR5YDHaQPxlhKuibfHifkSd7rjinQdbt0rM5BXRgI+M2/NihP8q9L/r+56aX
-         XdIQ==
-X-Gm-Message-State: APjAAAVk9LjqaJGDzwhHqTfrgkEljbhBzrToSFPO59otg2uehbkgQt4F
-        V8vzeld83CKfX3Vg3deBmAkXytzQGyNr4v/XBFI=
-X-Google-Smtp-Source: APXvYqx9zeCTXG6L2u/50zzr6HLZumNTp5QAGjJPhbCfCsxqyl+CRJ3+VOhlW4+ONQ2A4mxbmAR07pHS25KnPjt6JdU=
-X-Received: by 2002:aa7:d3cb:: with SMTP id o11mr46447702edr.145.1582543944370;
- Mon, 24 Feb 2020 03:32:24 -0800 (PST)
+        id S1727423AbgBXLif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 06:38:35 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:35034 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726778AbgBXLie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 06:38:34 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 95260B40066;
+        Mon, 24 Feb 2020 11:38:32 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 24 Feb
+ 2020 11:38:23 +0000
+Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW stats
+ type
+To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <pablo@netfilter.org>,
+        <mlxsw@mellanox.com>
+References: <20200221095643.6642-1-jiri@resnulli.us>
+ <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
+ <20200222063829.GB2228@nanopsycho>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
+Date:   Mon, 24 Feb 2020 11:38:20 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <1559287017-32397-1-git-send-email-horatiu.vultur@microchip.com>
- <1559287017-32397-2-git-send-email-horatiu.vultur@microchip.com>
- <CA+h21hoSA5DECsA+faJ91n0jBhAR5BZnkMm=Dx4JfNDp8J+xbw@mail.gmail.com> <20200224110350.7kdzf4kml4iaem4i@soft-dev3.microsemi.net>
-In-Reply-To: <20200224110350.7kdzf4kml4iaem4i@soft-dev3.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 24 Feb 2020 13:32:13 +0200
-Message-ID: <CA+h21hrWqdvfApodpKbBXNH83cFT4uCgBmAtnzs+t63bhktO2g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] net: mscc: ocelot: Add support for tcam
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200222063829.GB2228@nanopsycho>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25250.003
+X-TM-AS-Result: No-4.602700-8.000000-10
+X-TMASE-MatchedRID: u7Yf2n7Ca/3mLzc6AOD8DfHkpkyUphL9MYl7SZFEwUZsMPuLZB/IRxNM
+        UypRFEH0LASAR59ZE9v2BGOumBZTulcQrQ0wAgM+SVHYMTQ1F1r4nOjGtd/rn0eRNQFi4zevmpY
+        YVVDsQzCc8Hl/+cxY+YslHi31+rVcmw72jSYg2ikcLuEDP+gqcggqPpbA7sp1TmCoNkYjqsDRL5
+        O8Y5SCovd+Yt8jQKDv8rjtDXpvGJSCVrCmUEKpNhlJRfzNw8af9e5am3m57X0da1Vk3RqxOBx7q
+        i+TpcKI592sjG0JWVuKgppSTR43KYuNJ+oz9dLcwRTopFgZxh0yc6SHgkKAipsoi2XrUn/JmTDw
+        p0zM3zoqtq5d3cxkNXEz3ZC7MxyUy3zKBDrIl5r/Lc4tFJU54/NE2o7GD3Mt74aqa5JQRiIRZxQ
+        qt4U888QdILowxk2FAFC1GhXrh4lBRQ6X5GL8v9yS5IITWzgwBsRAh8WmTAcG2WAWHb2qekrMHC
+        7kmmSWc5S6hNczuvhDDKa3G4nrLQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.602700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25250.003
+X-MDID: 1582544313-o7NH65dVtZDs
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+On 22/02/2020 06:38, Jiri Pirko wrote:
+> Fri, Feb 21, 2020 at 07:22:00PM CET, kuba@kernel.org wrote:
+>> Hmm, but the statistics are on actions, it feels a little bit like we
+>> are perpetuating the mistake of counting on filters here.
+> You are right, the stats in tc are per-action. However, in both mlxsw
+> and mlx5, the stats are per-filter. What hw_stats does is that it
+> basically allows the user to set the type for all the actions in the
+> filter at once.
+>
+> Could you imagine a usecase that would use different HW stats type for
+> different actions in one action-chain?
+Potentially a user could only want stats on one action and disable them
+ on another.  For instance, if their action chain does delivery to the
+ 'customer' and also mirrors the packets for monitoring, they might only
+ want stats on the first delivery (e.g. for billing) and not want to
+ waste a counter on the mirror.
 
-On Mon, 24 Feb 2020 at 13:03, Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
->
-> Hi Vladimir,
->
-> The 02/24/2020 12:38, Vladimir Oltean wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > Hi Horatiu,
-> >
-> > On Fri, 31 May 2019 at 10:18, Horatiu Vultur
-> > <horatiu.vultur@microchip.com> wrote:
-> > >
-> > > Add ACL support using the TCAM. Using ACL it is possible to create rules
-> > > in hardware to filter/redirect frames.
-> > >
-> > > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > > ---
-> > >  arch/mips/boot/dts/mscc/ocelot.dtsi      |   5 +-
-> > >  drivers/net/ethernet/mscc/Makefile       |   2 +-
-> > >  drivers/net/ethernet/mscc/ocelot.c       |  13 +
-> > >  drivers/net/ethernet/mscc/ocelot.h       |   8 +
-> > >  drivers/net/ethernet/mscc/ocelot_ace.c   | 777 +++++++++++++++++++++++++++++++
-> > >  drivers/net/ethernet/mscc/ocelot_ace.h   | 227 +++++++++
-> > >  drivers/net/ethernet/mscc/ocelot_board.c |   1 +
-> > >  drivers/net/ethernet/mscc/ocelot_regs.c  |  11 +
-> > >  drivers/net/ethernet/mscc/ocelot_s2.h    |  64 +++
-> > >  drivers/net/ethernet/mscc/ocelot_vcap.h  | 403 ++++++++++++++++
-> > >  10 files changed, 1508 insertions(+), 3 deletions(-)
-> > >  create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.c
-> > >  create mode 100644 drivers/net/ethernet/mscc/ocelot_ace.h
-> > >  create mode 100644 drivers/net/ethernet/mscc/ocelot_s2.h
-> > >  create mode 100644 drivers/net/ethernet/mscc/ocelot_vcap.h
-> > >
-> >
-> > I was testing this functionality and it looks like the MAC_ETYPE keys
-> > (src_mac, dst_mac) only match non-IP frames.
-> > Example, this rule doesn't drop ping traffic:
-> >
-> > tc qdisc add dev swp0 clsact
-> > tc filter add dev swp0 ingress flower skip_sw dst_mac
-> > 96:e1:ef:64:1b:44 action drop
-> >
-> > Would it be possible to do anything about that?
->
-> What you could do is to configure each port in such a way, to treat IP
-> frames as MAC_ETYPE frames. Have a look in ANA:PORT[0-11]:VCAP_S2_CFG.
->
-> There might be a problem with this approach. If you configure the port
-> in such a way, then all your rules with the keys IP6, IP4 will not be
-> match on that port.
->
+> Plus, if the fine grained setup is ever needed, the hw_stats could be in
+> future easilyt extended to be specified per-action too overriding
+> the per-filter setup only for specific action. What do you think?
+I think this is improper; the stats type should be defined per-action in
+ the uapi, even if userland initially only has UI to set it across the
+ entire filter.  (I imagine `tc action` would grow the corresponding UI
+ pretty quickly.)  Then on the driver side, you must determine whether
+ your hardware can support the user's request, and if not, return an
+ appropriate error code.
 
-Thanks for the quick answer.
-Doing that is indeed problematic and would not be my first choice. I
-was expecting MAC_ETYPE rules to always match an Ethernet frame
-regardless of higher-level protocols, and that the user would decide
-the behavior via rule ordering.
+Let's try not to encourage people (users, future HW & driver developers)
+ to keep thinking of stats as per-filter entities.
 
-> >
-> > Thanks,
-> > -Vladimir
->
-> --
-> /Horatiu
-
--Vladimir
+-ed
