@@ -2,98 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3211216B42A
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:38:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE44D16B42F
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 23:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbgBXWh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 17:37:56 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:45009 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbgBXWhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:37:53 -0500
-Received: by mail-ed1-f65.google.com with SMTP id g19so13841675eds.11
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 14:37:52 -0800 (PST)
+        id S1728228AbgBXWiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 17:38:46 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:44098 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727459AbgBXWiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 17:38:46 -0500
+Received: by mail-ed1-f68.google.com with SMTP id g19so13843643eds.11
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 14:38:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3N90WFV/7sUeBc8APgoP9uPRrizY9mUfJVzn6+g48Ag=;
-        b=RnptAsZpiayyvIAXUqxaa+Mp9sENeW4gWhcUAaYWZ/0y6PIJLD4tCDXz/8F2xC1dm2
-         Vj//yQAVM42nPoEt8IXeKqHZJy/DEUvBUJ9owmdtLu+84A2+U1vC4vX98BUGZT1vI/pM
-         eH86qqKX8OoW3d3hvI84n43dRl2UQeR9vC6vRkpboX6YO1qL4paPEwV8yOj62GCzAStT
-         K7y8YJI/LTXhtDrk+THDnBsisRVycx0/YA3kdJbMoyos9xLHimMmwOPCVQYK+Gdf4VFK
-         JWDwwAY7alzmBLtxvJzqT83F55hpjacogznJ2iC22vnag71qqO1xoC25Nv+04K++CxCk
-         gEPw==
+        bh=Am1tgX996z1ppxv6KMXbcSkx7Xx4s/5SxOG8NwtW1po=;
+        b=128yUKO7rcI157pfejcd9t2zQycldfxQIqIc8cRktUGVtjEdYJS7Xa2EEt4NCp6cMj
+         ccOG/dx9wXq7fMbzKK9/c7gB/ST6TIrQg1OjwnQQg+hSWoeKvgzRSMREJxlV9nv3iZ/r
+         8R3sj1oXQ/MGMYqXhA9xggevnRUy18QlEfCXwLdv2LD9aNUakDNtJQAeNmi7jl/F/7/j
+         8h4jxBu2dbtGtfbkW010yvY9lkLUukFR4hU0J+O64RWRMGeWffLAgOFtZ4X0bzq7CxP3
+         PqoEz7RcxB0OAwtf3M7T07PnxyBA2lRFoYnVrcskyMkOASjt0wJOA70Fs7rjWV8wW65t
+         1Xnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3N90WFV/7sUeBc8APgoP9uPRrizY9mUfJVzn6+g48Ag=;
-        b=FuLxGi9Ymn6muzmMxyNekLLBLuKXcyhOqplGxR08QbDKarjmeJI16m9HLpg6tSBkJv
-         icNpELP52lFSO4fHHTHECKUqm6XyELeoj9Vp5Uf9nXlxPDiSz10RrBG5AJB9rQNENT78
-         juVooTif9YRvIUnm0PHfX1IW3QILy5YuNm9T15v5riaiwdmd1Gl6lWD1Iqqk4ynCt5XN
-         1/hv8tXWNkf3VIl8xiM9le+ilxRN0OsWpi57xdrAxcJC2KtqHEk8jIU4E5h1G57mOjq5
-         7nKm5km1Dh/rfDn620DjoV6aVzKi1KEaj3h8L0YLIysLeYF0G3wcHd1TU9f8D0FFSthe
-         rjDQ==
-X-Gm-Message-State: APjAAAWbdvvjRqd8KT+K1byRlG5W0AunEZvWIvkgHSs9y/mc6IlI7aiD
-        BUqSuA11zc4onIoMi3Dmnxi3qPKX7JXi+/HFGEpR
-X-Google-Smtp-Source: APXvYqzk5aWfHcxpccXcxPmfJlsCR1KQaNpOdP6b7V7BafO0b2WVftvp09WOF+osxKaxnSRtXQP0NYq7m3LuJkNHTGQ=
-X-Received: by 2002:a50:ec1a:: with SMTP id g26mr46930820edr.164.1582583871720;
- Mon, 24 Feb 2020 14:37:51 -0800 (PST)
+        bh=Am1tgX996z1ppxv6KMXbcSkx7Xx4s/5SxOG8NwtW1po=;
+        b=aQmrdEIw+Q4Z9UKM8EhXJ83d+guDm8Skn1fQrJLndh16QMKRr+SdSpouEDNoKEyO1z
+         H+csPUf8uLAWkJOcxQcDF9a3T0aXbHGAHodF3T387Rsz44FWTptmt10b478cSOCh2zK3
+         70uJDYhtaSFhYoz6La9zajk6UEnQzCL6egj6GOSFQlpVe5BSWmdloEotKdgCS8QdqUzB
+         xq1S8Il8erboC+YvSMz9iqyjZlXNhCEKDCodSscHdPjz2EOnQTYpxUTSMWh/Zez2TVPu
+         ixBWy2gHy82+tup5FZ3PLG3LqrQnMjrcu1eXfJv+9tKjOzvv2sfEXctInvrLU7MMChXl
+         kLrQ==
+X-Gm-Message-State: APjAAAU4dG5x+FgN8e46Sa4fva6DJg/MeN1I0Twfsr36KnGb/XqYYjHy
+        rFqmZ1cs4ghx9iLlj63XWjP62no367WGZEppkNHB
+X-Google-Smtp-Source: APXvYqxEBymbJcwpeAcsqEent6pUKYyaxYqCtvnCFKaEevNm78Aalz+Q0v7wR9q33U6yWP+EFiJQt51zFjYAEi6KtSM=
+X-Received: by 2002:a50:fd15:: with SMTP id i21mr48320647eds.12.1582583922225;
+ Mon, 24 Feb 2020 14:38:42 -0800 (PST)
 MIME-Version: 1.0
-References: <0000000000005fe204059f4ddf27@google.com>
-In-Reply-To: <0000000000005fe204059f4ddf27@google.com>
+References: <0000000000003cbb40059f4e0346@google.com>
+In-Reply-To: <0000000000003cbb40059f4e0346@google.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 24 Feb 2020 17:37:40 -0500
-Message-ID: <CAHC9VhRxnY8Zj9OvPcbkc0VkUsJKd7+khAz7MiGGs0SUoegg_g@mail.gmail.com>
-Subject: Re: kernel panic: audit: rate limit exceeded
-To:     syzbot <syzbot+72461ac44b36c98f58e5@syzkaller.appspotmail.com>
-Cc:     Eric Paris <eparis@redhat.com>, kvalo@codeaurora.org,
+Date:   Mon, 24 Feb 2020 17:38:31 -0500
+Message-ID: <CAHC9VhQVXk5ucd3=7OC=BxEkZGGLfXv9bESX67Mr-TRmTwxjEg@mail.gmail.com>
+Subject: Re: kernel panic: audit: backlog limit exceeded
+To:     syzbot <syzbot+9a5e789e4725b9ef1316@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        dan.carpenter@oracle.com, davem@davemloft.net,
+        Eric Paris <eparis@redhat.com>, fzago@cray.com,
+        gregkh@linuxfoundation.org, john.hammond@intel.com,
         linux-audit@redhat.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, peter.senna@collabora.com,
-        romain.perier@collabora.com, stas.yakovlev@gmail.com,
-        syzkaller-bugs@googlegroups.com
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 3:08 AM syzbot
-<syzbot+72461ac44b36c98f58e5@syzkaller.appspotmail.com> wrote:
+On Mon, Feb 24, 2020 at 3:18 AM syzbot
+<syzbot+9a5e789e4725b9ef1316@syzkaller.appspotmail.com> wrote:
 >
 > Hello,
 >
 > syzbot found the following crash on:
 >
-> HEAD commit:    0c0ddd6a Merge tag 'linux-watchdog-5.6-rc3' of git://www.l..
+> HEAD commit:    36a44bcd Merge branch 'bnxt_en-shutdown-and-kexec-kdump-re..
 > git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12c8a3d9e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
-> dashboard link: https://syzkaller.appspot.com/bug?extid=72461ac44b36c98f58e5
+> console output: https://syzkaller.appspot.com/x/log.txt?x=148bfdd9e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=768cc3d3e277cc16
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9a5e789e4725b9ef1316
 > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c803ede00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17237de9e00000
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=151b1109e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=128bfdd9e00000
 >
 > The bug was bisected to:
 >
-> commit 28b75415ad19fef232d8daab4d5de17d753f0b36
-> Author: Romain Perier <romain.perier@collabora.com>
-> Date:   Wed Aug 23 07:16:51 2017 +0000
+> commit 0c1b9970ddd4cc41002321c3877e7f91aacb896d
+> Author: Dan Carpenter <dan.carpenter@oracle.com>
+> Date:   Fri Jul 28 14:42:27 2017 +0000
 >
->     wireless: ipw2200: Replace PCI pool old API
+>     staging: lustre: lustre: Off by two in lmv_fid2path()
 >
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12dbfe09e00000
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=11dbfe09e00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16dbfe09e00000
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17e6c3e9e00000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=1416c3e9e00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1016c3e9e00000
 >
 > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+72461ac44b36c98f58e5@syzkaller.appspotmail.com
-> Fixes: 28b75415ad19 ("wireless: ipw2200: Replace PCI pool old API")
+> Reported-by: syzbot+9a5e789e4725b9ef1316@syzkaller.appspotmail.com
+> Fixes: 0c1b9970ddd4 ("staging: lustre: lustre: Off by two in lmv_fid2path()")
 >
-> audit: audit_lost=1 audit_rate_limit=2 audit_backlog_limit=0
-> Kernel panic - not syncing: audit: rate limit exceeded
-> CPU: 1 PID: 10031 Comm: syz-executor626 Not tainted 5.6.0-rc2-syzkaller #0
+> audit: audit_backlog=13 > audit_backlog_limit=7
+> audit: audit_lost=1 audit_rate_limit=0 audit_backlog_limit=7
+> Kernel panic - not syncing: audit: backlog limit exceeded
+> CPU: 1 PID: 9913 Comm: syz-executor024 Not tainted 5.6.0-rc1-syzkaller #0
 > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 > Call Trace:
 >  __dump_stack lib/dump_stack.c:77 [inline]
@@ -102,40 +105,50 @@ On Mon, Feb 24, 2020 at 3:08 AM syzbot
 >  audit_panic.cold+0x32/0x32 kernel/audit.c:307
 >  audit_log_lost kernel/audit.c:377 [inline]
 >  audit_log_lost+0x8b/0x180 kernel/audit.c:349
->  audit_log_end+0x23c/0x2b0 kernel/audit.c:2322
->  audit_log_config_change+0xcc/0xf0 kernel/audit.c:396
->  audit_receive_msg+0x2246/0x28b0 kernel/audit.c:1277
->  audit_receive+0x114/0x230 kernel/audit.c:1513
->  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
->  netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
->  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xd7/0x130 net/socket.c:672
->  ____sys_sendmsg+0x753/0x880 net/socket.c:2343
->  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
->  __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
->  __do_sys_sendmsg net/socket.c:2439 [inline]
->  __se_sys_sendmsg net/socket.c:2437 [inline]
->  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
+>  audit_log_start kernel/audit.c:1788 [inline]
+>  audit_log_start+0x70e/0x7c0 kernel/audit.c:1745
+>  audit_log+0x95/0x120 kernel/audit.c:2345
+>  xt_replace_table+0x61d/0x830 net/netfilter/x_tables.c:1413
+>  __do_replace+0x1da/0x950 net/ipv6/netfilter/ip6_tables.c:1084
+>  do_replace net/ipv6/netfilter/ip6_tables.c:1157 [inline]
+>  do_ip6t_set_ctl+0x33a/0x4c8 net/ipv6/netfilter/ip6_tables.c:1681
+>  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
+>  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
+>  ipv6_setsockopt net/ipv6/ipv6_sockglue.c:949 [inline]
+>  ipv6_setsockopt+0x147/0x180 net/ipv6/ipv6_sockglue.c:933
+>  tcp_setsockopt net/ipv4/tcp.c:3165 [inline]
+>  tcp_setsockopt+0x8f/0xe0 net/ipv4/tcp.c:3159
+>  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
+>  __sys_setsockopt+0x261/0x4c0 net/socket.c:2130
+>  __do_sys_setsockopt net/socket.c:2146 [inline]
+>  __se_sys_setsockopt net/socket.c:2143 [inline]
+>  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2143
 >  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
 >  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x441239
-> Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007ffd68c9df48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441239
-> RDX: 0000000000000000 RSI: 00000000200006c0 RDI: 0000000000000003
-> RBP: 0000000000018b16 R08: 00000000004002c8 R09: 00000000004002c8
-> R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000402060
-> R13: 00000000004020f0 R14: 0000000000000000 R15: 0000000000000000
+> RIP: 0033:0x44720a
+> Code: 49 89 ca b8 37 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 1a e0 fb ff c3 66 0f 1f 84 00 00 00 00 00 49 89 ca b8 36 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 fa df fb ff c3 66 0f 1f 84 00 00 00 00 00
+> RSP: 002b:00007ffd032dec78 EFLAGS: 00000286 ORIG_RAX: 0000000000000036
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000044720a
+> RDX: 0000000000000040 RSI: 0000000000000029 RDI: 0000000000000003
+> RBP: 00007ffd032deda0 R08: 00000000000003b8 R09: 0000000000004000
+> R10: 00000000006d7b40 R11: 0000000000000286 R12: 00007ffd032deca0
+> R13: 00000000006d9d60 R14: 0000000000000029 R15: 00000000006d7ba0
 > Kernel Offset: disabled
 > Rebooting in 86400 seconds..
+>
+>
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 
-Has the syzbot audit related configuration recently changed?  At the
-very least it looks like you want to configure the system so that it
-doesn't panic when an audit record is lost (printk/AUDIT_FAIL_PRINTK
-or silent/AUDIT_FAIL_SILENT are better options); look at the
-auditctl(8) manpage for some more information (hint: look at the "-f"
-option).
+Similar to syzbot report 72461ac44b36c98f58e5, see my comments there.
 
 -- 
 paul moore
