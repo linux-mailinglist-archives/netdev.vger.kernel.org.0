@@ -2,139 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBB1A16B115
-	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 21:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AAC316B15B
+	for <lists+netdev@lfdr.de>; Mon, 24 Feb 2020 21:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727450AbgBXUn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 15:43:28 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:51048 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726722AbgBXUn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 15:43:28 -0500
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j6KZ3-0005g7-1V; Mon, 24 Feb 2020 21:42:53 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 36301104088; Mon, 24 Feb 2020 21:42:52 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [patch V3 06/22] bpf/trace: Remove redundant preempt_disable from trace_call_bpf()
-In-Reply-To: <20200224194017.rtwjcgjxnmltisfe@ast-mbp>
-References: <20200224140131.461979697@linutronix.de> <20200224145643.059995527@linutronix.de> <20200224194017.rtwjcgjxnmltisfe@ast-mbp>
-Date:   Mon, 24 Feb 2020 21:42:52 +0100
-Message-ID: <875zfvk983.fsf@nanos.tec.linutronix.de>
+        id S1727389AbgBXU7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 15:59:25 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:51022 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726722AbgBXU7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 15:59:25 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6Kow-0007LH-2s; Mon, 24 Feb 2020 20:59:18 +0000
+Received: from sleer.kot-begemot.co.uk ([192.168.3.72])
+        by jain.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6Kot-0003JJ-TM; Mon, 24 Feb 2020 20:59:17 +0000
+Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        linux-um@lists.infradead.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
+ <CA+FuTSd8P6uQnwisZEh7+nfowW9qKLBEvA4GPg+xUkjBa-6TDA@mail.gmail.com>
+ <4e7757cf-148e-4585-b358-3b38f391275d@cambridgegreys.com>
+ <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Organization: Cambridge Greys
+Message-ID: <93cb2b3f-6cae-8cf1-5fab-93fa34c14628@cambridgegreys.com>
+Date:   Mon, 24 Feb 2020 20:59:15 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+In-Reply-To: <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Spam-Score: -0.7
+X-Spam-Score: -0.7
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> On Mon, Feb 24, 2020 at 03:01:37PM +0100, Thomas Gleixner wrote:
->> --- a/kernel/trace/bpf_trace.c
->> +++ b/kernel/trace/bpf_trace.c
->> @@ -83,7 +83,7 @@ unsigned int trace_call_bpf(struct trace
->>  	if (in_nmi()) /* not supported yet */
->>  		return 1;
->>  
->> -	preempt_disable();
->> +	cant_sleep();
->>  
->>  	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
->>  		/*
->> @@ -115,7 +115,6 @@ unsigned int trace_call_bpf(struct trace
->>  
->>   out:
->>  	__this_cpu_dec(bpf_prog_active);
->> -	preempt_enable();
+On 24/02/2020 20:20, Willem de Bruijn wrote:
+> On Mon, Feb 24, 2020 at 2:55 PM Anton Ivanov
+> <anton.ivanov@cambridgegreys.com> wrote:
+>> On 24/02/2020 19:27, Willem de Bruijn wrote:
+>>> On Mon, Feb 24, 2020 at 8:26 AM <anton.ivanov@cambridgegreys.com> wrote:
+>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>
+>>>> Some of the locally generated frames marked as GSO which
+>>>> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>> fragments (data_len = 0) and length significantly shorter
+>>>> than the MTU (752 in my experiments).
+>>> Do we understand how these packets are generated?
+>> No, we have not been able to trace them.
+>>
+>> The only thing we know is that this is specific to locally generated
+>> packets. Something arriving from the network does not show this.
+>>
+>>> Else it seems this
+>>> might be papering over a deeper problem.
+>>>
+>>> The stack should not create GSO packets less than or equal to
+>>> skb_shinfo(skb)->gso_size. See for instance the check in
+>>> tcp_gso_segment after pulling the tcp header:
+>>>
+>>>           mss = skb_shinfo(skb)->gso_size;
+>>>           if (unlikely(skb->len <= mss))
+>>>                   goto out;
+>>>
+>>> What is the gso_type, and does it include SKB_GSO_DODGY?
+>>>
+>>
+>> 0 - not set.
+> Thanks for the follow-up details. Is this something that you can trigger easily?
+
+Yes, if you have a UML instance handy.
+
+Running iperf between the host and a UML guest using raw socket 
+transport triggers it immediately.
+
+This is my UML command line:
+
+vmlinux mem=2048M umid=OPX \
+     ubd0=OPX-3.0-Work.img \
+vec0:transport=raw,ifname=p-veth0,depth=128,gro=1,mac=92:9b:36:5e:38:69 \
+     root=/dev/ubda ro con=null con0=null,fd:2 con1=fd:0,fd:1
+
+p-right is a part of a vEth pair:
+
+ip link add l-veth0 type veth peer name p-veth0 && ifconfig p-veth0 up
+
+iperf server is on host, iperf -c in the guest.
+
 >
-> My testing uncovered that above was too aggressive:
-> [   41.533438] BUG: assuming atomic context at kernel/trace/bpf_trace.c:86
-> [   41.534265] in_atomic(): 0, irqs_disabled(): 0, pid: 2348, name: test_progs
-> [   41.536907] Call Trace:
-> [   41.537167]  dump_stack+0x75/0xa0
-> [   41.537546]  __cant_sleep.cold.105+0x8b/0xa3
-> [   41.538018]  ? exit_to_usermode_loop+0x77/0x140
-> [   41.538493]  trace_call_bpf+0x4e/0x2e0
-> [   41.538908]  __uprobe_perf_func.isra.15+0x38f/0x690
-> [   41.539399]  ? probes_profile_seq_show+0x220/0x220
-> [   41.539962]  ? __mutex_lock_slowpath+0x10/0x10
-> [   41.540412]  uprobe_dispatcher+0x5de/0x8f0
-> [   41.540875]  ? uretprobe_dispatcher+0x7c0/0x7c0
-> [   41.541404]  ? down_read_killable+0x200/0x200
-> [   41.541852]  ? __kasan_kmalloc.constprop.6+0xc1/0xd0
-> [   41.542356]  uprobe_notify_resume+0xacf/0x1d60
+> An skb_dump() + dump_stack() when the packet socket gets such a
+> packet may point us to the root cause and fix that.
 
-Duh. I missed that particular callchain.
+We tried dump stack, it was not informative - it was just the recvmmsg 
+call stack coming from the UML until it hits the relevant recv bit in 
+af_packet - it does not tell us where the packet is coming from.
 
-> The following fixes it:
+Quoting from the message earlier in the thread:
+
+[ 2334.180854] Call Trace:
+[ 2334.181947]  dump_stack+0x5c/0x80
+[ 2334.183021]  packet_recvmsg.cold+0x23/0x49
+[ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
+[ 2334.185034]  ? packet_poll+0xca/0x130
+[ 2334.186014]  ? sock_poll+0x77/0xb0
+[ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
+[ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
+[ 2334.188901]  ? dequeue_signal+0xdb/0x180
+[ 2334.189848]  do_recvmmsg+0xc8/0x2d0
+[ 2334.190728]  ? ep_poll+0x8c/0x470
+[ 2334.191581]  __sys_recvmmsg+0x108/0x150
+[ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
+[ 2334.193346]  do_syscall_64+0x53/0x140
+[ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
 >
-> commit 7b7b71ff43cc0b15567b60c38a951c8a2cbc97f0 (HEAD -> bpf-next)
-> Author: Alexei Starovoitov <ast@kernel.org>
-> Date:   Mon Feb 24 11:27:15 2020 -0800
->
->     bpf: disable migration for bpf progs attached to uprobe
->
->     trace_call_bpf() no longer disables preemption on its own.
->     All callers of this function has to do it explicitly.
->
->     Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->
-> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-> index 18d16f3ef980..7581f5eb6091 100644
-> --- a/kernel/trace/trace_uprobe.c
-> +++ b/kernel/trace/trace_uprobe.c
-> @@ -1333,8 +1333,15 @@ static void __uprobe_perf_func(struct trace_uprobe *tu,
->         int size, esize;
->         int rctx;
->
-> -       if (bpf_prog_array_valid(call) && !trace_call_bpf(call, regs))
-> -               return;
-> +       if (bpf_prog_array_valid(call)) {
-> +               u32 ret;
-> +
-> +               migrate_disable();
-> +               ret = trace_call_bpf(call, regs);
-> +               migrate_enable();
-> +               if (!ret)
-> +                       return;
-> +       }
->
-> But looking at your patch cant_sleep() seems unnecessary strong.
-> Should it be cant_migrate() instead?
 
-Yes, if we go with the migrate_disable(). OTOH, having a
-preempt_disable() in that uprobe callsite should work as well, then we
-can keep the cant_sleep() check which covers all other callsites
-properly. No strong opinion though.
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
 
-> And two calls to __this_cpu*() replaced with this_cpu*() ?
-
-See above.
-
-> If you can ack it I can fix it up in place and apply the whole thing.
-
-Ack.
-
-Thanks,
-
-     tglx
