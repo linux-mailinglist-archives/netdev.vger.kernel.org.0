@@ -2,213 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3490D16BBDE
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 09:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 440C116BBF9
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 09:39:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729806AbgBYIbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 03:31:10 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54866 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729720AbgBYIbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 03:31:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582619466;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JmkjEEqq8m5BjNADnDl327dChnkc9rLHPLw9n41A+qY=;
-        b=Pjw9WIPwKnbwGIVvEpWYsUZjFwMkfrQFgKmf9X1p1dPbrpc0YpkDnm6MBFargxsHH7ewcD
-        merh+IH27AoFd5VISHtRokhNjWfK6JDyXHnqRTilxBcieg74MClDyXAeVyoFImFRSqGdov
-        dwj0IVa3qOai8quQEuqwE/rvavob5gg=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-128-kds4VfCuMEeQY1dZvVIqzA-1; Tue, 25 Feb 2020 03:31:05 -0500
-X-MC-Unique: kds4VfCuMEeQY1dZvVIqzA-1
-Received: by mail-wr1-f71.google.com with SMTP id z1so3286098wrs.9
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 00:31:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JmkjEEqq8m5BjNADnDl327dChnkc9rLHPLw9n41A+qY=;
-        b=fAk/30m9r5pHqEQOwo0MQbOt8+vbBKFQ1oMQDBFbk/OpdeWLhQsvJQx7B9ZTjt569F
-         OasoLKOaDqdPkoai0VSP4Npbe9kdFhh4hwKhRU16tH4Kz2rGGSGd5wcnR84YLM+VfI54
-         0jPgfbKPv8/mLs/fBTM/yCbYvIkNKHV8DWThoAzolnKSftlWT3DGogCCwITeptLxnb8E
-         pjcpJNu5Q1bW9D2IbN44AbQBUBPWZGUOOYD+xrwaF1db7HIPS7I7H4R3R/2dQFDcOyE1
-         9cjJ/TPLw+HLnuHF60kdKaeMBb18nYeJZUBQ2olN7b5CUsmVjKzpMIa9ledkl99OWj8s
-         u3DQ==
-X-Gm-Message-State: APjAAAWyIHmjA0o59OOQaauqe84v0niS7Y/XJ0YofdpHQeO1YcQGxekT
-        8nIAN0F1spXlMAkBPZvh5HwS/OpuJpbDpZtfUPcCjdPaaDedIVPTB2efPNBkVZnyXL3wIQMpo5O
-        Aau18IPNxD6L75MS5
-X-Received: by 2002:adf:f586:: with SMTP id f6mr15471136wro.256.1582619462026;
-        Tue, 25 Feb 2020 00:31:02 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxskh69L3ehEc2A4u9xM0Hn8YDZ+SLMXLTAldmiH302cEMuq/teKvvxsxUwEbCUclTnpJrS4Q==
-X-Received: by 2002:adf:f586:: with SMTP id f6mr15471097wro.256.1582619461690;
-        Tue, 25 Feb 2020 00:31:01 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id a13sm5456577wrt.55.2020.02.25.00.31.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 00:31:01 -0800 (PST)
-Date:   Tue, 25 Feb 2020 09:30:58 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        syzbot <syzbot+731710996d79d0d58fbc@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-Subject: Re: INFO: task hung in lock_sock_nested (2)
-Message-ID: <20200225083058.nfrrvsdgjxj3zcmw@steredhat>
-References: <0000000000004241ff059f2eb8a4@google.com>
- <20200223075025.9068-1-hdanton@sina.com>
- <20200224100853.wd67e7rqmtidfg7y@steredhat>
- <HK0P153MB0148B4C74BA6A60E295A03D8BFED0@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
+        id S1729416AbgBYIjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 03:39:55 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57311 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726867AbgBYIjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 03:39:55 -0500
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1j6Vkt-0003Ti-Q8; Tue, 25 Feb 2020 09:39:51 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "linux-can @ vger . kernel . org" <linux-can@vger.kernel.org>
+Cc:     kernel@pengutronix.de, glider@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com
+Subject: [PATCH v2] can: af_can: can_rcv() canfd_rcv(): Fix access of uninitialized memory or out of bounds
+Date:   Tue, 25 Feb 2020 09:39:50 +0100
+Message-Id: <20200225083950.2542543-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HK0P153MB0148B4C74BA6A60E295A03D8BFED0@HK0P153MB0148.APCP153.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 05:44:03AM +0000, Dexuan Cui wrote:
-> > From: Stefano Garzarella <sgarzare@redhat.com>
-> > Sent: Monday, February 24, 2020 2:09 AM
-> > ...
-> > > > syz-executor280 D27912  9768   9766 0x00000000
-> > > > Call Trace:
-> > > >  context_switch kernel/sched/core.c:3386 [inline]
-> > > >  __schedule+0x934/0x1f90 kernel/sched/core.c:4082
-> > > >  schedule+0xdc/0x2b0 kernel/sched/core.c:4156
-> > > >  __lock_sock+0x165/0x290 net/core/sock.c:2413
-> > > >  lock_sock_nested+0xfe/0x120 net/core/sock.c:2938
-> > > >  virtio_transport_release+0xc4/0xd60
-> > net/vmw_vsock/virtio_transport_common.c:832
-> > > >  vsock_assign_transport+0xf3/0x3b0 net/vmw_vsock/af_vsock.c:454
-> > > >  vsock_stream_connect+0x2b3/0xc70 net/vmw_vsock/af_vsock.c:1288
-> > > >  __sys_connect_file+0x161/0x1c0 net/socket.c:1857
-> > > >  __sys_connect+0x174/0x1b0 net/socket.c:1874
-> > > >  __do_sys_connect net/socket.c:1885 [inline]
-> > > >  __se_sys_connect net/socket.c:1882 [inline]
-> > > >  __x64_sys_connect+0x73/0xb0 net/socket.c:1882
-> > > >  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-> 
-> My understanding about the call trace is: in vsock_stream_connect() 
-> after we call lock_sock(sk), we call vsock_assign_transport(), which may
-> call vsk->transport->release(vsk), i.e. virtio_transport_release(), and in
-> virtio_transport_release() we try to get the same lock and hang.
+Syzbot found the use of uninitialzied memory when injecting non conformant
+CANFD frames via a tun device into the kernel:
 
-Yes, that's what I got.
+| BUG: KMSAN: uninit-value in number+0x9f8/0x2000 lib/vsprintf.c:459
+| CPU: 1 PID: 11897 Comm: syz-executor136 Not tainted 5.6.0-rc2-syzkaller #0
+| Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+| Call Trace:
+|  __dump_stack lib/dump_stack.c:77 [inline]
+|  dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+|  kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+|  __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+|  number+0x9f8/0x2000 lib/vsprintf.c:459
+|  vsnprintf+0x1d85/0x31b0 lib/vsprintf.c:2640
+|  vscnprintf+0xc2/0x180 lib/vsprintf.c:2677
+|  vprintk_store+0xef/0x11d0 kernel/printk/printk.c:1917
+|  vprintk_emit+0x2c0/0x860 kernel/printk/printk.c:1984
+|  vprintk_default+0x90/0xa0 kernel/printk/printk.c:2029
+|  vprintk_func+0x636/0x820 kernel/printk/printk_safe.c:386
+|  printk+0x18b/0x1d3 kernel/printk/printk.c:2062
+|  canfd_rcv+0x370/0x3a0 net/can/af_can.c:697
+|  __netif_receive_skb_one_core net/core/dev.c:5198 [inline]
+|  __netif_receive_skb net/core/dev.c:5312 [inline]
+|  netif_receive_skb_internal net/core/dev.c:5402 [inline]
+|  netif_receive_skb+0xe77/0xf20 net/core/dev.c:5461
+|  tun_rx_batched include/linux/skbuff.h:4321 [inline]
+|  tun_get_user+0x6aef/0x6f60 drivers/net/tun.c:1997
+|  tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+|  call_write_iter include/linux/fs.h:1901 [inline]
+|  new_sync_write fs/read_write.c:483 [inline]
+|  __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+|  vfs_write+0x44a/0x8f0 fs/read_write.c:558
+|  ksys_write+0x267/0x450 fs/read_write.c:611
+|  __do_sys_write fs/read_write.c:623 [inline]
+|  __se_sys_write+0x92/0xb0 fs/read_write.c:620
+|  __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+|  do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+|  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-> 
-> > > Seems like vsock needs a word to track lock owner in an attempt to
-> > > avoid trying to lock sock while the current is the lock owner.
-> 
-> I'm unfamilar with the g2h/h2g :-) 
-> Here I'm wondering if it's acceptable to add an 'already_locked'
-> parameter like this:
->   bool already_locked = true;
->   vsk->transport->release(vsk, already_locked) ?
+In canfd_rcv() the non conformant CANFD frame (i.e. skb too short) is detected,
+but the pr_warn_once() accesses uninitialized memory or the skb->data out of
+bounds to print the warning message.
 
-Could be acceptable, but I prefer to avoid.
+This problem exists in both can_rcv() and canfd_rcv(). This patch removes the
+access to the skb->data from the pr_warn_once() in both functions.
 
->  
-> > Thanks for this possible solution.
-> > What about using sock_owned_by_user()?
->  
-> > We should fix also hyperv_transport, because it could suffer from the same
-> > problem.
-> 
-> IIUC hyperv_transport doesn't supprot the h2g/g2h feature, so it should not
-> suffers from the deadlock issue here?
+Reported-by: syzbot+9bcb0c9409066696d3aa@syzkaller.appspotmail.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+---
+Hello,
 
-The h2g/g2h is in the vsock core, and the hyperv_transport is one of the g2h
-transports available.
+changes since RFC:
+- print cfd->len if backed by skb, -1 otherwise
+  (Requested by Oliver)
 
-If we have a L1 VM with hyperv_transport (G2H) to communicate with L0 and a
-nested KVM VM (L2) we need to load also vhost_transport (H2G). If the
-user creates a socket and it tries the following:
-    connect(fd, <2,1234>) - socket assigned to hyperv_transport (because
-                            the user wants to reach the host using CID_HOST)
-        fails
+Marc
 
-    connect(fd, <3,1234>) - socket must be reassigned to vhost_transport
-                            (because the user wants to reach a nested guest)
+ net/can/af_can.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-So, I think in this case we can have the deadlock.
-
-> 
-> > At this point, it might be better to call vsk->transport->release(vsk)
-> > always with the lock taken and remove it in the transports as in the
-> > following patch.
-> > 
-> > What do you think?
-> > 
-> > 
-> > diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> > index 9c5b2a91baad..a073d8efca33 100644
-> > --- a/net/vmw_vsock/af_vsock.c
-> > +++ b/net/vmw_vsock/af_vsock.c
-> > @@ -753,20 +753,18 @@ static void __vsock_release(struct sock *sk, int
-> > level)
-> >  		vsk = vsock_sk(sk);
-> >  		pending = NULL;	/* Compiler warning. */
-> > 
-> > -		/* The release call is supposed to use lock_sock_nested()
-> > -		 * rather than lock_sock(), if a sock lock should be acquired.
-> > -		 */
-> > -		if (vsk->transport)
-> > -			vsk->transport->release(vsk);
-> > -		else if (sk->sk_type == SOCK_STREAM)
-> > -			vsock_remove_sock(vsk);
-> > -
-> >  		/* When "level" is SINGLE_DEPTH_NESTING, use the nested
-> >  		 * version to avoid the warning "possible recursive locking
-> >  		 * detected". When "level" is 0, lock_sock_nested(sk, level)
-> >  		 * is the same as lock_sock(sk).
-> >  		 */
-> >  		lock_sock_nested(sk, level);
-> > +
-> > +		if (vsk->transport)
-> > +			vsk->transport->release(vsk);
-> > +		else if (sk->sk_type == SOCK_STREAM)
-> > +			vsock_remove_sock(vsk);
-> > +
-> >  		sock_orphan(sk);
-> >  		sk->sk_shutdown = SHUTDOWN_MASK;
-> > 
-> > diff --git a/net/vmw_vsock/hyperv_transport.c
-> > b/net/vmw_vsock/hyperv_transport.c
-> > index 3492c021925f..510f25f4a856 100644
-> > --- a/net/vmw_vsock/hyperv_transport.c
-> > +++ b/net/vmw_vsock/hyperv_transport.c
-> > @@ -529,9 +529,7 @@ static void hvs_release(struct vsock_sock *vsk)
-> >  	struct sock *sk = sk_vsock(vsk);
-> >  	bool remove_sock;
-> > 
-> > -	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
-> >  	remove_sock = hvs_close_lock_held(vsk);
-> > -	release_sock(sk);
-> >  	if (remove_sock)
-> >  		vsock_remove_sock(vsk);
-> >  }
-> 
-> This looks good to me, but do we know why vsk->transport->release(vsk)
-> is called without holding the lock for 'sk' in the first place?
-
-Maybe because vmci_transport (the first transport implemented) doesn't
-require holding lock during the release.
-
-Okay, so I'll test this patch and then I'll send it out for reviews.
-
-Thanks for the feedback,
-Stefano
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index 7511bfae2e0d..38b7aaa6b286 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -678,7 +678,9 @@ static int can_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CAN_MTU ||
+ 		     cfd->len > CAN_MAX_DLEN)) {
+ 		pr_warn_once("PF_CAN: dropped non conform CAN skbuf: dev type %d, len %d, datalen %d\n",
+-			     dev->type, skb->len, cfd->len);
++			     dev->type, skb->len,
++			     skb->len >= offsetof(struct canfd_frame, len) +
++			     sizeof(cfd->len) ? cfd->len : -1);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
+ 	}
+@@ -695,7 +697,9 @@ static int canfd_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CANFD_MTU ||
+ 		     cfd->len > CANFD_MAX_DLEN)) {
+ 		pr_warn_once("PF_CAN: dropped non conform CAN FD skbuf: dev type %d, len %d, datalen %d\n",
+-			     dev->type, skb->len, cfd->len);
++			     dev->type, skb->len,
++			     skb->len >= offsetof(struct canfd_frame, len) +
++			     sizeof(cfd->len) ? cfd->len : -1);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
+ 	}
+-- 
+2.25.0
 
