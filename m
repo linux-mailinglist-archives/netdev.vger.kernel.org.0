@@ -2,116 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6791216C0B2
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE2916C0C7
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729729AbgBYMYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 07:24:03 -0500
-Received: from mail-dm6nam11on2064.outbound.protection.outlook.com ([40.107.223.64]:42817
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729048AbgBYMYC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Feb 2020 07:24:02 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E1eCxmOoVIF1JLRRu0cCWavvzUqyQeecLVDGWkPshfgnOb3HqQE164AyEluJwc/sPbJQYBWZ2/aw8YddUrRZvRLky/1e6ZJQnQS64K8RlIeO8c79AEvgoh/cU8G9DaxHdY/fA55o9lAcYPPZa3JatHa6PL8FXbGsvC6WTzDhs00vt5nxvp0YZt1Fj0Um/8jbOLaMGi0OHAFxgtLExA8OKjckwb4Z9eBnxmTislOTl09QfAzkiZSy8WrrANhes13U+Z4sHCtL4uns1sVpN0bKPQteyPS27cg+VFJb99jpdAm696wAekMPYVhBn2f9/DdYxfec89VWqDK5j8EIPefYiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zOQYIhAlhsOMcgLdDsJOa46/769a/JFRgnSHKkt9lxs=;
- b=Xs9mA9Db2wa3lvNqTyMIVZzfW0JZME6byZoHSBU8MYsXJP71tGJp+4zmwHaOtmIkpn7ofrFb7XgiwvacsGZPDwiam2zqcc+MKhhlU9RQlu8YtcN4sckzKmC4rc2lWySdFv2G8kZ9KEDurhggtVYcemkh81gSxrXCyImR3yxaY+G/vASNId0PfurIqedgzxKWUJxHNxrlF4he+QsCBzEU7VtHAIhstnFken6z5FvLgSKpAYkn28GdG7sy4uPvM5O/ybHUuBUaD2lKkftnUEzUCRF5q154JaARdZ2T6Q8Xc2dAzzlk+7jOaNxY0isVdQnu5xwAbSwtblIARy6FADhA5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
+        id S1729899AbgBYM2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 07:28:00 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:35046 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729444AbgBYM2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:28:00 -0500
+Received: by mail-pj1-f67.google.com with SMTP id q39so1221415pjc.0;
+        Tue, 25 Feb 2020 04:27:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zOQYIhAlhsOMcgLdDsJOa46/769a/JFRgnSHKkt9lxs=;
- b=MSwHJDmqFOAZwm/3lwUyCnKkmTi4QW1Ft6uOSuoW3dBFRhi9NDuLE02su5uyLsSi/cFEkMqSImVovkcZCGXC3D4jUq4unoBOJdY/flH5j5nGfdNvAYHvU3Wnw5RdKqblsTf1XGmZxEonEsbxAMXq1SchOopX1RmatPUMoLFRHbs=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=Sudheesh.Mavila@amd.com; 
-Received: from MN2PR12MB2974.namprd12.prod.outlook.com (2603:10b6:208:c1::11)
- by MN2PR12MB3264.namprd12.prod.outlook.com (2603:10b6:208:104::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.22; Tue, 25 Feb
- 2020 12:23:57 +0000
-Received: from MN2PR12MB2974.namprd12.prod.outlook.com
- ([fe80::a142:9294:5865:65c]) by MN2PR12MB2974.namprd12.prod.outlook.com
- ([fe80::a142:9294:5865:65c%5]) with mapi id 15.20.2750.021; Tue, 25 Feb 2020
- 12:23:57 +0000
-From:   Sudheesh Mavila <sudheesh.mavila@amd.com>
-To:     sudheesh.mavila@amd.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: corrected the return value for genphy_check_and_restart_aneg
-Date:   Tue, 25 Feb 2020 17:52:08 +0530
-Message-Id: <20200225122208.6881-1-sudheesh.mavila@amd.com>
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+QtbxlvdjtvFda/vLl5OBW1XulRAqxs8RhN83qn/HyM=;
+        b=VAAaWZsH9ff4hCxWAWkbiQ66n9p2Wfea3aJP0p5rAMk8NtghSBZBJFxxx7ljudMPLT
+         AJ2d3jPOF8pyGPIk1V5WEb3bi3IYGdsBQJU6kiEaM34JGP8SMVnJ6mQFIosIVPY72qON
+         LNX+bb9RO1twk9ho41qpq1BqNqR+CfU5dMOezxJ2sNFFY/wZ+Q3aM3jA8h4hwnlB4nTF
+         B0G7ofOSTG7D8+ilvq/JGjHr4E+ckzwR418BILmJuQ7IfunCV5Ls8MmeFUucFvFHslsK
+         bxXc6niBU6BZPgHFTSEuTP+quZpDy/Q1VRFmDiR4VsnEHQTHR+89nfGV0PMSfAhv7BHi
+         aQ7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+QtbxlvdjtvFda/vLl5OBW1XulRAqxs8RhN83qn/HyM=;
+        b=R9zwSRtlgxCHZd7o7oguSUZTvZnWm1sBPC3XeoCZPhGvVXUewDhy5YRBXMQQ/UzhPP
+         nkiT6bMhFXitRu/ujKZuA3OP0HPH9w4jv6EFdgheq+iT/DF/1I4ytvRpl656sSVUEn1u
+         n7oTZVB/av2zgq//Ehps08mbubv2RTALwcSXaZj8VSmwbcoQloJhWsQuH5I/CAqRtENA
+         WX/MolK+9luAbHJPJYWggdbQwq55TUWlHorVcpWYOmRmoxCjbmYUV4JMFpht8nBDKV1e
+         I4EPxWOQm+/2Qdoi3RJu4kNoLgRc74OXndDn6ziX69+DXwRNK6FWAlEqmjSfhmPQX56M
+         jPng==
+X-Gm-Message-State: APjAAAV46MLqfbonGMW+nSCbYRj9IoF4q7EXmGtSG4/QJ6ZWYrYTvPA4
+        nleC4JufBRPpokG+caPPAQ==
+X-Google-Smtp-Source: APXvYqztBpN7FmSWeDOyFVt+VeM03oK0FL5OGPHFt8Rl0M+/B0gDYwwZenbSWw35AEfaNoYTNLjtTw==
+X-Received: by 2002:a17:90b:90d:: with SMTP id bo13mr4942999pjb.54.1582633678246;
+        Tue, 25 Feb 2020 04:27:58 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([2402:3a80:1ee1:f355:e8e5:803b:cde8:bccc])
+        by smtp.gmail.com with ESMTPSA id s7sm16508981pgp.44.2020.02.25.04.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 04:27:57 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     jiri@mellanox.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joel@joelfernandes.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        frextrite@gmail.com, paulmck@kernel.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] net: core: devlink.c: Use built-in RCU list checking
+Date:   Tue, 25 Feb 2020 17:57:45 +0530
+Message-Id: <20200225122745.31095-1-madhuparnabhowmik10@gmail.com>
 X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: MA1PR01CA0133.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:35::27) To MN2PR12MB2974.namprd12.prod.outlook.com
- (2603:10b6:208:c1::11)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yocto-build.amd.com (165.204.156.251) by MA1PR01CA0133.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:35::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Tue, 25 Feb 2020 12:23:54 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [165.204.156.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 22d1ec1e-1f6a-4310-51dc-08d7b9ed95f8
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3264:|MN2PR12MB3264:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB32646877CBAF64646084E366FCED0@MN2PR12MB3264.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:595;
-X-Forefront-PRVS: 0324C2C0E2
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(189003)(199004)(36756003)(8676002)(44832011)(316002)(5660300002)(2906002)(7696005)(4744005)(26005)(2616005)(1076003)(66946007)(16526019)(66476007)(81166006)(8936002)(6666004)(186003)(6486002)(66556008)(52116002)(81156014)(956004)(478600001)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3264;H:MN2PR12MB2974.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: amd.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k3gpn4kbb4t+IlTZza0I7fLJDUO74Q+gvApI9fyfwJuDplLS2Tdp38VCuyQHyo12zhETxk1ZdLOWXo7ZcucqXBdffVyOqV8LRwTchX+5v+a6K47s3ctLfHhSpZJUvnwcsm043q3o0gCaPzVpSvECP8UwuZyNtR9M4QCFQzZizrpgKi8v/49TH1PC7+Zf/MEcvU+3WwgDOxZ1CNPIUC0mDjPZiEnvQnoGQGqnrMeUn3tI0EeT5C06qMvsXP4MjKZVrfSBrSZ9w5fqTspL5xbmsi9yPQP6extUDBglpzsjpebIUIaa1e5tv1Ae/s7iThibfirN4kTCXLMVT/OSlaqk/oZMWy7evs2/uBmeINjK5FPvdDcdhKCprbIkBViPRD7xTrnMqZuuA1J9eZIn/tL/c0XUX9hu7lu3ZFb+xnaN6QsHP2SJsGu9MqH0ya9Dhprd
-X-MS-Exchange-AntiSpam-MessageData: TJxlMYmTgJubDMiPvy/zidSiHq8NdM5XWTS9sDqmB0kdkp4oPJ+l9nWpAtjwTJFdYV14VOJrA+R+ra42QOOg85wALpr8hGnM+BawT4yDFOjc52FJN0MneTxoPFH+GzXdSn8aHXra0v/T3in422tUhA==
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22d1ec1e-1f6a-4310-51dc-08d7b9ed95f8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2020 12:23:57.4309
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8bbHyeyTJlMb4O+0j4P96dj9QWhdGhZFmfLOzOhHE++6O6NFw7UGNvJQji4+Ta/3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3264
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When auto-negotiation is not required, return value should be zero.
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+list_for_each_entry_rcu() has built-in RCU and lock checking.
+
+Pass cond argument to list_for_each_entry_rcu() to silence
+false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
+
+The devlink->lock is held when devlink_dpipe_table_find()
+is called in non RCU read side section. Therefore, pass struct devlink
+to devlink_dpipe_table_find() for lockdep checking.
+
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 ---
- drivers/net/phy/phy_device.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/core/devlink.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 6a5056e0ae77..36cde3dac4c3 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1806,10 +1806,13 @@ int genphy_check_and_restart_aneg(struct phy_device *phydev, bool restart)
- 			restart = true;
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index e82750bdc496..a92ab58304e5 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2103,11 +2103,11 @@ static int devlink_dpipe_entry_put(struct sk_buff *skb,
+ 
+ static struct devlink_dpipe_table *
+ devlink_dpipe_table_find(struct list_head *dpipe_tables,
+-			 const char *table_name)
++			 const char *table_name, struct devlink *devlink)
+ {
+ 	struct devlink_dpipe_table *table;
+-
+-	list_for_each_entry_rcu(table, dpipe_tables, list) {
++	list_for_each_entry_rcu(table, dpipe_tables, list,
++				lockdep_is_held(&devlink->lock)) {
+ 		if (!strcmp(table->name, table_name))
+ 			return table;
  	}
+@@ -2226,7 +2226,7 @@ static int devlink_nl_cmd_dpipe_entries_get(struct sk_buff *skb,
  
--	if (restart)
--		ret = genphy_restart_aneg(phydev);
-+	/* Only restart aneg if we are advertising something different
-+	 * than we were before.
-+	 */
-+	if (restart > 0)
-+		return genphy_restart_aneg(phydev);
+ 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
+ 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+-					 table_name);
++					 table_name, devlink);
+ 	if (!table)
+ 		return -EINVAL;
  
--	return ret;
-+	return 0;
- }
- EXPORT_SYMBOL(genphy_check_and_restart_aneg);
+@@ -2382,7 +2382,7 @@ static int devlink_dpipe_table_counters_set(struct devlink *devlink,
+ 	struct devlink_dpipe_table *table;
  
+ 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+-					 table_name);
++					 table_name, devlink);
+ 	if (!table)
+ 		return -EINVAL;
+ 
+@@ -6814,7 +6814,7 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
+ 
+ 	rcu_read_lock();
+ 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+-					 table_name);
++					 table_name, devlink);
+ 	enabled = false;
+ 	if (table)
+ 		enabled = table->counters_enabled;
+@@ -6845,7 +6845,8 @@ int devlink_dpipe_table_register(struct devlink *devlink,
+ 
+ 	mutex_lock(&devlink->lock);
+ 
+-	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name)) {
++	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name,
++				     devlink)) {
+ 		err = -EEXIST;
+ 		goto unlock;
+ 	}
+@@ -6881,7 +6882,7 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
+ 
+ 	mutex_lock(&devlink->lock);
+ 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+-					 table_name);
++					 table_name, devlink);
+ 	if (!table)
+ 		goto unlock;
+ 	list_del_rcu(&table->list);
+@@ -7038,7 +7039,7 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
+ 
+ 	mutex_lock(&devlink->lock);
+ 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+-					 table_name);
++					 table_name, devlink);
+ 	if (!table) {
+ 		err = -EINVAL;
+ 		goto out;
 -- 
 2.17.1
 
