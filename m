@@ -2,82 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5450716EA22
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 16:31:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A6016EA39
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 16:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731017AbgBYPbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 10:31:16 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44366 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731104AbgBYPbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 10:31:15 -0500
-Received: by mail-pf1-f193.google.com with SMTP id y5so7343311pfb.11
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 07:31:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VzT+Bi9aRcIzHGw33ls7K4ic9gdRd2ue48AE8Ckn9dY=;
-        b=SKyrGUWa4UMK4lem3L5ao7gm5EwFg8zzQVwz4lVhuLmNLxggYbFhFp+9qvKw7Ocr4u
-         eefBfQiK6VRs3kwbcGZxGik+foeRG2TkAWl28VLy8mOVivZWNOp+nmLcypOw2W3t7wS1
-         Pc9+lfTQiqYNKJKNMfkCGUCUckJAoj+10idh8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VzT+Bi9aRcIzHGw33ls7K4ic9gdRd2ue48AE8Ckn9dY=;
-        b=Iso711L+G17mgNceyXIWHerpkQBaZSmMEjW4bpJ30HkqcSZF7GunQuMC60zBra1+gM
-         barO7cxtmMjPodYX6enpuE7Xz0ItiQjeED0LAaOSSkck9ElZWPmhx8XhwwaXvdzePDOp
-         sOMrJMISQQjgW+xahcWTFrGmLchkPMETD7i5hpCOUrZ9aInnPkO8KX4vC9m5azY8qVcM
-         GEz2hXX7lvTAisEqN44O8gwCVnmoWsp5wy42o1SqW9cOjzOhFL3gUvEBvnBmJ47qkvhn
-         /STphkftk+ghN27xrxuTpJ+DBavQWj6Tkb7SvM308T0N74r22WwLnz0UTBM2wf14DPNw
-         hjQg==
-X-Gm-Message-State: APjAAAVJth3Jt6sAk7LNgWC+cblTVLyzuj2xYQ/3JT1VhweSkSwijDDb
-        ldhabMNAZmbmuLAYR8yjMNy1OQ==
-X-Google-Smtp-Source: APXvYqz96aCOZJnivHeAhI3DTYBvj8Uq0Ew8+dU6teoDezYVy2LVzhSaLWTs/qKzU1bEWOQ1dEE9Dg==
-X-Received: by 2002:a63:8c18:: with SMTP id m24mr60402523pgd.70.1582644675177;
-        Tue, 25 Feb 2020 07:31:15 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id r62sm17947322pfc.89.2020.02.25.07.31.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 07:31:14 -0800 (PST)
-Date:   Tue, 25 Feb 2020 07:31:13 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        KP Singh <kpsingh@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        James Morris <jmorris@namei.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 3/8] bpf: lsm: provide attachment points for
- BPF LSM programs
-Message-ID: <202002250730.62F9BD642A@keescook>
-References: <20200220175250.10795-1-kpsingh@chromium.org>
- <20200220175250.10795-4-kpsingh@chromium.org>
- <0ef26943-9619-3736-4452-fec536a8d169@schaufler-ca.com>
- <202002211946.A23A987@keescook>
- <20200223220833.wdhonzvven7payaw@ast-mbp>
- <c5c67ece-e5c1-9e8f-3a2b-60d8d002c894@schaufler-ca.com>
- <20200224171305.GA21886@chromium.org>
- <00c216e1-bcfd-b7b1-5444-2a2dfa69190b@schaufler-ca.com>
- <202002241136.C4F9F7DFF@keescook>
- <20200225054125.dttrc3fvllzu4mx5@ast-mbp>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200225054125.dttrc3fvllzu4mx5@ast-mbp>
+        id S1731146AbgBYPes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 10:34:48 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18138 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728065AbgBYPes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 10:34:48 -0500
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PFYDT3130300
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 10:34:46 -0500
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2yb12c8dxk-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 10:34:46 -0500
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Tue, 25 Feb 2020 15:34:45 -0000
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 25 Feb 2020 15:34:42 -0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01PFYf8e51511542
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 25 Feb 2020 15:34:41 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32E4111C04A;
+        Tue, 25 Feb 2020 15:34:41 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ED2E911C04C;
+        Tue, 25 Feb 2020 15:34:40 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 25 Feb 2020 15:34:40 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net] net/smc: fix cleanup for linkgroup setup failures
+Date:   Tue, 25 Feb 2020 16:34:36 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 20022515-0016-0000-0000-000002EA2AAA
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20022515-0017-0000-0000-0000334D56B6
+Message-Id: <20200225153436.26498-1-kgraul@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-25_05:2020-02-21,2020-02-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ clxscore=1015 priorityscore=1501 lowpriorityscore=0 suspectscore=3
+ adultscore=0 malwarescore=0 impostorscore=0 phishscore=0 mlxlogscore=999
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002250120
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 09:41:27PM -0800, Alexei Starovoitov wrote:
-> I'm proposing to rename BPF_PROG_TYPE_LSM into BPF_PROG_TYPE_OVERRIDE_RETURN.
+From: Ursula Braun <ubraun@linux.ibm.com>
 
-Isn't the type used to decide which validator to use?
+If an SMC connection to a certain peer is setup the first time,
+a new linkgroup is created. In case of setup failures, such a
+linkgroup is unusable and should disappear. As a first step the
+linkgroup is removed from the linkgroup list in smc_lgr_forget().
 
+There are 2 problems:
+smc_listen_decline() might be called before linkgroup creation
+resulting in a crash due to calling smc_lgr_forget() with
+parameter NULL.
+If a setup failure occurs after linkgroup creation, the connection
+is never unregistered from the linkgroup, preventing linkgroup
+freeing.
+
+This patch introduces an enhanced smc_lgr_cleanup_early() function
+which
+* contains a linkgroup check for early smc_listen_decline()
+  invocations
+* invokes smc_conn_free() to guarantee unregistering of the
+  connection.
+* schedules fast linkgroup removal of the unusable linkgroup
+
+And the unused function smcd_conn_free() is removed from smc_core.h.
+
+Fixes: 3b2dec2603d5b ("net/smc: restructure client and server code in af_smc")
+Fixes: 2a0674fffb6bc ("net/smc: improve abnormal termination of link groups")
+Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ net/smc/af_smc.c   | 25 +++++++++++++++----------
+ net/smc/smc_core.c | 12 ++++++++++++
+ net/smc/smc_core.h |  2 +-
+ 3 files changed, 28 insertions(+), 11 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 90988a511cd5..6fd44bdb0fc3 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -512,15 +512,18 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code)
+ static int smc_connect_abort(struct smc_sock *smc, int reason_code,
+ 			     int local_contact)
+ {
++	bool is_smcd = smc->conn.lgr->is_smcd;
++
+ 	if (local_contact == SMC_FIRST_CONTACT)
+-		smc_lgr_forget(smc->conn.lgr);
+-	if (smc->conn.lgr->is_smcd)
++		smc_lgr_cleanup_early(&smc->conn);
++	else
++		smc_conn_free(&smc->conn);
++	if (is_smcd)
+ 		/* there is only one lgr role for SMC-D; use server lock */
+ 		mutex_unlock(&smc_server_lgr_pending);
+ 	else
+ 		mutex_unlock(&smc_client_lgr_pending);
+ 
+-	smc_conn_free(&smc->conn);
+ 	smc->connect_nonblock = 0;
+ 	return reason_code;
+ }
+@@ -1091,7 +1094,6 @@ static void smc_listen_out_err(struct smc_sock *new_smc)
+ 	if (newsmcsk->sk_state == SMC_INIT)
+ 		sock_put(&new_smc->sk); /* passive closing */
+ 	newsmcsk->sk_state = SMC_CLOSED;
+-	smc_conn_free(&new_smc->conn);
+ 
+ 	smc_listen_out(new_smc);
+ }
+@@ -1102,12 +1104,13 @@ static void smc_listen_decline(struct smc_sock *new_smc, int reason_code,
+ {
+ 	/* RDMA setup failed, switch back to TCP */
+ 	if (local_contact == SMC_FIRST_CONTACT)
+-		smc_lgr_forget(new_smc->conn.lgr);
++		smc_lgr_cleanup_early(&new_smc->conn);
++	else
++		smc_conn_free(&new_smc->conn);
+ 	if (reason_code < 0) { /* error, no fallback possible */
+ 		smc_listen_out_err(new_smc);
+ 		return;
+ 	}
+-	smc_conn_free(&new_smc->conn);
+ 	smc_switch_to_fallback(new_smc);
+ 	new_smc->fallback_rsn = reason_code;
+ 	if (reason_code && reason_code != SMC_CLC_DECL_PEERDECL) {
+@@ -1170,16 +1173,18 @@ static int smc_listen_ism_init(struct smc_sock *new_smc,
+ 			    new_smc->conn.lgr->vlan_id,
+ 			    new_smc->conn.lgr->smcd)) {
+ 		if (ini->cln_first_contact == SMC_FIRST_CONTACT)
+-			smc_lgr_forget(new_smc->conn.lgr);
+-		smc_conn_free(&new_smc->conn);
++			smc_lgr_cleanup_early(&new_smc->conn);
++		else
++			smc_conn_free(&new_smc->conn);
+ 		return SMC_CLC_DECL_SMCDNOTALK;
+ 	}
+ 
+ 	/* Create send and receive buffers */
+ 	if (smc_buf_create(new_smc, true)) {
+ 		if (ini->cln_first_contact == SMC_FIRST_CONTACT)
+-			smc_lgr_forget(new_smc->conn.lgr);
+-		smc_conn_free(&new_smc->conn);
++			smc_lgr_cleanup_early(&new_smc->conn);
++		else
++			smc_conn_free(&new_smc->conn);
+ 		return SMC_CLC_DECL_MEM;
+ 	}
+ 
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 2249de5379ee..5b085efa3bce 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -162,6 +162,18 @@ static void smc_lgr_unregister_conn(struct smc_connection *conn)
+ 	conn->lgr = NULL;
+ }
+ 
++void smc_lgr_cleanup_early(struct smc_connection *conn)
++{
++	struct smc_link_group *lgr = conn->lgr;
++
++	if (!lgr)
++		return;
++
++	smc_conn_free(conn);
++	smc_lgr_forget(lgr);
++	smc_lgr_schedule_free_work_fast(lgr);
++}
++
+ /* Send delete link, either as client to request the initiation
+  * of the DELETE LINK sequence from server; or as server to
+  * initiate the delete processing. See smc_llc_rx_delete_link().
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index c472e12951d1..234ae25f0025 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -296,6 +296,7 @@ struct smc_clc_msg_accept_confirm;
+ struct smc_clc_msg_local;
+ 
+ void smc_lgr_forget(struct smc_link_group *lgr);
++void smc_lgr_cleanup_early(struct smc_connection *conn);
+ void smc_lgr_terminate(struct smc_link_group *lgr, bool soft);
+ void smc_port_terminate(struct smc_ib_device *smcibdev, u8 ibport);
+ void smc_smcd_terminate(struct smcd_dev *dev, u64 peer_gid,
+@@ -316,7 +317,6 @@ int smc_vlan_by_tcpsk(struct socket *clcsock, struct smc_init_info *ini);
+ 
+ void smc_conn_free(struct smc_connection *conn);
+ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini);
+-void smcd_conn_free(struct smc_connection *conn);
+ void smc_lgr_schedule_free_work_fast(struct smc_link_group *lgr);
+ int smc_core_init(void);
+ void smc_core_exit(void);
 -- 
-Kees Cook
+2.17.1
+
