@@ -2,57 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D21EB16EEC8
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:13:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D9F16EED7
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:16:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729179AbgBYTNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:13:40 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48804 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728499AbgBYTNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:13:40 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 91EE513B490A4;
-        Tue, 25 Feb 2020 11:13:39 -0800 (PST)
-Date:   Tue, 25 Feb 2020 11:13:39 -0800 (PST)
-Message-Id: <20200225.111339.990273097730952856.davem@davemloft.net>
-To:     jiri@resnulli.us
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
-Subject: Re: [patch net-next] iavf: use tc_cls_can_offload_basic() instead
- of chain check
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200225121023.6011-1-jiri@resnulli.us>
-References: <20200225121023.6011-1-jiri@resnulli.us>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:13:39 -0800 (PST)
+        id S1731357AbgBYTQj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Feb 2020 14:16:39 -0500
+Received: from mga18.intel.com ([134.134.136.126]:36580 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728756AbgBYTQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 14:16:39 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Feb 2020 11:16:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,485,1574150400"; 
+   d="scan'208";a="260805520"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Feb 2020 11:16:37 -0800
+Received: from orsmsx125.amr.corp.intel.com (10.22.240.125) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 25 Feb 2020 11:16:37 -0800
+Received: from orsmsx113.amr.corp.intel.com ([169.254.9.183]) by
+ ORSMSX125.amr.corp.intel.com ([169.254.3.208]) with mapi id 14.03.0439.000;
+ Tue, 25 Feb 2020 11:16:37 -0800
+From:   "Allan, Bruce W" <bruce.w.allan@intel.com>
+To:     Colin King <colin.king@canonical.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH][next] ice: remove redundant
+ assignment to pointer vsi
+Thread-Topic: [Intel-wired-lan] [PATCH][next] ice: remove redundant
+ assignment to pointer vsi
+Thread-Index: AQHV6aMWiEGBawp1sE64DZXz6vfzxKgsR9Og
+Date:   Tue, 25 Feb 2020 19:16:36 +0000
+Message-ID: <804857E1F29AAC47BF68C404FC60A184010B0500CE@ORSMSX113.amr.corp.intel.com>
+References: <20200222171054.171505-1-colin.king@canonical.com>
+In-Reply-To: <20200222171054.171505-1-colin.king@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYmZhOTY1YmUtOWQ5ZC00MDcyLTg5ZTMtYzQ2YzJhNDQwNDJmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiNENUaUxac2FRUkYyVTBoNytRMFlaRmM0NjAweDUwb1RQc2sySGNLQzBrM1VlVjUxU1Z3QW94bk12VFRWcFN1MyJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@resnulli.us>
-Date: Tue, 25 Feb 2020 13:10:23 +0100
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Colin King
+> Sent: Saturday, February 22, 2020 9:11 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S . Miller
+> <davem@davemloft.net>; intel-wired-lan@lists.osuosl.org;
+> netdev@vger.kernel.org
+> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: [Intel-wired-lan] [PATCH][next] ice: remove redundant assignment to
+> pointer vsi
+> 
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Pointer vsi is being re-assigned a value that is never read,
+> the assignment is redundant and can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
 
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Looks like the iavf code actually experienced a race condition, when a
-> developer took code before the check for chain 0 was put to helper.
-> So use tc_cls_can_offload_basic() helper instead of direct check and
-> move the check to _cb() so this is similar to i40e code.
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+What version of coverity and what options were used?
+
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
-> This was originally part of "net: allow user specify TC filter HW stats type"
-> patchset, but it is no longer related after the requested changes.
-> Sending separatelly.
-
-Jeff, do you want me to apply this directly?  If so, please give your ack.
-
-Thanks.
+>  drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+> b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+> index 169b72a94b9d..2c8e334c47a0 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+> @@ -2191,7 +2191,6 @@ static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8
+> *msg)
+>  		set_bit(vf_q_id, vf->rxq_ena);
+>  	}
+> 
+> -	vsi = pf->vsi[vf->lan_vsi_idx];
+>  	q_map = vqs->tx_queues;
+>  	for_each_set_bit(vf_q_id, &q_map, ICE_MAX_BASE_QS_PER_VF) {
+>  		if (!ice_vc_isvalid_q_id(vf, vqs->vsi_id, vf_q_id)) {
+> --
+> 2.25.0
+> 
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
