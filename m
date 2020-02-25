@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 197B216C334
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 15:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26EE316C36E
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 15:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730584AbgBYODO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 09:03:14 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43505 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729680AbgBYODO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 09:03:14 -0500
-Received: by mail-wr1-f65.google.com with SMTP id r11so14864570wrq.10;
-        Tue, 25 Feb 2020 06:03:11 -0800 (PST)
+        id S1730584AbgBYOIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 09:08:32 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46641 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730240AbgBYOIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 09:08:31 -0500
+Received: by mail-wr1-f66.google.com with SMTP id j7so2363757wrp.13;
+        Tue, 25 Feb 2020 06:08:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=gT5zrM2j7XEtMlB7rHoEuszlfwjRx6IJBGVhnWU8za8=;
-        b=hWCtNvbvUOUdk4K2EShu9FzOHbBorzKRWJunvJI4ZLaV/J+MGAuQb3AYW1Mn5+jcbn
-         ZTtDmexNlmcBaSl5uuWo+w8hLruzzQ/wbfRnMWAYJmgsQMtLoC59sPePZugKWJEYfD1g
-         9T82BYG5cdxvkUSaOAdQbMR0Tk2Kch+5VODE/it0LOUb7emCWewH6eqNAWPBpQYdeNPi
-         G/HuJG2TvTBhPk0gJwVqN8cAlZTRC6mnjCP5eP/ea2gZGVG73SmG/w7vdN/BPGExb1rv
-         +Emu9lFoHa/YvTQoGcV8yJgaP4gvQxzM+hakIcI0ns8OK45ZhdlUXVNyL7wrRgp8Fp31
-         SjLg==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=E9/8+yaqRvrAtgc15Q6xGgpo7ZqTiVPb7l/6H6m7t5Q=;
+        b=ipTJOk/01c3Cv19kwq5xngz+7Q8JLD9W9SwP30kqoDvGgs9mzmSuyVdOp/0x2Z3JBX
+         SouECnpnvqbZiyAORAku+W/U/oRbWRkpCMkrmsn8Xl89YrZge3A/xv42OGXaXRe85vr9
+         vTJsbKq4CygkV1enEslMKQQAzYJvqW3zZywCr495lv9nYZjlIyDLhhmMutccJIDL3E+D
+         UjcWbnalYMJWIJc1ouJOTNUt8xrvH7VkdxIyKwl0kRhepl8251mAItVW4EnwGN5lCEOU
+         trh3JytS55gxaECU44jYgdM7QwaTh8CoQ0V0QkYq/wyOz2RQYHpyMrLr1mpaw7/QNu2g
+         A+Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=gT5zrM2j7XEtMlB7rHoEuszlfwjRx6IJBGVhnWU8za8=;
-        b=uc+wrjEndL6mFV0idYjrZeTNosHZRxGIyS0MIgfP48JvL7hK1adsrM7LUGMfsxBr7F
-         U9uHz2d66lZw/LtryVrsqYPG4yLxSin250Y+KywsWA6W1DYu4KHtC54zoNclSlm+4Pc5
-         D56WZAFknFAzI0H4c6gGaMrN9IEJwNvfG6UaGiyBpVW2jSM5HlXanLCwQwkOwO+mz4Zh
-         jkIS3B3en7KohhdVjGmtUqiAOua5PQIdXa2Js4LEMcLFIfc+SgaHkmEmXQ+HQ2Zedx3Y
-         JUPKoGzvQCmI0amQvc8iOJm6zv5uINuwedo7HfOOH6+J05bUUxp/wHGVbKI83EqVFMSj
-         pumQ==
-X-Gm-Message-State: APjAAAWiSHYRumFAlWz6UvWpFU0nbFW+uu/SVeM3dphbXBytan+mQG4/
-        undrnWQtbxC1LZqnLE5Iw2Y=
-X-Google-Smtp-Source: APXvYqzjvPCANPXCFeieo7Z7xtgMjQdPoQ0t/NA8OENUa0brXY7/kaqZFx/zHdDvsPU6g66uUU9LsQ==
-X-Received: by 2002:adf:a35e:: with SMTP id d30mr68333564wrb.33.1582639390815;
-        Tue, 25 Feb 2020 06:03:10 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=E9/8+yaqRvrAtgc15Q6xGgpo7ZqTiVPb7l/6H6m7t5Q=;
+        b=CI1/BbZxkbVcrdTVwl7COxp1msnv0nYYIXR6m23lgnsoEvDN6jlsr9b4AG6xH7WO3Y
+         H++ZjMfW8t+3nwaWZidaIIJE61XhTrkKuL/U/NOzfM8iuDcvQitP2OA9KoiFE64mPXIP
+         iW8uKVLqFA28RlmwXwl1xw7qNjRp8x5XmtTXab3hRv4Pn9xBITac6D1NVQsBO2aoOOJg
+         1paeZyyJEAw5M2BhetphKgh84Bz9Vo5VRTndjM/M8HPgfLumOKsYpUjn4RynoLn2Sv72
+         Da3+QLB6t8nJ1zhL2t7kRvnecYzfu7ZRMYqp+TJBHN/wrWsmdo91s8u6ZwT1r+NGXUKc
+         sURg==
+X-Gm-Message-State: APjAAAXaLNLa1qtKc4w1GpcQim+cnx1R7qrCPefyR3lj/zEeIrFOO7cO
+        ScaomgeDRiFQSuW82rks+MU=
+X-Google-Smtp-Source: APXvYqx+DZruNmT8sN2rhRo+8HDVho5gJrgSt8caSfXEUGu9sq6Ub/o8MAgrKTltKV/iaWI8Kpn9HA==
+X-Received: by 2002:a5d:5183:: with SMTP id k3mr72340713wrv.414.1582639709386;
+        Tue, 25 Feb 2020 06:08:29 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:30a8:e117:ed7d:d145? (p200300EA8F29600030A8E117ED7DD145.dip0.t-ipconnect.de. [2003:ea:8f29:6000:30a8:e117:ed7d:d145])
-        by smtp.googlemail.com with ESMTPSA id u8sm4297464wmm.15.2020.02.25.06.03.09
+        by smtp.googlemail.com with ESMTPSA id z19sm4286325wmi.35.2020.02.25.06.08.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Feb 2020 06:03:10 -0800 (PST)
+        Tue, 25 Feb 2020 06:08:28 -0800 (PST)
+Subject: [PATCH v3 1/8] PCI: add constant PCI_STATUS_ERROR_BITS
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v3 0/8] PCI: add and use constant PCI_STATUS_ERROR_BITS and
- helper pci_status_get_and_clear_errors
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>,
@@ -58,11 +58,13 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         alsa-devel@alsa-project.org
-Message-ID: <20ca7c1f-7530-2d89-40a6-d97a65aa25ef@gmail.com>
-Date:   Tue, 25 Feb 2020 15:03:05 +0100
+References: <20ca7c1f-7530-2d89-40a6-d97a65aa25ef@gmail.com>
+Message-ID: <73dd692e-bbce-35f5-88e9-417fb0f7229e@gmail.com>
+Date:   Tue, 25 Feb 2020 15:03:44 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <20ca7c1f-7530-2d89-40a6-d97a65aa25ef@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,51 +73,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Few drivers have own definitions for this constant, so move it to the
-PCI core. In addition there are several places where the following
-code sequence is used:
-1. Read PCI_STATUS
-2. Mask out non-error bits
-3. Action based on set error bits
-4. Write back set error bits to clear them
+This constant is used (with different names) in more than one driver,
+so move it to the PCI core.
 
-As this is a repeated pattern, add a helper to the PCI core.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/marvell/skge.h | 6 ------
+ drivers/net/ethernet/marvell/sky2.h | 6 ------
+ include/uapi/linux/pci_regs.h       | 7 +++++++
+ 3 files changed, 7 insertions(+), 12 deletions(-)
 
-Most affected drivers are network drivers. But as it's about core
-PCI functionality, I suppose the series should go through the PCI
-tree.
-
-v2:
-- fix formal issue with cover letter
-v3:
-- fix dumb typo in patch 7
-
-Heiner Kallweit (8):
-  PCI: add constant PCI_STATUS_ERROR_BITS
-  PCI: add pci_status_get_and_clear_errors
-  r8169: use pci_status_get_and_clear_errors
-  net: cassini: use pci_status_get_and_clear_errors
-  net: sungem: use pci_status_get_and_clear_errors
-  net: skfp: use PCI_STATUS_ERROR_BITS
-  PCI: pci-bridge-emul: use PCI_STATUS_ERROR_BITS
-  sound: bt87x: use pci_status_get_and_clear_errors
-
- drivers/net/ethernet/marvell/skge.h       |  6 -----
- drivers/net/ethernet/marvell/sky2.h       |  6 -----
- drivers/net/ethernet/realtek/r8169_main.c | 15 +++++-------
- drivers/net/ethernet/sun/cassini.c        | 28 ++++++++-------------
- drivers/net/ethernet/sun/sungem.c         | 30 +++++++----------------
- drivers/net/fddi/skfp/drvfbi.c            |  2 +-
- drivers/net/fddi/skfp/h/skfbi.h           |  5 ----
- drivers/pci/pci-bridge-emul.c             | 14 ++---------
- drivers/pci/pci.c                         | 23 +++++++++++++++++
- include/linux/pci.h                       |  1 +
- include/uapi/linux/pci_regs.h             |  7 ++++++
- sound/pci/bt87x.c                         |  7 +-----
- 12 files changed, 60 insertions(+), 84 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/skge.h b/drivers/net/ethernet/marvell/skge.h
+index 6fa7b6a34..e149bdfe1 100644
+--- a/drivers/net/ethernet/marvell/skge.h
++++ b/drivers/net/ethernet/marvell/skge.h
+@@ -15,12 +15,6 @@
+ #define  PCI_VPD_ROM_SZ	7L<<14	/* VPD ROM size 0=256, 1=512, ... */
+ #define  PCI_REV_DESC	1<<2	/* Reverse Descriptor bytes */
+ 
+-#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
+-			       PCI_STATUS_SIG_SYSTEM_ERROR | \
+-			       PCI_STATUS_REC_MASTER_ABORT | \
+-			       PCI_STATUS_REC_TARGET_ABORT | \
+-			       PCI_STATUS_PARITY)
+-
+ enum csr_regs {
+ 	B0_RAP	= 0x0000,
+ 	B0_CTST	= 0x0004,
+diff --git a/drivers/net/ethernet/marvell/sky2.h b/drivers/net/ethernet/marvell/sky2.h
+index b02b65230..851d8ed34 100644
+--- a/drivers/net/ethernet/marvell/sky2.h
++++ b/drivers/net/ethernet/marvell/sky2.h
+@@ -252,12 +252,6 @@ enum {
+ };
+ 
+ 
+-#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
+-			       PCI_STATUS_SIG_SYSTEM_ERROR | \
+-			       PCI_STATUS_REC_MASTER_ABORT | \
+-			       PCI_STATUS_REC_TARGET_ABORT | \
+-			       PCI_STATUS_PARITY)
+-
+ enum csr_regs {
+ 	B0_RAP		= 0x0000,
+ 	B0_CTST		= 0x0004,
+diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+index 543769048..9b84a1278 100644
+--- a/include/uapi/linux/pci_regs.h
++++ b/include/uapi/linux/pci_regs.h
+@@ -68,6 +68,13 @@
+ #define  PCI_STATUS_SIG_SYSTEM_ERROR	0x4000 /* Set when we drive SERR */
+ #define  PCI_STATUS_DETECTED_PARITY	0x8000 /* Set on parity error */
+ 
++#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY  | \
++			       PCI_STATUS_SIG_SYSTEM_ERROR | \
++			       PCI_STATUS_REC_MASTER_ABORT | \
++			       PCI_STATUS_REC_TARGET_ABORT | \
++			       PCI_STATUS_SIG_TARGET_ABORT | \
++			       PCI_STATUS_PARITY)
++
+ #define PCI_CLASS_REVISION	0x08	/* High 24 bits are class, low 8 revision */
+ #define PCI_REVISION_ID		0x08	/* Revision ID */
+ #define PCI_CLASS_PROG		0x09	/* Reg. Level Programming Interface */
 -- 
 2.25.1
+
 
 
 
