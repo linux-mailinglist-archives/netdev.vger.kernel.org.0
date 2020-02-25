@@ -2,145 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 480BB16BF9B
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 12:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3256D16C064
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730004AbgBYLaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 06:30:21 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:48418 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729296AbgBYLaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 06:30:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582630220;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8wgvrETqdiZw+TCS8TmrOLHtx9YLv1MswVjc/0eKKxw=;
-        b=DmD8D6lUsmHalzPWC7hK90HSnTEnJ0MhwiM/lzKMdPZxLxj9GyPfPYfBFlD52WkQyP3OVw
-        23U0hlmKVtG6yxXT/m1UZFZ5voo/U9ItPGCa/DYsSIP3BD4ZegbL+vAtHjklcQ6oEejDi2
-        aEkorgIgS6Bp6lEqK/qfS4yFjV0cHkM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-151-LoNb2JGGNlGEWYPNPq9rSw-1; Tue, 25 Feb 2020 06:30:18 -0500
-X-MC-Unique: LoNb2JGGNlGEWYPNPq9rSw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F4028017CC;
-        Tue, 25 Feb 2020 11:30:17 +0000 (UTC)
-Received: from lpt (unknown [10.43.2.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6320F8B755;
-        Tue, 25 Feb 2020 11:30:13 +0000 (UTC)
-Date:   Tue, 25 Feb 2020 12:30:10 +0100
-From:   =?iso-8859-1?B?SuFu?= Tomko <jtomko@redhat.com>
-To:     ted.h.kim@oracle.com
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        netdev@vger.kernel.org,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Subject: Re: vsock CID questions
-Message-ID: <20200225113010.GH1133033@lpt>
-References: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
- <20200219154317.GB1085125@stefanha-x1.localdomain>
- <20200220160912.GL3065@lpt>
- <b08eda42-9cc7-7a9a-b5b1-5adc44050896@oracle.com>
+        id S1730671AbgBYMJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 07:09:39 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36260 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729458AbgBYMJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:09:38 -0500
+Received: by mail-pg1-f193.google.com with SMTP id d9so6805809pgu.3;
+        Tue, 25 Feb 2020 04:09:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Mqwfc2KPcVYiVKPkQxYVO7vDegBEMXoJ1E0hLY/tEvs=;
+        b=QvpUiAYt/81/K3o5p9SEGp2S+oMZT+pF5G/IgKwJ3lkCNIGGhE/nqbrDprw6OJGudw
+         DUsN/CNkCmL2wqEET9mky2iuKALEg4gRZPHXjbe4mDJGEFhJ8ZlmL+35JSi4sbKu7+ym
+         bXdvae1ucylvR/2yo/6NFm7kVpAx2Ft2uX2ENpIxVC/i2YISkNdFAgUAGz/5Ypm36D9D
+         LBpyOYtWig9hLKlZ09ncVhBxPnKYi2nK6R4tGVHmUkvyzlngfHidSMEFW5Hzx4tGTi/h
+         OWGfE8fn6cQTUGLapsaPo39dImC5ITRM7AsE00N4g2ZNcVba4ZwRXvZQy+IondWafLuJ
+         uLcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Mqwfc2KPcVYiVKPkQxYVO7vDegBEMXoJ1E0hLY/tEvs=;
+        b=SEADDwq04uNK5AGDop93xJlxHlS3XW3J+/Uym/0H7J12Htbb1tyZd+ldL0CRDat21X
+         6vwsCvMKoR4vE3koxi5ZivAOuyC/ZWkzOX5XbSmlvEVNpiYaY2uck/TFHz9iyV4RuZVy
+         uJh6KCQvzK8mxNxkH/1FbU8ezWnlH9aZcSQdyPCzL6pHYLfHvPGlGMRjs2HVEiTjXmeo
+         bmy+ZdLA2kmlYBiCTlM5EP17oGsckoNpfVBN2EBrmN13xa95w043QCXUvKf9/p7oJsrw
+         mZOphkhNEdwiMZ6hU6hLpl+FlGVsub+6JbQI2OaN/ZiW8vg8PUpWYubH/7PvcDvWnzHF
+         u6ng==
+X-Gm-Message-State: APjAAAUOshflN2igIfDHbeV+SgG31NL9BPQS+ogEOApCS8arTujS6lvn
+        Yt/XNaO4Z1PbTd7ST4hz/A==
+X-Google-Smtp-Source: APXvYqw2IDOcub20k/JBZx9cp2o1QdYEKf3jJ3rBWjrY04ClE4F+LPbgluh8uCOp28IxecK5bd73nA==
+X-Received: by 2002:aa7:8587:: with SMTP id w7mr57040697pfn.39.1582632577377;
+        Tue, 25 Feb 2020 04:09:37 -0800 (PST)
+Received: from madhuparna-HP-Notebook ([2402:3a80:1ee1:f355:e8e5:803b:cde8:bccc])
+        by smtp.gmail.com with ESMTPSA id e6sm16685944pfh.32.2020.02.25.04.09.13
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 25 Feb 2020 04:09:36 -0800 (PST)
+From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
+Date:   Tue, 25 Feb 2020 17:39:08 +0530
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     madhuparnabhowmik10@gmail.com, jiri@mellanox.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        frextrite@gmail.com, paulmck@kernel.org
+Subject: Re: [PATCH] net: core: devlink.c: Use built-in RCU list checking
+Message-ID: <20200225120908.GA29836@madhuparna-HP-Notebook>
+References: <20200224093013.25700-1-madhuparnabhowmik10@gmail.com>
+ <20200224105209.GB16270@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <b08eda42-9cc7-7a9a-b5b1-5adc44050896@oracle.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="v2Uk6McLiE8OV1El"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20200224105209.GB16270@nanopsycho>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---v2Uk6McLiE8OV1El
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Feb 21, 2020 at 11:49:06AM -0800, ted.h.kim@oracle.com wrote:
->Hi Jan,
+On Mon, Feb 24, 2020 at 11:52:09AM +0100, Jiri Pirko wrote:
+> Mon, Feb 24, 2020 at 10:30:13AM CET, madhuparnabhowmik10@gmail.com wrote:
+> >From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> >
+> >list_for_each_entry_rcu() has built-in RCU and lock checking.
+> >
+> >Pass cond argument to list_for_each_entry_rcu() to silence
+> >false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
+> >
+> >The devlink->lock is held when devlink_dpipe_table_find()
+> >is called in non RCU read side section. Therefore, pass struct devlink
+> >to devlink_dpipe_table_find() for lockdep checking.
+> >
+> >Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> >---
+> > net/core/devlink.c | 18 +++++++++---------
+> > 1 file changed, 9 insertions(+), 9 deletions(-)
+> >
+> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >index e82750bdc496..dadf5fa79bb1 100644
+> >--- a/net/core/devlink.c
+> >+++ b/net/core/devlink.c
+> >@@ -2103,11 +2103,11 @@ static int devlink_dpipe_entry_put(struct sk_buff *skb,
+> > 
+> > static struct devlink_dpipe_table *
+> > devlink_dpipe_table_find(struct list_head *dpipe_tables,
+> >-			 const char *table_name)
+> >+			 const char *table_name, struct devlink *devlink)
+> > {
+> > 	struct devlink_dpipe_table *table;
+> >-
+> >-	list_for_each_entry_rcu(table, dpipe_tables, list) {
+> >+	list_for_each_entry_rcu(table, dpipe_tables, list,
+> >+				lockdep_is_held(&devlink->lock)) {
+> > 		if (!strcmp(table->name, table_name))
+> > 			return table;
+> > 	}
+> >@@ -2226,7 +2226,7 @@ static int devlink_nl_cmd_dpipe_entries_get(struct sk_buff *skb,
+> > 
+> > 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
+> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+> >-					 table_name);
+> >+					 table_name, devlink);
+> > 	if (!table)
+> > 		return -EINVAL;
+> > 
+> >@@ -2382,7 +2382,7 @@ static int devlink_dpipe_table_counters_set(struct devlink *devlink,
+> > 	struct devlink_dpipe_table *table;
+> > 
+> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+> >-					 table_name);
+> >+					 table_name, devlink);
+> > 	if (!table)
+> > 		return -EINVAL;
+> > 
+> >@@ -6814,7 +6814,7 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
+> > 
+> > 	rcu_read_lock();
+> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+> >-					 table_name);
+> >+					 table_name, devlink);
+> > 	enabled = false;
+> > 	if (table)
+> > 		enabled = table->counters_enabled;
+> >@@ -6845,7 +6845,7 @@ int devlink_dpipe_table_register(struct devlink *devlink,
+> > 
+> > 	mutex_lock(&devlink->lock);
+> > 
+> >-	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name)) {
+> >+	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name, devlink)) {
+> 
+> Run scripts/checkpatch.pl on your patch. You are breaking 80-cols limit
+> here.
 >
->Thanks for responding - let me see if I am understanding correctly.
->
->
->I think you are saying on migration the process of determining the CID=20
->assigned is the same as when you start a domain.
->
-><cid auto=3D'yes'> means assignment to the first available value.
->It also seems for auto=3D'yes' that any address=3D'<value>' part of the=20
->CID definition is ignored, even as a suggested value.
->(I always get CID 3 when starting auto=3D'yes' and no other domains have=
-=20
->started, even if there is an specific address in the definition, e.g.=20
->address=3D'12'.)
->
->But if auto=3D'no', either the domain gets the address field value or if=
-=20
->the value is already assigned, the domain will fail to start/migrate.
->
->Is that right?
->
+Sure, I will take care of this and send the updated patch soon.
 
-Yes.
-
->
->In cases, where auto=3D'yes', it does not seem that the host/hypervisor=20
->can find out what CID value was assigned to a domain. Even parsing the=20
->XML only reveals that it was auto-assigned and no specific value can=20
->be determined.
-
-The value is not recorded in the inactive XML, but after domain startup,
-the address should be visible in the live XML:
-
-   <vsock model=3D"virtio">
-     <cid auto=3D"yes" address=3D"3"/>
-     <alias name=3D"vsock0"/>
-     <address type=3D"pci" domain=3D"0x0000" bus=3D"0x07" slot=3D"0x00" fun=
-ction=3D"0x0"/>
-   </vsock>
-
->
->Is this correct?
->
->If this is the case, I would advocate for a specific API which can=20
->lookup the current CID of a domain.
-
-This can already be queried from the XML through virDomainGetXMLDesc:
-$ virsh dumpxml libvirt-fedora-31 | xmllint --xpath 'string(//cid/@address)=
-' -
-3
-
-Jano
-
->Otherwise the host/hypervisor cannot tell which=A0 auto=3D'yes' domain is=
-=20
->on the other end of the connected socket, when there is more than one.
->
->
->Thanks.
->-ted
->
->
-
---v2Uk6McLiE8OV1El
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEQeJGMrnL0ADuclbP+YPwO/Mat50FAl5VBT8ACgkQ+YPwO/Ma
-t52mMAgAreHfNtvGp8PJAyCxCp5YqXwLisHQt8uEoXV0HHQoKglZz3U5xPSK/HqC
-uC4L7VpxkR6JlFXwQjsvFv63qEoI78m2YCdmjfyOkRQZJLBrIRdeC692fzLP0tc3
-No1YHLm4dg5Vs3X+YATPsl8cOGlhpr422oOmMBJGNO/TC9xvxlQ6paIFhbBL29YV
-E89aM0dsoOL814qFAUDXHgwzK1BshiywJnxlkc25pTaZGtpcu/olabOcgDOMVyrH
-lJ1tNE1qtYqjM08v870uzB+288S9HsxHwBda6lP8LPXUL7JOvFz7q1gOyVZzgzjb
-weZ76sp6TN8hzxxXtwFXKxocKSDgMQ==
-=Jwb7
------END PGP SIGNATURE-----
-
---v2Uk6McLiE8OV1El--
-
+Thank you,
+Madhuparna
+> Otherwise, the patch looks fine.
+> 
+> > 		err = -EEXIST;
+> > 		goto unlock;
+> > 	}
+> >@@ -6881,7 +6881,7 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
+> > 
+> > 	mutex_lock(&devlink->lock);
+> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+> >-					 table_name);
+> >+					 table_name, devlink);
+> > 	if (!table)
+> > 		goto unlock;
+> > 	list_del_rcu(&table->list);
+> >@@ -7038,7 +7038,7 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
+> > 
+> > 	mutex_lock(&devlink->lock);
+> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
+> >-					 table_name);
+> >+					 table_name, devlink);
+> > 	if (!table) {
+> > 		err = -EINVAL;
+> > 		goto out;
+> >-- 
+> >2.17.1
+> >
