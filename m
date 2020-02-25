@@ -2,185 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C88B16BD39
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DB816BD60
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:38:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729925AbgBYJZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 04:25:50 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33888 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729864AbgBYJZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:25:50 -0500
-Received: by mail-wm1-f67.google.com with SMTP id i10so663607wmd.1
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 01:25:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FvcYTWOjERRwmHvUiPH05ZvRImLwQfvuQehAPXoTrzc=;
-        b=2RTpyD5li6uacEavhXaQUO6odvLqCFIMhOOsCQda5uTPvfa3k3vEI4cQ9k6+q8GDLN
-         W0heHrxaolccnuvq/mAvG7fIvG2FxyAXZJEBwcdk1C4TLY3UgG4JuPVLseXMLel/26vG
-         al8K1q/DApkG9yD+aALCzJibqOYmIS6mA9WMR/Y0PCJamgE2a9DXcqwoyrSA1UIKyd7O
-         VdufOPZGxViutEA5g7zvKThgwwnYFE8fJR4AF15A4fZTlNWRLQTHrKeGnpaRLc+i8VSt
-         3rA+fiKwLdId3odulc4ndD5h+5zi+jUDzm6mSAj5ymGW3AQXuVS1KXTbpGwduKLonyvI
-         xHXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FvcYTWOjERRwmHvUiPH05ZvRImLwQfvuQehAPXoTrzc=;
-        b=gGcy6tCs5GssUbN550RKP7DDW/WwoXfC4JebWEyCF+1I/npYtPdDoH1LvHMYKJI2cn
-         yHvdJUFQ1q00T4+R4W8dx79cu11glwCbSVw95ljVxNmrlTD5uTZinBFPmIADditobJKM
-         uVKstJ0R1DEMan3oGNCrrixfSvW2LIOwIdSXepdAhF9WXtEOKf+071mHFelL2Q8Au1fP
-         ekQ0F0FmEIuLatlsE7XhSMshQ5X8RFJpJiETODlIWPr/XHG+kMh5n3paaxh0szEHhFon
-         Lx8Hk8YQEslvaqXR4lRVRI9B9pJbO9zArKtrttITwuuOL+o8Mrfew+BVcHjnCj0piVMo
-         8ewA==
-X-Gm-Message-State: APjAAAXWC3GurliHVN97VCN9Do5OxPwpYVzOMEzZpVwjvdxv8zOZLXhi
-        7Cs5lm0EAFmy9ttJVonIJTOjXxiakJ4=
-X-Google-Smtp-Source: APXvYqx2YHkFA6VWuiMxLjAzdubJxYeOK01IPJH5oaMP4VmtsXXZsFjco3/Un2F06I3XBTsdTjTkeg==
-X-Received: by 2002:a1c:b603:: with SMTP id g3mr4177833wmf.130.1582622747793;
-        Tue, 25 Feb 2020 01:25:47 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id a26sm3291070wmm.18.2020.02.25.01.25.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 01:25:47 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ayal@mellanox.com,
-        saeedm@mellanox.com, ranro@mellanox.com, moshe@mellanox.com
-Subject: [patch net] mlx5: register lag notifier for init network namespace only
-Date:   Tue, 25 Feb 2020 10:25:46 +0100
-Message-Id: <20200225092546.30710-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
+        id S1729324AbgBYJiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 04:38:12 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:55264 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729080AbgBYJiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:38:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=OgLcUsWl+TfcpKVPqX7tI0GqOaE8EAShX68S92kCpMU=; b=d/Q7do78YcrzGE7LMmEYudWqZ
+        mYDG2BK17749n1rsgAt5lWnGpf6PCujp3aoPmsFt0tuIN3NwTxCZ7MrLyVQ/QlQw87ewH5W2qI932
+        hLvDyBf83T+zBrBxVM0Zk+homMb7ziNqyDeFMjcpXoSNGharheYxgTttkXETRJu/ohz2ZFasXPl0Q
+        c5DnESzfVY2CbeBgC5AWLzJYp2v9kZ3lhEKCCjKyHPu6OHD2fRm3flNrYVaObebsvtTfhzFwJqNcn
+        w1bT04vior/wrkpM9ckAbUCgCMMN0hNyNUTvxR2IEClx5a3CUHj6tK3QY0xot2wcQpLb0Mgd8BXCZ
+        kEK0goFsA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:52520)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j6Wei-0008OC-Ky; Tue, 25 Feb 2020 09:37:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j6WeF-0007KL-PX; Tue, 25 Feb 2020 09:37:03 +0000
+Date:   Tue, 25 Feb 2020 09:37:03 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Felix Fietkau <nbd@nbd.name>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/8] rework phylink interface for split MAC/PCS
+ support
+Message-ID: <20200225093703.GS25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Hi,
 
-The current code causes problems when the unregistering netdevice could
-be different then the registering one.
+The following series changes the phylink interface to allow us to
+better support split MAC / MAC PCS setups.  The fundamental change
+required for this turns out to be quite simple.
 
-Since the check in mlx5_lag_netdev_event() does not allow any other
-network namespace anyway, fix this by registerting the lag notifier
-per init network namespace only.
+Today, mac_config() is used for everything to do with setting the
+parameters for the MAC, and mac_link_up() is used to inform the
+MAC driver that the link is now up (and so to allow packet flow.)
+mac_config() also has had a few implementation issues, with folk
+who believe that members such as "speed" and "duplex" are always
+valid, where "link" gets used inappropriately, etc.
 
-Fixes: d48834f9d4b4 ("mlx5: Use dev_net netdevice notifier registrations")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Tested-by: Aya Levin <ayal@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   |  3 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/lag.c       | 11 +++--------
- drivers/net/ethernet/mellanox/mlx5/core/lag.h       |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h |  2 +-
- 5 files changed, 6 insertions(+), 13 deletions(-)
+With the proposed patches, all this changes subtly - but in a
+backwards compatible way at this stage.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 966983674663..21de4764d4c0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5147,7 +5147,6 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
- 
- static void mlx5e_nic_disable(struct mlx5e_priv *priv)
- {
--	struct net_device *netdev = priv->netdev;
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 
- #ifdef CONFIG_MLX5_CORE_EN_DCB
-@@ -5168,7 +5167,7 @@ static void mlx5e_nic_disable(struct mlx5e_priv *priv)
- 		mlx5e_monitor_counter_cleanup(priv);
- 
- 	mlx5e_disable_async_events(priv);
--	mlx5_lag_remove(mdev, netdev);
-+	mlx5_lag_remove(mdev);
- }
- 
- int mlx5e_update_nic_rx(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 7b48ccacebe2..3e4362dec4db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1870,7 +1870,7 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
- #endif
- 	mlx5_notifier_unregister(mdev, &priv->events_nb);
- 	cancel_work_sync(&rpriv->uplink_priv.reoffload_flows_work);
--	mlx5_lag_remove(mdev, netdev);
-+	mlx5_lag_remove(mdev);
- }
- 
- static MLX5E_DEFINE_STATS_GRP(sw_rep, 0);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index b91eabc09fbc..8e19f6ab8393 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -464,9 +464,6 @@ static int mlx5_lag_netdev_event(struct notifier_block *this,
- 	struct mlx5_lag *ldev;
- 	int changed = 0;
- 
--	if (!net_eq(dev_net(ndev), &init_net))
--		return NOTIFY_DONE;
--
- 	if ((event != NETDEV_CHANGEUPPER) && (event != NETDEV_CHANGELOWERSTATE))
- 		return NOTIFY_DONE;
- 
-@@ -586,8 +583,7 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
- 
- 	if (!ldev->nb.notifier_call) {
- 		ldev->nb.notifier_call = mlx5_lag_netdev_event;
--		if (register_netdevice_notifier_dev_net(netdev, &ldev->nb,
--							&ldev->nn)) {
-+		if (register_netdevice_notifier_net(&init_net, &ldev->nb)) {
- 			ldev->nb.notifier_call = NULL;
- 			mlx5_core_err(dev, "Failed to register LAG netdev notifier\n");
- 		}
-@@ -600,7 +596,7 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
- }
- 
- /* Must be called with intf_mutex held */
--void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev)
-+void mlx5_lag_remove(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_lag *ldev;
- 	int i;
-@@ -620,8 +616,7 @@ void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev)
- 
- 	if (i == MLX5_MAX_PORTS) {
- 		if (ldev->nb.notifier_call)
--			unregister_netdevice_notifier_dev_net(netdev, &ldev->nb,
--							      &ldev->nn);
-+			unregister_netdevice_notifier_net(&init_net, &ldev->nb);
- 		mlx5_lag_mp_cleanup(ldev);
- 		cancel_delayed_work_sync(&ldev->bond_work);
- 		mlx5_lag_dev_free(ldev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-index 316ab09e2664..f1068aac6406 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
-@@ -44,7 +44,6 @@ struct mlx5_lag {
- 	struct workqueue_struct   *wq;
- 	struct delayed_work       bond_work;
- 	struct notifier_block     nb;
--	struct netdev_net_notifier	nn;
- 	struct lag_mp             lag_mp;
- };
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index fcce9e0fc82c..da67b28d6e23 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -157,7 +157,7 @@ int mlx5_query_qcam_reg(struct mlx5_core_dev *mdev, u32 *qcam,
- 			u8 feature_group, u8 access_reg_group);
- 
- void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev);
--void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev);
-+void mlx5_lag_remove(struct mlx5_core_dev *dev);
- 
- int mlx5_irq_table_init(struct mlx5_core_dev *dev);
- void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev);
+We pass the the full resolved link state (speed, duplex, pause) to
+mac_link_up(), and it is now guaranteed that these parameters to
+this function will always be valid (no more SPEED_UNKNOWN or
+DUPLEX_UNKNOWN here - unless phylink is fed with such things.)
+
+Drivers should convert over to using the state in mac_link_up()
+rather than configuring the speed, duplex and pause in the
+mac_config() method. The patch series includes a number of MAC
+drivers which I've thought have been easy targets - I've left the
+remainder as I think they need maintainer input. However, *all*
+drivers will need conversion for future phylink development.
+
+ Documentation/networking/sfp-phylink.rst          |  17 +++-
+ drivers/net/dsa/b53/b53_common.c                  |   4 +-
+ drivers/net/dsa/b53/b53_priv.h                    |   4 +-
+ drivers/net/dsa/bcm_sf2.c                         |   4 +-
+ drivers/net/dsa/lantiq_gswip.c                    |   4 +-
+ drivers/net/dsa/mt7530.c                          |   4 +-
+ drivers/net/dsa/mv88e6xxx/chip.c                  |  79 +++++++++++++----
+ drivers/net/dsa/sja1105/sja1105_main.c            |   4 +-
+ drivers/net/ethernet/cadence/macb.h               |   1 -
+ drivers/net/ethernet/cadence/macb_main.c          |  57 +++++++-----
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  61 ++++++++-----
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h  |   1 +
+ drivers/net/ethernet/marvell/mvneta.c             |  63 ++++++++-----
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c   | 102 +++++++++++++---------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c       |   7 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |   4 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |  37 ++++----
+ drivers/net/phy/phylink.c                         |   9 +-
+ include/linux/phylink.h                           |  57 ++++++++----
+ include/net/dsa.h                                 |   4 +-
+ net/dsa/port.c                                    |   7 +-
+ 21 files changed, 352 insertions(+), 178 deletions(-)
+
 -- 
-2.21.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
