@@ -2,257 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E3716C1C5
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB5416C1C8
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730293AbgBYNKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 08:10:08 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:32807 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727983AbgBYNKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:10:08 -0500
-Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j6ZyO-0007LA-AG; Tue, 25 Feb 2020 13:10:04 +0000
-Date:   Tue, 25 Feb 2020 14:10:03 +0100
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v5 0/9] net: fix sysfs permssions when device changes
- network
-Message-ID: <20200225131003.3bhtzydbzve3v3ad@wittgenstein>
-References: <20200225124948.80682-1-christian.brauner@ubuntu.com>
+        id S1730324AbgBYNKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 08:10:51 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37149 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbgBYNKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:10:50 -0500
+Received: by mail-pf1-f193.google.com with SMTP id p14so7168581pfn.4;
+        Tue, 25 Feb 2020 05:10:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=NdIi3p1G+pK48BoZW2xQ7s8pQgL985dQmFMs11pogIQ=;
+        b=SqRWDHUPS48bv05ymWTtEWbtaU6DtthfFLOZ1wsFsdOFONm1ay26GExnGv9Tl345Tl
+         HVuFnYYTPNXOPMDICvlrv62A73Uw8gGvceNrRTsyT9bENOEKnCGiBRiJD4rImS8VRZPA
+         VK19KMOxAJIclJoijNvCVwyIpuWLeQDqg6mPEGyPks+595xkaytNoCB6mBqGijGKkDvY
+         Yv7a6pEVGsPGKn1a4KH6Y52oEjKVSZeJfaQmuuv5yfStcW+GPvEalRurj+W8FJ/gXbHo
+         eXwEsLj+M9o/BPp7PtNkAg9zrZmlkSjdythQnWvnPPWKKSlXzpf5K91Z8mJ4NP8URcUP
+         FKMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=NdIi3p1G+pK48BoZW2xQ7s8pQgL985dQmFMs11pogIQ=;
+        b=Gw2HnRY90LtjDBLhqEURiUyYNhj2bQz8ORYVAIPVtscT1KSkLK1qSNxsN/80CXLt7K
+         VvX1eudM5ll/4Q+CdGXNyPTGFzLg677gPzYfWDAqj8r2zU0Lx2N7RgFmnMeAAOPuwX/i
+         1IxgB2vT/7lBPg01x3NlJeB4ue8gFix1u0yisto6Z5UVYlcrLqRvit1pv9C8TpJzh2Jl
+         a3bi9Xqns8J6/nNjvmQ3pb3oMySo8nnR6WBNgPNNvn4XeN/kaUgJ5UvimQd0ysyzZyGf
+         IcJAtVW5SaEUQn1ubt3Vta97wr5wXLimgRYtjz8gxkqT839mb6O/uAYbEkIh837HNieS
+         3niA==
+X-Gm-Message-State: APjAAAURgq0d9V0cg8b7Y3l8+AQmWO5gHAiuOMswAPBtMIxU2h8UrR6x
+        okZ6bOW0fau0OywWKD2hWVQ=
+X-Google-Smtp-Source: APXvYqym5rY6K9md/Bot2AiUakY1J+acKKuoxOz41x81VdMxJZeV6UGEPQhMOPZsxtH1Co4cyMHbnQ==
+X-Received: by 2002:a63:1926:: with SMTP id z38mr56722083pgl.303.1582636250052;
+        Tue, 25 Feb 2020 05:10:50 -0800 (PST)
+Received: from workstation-portable ([103.87.56.186])
+        by smtp.gmail.com with ESMTPSA id d1sm16084363pgi.63.2020.02.25.05.10.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 05:10:49 -0800 (PST)
+Date:   Tue, 25 Feb 2020 18:40:41 +0530
+From:   Amol Grover <frextrite@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        joel@joelfernandes.org, madhuparnabhowmik10@gmail.com,
+        paulmck@kernel.org
+Subject: Re: [PATCH 2/2] ipmr: Add lockdep expression to ipmr_for_each_table
+ macro
+Message-ID: <20200225131041.GA8660@workstation-portable>
+References: <20200222063835.14328-1-frextrite@gmail.com>
+ <20200222063835.14328-2-frextrite@gmail.com>
+ <20200224.131801.2179562246092982372.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200225124948.80682-1-christian.brauner@ubuntu.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200224.131801.2179562246092982372.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 01:49:39PM +0100, Christian Brauner wrote:
-> Hey everyone,
+On Mon, Feb 24, 2020 at 01:18:01PM -0800, David Miller wrote:
+> From: Amol Grover <frextrite@gmail.com>
+> Date: Sat, 22 Feb 2020 12:08:36 +0530
 > 
-> /* v5 */
-> This is v5 with a small fixup requested by Rafael.
+> > ipmr_for_each_table() uses list_for_each_entry_rcu() for
+> > traversing outside of an RCU read-side critical section but
+> > under the protection of pernet_ops_rwsem. Hence add the
+> > corresponding lockdep expression to silence the following
+> > false-positive warning at boot:
+> > 
+> > [    0.645292] =============================
+> > [    0.645294] WARNING: suspicious RCU usage
+> > [    0.645296] 5.5.4-stable #17 Not tainted
+> > [    0.645297] -----------------------------
+> > [    0.645299] net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
+> > 
+> > Signed-off-by: Amol Grover <frextrite@gmail.com>
 > 
-> /* v4 */
-> This is v4 with more documentation and other fixes that Greg requested.
+> This patch series causes build problems, please fix and resubmit the entire
+> series:
 > 
-> /* v3 */
-> This is v3 with explicit uid and gid parameters added to functions that
-> change sysfs object ownership as Greg requested.
-> 
-> (I've tagged this with net-next since it's triggered by a bug for
->  network device files but it also touches driver core aspects so it's
->  not clear-cut. I can of course split this series into separate
->  patchsets.) 
-> We have been struggling with a bug surrounding the ownership of network
-> device sysfs files when moving network devices between network
-> namespaces owned by different user namespaces reported by multiple
-> users.
-> 
-> Currently, when moving network devices between network namespaces the
-> ownership of the corresponding sysfs entries is not changed. This leads
-> to problems when tools try to operate on the corresponding sysfs files.
-> 
-> I also causes a bug when creating a network device in a network
-> namespaces owned by a user namespace and moving that network device back
-> to the host network namespaces. Because when a network device is created
-> in a network namespaces it will be owned by the root user of the user
-> namespace and all its associated sysfs files will also be owned by the
-> root user of the corresponding user namespace.
-> If such a network device has to be moved back to the host network
-> namespace the permissions will still be set to the root user of the
-> owning user namespaces of the originating network namespace. This means
-> unprivileged users can e.g. re-trigger uevents for such incorrectly
-> owned devices on the host or in other network namespaces. They can also
-> modify the settings of the device itself through sysfs when they
-> wouldn't be able to do the same through netlink. Both of these things
-> are unwanted.
-> 
-> For example, quite a few workloads will create network devices in the
-> host network namespace. Other tools will then proceed to move such
-> devices between network namespaces owner by other user namespaces. While
-> the ownership of the device itself is updated in
-> net/core/net-sysfs.c:dev_change_net_namespace() the corresponding sysfs
-> entry for the device is not. Below you'll find that moving a network
-> device (here a veth device) from a network namespace into another
-> network namespaces owned by a different user namespace with a different
-> id mapping. As you can see the permissions are wrong even though it is
-> owned by the userns root user after it has been moved and can be
-> interacted with through netlink: 
-> 
-> drwxr-xr-x 5 nobody nobody    0 Jan 25 18:08 .
-> drwxr-xr-x 9 nobody nobody    0 Jan 25 18:08 ..
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 addr_assign_type
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 addr_len
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 address
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 broadcast
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_changes
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_down_count
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_up_count
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dev_id
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dev_port
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dormant
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 duplex
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 flags
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 gro_flush_timeout
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 ifalias
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 ifindex
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 iflink
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 link_mode
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 mtu
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 name_assign_type
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 netdev_group
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 operstate
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_port_id
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_port_name
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_switch_id
-> drwxr-xr-x 2 nobody nobody    0 Jan 25 18:09 power
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 proto_down
-> drwxr-xr-x 4 nobody nobody    0 Jan 25 18:09 queues
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 speed
-> drwxr-xr-x 2 nobody nobody    0 Jan 25 18:09 statistics
-> lrwxrwxrwx 1 nobody nobody    0 Jan 25 18:08 subsystem -> ../../../../class/net
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 tx_queue_len
-> -r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 type
-> -rw-r--r-- 1 nobody nobody 4096 Jan 25 18:08 uevent
-> 
-> Constrast this with creating a device of the same type in the network
-> namespace directly. In this case the device's sysfs permissions will be
-> correctly updated.
-> (Please also note, that in a lot of workloads this strategy of creating
->  the network device directly in the network device to workaround this
->  issue can not be used. Either because the network device is dedicated
->  after it has been created or because it used by a process that is
->  heavily sandboxed and couldn't create network devices itself.):
-> 
-> drwxr-xr-x 5 root   root      0 Jan 25 18:12 .
-> drwxr-xr-x 9 nobody nobody    0 Jan 25 18:08 ..
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 addr_assign_type
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 addr_len
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 address
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 broadcast
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 carrier
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_changes
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_down_count
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_up_count
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 dev_id
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 dev_port
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 dormant
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 duplex
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 flags
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 gro_flush_timeout
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 ifalias
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 ifindex
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 iflink
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 link_mode
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 mtu
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 name_assign_type
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 netdev_group
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 operstate
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_port_id
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_port_name
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_switch_id
-> drwxr-xr-x 2 root   root      0 Jan 25 18:12 power
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 proto_down
-> drwxr-xr-x 4 root   root      0 Jan 25 18:12 queues
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 speed
-> drwxr-xr-x 2 root   root      0 Jan 25 18:12 statistics
-> lrwxrwxrwx 1 nobody nobody    0 Jan 25 18:12 subsystem -> ../../../../class/net
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 tx_queue_len
-> -r--r--r-- 1 root   root   4096 Jan 25 18:12 type
-> -rw-r--r-- 1 root   root   4096 Jan 25 18:12 uevent
-> 
-> Now, when creating a network device in a network namespace owned by a
-> user namespace and moving it to the host the permissions will be set to
-> the id that the user namespace root user has been mapped to on the host
-> leading to all sorts of permission issues mentioned above:
-> 
-> 458752
-> drwxr-xr-x 5 458752 458752      0 Jan 25 18:12 .
-> drwxr-xr-x 9 root   root        0 Jan 25 18:08 ..
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 addr_assign_type
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 addr_len
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 address
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 broadcast
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_changes
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_down_count
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_up_count
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dev_id
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dev_port
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dormant
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 duplex
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 flags
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 gro_flush_timeout
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 ifalias
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 ifindex
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 iflink
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 link_mode
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 mtu
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 name_assign_type
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 netdev_group
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 operstate
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_port_id
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_port_name
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_switch_id
-> drwxr-xr-x 2 458752 458752      0 Jan 25 18:12 power
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 proto_down
-> drwxr-xr-x 4 458752 458752      0 Jan 25 18:12 queues
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 speed
-> drwxr-xr-x 2 458752 458752      0 Jan 25 18:12 statistics
-> lrwxrwxrwx 1 root   root        0 Jan 25 18:12 subsystem -> ../../../../class/net
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 tx_queue_len
-> -r--r--r-- 1 458752 458752   4096 Jan 25 18:12 type
-> -rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 uevent
-> 
-> Fix this by changing the basic sysfs files associated with network
-> devices when moving them between network namespaces. To this end we add
-> some infrastructure to sysfs.
-> 
-> The patchset takes care to only do this when the owning user namespaces
-> changes and the kids differ. So there's only a performance overhead,
-> when the owning user namespace of the network namespace is different
-> __and__ the kid mappings for the root user are different for the two
-> user namespaces:
-> Assume we have a netdev eth0 which we create in netns1 owned by userns1.
-> userns1 has an id mapping of 0 100000 100000. Now we move eth0 into
-> netns2 which is owned by userns2 which also defines an id mapping of 0
-> 100000 100000. In this case sysfs doesn't need updating. The patch will
-> handle this case and not do any needless work. Now assume eth0 is moved
-> into netns3 which is owned by userns3 which defines an id mapping of 0
-> 123456 65536. In this case the root user in each namespace corresponds
-> to different kid and sysfs needs updating.
-> 
-> Thanks!
-> Christian
-> 
-> Christian Brauner (9):
->   sysfs: add sysfs_file_change_owner_by_name()
+> [davem@localhost net-next]$ make net/ipv4/ipmr.o 
+>   CALL    scripts/checksyscalls.sh
+>   CALL    scripts/atomic/check-atomics.sh
+>   DESCEND  objtool
+>   CC      net/ipv4/ipmr.o
+> In file included from ./include/linux/rculist.h:11,
+>                  from ./include/linux/pid.h:5,
+>                  from ./include/linux/sched.h:14,
+>                  from ./include/linux/uaccess.h:5,
+>                  from net/ipv4/ipmr.c:24:
+> net/ipv4/ipmr.c: In function ‘ipmr_get_table’:
+> ./include/linux/rculist.h:63:25: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+>   RCU_LOCKDEP_WARN(!cond && !rcu_read_lock_any_held(),  \
+> ./include/linux/rcupdate.h:263:52: note: in definition of macro ‘RCU_LOCKDEP_WARN’
+>    if (debug_lockdep_rcu_enabled() && !__warned && (c)) { \
+>                                                     ^
+> ./include/linux/rculist.h:381:7: note: in expansion of macro ‘__list_check_rcu’
+>   for (__list_check_rcu(dummy, ## cond, 0),   \
+>        ^~~~~~~~~~~~~~~~
+> net/ipv4/ipmr.c:113:2: note: in expansion of macro ‘list_for_each_entry_rcu’
+>   list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
+>   ^~~~~~~~~~~~~~~~~~~~~~~
+> net/ipv4/ipmr.c:138:2: note: in expansion of macro ‘ipmr_for_each_table’
+>   ipmr_for_each_table(mrt, net) {
+>   ^~~~~~~~~~~~~~~~~~~
 
-I just realized that the commit message here somehow slipped through
-the cracks and still references the old name of the function.
+This is a build warning due to incorrect operator precedence in
+__list_check_rcu macro. This has already been reported and the patch
+submitted [1]. Infact the patch is currently queued for v5.7.
 
->   sysfs: add sysfs_link_change_owner()
->   sysfs: add sysfs_group{s}_change_owner()
->   sysfs: add sysfs_change_owner()
->   device: add device_change_owner()
->   drivers/base/power: add dpm_sysfs_change_owner()
+[1] https://lore.kernel.org/patchwork/patch/1181886/
 
-Also gives me a reason to make the dpm helper inline.
-
-Sorry, will resend in a bit.
-
-Christian
+Thanks
+Amol
