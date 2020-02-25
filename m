@@ -2,223 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 659FD16BDAD
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:42:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 308C116BD84
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730089AbgBYJlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 04:41:32 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:55610 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729375AbgBYJlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:41:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=G8lpiHOZ+WUfp/iCKEL1UO+gAa/0Xygzi08CY28mEYI=; b=XaY8BbYdPHmGr+sxih1v7fD3at
-        dquXraYroSJyxQdtRvuGmk8eYGP+pruO+T4kO/lmwDqnbrNVTiIe0IxCI1iW8X4yPpyY09tDTVfva
-        /KikCjw3W17Z60oymq12XzlfrBVrMUhiv+ovp7tnRz1Ztw9HPDIPJ4/rA/qB7a8O3RCQB0fWFrhH9
-        zQ+GdL2gKmo3JvVBdBfrziSczIia6yUGqLPYgRBLFYeszL3Wm0Nn7OJBeAFojF19dD+Tr8XAvErCa
-        ivjT8CDg+eKauMF+m15N8hqagI2+BKChj6o/5ZfCk+X/CNvVV1hdBUw+UWbxofnHzveVxnofOrBQG
-        TMEZwZdw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:38828 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j6Wgd-0008Pp-P7; Tue, 25 Feb 2020 09:39:32 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j6WgV-0000Tk-Mu; Tue, 25 Feb 2020 09:39:23 +0000
-In-Reply-To: <20200225093703.GS25745@shell.armlinux.org.uk>
-References: <20200225093703.GS25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Felix Fietkau <nbd@nbd.name>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 8/8] net: mvpp2: use resolved link config in
- mac_link_up()
+        id S1729217AbgBYJk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 04:40:59 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:52452 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729033AbgBYJk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:40:59 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6Whu-0001Hu-4c; Tue, 25 Feb 2020 09:40:54 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6Whp-0002XQ-I8; Tue, 25 Feb 2020 09:40:49 +0000
+Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-um@lists.infradead.org,
+        virtualization@lists.linux-foundation.org
+References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
+ <CA+FuTSd8P6uQnwisZEh7+nfowW9qKLBEvA4GPg+xUkjBa-6TDA@mail.gmail.com>
+ <4e7757cf-148e-4585-b358-3b38f391275d@cambridgegreys.com>
+ <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
+ <93cb2b3f-6cae-8cf1-5fab-93fa34c14628@cambridgegreys.com>
+ <CA+FuTScEXRwYtFzn-jtFhV0dNKNQqKPBwCWaNORJW=ERU=izMA@mail.gmail.com>
+ <6b83116c-2cca-fb03-1c13-bb436dccf1b3@cambridgegreys.com>
+Message-ID: <cd1b4084-af6b-7fd9-f182-8b32a3c8d837@cambridgegreys.com>
+Date:   Tue, 25 Feb 2020 09:40:45 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Disposition: inline
+In-Reply-To: <6b83116c-2cca-fb03-1c13-bb436dccf1b3@cambridgegreys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j6WgV-0000Tk-Mu@rmk-PC.armlinux.org.uk>
-Date:   Tue, 25 Feb 2020 09:39:23 +0000
+X-Spam-Score: -0.7
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Marvell mvpp2 ethernet driver to use the finalised link
-parameters in mac_link_up() rather than the parameters in mac_config().
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 83 +++++++++++--------
- 1 file changed, 47 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index ed8042d97e29..6b9c7ed2547e 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4976,15 +4976,13 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
- 	old_ctrl2 = ctrl2 = readl(port->base + MVPP2_GMAC_CTRL_2_REG);
- 	old_ctrl4 = ctrl4 = readl(port->base + MVPP22_GMAC_CTRL_4_REG);
- 
--	an &= ~(MVPP2_GMAC_CONFIG_MII_SPEED | MVPP2_GMAC_CONFIG_GMII_SPEED |
--		MVPP2_GMAC_AN_SPEED_EN | MVPP2_GMAC_FC_ADV_EN |
-+	an &= ~(MVPP2_GMAC_AN_SPEED_EN | MVPP2_GMAC_FC_ADV_EN |
- 		MVPP2_GMAC_FC_ADV_ASM_EN | MVPP2_GMAC_FLOW_CTRL_AUTONEG |
--		MVPP2_GMAC_CONFIG_FULL_DUPLEX | MVPP2_GMAC_AN_DUPLEX_EN |
--		MVPP2_GMAC_IN_BAND_AUTONEG | MVPP2_GMAC_IN_BAND_AUTONEG_BYPASS);
-+		MVPP2_GMAC_AN_DUPLEX_EN | MVPP2_GMAC_IN_BAND_AUTONEG |
-+		MVPP2_GMAC_IN_BAND_AUTONEG_BYPASS);
- 	ctrl0 &= ~MVPP2_GMAC_PORT_TYPE_MASK;
- 	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PORT_RESET_MASK |
- 		   MVPP2_GMAC_PCS_ENABLE_MASK);
--	ctrl4 &= ~(MVPP22_CTRL4_RX_FC_EN | MVPP22_CTRL4_TX_FC_EN);
- 
- 	/* Configure port type */
- 	if (phy_interface_mode_is_8023z(state->interface)) {
-@@ -5014,31 +5012,20 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
- 
- 	/* Configure negotiation style */
- 	if (!phylink_autoneg_inband(mode)) {
--		/* Phy or fixed speed - no in-band AN */
--		if (state->duplex)
--			an |= MVPP2_GMAC_CONFIG_FULL_DUPLEX;
--
--		if (state->speed == SPEED_1000 || state->speed == SPEED_2500)
--			an |= MVPP2_GMAC_CONFIG_GMII_SPEED;
--		else if (state->speed == SPEED_100)
--			an |= MVPP2_GMAC_CONFIG_MII_SPEED;
--
--		if (state->pause & MLO_PAUSE_TX)
--			ctrl4 |= MVPP22_CTRL4_TX_FC_EN;
--		if (state->pause & MLO_PAUSE_RX)
--			ctrl4 |= MVPP22_CTRL4_RX_FC_EN;
-+		/* Phy or fixed speed - no in-band AN, nothing to do, leave the
-+		 * configured speed, duplex and flow control as-is.
-+		 */
- 	} else if (state->interface == PHY_INTERFACE_MODE_SGMII) {
- 		/* SGMII in-band mode receives the speed and duplex from
- 		 * the PHY. Flow control information is not received. */
--		an &= ~(MVPP2_GMAC_FORCE_LINK_DOWN | MVPP2_GMAC_FORCE_LINK_PASS);
-+		an &= ~(MVPP2_GMAC_FORCE_LINK_DOWN |
-+			MVPP2_GMAC_FORCE_LINK_PASS |
-+			MVPP2_GMAC_CONFIG_MII_SPEED |
-+			MVPP2_GMAC_CONFIG_GMII_SPEED |
-+			MVPP2_GMAC_CONFIG_FULL_DUPLEX);
- 		an |= MVPP2_GMAC_IN_BAND_AUTONEG |
- 		      MVPP2_GMAC_AN_SPEED_EN |
- 		      MVPP2_GMAC_AN_DUPLEX_EN;
--
--		if (state->pause & MLO_PAUSE_TX)
--			ctrl4 |= MVPP22_CTRL4_TX_FC_EN;
--		if (state->pause & MLO_PAUSE_RX)
--			ctrl4 |= MVPP22_CTRL4_RX_FC_EN;
- 	} else if (phy_interface_mode_is_8023z(state->interface)) {
- 		/* 1000BaseX and 2500BaseX ports cannot negotiate speed nor can
- 		 * they negotiate duplex: they are always operating with a fixed
-@@ -5046,19 +5033,17 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
- 		 * speed and full duplex here.
- 		 */
- 		ctrl0 |= MVPP2_GMAC_PORT_TYPE_MASK;
--		an &= ~(MVPP2_GMAC_FORCE_LINK_DOWN | MVPP2_GMAC_FORCE_LINK_PASS);
-+		an &= ~(MVPP2_GMAC_FORCE_LINK_DOWN |
-+			MVPP2_GMAC_FORCE_LINK_PASS |
-+			MVPP2_GMAC_CONFIG_MII_SPEED |
-+			MVPP2_GMAC_CONFIG_GMII_SPEED |
-+			MVPP2_GMAC_CONFIG_FULL_DUPLEX);
- 		an |= MVPP2_GMAC_IN_BAND_AUTONEG |
- 		      MVPP2_GMAC_CONFIG_GMII_SPEED |
- 		      MVPP2_GMAC_CONFIG_FULL_DUPLEX;
- 
--		if (state->pause & MLO_PAUSE_AN && state->an_enabled) {
-+		if (state->pause & MLO_PAUSE_AN && state->an_enabled)
- 			an |= MVPP2_GMAC_FLOW_CTRL_AUTONEG;
--		} else {
--			if (state->pause & MLO_PAUSE_TX)
--				ctrl4 |= MVPP22_CTRL4_TX_FC_EN;
--			if (state->pause & MLO_PAUSE_RX)
--				ctrl4 |= MVPP22_CTRL4_RX_FC_EN;
--		}
- 	}
- 
- /* Some fields of the auto-negotiation register require the port to be down when
-@@ -5155,18 +5140,44 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	u32 val;
- 
--	if (!phylink_autoneg_inband(mode)) {
--		if (mvpp2_is_xlg(interface)) {
-+	if (mvpp2_is_xlg(interface)) {
-+		if (!phylink_autoneg_inband(mode)) {
- 			val = readl(port->base + MVPP22_XLG_CTRL0_REG);
- 			val &= ~MVPP22_XLG_CTRL0_FORCE_LINK_DOWN;
- 			val |= MVPP22_XLG_CTRL0_FORCE_LINK_PASS;
- 			writel(val, port->base + MVPP22_XLG_CTRL0_REG);
--		} else {
-+		}
-+	} else {
-+		if (!phylink_autoneg_inband(mode)) {
- 			val = readl(port->base + MVPP2_GMAC_AUTONEG_CONFIG);
--			val &= ~MVPP2_GMAC_FORCE_LINK_DOWN;
-+			val &= ~(MVPP2_GMAC_FORCE_LINK_DOWN |
-+				 MVPP2_GMAC_CONFIG_MII_SPEED |
-+				 MVPP2_GMAC_CONFIG_GMII_SPEED |
-+				 MVPP2_GMAC_CONFIG_FULL_DUPLEX);
- 			val |= MVPP2_GMAC_FORCE_LINK_PASS;
-+
-+			if (speed == SPEED_1000 || speed == SPEED_2500)
-+				val |= MVPP2_GMAC_CONFIG_GMII_SPEED;
-+			else if (speed == SPEED_100)
-+				val |= MVPP2_GMAC_CONFIG_MII_SPEED;
-+
-+			if (duplex == DUPLEX_FULL)
-+				val |= MVPP2_GMAC_CONFIG_FULL_DUPLEX;
-+
- 			writel(val, port->base + MVPP2_GMAC_AUTONEG_CONFIG);
- 		}
-+
-+		/* We can always update the flow control enable bits;
-+		 * these will only be effective if flow control AN
-+		 * (MVPP2_GMAC_FLOW_CTRL_AUTONEG) is disabled.
-+		 */
-+		val = readl(port->base + MVPP22_GMAC_CTRL_4_REG);
-+		val &= ~(MVPP22_CTRL4_RX_FC_EN | MVPP22_CTRL4_TX_FC_EN);
-+		if (tx_pause)
-+			val |= MVPP22_CTRL4_TX_FC_EN;
-+		if (rx_pause)
-+			val |= MVPP22_CTRL4_RX_FC_EN;
-+		writel(val, port->base + MVPP22_GMAC_CTRL_4_REG);
- 	}
- 
- 	mvpp2_port_enable(port);
+On 25/02/2020 07:48, Anton Ivanov wrote:
+> 
+> 
+> On 24/02/2020 22:22, Willem de Bruijn wrote:
+>> On Mon, Feb 24, 2020 at 4:00 PM Anton Ivanov
+>> <anton.ivanov@cambridgegreys.com> wrote:
+>>>
+>>> On 24/02/2020 20:20, Willem de Bruijn wrote:
+>>>> On Mon, Feb 24, 2020 at 2:55 PM Anton Ivanov
+>>>> <anton.ivanov@cambridgegreys.com> wrote:
+>>>>> On 24/02/2020 19:27, Willem de Bruijn wrote:
+>>>>>> On Mon, Feb 24, 2020 at 8:26 AM <anton.ivanov@cambridgegreys.com> wrote:
+>>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>>
+>>>>>>> Some of the locally generated frames marked as GSO which
+>>>>>>> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>>> fragments (data_len = 0) and length significantly shorter
+>>>>>>> than the MTU (752 in my experiments).
+>>>>>> Do we understand how these packets are generated?
+>>>>> No, we have not been able to trace them.
+>>>>>
+>>>>> The only thing we know is that this is specific to locally generated
+>>>>> packets. Something arriving from the network does not show this.
+>>>>>
+>>>>>> Else it seems this
+>>>>>> might be papering over a deeper problem.
+>>>>>>
+>>>>>> The stack should not create GSO packets less than or equal to
+>>>>>> skb_shinfo(skb)->gso_size. See for instance the check in
+>>>>>> tcp_gso_segment after pulling the tcp header:
+>>>>>>
+>>>>>>            mss = skb_shinfo(skb)->gso_size;
+>>>>>>            if (unlikely(skb->len <= mss))
+>>>>>>                    goto out;
+>>>>>>
+>>>>>> What is the gso_type, and does it include SKB_GSO_DODGY?
+>>>>>>
+>>>>>
+>>>>> 0 - not set.
+>>>> Thanks for the follow-up details. Is this something that you can trigger easily?
+>>>
+>>> Yes, if you have a UML instance handy.
+>>>
+>>> Running iperf between the host and a UML guest using raw socket
+>>> transport triggers it immediately.
+>>>
+>>> This is my UML command line:
+>>>
+>>> vmlinux mem=2048M umid=OPX \
+>>>       ubd0=OPX-3.0-Work.img \
+>>> vec0:transport=raw,ifname=p-veth0,depth=128,gro=1,mac=92:9b:36:5e:38:69 \
+>>>       root=/dev/ubda ro con=null con0=null,fd:2 con1=fd:0,fd:1
+>>>
+>>> p-right is a part of a vEth pair:
+>>>
+>>> ip link add l-veth0 type veth peer name p-veth0 && ifconfig p-veth0 up
+>>>
+>>> iperf server is on host, iperf -c in the guest.
+>>>
+>>>>
+>>>> An skb_dump() + dump_stack() when the packet socket gets such a
+>>>> packet may point us to the root cause and fix that.
+>>>
+>>> We tried dump stack, it was not informative - it was just the recvmmsg
+>>> call stack coming from the UML until it hits the relevant recv bit in
+>>> af_packet - it does not tell us where the packet is coming from.
+>>>
+>>> Quoting from the message earlier in the thread:
+>>>
+>>> [ 2334.180854] Call Trace:
+>>> [ 2334.181947]  dump_stack+0x5c/0x80
+>>> [ 2334.183021]  packet_recvmsg.cold+0x23/0x49
+>>> [ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
+>>> [ 2334.185034]  ? packet_poll+0xca/0x130
+>>> [ 2334.186014]  ? sock_poll+0x77/0xb0
+>>> [ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
+>>> [ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
+>>> [ 2334.188901]  ? dequeue_signal+0xdb/0x180
+>>> [ 2334.189848]  do_recvmmsg+0xc8/0x2d0
+>>> [ 2334.190728]  ? ep_poll+0x8c/0x470
+>>> [ 2334.191581]  __sys_recvmmsg+0x108/0x150
+>>> [ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
+>>> [ 2334.193346]  do_syscall_64+0x53/0x140
+>>> [ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>
+>> That makes sense. skb_dump might show more interesting details about
+>> the packet.
+> 
+> I will add that and retest later today.
+
+
+skb len=818 headroom=2 headlen=818 tailroom=908
+mac=(2,14) net=(16,0) trans=16
+shinfo(txflags=0 nr_frags=0 gso(size=752 type=0 segs=1))
+csum(0x100024 ip_summed=3 complete_sw=0 valid=0 level=0)
+hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=4 iif=0
+sk family=17 type=3 proto=0
+
+Deciphering the actual packet data gives a
+
+TCP packet, ACK and PSH set.
+
+The PSH flag looks like the only "interesting" thing about it in first read.
+
+> 
+>> From the previous thread, these are assumed to be TCP
+>> packets?
+> 
+> Yes
+> 
+>>
+>> I had missed the original thread. If the packet has
+>>
+>>      sinfo(skb)->gso_size = 752.
+>>      skb->len = 818
+>>
+>> then this is a GSO packet. Even though UML will correctly process it
+>> as a normal 818 B packet if psock_rcv pretends that it is, treating it
+>> like that is not strictly correct. A related question is how the setup
+>> arrived at that low MTU size, assuming that is not explicitly
+>> configured that low.
+> 
+> The mtu on the interface is normal. I suspect it is one of the first packets
+> in the stream or something iperf uses for communication between the server and
+> the client which always ends up that size.
+> 
+>>
+>> As of commit 51466a7545b7 ("tcp: fill shinfo->gso_type at last
+>> moment") tcp unconditionally sets gso_type, even for non gso packets.
+>> So either this is not a tcp packet or the field gets zeroed somewhere
+>> along the way. I could not quickly find a possible path to
+>> skb_gso_reset or a raw write.
+> 
+> Same. I have tried to trace a possible origin and I have not seen anything which may cause it.
+> 
+>>
+>> It may be useful to insert tests for this condition (skb_is_gso(skb)
+>> && !skb_shinfo(skb)->gso_type) that call skb_dump at other points in
+>> the network stack. For instance in __ip_queue_xmit and
+>> __dev_queue_xmit.
+>>
+>> Since skb segmentation fails in tcp_gso_segment for such packets, it
+>> may also be informative to disable TSO on the veth device and see if
+>> the test fails.
+> 
+> Ack.
+> 
+>>
+> 
+
 -- 
-2.20.1
-
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
