@@ -2,101 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1373416C198
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 782F916C1AF
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729987AbgBYNC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 08:02:26 -0500
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:2114 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729179AbgBYNC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:02:26 -0500
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 8OEkw47HCS/PfRHEv6iP0A73HoSI9Ymr6oxqJ3c9424ugpU3k8B0Eu6dn4d/IKMXZcfUHtC6k6
- qzJMPn/y7iDznf+5SmQaRK0FFd1BWvm5Xe5Bq+iXZJ2wMHnIBj4HxdWG+m3OVhMOnd433VIQZ+
- 5Xw495Ow/BeHZltAdS4LjpFEHtPfZnwrYb5PGfRlpozonMbpfDaxVxrztWf/jQF2uyawFhaLS0
- T+x7BCLVAncfyGX4jPd8YJnsXBxLRlOVIjLZZk78T0ACOoZRsQB3GFqG17wktwfkqCp0S8oqlB
- niQ=
-X-IronPort-AV: E=Sophos;i="5.70,484,1574146800"; 
-   d="scan'208";a="67889274"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2020 06:02:24 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 25 Feb 2020 06:02:35 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 25 Feb 2020 06:02:24 -0700
-Date:   Tue, 25 Feb 2020 14:02:23 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <davem@davemloft.net>, <horatiu.vultur@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
-        <joergen.andreasen@microchip.com>, <alexandru.marginean@nxp.com>,
-        <claudiu.manoil@nxp.com>, <xiaoliang.yang_1@nxp.com>,
-        <yangbo.lu@nxp.com>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH v2 net-next 0/2] Allow unknown unicast traffic to CPU for
- Felix DSA
-Message-ID: <20200225130223.kb7jg7u2kgjjrlpo@lx-anielsen.microsemi.net>
-References: <20200224213458.32451-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200224213458.32451-1-olteanv@gmail.com>
+        id S1730187AbgBYNHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 08:07:23 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40277 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729193AbgBYNHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:07:22 -0500
+Received: by mail-pl1-f196.google.com with SMTP id y1so5473088plp.7;
+        Tue, 25 Feb 2020 05:07:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1bjATN5yUQRktfOaoPKCC0Tyl9TIao9QDPF9Tp8wgtM=;
+        b=c/aX2xklwzN+KnL1Z0gS/vWAo34D7B+EVCyRXa1sgSGIxkEwXGMtnLjDb06SaW6TV4
+         poMEIqGLmg1KJrMLIUiVgZS0KWPG8ctxN7CBg9Ly/OimQ1ZgN6Y6NgVj7AgdClRM+jb5
+         EW0Xut8jNmTiVhGfgelmisiwJiDIwm7tuzzx2el4955WR6jKsFGeUJMrgOzeOLIvdzSJ
+         itgDnFljBrFvVl9FVXN63kKDys0rdJtm/Xwkv9kEVztRae2l2+34UPgc5tjPIK3swwx4
+         jnMp7VuSAmIfweh50M43NWjfak/4QtyjVk28klahBW9drhnBIsR1Ud1/0RionuTuDYhv
+         yLeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1bjATN5yUQRktfOaoPKCC0Tyl9TIao9QDPF9Tp8wgtM=;
+        b=SCdv8jUd1wzquk2X3S06G19VJX0SoDB4tkC0RlhWDvVDAnQocZ4G46AG58r6OvnElP
+         4Iy3bjTC9fSdcMuWxPgciaXgnE/FnPhrsXOzJqg+dSI34n2JXg8IXtKrNNMshi9vM6MC
+         DHmcGfNhlaIf6tv6BMvFCfszGXNvsvHuH1w00N/C1b4aZvVOoA6bSxJBu2UCddmTzo+/
+         0HKMyTL3zS/lVHJh+2py0hyzMCDk3AxGt03yq56CmfsCOlpnj8b1K40WmPLJe1V/BxPg
+         iYBzyHHiNZ8ho5D/tgfK40iaoFXFEJuWrpj1+/YviR0hXPZyJb21mGzyRYGW2vMUvul2
+         Hbzg==
+X-Gm-Message-State: APjAAAWS1yhv/ko78ryHM6cRYNmI0DGxPjRNbzGGTgEjECqAtZTWmXUL
+        1n4a2dx7OD3o0YNqiZaOSvBcmR8=
+X-Google-Smtp-Source: APXvYqx9u7699mSLH5QM5nQvKggMKDwMmVA1TGSCMDygfPwY1tQRBvHxTUNFIRyMh+PucBct8heGZA==
+X-Received: by 2002:a17:902:223:: with SMTP id 32mr55786706plc.167.1582636041493;
+        Tue, 25 Feb 2020 05:07:21 -0800 (PST)
+Received: from madhuparna-HP-Notebook.nitk.ac.in ([112.79.48.254])
+        by smtp.gmail.com with ESMTPSA id e2sm3156979pjs.25.2020.02.25.05.07.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 05:07:20 -0800 (PST)
+From:   madhuparnabhowmik10@gmail.com
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.or, joel@joelfernandes.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        frextrite@gmail.com, paulmck@kernel.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH] net: bluetooth: hci_core: Fix Suspicious RCU usage warnings
+Date:   Tue, 25 Feb 2020 18:36:38 +0530
+Message-Id: <20200225130638.32394-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.02.2020 23:34, Vladimir Oltean wrote:
->From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
->This is the continuation of the previous "[PATCH net-next] net: mscc:
->ocelot: Workaround to allow traffic to CPU in standalone mode":
->
->https://www.spinics.net/lists/netdev/msg631067.html
->
->Following the feedback received from Allan Nielsen, the Ocelot and Felix
->drivers were made to use the CPU port module in the same way (patch 1),
->and Felix was made to additionally allow unknown unicast frames towards
->the CPU port module (patch 2).
->
->Vladimir Oltean (2):
->  net: mscc: ocelot: eliminate confusion between CPU and NPI port
->  net: dsa: felix: Allow unknown unicast traffic towards the CPU port
->    module
->
-> drivers/net/dsa/ocelot/felix.c           | 16 ++++--
-> drivers/net/ethernet/mscc/ocelot.c       | 62 +++++++++++++---------
-> drivers/net/ethernet/mscc/ocelot.h       | 10 ----
-> drivers/net/ethernet/mscc/ocelot_board.c |  5 +-
-> include/soc/mscc/ocelot.h                | 67 ++++++++++++++++++++++--
-> net/dsa/tag_ocelot.c                     |  3 +-
-> 6 files changed, 117 insertions(+), 46 deletions(-)
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-Hi Vladimer,
+The following functions in hci_core are always called with
+hdev->lock held. No need to use list_for_each_entry_rcu(), therefore
+change the usage of list_for_each_entry_rcu() in these functions
+to list_for_each_entry().
 
-Did this fix you original issue with the spamming of the CPU?
+hci_link_keys_clear()
+hci_smp_ltks_clear()
+hci_smp_irks_clear()
+hci_blocked_keys_clear()
 
-/Allan
+Warning encountered with CONFIG_PROVE_RCU_LIST:
+
+[   72.213184] =============================
+[   72.213188] WARNING: suspicious RCU usage
+[   72.213192] 5.6.0-rc1+ #5 Not tainted
+[   72.213195] -----------------------------
+[   72.213198] net/bluetooth/hci_core.c:2288 RCU-list traversed in non-reader section!!
+
+[   72.213676] =============================
+[   72.213679] WARNING: suspicious RCU usage
+[   72.213683] 5.6.0-rc1+ #5 Not tainted
+[   72.213685] -----------------------------
+[   72.213689] net/bluetooth/hci_core.c:2298 RCU-list traversed in non-reader section!!
+
+[   72.214195] =============================
+[   72.214198] WARNING: suspicious RCU usage
+[   72.214201] 5.6.0-rc1+ #5 Not tainted
+[   72.214204] -----------------------------
+[   72.214208] net/bluetooth/hci_core.c:2308 RCU-list traversed in non-reader section!!
+
+[  333.456972] =============================
+[  333.456979] WARNING: suspicious RCU usage
+[  333.457001] 5.6.0-rc1+ #5 Not tainted
+[  333.457007] -----------------------------
+[  333.457014] net/bluetooth/hci_core.c:2318 RCU-list traversed in non-reader section!!
+
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+---
+ net/bluetooth/hci_core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index cbbc34a006d1..8ddd1bea02be 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2285,7 +2285,7 @@ void hci_link_keys_clear(struct hci_dev *hdev)
+ {
+ 	struct link_key *key;
+ 
+-	list_for_each_entry_rcu(key, &hdev->link_keys, list) {
++	list_for_each_entry(key, &hdev->link_keys, list) {
+ 		list_del_rcu(&key->list);
+ 		kfree_rcu(key, rcu);
+ 	}
+@@ -2295,7 +2295,7 @@ void hci_smp_ltks_clear(struct hci_dev *hdev)
+ {
+ 	struct smp_ltk *k;
+ 
+-	list_for_each_entry_rcu(k, &hdev->long_term_keys, list) {
++	list_for_each_entry(k, &hdev->long_term_keys, list) {
+ 		list_del_rcu(&k->list);
+ 		kfree_rcu(k, rcu);
+ 	}
+@@ -2305,7 +2305,7 @@ void hci_smp_irks_clear(struct hci_dev *hdev)
+ {
+ 	struct smp_irk *k;
+ 
+-	list_for_each_entry_rcu(k, &hdev->identity_resolving_keys, list) {
++	list_for_each_entry(k, &hdev->identity_resolving_keys, list) {
+ 		list_del_rcu(&k->list);
+ 		kfree_rcu(k, rcu);
+ 	}
+@@ -2315,7 +2315,7 @@ void hci_blocked_keys_clear(struct hci_dev *hdev)
+ {
+ 	struct blocked_key *b;
+ 
+-	list_for_each_entry_rcu(b, &hdev->blocked_keys, list) {
++	list_for_each_entry(b, &hdev->blocked_keys, list) {
+ 		list_del_rcu(&b->list);
+ 		kfree_rcu(b, rcu);
+ 	}
+-- 
+2.17.1
+
