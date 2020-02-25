@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7937C16B692
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A7316B6A4
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728316AbgBYART (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:17:19 -0500
-Received: from gateway30.websitewelcome.com ([192.185.196.18]:47448 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728011AbgBYARS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:17:18 -0500
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 91E5A1133F
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:15:39 -0600 (CST)
+        id S1728541AbgBYAZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:25:05 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.179]:41259 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728087AbgBYAZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:25:01 -0500
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 64B1A5EBE
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:25:00 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 6NsxjOiU1XVkQ6NsxjkK2i; Mon, 24 Feb 2020 18:15:39 -0600
+        id 6O20jJJqSSl8q6O20jyMEP; Mon, 24 Feb 2020 18:25:00 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,27 +24,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LktvCqqFjAA8rDcg5ByaBgBcVMdxrLSTLQa6siIf2JM=; b=pKNLiHChSa57IuH8C+BZVIHDFS
-        aqbfjtyx0N/KX80jSPbfkyRg3Kinl606snDgyjpldW8hmNoGBylzcyC9KOsfjUIKxIefbEGCd9ezj
-        Kl5Idd37G/ZU8bkfgspAK2mDX9BnKt8C5dz5dlb2r8Yd4vYzw9OmQpJ3tU7FpbyShJE4cckTcv8ih
-        nZT1ZJ/IB9WvZukUDk3L2F+yBsQo5FTDiSe8YUPrbtxJ8MJItPPBKITxL5CjXKS1WFyYpIkzk9aA6
-        B5UpSthtpvXbRx7eD6dDTqAOr+7jL7HsMPuy96HZIctLtVeXLxe39J9IpZThqS7L7H40lsrbg/8wp
-        06nIXcjg==;
-Received: from [201.166.191.14] (port=54580 helo=embeddedor)
+        bh=StD8K7B/IbLHb+7gq2AVQ24d9PrxX4zRAlmjceGLxBI=; b=cef/4pH9Y7gkNa2Rujz7TwrUuz
+        ao2dsiqnIm0nORidRrr4/fvQ8RILopsIHSo7ARSdrOk05VwGXag8B6MtXnfeaaYqLBgD6djtps/0c
+        A/LJQv9eO0E6TXTo9JCPFPyzXu4ZHczCKsIh7pgRpnmHMn53qfYJ7iSXtaJc6mW/ZZpbR0d2El6sF
+        VstH3V3fOY61qg7nprMZvqzVNVkf54FB4jQZYVNSEBvw342NRGtX9uLSCu1HA2sG4g8FXvnwh4W0D
+        c4yBXY3CfKPmfJs0m5q+yJFguVmCdxz2EBJ8WcXBlHT3q57lZlQjW8quMCujZpGm5iRTuUpVJJU08
+        llHgKSIw==;
+Received: from [201.166.191.153] (port=54744 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j6Nsv-002Rza-GF; Mon, 24 Feb 2020 18:15:38 -0600
-Date:   Mon, 24 Feb 2020 18:18:26 -0600
+        id 1j6O1x-002VtX-VX; Mon, 24 Feb 2020 18:24:58 -0600
+Date:   Mon, 24 Feb 2020 18:27:46 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Christian Benvenuti <benve@cisco.com>,
-        Govindarajulu Varadarajan <_govind@gmx.com>,
-        Parvi Kaustubhi <pkaustub@cisco.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: cisco: Replace zero-length array with
+Subject: [PATCH][next] wireless: realtek: Replace zero-length array with
  flexible-array member
-Message-ID: <20200225001826.GA22765@embeddedor>
+Message-ID: <20200225002746.GA26789@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,15 +57,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.166.191.14
+X-Source-IP: 201.166.191.153
 X-Source-L: No
-X-Exim-ID: 1j6Nsv-002Rza-GF
+X-Exim-ID: 1j6O1x-002VtX-VX
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.191.14]:54580
+X-Source-Sender: (embeddedor) [201.166.191.153]:54744
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 31
+X-Email-Count: 39
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -93,11 +95,6 @@ this change:
 may not be applied. As a quirk of the original implementation of
 zero-length arrays, sizeof evaluates to zero."[1]
 
-Lastly, fix the following checkpatch warning:
-CHECK: Prefer kernel type 'u32' over 'u_int32_t'
-#61: FILE: drivers/net/ethernet/cisco/enic/vnic_devcmd.h:653:
-+	u_int32_t val[];
-
 This issue was found with the help of Coccinelle.
 
 [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
@@ -106,49 +103,80 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/ethernet/cisco/enic/vnic_devcmd.h | 8 ++++----
- drivers/net/ethernet/cisco/enic/vnic_vic.h    | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/wifi.h      | 6 +++---
+ drivers/net/wireless/realtek/rtw88/fw.h          | 2 +-
+ drivers/net/wireless/realtek/rtw88/main.h        | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/cisco/enic/vnic_devcmd.h b/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
-index fef5a0a0663d..fcc4a3ccdd94 100644
---- a/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
-+++ b/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
-@@ -541,7 +541,7 @@ struct vnic_devcmd_notify {
- struct vnic_devcmd_provinfo {
- 	u8 oui[3];
- 	u8 type;
--	u8 data[0];
-+	u8 data[];
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+index 6598c8d786ea..440d164443bc 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+@@ -627,7 +627,7 @@ struct rtl8xxxu_firmware_header {
+ 	u32	reserved4;
+ 	u32	reserved5;
+ 
+-	u8	data[0];
++	u8	data[];
  };
  
- /* These are used in flags field of different filters to denote
-@@ -648,9 +648,9 @@ enum {
- #define FILTER_MAX_BUF_SIZE 100
- 
- struct filter_tlv {
--	u_int32_t type;
--	u_int32_t length;
--	u_int32_t val[0];
-+	u32 type;
-+	u32 length;
-+	u32 val[];
- };
- 
- enum {
-diff --git a/drivers/net/ethernet/cisco/enic/vnic_vic.h b/drivers/net/ethernet/cisco/enic/vnic_vic.h
-index 9ef81f148351..057776908828 100644
---- a/drivers/net/ethernet/cisco/enic/vnic_vic.h
-+++ b/drivers/net/ethernet/cisco/enic/vnic_vic.h
-@@ -59,7 +59,7 @@ struct vic_provinfo {
- 		u16 type;
- 		u16 length;
- 		u8 value[0];
--	} tlv[0];
-+	} tlv[];
+ /*
+diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+index 1cff9f07c9e9..13421cf2d201 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
++++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+@@ -1051,13 +1051,13 @@ struct rtl_hdr_3addr {
+ 	u8 addr2[ETH_ALEN];
+ 	u8 addr3[ETH_ALEN];
+ 	__le16 seq_ctl;
+-	u8 payload[0];
++	u8 payload[];
  } __packed;
  
- #define VIC_PROVINFO_ADD_TLV(vp, tlvtype, tlvlen, data) \
+ struct rtl_info_element {
+ 	u8 id;
+ 	u8 len;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct rtl_probe_rsp {
+@@ -1068,7 +1068,7 @@ struct rtl_probe_rsp {
+ 	/*SSID, supported rates, FH params, DS params,
+ 	 * CF params, IBSS params, TIM (if beacon), RSN
+ 	 */
+-	struct rtl_info_element info_element[0];
++	struct rtl_info_element info_element[];
+ } __packed;
+ 
+ /*LED related.*/
+diff --git a/drivers/net/wireless/realtek/rtw88/fw.h b/drivers/net/wireless/realtek/rtw88/fw.h
+index ccd27bd45775..414827800a5f 100644
+--- a/drivers/net/wireless/realtek/rtw88/fw.h
++++ b/drivers/net/wireless/realtek/rtw88/fw.h
+@@ -36,7 +36,7 @@ enum rtw_c2h_cmd_id_ext {
+ struct rtw_c2h_cmd {
+ 	u8 id;
+ 	u8 seq;
+-	u8 payload[0];
++	u8 payload[];
+ } __packed;
+ 
+ enum rtw_rsvd_packet_type {
+diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
+index c074cef22120..46c0ebceb177 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1641,7 +1641,7 @@ struct rtw_dev {
+ 	struct rtw_wow_param wow;
+ 
+ 	/* hci related data, must be last */
+-	u8 priv[0] __aligned(sizeof(void *));
++	u8 priv[] __aligned(sizeof(void *));
+ };
+ 
+ #include "hci.h"
 -- 
 2.25.0
 
