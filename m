@@ -2,115 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1339316BD03
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:07:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C88B16BD39
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:25:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729988AbgBYJHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 04:07:40 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:41831 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729939AbgBYJHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:07:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582621658;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J9KNb3WVdOxwxKr6MYNPKvXY1jE7XXYkemzIOMy9lrE=;
-        b=i2N+4Su/asOd1EGLWDVkJZvykjCeF7n5a3eSO4MEYuiB5k7M13QU9IVM0YtyYW+pjC7BzW
-        AwPnrYNj3YLy49aSxPMqEvFzh6Y/o+CZltJPbDvOQvPbp/wTLZuBQ/PUjqh/s7hSARq0S/
-        HuhcpotQJQh4sMHbZ2eQtWMZDNPOaoU=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-221-H4LjlgodNPywt8HrZLsMNQ-1; Tue, 25 Feb 2020 04:07:37 -0500
-X-MC-Unique: H4LjlgodNPywt8HrZLsMNQ-1
-Received: by mail-wr1-f72.google.com with SMTP id d9so3774626wrv.21
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 01:07:36 -0800 (PST)
+        id S1729925AbgBYJZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 04:25:50 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33888 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729864AbgBYJZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:25:50 -0500
+Received: by mail-wm1-f67.google.com with SMTP id i10so663607wmd.1
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 01:25:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FvcYTWOjERRwmHvUiPH05ZvRImLwQfvuQehAPXoTrzc=;
+        b=2RTpyD5li6uacEavhXaQUO6odvLqCFIMhOOsCQda5uTPvfa3k3vEI4cQ9k6+q8GDLN
+         W0heHrxaolccnuvq/mAvG7fIvG2FxyAXZJEBwcdk1C4TLY3UgG4JuPVLseXMLel/26vG
+         al8K1q/DApkG9yD+aALCzJibqOYmIS6mA9WMR/Y0PCJamgE2a9DXcqwoyrSA1UIKyd7O
+         VdufOPZGxViutEA5g7zvKThgwwnYFE8fJR4AF15A4fZTlNWRLQTHrKeGnpaRLc+i8VSt
+         3rA+fiKwLdId3odulc4ndD5h+5zi+jUDzm6mSAj5ymGW3AQXuVS1KXTbpGwduKLonyvI
+         xHXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J9KNb3WVdOxwxKr6MYNPKvXY1jE7XXYkemzIOMy9lrE=;
-        b=fGqv6JJeZIJtmV2LRq706zwgpbZiEgrOEdM7h09bCw+lnBwKn3ubKIFNcVChg/6pKx
-         NcHxxvB5PTUnwEQqi0rXW9ZrStQ+aaMwO0hJwNgi0dS2SeHM3/P+GQ9iSEDJBf+jgevN
-         4Jc+6xBelZ2obVtWLwabGiAKOtFKv6d4PqfwTLteNwoEXz15WFckcOu1nTz6pWFo62wN
-         V5LOo4a3txQ7Dgg+M3Rz+VmRic0LyoGNaksKGCuCjuNPzHDuqVFY+3TEbdlJdNZZTuEx
-         KMNU9ogIv2qn8Wc/aUOwJTSeB9DgSH5n/7XvRif6marHxSMPNq3MY2nBY7pZJUIH8UfF
-         /rgA==
-X-Gm-Message-State: APjAAAWHt3hbXa3oo3yCaLZ0iWvouEUhm4N3JAqxIyjZrxOIx2kgb5+w
-        nxldf1hWXGYxb2wfb4kLQQLipI/mo1lphnsgdcKp1SibGhNJN5/bspmoWkZX6cmgQeGC6z6OJWK
-        6L+V/JT3D2CJ67uQA
-X-Received: by 2002:a5d:504e:: with SMTP id h14mr13354441wrt.82.1582621655917;
-        Tue, 25 Feb 2020 01:07:35 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyvXTw1dY0/iQ7fl5rVkhMh/4ortONYEYN8tZpl8lKh5OB5cJe57Upw2uu6Y8P8dd7G6t5LXg==
-X-Received: by 2002:a5d:504e:: with SMTP id h14mr13354415wrt.82.1582621655699;
-        Tue, 25 Feb 2020 01:07:35 -0800 (PST)
-Received: from steredhat (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id s1sm22666564wro.66.2020.02.25.01.07.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FvcYTWOjERRwmHvUiPH05ZvRImLwQfvuQehAPXoTrzc=;
+        b=gGcy6tCs5GssUbN550RKP7DDW/WwoXfC4JebWEyCF+1I/npYtPdDoH1LvHMYKJI2cn
+         yHvdJUFQ1q00T4+R4W8dx79cu11glwCbSVw95ljVxNmrlTD5uTZinBFPmIADditobJKM
+         uVKstJ0R1DEMan3oGNCrrixfSvW2LIOwIdSXepdAhF9WXtEOKf+071mHFelL2Q8Au1fP
+         ekQ0F0FmEIuLatlsE7XhSMshQ5X8RFJpJiETODlIWPr/XHG+kMh5n3paaxh0szEHhFon
+         Lx8Hk8YQEslvaqXR4lRVRI9B9pJbO9zArKtrttITwuuOL+o8Mrfew+BVcHjnCj0piVMo
+         8ewA==
+X-Gm-Message-State: APjAAAXWC3GurliHVN97VCN9Do5OxPwpYVzOMEzZpVwjvdxv8zOZLXhi
+        7Cs5lm0EAFmy9ttJVonIJTOjXxiakJ4=
+X-Google-Smtp-Source: APXvYqx2YHkFA6VWuiMxLjAzdubJxYeOK01IPJH5oaMP4VmtsXXZsFjco3/Un2F06I3XBTsdTjTkeg==
+X-Received: by 2002:a1c:b603:: with SMTP id g3mr4177833wmf.130.1582622747793;
+        Tue, 25 Feb 2020 01:25:47 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id a26sm3291070wmm.18.2020.02.25.01.25.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 01:07:35 -0800 (PST)
-Date:   Tue, 25 Feb 2020 10:07:32 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        syzbot <syzbot+731710996d79d0d58fbc@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: INFO: task hung in lock_sock_nested (2)
-Message-ID: <20200225090732.kge6bdf46ji6mbb5@steredhat>
-References: <0000000000004241ff059f2eb8a4@google.com>
- <20200223075025.9068-1-hdanton@sina.com>
- <20200224134428.12256-1-hdanton@sina.com>
+        Tue, 25 Feb 2020 01:25:47 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ayal@mellanox.com,
+        saeedm@mellanox.com, ranro@mellanox.com, moshe@mellanox.com
+Subject: [patch net] mlx5: register lag notifier for init network namespace only
+Date:   Tue, 25 Feb 2020 10:25:46 +0100
+Message-Id: <20200225092546.30710-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200224134428.12256-1-hdanton@sina.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 09:44:28PM +0800, Hillf Danton wrote:
-> 
-> On Mon, 24 Feb 2020 11:08:53 +0100 Stefano Garzarella wrote:
-> > On Sun, Feb 23, 2020 at 03:50:25PM +0800, Hillf Danton wrote:
-> > > 
-> > > Seems like vsock needs a word to track lock owner in an attempt to
-> > > avoid trying to lock sock while the current is the lock owner.
-> > 
-> > Thanks for this possible solution.
-> > What about using sock_owned_by_user()?
-> > 
-> No chance for vsock_locked() if it works.
-> 
-> > We should fix also hyperv_transport, because it could suffer from the same
-> > problem.
-> > 
-> You're right. My diff is at most for introducing vsk's lock owner.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Sure, thanks for this!
+The current code causes problems when the unregistering netdevice could
+be different then the registering one.
 
-> 
-> > At this point, it might be better to call vsk->transport->release(vsk)
-> > always with the lock taken and remove it in the transports as in the
-> > following patch.
-> > 
-> > What do you think?
-> > 
-> Yes and ... please take a look at the output of grep
-> 
-> 	grep -n lock_sock linux/net/vmw_vsock/af_vsock.c
-> 
-> as it drove me mad.
+Since the check in mlx5_lag_netdev_event() does not allow any other
+network namespace anyway, fix this by registerting the lag notifier
+per init network namespace only.
 
-:-) I'll go in this direction and I'll check all the cases.
+Fixes: d48834f9d4b4 ("mlx5: Use dev_net netdevice notifier registrations")
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Tested-by: Aya Levin <ayal@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   |  3 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c       | 11 +++--------
+ drivers/net/ethernet/mellanox/mlx5/core/lag.h       |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h |  2 +-
+ 5 files changed, 6 insertions(+), 13 deletions(-)
 
-We should avoid to take lock_sock in the transports when it is possible.
-
-Thanks for the help,
-Stefano
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 966983674663..21de4764d4c0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5147,7 +5147,6 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
+ 
+ static void mlx5e_nic_disable(struct mlx5e_priv *priv)
+ {
+-	struct net_device *netdev = priv->netdev;
+ 	struct mlx5_core_dev *mdev = priv->mdev;
+ 
+ #ifdef CONFIG_MLX5_CORE_EN_DCB
+@@ -5168,7 +5167,7 @@ static void mlx5e_nic_disable(struct mlx5e_priv *priv)
+ 		mlx5e_monitor_counter_cleanup(priv);
+ 
+ 	mlx5e_disable_async_events(priv);
+-	mlx5_lag_remove(mdev, netdev);
++	mlx5_lag_remove(mdev);
+ }
+ 
+ int mlx5e_update_nic_rx(struct mlx5e_priv *priv)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 7b48ccacebe2..3e4362dec4db 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -1870,7 +1870,7 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
+ #endif
+ 	mlx5_notifier_unregister(mdev, &priv->events_nb);
+ 	cancel_work_sync(&rpriv->uplink_priv.reoffload_flows_work);
+-	mlx5_lag_remove(mdev, netdev);
++	mlx5_lag_remove(mdev);
+ }
+ 
+ static MLX5E_DEFINE_STATS_GRP(sw_rep, 0);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index b91eabc09fbc..8e19f6ab8393 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -464,9 +464,6 @@ static int mlx5_lag_netdev_event(struct notifier_block *this,
+ 	struct mlx5_lag *ldev;
+ 	int changed = 0;
+ 
+-	if (!net_eq(dev_net(ndev), &init_net))
+-		return NOTIFY_DONE;
+-
+ 	if ((event != NETDEV_CHANGEUPPER) && (event != NETDEV_CHANGELOWERSTATE))
+ 		return NOTIFY_DONE;
+ 
+@@ -586,8 +583,7 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
+ 
+ 	if (!ldev->nb.notifier_call) {
+ 		ldev->nb.notifier_call = mlx5_lag_netdev_event;
+-		if (register_netdevice_notifier_dev_net(netdev, &ldev->nb,
+-							&ldev->nn)) {
++		if (register_netdevice_notifier_net(&init_net, &ldev->nb)) {
+ 			ldev->nb.notifier_call = NULL;
+ 			mlx5_core_err(dev, "Failed to register LAG netdev notifier\n");
+ 		}
+@@ -600,7 +596,7 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
+ }
+ 
+ /* Must be called with intf_mutex held */
+-void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev)
++void mlx5_lag_remove(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
+ 	int i;
+@@ -620,8 +616,7 @@ void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev)
+ 
+ 	if (i == MLX5_MAX_PORTS) {
+ 		if (ldev->nb.notifier_call)
+-			unregister_netdevice_notifier_dev_net(netdev, &ldev->nb,
+-							      &ldev->nn);
++			unregister_netdevice_notifier_net(&init_net, &ldev->nb);
+ 		mlx5_lag_mp_cleanup(ldev);
+ 		cancel_delayed_work_sync(&ldev->bond_work);
+ 		mlx5_lag_dev_free(ldev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
+index 316ab09e2664..f1068aac6406 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.h
+@@ -44,7 +44,6 @@ struct mlx5_lag {
+ 	struct workqueue_struct   *wq;
+ 	struct delayed_work       bond_work;
+ 	struct notifier_block     nb;
+-	struct netdev_net_notifier	nn;
+ 	struct lag_mp             lag_mp;
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index fcce9e0fc82c..da67b28d6e23 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -157,7 +157,7 @@ int mlx5_query_qcam_reg(struct mlx5_core_dev *mdev, u32 *qcam,
+ 			u8 feature_group, u8 access_reg_group);
+ 
+ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev);
+-void mlx5_lag_remove(struct mlx5_core_dev *dev, struct net_device *netdev);
++void mlx5_lag_remove(struct mlx5_core_dev *dev);
+ 
+ int mlx5_irq_table_init(struct mlx5_core_dev *dev);
+ void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev);
+-- 
+2.21.1
 
