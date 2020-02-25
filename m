@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC61516B966
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 07:01:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C1016B968
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 07:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726039AbgBYGBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 01:01:39 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:40286 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgBYGBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 01:01:39 -0500
-Received: by mail-yw1-f65.google.com with SMTP id i126so6718182ywe.7
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 22:01:38 -0800 (PST)
+        id S1726125AbgBYGGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 01:06:25 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:50480 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725837AbgBYGGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 01:06:25 -0500
+Received: by mail-pj1-f66.google.com with SMTP id r67so794773pjb.0
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 22:06:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e0rzqvhgwpOfQhQCIq5cjFbK1rG8Ft2D0FdpY4JT0BY=;
-        b=tv2/g6T8ubcL4S+8xCDLS2HIrs6iR3p2Q2A8p3ggJ1Rclt12nqVIHTXEOQyHZd1pII
-         scC4EJSQHauU9pfIo7eg7EnWALjMBQde5spiA4tgMQJLMmzUcN5TRhowouH1M1wXECu0
-         ps4kPQqvCG2VLWR6PWxmwNfmjwoHaRJNRTeJF5tCjyfgXcOx9Wlbr4Ehc0ayX7gzLEQw
-         sh8AejQ1CPNGjPEttgQwJq+yxGS2SWS2Cqej70cI/JXpWCLwjNgnTepBdPtGcnXcvI10
-         baXpok10X2zVuCdZ4XBwm91PYeiukH/dZXO8qbPMATvYq+Uq3o1B/BfotqkhPUyX/E0g
-         L+8Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NL+8QKcJIo9UjBfd77xLS5pLZL6WsmvH9RUdBt70aro=;
+        b=nbX9S2G/Q+e5Mkiqv0RyvMX545B8rseKqiX9RmmWnsKFUHy4uKTyiYGVR04BWIGMGn
+         ANz3Jv3/jZ8nlZHGOFOVJZTcm7efE+hQbIT+Phx4CeDWX8+TvbVTYgLC5KPQHZHDsdko
+         HZY3Ds74HulEYwaavIfbL0+MybZ5WXElnkcgMjSqO5ZV33eci3E+koI78uWKjFn1Zpok
+         WVBBf03Ua7PfZ+/OznguF6CECcKQDdta8Lq/52159hA4D8TVOVkUhtv4vjOMQYQ51DMk
+         GNqvfkic9kibKeQikWGFPIGkU/AshDnmxa610dPzGsPpNbj/Sb3sMC8SUapAeYR0rLl3
+         ktxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e0rzqvhgwpOfQhQCIq5cjFbK1rG8Ft2D0FdpY4JT0BY=;
-        b=Nc0GYFyrXKvKDszjy6aF786XX46BsUGqfqDmyEHGcfxwnyBjOkmQQakNWBR70wGBlh
-         y/e3959zxkoKXj7BsqXcVRzbXqDlNZwGaw2XJsdTTmr7sYtNf1BBv0ieQ1P1E3iubg36
-         SzgTBti7QlnXYu54q067BIO/tL2MOjLBM/juwbPdgffeL/sNBcVOgTg3fMv1Rf7ZjSKc
-         wdaP7Tbmvyn82GLOoNU6AkEorx/y5S4MxXxZRsxoOtmpS/LpTcpIZesjR1N+oyTnE4wv
-         7QYIlOWWYcd9K41/OqRBoKF6J6MXXQ0QrZ+81e86EZqxaAYWt7xrOaq6cScGADgj3wem
-         yVtg==
-X-Gm-Message-State: APjAAAWsMNmBFvxBg/v6tq5Cv2OdXjqZ9k22f9VcxZtDwieVlTcLee9Z
-        ImSugSSzxm8XrmOKmyel14qUDJp1cjrdP8H5syNq3D/GN3M=
-X-Google-Smtp-Source: APXvYqwrAApIpAJ2zAeXVJ9P7xfknEc2TvDQS20TpTE/gWandQiWYGwRX4hK4gqiDjJ5XPcvgWjnTiocnQemGyPv2x8=
-X-Received: by 2002:a25:bd85:: with SMTP id f5mr21050414ybh.274.1582610497544;
- Mon, 24 Feb 2020 22:01:37 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NL+8QKcJIo9UjBfd77xLS5pLZL6WsmvH9RUdBt70aro=;
+        b=Y0TLLaV52xnJoJvCr1a24TqYDV54Doms8uufLnMHsOOyBbnJtr9XqTgDlNs3NzYabV
+         HJorDqu6lb8XaZSuVSMiuI5uYnQd4PZplIhCHj1R5qZI8VOKJgKpXi/yKLDbko0A4w8b
+         JM+Pno3eRtOutFyp4dFrjkUYW62EqAdicB1CX2PCpWz+Xg3p48803BkWNoSy0UbjS757
+         rEYgEVAC7UflUl4ArEIzztzWOVnfzWiZmchLS8duVZ6B/95xxNWHVTSUX5Y+gHWwvEHJ
+         fanA/d0crqCw4QR9+ki7oedJEmBH9HtPD1kZeitpeE2/yUGGySjdwv8yJ3SUiyVsbzPk
+         O3Ng==
+X-Gm-Message-State: APjAAAVeQRSD3GX5ZL/ux1B1ODnlmi02hYB0g+DQwIsnK3LTEuZAM9aC
+        NbRF3Jo8ZqKz5G6BAZ+wJmw=
+X-Google-Smtp-Source: APXvYqwo68ka3H5KHHir1p7/XcV8T+ufeMVKJt56gf9Yu3OmpQNTLdIXDyY4PlgwE5CBckLy2G7w6Q==
+X-Received: by 2002:a17:902:bb93:: with SMTP id m19mr55053436pls.310.1582610784494;
+        Mon, 24 Feb 2020 22:06:24 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
+        by smtp.gmail.com with ESMTPSA id s7sm1529990pjk.22.2020.02.24.22.06.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 22:06:23 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, soheil@google.com, edumazet@google.com,
+        willemb@google.com
+Subject: [PATCH net-next] tcp-zerocopy: Update returned getsockopt() optlen.
+Date:   Mon, 24 Feb 2020 22:06:20 -0800
+Message-Id: <20200225060620.76486-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
 MIME-Version: 1.0
-References: <20200225055806.74881-1-arjunroy.kdev@gmail.com>
-In-Reply-To: <20200225055806.74881-1-arjunroy.kdev@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 24 Feb 2020 22:01:25 -0800
-Message-ID: <CANn89iKFc9=4DrvuyGt05CVGqPumPO2e91wPZzp8qE90j4Gfeg@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp-zerocopy: Update returned getsockopt() optlen.
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 9:58 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
->
-> From: Arjun Roy <arjunroy@google.com>
->
-> TCP receive zerocopy currently does not update the returned optlen for
-> getsockopt(). Thus, userspace cannot properly determine if all the
-> fields are set in the passed-in struct. This patch sets the optlen
-> before return, in keeping with the expected operation of getsockopt().
->
-> Signed-off-by: Arjun Roy <arjunroy@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+From: Arjun Roy <arjunroy@google.com>
 
-Please add a proper Fixes: tag :)
+TCP receive zerocopy currently does not update the returned optlen for
+getsockopt(). Thus, userspace cannot properly determine if all the
+fields are set in the passed-in struct. This patch sets the optlen
+before return, in keeping with the expected operation of getsockopt().
 
-Thanks.
+Signed-off-by: Arjun Roy <arjunroy@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive
+zerocopy.")
 
->
-> ---
->  net/ipv4/tcp.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 600deb39f17de..fb9894d3d30e9 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4148,8 +4148,12 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
->  zerocopy_rcv_inq:
->                 zc.inq = tcp_inq_hint(sk);
->  zerocopy_rcv_out:
-> -               if (!err && copy_to_user(optval, &zc, len))
-> -                       err = -EFAULT;
-> +               if (!err) {
-> +                       if (put_user(len, optlen))
-> +                               return -EFAULT;
-> +                       if (copy_to_user(optval, &zc, len))
-> +                               return -EFAULT;
-> +               }
->                 return err;
->         }
->  #endif
-> --
-> 2.25.0.265.gbab2e86ba0-goog
->
+
+---
+ net/ipv4/tcp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 600deb39f17de..fb9894d3d30e9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4148,8 +4148,12 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ zerocopy_rcv_inq:
+ 		zc.inq = tcp_inq_hint(sk);
+ zerocopy_rcv_out:
+-		if (!err && copy_to_user(optval, &zc, len))
+-			err = -EFAULT;
++		if (!err) {
++			if (put_user(len, optlen))
++				return -EFAULT;
++			if (copy_to_user(optval, &zc, len))
++				return -EFAULT;
++		}
+ 		return err;
+ 	}
+ #endif
+-- 
+2.25.0.265.gbab2e86ba0-goog
+
