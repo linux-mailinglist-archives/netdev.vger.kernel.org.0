@@ -2,249 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE2716BF79
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 12:19:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 480BB16BF9B
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 12:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730432AbgBYLTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 06:19:45 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:26172 "EHLO
+        id S1730004AbgBYLaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 06:30:21 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:48418 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726039AbgBYLTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 06:19:44 -0500
+        by vger.kernel.org with ESMTP id S1729296AbgBYLaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 06:30:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582629582;
+        s=mimecast20190719; t=1582630220;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=U3hPikohRml3lL8Jogc7iVoQHY1Ph6Jcqk0meeV3PT4=;
-        b=LtFNel6glRAsmWsWPrgUNsD4m5ETvQJYK7a13H5RzEACZIkNfo63C2klMEKPbZY4wGAn/h
-        PLVTmShrDsy+K78owDlDXqXe7i6TCxCiW2ONDv4Sia45mPGloFfaEy3ZSo1uPNdE130DM7
-        ZPzay6qb1pacKzJyHiNseZO6FNg5odI=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-327-NomJKf6kOruBv41HxyNnYg-1; Tue, 25 Feb 2020 06:19:37 -0500
-X-MC-Unique: NomJKf6kOruBv41HxyNnYg-1
-Received: by mail-qt1-f199.google.com with SMTP id t9so14490792qtn.2
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 03:19:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U3hPikohRml3lL8Jogc7iVoQHY1Ph6Jcqk0meeV3PT4=;
-        b=ATaZqhgGy9ZgZVWNCl4/oByQURuygT/EbUPnH1uEUJR6NkwrXOAq7fA5KCcR6zcSF1
-         1naXAlpwjGShBQYqQ6cZbhgvixRKaWHkDS8mlkvyNnpyQaQzenX2Ns5PtWHfcKez62OB
-         EW636gPJYkCL8uisGfU6XToa60h+/A/SG4gaj0dc750lJVPubj/5wtRPR7oYtFf7NWHU
-         8uhNlur93n3luZYMJYrFpEvCh/gv6YblNdGTzZ/O3WKG4jKX9WY0+hUkPoyLsDta8+No
-         qLJTjGP/aFeoY3DonP5rQfjrl8BHzrKUO+CRhxZYK0CK6S8Xy4Th4b6iaQ54j+LDELG+
-         WNQA==
-X-Gm-Message-State: APjAAAUHwmWGlbzgO0+QoOC3WFjnhRW32pVn0HlCwzRVJ2C3kGMHnE5b
-        IQJ27bx11wuO2O4oVigIAVo1VGTj8HTh6AJzkkz97PJQqT4QXHXYoGy1ASjHHDbGW6j3QDDSajP
-        dYhETWtMWJwQVbuvw
-X-Received: by 2002:a0c:cc89:: with SMTP id f9mr33125095qvl.17.1582629577149;
-        Tue, 25 Feb 2020 03:19:37 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyzqcUgpQYhMUX/J07TlPjovku9kP6MRHH8Rhup5+jLZ30rCBS87MFDxy5DJWXwBXW2rSktqg==
-X-Received: by 2002:a0c:cc89:: with SMTP id f9mr33125064qvl.17.1582629576871;
-        Tue, 25 Feb 2020 03:19:36 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id t6sm3732951qke.57.2020.02.25.03.19.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 03:19:36 -0800 (PST)
-Date:   Tue, 25 Feb 2020 06:19:30 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Cc:     jasowang@redhat.com, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
-Subject: Re: [PATCH bpf-next v6 2/2] virtio_net: add XDP meta data support
-Message-ID: <20200225061923-mutt-send-email-mst@kernel.org>
-References: <20200225033103.437305-1-yuya.kusakabe@gmail.com>
- <20200225033212.437563-1-yuya.kusakabe@gmail.com>
- <20200225033212.437563-2-yuya.kusakabe@gmail.com>
+        bh=8wgvrETqdiZw+TCS8TmrOLHtx9YLv1MswVjc/0eKKxw=;
+        b=DmD8D6lUsmHalzPWC7hK90HSnTEnJ0MhwiM/lzKMdPZxLxj9GyPfPYfBFlD52WkQyP3OVw
+        23U0hlmKVtG6yxXT/m1UZFZ5voo/U9ItPGCa/DYsSIP3BD4ZegbL+vAtHjklcQ6oEejDi2
+        aEkorgIgS6Bp6lEqK/qfS4yFjV0cHkM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-LoNb2JGGNlGEWYPNPq9rSw-1; Tue, 25 Feb 2020 06:30:18 -0500
+X-MC-Unique: LoNb2JGGNlGEWYPNPq9rSw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F4028017CC;
+        Tue, 25 Feb 2020 11:30:17 +0000 (UTC)
+Received: from lpt (unknown [10.43.2.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6320F8B755;
+        Tue, 25 Feb 2020 11:30:13 +0000 (UTC)
+Date:   Tue, 25 Feb 2020 12:30:10 +0100
+From:   =?iso-8859-1?B?SuFu?= Tomko <jtomko@redhat.com>
+To:     ted.h.kim@oracle.com
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        netdev@vger.kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: Re: vsock CID questions
+Message-ID: <20200225113010.GH1133033@lpt>
+References: <7f9dd3c9-9531-902c-3c8a-97119f559f65@oracle.com>
+ <20200219154317.GB1085125@stefanha-x1.localdomain>
+ <20200220160912.GL3065@lpt>
+ <b08eda42-9cc7-7a9a-b5b1-5adc44050896@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <b08eda42-9cc7-7a9a-b5b1-5adc44050896@oracle.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="v2Uk6McLiE8OV1El"
 Content-Disposition: inline
-In-Reply-To: <20200225033212.437563-2-yuya.kusakabe@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 12:32:12PM +0900, Yuya Kusakabe wrote:
-> Implement support for transferring XDP meta data into skb for
-> virtio_net driver; before calling into the program, xdp.data_meta points
-> to xdp.data, where on program return with pass verdict, we call
-> into skb_metadata_set().
-> 
-> Tested with the script at
-> https://github.com/higebu/virtio_net-xdp-metadata-test.
-> 
-> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
-> ---
+--v2Uk6McLiE8OV1El
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+On Fri, Feb 21, 2020 at 11:49:06AM -0800, ted.h.kim@oracle.com wrote:
+>Hi Jan,
+>
+>Thanks for responding - let me see if I am understanding correctly.
+>
+>
+>I think you are saying on migration the process of determining the CID=20
+>assigned is the same as when you start a domain.
+>
+><cid auto=3D'yes'> means assignment to the first available value.
+>It also seems for auto=3D'yes' that any address=3D'<value>' part of the=20
+>CID definition is ignored, even as a suggested value.
+>(I always get CID 3 when starting auto=3D'yes' and no other domains have=
+=20
+>started, even if there is an specific address in the definition, e.g.=20
+>address=3D'12'.)
+>
+>But if auto=3D'no', either the domain gets the address field value or if=
+=20
+>the value is already assigned, the domain will fail to start/migrate.
+>
+>Is that right?
+>
 
->  drivers/net/virtio_net.c | 52 ++++++++++++++++++++++++----------------
->  1 file changed, 32 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index f39d0218bdaa..12d115ef5e74 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  				   struct receive_queue *rq,
->  				   struct page *page, unsigned int offset,
->  				   unsigned int len, unsigned int truesize,
-> -				   bool hdr_valid)
-> +				   bool hdr_valid, unsigned int metasize)
->  {
->  	struct sk_buff *skb;
->  	struct virtio_net_hdr_mrg_rxbuf *hdr;
-> @@ -393,6 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  	else
->  		hdr_padded_len = sizeof(struct padded_vnet_hdr);
->  
-> +	/* hdr_valid means no XDP, so we can copy the vnet header */
->  	if (hdr_valid)
->  		memcpy(hdr, p, hdr_len);
->  
-> @@ -405,6 +406,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  		copy = skb_tailroom(skb);
->  	skb_put_data(skb, p, copy);
->  
-> +	if (metasize) {
-> +		__skb_pull(skb, metasize);
-> +		skb_metadata_set(skb, metasize);
-> +	}
-> +
->  	len -= copy;
->  	offset += copy;
->  
-> @@ -450,10 +456,6 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
->  	struct virtio_net_hdr_mrg_rxbuf *hdr;
->  	int err;
->  
-> -	/* virtqueue want to use data area in-front of packet */
-> -	if (unlikely(xdpf->metasize > 0))
-> -		return -EOPNOTSUPP;
-> -
->  	if (unlikely(xdpf->headroom < vi->hdr_len))
->  		return -EOVERFLOW;
->  
-> @@ -644,6 +646,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  	unsigned int delta = 0;
->  	struct page *xdp_page;
->  	int err;
-> +	unsigned int metasize = 0;
->  
->  	len -= vi->hdr_len;
->  	stats->bytes += len;
-> @@ -683,8 +686,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  
->  		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
->  		xdp.data = xdp.data_hard_start + xdp_headroom;
-> -		xdp_set_data_meta_invalid(&xdp);
->  		xdp.data_end = xdp.data + len;
-> +		xdp.data_meta = xdp.data;
->  		xdp.rxq = &rq->xdp_rxq;
->  		orig_data = xdp.data;
->  		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> @@ -695,6 +698,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  			/* Recalculate length in case bpf program changed it */
->  			delta = orig_data - xdp.data;
->  			len = xdp.data_end - xdp.data;
-> +			metasize = xdp.data - xdp.data_meta;
->  			break;
->  		case XDP_TX:
->  			stats->xdp_tx++;
-> @@ -740,6 +744,9 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
->  	} /* keep zeroed vnet hdr since XDP is loaded */
->  
-> +	if (metasize)
-> +		skb_metadata_set(skb, metasize);
-> +
->  err:
->  	return skb;
->  
-> @@ -760,8 +767,8 @@ static struct sk_buff *receive_big(struct net_device *dev,
->  				   struct virtnet_rq_stats *stats)
->  {
->  	struct page *page = buf;
-> -	struct sk_buff *skb = page_to_skb(vi, rq, page, 0, len,
-> -					  PAGE_SIZE, true);
-> +	struct sk_buff *skb =
-> +		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0);
->  
->  	stats->bytes += len - vi->hdr_len;
->  	if (unlikely(!skb))
-> @@ -793,6 +800,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  	unsigned int truesize;
->  	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
->  	int err;
-> +	unsigned int metasize = 0;
->  
->  	head_skb = NULL;
->  	stats->bytes += len - vi->hdr_len;
-> @@ -839,8 +847,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  		data = page_address(xdp_page) + offset;
->  		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
->  		xdp.data = data + vi->hdr_len;
-> -		xdp_set_data_meta_invalid(&xdp);
->  		xdp.data_end = xdp.data + (len - vi->hdr_len);
-> +		xdp.data_meta = xdp.data;
->  		xdp.rxq = &rq->xdp_rxq;
->  
->  		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> @@ -848,24 +856,27 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  
->  		switch (act) {
->  		case XDP_PASS:
-> +			metasize = xdp.data - xdp.data_meta;
-> +
->  			/* recalculate offset to account for any header
-> -			 * adjustments. Note other cases do not build an
-> -			 * skb and avoid using offset
-> +			 * adjustments and minus the metasize to copy the
-> +			 * metadata in page_to_skb(). Note other cases do not
-> +			 * build an skb and avoid using offset
->  			 */
-> -			offset = xdp.data -
-> -					page_address(xdp_page) - vi->hdr_len;
-> +			offset = xdp.data - page_address(xdp_page) -
-> +				 vi->hdr_len - metasize;
->  
-> -			/* recalculate len if xdp.data or xdp.data_end were
-> -			 * adjusted
-> +			/* recalculate len if xdp.data, xdp.data_end or
-> +			 * xdp.data_meta were adjusted
->  			 */
-> -			len = xdp.data_end - xdp.data + vi->hdr_len;
-> +			len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
->  			/* We can only create skb based on xdp_page. */
->  			if (unlikely(xdp_page != page)) {
->  				rcu_read_unlock();
->  				put_page(page);
-> -				head_skb = page_to_skb(vi, rq, xdp_page,
-> -						       offset, len,
-> -						       PAGE_SIZE, false);
-> +				head_skb = page_to_skb(vi, rq, xdp_page, offset,
-> +						       len, PAGE_SIZE, false,
-> +						       metasize);
->  				return head_skb;
->  			}
->  			break;
-> @@ -921,7 +932,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  		goto err_skb;
->  	}
->  
-> -	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog);
-> +	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
-> +			       metasize);
->  	curr_skb = head_skb;
->  
->  	if (unlikely(!curr_skb))
-> -- 
-> 2.24.1
+Yes.
+
+>
+>In cases, where auto=3D'yes', it does not seem that the host/hypervisor=20
+>can find out what CID value was assigned to a domain. Even parsing the=20
+>XML only reveals that it was auto-assigned and no specific value can=20
+>be determined.
+
+The value is not recorded in the inactive XML, but after domain startup,
+the address should be visible in the live XML:
+
+   <vsock model=3D"virtio">
+     <cid auto=3D"yes" address=3D"3"/>
+     <alias name=3D"vsock0"/>
+     <address type=3D"pci" domain=3D"0x0000" bus=3D"0x07" slot=3D"0x00" fun=
+ction=3D"0x0"/>
+   </vsock>
+
+>
+>Is this correct?
+>
+>If this is the case, I would advocate for a specific API which can=20
+>lookup the current CID of a domain.
+
+This can already be queried from the XML through virDomainGetXMLDesc:
+$ virsh dumpxml libvirt-fedora-31 | xmllint --xpath 'string(//cid/@address)=
+' -
+3
+
+Jano
+
+>Otherwise the host/hypervisor cannot tell which=A0 auto=3D'yes' domain is=
+=20
+>on the other end of the connected socket, when there is more than one.
+>
+>
+>Thanks.
+>-ted
+>
+>
+
+--v2Uk6McLiE8OV1El
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEQeJGMrnL0ADuclbP+YPwO/Mat50FAl5VBT8ACgkQ+YPwO/Ma
+t52mMAgAreHfNtvGp8PJAyCxCp5YqXwLisHQt8uEoXV0HHQoKglZz3U5xPSK/HqC
+uC4L7VpxkR6JlFXwQjsvFv63qEoI78m2YCdmjfyOkRQZJLBrIRdeC692fzLP0tc3
+No1YHLm4dg5Vs3X+YATPsl8cOGlhpr422oOmMBJGNO/TC9xvxlQ6paIFhbBL29YV
+E89aM0dsoOL814qFAUDXHgwzK1BshiywJnxlkc25pTaZGtpcu/olabOcgDOMVyrH
+lJ1tNE1qtYqjM08v870uzB+288S9HsxHwBda6lP8LPXUL7JOvFz7q1gOyVZzgzjb
+weZ76sp6TN8hzxxXtwFXKxocKSDgMQ==
+=Jwb7
+-----END PGP SIGNATURE-----
+
+--v2Uk6McLiE8OV1El--
 
