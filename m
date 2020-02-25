@@ -2,68 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A69A416C0F1
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A16116C10A
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729841AbgBYMg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 07:36:57 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:52876 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgBYMg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:36:56 -0500
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j6ZRg-0002g5-4R; Tue, 25 Feb 2020 13:36:16 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 135EB101226; Tue, 25 Feb 2020 13:36:15 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sebastian Sewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Clark Williams <williams@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [patch V3 06/22] bpf/trace: Remove redundant preempt_disable from trace_call_bpf()
-In-Reply-To: <20200225003351.vvsrgyta47ciqhvo@ast-mbp>
-References: <20200224140131.461979697@linutronix.de> <20200224145643.059995527@linutronix.de> <20200224194017.rtwjcgjxnmltisfe@ast-mbp> <875zfvk983.fsf@nanos.tec.linutronix.de> <20200225003351.vvsrgyta47ciqhvo@ast-mbp>
-Date:   Tue, 25 Feb 2020 13:36:15 +0100
-Message-ID: <8736aykfnk.fsf@nanos.tec.linutronix.de>
+        id S1730175AbgBYMiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 07:38:54 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:57950 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729411AbgBYMiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:38:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=7il1HEPle9QWK8/fn+8p2ZW7O17syNxn3S0cD/+iqSQ=; b=mTmj8gEH/PDUSZrnwqB/k2HnS
+        8MBf7jbbYVViLuW2wqdDKg9jHs8mupOQCGoz6I86x8v9A7f/8ChSVtL8Eoh2xHimayo1IuYEmqGBa
+        NPn510WZTRozrgM7Q8GofRL+OZe1MDaK6eoEW/fe/mxPhrXKoFJ7eFHXTk7RrTzxncsT7nledbpG+
+        CD1vAEZVCVajSsZFfPeoXwv8INm+fWQ2o6F5nGnULeqDqlXdrCrVLEUi0VIs+O4y8A1YlC8aOKpHC
+        Y2ok8TmkoetW0RPg7+GbRCJzugXtMQRZ6LDT1eCgDZBxrWN15YKtcLRWUt0Wwf9UDkZHMEbjGgPth
+        ZUbM9B93A==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:52570)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j6ZU4-0000tE-DH; Tue, 25 Feb 2020 12:38:44 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j6ZTz-0007QW-GB; Tue, 25 Feb 2020 12:38:39 +0000
+Date:   Tue, 25 Feb 2020 12:38:39 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Sudheesh Mavila <sudheesh.mavila@amd.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: corrected the return value for
+ genphy_check_and_restart_aneg
+Message-ID: <20200225123839.GT25745@shell.armlinux.org.uk>
+References: <20200225122208.6881-1-sudheesh.mavila@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200225122208.6881-1-sudheesh.mavila@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> On Mon, Feb 24, 2020 at 09:42:52PM +0100, Thomas Gleixner wrote:
->> > But looking at your patch cant_sleep() seems unnecessary strong.
->> > Should it be cant_migrate() instead?
->> 
->> Yes, if we go with the migrate_disable(). OTOH, having a
->> preempt_disable() in that uprobe callsite should work as well, then we
->> can keep the cant_sleep() check which covers all other callsites
->> properly. No strong opinion though.
->
-> ok. I went with preempt_disable() for uprobes. It's simpler.
-> And pushed the whole set to bpf-next.
-> In few days we'll send it to Dave for net-next and on the way
-> to Linus's next release. imo it's a big milestone.
-> Thank you for the hard work to make it happen.
+On Tue, Feb 25, 2020 at 05:52:08PM +0530, Sudheesh Mavila wrote:
+> When auto-negotiation is not required, return value should be zero.
+> 
+> Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
 
-Thank you for guidance and review!
+Hi,
 
-      tglx
+Thanks for spotting this problem. However, it looks like the same
+problem also exists in genphy_c45_check_and_restart_aneg(). It would
+be a good idea to fix both at the same time.
+
+Thanks.
+
+> ---
+>  drivers/net/phy/phy_device.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 6a5056e0ae77..36cde3dac4c3 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1806,10 +1806,13 @@ int genphy_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+>  			restart = true;
+>  	}
+>  
+> -	if (restart)
+> -		ret = genphy_restart_aneg(phydev);
+> +	/* Only restart aneg if we are advertising something different
+> +	 * than we were before.
+> +	 */
+> +	if (restart > 0)
+> +		return genphy_restart_aneg(phydev);
+>  
+> -	return ret;
+> +	return 0;
+>  }
+>  EXPORT_SYMBOL(genphy_check_and_restart_aneg);
+>  
+> -- 
+> 2.17.1
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
