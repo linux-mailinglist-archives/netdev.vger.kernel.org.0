@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF4716EF3C
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A95D116EF38
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:44:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730794AbgBYToz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:44:55 -0500
-Received: from mx2.suse.de ([195.135.220.15]:55560 "EHLO mx2.suse.de"
+        id S1730422AbgBYTow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 14:44:52 -0500
+Received: from hs2.cadns.ca ([149.56.24.197]:55546 "EHLO hs2.cadns.ca"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728051AbgBYToz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Feb 2020 14:44:55 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D0466AB7F;
-        Tue, 25 Feb 2020 19:44:52 +0000 (UTC)
-From:   Michal Rostecki <mrostecki@opensuse.org>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v3 0/5] bpftool: Make probes which emit dmesg warnings optional
-Date:   Tue, 25 Feb 2020 20:44:38 +0100
-Message-Id: <20200225194446.20651-1-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.25.1
+        id S1728051AbgBYTov (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 14:44:51 -0500
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+        by hs2.cadns.ca (Postfix) with ESMTPSA id 5C89E4DC3D
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 14:44:50 -0500 (EST)
+Authentication-Results: hs2.cadns.ca;
+        spf=pass (sender IP is 209.85.222.175) smtp.mailfrom=sriram.chadalavada@mindleap.ca smtp.helo=mail-qk1-f175.google.com
+Received-SPF: pass (hs2.cadns.ca: connection is authenticated)
+Received: by mail-qk1-f175.google.com with SMTP id o28so330806qkj.9
+ for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 11:44:50 -0800 (PST)
+X-Gm-Message-State: APjAAAXYxGX7FCr9f04ySI0p2nCvvo7wR5+SfxqmQVnyvy+2pfj2TcSv
+ mgEPmfnft//2/fH3hOU0cKGtCANaAAOay1FKuSo=
+X-Google-Smtp-Source: APXvYqweAeRa2n2EIZTylSIJwQcahxZtCuevVr5bWpRHGcu7/uFqjSc4C67MUlKVoVm//3EwjH6m6hNjjbc+7p/ME8Q=
+X-Received: by 2002:a37:9587:: with SMTP id x129mr608669qkd.500.1582659889917;
+ Tue, 25 Feb 2020 11:44:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAOK2joHUDyZvGx6rkMS4D6-Rw0yznc2Q68JXdnUK1e=xN2X9Hw@mail.gmail.com>
+ <CAOK2joG_XixQ5EKUcxOph_gECBqfZGuW8=7dwpdskHpgUO5qug@mail.gmail.com>
+In-Reply-To: <CAOK2joG_XixQ5EKUcxOph_gECBqfZGuW8=7dwpdskHpgUO5qug@mail.gmail.com>
+From:   Sriram Chadalavada <sriram.chadalavada@mindleap.ca>
+Date:   Tue, 25 Feb 2020 14:44:38 -0500
+X-Gmail-Original-Message-ID: <CAOK2joEyyQHmsKz1L6WV_5XmDmP5ZGhucLwFY_CT+U=AiySeNA@mail.gmail.com>
+Message-ID: <CAOK2joEyyQHmsKz1L6WV_5XmDmP5ZGhucLwFY_CT+U=AiySeNA@mail.gmail.com>
+Subject: Fwd: Kernel crash due to conflict between legacy and current DSA
+ mv88e6xxx drivers ?
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-PPP-Message-ID: <20200225194450.14621.98241@hs2.cadns.ca>
+X-PPP-Vhost: mindleap.ca
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Feature probes in bpftool related to bpf_probe_write_user and
-bpf_trace_printk helpers emit dmesg warnings which might be confusing
-for people running bpftool on production environments. This patch series
-addresses that by filtering them out by default and introducing the new
-positional argument "full" which enables all available probes.
+The following error occurred using 4.19.101 kernel and NOT with our
+last stable 4.1.16 kernel on enabling CONFIG_NET_DSA_LEGACY.
 
-The main motivation behind those changes is ability the fact that some
-probes (for example those related to "trace" or "write_user" helpers)
-emit dmesg messages which might be confusing for people who are running
-on production environments. For details see the Cilium issue[0].
+[    1.505428] libphy: mdiobus_find: mii bus [igb_enet_mii_bus] found
+[    1.505515] sysfs: cannot create duplicate filename '/kernel/marvell/access'
+[    1.505529] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.101 #0
+[    1.505534] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[    1.505539] Backtrace:
+[    1.505549] Function entered at [<80013a28>] from [<80013d60>]
+[    1.505561]  r7:00000000 r6:60000013 r5:00000000 r4:806437b4
+[    1.505565] Function entered at [<80013d48>] from [<804e94b4>]
+[    1.505570] Function entered at [<804e941c>] from [<8013fffc>]
+[    1.505579]  r7:00000000 r6:80575d54 r5:e931a000 r4:eee2d000
+[    1.505585] Function entered at [<8013ff9c>] from [<8013fcbc>]
+[    1.505593]  r7:00000000 r6:e931a000 r5:ffffffef r4:8063860c
+[    1.505599] Function entered at [<8013fb50>] from [<8013fd68>]
+[    1.505606]  r6:e932f880 r5:8063860c r4:00000000
+[    1.505612] Function entered at [<8013fcf4>] from [<802f3190>]
+[    1.505620]  r7:80673f0c r6:00000000 r5:e91df078 r4:00000000
+[    1.505626] Function entered at [<802f30f4>] from [<804df104>]
+[    1.505638]  r10:e932b940 r9:8052c8e8 r8:00000000 r7:e91df078
+r6:00000000 r5:802f30f4
+[    1.505644]  r4:80638598
+[    1.505649] Function entered at [<804deb8c>] from [<80271310>]
+[    1.505661]  r10:00000000 r9:8064366c r8:00000000 r7:80672acc
+r6:8064366c r5:eef36410
+[    1.505665]  r4:00000000
+[    1.505670] Function entered at [<802712c0>] from [<8026f7b0>]
+[    1.505679]  r7:80672acc r6:00000000 r5:80672ac8 r4:eef36410
+[    1.505684] Function entered at [<8026f65c>] from [<8026fb90>]
 
-v1 -> v2:
-- Do not expose regex filters to users, keep filtering logic internal,
-expose only the "full" option for including probes which emit dmesg
-warnings.
+On disabling the option CONFIG_NET_DSA_LEGACY,  the crash goes away
+but the ethernet interfaces are NOT enumerated.
 
-v2 -> v3:
-- Do not use regex for filtering out probes, use function IDs directly.
-- Fix bash completion - in v2 only "prefix" was proposed after "macros",
-  "dev" and "kernel" were not.
-- Rephrase the man page paragraph, highlight helper function names.
-- Remove tests which parse the plain output of bpftool (except the
-  header/macros test), focus on testing JSON output instead.
-- Add test which compares the output with and without "full" option.
-
-[0] https://github.com/cilium/cilium/issues/10048
-
-Michal Rostecki (5):
-  bpftool: Move out sections to separate functions
-  bpftool: Make probes which emit dmesg warnings optional
-  bpftool: Update documentation of "bpftool feature" command
-  bpftool: Update bash completion for "bpftool feature" command
-  selftests/bpf: Add test for "bpftool feature" command
-
- .../bpftool/Documentation/bpftool-feature.rst |  19 +-
- tools/bpf/bpftool/bash-completion/bpftool     |   3 +-
- tools/bpf/bpftool/feature.c                   | 283 +++++++++++-------
- tools/testing/selftests/.gitignore            |   5 +-
- tools/testing/selftests/bpf/Makefile          |   3 +-
- tools/testing/selftests/bpf/test_bpftool.py   | 179 +++++++++++
- tools/testing/selftests/bpf/test_bpftool.sh   |   5 +
- 7 files changed, 374 insertions(+), 123 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
- create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
-
--- 
-2.25.1
-
+https://www.spinics.net/lists/netdev/msg556413.html seems to suggest
+that legacy DSA is still being used for Marvell 88e6xxx drivers. If
+the kernel community intends to move away from that, we would want to
+adopt that approach. Please advise on what we might have to
+investigate/change that will also enable resolving this kernel crash.
+As I understand, one of the things I would need to change is that the
+relevant device tree needs to use the "current binding" as opposed to
+the "deprecated binding" which is what is being used now.
