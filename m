@@ -2,94 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3451A16B9B9
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 07:28:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDC3E16B9BB
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 07:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729025AbgBYG2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 01:28:35 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:40650 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgBYG2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 01:28:35 -0500
-Received: by mail-yw1-f65.google.com with SMTP id i126so6765036ywe.7
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 22:28:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YUEseoc5nFfm01S1YjQu52NcZ+yHtKwJn1jBK5gtp8Y=;
-        b=MNU/bMVAHSTBwAF8nuKA4L5SeAUMSLSwFzpJic/bYDxP69XfLgwE6cvaxI4Qghxkhd
-         I6XGws0+jRQOe4/6wSfQTNY7NviR8t2AsC3VhqHcX2KlJz+I/EYNoDsdvYnIGdIcP2JK
-         WD6YgYY1ZLt2znRUTGPxUCIig0dnsbUuKXAFWQvym3cagfAkUK0HQnIH+ViwSjP3Wubw
-         pFeM1HvJv3T4QSIiUFNXFIbkCb9cBICBC6UiEnuVe8N7WiKLSraBq4uDhEIbCcjqdlUX
-         EZBY1uYsQZaAok55DeO757aoazXyBJoU7gLhyKhFLJtaSFYfOXsGrRvh8siOB94AZk2V
-         nSSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YUEseoc5nFfm01S1YjQu52NcZ+yHtKwJn1jBK5gtp8Y=;
-        b=FpLVXvngixMsMX3DjSuiqRREVQvDtgy11SR12rl/+O/YtPZ2AvF7hpc+dN/zzfDJGc
-         7ofhg2KrR1GSaRIgzdhPJQ55sql7kj/sKyZ2wmrPhyfPJSaowkzhHjR594PVJ73jclZF
-         wxNiL4O9p9Guw8NyLIaCVdLkVswRZhbUShUi5KR92APcikyv4CyCqp+pCnY5k7I2pLje
-         ndAKCeStUj4Npvm80tMW4I4XOFpcCooY5uHNZyHSUDoZ0u/Qo9ja+zwww4ojkJd25AcL
-         kVX5z6aQt2i5p3U0ARK7fUy9IJJV3Ek3dk72Vzs9NTx+JQiBNCH2psJLZAUfkr3K0HMr
-         vwnQ==
-X-Gm-Message-State: APjAAAWV7tVA4YtC27qG2GRbO5XVeJpB/A/IVMykRCnxdtoclL1gV34a
-        /Rmx+qxXKR4yZwMpI4MdQZnGE1KV/9rviKs3wL8XXcjWwwo=
-X-Google-Smtp-Source: APXvYqyGX7bP3yIWa7VV40IwRF3ie6diWmVkz2uCd98r76dUXC4e6VkFBXlc9oIIuj1A0vrOjABcg+C9wFXezYAonwg=
-X-Received: by 2002:a25:bd85:: with SMTP id f5mr21130913ybh.274.1582612114053;
- Mon, 24 Feb 2020 22:28:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20200225060620.76486-1-arjunroy.kdev@gmail.com>
-In-Reply-To: <20200225060620.76486-1-arjunroy.kdev@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 24 Feb 2020 22:28:22 -0800
-Message-ID: <CANn89iLrOwvNSHOB2i_+gMmN29O6BpJrnd9RfNERDTayNf7qKA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp-zerocopy: Update returned getsockopt() optlen.
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729057AbgBYG3X convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Feb 2020 01:29:23 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:41713 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgBYG3W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 01:29:22 -0500
+Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id C500DCECC5;
+        Tue, 25 Feb 2020 07:38:46 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: WARNING: refcount bug in l2cap_chan_put
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABBYNZJzxO=aTnYOL7UpDzK+PDNcAa-DuH_5N+FZV6OZp52uFA@mail.gmail.com>
+Date:   Tue, 25 Feb 2020 07:29:20 +0100
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        syzbot <syzbot+198362c76088d1515529@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com
+Content-Transfer-Encoding: 8BIT
+Message-Id: <9D797053-B09C-4AB8-8C32-E572E57F9140@holtmann.org>
+References: <0000000000000cce30059f4e27e9@google.com>
+ <CANFp7mWobejCpiq5xXouKAcRBSAbVwxKOnFbJ_XfiU6rLsT0Vw@mail.gmail.com>
+ <CABBYNZJzxO=aTnYOL7UpDzK+PDNcAa-DuH_5N+FZV6OZp52uFA@mail.gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 10:06 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
->
-> From: Arjun Roy <arjunroy@google.com>
->
-> TCP receive zerocopy currently does not update the returned optlen for
-> getsockopt(). Thus, userspace cannot properly determine if all the
-> fields are set in the passed-in struct. This patch sets the optlen
-> before return, in keeping with the expected operation of getsockopt().
->
-> Signed-off-by: Arjun Roy <arjunroy@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive
-> zerocopy")
+Hi Luiz,
 
+>> (Resent in plain text; sorry for double send)
+>> 
+>> I took a brief look at this error and uncovered that 6lowpan uses zero
+>> locks when using l2cap (should be using the channel lock).
+>> 
+>> It seems like it would be better just to convert its direct use of
+>> l2cap channel into using an l2cap socket.
+> 
+> I recall having some thought on that, I think having a socket like
+> RFCOMM does would be better but I don't remember why I haven't
+> follow-up on that, well we wanted to discontinue the bt specific
+> 6lowpan on the kernel side though.
 
-OK, please note for next time :
+because sockets have their own locking issues for Bluetooth. We actually want to get rid of the internal socket usage.
 
-Fixes: tag should not wrap : It should be a single line.
-Preferably it should be the first tag (before your Sob)
+Regards
 
-Add v2 as in [PATCH v2 net-next]  :  so that reviewers can easily see
-which version is the more recent one.
+Marcel
 
-
->
-> +               if (!err) {
-> +                       if (put_user(len, optlen))
-> +                               return -EFAULT;
-
-Sorry for not asking this before during our internal review :
-
-Is the cost of the extra STAC / CLAC (on x86) being high enough that it is worth
-trying to call put_user() only if user provided a different length ?
