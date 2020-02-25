@@ -2,213 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D48A616B6BD
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C8716B6CB
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728653AbgBYAbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:31:31 -0500
-Received: from gateway22.websitewelcome.com ([192.185.47.179]:43825 "EHLO
-        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727081AbgBYAba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:31:30 -0500
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 6CB3362F4
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:31:29 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 6O8HjhwXmRP4z6O8Hj73g5; Mon, 24 Feb 2020 18:31:29 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+57+TZ+YS4fZoiEVbZiT3ANzLG4Ir1hQoUxGBfOF4M4=; b=sh51uhl5baRoJtHSTmrspjD2QJ
-        Ru1DDAERaQUgtBRxZld32WPyJwVT46uq1l+8Dm7ktFw8/+cR+HBNcpQqTrmfxn/I7t8b/mXhyebJh
-        gHHyc1h5/ES31UlOe69t8dHj7i/t766pPjoJY2KCBztNdeP5FMnuGwWJBon6cuWTa6vl0t2xkGhb3
-        VHzUpTqGZNbl8aF9+WAYd83VcHLdE71nAgWU6i6cs57sVllG1ntZZay8LOLuE6mz2ccNZ47wjYEbZ
-        EVVIFs/ZL+DpxGZcMFGxs1buz+JD2OegK3gY2/nautdm4Pg8ePmI1I8vKKNe7mSzWqzDCbaBQl6i+
-        rFBfrZIw==;
-Received: from [201.166.191.211] (port=54920 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j6O8F-002YvY-IY; Mon, 24 Feb 2020 18:31:27 -0600
-Date:   Mon, 24 Feb 2020 18:34:08 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] wireless: ti: Replace zero-length array with
- flexible-array member
-Message-ID: <20200225003408.GA28675@embeddedor>
+        id S1728396AbgBYAh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:37:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727081AbgBYAh3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Feb 2020 19:37:29 -0500
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B186B2072D;
+        Tue, 25 Feb 2020 00:37:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582591048;
+        bh=lSqEwBt8JAuTSPB4Ufa8LgK5k1l9A6Ipvq2+Fp3Qcd0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tFranfzXwpE2/bt9OnzhXEP19V9AuY2zBXEuIQZl5EPPDWA8VdbWl6bwQ90RcxNN3
+         TpLYutwSn/SqPMROXTYbDIpBa/GrkX19HYqz8mdiwwjmsZhOBARqOeizum5/K6lYk1
+         DYP13/xnO6ADstRAHa8bDPojHiHke9+xuZwJ16HI=
+Received: by mail-lf1-f53.google.com with SMTP id y17so5133967lfe.8;
+        Mon, 24 Feb 2020 16:37:27 -0800 (PST)
+X-Gm-Message-State: APjAAAUP14uRy3ezupFLb/qFPZobk50plzz5om7/d3LjxLEHSL1K+V5Z
+        5MOYM2QBxBVlo8mdJefJa7naVdkAaVygkM8SoJk=
+X-Google-Smtp-Source: APXvYqzui2YDbc9/NwiddbTVjui9mtdFUSIGuJGEUGnYJ3nQHP5LOzi7mjdZuj/8IaQCSVkhHJNdlmdb2p1Q9Pa/yQo=
+X-Received: by 2002:ac2:47ec:: with SMTP id b12mr28919123lfp.162.1582591045905;
+ Mon, 24 Feb 2020 16:37:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.166.191.211
-X-Source-L: No
-X-Exim-ID: 1j6O8F-002YvY-IY
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.191.211]:54920
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 44
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20200221184650.21920-1-kafai@fb.com> <20200221184703.22967-1-kafai@fb.com>
+In-Reply-To: <20200221184703.22967-1-kafai@fb.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 24 Feb 2020 16:37:14 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4SgovdeZGLgY+OkFtFLzGjmascLyV8Kf+ig7rJ3yNJdg@mail.gmail.com>
+Message-ID: <CAPhsuW4SgovdeZGLgY+OkFtFLzGjmascLyV8Kf+ig7rJ3yNJdg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] inet_diag: Move the INET_DIAG_REQ_BYTECODE
+ nlattr to cb->data
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On Fri, Feb 21, 2020 at 10:47 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> The INET_DIAG_REQ_BYTECODE nlattr is currently re-found every time when
+> the "dump()" is re-started.
+>
+> In a latter patch, it will also need to parse the new
+> INET_DIAG_REQ_SK_BPF_STORAGES nlattr to learn the map_fds. Thus, this
+> patch takes this chance to store the parsed nlattr in cb->data
+> during the "start" time of a dump.
+>
+> By doing this, the "bc" argument also becomes unnecessary
+> and is removed.  Also, the two copies of the INET_DIAG_REQ_BYTECODE
+> parsing-audit logic between compat/current version can be
+> consolidated to one.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
-
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/wireless/ti/wl1251/cmd.h          | 4 ++--
- drivers/net/wireless/ti/wl1251/wl12xx_80211.h | 2 +-
- drivers/net/wireless/ti/wlcore/acx.h          | 2 +-
- drivers/net/wireless/ti/wlcore/boot.h         | 2 +-
- drivers/net/wireless/ti/wlcore/cmd.h          | 2 +-
- drivers/net/wireless/ti/wlcore/conf.h         | 2 +-
- drivers/net/wireless/ti/wlcore/wl12xx_80211.h | 2 +-
- 7 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/ti/wl1251/cmd.h b/drivers/net/wireless/ti/wl1251/cmd.h
-index 1c1a591c6055..e5874186f9d7 100644
---- a/drivers/net/wireless/ti/wl1251/cmd.h
-+++ b/drivers/net/wireless/ti/wl1251/cmd.h
-@@ -90,7 +90,7 @@ struct wl1251_cmd_header {
- 	u16 id;
- 	u16 status;
- 	/* payload */
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- struct  wl1251_command {
-@@ -281,7 +281,7 @@ struct wl1251_cmd_packet_template {
- 	struct wl1251_cmd_header header;
- 
- 	__le16 size;
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- #define TIM_ELE_ID    5
-diff --git a/drivers/net/wireless/ti/wl1251/wl12xx_80211.h b/drivers/net/wireless/ti/wl1251/wl12xx_80211.h
-index 7fabe702c4cc..7e28fe435b43 100644
---- a/drivers/net/wireless/ti/wl1251/wl12xx_80211.h
-+++ b/drivers/net/wireless/ti/wl1251/wl12xx_80211.h
-@@ -65,7 +65,7 @@ struct ieee80211_header {
- 	u8 sa[ETH_ALEN];
- 	u8 bssid[ETH_ALEN];
- 	__le16 seq_ctl;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- struct wl12xx_ie_header {
-diff --git a/drivers/net/wireless/ti/wlcore/acx.h b/drivers/net/wireless/ti/wlcore/acx.h
-index a265fba0cb4c..c725f5855c13 100644
---- a/drivers/net/wireless/ti/wlcore/acx.h
-+++ b/drivers/net/wireless/ti/wlcore/acx.h
-@@ -938,7 +938,7 @@ struct acx_rx_filter_cfg {
- 	u8 action;
- 
- 	u8 num_fields;
--	u8 fields[0];
-+	u8 fields[];
- } __packed;
- 
- struct acx_roaming_stats {
-diff --git a/drivers/net/wireless/ti/wlcore/boot.h b/drivers/net/wireless/ti/wlcore/boot.h
-index 14b367e98dce..24a2dfcb41ea 100644
---- a/drivers/net/wireless/ti/wlcore/boot.h
-+++ b/drivers/net/wireless/ti/wlcore/boot.h
-@@ -26,7 +26,7 @@ struct wl1271_static_data {
- 	u8 fw_version[WL1271_FW_VERSION_MAX_LEN];
- 	u32 hw_version;
- 	u8 tx_power_table[WL1271_NO_SUBBANDS][WL1271_NO_POWER_LEVELS];
--	u8 priv[0];
-+	u8 priv[];
- };
- 
- /* number of times we try to read the INIT interrupt */
-diff --git a/drivers/net/wireless/ti/wlcore/cmd.h b/drivers/net/wireless/ti/wlcore/cmd.h
-index bfad7b5a1ac6..f2609d5b6bf7 100644
---- a/drivers/net/wireless/ti/wlcore/cmd.h
-+++ b/drivers/net/wireless/ti/wlcore/cmd.h
-@@ -209,7 +209,7 @@ struct wl1271_cmd_header {
- 	__le16 id;
- 	__le16 status;
- 	/* payload */
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- #define WL1271_CMD_MAX_PARAMS 572
-diff --git a/drivers/net/wireless/ti/wlcore/conf.h b/drivers/net/wireless/ti/wlcore/conf.h
-index 6116383ee248..31be425f2332 100644
---- a/drivers/net/wireless/ti/wlcore/conf.h
-+++ b/drivers/net/wireless/ti/wlcore/conf.h
-@@ -1150,7 +1150,7 @@ struct wlcore_conf {
- struct wlcore_conf_file {
- 	struct wlcore_conf_header header;
- 	struct wlcore_conf core;
--	u8 priv[0];
-+	u8 priv[];
- } __packed;
- 
- #endif
-diff --git a/drivers/net/wireless/ti/wlcore/wl12xx_80211.h b/drivers/net/wireless/ti/wlcore/wl12xx_80211.h
-index 181be725eff8..1dd7ecc11f86 100644
---- a/drivers/net/wireless/ti/wlcore/wl12xx_80211.h
-+++ b/drivers/net/wireless/ti/wlcore/wl12xx_80211.h
-@@ -66,7 +66,7 @@ struct ieee80211_header {
- 	u8 sa[ETH_ALEN];
- 	u8 bssid[ETH_ALEN];
- 	__le16 seq_ctl;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- struct wl12xx_ie_header {
--- 
-2.25.0
-
+Acked-by: Song Liu <songliubraving@fb.com>
