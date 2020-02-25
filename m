@@ -2,141 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D05716EFF2
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF3B16F018
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:32:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731685AbgBYUUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 15:20:37 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52373 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730794AbgBYUUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 15:20:37 -0500
-Received: by mail-wm1-f67.google.com with SMTP id p9so577608wmc.2
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 12:20:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fSUQgM+Gi05W9iBcKU4tKxIsn0Ezgn1f82aBeGbKCQc=;
-        b=nqi/HRpB5I74D1XvhiysB93d83mLFP1U5h689x1aT/pY3ixf3cL4LGvZ6pDXLOXaGK
-         ZLi6KQDlaw4jQxvmjFcwCaCy4pOLqKH4JaDyqRK/ht7o2KcQkXT36gZGqJKPTgDNoMrJ
-         qRWSKvTiRcp33aoKEyGYIX5+8LeZh5xy5CDh0ctFOLsh/dsToRIUaog7iFziNpaAIvNA
-         pPG3/gFd62P3k0y4ReaowYhupjBlVv7WuRMYfWoW58OuN0DUWdwYNQkMTedHFus7XTO4
-         gWkRvnFMZDCrXYtNZUZTiSZOIbBB0AdkeXqdBW2dqG8EZj03fh690xo/9NBx3cV9L7oh
-         549Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fSUQgM+Gi05W9iBcKU4tKxIsn0Ezgn1f82aBeGbKCQc=;
-        b=KEdUHKkPWmUfKV54G8soiKnfp+VpXrwVKvzIuYcAfCUhOq8EDLTwUjl3zWFMPbSYuW
-         HMReGAh+kMT/Pg2zK4J5Zjtwiw2adSaMZTmEZ2TWbTfVqwyFnBLKvB3HZed2O0GAT70a
-         mga/ThpHei7L46x/m0cKhk6MbTF5QDruOg2VzKfM7pWXxAijrk0TAHZwvHtUgyoLd6f2
-         v56OjEDrx2mNu4PD8TT16AhBMmutH4kMZBCg6Lk0GkZcUFsDdhpV3x7VpfCizUqg8YwT
-         DCR+6pJ4CgX64eqFxWyxvwAiEy5/Vx+dNLICkMQwC5rMr2WiqNuUabsljHd9f6mbCRvm
-         nVUA==
-X-Gm-Message-State: APjAAAV3w6uJzjCL0EBj8X6yOaY7Jvp+ENViUoK/6s+1sQW0yAyqs5RN
-        5RoqMeHpctdGFNmWEpmx6f3tplzoru6WMmX6xKnbgA==
-X-Google-Smtp-Source: APXvYqx+uY8MCJdK2SEFHpQuAu2dAUKFYLEZl12iM4hxN9CJm9MAJ+UVg0Dg5k1L+zOK8+gmjZFmKEhH9b8WsvYtwvM=
-X-Received: by 2002:a1c:9c4c:: with SMTP id f73mr865526wme.125.1582662034197;
- Tue, 25 Feb 2020 12:20:34 -0800 (PST)
+        id S1731725AbgBYUcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 15:32:53 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57871 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731159AbgBYUcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 15:32:52 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1j6gsq-0006R0-1i; Tue, 25 Feb 2020 21:32:48 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad] (unknown [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2164C4C09B4;
+        Tue, 25 Feb 2020 20:32:45 +0000 (UTC)
+Subject: Re: [PATCH] bonding: do not enslave CAN devices
+To:     Oliver Hartkopp <socketcan@hartkopp.net>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com,
+        dvyukov@google.com, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, davem@davemloft.net,
+        linux-stable <stable@vger.kernel.org>
+References: <20200130133046.2047-1-socketcan@hartkopp.net>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
+Message-ID: <767580d8-1c93-907b-609c-4c1c049b7c42@pengutronix.de>
+Date:   Tue, 25 Feb 2020 21:32:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20200225060620.76486-1-arjunroy.kdev@gmail.com>
- <CANn89iLrOwvNSHOB2i_+gMmN29O6BpJrnd9RfNERDTayNf7qKA@mail.gmail.com>
- <CAOFY-A35RJOwg_4Vqc1SzeGb83OoWG-LE+dJb1maRPauaLLNwQ@mail.gmail.com>
- <CAOFY-A0DXFse8=Mm0fx6kxAvsFZ=AzT96_P+WT=ctSESBncNjA@mail.gmail.com> <CACSApvac8dxyec08Ac1dpD+TERWp6h94o+8Xg5mW6QLe3mUYNg@mail.gmail.com>
-In-Reply-To: <CACSApvac8dxyec08Ac1dpD+TERWp6h94o+8Xg5mW6QLe3mUYNg@mail.gmail.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Tue, 25 Feb 2020 12:20:22 -0800
-Message-ID: <CAOFY-A1UEPx12274Mqw3xefNDAVg2FQGAvV4LHoWMLyihyaD6w@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp-zerocopy: Update returned getsockopt() optlen.
-To:     Soheil Hassas Yeganeh <soheil@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200130133046.2047-1-socketcan@hartkopp.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 9:17 AM Soheil Hassas Yeganeh <soheil@google.com> wrote:
->
-> On Tue, Feb 25, 2020 at 12:04 PM Arjun Roy <arjunroy@google.com> wrote:
-> >
-> > On Tue, Feb 25, 2020 at 8:48 AM Arjun Roy <arjunroy@google.com> wrote:
-> > >
-> > > On Mon, Feb 24, 2020 at 10:28 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > >
-> > > > On Mon, Feb 24, 2020 at 10:06 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
-> > > > >
-> > > > > From: Arjun Roy <arjunroy@google.com>
-> > > > >
-> > > > > TCP receive zerocopy currently does not update the returned optlen for
-> > > > > getsockopt(). Thus, userspace cannot properly determine if all the
-> > > > > fields are set in the passed-in struct. This patch sets the optlen
-> > > > > before return, in keeping with the expected operation of getsockopt().
-> > > > >
-> > > > > Signed-off-by: Arjun Roy <arjunroy@google.com>
-> > > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > > > Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
-> > > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > > > Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive
-> > > > > zerocopy")
-> > > >
-> > > >
-> > > > OK, please note for next time :
-> > > >
-> > > > Fixes: tag should not wrap : It should be a single line.
-> > > > Preferably it should be the first tag (before your Sob)
-> > > >
-> > > > Add v2 as in [PATCH v2 net-next]  :  so that reviewers can easily see
-> > > > which version is the more recent one.
-> > > >
-> > > >
-> > > > >
-> > > > > +               if (!err) {
-> > > > > +                       if (put_user(len, optlen))
-> > > > > +                               return -EFAULT;
-> > > >
-> > > > Sorry for not asking this before during our internal review :
-> > > >
-> > > > Is the cost of the extra STAC / CLAC (on x86) being high enough that it is worth
-> > > > trying to call put_user() only if user provided a different length ?
-> > >
-> > > I'll have to defer to someone with more understanding of the overheads
-> > > involved in this case.
-> > >
-> >
-> > Actually, now that I think about it, the (hopefully) common case is
-> > indeed that the kernel and userspace agree on the size of the struct,
-> > so I think just having just that one extra branch to check before
-> > issuing a put_user() would be well worth it compared to all the
-> > instructions in put_user(). I'll send a v2 patch with the change.
->
-> Thank you, Arjun.  Given that most TCP socket options overwrite the
-> optlen even when returning error, I think we can avoid having the
-> extra branch by simply moving put_user right after the check for "len
-> == sizeof(zc)" and before "switch(len)".
->
-> Thanks,
-> Soheil
->
-Unfortunately I don't that works in this case - there's a point before
-then that could set len to sizeof(zc) (if len was > sizeof(zc) to
-begin with) which would disrupt what we want.
+On 1/30/20 2:30 PM, Oliver Hartkopp wrote:
+> Since commit 8df9ffb888c ("can: make use of preallocated can_ml_priv for per
+> device struct can_dev_rcv_lists") the device specific CAN receive filter lists
+> are stored in netdev_priv() and dev->ml_priv points to these filters.
+> 
+> In the bug report Syzkaller enslaved a vxcan1 CAN device and accessed the
+> bonding device with a PF_CAN socket which lead to a crash due to an access of
+> an unhandled bond_dev->ml_priv pointer.
+> 
+> Deny to enslave CAN devices by the bonding driver as the resulting bond_dev
+> pretends to be a CAN device by copying dev->type without really being one.
+> 
+> Reported-by: syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com
+> Fixes: 8df9ffb888c ("can: make use of preallocated can_ml_priv for per
+> device struct can_dev_rcv_lists")
+> Cc: linux-stable <stable@vger.kernel.org> # >= v5.4
+> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-Accounting for that would probably add more complication and still
-require a branch, so I'm going with the simpler move in this case.
-Will send a v2 patch out momentarily.
+What's the preferred to upstream this? I could take this via the
+linux-can tree.
 
-Thanks,
--Arjun
+regards,
+Marc
+
+> ---
+>  drivers/net/bonding/bond_main.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 48d5ec770b94..4b781a7dfd96 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -1475,6 +1475,18 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+>  		return -EPERM;
+>  	}
+>  
+> +	/* CAN network devices hold device specific filter lists in
+> +	 * netdev_priv() where dev->ml_priv sets a reference to.
+> +	 * As bonding assumes to have some ethernet-like device it doesn't
+> +	 * take care about these CAN specific filter lists today.
+> +	 * So we deny the enslaving of CAN interfaces here.
+> +	 */
+> +	if (slave_dev->type == ARPHRD_CAN) {
+> +		NL_SET_ERR_MSG(extack, "CAN devices can not be enslaved");
+> +		slave_err(bond_dev, slave_dev, "no bonding on CAN devices\n");
+> +		return -EINVAL;
+> +	}
+> +
+>  	/* set bonding device ether type by slave - bonding netdevices are
+>  	 * created with ether_setup, so when the slave type is not ARPHRD_ETHER
+>  	 * there is a need to override some of the type dependent attribs/funcs.
+> 
 
 
-> > Thanks,
-> > -Arjun
-> >
-> > > -Arjun
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
