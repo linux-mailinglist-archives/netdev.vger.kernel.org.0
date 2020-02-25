@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BA8F16BD81
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47AAB16BDB2
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729583AbgBYJk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 04:40:29 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:55452 "EHLO
+        id S1730111AbgBYJl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 04:41:57 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:55684 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729108AbgBYJk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:40:29 -0500
+        with ESMTP id S1729317AbgBYJl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:41:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fa4NZv5nNOs4Sh5tsn/w+0iIu7F1BQDsZ/B6zmpXUBw=; b=yUVsWTn96lhnki6+QXTztZ1txU
-        iQTuFnPvavfgoeM7wX6AlQpZvqRcmNiiFRsTOP12rWpglRjvdY0qWHD+0yczZG6CW5AR/PEXPzrM8
-        OY5+sJaf26d36FM36F32RxqnAJURuji8NKedWgmK3L0rbTtESYPEKAWn53Jim/L/JBsuzCcxJsbOs
-        x3RoyEmCtl6wrgbAV7VsGvZAwXCTaaCe75Dt43C2pvYlSPMCq0jDFfRHEmCKIWt6k8NVamY9uaFLc
-        C3ANgAWauj/Hl8vYZib5AQlKrdXyfd55L85LQZvrdV0vZOLHAL7O+OEz9VOKekBBLKq9gHX2CeQvB
-        8fEuDVZA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:51282 helo=rmk-PC.armlinux.org.uk)
+        bh=d3VDUs9GECL3V7Id9j1fk72SoO2qfr/Dzvti38P06AQ=; b=pWKjtiSBO4vK2BJ1qSte9upRW2
+        blbcnFqZrka33f8Smc2cQ8EUmFoDXOUV8Jm8NT0LFSCKMTroYL/KOjjCVvrV99RAQWF0CvLFft1+W
+        IDc3BTIgR0J49TlWl5eQCjy4BZAlDkPK+K1QYb34rNa2MnemPKTFcDB5tI9othXZOrSWreScyu7qH
+        5ASukZDNR9QvsvtxOPXyq4AlnO4Vy5hDT3fYpJJoiRYTrBMLMADnjnW6wiQ/4dIqAeXMnG+FSuv9X
+        /IBkd7c71AqIitzgWYavkstoE4UFFWhUKDgxEShu+Taab9Q27F/PT1KdAAyOURy2Su4Tx2MJooqQE
+        yFRV5sOA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:58916 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1j6Wg8-0008P5-Ok; Tue, 25 Feb 2020 09:39:01 +0000
+        id 1j6WgF-0008PK-GB; Tue, 25 Feb 2020 09:39:08 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1j6Wg6-0000T3-3n; Tue, 25 Feb 2020 09:38:58 +0000
+        id 1j6WgB-0000TB-95; Tue, 25 Feb 2020 09:39:03 +0000
 In-Reply-To: <20200225093703.GS25745@shell.armlinux.org.uk>
 References: <20200225093703.GS25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -60,125 +60,100 @@ Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 3/8] net: mv88e6xxx: use resolved link config in
+Subject: [PATCH net-next 4/8] net: axienet: use resolved link config in
  mac_link_up()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j6Wg6-0000T3-3n@rmk-PC.armlinux.org.uk>
-Date:   Tue, 25 Feb 2020 09:38:58 +0000
+Message-Id: <E1j6WgB-0000TB-95@rmk-PC.armlinux.org.uk>
+Date:   Tue, 25 Feb 2020 09:39:03 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the resolved link configuration to set the MAC configuration when
-mac_link_up() for non-internal-PHY ports.
+Convert the Xilinx AXI ethernet driver to use the finalised link
+parameters in mac_link_up() rather than the parameters in mac_config().
 
+Tested-by: Andre Przywara <andre.przywara@arm.com>
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 75 +++++++++++++++++++++++++-------
- 1 file changed, 59 insertions(+), 16 deletions(-)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 38 +++++++++----------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index fef3b5e0b291..4a4173e63fa5 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -632,25 +632,30 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
- 		dev_err(ds->dev, "p%d: failed to configure MAC\n", port);
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 197740781157..c2f4c5ca2e80 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1440,6 +1440,22 @@ static void axienet_mac_an_restart(struct phylink_config *config)
+ 
+ static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
+ 			       const struct phylink_link_state *state)
++{
++	/* nothing meaningful to do */
++}
++
++static void axienet_mac_link_down(struct phylink_config *config,
++				  unsigned int mode,
++				  phy_interface_t interface)
++{
++	/* nothing meaningful to do */
++}
++
++static void axienet_mac_link_up(struct phylink_config *config,
++				struct phy_device *phy,
++				unsigned int mode, phy_interface_t interface,
++				int speed, int duplex,
++				bool tx_pause, bool rx_pause)
+ {
+ 	struct net_device *ndev = to_net_dev(config->dev);
+ 	struct axienet_local *lp = netdev_priv(ndev);
+@@ -1448,7 +1464,7 @@ static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
+ 	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
+ 	emmc_reg &= ~XAE_EMMC_LINKSPEED_MASK;
+ 
+-	switch (state->speed) {
++	switch (speed) {
+ 	case SPEED_1000:
+ 		emmc_reg |= XAE_EMMC_LINKSPD_1000;
+ 		break;
+@@ -1467,33 +1483,17 @@ static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
+ 	axienet_iow(lp, XAE_EMMC_OFFSET, emmc_reg);
+ 
+ 	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
+-	if (state->pause & MLO_PAUSE_TX)
++	if (tx_pause)
+ 		fcc_reg |= XAE_FCC_FCTX_MASK;
+ 	else
+ 		fcc_reg &= ~XAE_FCC_FCTX_MASK;
+-	if (state->pause & MLO_PAUSE_RX)
++	if (rx_pause)
+ 		fcc_reg |= XAE_FCC_FCRX_MASK;
+ 	else
+ 		fcc_reg &= ~XAE_FCC_FCRX_MASK;
+ 	axienet_iow(lp, XAE_FCC_OFFSET, fcc_reg);
  }
  
--static void mv88e6xxx_mac_link_force(struct dsa_switch *ds, int port, int link)
-+static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
-+				    unsigned int mode,
-+				    phy_interface_t interface)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
--	int err;
-+	const struct mv88e6xxx_ops *ops;
-+	int err = 0;
- 
--	mv88e6xxx_reg_lock(chip);
--	err = chip->info->ops->port_set_link(chip, port, link);
--	mv88e6xxx_reg_unlock(chip);
-+	ops = chip->info->ops;
- 
--	if (err)
--		dev_err(chip->dev, "p%d: failed to force MAC link\n", port);
--}
-+	/* Internal PHYs propagate their configuration directly to the MAC.
-+	 * External PHYs depend on whether the PPU is enabled for this port.
-+	 * FIXME: we should be using the PPU enable state here. What about
-+	 * an automedia port?
-+	 */
-+	if (!mv88e6xxx_phy_is_internal(ds, port) && ops->port_set_link) {
-+		mv88e6xxx_reg_lock(chip);
-+		err = ops->port_set_link(chip, port, LINK_FORCED_DOWN);
-+		mv88e6xxx_reg_unlock(chip);
- 
--static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
--				    unsigned int mode,
--				    phy_interface_t interface)
+-static void axienet_mac_link_down(struct phylink_config *config,
+-				  unsigned int mode,
+-				  phy_interface_t interface)
 -{
--	if (mode == MLO_AN_FIXED)
--		mv88e6xxx_mac_link_force(ds, port, LINK_FORCED_DOWN);
-+		if (err)
-+			dev_err(chip->dev,
-+				"p%d: failed to force MAC link down\n", port);
-+	}
- }
- 
- static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
-@@ -659,8 +664,46 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
- 				  int speed, int duplex,
- 				  bool tx_pause, bool rx_pause)
- {
--	if (mode == MLO_AN_FIXED)
--		mv88e6xxx_mac_link_force(ds, port, LINK_FORCED_UP);
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	const struct mv88e6xxx_ops *ops;
-+	int err = 0;
-+
-+	ops = chip->info->ops;
-+
-+	/* Internal PHYs propagate their configuration directly to the MAC.
-+	 * External PHYs depend on whether the PPU is enabled for this port.
-+	 * FIXME: we should be using the PPU enable state here. What about
-+	 * an automedia port?
-+	 */
-+	if (!mv88e6xxx_phy_is_internal(ds, port)) {
-+		mv88e6xxx_reg_lock(chip);
-+		/* FIXME: for an automedia port, should we force the link
-+		 * down here - what if the link comes up due to "other" media
-+		 * while we're bringing the port up, how is the exclusivity
-+		 * handled in the Marvell hardware? E.g. port 4 on 88E6532
-+		 * shared between internal PHY and Serdes.
-+		 */
-+		if (ops->port_set_speed) {
-+			err = ops->port_set_speed(chip, port, speed);
-+			if (err && err != -EOPNOTSUPP)
-+				goto error;
-+		}
-+
-+		if (ops->port_set_duplex) {
-+			err = ops->port_set_duplex(chip, port, duplex);
-+			if (err && err != -EOPNOTSUPP)
-+				goto error;
-+		}
-+
-+		if (ops->port_set_link)
-+			err = ops->port_set_link(chip, port, LINK_FORCED_UP);
-+error:
-+		mv88e6xxx_reg_unlock(chip);
-+
-+		if (err && err != -EOPNOTSUPP)
-+			dev_err(ds->dev,
-+				"p%d: failed to configure MAC link up\n", port);
-+	}
- }
- 
- static int mv88e6xxx_stats_snapshot(struct mv88e6xxx_chip *chip, int port)
+-	/* nothing meaningful to do */
+-}
+-
+-static void axienet_mac_link_up(struct phylink_config *config,
+-				struct phy_device *phy,
+-				unsigned int mode, phy_interface_t interface,
+-				int speed, int duplex,
+-				bool tx_pause, bool rx_pause)
+-{
+-	/* nothing meaningful to do */
+-}
+-
+ static const struct phylink_mac_ops axienet_phylink_ops = {
+ 	.validate = axienet_validate,
+ 	.mac_pcs_get_state = axienet_mac_pcs_get_state,
 -- 
 2.20.1
 
