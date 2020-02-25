@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF3E16F2E1
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:04:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAED616F2E3
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729282AbgBYXEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 18:04:15 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39724 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726827AbgBYXEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:04:15 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01PMskWa012544
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:13 -0800
+        id S1729299AbgBYXEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 18:04:20 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:62576 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729078AbgBYXET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:04:19 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PN1ANa018835
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:18 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=QQzB6N2Q2mL5lGKD2kJLYAQWvFLoxtpxInDjOQb9NMA=;
- b=EiGOqXwfc5dePp3t1iSrTWvViHFOMav3JBBlAuIuwpTnAYoNBwON2cM9dg7NLGXb8Olt
- ks9kcpi+8QraeZ7W0ytsy6ajn/I/nBQHr+KEG7DiWTokLgcao2NPljs8UQrxM8XP8BOe
- Kdege7ZdEp4ptrqJirwBVUIJqSEnI1erwVA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2ydckp83c2-3
+ content-type; s=facebook; bh=LS0i5U0Ie8ZmIXaDvCd2V0OQGieFFXFw1ckMa/HWdUM=;
+ b=Kj2Of/+ksM5JAXLXIGnDHycb0911r42Y8Lq5LoqF7d12kTyBwhGuMM5mAihkP/Lr23AN
+ yXzA3lqbMRCnmPRQMsC84Q/mzP0q+CMG9GOLrCVuHThL07K7dx1AkHzIcZvXb8rOBtaA
+ Qv1RDlYZOjLmS6mcjIpleVjVyj/ZaKJu//M= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ydcky8344-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:13 -0800
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:18 -0800
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 25 Feb 2020 15:04:12 -0800
+ 15.1.1779.2; Tue, 25 Feb 2020 15:04:17 -0800
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 383F02940827; Tue, 25 Feb 2020 15:04:09 -0800 (PST)
+        id 754DA2940827; Tue, 25 Feb 2020 15:04:15 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v2 1/4] inet_diag: Refactor inet_sk_diag_fill(), dump(), and dump_one()
-Date:   Tue, 25 Feb 2020 15:04:09 -0800
-Message-ID: <20200225230409.1975173-1-kafai@fb.com>
+Subject: [PATCH bpf-next v2 2/4] inet_diag: Move the INET_DIAG_REQ_BYTECODE nlattr to cb->data
+Date:   Tue, 25 Feb 2020 15:04:15 -0800
+Message-ID: <20200225230415.1975555-1-kafai@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200225230402.1974723-1-kafai@fb.com>
 References: <20200225230402.1974723-1-kafai@fb.com>
@@ -50,489 +50,410 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-02-25_09:2020-02-25,2020-02-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=462 adultscore=0 priorityscore=1501
- mlxscore=0 malwarescore=0 spamscore=0 impostorscore=0 phishscore=0
- suspectscore=38 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2002250161
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ impostorscore=0 suspectscore=15 phishscore=0 lowpriorityscore=0
+ mlxlogscore=999 malwarescore=0 adultscore=0 priorityscore=1501 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002250161
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a latter patch, there is a need to update "cb->min_dump_alloc"
-in inet_sk_diag_fill() as it learns the diffierent bpf_sk_storages
-stored in a sk while dumping all sk(s) (e.g. tcp_hashinfo).
+The INET_DIAG_REQ_BYTECODE nlattr is currently re-found every time when
+the "dump()" is re-started.
 
-The inet_sk_diag_fill() currently does not take the "cb" as an argument.
-One of the reason is inet_sk_diag_fill() is used by both dump_one()
-and dump() (which belong to the "struct inet_diag_handler".  The dump_one()
-interface does not pass the "cb" along.
+In a latter patch, it will also need to parse the new
+INET_DIAG_REQ_SK_BPF_STORAGES nlattr to learn the map_fds. Thus, this
+patch takes this chance to store the parsed nlattr in cb->data
+during the "start" time of a dump.
 
-This patch is to make dump_one() pass a "cb".  The "cb" is created in
-inet_diag_cmd_exact().  The "nlh" and "in_skb" are stored in "cb" as
-the dump() interface does.  The total number of args in
-inet_sk_diag_fill() is also cut from 10 to 7 and
-that helps many callers to pass fewer args.
-
-In particular,
-"struct user_namespace *user_ns", "u32 pid", and "u32 seq"
-can be replaced by accessing "cb->nlh" and "cb->skb".
-
-A similar argument reduction is also made to
-inet_twsk_diag_fill() and inet_req_diag_fill().
-
-inet_csk_diag_dump() and inet_csk_diag_fill() are also removed.
-They are mostly equivalent to inet_sk_diag_fill().  Their repeated
-usages are very limited.  Thus, inet_sk_diag_fill() is directly used
-in those occasions.
+By doing this, the "bc" argument also becomes unnecessary
+and is removed.  Also, the two copies of the INET_DIAG_REQ_BYTECODE
+parsing-audit logic between compat/current version can be
+consolidated to one.
 
 Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/inet_diag.h |  12 ++--
- net/dccp/diag.c           |   5 +-
- net/ipv4/inet_diag.c      | 116 +++++++++++++++-----------------------
- net/ipv4/raw_diag.c       |  18 ++----
- net/ipv4/tcp_diag.c       |   4 +-
- net/ipv4/udp_diag.c       |  26 ++++-----
- net/sctp/diag.c           |   5 +-
- 7 files changed, 73 insertions(+), 113 deletions(-)
+ include/linux/inet_diag.h      |  11 ++--
+ include/uapi/linux/inet_diag.h |   3 +-
+ net/dccp/diag.c                |   4 +-
+ net/ipv4/inet_diag.c           | 117 ++++++++++++++++++++-------------
+ net/ipv4/raw_diag.c            |   6 +-
+ net/ipv4/tcp_diag.c            |   4 +-
+ net/ipv4/udp_diag.c            |  15 +++--
+ net/sctp/diag.c                |   2 +-
+ 8 files changed, 98 insertions(+), 64 deletions(-)
 
 diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index 39faaaf843e1..6b157ce07d74 100644
+index 6b157ce07d74..1bb94cac265f 100644
 --- a/include/linux/inet_diag.h
 +++ b/include/linux/inet_diag.h
-@@ -18,8 +18,7 @@ struct inet_diag_handler {
- 				const struct inet_diag_req_v2 *r,
- 				struct nlattr *bc);
+@@ -15,8 +15,7 @@ struct netlink_callback;
+ struct inet_diag_handler {
+ 	void		(*dump)(struct sk_buff *skb,
+ 				struct netlink_callback *cb,
+-				const struct inet_diag_req_v2 *r,
+-				struct nlattr *bc);
++				const struct inet_diag_req_v2 *r);
  
--	int		(*dump_one)(struct sk_buff *in_skb,
--				    const struct nlmsghdr *nlh,
-+	int		(*dump_one)(struct netlink_callback *cb,
+ 	int		(*dump_one)(struct netlink_callback *cb,
  				    const struct inet_diag_req_v2 *req);
+@@ -39,6 +38,11 @@ struct inet_diag_handler {
+ 	__u16		idiag_info_size;
+ };
  
- 	void		(*idiag_get_info)(struct sock *sk,
-@@ -42,16 +41,15 @@ struct inet_diag_handler {
- 
++struct inet_diag_dump_data {
++	struct nlattr *req_nlas[__INET_DIAG_REQ_MAX];
++#define inet_diag_nla_bc req_nlas[INET_DIAG_REQ_BYTECODE]
++};
++
  struct inet_connection_sock;
  int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
--		      struct sk_buff *skb, const struct inet_diag_req_v2 *req,
--		      struct user_namespace *user_ns,
--		      u32 pid, u32 seq, u16 nlmsg_flags,
--		      const struct nlmsghdr *unlh, bool net_admin);
-+		      struct sk_buff *skb, struct netlink_callback *cb,
-+		      const struct inet_diag_req_v2 *req,
-+		      u16 nlmsg_flags, bool net_admin);
+ 		      struct sk_buff *skb, struct netlink_callback *cb,
+@@ -46,8 +50,7 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
+ 		      u16 nlmsg_flags, bool net_admin);
  void inet_diag_dump_icsk(struct inet_hashinfo *h, struct sk_buff *skb,
  			 struct netlink_callback *cb,
- 			 const struct inet_diag_req_v2 *r,
- 			 struct nlattr *bc);
+-			 const struct inet_diag_req_v2 *r,
+-			 struct nlattr *bc);
++			 const struct inet_diag_req_v2 *r);
  int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
--			    struct sk_buff *in_skb, const struct nlmsghdr *nlh,
-+			    struct netlink_callback *cb,
+ 			    struct netlink_callback *cb,
  			    const struct inet_diag_req_v2 *req);
+diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+index a1ff345b3f33..bab9a9f8da12 100644
+--- a/include/uapi/linux/inet_diag.h
++++ b/include/uapi/linux/inet_diag.h
+@@ -64,9 +64,10 @@ struct inet_diag_req_raw {
+ enum {
+ 	INET_DIAG_REQ_NONE,
+ 	INET_DIAG_REQ_BYTECODE,
++	__INET_DIAG_REQ_MAX,
+ };
  
- struct sock *inet_diag_find_one_icsk(struct net *net,
+-#define INET_DIAG_REQ_MAX INET_DIAG_REQ_BYTECODE
++#define INET_DIAG_REQ_MAX (__INET_DIAG_REQ_MAX - 1)
+ 
+ /* Bytecode is sequence of 4 byte commands followed by variable arguments.
+  * All the commands identified by "code" are conditional jumps forward:
 diff --git a/net/dccp/diag.c b/net/dccp/diag.c
-index 73ef73a218ff..8f1e2a653f6d 100644
+index 8f1e2a653f6d..8a82c5a2c5a8 100644
 --- a/net/dccp/diag.c
 +++ b/net/dccp/diag.c
-@@ -51,11 +51,10 @@ static void dccp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r, bc);
+@@ -46,9 +46,9 @@ static void dccp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
  }
  
--static int dccp_diag_dump_one(struct sk_buff *in_skb,
--			      const struct nlmsghdr *nlh,
-+static int dccp_diag_dump_one(struct netlink_callback *cb,
- 			      const struct inet_diag_req_v2 *req)
+ static void dccp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			   const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			   const struct inet_diag_req_v2 *r)
  {
--	return inet_diag_dump_one_icsk(&dccp_hashinfo, in_skb, nlh, req);
-+	return inet_diag_dump_one_icsk(&dccp_hashinfo, cb, req);
+-	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r, bc);
++	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r);
  }
  
- static const struct inet_diag_handler dccp_diag_handler = {
+ static int dccp_diag_dump_one(struct netlink_callback *cb,
 diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index f11e997e517b..d2ecff3195ba 100644
+index d2ecff3195ba..4bce8a477699 100644
 --- a/net/ipv4/inet_diag.c
 +++ b/net/ipv4/inet_diag.c
-@@ -157,11 +157,9 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- EXPORT_SYMBOL_GPL(inet_diag_msg_attrs_fill);
+@@ -495,9 +495,11 @@ static int inet_diag_cmd_exact(int cmd, struct sk_buff *in_skb,
+ 	if (IS_ERR(handler)) {
+ 		err = PTR_ERR(handler);
+ 	} else if (cmd == SOCK_DIAG_BY_FAMILY) {
++		struct inet_diag_dump_data empty_dump_data = {};
+ 		struct netlink_callback cb = {
+ 			.nlh = nlh,
+ 			.skb = in_skb,
++			.data = &empty_dump_data,
+ 		};
+ 		err = handler->dump_one(&cb, req);
+ 	} else if (cmd == SOCK_DESTROY && handler->destroy) {
+@@ -863,14 +865,17 @@ static void twsk_build_assert(void)
  
- int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
--		      struct sk_buff *skb, const struct inet_diag_req_v2 *req,
--		      struct user_namespace *user_ns,
--		      u32 portid, u32 seq, u16 nlmsg_flags,
--		      const struct nlmsghdr *unlh,
--		      bool net_admin)
-+		      struct sk_buff *skb, struct netlink_callback *cb,
-+		      const struct inet_diag_req_v2 *req,
-+		      u16 nlmsg_flags, bool net_admin)
+ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
+ 			 struct netlink_callback *cb,
+-			 const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			 const struct inet_diag_req_v2 *r)
  {
- 	const struct tcp_congestion_ops *ca_ops;
+ 	bool net_admin = netlink_net_capable(cb->skb, CAP_NET_ADMIN);
++	struct inet_diag_dump_data *cb_data = cb->data;
+ 	struct net *net = sock_net(skb->sk);
+ 	u32 idiag_states = r->idiag_states;
+ 	int i, num, s_i, s_num;
++	struct nlattr *bc;
+ 	struct sock *sk;
+ 
++	bc = cb_data->inet_diag_nla_bc;
+ 	if (idiag_states & TCPF_SYN_RECV)
+ 		idiag_states |= TCPF_NEW_SYN_RECV;
+ 	s_i = cb->args[1];
+@@ -1014,15 +1019,14 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
+ EXPORT_SYMBOL_GPL(inet_diag_dump_icsk);
+ 
+ static int __inet_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			    const struct inet_diag_req_v2 *r,
+-			    struct nlattr *bc)
++			    const struct inet_diag_req_v2 *r)
+ {
  	const struct inet_diag_handler *handler;
-@@ -174,8 +172,8 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 	handler = inet_diag_table[req->sdiag_protocol];
- 	BUG_ON(!handler);
+ 	int err = 0;
  
--	nlh = nlmsg_put(skb, portid, seq, unlh->nlmsg_type, sizeof(*r),
--			nlmsg_flags);
-+	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-+			cb->nlh->nlmsg_type, sizeof(*r), nlmsg_flags);
- 	if (!nlh)
- 		return -EMSGSIZE;
+ 	handler = inet_diag_lock_handler(r->sdiag_protocol);
+ 	if (!IS_ERR(handler))
+-		handler->dump(skb, cb, r, bc);
++		handler->dump(skb, cb, r);
+ 	else
+ 		err = PTR_ERR(handler);
+ 	inet_diag_unlock_handler(handler);
+@@ -1032,13 +1036,57 @@ static int __inet_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
  
-@@ -187,7 +185,9 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 	r->idiag_timer = 0;
- 	r->idiag_retrans = 0;
+ static int inet_diag_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ {
+-	int hdrlen = sizeof(struct inet_diag_req_v2);
+-	struct nlattr *bc = NULL;
++	return __inet_diag_dump(skb, cb, nlmsg_data(cb->nlh));
++}
++
++static int __inet_diag_dump_start(struct netlink_callback *cb, int hdrlen)
++{
++	const struct nlmsghdr *nlh = cb->nlh;
++	struct inet_diag_dump_data *cb_data;
++	struct sk_buff *skb = cb->skb;
++	struct nlattr *nla;
++	int rem, err;
++
++	cb_data = kzalloc(sizeof(*cb_data), GFP_KERNEL);
++	if (!cb_data)
++		return -ENOMEM;
++
++	nla_for_each_attr(nla, nlmsg_attrdata(nlh, hdrlen),
++			  nlmsg_attrlen(nlh, hdrlen), rem) {
++		int type = nla_type(nla);
++
++		if (type < __INET_DIAG_REQ_MAX)
++			cb_data->req_nlas[type] = nla;
++	}
++
++	nla = cb_data->inet_diag_nla_bc;
++	if (nla) {
++		err = inet_diag_bc_audit(nla, skb);
++		if (err) {
++			kfree(cb_data);
++			return err;
++		}
++	}
++
++	cb->data = cb_data;
++	return 0;
++}
++
++static int inet_diag_dump_start(struct netlink_callback *cb)
++{
++	return __inet_diag_dump_start(cb, sizeof(struct inet_diag_req_v2));
++}
++
++static int inet_diag_dump_start_compat(struct netlink_callback *cb)
++{
++	return __inet_diag_dump_start(cb, sizeof(struct inet_diag_req));
++}
  
--	if (inet_diag_msg_attrs_fill(sk, skb, r, ext, user_ns, net_admin))
-+	if (inet_diag_msg_attrs_fill(sk, skb, r, ext,
-+				     sk_user_ns(NETLINK_CB(cb->skb).sk),
-+				     net_admin))
- 		goto errout;
+-	if (nlmsg_attrlen(cb->nlh, hdrlen))
+-		bc = nlmsg_find_attr(cb->nlh, hdrlen, INET_DIAG_REQ_BYTECODE);
++static int inet_diag_dump_done(struct netlink_callback *cb)
++{
++	kfree(cb->data);
  
- 	if (ext & (1 << (INET_DIAG_MEMINFO - 1))) {
-@@ -312,30 +312,19 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
+-	return __inet_diag_dump(skb, cb, nlmsg_data(cb->nlh), bc);
++	return 0;
  }
- EXPORT_SYMBOL_GPL(inet_sk_diag_fill);
  
--static int inet_csk_diag_fill(struct sock *sk,
--			      struct sk_buff *skb,
--			      const struct inet_diag_req_v2 *req,
--			      struct user_namespace *user_ns,
--			      u32 portid, u32 seq, u16 nlmsg_flags,
--			      const struct nlmsghdr *unlh,
--			      bool net_admin)
--{
--	return inet_sk_diag_fill(sk, inet_csk(sk), skb, req, user_ns,
--				 portid, seq, nlmsg_flags, unlh, net_admin);
--}
+ static int inet_diag_type2proto(int type)
+@@ -1057,9 +1105,7 @@ static int inet_diag_dump_compat(struct sk_buff *skb,
+ 				 struct netlink_callback *cb)
+ {
+ 	struct inet_diag_req *rc = nlmsg_data(cb->nlh);
+-	int hdrlen = sizeof(struct inet_diag_req);
+ 	struct inet_diag_req_v2 req;
+-	struct nlattr *bc = NULL;
+ 
+ 	req.sdiag_family = AF_UNSPEC; /* compatibility */
+ 	req.sdiag_protocol = inet_diag_type2proto(cb->nlh->nlmsg_type);
+@@ -1067,10 +1113,7 @@ static int inet_diag_dump_compat(struct sk_buff *skb,
+ 	req.idiag_states = rc->idiag_states;
+ 	req.id = rc->id;
+ 
+-	if (nlmsg_attrlen(cb->nlh, hdrlen))
+-		bc = nlmsg_find_attr(cb->nlh, hdrlen, INET_DIAG_REQ_BYTECODE);
 -
- static int inet_twsk_diag_fill(struct sock *sk,
- 			       struct sk_buff *skb,
--			       u32 portid, u32 seq, u16 nlmsg_flags,
--			       const struct nlmsghdr *unlh)
-+			       struct netlink_callback *cb,
-+			       u16 nlmsg_flags)
- {
- 	struct inet_timewait_sock *tw = inet_twsk(sk);
- 	struct inet_diag_msg *r;
- 	struct nlmsghdr *nlh;
- 	long tmo;
- 
--	nlh = nlmsg_put(skb, portid, seq, unlh->nlmsg_type, sizeof(*r),
--			nlmsg_flags);
-+	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid,
-+			cb->nlh->nlmsg_seq, cb->nlh->nlmsg_type,
-+			sizeof(*r), nlmsg_flags);
- 	if (!nlh)
- 		return -EMSGSIZE;
- 
-@@ -359,16 +348,16 @@ static int inet_twsk_diag_fill(struct sock *sk,
+-	return __inet_diag_dump(skb, cb, &req, bc);
++	return __inet_diag_dump(skb, cb, &req);
  }
  
- static int inet_req_diag_fill(struct sock *sk, struct sk_buff *skb,
--			      u32 portid, u32 seq, u16 nlmsg_flags,
--			      const struct nlmsghdr *unlh, bool net_admin)
-+			      struct netlink_callback *cb,
-+			      u16 nlmsg_flags, bool net_admin)
- {
- 	struct request_sock *reqsk = inet_reqsk(sk);
- 	struct inet_diag_msg *r;
- 	struct nlmsghdr *nlh;
- 	long tmo;
+ static int inet_diag_get_exact_compat(struct sk_buff *in_skb,
+@@ -1098,22 +1141,12 @@ static int inet_diag_rcv_msg_compat(struct sk_buff *skb, struct nlmsghdr *nlh)
+ 		return -EINVAL;
  
--	nlh = nlmsg_put(skb, portid, seq, unlh->nlmsg_type, sizeof(*r),
--			nlmsg_flags);
-+	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-+			cb->nlh->nlmsg_type, sizeof(*r), nlmsg_flags);
- 	if (!nlh)
- 		return -EMSGSIZE;
- 
-@@ -397,21 +386,18 @@ static int inet_req_diag_fill(struct sock *sk, struct sk_buff *skb,
- }
- 
- static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
-+			struct netlink_callback *cb,
- 			const struct inet_diag_req_v2 *r,
--			struct user_namespace *user_ns,
--			u32 portid, u32 seq, u16 nlmsg_flags,
--			const struct nlmsghdr *unlh, bool net_admin)
-+			u16 nlmsg_flags, bool net_admin)
- {
- 	if (sk->sk_state == TCP_TIME_WAIT)
--		return inet_twsk_diag_fill(sk, skb, portid, seq,
--					   nlmsg_flags, unlh);
-+		return inet_twsk_diag_fill(sk, skb, cb, nlmsg_flags);
- 
- 	if (sk->sk_state == TCP_NEW_SYN_RECV)
--		return inet_req_diag_fill(sk, skb, portid, seq,
--					  nlmsg_flags, unlh, net_admin);
-+		return inet_req_diag_fill(sk, skb, cb, nlmsg_flags, net_admin);
- 
--	return inet_csk_diag_fill(sk, skb, r, user_ns, portid, seq,
--				  nlmsg_flags, unlh, net_admin);
-+	return inet_sk_diag_fill(sk, inet_csk(sk), skb, cb, r, nlmsg_flags,
-+				 net_admin);
- }
- 
- struct sock *inet_diag_find_one_icsk(struct net *net,
-@@ -459,10 +445,10 @@ struct sock *inet_diag_find_one_icsk(struct net *net,
- EXPORT_SYMBOL_GPL(inet_diag_find_one_icsk);
- 
- int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
--			    struct sk_buff *in_skb,
--			    const struct nlmsghdr *nlh,
-+			    struct netlink_callback *cb,
- 			    const struct inet_diag_req_v2 *req)
- {
-+	struct sk_buff *in_skb = cb->skb;
- 	bool net_admin = netlink_net_capable(in_skb, CAP_NET_ADMIN);
- 	struct net *net = sock_net(in_skb->sk);
- 	struct sk_buff *rep;
-@@ -479,10 +465,7 @@ int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
- 		goto out;
+ 	if (nlh->nlmsg_flags & NLM_F_DUMP) {
+-		if (nlmsg_attrlen(nlh, hdrlen)) {
+-			struct nlattr *attr;
+-			int err;
+-
+-			attr = nlmsg_find_attr(nlh, hdrlen,
+-					       INET_DIAG_REQ_BYTECODE);
+-			err = inet_diag_bc_audit(attr, skb);
+-			if (err)
+-				return err;
+-		}
+-		{
+-			struct netlink_dump_control c = {
+-				.dump = inet_diag_dump_compat,
+-			};
+-			return netlink_dump_start(net->diag_nlsk, skb, nlh, &c);
+-		}
++		struct netlink_dump_control c = {
++			.start = inet_diag_dump_start_compat,
++			.done = inet_diag_dump_done,
++			.dump = inet_diag_dump_compat,
++		};
++		return netlink_dump_start(net->diag_nlsk, skb, nlh, &c);
  	}
  
--	err = sk_diag_fill(sk, rep, req,
--			   sk_user_ns(NETLINK_CB(in_skb).sk),
--			   NETLINK_CB(in_skb).portid,
--			   nlh->nlmsg_seq, 0, nlh, net_admin);
-+	err = sk_diag_fill(sk, rep, cb, req, 0, net_admin);
- 	if (err < 0) {
- 		WARN_ON(err == -EMSGSIZE);
- 		nlmsg_free(rep);
-@@ -509,14 +492,19 @@ static int inet_diag_cmd_exact(int cmd, struct sk_buff *in_skb,
- 	int err;
+ 	return inet_diag_get_exact_compat(skb, nlh);
+@@ -1129,22 +1162,12 @@ static int inet_diag_handler_cmd(struct sk_buff *skb, struct nlmsghdr *h)
  
- 	handler = inet_diag_lock_handler(req->sdiag_protocol);
--	if (IS_ERR(handler))
-+	if (IS_ERR(handler)) {
- 		err = PTR_ERR(handler);
--	else if (cmd == SOCK_DIAG_BY_FAMILY)
--		err = handler->dump_one(in_skb, nlh, req);
--	else if (cmd == SOCK_DESTROY && handler->destroy)
-+	} else if (cmd == SOCK_DIAG_BY_FAMILY) {
-+		struct netlink_callback cb = {
-+			.nlh = nlh,
-+			.skb = in_skb,
+ 	if (h->nlmsg_type == SOCK_DIAG_BY_FAMILY &&
+ 	    h->nlmsg_flags & NLM_F_DUMP) {
+-		if (nlmsg_attrlen(h, hdrlen)) {
+-			struct nlattr *attr;
+-			int err;
+-
+-			attr = nlmsg_find_attr(h, hdrlen,
+-					       INET_DIAG_REQ_BYTECODE);
+-			err = inet_diag_bc_audit(attr, skb);
+-			if (err)
+-				return err;
+-		}
+-		{
+-			struct netlink_dump_control c = {
+-				.dump = inet_diag_dump,
+-			};
+-			return netlink_dump_start(net->diag_nlsk, skb, h, &c);
+-		}
++		struct netlink_dump_control c = {
++			.start = inet_diag_dump_start,
++			.done = inet_diag_dump_done,
++			.dump = inet_diag_dump,
 +		};
-+		err = handler->dump_one(&cb, req);
-+	} else if (cmd == SOCK_DESTROY && handler->destroy) {
- 		err = handler->destroy(in_skb, req);
--	else
-+	} else {
- 		err = -EOPNOTSUPP;
-+	}
- 	inet_diag_unlock_handler(handler);
++		return netlink_dump_start(net->diag_nlsk, skb, h, &c);
+ 	}
  
- 	return err;
-@@ -847,23 +835,6 @@ static int inet_diag_bc_audit(const struct nlattr *attr,
- 	return len == 0 ? 0 : -EINVAL;
- }
- 
--static int inet_csk_diag_dump(struct sock *sk,
--			      struct sk_buff *skb,
--			      struct netlink_callback *cb,
--			      const struct inet_diag_req_v2 *r,
--			      const struct nlattr *bc,
--			      bool net_admin)
--{
--	if (!inet_diag_bc_sk(bc, sk))
--		return 0;
--
--	return inet_csk_diag_fill(sk, skb, r,
--				  sk_user_ns(NETLINK_CB(cb->skb).sk),
--				  NETLINK_CB(cb->skb).portid,
--				  cb->nlh->nlmsg_seq, NLM_F_MULTI, cb->nlh,
--				  net_admin);
--}
--
- static void twsk_build_assert(void)
- {
- 	BUILD_BUG_ON(offsetof(struct inet_timewait_sock, tw_family) !=
-@@ -935,8 +906,12 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
- 				    r->id.idiag_sport)
- 					goto next_listen;
- 
--				if (inet_csk_diag_dump(sk, skb, cb, r,
--						       bc, net_admin) < 0) {
-+				if (!inet_diag_bc_sk(bc, sk))
-+					goto next_listen;
-+
-+				if (inet_sk_diag_fill(sk, inet_csk(sk), skb,
-+						      cb, r, NLM_F_MULTI,
-+						      net_admin) < 0) {
- 					spin_unlock(&ilb->lock);
- 					goto done;
- 				}
-@@ -1014,11 +989,8 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
- 		res = 0;
- 		for (idx = 0; idx < accum; idx++) {
- 			if (res >= 0) {
--				res = sk_diag_fill(sk_arr[idx], skb, r,
--					   sk_user_ns(NETLINK_CB(cb->skb).sk),
--					   NETLINK_CB(cb->skb).portid,
--					   cb->nlh->nlmsg_seq, NLM_F_MULTI,
--					   cb->nlh, net_admin);
-+				res = sk_diag_fill(sk_arr[idx], skb, cb, r,
-+						   NLM_F_MULTI, net_admin);
- 				if (res < 0)
- 					num = num_arr[idx];
- 			}
+ 	return inet_diag_cmd_exact(h->nlmsg_type, skb, h, nlmsg_data(h));
 diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
-index e35736b99300..a2933eeabd91 100644
+index a2933eeabd91..d19cce39be1b 100644
 --- a/net/ipv4/raw_diag.c
 +++ b/net/ipv4/raw_diag.c
-@@ -87,15 +87,16 @@ static struct sock *raw_sock_get(struct net *net, const struct inet_diag_req_v2
- 	return sk ? sk : ERR_PTR(-ENOENT);
- }
- 
--static int raw_diag_dump_one(struct sk_buff *in_skb,
--			     const struct nlmsghdr *nlh,
-+static int raw_diag_dump_one(struct netlink_callback *cb,
- 			     const struct inet_diag_req_v2 *r)
- {
--	struct net *net = sock_net(in_skb->sk);
-+	struct sk_buff *in_skb = cb->skb;
- 	struct sk_buff *rep;
- 	struct sock *sk;
-+	struct net *net;
- 	int err;
- 
-+	net = sock_net(in_skb->sk);
- 	sk = raw_sock_get(net, r);
- 	if (IS_ERR(sk))
- 		return PTR_ERR(sk);
-@@ -108,10 +109,7 @@ static int raw_diag_dump_one(struct sk_buff *in_skb,
- 		return -ENOMEM;
- 	}
- 
--	err = inet_sk_diag_fill(sk, NULL, rep, r,
--				sk_user_ns(NETLINK_CB(in_skb).sk),
--				NETLINK_CB(in_skb).portid,
--				nlh->nlmsg_seq, 0, nlh,
-+	err = inet_sk_diag_fill(sk, NULL, rep, cb, r, 0,
- 				netlink_net_capable(in_skb, CAP_NET_ADMIN));
- 	sock_put(sk);
- 
-@@ -136,11 +134,7 @@ static int sk_diag_dump(struct sock *sk, struct sk_buff *skb,
- 	if (!inet_diag_bc_sk(bc, sk))
- 		return 0;
- 
--	return inet_sk_diag_fill(sk, NULL, skb, r,
--				 sk_user_ns(NETLINK_CB(cb->skb).sk),
--				 NETLINK_CB(cb->skb).portid,
--				 cb->nlh->nlmsg_seq, NLM_F_MULTI,
--				 cb->nlh, net_admin);
-+	return inet_sk_diag_fill(sk, NULL, skb, cb, r, NLM_F_MULTI, net_admin);
+@@ -138,17 +138,21 @@ static int sk_diag_dump(struct sock *sk, struct sk_buff *skb,
  }
  
  static void raw_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			  const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			  const struct inet_diag_req_v2 *r)
+ {
+ 	bool net_admin = netlink_net_capable(cb->skb, CAP_NET_ADMIN);
+ 	struct raw_hashinfo *hashinfo = raw_get_hashinfo(r);
+ 	struct net *net = sock_net(skb->sk);
++	struct inet_diag_dump_data *cb_data;
+ 	int num, s_num, slot, s_slot;
+ 	struct sock *sk = NULL;
++	struct nlattr *bc;
+ 
+ 	if (IS_ERR(hashinfo))
+ 		return;
+ 
++	cb_data = cb->data;
++	bc = cb_data->inet_diag_nla_bc;
+ 	s_slot = cb->args[0];
+ 	num = s_num = cb->args[1];
+ 
 diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-index 0d08f9e2d8d0..bcd3a26efff1 100644
+index bcd3a26efff1..75a1c985f49a 100644
 --- a/net/ipv4/tcp_diag.c
 +++ b/net/ipv4/tcp_diag.c
-@@ -184,10 +184,10 @@ static void tcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	inet_diag_dump_icsk(&tcp_hashinfo, skb, cb, r, bc);
+@@ -179,9 +179,9 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
  }
  
--static int tcp_diag_dump_one(struct sk_buff *in_skb, const struct nlmsghdr *nlh,
-+static int tcp_diag_dump_one(struct netlink_callback *cb,
- 			     const struct inet_diag_req_v2 *req)
+ static void tcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			  const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			  const struct inet_diag_req_v2 *r)
  {
--	return inet_diag_dump_one_icsk(&tcp_hashinfo, in_skb, nlh, req);
-+	return inet_diag_dump_one_icsk(&tcp_hashinfo, cb, req);
+-	inet_diag_dump_icsk(&tcp_hashinfo, skb, cb, r, bc);
++	inet_diag_dump_icsk(&tcp_hashinfo, skb, cb, r);
  }
  
- #ifdef CONFIG_INET_DIAG_DESTROY
+ static int tcp_diag_dump_one(struct netlink_callback *cb,
 diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
-index 910555a4d9fe..7d65a6a5cd51 100644
+index 7d65a6a5cd51..93884696abdd 100644
 --- a/net/ipv4/udp_diag.c
 +++ b/net/ipv4/udp_diag.c
-@@ -21,16 +21,15 @@ static int sk_diag_dump(struct sock *sk, struct sk_buff *skb,
- 	if (!inet_diag_bc_sk(bc, sk))
- 		return 0;
+@@ -89,12 +89,16 @@ static int udp_dump_one(struct udp_table *tbl,
  
--	return inet_sk_diag_fill(sk, NULL, skb, req,
--			sk_user_ns(NETLINK_CB(cb->skb).sk),
--			NETLINK_CB(cb->skb).portid,
--			cb->nlh->nlmsg_seq, NLM_F_MULTI, cb->nlh, net_admin);
-+	return inet_sk_diag_fill(sk, NULL, skb, cb, req, NLM_F_MULTI,
-+				 net_admin);
- }
- 
--static int udp_dump_one(struct udp_table *tbl, struct sk_buff *in_skb,
--			const struct nlmsghdr *nlh,
-+static int udp_dump_one(struct udp_table *tbl,
-+			struct netlink_callback *cb,
- 			const struct inet_diag_req_v2 *req)
+ static void udp_dump(struct udp_table *table, struct sk_buff *skb,
+ 		     struct netlink_callback *cb,
+-		     const struct inet_diag_req_v2 *r, struct nlattr *bc)
++		     const struct inet_diag_req_v2 *r)
  {
-+	struct sk_buff *in_skb = cb->skb;
- 	int err = -EINVAL;
- 	struct sock *sk = NULL;
- 	struct sk_buff *rep;
-@@ -70,11 +69,8 @@ static int udp_dump_one(struct udp_table *tbl, struct sk_buff *in_skb,
- 	if (!rep)
- 		goto out;
+ 	bool net_admin = netlink_net_capable(cb->skb, CAP_NET_ADMIN);
+ 	struct net *net = sock_net(skb->sk);
++	struct inet_diag_dump_data *cb_data;
+ 	int num, s_num, slot, s_slot;
++	struct nlattr *bc;
  
--	err = inet_sk_diag_fill(sk, NULL, rep, req,
--			   sk_user_ns(NETLINK_CB(in_skb).sk),
--			   NETLINK_CB(in_skb).portid,
--			   nlh->nlmsg_seq, 0, nlh,
--			   netlink_net_capable(in_skb, CAP_NET_ADMIN));
-+	err = inet_sk_diag_fill(sk, NULL, rep, cb, req, 0,
-+				netlink_net_capable(in_skb, CAP_NET_ADMIN));
- 	if (err < 0) {
- 		WARN_ON(err == -EMSGSIZE);
- 		kfree_skb(rep);
-@@ -151,10 +147,10 @@ static void udp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	udp_dump(&udp_table, skb, cb, r, bc);
++	cb_data = cb->data;
++	bc = cb_data->inet_diag_nla_bc;
+ 	s_slot = cb->args[0];
+ 	num = s_num = cb->args[1];
+ 
+@@ -142,9 +146,9 @@ static void udp_dump(struct udp_table *table, struct sk_buff *skb,
  }
  
--static int udp_diag_dump_one(struct sk_buff *in_skb, const struct nlmsghdr *nlh,
-+static int udp_diag_dump_one(struct netlink_callback *cb,
- 			     const struct inet_diag_req_v2 *req)
+ static void udp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			  const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			  const struct inet_diag_req_v2 *r)
  {
--	return udp_dump_one(&udp_table, in_skb, nlh, req);
-+	return udp_dump_one(&udp_table, cb, req);
+-	udp_dump(&udp_table, skb, cb, r, bc);
++	udp_dump(&udp_table, skb, cb, r);
  }
  
- static void udp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
-@@ -255,10 +251,10 @@ static void udplite_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 	udp_dump(&udplite_table, skb, cb, r, bc);
- }
+ static int udp_diag_dump_one(struct netlink_callback *cb,
+@@ -245,10 +249,9 @@ static const struct inet_diag_handler udp_diag_handler = {
+ };
  
--static int udplite_diag_dump_one(struct sk_buff *in_skb, const struct nlmsghdr *nlh,
-+static int udplite_diag_dump_one(struct netlink_callback *cb,
- 				 const struct inet_diag_req_v2 *req)
+ static void udplite_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			      const struct inet_diag_req_v2 *r,
+-			      struct nlattr *bc)
++			      const struct inet_diag_req_v2 *r)
  {
--	return udp_dump_one(&udplite_table, in_skb, nlh, req);
-+	return udp_dump_one(&udplite_table, cb, req);
+-	udp_dump(&udplite_table, skb, cb, r, bc);
++	udp_dump(&udplite_table, skb, cb, r);
  }
  
- static const struct inet_diag_handler udplite_diag_handler = {
+ static int udplite_diag_dump_one(struct netlink_callback *cb,
 diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index 8a15146faaeb..bed6436cd0af 100644
+index bed6436cd0af..69743a6aaf6f 100644
 --- a/net/sctp/diag.c
 +++ b/net/sctp/diag.c
-@@ -432,11 +432,12 @@ static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 		sctp_get_sctp_info(sk, infox->asoc, infox->sctpinfo);
+@@ -471,7 +471,7 @@ static int sctp_diag_dump_one(struct netlink_callback *cb,
  }
  
--static int sctp_diag_dump_one(struct sk_buff *in_skb,
--			      const struct nlmsghdr *nlh,
-+static int sctp_diag_dump_one(struct netlink_callback *cb,
- 			      const struct inet_diag_req_v2 *req)
+ static void sctp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+-			   const struct inet_diag_req_v2 *r, struct nlattr *bc)
++			   const struct inet_diag_req_v2 *r)
  {
-+	struct sk_buff *in_skb = cb->skb;
- 	struct net *net = sock_net(in_skb->sk);
-+	const struct nlmsghdr *nlh = cb->nlh;
- 	union sctp_addr laddr, paddr;
- 	struct sctp_comm_param commp = {
- 		.skb = in_skb,
+ 	u32 idiag_states = r->idiag_states;
+ 	struct net *net = sock_net(skb->sk);
 -- 
 2.17.1
 
