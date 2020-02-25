@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DA9116E99E
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 16:09:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A97616E9AF
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 16:11:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730900AbgBYPJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 10:09:14 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:41834 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730866AbgBYPJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 10:09:13 -0500
-Received: by mail-qv1-f65.google.com with SMTP id s7so5830270qvn.8
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 07:09:13 -0800 (PST)
+        id S1730753AbgBYPLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 10:11:15 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:40927 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730017AbgBYPLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 10:11:15 -0500
+Received: by mail-ed1-f66.google.com with SMTP id p3so16599008edx.7
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 07:11:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hfJPS0aSSmWSxrS1z6hdTyQpH7CN51v0RStp/ll4t7o=;
-        b=EuHICkRJTvkHvHmdiItNxQmplfi8eYk+gJ1lsh3yb6qmiy50HtAcW4+6j+Mq7L4S85
-         1Mx2+Xg9Bd/Fg9ATFMej1fO+dpJMo9f24wCo4wzJ0r+xUCzzrioU6ebC2QnfYRvz+h7N
-         0iV6DkwnkxWArUeqWGI26iIDWnkxJ7VYi5YoAnqZl+y1SbyY7eK8rTtO0vGzupfISbV6
-         LcVjw0KL+tiFPRVvoKt9i+kgWphbLlJ+vSNr49lvhFRDJeF5yV4PON4VEypMp1KOWQ8u
-         2aovX5x4le7186emQ53Svd69x3ngLPPEVkyUAzhtjafAfodoZ6pZjS62OEmAa5Y0dki1
-         7NMA==
+        bh=QyIKHoe0zdPnfK4XeY9IM8vuq1WtcdXTsRQQD6Fa5W0=;
+        b=sARjaeSvuf0rkn41cGwPSjyr3y9TkDv0UcNoecaL0jjTAK1BEwyTxAoaxx3/MV9uZV
+         eJTtf7XyC5CsctCxAB4toYZiuOcnyLtX/XZYCHGSbDpFAVQ/vk6EUrLfh9dH7hMD8MNk
+         iv5ZONeQ1r0p3yb1x9DgXwrB+Ui+89r2hBJP6NlNk5ewXT8j+Pzuqb//dqetMKIt2puE
+         IXL/IUgFcF3pVcFYHOZoEMQI4a9fgSF3WGy15MSXWzEOy8Lz7aD0gMIDg8BMoIzu42H0
+         t+EflPz8zhc4OJZV8u3WLDKqvxYx3ztj8M9eS6v+Dq0UYX9dcB27gLEK4SqsQdP9iAUq
+         UmUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hfJPS0aSSmWSxrS1z6hdTyQpH7CN51v0RStp/ll4t7o=;
-        b=tso66pt717RAisdilKjA7sfT2ztP3cp8DvB0bBW6lo0kp+1Pd1hFmr5fOf6aL/f89M
-         fvQPqF02HywwyPG6w2eP0BhYqZm26bgthIILYvz3AkIVu9kT6/BUmSlTLRFGZkOEdXes
-         rij/pyecu5eV6KROZdqzjUzALw6QLFKOLpfmK7IF/dCaxjuq4I3diWttf5n5urMVfRv8
-         jPHhmv4Obj4yUXl2ebh5+HqiLsOMJpfGB0SMCvUGkNuFiqdZhIHdzSFjlvfrNzLfr9IP
-         KfC84lKy6pVE4q/+erZ7VefBpo3KGxZO9Rp5AUuY+OwXd5IvQ8rqUGaP09mfLyxO5IPM
-         MRfw==
-X-Gm-Message-State: APjAAAVE/cOeqvP352E99IAIHg7diVRXXiQonqRXTvT2SiTpmyH428fE
-        WQSnXZMM66XD4Qar50riZFO4KLVwMgPj+gsOyOojcg==
-X-Google-Smtp-Source: APXvYqyM4ugTOOU3/Yh4aSow5D9jJTB19rycM3Nqj6TBmlDHljnuFLqRTOLoo/f+9kfOyY6wAHJ5n4n8pCpjxGIRRyQ=
-X-Received: by 2002:ad4:4e50:: with SMTP id eb16mr50742796qvb.34.1582643352427;
- Tue, 25 Feb 2020 07:09:12 -0800 (PST)
+        bh=QyIKHoe0zdPnfK4XeY9IM8vuq1WtcdXTsRQQD6Fa5W0=;
+        b=QC47XkEC/n2bukEL8HssJOiM5qm2oh517Ued3sOqfeZofiAe137OJX1jQ/R/h4qXj8
+         hyzzJCsrtHO1b0GT8MJlCkaNN+nYtEAbpMy5QfUNgELLtmj7gpIiP5aqJt6vjPbnbeYD
+         ep6zaPvvOe0WwAfO56OLmCzUsi5jDvHNVmXclnBScPzW62IqgIHrc5B5GaGrzjU2DnUY
+         J5tsOmOtFQUTJEGxVzNnVhsBLzscKIK1nxknLmeT7rWB/M0CBHxo21dfdWZ1g/G1S4ta
+         YoyzRU4OysZ9xsUUV6FIfwgXHNbl1bD1Qo6pKcA03JadzTQjQkkgXMGzs8cXbJnfNaJB
+         LBTA==
+X-Gm-Message-State: APjAAAXsIw4dQYwxW9lX2bcenKf2/ZQJdXkXYkhhGi41ZcZq5SfQ05be
+        R+j+WpYTLVhetcwaiS7wWz3tqUPmid6ouZSEILHD
+X-Google-Smtp-Source: APXvYqwm2XhqLuPrGPXGCiNbgNYmxtGfKr2SHv0Etrwk/3t6dEnloO/+uZkuyuNJgswg+lx52LF5eQ6REVCl6aKcPHk=
+X-Received: by 2002:a05:6402:309b:: with SMTP id de27mr35926843edb.269.1582643473519;
+ Tue, 25 Feb 2020 07:11:13 -0800 (PST)
 MIME-Version: 1.0
 References: <000000000000a719a9059f62246e@google.com> <CAHC9VhTh6s1m7YBZp-3XO3q2EcjtMKUTcXwRzDTj_LSJd+cHTA@mail.gmail.com>
  <CACT4Y+Y3QN9=c5JvJkecCtdQGTxHYRXMhS4f1itwU5JEZmcYtA@mail.gmail.com> <db643ed6efb6fa04fe5753af68d13f1b2ffcf821.camel@redhat.com>
 In-Reply-To: <db643ed6efb6fa04fe5753af68d13f1b2ffcf821.camel@redhat.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 25 Feb 2020 16:09:01 +0100
-Message-ID: <CACT4Y+a6Lp=YGYrxDubwrXiMKc5R5WhehR+Q5E1jEu452d0tfA@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 25 Feb 2020 10:11:02 -0500
+Message-ID: <CAHC9VhR=fKXhL5vgRD1tqMa74P0FBu2wmkjZj8c9BmiYJyaTog@mail.gmail.com>
 Subject: Re: BUG: unable to handle kernel NULL pointer dereference in cipso_v4_sock_setattr
 To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
         syzbot <syzbot+f4dfece964792d80b139@syzkaller.appspotmail.com>,
         cpaasch@apple.com, David Miller <davem@davemloft.net>,
         Davide Caratti <dcaratti@redhat.com>,
@@ -67,8 +67,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 3:46 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
+On Tue, Feb 25, 2020 at 9:46 AM Paolo Abeni <pabeni@redhat.com> wrote:
 > On Tue, 2020-02-25 at 15:27 +0100, Dmitry Vyukov wrote:
 > > On Tue, Feb 25, 2020 at 3:20 PM Paul Moore <paul@paul-moore.com> wrote:
 > > > On Tue, Feb 25, 2020 at 3:19 AM syzbot
@@ -149,10 +148,13 @@ On Tue, Feb 25, 2020 at 3:46 PM Paolo Abeni <pabeni@redhat.com> wrote:
 >
 > I sent the patch to the syzbot ML only, for testing before posting on
 > netdev, so Paul likely have not seen it yet, sorry.
->
-> @Dmitry: I did not get any reply yet from syzbot, are there any
-> problems or is this the usual time-frame?
 
-The testing is queued after bisection of this guy:
-https://syzkaller.appspot.com/bug?id=c0a75a31c5fa84e6e5d3131fd98a5b56e2141b9a
-which has been running since 6pm yesterday...
+No problem, as long as someone is working on a fix I'm happy.  Would
+you mind CC'ing me on the patch once you post it?  I'm curious as to
+what the problem and solution turns out to be.
+
+Thanks.
+
+-- 
+paul moore
+www.paul-moore.com
