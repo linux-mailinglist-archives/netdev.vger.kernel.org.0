@@ -2,88 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5791316F245
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3349916F255
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727075AbgBYVye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 16:54:34 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37720 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgBYVye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:54:34 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p14so287688pfn.4
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 13:54:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=KcdHvGM7QxFXjBI6YkGaxSLjQS65LiqMdGvAY4ntlYg=;
-        b=BJg/VXcEzVPAtNCiJSv2Hc7W1Mt/dRRojyKCXS6TU/oze3/dcR8LqHlcCwGk2hYCL0
-         EnSx5OIdw3WVRhLgivB6JzI2dUttE7TLCrw1izn/sjGVTuhOr1hqa0KwTRaWPZG3MDLR
-         fRzSE2Ofg7v/iMufnm5emtYziWFDAlaEjdb4a+Vy2yhIR+BqV4Q3AnfDxUK5FgPJwiKW
-         nzQRDUTKfxm4XhYnCttB2qASK3jw/jk35JMmrrugzA2i9MHc1K3RFyg/3iQV/Xgd3Er1
-         6uNvDED+t5CfC9IPaxWyMZTmTBWyUqHcL39cU7EBxVGFxpYf22o7J/S4gGv0W2tTOkmZ
-         cdMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=KcdHvGM7QxFXjBI6YkGaxSLjQS65LiqMdGvAY4ntlYg=;
-        b=dHp/FLdaAPQAUXNKtVNSIok58QNo1laMSrjBXmFXL2rhO9P/k/1X8LOFlf3CHckqMi
-         UG7Qo9v1K1OYK5mxZHn5g2iPmdPsrdHvDaM6UvhLQc3hQNVXlHB9jCDgCEo81OG/Vpm9
-         OBHWjqdZT1b+qX2sBuYcaRxVlMAZtN0Ah68WmOwhmnsT8nI2fTEaGy9jDKZnGtG8oWVo
-         m8rzMkyA2quTUAvXqSlqOwJU4hQte+Dbx1vgHbRpij1t7Zk47SVqzGsCt+aSJP5eYSxz
-         Pl0sWJ4LL6keW+DfGOXrYrhTXwpL9u9hfy2ZbBDmN9dgX8nfKdgySmJacn95n4L7v5UA
-         asPA==
-X-Gm-Message-State: APjAAAUvT707t311B13exQxqc+Got2GUkB9lhI26F+CBN4apln1xBmt+
-        VTNt0PexmHJ+pl17ugDRCcE=
-X-Google-Smtp-Source: APXvYqzXeuEPfSp3VdcIUBjDS39ldgr3ryfWOcsFqMbnkGtbJXYVP3g74RBwe0bGHjwpABjKCvaYog==
-X-Received: by 2002:aa7:9546:: with SMTP id w6mr816916pfq.66.1582667672366;
-        Tue, 25 Feb 2020 13:54:32 -0800 (PST)
-Received: from [172.20.102.201] ([2620:10d:c090:400::5:1dea])
-        by smtp.gmail.com with ESMTPSA id w81sm48493pff.95.2020.02.25.13.54.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Feb 2020 13:54:31 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "David Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        kernel-team@fb.com, kuba@kernel.org
-Subject: Re: [PATCH] bnxt_en: add newline to netdev_*() format strings
-Date:   Tue, 25 Feb 2020 13:54:30 -0800
-X-Mailer: MailMate (1.13.1r5671)
-Message-ID: <CDA6E3B5-FB0A-4092-8F2B-44BD4357C633@gmail.com>
-In-Reply-To: <20200225.114544.1730081330061687105.davem@davemloft.net>
-References: <20200224232909.2311486-1-jonathan.lemon@gmail.com>
- <20200224.153254.1115312677901381309.davem@davemloft.net>
- <0C3291B2-E552-420F-B31F-F18C6F5FE056@gmail.com>
- <20200225.114544.1730081330061687105.davem@davemloft.net>
+        id S1728978AbgBYV63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 16:58:29 -0500
+Received: from www62.your-server.de ([213.133.104.62]:54070 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726421AbgBYV63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:58:29 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j6iDi-0003cv-KN; Tue, 25 Feb 2020 22:58:26 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j6iDi-000JoD-Bn; Tue, 25 Feb 2020 22:58:26 +0100
+Subject: Re: [PATCH v2 bpf-next] selftests/bpf: print backtrace on SIGSEGV in
+ test_progs
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20200225000847.3965188-1-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f4ae621b-a783-1a77-3a06-b7eb5afdfc4e@iogearbox.net>
+Date:   Tue, 25 Feb 2020 22:58:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; markup=markdown
+In-Reply-To: <20200225000847.3965188-1-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25734/Tue Feb 25 15:06:17 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25 Feb 2020, at 11:45, David Miller wrote:
+On 2/25/20 1:08 AM, Andrii Nakryiko wrote:
+> Due to various bugs in tests clean up code (usually), if host system is
+> misconfigured, it happens that test_progs will just crash in the middle of
+> running a test with little to no indication of where and why the crash
+> happened. For cases where coredump is not readily available (e.g., inside
+> a CI), it's very helpful to have a stack trace, which lead to crash, to be
+> printed out. This change adds a signal handler that will capture and print out
+> symbolized backtrace:
+> 
+>    $ sudo ./test_progs -t mmap
+>    test_mmap:PASS:skel_open_and_load 0 nsec
+>    test_mmap:PASS:bss_mmap 0 nsec
+>    test_mmap:PASS:data_mmap 0 nsec
+>    Caught signal #11!
+>    Stack trace:
+>    ./test_progs(crash_handler+0x18)[0x42a888]
+>    /lib64/libpthread.so.0(+0xf5d0)[0x7f2aab5175d0]
+>    ./test_progs(test_mmap+0x3c0)[0x41f0a0]
+>    ./test_progs(main+0x160)[0x407d10]
+>    /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f2aab15d3d5]
+>    ./test_progs[0x407ebc]
+>    [1]    1988412 segmentation fault (core dumped)  sudo ./test_progs -t mmap
+> 
+> Unfortunately, glibc's symbolization support is unable to symbolize static
+> functions, only global ones will be present in stack trace. But it's still a
+> step forward without adding extra libraries to get a better symbolization.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-> From: "Jonathan Lemon" <jonathan.lemon@gmail.com>
-> Date: Tue, 25 Feb 2020 08:16:35 -0800
->
->> There should be a single posting on the list, are you telling me
->> otherwise?
->
-> There were three postings:
->
-> https://patchwork.ozlabs.org/patch/1243698/
-> https://patchwork.ozlabs.org/patch/1243701/
-> https://patchwork.ozlabs.org/patch/1243702/
-
-From the headers on the first one, that should not have
-gone out; the second was the correction/check, and the
-third was the actual posting.  I'll add some scripts to
-automate this for next time.
-
-Sorry about the noise.
--- 
-Jonathan
-
+Applied, thanks!
