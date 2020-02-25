@@ -2,127 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A743916B683
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7937C16B692
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbgBYAOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:14:53 -0500
-Received: from mail-vi1eur05on2139.outbound.protection.outlook.com ([40.107.21.139]:29204
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726651AbgBYAOw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 19:14:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=erEJpfsFFk6T3S7ekZXsWVOyXuTcXQZIzpg3g91ru5MyaLAkJrR6Ki0RrNpVTzunNhzUCg+ZsMx2IbWg3VPknsdhuanw4lT6pkY9ubFVWnf7aHo11MHdhLcZYWFZUIpMCJS1BtNXCPJYLy44TAvucfjejj38h0Xiycn5KBcnut5J0M5Xs12IwkjANZ2gzw/5gYoOtW755sFBp9uJVng+9DrqmcpcJ9Ouchz58GnLPH9uKqQ20EOQD9Yw+Uv/BJtcDPXGUNGkrzX36Vv7aGYn+TWnT1NNhn7FAZPQrzwF5ExUZsvSrkL9B1heTlVWidu/E+npQgsJgaGa2hgyiO+wag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j43+D425VRp5NzTNeMMebCI0wIQnUMk058NmHC9mSck=;
- b=jrdJp1D8posY1T3gk+zTmJ+AMUArsrgqKR++DgGHr0c++Xbbwj7r/ooipe7AmZTZR9AVW6Nx+VSYlVvK6IGnpH4DafRogNOalm7ED3DsPXwYktLIEP/7mfFBBjp/XypCxregov++gqOZ7kYtwtoasA0teBKSBLZwu8nCw8FTl1ADrYlIxvhp39rMcNeUzf8HTqVzgolImy2wvTPreWiygTfQldhdaVetDY89UHxLJ1m6Inrojyx2qCXNEhHFETY2lbzVt7FXmElkbuRaCY3WPbPpSBWJJr/ES7aPqop3ykYzyOl6+3tkv7qPOTsBNOq7SiLqBmsavJQ9YhiJJC9HfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j43+D425VRp5NzTNeMMebCI0wIQnUMk058NmHC9mSck=;
- b=YuZudngG7yF3P6o9xypq2+1f/0FHee8gdwbVczxDQHbtsLssTi3XOWmrbU9OCB63rdcirXztytqcMba/QNEysShSUgulofNq/2xbFRrYlCiwJlDWj2PJYb66pcEsF3L3+w03fjugTHuOL5n1KFRCO7UYCkBXVj/OR3rKgjBrk9g=
-Received: from DB6PR07MB4408.eurprd07.prod.outlook.com (10.168.24.141) by
- DB6PR07MB4231.eurprd07.prod.outlook.com (10.168.23.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2772.10; Tue, 25 Feb 2020 00:14:49 +0000
-Received: from DB6PR07MB4408.eurprd07.prod.outlook.com
- ([fe80::d40c:1a36:d897:dd7b]) by DB6PR07MB4408.eurprd07.prod.outlook.com
- ([fe80::d40c:1a36:d897:dd7b%2]) with mapi id 15.20.2772.010; Tue, 25 Feb 2020
- 00:14:49 +0000
-From:   "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "willemb@google.com" <willemb@google.com>
-Subject: RE: linux-next: build warning after merge of the net-next tree
-Thread-Topic: linux-next: build warning after merge of the net-next tree
-Thread-Index: AQHV62GlIj4EO15ztkCQL+lX7FjKtKgq8LCAgAABR4CAABdakA==
-Date:   Tue, 25 Feb 2020 00:14:49 +0000
-Message-ID: <DB6PR07MB44080818D2EB925DD9F024F1EDED0@DB6PR07MB4408.eurprd07.prod.outlook.com>
-References: <20200225092736.137df206@canb.auug.org.au>
-        <20200224.144243.1485587034182183004.davem@davemloft.net>
- <20200225094717.241cef90@canb.auug.org.au>
-In-Reply-To: <20200225094717.241cef90@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=martin.varghese@nokia.com; 
-x-originating-ip: [122.178.219.138]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b8493b2d-81a8-4fc8-e562-08d7b987ba3f
-x-ms-traffictypediagnostic: DB6PR07MB4231:
-x-microsoft-antispam-prvs: <DB6PR07MB4231E1A514554F8A052866D3EDED0@DB6PR07MB4231.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-forefront-prvs: 0324C2C0E2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(39860400002)(396003)(366004)(376002)(136003)(199004)(189003)(52536014)(186003)(86362001)(76116006)(26005)(478600001)(71200400001)(4744005)(66476007)(66446008)(66556008)(64756008)(8936002)(53546011)(6506007)(5660300002)(66946007)(2906002)(4326008)(55016002)(81166006)(81156014)(8676002)(9686003)(316002)(7696005)(110136005)(33656002)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:DB6PR07MB4231;H:DB6PR07MB4408.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nokia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: K1Ycka361L+s4eKHm8YfX/EiHSjQqZmsVSHmTTh/OBA+7gs5hBCgKMTbyWn5OSnDqAP9K4bxIPmggP9hEWY0CaKVbbuUFz8n8KU36gpQXeU7+LN2j6Py7p22jXhAaQef1de0lKwXw2IGLS/b6vYywwQA0Z0sDNCHWnFPUm4sfffugUBtMQHmpIpxltPYt+p3J2xbQjlR1Bozx4U94RYNrhwvUU9TnEajim6zMQgnAP+UWxQV1yPZl31Rumcao1QtLMWNfmz90B2ChLfRJdDWHp1NLHxu8rNIhoEaIB++54LkFjZSHuHhtF3G+AbXgTu0Gw/xE3ZEArMPa5cIeSTvSZk4fGfGx2L6GwTQLEtyMmleZR6H5awxLh6e/VWsutIHqh+3WOff9QOrvSsCh7+MrQKmvcZSLHhiZl5xCJD2nZmEvCPQnWaq1MDKYx+dKX8m
-x-ms-exchange-antispam-messagedata: K5YynRerxxBK8Y5y2NnVp/fWEpwdnX9UuhE5fPtINljv/FnNXDRZcktzcACEXXIOXiRyEly2sDQAXyEcqMvW0AWVnC4Rzlai4kbii75fU8nq7TOEupgpMAfDq9+EDumMQWQJK1ludEtLIoVg7vIEDw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728316AbgBYART (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:17:19 -0500
+Received: from gateway30.websitewelcome.com ([192.185.196.18]:47448 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728011AbgBYARS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:17:18 -0500
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 91E5A1133F
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:15:39 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 6NsxjOiU1XVkQ6NsxjkK2i; Mon, 24 Feb 2020 18:15:39 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=LktvCqqFjAA8rDcg5ByaBgBcVMdxrLSTLQa6siIf2JM=; b=pKNLiHChSa57IuH8C+BZVIHDFS
+        aqbfjtyx0N/KX80jSPbfkyRg3Kinl606snDgyjpldW8hmNoGBylzcyC9KOsfjUIKxIefbEGCd9ezj
+        Kl5Idd37G/ZU8bkfgspAK2mDX9BnKt8C5dz5dlb2r8Yd4vYzw9OmQpJ3tU7FpbyShJE4cckTcv8ih
+        nZT1ZJ/IB9WvZukUDk3L2F+yBsQo5FTDiSe8YUPrbtxJ8MJItPPBKITxL5CjXKS1WFyYpIkzk9aA6
+        B5UpSthtpvXbRx7eD6dDTqAOr+7jL7HsMPuy96HZIctLtVeXLxe39J9IpZThqS7L7H40lsrbg/8wp
+        06nIXcjg==;
+Received: from [201.166.191.14] (port=54580 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j6Nsv-002Rza-GF; Mon, 24 Feb 2020 18:15:38 -0600
+Date:   Mon, 24 Feb 2020 18:18:26 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        Parvi Kaustubhi <pkaustub@cisco.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: cisco: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200225001826.GA22765@embeddedor>
 MIME-Version: 1.0
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8493b2d-81a8-4fc8-e562-08d7b987ba3f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2020 00:14:49.1338
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2kr79IuEtQRjlx2hhWqafYvAE/GveimVV6fvsmUR8BLnTSBLsuIRD4szCqxX0UdAa2bgEVqZYFtkLEYx+2nS3DNtRUssvl04CByvOIn93UY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR07MB4231
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.166.191.14
+X-Source-L: No
+X-Exim-ID: 1j6Nsv-002Rza-GF
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.166.191.14]:54580
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 31
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HI David & Stephen,
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-In v8 version of patch while fixing reverse xmas tree I wrongly judged the =
-variable usage and removed the initialization. But wondering why compiler d=
-idn't show me that. Apologies.
-David, Thanks for fixing it.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-Regards,
-Martin =20
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
------Original Message-----
-From: Stephen Rothwell <sfr@canb.auug.org.au>=20
-Sent: Tuesday, February 25, 2020 4:17 AM
-To: David Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org; linux-next@vger.kernel.org; linux-kernel@vger.k=
-ernel.org; Varghese, Martin (Nokia - IN/Bangalore) <martin.varghese@nokia.c=
-om>; willemb@google.com
-Subject: Re: linux-next: build warning after merge of the net-next tree
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-Hi Dave,
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
-On Mon, 24 Feb 2020 14:42:43 -0800 (PST) David Miller <davem@davemloft.net>=
- wrote:
->
-> Sorry, my compiler didn't show this.
+Lastly, fix the following checkpatch warning:
+CHECK: Prefer kernel type 'u32' over 'u_int32_t'
+#61: FILE: drivers/net/ethernet/cisco/enic/vnic_devcmd.h:653:
++	u_int32_t val[];
 
-Yeah, these ones especially change with compiler version.  I am currently r=
-unning gcc v9.2.1 if it matters.
+This issue was found with the help of Coccinelle.
 
-> I've committed the following into net-next, hopefully it does the trick:
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
 
-Thanks.
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/ethernet/cisco/enic/vnic_devcmd.h | 8 ++++----
+ drivers/net/ethernet/cisco/enic/vnic_vic.h    | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
---
-Cheers,
-Stephen Rothwell
+diff --git a/drivers/net/ethernet/cisco/enic/vnic_devcmd.h b/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
+index fef5a0a0663d..fcc4a3ccdd94 100644
+--- a/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
++++ b/drivers/net/ethernet/cisco/enic/vnic_devcmd.h
+@@ -541,7 +541,7 @@ struct vnic_devcmd_notify {
+ struct vnic_devcmd_provinfo {
+ 	u8 oui[3];
+ 	u8 type;
+-	u8 data[0];
++	u8 data[];
+ };
+ 
+ /* These are used in flags field of different filters to denote
+@@ -648,9 +648,9 @@ enum {
+ #define FILTER_MAX_BUF_SIZE 100
+ 
+ struct filter_tlv {
+-	u_int32_t type;
+-	u_int32_t length;
+-	u_int32_t val[0];
++	u32 type;
++	u32 length;
++	u32 val[];
+ };
+ 
+ enum {
+diff --git a/drivers/net/ethernet/cisco/enic/vnic_vic.h b/drivers/net/ethernet/cisco/enic/vnic_vic.h
+index 9ef81f148351..057776908828 100644
+--- a/drivers/net/ethernet/cisco/enic/vnic_vic.h
++++ b/drivers/net/ethernet/cisco/enic/vnic_vic.h
+@@ -59,7 +59,7 @@ struct vic_provinfo {
+ 		u16 type;
+ 		u16 length;
+ 		u8 value[0];
+-	} tlv[0];
++	} tlv[];
+ } __packed;
+ 
+ #define VIC_PROVINFO_ADD_TLV(vp, tlvtype, tlvlen, data) \
+-- 
+2.25.0
+
