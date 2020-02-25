@@ -2,319 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B888816F2E5
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:04:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02FF716F2E9
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:05:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729354AbgBYXEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 18:04:35 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7542 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729078AbgBYXEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:04:35 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PMwVi9003838
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:34 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=xAxp5p3ygU4SH67TfXUmPYlRnhhesAGG5RMyeYk+vG8=;
- b=CbshywPwoPqm7Ff61/fD14GMsF5FWq4x2YgPx3ARl6CPHSFI3w/fDUWwh+GBfMYRsupW
- 0C1ZgKvd1FyU2W0VnhqVa7PUqC8jEGmwbXcpatGySxKKSnB0j4SFgRj3bCY+mrAasNOV
- QdbGKebRbSnoojwaQKUonf58eYk5l08aq0w= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ydcs781g6-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 15:04:33 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 25 Feb 2020 15:04:32 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 01EB72940827; Tue, 25 Feb 2020 15:04:27 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v2 4/4] bpf: inet_diag: Dump bpf_sk_storages in inet_diag_dump()
-Date:   Tue, 25 Feb 2020 15:04:27 -0800
-Message-ID: <20200225230427.1976129-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200225230402.1974723-1-kafai@fb.com>
-References: <20200225230402.1974723-1-kafai@fb.com>
-X-FB-Internal: Safe
+        id S1729400AbgBYXFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 18:05:03 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:52344 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728806AbgBYXFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:05:02 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1j6jG4-00036P-UY; Tue, 25 Feb 2020 23:04:57 +0000
+To:     Martin Varghese <martin.varghese@nokia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: re: net: UDP tunnel encapsulation module for tunnelling different
+Message-ID: <6a8cabb8-e371-d119-c2e6-d495eca016b7@canonical.com>
+Date:   Tue, 25 Feb 2020 23:04:56 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-25_09:2020-02-25,2020-02-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- lowpriorityscore=0 priorityscore=1501 clxscore=1015 bulkscore=0
- malwarescore=0 phishscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
- spamscore=0 suspectscore=38 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2002250161
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch will dump out the bpf_sk_storages of a sk
-if the request has the INET_DIAG_REQ_SK_BPF_STORAGES nlattr.
+Hi,
 
-An array of SK_DIAG_BPF_STORAGE_REQ_MAP_FD can be specified in
-INET_DIAG_REQ_SK_BPF_STORAGES to select which bpf_sk_storage to dump.
-If no map_fd is specified, all bpf_sk_storages of a sk will be dumped.
+Static analysis with Coverity detected an issue in function
+bareudp_xmit_skb with the return of an uninitialized value in variable
+err in the following commit:
 
-bpf_sk_storages can be added to the system at runtime.  It is difficult
-to find a proper static value for cb->min_dump_alloc.
+commit 571912c69f0ed731bd1e071ade9dc7ca4aa52065
+Author: Martin Varghese <martin.varghese@nokia.com>
+Date:   Mon Feb 24 10:57:50 2020 +0530
 
-This patch learns the nlattr size required to dump the bpf_sk_storages
-of a sk.  If it happens to be the very first nlmsg of a dump and it
-cannot fit the needed bpf_sk_storages,  it will try to expand the
-skb by "pskb_expand_head()".
+    net: UDP tunnel encapsulation module for tunnelling different
+protocols like MPLS, IP, NSH etc.
 
-Instead of expanding it in inet_sk_diag_fill(), it is expanded at a
-sleepable context in __inet_diag_dump() so __GFP_DIRECT_RECLAIM can
-be used.  In __inet_diag_dump(), it will retry as long as the
-skb is empty and the cb->min_dump_alloc becomes larger than before.
-cb->min_dump_alloc is bounded by KMALLOC_MAX_SIZE.  The min_dump_alloc
-is also changed from 'u16' to 'u32' to accommodate a sk that may have
-a few large bpf_sk_storages.
+The analysis is as follows:
 
-The updated cb->min_dump_alloc will also be used to allocate the skb in
-the next dump.  This logic already exists in netlink_dump().
+var_decl: Declaring variable err without initializer.
 
-Here is the sample output of a locally modified 'ss' and it could be made
-more readable by using BTF later:
-[root@arch-fb-vm1 ~]# ss --bpf-map-id 14 --bpf-map-id 13 -t6an 'dst [::1]:8989'
-State Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
-ESTAB 0      0              [::1]:51072        [::1]:8989
-	 bpf_map_id:14 value:[ 3feb ]
-	 bpf_map_id:13 value:[ 3f ]
-ESTAB 0      0              [::1]:51070        [::1]:8989
-	 bpf_map_id:14 value:[ 3feb ]
-	 bpf_map_id:13 value:[ 3f ]
+301        int err;
+302
 
-[root@arch-fb-vm1 ~]# ~/devshare/github/iproute2/misc/ss --bpf-maps -t6an 'dst [::1]:8989'
-State         Recv-Q         Send-Q                   Local Address:Port                    Peer Address:Port         Process
-ESTAB         0              0                                [::1]:51072                          [::1]:8989
-	 bpf_map_id:14 value:[ 3feb ]
-	 bpf_map_id:13 value:[ 3f ]
-	 bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
-ESTAB         0              0                                [::1]:51070                          [::1]:8989
-	 bpf_map_id:14 value:[ 3feb ]
-	 bpf_map_id:13 value:[ 3f ]
-	 bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
+...
 
-Acked-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- include/linux/inet_diag.h      |  4 ++
- include/linux/netlink.h        |  4 +-
- include/uapi/linux/inet_diag.h |  2 +
- net/ipv4/inet_diag.c           | 74 ++++++++++++++++++++++++++++++++++
- 4 files changed, 82 insertions(+), 2 deletions(-)
+344 free_dst:
+345        dst_release(&rt->dst);
 
-diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index 1bb94cac265f..e4ba25d63913 100644
---- a/include/linux/inet_diag.h
-+++ b/include/linux/inet_diag.h
-@@ -38,9 +38,13 @@ struct inet_diag_handler {
- 	__u16		idiag_info_size;
- };
- 
-+struct bpf_sk_storage_diag;
- struct inet_diag_dump_data {
- 	struct nlattr *req_nlas[__INET_DIAG_REQ_MAX];
- #define inet_diag_nla_bc req_nlas[INET_DIAG_REQ_BYTECODE]
-+#define inet_diag_nla_bpf_stgs req_nlas[INET_DIAG_REQ_SK_BPF_STORAGES]
-+
-+	struct bpf_sk_storage_diag *bpf_stg_diag;
- };
- 
- struct inet_connection_sock;
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index 205fa7b1f07a..788969ccbbde 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -188,10 +188,10 @@ struct netlink_callback {
- 	struct module		*module;
- 	struct netlink_ext_ack	*extack;
- 	u16			family;
--	u16			min_dump_alloc;
--	bool			strict_check;
- 	u16			answer_flags;
-+	u32			min_dump_alloc;
- 	unsigned int		prev_seq, seq;
-+	bool			strict_check;
- 	union {
- 		u8		ctx[48];
- 
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index bab9a9f8da12..75dffd78363a 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -64,6 +64,7 @@ struct inet_diag_req_raw {
- enum {
- 	INET_DIAG_REQ_NONE,
- 	INET_DIAG_REQ_BYTECODE,
-+	INET_DIAG_REQ_SK_BPF_STORAGES,
- 	__INET_DIAG_REQ_MAX,
- };
- 
-@@ -155,6 +156,7 @@ enum {
- 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
- 	INET_DIAG_MD5SIG,
- 	INET_DIAG_ULP_INFO,
-+	INET_DIAG_SK_BPF_STORAGES,
- 	__INET_DIAG_MAX,
- };
- 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 4bce8a477699..e1cad25909df 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -23,6 +23,7 @@
- #include <net/inet_hashtables.h>
- #include <net/inet_timewait_sock.h>
- #include <net/inet6_hashtables.h>
-+#include <net/bpf_sk_storage.h>
- #include <net/netlink.h>
- 
- #include <linux/inet.h>
-@@ -156,6 +157,8 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- }
- EXPORT_SYMBOL_GPL(inet_diag_msg_attrs_fill);
- 
-+#define MAX_DUMP_ALLOC_SIZE (KMALLOC_MAX_SIZE - SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+
- int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 		      struct sk_buff *skb, struct netlink_callback *cb,
- 		      const struct inet_diag_req_v2 *req,
-@@ -163,12 +166,14 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- {
- 	const struct tcp_congestion_ops *ca_ops;
- 	const struct inet_diag_handler *handler;
-+	struct inet_diag_dump_data *cb_data;
- 	int ext = req->idiag_ext;
- 	struct inet_diag_msg *r;
- 	struct nlmsghdr  *nlh;
- 	struct nlattr *attr;
- 	void *info = NULL;
- 
-+	cb_data = cb->data;
- 	handler = inet_diag_table[req->sdiag_protocol];
- 	BUG_ON(!handler);
- 
-@@ -302,6 +307,48 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 			goto errout;
- 	}
- 
-+	/* Keep it at the end for potential retry with a larger skb,
-+	 * or else do best-effort fitting, which is only done for the
-+	 * first_nlmsg.
-+	 */
-+	if (cb_data->bpf_stg_diag) {
-+		bool first_nlmsg = ((unsigned char *)nlh == skb->data);
-+		unsigned int prev_min_dump_alloc;
-+		unsigned int total_nla_size = 0;
-+		unsigned int msg_len;
-+		int err;
-+
-+		msg_len = skb_tail_pointer(skb) - (unsigned char *)nlh;
-+		err = bpf_sk_storage_diag_put(cb_data->bpf_stg_diag, sk, skb,
-+					      INET_DIAG_SK_BPF_STORAGES,
-+					      &total_nla_size);
-+
-+		if (!err)
-+			goto out;
-+
-+		total_nla_size += msg_len;
-+		prev_min_dump_alloc = cb->min_dump_alloc;
-+		if (total_nla_size > prev_min_dump_alloc)
-+			cb->min_dump_alloc = min_t(u32, total_nla_size,
-+						   MAX_DUMP_ALLOC_SIZE);
-+
-+		if (!first_nlmsg)
-+			goto errout;
-+
-+		if (cb->min_dump_alloc > prev_min_dump_alloc)
-+			/* Retry with pskb_expand_head() with
-+			 * __GFP_DIRECT_RECLAIM
-+			 */
-+			goto errout;
-+
-+		WARN_ON_ONCE(total_nla_size <= prev_min_dump_alloc);
-+
-+		/* Send what we have for this sk
-+		 * and move on to the next sk in the following
-+		 * dump()
-+		 */
-+	}
-+
- out:
- 	nlmsg_end(skb, nlh);
- 	return 0;
-@@ -1022,8 +1069,11 @@ static int __inet_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 			    const struct inet_diag_req_v2 *r)
- {
- 	const struct inet_diag_handler *handler;
-+	u32 prev_min_dump_alloc;
- 	int err = 0;
- 
-+again:
-+	prev_min_dump_alloc = cb->min_dump_alloc;
- 	handler = inet_diag_lock_handler(r->sdiag_protocol);
- 	if (!IS_ERR(handler))
- 		handler->dump(skb, cb, r);
-@@ -1031,6 +1081,15 @@ static int __inet_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 		err = PTR_ERR(handler);
- 	inet_diag_unlock_handler(handler);
- 
-+	/* The skb is not large enough to fit one sk info and
-+	 * inet_sk_diag_fill() has requested for a larger skb.
-+	 */
-+	if (!skb->len && cb->min_dump_alloc > prev_min_dump_alloc) {
-+		err = pskb_expand_head(skb, 0, cb->min_dump_alloc, GFP_KERNEL);
-+		if (!err)
-+			goto again;
-+	}
-+
- 	return err ? : skb->len;
- }
- 
-@@ -1068,6 +1127,18 @@ static int __inet_diag_dump_start(struct netlink_callback *cb, int hdrlen)
- 		}
- 	}
- 
-+	nla = cb_data->inet_diag_nla_bpf_stgs;
-+	if (nla) {
-+		struct bpf_sk_storage_diag *bpf_stg_diag;
-+
-+		bpf_stg_diag = bpf_sk_storage_diag_alloc(nla);
-+		if (IS_ERR(bpf_stg_diag)) {
-+			kfree(cb_data);
-+			return PTR_ERR(bpf_stg_diag);
-+		}
-+		cb_data->bpf_stg_diag = bpf_stg_diag;
-+	}
-+
- 	cb->data = cb_data;
- 	return 0;
- }
-@@ -1084,6 +1155,9 @@ static int inet_diag_dump_start_compat(struct netlink_callback *cb)
- 
- static int inet_diag_dump_done(struct netlink_callback *cb)
- {
-+	struct inet_diag_dump_data *cb_data = cb->data;
-+
-+	bpf_sk_storage_diag_free(cb_data->bpf_stg_diag);
- 	kfree(cb->data);
- 
- 	return 0;
--- 
-2.17.1
+Uninitialized scalar variable (UNINIT)
+uninit_use: Using uninitialized value err.
 
+346        return err;
+347 }
+
+and also in function bareudp6_xmit_skb:
+
+var_decl: Declaring variable err without initializer.
+
+364        int err;
+365
+
+...
+
+404
+405 free_dst:
+406        dst_release(dst);
+
+Uninitialized scalar variable (UNINIT)
+uninit_use: Using uninitialized value err.
+
+407        return err;
+408 }
+
+Colin
