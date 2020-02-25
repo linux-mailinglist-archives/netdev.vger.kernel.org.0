@@ -2,21 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 580D716B63E
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:06:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5A316B64B
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:09:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728445AbgBYAGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:06:53 -0500
-Received: from gateway30.websitewelcome.com ([192.185.196.18]:16613 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727976AbgBYAGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:06:53 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 95DC7FDE5
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:06:52 -0600 (CST)
+        id S1728546AbgBYAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:09:28 -0500
+Received: from gateway33.websitewelcome.com ([192.185.146.195]:38731 "EHLO
+        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728235AbgBYAJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:09:28 -0500
+X-Greylist: delayed 325 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Feb 2020 19:09:26 EST
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id ADF6B7175A
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:09:26 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 6NkSjn3wUAGTX6NkSjwj2g; Mon, 24 Feb 2020 18:06:52 -0600
+        id 6NmwjJ3AwSl8q6Nmwjy5kU; Mon, 24 Feb 2020 18:09:26 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,26 +25,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=W2nVCBOC3RQtFd1bJm8Y55rMfod2dkAr8hWnPOcjNNM=; b=C/ezcuvREGquXC4mgNW/H88+ug
-        TVAa6onqkKTEYBN++tieBb1vLd2PnxxGpJ99XXjMhkF3X5vm3yFh+dX31VyJS4lN0jNOp8h8BWxKO
-        q9EhUxG3KUKxBWkkCy7Q88JqK0vy8o5Q8Xxn/1qhrxnSP80grhsxxAYOBBL0I6q6NzKSGQrH8hFEA
-        0LfXdZIgDC4fV+88I9t5k0KJXM+zYMDi1GnGYqMQlJU6zPeVuqemnXl7DSfa7osY2LhJuvY5TOHP6
-        0tbshf9NfwsYuh7Ks/fAYtdqwRhI+1hm7Q63aemirVaCFA0ytK48jW68iC397zTuMZSu+VZyND0De
-        5+WkfkSg==;
-Received: from [201.166.190.177] (port=54400 helo=embeddedor)
+        bh=ZwmvXNF0jxPluhfTdIp+OkMhFDGnO6D8vfAw9YlIa3k=; b=JD/Y/mISz9+s6xEcFV8VrUebnA
+        GXp81qYIO0zcoyu28r1UkT83FgP+aju1ycUxK/cvS6CYIVP90cCrNqaK1cFMulvC47GW5P0yscOq/
+        HU7qUwAULL+2b1mn3E0k6XakzlGx6bfvP6J6w5e4nmLbwrrY17Dq3IDFoR1Y+8AQ9z5VTrYU0p2MS
+        7YFfFzYQYNKkfmweNOL+uywgNzcLBMr0pBdadbrRYgozPOvTXTklF75Q05Cumo/mCmOfirpAkpSQ2
+        8Seg1Va6u0aZPU0w5lpNRL3DkoZ3ZrrUNFNViG9JhPXdYVESgL8wDtUg4TxIhcgWEpRxNvl/Yhgg2
+        IrkC12Zw==;
+Received: from [201.166.190.60] (port=54458 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j6NkQ-002Nmd-0p; Mon, 24 Feb 2020 18:06:51 -0600
-Date:   Mon, 24 Feb 2020 18:09:39 -0600
+        id 1j6Nmu-002OsC-IZ; Mon, 24 Feb 2020 18:09:25 -0600
+Date:   Mon, 24 Feb 2020 18:12:13 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
+To:     Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: hns: Replace zero-length array with
+Subject: [PATCH][next] net: marvell: Replace zero-length array with
  flexible-array member
-Message-ID: <20200225000939.GA18897@embeddedor>
+Message-ID: <20200225001213.GA20527@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -54,15 +55,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.166.190.177
+X-Source-IP: 201.166.190.60
 X-Source-L: No
-X-Exim-ID: 1j6NkQ-002Nmd-0p
+X-Exim-ID: 1j6Nmu-002OsC-IZ
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.190.177]:54400
+X-Source-Sender: (embeddedor) [201.166.190.60]:54458
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 20
+X-Email-Count: 25
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -100,36 +101,36 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h | 2 +-
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h | 2 +-
+ drivers/net/ethernet/marvell/skge.h | 2 +-
+ drivers/net/ethernet/marvell/sky2.h | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
-index 2721f1f1ab42..0f0e16f9afc0 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
-@@ -92,7 +92,7 @@ struct ppe_common_cb {
- 	u8 comm_index;   /*ppe_common index*/
+diff --git a/drivers/net/ethernet/marvell/skge.h b/drivers/net/ethernet/marvell/skge.h
+index 6fa7b6a34c08..a1313d57e283 100644
+--- a/drivers/net/ethernet/marvell/skge.h
++++ b/drivers/net/ethernet/marvell/skge.h
+@@ -2426,7 +2426,7 @@ struct skge_hw {
+ 	spinlock_t	     phy_lock;
+ 	struct tasklet_struct phy_task;
  
- 	u32 ppe_num;
--	struct hns_ppe_cb ppe_cb[0];
-+	struct hns_ppe_cb ppe_cb[];
- 
+-	char		     irq_name[0]; /* skge@pci:000:04:00.0 */
++	char		     irq_name[]; /* skge@pci:000:04:00.0 */
  };
  
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
-index 3741befb914e..a9f805925699 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
-@@ -108,7 +108,7 @@ struct rcb_common_cb {
- 	u32 ring_num;
- 	u32 desc_num; /*  desc num per queue*/
+ enum pause_control {
+diff --git a/drivers/net/ethernet/marvell/sky2.h b/drivers/net/ethernet/marvell/sky2.h
+index b02b6523083c..ada1ca60f088 100644
+--- a/drivers/net/ethernet/marvell/sky2.h
++++ b/drivers/net/ethernet/marvell/sky2.h
+@@ -2309,7 +2309,7 @@ struct sky2_hw {
+ 	struct work_struct   restart_work;
+ 	wait_queue_head_t    msi_wait;
  
--	struct ring_pair_cb ring_pair_cb[0];
-+	struct ring_pair_cb ring_pair_cb[];
+-	char		     irq_name[0];
++	char		     irq_name[];
  };
  
- int hns_rcb_buf_size2type(u32 buf_size);
+ static inline int sky2_is_copper(const struct sky2_hw *hw)
 -- 
 2.25.0
 
