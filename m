@@ -2,159 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF01216B649
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:09:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 580D716B63E
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:06:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728529AbgBYAJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:09:00 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45518 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728316AbgBYAJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:09:00 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 01P04V6O005386
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 16:08:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=PXmrFmdduNTeIAvS5jq1Y+6K8sKhpZ6nQsDc9FUuiG0=;
- b=bNnMRzt9Jg1/UzbfZaLvK6UA52ZlcNyC0KSYW5d5BkEd5vW1S4MWIU2puKxnGZfxwuAi
- 42FkOPVQntxWepnyY5q/XGP+VfQCDjRgjfu5jHgLiSLpy2H89akvPtFq5OqOYLDyaEEv
- GCzfIxbrscsMe2w3tax+8fQZImFgQfbPb2k= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 2yb0p5k4t1-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 16:08:58 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 24 Feb 2020 16:08:56 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 1FC2C2EC2ED2; Mon, 24 Feb 2020 16:08:52 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] selftests/bpf: print backtrace on SIGSEGV in test_progs
-Date:   Mon, 24 Feb 2020 16:08:47 -0800
-Message-ID: <20200225000847.3965188-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1728445AbgBYAGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:06:53 -0500
+Received: from gateway30.websitewelcome.com ([192.185.196.18]:16613 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727976AbgBYAGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:06:53 -0500
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 95DC7FDE5
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:06:52 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 6NkSjn3wUAGTX6NkSjwj2g; Mon, 24 Feb 2020 18:06:52 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=W2nVCBOC3RQtFd1bJm8Y55rMfod2dkAr8hWnPOcjNNM=; b=C/ezcuvREGquXC4mgNW/H88+ug
+        TVAa6onqkKTEYBN++tieBb1vLd2PnxxGpJ99XXjMhkF3X5vm3yFh+dX31VyJS4lN0jNOp8h8BWxKO
+        q9EhUxG3KUKxBWkkCy7Q88JqK0vy8o5Q8Xxn/1qhrxnSP80grhsxxAYOBBL0I6q6NzKSGQrH8hFEA
+        0LfXdZIgDC4fV+88I9t5k0KJXM+zYMDi1GnGYqMQlJU6zPeVuqemnXl7DSfa7osY2LhJuvY5TOHP6
+        0tbshf9NfwsYuh7Ks/fAYtdqwRhI+1hm7Q63aemirVaCFA0ytK48jW68iC397zTuMZSu+VZyND0De
+        5+WkfkSg==;
+Received: from [201.166.190.177] (port=54400 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j6NkQ-002Nmd-0p; Mon, 24 Feb 2020 18:06:51 -0600
+Date:   Mon, 24 Feb 2020 18:09:39 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: hns: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200225000939.GA18897@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-24_12:2020-02-21,2020-02-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1015
- bulkscore=0 priorityscore=1501 mlxlogscore=939 suspectscore=8
- malwarescore=0 adultscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002240181
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.166.190.177
+X-Source-L: No
+X-Exim-ID: 1j6NkQ-002Nmd-0p
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.166.190.177]:54400
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 20
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to various bugs in tests clean up code (usually), if host system is
-misconfigured, it happens that test_progs will just crash in the middle of
-running a test with little to no indication of where and why the crash
-happened. For cases where coredump is not readily available (e.g., inside
-a CI), it's very helpful to have a stack trace, which lead to crash, to be
-printed out. This change adds a signal handler that will capture and print out
-symbolized backtrace:
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-  $ sudo ./test_progs -t mmap
-  test_mmap:PASS:skel_open_and_load 0 nsec
-  test_mmap:PASS:bss_mmap 0 nsec
-  test_mmap:PASS:data_mmap 0 nsec
-  Caught signal #11!
-  Stack trace:
-  ./test_progs(crash_handler+0x18)[0x42a888]
-  /lib64/libpthread.so.0(+0xf5d0)[0x7f2aab5175d0]
-  ./test_progs(test_mmap+0x3c0)[0x41f0a0]
-  ./test_progs(main+0x160)[0x407d10]
-  /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f2aab15d3d5]
-  ./test_progs[0x407ebc]
-  [1]    1988412 segmentation fault (core dumped)  sudo ./test_progs -t mmap
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-Unfortunately, glibc's symbolization support is unable to symbolize static
-functions, only global ones will be present in stack trace. But it's still a
-step forward without adding extra libraries to get a better symbolization.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- tools/testing/selftests/bpf/Makefile     |  2 +-
- tools/testing/selftests/bpf/test_progs.c | 25 ++++++++++++++++++++++++
- 2 files changed, 26 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h | 2 +-
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 2a583196fa51..50c63c21e6fd 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -20,7 +20,7 @@ CLANG		?= clang
- LLC		?= llc
- LLVM_OBJCOPY	?= llvm-objcopy
- BPF_GCC		?= $(shell command -v bpf-gcc;)
--CFLAGS += -g -Wall -O2 $(GENFLAGS) -I$(CURDIR) -I$(APIDIR)		\
-+CFLAGS += -g -rdynamic -Wall -O2 $(GENFLAGS) -I$(CURDIR) -I$(APIDIR)	\
- 	  -I$(INCLUDE_DIR) -I$(GENDIR) -I$(LIBDIR) -I$(TOOLSINCDIR)	\
- 	  -Dbpf_prog_load=bpf_prog_test_load				\
- 	  -Dbpf_load_program=bpf_test_load_program
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index bab1e6f1d8f1..a969c77e9456 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -6,6 +6,8 @@
- #include "bpf_rlimit.h"
- #include <argp.h>
- #include <string.h>
-+#include <signal.h>
-+#include <execinfo.h> /* backtrace */
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
+index 2721f1f1ab42..0f0e16f9afc0 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_ppe.h
+@@ -92,7 +92,7 @@ struct ppe_common_cb {
+ 	u8 comm_index;   /*ppe_common index*/
  
- /* defined in test_progs.h */
- struct test_env env = {};
-@@ -617,6 +619,23 @@ int cd_flavor_subdir(const char *exec_name)
- 	return chdir(flavor);
- }
+ 	u32 ppe_num;
+-	struct hns_ppe_cb ppe_cb[0];
++	struct hns_ppe_cb ppe_cb[];
  
-+#define MAX_BACKTRACE_SZ 128
-+void crash_handler(int signum)
-+{
-+	void *bt[MAX_BACKTRACE_SZ];
-+	size_t sz;
-+
-+	sz = backtrace(bt, ARRAY_SIZE(bt));
-+
-+	if (env.test)
-+		dump_test_log(env.test, true);
-+	if (env.stdout)
-+		stdio_restore();
-+
-+	fprintf(stderr, "Caught signal #%d!\nStack trace:\n", signum);
-+	backtrace_symbols_fd(bt, sz, STDERR_FILENO);
-+}
-+
- int main(int argc, char **argv)
- {
- 	static const struct argp argp = {
-@@ -624,8 +643,14 @@ int main(int argc, char **argv)
- 		.parser = parse_arg,
- 		.doc = argp_program_doc,
- 	};
-+	struct sigaction sigact = {
-+		.sa_handler = crash_handler,
-+		.sa_flags = SA_RESETHAND,
-+	};
- 	int err, i;
+ };
  
-+	sigaction(SIGSEGV, &sigact, NULL);
-+
- 	err = argp_parse(&argp, argc, argv, 0, NULL, &env);
- 	if (err)
- 		return err;
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
+index 3741befb914e..a9f805925699 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_rcb.h
+@@ -108,7 +108,7 @@ struct rcb_common_cb {
+ 	u32 ring_num;
+ 	u32 desc_num; /*  desc num per queue*/
+ 
+-	struct ring_pair_cb ring_pair_cb[0];
++	struct ring_pair_cb ring_pair_cb[];
+ };
+ 
+ int hns_rcb_buf_size2type(u32 buf_size);
 -- 
-2.17.1
+2.25.0
 
