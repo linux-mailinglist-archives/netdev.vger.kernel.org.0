@@ -2,88 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5771416F029
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DB616F040
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731817AbgBYUeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 15:34:44 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:58941 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728483AbgBYUen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 15:34:43 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1j6gue-0006Tm-J7; Tue, 25 Feb 2020 21:34:40 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad] (unknown [IPv6:2a03:f580:87bc:d400:6ccf:3365:1a9c:55ad])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 954994C09BC;
-        Tue, 25 Feb 2020 20:34:39 +0000 (UTC)
-Subject: Re: [RFC] can: af_can: can_rcv() canfd_rcv(): Fix access of
- uninitialized memory or out of bounds
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        "linux-can @ vger . kernel . org" <linux-can@vger.kernel.org>
-Cc:     kuba@kernel.org, kernel@pengutronix.de, netdev@vger.kernel.org
-References: <20200224094100.2431262-1-mkl@pengutronix.de>
- <b3ef9c62-2436-749a-4cf2-1faf55d8b542@hartkopp.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <c280d2e0-30a2-eb67-90ee-4b7cef7c746b@pengutronix.de>
-Date:   Tue, 25 Feb 2020 21:34:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731859AbgBYUjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 15:39:04 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:33928 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728119AbgBYUjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 15:39:04 -0500
+Received: by mail-pj1-f68.google.com with SMTP id f2so1368892pjq.1
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 12:39:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0sQIbI7dBNLv69VANmscf3kTolWr8JxCUdMFG96rkYc=;
+        b=nN7tdWIfojfI4nX3ebOyntvIy8OKYbZurdDqGQAyiHFxI46/v9P+hmaS0jgFBfcMct
+         WJqdMxLE1ImzscclDZMarEfQ4xO4EoSIaDMbXxJcksfAbndg4mz09YDkIixPe8vf5Tf8
+         8H1PTrd2IV3Ab8xP6+1qNdffBgqfWe8JF3JOqBtQDE3D/y02jjOuo8KqXSNM9RCe5+NG
+         33shaNKZrUdwQVfbxnmB1Hf16hysNK90AY9zCMI7kT158G/P2k568mOcXyxprgNCQHUE
+         jn0dNJ+wTsjmQN27uvVqq3yx5n5JsB9gQRaYSe+5Z8sYVxXYdtLrJnfE5/drHo+LsbSB
+         zWvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0sQIbI7dBNLv69VANmscf3kTolWr8JxCUdMFG96rkYc=;
+        b=oVZWYmrW1zYCaKYc3UzvenjttEquUh5SAcECkvhGjJjJ85dm1HYwPEbE+I/ZO3vHb9
+         nGVyq3ezoYvudGkMhJ5OnIDPJ68BkgXv5tEk2zJCl/MBWeiab8c2pECzpuOhOHjBDMIX
+         AMp4VUz6HM2xPtqEbu7+HGxV1ZraE1g2wfZCnz5V9yyRJKSKZxTgDXvQsbQx3/wJSoWE
+         53pPqH5fCt6MVKlzcaq0sBP+fBShpiBXfaYopyBkCjUChPNGvgj7JHYFeDB+q+AWOiTX
+         BI/E2ZZBMlttb5siIkrBfs+Ce04cAYW+bKEziXHHHV1eaKCNrXB/lo7h0W7TQWMgXRu4
+         NkpA==
+X-Gm-Message-State: APjAAAXR5lHTL2pb0vbFZ8OiV3J75KT5+ggNLg/BPUrvjksIGj8go1vi
+        3q3dyOnT3obBf8ImyE/WyYU=
+X-Google-Smtp-Source: APXvYqzYlrfnti+Ws8CI6bIVyArXSp4kEjzCyWXGniVa4VoiZExo0DN5xeFEe8EjLAcn83QcxOylhA==
+X-Received: by 2002:a17:90a:9416:: with SMTP id r22mr995925pjo.2.1582663142772;
+        Tue, 25 Feb 2020 12:39:02 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
+        by smtp.gmail.com with ESMTPSA id e30sm9641pga.6.2020.02.25.12.39.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 12:39:02 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, soheil@google.com, edumazet@google.com,
+        willemb@google.com
+Subject: [PATCH v2 net-next] tcp-zerocopy: Update returned getsockopt() optlen.
+Date:   Tue, 25 Feb 2020 12:38:54 -0800
+Message-Id: <20200225203854.184524-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
 MIME-Version: 1.0
-In-Reply-To: <b3ef9c62-2436-749a-4cf2-1faf55d8b542@hartkopp.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/20 8:52 PM, Oliver Hartkopp wrote:
-> Btw. do you take this patch via your tree too?
-> https://marc.info/?l=linux-can&m=158039108004683
+From: Arjun Roy <arjunroy@google.com>
 
-I've just given my Acked-by and ask for the preferred way of upstreaming.
+TCP receive zerocopy currently does not update the returned optlen for
+getsockopt() if the user passed in a larger than expected value.
+Thus, userspace cannot properly determine if all the fields are set in
+the passed-in struct. This patch sets the optlen for this case before
+returning, in keeping with the expected operation of getsockopt().
 
-Marc
+Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive zerocopy.")
+Signed-off-by: Arjun Roy <arjunroy@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 
+---
+ net/ipv4/tcp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 600deb39f17de..9644047262ece 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4124,8 +4124,11 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ 			return -EFAULT;
+ 		if (len < offsetofend(struct tcp_zerocopy_receive, length))
+ 			return -EINVAL;
+-		if (len > sizeof(zc))
++		if (len > sizeof(zc)) {
+ 			len = sizeof(zc);
++			if (put_user(len, optlen))
++				return -EFAULT;
++		}
+ 		if (copy_from_user(&zc, optval, len))
+ 			return -EFAULT;
+ 		lock_sock(sk);
 -- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+2.25.0.265.gbab2e86ba0-goog
+
