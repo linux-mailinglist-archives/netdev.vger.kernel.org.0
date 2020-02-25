@@ -2,132 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FF716F2E9
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4256B16F2F0
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 00:09:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729400AbgBYXFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 18:05:03 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:52344 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728806AbgBYXFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:05:02 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1j6jG4-00036P-UY; Tue, 25 Feb 2020 23:04:57 +0000
-To:     Martin Varghese <martin.varghese@nokia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: net: UDP tunnel encapsulation module for tunnelling different
-Message-ID: <6a8cabb8-e371-d119-c2e6-d495eca016b7@canonical.com>
-Date:   Tue, 25 Feb 2020 23:04:56 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1729297AbgBYXIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 18:08:55 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:37647 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726827AbgBYXIz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 18:08:55 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DF04622FE5;
+        Wed, 26 Feb 2020 00:08:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1582672132;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bBQCpWzOT+jCTvKUq+eGkBcAmAFVVUcn5WV8ncy2QlE=;
+        b=N61VRDYWpZK8b1WQH8wA+EgWLWO1wXOY4MuiaNGsbVV116f2DKquii8QhBLwp6aYf7p99e
+        ucO88t0RlEaMdXUjS5jH0rmt5fyjU9tpMUKoi/3O8iGjFe+i5g7G9rTZMKEoKlGK85J5Q+
+        LKwpq2j3oefL/en6JlLT0V1KRCXC6Us=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [RFC PATCH 0/2] AT8031 PHY timestamping support
+Date:   Wed, 26 Feb 2020 00:08:17 +0100
+Message-Id: <20200225230819.7325-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+X-Rspamd-Server: web
+X-Spam-Status: Yes, score=6.40
+X-Spam-Score: 6.40
+X-Rspamd-Queue-Id: DF04622FE5
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         NEURAL_SPAM(0.00)[1.036];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[9];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c::/31, country:DE];
+         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,walle.cc];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patchset is the current state of my work for adding PHY timestamping
+support. I just wanted to post this to the mailinglist before I never do
+it. Maybe its a starting point for other people. That being said, I
+wouldn't mind comments ;) The code basically works but there are three
+major caveats:
 
-Static analysis with Coverity detected an issue in function
-bareudp_xmit_skb with the return of an uninitialized value in variable
-err in the following commit:
+ (1) The reading of timestamps via MDIO sometimes return wrong values. What
+     I see is that a part of the timestamp corresponds to the new timestamp
+	 while another part still contains old values. Thus at the moment, I'm
+	 reading the registers twice. I don't know if the reading actually
+	 affects the update of the timestamp or the different timing (my MDIO
+	 bus is rather slow, so reading the timestamp a second time take some
+	 amount of time; but I've also tested with some delays and it didn't
+	 had any effects). There is also no possibility to read the timestamp
+	 atomically :(
+ (2) It seems to be the case that the PHY generates an interrupt on every
+     PTP message, eg. even if it is not an event message meaning that a new
+	 timestamp is ready. Thus we might read the timestamp too often.
+ (3) Sometimes the TX timestamp is missing. It seems that in this case the
+     PHY doesn't generate an interrupt. If you check for any RX_PTP/TX_PTP
+	 interrupt pending and then read both timestamps (remember that
+	 get_rxts/get_txts checks that the timestamp has actually changed)
+	 it seems to work though.
 
-commit 571912c69f0ed731bd1e071ade9dc7ca4aa52065
-Author: Martin Varghese <martin.varghese@nokia.com>
-Date:   Mon Feb 24 10:57:50 2020 +0530
+	   if (mask & (AT8031_INTR_RX_PTP | AT8031_INTR_TX_PTP)) {
+			   at8031_get_rxts(phydev);
+			   at8031_get_txts(phydev);
+	   }
 
-    net: UDP tunnel encapsulation module for tunnelling different
-protocols like MPLS, IP, NSH etc.
+Please note that the patch doesn't contain the code above. Replacing the
+IRQ handling with the code make PTP actually work, but I'm not satisfied
+with that solution, esp. reading the timestamps multiple times over MDIO.
+So currently I'm stuck and unfortunately, I'm not able to get support from
+Atheros/our FAE.
 
-The analysis is as follows:
+The PHY also supports appending the timestamp to the actual ethernet frame,
+but this seems to only work when the PHY is connected via RGMII. I've never
+get it to work with a SGMII connection.
 
-var_decl: Declaring variable err without initializer.
+The first patch might actually be useful outside of this series. See also
+  https://lore.kernel.org/netdev/bd47f8e1ebc04fa98856ed8d89b91419@walle.cc/
 
-301        int err;
-302
+-michael
 
-...
+Michael Walle (2):
+  net: phy: let the driver register its own IRQ handler
+  net: phy: at803x: add PTP support for AR8031
 
-344 free_dst:
-345        dst_release(&rt->dst);
+ drivers/net/phy/Kconfig      |  17 +
+ drivers/net/phy/at803x.c     | 879 ++++++++++++++++++++++++++++++++++-
+ drivers/net/phy/phy.c        |  15 +
+ drivers/net/phy/phy_device.c |   6 +-
+ include/linux/phy.h          |   2 +
+ 5 files changed, 892 insertions(+), 27 deletions(-)
 
-Uninitialized scalar variable (UNINIT)
-uninit_use: Using uninitialized value err.
+-- 
+2.20.1
 
-346        return err;
-347 }
-
-and also in function bareudp6_xmit_skb:
-
-var_decl: Declaring variable err without initializer.
-
-364        int err;
-365
-
-...
-
-404
-405 free_dst:
-406        dst_release(dst);
-
-Uninitialized scalar variable (UNINIT)
-uninit_use: Using uninitialized value err.
-
-407        return err;
-408 }
-
-Colin
