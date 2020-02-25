@@ -2,172 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3256D16C064
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:10:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E25116C06C
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 13:10:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730671AbgBYMJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 07:09:39 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36260 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729458AbgBYMJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:09:38 -0500
-Received: by mail-pg1-f193.google.com with SMTP id d9so6805809pgu.3;
-        Tue, 25 Feb 2020 04:09:37 -0800 (PST)
+        id S1729301AbgBYMKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 07:10:30 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33202 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728975AbgBYMKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 07:10:30 -0500
+Received: by mail-wr1-f65.google.com with SMTP id u6so14477191wrt.0
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 04:10:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Mqwfc2KPcVYiVKPkQxYVO7vDegBEMXoJ1E0hLY/tEvs=;
-        b=QvpUiAYt/81/K3o5p9SEGp2S+oMZT+pF5G/IgKwJ3lkCNIGGhE/nqbrDprw6OJGudw
-         DUsN/CNkCmL2wqEET9mky2iuKALEg4gRZPHXjbe4mDJGEFhJ8ZlmL+35JSi4sbKu7+ym
-         bXdvae1ucylvR/2yo/6NFm7kVpAx2Ft2uX2ENpIxVC/i2YISkNdFAgUAGz/5Ypm36D9D
-         LBpyOYtWig9hLKlZ09ncVhBxPnKYi2nK6R4tGVHmUkvyzlngfHidSMEFW5Hzx4tGTi/h
-         OWGfE8fn6cQTUGLapsaPo39dImC5ITRM7AsE00N4g2ZNcVba4ZwRXvZQy+IondWafLuJ
-         uLcw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+vf7vFy32leZxkg71Rv8R4R2GOrwOOUiymQNeS6WVSI=;
+        b=06PkSJnH2FZx1nCC/x5Ek3romIGn5geHaYIAL2P10gLlY/uzRXVTk/4P7RxmEWHG1G
+         NaJu+MMjA0ydvC6EYmyyTjrwXagaCw+8ofMLtvjyTNln/3qwKE1xy65o6W5slaB5MId7
+         z0XC3uLBtNXJBv0aRP2avu3LRihZHixIPxdI2Kzkf+6K6osdYoYkmoccWS2hf0zha8dL
+         ZYkmMQQzZ/oyrEMVqjg3L64N8ymngGbt3Qaq9XZb2Fn5gTxG1j1IEdlGK9YxFv9c15XD
+         4Ael8SXcpL6M8ZfjzcsK7CEsh6+DxeL5nJjJgRGoHFzKoDu6auTRPB/KmqAK40gTHPfg
+         DsIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Mqwfc2KPcVYiVKPkQxYVO7vDegBEMXoJ1E0hLY/tEvs=;
-        b=SEADDwq04uNK5AGDop93xJlxHlS3XW3J+/Uym/0H7J12Htbb1tyZd+ldL0CRDat21X
-         6vwsCvMKoR4vE3koxi5ZivAOuyC/ZWkzOX5XbSmlvEVNpiYaY2uck/TFHz9iyV4RuZVy
-         uJh6KCQvzK8mxNxkH/1FbU8ezWnlH9aZcSQdyPCzL6pHYLfHvPGlGMRjs2HVEiTjXmeo
-         bmy+ZdLA2kmlYBiCTlM5EP17oGsckoNpfVBN2EBrmN13xa95w043QCXUvKf9/p7oJsrw
-         mZOphkhNEdwiMZ6hU6hLpl+FlGVsub+6JbQI2OaN/ZiW8vg8PUpWYubH/7PvcDvWnzHF
-         u6ng==
-X-Gm-Message-State: APjAAAUOshflN2igIfDHbeV+SgG31NL9BPQS+ogEOApCS8arTujS6lvn
-        Yt/XNaO4Z1PbTd7ST4hz/A==
-X-Google-Smtp-Source: APXvYqw2IDOcub20k/JBZx9cp2o1QdYEKf3jJ3rBWjrY04ClE4F+LPbgluh8uCOp28IxecK5bd73nA==
-X-Received: by 2002:aa7:8587:: with SMTP id w7mr57040697pfn.39.1582632577377;
-        Tue, 25 Feb 2020 04:09:37 -0800 (PST)
-Received: from madhuparna-HP-Notebook ([2402:3a80:1ee1:f355:e8e5:803b:cde8:bccc])
-        by smtp.gmail.com with ESMTPSA id e6sm16685944pfh.32.2020.02.25.04.09.13
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 25 Feb 2020 04:09:36 -0800 (PST)
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
-Date:   Tue, 25 Feb 2020 17:39:08 +0530
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     madhuparnabhowmik10@gmail.com, jiri@mellanox.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@joelfernandes.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        frextrite@gmail.com, paulmck@kernel.org
-Subject: Re: [PATCH] net: core: devlink.c: Use built-in RCU list checking
-Message-ID: <20200225120908.GA29836@madhuparna-HP-Notebook>
-References: <20200224093013.25700-1-madhuparnabhowmik10@gmail.com>
- <20200224105209.GB16270@nanopsycho>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+vf7vFy32leZxkg71Rv8R4R2GOrwOOUiymQNeS6WVSI=;
+        b=Gh5xPohV2hncK1mFle3Osxijf0TICr/8RXLaXa3okVLOl23HM7A/az7WvVuzj09nxk
+         5rSUgWtj7/QEIBp0i0RMQHEFYxC3JtzpVdEVNDnj/qmpfy/CJljZ/2FDq/XtowlUp5JR
+         wtud9sB+/uZkdI5dRz3tgS4Y9Lal6wag0QRVC7ByBwT6dklXT/34dAVe1vohQcZGk+Tp
+         vdyHcCiUQ6FyAay1cSHo+6PZ6wCXhlAaqxx7l/YkL0//c/prdSN9HrB4lgKQbD3vnQhG
+         qgrOu+ej8FWc2VnUHNDMYRu5cftn3dzxEViJ5o18vJ8ZGZSx2mWQAjxQleV/GVyCiQyK
+         ex/Q==
+X-Gm-Message-State: APjAAAUevAbfF+AohHlLCNTAcxVrr3Hh5wqOqyXwEcvmgyr3zZ2xppVW
+        i4Hxwd54hUauetWLbHHWQEcZruoZ/v0=
+X-Google-Smtp-Source: APXvYqwklqACVlTE19bm6aSF4tHd7IzANxCHuuSNEIWyYYMxnnkqqxqSFwkHESzEGyZyydnRrHmpTA==
+X-Received: by 2002:adf:f787:: with SMTP id q7mr72914452wrp.297.1582632627798;
+        Tue, 25 Feb 2020 04:10:27 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id a7sm16745561wrm.29.2020.02.25.04.10.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 04:10:24 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jeffrey.t.kirsher@intel.com,
+        intel-wired-lan@lists.osuosl.org
+Subject: [patch net-next] iavf: use tc_cls_can_offload_basic() instead of chain check
+Date:   Tue, 25 Feb 2020 13:10:23 +0100
+Message-Id: <20200225121023.6011-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200224105209.GB16270@nanopsycho>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 11:52:09AM +0100, Jiri Pirko wrote:
-> Mon, Feb 24, 2020 at 10:30:13AM CET, madhuparnabhowmik10@gmail.com wrote:
-> >From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> >
-> >list_for_each_entry_rcu() has built-in RCU and lock checking.
-> >
-> >Pass cond argument to list_for_each_entry_rcu() to silence
-> >false lockdep warning when CONFIG_PROVE_RCU_LIST is enabled.
-> >
-> >The devlink->lock is held when devlink_dpipe_table_find()
-> >is called in non RCU read side section. Therefore, pass struct devlink
-> >to devlink_dpipe_table_find() for lockdep checking.
-> >
-> >Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> >---
-> > net/core/devlink.c | 18 +++++++++---------
-> > 1 file changed, 9 insertions(+), 9 deletions(-)
-> >
-> >diff --git a/net/core/devlink.c b/net/core/devlink.c
-> >index e82750bdc496..dadf5fa79bb1 100644
-> >--- a/net/core/devlink.c
-> >+++ b/net/core/devlink.c
-> >@@ -2103,11 +2103,11 @@ static int devlink_dpipe_entry_put(struct sk_buff *skb,
-> > 
-> > static struct devlink_dpipe_table *
-> > devlink_dpipe_table_find(struct list_head *dpipe_tables,
-> >-			 const char *table_name)
-> >+			 const char *table_name, struct devlink *devlink)
-> > {
-> > 	struct devlink_dpipe_table *table;
-> >-
-> >-	list_for_each_entry_rcu(table, dpipe_tables, list) {
-> >+	list_for_each_entry_rcu(table, dpipe_tables, list,
-> >+				lockdep_is_held(&devlink->lock)) {
-> > 		if (!strcmp(table->name, table_name))
-> > 			return table;
-> > 	}
-> >@@ -2226,7 +2226,7 @@ static int devlink_nl_cmd_dpipe_entries_get(struct sk_buff *skb,
-> > 
-> > 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
-> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-> >-					 table_name);
-> >+					 table_name, devlink);
-> > 	if (!table)
-> > 		return -EINVAL;
-> > 
-> >@@ -2382,7 +2382,7 @@ static int devlink_dpipe_table_counters_set(struct devlink *devlink,
-> > 	struct devlink_dpipe_table *table;
-> > 
-> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-> >-					 table_name);
-> >+					 table_name, devlink);
-> > 	if (!table)
-> > 		return -EINVAL;
-> > 
-> >@@ -6814,7 +6814,7 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
-> > 
-> > 	rcu_read_lock();
-> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-> >-					 table_name);
-> >+					 table_name, devlink);
-> > 	enabled = false;
-> > 	if (table)
-> > 		enabled = table->counters_enabled;
-> >@@ -6845,7 +6845,7 @@ int devlink_dpipe_table_register(struct devlink *devlink,
-> > 
-> > 	mutex_lock(&devlink->lock);
-> > 
-> >-	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name)) {
-> >+	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name, devlink)) {
-> 
-> Run scripts/checkpatch.pl on your patch. You are breaking 80-cols limit
-> here.
->
-Sure, I will take care of this and send the updated patch soon.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Thank you,
-Madhuparna
-> Otherwise, the patch looks fine.
-> 
-> > 		err = -EEXIST;
-> > 		goto unlock;
-> > 	}
-> >@@ -6881,7 +6881,7 @@ void devlink_dpipe_table_unregister(struct devlink *devlink,
-> > 
-> > 	mutex_lock(&devlink->lock);
-> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-> >-					 table_name);
-> >+					 table_name, devlink);
-> > 	if (!table)
-> > 		goto unlock;
-> > 	list_del_rcu(&table->list);
-> >@@ -7038,7 +7038,7 @@ int devlink_dpipe_table_resource_set(struct devlink *devlink,
-> > 
-> > 	mutex_lock(&devlink->lock);
-> > 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-> >-					 table_name);
-> >+					 table_name, devlink);
-> > 	if (!table) {
-> > 		err = -EINVAL;
-> > 		goto out;
-> >-- 
-> >2.17.1
-> >
+Looks like the iavf code actually experienced a race condition, when a
+developer took code before the check for chain 0 was put to helper.
+So use tc_cls_can_offload_basic() helper instead of direct check and
+move the check to _cb() so this is similar to i40e code.
+
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+This was originally part of "net: allow user specify TC filter HW stats type"
+patchset, but it is no longer related after the requested changes.
+Sending separatelly.
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 62fe56ddcb6e..8bc0d287d025 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -3061,9 +3061,6 @@ static int iavf_delete_clsflower(struct iavf_adapter *adapter,
+ static int iavf_setup_tc_cls_flower(struct iavf_adapter *adapter,
+ 				    struct flow_cls_offload *cls_flower)
+ {
+-	if (cls_flower->common.chain_index)
+-		return -EOPNOTSUPP;
+-
+ 	switch (cls_flower->command) {
+ 	case FLOW_CLS_REPLACE:
+ 		return iavf_configure_clsflower(adapter, cls_flower);
+@@ -3087,6 +3084,11 @@ static int iavf_setup_tc_cls_flower(struct iavf_adapter *adapter,
+ static int iavf_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ 				  void *cb_priv)
+ {
++	struct iavf_adapter *adapter = cb_priv;
++
++	if (!tc_cls_can_offload_basic(adapter->netdev, type_data))
++		return -EOPNOTSUPP;
++
+ 	switch (type) {
+ 	case TC_SETUP_CLSFLOWER:
+ 		return iavf_setup_tc_cls_flower(cb_priv, type_data);
+-- 
+2.21.1
+
