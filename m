@@ -2,79 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE12216F0AD
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5EF716F0B2
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 21:57:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729483AbgBYUyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 15:54:45 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:34419 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728714AbgBYUyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 15:54:45 -0500
-Received: by mail-wr1-f65.google.com with SMTP id z15so357731wrl.1
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 12:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=28TDunclJ0ED67dbx8CkZqbh/7wdN9qJRWSOtwdsi1s=;
-        b=UoHTD/6+hk2QYtP059qZLw3RRZ16mc3CjCh2ZZwsu0a7xHxNMua3zoubg3FnJlMpfT
-         h9ft7NT72oICgPc9WavKnXNoQg4dLsDOs92lfQDDJOEaG24d44X339XfYqFwcRKl1+hz
-         FaPA+pFgOHmZtoFQij9N6yoY6Gloe1pEwStUk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=28TDunclJ0ED67dbx8CkZqbh/7wdN9qJRWSOtwdsi1s=;
-        b=Nrkd2gxHtol+rmFRMWW3SLEVdBB9WhYizsgkQiyl20aw4zG3VhuPhQSOv5mfeu/U21
-         anuwSDdBLuQgbMMrcs/OU33g79ycnHZNdfv7M81iS9gHQ9acJvC4ViY1d1JlkMf9sDjU
-         UCzk4xNTyDstE+UmHYql2MfTCKq4Hk4CECFMrQevJMaKfV9tpvdqttlgsCMHuVLSw7na
-         dbJ8kcEqMI8yPVJqneAhuKkTuwqE8t55n8Dclt5pRXuWL2MGwrvSrRE/ElnjKBb5/BkZ
-         EercpuzaRDQyYvtGdNfrcQmPwsd8ikCCEUtlIKuv0a0rJCYNRV9NCcThfM1VjMvy00C1
-         QnKA==
-X-Gm-Message-State: APjAAAXLxxN1IYXIhEYL4ANwa8+gsAasZzkesbT08IRhDQ/gHpXqHwBL
-        MdY/sAunZ02XOMkuc1AIY8Z/EQ==
-X-Google-Smtp-Source: APXvYqxs5Dht7wCnHgNaDyHKMXo95ql8ZEwhG4lxizSll22ZJBzPc0J3TZ9jyuOGIAHL1lrfaQwGNg==
-X-Received: by 2002:adf:de0b:: with SMTP id b11mr932096wrm.89.1582664082855;
-        Tue, 25 Feb 2020 12:54:42 -0800 (PST)
-Received: from lbrmn-lnxub113.broadcom.net ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id t13sm104852wrw.19.2020.02.25.12.54.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 12:54:42 -0800 (PST)
-From:   Scott Branden <scott.branden@broadcom.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        Scott Branden <scott.branden@broadcom.com>
-Subject: [PATCH] scripts/bpf: switch to more portable python3 shebang
-Date:   Tue, 25 Feb 2020 12:54:26 -0800
-Message-Id: <20200225205426.6975-1-scott.branden@broadcom.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728979AbgBYU52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 15:57:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728162AbgBYU52 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 15:57:28 -0500
+Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7ACF22176D;
+        Tue, 25 Feb 2020 20:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582664247;
+        bh=Rypr7ZcCh3/KMa7zUtTWHxN5tpwd6oUsx8Lx4vdqwMk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=saTPPq1IDMzPUuwqxy3ZuO7f+3vh/70NVZ0l1VhP3hk7OqaweW93ZLKtzBrT18SjH
+         10l061LcAZN51AIZTBJ6w9HmtBuH4sTJDFIkV/1Bn0DyWQHP9+QrwNae+mdvAqGZoL
+         Fu6UaLjJ2+1p1nAM411ujb0LsepAurPQ6kmQm+k8=
+Date:   Tue, 25 Feb 2020 14:57:25 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v3 2/8] PCI: add pci_status_get_and_clear_errors
+Message-ID: <20200225205725.GA197467@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45054c7d-cc48-2be0-11fa-4c3ffce8fdd7@gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change "/usr/bin/python3" to "/usr/bin/env python3" for
-more portable solution in bpf_helpers_doc.py.
+On Tue, Feb 25, 2020 at 03:04:23PM +0100, Heiner Kallweit wrote:
+> Few drivers use the following code sequence:
 
-Signed-off-by: Scott Branden <scott.branden@broadcom.com>
----
- scripts/bpf_helpers_doc.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This reads like "Not very many drivers".  I think "Several drivers"
+would capture the sense of this better.
 
-diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-index 90baf7d70911..cebed6fb5bbb 100755
---- a/scripts/bpf_helpers_doc.py
-+++ b/scripts/bpf_helpers_doc.py
-@@ -1,4 +1,4 @@
--#!/usr/bin/python3
-+#!/usr/bin/env python3
- # SPDX-License-Identifier: GPL-2.0-only
- #
- # Copyright (C) 2018-2019 Netronome Systems, Inc.
--- 
-2.17.1
-
+> 1. Read PCI_STATUS
+> 2. Mask out non-error bits
+> 3. Action based on error bits set
+> 4. Write back set error bits to clear them
+> 
+> As this is a repeated pattern, add a helper to the PCI core.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/pci/pci.c   | 23 +++++++++++++++++++++++
+>  include/linux/pci.h |  1 +
+>  2 files changed, 24 insertions(+)
+> 
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index d828ca835..c16b0ba2a 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -173,6 +173,29 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
+>  
+> +/**
+> + * pci_status_get_and_clear_errors - return and clear error bits in PCI_STATUS
+> + * @pdev: the PCI device
+> + *
+> + * Returns error bits set in PCI_STATUS and clears them.
+> + */
+> +int pci_status_get_and_clear_errors(struct pci_dev *pdev)
+> +{
+> +	u16 status;
+> +	int ret;
+> +
+> +	ret = pci_read_config_word(pdev, PCI_STATUS, &status);
+> +	if (ret != PCIBIOS_SUCCESSFUL)
+> +		return -EIO;
+> +
+> +	status &= PCI_STATUS_ERROR_BITS;
+> +	if (status)
+> +		pci_write_config_word(pdev, PCI_STATUS, status);
+> +
+> +	return status;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_status_get_and_clear_errors);
+> +
+>  #ifdef CONFIG_HAS_IOMEM
+>  void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
+>  {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 3840a541a..7a75aae04 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1203,6 +1203,7 @@ int pci_select_bars(struct pci_dev *dev, unsigned long flags);
+>  bool pci_device_is_present(struct pci_dev *pdev);
+>  void pci_ignore_hotplug(struct pci_dev *dev);
+>  struct pci_dev *pci_real_dma_dev(struct pci_dev *dev);
+> +int pci_status_get_and_clear_errors(struct pci_dev *pdev);
+>  
+>  int __printf(6, 7) pci_request_irq(struct pci_dev *dev, unsigned int nr,
+>  		irq_handler_t handler, irq_handler_t thread_fn, void *dev_id,
+> -- 
+> 2.25.1
+> 
+> 
+> 
+> 
