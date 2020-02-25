@@ -2,143 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 006D816B933
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 06:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88CA216B937
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 06:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726425AbgBYFlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 00:41:31 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:40182 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbgBYFlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 00:41:31 -0500
-Received: by mail-pj1-f65.google.com with SMTP id 12so781647pjb.5;
-        Mon, 24 Feb 2020 21:41:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gLVzYUKvFkdnFdGrFfL5ckRC9d9XLzszDBemhFoCXos=;
-        b=s5Ja+WQrx0bCQ7dZ7FgKMjgQo/QP0DD95K3BOk4egXtL/UeLMvIy2jpS7tx5TsAVVJ
-         aHy/bGrbvj78nC86Nyt+E/I2nmXjh4DHDl/eHROqVjMsC2D2+vG/CH2waM2Fh4cONghZ
-         WdiDspcvDT5PQ0nKNyZnXgoZqB9xy6lYI3HNWKQzA0EOqtOTEoSForwxNvq6DJ/5JqbR
-         E1vsmiWXl54bGwymCrXGFoeX08Y+n0ASpt4lt11VLWRp9R9aH9v61HIqSXmjQQZrgesg
-         Wg5TuHJUcbIh9it/L4yqZVa7sIklAWBBpV8N04jOhzSejJlj2dzAOoC3qGZqNXr9hh6V
-         tv9g==
+        id S1726130AbgBYFnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 00:43:15 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:40657 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbgBYFnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 00:43:15 -0500
+Received: by mail-il1-f198.google.com with SMTP id m18so23051587ill.7
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 21:43:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gLVzYUKvFkdnFdGrFfL5ckRC9d9XLzszDBemhFoCXos=;
-        b=hSGyrk/ST4/fR6fjhWqB3HV/aSt6nebXASj+e4MsrmLcMYfi4I8WYlwHQ9r4Tjph44
-         Sxws8R9r5dk9KUA2bNJqK8ELOw1ye277huc12PvyoUMsBTrV95EUPNC3Yc1QGzjthnSS
-         qmIJfoEbCsU/ZaYC72b5wmH8Ow3/s8sFHxnwxfvJ69F6J4utZ+UTY6siVztXS8rWmvcc
-         FB3fSCy5uvIwli3dQvX4aX7wQcMOccCIJLToZgNWI/OYJHb+moc/4PBiTYWrkbnI6Vk8
-         0cvU3IQKI4/DHY+7f7B2cetJ77lSWlgybssPgem97I1Vrk1GgJLJZh/GAsSg0yz+PDYD
-         pvEQ==
-X-Gm-Message-State: APjAAAV9FLWpnrfbOXrSccnGNiykQhOjLOeVga6x4V20Auq4XoAIqWnj
-        2W/W0zlrx+eUcU0ameMVY8g=
-X-Google-Smtp-Source: APXvYqyLQD/uoznzJK80E87XPvvlBxI2esMHs4Lc0c2FiNFhE1JCzQiQ97R/mITRAGLVI0hBkdP8jg==
-X-Received: by 2002:a17:902:b417:: with SMTP id x23mr2630326plr.9.1582609290508;
-        Mon, 24 Feb 2020 21:41:30 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:3b30])
-        by smtp.gmail.com with ESMTPSA id t11sm1382841pjo.21.2020.02.24.21.41.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Feb 2020 21:41:29 -0800 (PST)
-Date:   Mon, 24 Feb 2020 21:41:27 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        KP Singh <kpsingh@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        James Morris <jmorris@namei.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 3/8] bpf: lsm: provide attachment points for
- BPF LSM programs
-Message-ID: <20200225054125.dttrc3fvllzu4mx5@ast-mbp>
-References: <20200220175250.10795-1-kpsingh@chromium.org>
- <20200220175250.10795-4-kpsingh@chromium.org>
- <0ef26943-9619-3736-4452-fec536a8d169@schaufler-ca.com>
- <202002211946.A23A987@keescook>
- <20200223220833.wdhonzvven7payaw@ast-mbp>
- <c5c67ece-e5c1-9e8f-3a2b-60d8d002c894@schaufler-ca.com>
- <20200224171305.GA21886@chromium.org>
- <00c216e1-bcfd-b7b1-5444-2a2dfa69190b@schaufler-ca.com>
- <202002241136.C4F9F7DFF@keescook>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=hMFIzaD34cEyiy4pe9ZVgsYgncv2dmIkFd8NRXrfNIw=;
+        b=ar0BZEcPR5Br4GqWEFUtrCRXPemJV1afjqCwvis1P4+FV4pZ3zEQ+OvUsiR7bU9Omk
+         dQNBs0VrdSKz+epKlX7LCx+jlsn/D0WJZfCuVGTwF4/KIqGXUamcJ3HUv01nFvsla1gH
+         K2k6uDvMRycT4vtV05t4RnT3aF7k/0Ik9oxO+u00lsCJiiH2jBOy4ij5AuhI3gaFJIww
+         uU0pYM6iljeqOQo/ToFQQzYwQSvLDQR8OiVmEUoiqsmjwCQOyoV9gwzWkbbWzxInDHSv
+         dri1yb7H6P32OqNDzrGgnV1K3Odsk50PvaN9yz0wq2Q4sIbNAFzAiQMXqePZDXot3zlP
+         OMaQ==
+X-Gm-Message-State: APjAAAWn+vqzTX9UFwiPWXIVTVswsPaQZgYW9nNF1H90v2Tj+zspeWSr
+        CTI/cCs4JkQnhgij0isqe/5VKeoZJi/BI69ppuSXwnYK7wuA
+X-Google-Smtp-Source: APXvYqyX+8bh4pqGwUyfTDN7ausdfx6o3oaqgOKmF9c/aUSjuAI8sb9sMQDpMWqe/nIzsmjZWo8ldZYW7CfFCUz71Ymm9LWtZcy3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202002241136.C4F9F7DFF@keescook>
-User-Agent: NeoMutt/20180223
+X-Received: by 2002:a02:b38f:: with SMTP id p15mr56855445jan.56.1582609393220;
+ Mon, 24 Feb 2020 21:43:13 -0800 (PST)
+Date:   Mon, 24 Feb 2020 21:43:13 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b380de059f5ff6aa@google.com>
+Subject: WARNING: ODEBUG bug in tcindex_destroy_work (3)
+From:   syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 01:41:19PM -0800, Kees Cook wrote:
-> 
-> But the LSM subsystem doesn't want special cases (Casey has worked very
-> hard to generalize everything there for stacking). It is really hard to
-> accept adding a new special case when there are still special cases yet
-> to be worked out even in the LSM code itself[2].
-> [2] Casey's work to generalize the LSM interfaces continues and it quite
-> complex:
-> https://lore.kernel.org/linux-security-module/20200214234203.7086-1-casey@schaufler-ca.com/
+Hello,
 
-I think the key mistake we made is that we classified KRSI as LSM.
-LSM stacking, lsmblobs that the above set is trying to do are not necessary for KRSI.
-I don't see anything in LSM infra that KRSI can reuse.
-The only thing BPF needs is a function to attach to.
-It can be a nop function or any other.
-security_*() functions are interesting from that angle only.
-Hence I propose to reconsider what I was suggesting earlier.
-No changes to secruity/ directory.
-Attach to security_*() funcs via bpf trampoline.
-The key observation vs what I was saying earlier is KRSI and LSM are wrong names.
-I think "security" is also loaded word that should be avoided.
-I'm proposing to rename BPF_PROG_TYPE_LSM into BPF_PROG_TYPE_OVERRIDE_RETURN.
+syzbot found the following crash on:
 
-> So, unless James is going to take this over Casey's objections, the path
-> forward I see here is:
-> 
-> - land a "slow" KRSI (i.e. one that hooks every hook with a stub).
-> - optimize calling for all LSMs
+HEAD commit:    d2eee258 Merge tag 'for-5.6-rc2-tag' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17fd8931e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3e57a6b450fb9883
+dashboard link: https://syzkaller.appspot.com/bug?extid=46f513c3033d592409d2
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
 
-I'm very much surprised how 'slow' KRSI is an option at all.
-'slow' KRSI means that CONFIG_SECURITY_KRSI=y adds indirect calls to nop
-functions for every place in the kernel that calls security_*().
-This is not an acceptable overhead. Even w/o retpoline
-this is not something datacenter servers can use.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-Another option is to do this:
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 64b19f050343..7887ce636fb1 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -240,7 +240,7 @@ static inline const char *kernel_load_data_id_str(enum kernel_load_data_id id)
-        return kernel_load_data_str[id];
- }
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
 
--#ifdef CONFIG_SECURITY
-+#if defined(CONFIG_SECURITY) || defined(CONFIG_BPF_OVERRIDE_RETURN)
+------------[ cut here ]------------
+ODEBUG: free active (active state 0) object type: work_struct hint: tcindex_destroy_rexts_work+0x0/0xd0 net/sched/cls_tcindex.c:57
+WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:488 debug_print_object lib/debugobjects.c:485 [inline]
+WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:488 __debug_check_no_obj_freed lib/debugobjects.c:967 [inline]
+WARNING: CPU: 1 PID: 21 at lib/debugobjects.c:488 debug_check_no_obj_freed+0x468/0x620 lib/debugobjects.c:998
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 21 Comm: kworker/u4:1 Not tainted 5.6.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: tc_filter_workqueue tcindex_destroy_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1fb/0x318 lib/dump_stack.c:118
+ panic+0x264/0x7a9 kernel/panic.c:221
+ __warn+0x209/0x210 kernel/panic.c:582
+ report_bug+0x1b6/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ do_error_trap+0xcf/0x1c0 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:debug_print_object lib/debugobjects.c:485 [inline]
+RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:967 [inline]
+RIP: 0010:debug_check_no_obj_freed+0x468/0x620 lib/debugobjects.c:998
+Code: 08 48 89 df e8 f9 27 0f fe 4c 8b 03 48 c7 c7 75 eb f0 88 48 c7 c6 8f dc ee 88 4c 89 e2 44 89 f9 4d 89 e9 31 c0 e8 28 c4 a3 fd <0f> 0b 48 ba 00 00 00 00 00 fc ff df 4c 8b 6d b0 ff 05 b6 df c4 05
+RSP: 0018:ffffc90000dd7be0 EFLAGS: 00010046
+RAX: a8ee08c59d207d00 RBX: ffffffff892d11c0 RCX: ffff8880a9bf6580
+RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+RBP: ffffc90000dd7c78 R08: ffffffff81600324 R09: ffffed1015d64592
+R10: ffffed1015d64592 R11: 0000000000000000 R12: ffffffff88f4c8da
+R13: ffffffff869b5000 R14: ffff88802cc7c000 R15: 0000000000000000
+ kfree+0xff/0x220 mm/slab.c:3756
+ tcindex_destroy_work+0x3e/0x70 net/sched/cls_tcindex.c:231
+ process_one_work+0x7f5/0x10f0 kernel/workqueue.c:2264
+ worker_thread+0xbbc/0x1630 kernel/workqueue.c:2410
+ kthread+0x332/0x350 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-Single line change to security.h and new file kernel/bpf/override_security.c
-that will look like:
-int security_binder_set_context_mgr(struct task_struct *mgr)
-{
-        return 0;
-}
 
-int security_binder_transaction(struct task_struct *from,
-                                struct task_struct *to)
-{
-        return 0;
-}
-Essentially it will provide BPF side with a set of nop functions.
-CONFIG_SECURITY is off. It may seem as a downside that it will force a choice
-on kernel users. Either they build the kernel with CONFIG_SECURITY and their
-choice of LSMs or build the kernel with CONFIG_BPF_OVERRIDE_RETURN and use
-BPF_PROG_TYPE_OVERRIDE_RETURN programs to enforce any kind of policy. I think
-it's a pro not a con.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
