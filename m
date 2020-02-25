@@ -2,120 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8385916B756
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 02:48:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2033C16B77A
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 03:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728707AbgBYBsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 20:48:14 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:40166 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728546AbgBYBsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 20:48:13 -0500
-Received: by mail-il1-f197.google.com with SMTP id m18so22043498ill.7
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 17:48:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DwOxWulic73RxjwFhGbAWG6xr0sogpuOtGMOVnENdpw=;
-        b=YsvmQDyWagZ33uFj79GQJz/CrSQP9DNyRR+3k3WjkOQLbGsmfnL3ZMmg5I23E1d+R0
-         TMCZvzLH7ciwrjqnt2YHj2NPbWOxgejlVwjqthaIE/eXEk/QNilLU8p2fBfA7JWdZnl4
-         dDc6cQuoPwv2lezGcCJnO8pSqu7zNo34Ays+pw0OaGwAkYoZTKR1Ww49SCAgJLXvKES5
-         +dOQZQVIrU3lvXrwOZgkyd7m9ie1my38ZXHiLA1aRMLXiPlzq3IX/vba0LGlpKiTZRli
-         A8AfvNvKIOmNFY169tYLJDUvNR3VTY2EBAMtByjQPaKZrjcf/MSnZuTrJkp0eFRlethQ
-         upDg==
-X-Gm-Message-State: APjAAAUAplad2g1Dp7XOjRKvgwtjzqg1W4Jn1WA8rStu0AAdycm3gdKD
-        ygGkhm0L86ccBowyceh6u1yvghgF1ofoEkBSaIRIu/DeC5HE
-X-Google-Smtp-Source: APXvYqysWAPjtehiszFnrhai12UfjdJ3bI84iQaIcNhRqURAGFrtrNs42drBRzQjHNh7uUtIidVuEt9Zu2YpT4DSFhngSQf2Dkt/
+        id S1728725AbgBYCBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 21:01:30 -0500
+Received: from gateway23.websitewelcome.com ([192.185.50.129]:15153 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726962AbgBYCB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 21:01:29 -0500
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 7FDED3679
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 20:01:28 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 6PXMjjLdcRP4z6PXMj8S0P; Mon, 24 Feb 2020 20:01:28 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CAn5pDJV+AMTxsAdNdv7kJ+v+KzqRtAypQ/6vJnaxYE=; b=m/153pWvdVNLv1zr5ddardWVm0
+        tuQ0DfFixZxbnmEfvh6CrgntJWM1xsleuJWAvdFXXoqb5CRsf59OJcUFJNM9SLHHkHnYapFPHdt2b
+        CSTAdeooKq7voKjhGPr6BxNYrqrTitLzDEtpoz0G/5+fLQ5CEIBm+65Wo6gdWzQTcl8pybFbeeIl9
+        AmT5M6TcbBJAf/JWs2+5EitCap4fAI1c1bMPUUYilV1UARxXDfxRQwhw2yOAibN42zLXGS/7BMFZX
+        wgfuJyYGzTviXWuBf9F4YQS/Lvd+0xdbiKKzMDiFXWofyW/+0M0tEBcMpZJdDvfj8OiBueVMpCPSz
+        /ra9HvKg==;
+Received: from [201.166.191.17] (port=60526 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j6PXI-003Ffv-5c; Mon, 24 Feb 2020 20:01:25 -0600
+Date:   Mon, 24 Feb 2020 20:04:13 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Lennert Buytenhek <buytenh@wantstofly.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] wireless: marvell: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200225020413.GA8057@embeddedor>
 MIME-Version: 1.0
-X-Received: by 2002:a02:cdd9:: with SMTP id m25mr53570273jap.123.1582595293217;
- Mon, 24 Feb 2020 17:48:13 -0800 (PST)
-Date:   Mon, 24 Feb 2020 17:48:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000046895c059f5cae37@google.com>
-Subject: INFO: trying to register non-static key in xa_destroy
-From:   syzbot <syzbot+2e80962bedd9559fe0b3@syzkaller.appspotmail.com>
-To:     bmt@zurich.ibm.com, dledford@redhat.com, jgg@ziepe.ca,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.166.191.17
+X-Source-L: No
+X-Exim-ID: 1j6PXI-003Ffv-5c
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.166.191.17]:60526
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-syzbot found the following crash on:
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-HEAD commit:    2045e158 r8169: remove RTL_EVENT_NAPI constants
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14791c81e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b8906eb6a7d6028
-dashboard link: https://syzkaller.appspot.com/bug?extid=2e80962bedd9559fe0b3
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1277fe09e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=108d9109e00000
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+2e80962bedd9559fe0b3@syzkaller.appspotmail.com
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-RBP: 00007ffcc52aa360 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
-INFO: trying to register non-static key.
-the code is fine but needs lockdep annotation.
-turning off the locking correctness validator.
-CPU: 0 PID: 9669 Comm: syz-executor271 Not tainted 5.6.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- assign_lock_key kernel/locking/lockdep.c:880 [inline]
- register_lock_class+0x179e/0x1850 kernel/locking/lockdep.c:1189
- __lock_acquire+0xf4/0x4a00 kernel/locking/lockdep.c:3836
- lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
- xa_destroy+0xb8/0x2f0 lib/xarray.c:1990
- siw_device_cleanup+0x19/0x30 drivers/infiniband/sw/siw/siw_main.c:86
- ib_dealloc_device+0x48/0x230 drivers/infiniband/core/device.c:617
- siw_device_create drivers/infiniband/sw/siw/siw_main.c:436 [inline]
- siw_newlink drivers/infiniband/sw/siw/siw_main.c:556 [inline]
- siw_newlink+0x10aa/0x1310 drivers/infiniband/sw/siw/siw_main.c:542
- nldev_newlink+0x28a/0x430 drivers/infiniband/core/nldev.c:1538
- rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
- rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
- rdma_nl_rcv+0x5d9/0x980 drivers/infiniband/core/netlink.c:259
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441219
-Code: e8 5c ae 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 bb 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffcc52aa348 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441219
-RDX: 0000000000000000 RSI: 00000000200031c0 RDI: 0000000000000003
-RBP: 00007ffcc52aa360 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
+This issue was found with the help of Coccinelle.
 
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../net/wireless/marvell/libertas_tf/if_usb.h |  2 +-
+ drivers/net/wireless/marvell/mwifiex/fw.h     | 40 +++++++++----------
+ drivers/net/wireless/marvell/mwl8k.c          |  6 +--
+ 3 files changed, 24 insertions(+), 24 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/wireless/marvell/libertas_tf/if_usb.h b/drivers/net/wireless/marvell/libertas_tf/if_usb.h
+index 585ad36f9055..f6dd7373b09e 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/if_usb.h
++++ b/drivers/net/wireless/marvell/libertas_tf/if_usb.h
+@@ -81,7 +81,7 @@ struct fwheader {
+ struct fwdata {
+ 	struct fwheader hdr;
+ 	__le32 seqnum;
+-	uint8_t data[0];
++	uint8_t data[];
+ };
+ 
+ /** fwsyncheader */
+diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
+index 4dfdf928f705..a415d73a73e6 100644
+--- a/drivers/net/wireless/marvell/mwifiex/fw.h
++++ b/drivers/net/wireless/marvell/mwifiex/fw.h
+@@ -846,7 +846,7 @@ struct mwifiex_ie_types_random_mac {
+ 
+ struct mwifiex_ietypes_chanstats {
+ 	struct mwifiex_ie_types_header header;
+-	struct mwifiex_fw_chan_stats chanstats[0];
++	struct mwifiex_fw_chan_stats chanstats[];
+ } __packed;
+ 
+ struct mwifiex_ie_types_wildcard_ssid_params {
+@@ -1082,7 +1082,7 @@ struct host_cmd_ds_get_hw_spec {
+ 	__le32 reserved_6;
+ 	__le32 dot_11ac_dev_cap;
+ 	__le32 dot_11ac_mcs_support;
+-	u8 tlvs[0];
++	u8 tlvs[];
+ } __packed;
+ 
+ struct host_cmd_ds_802_11_rssi_info {
+@@ -1140,7 +1140,7 @@ struct ieee_types_assoc_rsp {
+ 	__le16 cap_info_bitmap;
+ 	__le16 status_code;
+ 	__le16 a_id;
+-	u8 ie_buffer[0];
++	u8 ie_buffer[];
+ } __packed;
+ 
+ struct host_cmd_ds_802_11_associate_rsp {
+@@ -1455,7 +1455,7 @@ struct host_cmd_ds_chan_rpt_event {
+ 	__le32 result;
+ 	__le64 start_tsf;
+ 	__le32 duration;
+-	u8 tlvbuf[0];
++	u8 tlvbuf[];
+ } __packed;
+ 
+ struct host_cmd_sdio_sp_rx_aggr_cfg {
+@@ -1625,7 +1625,7 @@ struct host_cmd_ds_802_11_bg_scan_config {
+ 	__le32 reserved2;
+ 	__le32 report_condition;
+ 	__le16 reserved3;
+-	u8 tlv[0];
++	u8 tlv[];
+ } __packed;
+ 
+ struct host_cmd_ds_802_11_bg_scan_query {
+@@ -1720,7 +1720,7 @@ struct mwifiex_ie_types_sta_info {
+ 
+ struct host_cmd_ds_sta_list {
+ 	__le16 sta_count;
+-	u8 tlv[0];
++	u8 tlv[];
+ } __packed;
+ 
+ struct mwifiex_ie_types_pwr_capability {
+@@ -1743,7 +1743,7 @@ struct mwifiex_ie_types_wmm_param_set {
+ struct mwifiex_ie_types_mgmt_frame {
+ 	struct mwifiex_ie_types_header header;
+ 	__le16 frame_control;
+-	u8 frame_contents[0];
++	u8 frame_contents[];
+ };
+ 
+ struct mwifiex_ie_types_wmm_queue_status {
+@@ -1861,7 +1861,7 @@ struct mwifiex_ie_types_2040bssco {
+ 
+ struct mwifiex_ie_types_extcap {
+ 	struct mwifiex_ie_types_header header;
+-	u8 ext_capab[0];
++	u8 ext_capab[];
+ } __packed;
+ 
+ struct host_cmd_ds_mem_access {
+@@ -1918,12 +1918,12 @@ struct mwifiex_assoc_event {
+ 	__le16 frame_control;
+ 	__le16 cap_info;
+ 	__le16 listen_interval;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct host_cmd_ds_sys_config {
+ 	__le16 action;
+-	u8 tlv[0];
++	u8 tlv[];
+ };
+ 
+ struct host_cmd_11ac_vht_cfg {
+@@ -1956,7 +1956,7 @@ struct host_cmd_tlv_gwk_cipher {
+ 
+ struct host_cmd_tlv_passphrase {
+ 	struct mwifiex_ie_types_header header;
+-	u8 passphrase[0];
++	u8 passphrase[];
+ } __packed;
+ 
+ struct host_cmd_tlv_wep_key {
+@@ -1978,12 +1978,12 @@ struct host_cmd_tlv_encrypt_protocol {
+ 
+ struct host_cmd_tlv_ssid {
+ 	struct mwifiex_ie_types_header header;
+-	u8 ssid[0];
++	u8 ssid[];
+ } __packed;
+ 
+ struct host_cmd_tlv_rates {
+ 	struct mwifiex_ie_types_header header;
+-	u8 rates[0];
++	u8 rates[];
+ } __packed;
+ 
+ struct mwifiex_ie_types_bssid_list {
+@@ -2100,13 +2100,13 @@ struct mwifiex_fw_mef_entry {
+ 	u8 mode;
+ 	u8 action;
+ 	__le16 exprsize;
+-	u8 expr[0];
++	u8 expr[];
+ } __packed;
+ 
+ struct host_cmd_ds_mef_cfg {
+ 	__le32 criteria;
+ 	__le16 num_entries;
+-	struct mwifiex_fw_mef_entry mef_entry[0];
++	struct mwifiex_fw_mef_entry mef_entry[];
+ } __packed;
+ 
+ #define CONNECTION_TYPE_INFRA   0
+@@ -2169,7 +2169,7 @@ struct mwifiex_radar_det_event {
+ struct mwifiex_ie_types_multi_chan_info {
+ 	struct mwifiex_ie_types_header header;
+ 	__le16 status;
+-	u8 tlv_buffer[0];
++	u8 tlv_buffer[];
+ } __packed;
+ 
+ struct mwifiex_ie_types_mc_group_info {
+@@ -2185,7 +2185,7 @@ struct mwifiex_ie_types_mc_group_info {
+ 		u8 usb_ep_num;
+ 	} hid_num;
+ 	u8 intf_num;
+-	u8 bss_type_numlist[0];
++	u8 bss_type_numlist[];
+ } __packed;
+ 
+ struct meas_rpt_map {
+@@ -2250,13 +2250,13 @@ struct coalesce_receive_filt_rule {
+ 	u8 num_of_fields;
+ 	u8 pkt_type;
+ 	__le16 max_coalescing_delay;
+-	struct coalesce_filt_field_param params[0];
++	struct coalesce_filt_field_param params[];
+ } __packed;
+ 
+ struct host_cmd_ds_coalesce_cfg {
+ 	__le16 action;
+ 	__le16 num_of_rules;
+-	struct coalesce_receive_filt_rule rule[0];
++	struct coalesce_receive_filt_rule rule[];
+ } __packed;
+ 
+ struct host_cmd_ds_multi_chan_policy {
+@@ -2295,7 +2295,7 @@ struct host_cmd_ds_pkt_aggr_ctrl {
+ 
+ struct host_cmd_ds_sta_configure {
+ 	__le16 action;
+-	u8 tlv_buffer[0];
++	u8 tlv_buffer[];
+ } __packed;
+ 
+ struct host_cmd_ds_command {
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index d55f229abeea..47fb4b3ea004 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -592,7 +592,7 @@ struct mwl8k_cmd_pkt {
+ 	__u8	seq_num;
+ 	__u8	macid;
+ 	__le16	result;
+-	char	payload[0];
++	char	payload[];
+ } __packed;
+ 
+ /*
+@@ -806,7 +806,7 @@ static int mwl8k_load_firmware(struct ieee80211_hw *hw)
+ struct mwl8k_dma_data {
+ 	__le16 fwlen;
+ 	struct ieee80211_hdr wh;
+-	char data[0];
++	char data[];
+ } __packed;
+ 
+ /* Routines to add/remove DMA header from skb.  */
+@@ -2955,7 +2955,7 @@ mwl8k_cmd_rf_antenna(struct ieee80211_hw *hw, int antenna, int mask)
+ struct mwl8k_cmd_set_beacon {
+ 	struct mwl8k_cmd_pkt header;
+ 	__le16 beacon_len;
+-	__u8 beacon[0];
++	__u8 beacon[];
+ };
+ 
+ static int mwl8k_cmd_set_beacon(struct ieee80211_hw *hw,
+-- 
+2.25.0
+
