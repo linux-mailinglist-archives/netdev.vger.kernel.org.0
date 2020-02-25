@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7580A16EEAD
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D21EB16EEC8
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731122AbgBYTKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:10:31 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48774 "EHLO
+        id S1729179AbgBYTNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 14:13:40 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48804 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728065AbgBYTKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:10:31 -0500
+        with ESMTP id S1728499AbgBYTNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:13:40 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0C11313B48C3E;
-        Tue, 25 Feb 2020 11:10:31 -0800 (PST)
-Date:   Tue, 25 Feb 2020 11:10:30 -0800 (PST)
-Message-Id: <20200225.111030.1608169659746789536.davem@davemloft.net>
-To:     aaro.koskinen@nokia.com
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: move notifier block to private data
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 91EE513B490A4;
+        Tue, 25 Feb 2020 11:13:39 -0800 (PST)
+Date:   Tue, 25 Feb 2020 11:13:39 -0800 (PST)
+Message-Id: <20200225.111339.990273097730952856.davem@davemloft.net>
+To:     jiri@resnulli.us
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: [patch net-next] iavf: use tc_cls_can_offload_basic() instead
+ of chain check
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200225111615.17964-1-aaro.koskinen@nokia.com>
-References: <20200225111615.17964-1-aaro.koskinen@nokia.com>
+In-Reply-To: <20200225121023.6011-1-jiri@resnulli.us>
+References: <20200225121023.6011-1-jiri@resnulli.us>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:10:31 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:13:39 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: aaro.koskinen@nokia.com
-Date: Tue, 25 Feb 2020 13:16:15 +0200
+From: Jiri Pirko <jiri@resnulli.us>
+Date: Tue, 25 Feb 2020 13:10:23 +0100
 
-> From: Aaro Koskinen <aaro.koskinen@nokia.com>
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Move notifier block to private data. Otherwise notifier code will complain
-> about double register with multiple stmmac instances.
+> Looks like the iavf code actually experienced a race condition, when a
+> developer took code before the check for chain 0 was put to helper.
+> So use tc_cls_can_offload_basic() helper instead of direct check and
+> move the check to _cb() so this is similar to i40e code.
 > 
-> Fixes: 481a7d154cbb ("stmmac: debugfs entry name is not be changed when udev rename device name.")
-> Signed-off-by: Aaro Koskinen <aaro.koskinen@nokia.com>
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+> This was originally part of "net: allow user specify TC filter HW stats type"
+> patchset, but it is no longer related after the requested changes.
+> Sending separatelly.
 
-This doesn't make any sense.
+Jeff, do you want me to apply this directly?  If so, please give your ack.
 
-We need only one instance of the stmmac notifier registered, no matter how many
-stmmac devices are probed.
-
-Please change it such that we only call register_notifier() once (when the first
-stmmac device is probed) and only unregister_notifier() when the last one is
-removed.
+Thanks.
