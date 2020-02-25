@@ -2,109 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EF2716F14A
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:42:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5791316F245
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:54:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729071AbgBYVmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 16:42:44 -0500
-Received: from mout.kundenserver.de ([217.72.192.74]:52137 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729062AbgBYVmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:42:43 -0500
-Received: from kiste.fritz.box ([94.134.180.105]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M1HmG-1j9T802JWE-002roK; Tue, 25 Feb 2020 22:42:30 +0100
-From:   Hans Wippel <ndev@hwipl.net>
-To:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Hans Wippel <ndev@hwipl.net>
-Subject: [PATCH net-next v2 2/2] net/smc: improve peer ID in CLC decline for SMC-R
-Date:   Tue, 25 Feb 2020 22:41:22 +0100
-Message-Id: <20200225214122.335292-3-ndev@hwipl.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200225214122.335292-1-ndev@hwipl.net>
-References: <20200225214122.335292-1-ndev@hwipl.net>
+        id S1727075AbgBYVye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 16:54:34 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37720 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgBYVye (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:54:34 -0500
+Received: by mail-pf1-f194.google.com with SMTP id p14so287688pfn.4
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 13:54:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=KcdHvGM7QxFXjBI6YkGaxSLjQS65LiqMdGvAY4ntlYg=;
+        b=BJg/VXcEzVPAtNCiJSv2Hc7W1Mt/dRRojyKCXS6TU/oze3/dcR8LqHlcCwGk2hYCL0
+         EnSx5OIdw3WVRhLgivB6JzI2dUttE7TLCrw1izn/sjGVTuhOr1hqa0KwTRaWPZG3MDLR
+         fRzSE2Ofg7v/iMufnm5emtYziWFDAlaEjdb4a+Vy2yhIR+BqV4Q3AnfDxUK5FgPJwiKW
+         nzQRDUTKfxm4XhYnCttB2qASK3jw/jk35JMmrrugzA2i9MHc1K3RFyg/3iQV/Xgd3Er1
+         6uNvDED+t5CfC9IPaxWyMZTmTBWyUqHcL39cU7EBxVGFxpYf22o7J/S4gGv0W2tTOkmZ
+         cdMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=KcdHvGM7QxFXjBI6YkGaxSLjQS65LiqMdGvAY4ntlYg=;
+        b=dHp/FLdaAPQAUXNKtVNSIok58QNo1laMSrjBXmFXL2rhO9P/k/1X8LOFlf3CHckqMi
+         UG7Qo9v1K1OYK5mxZHn5g2iPmdPsrdHvDaM6UvhLQc3hQNVXlHB9jCDgCEo81OG/Vpm9
+         OBHWjqdZT1b+qX2sBuYcaRxVlMAZtN0Ah68WmOwhmnsT8nI2fTEaGy9jDKZnGtG8oWVo
+         m8rzMkyA2quTUAvXqSlqOwJU4hQte+Dbx1vgHbRpij1t7Zk47SVqzGsCt+aSJP5eYSxz
+         Pl0sWJ4LL6keW+DfGOXrYrhTXwpL9u9hfy2ZbBDmN9dgX8nfKdgySmJacn95n4L7v5UA
+         asPA==
+X-Gm-Message-State: APjAAAUvT707t311B13exQxqc+Got2GUkB9lhI26F+CBN4apln1xBmt+
+        VTNt0PexmHJ+pl17ugDRCcE=
+X-Google-Smtp-Source: APXvYqzXeuEPfSp3VdcIUBjDS39ldgr3ryfWOcsFqMbnkGtbJXYVP3g74RBwe0bGHjwpABjKCvaYog==
+X-Received: by 2002:aa7:9546:: with SMTP id w6mr816916pfq.66.1582667672366;
+        Tue, 25 Feb 2020 13:54:32 -0800 (PST)
+Received: from [172.20.102.201] ([2620:10d:c090:400::5:1dea])
+        by smtp.gmail.com with ESMTPSA id w81sm48493pff.95.2020.02.25.13.54.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Feb 2020 13:54:31 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "David Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
+        kernel-team@fb.com, kuba@kernel.org
+Subject: Re: [PATCH] bnxt_en: add newline to netdev_*() format strings
+Date:   Tue, 25 Feb 2020 13:54:30 -0800
+X-Mailer: MailMate (1.13.1r5671)
+Message-ID: <CDA6E3B5-FB0A-4092-8F2B-44BD4357C633@gmail.com>
+In-Reply-To: <20200225.114544.1730081330061687105.davem@davemloft.net>
+References: <20200224232909.2311486-1-jonathan.lemon@gmail.com>
+ <20200224.153254.1115312677901381309.davem@davemloft.net>
+ <0C3291B2-E552-420F-B31F-F18C6F5FE056@gmail.com>
+ <20200225.114544.1730081330061687105.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:EmdaMQ+Pd5tqIkdpmwtCMLmktggUZBUskyC8fqunkEUfbsWhlgd
- pRrnQAYbhkglw6o+bNGlVT5dpDNGBhlcAKpbirt1rbebhHoZb67E6fyG6USILMInmhuV+HD
- YdlYX5WnDPcJmIVx80gLvBiXUBiHjdjx3YAlfZkRufW1K7qMaUlZWA9uwD1bDgpGKU1shqn
- IdoxywPPiaeRb+2q1d68Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bIKAsvkU/8M=:BQKPEfTTzK+ET9qkSuj09b
- 3aLjmXsbGobVoDgRX5URuoyoK5iFyQs4v6OLK1czWsF8ikPv2rJ3KU65FxXxXxGgQuUwjPNyQ
- J2PVQ92T4mao5LERYtuTDf+rkZYCCrpOW3q4C6msbHPVXk0/e+mlUS63ZSdJp1d7c+YeJYEFC
- YOnZfUFUTifN/EWPry31jjLWpxoUVHb/n01x1lc3de78n3oSHVxckt5+NwdEpWisGbiAPDDr3
- YgAoMAA27dbOwjygRVjRmG6jfnsIKOtRalmwMFcrOR2ATsxD4Ssb0vE+7Mwt/hfVK7dnZOW5d
- nDAKXB0TbBMPfUdhZQdGkvgFWqZmSYeJMV3hvdeh5aX7NK1HctiSQMl07HeRxt59yG6XjaLcQ
- RkQEUV6hh0EwjAchQMIAWXmcH0vWkv5gyK1C4xsi9vNQuBlyXFh9j1eWPwEPWsPWBHt4oOfvF
- 04FeUJfo9ELpU2PNpYfw/oJ4skQJTagY/h3clannuLG/1w3bAOSLfK2r5ELLy7l6Q9b94+4v/
- ADkgw9YsvoJ9HjzgzTLun/FC4P7v0cDqJF6Qax4tMr0CPgmJJhGZ5BGL2fQYWhlZ4E83tXJVm
- ncq+4UkiUWTzFoYNG7BN6cgVYFiD5EY8DhICbZeJBoyeluBp4FhUY8HsuPM0PxGXeUALArvld
- DUj/Y64LEz16yYYkTCK8JZz8u4OqSlNaepNm0mXcmjkS/4GLVNnpvDnjE5THczRUISDyYXIkP
- XmuURPy0VuUJ0b1prkDhVvXMCT4H2OOI6zbI+ZSF0iXmtGiyqhMPONRqYWVLpCo1V8L573sKC
- aGKMRYhu63Lw1x2EB5AZFjqldtCEH9fhaObKaKm4RxWI+S6dVW3HCC1oUf8nW2CDMGa0sPF
+Content-Type: text/plain; markup=markdown
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to RFC 7609, all CLC messages contain a peer ID that consists
-of a unique instance ID and the MAC address of one of the host's RoCE
-devices. But if a SMC-R connection cannot be established, e.g., because
-no matching pnet table entry is found, the current implementation uses a
-zero value in the CLC decline message although the host's peer ID is set
-to a proper value.
+On 25 Feb 2020, at 11:45, David Miller wrote:
 
-If no RoCE and no ISM device is usable for a connection, there is no LGR
-and the LGR check in smc_clc_send_decline() prevents that the peer ID is
-copied into the CLC decline message for both SMC-D and SMC-R. So, this
-patch modifies the check to also accept the case of no LGR. Also, only a
-valid peer ID is copied into the decline message.
+> From: "Jonathan Lemon" <jonathan.lemon@gmail.com>
+> Date: Tue, 25 Feb 2020 08:16:35 -0800
+>
+>> There should be a single posting on the list, are you telling me
+>> otherwise?
+>
+> There were three postings:
+>
+> https://patchwork.ozlabs.org/patch/1243698/
+> https://patchwork.ozlabs.org/patch/1243701/
+> https://patchwork.ozlabs.org/patch/1243702/
 
-Signed-off-by: Hans Wippel <ndev@hwipl.net>
----
- net/smc/smc_clc.c | 3 ++-
- net/smc/smc_ib.c  | 2 +-
- net/smc/smc_ib.h  | 1 +
- 3 files changed, 4 insertions(+), 2 deletions(-)
+From the headers on the first one, that should not have
+gone out; the second was the correction/check, and the
+third was the actual posting.  I'll add some scripts to
+automate this for next time.
 
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 3e16b887cfcf..ea0068f0173c 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -372,7 +372,8 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info)
- 	dclc.hdr.length = htons(sizeof(struct smc_clc_msg_decline));
- 	dclc.hdr.version = SMC_CLC_V1;
- 	dclc.hdr.flag = (peer_diag_info == SMC_CLC_DECL_SYNCERR) ? 1 : 0;
--	if (smc->conn.lgr && !smc->conn.lgr->is_smcd)
-+	if ((!smc->conn.lgr || !smc->conn.lgr->is_smcd) &&
-+	    smc_ib_is_valid_local_systemid())
- 		memcpy(dclc.id_for_peer, local_systemid,
- 		       sizeof(local_systemid));
- 	dclc.peer_diagnosis = htonl(peer_diag_info);
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index e0592d337a94..3444de27fecd 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -166,7 +166,7 @@ static inline void smc_ib_define_local_systemid(struct smc_ib_device *smcibdev,
- 	       sizeof(smcibdev->mac[ibport - 1]));
- }
- 
--static bool smc_ib_is_valid_local_systemid(void)
-+bool smc_ib_is_valid_local_systemid(void)
- {
- 	return !is_zero_ether_addr(&local_systemid[2]);
- }
-diff --git a/net/smc/smc_ib.h b/net/smc/smc_ib.h
-index 255db87547d3..5c2b115d36da 100644
---- a/net/smc/smc_ib.h
-+++ b/net/smc/smc_ib.h
-@@ -84,4 +84,5 @@ void smc_ib_sync_sg_for_device(struct smc_ib_device *smcibdev,
- 			       enum dma_data_direction data_direction);
- int smc_ib_determine_gid(struct smc_ib_device *smcibdev, u8 ibport,
- 			 unsigned short vlan_id, u8 gid[], u8 *sgid_index);
-+bool smc_ib_is_valid_local_systemid(void);
- #endif
+Sorry about the noise.
 -- 
-2.25.1
+Jonathan
 
