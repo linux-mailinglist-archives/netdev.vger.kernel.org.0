@@ -2,107 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 399A516BB30
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 08:46:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C1EE16BB35
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 08:48:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729623AbgBYHqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 02:46:06 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40234 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729124AbgBYHqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 02:46:06 -0500
-Received: by mail-wr1-f68.google.com with SMTP id t3so13422496wru.7
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 23:46:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HaCf8ju6+9uNDhhwgsR+7owEeD/A7pubs4p/KrqXW7w=;
-        b=Rbgl6DGc29ep6e3jOlUjpHe+hFkWtrmj3/q2/K7E6XRL4Xv1MaLPPA73SkSLRsVSLq
-         EOND6HpkYXY+GsYzpbyRpRTkHa5Otl5T0yip0GNUY0ulkbNp3Q50Du1/0cq8Fu7NorrU
-         YP2ATGc/+Nc1iCVit+TzxnVbJRrc3L2loUsH8hfvEOHjB7tCgXYo6r6WVa1wXBuQ2aD8
-         MN5jYcQEGJXpaLS5074Q5sXvaAUU+R1zYXLvQ4Vr1SU0IrvzAxL2nT3g9rbXyYC8ZihN
-         BITaWjaBXY+EoHtD0yO6oEwi5eYtaMaQMs0o+LrEuu6JBI4csQNNuUenev0SWtS66PRp
-         h6Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HaCf8ju6+9uNDhhwgsR+7owEeD/A7pubs4p/KrqXW7w=;
-        b=EuQc6UYE/LwniftNddfp7LmH082wXwL1PBt5fIVJoQKDjRhauGenL63+7LnCxPyFjd
-         sCdroyS5gAWUenrcptTuvpc7y90AbS561CokbgpOQzef6v7dazCTsrpS+L8kfgRmxQb0
-         qi2EEGcfWYj9gOdb5DW+uMXerSAsmXOWo8ByJxzGE/RwmOX4Ve9bFwbvX3tlXG9kXYkL
-         1+jzQrXcOmfwwMrZsvlSrKRnxkp0XNRUzg7GqUfYnYdjI8UylWzZ9Uaow89AJIAtGPrU
-         C+ayRTFC603oat/4XpXoJLG2JNxx7RS4/naxd2/EKRPHhfNFrsEnDAs18xdNkzhG4usy
-         aBLQ==
-X-Gm-Message-State: APjAAAWXotRsfWp9a1UwLosQ3tMPEfUtqE7A67XSP/uh8v1mwcVJEznJ
-        qHXbStGR5vlQe3ATCtLfmQc/vQ==
-X-Google-Smtp-Source: APXvYqyhW+mhVvvYFLSjzPmOyX20qIvYzJ3Q2WyndF77lmeQftPgNdfHEnkeBPRYkkrH7daGkO9viw==
-X-Received: by 2002:a5d:514b:: with SMTP id u11mr70906445wrt.322.1582616765065;
-        Mon, 24 Feb 2020 23:46:05 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id l6sm24061472wrn.26.2020.02.24.23.46.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 23:46:04 -0800 (PST)
-Date:   Tue, 25 Feb 2020 08:46:03 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next 10/10] selftests: netdevsim: Extend devlink trap
- test to include flow action cookie
-Message-ID: <20200225074603.GC17869@nanopsycho>
-References: <20200224210758.18481-1-jiri@resnulli.us>
- <20200224210758.18481-11-jiri@resnulli.us>
- <20200224204332.1e126fb4@cakuba.hsd1.ca.comcast.net>
+        id S1729580AbgBYHsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 02:48:38 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:52290 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725837AbgBYHsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 02:48:38 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6UxE-0000yW-BM; Tue, 25 Feb 2020 07:48:32 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1j6UxC-0007kR-16; Tue, 25 Feb 2020 07:48:32 +0000
+Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        linux-um@lists.infradead.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
+ <CA+FuTSd8P6uQnwisZEh7+nfowW9qKLBEvA4GPg+xUkjBa-6TDA@mail.gmail.com>
+ <4e7757cf-148e-4585-b358-3b38f391275d@cambridgegreys.com>
+ <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
+ <93cb2b3f-6cae-8cf1-5fab-93fa34c14628@cambridgegreys.com>
+ <CA+FuTScEXRwYtFzn-jtFhV0dNKNQqKPBwCWaNORJW=ERU=izMA@mail.gmail.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Message-ID: <6b83116c-2cca-fb03-1c13-bb436dccf1b3@cambridgegreys.com>
+Date:   Tue, 25 Feb 2020 07:48:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200224204332.1e126fb4@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <CA+FuTScEXRwYtFzn-jtFhV0dNKNQqKPBwCWaNORJW=ERU=izMA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Score: -0.7
+X-Spam-Score: -0.7
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Feb 25, 2020 at 05:43:32AM CET, kuba@kernel.org wrote:
->On Mon, 24 Feb 2020 22:07:58 +0100, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Extend existing devlink trap test to include metadata type for flow
->> action cookie.
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
->> ---
->>  .../testing/selftests/drivers/net/netdevsim/devlink_trap.sh  | 5 +++++
->>  1 file changed, 5 insertions(+)
->> 
->> diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
->> index f101ab9441e2..437d32bd4cfd 100755
->> --- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
->> +++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
->> @@ -103,6 +103,11 @@ trap_metadata_test()
->>  	for trap_name in $(devlink_traps_get); do
->>  		devlink_trap_metadata_test $trap_name "input_port"
->>  		check_err $? "Input port not reported as metadata of trap $trap_name"
->> +		if [ $trap_name == "ingress_flow_action_drop" ] ||
->> +		   [ $trap_name == "egress_flow_action_drop" ]; then
->> +			devlink_trap_metadata_test $trap_name "flow_action_cookie"
->> +			check_err $? "Flow action cookie not reported as metadata of trap $trap_name"
->> +		fi
->>  	done
->>  
->>  	log_test "Trap metadata"
->
->Oh, this doesn't seem to check the contents of the trap at all, does it?
 
-No. This is not the test for the actual trapped packets. It is a test to
-list devlink traps and supported metadata.
 
-The packet trapping is done using dropmonitor which is currently
-not implemented in selftests, even for the existing traps. Not even for
-mlxsw. There is a plan to introduce these tests in the future, Ido is
-working on a tool to catch those packets to pcap using dropmon. I think
-he plans to send it to dropmon git soon. Then we can implement the
-selftests using it.
+On 24/02/2020 22:22, Willem de Bruijn wrote:
+> On Mon, Feb 24, 2020 at 4:00 PM Anton Ivanov
+> <anton.ivanov@cambridgegreys.com> wrote:
+>>
+>> On 24/02/2020 20:20, Willem de Bruijn wrote:
+>>> On Mon, Feb 24, 2020 at 2:55 PM Anton Ivanov
+>>> <anton.ivanov@cambridgegreys.com> wrote:
+>>>> On 24/02/2020 19:27, Willem de Bruijn wrote:
+>>>>> On Mon, Feb 24, 2020 at 8:26 AM <anton.ivanov@cambridgegreys.com> wrote:
+>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>>
+>>>>>> Some of the locally generated frames marked as GSO which
+>>>>>> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
+>>>>>> fragments (data_len = 0) and length significantly shorter
+>>>>>> than the MTU (752 in my experiments).
+>>>>> Do we understand how these packets are generated?
+>>>> No, we have not been able to trace them.
+>>>>
+>>>> The only thing we know is that this is specific to locally generated
+>>>> packets. Something arriving from the network does not show this.
+>>>>
+>>>>> Else it seems this
+>>>>> might be papering over a deeper problem.
+>>>>>
+>>>>> The stack should not create GSO packets less than or equal to
+>>>>> skb_shinfo(skb)->gso_size. See for instance the check in
+>>>>> tcp_gso_segment after pulling the tcp header:
+>>>>>
+>>>>>            mss = skb_shinfo(skb)->gso_size;
+>>>>>            if (unlikely(skb->len <= mss))
+>>>>>                    goto out;
+>>>>>
+>>>>> What is the gso_type, and does it include SKB_GSO_DODGY?
+>>>>>
+>>>>
+>>>> 0 - not set.
+>>> Thanks for the follow-up details. Is this something that you can trigger easily?
+>>
+>> Yes, if you have a UML instance handy.
+>>
+>> Running iperf between the host and a UML guest using raw socket
+>> transport triggers it immediately.
+>>
+>> This is my UML command line:
+>>
+>> vmlinux mem=2048M umid=OPX \
+>>       ubd0=OPX-3.0-Work.img \
+>> vec0:transport=raw,ifname=p-veth0,depth=128,gro=1,mac=92:9b:36:5e:38:69 \
+>>       root=/dev/ubda ro con=null con0=null,fd:2 con1=fd:0,fd:1
+>>
+>> p-right is a part of a vEth pair:
+>>
+>> ip link add l-veth0 type veth peer name p-veth0 && ifconfig p-veth0 up
+>>
+>> iperf server is on host, iperf -c in the guest.
+>>
+>>>
+>>> An skb_dump() + dump_stack() when the packet socket gets such a
+>>> packet may point us to the root cause and fix that.
+>>
+>> We tried dump stack, it was not informative - it was just the recvmmsg
+>> call stack coming from the UML until it hits the relevant recv bit in
+>> af_packet - it does not tell us where the packet is coming from.
+>>
+>> Quoting from the message earlier in the thread:
+>>
+>> [ 2334.180854] Call Trace:
+>> [ 2334.181947]  dump_stack+0x5c/0x80
+>> [ 2334.183021]  packet_recvmsg.cold+0x23/0x49
+>> [ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
+>> [ 2334.185034]  ? packet_poll+0xca/0x130
+>> [ 2334.186014]  ? sock_poll+0x77/0xb0
+>> [ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
+>> [ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
+>> [ 2334.188901]  ? dequeue_signal+0xdb/0x180
+>> [ 2334.189848]  do_recvmmsg+0xc8/0x2d0
+>> [ 2334.190728]  ? ep_poll+0x8c/0x470
+>> [ 2334.191581]  __sys_recvmmsg+0x108/0x150
+>> [ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
+>> [ 2334.193346]  do_syscall_64+0x53/0x140
+>> [ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> That makes sense. skb_dump might show more interesting details about
+> the packet.
+
+I will add that and retest later today.
+
+> From the previous thread, these are assumed to be TCP
+> packets?
+
+Yes
+
+> 
+> I had missed the original thread. If the packet has
+> 
+>      sinfo(skb)->gso_size = 752.
+>      skb->len = 818
+> 
+> then this is a GSO packet. Even though UML will correctly process it
+> as a normal 818 B packet if psock_rcv pretends that it is, treating it
+> like that is not strictly correct. A related question is how the setup
+> arrived at that low MTU size, assuming that is not explicitly
+> configured that low.
+
+The mtu on the interface is normal. I suspect it is one of the first packets
+in the stream or something iperf uses for communication between the server and
+the client which always ends up that size.
+
+> 
+> As of commit 51466a7545b7 ("tcp: fill shinfo->gso_type at last
+> moment") tcp unconditionally sets gso_type, even for non gso packets.
+> So either this is not a tcp packet or the field gets zeroed somewhere
+> along the way. I could not quickly find a possible path to
+> skb_gso_reset or a raw write.
+
+Same. I have tried to trace a possible origin and I have not seen anything which may cause it.
+
+> 
+> It may be useful to insert tests for this condition (skb_is_gso(skb)
+> && !skb_shinfo(skb)->gso_type) that call skb_dump at other points in
+> the network stack. For instance in __ip_queue_xmit and
+> __dev_queue_xmit.
+> 
+> Since skb segmentation fails in tcp_gso_segment for such packets, it
+> may also be informative to disable TSO on the veth device and see if
+> the test fails.
+
+Ack.
+
+> 
+
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
