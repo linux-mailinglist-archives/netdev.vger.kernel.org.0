@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B280716EE85
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B9F16EE8E
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731608AbgBYTAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:00:35 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48664 "EHLO
+        id S1731173AbgBYTCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 14:02:06 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48690 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730080AbgBYTAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:00:35 -0500
+        with ESMTP id S1728787AbgBYTCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:02:06 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6A63413B3AC16;
-        Tue, 25 Feb 2020 11:00:34 -0800 (PST)
-Date:   Tue, 25 Feb 2020 11:00:33 -0800 (PST)
-Message-Id: <20200225.110033.2078372349210559509.davem@davemloft.net>
-To:     johannes@sipsolutions.net
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        elder@linaro.org, m.chetan.kumar@intel.com, dcbw@redhat.com,
-        bjorn.andersson@linaro.org, johannes.berg@intel.com
-Subject: Re: [RFC] wwan: add a new WWAN subsystem
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CE2EF13B3AC26;
+        Tue, 25 Feb 2020 11:02:05 -0800 (PST)
+Date:   Tue, 25 Feb 2020 11:02:05 -0800 (PST)
+Message-Id: <20200225.110205.1860690641020290592.davem@davemloft.net>
+To:     Jason@zx2c4.com
+Cc:     netdev@vger.kernel.org, chenzhou10@huawei.com, hulkci@huawei.com
+Subject: Re: [PATCH net] icmp: allow icmpv6_ndo_send to work with
+ CONFIG_IPV6=n
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid>
-References: <20200225100053.16385-1-johannes@sipsolutions.net>
-        <20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid>
+In-Reply-To: <20200225100535.45146-1-Jason@zx2c4.com>
+References: <20200225100535.45146-1-Jason@zx2c4.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:00:34 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:02:06 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes@sipsolutions.net>
-Date: Tue, 25 Feb 2020 11:00:53 +0100
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Tue, 25 Feb 2020 18:05:35 +0800
 
-> +static struct wwan_device *wwan_create(struct device *dev)
-> +{
-> +	struct wwan_device *wwan = kzalloc(sizeof(*wwan), GFP_KERNEL);
-> +	u32 id = ++wwan_id_counter;
-> +	int err;
-> +
-> +	lockdep_assert_held(&wwan_mtx);
-> +
-> +	if (WARN_ON(!id))
-> +		return ERR_PTR(-ENOSPC);
+> The icmpv6_send function has long had a static inline implementation
+> with an empty body for CONFIG_IPV6=n, so that code calling it doesn't
+> need to be ifdef'd. The new icmpv6_ndo_send function, which is intended
+> for drivers as a drop-in replacement with an identical function
+> signature, should follow the same pattern. Without this patch, drivers
+> that used to work with CONFIG_IPV6=n now result in a linker error.
+> 
+> Cc: Chen Zhou <chenzhou10@huawei.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 0b41713b6066 ("icmp: introduce helper for nat'd source address in network device context")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-This potentially leaks 'wwan'.
+Applied, thanks Jason.
