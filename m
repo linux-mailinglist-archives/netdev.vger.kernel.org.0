@@ -2,209 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 308C116BD84
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:41:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC1216BDB7
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 10:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729217AbgBYJk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 04:40:59 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:52452 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729033AbgBYJk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:40:59 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6Whu-0001Hu-4c; Tue, 25 Feb 2020 09:40:54 +0000
-Received: from jain.kot-begemot.co.uk ([192.168.3.3])
-        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6Whp-0002XQ-I8; Tue, 25 Feb 2020 09:40:49 +0000
-Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>, linux-um@lists.infradead.org,
-        virtualization@lists.linux-foundation.org
-References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
- <CA+FuTSd8P6uQnwisZEh7+nfowW9qKLBEvA4GPg+xUkjBa-6TDA@mail.gmail.com>
- <4e7757cf-148e-4585-b358-3b38f391275d@cambridgegreys.com>
- <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
- <93cb2b3f-6cae-8cf1-5fab-93fa34c14628@cambridgegreys.com>
- <CA+FuTScEXRwYtFzn-jtFhV0dNKNQqKPBwCWaNORJW=ERU=izMA@mail.gmail.com>
- <6b83116c-2cca-fb03-1c13-bb436dccf1b3@cambridgegreys.com>
-Message-ID: <cd1b4084-af6b-7fd9-f182-8b32a3c8d837@cambridgegreys.com>
-Date:   Tue, 25 Feb 2020 09:40:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <6b83116c-2cca-fb03-1c13-bb436dccf1b3@cambridgegreys.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -0.7
-X-Spam-Score: -1.0
-X-Clacks-Overhead: GNU Terry Pratchett
+        id S1729609AbgBYJmg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Feb 2020 04:42:36 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55401 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729332AbgBYJmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 04:42:35 -0500
+Received: from mail-pj1-f69.google.com ([209.85.216.69])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1j6WjY-0007Fa-H3
+        for netdev@vger.kernel.org; Tue, 25 Feb 2020 09:42:32 +0000
+Received: by mail-pj1-f69.google.com with SMTP id c31so1723574pje.9
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 01:42:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=qW9RGA2yoPMiW3Kx/nzk+m/gnWxZba3lZu/gpv/Ykio=;
+        b=CYQzx/DDlof2w4OBHMQvY/25GA6jdGTSpLBOFsZXq0r/K09J0mdxPvXsrTXVCZALtq
+         ZuZOA4qKHwXKy9o7w5WYgm/j9kqu40jaiWCa65h4wBYhtmS07c3FUY36tatyP1NtK7dp
+         t09u+HqhhTYgN8YzvCxHwpv6MlGi9LAf4Uu0DEk5ZUSRL0/XiXHEnhFpRayUYFyoZnb+
+         BkTBzbGYrosy4zMblHxrivKMZ7V1Tsea/XmQg5969iVz/HFd3nbntzMAY82PEnpYrBJl
+         RtI9TcqV7HudVbbBbgBcme8Idu0VlNy8mB3OfZiK8hpkaGNu1lEDvn4QKuL4oy/P3704
+         GQYA==
+X-Gm-Message-State: APjAAAV7X3tvhSo8J0UWd6WTYVYAOQs/f9EI1qqI3a0vZ/ahuScovqPu
+        5FK/zHS6MDETmKwuC6JN2xJsExAPBEobvjv7O3N2ihVh7CfY+voucAeMJq1TURmaeAJEN4j44Rk
+        DBJIoHDzdWAM6HYafsi2JCBbv9t+/X3fvog==
+X-Received: by 2002:a17:902:b089:: with SMTP id p9mr54667621plr.42.1582623751054;
+        Tue, 25 Feb 2020 01:42:31 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzXiUrpXHoo48RK24Wp0HqIr5ldhZ93iqCXYewVgNjhMgIUvCWcxmth/JlUGNfosIYuNKD1nw==
+X-Received: by 2002:a17:902:b089:: with SMTP id p9mr54667588plr.42.1582623750614;
+        Tue, 25 Feb 2020 01:42:30 -0800 (PST)
+Received: from 2001-b011-380f-3214-6d62-6b9e-e5b8-db59.dynamic-ip6.hinet.net (2001-b011-380f-3214-6d62-6b9e-e5b8-db59.dynamic-ip6.hinet.net. [2001:b011:380f:3214:6d62:6b9e:e5b8:db59])
+        by smtp.gmail.com with ESMTPSA id e18sm16697476pfm.24.2020.02.25.01.42.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Feb 2020 01:42:30 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [RFC PATCH v2] e1000e: Use rtnl_lock to prevent race conditions
+ between net and pci/pm
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <20191007172559.11166.29328.stgit@localhost.localdomain>
+Date:   Tue, 25 Feb 2020 17:42:26 +0800
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        zdai@linux.vnet.ibm.com,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        zdai@us.ibm.com, David Miller <davem@davemloft.net>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <681404C7-9015-4C64-B8FE-2C93D75A7318@canonical.com>
+References: <CAKgT0UdwqGGKvaSJ+3vd-_d-6t9MB=No+7SpkbOT2PnynRK+2w@mail.gmail.com>
+ <20191007172559.11166.29328.stgit@localhost.localdomain>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Greg,
 
+> On Oct 8, 2019, at 01:27, Alexander Duyck <alexander.duyck@gmail.com> wrote:
+> 
+> From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> 
+> This patch is meant to address possible race conditions that can exist
+> between network configuration and power management. A similar issue was
+> fixed for igb in commit 9474933caf21 ("igb: close/suspend race in
+> netif_device_detach").
+> 
+> In addition it consolidates the code so that the PCI error handling code
+> will essentially perform the power management freeze on the device prior to
+> attempting a reset, and will thaw the device afterwards if that is what it
+> is planning to do. Otherwise when we call close on the interface it should
+> see it is detached and not attempt to call the logic to down the interface
+> and free the IRQs again.
+> 
+>> From what I can tell the check that was adding the check for __E1000_DOWN
+> in e1000e_close was added when runtime power management was added. However
+> it should not be relevant for us as we perform a call to
+> pm_runtime_get_sync before we call e1000_down/free_irq so it should always
+> be back up before we call into this anyway.
+> 
+> Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-On 25/02/2020 07:48, Anton Ivanov wrote:
-> 
-> 
-> On 24/02/2020 22:22, Willem de Bruijn wrote:
->> On Mon, Feb 24, 2020 at 4:00 PM Anton Ivanov
->> <anton.ivanov@cambridgegreys.com> wrote:
->>>
->>> On 24/02/2020 20:20, Willem de Bruijn wrote:
->>>> On Mon, Feb 24, 2020 at 2:55 PM Anton Ivanov
->>>> <anton.ivanov@cambridgegreys.com> wrote:
->>>>> On 24/02/2020 19:27, Willem de Bruijn wrote:
->>>>>> On Mon, Feb 24, 2020 at 8:26 AM <anton.ivanov@cambridgegreys.com> wrote:
->>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>>>>>>
->>>>>>> Some of the locally generated frames marked as GSO which
->>>>>>> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
->>>>>>> fragments (data_len = 0) and length significantly shorter
->>>>>>> than the MTU (752 in my experiments).
->>>>>> Do we understand how these packets are generated?
->>>>> No, we have not been able to trace them.
->>>>>
->>>>> The only thing we know is that this is specific to locally generated
->>>>> packets. Something arriving from the network does not show this.
->>>>>
->>>>>> Else it seems this
->>>>>> might be papering over a deeper problem.
->>>>>>
->>>>>> The stack should not create GSO packets less than or equal to
->>>>>> skb_shinfo(skb)->gso_size. See for instance the check in
->>>>>> tcp_gso_segment after pulling the tcp header:
->>>>>>
->>>>>>            mss = skb_shinfo(skb)->gso_size;
->>>>>>            if (unlikely(skb->len <= mss))
->>>>>>                    goto out;
->>>>>>
->>>>>> What is the gso_type, and does it include SKB_GSO_DODGY?
->>>>>>
->>>>>
->>>>> 0 - not set.
->>>> Thanks for the follow-up details. Is this something that you can trigger easily?
->>>
->>> Yes, if you have a UML instance handy.
->>>
->>> Running iperf between the host and a UML guest using raw socket
->>> transport triggers it immediately.
->>>
->>> This is my UML command line:
->>>
->>> vmlinux mem=2048M umid=OPX \
->>>       ubd0=OPX-3.0-Work.img \
->>> vec0:transport=raw,ifname=p-veth0,depth=128,gro=1,mac=92:9b:36:5e:38:69 \
->>>       root=/dev/ubda ro con=null con0=null,fd:2 con1=fd:0,fd:1
->>>
->>> p-right is a part of a vEth pair:
->>>
->>> ip link add l-veth0 type veth peer name p-veth0 && ifconfig p-veth0 up
->>>
->>> iperf server is on host, iperf -c in the guest.
->>>
->>>>
->>>> An skb_dump() + dump_stack() when the packet socket gets such a
->>>> packet may point us to the root cause and fix that.
->>>
->>> We tried dump stack, it was not informative - it was just the recvmmsg
->>> call stack coming from the UML until it hits the relevant recv bit in
->>> af_packet - it does not tell us where the packet is coming from.
->>>
->>> Quoting from the message earlier in the thread:
->>>
->>> [ 2334.180854] Call Trace:
->>> [ 2334.181947]  dump_stack+0x5c/0x80
->>> [ 2334.183021]  packet_recvmsg.cold+0x23/0x49
->>> [ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
->>> [ 2334.185034]  ? packet_poll+0xca/0x130
->>> [ 2334.186014]  ? sock_poll+0x77/0xb0
->>> [ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
->>> [ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
->>> [ 2334.188901]  ? dequeue_signal+0xdb/0x180
->>> [ 2334.189848]  do_recvmmsg+0xc8/0x2d0
->>> [ 2334.190728]  ? ep_poll+0x8c/0x470
->>> [ 2334.191581]  __sys_recvmmsg+0x108/0x150
->>> [ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
->>> [ 2334.193346]  do_syscall_64+0x53/0x140
->>> [ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>
->> That makes sense. skb_dump might show more interesting details about
->> the packet.
-> 
-> I will add that and retest later today.
+Please merge this commit, a7023819404ac9bd2bb311a4fafd38515cfa71ec to stable v5.14.
 
+`modprobe -r e1000e` triggers a null pointer dereference [1] after the the following two patches are applied to v5.4.y:
+d635e7c4b34e6a630c7a1e8f1a8fd52c3e3ceea7 e1000e: Revert "e1000e: Make watchdog use delayed work"
+21c6137939723ed6f5e4aec7882cdfc247304c27 e1000e: Drop unnecessary __E1000_DOWN bit twiddling
 
-skb len=818 headroom=2 headlen=818 tailroom=908
-mac=(2,14) net=(16,0) trans=16
-shinfo(txflags=0 nr_frags=0 gso(size=752 type=0 segs=1))
-csum(0x100024 ip_summed=3 complete_sw=0 valid=0 level=0)
-hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=4 iif=0
-sk family=17 type=3 proto=0
+[1] https://bugs.launchpad.net/bugs/1864303
 
-Deciphering the actual packet data gives a
+Kai-Heng
 
-TCP packet, ACK and PSH set.
-
-The PSH flag looks like the only "interesting" thing about it in first read.
-
+> ---
 > 
->> From the previous thread, these are assumed to be TCP
->> packets?
+> RFC v2: Dropped some unused variables
+> 	Added logic to check for device present before removing to pm_freeze
+> 	Fixed misplaced err_irq to before rtnl_unlock()
 > 
-> Yes
+> drivers/net/ethernet/intel/e1000e/netdev.c |   40 +++++++++++++++-------------
+> 1 file changed, 21 insertions(+), 19 deletions(-)
 > 
->>
->> I had missed the original thread. If the packet has
->>
->>      sinfo(skb)->gso_size = 752.
->>      skb->len = 818
->>
->> then this is a GSO packet. Even though UML will correctly process it
->> as a normal 818 B packet if psock_rcv pretends that it is, treating it
->> like that is not strictly correct. A related question is how the setup
->> arrived at that low MTU size, assuming that is not explicitly
->> configured that low.
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index d7d56e42a6aa..8b4e589aca36 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -4715,12 +4715,12 @@ int e1000e_close(struct net_device *netdev)
 > 
-> The mtu on the interface is normal. I suspect it is one of the first packets
-> in the stream or something iperf uses for communication between the server and
-> the client which always ends up that size.
+> 	pm_runtime_get_sync(&pdev->dev);
 > 
->>
->> As of commit 51466a7545b7 ("tcp: fill shinfo->gso_type at last
->> moment") tcp unconditionally sets gso_type, even for non gso packets.
->> So either this is not a tcp packet or the field gets zeroed somewhere
->> along the way. I could not quickly find a possible path to
->> skb_gso_reset or a raw write.
+> -	if (!test_bit(__E1000_DOWN, &adapter->state)) {
+> +	if (netif_device_present(netdev)) {
+> 		e1000e_down(adapter, true);
+> 		e1000_free_irq(adapter);
 > 
-> Same. I have tried to trace a possible origin and I have not seen anything which may cause it.
+> 		/* Link status message must follow this format */
+> -		pr_info("%s NIC Link is Down\n", adapter->netdev->name);
+> +		pr_info("%s NIC Link is Down\n", netdev->name);
+> 	}
 > 
->>
->> It may be useful to insert tests for this condition (skb_is_gso(skb)
->> && !skb_shinfo(skb)->gso_type) that call skb_dump at other points in
->> the network stack. For instance in __ip_queue_xmit and
->> __dev_queue_xmit.
->>
->> Since skb segmentation fails in tcp_gso_segment for such packets, it
->> may also be informative to disable TSO on the veth device and see if
->> the test fails.
+> 	napi_disable(&adapter->napi);
+> @@ -6298,10 +6298,14 @@ static int e1000e_pm_freeze(struct device *dev)
+> {
+> 	struct net_device *netdev = dev_get_drvdata(dev);
+> 	struct e1000_adapter *adapter = netdev_priv(netdev);
+> +	bool present;
 > 
-> Ack.
+> +	rtnl_lock();
+> +
+> +	present = netif_device_present(netdev);
+> 	netif_device_detach(netdev);
 > 
->>
+> -	if (netif_running(netdev)) {
+> +	if (present && netif_running(netdev)) {
+> 		int count = E1000_CHECK_RESET_COUNT;
+> 
+> 		while (test_bit(__E1000_RESETTING, &adapter->state) && count--)
+> @@ -6313,6 +6317,8 @@ static int e1000e_pm_freeze(struct device *dev)
+> 		e1000e_down(adapter, false);
+> 		e1000_free_irq(adapter);
+> 	}
+> +	rtnl_unlock();
+> +
+> 	e1000e_reset_interrupt_capability(adapter);
+> 
+> 	/* Allow time for pending master requests to run */
+> @@ -6626,27 +6632,31 @@ static int __e1000_resume(struct pci_dev *pdev)
+> 	return 0;
+> }
+> 
+> -#ifdef CONFIG_PM_SLEEP
+> static int e1000e_pm_thaw(struct device *dev)
+> {
+> 	struct net_device *netdev = dev_get_drvdata(dev);
+> 	struct e1000_adapter *adapter = netdev_priv(netdev);
+> +	int rc = 0;
+> 
+> 	e1000e_set_interrupt_capability(adapter);
+> -	if (netif_running(netdev)) {
+> -		u32 err = e1000_request_irq(adapter);
+> 
+> -		if (err)
+> -			return err;
+> +	rtnl_lock();
+> +	if (netif_running(netdev)) {
+> +		rc = e1000_request_irq(adapter);
+> +		if (rc)
+> +			goto err_irq;
+> 
+> 		e1000e_up(adapter);
+> 	}
+> 
+> 	netif_device_attach(netdev);
+> +err_irq:
+> +	rtnl_unlock();
+> 
+> -	return 0;
+> +	return rc;
+> }
+> 
+> +#ifdef CONFIG_PM_SLEEP
+> static int e1000e_pm_suspend(struct device *dev)
+> {
+> 	struct pci_dev *pdev = to_pci_dev(dev);
+> @@ -6818,16 +6828,11 @@ static void e1000_netpoll(struct net_device *netdev)
+> static pci_ers_result_t e1000_io_error_detected(struct pci_dev *pdev,
+> 						pci_channel_state_t state)
+> {
+> -	struct net_device *netdev = pci_get_drvdata(pdev);
+> -	struct e1000_adapter *adapter = netdev_priv(netdev);
+> -
+> -	netif_device_detach(netdev);
+> +	e1000e_pm_freeze(&pdev->dev);
+> 
+> 	if (state == pci_channel_io_perm_failure)
+> 		return PCI_ERS_RESULT_DISCONNECT;
+> 
+> -	if (netif_running(netdev))
+> -		e1000e_down(adapter, true);
+> 	pci_disable_device(pdev);
+> 
+> 	/* Request a slot slot reset. */
+> @@ -6893,10 +6898,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
+> 
+> 	e1000_init_manageability_pt(adapter);
+> 
+> -	if (netif_running(netdev))
+> -		e1000e_up(adapter);
+> -
+> -	netif_device_attach(netdev);
+> +	e1000e_pm_thaw(&pdev->dev);
+> 
+> 	/* If the controller has AMT, do not set DRV_LOAD until the interface
+> 	 * is up.  For all other cases, let the f/w know that the h/w is now
 > 
 
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
