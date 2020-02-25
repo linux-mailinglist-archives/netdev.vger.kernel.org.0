@@ -2,53 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B9F16EE8E
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:02:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8D416EE91
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731173AbgBYTCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:02:06 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48690 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728787AbgBYTCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:02:06 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CE2EF13B3AC26;
-        Tue, 25 Feb 2020 11:02:05 -0800 (PST)
-Date:   Tue, 25 Feb 2020 11:02:05 -0800 (PST)
-Message-Id: <20200225.110205.1860690641020290592.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     netdev@vger.kernel.org, chenzhou10@huawei.com, hulkci@huawei.com
-Subject: Re: [PATCH net] icmp: allow icmpv6_ndo_send to work with
- CONFIG_IPV6=n
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200225100535.45146-1-Jason@zx2c4.com>
-References: <20200225100535.45146-1-Jason@zx2c4.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1730539AbgBYTFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 14:05:04 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:29274 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728787AbgBYTFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:05:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1582657502;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=42aBOKu2QpvgqIIKVgSLqUIZaavqYHI63A82ZQRYIvA=;
+        b=GFgmIc/zm8LApjbbeVVOSVwpEhCwIW7Ot+b0Y3u6w3/ahEUel1xyYO9im1sqRc10MU
+        Uc+0BNhYha/KOMuNKX31E2kUOm5lobquaA3MUpzurkM5d9+nuxiK//40QinUWly3VDbe
+        GdAqd0B4O62TbKUzzCgTkli/WAHf0i5dJt4rmRuE18iPLJgfDG/JDTFS+JTc9iwY6hNU
+        FDlrIxAnD88ZabbNP6iaIOIyHRkrSd/mz9C/zROOu8eV6YR0noC1BycqUQdE3M0REouS
+        2HIMhnomo6qt2C23sb4LD6g7bFFnJQCppW1LynHrpBKJ10F95CoDSP/mFssdYjIXiWTA
+        vWIg==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVsh5lE2J"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.1.177]
+        by smtp.strato.de (RZmta 46.1.12 DYNA|AUTH)
+        with ESMTPSA id g084e8w1PJ4uDGM
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 25 Feb 2020 20:04:56 +0100 (CET)
+Subject: Re: [RFC] slip: not call free_netdev before rtnl_unlock in slip_open
+To:     yangerkun <yangerkun@huawei.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, maowenan@huawei.com
+References: <20200213093248.129757-1-yangerkun@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <2c08964c-d160-9841-4196-911a2ec7c2ff@hartkopp.net>
+Date:   Tue, 25 Feb 2020 20:04:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <20200213093248.129757-1-yangerkun@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Feb 2020 11:02:06 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Tue, 25 Feb 2020 18:05:35 +0800
+I pick it up to take a look at this :-)
 
-> The icmpv6_send function has long had a static inline implementation
-> with an empty body for CONFIG_IPV6=n, so that code calling it doesn't
-> need to be ifdef'd. The new icmpv6_ndo_send function, which is intended
-> for drivers as a drop-in replacement with an identical function
-> signature, should follow the same pattern. Without this patch, drivers
-> that used to work with CONFIG_IPV6=n now result in a linker error.
+On 13/02/2020 10.32, yangerkun wrote:
+> As the description before netdev_run_todo, we cannot call free_netdev
+> before rtnl_unlock, fix it by reorder the code.
 > 
-> Cc: Chen Zhou <chenzhou10@huawei.com>
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 0b41713b6066 ("icmp: introduce helper for nat'd source address in network device context")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: yangerkun <yangerkun@huawei.com>
 
-Applied, thanks Jason.
+Reviewed-by: Oliver Hartkopp <socketcan@hartkopp.net>
+
+The same issue applies to slcan_open() in slcan.c too.
+
+I'll send a patch for it, when this fix got merged.
+
+Best regards,
+Oliver
+
+> ---
+>   drivers/net/slip/slip.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+> index 6f4d7ba8b109..babb01888b78 100644
+> --- a/drivers/net/slip/slip.c
+> +++ b/drivers/net/slip/slip.c
+> @@ -863,7 +863,10 @@ static int slip_open(struct tty_struct *tty)
+>   	tty->disc_data = NULL;
+>   	clear_bit(SLF_INUSE, &sl->flags);
+>   	sl_free_netdev(sl->dev);
+> +	/* do not call free_netdev before rtnl_unlock */
+> +	rtnl_unlock();
+>   	free_netdev(sl->dev);
+> +	return err;
+>   
+>   err_exit:
+>   	rtnl_unlock();
+> 
