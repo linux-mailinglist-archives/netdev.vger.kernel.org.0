@@ -2,175 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6652116EAD4
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 17:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 679F716EB09
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 17:13:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730424AbgBYQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 11:07:13 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:40248 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729206AbgBYQHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 11:07:13 -0500
-Received: by mail-ed1-f65.google.com with SMTP id p3so16818626edx.7
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 08:07:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9arvUk2cDROQgu3vYCcsInrskI9x/O+LBT4kduBjlQY=;
-        b=BCYxRthhM/uNEfGO2DIAjqr5SPNI8DCKY8qUSz6YDnWAgtIdjCoHnYoSOAKzujTf69
-         FoLIAj9u2wGyC+fCGU4dB7bzkSolSW/BkE+X7aKxdS66lAvSLC07Iz+0LPtrl1mxdmUO
-         NEyfnHkypLBUNu/WuOiSos0QFN1bVdOBruDzG4jnVvEAMCcUGgEXmhV2OAecLDtA3cmW
-         Zu0s84N5Fr238I7jltzlJKDyJexbayfRHfw98uNt0PSV0K1pSdlEAzEgVCQ4o+ECKaR5
-         u8RIMnwk2R+M0k90M2y4vUtO37xsneC6MMtO4WnZqvyX4LY0arPYhWjJmo+abyjY3SBp
-         tnlQ==
+        id S1730573AbgBYQNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 11:13:24 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:35462 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729189AbgBYQNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 11:13:24 -0500
+Received: by mail-ot1-f67.google.com with SMTP id r16so50324otd.2;
+        Tue, 25 Feb 2020 08:13:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9arvUk2cDROQgu3vYCcsInrskI9x/O+LBT4kduBjlQY=;
-        b=fgp5tsjfxR0lQEdYNpxcPww1qgdQFdbTNBvr04aFjf8i1dX7Xaa3MASrI1DFUR07sE
-         fsRzDKR5Qut3Zqb4vLhSuoIJtKU64kYuDVQmbnA8Q0dABcwE1ziz8vqIbi6Q41SLygWu
-         OFGwikNuIiPEqwj6rAttc02CgkCsvrH354rphSrBr/aTVxGuci3OZ3nbDTY3DT0mQRqo
-         mYc7fEQhwL4e7OJtu7sqUy3c/YN+vD6QC7AyEpRhCGxUy79D9IwNsIV8XYa66XEbjQne
-         5wPZcV6VzhPdmvaCp+PDt96T49qkH1hrVxGdGjEmfEBy20H/IHNncYMHF64nXn4npea4
-         S4qA==
-X-Gm-Message-State: APjAAAUWNDiFJDHCGqoOjDJbZ6RfpAP4mQsemsIlGVtsMTHKfaHJw62K
-        L8X3rM9WgXje/dpOOVEB2LhDLZQPGd701GSR6AOpVg==
-X-Google-Smtp-Source: APXvYqzHZ5M65J1wSxStiQAYTfSOvJoaKbxN980Ghw3Ls5JXVOh56kKcVx01i3UMF1+gKusAzMeQLZVuJgYlujPpvtk=
-X-Received: by 2002:aa7:c44e:: with SMTP id n14mr54140896edr.179.1582646830983;
- Tue, 25 Feb 2020 08:07:10 -0800 (PST)
+        bh=VL+DlyeyetOp4hj4Wd5H2StakcvzqSai3gD2cxZNaVU=;
+        b=TCJFthGcpQjUV/t0A1xP4NxNmzxtaPk8RQ9L0c7x7ukdLOADNc4qsmFQrs3s1cmoF8
+         12OJSRL5wKhACXCm27oGkuuYuW7pO9CAg5YbTrV7Vei+8vsE0t4TuP1G0LmpPC9VTaip
+         w5j0I5h/f15lY1x+pA/NDnOrH26xHCVTAZJ/kx21em7dlwQt2iS8k/IbfYGGvwTfCXse
+         R3zQYnBAD8W47X7+04bYE3DzPXpddDYSdUsmwuQvcZwTvtEdmtM3ew2rNtqsgVY/mx1M
+         Kcbdu3XfjKovb6hlbilsLbL8M5YdCd+KOxDlAnRvhHsPAPSjgm5/0yhnrHk4qvaqLlyb
+         oWWQ==
+X-Gm-Message-State: APjAAAW7ljdwiaM5XkKnXBJ86E0jKvTp2+SvMU9QbCSl1TJJgRiC9XFu
+        sIYuvWsTI40kP9k57U7gE1bIQDY8Ci/PWouK5HA=
+X-Google-Smtp-Source: APXvYqy63J+4B+eRAxGKURNWKgaKqO36eFLFSszHvTNIVZUAJvPu1RoqON1pZkTd0zEjWOHRd5HvC3NhPplF8VrLqMI=
+X-Received: by 2002:a9d:7653:: with SMTP id o19mr43546746otl.118.1582647202902;
+ Tue, 25 Feb 2020 08:13:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20200224130831.25347-1-olteanv@gmail.com> <20200225144545.3lriucp2igwd3kpb@soft-dev3.microsemi.net>
-In-Reply-To: <20200225144545.3lriucp2igwd3kpb@soft-dev3.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 25 Feb 2020 18:06:59 +0200
-Message-ID: <CA+h21hrFLBF9+_v+Pk8nC6Vv0dGjP1P2fkA+ECtms-GL201OYg@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/10] Wire up Ocelot tc-flower to Felix DSA
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+References: <20200225131938.120447-1-christian.brauner@ubuntu.com> <20200225131938.120447-7-christian.brauner@ubuntu.com>
+In-Reply-To: <20200225131938.120447-7-christian.brauner@ubuntu.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 25 Feb 2020 17:13:11 +0100
+Message-ID: <CAJZ5v0ip8Z78_tOrDB+dR_t+V6YfKi6qY14nr6j6fW=zPu99wQ@mail.gmail.com>
+Subject: Re: [PATCH v6 6/9] drivers/base/power: add dpm_sysfs_change_owner()
+To:     Christian Brauner <christian.brauner@ubuntu.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "Y.b. Lu" <yangbo.lu@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Linux PM <linux-pm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+On Tue, Feb 25, 2020 at 2:22 PM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+>
+> Add a helper to change the owner of a device's power entries. This
+> needs to happen when the ownership of a device is changed, e.g. when
+> moving network devices between network namespaces.
+> This function will be used to correctly account for ownership changes,
+> e.g. when moving network devices between network namespaces.
+>
+> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 
-On Tue, 25 Feb 2020 at 16:45, Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
->
-> The 02/24/2020 15:08, Vladimir Oltean wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > This series is a proposal on how to wire up the tc-flower callbacks into
-> > DSA. The example taken is the Microchip Felix switch, whose core
-> > implementation is actually located in drivers/net/ethernet/mscc/.
-> >
-> > The proposal is largely a compromise solution. The DSA middle layer
-> > handles just enough to get to the interesting stuff (FLOW_CLS_REPLACE,
-> > FLOW_CLS_DESTROY, FLOW_CLS_STATS), but also thin enough to let drivers
-> > decide what filter keys and actions they support without worrying that
-> > the DSA middle layer will grow exponentially. I am far from being an
-> > expert, so I am asking reviewers to please voice your opinion if you
-> > think it can be done differently, with better results.
-> >
-> > The bulk of the work was actually refactoring the ocelot driver enough
-> > to allow the VCAP (Versatile Content-Aware Processor) code for vsc7514
-> > and the vsc9959 switch cores to live together.
-> >
-> > Flow block offloads have not been tested yet, only filters attached to a
-> > single port. It might be as simple as replacing ocelot_ace_rule_create
-> > with something smarter, it might be more complicated, I haven't tried
-> > yet.
-> >
-> > I should point out that the tc-matchall filter offload is not
-> > implemented in the same manner in current mainline. Florian has already
-> > went all the way down into exposing actual per-action callbacks,
-> > starting with port mirroring. Because currently only mirred is supported
-> > by this DSA mid layer, everything else will return -EOPNOTSUPP. So even
-> > though ocelot supports matchall (aka port-based) policers, we don't have
-> > a call path to call into them.  Personally I think that this is not
-> > going to scale for tc-matchall (there may be policers, traps, drops,
-> > VLAN retagging, etc etc), and that we should consider replacing the port
-> > mirroring callbacks in DSA with simple accessors to
-> > TC_CLSMATCHALL_REPLACE and TC_CLSMATCHALL_DESTROY, just like for flower.
-> > That means that drivers which currently implement the port mirroring
-> > callbacks will need to have some extra "if" conditions now, in order for
-> > them to call their port mirroring implementations.
-> >
-> > Vladimir Oltean (9):
-> >   net: mscc: ocelot: simplify tc-flower offload structures
-> >   net: mscc: ocelot: replace "rule" and "ocelot_rule" variable names
-> >     with "ace"
-> >   net: mscc: ocelot: return directly in
-> >     ocelot_cls_flower_{replace,destroy}
-> >   net: mscc: ocelot: don't rely on preprocessor for vcap key/action
-> >     packing
-> >   net: mscc: ocelot: remove port_pcs_init indirection for VSC7514
-> >   net: mscc: ocelot: parameterize the vcap_is2 properties
-> >   net: dsa: Refactor matchall mirred action to separate function
-> >   net: dsa: Add bypass operations for the flower classifier-action
-> >     filter
-> >   net: dsa: felix: Wire up the ocelot cls_flower methods
-> >
-> > Yangbo Lu (1):
-> >   net: mscc: ocelot: make ocelot_ace_rule support multiple ports
-> >
-> >  drivers/net/dsa/ocelot/felix.c            |  31 ++
-> >  drivers/net/dsa/ocelot/felix.h            |   3 +
-> >  drivers/net/dsa/ocelot/felix_vsc9959.c    | 126 ++++++
-> >  drivers/net/ethernet/mscc/ocelot.c        |  20 +-
-> >  drivers/net/ethernet/mscc/ocelot_ace.c    | 472 +++++++++++-----------
-> >  drivers/net/ethernet/mscc/ocelot_ace.h    |  26 +-
-> >  drivers/net/ethernet/mscc/ocelot_board.c  | 151 +++++--
-> >  drivers/net/ethernet/mscc/ocelot_flower.c | 256 ++++--------
-> >  drivers/net/ethernet/mscc/ocelot_tc.c     |  22 +-
-> >  drivers/net/ethernet/mscc/ocelot_vcap.h   | 403 ------------------
-> >  include/net/dsa.h                         |   6 +
-> >  include/soc/mscc/ocelot.h                 |  20 +-
-> >  include/soc/mscc/ocelot_vcap.h            | 205 ++++++++++
-> >  net/dsa/slave.c                           | 128 ++++--
-> >  14 files changed, 954 insertions(+), 915 deletions(-)
-> >  delete mode 100644 drivers/net/ethernet/mscc/ocelot_vcap.h
-> >  create mode 100644 include/soc/mscc/ocelot_vcap.h
-> >
-> > --
-> > 2.17.1
-> >
->
-> Hi Vladimir,
->
-> From my point, it looks OK the changes to Ocelot.
-> Also I managed to run some tests and they are passing.
->
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Thanks, I really appreciate you trying out the patches. Having the
-VCAP IS2 already implemented and working for Felix with minimal
-changes is also huge.
-I'll wait for further comments from the flow offload people, DSA
-people or anybody else, and if the timeout expires I'll send a v2
-addressing the Kbuild and David's reverse Christmas tree complaints.
-
+> ---
+> /* v2 */
+> - "Rafael J. Wysocki" <rafael@kernel.org>:
+>   -  Fold if (dev->power.wakeup && dev->power.wakeup->dev) check into
+>      if (device_can_wakeup(dev)) check since the former can never be true if
+>      the latter is false.
+>
+> - Christian Brauner <christian.brauner@ubuntu.com>:
+>   - Place (dev->power.wakeup && dev->power.wakeup->dev) check under
+>     CONFIG_PM_SLEEP ifdefine since it will wakeup_source will only be available
+>     when this config option is set.
+>
+> /* v3 */
+> -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+>    - Add explicit uid/gid parameters.
+>
+> /* v4 */
+> - "Rafael J. Wysocki" <rafael@kernel.org>:
+>    - Remove in-function #ifdef in favor of separate helper that is a nop
+>      whenver !CONFIG_PM_SLEEP.
+>
+> /* v5 */
+> - "Rafael J. Wysocki" <rafael@kernel.org>:
+>    - Return directly if condition is true in dpm_sysfs_wakeup_change_owner()
+>      instead of using additional variable.
+>
+> /* v6 */
+> - Christian Brauner <christian.brauner@ubuntu.com>:
+>   - Make dpm_sysfs_wakeup_change_owner() static inline.
+> ---
+>  drivers/base/core.c        |  4 +++
+>  drivers/base/power/power.h |  3 +++
+>  drivers/base/power/sysfs.c | 55 +++++++++++++++++++++++++++++++++++++-
+>  3 files changed, 61 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 988f34ce2eb0..fb8b7990f6fd 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -3552,6 +3552,10 @@ int device_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+>         if (error)
+>                 goto out;
+>
+> +       error = dpm_sysfs_change_owner(dev, kuid, kgid);
+> +       if (error)
+> +               goto out;
+> +
+>  #ifdef CONFIG_BLOCK
+>         if (sysfs_deprecated && dev->class == &block_class)
+>                 goto out;
+> diff --git a/drivers/base/power/power.h b/drivers/base/power/power.h
+> index 444f5c169a0b..54292cdd7808 100644
+> --- a/drivers/base/power/power.h
+> +++ b/drivers/base/power/power.h
+> @@ -74,6 +74,7 @@ extern int pm_qos_sysfs_add_flags(struct device *dev);
+>  extern void pm_qos_sysfs_remove_flags(struct device *dev);
+>  extern int pm_qos_sysfs_add_latency_tolerance(struct device *dev);
+>  extern void pm_qos_sysfs_remove_latency_tolerance(struct device *dev);
+> +extern int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid);
+>
+>  #else /* CONFIG_PM */
+>
+> @@ -88,6 +89,8 @@ static inline void pm_runtime_remove(struct device *dev) {}
+>
+>  static inline int dpm_sysfs_add(struct device *dev) { return 0; }
+>  static inline void dpm_sysfs_remove(struct device *dev) {}
+> +static inline int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid,
+> +                                        kgid_t kgid) { return 0; }
+>
+>  #endif
+>
+> diff --git a/drivers/base/power/sysfs.c b/drivers/base/power/sysfs.c
+> index d7d82db2e4bc..2b99fe1eb207 100644
+> --- a/drivers/base/power/sysfs.c
+> +++ b/drivers/base/power/sysfs.c
+> @@ -480,6 +480,14 @@ static ssize_t wakeup_last_time_ms_show(struct device *dev,
+>         return enabled ? sprintf(buf, "%lld\n", msec) : sprintf(buf, "\n");
+>  }
+>
+> +static inline int dpm_sysfs_wakeup_change_owner(struct device *dev, kuid_t kuid,
+> +                                               kgid_t kgid)
+> +{
+> +       if (dev->power.wakeup && dev->power.wakeup->dev)
+> +               return device_change_owner(dev->power.wakeup->dev, kuid, kgid);
+> +       return 0;
+> +}
+> +
+>  static DEVICE_ATTR_RO(wakeup_last_time_ms);
+>
+>  #ifdef CONFIG_PM_AUTOSLEEP
+> @@ -501,7 +509,13 @@ static ssize_t wakeup_prevent_sleep_time_ms_show(struct device *dev,
+>
+>  static DEVICE_ATTR_RO(wakeup_prevent_sleep_time_ms);
+>  #endif /* CONFIG_PM_AUTOSLEEP */
+> -#endif /* CONFIG_PM_SLEEP */
+> +#else /* CONFIG_PM_SLEEP */
+> +static inline int dpm_sysfs_wakeup_change_owner(struct device *dev, kuid_t kuid,
+> +                                               kgid_t kgid)
+> +{
+> +       return 0;
+> +}
+> +#endif
+>
+>  #ifdef CONFIG_PM_ADVANCED_DEBUG
+>  static ssize_t runtime_usage_show(struct device *dev,
+> @@ -684,6 +698,45 @@ int dpm_sysfs_add(struct device *dev)
+>         return rc;
+>  }
+>
+> +int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+> +{
+> +       int rc;
+> +
+> +       if (device_pm_not_required(dev))
+> +               return 0;
+> +
+> +       rc = sysfs_group_change_owner(&dev->kobj, &pm_attr_group, kuid, kgid);
+> +       if (rc)
+> +               return rc;
+> +
+> +       if (pm_runtime_callbacks_present(dev)) {
+> +               rc = sysfs_group_change_owner(
+> +                       &dev->kobj, &pm_runtime_attr_group, kuid, kgid);
+> +               if (rc)
+> +                       return rc;
+> +       }
+> +
+> +       if (device_can_wakeup(dev)) {
+> +               rc = sysfs_group_change_owner(&dev->kobj, &pm_wakeup_attr_group,
+> +                                             kuid, kgid);
+> +               if (rc)
+> +                       return rc;
+> +
+> +               rc = dpm_sysfs_wakeup_change_owner(dev, kuid, kgid);
+> +               if (rc)
+> +                       return rc;
+> +       }
+> +
+> +       if (dev->power.set_latency_tolerance) {
+> +               rc = sysfs_group_change_owner(
+> +                       &dev->kobj, &pm_qos_latency_tolerance_attr_group, kuid,
+> +                       kgid);
+> +               if (rc)
+> +                       return rc;
+> +       }
+> +       return 0;
+> +}
+> +
+>  int wakeup_sysfs_add(struct device *dev)
+>  {
+>         return sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
 > --
-> /Horatiu
-
-Regards,
--Vladimir
+> 2.25.1
+>
