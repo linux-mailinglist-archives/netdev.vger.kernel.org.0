@@ -2,135 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE4116B6AE
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:27:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6B1F16B641
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 01:08:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgBYA14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 19:27:56 -0500
-Received: from gateway33.websitewelcome.com ([192.185.145.23]:13242 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728087AbgBYA1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:27:55 -0500
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id E210C135D2
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 18:04:00 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 6NhgjhSRLRP4z6Nhgj6Znb; Mon, 24 Feb 2020 18:04:00 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=q67V6wkz/vP58iDZWoblidrn9lVnubX/pXsOU2x0CG0=; b=xjMuCcfDK2IR1n0XjWR9lmhBDv
-        42BFoVIxSRVzKvH836FTURQOhCmJtGhYH/r5hHyXOuzILas2/BCeCkMw+nLzPnCgOH6f47dFqxCnP
-        4komlYZTAvGklfkzV7OPVXrB15ou3eGQGOtga65+8wR8O/OjiZjYJ5H0YLY2cqnIgNbI2qD4i2H1H
-        Q9hGdi8lpTi8V8JTCfoxOyZLpsBKVExitmnr+x75I4PPz0M1QdbdjPkNYJLFvAOVN9JkSdlfwgkSV
-        JiRSsZ3Sg3G0wLiDkDQswEP+zI3mufPkEE7QGomr13FvlkUHYKUENi2VWwAh/vYk6ZnY8uHE+r1B1
-        yqMpge3g==;
-Received: from [201.166.190.71] (port=54310 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j6Nhe-002MWf-3D; Mon, 24 Feb 2020 18:03:59 -0600
-Date:   Mon, 24 Feb 2020 18:06:47 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] sfc: Replace zero-length array with flexible-array
- member
-Message-ID: <20200225000647.GA17795@embeddedor>
+        id S1728440AbgBYAIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 19:08:05 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:36359 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726651AbgBYAIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 19:08:05 -0500
+Received: by mail-qk1-f195.google.com with SMTP id f3so7470123qkh.3;
+        Mon, 24 Feb 2020 16:08:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7U/Xnopp7HziZ6TTtjf/x259n7uyOH8t1WEbO/vN4yM=;
+        b=hcKKDpU3QLRiUU8hbG1AJHAHjcbjCiYGn7DeSGek8JpcBaPU5YcdXb2MO49g+acldF
+         ekZeERF2Oubb0HcXnpodGn9nW+xkaWdm42seNEVZ6BwbbdOqs4xaPSBXTnbeMixmu+Or
+         Fs5j58ArmyAubIAVbkwn8fU5UTONtrxdlpGIfX88ZtHUd7KDPAFD/eUa6uqp81SABQcy
+         /Vm8rx9PEq1ayGlrMRbYHbGc2iJ4PEmAxK2RMpglPsz57SAMcDfQJb4zaWT357rkFUYl
+         L3msNsxV09qW1CyM2Is8JX+oJLTxco6rhEJcTu9YR07VooiDVnOrq/efzYnij/nshoUU
+         UMdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7U/Xnopp7HziZ6TTtjf/x259n7uyOH8t1WEbO/vN4yM=;
+        b=tOkVRNenoV8iIFDiQKFHnFIlDEq9bnzU1KXUlrSoDKIQU5kmzcZefaQRab8ZSvodVi
+         rDjzfKQi6ZLPSnu/JG+yfrqltCpLr3FW7PBvcjpySBkQKGUL1irhMJFCqJhBpkQKzFax
+         KXdPuqmG5x8+70lUwgwacfoOYksEmUwkCK446J9qwb9E7ZATIlAfqeoXQf9ZM5gIMyYC
+         Xpzzk0fWOnF8hY9uOYn8Q539fxAUPaWfyzWSYEWjWNjmlovv5hMk8gtNvXSTLkCJ6/Db
+         6+NEifw9X0Tnw2M3+1g/IDKippQUxaLtUKnn5btV50fpQS+rz7I0nkoZQETDnfGyot0s
+         YgkQ==
+X-Gm-Message-State: APjAAAXD/201/cHWkTtMw54IqhWkGWmD4B2PsSzHaGKAfzIkIXm80VaJ
+        em93kXIzyt0s5oqiauMYAWYON3nzWdudXS3Rn7M=
+X-Google-Smtp-Source: APXvYqyT4CZdvF3zAxy0NP7TeQlB3pw66yBObLfwa7fJmcq7TSDSQNXrp4OpKMVAHSeBG/gix22gH9ukAWPgRwITRMc=
+X-Received: by 2002:a37:a70c:: with SMTP id q12mr5119547qke.36.1582589283607;
+ Mon, 24 Feb 2020 16:08:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.166.190.71
-X-Source-L: No
-X-Exim-ID: 1j6Nhe-002MWf-3D
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.190.71]:54310
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 15
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20200223054320.2006995-1-andriin@fb.com> <0614970B-8A37-470F-82F3-2F4C36E873C0@fb.com>
+In-Reply-To: <0614970B-8A37-470F-82F3-2F4C36E873C0@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 24 Feb 2020 16:07:51 -0800
+Message-ID: <CAEf4BzZLL_=VeVhx3+WnoWwn=G4soUnpPaB_-RAzsxNZfzW6gQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: print backtrace on SIGSEGV in test_progs
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On Mon, Feb 24, 2020 at 1:34 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Feb 22, 2020, at 9:43 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Due to various bugs in test clean up code (usually), if host system is
+> > misconfigured, it happens that test_progs will just crash in the middle of
+> > running a test with little to no indication of where and why the crash
+> > happened. For cases where coredump is not readily available (e.g., inside
+> > a CI), it's very helpful to have a stack trace, which lead to crash, to be
+> > printed out. This change adds a signal handler that will capture and print out
+> > symbolized backtrace:
+> >
+> >  $ sudo ./test_progs -t mmap
+> >  test_mmap:PASS:skel_open_and_load 0 nsec
+> >  test_mmap:PASS:bss_mmap 0 nsec
+> >  test_mmap:PASS:data_mmap 0 nsec
+> >  Caught signal #11!
+> >  Stack trace:
+> >  ./test_progs(crash_handler+0x18)[0x42a888]
+> >  /lib64/libpthread.so.0(+0xf5d0)[0x7f2aab5175d0]
+> >  ./test_progs(test_mmap+0x3c0)[0x41f0a0]
+> >  ./test_progs(main+0x160)[0x407d10]
+> >  /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f2aab15d3d5]
+> >  ./test_progs[0x407ebc]
+> >  [1]    1988412 segmentation fault (core dumped)  sudo ./test_progs -t mmap
+> >
+> > Unfortunately, glibc's symbolization support is unable to symbolize static
+> > functions, only global ones will be present in stack trace. But it's still a
+> > step forward without adding extra libraries to get a better symbolization.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> > tools/testing/selftests/bpf/Makefile     |  2 +-
+> > tools/testing/selftests/bpf/test_progs.c | 26 ++++++++++++++++++++++++
+> > 2 files changed, 27 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > index 2a583196fa51..50c63c21e6fd 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -20,7 +20,7 @@ CLANG               ?= clang
+> > LLC           ?= llc
+> > LLVM_OBJCOPY  ?= llvm-objcopy
+> > BPF_GCC               ?= $(shell command -v bpf-gcc;)
+> > -CFLAGS += -g -Wall -O2 $(GENFLAGS) -I$(CURDIR) -I$(APIDIR)           \
+> > +CFLAGS += -g -rdynamic -Wall -O2 $(GENFLAGS) -I$(CURDIR) -I$(APIDIR) \
+> >         -I$(INCLUDE_DIR) -I$(GENDIR) -I$(LIBDIR) -I$(TOOLSINCDIR)     \
+> >         -Dbpf_prog_load=bpf_prog_test_load                            \
+> >         -Dbpf_load_program=bpf_test_load_program
+> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > index bab1e6f1d8f1..531ab3e7e5e5 100644
+> > --- a/tools/testing/selftests/bpf/test_progs.c
+> > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > @@ -6,6 +6,8 @@
+> > #include "bpf_rlimit.h"
+> > #include <argp.h>
+> > #include <string.h>
+> > +#include <signal.h>
+> > +#include <execinfo.h> /* backtrace */
+> >
+> > /* defined in test_progs.h */
+> > struct test_env env = {};
+> > @@ -617,6 +619,22 @@ int cd_flavor_subdir(const char *exec_name)
+> >       return chdir(flavor);
+> > }
+> >
+> > +#define MAX_BACKTRACE_SZ 128
+> > +void crash_handler(int signum)
+> > +{
+> > +     void *bt[MAX_BACKTRACE_SZ];
+> > +     size_t sz;
+> > +
+> > +     sz = backtrace(bt, ARRAY_SIZE(bt));
+> > +
+> > +     if (env.test)
+> > +             dump_test_log(env.test, true);
+> > +     stdio_restore();
+> > +
+> > +     fprintf(stderr, "Caught signal #%d!\nStack trace:\n", signum);
+> > +     backtrace_symbols_fd(bt, sz, STDERR_FILENO);
+> > +}
+> > +
+> > int main(int argc, char **argv)
+> > {
+> >       static const struct argp argp = {
+> > @@ -624,8 +642,16 @@ int main(int argc, char **argv)
+> >               .parser = parse_arg,
+> >               .doc = argp_program_doc,
+> >       };
+> > +     struct sigaction sigact = {
+> > +             .sa_handler = crash_handler,
+> > +             .sa_flags = SA_RESETHAND,
+> > +     };
+> >       int err, i;
+> >
+> > +     env.stdout = stdout;
+> > +     env.stderr = stderr;
+>
+> We have the same code in stdio_hijack(). Maybe remove those in
+> stdio_hijack()?
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+Yeah, this is ugly. I'll just check for (!env.stdout) in signal
+handler instead. Sending v2...
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/ethernet/sfc/falcon/net_driver.h | 2 +-
- drivers/net/ethernet/sfc/net_driver.h        | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/falcon/net_driver.h b/drivers/net/ethernet/sfc/falcon/net_driver.h
-index a49ea2e719b6..a529ff395ead 100644
---- a/drivers/net/ethernet/sfc/falcon/net_driver.h
-+++ b/drivers/net/ethernet/sfc/falcon/net_driver.h
-@@ -288,7 +288,7 @@ struct ef4_rx_buffer {
- struct ef4_rx_page_state {
- 	dma_addr_t dma_addr;
- 
--	unsigned int __pad[0] ____cacheline_aligned;
-+	unsigned int __pad[] ____cacheline_aligned;
- };
- 
- /**
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 9f9886f222c8..392bd5b7017e 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -336,7 +336,7 @@ struct efx_rx_buffer {
- struct efx_rx_page_state {
- 	dma_addr_t dma_addr;
- 
--	unsigned int __pad[0] ____cacheline_aligned;
-+	unsigned int __pad[] ____cacheline_aligned;
- };
- 
- /**
--- 
-2.25.0
-
+>
+> > +     sigaction(SIGSEGV, &sigact, NULL);
+> > +
+> >       err = argp_parse(&argp, argc, argv, 0, NULL, &env);
+> >       if (err)
+> >               return err;
+> > --
+> > 2.17.1
+> >
+>
