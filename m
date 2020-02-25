@@ -2,191 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E13016BB24
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 08:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA8C16BB29
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 08:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729597AbgBYHni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 02:43:38 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:52248 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729189AbgBYHnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 02:43:37 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6UsM-0000xu-R3; Tue, 25 Feb 2020 07:43:31 +0000
-Received: from jain.kot-begemot.co.uk ([192.168.3.3])
-        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1j6UsK-0007eU-Cm; Tue, 25 Feb 2020 07:43:30 +0000
-Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
-To:     Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-um@lists.infradead.org,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        virtualization@lists.linux-foundation.org
-References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
- <CA+FuTSd8P6uQnwisZEh7+nfowW9qKLBEvA4GPg+xUkjBa-6TDA@mail.gmail.com>
- <4e7757cf-148e-4585-b358-3b38f391275d@cambridgegreys.com>
- <CA+FuTSdOCJZCVS4xohx+BQmkmq8JALnK=gGc0=qy1TbjY707ag@mail.gmail.com>
- <93cb2b3f-6cae-8cf1-5fab-93fa34c14628@cambridgegreys.com>
- <CA+FuTScEXRwYtFzn-jtFhV0dNKNQqKPBwCWaNORJW=ERU=izMA@mail.gmail.com>
- <1af28666-1d27-8c9e-7225-2796a9f7336e@redhat.com>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Message-ID: <86d6945d-a569-f0e5-e868-dfccbdb5701f@cambridgegreys.com>
-Date:   Tue, 25 Feb 2020 07:43:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <1af28666-1d27-8c9e-7225-2796a9f7336e@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1729607AbgBYHnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 02:43:50 -0500
+Received: from mail-eopbgr10079.outbound.protection.outlook.com ([40.107.1.79]:39781
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725837AbgBYHnt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 02:43:49 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iFSfrvhsBTgH1lpv/aplhQaLYNNw9ZdxEQWUggdj2zKCA+NcEAUe49yNF4Xotm+MfIzf7KtcBTi/GuxaSntJrssu+3D6vT/OKmZefVHvfWmBmE0xnOj0oWyzuGdT+VOwT0uQczMxsRRkRZP0GmqBblvLvpdiqtOBBVWKf/EYMQeZQJHlxIKyh6L6m/PLeL5IZhyVpIofqitqj2AgpfZFOdWvT6mScIASlQDb6+6OZ2xBLxYwoRtjLdle+7GrLt8DyZeJ0xPQo50IWeKcmy/inZ10/6du143LdUO9f+WpBRGyBfmHHDCnCLltZxtTZO2rPsMxEMretdmVWT91kraxCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cYKAf/7XmNkyMTt/YKnkO11BBIZuyBa/WyYdPoRJKeU=;
+ b=A224SpITi9FCwLgYUjph6sGoVG8yWNoCZOmU/9o0RzNDAzLo/EHKv010t5qvoXrJelVb9JEAmwu44ZxxOhOMtt+XKPbJzhPhbyQUa64p+TB7K32v37vVwWJZpQfQaJnP4okrs1CKw9Q7Nqm14fqfxoMOCv0iC9TBUKp/mhV5inbotIVm/Ztv8ihmwV+yQkSB6eHPeQebSlHTfKHC1yonhN3v9+9LPXSfd4OUV1s/DQSjM3BZTRfuJ+tB+TiGBSzXJpa5YYeOKYsJFnPG2u+fMsxtZspoOHoFjh10jBSwacSWBywPSA5TxIgQEjSjfXws+bxo7tPw+yKwkuJ3JP8zHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cYKAf/7XmNkyMTt/YKnkO11BBIZuyBa/WyYdPoRJKeU=;
+ b=MI3MzjcO72jimTkSL5nYAxnuyswe670XcGt9XVXk+hGGv2Vvox9IO3TTMvVnRT5sEMXZOdv/dsULFCq1JVyg8IUKR35k8yp+vUgKnDZwXTqWUe2fYK9KWB86lN37d1vzx3eJOoqe+tSvmOrIkJ4SwrlAnogQcakOmEgoFihAvAw=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+Received: from AM6PR05MB6408.eurprd05.prod.outlook.com (20.179.5.215) by
+ AM6SPR01MB0033.eurprd05.prod.outlook.com (20.177.117.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.22; Tue, 25 Feb 2020 07:43:44 +0000
+Received: from AM6PR05MB6408.eurprd05.prod.outlook.com
+ ([fe80::c99f:9130:561f:dea0]) by AM6PR05MB6408.eurprd05.prod.outlook.com
+ ([fe80::c99f:9130:561f:dea0%3]) with mapi id 15.20.2750.021; Tue, 25 Feb 2020
+ 07:43:44 +0000
+Date:   Tue, 25 Feb 2020 09:43:41 +0200
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "yishaih@dev.mellanox.co.il" <yishaih@dev.mellanox.co.il>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rosenbaumalex@gmail.com" <rosenbaumalex@gmail.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>
+Subject: Re: [PATCH mlx5-next 1/2] net/mlx5: Expose raw packet pacing APIs
+Message-ID: <20200225074341.GA5347@unreal>
+References: <20200219190518.200912-1-leon@kernel.org>
+ <20200219190518.200912-2-leon@kernel.org>
+ <ea7589ad4d3f847f49e4b4f230cdc130ed4b83a8.camel@mellanox.com>
+ <449186ce-c66f-a762-24c3-139c4ced3b1c@dev.mellanox.co.il>
+ <df68bb933da1c20bbd1c131653895f9233249c9e.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Score: -0.7
-X-Spam-Score: -0.7
-X-Clacks-Overhead: GNU Terry Pratchett
+In-Reply-To: <df68bb933da1c20bbd1c131653895f9233249c9e.camel@mellanox.com>
+X-ClientProxiedBy: AM3PR05CA0101.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::27) To AM6PR05MB6408.eurprd05.prod.outlook.com
+ (2603:10a6:20b:b8::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (193.47.165.251) by AM3PR05CA0101.eurprd05.prod.outlook.com (2603:10a6:207:1::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Tue, 25 Feb 2020 07:43:43 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: e6556f94-0276-47ff-1672-08d7b9c67094
+X-MS-TrafficTypeDiagnostic: AM6SPR01MB0033:|AM6SPR01MB0033:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6SPR01MB003395D3F9FDBCEACAC8F4D2B0ED0@AM6SPR01MB0033.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0324C2C0E2
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(366004)(199004)(189003)(6496006)(52116002)(956004)(66476007)(16526019)(6636002)(26005)(186003)(53546011)(498600001)(86362001)(66556008)(33716001)(66946007)(5660300002)(81166006)(8936002)(54906003)(4326008)(6486002)(6862004)(8676002)(1076003)(33656002)(9686003)(2906002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6SPR01MB0033;H:AM6PR05MB6408.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vCSx53w+7+njhj1iFVktZgMTv9WtllDygorhqq40z/oV9bA/P3ZXpROgD5vvH99beblQlUZ5cJ8Q1zMaKhWc/d2rpbyXZ2v9v26K3HT5mXFB+sCfdF0aGtEZBZqP9awxaDwlCAvKnGFD0Q7T6bdkECCpFu0AltEcKefb9Eiv6yy57j+hiTXLvLMkIWpyJPgo0UNGjYBkPs6KPusCD5XjK5uvq7g2V4GiMFhNYy46UehaLnUYo12mNafBtj2LJx1nNS8PBpG5dsgpQLyK+kBS1+DaMeKrlnZdvL6NgG9k54Hhz2GptuCgybISuYuwt5+2s5nz/OH+eaZiXHWO8k8fizXWaa9jr0rm21qhu5qUATzKcHnYpx3DOblib9XIda8mYg6almTfBm1jKR6qWi0jEUDURHH0pIAsYdrOuh7COi6czLGz0ZQZzexrOd18rrs2
+X-MS-Exchange-AntiSpam-MessageData: wNZqNPFX3D9Gx3tcG+/y0xJRefoLB/TcaoLfHPJ5eJ0i/hv2NA2veIYSQgwPE/wQ18TDYng7pZxgHPBuEcDf1SjaeUt+sSQZrNzOAuP3LKgAk+e+JL+i8oUbgn8LqMrHoU2uzuvjJNoNynn8cWaxHw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6556f94-0276-47ff-1672-08d7b9c67094
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2020 07:43:44.2549
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DupfrntN3bvt2vGqKMKMhGBHq3nop4howyLRfdBbpABtdMi7kisHk7sH65thXvVufeJmFHyDtw2yLd+4yjzCIw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0033
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 24, 2020 at 11:32:58PM +0000, Saeed Mahameed wrote:
+> On Sun, 2020-02-23 at 10:53 +0200, Yishai Hadas wrote:
+> > On 2/21/2020 9:04 PM, Saeed Mahameed wrote:
+> > > On Wed, 2020-02-19 at 21:05 +0200, Leon Romanovsky wrote:
+> > > > From: Yishai Hadas <yishaih@mellanox.com>
+> > > >
+> > > > Expose raw packet pacing APIs to be used by DEVX based
+> > > > applications.
+> > > > The existing code was refactored to have a single flow with the
+> > > > new
+> > > > raw
+> > > > APIs.
+> > > >
+> > > > The new raw APIs considered the input of 'pp_rate_limit_context',
+> > > > uid,
+> > > > 'dedicated', upon looking for an existing entry.
+> > > >
+> > > > This raw mode enables future device specification data in the raw
+> > > > context without changing the existing logic and code.
+> > > >
+> > > > The ability to ask for a dedicated entry gives control for
+> > > > application
+> > > > to allocate entries according to its needs.
+> > > >
+> > > > A dedicated entry may not be used by some other process and it
+> > > > also
+> > > > enables the process spreading its resources to some different
+> > > > entries
+> > > > for use different hardware resources as part of enforcing the
+> > > > rate.
+> > > >
+> > >
+> > > It sounds like the dedicated means "no sharing" which means you
+> > > don't
+> > > need to use the mlx5_core API and you can go directly to FW.. The
+> > > problem is that the entry indices are managed by driver, and i
+> > > guess
+> > > this is the reason why you had to expand the mlx5_core API..
+> > >
+> >
+> > The main reason for introducing the new mlx5_core APIs was the need
+> > to
+> > support the "shared mode" in a "raw data" format to prevent future
+> > touching the kernel once PRM will support extra fields.
+> > As the RL indices are managed by the driver (mlx5_core) including
+> > the
+> > sharing, we couldn’t go directly to FW, the legacy API was
+> > refactored
+> > inside the core to have one flow with the new raw APIs.
+> > So we may need those APIs regardless the dedicated mode.
+> >
+>
+> I not a fan of legacy APIs, all of the APIs are mlx5 internals and i
+> would like to keep one API which is only PRM dependent as much as
+> possible.
+>
+> Anyway thanks for the clarification, i think the patch is good as is,
+> we can improve and remove the legacy API in the future and keep the raw
+> API.
+>
+> >
+> > > I would like to suggest some alternatives to simplify the approach
+> > > and
+> > > allow using RAW PRM for DEVX properly.
+> > >
+> > > 1. preserve RL entries for DEVX and let DEVX access FW directly
+> > > with
+> > > PRM commands.
+> > > 2. keep mlx5_core API simple and instead of adding this raw/non raw
+> > > api
+> > > and complicating the RL API with this dedicated bit:
+> > >
+> > > just add mlx5_rl_{alloc/free}_index(), this will dedicate for you
+> > > the
+> > > RL index form the end of the RL indices database and you are free
+> > > to
+> > > access the FW with this index the way you like via direct PRM
+> > > commands.
+> > >
+> > As mentioned above, we may still need the new mlx5_core raw APIs for
+> > the
+> > shared mode which is the main usage of the API, we found it
+> > reasonable
+> > to have the dedicate flag in the new raw alloc API instead of
+> > exposing
+> > more two new APIs only for that.
+> >
+> > Please note that even if we'll go with those 2 extra APIs for the
+> > dedicated mode, we may still need to maintain in the core this
+> > information to prevent returning this entry for other cases.
+> >
+> > Also the idea to preserve some entries at the end might be wasteful
+> > as
+> > there is no guarantee that DEVX will really be used, and even so it
+> > may
+> > not ask for entries in a dedicated mode.
+> >
+> > Presering them for this optional use case might prevent using them
+> > for
+> > all other cases.
+> >
+> >
+> > > > The counter per entry mas changed to be u64 to prevent any option
+> > > > to
+> > >                     typo ^^^ was
+> >
+> > Sure, thanks.
+> >
+>
+> Leon, Other than the typo i am good with this patch.
+> you can fix up the patch prior to pulling into mlx5-next, no need for
+> v2.
 
+Thanks Saeed, I'll apply it once Doug/Jason ack RDMA part of the series.
 
-On 25/02/2020 04:02, Jason Wang wrote:
-> 
-> On 2020/2/25 上午6:22, Willem de Bruijn wrote:
->> On Mon, Feb 24, 2020 at 4:00 PM Anton Ivanov
->> <anton.ivanov@cambridgegreys.com> wrote:
->>> On 24/02/2020 20:20, Willem de Bruijn wrote:
->>>> On Mon, Feb 24, 2020 at 2:55 PM Anton Ivanov
->>>> <anton.ivanov@cambridgegreys.com> wrote:
->>>>> On 24/02/2020 19:27, Willem de Bruijn wrote:
->>>>>> On Mon, Feb 24, 2020 at 8:26 AM <anton.ivanov@cambridgegreys.com> wrote:
->>>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
->>>>>>>
->>>>>>> Some of the locally generated frames marked as GSO which
->>>>>>> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
->>>>>>> fragments (data_len = 0) and length significantly shorter
->>>>>>> than the MTU (752 in my experiments).
->>>>>> Do we understand how these packets are generated?
->>>>> No, we have not been able to trace them.
->>>>>
->>>>> The only thing we know is that this is specific to locally generated
->>>>> packets. Something arriving from the network does not show this.
->>>>>
->>>>>> Else it seems this
->>>>>> might be papering over a deeper problem.
->>>>>>
->>>>>> The stack should not create GSO packets less than or equal to
->>>>>> skb_shinfo(skb)->gso_size. See for instance the check in
->>>>>> tcp_gso_segment after pulling the tcp header:
->>>>>>
->>>>>>            mss = skb_shinfo(skb)->gso_size;
->>>>>>            if (unlikely(skb->len <= mss))
->>>>>>                    goto out;
->>>>>>
->>>>>> What is the gso_type, and does it include SKB_GSO_DODGY?
->>>>>>
->>>>> 0 - not set.
->>>> Thanks for the follow-up details. Is this something that you can trigger easily?
->>> Yes, if you have a UML instance handy.
->>>
->>> Running iperf between the host and a UML guest using raw socket
->>> transport triggers it immediately.
->>>
->>> This is my UML command line:
->>>
->>> vmlinux mem=2048M umid=OPX \
->>>       ubd0=OPX-3.0-Work.img \
->>> vec0:transport=raw,ifname=p-veth0,depth=128,gro=1,mac=92:9b:36:5e:38:69 \
->>>       root=/dev/ubda ro con=null con0=null,fd:2 con1=fd:0,fd:1
->>>
->>> p-right is a part of a vEth pair:
->>>
->>> ip link add l-veth0 type veth peer name p-veth0 && ifconfig p-veth0 up
->>>
->>> iperf server is on host, iperf -c in the guest.
->>>
->>>> An skb_dump() + dump_stack() when the packet socket gets such a
->>>> packet may point us to the root cause and fix that.
->>> We tried dump stack, it was not informative - it was just the recvmmsg
->>> call stack coming from the UML until it hits the relevant recv bit in
->>> af_packet - it does not tell us where the packet is coming from.
->>>
->>> Quoting from the message earlier in the thread:
->>>
->>> [ 2334.180854] Call Trace:
->>> [ 2334.181947]  dump_stack+0x5c/0x80
->>> [ 2334.183021]  packet_recvmsg.cold+0x23/0x49
->>> [ 2334.184063]  ___sys_recvmsg+0xe1/0x1f0
->>> [ 2334.185034]  ? packet_poll+0xca/0x130
->>> [ 2334.186014]  ? sock_poll+0x77/0xb0
->>> [ 2334.186977]  ? ep_item_poll.isra.0+0x3f/0xb0
->>> [ 2334.187936]  ? ep_send_events_proc+0xf1/0x240
->>> [ 2334.188901]  ? dequeue_signal+0xdb/0x180
->>> [ 2334.189848]  do_recvmmsg+0xc8/0x2d0
->>> [ 2334.190728]  ? ep_poll+0x8c/0x470
->>> [ 2334.191581]  __sys_recvmmsg+0x108/0x150
->>> [ 2334.192441]  __x64_sys_recvmmsg+0x25/0x30
->>> [ 2334.193346]  do_syscall_64+0x53/0x140
->>> [ 2334.194262]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->> That makes sense. skb_dump might show more interesting details about
->> the packet. From the previous thread, these are assumed to be TCP
->> packets?
->>
->> I had missed the original thread. If the packet has
->>
->>      sinfo(skb)->gso_size = 752.
->>      skb->len = 818
->>
->> then this is a GSO packet. Even though UML will correctly process it
->> as a normal 818 B packet if psock_rcv pretends that it is, treating it
->> like that is not strictly correct. A related question is how the setup
->> arrived at that low MTU size, assuming that is not explicitly
->> configured that low.
->>
->> As of commit 51466a7545b7 ("tcp: fill shinfo->gso_type at last
->> moment") tcp unconditionally sets gso_type, even for non gso packets.
->> So either this is not a tcp packet or the field gets zeroed somewhere
->> along the way. I could not quickly find a possible path to
->> skb_gso_reset or a raw write.
->>
->> It may be useful to insert tests for this condition (skb_is_gso(skb)
->> && !skb_shinfo(skb)->gso_type) that call skb_dump at other points in
->> the network stack. For instance in __ip_queue_xmit and
->> __dev_queue_xmit.
-> 
-> 
-> +1
-> 
-> We meet some customer hit such condition as well which lead over MTU packet to be queued by TAP which crashes their buggy userspace application.
-> 
-> We suspect it's the issue of wrong gso_type vs gso_size.
-
-Well, we now have a test case where all the code is available and 100% under our control :)
-
-Brgds,
-
-> 
-> Thanks
-> 
-> 
->>
->> Since skb segmentation fails in tcp_gso_segment for such packets, it
->> may also be informative to disable TSO on the veth device and see if
->> the test fails.
->>
-> 
-> 
-> _______________________________________________
-> linux-um mailing list
-> linux-um@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-um
-
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+>
+> Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+>
+>
+> thanks,
+> Saeed.
+>
