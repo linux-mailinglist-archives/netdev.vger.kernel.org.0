@@ -2,160 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2440716B71A
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 02:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2700616B718
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 02:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728689AbgBYBTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 20:19:09 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:37600 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728529AbgBYBTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 20:19:08 -0500
-Received: by mail-ot1-f67.google.com with SMTP id b3so10602093otp.4;
-        Mon, 24 Feb 2020 17:19:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aE1i9Rz4lLQhWMcE4DMh4CNy5Gg6MzzIMCjBhBBi/rs=;
-        b=QEID+QJ9xZeQ58mEs3KxCOZ+xtPBop2qKOjgokoNp+jbmAzHNMB1AKFkurgmOEXf37
-         lIIuxK86GUjW7jKPOorKXNbUoydEqeXYjZ0l6iGIn7uFf5xAChd3wjJOvCTqIh0RUXW/
-         a5QdJsLwG1xhDpEHZimA1ZBLddylZbvm4qsFU4L85h6NFa3nYOpGf/MJ75DeCQmM68Ia
-         2/xAsZ2qOsbzc7d45L1KEcF2Pw6jHYzeEyoWNQCk12m3t/fjKwsCTD70acaTl0jpUH16
-         dJ3P8CDhws9W44d7xJdWbmJ1jvLN0nMiLwXHDbLDnyyQFlX2VgAwNvj7+M9kwF8fIw/L
-         gdnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aE1i9Rz4lLQhWMcE4DMh4CNy5Gg6MzzIMCjBhBBi/rs=;
-        b=D3TV4mQmEeTW2sH23AMOo1P3o1+og/DUWbMmGz4bfYn8hpG1orYJ2UHKGK5lvvJJHL
-         zxJTXLZ60Uukmup4Y9Cr6UKcT0BUecVfN6dQ2bItxGDzB+88ot4PikrWzgANqHtk5xz5
-         OFGrF9wixFwlplWa1vHbxz0jUigv5SPrlUJU1p36Dj1GAb1/SwRTXsCZwp5EXrlYyyuN
-         oZ7AnlHn9o7U+GlwIIHYl7eRSvDCtYCFDTqTQKEM2+gmM6DKCKFheRzm2tb7AhQaDZfk
-         aa9W9LXZdgrDM3iPCma1CGBcD/iuBrwNLABtGU02m0C7JbiiaPJQyxXPrcPzg/cEh2N1
-         ON8w==
-X-Gm-Message-State: APjAAAVd/nGpMxQS7yzxoYXIJiIpDy9Jrp4UmDzQ/cdU/Xfb9g+g8ljz
-        FFbenN5aJRkXyqU08wV1DQh15CpmPCi8zLPzqxg=
-X-Google-Smtp-Source: APXvYqwWq03HyoRhkh6X6v2oIwvKH4wC2OZrfsZMOdlFU0MD49+Kv33pqgqy6FT9XQnTLJOe0EG1UxES727L18YBHsQ=
-X-Received: by 2002:a9d:6d10:: with SMTP id o16mr43983492otp.28.1582593547644;
- Mon, 24 Feb 2020 17:19:07 -0800 (PST)
+        id S1728697AbgBYBRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 20:17:23 -0500
+Received: from gateway30.websitewelcome.com ([192.185.196.18]:47403 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727378AbgBYBRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 20:17:22 -0500
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 0897C3CA4
+        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 19:17:21 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 6OqfjjMxJvBMd6OqfjfVfV; Mon, 24 Feb 2020 19:17:21 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8PuKkfXcmVyx3upImaxoOPndGOZW+wA+Sy4Sih/Rb3U=; b=fNVAqJz/DRQv+OOERZb352EIG2
+        c41NMqpOz2CQ44CATBGzKrFbwtNxw1WK6PZewR66YgVClYxFBgohbKBIE1fRdHE+rsGdmmM8sI6Cx
+        uqlTZGaE3XJWFq4+c39PBtxKOmaHDa/YQpyj1CAY7dapnHIXmrncAuu4MaHxh3RLNi9XYR609Pz+B
+        6UHaC3Ak3feP3RO/Uqdv2d0kJgjdtu05UYAZUONpbbfLSjQqwvcRg7YZkaTMK00txwHpSh5oBEUTZ
+        VboH0gquje3vTf8J4TjcGVHlVdazQsUQPRY5bt0Hp9VlstlgWNYGiK3U/S9drUzHSO47/axkGoPYn
+        YsIED7HQ==;
+Received: from [201.166.191.50] (port=58608 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j6Oqd-002v0R-6d; Mon, 24 Feb 2020 19:17:19 -0600
+Date:   Mon, 24 Feb 2020 19:20:08 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] prism54: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200225012008.GA4309@embeddedor>
 MIME-Version: 1.0
-References: <0000000000000cce30059f4e27e9@google.com> <CANFp7mWobejCpiq5xXouKAcRBSAbVwxKOnFbJ_XfiU6rLsT0Vw@mail.gmail.com>
-In-Reply-To: <CANFp7mWobejCpiq5xXouKAcRBSAbVwxKOnFbJ_XfiU6rLsT0Vw@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 24 Feb 2020 17:18:56 -0800
-Message-ID: <CABBYNZJzxO=aTnYOL7UpDzK+PDNcAa-DuH_5N+FZV6OZp52uFA@mail.gmail.com>
-Subject: Re: WARNING: refcount bug in l2cap_chan_put
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     syzbot <syzbot+198362c76088d1515529@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.166.191.50
+X-Source-L: No
+X-Exim-ID: 1j6Oqd-002v0R-6d
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.166.191.50]:58608
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 28
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-On Mon, Feb 24, 2020 at 11:33 AM Abhishek Pandit-Subedi
-<abhishekpandit@chromium.org> wrote:
->
-> (Resent in plain text; sorry for double send)
->
-> I took a brief look at this error and uncovered that 6lowpan uses zero
-> locks when using l2cap (should be using the channel lock).
->
-> It seems like it would be better just to convert its direct use of
-> l2cap channel into using an l2cap socket.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-I recall having some thought on that, I think having a socket like
-RFCOMM does would be better but I don't remember why I haven't
-follow-up on that, well we wanted to discontinue the bt specific
-6lowpan on the kernel side though.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-> On Mon, Feb 24, 2020 at 12:28 AM syzbot
-> <syzbot+198362c76088d1515529@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    bee46b30 Add linux-next specific files for 20200221
-> > git tree:       linux-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1244ea7ee00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=10693880b4976691
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=198362c76088d1515529
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=160a03d9e00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f8e1dde00000
-> >
-> > Bisection is inconclusive: the bug happens on the oldest tested release.
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13f03a7ee00000
-> > final crash:    https://syzkaller.appspot.com/x/report.txt?x=10083a7ee00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=17f03a7ee00000
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+198362c76088d1515529@syzkaller.appspotmail.com
-> >
-> > ------------[ cut here ]------------
-> > refcount_t: underflow; use-after-free.
-> > WARNING: CPU: 1 PID: 2940 at lib/refcount.c:28 refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
-> > Kernel panic - not syncing: panic_on_warn set ...
-> > CPU: 1 PID: 2940 Comm: kworker/1:12 Not tainted 5.6.0-rc2-next-20200221-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Workqueue: events do_enable_set
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x197/0x210 lib/dump_stack.c:118
-> >  panic+0x2e3/0x75c kernel/panic.c:221
-> >  __warn.cold+0x2f/0x3e kernel/panic.c:582
-> >  report_bug+0x289/0x300 lib/bug.c:195
-> >  fixup_bug arch/x86/kernel/traps.c:175 [inline]
-> >  fixup_bug arch/x86/kernel/traps.c:170 [inline]
-> >  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-> >  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-> >  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-> > RIP: 0010:refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
-> > Code: e9 d8 fe ff ff 48 89 df e8 81 81 10 fe e9 85 fe ff ff e8 07 54 d1 fd 48 c7 c7 00 c8 91 88 c6 05 6b f6 fc 06 01 e8 23 74 a1 fd <0f> 0b e9 ac fe ff ff 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 55 48
-> > RSP: 0018:ffffc9000952fbd8 EFLAGS: 00010286
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > RDX: 0000000000000000 RSI: ffffffff815ee766 RDI: fffff520012a5f6d
-> > RBP: ffffc9000952fbe8 R08: ffff88809e82e600 R09: ffffed1015d26661
-> > R10: ffffed1015d26660 R11: ffff8880ae933307 R12: 0000000000000003
-> > R13: ffff888095b3f018 R14: dead000000000122 R15: ffffc9000952fc98
-> >  refcount_sub_and_test include/linux/refcount.h:261 [inline]
-> >  refcount_dec_and_test include/linux/refcount.h:281 [inline]
-> >  kref_put include/linux/kref.h:64 [inline]
-> >  l2cap_chan_put+0x1d9/0x240 net/bluetooth/l2cap_core.c:501
-> >  do_enable_set+0x54b/0x960 net/bluetooth/6lowpan.c:1075
-> >  process_one_work+0xa05/0x17a0 kernel/workqueue.c:2266
-> >  worker_thread+0x98/0xe40 kernel/workqueue.c:2412
-> >  kthread+0x361/0x430 kernel/kthread.c:255
-> >  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> > Kernel Offset: disabled
-> > Rebooting in 86400 seconds..
-> >
-> >
-> > ---
-> > This bug is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this bug report. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> > syzbot can test patches for this bug, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
+This issue was found with the help of Coccinelle.
 
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/wireless/intersil/prism54/isl_oid.h    | 8 ++++----
+ drivers/net/wireless/intersil/prism54/islpci_mgt.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireless/intersil/prism54/isl_oid.h b/drivers/net/wireless/intersil/prism54/isl_oid.h
+index 5441c1f9f2fc..1afc2ccf94ca 100644
+--- a/drivers/net/wireless/intersil/prism54/isl_oid.h
++++ b/drivers/net/wireless/intersil/prism54/isl_oid.h
+@@ -37,7 +37,7 @@ struct obj_mlmeex {
+ 	u16 state;
+ 	u16 code;
+ 	u16 size;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct obj_buffer {
+@@ -68,12 +68,12 @@ struct obj_bss {
+ 
+ struct obj_bsslist {
+ 	u32 nr;
+-	struct obj_bss bsslist[0];
++	struct obj_bss bsslist[];
+ } __packed;
+ 
+ struct obj_frequencies {
+ 	u16 nr;
+-	u16 mhz[0];
++	u16 mhz[];
+ } __packed;
+ 
+ struct obj_attachment {
+@@ -81,7 +81,7 @@ struct obj_attachment {
+ 	char reserved;
+ 	short id;
+ 	short size;
+-	char data[0];
++	char data[];
+ } __packed;
+ 
+ /*
+diff --git a/drivers/net/wireless/intersil/prism54/islpci_mgt.h b/drivers/net/wireless/intersil/prism54/islpci_mgt.h
+index d6bbbac46b4a..1f87d0aea60c 100644
+--- a/drivers/net/wireless/intersil/prism54/islpci_mgt.h
++++ b/drivers/net/wireless/intersil/prism54/islpci_mgt.h
+@@ -99,7 +99,7 @@ struct islpci_mgmtframe {
+ 	pimfor_header_t *header;      /* payload header, points into buf */
+ 	void *data;		      /* payload ex header, points into buf */
+         struct work_struct ws;	      /* argument for schedule_work() */
+-	char buf[0];		      /* fragment buffer */
++	char buf[];		      /* fragment buffer */
+ };
+ 
+ int
 -- 
-Luiz Augusto von Dentz
+2.25.0
+
