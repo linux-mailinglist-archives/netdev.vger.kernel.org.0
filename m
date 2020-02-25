@@ -2,87 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5399116BE48
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 11:09:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8FFD16BF04
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 11:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729959AbgBYKJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 05:09:03 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:58811 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729129AbgBYKJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Feb 2020 05:09:03 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d66c8548;
-        Tue, 25 Feb 2020 10:05:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=bMG3a8sETAFevA+RrkHwTbqJF4k=; b=tuTxGH
-        wrdaV6dHFYM1sfCD2lgenrCr2sIS4fI8ONgYGlT8HU/Pjh2/XeqoG6FUR7UYzWgr
-        CU8NaYNpLND2rmT2wHojH0PTFjmUD7hT7Ry2dvF3TZ/xLha/KqpfFCSf+S+L5CLU
-        xVtVBQXuCgU9vThFW6Y+D/tPqYThlXnpUVEn2kCGZz5k+U8sncwOSa4bjhYnJYWk
-        ibPUjc+4P5NT7rLRri7fIhbQ7RtSs2fZ92qKSnOUGQN01ZskpZl7JiivgiDOhzPZ
-        jqKCm097vS2cYmlvis5k8sh0KfgLpPjeUsMmYFjO82TJcCerTVbL+KFjkmXcxnU3
-        h/0iZnHS9GLePBKQ==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d1f191ff (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Tue, 25 Feb 2020 10:05:30 +0000 (UTC)
-Received: by mail-ot1-f44.google.com with SMTP id r27so11541373otc.8;
-        Tue, 25 Feb 2020 02:09:01 -0800 (PST)
-X-Gm-Message-State: APjAAAXPUkT6CYNljQlMZYl1A3tiHhS8R0D4W7P8CtLxsbRGq4VwjYsJ
-        LfWdO+X7WOkFR56jnqmBEjTZQd3OoLZJU64Nfto=
-X-Google-Smtp-Source: APXvYqyH6FyTD1BglsITNbf1R40BsS3/QdM1a7nYQiUam5fFt2VuAFypr29/4UNOs4hsUsYffLXzwJybJ3XWivHpwE4=
-X-Received: by 2002:a9d:6a53:: with SMTP id h19mr45381243otn.120.1582625340064;
- Tue, 25 Feb 2020 02:09:00 -0800 (PST)
+        id S1730353AbgBYKpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 05:45:32 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38078 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729417AbgBYKpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 05:45:32 -0500
+Received: by mail-wr1-f66.google.com with SMTP id e8so14130512wrm.5
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 02:45:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JKudRvcTO8rgWPkCP9rmiRjxyvxieFSOWjFOG+/nM30=;
+        b=I/Yz+pell4sk9QZoibTiZyfQpxqMCF6Bgo8/1k9PqEISXfdY+vN6N9FXsQlxKl2XSB
+         eEAiUXzqYokrmWIUku1GUJsnExo12/WbmLQAL7NtyZKTCZtqajBK2Z2FeiFeZMQbmeSM
+         rkXWzveQA6DBGtTI7m+8zAtLLLEBp5Dse+diQZkVytEZfok4wc4usOAwF01juPzduklK
+         eG8njtRmm840XGSRkq1sml1BtJdhioYH4d0qgCQb/RTZzzqA6A07IiXzTlflU4gWZjmn
+         bn/wO2hS6pQ9hZ5/Gkf719oG0U6d4W1AR8VtqdnPv2Ue/M8ti7ZtIiiGB0i4craqTpbv
+         vokA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JKudRvcTO8rgWPkCP9rmiRjxyvxieFSOWjFOG+/nM30=;
+        b=U8I8AKWcWasl+yDICtvtb/M5DGZI/VDJWEaP8A0fuekHKK67fhiod3bUze8uiTUOoj
+         dOTjOXVSM259YY4QcB/VhqUOULAsU0ENSt8/Q7jwTcSCDb+ckgDRxdweB626mFp8R1EP
+         kuTdf1t4nZ3nmhGvsoMhIuGWSXaC67ryQpGNhgJxpbnPV+zYWxR0Od306Yw1VkmXBe0i
+         zox5+VE8mPY6fqyjk7ESNcEkkWK/KiSvg3hFIwLF76FU/ovTlylt3PW+p0GHrVY4ydAM
+         wQJ7/wNi1FsSWVtg5DKrfyJ3Md1VmiARlGZaM1on3hGEurNVfw6ErDUW6SbHfD8XoWTm
+         Kv2g==
+X-Gm-Message-State: APjAAAVMV+Izcfxsf9+bHSNG/7Ex9Cvy+OKGczF7lfWgyYBgfxVxFJtz
+        NC7dafloOCdOwYoqnAy1bK1FGOanT2E=
+X-Google-Smtp-Source: APXvYqwKSZ8O8PRzrBfyVC0sLjCKii5OGn6XyNt+DyicLIlmcXRg49XcpV3U0IljyB3ufGcLEUVhtw==
+X-Received: by 2002:adf:f641:: with SMTP id x1mr19853187wrp.248.1582627528595;
+        Tue, 25 Feb 2020 02:45:28 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id b11sm23516733wrx.89.2020.02.25.02.45.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 02:45:28 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next v2 00/10] mlxsw: Implement ACL-dropped packets identification
+Date:   Tue, 25 Feb 2020 11:45:17 +0100
+Message-Id: <20200225104527.2849-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-References: <20200225063930.106436-1-chenzhou10@huawei.com> <CAHmME9rWq+jJk5s+OoQ+MFMg74=b-a+LtJFjNWqLg6fcreLKbA@mail.gmail.com>
-In-Reply-To: <CAHmME9rWq+jJk5s+OoQ+MFMg74=b-a+LtJFjNWqLg6fcreLKbA@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 25 Feb 2020 18:08:48 +0800
-X-Gmail-Original-Message-ID: <CAHmME9pr0CEiztk11GMJS3MFhQkAmeUPkM-uHR06_ataw+SpBg@mail.gmail.com>
-Message-ID: <CAHmME9pr0CEiztk11GMJS3MFhQkAmeUPkM-uHR06_ataw+SpBg@mail.gmail.com>
-Subject: Re: [PATCH -next] drivers: net: WIREGUARD depends on IPV6
-To:     Chen Zhou <chenzhou10@huawei.com>
-Cc:     David Miller <davem@davemloft.net>, jiri@mellanox.com,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 2:52 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> On 2/25/20, Chen Zhou <chenzhou10@huawei.com> wrote:
-> > If CONFIG_IPV6 is n, build fails:
-> >
-> > drivers/net/wireguard/device.o: In function `wg_xmit':
-> > device.c:(.text+0xb2d): undefined reference to `icmpv6_ndo_send'
-> > make: *** [vmlinux] Error 1
-> >
-> > Set WIREGUARD depending on IPV6 to fix this.
-> >
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> > ---
-> >  drivers/net/Kconfig | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-> > index 25a8f93..824292e 100644
-> > --- a/drivers/net/Kconfig
-> > +++ b/drivers/net/Kconfig
-> > @@ -74,7 +74,7 @@ config DUMMY
-> >  config WIREGUARD
-> >       tristate "WireGuard secure network tunnel"
-> >       depends on NET && INET
-> > -     depends on IPV6 || !IPV6
-> > +     depends on IPV6
->
-> Thanks for reporting the breakage. However, this is not the correct
-> fix, as wireguard should work without IPv6. Rather, the recent icmp
-> fixes changed something. I'll investigate why when I'm off the road in
-> several hours.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Off the road. Fix posted to mailing list:
-https://lore.kernel.org/netdev/20200225100535.45146-1-Jason@zx2c4.com/
+mlxsw hardware allows to insert a ACL-drop action with a value defined
+by user that would be later on passed with a dropped packet.
+
+To implement this, use the existing TC action cookie and pass it to the
+driver. As the cookie format coming down from TC and the mlxsw HW cookie
+format is different, do the mapping of these two using idr and rhashtable.
+
+The cookie is passed up from the HW through devlink_trap_report() to
+drop_monitor code. A new metadata type is used for that.
+
+Example:
+$ tc qdisc add dev enp0s16np1 clsact
+$ tc filter add dev enp0s16np1 ingress protocol ip pref 10 flower skip_sw dst_ip 192.168.1.2 action drop cookie 3b45fa38c8
+                                                                                                                ^^^^^^^^^^
+$ devlink trap set pci/0000:00:10.0 trap acl action trap
+$ dropwatch
+Initializing null lookup method
+dropwatch> set hw true
+setting hardware drops monitoring to 1
+dropwatch> set alertmode packet
+Setting alert mode
+Alert mode successfully set
+dropwatch> start
+Enabling monitoring...
+Kernel monitoring activated.
+Issue Ctrl-C to stop monitoring
+drop at: ingress_flow_action_drop (acl_drops)
+origin: hardware
+input port ifindex: 30
+input port name: enp0s16np1
+cookie: 3b45fa38c8    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+timestamp: Fri Jan 24 17:10:53 2020 715387671 nsec
+protocol: 0x800
+length: 98
+original length: 98
+
+This way the user may insert multiple drop rules and monitor the dropped
+packets with the information of which action caused the drop.
+
+Jiri Pirko (10):
+  flow_offload: pass action cookie through offload structures
+  devlink: add trap metadata type for cookie
+  drop_monitor: extend by passing cookie from driver
+  devlink: extend devlink_trap_report() to accept cookie and pass
+  mlxsw: core_acl_flex_actions: Add trap with userdef action
+  mlxsw: core_acl_flex_actions: Implement flow_offload action cookie
+    offload
+  mlxsw: pci: Extract cookie index for ACL discard trap packets
+  mlxsw: spectrum_trap: Lookup and pass cookie down to
+    devlink_trap_report()
+  netdevsim: add ACL trap reporting cookie as a metadata
+  selftests: netdevsim: Extend devlink trap test to include flow action
+    cookie
+
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   5 +-
+ .../mellanox/mlxsw/core_acl_flex_actions.c    | 289 +++++++++++++++++-
+ .../mellanox/mlxsw/core_acl_flex_actions.h    |   7 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |   9 +
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h  |   5 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  11 +-
+ .../ethernet/mellanox/mlxsw/spectrum_acl.c    |   7 +-
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c |   3 +-
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  46 ++-
+ drivers/net/netdevsim/dev.c                   | 117 ++++++-
+ drivers/net/netdevsim/netdevsim.h             |   2 +
+ include/net/devlink.h                         |   8 +-
+ include/net/drop_monitor.h                    |   3 +
+ include/net/flow_offload.h                    |  11 +
+ include/uapi/linux/devlink.h                  |   2 +
+ include/uapi/linux/net_dropmon.h              |   1 +
+ net/core/devlink.c                            |  14 +-
+ net/core/drop_monitor.c                       |  33 +-
+ net/core/flow_offload.c                       |  21 ++
+ net/sched/cls_api.c                           |  31 +-
+ .../drivers/net/netdevsim/devlink_trap.sh     |   5 +
+ 21 files changed, 605 insertions(+), 25 deletions(-)
+
+-- 
+2.21.1
+
