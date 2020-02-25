@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFCD216EF2D
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF4716EF3C
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 20:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730968AbgBYTkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 14:40:20 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:45628 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729510AbgBYTkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 14:40:20 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1j6g3y-00AX5g-Jj; Tue, 25 Feb 2020 20:40:14 +0100
-Message-ID: <c80d2bbae9606ae09746ad0d382b0b555f9987e3.camel@sipsolutions.net>
-Subject: Re: [RFC] wwan: add a new WWAN subsystem
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        elder@linaro.org, m.chetan.kumar@intel.com, dcbw@redhat.com,
-        bjorn.andersson@linaro.org
-Date:   Tue, 25 Feb 2020 20:40:12 +0100
-In-Reply-To: <20200225.110033.2078372349210559509.davem@davemloft.net>
-References: <20200225100053.16385-1-johannes@sipsolutions.net>
-         <20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid>
-         <20200225.110033.2078372349210559509.davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1730794AbgBYToz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 14:44:55 -0500
+Received: from mx2.suse.de ([195.135.220.15]:55560 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728051AbgBYToz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 14:44:55 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id D0466AB7F;
+        Tue, 25 Feb 2020 19:44:52 +0000 (UTC)
+From:   Michal Rostecki <mrostecki@opensuse.org>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/5] bpftool: Make probes which emit dmesg warnings optional
+Date:   Tue, 25 Feb 2020 20:44:38 +0100
+Message-Id: <20200225194446.20651-1-mrostecki@opensuse.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-02-25 at 11:00 -0800, David Miller wrote:
-> From: Johannes Berg <johannes@sipsolutions.net>
-> Date: Tue, 25 Feb 2020 11:00:53 +0100
-> 
-> > +static struct wwan_device *wwan_create(struct device *dev)
-> > +{
-> > +     struct wwan_device *wwan = kzalloc(sizeof(*wwan), GFP_KERNEL);
-> > +     u32 id = ++wwan_id_counter;
-> > +     int err;
-> > +
-> > +     lockdep_assert_held(&wwan_mtx);
-> > +
-> > +     if (WARN_ON(!id))
-> > +             return ERR_PTR(-ENOSPC);
-> 
-> This potentially leaks 'wwan'.
+Feature probes in bpftool related to bpf_probe_write_user and
+bpf_trace_printk helpers emit dmesg warnings which might be confusing
+for people running bpftool on production environments. This patch series
+addresses that by filtering them out by default and introducing the new
+positional argument "full" which enables all available probes.
 
-Eagle eyes ... thanks! :)
+The main motivation behind those changes is ability the fact that some
+probes (for example those related to "trace" or "write_user" helpers)
+emit dmesg messages which might be confusing for people who are running
+on production environments. For details see the Cilium issue[0].
 
-I suppose this will be totally different if I can integrate with the
-component device stuff somehow, will see.
+v1 -> v2:
+- Do not expose regex filters to users, keep filtering logic internal,
+expose only the "full" option for including probes which emit dmesg
+warnings.
 
-johannes
+v2 -> v3:
+- Do not use regex for filtering out probes, use function IDs directly.
+- Fix bash completion - in v2 only "prefix" was proposed after "macros",
+  "dev" and "kernel" were not.
+- Rephrase the man page paragraph, highlight helper function names.
+- Remove tests which parse the plain output of bpftool (except the
+  header/macros test), focus on testing JSON output instead.
+- Add test which compares the output with and without "full" option.
+
+[0] https://github.com/cilium/cilium/issues/10048
+
+Michal Rostecki (5):
+  bpftool: Move out sections to separate functions
+  bpftool: Make probes which emit dmesg warnings optional
+  bpftool: Update documentation of "bpftool feature" command
+  bpftool: Update bash completion for "bpftool feature" command
+  selftests/bpf: Add test for "bpftool feature" command
+
+ .../bpftool/Documentation/bpftool-feature.rst |  19 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   3 +-
+ tools/bpf/bpftool/feature.c                   | 283 +++++++++++-------
+ tools/testing/selftests/.gitignore            |   5 +-
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ tools/testing/selftests/bpf/test_bpftool.py   | 179 +++++++++++
+ tools/testing/selftests/bpf/test_bpftool.sh   |   5 +
+ 7 files changed, 374 insertions(+), 123 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
+
+-- 
+2.25.1
 
