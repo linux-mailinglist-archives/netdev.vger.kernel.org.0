@@ -2,76 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF16C16EB6C
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 17:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0013B16EB18
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 17:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730939AbgBYQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 11:29:40 -0500
-Received: from sender11-of-f72.zoho.eu ([31.186.226.244]:17817 "EHLO
-        sender11-of-f72.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728065AbgBYQ3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 11:29:39 -0500
-X-Greylist: delayed 906 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Feb 2020 11:29:38 EST
-Received: from [172.30.220.169] (163.114.130.128 [163.114.130.128]) by mx.zoho.eu
-        with SMTPS id 158264725127230.28543562251855; Tue, 25 Feb 2020 17:14:11 +0100 (CET)
-Subject: Re: [PATCH][next] wireless: realtek: Replace zero-length array with
- flexible-array member
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200225002746.GA26789@embeddedor>
-From:   Jes Sorensen <jes@trained-monkey.org>
-Message-ID: <04cba503-9de8-0b61-8d97-77bf47392ef5@trained-monkey.org>
-Date:   Tue, 25 Feb 2020 11:14:09 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1730208AbgBYQQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 11:16:38 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41016 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728051AbgBYQQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 11:16:38 -0500
+Received: by mail-pg1-f196.google.com with SMTP id 70so7096969pgf.8
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 08:16:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=f6ByfgXPM82KxYuRcY9g427z4rs8ELUhq95U8hEF4Xo=;
+        b=IAh10TkX6uqGIj2oBiKLm4a0pl999aL+UkRIaTJzL/49yDWL/p5WopU1YzdfaEmiPP
+         ucWFGevEm6EmuvPzr12sH0LAM7w51JSaYL0do+JVdIGTrrXw3D8476/9WZtj6PDaLwfu
+         mImD3ZL29HiG40eu8AcWvCJhLEiwdtdMTMtdDdwquOM82+cbrCDXofUbi46zYmWjzevf
+         KvOpD5AVDhCjpOVCerJrOvhyEQMW41O2MFTd0hijxMaZRSPKIk4tV8PI3ycDqCvknGZK
+         /6pO6KeUHJXvhVg465a/MM7K/CLRNGevkjQ4Ng+OffPxZnKIgc93lR2V6sqfwX/6x8IN
+         Uokw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=f6ByfgXPM82KxYuRcY9g427z4rs8ELUhq95U8hEF4Xo=;
+        b=YudZkoVwIAmPVS8/BaukbboS848PeEo0a20JGLU0mzHXZhJhsple20rbOLRZ6tFJA0
+         nKeFXV/a12NW72gtP6gi6iQbpvs5CMXWLSxEjX8RTixyc3suXQBisgHflAZA0ORMojW2
+         eqFYxqhFoy++pmg7qHiM3l0GU4QXN0pLYyzDmRhyEc3yxRzWVQD1U8Bu3weN2cucgGy4
+         dTj8udgqmyeOGbSJXC49gBqrDdigF6QXuqoyckXICxIOzla40tiQMnPI7W+Sp9DOG5uB
+         9zehTyBtmo1i080tdyChNUFHBZLUx3ks2f2rzVuJYpiYIeY7T2MyvUlQ7CctPdclYxfd
+         Hysw==
+X-Gm-Message-State: APjAAAWBgUlGe0ynn64X39ylYXeHtc52JpdzU4wfAzL+j/unAhIXqfqK
+        czFatQw9O3V7khAV0SWBMhI=
+X-Google-Smtp-Source: APXvYqzqXrbpetuDc/BidY+qU6ZpZg8lYmpwDILy+v4W2t7qgEW20tE3lM3spSloekq0CATtqwYsvQ==
+X-Received: by 2002:a63:c10d:: with SMTP id w13mr39638929pgf.312.1582647397881;
+        Tue, 25 Feb 2020 08:16:37 -0800 (PST)
+Received: from [172.20.102.201] ([2620:10d:c090:400::5:1dea])
+        by smtp.gmail.com with ESMTPSA id y190sm18115629pfb.82.2020.02.25.08.16.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Feb 2020 08:16:37 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "David Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
+        kernel-team@fb.com, kuba@kernel.org
+Subject: Re: [PATCH] bnxt_en: add newline to netdev_*() format strings
+Date:   Tue, 25 Feb 2020 08:16:35 -0800
+X-Mailer: MailMate (1.13.1r5671)
+Message-ID: <0C3291B2-E552-420F-B31F-F18C6F5FE056@gmail.com>
+In-Reply-To: <20200224.153254.1115312677901381309.davem@davemloft.net>
+References: <20200224232909.2311486-1-jonathan.lemon@gmail.com>
+ <20200224.153254.1115312677901381309.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20200225002746.GA26789@embeddedor>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ZohoMailClient: External
+Content-Type: text/plain; format=flowed; markup=markdown
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/24/20 7:27 PM, Gustavo A. R. Silva wrote:
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
 
-Hi Gustavo,
 
-I really don't think this improves the code in any way for the drivers
-you are modifying. If we really want to address this corner case, it
-seems like fixing the compiler to address [0] arrays the same as []
-arrays is the right solution.
+On 24 Feb 2020, at 15:32, David Miller wrote:
 
-Cheers,
-Jes
+> Jonathan, why did you post three copies of this same patch?
 
+Er, what?
+
+I ran "git send-email --dry-run" to confirm the email addresses were 
+correct,
+(mistyped yours) then ran "git send-email" once (without --dry-run) to 
+actually
+send the message.
+
+There should be a single posting on the list, are you telling me 
+otherwise?
+-- 
+Jonathan
