@@ -2,74 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8696216B892
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 05:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FFFF16B894
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 05:46:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728943AbgBYEne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 23:43:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50378 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728725AbgBYEne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Feb 2020 23:43:34 -0500
-Received: from cakuba.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F0072467F;
-        Tue, 25 Feb 2020 04:43:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582605813;
-        bh=1VP7h5RXiBX/niAD2aBjvAoddyCRYHuw8utQ8nNFXdA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SD6fty5SyCkfGSomS+UWHwKHvlcnj6wceZzOPHQh6DujGzptu5xDDSewqOh73fuQR
-         gDQuTrEjTaMe3mEMeBf3W6ozU1ZFx3ccIJPhapzDZrKPSbDctfkDIK2k4U2HZfjcc3
-         /jWeL9/Nsd1IfqW3jEvXDffbPGfcX4Uhregcdofc=
-Date:   Mon, 24 Feb 2020 20:43:32 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next 10/10] selftests: netdevsim: Extend devlink
- trap test to include flow action cookie
-Message-ID: <20200224204332.1e126fb4@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20200224210758.18481-11-jiri@resnulli.us>
-References: <20200224210758.18481-1-jiri@resnulli.us>
-        <20200224210758.18481-11-jiri@resnulli.us>
+        id S1728883AbgBYEqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 23:46:06 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37053 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728725AbgBYEqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 23:46:05 -0500
+Received: by mail-pf1-f194.google.com with SMTP id p14so6515638pfn.4;
+        Mon, 24 Feb 2020 20:46:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HCVc3i9d3S/qcUpJff2WYyjdf86w+Z7qr4+taVELhb4=;
+        b=qAVJSW7RAgfZGvfyiSBLu1F1qhdFjXkE8xJTqEzZt333W/krXdLyn22u+T0pK14CBt
+         aBZwBMlZZBDSsKqU8sfQTNqHwU/J2KB+zXcPLyOp+Tg5LSI7GQC/Gq5iKqr0MJGz06iy
+         hJcst9b0VQfcTfuhaDoqhOcvBzNH9dP1GRm7E5ZWYIOq0zm/TxWFjUq+sxpl9eVHNVWM
+         2i5VQoRP7UvNJSdRcfhJDc1eb1viFAEVEdsDwB78i1/ZEjWNgFgVIbdqUVXi0PakA53+
+         M2I4MGnfiNDtJQ0FLheBMEHQn+Ftce1iUI5+AnNsryGNIbRMbZunNw2sO1z0Qvsu2bYB
+         rXnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HCVc3i9d3S/qcUpJff2WYyjdf86w+Z7qr4+taVELhb4=;
+        b=ExKXYRYaVIR/nOaBP2hQnZOd60z5okf8MF8ygMG4FXFolA9Kzq55aTeZF36VeoJuAR
+         30xmNS53PMwaL5zLxWOvA39EeFe6uBzghEjako4VEgni0BhIi8aN9r/JLnnINNcQCXug
+         srJX7b+qAvjpOBLVb+GDJXgMnAp/jS+2yzY2/5wUqQrxnUkfqTrEq44SSFqpfpv3Ellm
+         OYksCHld5CzVLWONdT0M9glSahcnXFrzlenoMu+Z+zMhp7DeC78ZCVg33/+epCsBSA9G
+         bDjUhiKPmEglr5CcgXkS5IccmT0DWKQIQY3QKR9rkYzyQNY/qUD24DjVc47ntBUyrCtO
+         j3Lg==
+X-Gm-Message-State: APjAAAUeVTSHYZgTpQoFaPy+SM7JpKWW7Hr95ic3oaIEtoasD3l2KsRN
+        2BGxYRTBTJ0a7pxvYHdhEUF5Ed39/rA=
+X-Google-Smtp-Source: APXvYqzdgAVkcj6/SSD9kRG26CjGcEzoUEqF0Wk87X4XzI/A8SPlR7fHGP5atRyB0AiGBGapxO3e3A==
+X-Received: by 2002:a62:1456:: with SMTP id 83mr55965186pfu.186.1582605963455;
+        Mon, 24 Feb 2020 20:46:03 -0800 (PST)
+Received: from kernel.rdqbwbcbjylexclmhxlbqg5jve.hx.internal.cloudapp.net ([65.52.171.215])
+        by smtp.gmail.com with ESMTPSA id l13sm1170879pjq.23.2020.02.24.20.46.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 20:46:03 -0800 (PST)
+From:   Lingpeng Chen <forrest0579@gmail.com>
+To:     bpf <bpf@vger.kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Petar Penkov <ppenkov.kernel@gmail.com>,
+        Song Liu <song@kernel.org>,
+        Lingpeng Chen <forrest0579@gmail.com>
+Subject: [PATCH v4 bpf-next 0/3] bpf: Add get_netns_id helper for sock_ops
+Date:   Tue, 25 Feb 2020 04:45:35 +0000
+Message-Id: <20200225044538.61889-1-forrest0579@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <CAPhsuW6QkQ8-pXamQVzTXLPzyb4-FCeF_6To7sa_=gd7Ea5VpA@mail.gmail.com>
+References: <CAPhsuW6QkQ8-pXamQVzTXLPzyb4-FCeF_6To7sa_=gd7Ea5VpA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Feb 2020 22:07:58 +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Extend existing devlink trap test to include metadata type for flow
-> action cookie.
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  .../testing/selftests/drivers/net/netdevsim/devlink_trap.sh  | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-> index f101ab9441e2..437d32bd4cfd 100755
-> --- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-> +++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-> @@ -103,6 +103,11 @@ trap_metadata_test()
->  	for trap_name in $(devlink_traps_get); do
->  		devlink_trap_metadata_test $trap_name "input_port"
->  		check_err $? "Input port not reported as metadata of trap $trap_name"
-> +		if [ $trap_name == "ingress_flow_action_drop" ] ||
-> +		   [ $trap_name == "egress_flow_action_drop" ]; then
-> +			devlink_trap_metadata_test $trap_name "flow_action_cookie"
-> +			check_err $? "Flow action cookie not reported as metadata of trap $trap_name"
-> +		fi
->  	done
->  
->  	log_test "Trap metadata"
+Currently 5-tuple(sip+dip+sport+dport+proto) can't identify a
+uniq connection because there may be multi net namespace.
+For example, there may be a chance that netns a and netns b all
+listen on 127.0.0.1:8080 and the client with same port 40782
+connect to them. Without netns number, sock ops program
+can't distinguish them.
+Using bpf_get_netns_id helpers to get current connection
+netns number to distinguish connections.
 
-Oh, this doesn't seem to check the contents of the trap at all, does it?
+Changes in v4:
+- rename get_netns_id_sock_ops to get_getns_id
+- rebase from bpf-next
+
+Changes in v3:
+- rename sock_ops_get_netns to get_netns_id
+
+Changes in v2:
+- Return u64 instead of u32 for sock_ops_get_netns
+- Fix build bug when CONFIG_NET_NS not set
+- Add selftest for sock_ops_get_netns
+
+Lingpeng Chen (3):
+  bpf: Add get_netns_id helper function for sock_ops
+  bpf: Sync uapi bpf.h to tools/
+  selftests/bpf: add selftest for get_netns_id helper
+
+ include/uapi/linux/bpf.h                      |  9 +++-
+ net/core/filter.c                             | 20 ++++++++
+ tools/include/uapi/linux/bpf.h                |  9 +++-
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    | 11 +++++
+ .../testing/selftests/bpf/test_tcpbpf_user.c  | 46 ++++++++++++++++++-
+ 5 files changed, 92 insertions(+), 3 deletions(-)
+
+
+base-commit e0360423d020
+("selftests/bpf: Run SYN cookies with reuseport BPF test only for TCP")
+-- 
+2.20.1
+
