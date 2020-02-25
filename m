@@ -2,105 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CEB216F260
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 23:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAA816F26F
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 23:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729068AbgBYWCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 17:02:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52078 "EHLO mail.kernel.org"
+        id S1728688AbgBYWFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 17:05:34 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34146 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbgBYWCH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Feb 2020 17:02:07 -0500
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BABEF2467B;
-        Tue, 25 Feb 2020 22:02:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582668126;
-        bh=ASA6axefWklSU78pWejTSwer0ZOaWKFTnH47gYDjOZA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CTCD9kg9XuK/5B5/i8D8A/5G6NN6eG+R/lePr4JYYbypdV7FZygukNX4N2vScKNMR
-         AcowiA3TsPtPrp9pjfqln0aJMCgno1iOeRyF4hIx8g2f5Ai/mJTN4X1rrllv43N8WQ
-         yeXIAeDINI5iDpqzRb+S/V40752h2KdAmsoPsWz0=
-Received: by mail-qk1-f182.google.com with SMTP id 11so763049qkd.1;
-        Tue, 25 Feb 2020 14:02:06 -0800 (PST)
-X-Gm-Message-State: APjAAAXovnpnqOnxO6TIMLj1I1Q7o6ie4wdbK3YAQfHoY7wP6QY/+mQF
-        ty23BTDM2NQtFgs0W1Isrn4f1OKezLZdVWydnw==
-X-Google-Smtp-Source: APXvYqw5XKZGdHCXY9u0tVRDbjlPaa0iutz4jC8T9d3E9Z8AVXYJLUY39qJiOoxuGit3bif1zq9Awqp6HaEj5QU++i0=
-X-Received: by 2002:ae9:f205:: with SMTP id m5mr1310560qkg.152.1582668125762;
- Tue, 25 Feb 2020 14:02:05 -0800 (PST)
+        id S1726607AbgBYWFe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Feb 2020 17:05:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5Nu7vVzAgRjIOT3nTKCs9kz7QufjSh2yf/3fHkW8+Zs=; b=gbA5lK2wqlsFBRMia+r1AyPz0b
+        tI5grpHd3hS6O4tWDbZ00K4LMxYGrInJxRaPM1+HdS6L2NmzX4Rzcldr7uaWM+89LuY7SvascB2hS
+        z0etRRCqMroh8OIE8DqzS5i5I0z+1yetLDNfPvOgSHhd5fA1cAyybEWNz5Z1Xpovpu1U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j6iKZ-0001ct-9M; Tue, 25 Feb 2020 23:05:31 +0100
+Date:   Tue, 25 Feb 2020 23:05:31 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+Subject: Re: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
+ for Prestera family ASIC device 98DX325x (AC3x)
+Message-ID: <20200225220531.GH7663@lunn.ch>
+References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
+ <20200225163025.9430-2-vadym.kochan@plvision.eu>
 MIME-Version: 1.0
-References: <20200218171321.30990-1-robh@kernel.org> <20200218171321.30990-7-robh@kernel.org>
- <20200218172000.GF1133@willie-the-truck>
-In-Reply-To: <20200218172000.GF1133@willie-the-truck>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 25 Feb 2020 16:01:54 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
-Message-ID: <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode quirk
-To:     Will Deacon <will@kernel.org>
-Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200225163025.9430-2-vadym.kochan@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 18, 2020 at 11:20 AM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: iommu@lists.linux-foundation.org
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> > Do not apply yet.
->
-> Pleeeeease? ;)
->
-> >  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
-> >  1 file changed, 43 deletions(-)
->
-> Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
-> anything from 'struct arm_smmu_impl' because most implementations fall
-> just short of perfect.
->
-> Anyway, let me know when I can push the button and I'll queue this in
-> the arm-smmu tree.
+> +static int mvsw_pr_port_obj_attr_set(struct net_device *dev,
+> +				     const struct switchdev_attr *attr,
+> +				     struct switchdev_trans *trans)
+> +{
+> +	int err = 0;
+> +	struct mvsw_pr_port *port = netdev_priv(dev);
+> +
+> +	switch (attr->id) {
+> +	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
+> +		err = -EOPNOTSUPP;
+> +		break;
 
-Seems we're leaving the platform support for now, but I think we never
-actually enabled SMMU support. It's not in the dts either in mainline
-nor the version I have which should be close to what shipped in
-firmware. So as long as Andre agrees, this one is good to apply.
+That is interesting. Is the linux bridge happy with this? Particularly
+when you have other interfaces in the Linux SW bridge, which cause a
+loop via the switch ports? I assume the network then dies in a
+broadcast storm, since there is nothing Linux can do to solve the
+loop.
 
-Rob
+       Andrew
