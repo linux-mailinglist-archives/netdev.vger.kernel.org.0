@@ -2,237 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE2216EC43
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 18:13:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EBA16EC58
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 18:17:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730890AbgBYRNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 12:13:52 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46130 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730460AbgBYRNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 12:13:52 -0500
-Received: by mail-qk1-f196.google.com with SMTP id u124so12546480qkh.13;
-        Tue, 25 Feb 2020 09:13:51 -0800 (PST)
+        id S1730890AbgBYRRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 12:17:32 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34014 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727983AbgBYRRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 12:17:31 -0500
+Received: by mail-wm1-f66.google.com with SMTP id i10so1553050wmd.1
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 09:17:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/IxlTtwEg8zi+QmSOZxjTfJWmhKRQK0zQGdeCH6cfpk=;
-        b=bNpyyqe0IPSH4nFUQJwmQ+pJ+cJ4fVNK+M/IWCX83m+vM3SGNfBFlonsA4GBUQOxZt
-         vVNwxYgrvDHhn3jvnMq6RqqqjMEa8ilyR2ynNtnZurdnAPTwL1sP45RLCtIi5gpOyDxN
-         703IzUBxrS1QglYlMz8dFy74aQoGAfgZTsEHHjE3A2jSvLswM6nhImui430M7mSLcd8+
-         c+ODbedvR3zWDOT4LG+b/sIG+6I1OFI16H8YlnyzXlr54D64EmIaS55y0DKQiNGFVUOf
-         1+eiMlF5tIR7sqcAteraf3heVkXL7jlEHMtlPSL6QKnKRvIF2RbhriKGCBYrn2PbIIaR
-         jG+Q==
+         :cc;
+        bh=enwbul+2wY5IaL2JlcSBQKs2gWt8zyhe/5zh20sr06g=;
+        b=l2inbIhkh97XFdP0v95gmdfpL/95QPmjNN2xdqL+NyMIrf6u0tuz5y6TApXILUaERI
+         jHVZo1JeZbKMCSYG5pA/cEVrvkQANvgPwB3jROSZ9mRycapVsjLNndk6uJAJCReEzEa/
+         rm6QVLJsCQERC85nsfiHGfCUdjaX043lRfeX+x8hblbNUh8yihHg6f0G7y4KDnU0zK6U
+         j3N1n74tAECXqoXk9YZ1C0zvYiIM5xrRiKZJAxNf+wRX+3PB3eL9ovft1gkHa492nemP
+         N1cvJ11Ib5H0wiwLo7wrWlzZxxHW0bbWYMbxVypXDn8aW5UgvTnVxZ+BIYbtMcsC+eGe
+         zhWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/IxlTtwEg8zi+QmSOZxjTfJWmhKRQK0zQGdeCH6cfpk=;
-        b=NTDnPqyIPDhcYqDqy3GBLIHf4gj8pp5WNJHB3iYETWtxBHWwuTxvYKHd70TOJIk3R7
-         MXGv/n8ma+tXVd8EE5DIWeo/Jj+MOQllC1zGNFm51+PN0kjITxK9a0bV50dhpxXNX0Zw
-         9ZDFxoMZB3LuIbmVf1bID87MpbPsn1l06kwQC5Y0YOW34P8EX8PgH9JeF1V/6cOMDc62
-         AL95ffykX3wwnZ+kACx/otAR8GcN9oDDoP4ZXhR8N906BPMsuDzXbi/Knlrrm7nBnRge
-         kT2t/O75xWUtHTxaGvqilfROB/BXn/MLVVRfHJEDg+WPUTNc9b/+6ALkyrKEuwWAzgVD
-         waEA==
-X-Gm-Message-State: APjAAAXJqnaBfGPO/jnR+48Iflot0z7hJdRUr0F0ekSwrjWVAiEucleZ
-        DnR7j7yY9EpKHtWW/kDv85gcBSI0UgAWz7WR+QM=
-X-Google-Smtp-Source: APXvYqyg03eBS2emfwjt3uaVnLeRLX9IcgTkWa3y8uPDu0TutcNXuEtbKrhzfs6d9ZVsl6FyS8NPLGQVzJQi1Zq2PDI=
-X-Received: by 2002:a37:9104:: with SMTP id t4mr61498015qkd.449.1582650831011;
- Tue, 25 Feb 2020 09:13:51 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=enwbul+2wY5IaL2JlcSBQKs2gWt8zyhe/5zh20sr06g=;
+        b=oGg683NFbQUTymsAYW+CgHiHyqnGS28c9F6afJ6Me1B17HL3GEO8g+Ynt1Ze+DJcw1
+         p0WlfMWirwMzCUEGOF9RD8JUWpeGL8SCjfNwTR/fhNgt/lrTW37/rwjLlAJJn9Sgwwqq
+         5mtVjJjDzTy/ZLCzglJLBDNaYA6fypE4obxg5/5t7xs9TwK8bq1Nk4g34REm3AhY4TYR
+         RQLn1MNiSOo+nhoh77WBiimfmOBow8Fxl9Rkmkru5FnjC8utwW5movmd2SsWyV2VESTy
+         WTV8mF1Don9Yj0S84L9SrxvYnq8awcZW+CdbqBc4CPpY3KvAFXBlfj9hF8q4VdKJKLSm
+         AkMw==
+X-Gm-Message-State: APjAAAUEaPf/WhYui4OXvY8lGm0aQq1hyrMiNmuo1UzktUT9CBjukPw+
+        p4l60k7i2LX7RE5ZnU9IpgeI2dlGmgxaI21uu83z0g==
+X-Google-Smtp-Source: APXvYqwAMj6EObdSsgO/Hs6YMVU6vXPQ6obpY2yFXjj/C9UE/aQOU2z0FBHoCHpJvotcSsaAXkMlxHKCAynbEd/+tCs=
+X-Received: by 2002:a05:600c:217:: with SMTP id 23mr285633wmi.124.1582651048921;
+ Tue, 25 Feb 2020 09:17:28 -0800 (PST)
 MIME-Version: 1.0
-References: <CAPhsuW6QkQ8-pXamQVzTXLPzyb4-FCeF_6To7sa_=gd7Ea5VpA@mail.gmail.com>
- <20200225044538.61889-1-forrest0579@gmail.com> <20200225044538.61889-4-forrest0579@gmail.com>
- <CAEf4Bza5k92bxYH=c1DP_rcugF6z3NLos7aPS7DPoi9-3B_JrQ@mail.gmail.com> <CAH+Qyb+rQeebkb1TtLuNHPLmf-VRLqj1yvsHXtaqfzHKMA4azQ@mail.gmail.com>
-In-Reply-To: <CAH+Qyb+rQeebkb1TtLuNHPLmf-VRLqj1yvsHXtaqfzHKMA4azQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 25 Feb 2020 09:13:40 -0800
-Message-ID: <CAEf4BzbM3ey=vUobB=H+j9bzAT+H1TgsNFp88MCB3BkOYQ+0Yg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 3/3] selftests/bpf: add selftest for
- get_netns_id helper
-To:     Forrest Chen <forrest0579@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Petar Penkov <ppenkov.kernel@gmail.com>,
-        Song Liu <song@kernel.org>, Song Liu <songliubraving@fb.com>
+References: <20200225060620.76486-1-arjunroy.kdev@gmail.com>
+ <CANn89iLrOwvNSHOB2i_+gMmN29O6BpJrnd9RfNERDTayNf7qKA@mail.gmail.com>
+ <CAOFY-A35RJOwg_4Vqc1SzeGb83OoWG-LE+dJb1maRPauaLLNwQ@mail.gmail.com> <CAOFY-A0DXFse8=Mm0fx6kxAvsFZ=AzT96_P+WT=ctSESBncNjA@mail.gmail.com>
+In-Reply-To: <CAOFY-A0DXFse8=Mm0fx6kxAvsFZ=AzT96_P+WT=ctSESBncNjA@mail.gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Tue, 25 Feb 2020 12:16:52 -0500
+Message-ID: <CACSApvac8dxyec08Ac1dpD+TERWp6h94o+8Xg5mW6QLe3mUYNg@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp-zerocopy: Update returned getsockopt() optlen.
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 24, 2020 at 11:20 PM Forrest Chen <forrest0579@gmail.com> wrote=
-:
+On Tue, Feb 25, 2020 at 12:04 PM Arjun Roy <arjunroy@google.com> wrote:
 >
-> > It would be nice if this selftests becomes part of test_progs.
+> On Tue, Feb 25, 2020 at 8:48 AM Arjun Roy <arjunroy@google.com> wrote:
+> >
+> > On Mon, Feb 24, 2020 at 10:28 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Mon, Feb 24, 2020 at 10:06 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+> > > >
+> > > > From: Arjun Roy <arjunroy@google.com>
+> > > >
+> > > > TCP receive zerocopy currently does not update the returned optlen for
+> > > > getsockopt(). Thus, userspace cannot properly determine if all the
+> > > > fields are set in the passed-in struct. This patch sets the optlen
+> > > > before return, in keeping with the expected operation of getsockopt().
+> > > >
+> > > > Signed-off-by: Arjun Roy <arjunroy@google.com>
+> > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > > Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+> > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > > > Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive
+> > > > zerocopy")
+> > >
+> > >
+> > > OK, please note for next time :
+> > >
+> > > Fixes: tag should not wrap : It should be a single line.
+> > > Preferably it should be the first tag (before your Sob)
+> > >
+> > > Add v2 as in [PATCH v2 net-next]  :  so that reviewers can easily see
+> > > which version is the more recent one.
+> > >
+> > >
+> > > >
+> > > > +               if (!err) {
+> > > > +                       if (put_user(len, optlen))
+> > > > +                               return -EFAULT;
+> > >
+> > > Sorry for not asking this before during our internal review :
+> > >
+> > > Is the cost of the extra STAC / CLAC (on x86) being high enough that it is worth
+> > > trying to call put_user() only if user provided a different length ?
+> >
+> > I'll have to defer to someone with more understanding of the overheads
+> > involved in this case.
+> >
 >
-> You mean the whole tests of tcpbpf or only the changes I made in this tes=
-t?
-> If you mean the whole tests of tcpbpf, I think we could fire another thre=
-ad
-> to do this?
+> Actually, now that I think about it, the (hopefully) common case is
+> indeed that the kernel and userspace agree on the size of the struct,
+> so I think just having just that one extra branch to check before
+> issuing a put_user() would be well worth it compared to all the
+> instructions in put_user(). I'll send a v2 patch with the change.
 
-Yeah, I meant entire tcpbpf test.
+Thank you, Arjun.  Given that most TCP socket options overwrite the
+optlen even when returning error, I think we can avoid having the
+extra branch by simply moving put_user right after the check for "len
+== sizeof(zc)" and before "switch(len)".
 
+Thanks,
+Soheil
+
+> Thanks,
+> -Arjun
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> =E4=BA=8E2020=E5=B9=B42=E6=9C=
-=8825=E6=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=882:13=E5=86=99=E9=81=93=
-=EF=BC=9A
->>
->> On Mon, Feb 24, 2020 at 8:47 PM Lingpeng Chen <forrest0579@gmail.com> wr=
-ote:
->> >
->> > adding selftest for new bpf helper function get_netns_id
->> >
->> > Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
->> > Acked-by: Song Liu <songliubraving@fb.com>
->> > ---
->>
->> It would be nice if this selftests becomes part of test_progs. That
->> way it would be exercised regularly, both by committers, as well as by
->> automated CI in libbpf's Github repo. Using global variables and BPF
->> skeleton would also clean up both BPF and user-space code.
->>
->> It seems like this test runs Python script for server, but doesn't
->> seem like that server is doing anything complicated, so writing that
->> in C shouldn't be a problem as well. Thoughts?
->>
->> >  .../selftests/bpf/progs/test_tcpbpf_kern.c    | 11 +++++
->> >  .../testing/selftests/bpf/test_tcpbpf_user.c  | 46 ++++++++++++++++++=
--
->> >  2 files changed, 56 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/to=
-ols/testing/selftests/bpf/progs/test_tcpbpf_kern.c
->> > index 1f1966e86e9f..d7d851ddd2cc 100644
->> > --- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
->> > +++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
->> > @@ -28,6 +28,13 @@ struct {
->> >         __type(value, int);
->> >  } sockopt_results SEC(".maps");
->> >
->> > +struct {
->> > +       __uint(type, BPF_MAP_TYPE_ARRAY);
->> > +       __uint(max_entries, 1);
->> > +       __type(key, __u32);
->> > +       __type(value, __u64);
->> > +} netns_number SEC(".maps");
->> > +
->> >  static inline void update_event_map(int event)
->> >  {
->> >         __u32 key =3D 0;
->> > @@ -61,6 +68,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
->> >         int rv =3D -1;
->> >         int v =3D 0;
->> >         int op;
->> > +       __u64 netns_id;
->> >
->> >         op =3D (int) skops->op;
->> >
->> > @@ -144,6 +152,9 @@ int bpf_testcb(struct bpf_sock_ops *skops)
->> >                 __u32 key =3D 0;
->> >
->> >                 bpf_map_update_elem(&sockopt_results, &key, &v, BPF_AN=
-Y);
->> > +
->> > +               netns_id =3D bpf_get_netns_id(skops);
->> > +               bpf_map_update_elem(&netns_number, &key, &netns_id, BP=
-F_ANY);
->> >                 break;
->> >         default:
->> >                 rv =3D -1;
->> > diff --git a/tools/testing/selftests/bpf/test_tcpbpf_user.c b/tools/te=
-sting/selftests/bpf/test_tcpbpf_user.c
->> > index 3ae127620463..fef2f4d77ecc 100644
->> > --- a/tools/testing/selftests/bpf/test_tcpbpf_user.c
->> > +++ b/tools/testing/selftests/bpf/test_tcpbpf_user.c
->> > @@ -76,6 +76,41 @@ int verify_sockopt_result(int sock_map_fd)
->> >         return ret;
->> >  }
->> >
->> > +int verify_netns(__u64 netns_id)
->> > +{
->> > +       char buf1[40];
->> > +       char buf2[40];
->> > +       int ret =3D 0;
->> > +       ssize_t len =3D 0;
->> > +
->> > +       len =3D readlink("/proc/self/ns/net", buf1, 39);
->> > +       sprintf(buf2, "net:[%llu]", netns_id);
->> > +
->> > +       if (len <=3D 0) {
->> > +               printf("FAILED: readlink /proc/self/ns/net");
->> > +               return ret;
->> > +       }
->> > +
->> > +       if (strncmp(buf1, buf2, len)) {
->> > +               printf("FAILED: netns don't match");
->> > +               ret =3D 1;
->> > +       }
->> > +       return ret;
->> > +}
->> > +
->> > +int verify_netns_result(int netns_map_fd)
->> > +{
->> > +       __u32 key =3D 0;
->> > +       __u64 res =3D 0;
->> > +       int ret =3D 0;
->> > +       int rv;
->> > +
->> > +       rv =3D bpf_map_lookup_elem(netns_map_fd, &key, &res);
->> > +       EXPECT_EQ(0, rv, "d");
->> > +
->> > +       return verify_netns(res);
->> > +}
->> > +
->> >  static int bpf_find_map(const char *test, struct bpf_object *obj,
->> >                         const char *name)
->> >  {
->> > @@ -92,7 +127,7 @@ static int bpf_find_map(const char *test, struct bp=
-f_object *obj,
->> >  int main(int argc, char **argv)
->> >  {
->> >         const char *file =3D "test_tcpbpf_kern.o";
->> > -       int prog_fd, map_fd, sock_map_fd;
->> > +       int prog_fd, map_fd, sock_map_fd, netns_map_fd;
->> >         struct tcpbpf_globals g =3D {0};
->> >         const char *cg_path =3D "/foo";
->> >         int error =3D EXIT_FAILURE;
->> > @@ -137,6 +172,10 @@ int main(int argc, char **argv)
->> >         if (sock_map_fd < 0)
->> >                 goto err;
->> >
->> > +       netns_map_fd =3D bpf_find_map(__func__, obj, "netns_number");
->> > +       if (netns_map_fd < 0)
->> > +               goto err;
->> > +
->> >  retry_lookup:
->> >         rv =3D bpf_map_lookup_elem(map_fd, &key, &g);
->> >         if (rv !=3D 0) {
->> > @@ -161,6 +200,11 @@ int main(int argc, char **argv)
->> >                 goto err;
->> >         }
->> >
->> > +       if (verify_netns_result(netns_map_fd)) {
->> > +               printf("FAILED: Wrong netns stats\n");
->> > +               goto err;
->> > +       }
->> > +
->> >         printf("PASSED!\n");
->> >         error =3D 0;
->> >  err:
->> > --
->> > 2.20.1
->> >
->
->
->
-> --
-> Beijing University of Posts and Telecommunications
-> forrest0579@gmail.com
->
->
+> > -Arjun
