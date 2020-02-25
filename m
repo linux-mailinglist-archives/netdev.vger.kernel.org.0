@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8FFD16BF04
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 11:45:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1564916BF06
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 11:45:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730353AbgBYKpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 05:45:32 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38078 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729417AbgBYKpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 05:45:32 -0500
-Received: by mail-wr1-f66.google.com with SMTP id e8so14130512wrm.5
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 02:45:29 -0800 (PST)
+        id S1730375AbgBYKpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 05:45:34 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:50202 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730242AbgBYKpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 05:45:33 -0500
+Received: by mail-wm1-f66.google.com with SMTP id a5so2479570wmb.0
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 02:45:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JKudRvcTO8rgWPkCP9rmiRjxyvxieFSOWjFOG+/nM30=;
-        b=I/Yz+pell4sk9QZoibTiZyfQpxqMCF6Bgo8/1k9PqEISXfdY+vN6N9FXsQlxKl2XSB
-         eEAiUXzqYokrmWIUku1GUJsnExo12/WbmLQAL7NtyZKTCZtqajBK2Z2FeiFeZMQbmeSM
-         rkXWzveQA6DBGtTI7m+8zAtLLLEBp5Dse+diQZkVytEZfok4wc4usOAwF01juPzduklK
-         eG8njtRmm840XGSRkq1sml1BtJdhioYH4d0qgCQb/RTZzzqA6A07IiXzTlflU4gWZjmn
-         bn/wO2hS6pQ9hZ5/Gkf719oG0U6d4W1AR8VtqdnPv2Ue/M8ti7ZtIiiGB0i4craqTpbv
-         vokA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SS2QFyZIJelZ/sd9XZ/hXTMvynBDfSWHspJ07fvITKs=;
+        b=ObZf8Ops+4fX3VHrL9eMT7u3vdo93FAd7vYGcWkkBDsDaPJm59VbwFaBPFMdZ8VQ6B
+         1ZiOv5QwUVFidzDuu8c9DrN0jlwNK3qZ2w39hp+lu+wLiBtsVb27t8D/lsrV+1nP0IIE
+         Oxh12cO6C38y42U0fVWDp4D0R7VPFKmgqd6nE+0mXrlMfDV8IrZWjqAfQQ7M6JYHEnCE
+         bIUNGQF165XYsaOv2ZiFDTInndnhUY5VKB6d7WjCnPfxVqF2qbykNQX0vej7D4EjddTF
+         aI/KPuAplxHfnK0WM3aIM5ju7nt7rGMhDO3baZquENVz2kBk9omxxVO6Jdbk3TZeiP7e
+         G1Kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JKudRvcTO8rgWPkCP9rmiRjxyvxieFSOWjFOG+/nM30=;
-        b=U8I8AKWcWasl+yDICtvtb/M5DGZI/VDJWEaP8A0fuekHKK67fhiod3bUze8uiTUOoj
-         dOTjOXVSM259YY4QcB/VhqUOULAsU0ENSt8/Q7jwTcSCDb+ckgDRxdweB626mFp8R1EP
-         kuTdf1t4nZ3nmhGvsoMhIuGWSXaC67ryQpGNhgJxpbnPV+zYWxR0Od306Yw1VkmXBe0i
-         zox5+VE8mPY6fqyjk7ESNcEkkWK/KiSvg3hFIwLF76FU/ovTlylt3PW+p0GHrVY4ydAM
-         wQJ7/wNi1FsSWVtg5DKrfyJ3Md1VmiARlGZaM1on3hGEurNVfw6ErDUW6SbHfD8XoWTm
-         Kv2g==
-X-Gm-Message-State: APjAAAVMV+Izcfxsf9+bHSNG/7Ex9Cvy+OKGczF7lfWgyYBgfxVxFJtz
-        NC7dafloOCdOwYoqnAy1bK1FGOanT2E=
-X-Google-Smtp-Source: APXvYqwKSZ8O8PRzrBfyVC0sLjCKii5OGn6XyNt+DyicLIlmcXRg49XcpV3U0IljyB3ufGcLEUVhtw==
-X-Received: by 2002:adf:f641:: with SMTP id x1mr19853187wrp.248.1582627528595;
-        Tue, 25 Feb 2020 02:45:28 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SS2QFyZIJelZ/sd9XZ/hXTMvynBDfSWHspJ07fvITKs=;
+        b=LU/TAiQS3z4HrkyPisR5XKVSnJ1twGfSOHAKLiRTeF0twF58uYTiolO6Dt1F1eb54I
+         +sFxiRDEHTibJyUc/eioGbXX7UfrNWYXQ1UJmV2MVIOXp9xG09b46+LDOuklQa7p4iEW
+         NQwlXjSIFZSz0YUVqn5L9wNMrksY6D03PhaLoGrea6fKw32rq2iydAM7X4gsSKZRGjAM
+         F+XzY1zgJzHlVJfJQRuDznHzb3oJ2tMj8wET4yfI/QEhYOprNl+WsWgWcsWSjthaJWmG
+         TCiOm7tvLnJlQYqCgt0HaPXcA9PgzlFmk5LQooEOppaFrRwqwiqSZ318qd8BqoG7hA/V
+         FSLg==
+X-Gm-Message-State: APjAAAX1lcI9ynQv81Jk3Qs2QS3mfmjDifp8GO5PdfcndcTD+57kXdmi
+        pOeFhCJj3imC3mJPECcl6q8no2wiGmY=
+X-Google-Smtp-Source: APXvYqzi/dpk/oHxWYBqu2wz4K0A0A2tDMGToLAPfkg76OXoyx1Vs8okixcm1nxGda9m3YQT829+AA==
+X-Received: by 2002:a1c:8156:: with SMTP id c83mr4502096wmd.164.1582627529897;
+        Tue, 25 Feb 2020 02:45:29 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id b11sm23516733wrx.89.2020.02.25.02.45.27
+        by smtp.gmail.com with ESMTPSA id f207sm3842343wme.9.2020.02.25.02.45.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 02:45:28 -0800 (PST)
+        Tue, 25 Feb 2020 02:45:29 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [patch net-next v2 00/10] mlxsw: Implement ACL-dropped packets identification
-Date:   Tue, 25 Feb 2020 11:45:17 +0100
-Message-Id: <20200225104527.2849-1-jiri@resnulli.us>
+Subject: [patch net-next v2 01/10] flow_offload: pass action cookie through offload structures
+Date:   Tue, 25 Feb 2020 11:45:18 +0100
+Message-Id: <20200225104527.2849-2-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200225104527.2849-1-jiri@resnulli.us>
+References: <20200225104527.2849-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,83 +64,139 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-mlxsw hardware allows to insert a ACL-drop action with a value defined
-by user that would be later on passed with a dropped packet.
+Extend struct flow_action_entry in order to hold TC action cookie
+specified by user inserting the action.
 
-To implement this, use the existing TC action cookie and pass it to the
-driver. As the cookie format coming down from TC and the mlxsw HW cookie
-format is different, do the mapping of these two using idr and rhashtable.
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+v1->v2:
+- s/[0]/[]/
+- used u8* instead of unsigned long* for cookie
+- used u32 for cookie_len
+---
+ include/net/flow_offload.h | 11 +++++++++++
+ net/core/flow_offload.c    | 21 +++++++++++++++++++++
+ net/sched/cls_api.c        | 31 ++++++++++++++++++++++++++++++-
+ 3 files changed, 62 insertions(+), 1 deletion(-)
 
-The cookie is passed up from the HW through devlink_trap_report() to
-drop_monitor code. A new metadata type is used for that.
-
-Example:
-$ tc qdisc add dev enp0s16np1 clsact
-$ tc filter add dev enp0s16np1 ingress protocol ip pref 10 flower skip_sw dst_ip 192.168.1.2 action drop cookie 3b45fa38c8
-                                                                                                                ^^^^^^^^^^
-$ devlink trap set pci/0000:00:10.0 trap acl action trap
-$ dropwatch
-Initializing null lookup method
-dropwatch> set hw true
-setting hardware drops monitoring to 1
-dropwatch> set alertmode packet
-Setting alert mode
-Alert mode successfully set
-dropwatch> start
-Enabling monitoring...
-Kernel monitoring activated.
-Issue Ctrl-C to stop monitoring
-drop at: ingress_flow_action_drop (acl_drops)
-origin: hardware
-input port ifindex: 30
-input port name: enp0s16np1
-cookie: 3b45fa38c8    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-timestamp: Fri Jan 24 17:10:53 2020 715387671 nsec
-protocol: 0x800
-length: 98
-original length: 98
-
-This way the user may insert multiple drop rules and monitor the dropped
-packets with the information of which action caused the drop.
-
-Jiri Pirko (10):
-  flow_offload: pass action cookie through offload structures
-  devlink: add trap metadata type for cookie
-  drop_monitor: extend by passing cookie from driver
-  devlink: extend devlink_trap_report() to accept cookie and pass
-  mlxsw: core_acl_flex_actions: Add trap with userdef action
-  mlxsw: core_acl_flex_actions: Implement flow_offload action cookie
-    offload
-  mlxsw: pci: Extract cookie index for ACL discard trap packets
-  mlxsw: spectrum_trap: Lookup and pass cookie down to
-    devlink_trap_report()
-  netdevsim: add ACL trap reporting cookie as a metadata
-  selftests: netdevsim: Extend devlink trap test to include flow action
-    cookie
-
- drivers/net/ethernet/mellanox/mlxsw/core.h    |   5 +-
- .../mellanox/mlxsw/core_acl_flex_actions.c    | 289 +++++++++++++++++-
- .../mellanox/mlxsw/core_acl_flex_actions.h    |   7 +-
- drivers/net/ethernet/mellanox/mlxsw/pci.c     |   9 +
- drivers/net/ethernet/mellanox/mlxsw/pci_hw.h  |   5 +
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  11 +-
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    |   7 +-
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |   3 +-
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  46 ++-
- drivers/net/netdevsim/dev.c                   | 117 ++++++-
- drivers/net/netdevsim/netdevsim.h             |   2 +
- include/net/devlink.h                         |   8 +-
- include/net/drop_monitor.h                    |   3 +
- include/net/flow_offload.h                    |  11 +
- include/uapi/linux/devlink.h                  |   2 +
- include/uapi/linux/net_dropmon.h              |   1 +
- net/core/devlink.c                            |  14 +-
- net/core/drop_monitor.c                       |  33 +-
- net/core/flow_offload.c                       |  21 ++
- net/sched/cls_api.c                           |  31 +-
- .../drivers/net/netdevsim/devlink_trap.sh     |   5 +
- 21 files changed, 605 insertions(+), 25 deletions(-)
-
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index c6f7bd22db60..4e864c34a1b0 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -156,6 +156,16 @@ enum flow_action_mangle_base {
+ 
+ typedef void (*action_destr)(void *priv);
+ 
++struct flow_action_cookie {
++	u32 cookie_len;
++	u8 cookie[];
++};
++
++struct flow_action_cookie *flow_action_cookie_create(void *data,
++						     unsigned int len,
++						     gfp_t gfp);
++void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
++
+ struct flow_action_entry {
+ 	enum flow_action_id		id;
+ 	action_destr			destructor;
+@@ -214,6 +224,7 @@ struct flow_action_entry {
+ 			u8		ttl;
+ 		} mpls_mangle;
+ 	};
++	struct flow_action_cookie *cookie; /* user defined action cookie */
+ };
+ 
+ struct flow_action {
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 45b6a59ac124..d21348202ba6 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -167,6 +167,27 @@ void flow_rule_match_enc_opts(const struct flow_rule *rule,
+ }
+ EXPORT_SYMBOL(flow_rule_match_enc_opts);
+ 
++struct flow_action_cookie *flow_action_cookie_create(void *data,
++						     unsigned int len,
++						     gfp_t gfp)
++{
++	struct flow_action_cookie *cookie;
++
++	cookie = kmalloc(sizeof(*cookie) + len, gfp);
++	if (!cookie)
++		return NULL;
++	cookie->cookie_len = len;
++	memcpy(cookie->cookie, data, len);
++	return cookie;
++}
++EXPORT_SYMBOL(flow_action_cookie_create);
++
++void flow_action_cookie_destroy(struct flow_action_cookie *cookie)
++{
++	kfree(cookie);
++}
++EXPORT_SYMBOL(flow_action_cookie_destroy);
++
+ struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv))
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 13c33eaf1ca1..4e766c5ab77a 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3382,14 +3382,40 @@ int tc_setup_cb_reoffload(struct tcf_block *block, struct tcf_proto *tp,
+ }
+ EXPORT_SYMBOL(tc_setup_cb_reoffload);
+ 
++static int tcf_act_get_cookie(struct flow_action_entry *entry,
++			      const struct tc_action *act)
++{
++	struct tc_cookie *cookie;
++	int err = 0;
++
++	rcu_read_lock();
++	cookie = rcu_dereference(act->act_cookie);
++	if (cookie) {
++		entry->cookie = flow_action_cookie_create(cookie->data,
++							  cookie->len,
++							  GFP_ATOMIC);
++		if (!entry->cookie)
++			err = -ENOMEM;
++	}
++	rcu_read_unlock();
++	return err;
++}
++
++static void tcf_act_put_cookie(struct flow_action_entry *entry)
++{
++	flow_action_cookie_destroy(entry->cookie);
++}
++
+ void tc_cleanup_flow_action(struct flow_action *flow_action)
+ {
+ 	struct flow_action_entry *entry;
+ 	int i;
+ 
+-	flow_action_for_each(i, entry, flow_action)
++	flow_action_for_each(i, entry, flow_action) {
++		tcf_act_put_cookie(entry);
+ 		if (entry->destructor)
+ 			entry->destructor(entry->destructor_priv);
++	}
+ }
+ EXPORT_SYMBOL(tc_cleanup_flow_action);
+ 
+@@ -3447,6 +3473,9 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 
+ 		entry = &flow_action->entries[j];
+ 		spin_lock_bh(&act->tcfa_lock);
++		err = tcf_act_get_cookie(entry, act);
++		if (err)
++			goto err_out_locked;
+ 		if (is_tcf_gact_ok(act)) {
+ 			entry->id = FLOW_ACTION_ACCEPT;
+ 		} else if (is_tcf_gact_shot(act)) {
 -- 
 2.21.1
 
