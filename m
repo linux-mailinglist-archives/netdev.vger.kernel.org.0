@@ -2,141 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C21F16B782
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 03:05:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4F716B818
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 04:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728664AbgBYCFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Feb 2020 21:05:47 -0500
-Received: from gateway21.websitewelcome.com ([192.185.45.38]:43301 "EHLO
-        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726962AbgBYCFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 21:05:46 -0500
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway21.websitewelcome.com (Postfix) with ESMTP id 50BD7400C55A1
-        for <netdev@vger.kernel.org>; Mon, 24 Feb 2020 20:05:46 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 6PbWjdRLC8vkB6PbWjYu9R; Mon, 24 Feb 2020 20:05:46 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3WYY4D95dFsGR6aMI/L2pR572DKPC2ZtgZvA51FyZmc=; b=SDfjbEqUWa5eyJtudos2VU69K3
-        slC/oG4O9+M6lqicfB/Ypvnl9pHtHkvcPAIjDbTrwGhc8GHF4Au8ftHWr+66MZVLJVQ7dZ0OsGH1Z
-        9Sucy77xWuZhLOkv/4ujdkydQ1ibfudhitglXMVtz1bJoWHMjxniLqb9N2jd5UPyR8eJRymHlK8tX
-        4RZghqUUz+K6pn6HbGp6HZAQQf85GBWGNLEbaF6n0Ny1YItVZmR0769hFHowRnXBb3oLJFXbxGYVN
-        o/70KaI/Ig0ILP2MtfxHPPJml1+3We6thtdY1fFwKJch3vb1g90h7wwsGjfOgCVaisGZQnWeL3pvS
-        ZtP5SOxQ==;
-Received: from [201.166.191.97] (port=60674 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j6PbT-003Hcz-Ke; Mon, 24 Feb 2020 20:05:44 -0600
-Date:   Mon, 24 Feb 2020 20:08:04 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] brcmfmac: Replace zero-length array with
- flexible-array member
-Message-ID: <20200225020804.GA9428@embeddedor>
+        id S1728912AbgBYDbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Feb 2020 22:31:13 -0500
+Received: from mail-pl1-f170.google.com ([209.85.214.170]:41606 "EHLO
+        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728843AbgBYDbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Feb 2020 22:31:13 -0500
+Received: by mail-pl1-f170.google.com with SMTP id t14so4902042plr.8;
+        Mon, 24 Feb 2020 19:31:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SR07YcgBHjEbiX3pylMiKuRM3jiAa6Jpy3Owt8WPWkk=;
+        b=nUtb/iNUfsC7e2IxqgHBkTbS6JzQp9zKUgk9Iu2U0weihcromBfUtuUTXwrKRMoPiK
+         FT/VoZAWiW8RvLHTW/53dXJcn8//c87BVb57U76jwU8IYhpZIa0UeRaiqQj2ZPiouhBQ
+         STHJPm3vehcJSC7XY09Oo1XJUCyTUpcZLEzgCOdg7dhm8S760HRMulwWpeZp8W0tOFl/
+         GqrEDFICOa707ql8oqhjoFvjDGiCQIBZRT0TBfKFq8uTRlp6KbuVVx7QqTVi0dBQ/9uu
+         A7hsqOplN5IWMIz4Q2b1qi64YHeUSQh9P4Y0nrFOwIbUUXmFAQjT+IOzNhqoJlGmWDlb
+         Mz6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SR07YcgBHjEbiX3pylMiKuRM3jiAa6Jpy3Owt8WPWkk=;
+        b=MBkW3fli2LbmzAa8B7fRc1nAQKwjrzuJgfEFKJMe6XPk8lSx3bPQ2Hr6UVEHXsU28A
+         W/XsAMIK+vRiiHJzPRV3ovl1HpTLz/OYN2RiCsrUPsEaEXy5to/sTmWj3hbIVIyRWLMK
+         5Jq+7LPiIsA4W9uJ0oJZAp3CMHGK8eRiRUrqAYj5MSeRx/pApWqrK4xpBc3z5cnZpsqw
+         iFVKHTDSbol6S/27OOs9RiUU7XCTRZskt8vbvxUE+xNIjxXfIz2KI+/naKg5zdb86fJI
+         iFxLxHGWbC+MFEyAVAYe18wBucaITeCgm7hnyCbi/LOTLNcWO4RPJIMo7ZdSzmF9qfVK
+         1GSw==
+X-Gm-Message-State: APjAAAVitAiHwtTkle6jkRsAxoqtZ0q11kD0oALyQKoIx7+SILfqfu1c
+        9kqmhCZMsXN60NWfuePWHkY=
+X-Google-Smtp-Source: APXvYqwuqVmqFcxcal87EhRkAwIpTgJoYOqxktRmhFm4Oj2UuRqpiq5DJJNZ1O+sf4vlPP4MbNTcFA==
+X-Received: by 2002:a17:902:8308:: with SMTP id bd8mr53172354plb.210.1582601472440;
+        Mon, 24 Feb 2020 19:31:12 -0800 (PST)
+Received: from localhost.localdomain ([103.202.217.14])
+        by smtp.gmail.com with ESMTPSA id d73sm14498160pfd.109.2020.02.24.19.31.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2020 19:31:11 -0800 (PST)
+From:   Yuya Kusakabe <yuya.kusakabe@gmail.com>
+To:     jasowang@redhat.com
+Cc:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
+        yuya.kusakabe@gmail.com
+Subject: [PATCH bpf-next v6 0/2] virtio_net: add XDP meta data support
+Date:   Tue, 25 Feb 2020 12:31:03 +0900
+Message-Id: <20200225033103.437305-1-yuya.kusakabe@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.166.191.97
-X-Source-L: No
-X-Exim-ID: 1j6PbT-003Hcz-Ke
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.191.97]:60674
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 20
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+This patch series has 2 patches.
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+Patch 1/2: keep vnet header zeroed if XDP is loaded for small buffer
+With this fix, we do not need to care about vnet header in XDP meta data
+support for small buffer, even though XDP meta data uses in front of
+packet as same as vnet header.
+It would be best if this patch goes into stable.
+This patch is based on the feedback by Jason Wang and Michael S. Tsirkin.
+https://lore.kernel.org/netdev/9a0a1469-c8a7-8223-a4d5-dad656a142fc@redhat.com/
+https://lore.kernel.org/netdev/20200223031314-mutt-send-email-mst@kernel.org/
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+Patch 2/2: add XDP meta data support
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
+Thanks to Jason Wang, Daniel Borkmann and Michael S. Tsirkin for the feedback.
 
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
+Yuya Kusakabe (2):
+  virtio_net: keep vnet header zeroed if XDP is loaded for small buffer
+  virtio_net: add XDP meta data support
 
-This issue was found with the help of Coccinelle.
+ drivers/net/virtio_net.c | 56 ++++++++++++++++++++++++----------------
+ 1 file changed, 34 insertions(+), 22 deletions(-)
 
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h | 2 +-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-index 3347439543bb..46c66415b4a6 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-@@ -60,7 +60,7 @@ struct brcmf_fw_request {
- 	u16 bus_nr;
- 	u32 n_items;
- 	const char *board_type;
--	struct brcmf_fw_item items[0];
-+	struct brcmf_fw_item items[];
- };
- 
- struct brcmf_fw_name {
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
-index 79c8a858b6d6..a5cced2c89ac 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c
-@@ -32,7 +32,7 @@ struct brcmf_fweh_queue_item {
- 	u8 ifaddr[ETH_ALEN];
- 	struct brcmf_event_msg_be emsg;
- 	u32 datalen;
--	u8 data[0];
-+	u8 data[];
- };
- 
- /**
 -- 
-2.25.0
+2.24.1
 
