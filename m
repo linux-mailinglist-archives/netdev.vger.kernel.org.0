@@ -2,87 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D62216C2EB
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C62916C2F7
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730490AbgBYN4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 08:56:55 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51218 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730491AbgBYN4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:56:51 -0500
-Received: by mail-wm1-f68.google.com with SMTP id t23so3102885wmi.1
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 05:56:50 -0800 (PST)
+        id S1730559AbgBYN5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 08:57:38 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37008 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730387AbgBYN5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:57:37 -0500
+Received: by mail-ed1-f66.google.com with SMTP id t7so16338368edr.4
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 05:57:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tdUpExQ3hzj21QBKAtvqnsJNrL5zKnYkhtRdt8iWk7k=;
-        b=s5u3MDHXfeJEdDUkFi2tRNaJM12+acezT/J5c/Y0dUXkBOk/Z9YD1zJLa8EIPBuT6B
-         7h7PRy4x1vohUccQmHB+TwhLO9VWNXD0fiWJOJKZU1nlmtsRs+w7A2QaomMVn+NiNi3u
-         6GoTma0klKIR0YB8fQI4/PbM1mqrws28FonEQ=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dtKTDfpqSapmTpD0qVUWkLKwtjyj+4R+f9K8CWQTmrQ=;
+        b=igOggpu6SKpNPYq1OrYvUb/VlD6dx+X/ou4D7/K/9u5Kn2WQ9sn/nZAEjZc7OsTksd
+         k9ed3YS/o3k0CahM1VTnL1aymVy6y2oiXOD3avXxXvzSfEGiPmlGrmgskPDivV7T/CDF
+         Z7zCJxpgTbtnbzxFavAnfSEXEb3fXYQGv2+FoCu92ODzeqUJ0OOn2EkASAj5Q5TMwc7c
+         iFPQJ6Thw97X+Yg4X052xySBILsZn2zberoexCWaiWKq0iWCyCKvrjv6LevMXihyMJjU
+         nfQwzyvsERqecfxD6mjKVY4gj8Yn3t+8gu3S9vJmBONBrCTxRAzU2rm6uS3iMdCOsVFA
+         KLmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tdUpExQ3hzj21QBKAtvqnsJNrL5zKnYkhtRdt8iWk7k=;
-        b=ooILkXqvHbAE0u5vtWTusne/Dt2bRprDAMwglMZAaR020GPdlRG2dGftf0Y9z+grdy
-         irilrgO7lT1t4tj+/Nwc6R5XRX5ffQAbd+NDJuHsOPYcBubfw7+TCaP+8EJlKPgiqNGA
-         ILjxmck7t3CAtxeceaJVfXfVMq+M/0xejxFA/vI088TnLaDsTVBZxpsCa1hz+C9anNr2
-         nXLxV6FsJt2w4vkKQ/s31x3WOlbRE8iDKk5rX4F0a4F9ernB1lKeDVGjSSNl2yRrkQB7
-         IYhLbrzRz+U/xg2XZ8dOGReCthxjF4efCOEP4NujTBFdZ8TyamWMx6mHUCKp6VvkzDr2
-         VlEQ==
-X-Gm-Message-State: APjAAAWHxDB+70puQsfSlOSEuYQqG55vq7cyZLSwbGN7uELctIJo4kT2
-        mMLfbN1rDFExqqAGbUaeO1OIXA==
-X-Google-Smtp-Source: APXvYqwmAujwCf7IqxSUcZ5V29CAKHVHg254H8PhRtUSEgNxQ9uaMCXdJUMj69n1j+nAigX8UVaXsg==
-X-Received: by 2002:a7b:c450:: with SMTP id l16mr5662485wmi.31.1582639009440;
-        Tue, 25 Feb 2020 05:56:49 -0800 (PST)
-Received: from localhost.localdomain ([2a06:98c0:1000:8800:3dea:15ba:1870:8e94])
-        by smtp.gmail.com with ESMTPSA id t128sm4463580wmf.28.2020.02.25.05.56.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 05:56:48 -0800 (PST)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf-next 7/7] selftests: bpf: enable UDP sockmap reuseport tests
-Date:   Tue, 25 Feb 2020 13:56:36 +0000
-Message-Id: <20200225135636.5768-8-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200225135636.5768-1-lmb@cloudflare.com>
-References: <20200225135636.5768-1-lmb@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dtKTDfpqSapmTpD0qVUWkLKwtjyj+4R+f9K8CWQTmrQ=;
+        b=qJrEz3itXcI798hjpLltkN6b8f4V1zlfYXprmBvNEAN4jAgyMp6mp4tspg/DmFfn4E
+         OT7dDbBY4qwgd8eZqnoZk2gJXAgrJkNBbn4BwR/lXJNMj5weEILlJauky89hT8zdKg4k
+         lOIHAL/CC5dQJS/puy/qz9GsnTyyAROX7OkSPVwPVBpsjpP9bPPOeh9yoKoqUbX+Zski
+         aVtaL3oqw6UkrBltahSKfF4Zuho7cVKfgwygbpcPPyRd5YOkGIpKPy6n1EBTvCHdr4A4
+         fabMdf9twZ3a78zaA9Wd+MRjlu9lh4+t/WvB2ubD5UPYHaI9rJQzBhsrQiqjSlWVe5zP
+         W8kA==
+X-Gm-Message-State: APjAAAVspaPJw66ZpBdGF/L4YHeP2Egn7Et86iVhCRWZZ6GFd32Qjiu5
+        F6sVQw23re7nOYutBIq/zmZnXzmqgMv9GBz/vqQ=
+X-Google-Smtp-Source: APXvYqxO5S01tEUs1tCO+tf8gR4uq2ecP1mTYooMdGuf0szkRZpxKSUHENb1xXeiIsXwmyOrBgoGcFvTzqBEaVuON9U=
+X-Received: by 2002:aa7:d145:: with SMTP id r5mr52284571edo.337.1582639055994;
+ Tue, 25 Feb 2020 05:57:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200224213458.32451-1-olteanv@gmail.com> <20200225130223.kb7jg7u2kgjjrlpo@lx-anielsen.microsemi.net>
+ <CA+h21hp41WXXTLZ0L2rwT5b1gMeL5YFBpNpCZMh7d9eWZpmaqw@mail.gmail.com> <20200225133728.GE9749@lunn.ch>
+In-Reply-To: <20200225133728.GE9749@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 25 Feb 2020 15:57:24 +0200
+Message-ID: <CA+h21hqG_BpjzZJ=ak7hQxX-FFLHLvRQM+yUmD1Wjbk0ST4f=A@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 0/2] Allow unknown unicast traffic to CPU for
+ Felix DSA
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the guard that disables UDP tests now that sockmap has support for them.
+Hi Andrew,
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- tools/testing/selftests/bpf/prog_tests/select_reuseport.c | 7 -------
- 1 file changed, 7 deletions(-)
+On Tue, 25 Feb 2020 at 15:37, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > Secondly, even traffic that the CPU _intends_ to terminate remains
+> > "unknown" from the switch's perspective, due to the
+> > no-learning-from-injected-traffic issue. So that traffic is still
+> > going to be flooded, potentially to unwanted ports as well.
+>
+> Hi Vladimir
+>
+> Can you add an entry to its table to solve this? Make it known
+> traffic. Hook into dsa_slave_set_rx_mode() and
+> dsa_slave_set_mac_address()?
+>
+>         Andrew
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-index 68d452bb9fd9..4c09766344a4 100644
---- a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-@@ -816,13 +816,6 @@ static void test_config(int sotype, sa_family_t family, bool inany)
- 		if (!test__start_subtest(s))
- 			continue;
- 
--		if (sotype == SOCK_DGRAM &&
--		    inner_map_type != BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
--			/* SOCKMAP/SOCKHASH don't support UDP yet */
--			test__skip();
--			continue;
--		}
--
- 		setup_per_test(sotype, family, inany, t->no_inner_map);
- 		t->fn(sotype, family);
- 		cleanup_per_test(t->no_inner_map);
--- 
-2.20.1
+What about bridging a felix port with a "foreign interface" and
+passing traffic to a DMAC that is not even on this board (a host
+connected to the foreign interface)?
+There are so many cases that the Ocelot approach will not work for,
+and even adapting that to DSA is going to be tricky for the
+implementation. Consider that even a Linux bridge may have a MAC
+address that differs from the addresses of its slave devices. Do we
+add code in DSA to learn the bridge's address too? Do we add code to
+forget it when the last port leaves the bridge? Is it even sufficient?
 
+Regards,
+-Vladimir
