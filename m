@@ -2,98 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C62916C2F7
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A255416C319
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 14:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730559AbgBYN5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 08:57:38 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37008 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730387AbgBYN5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:57:37 -0500
-Received: by mail-ed1-f66.google.com with SMTP id t7so16338368edr.4
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 05:57:36 -0800 (PST)
+        id S1730424AbgBYN7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 08:59:22 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51506 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729287AbgBYN7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 08:59:21 -0500
+Received: by mail-wm1-f65.google.com with SMTP id t23so3111241wmi.1;
+        Tue, 25 Feb 2020 05:59:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dtKTDfpqSapmTpD0qVUWkLKwtjyj+4R+f9K8CWQTmrQ=;
-        b=igOggpu6SKpNPYq1OrYvUb/VlD6dx+X/ou4D7/K/9u5Kn2WQ9sn/nZAEjZc7OsTksd
-         k9ed3YS/o3k0CahM1VTnL1aymVy6y2oiXOD3avXxXvzSfEGiPmlGrmgskPDivV7T/CDF
-         Z7zCJxpgTbtnbzxFavAnfSEXEb3fXYQGv2+FoCu92ODzeqUJ0OOn2EkASAj5Q5TMwc7c
-         iFPQJ6Thw97X+Yg4X052xySBILsZn2zberoexCWaiWKq0iWCyCKvrjv6LevMXihyMJjU
-         nfQwzyvsERqecfxD6mjKVY4gj8Yn3t+8gu3S9vJmBONBrCTxRAzU2rm6uS3iMdCOsVFA
-         KLmw==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=1LEeQz9rLoFuQ2vwZIwdg0x06s31QUfcOgdiVu+Auj4=;
+        b=QkhjKjcj15gtMfq5DbTi6oPAlp7mWTNwPx5w9VypaUoZZIbWJcGFBAYnj0jx/gfgh8
+         26JELHXryYgVKnFItMOnD9OMYx12Kr1EdHFqFTVuwz52rL9AKaeoHIEoI1OMpH5thmxa
+         7tlOkadCco7AkK0bXzzhDZbrKCsEHaEMspCOljVH9ftSTMm7EFIZxNUJ1KKpLRd3p7w8
+         yDSfTHxIbNR267GpJeE9JKVroJud9RPE8w5ye5vDE8iWW65XSTmcKxJEpHfT+mElvi79
+         cgddb5RIvmyTp6jZvQC/pWjwGvMOr5io/GaKl1w1/YQurF5kS2pKIRmzhclixP8sK9bL
+         VkJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dtKTDfpqSapmTpD0qVUWkLKwtjyj+4R+f9K8CWQTmrQ=;
-        b=qJrEz3itXcI798hjpLltkN6b8f4V1zlfYXprmBvNEAN4jAgyMp6mp4tspg/DmFfn4E
-         OT7dDbBY4qwgd8eZqnoZk2gJXAgrJkNBbn4BwR/lXJNMj5weEILlJauky89hT8zdKg4k
-         lOIHAL/CC5dQJS/puy/qz9GsnTyyAROX7OkSPVwPVBpsjpP9bPPOeh9yoKoqUbX+Zski
-         aVtaL3oqw6UkrBltahSKfF4Zuho7cVKfgwygbpcPPyRd5YOkGIpKPy6n1EBTvCHdr4A4
-         fabMdf9twZ3a78zaA9Wd+MRjlu9lh4+t/WvB2ubD5UPYHaI9rJQzBhsrQiqjSlWVe5zP
-         W8kA==
-X-Gm-Message-State: APjAAAVspaPJw66ZpBdGF/L4YHeP2Egn7Et86iVhCRWZZ6GFd32Qjiu5
-        F6sVQw23re7nOYutBIq/zmZnXzmqgMv9GBz/vqQ=
-X-Google-Smtp-Source: APXvYqxO5S01tEUs1tCO+tf8gR4uq2ecP1mTYooMdGuf0szkRZpxKSUHENb1xXeiIsXwmyOrBgoGcFvTzqBEaVuON9U=
-X-Received: by 2002:aa7:d145:: with SMTP id r5mr52284571edo.337.1582639055994;
- Tue, 25 Feb 2020 05:57:35 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1LEeQz9rLoFuQ2vwZIwdg0x06s31QUfcOgdiVu+Auj4=;
+        b=HrZrlBnmVqh6/YLeAtorY8psKNxszAckq+gsKpxLSacOGO1YxCoZDyI5lkt5Z/4TKb
+         V84P5VZ/ElN6LH2nbqq+S0OouTZoDNdbs2EcZK43BhDGQdHo0a+Zjs5sGQV+C/EEdDvg
+         NqzZUGTFWtjNlM0xfSmsr0UfccKgunjE3qb7P0RZEbhJ9DArHiKe1+Vu3lYyoSxCcML+
+         AsXkYmY3VFKKU12DugTskYOiXraWyVGInnMLlPqXPJF8KX2LMRojh+vTo5n4W/kOLlAu
+         3ACkrFx9X7aFuOG58RiZx3pt7Ngh5elusEEkQGGwHmHhozK2nolxVx/Gd/HKtpYRrOWC
+         ZNMg==
+X-Gm-Message-State: APjAAAXD+9ZJmi3YG4h70m/yug6BSPIKmlJCrfuDwkpKijtM5uYmYRay
+        facA665XM7YsLBf3UxvuNAeMHcZL
+X-Google-Smtp-Source: APXvYqy+urL8B2E1P8ykBOqUQ1PxfKX3HkSr+CS+niES8z1lCOSFTwmcxUHtN8ud4xNBSnPKv01kLw==
+X-Received: by 2002:a05:600c:2c13:: with SMTP id q19mr5640589wmg.144.1582639159661;
+        Tue, 25 Feb 2020 05:59:19 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:30a8:e117:ed7d:d145? (p200300EA8F29600030A8E117ED7DD145.dip0.t-ipconnect.de. [2003:ea:8f29:6000:30a8:e117:ed7d:d145])
+        by smtp.googlemail.com with ESMTPSA id 61sm8675693wrf.65.2020.02.25.05.59.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Feb 2020 05:59:19 -0800 (PST)
+Subject: Re: [PATCH] net: phy: corrected the return value for
+ genphy_check_and_restart_aneg
+To:     Sudheesh Mavila <sudheesh.mavila@amd.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200225122208.6881-1-sudheesh.mavila@amd.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <90fc4cb6-d11b-20d0-a1fa-28e0564a425b@gmail.com>
+Date:   Tue, 25 Feb 2020 14:59:12 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200224213458.32451-1-olteanv@gmail.com> <20200225130223.kb7jg7u2kgjjrlpo@lx-anielsen.microsemi.net>
- <CA+h21hp41WXXTLZ0L2rwT5b1gMeL5YFBpNpCZMh7d9eWZpmaqw@mail.gmail.com> <20200225133728.GE9749@lunn.ch>
-In-Reply-To: <20200225133728.GE9749@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 25 Feb 2020 15:57:24 +0200
-Message-ID: <CA+h21hqG_BpjzZJ=ak7hQxX-FFLHLvRQM+yUmD1Wjbk0ST4f=A@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 0/2] Allow unknown unicast traffic to CPU for
- Felix DSA
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200225122208.6881-1-sudheesh.mavila@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On 25.02.2020 13:22, Sudheesh Mavila wrote:
+> When auto-negotiation is not required, return value should be zero.
+> 
+> Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+> ---
+>  drivers/net/phy/phy_device.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 6a5056e0ae77..36cde3dac4c3 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1806,10 +1806,13 @@ int genphy_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+>  			restart = true;
+>  	}
+>  
+> -	if (restart)
+> -		ret = genphy_restart_aneg(phydev);
+> +	/* Only restart aneg if we are advertising something different
+> +	 * than we were before.
+> +	 */
+> +	if (restart > 0)
 
-On Tue, 25 Feb 2020 at 15:37, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > Secondly, even traffic that the CPU _intends_ to terminate remains
-> > "unknown" from the switch's perspective, due to the
-> > no-learning-from-injected-traffic issue. So that traffic is still
-> > going to be flooded, potentially to unwanted ports as well.
->
-> Hi Vladimir
->
-> Can you add an entry to its table to solve this? Make it known
-> traffic. Hook into dsa_slave_set_rx_mode() and
-> dsa_slave_set_mac_address()?
->
->         Andrew
+In addition to what Russell and Andrew commented already:
+- You shouldn't compare a bool with an int. There's no need to change
+  the original condition.
+- The comment isn't really needed, and it's wrong. See the comment few
+  lines earlier.
+- After this change the initialization of ret isn't needed any longer.
 
-What about bridging a felix port with a "foreign interface" and
-passing traffic to a DMAC that is not even on this board (a host
-connected to the foreign interface)?
-There are so many cases that the Ocelot approach will not work for,
-and even adapting that to DSA is going to be tricky for the
-implementation. Consider that even a Linux bridge may have a MAC
-address that differs from the addresses of its slave devices. Do we
-add code in DSA to learn the bridge's address too? Do we add code to
-forget it when the last port leaves the bridge? Is it even sufficient?
+> +		return genphy_restart_aneg(phydev);
+>  
+> -	return ret;
+> +	return 0;
+>  }
+>  EXPORT_SYMBOL(genphy_check_and_restart_aneg);
+>  
+> 
 
-Regards,
--Vladimir
