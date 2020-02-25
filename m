@@ -2,74 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B4416F149
-	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:42:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A635916F148
+	for <lists+netdev@lfdr.de>; Tue, 25 Feb 2020 22:42:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729065AbgBYVmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728818AbgBYVmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 25 Feb 2020 16:42:42 -0500
-Received: from mout.kundenserver.de ([217.72.192.73]:45351 "EHLO
+Received: from mout.kundenserver.de ([212.227.17.10]:53045 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbgBYVmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:42:42 -0500
+        with ESMTP id S1726130AbgBYVml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 16:42:41 -0500
 Received: from kiste.fritz.box ([94.134.180.105]) by mrelayeu.kundenserver.de
  (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M72wT-1j3fq50v9D-008eZ7; Tue, 25 Feb 2020 22:42:30 +0100
+ 1MRTEp-1ijNnX1da9-00NQWx; Tue, 25 Feb 2020 22:42:30 +0100
 From:   Hans Wippel <ndev@hwipl.net>
 To:     kgraul@linux.ibm.com, ubraun@linux.ibm.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Hans Wippel <ndev@hwipl.net>
-Subject: [PATCH net-next v2 0/2] net/smc: improve peer ID in CLC decline
-Date:   Tue, 25 Feb 2020 22:41:20 +0100
-Message-Id: <20200225214122.335292-1-ndev@hwipl.net>
+Subject: [PATCH net-next v2 1/2] net/smc: rework peer ID handling
+Date:   Tue, 25 Feb 2020 22:41:21 +0100
+Message-Id: <20200225214122.335292-2-ndev@hwipl.net>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200225214122.335292-1-ndev@hwipl.net>
+References: <20200225214122.335292-1-ndev@hwipl.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:ymhbc0+KWA0Wnzu+RSp11z63nFrmCIF7E9hTuWl90FKRPVTM20X
- 92Yxwtu6vMvhR9irfeSI75s/midsRhLufpzstLhAobr3Mk37CJ40t3ZC383UL8bKewarV6I
- e73OckbHIpERDP4YBt/yb5INIlzN9lBiwHZo8lU7Ttl65EwfOs8J3xJ7txL4sm6YMu3wKmL
- 5F5GLdlmtjCww9+sR2I9Q==
+X-Provags-ID: V03:K1:81N7Is7afIPjSfZawRgQYPJYz+TFoeiQ7W8RoA28jx5vwc7nq6k
+ VPIck6ew++kR4kjwLAiFmvPkHfHXOTjF81c0K37SdF5XY0e5atn5rJW7ddXXBmZuWDe/DjA
+ q6QFWS+r65ZlB4XPVboX4YiWb67EUO9yUhC/uR9TMb16oIH8hBzI/v+HHo2VxAAjUQVo8jy
+ SqNLcp5ncZgxJZsv0QvhA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2jWvEeX0pFo=:yoOAkLq7FIV5Yf1JR5hRPS
- SiXknZI/qG3AUTxQ2EfXSdHaVDf+4UnReSMzqgV0jmJibKH1FCVdJ8vHBiP+x63LA81/3xhAV
- I6SElEfD3gu14//cX3Bfsg73F5POjnC5bBDUt4vNFM2ATgGaK0NyIjKMJ0ffjJQuIUPSqGbDZ
- qPgEcbaUdUzFslVJOvcSxQEvqZ+VWOhL6bcRA19Q0L7J3FfjFz37Q3hO7SkUh7CQG0D14Y9xV
- UZON+CIyn14B+UhlwiT0yKeS8AKlTi/5TK2WRsdSFFT46tmZk0wVgq05qDqTkW5msQsPHbCfB
- Z4ngRYPL4HJrV+wRrTCBH4XYGkggqPNG3xOpUEX3dqzuC60wqGwBSGLka/x/YGVsdoSvLpNlw
- diOklK2IgY9zyoiAkpqHGaG0iI9NWvxjtfJOx1RPPlMD2O25XvTrzTy5otif88Xu1upu/Zn1L
- 9x0ai9sjIaORSXo9ShYBqBpQcmjNlhBgWw87cCsHsoQ1j7RPkvwHUB6DoTFJFQvnqc+NLvop8
- 1YHDClZMuEoghs67KMdbMxSoT5Ko/2pcBuGD5D4ZZ8v/j2yKMt6bnKbn8iVC3PTfVCpF9ZtMo
- SH2VhOnNLoyS84zrcKSRffYMJj/cTh4ObxO3Uo4vCVVPmv7p2PY3dToUvFx9YN4vFC0bW5Hzi
- uNsiFu3Uz4IU7B9G7TEaZnSUpZiP/TPQccRjyrG9s5fI49sBiJONPRSfi8H8odyRvoZcNMjvb
- vyQNF5KfHexGl0g+m/STlHjl1BPBtoLoo9YU6qDPRY1ZZMy5dK3ZhZzpGAuL3DovEI+DGaejX
- z3pRqkWddlLFKCzc71haSpbTgn1hEB/ZEz0fvV8t/pROjeO82wPpl8dCBetzvHewYud0L6Z
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZG1nMITVZmA=:gvd+Pb45sbKmptDlzVo02g
+ rCCH0FWIxGQ0zr3mWnxHgZXvZh3tZ0fUPc9BwWmHc6t80xUiIF1cuV+DcLUihrbLN3DBRY10/
+ sGfzpeoiGDa4X9ykLySLVVVNiKzLphtfd5Rfz+7hTjgeIvLiLaO6dlSEojYYZf5k5Sis+yNOR
+ lAdeGAfwuKdloQQymDZibtspdJHIClHfK3FUQAbq3Cv4bku8N1/SuAEuS4h46S3WLLsjzATEe
+ tc/sIpLZNftcKnIO2cJrtq4Cwwezaykme8YLCxcSzzMRF9aClkALlqfv9tttAXCb0kodyCegg
+ BgZv/Ehqo/XLkeIMYYXuBxPJ2L8xEfczx7vc5+3quFP6fCvonCqHBv90QXJ9NLRdke0WwX7mp
+ SDXQDw2cZqtDp8qUovxTXEg5mG+2PEWRI819uSEFsJEU5xNzvm2jzHwd4dOAe8vpbTUTCpkA4
+ GWCU4OIt1mZ73n49QKBy0O3XnpyFQnBgfcdp3AS3WsDFIxlx/Vr7FRLamAEI+nq/S2+xGyqUK
+ /qfw8bxbqzkLEVRYvnmMmk8l1HEMBdenZKI2LasrG4VagRgBEVK2hlmBiaSMp+Lni0OWNho8A
+ ZzSe8Ymqt2FmB4t7xzp8P7vYAxD3yOWNUcYmHLMLYZsKhgm+gpuTinNHkoUlVFbjALhK/UQcy
+ Nj1q4Ot/OTRdKyjJSRfqTZhkPUmUx6e+EsK4QnNBmxQ1a7fYwUeq6MZy3sDAvhzggNL7taUtG
+ NA2YsUUyipSacoegm0f4uDeoGICZdRuf+d29ts0c6sR4UtUcklxuaNLVobRbwByJL0nuqMkDI
+ LE+ed0CqQmA/Mz7Z6YUsxIcBXwhEqZks6pEWnKKXuFYu8fysRXtC2t1j/YHjMPW3O5YzEgS
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following two patches improve the peer ID in CLC decline messages if
-RoCE devices are present in the host but no suitable device is found for
-a connection. The first patch reworks the peer ID initialization. The
-second patch contains the actual changes of the CLC decline messages.
+This patch initializes the peer ID to a random instance ID and a zero
+MAC address. If a RoCE device is in the host, the MAC address part of
+the peer ID is overwritten with the respective address. Also, a function
+for checking if the peer ID is valid is added. A peer ID is considered
+valid if the MAC address part contains a non-zero MAC address.
 
-Changes v1 -> v2:
-* make smc_ib_is_valid_local_systemid() static in first patch
-* changed if in smc_clc_send_decline() to remove curly braces
+Signed-off-by: Hans Wippel <ndev@hwipl.net>
+---
+ net/smc/smc_ib.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-Changes RFC -> v1:
-* split the patch into two parts
-* removed zero assignment to global variable (thanks Leon)
-
-Thanks to Leon Romanovsky and Karsten Graul for the feedback!
-
-Hans Wippel (2):
-  net/smc: rework peer ID handling
-  net/smc: improve peer ID in CLC decline for SMC-R
-
- net/smc/smc_clc.c |  3 ++-
- net/smc/smc_ib.c  | 19 ++++++++++++-------
- net/smc/smc_ib.h  |  1 +
- 3 files changed, 15 insertions(+), 8 deletions(-)
-
+diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+index 6756bd5a3fe4..e0592d337a94 100644
+--- a/net/smc/smc_ib.c
++++ b/net/smc/smc_ib.c
+@@ -37,11 +37,7 @@ struct smc_ib_devices smc_ib_devices = {	/* smc-registered ib devices */
+ 	.list = LIST_HEAD_INIT(smc_ib_devices.list),
+ };
+ 
+-#define SMC_LOCAL_SYSTEMID_RESET	"%%%%%%%"
+-
+-u8 local_systemid[SMC_SYSTEMID_LEN] = SMC_LOCAL_SYSTEMID_RESET;	/* unique system
+-								 * identifier
+-								 */
++u8 local_systemid[SMC_SYSTEMID_LEN];		/* unique system identifier */
+ 
+ static int smc_ib_modify_qp_init(struct smc_link *lnk)
+ {
+@@ -168,6 +164,15 @@ static inline void smc_ib_define_local_systemid(struct smc_ib_device *smcibdev,
+ {
+ 	memcpy(&local_systemid[2], &smcibdev->mac[ibport - 1],
+ 	       sizeof(smcibdev->mac[ibport - 1]));
++}
++
++static bool smc_ib_is_valid_local_systemid(void)
++{
++	return !is_zero_ether_addr(&local_systemid[2]);
++}
++
++static void smc_ib_init_local_systemid(void)
++{
+ 	get_random_bytes(&local_systemid[0], 2);
+ }
+ 
+@@ -224,8 +229,7 @@ static int smc_ib_remember_port_attr(struct smc_ib_device *smcibdev, u8 ibport)
+ 	rc = smc_ib_fill_mac(smcibdev, ibport);
+ 	if (rc)
+ 		goto out;
+-	if (!strncmp(local_systemid, SMC_LOCAL_SYSTEMID_RESET,
+-		     sizeof(local_systemid)) &&
++	if (!smc_ib_is_valid_local_systemid() &&
+ 	    smc_ib_port_active(smcibdev, ibport))
+ 		/* create unique system identifier */
+ 		smc_ib_define_local_systemid(smcibdev, ibport);
+@@ -605,6 +609,7 @@ static struct ib_client smc_ib_client = {
+ 
+ int __init smc_ib_register_client(void)
+ {
++	smc_ib_init_local_systemid();
+ 	return ib_register_client(&smc_ib_client);
+ }
+ 
 -- 
 2.25.1
 
