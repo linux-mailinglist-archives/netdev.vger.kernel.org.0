@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF6BA16FF99
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4864416FF9D
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:05:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbgBZNFD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Feb 2020 08:05:03 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21866 "EHLO
+        id S1727368AbgBZNFJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Feb 2020 08:05:09 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30413 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726829AbgBZNFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:05:02 -0500
+        by vger.kernel.org with ESMTP id S1727350AbgBZNFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:05:09 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-254-mAeJ63EzMxmvaeEgjAUKEQ-1; Wed, 26 Feb 2020 08:04:58 -0500
-X-MC-Unique: mAeJ63EzMxmvaeEgjAUKEQ-1
+ us-mta-349-LVWOt1y9Pluzec83kuDYVg-1; Wed, 26 Feb 2020 08:05:03 -0500
+X-MC-Unique: LVWOt1y9Pluzec83kuDYVg-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 02ECE80256B;
-        Wed, 26 Feb 2020 13:04:56 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53161DB33;
+        Wed, 26 Feb 2020 13:05:01 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.43.17.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA8FF19C7F;
-        Wed, 26 Feb 2020 13:04:50 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F88419C7F;
+        Wed, 26 Feb 2020 13:04:56 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -36,9 +36,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 14/18] bpf: Add dispatchers to kallsyms
-Date:   Wed, 26 Feb 2020 14:03:41 +0100
-Message-Id: <20200226130345.209469-15-jolsa@kernel.org>
+Subject: [PATCH 15/18] bpf: Sort bpf kallsyms symbols
+Date:   Wed, 26 Feb 2020 14:03:42 +0100
+Message-Id: <20200226130345.209469-16-jolsa@kernel.org>
 In-Reply-To: <20200226130345.209469-1-jolsa@kernel.org>
 References: <20200226130345.209469-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -52,74 +52,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding dispatchers to kallsyms. It's displayed as
-  bpf_dispatcher_<NAME>
+Currently we don't sort bpf_kallsyms and display symbols
+in proc/kallsyms as they come in via __bpf_ksym_add.
 
-where NAME is the name of dispatcher.
+Using the latch tree to get the next bpf_ksym object
+and insert the new symbol ahead of it.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h     | 19 ++++++++++++-------
- kernel/bpf/dispatcher.c |  9 ++++++++-
- 2 files changed, 20 insertions(+), 8 deletions(-)
+ kernel/bpf/core.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c216af89254f..4ae2273112ba 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -520,6 +520,7 @@ struct bpf_dispatcher {
- 	int num_progs;
- 	void *image;
- 	u32 image_off;
-+	struct bpf_ksym ksym;
- };
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 9879fb02ee8e..3319019735f0 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -647,9 +647,28 @@ static struct latch_tree_root bpf_progs_tree __cacheline_aligned;
  
- static __always_inline unsigned int bpf_dispatcher_nop_func(
-@@ -535,13 +536,17 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
- int bpf_trampoline_link_prog(struct bpf_prog *prog);
- int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
- void bpf_trampoline_put(struct bpf_trampoline *tr);
--#define BPF_DISPATCHER_INIT(name) {			\
--	.mutex = __MUTEX_INITIALIZER(name.mutex),	\
--	.func = &name##_func,				\
--	.progs = {},					\
--	.num_progs = 0,					\
--	.image = NULL,					\
--	.image_off = 0					\
-+#define BPF_DISPATCHER_INIT(_name) {				\
-+	.mutex = __MUTEX_INITIALIZER(_name.mutex),		\
-+	.func = &_name##_func,					\
-+	.progs = {},						\
-+	.num_progs = 0,						\
-+	.image = NULL,						\
-+	.image_off = 0,						\
-+	.ksym = {						\
-+		.name  = #_name,				\
-+		.lnode = LIST_HEAD_INIT(_name.ksym.lnode),	\
-+	},							\
- }
- 
- #define DEFINE_BPF_DISPATCHER(name)					\
-diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-index 3a5871bbd6d0..74060c92b2f3 100644
---- a/kernel/bpf/dispatcher.c
-+++ b/kernel/bpf/dispatcher.c
-@@ -154,7 +154,14 @@ void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
- 	if (!changed)
- 		goto out;
- 
--	bpf_dispatcher_update(d, prev_num_progs);
-+	if (!bpf_dispatcher_update(d, prev_num_progs)) {
-+		if (!prev_num_progs)
-+			bpf_image_ksym_add(d->image, &d->ksym);
+ static void __bpf_ksym_add(struct bpf_ksym *ksym)
+ {
++	struct list_head *head = &bpf_kallsyms;
++	struct rb_node *next;
 +
-+		if (!d->num_progs)
-+			bpf_image_ksym_del(&d->ksym);
+ 	WARN_ON_ONCE(!list_empty(&ksym->lnode));
+-	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
+ 	latch_tree_insert(&ksym->tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
++
++	/*
++	 * Add ksym into bpf_kallsyms in ordered position,
++	 * which is prepared for us by latch tree addition.
++	 *
++	 * Find out the next symbol and insert ksym right
++	 * ahead of it. If ksym is the last one, just tail
++	 * add to the bpf_kallsyms.
++	 */
++	next = rb_next(&ksym->tnode.node[0]);
++	if (next) {
++		struct bpf_ksym *ptr;
++
++		ptr = container_of(next, struct bpf_ksym, tnode.node[0]);
++		head = &ptr->lnode;
 +	}
-+
- out:
- 	mutex_unlock(&d->mutex);
++	list_add_tail_rcu(&ksym->lnode, head);
  }
+ 
+ void bpf_ksym_add(struct bpf_ksym *ksym)
 -- 
 2.24.1
 
