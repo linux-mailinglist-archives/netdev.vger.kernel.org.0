@@ -2,169 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB3F170A49
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 22:17:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC4C0170A4B
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 22:17:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727552AbgBZVRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 16:17:07 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46762 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727446AbgBZVRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 16:17:06 -0500
-Received: by mail-wr1-f66.google.com with SMTP id j7so529913wrp.13;
-        Wed, 26 Feb 2020 13:17:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eGG5HV/wHjXmjW594DYnRXUEMq+KVnRCi2GVnSHct24=;
-        b=GWMdC2CT7TecL5TAmiCGBNOag5B0X++Z1IY0dQWJIayMcUrrFTULSVfUlbT0TY1wA+
-         TGqh7IexTm/eF1H0hR9Lj3XFtTUWPA74MBjrXxPhFbD5JlulljnQEXzJ88AOlVT7zv20
-         R87ybBJn2VbvR4UFwp+OYTMj9wq7We6KOMUUXig0DqMGbtaAfvhe+UqbS8ftV8tRKo+n
-         ZoYHLEL5+N1p1ZRCKfLr7ixiDi4sCQBvDq09jej2U2cK946ViEn+3hYOPVi7+M0kDzYL
-         GWWs9IsvCcplqUrgG/mNaN+41I3tZN9yEYl7Gvrd32aW/hndLnr9mRdw0FLMH7pCjZTF
-         ZC6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eGG5HV/wHjXmjW594DYnRXUEMq+KVnRCi2GVnSHct24=;
-        b=CwTv1e/t7xlBB4XLpKCXpar3d3ZceP24wsIK9GBZ6VR8rhMUsPek/6rW0WZNW6cc7r
-         ZrR67UjHzPP04mn5DaTZ7AR18G3BblasGuiSz/32NGAHwQvlAXmFYXGZpN2eVG4KxCRy
-         Um/nkaKHTagG4Lk6CIFmVRtg/crJ/mby5c45A3TbrH8RBNRMidF2aSt+ux2YiME1/pgk
-         SYMkjXVrEMdyaajbONwcIJdoJf2qyXOzfBSfE+INkjxArCfWh5cQ7AwjpzYWB89UicRP
-         Vo/UXQ3jwQiKCcNUcj6q6B4NoCwkAM2u02X3TcvuwbT2c+tZFK/LGMkm7AX4yLSyVOp1
-         wGCg==
-X-Gm-Message-State: APjAAAVfF6G3UCASc15CO9Zp4+wmvVqxeGCa7+t0qm+Bx07xwUscKqsC
-        i89WMTmyaUKvorIpMGn8YkU=
-X-Google-Smtp-Source: APXvYqytANCFtOd8eL6ThzI4nOTk57R3SjvMxRHm6IAzwk+nJfSmbZzar4bJOjJ2Ks/IF5tG/MDhEA==
-X-Received: by 2002:a05:6000:1206:: with SMTP id e6mr613672wrx.410.1582751824917;
-        Wed, 26 Feb 2020 13:17:04 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:38ea:e5eb:bce2:2ee3? (p200300EA8F29600038EAE5EBBCE22EE3.dip0.t-ipconnect.de. [2003:ea:8f29:6000:38ea:e5eb:bce2:2ee3])
-        by smtp.googlemail.com with ESMTPSA id s139sm4674219wme.35.2020.02.26.13.17.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 13:17:04 -0800 (PST)
-Subject: Re: [RFC PATCH 1/2] net: phy: let the driver register its own IRQ
- handler
-To:     Michael Walle <michael@walle.cc>
+        id S1727672AbgBZVRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 16:17:15 -0500
+Received: from gateway22.websitewelcome.com ([192.185.46.187]:45476 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727591AbgBZVRN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 16:17:13 -0500
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 2FFC36B76
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 15:17:11 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 743LjeMuKAGTX743LjndPt; Wed, 26 Feb 2020 15:17:11 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=hcbL3GZL7zsDbcF7idZFTlF2lQ3OpBjxU8cd/6ijrTg=; b=fidh2amCT9uWl2kffO/euzuGBx
+        UEBpTxuFfCFq9WZOVARghIAnVfVkv1j7SzqN9AecVch+6Kz4jZNxnkm/cu+48NfjSQM5ZSlVNlnjD
+        FYoTTlQUiSDLDoaSNBn7sx1nZZpkK+cm0MvhXpdJGS60/05Y7520Y71IIv0lVO8eg4/dVbFsjXo/G
+        uRyPUFUr3miIoqER1U7tKfo2yAKSqeEBhLvTMe/mtIb+KBRNQlMAenN7h6iHaKmmKAg7TXqKF6koG
+        MtJEK9hLR/migrGJdxeMq949dFojySxzONPVMxCEzT4RsappO8FJmP6jJao1Vv6QTgv075YdDUq1P
+        kE62bZeQ==;
+Received: from [201.162.161.213] (port=47606 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j743J-000kNj-0S; Wed, 26 Feb 2020 15:17:09 -0600
+Date:   Wed, 26 Feb 2020 15:20:00 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>
-References: <20200225230819.7325-1-michael@walle.cc>
- <20200225230819.7325-2-michael@walle.cc>
- <3c7e1064-845e-d193-24ad-965211bf1e9a@gmail.com>
- <18f531a691d0c4905552794bbb1be1e5@walle.cc>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <60985489-a6e9-dc13-68af-765d98116eb8@gmail.com>
-Date:   Wed, 26 Feb 2020 22:17:00 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] NFC: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200226212000.GA32231@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <18f531a691d0c4905552794bbb1be1e5@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.161.213
+X-Source-L: No
+X-Exim-ID: 1j743J-000kNj-0S
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.162.161.213]:47606
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 10
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.02.2020 12:12, Michael Walle wrote:
-> Am 2020-02-26 08:27, schrieb Heiner Kallweit:
->> On 26.02.2020 00:08, Michael Walle wrote:
->>> There are more and more PHY drivers which has more than just the PHY
->>> link change interrupts. For example, temperature thresholds or PTP
->>> interrupts.
->>>
->>> At the moment it is not possible to correctly handle interrupts for PHYs
->>> which has a clear-on-read interrupt status register. It is also likely
->>> that the current approach of the phylib isn't working for all PHYs out
->>> there.
->>>
->>> Therefore, this patch let the PHY driver register its own interrupt
->>> handler. To notify the phylib about a link change, the interrupt handler
->>> has to call the new function phy_drv_interrupt().
->>>
->>
->> We have phy_driver callback handle_interrupt for custom interrupt
->> handlers. Any specific reason why you can't use it for your purposes?
-> 
-> Yes, as mentioned above this wont work for PHYs which has a clear-on-read
-> status register, because you may loose interrupts between handle_interrupt()
-> and phy_clear_interrupt().
-> 
-> See also
->  
-> https://lore.kernel.org/netdev/bd47f8e1ebc04fa98856ed8d89b91419@walle.cc/
-> 
-> And esp. Russell reply. I tried using handle_interrupt() but it won't work
-> unless you make the ack_interrupt a NOOP. but even then it won't work because
-> the ack_interrupt is also used during setup etc.
-> 
-Right, now I remember .. So far we have only one user of the handle_interrupt
-callback. Following a proposal from the quoted discussion, can you base your
-patch on the following and check?
-Note: Even though you implement handle_interrupt, you still have to implement
-ack_interrupt too.
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
+
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/phy/mscc.c | 3 ++-
- drivers/net/phy/phy.c  | 4 ++--
- include/linux/phy.h    | 4 +++-
- 3 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/nfc/fdp/fdp.c      |  2 +-
+ drivers/nfc/st21nfca/dep.c |  4 ++--
+ include/net/nfc/nci.h      | 14 +++++++-------
+ include/net/nfc/nfc.h      |  2 +-
+ 4 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index 937ac7da2..20b9d3ef5 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -2868,7 +2868,8 @@ static int vsc8584_handle_interrupt(struct phy_device *phydev)
- #endif
+diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+index 062535c8251b..d4ff9e6056c2 100644
+--- a/drivers/nfc/fdp/fdp.c
++++ b/drivers/nfc/fdp/fdp.c
+@@ -76,7 +76,7 @@ static u8 nci_core_get_config_otp_ram_version[5] = {
+ struct nci_core_get_config_rsp {
+ 	u8 status;
+ 	u8 count;
+-	u8 data[0];
++	u8 data[];
+ };
  
- 	phy_mac_interrupt(phydev);
--	return 0;
-+
-+	return vsc85xx_ack_interrupt(phydev);
- }
+ static int fdp_nci_create_conn(struct nci_dev *ndev)
+diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
+index 137eb3f7dabd..98e73e047e02 100644
+--- a/drivers/nfc/st21nfca/dep.c
++++ b/drivers/nfc/st21nfca/dep.c
+@@ -66,7 +66,7 @@ struct st21nfca_atr_req {
+ 	u8 bsi;
+ 	u8 bri;
+ 	u8 ppi;
+-	u8 gbi[0];
++	u8 gbi[];
+ } __packed;
  
- static int vsc85xx_config_init(struct phy_device *phydev)
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index d76e038cf..de52f0e82 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -725,10 +725,10 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
- 	} else {
- 		/* reschedule state queue work to run as soon as possible */
- 		phy_trigger_machine(phydev);
-+		if (phy_clear_interrupt(phydev))
-+			goto phy_err;
- 	}
+ struct st21nfca_atr_res {
+@@ -79,7 +79,7 @@ struct st21nfca_atr_res {
+ 	u8 bri;
+ 	u8 to;
+ 	u8 ppi;
+-	u8 gbi[0];
++	u8 gbi[];
+ } __packed;
  
--	if (phy_clear_interrupt(phydev))
--		goto phy_err;
- 	return IRQ_HANDLED;
+ struct st21nfca_psl_req {
+diff --git a/include/net/nfc/nci.h b/include/net/nfc/nci.h
+index 6ab5a83f597c..0550e0380b8d 100644
+--- a/include/net/nfc/nci.h
++++ b/include/net/nfc/nci.h
+@@ -244,13 +244,13 @@ struct dest_spec_params {
+ struct core_conn_create_dest_spec_params {
+ 	__u8    type;
+ 	__u8    length;
+-	__u8    value[0];
++	__u8    value[];
+ } __packed;
  
- phy_err:
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 80f8b2158..9e2895ee4 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -560,7 +560,9 @@ struct phy_driver {
- 	 */
- 	int (*did_interrupt)(struct phy_device *phydev);
+ struct nci_core_conn_create_cmd {
+ 	__u8    destination_type;
+ 	__u8    number_destination_params;
+-	struct core_conn_create_dest_spec_params params[0];
++	struct core_conn_create_dest_spec_params params[];
+ } __packed;
  
--	/* Override default interrupt handling */
-+	/* Override default interrupt handling. Handler has to ensure
-+	 * that interrupt is ack'ed.
-+	 */
- 	int (*handle_interrupt)(struct phy_device *phydev);
+ #define NCI_OP_CORE_CONN_CLOSE_CMD	nci_opcode_pack(NCI_GID_CORE, 0x05)
+@@ -321,7 +321,7 @@ struct nci_core_init_rsp_1 {
+ 	__u8	status;
+ 	__le32	nfcc_features;
+ 	__u8	num_supported_rf_interfaces;
+-	__u8	supported_rf_interfaces[0];	/* variable size array */
++	__u8	supported_rf_interfaces[];	/* variable size array */
+ 	/* continuted in nci_core_init_rsp_2 */
+ } __packed;
  
- 	/* Clears up any memory if needed */
+@@ -338,7 +338,7 @@ struct nci_core_init_rsp_2 {
+ struct nci_core_set_config_rsp {
+ 	__u8	status;
+ 	__u8	num_params;
+-	__u8	params_id[0];	/* variable size array */
++	__u8	params_id[];	/* variable size array */
+ } __packed;
+ 
+ #define NCI_OP_CORE_CONN_CREATE_RSP	nci_opcode_pack(NCI_GID_CORE, 0x04)
+@@ -501,18 +501,18 @@ struct nci_rf_nfcee_action_ntf {
+ 	__u8 nfcee_id;
+ 	__u8 trigger;
+ 	__u8 supported_data_length;
+-	__u8 supported_data[0];
++	__u8 supported_data[];
+ } __packed;
+ 
+ #define NCI_OP_NFCEE_DISCOVER_NTF nci_opcode_pack(NCI_GID_NFCEE_MGMT, 0x00)
+ struct nci_nfcee_supported_protocol {
+ 	__u8	num_protocol;
+-	__u8	supported_protocol[0];
++	__u8	supported_protocol[];
+ } __packed;
+ 
+ struct nci_nfcee_information_tlv {
+ 	__u8	num_tlv;
+-	__u8	information_tlv[0];
++	__u8	information_tlv[];
+ } __packed;
+ 
+ struct nci_nfcee_discover_ntf {
+diff --git a/include/net/nfc/nfc.h b/include/net/nfc/nfc.h
+index 5d277d68fd8d..2cd3a261bcbc 100644
+--- a/include/net/nfc/nfc.h
++++ b/include/net/nfc/nfc.h
+@@ -146,7 +146,7 @@ struct nfc_evt_transaction {
+ 	u32 aid_len;
+ 	u8 aid[NFC_MAX_AID_LENGTH];
+ 	u8 params_len;
+-	u8 params[0];
++	u8 params[];
+ } __packed;
+ 
+ struct nfc_genl_data {
 -- 
-2.25.1
-
+2.25.0
 
