@@ -2,123 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C01841701B9
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 15:59:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D331701F2
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 16:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727173AbgBZO7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 09:59:49 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58464 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgBZO7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 09:59:48 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j6yA5-0005YR-VF; Wed, 26 Feb 2020 15:59:46 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j6yA5-000WjF-JX; Wed, 26 Feb 2020 15:59:45 +0100
-Subject: Re: selftests/bpf: arm64: test_verifier 13 "FAIL retval 65507 != -29
- (run 1/1)"
-To:     Paolo Pisati <paolo.pisati@canonical.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org
-References: <20200226134458.GA65282@harukaze>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3707ef0b-010e-52b8-aff9-720d6a5e60ec@iogearbox.net>
-Date:   Wed, 26 Feb 2020 15:59:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200226134458.GA65282@harukaze>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727733AbgBZPH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 10:07:57 -0500
+Received: from mail-eopbgr140071.outbound.protection.outlook.com ([40.107.14.71]:16548
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726990AbgBZPH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 10:07:56 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UDgoYgNOk8TqRRTiRVZyTfhPcqPV+rZyFxZiEooeKHcel/xx5jwR0hIwFDow00P4KTBIGHih3U0kWdBwZ2ZAJc1MC4W9r45fCSyNy6hN1bBm83HaRy+b42HUsvQE3/KLugXWv0qX5bE7+3UaaOjHImN/TqRJ1Z1WEvZgJENVRTVkaGO3OjiGezUtrIfSgF0ke04xRSkL+glNrPJhNnS33PVF0NeX+45WMJgvH74uSy0GpIpoa7bMa0GqfXaApV+vP/swTHE7G5WNc77O08faWnHHTb1HU6TvCP5pAkIrJaw3Ou5HBIwPrUD6fvHx66WQSNdi0XsljZ675tDZ6f2uRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iKQxL1tg8qxGVVymZDRFYi7aXQYJ/gAgT6avONxa66o=;
+ b=gGlPPI7+y2XaFLVoUyP4i/PWPGlHPAouB1S8Vq1kfKnURZPqVp4SV577s5kXSMFDhks0GXKGZ/2XW184ZEf+R/I9IgGi3nu1TNqRVTvJznFe447uJ4RWdjh1adn2VmNajeWcw3HhP6NjfMvKyQNzSjo9zACuN/1lmIoP16ggte8MaH6nIjJtwjZ0HLVkiHFXgVg48CRGTNtI+dgf8CQHxBajwktsc/3sP49vC9dCHafNTZtGYXtvs4Ncn9mAn1EViGytUxc2qdYL5iyuv1CF34wfiOG8GY/VN8j6rnOENhi9uuwb+pVwayoJBlrBCClEiqOy0wjtGrVaVakF4keUDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iKQxL1tg8qxGVVymZDRFYi7aXQYJ/gAgT6avONxa66o=;
+ b=qh2ymQld5yXHCY3O+EEPOOLjB/gFh6bESYsw+wPE4CFOTyJHsdnpGxb5iVvX5NsyYMAp30IBrLPUomPg06jQJ/4gyYRsoMApglMJcp0jKY6ystxXU8KI2MdQgiOhSl0Y/dr3vcW6fDZ5A01yRGFlyYl+xLAJM+AzQK0lUyr0mRk=
+Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (52.133.240.149) by
+ DB8PR04MB6716.eurprd04.prod.outlook.com (20.179.250.22) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.21; Wed, 26 Feb 2020 15:07:52 +0000
+Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
+ ([fe80::9484:81c6:c73b:2697]) by DB8PR04MB6828.eurprd04.prod.outlook.com
+ ([fe80::9484:81c6:c73b:2697%6]) with mapi id 15.20.2750.021; Wed, 26 Feb 2020
+ 15:07:52 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Felix Fietkau <nbd@nbd.name>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: RE: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link config in
+ mac_link_up()
+Thread-Topic: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link config in
+ mac_link_up()
+Thread-Index: AQHV67+le9Rplv4RF0eFqNNnaoBGEagsGLhggAEqKwCAAFHtwA==
+Date:   Wed, 26 Feb 2020 15:07:51 +0000
+Message-ID: <DB8PR04MB6828131F75AB5D9162138F6DE0EA0@DB8PR04MB6828.eurprd04.prod.outlook.com>
+References: <20200225093703.GS25745@shell.armlinux.org.uk>
+ <E1j6WgG-0000TJ-CC@rmk-PC.armlinux.org.uk>
+ <DB8PR04MB68282F710FB598B977C36F99E0ED0@DB8PR04MB6828.eurprd04.prod.outlook.com>
+ <20200226101204.GW25745@shell.armlinux.org.uk>
+In-Reply-To: <20200226101204.GW25745@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25734/Tue Feb 25 15:06:17 2020)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b8e8932d-a94c-4dd2-d83b-08d7bacda67a
+x-ms-traffictypediagnostic: DB8PR04MB6716:
+x-microsoft-antispam-prvs: <DB8PR04MB671631EC366662E4A1D10496E0EA0@DB8PR04MB6716.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0325F6C77B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(189003)(199004)(81156014)(8676002)(33656002)(186003)(8936002)(6916009)(81166006)(71200400001)(44832011)(7696005)(26005)(6506007)(66946007)(66446008)(4326008)(478600001)(86362001)(7416002)(66556008)(64756008)(55016002)(54906003)(9686003)(76116006)(52536014)(66476007)(2906002)(316002)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB6716;H:DB8PR04MB6828.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FG1SoBBnTbK9ttGqNZCCCrC4A9Y2C1emH4fWhzRc7BNmeM3Oy7uWEJ0p3WDst/wl5U8eXCXyTzwyYmojNHwRG0Gz9vbP6eUfn/Wl2WkXaqG6kDVL/woTQ6arloxkriX1wPqkmBsoJnp3gjn9VhccqFxxRqX5fOIrDchUwMYvGEJG91qdpSHEZlHrQGUCZtwtyW6lYGqHFd/ok3fpm63HbFf2Cqrq5Dd503uLBYHNZzvtD62uvcgOkP7CQFLW4U7gptd5HVgMyKCvUkYi9pA4hsfHFik10809ILuL8OxC0pAoV0XfJa63qbRDUg0tjJJgRE2vugZGdDVIurm/Wtw1Tcrbvu0oHGcbKakbAUd8tT9Y0P4y7lR8K+ktWyUKieKxjlqOEw31qGsAm9Y0HVbpEWVWtAz96rJEV7xYhjkR1zH/Jj/NHdUXOB4zP+FTolWJ
+x-ms-exchange-antispam-messagedata: 3tiDRHOqRBv4I8HkL06zHdDmXhpCLu7+GrB0MJKOGt41b38T0bzzE7hew5c/5AaS2kxkkfI0V+6I8kGuFsZ4r86W7T0ADFwmI/PPiWLb/pqIa75JwKLOFU+QgFsRFzGW38RBuIJMhieFagbJMhNFQg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8e8932d-a94c-4dd2-d83b-08d7bacda67a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Feb 2020 15:07:51.8543
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aHOETpdVJgxEbhHpPzk9R6ooIwbcIN3IGRu5D7KOJa1A0yvXHEBgSG4d5W9PjDLVUajOYLyrKpi50iExDcQ0zg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/20 2:44 PM, Paolo Pisati wrote:
-> This particular selftest fails on arm64 (x86-64 is fine):
-> 
-> $ sudo ./tools/testing/selftests/bpf/test_verifier -v 13
-> #13/p valid read map access into a read-only array 2 , verifier log:
-> 0: (7a) *(u64 *)(r10 -8) = 0
-> 1: (bf) r2 = r10
-> 2: (07) r2 += -8
-> 3: (18) r1 = 0xffff00becd0d8c00
-> 5: (85) call bpf_map_lookup_elem#1
-> 6: (15) if r0 == 0x0 goto pc+6
->   R0_w=map_value(id=0,off=0,ks=4,vs=48,imm=0) R10=fp0 fp-8_w=mmmmmmmm
-> 7: (bf) r1 = r0
-> 8: (b7) r2 = 4
-> 9: (b7) r3 = 0
-> 10: (b7) r4 = 0
-> 11: (b7) r5 = 0
-> 12: (85) call bpf_csum_diff#28
->   R0_w=map_value(id=0,off=0,ks=4,vs=48,imm=0)
-> R1_w=map_value(id=0,off=0,ks=4,vs=48,imm=0) R2_w=inv4 R3_w=inv0 R4_w=inv0
-> R5_w=inv0 R10=fp0 fp-8_w=mmmmmmmm
-> last_idx 12 first_idx 0
-> regs=4 stack=0 before 11: (b7) r5 = 0
-> regs=4 stack=0 before 10: (b7) r4 = 0
-> regs=4 stack=0 before 9: (b7) r3 = 0
-> regs=4 stack=0 before 8: (b7) r2 = 4
-> last_idx 12 first_idx 0
-> regs=10 stack=0 before 11: (b7) r5 = 0
-> regs=10 stack=0 before 10: (b7) r4 = 0
-> 13: (95) exit
-> 
-> from 6 to 13: safe
-> processed 14 insns (limit 1000000) max_states_per_insn 0 total_states 1
-> peak_states 1 mark_read 1
-> FAIL retval 65507 != -29 (run 1/1)
-> 0: (7a) *(u64 *)(r10 -8) = 0
-> 1: (bf) r2 = r10
-> 2: (07) r2 += -8
-> 3: (18) r1 = 0xffff00becd0d8c00
-> 5: (85) call bpf_map_lookup_elem#1
-> 6: (15) if r0 == 0x0 goto pc+6
->   R0_w=map_value(id=0,off=0,ks=4,vs=48,imm=0) R10=fp0 fp-8_w=mmmmmmmm
-> 7: (bf) r1 = r0
-> 8: (b7) r2 = 4
-> 9: (b7) r3 = 0
-> 10: (b7) r4 = 0
-> 11: (b7) r5 = 0
-> 12: (85) call bpf_csum_diff#28
->   R0_w=map_value(id=0,off=0,ks=4,vs=48,imm=0)
-> R1_w=map_value(id=0,off=0,ks=4,vs=48,imm=0) R2_w=inv4 R3_w=inv0 R4_w=inv0
-> R5_w=inv0 R10=fp0 fp-8_w=mmmmmmmm
-> last_idx 12 first_idx 0
-> regs=4 stack=0 before 11: (b7) r5 = 0
-> regs=4 stack=0 before 10: (b7) r4 = 0
-> regs=4 stack=0 before 9: (b7) r3 = 0
-> regs=4 stack=0 before 8: (b7) r2 = 4
-> last_idx 12 first_idx 0
-> regs=10 stack=0 before 11: (b7) r5 = 0
-> regs=10 stack=0 before 10: (b7) r4 = 0
-> 13: (95) exit
-> 
-> from 6 to 13: safe
-> processed 14 insns (limit 1000000) max_states_per_insn 0 total_states 1
-> peak_states 1 mark_read 1
-> Summary: 0 PASSED, 0 SKIPPED, 1 FAILED
-> 
-> Above output without line wrapping: https://paste.ubuntu.com/p/qhCK8nJjKw/
-> 
-> Kernel version 5.4.21, config: https://paste.ubuntu.com/p/G3yxvvjRMS/
 
-Yep, the csum_diff is broken for non-x86_64. Fix is wip on my side, will keep
-you posted.
+> Subject: Re: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link confi=
+g in
+> mac_link_up()
+>=20
+> On Tue, Feb 25, 2020 at 04:36:32PM +0000, Ioana Ciornei wrote:
+> > > Subject: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link
+> > > config in
+> > > mac_link_up()
+> > >
+> > > Convert the DPAA2 ethernet driver to use the finalised link
+> > > parameters in
+> > > mac_link_up() rather than the parameters in mac_config(), which are
+> > > more suited to the needs of the DPAA2 MC firmware than those
+> > > available via mac_config().
+> > >
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> >
+> > Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+>=20
+> Thanks.
+>=20
+> > > +
+> > > +		/* This is lossy; the firmware really should take the pause
+> > > +		 * enablement status rather than pause/asym pause status.
+> > > +		 */
+> >
+> > In what sense it's lossy? I cannot see how information can be lost by
+> translating the rx/tx pause state to pause/asym.
+> > If it's just about the unnecessary double translation, then I agree.. t=
+his could
+> have been done in an easier manner.
+>=20
+> If you're just translating rx/tx to pause/asym and then doing the reverse=
+, then it
+> isn't lossy, but if the firmware is resolving pause/asym according to the=
+ table in
+> IEEE 802.3, then it will be lossy.
 
-Thanks,
-Daniel
+The firmware is just doing the reverse translation.
+
+>=20
+> If the firmware doesn't interpret the bits, then why not do the sensible =
+thing and
+> just pass the enablement status rather than trying to confusingly encode =
+it back
+> to pause/asym?
+
+I agree. It's unnecessary and confusing. I'll add this on the list of fixup=
+s to be made by the firmware team.
+
+Ioana
+
+>=20
+> --
+
