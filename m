@@ -2,203 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 968FE16FCCB
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 11:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D63A16FCF1
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 12:06:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728068AbgBZK62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 05:58:28 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33844 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728054AbgBZK60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 05:58:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582714705;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Ao4shkARYBOlBvwWDPYByOMa60o0c7ck0bB41Z0If+w=;
-        b=ebcBzj7JZRtl4yJG2ucuqBkycELIg2oCp/NYRejkF+wI73YIWTrxeakNKlV50lG0f+76xl
-        lGBrzIKcLS6fYhxxQbn1gwuZQFpuihIjXTgm2vnp/aVSlueg6gF1rfhK1RtJFXyAVu5UU6
-        tdd0vZad3u/dOAV2baj/sy/Y1ODQbvo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-159-fH_OXU6DPce9cL8sU1_dBw-1; Wed, 26 Feb 2020 05:58:22 -0500
-X-MC-Unique: fH_OXU6DPce9cL8sU1_dBw-1
-Received: by mail-wm1-f69.google.com with SMTP id w12so562964wmc.3
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 02:58:22 -0800 (PST)
+        id S1728102AbgBZLGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 06:06:20 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:40047 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727954AbgBZLGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 06:06:19 -0500
+Received: by mail-ed1-f65.google.com with SMTP id p3so3246477edx.7;
+        Wed, 26 Feb 2020 03:06:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qD490qP8YoHuMggNJ+4rCSwLuR21SazsOZ1+Y/A5tXY=;
+        b=nAB7CUTnvsBjhe/PIwUREoSD8Dtea7xSb4TC/ZjuCq1rN7YookFkVvp8f5NZr8ViuK
+         JDwLBw/0dPnEXcIRSMONvffCxwYafU6qASRFtw2FNJWsgVFLjapX7Y4NaqL3meEK0zbK
+         uNBpTss6XQOEf+r08uX1VGCQ0l4g5Jtd4g7oug1CoUkmD6Lkte+9/zOKo7RA7ZGzOP5h
+         34i5PNdEEhbSXfsPuH7I/CNg7jeUY9/lkboGTTuf0f5N0YJ2dZrhkAngbkNKktHnf1FZ
+         /TIxN12YKiz/RCiSaMauemnXMy4FcKVLARcxQHPhLrOT7xcsiujLwxQ2HYaqpa7W2KQZ
+         s4SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ao4shkARYBOlBvwWDPYByOMa60o0c7ck0bB41Z0If+w=;
-        b=tz4G0SenQ/tbMINQgnHqoX/TDSqfK30nPUIPsreFniACxJCbQ5MJ20UCNVtnZeRrQI
-         jkgkFySn9bkx+2b5D5I6YzlNj39qnTuIPSbtjR5li3ejDsWqMX8u5CX6yceXR7nrs8fE
-         +djAmUIrrRhV4M+lNnzoQT3cciUAD4gjisp82qO663ksRrvXhwsVmLinCuU3sVktFa0h
-         u4X69piYTMAURc0cPdZGUPGXf2tQ1p7IdyHIQu+5gynYQbLdsrAHo8vOoNIVfHISmGwj
-         ysaBG7k91n2dP2i7CG0T6plT8cEBzeQrVtUY1HJSEl2wNuQdo5ZFQ9keUtD48Cy5JUKo
-         JZPg==
-X-Gm-Message-State: APjAAAU4Cj5QiChdJExCHSB8c2GdIVvILcg1uqvUA6hyrR1DaCvyGuag
-        tiQBHQ2QsF5s4v5lcToYEXCA1oxMnGlj6TpVQF1fZUujZWvtwWVZ8dBG2ggm0PDEQakM8T13Wbu
-        B0sZKrH+jqyiRsoqP
-X-Received: by 2002:a5d:526c:: with SMTP id l12mr5137377wrc.117.1582714700517;
-        Wed, 26 Feb 2020 02:58:20 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyh+hNuja55nNfaQjP9nDbwKYYMHtCqsv8lSLIfOPeY/HkJFiCny/r2KQbRfkc32TKRz7Lunw==
-X-Received: by 2002:a5d:526c:: with SMTP id l12mr5137321wrc.117.1582714700113;
-        Wed, 26 Feb 2020 02:58:20 -0800 (PST)
-Received: from steredhat.redhat.com (host209-4-dynamic.27-79-r.retail.telecomitalia.it. [79.27.4.209])
-        by smtp.gmail.com with ESMTPSA id l132sm2619123wmf.16.2020.02.26.02.58.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 02:58:19 -0800 (PST)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     davem@davemloft.net
-Cc:     Dexuan Cui <decui@microsoft.com>, Hillf Danton <hdanton@sina.com>,
-        virtualization@lists.linux-foundation.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>, kvm@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        syzbot+731710996d79d0d58fbc@syzkaller.appspotmail.com,
-        netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Sunil Muthuswamy <sunilmut@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: [PATCH net] vsock: fix potential deadlock in transport->release()
-Date:   Wed, 26 Feb 2020 11:58:18 +0100
-Message-Id: <20200226105818.36055-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qD490qP8YoHuMggNJ+4rCSwLuR21SazsOZ1+Y/A5tXY=;
+        b=BTyuIT+UmI0/Ma/+ZZKYMXW7Sg9mwzfVlRYpifOsOrdwUkpeEye7GCqd6OfLtYA0/X
+         TLRrEgjTAzfHM5R8LFhLGpLVziSPQO8ZCXMPoD0eCz/bgCjoRR1m8tgpeHilYkAM/WJH
+         1ora014PKQ3UfgWk9Rht+6ke5RBj3bCgJrBajJfwvaoh6Yut06XJVkmV6RxlH1fCCscg
+         8QP/MoM0W1G033ONcbD89DikhBwANgnhApH9IbguFERBk74Y2yTnlMCNW1ndTctWfDn8
+         ivbcveGsYTiYOymqDRLYfwzlpdrxFuMFWb0GIQAfYuzjzGHz03gVqjgmPyZPUNLz8d91
+         1hlA==
+X-Gm-Message-State: APjAAAVd9Jb4e290gpTgz/mAobT0p5qjZkyeLJz0XHC9kcuDFLlCE3Zg
+        0M6bG29DVHxoFnzVP515urK7XXSParffJzUxW50=
+X-Google-Smtp-Source: APXvYqxKn9EHYJorI3u34MIoTYZ1p/XSstU3KzZU6YSsE3nbzrut7Z7pjBq/4/6dZdIrJEtcRK8EZjxaPv8Js3jOl/c=
+X-Received: by 2002:a05:6402:3046:: with SMTP id bu6mr4201533edb.139.1582715177721;
+ Wed, 26 Feb 2020 03:06:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200226102312.GX25745@shell.armlinux.org.uk> <E1j6tqv-0003G6-BO@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1j6tqv-0003G6-BO@rmk-PC.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 26 Feb 2020 13:06:06 +0200
+Message-ID: <CA+h21hrR1Xkx9gwAT2FHqcH38L=xjWiPxmF2Er7-4fHFTrA8pQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] net: phylink: propagate resolved link
+ config via mac_link_up()
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Felix Fietkau <nbd@nbd.name>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        netdev <netdev@vger.kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some transports (hyperv, virtio) acquire the sock lock during the
-.release() callback.
+Hi Russell,
 
-In the vsock_stream_connect() we call vsock_assign_transport(); if
-the socket was previously assigned to another transport, the
-vsk->transport->release() is called, but the sock lock is already
-held in the vsock_stream_connect(), causing a deadlock reported by
-syzbot:
+On Wed, 26 Feb 2020 at 12:23, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+>
+> Propagate the resolved link parameters via the mac_link_up() call for
+> MACs that do not automatically track their PCS state. We propagate the
+> link parameters via function arguments so that inappropriate members
+> of struct phylink_link_state can't be accessed, and creating a new
+> structure just for this adds needless complexity to the API.
+>
+> Tested-by: Andre Przywara <andre.przywara@arm.com>
+> Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  Documentation/networking/sfp-phylink.rst      | 17 +++++-
+>  drivers/net/ethernet/cadence/macb_main.c      |  7 ++-
+>  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  7 ++-
+>  drivers/net/ethernet/marvell/mvneta.c         |  8 ++-
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 19 +++++--
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  7 ++-
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +-
+>  .../net/ethernet/xilinx/xilinx_axienet_main.c |  7 ++-
+>  drivers/net/phy/phylink.c                     |  9 ++-
+>  include/linux/phylink.h                       | 57 ++++++++++++++-----
+>  net/dsa/port.c                                |  4 +-
+>  11 files changed, 105 insertions(+), 41 deletions(-)
+>
+> diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
+> index d753a309f9d1..8d7af28cd835 100644
+> --- a/Documentation/networking/sfp-phylink.rst
+> +++ b/Documentation/networking/sfp-phylink.rst
+> @@ -74,10 +74,13 @@ phylib to the sfp/phylink support.  Please send patches to improve
+>  this documentation.
+>
+>  1. Optionally split the network driver's phylib update function into
+> -   three parts dealing with link-down, link-up and reconfiguring the
+> -   MAC settings. This can be done as a separate preparation commit.
+> +   two parts dealing with link-down and link-up. This can be done as
+> +   a separate preparation commit.
+>
+> -   An example of this preparation can be found in git commit fc548b991fb0.
+> +   An older example of this preparation can be found in git commit
+> +   fc548b991fb0, although this was splitting into three parts; the
+> +   link-up part now includes configuring the MAC for the link settings.
+> +   Please see :c:func:`mac_link_up` for more information on this.
+>
+>  2. Replace::
+>
+> @@ -207,6 +210,14 @@ this documentation.
+>     using. This is particularly important for in-band negotiation
+>     methods such as 1000base-X and SGMII.
+>
+> +   The :c:func:`mac_link_up` method is used to inform the MAC that the
+> +   link has come up. The call includes the negotiation mode and interface
+> +   for reference only. The finalised link parameters are also supplied
+> +   (speed, duplex and flow control/pause enablement settings) which
+> +   should be used to configure the MAC when the MAC and PCS are not
+> +   tightly integrated, or when the settings are not coming from in-band
+> +   negotiation.
+> +
+>     The :c:func:`mac_config` method is used to update the MAC with the
+>     requested state, and must avoid unnecessarily taking the link down
+>     when making changes to the MAC configuration.  This means the
 
-    INFO: task syz-executor280:9768 blocked for more than 143 seconds.
-      Not tainted 5.6.0-rc1-syzkaller #0
-    "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-    syz-executor280 D27912  9768   9766 0x00000000
-    Call Trace:
-     context_switch kernel/sched/core.c:3386 [inline]
-     __schedule+0x934/0x1f90 kernel/sched/core.c:4082
-     schedule+0xdc/0x2b0 kernel/sched/core.c:4156
-     __lock_sock+0x165/0x290 net/core/sock.c:2413
-     lock_sock_nested+0xfe/0x120 net/core/sock.c:2938
-     virtio_transport_release+0xc4/0xd60 net/vmw_vsock/virtio_transport_common.c:832
-     vsock_assign_transport+0xf3/0x3b0 net/vmw_vsock/af_vsock.c:454
-     vsock_stream_connect+0x2b3/0xc70 net/vmw_vsock/af_vsock.c:1288
-     __sys_connect_file+0x161/0x1c0 net/socket.c:1857
-     __sys_connect+0x174/0x1b0 net/socket.c:1874
-     __do_sys_connect net/socket.c:1885 [inline]
-     __se_sys_connect net/socket.c:1882 [inline]
-     __x64_sys_connect+0x73/0xb0 net/socket.c:1882
-     do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-     entry_SYSCALL_64_after_hwframe+0x49/0xbe
+Just to make sure I understand the changes:
+- A MAC with no PCS can be configured in either .mac_config or .mac_link_up
+- A MAC that needs to be manually reconfigured to the link mode
+negotiated by its PCS needs to have the PCS configured in .mac_config
+and the MAC in .mac_link_up
+- A MAC with PCS where the MAC follows the PCS negotiation
+automatically in hardware is basically equivalent with a MAC with no
+PCS, and therefore can be configured in either .mac_config or
+.mac_link_up
+Is this correct?
 
-To avoid this issue, this patch remove the lock acquiring in the
-.release() callback of hyperv and virtio transports, and it holds
-the lock when we call vsk->transport->release() in the vsock core.
-
-Reported-by: syzbot+731710996d79d0d58fbc@syzkaller.appspotmail.com
-Fixes: 408624af4c89 ("vsock: use local transport when it is loaded")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/af_vsock.c                | 20 ++++++++++++--------
- net/vmw_vsock/hyperv_transport.c        |  3 ---
- net/vmw_vsock/virtio_transport_common.c |  2 --
- 3 files changed, 12 insertions(+), 13 deletions(-)
-
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 9c5b2a91baad..a5f28708e0e7 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -451,6 +451,12 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 		if (vsk->transport == new_transport)
- 			return 0;
- 
-+		/* transport->release() must be called with sock lock acquired.
-+		 * This path can only be taken during vsock_stream_connect(),
-+		 * where we have already held the sock lock.
-+		 * In the other cases, this function is called on a new socket
-+		 * which is not assigned to any transport.
-+		 */
- 		vsk->transport->release(vsk);
- 		vsock_deassign_transport(vsk);
- 	}
-@@ -753,20 +759,18 @@ static void __vsock_release(struct sock *sk, int level)
- 		vsk = vsock_sk(sk);
- 		pending = NULL;	/* Compiler warning. */
- 
--		/* The release call is supposed to use lock_sock_nested()
--		 * rather than lock_sock(), if a sock lock should be acquired.
--		 */
--		if (vsk->transport)
--			vsk->transport->release(vsk);
--		else if (sk->sk_type == SOCK_STREAM)
--			vsock_remove_sock(vsk);
--
- 		/* When "level" is SINGLE_DEPTH_NESTING, use the nested
- 		 * version to avoid the warning "possible recursive locking
- 		 * detected". When "level" is 0, lock_sock_nested(sk, level)
- 		 * is the same as lock_sock(sk).
- 		 */
- 		lock_sock_nested(sk, level);
-+
-+		if (vsk->transport)
-+			vsk->transport->release(vsk);
-+		else if (sk->sk_type == SOCK_STREAM)
-+			vsock_remove_sock(vsk);
-+
- 		sock_orphan(sk);
- 		sk->sk_shutdown = SHUTDOWN_MASK;
- 
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index 3492c021925f..630b851f8150 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -526,12 +526,9 @@ static bool hvs_close_lock_held(struct vsock_sock *vsk)
- 
- static void hvs_release(struct vsock_sock *vsk)
- {
--	struct sock *sk = sk_vsock(vsk);
- 	bool remove_sock;
- 
--	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
- 	remove_sock = hvs_close_lock_held(vsk);
--	release_sock(sk);
- 	if (remove_sock)
- 		vsock_remove_sock(vsk);
- }
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index d9f0c9c5425a..f3c4bab2f737 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -829,7 +829,6 @@ void virtio_transport_release(struct vsock_sock *vsk)
- 	struct sock *sk = &vsk->sk;
- 	bool remove_sock = true;
- 
--	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
- 	if (sk->sk_type == SOCK_STREAM)
- 		remove_sock = virtio_transport_close(vsk);
- 
-@@ -837,7 +836,6 @@ void virtio_transport_release(struct vsock_sock *vsk)
- 		list_del(&pkt->list);
- 		virtio_transport_free_pkt(pkt);
- 	}
--	release_sock(sk);
- 
- 	if (remove_sock)
- 		vsock_remove_sock(vsk);
--- 
-2.24.1
-
+Regards,
+-Vladimir
