@@ -2,27 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01DCA1702DF
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 16:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1F41702E9
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 16:43:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728402AbgBZPmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 10:42:17 -0500
-Received: from mx2.suse.de ([195.135.220.15]:49052 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727311AbgBZPmR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 10:42:17 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 313E4AE1E;
-        Wed, 26 Feb 2020 15:42:14 +0000 (UTC)
+        id S1728469AbgBZPn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 10:43:29 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:51458 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727311AbgBZPn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 10:43:29 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t23so3616300wmi.1
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 07:43:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I5/BA7YsbH1T9sgkRZT9CG8Y5s0Fng9eOPPb7ZuWHYE=;
+        b=h0CZuuEJRdVegqyi13c89qiGXx60eLvFkx/GwHshqfyg1vU877SDUzDDB7+QbtC1W4
+         IhZXFnKEfR6MW0VSVVOY+sD9tqlAd3SGcdRXz/PyPZ0jdPpGRsh2lcvncF42WgrK27QA
+         18DpuPtuP6ADT4RB6IyZtgqcVTX3AyvYrzENEk1ViR0tR3gsqakChr/D4VcH1LaAL9Gk
+         CRBXOTzhlF30dp3sFSmjBlEtQdmwO4QP+HtcY9ByqIueXHuhOxr+7aW2BmhWQ+tGZu+6
+         Ct7qXdZCDPqKlJlnDVNVP8qqZkPvyqzBNWIVMTbxgiySJl2kSbTgfMzHdVSAMMMibvHi
+         yYbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I5/BA7YsbH1T9sgkRZT9CG8Y5s0Fng9eOPPb7ZuWHYE=;
+        b=MPtq8FPC6b05t39J2t5urfxuLpVui7XiVEna9cIBmKh2hmoIa9hdJBSBez89VfNZTK
+         jy/qLLIJJ/Ch3QKw4PGBLTBgWd0s+GyCnXJV8zdAlXjyTnCNQTs/QYIYbQ9WILL1MuMu
+         TJB5c5D5rMKDZAkMplXYuHrjKzn25m0JlB3mhcMgfgY1I8qMuJJzn8t500xrZAARTuKj
+         3yiiMgD4g7sKihjs5X18NwtAjJqZDjj7MePQiiV9Hmbrn5XO9M6w/nDUCwUjZvKEYLmP
+         n/zNGmcmHT8kgJSknW/Z5ftHu/mIEKvwQUVBLWl3ZNav5dvAocgkG3K9qqS3DyriJJxO
+         wTxA==
+X-Gm-Message-State: APjAAAWy1JtyOdhjlS8M1sii4gzPB1WgTrtGpWnXK2v7BOUK/q5cfaa0
+        sp5v6/i5idaxDvmrNxtGcvikog==
+X-Google-Smtp-Source: APXvYqyBpiXgO5JATr9oE7f1ctrb6q9k+9T8pBp8B9tz+Bz4xDU3/9j3M2yLGFRhzsynf86yERgMBQ==
+X-Received: by 2002:a05:600c:211:: with SMTP id 17mr6214941wmi.60.1582731806522;
+        Wed, 26 Feb 2020 07:43:26 -0800 (PST)
+Received: from [192.168.1.10] ([194.35.116.65])
+        by smtp.gmail.com with ESMTPSA id s139sm3528634wme.35.2020.02.26.07.43.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Feb 2020 07:43:25 -0800 (PST)
 Subject: Re: [PATCH bpf-next v3 5/5] selftests/bpf: Add test for "bpftool
  feature" command
-To:     Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -32,66 +62,31 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
 References: <20200225194446.20651-1-mrostecki@opensuse.org>
  <20200225194446.20651-6-mrostecki@opensuse.org>
  <d0c40cd0-f9db-c6cb-5b46-79145311050d@iogearbox.net>
-From:   Michal Rostecki <mrostecki@opensuse.org>
-Autocrypt: addr=mrostecki@opensuse.org; keydata=
- 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
- ZURUUA==
-Message-ID: <04df2984-808b-4c69-9bdc-e65815d9e64e@opensuse.org>
-Date:   Wed, 26 Feb 2020 16:42:13 +0100
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <3e485c13-e478-c0b3-39e4-595dbd968ea2@isovalent.com>
+Date:   Wed, 26 Feb 2020 15:43:25 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
 In-Reply-To: <d0c40cd0-f9db-c6cb-5b46-79145311050d@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/20 4:34 PM, Daniel Borkmann wrote:
+2020-02-26 16:34 UTC+0100 ~ Daniel Borkmann <daniel@iogearbox.net>
+> On 2/25/20 8:44 PM, Michal Rostecki wrote:
+>> Add Python module with tests for "bpftool feature" command, which mainly
+>> wheck whether the "full" option is working properly.
+> 
+> nit, typo: wheck
+> 
+>>
+>> Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
+> 
 > Ptal, when running the test I'm getting the following error:
 > 
 > root@tank:~/bpf-next/tools/testing/selftests/bpf# ./test_bpftool.sh
@@ -105,22 +100,30 @@ On 2/26/20 4:34 PM, Daniel Borkmann wrote:
 > ERROR: test_feature_dev_json (test_bpftool.TestBpftool)
 > ----------------------------------------------------------------------
 > Traceback (most recent call last):
->   File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py",
+>    File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py", 
 > line 58, in wrapper
->     return f(*args, iface, **kwargs)
->   File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py",
+>      return f(*args, iface, **kwargs)
+>    File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py", 
 > line 83, in test_feature_dev_json
->     res = bpftool_json(["feature", "probe", "dev", iface])
->   File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py",
+>      res = bpftool_json(["feature", "probe", "dev", iface])
+>    File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py", 
 > line 43, in bpftool_json
->     res = _bpftool(args)
->   File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py",
+>      res = _bpftool(args)
+>    File "/root/bpf-next/tools/testing/selftests/bpf/test_bpftool.py", 
 > line 34, in _bpftool
->     res = subprocess.run(_args, capture_output=True)
->   File "/usr/lib/python3.6/subprocess.py", line 423, in run
->     with Popen(*popenargs, **kwargs) as process:
+>      res = subprocess.run(_args, capture_output=True)
+>    File "/usr/lib/python3.6/subprocess.py", line 423, in run
+>      with Popen(*popenargs, **kwargs) as process:
 > TypeError: __init__() got an unexpected keyword argument 'capture_output'
 
-Seems like that kwarg in Popen was added in Python 3.7. I will drop it
-and use the older way of getting combined output. Thanks for pointing
-that out!
+
+Apparently the “capture_output” option for subprocess was added to 
+python 3.7 [0]. It worked on my system (python 3.7.5) but didn't pass on 
+yours with 3.6.
+
+Michal, can you change it to something less recent please, so that 
+people don't have to upgrade python to test?
+
+Quentin
+
+[0] https://docs.python.org/3/whatsnew/3.7.html#subprocess
