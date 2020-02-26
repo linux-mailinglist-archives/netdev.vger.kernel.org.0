@@ -2,99 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5250E16F6EE
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 06:14:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B73616F6F2
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 06:15:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbgBZFOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 00:14:09 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:43874 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbgBZFOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 00:14:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=0ycAnDc1mDz//TJNujJVfqAUznKl13u8yooFEbRUpVU=; b=o3TtZtRAsbCem3whbkX9svccVq
-        /quTK6jPIHMK2DeeiqWiFQJLiicmcMbn4mc8SSVdO0tG+UmkVVQWLCciHMG9VXhbAekEnKnn8OJCT
-        qFeWsi6m2IXTyUYbM1qudui0e0N4T0aAg93XkBMgT8Mg0tmhxnIc3+xb5c5M6Dxzmm6fI9D/u2+N6
-        TK3dZJfly+C+JucV4Xw9YjwGE/R6tk61PivYzpz2/TWtQy7gWdwxkqp9sL88bumQN+N5DYouCeo9j
-        d/L3tV0hdfB00i6qva267VeaMOyjchl+RCtFHC05tY9A3uR69Day8KN7XaRz4Y/eEUhd1ssIGxXYU
-        ksQabE/w==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j6p1K-0003Pv-MZ; Wed, 26 Feb 2020 05:14:06 +0000
-To:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "Maciej W. Rozycki" <macro@linux-mips.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [RFC PATCH] x86: slightly reduce defconfigs
-Message-ID: <433f203e-4e00-f317-2e6b-81518b72843c@infradead.org>
-Date:   Tue, 25 Feb 2020 21:14:05 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726063AbgBZFPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 00:15:41 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:37030 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgBZFPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 00:15:40 -0500
+Received: by mail-wr1-f67.google.com with SMTP id l5so1356308wrx.4
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 21:15:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2mmwcPt7FYwEo0xY8XBsaqPBRihA0DEsv6KzigsLQ58=;
+        b=GFtc1XjesUgCXUHiWoX/bNXIOX68YtbiUIv3KeypQbKO5nzN9EtNHzPQKWx0AS5kQJ
+         QisbhnZZnyRyZjREV911pnrbH5+8FGTnjfq8Q5XVQa2GK8NZ2DcgdwFhmh+qZM3Cwlwl
+         Q7kmyK8YZbxd1bbdUd4Kx+IkQ7qvTY57UKgSo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2mmwcPt7FYwEo0xY8XBsaqPBRihA0DEsv6KzigsLQ58=;
+        b=HVJ9nOjolFoiOCwbw3N7VhfG6aSS6t1qkiIcInXQAbWtgcOQVGq4deN2D9r1/qLcRy
+         3UtyL72O3cOYBdGpbOIEjtf5wGqKP1q38WBg2jyxe658omQ2yeqn3NzZ/8l4AQn1Weh+
+         0x1EJA94xCE04LFhLXwu9D6dDdoAbt+mZAvbpFh/pKyFtS8Yn8emD3WlU/0sTFStGJCy
+         hSh7GPApaMYaNvt2zdxxmk9Iuh88HlQDF1dP0uOq1osmjm9HwUSo1+ptXHPjMlnLkTFV
+         t1GGvKEdYaecZf0BIz0DKNvoyxIAw13XgFQGwuptWAUyxTYiarNu/b4t2KGl19IJUZdA
+         l2gA==
+X-Gm-Message-State: APjAAAXoDYfdOLnESQhiJfOVVzTnMOF5LZx8np+WU+3IwJkvNqaLL83c
+        hflnBM54/SM4gKmU0l3Nhk4RkQ==
+X-Google-Smtp-Source: APXvYqz2IaEWwjMKpkbhNY7SJ8fg1XpAhmBgB4RAX5kpwm8067vORT93Ydflic8x7eX4NRlr6w4xtQ==
+X-Received: by 2002:adf:fc85:: with SMTP id g5mr3094802wrr.52.1582694138040;
+        Tue, 25 Feb 2020 21:15:38 -0800 (PST)
+Received: from chromium.org (77-56-209-237.dclient.hispeed.ch. [77.56.209.237])
+        by smtp.gmail.com with ESMTPSA id m22sm389298wmc.41.2020.02.25.21.15.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 21:15:37 -0800 (PST)
+From:   KP Singh <kpsingh@chromium.org>
+X-Google-Original-From: KP Singh <kpsingh>
+Date:   Wed, 26 Feb 2020 06:15:35 +0100
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        James Morris <jmorris@namei.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 3/8] bpf: lsm: provide attachment points for
+ BPF LSM programs
+Message-ID: <20200226051535.GA17117@chromium.org>
+References: <20200220175250.10795-4-kpsingh@chromium.org>
+ <0ef26943-9619-3736-4452-fec536a8d169@schaufler-ca.com>
+ <202002211946.A23A987@keescook>
+ <20200223220833.wdhonzvven7payaw@ast-mbp>
+ <c5c67ece-e5c1-9e8f-3a2b-60d8d002c894@schaufler-ca.com>
+ <20200224171305.GA21886@chromium.org>
+ <00c216e1-bcfd-b7b1-5444-2a2dfa69190b@schaufler-ca.com>
+ <202002241136.C4F9F7DFF@keescook>
+ <20200225054125.dttrc3fvllzu4mx5@ast-mbp>
+ <4b56177f-8148-177b-e1e5-c98da86b3b01@schaufler-ca.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b56177f-8148-177b-e1e5-c98da86b3b01@schaufler-ca.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On 25-Feb 16:30, Casey Schaufler wrote:
+> On 2/24/2020 9:41 PM, Alexei Starovoitov wrote:
+> > On Mon, Feb 24, 2020 at 01:41:19PM -0800, Kees Cook wrote:
+> >> But the LSM subsystem doesn't want special cases (Casey has worked very
+> >> hard to generalize everything there for stacking). It is really hard to
+> >> accept adding a new special case when there are still special cases yet
+> >> to be worked out even in the LSM code itself[2].
+> >> [2] Casey's work to generalize the LSM interfaces continues and it quite
+> >> complex:
+> >> https://lore.kernel.org/linux-security-module/20200214234203.7086-1-casey@schaufler-ca.com/
+> > I think the key mistake we made is that we classified KRSI as LSM.
+> > LSM stacking, lsmblobs that the above set is trying to do are not necessary for KRSI.
+> > I don't see anything in LSM infra that KRSI can reuse.
+> > The only thing BPF needs is a function to attach to.
+> > It can be a nop function or any other.
+> > security_*() functions are interesting from that angle only.
+> > Hence I propose to reconsider what I was suggesting earlier.
+> > No changes to secruity/ directory.
+> > Attach to security_*() funcs via bpf trampoline.
+> > The key observation vs what I was saying earlier is KRSI and LSM are wrong names.
+> > I think "security" is also loaded word that should be avoided.
+> 
+> No argument there.
+> 
+> > I'm proposing to rename BPF_PROG_TYPE_LSM into BPF_PROG_TYPE_OVERRIDE_RETURN.
+> >
+> >> So, unless James is going to take this over Casey's objections, the path
+> >> forward I see here is:
+> >>
+> >> - land a "slow" KRSI (i.e. one that hooks every hook with a stub).
+> >> - optimize calling for all LSMs
+> > I'm very much surprised how 'slow' KRSI is an option at all.
+> > 'slow' KRSI means that CONFIG_SECURITY_KRSI=y adds indirect calls to nop
+> > functions for every place in the kernel that calls security_*().
+> > This is not an acceptable overhead. Even w/o retpoline
+> > this is not something datacenter servers can use.
+> 
+> In the universe I live in data centers will disable hyper-threading,
+> reducing performance substantially, in the face of hypothetical security
+> exploits. That's a massively greater performance impact than the handful
+> of instructions required to do indirect calls. Not to mention the impact
 
-Eliminate 2 config symbols from both x86 defconfig files:
-HAMRADIO and FDDI.
+Indirect calls have worse performance implications than just a few
+instructions and are especially not suitable for hotpaths.
 
-The FDDI Kconfig file even says (for the FDDI config symbol):
-  Most people will say N.
+There have been multiple efforts to reduce their usage e.g.:
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc:	x86@kernel.org
-Cc:	netdev@vger.kernel.org
-Cc:	"Maciej W. Rozycki" <macro@linux-mips.org>
-Cc:	"David S. Miller" <davem@davemloft.net>
----
- arch/x86/configs/i386_defconfig   |    2 --
- arch/x86/configs/x86_64_defconfig |    2 --
- 2 files changed, 4 deletions(-)
+  - https://lwn.net/Articles/774743/
+  - https://lwn.net/Articles/773985/
 
---- linux-next-20200225.orig/arch/x86/configs/i386_defconfig
-+++ linux-next-20200225/arch/x86/configs/i386_defconfig
-@@ -125,7 +125,6 @@ CONFIG_IP6_NF_MANGLE=y
- CONFIG_NET_SCHED=y
- CONFIG_NET_EMATCH=y
- CONFIG_NET_CLS_ACT=y
--CONFIG_HAMRADIO=y
- CONFIG_CFG80211=y
- CONFIG_MAC80211=y
- CONFIG_MAC80211_LEDS=y
-@@ -171,7 +170,6 @@ CONFIG_FORCEDETH=y
- CONFIG_8139TOO=y
- # CONFIG_8139TOO_PIO is not set
- CONFIG_R8169=y
--CONFIG_FDDI=y
- CONFIG_INPUT_POLLDEV=y
- # CONFIG_INPUT_MOUSEDEV_PSAUX is not set
- CONFIG_INPUT_EVDEV=y
---- linux-next-20200225.orig/arch/x86/configs/x86_64_defconfig
-+++ linux-next-20200225/arch/x86/configs/x86_64_defconfig
-@@ -123,7 +123,6 @@ CONFIG_IP6_NF_MANGLE=y
- CONFIG_NET_SCHED=y
- CONFIG_NET_EMATCH=y
- CONFIG_NET_CLS_ACT=y
--CONFIG_HAMRADIO=y
- CONFIG_CFG80211=y
- CONFIG_MAC80211=y
- CONFIG_MAC80211_LEDS=y
-@@ -164,7 +163,6 @@ CONFIG_SKY2=y
- CONFIG_FORCEDETH=y
- CONFIG_8139TOO=y
- CONFIG_R8169=y
--CONFIG_FDDI=y
- CONFIG_INPUT_POLLDEV=y
- # CONFIG_INPUT_MOUSEDEV_PSAUX is not set
- CONFIG_INPUT_EVDEV=y
+> of the BPF programs that have been included. Have you ever looked at what
 
+  BPF programs are JIT'ed and optimized to native code.
+
+> happens to system performance when polkitd is enabled?
+
+However, let's discuss all this separately when we follow-up with
+performance improvements after submitting the initial patch-set.
+
+> 
+> 
+> >
+> > Another option is to do this:
+> > diff --git a/include/linux/security.h b/include/linux/security.h
+> > index 64b19f050343..7887ce636fb1 100644
+> > --- a/include/linux/security.h
+> > +++ b/include/linux/security.h
+> > @@ -240,7 +240,7 @@ static inline const char *kernel_load_data_id_str(enum kernel_load_data_id id)
+> >         return kernel_load_data_str[id];
+> >  }
+> >
+> > -#ifdef CONFIG_SECURITY
+> > +#if defined(CONFIG_SECURITY) || defined(CONFIG_BPF_OVERRIDE_RETURN)
+> >
+> > Single line change to security.h and new file kernel/bpf/override_security.c
+> > that will look like:
+> > int security_binder_set_context_mgr(struct task_struct *mgr)
+> > {
+> >         return 0;
+> > }
+> >
+> > int security_binder_transaction(struct task_struct *from,
+> >                                 struct task_struct *to)
+> > {
+> >         return 0;
+> > }
+> > Essentially it will provide BPF side with a set of nop functions.
+> > CONFIG_SECURITY is off. It may seem as a downside that it will force a choice
+> > on kernel users. Either they build the kernel with CONFIG_SECURITY and their
+> > choice of LSMs or build the kernel with CONFIG_BPF_OVERRIDE_RETURN and use
+> > BPF_PROG_TYPE_OVERRIDE_RETURN programs to enforce any kind of policy. I think
+> > it's a pro not a con.
+> 
+> Err, no. All distros use an LSM or two. Unless you can re-implement SELinux
+
+The users mentioned here in this context are (I would assume) the more
+performance sensitive users who would, potentially, disable
+CONFIG_SECURITY because of the current performance characteristics.
+
+We can also discuss this separately and only if we find that we need
+it for the BPF_OVERRIDE_RET type attachment.
+
+- KP
+
+> in BPF (good luck with state transitions) you've built a warp drive without
+> ever having mined dilithium crystals.
+> 
+> 
