@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E07170B95
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD4F170B99
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbgBZWaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 17:30:10 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:39352 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727709AbgBZWaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 17:30:10 -0500
-Received: by mail-pf1-f195.google.com with SMTP id l7so83070pff.6
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 14:30:08 -0800 (PST)
+        id S1727932AbgBZWak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 17:30:40 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:51676 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727709AbgBZWak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 17:30:40 -0500
+Received: by mail-pj1-f65.google.com with SMTP id fa20so253452pjb.1
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 14:30:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YapVhvbEAQrJ8gtVa9/XpwZ6QgZM+Zel9gDwxB9l65g=;
-        b=mmM9aecK3bXDxlx3osu1VSOg9xh1spjfEXsLMisRuEDnKEc3yKikoOoNmblymuEygR
-         VdDo5dNGoRwfkl3rAdi8xjoBUPLpBzIodnY/RD8Hz3HNKd1oLCptSWTMxj1sUOiyqApq
-         beVcPFLDrHkjU28Qi+pblZGfqpfBKP1rzMlNf9wEGN25BQ0sncTWRCm6FEwXmHLEnzHq
-         dsVvhSBQXc7fDn3+VKxKe2Rk2E03pUBp/q6zb5gcpOkD1H6EcgrDMSgJ4EBxnNZk9wWj
-         sk0tQl/VOewa6djRML7/VySFSksgYwsuoKXykcYjnsARae/hO0OgIfKCvQyfPcx1s16a
-         BqYw==
+        bh=RfL5ycrLFRHmzfFbvCG05ODdPx2aD/2o2U6MfPmVvkU=;
+        b=iRlFtGntuub3cHUA51fMYJeLe5xW2Oax8pAXxZ1cJOsI7LGeYpLsdxwwkserq5VYRy
+         bMakndfJr2WDnfln1b49EWRweRWApcvV+2ytSUJO3Qu11ugvgmPws26G2gtSanIu9If1
+         8BGIEx66RuNrneWQzUQpGaIaKCfxzmh/E7XlPHKTAkkMpj4XNKpzoyMMdCVssufSkwsr
+         FQ8+eq1R0CNKDWHq9pBQOSobzCJyanLcHOQSamf447uwLKvCYc0I4Otbr7qtjYrhWt5t
+         f9jS6aQnRH8QgD0yGjLtLr00yTIlwqbz7UhZNAoaU8UFDJgIRlBehw+4yq3IbVLDo1NU
+         GOOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=YapVhvbEAQrJ8gtVa9/XpwZ6QgZM+Zel9gDwxB9l65g=;
-        b=EoYy39rSNfHxQkjXF2tQ5cqv4Iu4xSpzeKvq0FMoFF1V3WvM6ZO0qFoTT24rKlcIEf
-         hPMkA32ovwM2aIEz5k/fOfwc+ld7P09+gRvXAyILAq8TQhY4eEevj/Npaak8TuqErIjH
-         f6V4F+P94OfQFUgCpLxJhjOjPlQf9YBR5mfx/toUBTnpKjCnsRZIzfytQc9Id4im518s
-         hiiDLN65xbTndB88zS//1/qPn+dbA9y01R1wPbmzvzlKZkrxYPOrdGWU11Xf1hzfE0gT
-         4e0+vYorehoSdTKREwNpJoMp/S8COZqryF1zO+JAKFB9e1lNW5OA5+LZKiUH/AsC8ayf
-         CwRQ==
-X-Gm-Message-State: APjAAAW98FBHSIK1GVC/MpWHG+075iWD4bsfWTxjgJESdqweF+2kycll
-        r8OGfX2vLBrMdZwirCy5a90=
-X-Google-Smtp-Source: APXvYqzKuO53WJG6cLGaOTiEZF8XI1tlqjN7L3sBVnybaJazb2/tcOlmhqA4f8LI/Uy58WnaYx88GQ==
-X-Received: by 2002:a62:834e:: with SMTP id h75mr878865pfe.238.1582756207788;
-        Wed, 26 Feb 2020 14:30:07 -0800 (PST)
+        bh=RfL5ycrLFRHmzfFbvCG05ODdPx2aD/2o2U6MfPmVvkU=;
+        b=LzZq3htD7aDYjdlzCV8dKgBeVWn+NLV64kKR628zVtXFnxfG0eST7h2owbx+Mjkih6
+         4b2th1LiaFB5+QfhFz6SeYq6oTwCDisuERkXM16Dzna4HsBjj37gNupQHRO9LoDuUASV
+         s+GenO+kjdU8Fj6SqJ0r8DX/4htqEtg/nScsdUPHIMm/eDrvzyo5NLr9YE5pG1b8tnLL
+         3iaB7HRu7vrBn/F+m0l7CArk4u4qf8FMVlCWJfvCipQMi/eGl4Ewcsmlk+e74HUzjKR8
+         20s85OEciOn9tjMlWA8l6L5f60QMhayBndVkhNHmT5AsLO1tBDliNGX5yu0aak2LVsyt
+         pMsQ==
+X-Gm-Message-State: APjAAAWeFn/MYQKKHUGWC/TrTv7MU/jFAGjWlrtrWpjK+rW+SCNGRA5m
+        cerXgmdrKTIFEDFjM1j+zfReUDb7
+X-Google-Smtp-Source: APXvYqyfIA9C7NjJHOWBLhMfD9ZfSJ1J/FpcgeBB4jQnOYCVoXwmY2plJpqfkLINvtCw3CRFkTRk0g==
+X-Received: by 2002:a17:902:b714:: with SMTP id d20mr1439462pls.272.1582756239057;
+        Wed, 26 Feb 2020 14:30:39 -0800 (PST)
 Received: from [10.67.50.18] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id c184sm4117649pfa.39.2020.02.26.14.30.06
+        by smtp.googlemail.com with ESMTPSA id i14sm3569560pgh.14.2020.02.26.14.30.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 14:30:07 -0800 (PST)
-Subject: Re: [PATCH net-next v3 1/2] net: switchdev: do not propagate bridge
- updates across bridges
+        Wed, 26 Feb 2020 14:30:38 -0800 (PST)
+Subject: Re: [PATCH net-next v3 2/2] net: dsa: mv88e6xxx: fix duplicate vlan
+ warning
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
+        Vivien Didelot <vivien.didelot@gmail.com>
 References: <20200226171349.GD25745@shell.armlinux.org.uk>
- <E1j70GL-0004Ns-A7@rmk-PC.armlinux.org.uk>
+ <E1j70GQ-0004Nz-FS@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <e03d821b-1cf1-646d-2582-58ebbf00cf50@gmail.com>
-Date:   Wed, 26 Feb 2020 14:30:05 -0800
+Message-ID: <5c3bab59-9ad4-c6bf-24ac-0120fc4aec90@gmail.com>
+Date:   Wed, 26 Feb 2020 14:30:37 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <E1j70GL-0004Ns-A7@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1j70GQ-0004Nz-FS@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,21 +124,13 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 2/26/20 9:14 AM, Russell King wrote:
-> When configuring a tree of independent bridges, propagating changes
-> from the upper bridge across a bridge master to the lower bridge
-> ports brings surprises.
+> When setting VLANs on DSA switches, the VLAN is added to both the port
+> concerned as well as the CPU port by dsa_slave_vlan_add(), as well as
+> any DSA ports.  If multiple ports are configured with the same VLAN ID,
+> this triggers a warning on the CPU and DSA ports.
 > 
-> For example, a lower bridge may have vlan filtering enabled.  It
-> may have a vlan interface attached to the bridge master, which may
-> then be incorporated into another bridge.  As soon as the lower
-> bridge vlan interface is attached to the upper bridge, the lower
-> bridge has vlan filtering disabled.
+> Avoid this warning for CPU and DSA ports.
 > 
-> This occurs because switchdev recursively applies its changes to
-> all lower devices no matter what.
-> 
-> Reviewed-by: Ido Schimmel <idosch@mellanox.com>
-> Tested-by: Ido Schimmel <idosch@mellanox.com>
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
