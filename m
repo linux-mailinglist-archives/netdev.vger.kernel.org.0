@@ -2,96 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EB317042C
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C18617046A
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:31:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgBZQVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 11:21:14 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:39411 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726148AbgBZQVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 11:21:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582734072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+PZOrnclHlzyNyh6vayM0uYlmPcz0oG8mfIUPthLLKA=;
-        b=IIC29785oMVGAi30fraX2Mqnk777E97T3GbpjFjZ3sbhkDFgb+EaeZ2+WAJhnq1YIEnpcu
-        j0AU8wtkGxU082mLyeXyceXVVRIB2aQgTVKX649kywM8McH6j4p0jiD8E44XUBWL5NrxRp
-        GCNwEpZOUTYM5F9RfLPeYIiEdvTGHQs=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-250-nXG2wuFlORyZTbhQ0dVTrQ-1; Wed, 26 Feb 2020 11:21:05 -0500
-X-MC-Unique: nXG2wuFlORyZTbhQ0dVTrQ-1
-Received: by mail-lj1-f200.google.com with SMTP id d14so848813ljg.17
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 08:21:04 -0800 (PST)
+        id S1727442AbgBZQbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 11:31:36 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:39540 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbgBZQbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 11:31:35 -0500
+Received: by mail-ed1-f65.google.com with SMTP id m13so4526685edb.6
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 08:31:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z1w+58dOrrZr3wo5mk8rJB/ZJsesTkU2LXg6fDoYot4=;
+        b=PWVHdGOKeZeBrmZqjFNWON3PpXWLD/9F+byeDjIJWy+ytRge7nUh9NGmyX86dkURx+
+         e0mLG9bX4960huPEWOL+TWR+I1cgCsC/A9WJEuvwqSBaMzaTqV0o7c4/0zm9hdj7F82H
+         URmRnPcaEgXmpKdkbmcIvzfhb5rKpkH41i0l4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=+PZOrnclHlzyNyh6vayM0uYlmPcz0oG8mfIUPthLLKA=;
-        b=It/C9I7VqaIS9YftGz5C1zztL2nj0RJvQVY5lw+NZdCL9HypDMaM9yepG4yQ5lRgqX
-         1kXZGoCPk1BdFCXezFP5/tRh6YEmbzwELjz/v5IlnVGU3ANA0UzgYLtSD+C7o675moBO
-         536KZD3m22t/eECbSjqmxSm7Nfk4p7bn+6D1qhtyavRu4ULkcvwa3tK4oX/iY/8jaAtk
-         EeV99flau3gkkMu8diOGi0/EHEjOI8aaXy4vWyQE+oB0o8BTX2wBOF0QgNLz179uV4Eb
-         obOKLDhtl5vDtEPBq0SWwlI3Hx0esglKMk3HOVMo2wjDY9caBkMg4FiAzSB5FIMnY/xP
-         J8fw==
-X-Gm-Message-State: ANhLgQ3DHeJZHLa0pAmezq07cpwCxvzv+xynOnPVHcypoxL5cE4F3tHS
-        89kf4QtySvE9R1AOSihVlCK4JklkBKeosXjdtJw7f7CJMD/oAlgvk5LoKcaFqtSYdL3P5aHaGUc
-        jZcox6/xbRKGNStrl
-X-Received: by 2002:a2e:9b90:: with SMTP id z16mr3658947lji.254.1582734062585;
-        Wed, 26 Feb 2020 08:21:02 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vucAUgrMVWoBX0Jyf9aVoL1SCvhv053L//BO/+qISFkCs/i/XSXGJkYgzyzxpqyzJY/46Zipw==
-X-Received: by 2002:a2e:9b90:: with SMTP id z16mr3658940lji.254.1582734062416;
-        Wed, 26 Feb 2020 08:21:02 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id p24sm359265lfo.93.2020.02.26.08.21.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 08:21:01 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E52AF180362; Wed, 26 Feb 2020 17:21:00 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dahern@digitalocean.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for using XDP
-In-Reply-To: <e6f6aaaa-664b-e80d-05fd-9821e6ae75ef@digitalocean.com>
-References: <20200226005744.1623-1-dsahern@kernel.org> <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com> <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk> <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk> <e6f6aaaa-664b-e80d-05fd-9821e6ae75ef@digitalocean.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 26 Feb 2020 17:21:00 +0100
-Message-ID: <87tv3dxqtv.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z1w+58dOrrZr3wo5mk8rJB/ZJsesTkU2LXg6fDoYot4=;
+        b=Wn8RfzykB56dKLfYCyg/W2n/Tlogt+49p6lN6fjBrBDUGhJYf7Q4/UWBnBd31nBKKI
+         7WiwO1N8TdANmJe3TgWAAUj5uJVZQopOb4OvVfs3Wmc+gHXaufpJhD+p0ZlUP4k2qht7
+         sRSIv8iAPshNfSbX6Cfhka6432z8bs+S7WkT+WnVxrZMZuSheCf9ePKRv3bvwUfqOq/7
+         4FhM//urmp6GYC1DdvH9NP8F9FuWrrO9pQ0BAL+XcillkTZNniHUJb2puYP/fqQphGNB
+         D7+bzCapSvynWPATd4IicOf7YCkQ3gAep7TajC/QgqE39b10pBVmT3zlfOyiiHEfdsI0
+         wyFw==
+X-Gm-Message-State: APjAAAUitF2QPMkxZEftSAF0NALc2s1TAFhOab9bRlnZE4EdHpBa3gl7
+        kf9+GgRIfk0QidDaE+aI5kzIg9wuDZHmxM787ZGEhA==
+X-Google-Smtp-Source: APXvYqzrSAOseHb5MIcTw/nawhJsW3ES0aHkvgiuyVEnigJi8uZOuBz/tTxOvsOzYVVPzvAU4zYwgIzxXALT47g6rdA=
+X-Received: by 2002:a17:906:f105:: with SMTP id gv5mr5259642ejb.135.1582734694188;
+ Wed, 26 Feb 2020 08:31:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
+In-Reply-To: <20200225163025.9430-1-vadym.kochan@plvision.eu>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Wed, 26 Feb 2020 08:38:32 -0800
+Message-ID: <CAJieiUg8ycCnNtUCuHfc55nQXCQx9+f4rdw161AM+py3i2zpfg@mail.gmail.com>
+Subject: Re: [RFC net-next 0/3] net: marvell: prestera: Add Switchdev driver
+ for Prestera family ASIC device 98DX326x (AC3x)
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dahern@digitalocean.com> writes:
-
-> On 2/26/20 1:34 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>>
->>> OK so basically there would be commands to configure which TX queue is
->>> used by XDP. With enough resources default is to use dedicated queues.
->>> With not enough resources default is to fail binding xdp program
->>> unless queues are specified. Does this sound reasonable?
->>=20
->> Yeah, that was the idea. See this talk from LPC last year for more
->> details: https://linuxplumbersconf.org/event/4/contributions/462/
+On Tue, Feb 25, 2020 at 8:31 AM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
 >
->  Hopefully such a design is only required for a program doing a Tx path
-> (XDP_TX or XDP_REDIRECT). i.e., a program just doing basic ACL, NAT, or
-> even encap, decap, should not have to do anything with Tx queues to load
-> and run the program.
+> Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
+> ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
+> wireless SMB deployment.
+>
+> Prestera Switchdev is a firmware based driver which operates via PCI
+> bus. The driver is split into 2 modules:
+>
+>     - prestera_sw.ko - main generic Switchdev Prestera ASIC related logic.
+>
+>     - prestera_pci.ko - bus specific code which also implements firmware
+>                         loading and low-level messaging protocol between
+>                         firmware and the switchdev driver.
+>
+> This driver implementation includes only L1 & basic L2 support.
+>
+> The core Prestera switching logic is implemented in prestera.c, there is
+> an intermediate hw layer between core logic and firmware. It is
+> implemented in prestera_hw.c, the purpose of it is to encapsulate hw
+> related logic, in future there is a plan to support more devices with
+> different HW related configurations.
+>
+> The firmware has to be loaded each time device is reset. The driver is
+> loading it from:
+>
+>     /lib/firmware/marvell/prestera_fw_img.bin
+>
+> The firmware image version is located within internal header and consists
+> of 3 numbers - MAJOR.MINOR.PATCH. Additionally, driver has hard-coded
+> minimum supported firmware version which it can work with:
+>
+>     MAJOR - reflects the support on ABI level between driver and loaded
+>             firmware, this number should be the same for driver and
+>             loaded firmware.
+>
+>     MINOR - this is the minimal supported version between driver and the
+>             firmware.
+>
+>     PATCH - indicates only fixes, firmware ABI is not changed.
+>
+> The firmware image will be submitted to the linux-firmware after the
+> driver is accepted.
+>
+> The following Switchdev features are supported:
+>
+>     - VLAN-aware bridge offloading
+>     - VLAN-unaware bridge offloading
+>     - FDB offloading (learning, ageing)
+>     - Switchport configuration
+>
+> CPU RX/TX support will be provided in the next contribution.
+>
+> Vadym Kochan (3):
+>   net: marvell: prestera: Add Switchdev driver for Prestera family ASIC
+>     device 98DX325x (AC3x)
+>   net: marvell: prestera: Add PCI interface support
+>   dt-bindings: marvell,prestera: Add address mapping for Prestera
+>     Switchdev PCIe driver
+>
 
-No but they may want to configure RX queues (for CPU affinity, etc).
-Ideally we'd want both (TX and RX) to be configurable through the same
-interface.
+Have not looked at the patches yet, but very excited to see another
+switchdev driver making it into the kernel!.
 
--Toke
-
+Thanks Marvell!.
