@@ -2,140 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B38616FAD3
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88B7E16FB29
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgBZJgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 04:36:17 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27538 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727339AbgBZJgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:36:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582709775;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1cPkI6KnngicmG1b55Lq+7GrehJNy/FxpxJUSbZpoBo=;
-        b=fEh1JUtNxv0AoFhF65yDUcKj8CKJtwH1z32rg3pG0tNFZKsj1H98aRplZORVL83HwWjNfI
-        19zS3X/qObgLHsRCEA2QlbLGpuYTSsBf1X16G/tj57x9I+duCQhovgBl6wGbUzHw6dY+pF
-        VJlaFFJKCQT+7sa7tJkqYgy2O7jRdz8=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-142-7KOasp8qOfWZA5Qc3wOO_A-1; Wed, 26 Feb 2020 04:36:14 -0500
-X-MC-Unique: 7KOasp8qOfWZA5Qc3wOO_A-1
-Received: by mail-qk1-f197.google.com with SMTP id n130so3337395qke.19
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 01:36:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1cPkI6KnngicmG1b55Lq+7GrehJNy/FxpxJUSbZpoBo=;
-        b=uh3D/m9WY45TWYEFbUS8afv9+Xl4MV1nbQVjAsLqj+G1dSDeddQtsg8DiZyIhQKFE6
-         8+pow3TDmiaoqvHur9D1e/aocNfqvAtDG7SeiZYWx8ZQL6yq8KAU1sCFiptyZR3eBxei
-         2alfNEmHQrr8IcGGj8cTVWyup3M7xddjTu5G3Nuaa5XYV/tkS/SVFJF9agsx/90p6LR9
-         3J69eS42mlx0/Ib2dKGLeAmUsXUKUaME+xZbHX3fEaDoCB7D5sSEpvgYYslZeaxw5VSf
-         mAeeIQqSn1Jr2MuT2Gbvs7/g+bw417bU1sbkQoHgfEOD3AuAXevJ3ZpSmuSbuK1yxNUa
-         bZ6Q==
-X-Gm-Message-State: APjAAAXSQAqb1yFDIYLh/XCUNk3qDr33UZFjsVMVjftZIF/1FmYIuvWX
-        60NNK58gyNqqDKdfGndC09zkFqVkOhvCjpeZH2Mmj3weSQMPOzix9PQUOlbvrIHDfJi7lYMX4pd
-        sZtiFcouYcjBOdp6M
-X-Received: by 2002:a37:644f:: with SMTP id y76mr4488925qkb.488.1582709774107;
-        Wed, 26 Feb 2020 01:36:14 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxUwwE45My/XwdX7hIoU3COFqj3In3rAhxaDziwMpei5CfEgfyyXFFAIMAwJ2PFDdEJcc5fwg==
-X-Received: by 2002:a37:644f:: with SMTP id y76mr4488898qkb.488.1582709773895;
-        Wed, 26 Feb 2020 01:36:13 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id f59sm779223qtb.75.2020.02.26.01.36.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 01:36:12 -0800 (PST)
-Date:   Wed, 26 Feb 2020 04:36:08 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     David Ahern <dahern@digitalocean.com>, netdev@vger.kernel.org
-Subject: Re: virtio_net: can change MTU after installing program
-Message-ID: <20200226043343-mutt-send-email-mst@kernel.org>
-References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
- <20200226015113-mutt-send-email-mst@kernel.org>
- <172688592.10687939.1582702621880.JavaMail.zimbra@redhat.com>
- <20200226032421-mutt-send-email-mst@kernel.org>
- <b8dcde8c-ce7b-588a-49c1-0cf315794613@redhat.com>
-MIME-Version: 1.0
+        id S1727964AbgBZJpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 04:45:03 -0500
+Received: from mail-vi1eur05on2086.outbound.protection.outlook.com ([40.107.21.86]:18799
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727934AbgBZJpD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 04:45:03 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZIxeXepPDES96CNZc/QlMxWnlIJGCq3fyZzTGEiLLCg8odOMlAu0b2Nf3LdhLm9cjCT9xdbcctYRr/92N8h5cu/9bLwAJS8zfYV0egLyKOlhRSwgbnFPcMYUBjlbJp6EDxkj3woAiMXWwPkJ9tsqzaMzMyfEGppPPyNgvSFzgU6phs6LIEgcb8H9qthOPey8PvSj0ppcF+hZpIM2U87EklZKHehYRT5/cHl6BjllVpTWfIdu7+mnfGjkuNCV6b2jXRXV/GzUkje4Nitp2ZfPZW3Cd/JiSLab0OW5ImielB6CIq1m6hqgrfRhmywoP6xtWVPQzcuIlb2FF+k0C7kAVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kZjgg5+bZz/YF+Qx02D6k7rzcODm5ecIf9NOXWff3sc=;
+ b=PpGsWq6e1IPjIfs0Ug8iqDYEi+O4kazoWUsUCESB+X54pF25oYVjGWbPv00giKG+IHc4Ev5y8k6dbsAoozo89TlR0yEDyYajJp92F+gJzmJesvxmgEPDjbR4k1pybJXdRrn4brXsl5NPLTbfZiXMAN6mtS0moLA966647YFURJRcvpR7IrbMdyxBFcGS8EJ0ZbAxjNa5wHW2s7zvU6xBUWygLiHxgfdT0UvzQ5d1C8/dgAbscJbEuNs7OVhApdnOVa7hjqzncWotkiepf0yx2U6weiwtcIuOvFuffMs2dx6NmpHndYuzeZGEjMQj/x+r9UOcciD6h5beoOniDu9SmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kZjgg5+bZz/YF+Qx02D6k7rzcODm5ecIf9NOXWff3sc=;
+ b=e8xzgBWVHHo3AW9dhLqLqR1jrrdEK25Ryib4D5fmIUYoyXJ+VSLKM0nnJAJg51j4dTL48RwVjQv4LJTVvVNSEQ1G4zSdDFWUv1t273mB4D6kCeL/xRxXORBw6B07gwUyQkTMqilaDnrmlV8XP3aLcYo2cAPJRAx++Duyyv9kGr8=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB5554.eurprd05.prod.outlook.com (20.177.189.79) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.14; Wed, 26 Feb 2020 09:44:57 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2750.021; Wed, 26 Feb 2020
+ 09:44:57 +0000
+Subject: Re: [PATCH net-next 4/6] net/sched: act_ct: Create nf flow table per
+ zone
+To:     Edward Cree <ecree@solarflare.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
+ <1582458307-17067-5-git-send-email-paulb@mellanox.com>
+ <97c2e036-6334-9818-f8cd-4c2671273eed@solarflare.com>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <a6f0dc1c-e271-329c-509f-045f1b400e1c@mellanox.com>
+Date:   Wed, 26 Feb 2020 11:44:52 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+In-Reply-To: <97c2e036-6334-9818-f8cd-4c2671273eed@solarflare.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b8dcde8c-ce7b-588a-49c1-0cf315794613@redhat.com>
+Content-Language: en-US
+X-ClientProxiedBy: ZR0P278CA0018.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::28) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.223.6.3] (193.47.165.251) by ZR0P278CA0018.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.22 via Frontend Transport; Wed, 26 Feb 2020 09:44:56 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 10ba81c9-e9c4-4985-0eb0-08d7baa08a48
+X-MS-TrafficTypeDiagnostic: AM6PR05MB5554:|AM6PR05MB5554:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB55545300666A227FEFEC2E8FCFEA0@AM6PR05MB5554.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0325F6C77B
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(199004)(189003)(5660300002)(81156014)(8676002)(81166006)(2906002)(36756003)(52116002)(26005)(8936002)(31686004)(66556008)(66476007)(16526019)(186003)(6636002)(66946007)(53546011)(956004)(2616005)(478600001)(110136005)(31696002)(86362001)(6486002)(316002)(16576012)(6666004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5554;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: w+Y95hCKNTGR+pMq005psRpwJDxfKLmtWNOHdgNEn6xrHJuLz8r2AYQe55F6PO56oQZXOcYCkHccEePytbaNw7TIOARt3mWfxTYUNo6Plqzy2m4htujtuE+ZSn8+QV1AOD0ngYRn94tYB47ArpRuwP7JMvVA2LABjMFwUvOu13x31gVfCC+GIwQGX3p5+8qWrqyGLP9zQVl8LZ9FKHoBEXxy0+1A5KDzWtaxawS/VWjHx/Tg/q1Kh5WzTKBC3aUxFAoqr8aFMoEF9yYVHG7HNq/Pfks/2cQAc9zu9pZC/3dU3rDazRx3zyhNl7tUNhfLk4vlgTRwNMwAA+byyr251rwYiz7IurxucrafZnI8PWl32fk8xxlXD4dQ8EKOsQrBawqnlRT5Wz1X+0Z1n+QI/BbzF33EirH/0t+e6Q6V/xvOKmS0eL/I0t20/YmsgDke
+X-MS-Exchange-AntiSpam-MessageData: +m7luKycsDT0dUSnMc18wzr5mB7hetg2/TLtsLapcFTa4RDSvHL6t5tDxxxN3SfaIwbrGj3UwwAwKAfiUIXfMfvoNr7r4o2KI7CfmOZBQt74RbU4qlDyoqB/VC5bgkSasdEpNXpImmaXD3nZJ86fWg==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10ba81c9-e9c4-4985-0eb0-08d7baa08a48
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2020 09:44:57.5355
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: idRiHOPQgneF7Fv7tPGbxh+mA24F34U2XFtWMs/rpdTE/F9AltYpSF01MmLQCayLu1felphgwWAVJm16yTOmhg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5554
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 05:30:18PM +0800, Jason Wang wrote:
-> 
-> On 2020/2/26 下午4:39, Michael S. Tsirkin wrote:
-> > On Wed, Feb 26, 2020 at 02:37:01AM -0500, Jason Wang wrote:
-> > > 
-> > > ----- Original Message -----
-> > > > On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
-> > > > > Another issue is that virtio_net checks the MTU when a program is
-> > > > > installed, but does not restrict an MTU change after:
-> > > > > 
-> > > > > # ip li sh dev eth0
-> > > > > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
-> > > > > state UP mode DEFAULT group default qlen 1000
-> > > > >      link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
-> > > > >      prog/xdp id 13 tag c5595e4590d58063 jited
-> > > > > 
-> > > > > # ip li set dev eth0 mtu 8192
-> > > > > 
-> > > > > # ip li sh dev eth0
-> > > > > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
-> > > > > state UP mode DEFAULT group default qlen 1000
-> > > > Well the reason XDP wants to limit MTU is this:
-> > > >      the MTU must be less than a page
-> > > >      size to avoid having to handle XDP across multiple pages
-> > > > 
-> > > But even if we limit MTU is guest there's no way to limit the packet
-> > > size on host.
-> > Isn't this fundamental? IIUC dev->mtu is mostly a hint to devices about
-> > how the network is configured. It has to be the same across LAN.  If
-> > someone misconfigures it that breaks networking, and user gets to keep
-> > both pieces. E.g. e1000 will use dev->mtu to calculate rx buffer size.
-> > If you make it too small, well packets that are too big get dropped.
-> > There's no magic to somehow make them smaller, or anything like that.
-> > We can certainly drop packet > dev->mtu in the driver right now if we want to,
-> > and maybe if it somehow becomes important for performance, we
-> > could teach host to drop such packets for us. Though
-> > I don't really see why we care ...
-> > 
-> > > It looks to me we need to introduce new commands to
-> > > change the backend MTU (e.g TAP) accordingly.
-> > > 
-> > > Thanks
-> > So you are saying there are configurations where host does not know the
-> > correct MTU, and needs guest's help to figure it out?
-> 
-> 
-> Yes.
-> 
-> 
-> > I guess it's
-> > possible but it seems beside the point raised here.  TAP in particular
-> > mostly just seems to ignore MTU, I am not sure why we should bother
-> > propagating it there from guest or host. Propagating it from guest to
-> > the actual NIC might be useful e.g. for buffer sizing, but is tricky
-> > to do safely in case the NIC is shared between VMs.
-> 
-> 
-> Macvlan passthrough mode could be easier I guess.
-> 
-> Thanks
 
-As usual :) So sure, it's doable for simple configs.
-But this seems orthogoal to the question raised in this thread.
+On 2/24/2020 5:58 PM, Edward Cree wrote:
+> On 23/02/2020 11:45, Paul Blakey wrote:
+>> Use the NF flow tables infrastructure for CT offload.
+>>
+>> Create a nf flow table per zone.
+>>
+>> Next patches will add FT entries to this table, and do
+>> the software offload.
+>>
+>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+>> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |   1 +
+>>  include/net/tc_act/tc_ct.h                      |   2 +
+>>  net/sched/Kconfig                               |   2 +-
+>>  net/sched/act_ct.c                              | 159 +++++++++++++++++++++++-
+>>  4 files changed, 162 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> index 70b5fe2..eb16136 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> @@ -45,6 +45,7 @@
+>>  #include <net/tc_act/tc_tunnel_key.h>
+>>  #include <net/tc_act/tc_pedit.h>
+>>  #include <net/tc_act/tc_csum.h>
+>> +#include <net/tc_act/tc_ct.h>
+>>  #include <net/arp.h>
+>>  #include <net/ipv6_stubs.h>
+>>  #include "en.h"
+>> diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+>> index a8b1564..cf3492e 100644
+>> --- a/include/net/tc_act/tc_ct.h
+>> +++ b/include/net/tc_act/tc_ct.h
+>> @@ -25,6 +25,8 @@ struct tcf_ct_params {
+>>  	u16 ct_action;
+>>  
+>>  	struct rcu_head rcu;
+>> +
+>> +	struct tcf_ct_flow_table *ct_ft;
+>>  };
+>>  
+>>  struct tcf_ct {
+>> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+>> index edde0e5..bfbefb7 100644
+>> --- a/net/sched/Kconfig
+>> +++ b/net/sched/Kconfig
+>> @@ -972,7 +972,7 @@ config NET_ACT_TUNNEL_KEY
+>>  
+>>  config NET_ACT_CT
+>>  	tristate "connection tracking tc action"
+>> -	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT
+>> +	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT && NF_FLOW_TABLE
+> Is it not possible to keep sensible/old behaviour in the case
+>  of NF_FLOW_TABLE=n?  (And what about NF_FLOW_TABLE=m, which is
+>  what its Kconfig help seems to advise...)
 
--- 
-MST
+No problem with it being a module.
 
+It is possible to allow compilation without flow table, but it will create confusion for people trying
+
+to offload conntrack, as it would silently not happen.
+
+>
+>>  	help
+>>  	  Say Y here to allow sending the packets to conntrack module.
+>>  
+>> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+>> index f685c0d..4267d7d 100644
+>> --- a/net/sched/act_ct.c
+>> +++ b/net/sched/act_ct.c
+>> @@ -15,6 +15,7 @@
+>>  #include <linux/pkt_cls.h>
+>>  #include <linux/ip.h>
+>>  #include <linux/ipv6.h>
+>> +#include <linux/rhashtable.h>
+>>  #include <net/netlink.h>
+>>  #include <net/pkt_sched.h>
+>>  #include <net/pkt_cls.h>
+>> @@ -24,6 +25,7 @@
+>>  #include <uapi/linux/tc_act/tc_ct.h>
+>>  #include <net/tc_act/tc_ct.h>
+>>  
+>> +#include <net/netfilter/nf_flow_table.h>
+>>  #include <net/netfilter/nf_conntrack.h>
+>>  #include <net/netfilter/nf_conntrack_core.h>
+>>  #include <net/netfilter/nf_conntrack_zones.h>
+>> @@ -31,6 +33,133 @@
+>>  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+>>  #include <uapi/linux/netfilter/nf_nat.h>
+>>  
+>> +static struct workqueue_struct *act_ct_wq;
+>> +
+>> +struct tcf_ct_flow_table {
+>> +	struct rhash_head node; /* In zones tables */
+>> +
+>> +	struct rcu_work rwork;
+>> +	struct nf_flowtable nf_ft;
+>> +	u16 zone;
+>> +	u32 ref;
+> Any reason this isn't using a refcount_t?
+> -ed
+it is updated under lock, so there was no need for atomic as well
