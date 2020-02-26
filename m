@@ -2,87 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4A6E16F5B6
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 03:41:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5349816F5C7
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 03:47:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730042AbgBZClo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 21:41:44 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:32949 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729045AbgBZClo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Feb 2020 21:41:44 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48S0S44MKKz9sRG;
-        Wed, 26 Feb 2020 13:41:39 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1582684900;
-        bh=6CeLDGBmf/v4Dv6Gn21sA3lm6q6Y7v6mvEneUpmqp2g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mwHkXGrWEO+ay0dPaSsD4F7KzSQu76s02t2PjC70c2VStk3YP1AkNSxnyVALj2O1t
-         qzXsGlHvUS+M+dartEa/wrg/30wJGD2/9YObxq4yYBvjixGXnzXTQ6zvWNuW/pb3t6
-         wxUGNpxFGShcvPEahPnopFH91AZbKFPJ8aXSvccdlMWdyFiZ0qYF336Z3yueh0QNWo
-         /HAWbiTaR2ozvUuBQAm6Lv26/dVK7FhwUPGCLjxU82r0VT1wz5SnPAb4o3UVtE9KbJ
-         NpfHCxtnoeZ2j22GPNpWUnCRuh92ukb+7CPAEC9+7DBfVNPRrzB26XH9BrQ3NATJC5
-         DIrV3Y17SnstA==
-Date:   Wed, 26 Feb 2020 13:41:37 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jouni Malinen <jouni@codeaurora.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20200226134137.77445e2f@canb.auug.org.au>
+        id S1730014AbgBZCrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 21:47:11 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:32996 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728989AbgBZCrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 21:47:11 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 6so551358pgk.0;
+        Tue, 25 Feb 2020 18:47:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1Y1UZOFfTZ0N6C6Za7AR6jiLifnSzYiC7Rf6ZLlfNiw=;
+        b=P42MrSbUt/jDRdsuYTv73WxSBQYHL2ixhS9t3NbKGd9SNMfPqqbEfc8/ME9OkMgfdy
+         UxJQ2v//q3H1K9dDHdH/s0rmT2NorypFnBFmO/S1opc7MQSbVfW5A0dOjZIV6kMvT7uP
+         Kn47dTNifgZMlU2/BSTpjqfJgnP07NjdYPlS6Cm8Lj3vDSoERQSq+7P7OGgqKcNIc2gN
+         XxOCv1xsrSlmosu2wNYEUk1Hx/i5vAHgViV8ZB8zlBwZdaQRXuTJjmfJ3coEWzo+LSGc
+         x7etNWvB6gXGWXw21vWq/kmp6WONGtzPvkJWXBNYmBSelX5il7YJHlaZClzFl7hZ6jBD
+         20jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1Y1UZOFfTZ0N6C6Za7AR6jiLifnSzYiC7Rf6ZLlfNiw=;
+        b=YK2kJ0rd4V1U4oN5eE5cGZrg0+n097BxHEHuZgkI6nLgXgfTesUcsdqsS7honxOonP
+         zsK75+Y1HY2xWxjGO8Yp5SeZhzRYa7wYa+kqRGShA5v8MX65OQGM/amCxDXKlCNVNJ70
+         0Igq8/COktnuuU0bNBsAYqhz17yKf7xBnShqqvcqKYl0SpEERMYmRmUmHkaTrYM1N8Wd
+         RAPwAMkYSNjOFerSjvXgoNB5XYidzcIxX1NLLsLIxk+EwhHqR8HaWq7vMJIdJlAI1792
+         4shLy5QUoPMIqApMfEdplAxLX2XBKG/vIFiHUYHIhSgVjgbTagoEkq5lcpLlraXHQyc9
+         REsQ==
+X-Gm-Message-State: APjAAAWjzJy00t7wju1S21wQB5tjdE21PY9+JvbjuM4MySVY4CgI3S1/
+        l3ZzEuWusz9upm2VPyC+JTI=
+X-Google-Smtp-Source: APXvYqwAGBfDW1W1JoMhxUQofiKL5jbdmw6iHpPOI4qgkIdGrY+7eME4F8Iv+SLzWvp2tiziCUkfiA==
+X-Received: by 2002:aa7:8597:: with SMTP id w23mr1993190pfn.38.1582685229908;
+        Tue, 25 Feb 2020 18:47:09 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id z30sm451033pfq.154.2020.02.25.18.47.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 18:47:09 -0800 (PST)
+Date:   Tue, 25 Feb 2020 18:47:07 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Christopher S. Hall" <christopher.s.hall@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
+        x86@kernel.org, jacob.e.keller@intel.com, davem@davemloft.net,
+        sean.v.kelley@intel.com
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
+ Driver with PHC interface changes to support additional H/W Features
+Message-ID: <20200226024707.GA10271@localhost>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+ <20200203040838.GA5851@localhost>
+ <20200225233707.GA32079@skl-build>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/NHNuz1LW4.GGZwbla3Ej=CD";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200225233707.GA32079@skl-build>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/NHNuz1LW4.GGZwbla3Ej=CD
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Feb 25, 2020 at 03:37:07PM -0800, Christopher S. Hall wrote:
+> On Sun, Feb 02, 2020 at 08:08:38PM -0800, Richard Cochran wrote:
+> > The TGPIO input clock, the ART, is a free running counter, but you
+> > want to support frequency adjustments.  Use a timecounter cyclecounter
+> > pair.
+> 
+> I'm concerned about the complexity that the timecounter adds to
+> the driver. Specifically, the complexity of dealing with any rate mismatches
+> between the timecounter and the periodic output signal. The phase
+> error between the output and timecounter needs to be zero.
 
-Hi all,
+If I understood correctly, the device's outputs are generated from a
+non-adjustable counter.  So, no matter what, you will have the problem
+of changing the pulse period in concert with the user changing the
+desired frequency.
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced this warning:
+> My counter-proposal would be to use the real-time clock as the basis of the
+> device clock. This is fairly simple because the relation between ART and the
+> realtime clock is known. When output is enabled any phase error between
+> the realtime clock and the periodic output signal is accumulated in the
+> SYS_OFFSET result.
 
-include/net/cfg80211.h:3407: warning: bad line:
+I don't understand how you intend to do this...
+ 
+> This leaves the PHC API behavior as it is currently and uses the frequency
+> adjust API to adjust the output rate.
+> 
+> > Let the user dial a periodic output signal in the normal way.
+> > 
+> > Let the user change the frequency in the normal way, and during this
+> > call, adjust the counter values accordingly.
+> 
+> Yes to both of the above.
 
-Many times.
+So, why then do you need this?
 
-Introduced by commit
++#define PTP_EVENT_COUNT_TSTAMP2 \
++       _IOWR(PTP_CLK_MAGIC, 19, struct ptp_event_count_tstamp)
 
-  56be393fa8b4 ("cfg80211: Support key configuration for Beacon protection =
-(BIGTK)")
+If you can make the device work with the existing user space API,
 
-I assume that all it needs is a leading " *" on that line.
+	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
+	while (1) {
+		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
+	}
 
---=20
-Cheers,
-Stephen Rothwell
+that would be ideal.  But I will push back on anything like the
+following.
 
---Sig_/NHNuz1LW4.GGZwbla3Ej=CD
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
+	while (1) {
+		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
+		ioctl(fd, PTP_EVENT_COUNT_TSTAMP, ...);
+	}
 
------BEGIN PGP SIGNATURE-----
+But maybe I misunderstood?
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5V2uEACgkQAVBC80lX
-0GyROAf9GvV7PuBfpBVXVaeBf0KyW1iB4UAQ3fw2nvfFDfZ3uuEUrccfWwtXzCrM
-COG2h6ZiFsgvQ8kB/wR0JnuU4rm0OjTINLBXAK8WLovAhcQdbR4n72Ze6kDq+Sac
-ShgnNVf0JATkLKrKrtsKYrRx9h4nDuLHZAIOlpk7FjsJ1QMBLQMSbb62A9F/IoH2
-fMcqGpxhrIVVGG3MFchSDpDIk2l0MRTGHhc+5HCSdZo0OTidUFwQpiBok4hvrT1R
-oINurB/xz+/+7V+DOb84J6Flp/JlBpxYVnjd93ZVgz4BVAlviRYkDmrpT6Dc167b
-nVFKaLnTrKMgSaNzWHunytCbLNIK1Q==
-=sjwb
------END PGP SIGNATURE-----
-
---Sig_/NHNuz1LW4.GGZwbla3Ej=CD--
+Thanks,
+Richard
