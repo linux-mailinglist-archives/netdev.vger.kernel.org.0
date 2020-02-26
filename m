@@ -2,67 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A57C3170877
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:08:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0932B17087E
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbgBZTHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 14:07:55 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:60140 "EHLO
+        id S1727190AbgBZTJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 14:09:23 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:60170 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbgBZTHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 14:07:55 -0500
+        with ESMTP id S1727035AbgBZTJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 14:09:23 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5044515AA1098;
-        Wed, 26 Feb 2020 11:07:52 -0800 (PST)
-Date:   Wed, 26 Feb 2020 11:07:49 -0800 (PST)
-Message-Id: <20200226.110749.77396284962321904.davem@davemloft.net>
-To:     shakeelb@google.com
-Cc:     edumazet@google.com, guro@fb.com, hannes@cmpxchg.org,
-        tj@kernel.org, gthelen@google.com, mhocko@kernel.org,
-        vdavydov.dev@gmail.com, akpm@linux-foundation.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3] cgroup: memcg: net: do not associate sock with
- unrelated cgroup
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 83BCB15AA10AB;
+        Wed, 26 Feb 2020 11:09:22 -0800 (PST)
+Date:   Wed, 26 Feb 2020 11:09:22 -0800 (PST)
+Message-Id: <20200226.110922.2164858284509225676.davem@davemloft.net>
+To:     anton.ivanov@cambridgegreys.com
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-um@lists.infradead.org, mst@redhat.com, jasowang@redhat.com,
+        eric.dumazet@gmail.com
+Subject: Re: [PATCH v3] virtio: Work around frames incorrectly marked as gso
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200221014604.126118-1-shakeelb@google.com>
-References: <20200221014604.126118-1-shakeelb@google.com>
+In-Reply-To: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
+References: <20200224132550.2083-1-anton.ivanov@cambridgegreys.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 11:07:52 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 11:09:22 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shakeel Butt <shakeelb@google.com>
-Date: Thu, 20 Feb 2020 17:46:04 -0800
+From: anton.ivanov@cambridgegreys.com
+Date: Mon, 24 Feb 2020 13:25:50 +0000
 
-> We are testing network memory accounting in our setup and noticed
-> inconsistent network memory usage and often unrelated cgroups network
-> usage correlates with testing workload. On further inspection, it
-> seems like mem_cgroup_sk_alloc() and cgroup_sk_alloc() are broken in
-> IRQ context specially for cgroup v1.
+> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 > 
-> mem_cgroup_sk_alloc() and cgroup_sk_alloc() can be called in IRQ context
-> and kind of assumes that this can only happen from sk_clone_lock()
-> and the source sock object has already associated cgroup. However in
-> cgroup v1, where network memory accounting is opt-in, the source sock
-> can be unassociated with any cgroup and the new cloned sock can get
-> associated with unrelated interrupted cgroup.
+> Some of the locally generated frames marked as GSO which
+> arrive at virtio_net_hdr_from_skb() have no GSO_TYPE, no
+> fragments (data_len = 0) and length significantly shorter
+> than the MTU (752 in my experiments).
 > 
-> Cgroup v2 can also suffer if the source sock object was created by
-> process in the root cgroup or if sk_alloc() is called in IRQ context.
-> The fix is to just do nothing in interrupt.
+> This is observed on raw sockets reading off vEth interfaces
+> in all 4.x and 5.x kernels. The frames are reported as
+> invalid, while they are in fact gso-less frames.
 > 
-> WARNING: Please note that about half of the TCP sockets are allocated
-> from the IRQ context, so, memory used by such sockets will not be
-> accouted by the memcg.
+> The easiest way to reproduce is to connect a User Mode
+> Linux instance to the host using the vector raw transport
+> and a vEth interface. Vector raw uses recvmmsg/sendmmsg
+> with virtio headers on af_packet sockets. When running iperf
+> between the UML and the host, UML regularly complains about
+> EINVAL return from recvmmsg.
+> 
+> This patch marks the vnet header as non-GSO instead of
+> reporting it as invalid.
+> 
+> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
-Then if we do this then we have to have some kind of subsequent change
-to attach these sockets to the correct cgroup, right?
+I don't feel comfortable applying this until we know where these
+weird frames are coming from and how they are created.
+
+Please respin this patch once you know this information and make
+sure to mention it in the commit log.
+
+Thank you.
