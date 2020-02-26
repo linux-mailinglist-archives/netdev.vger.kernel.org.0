@@ -2,163 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E901716F7E2
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 07:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A773616F7F8
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 07:28:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbgBZGNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 01:13:11 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:48291 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726473AbgBZGNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 01:13:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582697588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qomx+ZbKWIrzZtErXMfwcPJrjlc3eZgjsPhGLKwY99k=;
-        b=ikzo3AStrM2846tHd/S5/F/ytuVHn8z+qpwTGY8EK53fqgxvWuN3kXXuzl95M4KZIf28JZ
-        hWefZKC+SCzVFyZhCds5+TrngI2OjrPDKPTF4RtqzyhDDrSoMhyldTdm+kyaCgdUEGRFRV
-        aDiz701cRWmQwUVYQ0ZpTFfAyIUupO4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-147-mlezykjlOrKrQv0WTr5MZQ-1; Wed, 26 Feb 2020 01:13:07 -0500
-X-MC-Unique: mlezykjlOrKrQv0WTr5MZQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4343A800053;
-        Wed, 26 Feb 2020 06:13:04 +0000 (UTC)
-Received: from [10.72.13.217] (ovpn-13-217.pek2.redhat.com [10.72.13.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 09EC0396;
-        Wed, 26 Feb 2020 06:12:30 +0000 (UTC)
-Subject: Re: [PATCH V4 5/5] vdpasim: vDPA device simulator
-From:   Jason Wang <jasowang@redhat.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     "mst@redhat.com" <mst@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
-        "maxime.coquelin@redhat.com" <maxime.coquelin@redhat.com>,
-        "cunming.liang@intel.com" <cunming.liang@intel.com>,
-        "zhihong.wang@intel.com" <zhihong.wang@intel.com>,
-        "rob.miller@broadcom.com" <rob.miller@broadcom.com>,
-        "xiao.w.wang@intel.com" <xiao.w.wang@intel.com>,
-        "haotian.wang@sifive.com" <haotian.wang@sifive.com>,
-        "lingshan.zhu@intel.com" <lingshan.zhu@intel.com>,
-        "eperezma@redhat.com" <eperezma@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "aadam@redhat.com" <aadam@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "mhabets@solarflare.com" <mhabets@solarflare.com>
-References: <20200220061141.29390-1-jasowang@redhat.com>
- <20200220061141.29390-6-jasowang@redhat.com>
- <20200220151215.GU23930@mellanox.com>
- <6c341a77-a297-b7c7-dea5-b3f7b920b1f3@redhat.com>
-Message-ID: <793a1b81-4f78-c405-4aae-f32a2bf67d87@redhat.com>
-Date:   Wed, 26 Feb 2020 14:12:26 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726981AbgBZG2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 01:28:17 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:43292 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgBZG2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 01:28:16 -0500
+Received: by mail-ot1-f67.google.com with SMTP id p8so1920662oth.10
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 22:28:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=U3UAIH4AGCVoy4goSEufz/PBsyPz3rG5CGZwxsdNtEA=;
+        b=Bxx3Yp0jstbyXRbT23+jRGJE1+mv0IhumWgZPUXHYe+EzPbfyPCjpivPdjwCRNASw8
+         a0RPswXY+L76GPociTxhtMcNPjWee3CMvOeon/RSis5Qm9dEWjG3+fBgElQi/FY+ZFUZ
+         M6AZaQgflWUzQnlJzit1fhTMOCNiGAQObe3V1tH8w9MInemytfmwmDNWLdwCNvRPNsAx
+         QAg+im1U7yOXM0OKz/ZFaxOJxP2oy05o4LANHRSRjW29M+jyW+vR53RQ1rCvblSI+T19
+         1+xHZ4QMua/yCu4zA38F3U1EKeAIT7ibRpFlOLE9Op/WWuW51loZDlQe/kHGb1v0QXpS
+         Tpww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=U3UAIH4AGCVoy4goSEufz/PBsyPz3rG5CGZwxsdNtEA=;
+        b=AKpyi7YZBPoCAX1n84aeQN4XFoSga7kWubbpkHamD8U7kkY0/LZIczZITNQyiGCG4e
+         p8EDAhzY6AwCCNFyDmiAyM0r+VzggScsNZ7JOybY8V4/c2FyYBMSx4mzMiGmOtEOaP3V
+         /sYlmyL6zLHwljb+wyZnYz65cU5SOx7R/UWwPNfx8UnGSRjukSbEc2TQHv0kDrRdjsWc
+         H9Uwql+mzmtSMNlDos9H3FbQM68u8Oi7GFWw+O/akPjjmknQvRsfY69WqcuGIm/fCzBS
+         gRK7rKEUiInuFdkkflaS0BnMUW+77aIAB1IuTWSXx2M8zoXjHkuGaRep8BayYr6jnAeQ
+         kiAw==
+X-Gm-Message-State: APjAAAUEiFP6M5wSmt2EWNbA5crHBdxmx9uQwYSaawFYxpj0g3te2f09
+        Gxv6v/e6WzbsRplFT+aI3p/dDoMgEcAQnqsMJj0=
+X-Google-Smtp-Source: APXvYqyqVh9201YXNmSl8Sxtq4FBG/v++lXrJc6qGx44EVjO/KniU/KUC0ia4tnsUkNdYrNsOIPHX3gpcebejoN+s1M=
+X-Received: by 2002:a05:6830:16d0:: with SMTP id l16mr1836785otr.83.1582698495907;
+ Tue, 25 Feb 2020 22:28:15 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <6c341a77-a297-b7c7-dea5-b3f7b920b1f3@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a4a:e3c1:0:0:0:0:0 with HTTP; Tue, 25 Feb 2020 22:28:15
+ -0800 (PST)
+Reply-To: mrmoussadaudaa@gmail.com
+From:   "Mr. Moussa Dauda" <elizabethfusa22@gmail.com>
+Date:   Wed, 26 Feb 2020 07:28:15 +0100
+Message-ID: <CALoSJB_011sS7kqaiPTyknqi057cerPUeXQmvHZOTX5jdc7qiQ@mail.gmail.com>
+Subject: I await your urgent response immediately.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Good Friend,
 
-On 2020/2/21 =E4=B8=8B=E5=8D=883:57, Jason Wang wrote:
->
-> On 2020/2/20 =E4=B8=8B=E5=8D=8811:12, Jason Gunthorpe wrote:
->> On Thu, Feb 20, 2020 at 02:11:41PM +0800, Jason Wang wrote:
->>> +static void vdpasim_device_release(struct device *dev)
->>> +{
->>> +=C2=A0=C2=A0=C2=A0 struct vdpasim *vdpasim =3D dev_to_sim(dev);
->>> +
->>> +=C2=A0=C2=A0=C2=A0 cancel_work_sync(&vdpasim->work);
->>> +=C2=A0=C2=A0=C2=A0 kfree(vdpasim->buffer);
->>> +=C2=A0=C2=A0=C2=A0 vhost_iotlb_free(vdpasim->iommu);
->>> +=C2=A0=C2=A0=C2=A0 kfree(vdpasim);
->>> +}
->>> +
->>> +static struct vdpasim *vdpasim_create(void)
->>> +{
->>> +=C2=A0=C2=A0=C2=A0 struct virtio_net_config *config;
->>> +=C2=A0=C2=A0=C2=A0 struct vhost_iotlb *iommu;
->>> +=C2=A0=C2=A0=C2=A0 struct vdpasim *vdpasim;
->>> +=C2=A0=C2=A0=C2=A0 struct device *dev;
->>> +=C2=A0=C2=A0=C2=A0 void *buffer;
->>> +=C2=A0=C2=A0=C2=A0 int ret =3D -ENOMEM;
->>> +
->>> +=C2=A0=C2=A0=C2=A0 iommu =3D vhost_iotlb_alloc(2048, 0);
->>> +=C2=A0=C2=A0=C2=A0 if (!iommu)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err;
->>> +
->>> +=C2=A0=C2=A0=C2=A0 buffer =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
->>> +=C2=A0=C2=A0=C2=A0 if (!buffer)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_buffer;
->>> +
->>> +=C2=A0=C2=A0=C2=A0 vdpasim =3D kzalloc(sizeof(*vdpasim), GFP_KERNEL)=
-;
->>> +=C2=A0=C2=A0=C2=A0 if (!vdpasim)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_alloc;
->>> +
->>> +=C2=A0=C2=A0=C2=A0 vdpasim->buffer =3D buffer;
->>> +=C2=A0=C2=A0=C2=A0 vdpasim->iommu =3D iommu;
->>> +
->>> +=C2=A0=C2=A0=C2=A0 config =3D &vdpasim->config;
->>> +=C2=A0=C2=A0=C2=A0 config->mtu =3D 1500;
->>> +=C2=A0=C2=A0=C2=A0 config->status =3D VIRTIO_NET_S_LINK_UP;
->>> +=C2=A0=C2=A0=C2=A0 eth_random_addr(config->mac);
->>> +
->>> +=C2=A0=C2=A0=C2=A0 INIT_WORK(&vdpasim->work, vdpasim_work);
->>> +=C2=A0=C2=A0=C2=A0 spin_lock_init(&vdpasim->lock);
->>> +
->>> +=C2=A0=C2=A0=C2=A0 vringh_set_iotlb(&vdpasim->vqs[0].vring, vdpasim-=
->iommu);
->>> +=C2=A0=C2=A0=C2=A0 vringh_set_iotlb(&vdpasim->vqs[1].vring, vdpasim-=
->iommu);
->>> +
->>> +=C2=A0=C2=A0=C2=A0 dev =3D &vdpasim->dev;
->>> +=C2=A0=C2=A0=C2=A0 dev->release =3D vdpasim_device_release;
->>> +=C2=A0=C2=A0=C2=A0 dev->coherent_dma_mask =3D DMA_BIT_MASK(64);
->>> +=C2=A0=C2=A0=C2=A0 set_dma_ops(dev, &vdpasim_dma_ops);
->>> +=C2=A0=C2=A0=C2=A0 dev_set_name(dev, "%s", VDPASIM_NAME);
->>> +
->>> +=C2=A0=C2=A0=C2=A0 ret =3D device_register(&vdpasim->dev);
->>> +=C2=A0=C2=A0=C2=A0 if (ret)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto err_init;
->> It is a bit weird to be creating this dummy parent, couldn't this be
->> done by just passing a NULL parent to vdpa_alloc_device, doing
->> set_dma_ops() on the vdpasim->vdpa->dev and setting dma_device to
->> vdpasim->vdpa->dev ?
->
->
-> I think it works.
+Good Day,
 
+I am Mr. Moussa Dauda, Director In charge of Auditing and accounting
+department of Bank Of Africa, BOA, I hope that you will not betray or
+expose this trust and confident that i am about to repose on you for
+the mutual benefit of our both families.
 
-Rethink about this, since most hardware vDPA driver will have a parent=20
-and will use it to find the parent structure e.g
+I need your urgent assistance in transferring the sum of TEN MILLION
+FIVE HUNDRED THOUSAND UNITED STATES DOLLARS, U$10,500.000.00,
+immediately to your account anywhere you chose.
 
-dev_get_drvdata(vdpa->dev->parent)
+This is a very highly secret, i will like you to please keep this
+proposal as a top secret or delete it if you are not interested, upon
+receipt of your reply, i will send to you more details about this
+business deal.
 
-So I keep this dummy parent in V5.
+I will also direct you on how this deal will be done without any
+problem; you must understand that this is 100% free from risk.
 
-Thanks
+Therefore my questions are:
 
+1. Can you handle this project?
+2. Can I give you this trust?
+If yes, get back to me immediately.
 
+Try and get back to me with this my private email address (
+mrmoussadaudaa@gmail.com )
+
+I will be waiting to hear from you immediately.
+
+Regards
+Mr. Moussa Dauda.
