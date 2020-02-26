@@ -2,89 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A773616F7F8
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 07:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B1616F825
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 07:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgBZG2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 01:28:17 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43292 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgBZG2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 01:28:16 -0500
-Received: by mail-ot1-f67.google.com with SMTP id p8so1920662oth.10
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 22:28:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=U3UAIH4AGCVoy4goSEufz/PBsyPz3rG5CGZwxsdNtEA=;
-        b=Bxx3Yp0jstbyXRbT23+jRGJE1+mv0IhumWgZPUXHYe+EzPbfyPCjpivPdjwCRNASw8
-         a0RPswXY+L76GPociTxhtMcNPjWee3CMvOeon/RSis5Qm9dEWjG3+fBgElQi/FY+ZFUZ
-         M6AZaQgflWUzQnlJzit1fhTMOCNiGAQObe3V1tH8w9MInemytfmwmDNWLdwCNvRPNsAx
-         QAg+im1U7yOXM0OKz/ZFaxOJxP2oy05o4LANHRSRjW29M+jyW+vR53RQ1rCvblSI+T19
-         1+xHZ4QMua/yCu4zA38F3U1EKeAIT7ibRpFlOLE9Op/WWuW51loZDlQe/kHGb1v0QXpS
-         Tpww==
+        id S1727119AbgBZGne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 01:43:34 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:60112 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726112AbgBZGne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 01:43:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582699412;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=45Q2Z/6mfbnmrfD1M7fzs4kDePvxBZmHxdEsKKqCXbU=;
+        b=e3trmm3Wbw8TSJaLC7y3vq5S0POnT3THJ7KfXodk0lkCkjHgmt/B9vIH05qbMFlbEgiDts
+        d5MPqLa+oBi//t9uQdDD7cLfXRmTV/dUxqktgzFrkFmNNA57BxSO1uVUDFEva3+hZAtlzF
+        71UVTTZ0lYCfOCp9H1Oin6YUkEUalXE=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-yUIWZDVgMJCye-qyawHPpQ-1; Wed, 26 Feb 2020 01:43:28 -0500
+X-MC-Unique: yUIWZDVgMJCye-qyawHPpQ-1
+Received: by mail-qk1-f199.google.com with SMTP id w126so2682756qkb.23
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 22:43:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=U3UAIH4AGCVoy4goSEufz/PBsyPz3rG5CGZwxsdNtEA=;
-        b=AKpyi7YZBPoCAX1n84aeQN4XFoSga7kWubbpkHamD8U7kkY0/LZIczZITNQyiGCG4e
-         p8EDAhzY6AwCCNFyDmiAyM0r+VzggScsNZ7JOybY8V4/c2FyYBMSx4mzMiGmOtEOaP3V
-         /sYlmyL6zLHwljb+wyZnYz65cU5SOx7R/UWwPNfx8UnGSRjukSbEc2TQHv0kDrRdjsWc
-         H9Uwql+mzmtSMNlDos9H3FbQM68u8Oi7GFWw+O/akPjjmknQvRsfY69WqcuGIm/fCzBS
-         gRK7rKEUiInuFdkkflaS0BnMUW+77aIAB1IuTWSXx2M8zoXjHkuGaRep8BayYr6jnAeQ
-         kiAw==
-X-Gm-Message-State: APjAAAUEiFP6M5wSmt2EWNbA5crHBdxmx9uQwYSaawFYxpj0g3te2f09
-        Gxv6v/e6WzbsRplFT+aI3p/dDoMgEcAQnqsMJj0=
-X-Google-Smtp-Source: APXvYqyqVh9201YXNmSl8Sxtq4FBG/v++lXrJc6qGx44EVjO/KniU/KUC0ia4tnsUkNdYrNsOIPHX3gpcebejoN+s1M=
-X-Received: by 2002:a05:6830:16d0:: with SMTP id l16mr1836785otr.83.1582698495907;
- Tue, 25 Feb 2020 22:28:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=45Q2Z/6mfbnmrfD1M7fzs4kDePvxBZmHxdEsKKqCXbU=;
+        b=S1PzdF9siepIS8BW+quxrAhGZXEhZCTTA7O5Bgv5pIaij5FWpnbZabgNA3z/oo/UW/
+         Dl5cIJsDuqNkoD1dlyKtmpSewh3T6YbNfdKYP3kZCss6pgKPR3sZzaVCegk96SGAFvbJ
+         reOf63Huo73/oq7htoBFY1xdTn4R0sT0sCBQ7Cyxj/EzlT2GC0YGXa2xPKwMsonW8/jt
+         Cle2eH/gNF41mt+JacO9p1nn36zxXGN9VUTTBD94JItB542PjM7xkunNw/hpR9JCSz5P
+         66Qp9PUB54tWUCNCNRQ69rj+wLOa08XCjiReocnGiydbgZSMlyaxadiiVdgQ/z6HyWeQ
+         S/Qg==
+X-Gm-Message-State: APjAAAW+sk2zQ0NtrQ4KaJ+pid9a4k/01vTZmmu4AFPBs2T676iFI+QD
+        jlbPdYyRSzRNEUVTc2xs6myfzIZ2DLxG0E9Y9VJrJcDiVcinGZX3iwMZQ41QOyX4DmvlGCEyRKV
+        HXIW4LrY2JhiAHYiO
+X-Received: by 2002:a05:6214:4f2:: with SMTP id cl18mr3431781qvb.89.1582699408011;
+        Tue, 25 Feb 2020 22:43:28 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyBbLUYkni9JkcvO08M+iP4GMZsMtJn2mpIqPOt9f6NH24OpB0rtHzSsoUIG0zq0EkxKWqt/Q==
+X-Received: by 2002:a05:6214:4f2:: with SMTP id cl18mr3431745qvb.89.1582699407348;
+        Tue, 25 Feb 2020 22:43:27 -0800 (PST)
+Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
+        by smtp.gmail.com with ESMTPSA id d9sm593296qtw.32.2020.02.25.22.43.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 22:43:26 -0800 (PST)
+Date:   Wed, 26 Feb 2020 01:43:21 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        David Ahern <dahern@digitalocean.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
+ using XDP
+Message-ID: <20200226013336-mutt-send-email-mst@kernel.org>
+References: <20200226005744.1623-1-dsahern@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a4a:e3c1:0:0:0:0:0 with HTTP; Tue, 25 Feb 2020 22:28:15
- -0800 (PST)
-Reply-To: mrmoussadaudaa@gmail.com
-From:   "Mr. Moussa Dauda" <elizabethfusa22@gmail.com>
-Date:   Wed, 26 Feb 2020 07:28:15 +0100
-Message-ID: <CALoSJB_011sS7kqaiPTyknqi057cerPUeXQmvHZOTX5jdc7qiQ@mail.gmail.com>
-Subject: I await your urgent response immediately.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200226005744.1623-1-dsahern@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Good Friend,
+On Tue, Feb 25, 2020 at 05:57:44PM -0700, David Ahern wrote:
+> From: David Ahern <dahern@digitalocean.com>
+> 
+> virtio_net currently requires extra queues to install an XDP program,
+> with the rule being twice as many queues as vcpus. From a host
+> perspective this means the VM needs to have 2*vcpus vhost threads
+> for each guest NIC for which XDP is to be allowed. For example, a
+> 16 vcpu VM with 2 tap devices needs 64 vhost threads.
+> 
+> The extra queues are only needed in case an XDP program wants to
+> return XDP_TX. XDP_PASS, XDP_DROP and XDP_REDIRECT do not need
+> additional queues. Relax the queue requirement and allow XDP
+> functionality based on resources. If an XDP program is loaded and
+> there are insufficient queues, then return a warning to the user
+> and if a program returns XDP_TX just drop the packet. This allows
+> the use of the rest of the XDP functionality to work without
+> putting an unreasonable burden on the host.
+> 
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: David Ahern <dahern@digitalocean.com>
 
-Good Day,
 
-I am Mr. Moussa Dauda, Director In charge of Auditing and accounting
-department of Bank Of Africa, BOA, I hope that you will not betray or
-expose this trust and confident that i am about to repose on you for
-the mutual benefit of our both families.
+It isn't particularly easy for userspace to detect packets
+are dropped. If there's a need for a limited XDP with
+limited resources, IMHO it's better for userspace to
+declare this to the driver.
 
-I need your urgent assistance in transferring the sum of TEN MILLION
-FIVE HUNDRED THOUSAND UNITED STATES DOLLARS, U$10,500.000.00,
-immediately to your account anywhere you chose.
 
-This is a very highly secret, i will like you to please keep this
-proposal as a top secret or delete it if you are not interested, upon
-receipt of your reply, i will send to you more details about this
-business deal.
+> ---
+>  drivers/net/virtio_net.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 2fe7a3188282..2f4c5b2e674d 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -190,6 +190,8 @@ struct virtnet_info {
+>  	/* # of XDP queue pairs currently used by the driver */
+>  	u16 xdp_queue_pairs;
+>  
+> +	bool can_do_xdp_tx;
+> +
+>  	/* I like... big packets and I cannot lie! */
+>  	bool big_packets;
+>  
+> @@ -697,6 +699,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>  			len = xdp.data_end - xdp.data;
+>  			break;
+>  		case XDP_TX:
+> +			if (!vi->can_do_xdp_tx)
+> +				goto err_xdp;
+>  			stats->xdp_tx++;
+>  			xdpf = convert_to_xdp_frame(&xdp);
+>  			if (unlikely(!xdpf))
+> @@ -870,6 +874,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			}
+>  			break;
+>  		case XDP_TX:
+> +			if (!vi->can_do_xdp_tx)
+> +				goto err_xdp;
+>  			stats->xdp_tx++;
+>  			xdpf = convert_to_xdp_frame(&xdp);
+>  			if (unlikely(!xdpf))
+> @@ -2435,10 +2441,10 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  
+>  	/* XDP requires extra queues for XDP_TX */
+>  	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> -			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> +		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available; XDP_TX will not be allowed");
+> +		vi->can_do_xdp_tx = false;
+> +	} else {
+> +		vi->can_do_xdp_tx = true;
+>  	}
+>  
+>  	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+> -- 
+> 2.17.1
 
-I will also direct you on how this deal will be done without any
-problem; you must understand that this is 100% free from risk.
-
-Therefore my questions are:
-
-1. Can you handle this project?
-2. Can I give you this trust?
-If yes, get back to me immediately.
-
-Try and get back to me with this my private email address (
-mrmoussadaudaa@gmail.com )
-
-I will be waiting to hear from you immediately.
-
-Regards
-Mr. Moussa Dauda.
