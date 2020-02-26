@@ -2,366 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25C9116FA99
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B19A416FAC1
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727733AbgBZJVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 04:21:54 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44656 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgBZJVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:21:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=+Os/7yUni0JJHrrhjZ+cA+bqBG4cxaWE6UbZw8s44OM=; b=CrDwixOK6nLbMxCygaOTCyF1n
-        BxFSaKZIbyk/KJ6vddrVI1/Y9trjIDDKAJzjZG7fGsH4nzd5Zowh5nZIpAIdD6W1Zwu+EoTcyBNWh
-        LdV+vEwLb68c57RPhMgvsGMyYfMggPg7I75goE3MSBTnIaR0j25ixMvUK8qxAwrHF/IUB3WLqD8fm
-        BB9G1bF7Hw0TgOcldTxlWAD6kc394N4tlihiT2BvLdcfihYwsIlabBpXZ8kHeA66Ha+SeNWXWSlPH
-        hwhNkCx4jzSBek1OaS0DEL0NztyEwxwA/wEwLBiu2j4UlrQQfYZu2fpXSOl5AMfSQR8F/E7hkyslj
-        vL+xk1b5w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57098)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j6ssu-0006Z7-Sy; Wed, 26 Feb 2020 09:21:41 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j6sss-0008I5-BR; Wed, 26 Feb 2020 09:21:38 +0000
-Date:   Wed, 26 Feb 2020 09:21:38 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Chris Snook <chris.snook@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH v8 1/1] net: ag71xx: port to phylink
-Message-ID: <20200226092138.GV25745@shell.armlinux.org.uk>
-References: <20200226054624.14199-1-o.rempel@pengutronix.de>
+        id S1727040AbgBZJaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 04:30:46 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:58157 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726082AbgBZJap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:30:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582709444;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gl/Qr0UmavRwEDNdFhMHeBuuzOf8uvsGp/oLFksBTPM=;
+        b=DcegNe5B+PqK4G4w3TC3eNd9CuUWTaseYMLHo6FzI6rqvyOCE6DHzYuCNC6kILKkqMXBb1
+        6LzL/pZ1b5FjrVxwPlan7IOmwBmGzGWpKQGjLipezWiQwcqcziN4od9iCA1fquz2aRAdnG
+        U5LjRy+hMrVz6Eq4V+3zWIBwbG/B1gg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-312-csd-TjdMOK-YHS3eAQQ2sA-1; Wed, 26 Feb 2020 04:30:43 -0500
+X-MC-Unique: csd-TjdMOK-YHS3eAQQ2sA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E137107ACC4;
+        Wed, 26 Feb 2020 09:30:42 +0000 (UTC)
+Received: from [10.72.13.217] (ovpn-13-217.pek2.redhat.com [10.72.13.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 56EB95C545;
+        Wed, 26 Feb 2020 09:30:37 +0000 (UTC)
+Subject: Re: virtio_net: can change MTU after installing program
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     David Ahern <dahern@digitalocean.com>, netdev@vger.kernel.org
+References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+ <20200226015113-mutt-send-email-mst@kernel.org>
+ <172688592.10687939.1582702621880.JavaMail.zimbra@redhat.com>
+ <20200226032421-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b8dcde8c-ce7b-588a-49c1-0cf315794613@redhat.com>
+Date:   Wed, 26 Feb 2020 17:30:18 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200226054624.14199-1-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200226032421-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 06:46:24AM +0100, Oleksij Rempel wrote:
-> The port to phylink was done as close as possible to initial
-> functionality.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-> changes v8:
-> - set the autoneg bit
-> - provide implementations for the mac_pcs_get_state and mac_an_restart
->   methods
-> - do phylink_disconnect_phy() on _stop()
-> - rename ag71xx_phy_setup() to ag71xx_phylink_setup() 
 
-There will be one more change required; I'm changing the prototype for
-the mac_link_up() function, and I suggest as you don't support in-band
-AN that most of the setup for speed and duplex gets moved out of your
-mac_config() implementation to mac_link_up().
+On 2020/2/26 =E4=B8=8B=E5=8D=884:39, Michael S. Tsirkin wrote:
+> On Wed, Feb 26, 2020 at 02:37:01AM -0500, Jason Wang wrote:
+>>
+>> ----- Original Message -----
+>>> On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
+>>>> Another issue is that virtio_net checks the MTU when a program is
+>>>> installed, but does not restrict an MTU change after:
+>>>>
+>>>> # ip li sh dev eth0
+>>>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_cod=
+el
+>>>> state UP mode DEFAULT group default qlen 1000
+>>>>      link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
+>>>>      prog/xdp id 13 tag c5595e4590d58063 jited
+>>>>
+>>>> # ip li set dev eth0 mtu 8192
+>>>>
+>>>> # ip li sh dev eth0
+>>>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_cod=
+el
+>>>> state UP mode DEFAULT group default qlen 1000
+>>> Well the reason XDP wants to limit MTU is this:
+>>>      the MTU must be less than a page
+>>>      size to avoid having to handle XDP across multiple pages
+>>>
+>> But even if we limit MTU is guest there's no way to limit the packet
+>> size on host.
+> Isn't this fundamental? IIUC dev->mtu is mostly a hint to devices about
+> how the network is configured. It has to be the same across LAN.  If
+> someone misconfigures it that breaks networking, and user gets to keep
+> both pieces. E.g. e1000 will use dev->mtu to calculate rx buffer size.
+> If you make it too small, well packets that are too big get dropped.
+> There's no magic to somehow make them smaller, or anything like that.
+> We can certainly drop packet > dev->mtu in the driver right now if we w=
+ant to,
+> and maybe if it somehow becomes important for performance, we
+> could teach host to drop such packets for us. Though
+> I don't really see why we care ...
+>
+>> It looks to me we need to introduce new commands to
+>> change the backend MTU (e.g TAP) accordingly.
+>>
+>> Thanks
+> So you are saying there are configurations where host does not know the
+> correct MTU, and needs guest's help to figure it out?
 
-The patches have been available on netdev for just over a week now.
 
-> 
->  drivers/net/ethernet/atheros/Kconfig  |   2 +-
->  drivers/net/ethernet/atheros/ag71xx.c | 150 +++++++++++++++++---------
->  2 files changed, 98 insertions(+), 54 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
-> index 0058051ba925..2720bde5034e 100644
-> --- a/drivers/net/ethernet/atheros/Kconfig
-> +++ b/drivers/net/ethernet/atheros/Kconfig
-> @@ -20,7 +20,7 @@ if NET_VENDOR_ATHEROS
->  config AG71XX
->  	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
->  	depends on ATH79
-> -	select PHYLIB
-> +	select PHYLINK
->  	help
->  	  If you wish to compile a kernel for AR7XXX/91XXX and enable
->  	  ethernet support, then you should always answer Y to this.
-> diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-> index e95687a780fb..9692ae1734a8 100644
-> --- a/drivers/net/ethernet/atheros/ag71xx.c
-> +++ b/drivers/net/ethernet/atheros/ag71xx.c
-> @@ -32,6 +32,7 @@
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
->  #include <linux/of_platform.h>
-> +#include <linux/phylink.h>
->  #include <linux/regmap.h>
->  #include <linux/reset.h>
->  #include <linux/clk.h>
-> @@ -314,6 +315,8 @@ struct ag71xx {
->  	dma_addr_t stop_desc_dma;
->  
->  	phy_interface_t phy_if_mode;
-> +	struct phylink *phylink;
-> +	struct phylink_config phylink_config;
->  
->  	struct delayed_work restart_work;
->  	struct timer_list oom_timer;
-> @@ -845,24 +848,23 @@ static void ag71xx_hw_start(struct ag71xx *ag)
->  	netif_wake_queue(ag->ndev);
->  }
->  
-> -static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
-> +static void ag71xx_mac_config(struct phylink_config *config, unsigned int mode,
-> +			      const struct phylink_link_state *state)
->  {
-> -	struct phy_device *phydev = ag->ndev->phydev;
-> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
->  	u32 cfg2;
->  	u32 ifctl;
->  	u32 fifo5;
->  
-> -	if (!phydev->link && update) {
-> -		ag71xx_hw_stop(ag);
-> +	if (phylink_autoneg_inband(mode))
->  		return;
-> -	}
->  
->  	if (!ag71xx_is(ag, AR7100) && !ag71xx_is(ag, AR9130))
->  		ag71xx_fast_reset(ag);
->  
->  	cfg2 = ag71xx_rr(ag, AG71XX_REG_MAC_CFG2);
->  	cfg2 &= ~(MAC_CFG2_IF_1000 | MAC_CFG2_IF_10_100 | MAC_CFG2_FDX);
-> -	cfg2 |= (phydev->duplex) ? MAC_CFG2_FDX : 0;
-> +	cfg2 |= (state->duplex) ? MAC_CFG2_FDX : 0;
->  
->  	ifctl = ag71xx_rr(ag, AG71XX_REG_MAC_IFCTL);
->  	ifctl &= ~(MAC_IFCTL_SPEED);
-> @@ -870,7 +872,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
->  	fifo5 = ag71xx_rr(ag, AG71XX_REG_FIFO_CFG5);
->  	fifo5 &= ~FIFO_CFG5_BM;
->  
-> -	switch (phydev->speed) {
-> +	switch (state->speed) {
->  	case SPEED_1000:
->  		cfg2 |= MAC_CFG2_IF_1000;
->  		fifo5 |= FIFO_CFG5_BM;
-> @@ -883,7 +885,6 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
->  		cfg2 |= MAC_CFG2_IF_10_100;
->  		break;
->  	default:
-> -		WARN(1, "not supported speed %i\n", phydev->speed);
->  		return;
->  	}
->  
-> @@ -897,58 +898,91 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
->  	ag71xx_wr(ag, AG71XX_REG_MAC_CFG2, cfg2);
->  	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG5, fifo5);
->  	ag71xx_wr(ag, AG71XX_REG_MAC_IFCTL, ifctl);
-> +}
->  
-> -	ag71xx_hw_start(ag);
-> +static void ag71xx_mac_validate(struct phylink_config *config,
-> +			    unsigned long *supported,
-> +			    struct phylink_link_state *state)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> +
-> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
-> +	    state->interface != PHY_INTERFACE_MODE_GMII &&
-> +	    state->interface != PHY_INTERFACE_MODE_MII) {
-> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +		return;
-> +	}
-> +
-> +	phylink_set(mask, MII);
-> +
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set(mask, 10baseT_Half);
-> +	phylink_set(mask, 10baseT_Full);
-> +	phylink_set(mask, 100baseT_Half);
-> +	phylink_set(mask, 100baseT_Full);
-> +
-> +	if (state->interface == PHY_INTERFACE_MODE_NA ||
-> +	    state->interface == PHY_INTERFACE_MODE_GMII) {
-> +		phylink_set(mask, 1000baseT_Full);
-> +		phylink_set(mask, 1000baseX_Full);
-> +	}
->  
-> -	if (update)
-> -		phy_print_status(phydev);
-> +	bitmap_and(supported, supported, mask,
-> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +	bitmap_and(state->advertising, state->advertising, mask,
-> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
->  }
->  
-> -static void ag71xx_phy_link_adjust(struct net_device *ndev)
-> +static void ag71xx_mac_pcs_get_state(struct phylink_config *config,
-> +				     struct phylink_link_state *state)
->  {
-> -	struct ag71xx *ag = netdev_priv(ndev);
-> +	state->link = 0;
-> +}
->  
-> -	ag71xx_link_adjust(ag, true);
-> +static void ag71xx_mac_an_restart(struct phylink_config *config)
-> +{
-> +	/* Not Supported */
->  }
->  
-> -static int ag71xx_phy_connect(struct ag71xx *ag)
-> +static void ag71xx_mac_link_down(struct phylink_config *config,
-> +				 unsigned int mode, phy_interface_t interface)
->  {
-> -	struct device_node *np = ag->pdev->dev.of_node;
-> -	struct net_device *ndev = ag->ndev;
-> -	struct device_node *phy_node;
-> -	struct phy_device *phydev;
-> -	int ret;
-> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
->  
-> -	if (of_phy_is_fixed_link(np)) {
-> -		ret = of_phy_register_fixed_link(np);
-> -		if (ret < 0) {
-> -			netif_err(ag, probe, ndev, "Failed to register fixed PHY link: %d\n",
-> -				  ret);
-> -			return ret;
-> -		}
-> +	ag71xx_hw_stop(ag);
-> +}
->  
-> -		phy_node = of_node_get(np);
-> -	} else {
-> -		phy_node = of_parse_phandle(np, "phy-handle", 0);
-> -	}
-> +static void ag71xx_mac_link_up(struct phylink_config *config, unsigned int mode,
-> +			       phy_interface_t interface,
-> +			       struct phy_device *phy)
-> +{
-> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
->  
-> -	if (!phy_node) {
-> -		netif_err(ag, probe, ndev, "Could not find valid phy node\n");
-> -		return -ENODEV;
-> -	}
-> +	ag71xx_hw_start(ag);
-> +}
->  
-> -	phydev = of_phy_connect(ag->ndev, phy_node, ag71xx_phy_link_adjust,
-> -				0, ag->phy_if_mode);
-> +static const struct phylink_mac_ops ag71xx_phylink_mac_ops = {
-> +	.validate = ag71xx_mac_validate,
-> +	.mac_pcs_get_state = ag71xx_mac_pcs_get_state,
-> +	.mac_an_restart = ag71xx_mac_an_restart,
-> +	.mac_config = ag71xx_mac_config,
-> +	.mac_link_down = ag71xx_mac_link_down,
-> +	.mac_link_up = ag71xx_mac_link_up,
-> +};
->  
-> -	of_node_put(phy_node);
-> +static int ag71xx_phylink_setup(struct ag71xx *ag)
-> +{
-> +	struct phylink *phylink;
->  
-> -	if (!phydev) {
-> -		netif_err(ag, probe, ndev, "Could not connect to PHY device\n");
-> -		return -ENODEV;
-> -	}
-> +	ag->phylink_config.dev = &ag->ndev->dev;
-> +	ag->phylink_config.type = PHYLINK_NETDEV;
->  
-> -	phy_attached_info(phydev);
-> +	phylink = phylink_create(&ag->phylink_config, ag->pdev->dev.fwnode,
-> +				 ag->phy_if_mode, &ag71xx_phylink_mac_ops);
-> +	if (IS_ERR(phylink))
-> +		return PTR_ERR(phylink);
->  
-> +	ag->phylink = phylink;
->  	return 0;
->  }
->  
-> @@ -1239,6 +1273,13 @@ static int ag71xx_open(struct net_device *ndev)
->  	unsigned int max_frame_len;
->  	int ret;
->  
-> +	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
-> +	if (ret) {
-> +		netif_err(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
-> +			  ret);
-> +		goto err;
-> +	}
-> +
->  	max_frame_len = ag71xx_max_frame_len(ndev->mtu);
->  	ag->rx_buf_size =
->  		SKB_DATA_ALIGN(max_frame_len + NET_SKB_PAD + NET_IP_ALIGN);
-> @@ -1251,11 +1292,7 @@ static int ag71xx_open(struct net_device *ndev)
->  	if (ret)
->  		goto err;
->  
-> -	ret = ag71xx_phy_connect(ag);
-> -	if (ret)
-> -		goto err;
-> -
-> -	phy_start(ndev->phydev);
-> +	phylink_start(ag->phylink);
->  
->  	return 0;
->  
-> @@ -1268,8 +1305,8 @@ static int ag71xx_stop(struct net_device *ndev)
->  {
->  	struct ag71xx *ag = netdev_priv(ndev);
->  
-> -	phy_stop(ndev->phydev);
-> -	phy_disconnect(ndev->phydev);
-> +	phylink_stop(ag->phylink);
-> +	phylink_disconnect_phy(ag->phylink);
->  	ag71xx_hw_disable(ag);
->  
->  	return 0;
-> @@ -1414,13 +1451,14 @@ static void ag71xx_restart_work_func(struct work_struct *work)
->  {
->  	struct ag71xx *ag = container_of(work, struct ag71xx,
->  					 restart_work.work);
-> -	struct net_device *ndev = ag->ndev;
->  
->  	rtnl_lock();
->  	ag71xx_hw_disable(ag);
->  	ag71xx_hw_enable(ag);
-> -	if (ndev->phydev->link)
-> -		ag71xx_link_adjust(ag, false);
-> +
-> +	phylink_stop(ag->phylink);
-> +	phylink_start(ag->phylink);
-> +
->  	rtnl_unlock();
->  }
->  
-> @@ -1759,6 +1797,12 @@ static int ag71xx_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, ndev);
->  
-> +	err = ag71xx_phylink_setup(ag);
-> +	if (err) {
-> +		netif_err(ag, probe, ndev, "failed to setup phylink (%d)\n", err);
-> +		goto err_mdio_remove;
-> +	}
-> +
->  	err = register_netdev(ndev);
->  	if (err) {
->  		netif_err(ag, probe, ndev, "unable to register net device\n");
-> -- 
-> 2.25.0
-> 
-> 
+Yes.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+
+> I guess it's
+> possible but it seems beside the point raised here.  TAP in particular
+> mostly just seems to ignore MTU, I am not sure why we should bother
+> propagating it there from guest or host. Propagating it from guest to
+> the actual NIC might be useful e.g. for buffer sizing, but is tricky
+> to do safely in case the NIC is shared between VMs.
+
+
+Macvlan passthrough mode could be easier I guess.
+
+Thanks
+
