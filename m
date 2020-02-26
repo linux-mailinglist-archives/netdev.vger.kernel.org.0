@@ -2,147 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BFD916F98D
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B35F16F99E
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbgBZIYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 03:24:10 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36574 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727311AbgBZIYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 03:24:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582705449;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=axeNxuwVzLh9+6WHrifmT3/K6ZVO5b41Nj4aK9DIR2w=;
-        b=D3ybdi2sQKAa0SveFykEvhcJx4zQZLRDEUsy9nrj7gRld3Yk790nbdvJNyIWE67VxgQy8V
-        qVia2WIXojq7YU8zTZq3STLPRUhC58MounNPEXniy75X0OG0jIfsu64Wwe2OJA/kRoZjh+
-        WrHTUju/WHnhH0MX2XaTN4ztdAIkVAI=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-rcUkIjwrN9qrRgncVqZ7aw-1; Wed, 26 Feb 2020 03:24:08 -0500
-X-MC-Unique: rcUkIjwrN9qrRgncVqZ7aw-1
-Received: by mail-il1-f197.google.com with SMTP id s71so2848590ill.6
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 00:24:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=axeNxuwVzLh9+6WHrifmT3/K6ZVO5b41Nj4aK9DIR2w=;
-        b=WGGI8I942NG8kyVLnQWnwLVZlmeofV9M6PuzNj97kmvQ0DlSMS6aJudfAECSUWRODu
-         m4tqd9Z23/gCFs6hgfEqO3N18d22dGZYDxoauo/JCeS6LyC0lVa2VyxTAuewGxLP7gf2
-         2fm4Z+atpqgdudqSiJ8UcBp1JsDsmjUkqfECB0OgAoCbyqUS+3vfoW8fT0R/4iURtl1F
-         XJ2vPRch+JhU3aLc1alnlX3OgM8xdJFFfLa4ON9ayea6Edutgfb2TdN4HcGFftqk0xrW
-         S2cAoJTNJuA8/C4IAUc1NBdDl8+Umn5/xc0soi935izMI6Xz7GTo6tc60LXA364l5MDK
-         9Qiw==
-X-Gm-Message-State: APjAAAXB6zJZW7ftquaULhxpI7wqpIsc7h/kmFp+TVBmR/3iErsApfUF
-        uAGACN4kaIrgCJc8TeWFvnksH2RaNWr/Uf6MI4ij8ri/1QnapELu1cA8IzXmpy3Mq41ltWWMcr4
-        tx1X26JY5gOb0++qq
-X-Received: by 2002:a02:8587:: with SMTP id d7mr2804984jai.39.1582705446969;
-        Wed, 26 Feb 2020 00:24:06 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyNGtokikJLjt5IWioTO0CM1HHV1W+Vw7qQ6W4uRXA40eiOCfu4PkMws4PyUYZcJVsxq3EcFQ==
-X-Received: by 2002:ae9:e90f:: with SMTP id x15mr4433182qkf.437.1582705445306;
-        Wed, 26 Feb 2020 00:24:05 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id t29sm747118qtt.20.2020.02.26.00.24.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 00:24:04 -0800 (PST)
-Date:   Wed, 26 Feb 2020 03:23:59 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
- using XDP
-Message-ID: <20200226032204-mutt-send-email-mst@kernel.org>
-References: <20200226005744.1623-1-dsahern@kernel.org>
- <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
- <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com>
- <87wo89zroe.fsf@toke.dk>
+        id S1727504AbgBZIde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 03:33:34 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:12838 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726425AbgBZIde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 03:33:34 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01Q8SsCx125781
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 03:33:33 -0500
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ydcntdsh1-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 03:33:32 -0500
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Wed, 26 Feb 2020 08:33:30 -0000
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 26 Feb 2020 08:33:28 -0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01Q8XRZt52953304
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Feb 2020 08:33:27 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 59BCE11C04A;
+        Wed, 26 Feb 2020 08:33:27 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 157AD11C054;
+        Wed, 26 Feb 2020 08:33:27 +0000 (GMT)
+Received: from [9.145.0.34] (unknown [9.145.0.34])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 26 Feb 2020 08:33:26 +0000 (GMT)
+Subject: Re: [PATCH net-next v2 0/2] net/smc: improve peer ID in CLC decline
+To:     Hans Wippel <ndev@hwipl.net>, ubraun@linux.ibm.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20200225214122.335292-1-ndev@hwipl.net>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Date:   Wed, 26 Feb 2020 09:33:28 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <20200225214122.335292-1-ndev@hwipl.net>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87wo89zroe.fsf@toke.dk>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20022608-0012-0000-0000-0000038A5D95
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20022608-0013-0000-0000-000021C702A5
+Message-Id: <cd02abb7-7175-8603-0c1c-f5916feb464e@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-26_02:2020-02-25,2020-02-26 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ bulkscore=0 mlxlogscore=811 clxscore=1015 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 phishscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002260064
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 09:19:45AM +0100, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@gmail.com> writes:
-> 
-> > On 2/25/20 8:00 PM, Jason Wang wrote:
-> >> 
-> >> On 2020/2/26 上午8:57, David Ahern wrote:
-> >>> From: David Ahern <dahern@digitalocean.com>
-> >>>
-> >>> virtio_net currently requires extra queues to install an XDP program,
-> >>> with the rule being twice as many queues as vcpus. From a host
-> >>> perspective this means the VM needs to have 2*vcpus vhost threads
-> >>> for each guest NIC for which XDP is to be allowed. For example, a
-> >>> 16 vcpu VM with 2 tap devices needs 64 vhost threads.
-> >>>
-> >>> The extra queues are only needed in case an XDP program wants to
-> >>> return XDP_TX. XDP_PASS, XDP_DROP and XDP_REDIRECT do not need
-> >>> additional queues. Relax the queue requirement and allow XDP
-> >>> functionality based on resources. If an XDP program is loaded and
-> >>> there are insufficient queues, then return a warning to the user
-> >>> and if a program returns XDP_TX just drop the packet. This allows
-> >>> the use of the rest of the XDP functionality to work without
-> >>> putting an unreasonable burden on the host.
-> >>>
-> >>> Cc: Jason Wang <jasowang@redhat.com>
-> >>> Cc: Michael S. Tsirkin <mst@redhat.com>
-> >>> Signed-off-by: David Ahern <dahern@digitalocean.com>
-> >>> ---
-> >>>   drivers/net/virtio_net.c | 14 ++++++++++----
-> >>>   1 file changed, 10 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> >>> index 2fe7a3188282..2f4c5b2e674d 100644
-> >>> --- a/drivers/net/virtio_net.c
-> >>> +++ b/drivers/net/virtio_net.c
-> >>> @@ -190,6 +190,8 @@ struct virtnet_info {
-> >>>       /* # of XDP queue pairs currently used by the driver */
-> >>>       u16 xdp_queue_pairs;
-> >>>   +    bool can_do_xdp_tx;
-> >>> +
-> >>>       /* I like... big packets and I cannot lie! */
-> >>>       bool big_packets;
-> >>>   @@ -697,6 +699,8 @@ static struct sk_buff *receive_small(struct
-> >>> net_device *dev,
-> >>>               len = xdp.data_end - xdp.data;
-> >>>               break;
-> >>>           case XDP_TX:
-> >>> +            if (!vi->can_do_xdp_tx)
-> >>> +                goto err_xdp;
-> >> 
-> >> 
-> >> I wonder if using spinlock to synchronize XDP_TX is better than dropping
-> >> here?
-> >
-> > I recall you suggesting that. Sure, it makes for a friendlier user
-> > experience, but if a spinlock makes this slower then it goes against the
-> > core idea of XDP.
-> 
-> IMO a spinlock-arbitrated TX queue is something that should be available
-> to the user if configured (using that queue abstraction Magnus is
-> working on), but not the default, since as you say that goes against the
-> "performance first" mantra of XDP.
-> 
-> -Toke
 
-OK so basically there would be commands to configure which TX queue is
-used by XDP. With enough resources default is to use dedicated queues.
-With not enough resources default is to fail binding xdp program
-unless queues are specified. Does this sound reasonable?
-It remains to define how are changes in TX queue config handled.
-Should they just be disallowed as long as there's an active XDP program?
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+
+
+On 25/02/2020 22:41, Hans Wippel wrote:
+> The following two patches improve the peer ID in CLC decline messages if
+> RoCE devices are present in the host but no suitable device is found for
+> a connection. The first patch reworks the peer ID initialization. The
+> second patch contains the actual changes of the CLC decline messages.
+> 
+> Changes v1 -> v2:
+> * make smc_ib_is_valid_local_systemid() static in first patch
+> * changed if in smc_clc_send_decline() to remove curly braces
+> 
+> Changes RFC -> v1:
+> * split the patch into two parts
+> * removed zero assignment to global variable (thanks Leon)
+> 
+> Thanks to Leon Romanovsky and Karsten Graul for the feedback!
+> 
+> Hans Wippel (2):
+>   net/smc: rework peer ID handling
+>   net/smc: improve peer ID in CLC decline for SMC-R
+> 
+>  net/smc/smc_clc.c |  3 ++-
+>  net/smc/smc_ib.c  | 19 ++++++++++++-------
+>  net/smc/smc_ib.h  |  1 +
+>  3 files changed, 15 insertions(+), 8 deletions(-)
+> 
+
+-- 
+Karsten
+
+(I'm a dude)
 
