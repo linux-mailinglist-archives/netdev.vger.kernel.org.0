@@ -2,169 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A457170C41
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 00:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A05B170C57
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 00:10:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbgBZXGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 18:06:14 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:60769 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbgBZXGO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 18:06:14 -0500
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j75kf-0008Pg-Lx; Thu, 27 Feb 2020 00:06:01 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 0D450100EA1; Thu, 27 Feb 2020 00:06:01 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     "Christopher S. Hall" <christopher.s.hall@intel.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hpa@zytor.com, mingo@redhat.com, x86@kernel.org,
-        jacob.e.keller@intel.com, richardcochran@gmail.com,
-        davem@davemloft.net, sean.v.kelley@intel.com
-Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO Driver with PHC interface changes to support additional H/W Features
-In-Reply-To: <20200224224059.GC1508@skl-build>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com> <87eevf4hnq.fsf@nanos.tec.linutronix.de> <20200224224059.GC1508@skl-build>
-Date:   Thu, 27 Feb 2020 00:06:01 +0100
-Message-ID: <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+        id S1727922AbgBZXKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 18:10:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50448 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726413AbgBZXKW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 18:10:22 -0500
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D93424672;
+        Wed, 26 Feb 2020 23:10:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582758621;
+        bh=KspIpxU2HtokbKj86svjFj5TLHdIJJWX3Q9t2yMeTgk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=E8nBEp45AboIvLGHvZR8GoCLYlbvJMHZXZalUpg13oBjV4eWPmU5icN9xgfWOFFUD
+         k4yuLScfYAXAqfoUlEJeY74wbfucrSGNFFMc6X9H+V1PcjMKblRz4WthZ6aSkMcr9f
+         m9pqKhZeq0qp+n336uK3cS5Yz3WlkcdkfICin3yg=
+Received: by mail-lj1-f175.google.com with SMTP id 143so943765ljj.7;
+        Wed, 26 Feb 2020 15:10:21 -0800 (PST)
+X-Gm-Message-State: ANhLgQ2GdPjmPC5Q+66j7CM4DLQW7rxAJnoBugg6xePp/+wvCeaqKzVQ
+        oGcbIibCbjQoKcrOeUR6lWsqucxEGWsIVQG/uRM=
+X-Google-Smtp-Source: ADFU+vv0ZmmFo2/2vJ2clO/40f67XJutw73Y69Xvj72xloPaCNGT+S+AbQYRdi+cssYzSiL/qbgJtlFNBQE/W0kQAvg=
+X-Received: by 2002:a2e:b017:: with SMTP id y23mr798375ljk.229.1582758619735;
+ Wed, 26 Feb 2020 15:10:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-7-jolsa@kernel.org>
+In-Reply-To: <20200226130345.209469-7-jolsa@kernel.org>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 26 Feb 2020 15:10:08 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5OUKMhCqh8qRq4dC5dgeb56b4LbbODVGwo6R0woV3fTg@mail.gmail.com>
+Message-ID: <CAPhsuW5OUKMhCqh8qRq4dC5dgeb56b4LbbODVGwo6R0woV3fTg@mail.gmail.com>
+Subject: Re: [PATCH 06/18] bpf: Add bpf_ksym_tree tree
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christopher,
-
-"Christopher S. Hall" <christopher.s.hall@intel.com> writes:
-> On Fri, Jan 31, 2020 at 07:14:49PM +0100, Thomas Gleixner wrote:
->> christopher.s.hall@intel.com writes:
->> >
->> > The TGPIO hardware doesn't implement interrupts. For TGPIO input, the
->> > output edge-timestamp API is re-used to implement a user-space polling
->> > interface. For periodic input (e.g. PPS) this is fairly efficient,
->> > requiring only a marginally faster poll rate than the input event
->> > frequency.
->> 
->> I really have a hard time to understand why this is implemented as part
->> of PTP while you talk about PPS at the same time.
+On Wed, Feb 26, 2020 at 5:04 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> We primarily need support for periodic input and output uses cases.
-> Apologies for omitting the periodic output use case from the cover
-> letter. While TGPIO isn't associated with a PTP timestamp clock, the PHC
-> pin/clock interface fits the usage otherwise.
-
-Which usage? PTP like usage? I really have a hard time to make the
-connection. PTP is as the name says a protocol to synchronize time
-across a network.
-
-What you're having is a GPIO which has some magic timestamp clock which
-can be correlated back to ART/TSC, right?
-
-So squeezing this into PTP makes as much sense as squeezing a
-camera/video/audio interface which provides or consumes timestamps into
-it.
-
-> The PHC periodic output API is the closest fit for periodic output without
-> creating a new API.
-
-Well, you avoid creating a new API or extending one which makes sense by
-abusing the PTP interface for something which is not even remotely
-connected to PTP.
-
-> The PHC interface can also register as a PPS source. I am, however,
-> concerned in general about implementing PPS input in the driver
-> because the hardware doesn't implement interrupts - requiring polling.
-
-Really useful.
-
->> Proper information about why this approach was chosen and what that
->> magic device is used for would be really helpful.
+> The bpf_tree is used both for kallsyms iterations and searching
+> for exception tables of bpf programs, which is needed only for
+> bpf programs.
 >
-> The customer requested usages are 1 kHz and 1 Hz for both input and
-> output. Some higher level use cases are:
-> - using a GPS PPS signal to sync the system clock
+> Adding bpf_ksym_tree that will hold symbols for all bpf_prog
+> bpf_trampoline and bpf_dispatcher objects and keeping bpf_tree
+> only for bpf_prog objects to keep it fast.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-That makes at least some sense. See below.
-
-> - auditing timesync precision for financial services, especially high
-> 	frequency trading (e.g. MiFID).
-
-A good reason to not support it at all. Aside of that I have no idea how
-that auditing is supposed to work. Just throwing a few buzzwords around
-is not giving much technical context.
-
-> Apart from clock import/export applications, timestamping single I/O
-> events are potentially valuable for industrial control applications
-> (e.g. motor position sensing vs. time). As time sync precision
-> requirements for these applications are tightened, standard GPIO
-> timing precision will not be good enough.
-
-Well, coming from that industry I really doubt that you can do anything
-useful with it, but hey it's been 25 years since I stopped working on
-motor and motion controllers :)
-
-Anyway, the device we are talking about is a GPIO device with inputs and
-outputs plus bells and whistels attached to it.
-
-On the input side this provides a timestamp taken by the hardware when
-the input level changes, i.e. hardware based time stamping instead of
-software based interrupt arrival timestamping. Looks like an obvious
-extension to the GPIO subsystem.
-
-How that timestamp is processed/converted and what an application can
-actually do with it is a secondary problem:
-
-  - PPS mode:
-
-    This can be implemented as an actual PPS driver which consumes the
-    GPIO, does timer based polling and feeds the timestamp into the PPS
-    subsystem. Might be not the most accurate solution, so I can see why
-    you want to use the PTP interface for it, which provides the raw
-    clocksource (ART/TSC) and the correlated monotonic/realtime
-    timestamps. But then again this wants to be a PTP driver consuming
-    the GPIO and the timestamp via timer based polling.
-
-  - GPIO sampling
-  
-    That's totally disconnected from PPS/PTP and just provides a
-    correlated clock monotonic timestamp to the application.
-
-    That covers your motor example :)
-
-  - Timesync validation:
-
-    -Enocluehowthatshouldworkatall
-
-And of course you can use the GPIO input just as input without bells and
-whistels :)
-
-Now you have the output side which again is a GPIO in the first
-place. But then it also has a secondary function which allows to create
-a periodic output with a magic correlation to the ART and some way to
-actually adjust the frequency. Neither of those two functions are in
-anyway relatable to PTP AFAICT.
-
-The periodic, programmable and adjustable output is pretty much a PWM of
-some form and what you want to tell it is: Output a pulse at a given
-frequency. Due to the fact that the input clock of that thing is ART you
-can do the magic transformation from ART frequency to frequency adjusted
-clock monotonic in order to tweak the parameters so they actually end up
-generating your precise output frequency.  Tell the driver which
-frequency you want and it retrieves the correlation information from the
-kernel and uses it to achieve a precise output frequency. Doesn't sound
-like rocket science and does not required new magic ioctls.
-
-I might be missing something, but you surely can fill the blanks then.
-
-Thanks,
-
-        tglx
-
-
-
+Acked-by: Song Liu <songliubraving@fb.com>
