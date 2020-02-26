@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C34B17082F
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:01:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57C3170877
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:08:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbgBZTBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 14:01:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44450 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727031AbgBZTBv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 14:01:51 -0500
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 36D8A24679;
-        Wed, 26 Feb 2020 19:01:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582743710;
-        bh=87zmTGRP72EtUqtXV2kELCZ69ltWhtMns7STCLU89kE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MewZCsKGJ9hYwO1mzDwICzqKxLImxDn0WU4wkz7FLJrt1dm6v7KiUdQ+K4Y7H1txw
-         vGsPQVPbk7UQhByko8/eKxUq2r9A+IshMOGnazYVws3lBhN8+i+AYI2Zg1fu68D2gf
-         WOUqkHrC+kKwZfMZRRUm0zVW55HTjaMqLN8r3HJo=
-Received: by mail-lj1-f172.google.com with SMTP id e3so270917lja.10;
-        Wed, 26 Feb 2020 11:01:50 -0800 (PST)
-X-Gm-Message-State: ANhLgQ3OjPfEbFMsUuMO7me2VC1Z7GdxidjvurhvBKIxBU5d3Vf8Q5cB
-        XGOZrVax4xFj4gsTQaI8imACDG8g2/b7Eo3hZBA=
-X-Google-Smtp-Source: ADFU+vs/pms32n/acnO2kmEpekOBkakj5FAYo9koM5OaHTg+pJ0LduTuEyuZeDcvQiR0VQf/9PC6Gjo0XEmFKuvywNA=
-X-Received: by 2002:a2e:b017:: with SMTP id y23mr235314ljk.229.1582743708336;
- Wed, 26 Feb 2020 11:01:48 -0800 (PST)
-MIME-Version: 1.0
-References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-4-jolsa@kernel.org>
-In-Reply-To: <20200226130345.209469-4-jolsa@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 26 Feb 2020 11:01:37 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5JZeCjmkeu-YWVR0p4ZMUJzxeif+8Qgx2NtxWLOjpL7w@mail.gmail.com>
-Message-ID: <CAPhsuW5JZeCjmkeu-YWVR0p4ZMUJzxeif+8Qgx2NtxWLOjpL7w@mail.gmail.com>
-Subject: Re: [PATCH 03/18] bpf: Add struct bpf_ksym
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727167AbgBZTHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 14:07:55 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:60140 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727035AbgBZTHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 14:07:55 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5044515AA1098;
+        Wed, 26 Feb 2020 11:07:52 -0800 (PST)
+Date:   Wed, 26 Feb 2020 11:07:49 -0800 (PST)
+Message-Id: <20200226.110749.77396284962321904.davem@davemloft.net>
+To:     shakeelb@google.com
+Cc:     edumazet@google.com, guro@fb.com, hannes@cmpxchg.org,
+        tj@kernel.org, gthelen@google.com, mhocko@kernel.org,
+        vdavydov.dev@gmail.com, akpm@linux-foundation.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3] cgroup: memcg: net: do not associate sock with
+ unrelated cgroup
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200221014604.126118-1-shakeelb@google.com>
+References: <20200221014604.126118-1-shakeelb@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 11:07:52 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 5:05 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding 'struct bpf_ksym' object that will carry the
-> kallsym information for bpf symbol. Adding the start
-> and end address to begin with. It will be used by
-> bpf_prog, bpf_trampoline, bpf_dispatcher.
->
-> The symbol_start/symbol_end values were originally used
-> to sort bpf_prog objects. For the address displayed in
-> /proc/kallsyms we are using prog->bpf_func.
->
-> I'm using the bpf_func for program symbol start instead
-> of the symbol_start, because it makes no difference for
-> sorting bpf_prog objects and we can use it directly as
-> an address for display it in /proc/kallsyms.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Acked-by: Song Liu <songliubraving@fb.com>
+From: Shakeel Butt <shakeelb@google.com>
+Date: Thu, 20 Feb 2020 17:46:04 -0800
+
+> We are testing network memory accounting in our setup and noticed
+> inconsistent network memory usage and often unrelated cgroups network
+> usage correlates with testing workload. On further inspection, it
+> seems like mem_cgroup_sk_alloc() and cgroup_sk_alloc() are broken in
+> IRQ context specially for cgroup v1.
+> 
+> mem_cgroup_sk_alloc() and cgroup_sk_alloc() can be called in IRQ context
+> and kind of assumes that this can only happen from sk_clone_lock()
+> and the source sock object has already associated cgroup. However in
+> cgroup v1, where network memory accounting is opt-in, the source sock
+> can be unassociated with any cgroup and the new cloned sock can get
+> associated with unrelated interrupted cgroup.
+> 
+> Cgroup v2 can also suffer if the source sock object was created by
+> process in the root cgroup or if sk_alloc() is called in IRQ context.
+> The fix is to just do nothing in interrupt.
+> 
+> WARNING: Please note that about half of the TCP sockets are allocated
+> from the IRQ context, so, memory used by such sockets will not be
+> accouted by the memcg.
+
+Then if we do this then we have to have some kind of subsequent change
+to attach these sockets to the correct cgroup, right?
