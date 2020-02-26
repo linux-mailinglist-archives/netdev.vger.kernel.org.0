@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4C6F16FA69
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9062C16FA6B
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:15:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727804AbgBZJPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 04:15:24 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:60780 "EHLO
+        id S1727816AbgBZJP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 04:15:28 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:60788 "EHLO
         Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727744AbgBZJPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:15:23 -0500
+        by vger.kernel.org with ESMTP id S1727719AbgBZJP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:15:28 -0500
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1j6smo-0001NO-If; Wed, 26 Feb 2020 10:15:22 +0100
+        id 1j6sms-0001Nj-Ok; Wed, 26 Feb 2020 10:15:26 +0100
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 6/7] mptcp: avoid work queue scheduling if possible
-Date:   Wed, 26 Feb 2020 10:14:51 +0100
-Message-Id: <20200226091452.1116-7-fw@strlen.de>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next 7/7] mptcp: defer work schedule until mptcp lock is released
+Date:   Wed, 26 Feb 2020 10:14:52 +0100
+Message-Id: <20200226091452.1116-8-fw@strlen.de>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200226091452.1116-1-fw@strlen.de>
 References: <20200226091452.1116-1-fw@strlen.de>
@@ -30,103 +30,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't lock_sock() the mptcp socket from the subflow data_ready callback,
-it would result in ABBA deadlock with the subflow socket lock.
+From: Paolo Abeni <pabeni@redhat.com>
 
-We can however grab the spinlock: if that succeeds and the mptcp socket
-is not owned at the moment, we can process the new skbs right away
-without deferring this to the work queue.
+Don't schedule the work queue right away, instead defer this
+to the lock release callback.
 
-This avoids the schedule_work and hence the small delay until the
-work item is processed.
+This has the advantage that it will give recv path a chance to
+complete -- this might have moved all pending packets from the
+subflow to the mptcp receive queue, which allows to avoid the
+schedule_work().
 
+Co-developed-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/protocol.c | 29 ++++++++++++++++++++++++++++-
- net/mptcp/protocol.h |  2 +-
- net/mptcp/subflow.c  |  4 ++--
- 3 files changed, 31 insertions(+), 4 deletions(-)
+ net/mptcp/protocol.c | 38 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index b781498e69b4..70f20c8eddbd 100644
+index 70f20c8eddbd..044295707bbf 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -201,12 +201,39 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
- 	return done;
- }
- 
--void mptcp_data_ready(struct sock *sk)
-+/* In most cases we will be able to lock the mptcp socket.  If its already
-+ * owned, we need to defer to the work queue to avoid ABBA deadlock.
-+ */
-+static bool move_skbs_to_msk(struct mptcp_sock *msk, struct sock *ssk)
-+{
-+	struct sock *sk = (struct sock *)msk;
-+	unsigned int moved = 0;
-+
-+	if (READ_ONCE(sk->sk_lock.owned))
-+		return false;
-+
-+	if (unlikely(!spin_trylock_bh(&sk->sk_lock.slock)))
-+		return false;
-+
-+	/* must re-check after taking the lock */
-+	if (!READ_ONCE(sk->sk_lock.owned))
-+		__mptcp_move_skbs_from_subflow(msk, ssk, &moved);
-+
-+	spin_unlock_bh(&sk->sk_lock.slock);
-+
-+	return moved > 0;
-+}
-+
-+void mptcp_data_ready(struct sock *sk, struct sock *ssk)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 
- 	set_bit(MPTCP_DATA_READY, &msk->flags);
- 
-+	if (atomic_read(&sk->sk_rmem_alloc) < READ_ONCE(sk->sk_rcvbuf) &&
-+	    move_skbs_to_msk(msk, ssk))
-+		goto wake;
-+
- 	/* don't schedule if mptcp sk is (still) over limit */
+@@ -238,9 +238,16 @@ void mptcp_data_ready(struct sock *sk, struct sock *ssk)
  	if (atomic_read(&sk->sk_rmem_alloc) > READ_ONCE(sk->sk_rcvbuf))
  		goto wake;
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index d06170c5f191..6c0b2c8ab674 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -195,7 +195,7 @@ void mptcp_get_options(const struct sk_buff *skb,
- 		       struct tcp_options_received *opt_rx);
  
- void mptcp_finish_connect(struct sock *sk);
--void mptcp_data_ready(struct sock *sk);
-+void mptcp_data_ready(struct sock *sk, struct sock *ssk);
+-	if (schedule_work(&msk->work))
+-		sock_hold((struct sock *)msk);
++	/* mptcp socket is owned, release_cb should retry */
++	if (!test_and_set_bit(TCP_DELACK_TIMER_DEFERRED,
++			      &sk->sk_tsq_flags)) {
++		sock_hold(sk);
  
- int mptcp_token_new_request(struct request_sock *req);
- void mptcp_token_destroy_request(u32 token);
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 37a4767db441..0de2a44bdaa0 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -563,7 +563,7 @@ static void subflow_data_ready(struct sock *sk)
- 	}
- 
- 	if (mptcp_subflow_data_available(sk))
--		mptcp_data_ready(parent);
-+		mptcp_data_ready(parent, sk);
++		/* need to try again, its possible release_cb() has already
++		 * been called after the test_and_set_bit() above.
++		 */
++		move_skbs_to_msk(msk, ssk);
++	}
+ wake:
+ 	sk->sk_data_ready(sk);
+ }
+@@ -941,6 +948,32 @@ static int mptcp_getsockopt(struct sock *sk, int level, int optname,
+ 	return -EOPNOTSUPP;
  }
  
- static void subflow_write_space(struct sock *sk)
-@@ -696,7 +696,7 @@ static void subflow_state_change(struct sock *sk)
- 	 * the data available machinery here.
- 	 */
- 	if (parent && subflow->mp_capable && mptcp_subflow_data_available(sk))
--		mptcp_data_ready(parent);
-+		mptcp_data_ready(parent, sk);
- 
- 	if (parent && !(parent->sk_shutdown & RCV_SHUTDOWN) &&
- 	    !subflow->rx_eof && subflow_is_done(sk)) {
++#define MPTCP_DEFERRED_ALL TCPF_DELACK_TIMER_DEFERRED
++
++/* this is very alike tcp_release_cb() but we must handle differently a
++ * different set of events
++ */
++static void mptcp_release_cb(struct sock *sk)
++{
++	unsigned long flags, nflags;
++
++	do {
++		flags = sk->sk_tsq_flags;
++		if (!(flags & MPTCP_DEFERRED_ALL))
++			return;
++		nflags = flags & ~MPTCP_DEFERRED_ALL;
++	} while (cmpxchg(&sk->sk_tsq_flags, flags, nflags) != flags);
++
++	if (flags & TCPF_DELACK_TIMER_DEFERRED) {
++		struct mptcp_sock *msk = mptcp_sk(sk);
++		struct sock *ssk;
++
++		ssk = mptcp_subflow_recv_lookup(msk);
++		if (!ssk || !schedule_work(&msk->work))
++			__sock_put(sk);
++	}
++}
++
+ static int mptcp_get_port(struct sock *sk, unsigned short snum)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+@@ -1016,6 +1049,7 @@ static struct proto mptcp_prot = {
+ 	.destroy	= mptcp_destroy,
+ 	.sendmsg	= mptcp_sendmsg,
+ 	.recvmsg	= mptcp_recvmsg,
++	.release_cb	= mptcp_release_cb,
+ 	.hash		= inet_hash,
+ 	.unhash		= inet_unhash,
+ 	.get_port	= mptcp_get_port,
 -- 
 2.24.1
 
