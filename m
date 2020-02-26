@@ -2,85 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCCE1705C9
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:14:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C92F1705DD
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbgBZRON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 12:14:13 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34729 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgBZROM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:14:12 -0500
-Received: by mail-wm1-f65.google.com with SMTP id i10so3929108wmd.1
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 09:14:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hs1Dnv8OkUX4sAKXU675PNsCaAiph3nxzHoSQ2tz4mY=;
-        b=Fvd0znyFAvs/Z+RQe56DZVCoHHGI0mH5KwABX5dKxqnpfPB7pd+27P572tMfDmx2j3
-         7EF0B55OLQsWoPY1hL5SbRUynxBS/H+uH1GznO+Atf27r7N5lH/asoNTIdVEaSotqztW
-         RmKHurYYiqYble4Xz7rs7l3LBe0IpJ6FEF7+YWLWIxRH+tKdBV+lm2oYFiHn+HL7HQ4w
-         w8BtJiFBtWziNs1/rxN2+YwTbBwcBlfNJBI42jIYoZCpjKtTGO/In6/LOS5w2zYI4XOZ
-         QrTxhoYpWQbdW3UTUOWIVk5tb/ny+k/yxes6JSYrmoI8XoaE8X5R8aVUFMU2h8VB/Fn9
-         3CeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hs1Dnv8OkUX4sAKXU675PNsCaAiph3nxzHoSQ2tz4mY=;
-        b=jFKH2v+zGjzpuuHA17tcGU2bmZVhuujT631EJvApvz7kA8PVoFGkbPmbP0qpN+W1pY
-         B0uoeuPzO+y9LpLrC9ZqlNSdsombvXWfgzxpHNz3/IzZsgPDC/vLcHYjQksXXj6ElBGr
-         Ldpc+lO8rhZB/whrGtTIcjayu0xjZvzQN2tBMOo+jIDUGVq3i0o9eNIhhlWEv+UGJr2C
-         GVSSwxZy0MynSOlezgOXX46EghvkrQx/FuSpWcM/2N6eV56Rk1YA4lZgRJqhYTnC7Vgb
-         h1rBeMf5oAKorBnhGUDulV2ddos0N6UrmqAlil2a8IOl4dniyrmxcpZVVgXdn0jJ+/oF
-         f7Wg==
-X-Gm-Message-State: APjAAAUyM6tLHSqsNssgyO+oUHF4EcUdAoMApSQxk6uaVdEEhopKgcTK
-        95UhSBDQpFJ630E7/urw7rGADg==
-X-Google-Smtp-Source: APXvYqxVisx0WWuxbZMRqmE/joqQNU3c6aUjq7FmETJiXmXkhS0yvH+WurdWR1QhvsZ+k3KlpLyI2Q==
-X-Received: by 2002:a7b:c8d7:: with SMTP id f23mr6436992wml.173.1582737250916;
-        Wed, 26 Feb 2020 09:14:10 -0800 (PST)
-Received: from localhost.localdomain ([194.35.116.65])
-        by smtp.gmail.com with ESMTPSA id b10sm3962802wrw.61.2020.02.26.09.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 09:14:10 -0800 (PST)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf] mailmap: update email address
-Date:   Wed, 26 Feb 2020 17:13:53 +0000
-Message-Id: <20200226171353.18982-1-quentin@isovalent.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726871AbgBZRTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 12:19:17 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:51272 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbgBZRTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:19:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=0jxy9TfUv53+AvFcjEpwQifXuWJDhaRpG+8gw6vOwbg=; b=w5ITDRuag2iWcZrc00VNSK5ZTm
+        M7Maag11TA1lR3hP2NprAKvrwbTwISAYngbcRMLkQCPzaHDkf38KmkoeG8JQrVAYognoNqpb52EX8
+        oIlrPuxaT5Xn1YZ7SlGd6g55N4gI52Xj2Sn+XEQPJSVx1Jl8GK48CPpVfqCjwzabSEvcEWg7D0qhg
+        Hw57G5VdWImh+DQPAVushoY+bTONbhmY5c9LY/2VmMXs24G1VFYytyTdV+Fg+L9JcUIRNEXNDzQhB
+        QGpUIEqMFK43xh+ZeZ8cCpF1gijcORDtQDg3P1bcb1eiSO6DZGpzjjRKGhB+6OG4yMaakm1dybXCb
+        IiLgQqXw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:54664 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j70GL-0000Pb-UP; Wed, 26 Feb 2020 17:14:22 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j70GL-0004Ns-A7; Wed, 26 Feb 2020 17:14:21 +0000
+In-Reply-To: <20200226171349.GD25745@shell.armlinux.org.uk>
+References: <20200226171349.GD25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v3 1/2] net: switchdev: do not propagate bridge
+ updates across bridges
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1j70GL-0004Ns-A7@rmk-PC.armlinux.org.uk>
+Date:   Wed, 26 Feb 2020 17:14:21 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Netronome address is no longer active. I am no maintainer, but
-get_maintainer.pl sometimes returns my name for a small number of files
-(BPF-related). Add an entry to .mailmap for good measure.
+When configuring a tree of independent bridges, propagating changes
+from the upper bridge across a bridge master to the lower bridge
+ports brings surprises.
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+For example, a lower bridge may have vlan filtering enabled.  It
+may have a vlan interface attached to the bridge master, which may
+then be incorporated into another bridge.  As soon as the lower
+bridge vlan interface is attached to the upper bridge, the lower
+bridge has vlan filtering disabled.
+
+This occurs because switchdev recursively applies its changes to
+all lower devices no matter what.
+
+Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+Tested-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- .mailmap | 1 +
- 1 file changed, 1 insertion(+)
+ net/switchdev/switchdev.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/.mailmap b/.mailmap
-index ffb8f28290c7..a0dfce8de1ba 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -225,6 +225,7 @@ Pratyush Anand <pratyush.anand@gmail.com> <pratyush.anand@st.com>
- Praveen BP <praveenbp@ti.com>
- Punit Agrawal <punitagrawal@gmail.com> <punit.agrawal@arm.com>
- Qais Yousef <qsyousef@gmail.com> <qais.yousef@imgtec.com>
-+Quentin Monnet <quentin@isovalent.com> <quentin.monnet@netronome.com>
- Quentin Perret <qperret@qperret.net> <quentin.perret@arm.com>
- Rafael J. Wysocki <rjw@rjwysocki.net> <rjw@sisk.pl>
- Rajesh Shah <rajesh.shah@intel.com>
+diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
+index 60630762a748..f25604d68337 100644
+--- a/net/switchdev/switchdev.c
++++ b/net/switchdev/switchdev.c
+@@ -475,6 +475,9 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
+ 	 * necessary to go through this helper.
+ 	 */
+ 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
++		if (netif_is_bridge_master(lower_dev))
++			continue;
++
+ 		err = __switchdev_handle_port_obj_add(lower_dev, port_obj_info,
+ 						      check_cb, add_cb);
+ 		if (err && err != -EOPNOTSUPP)
+@@ -526,6 +529,9 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
+ 	 * necessary to go through this helper.
+ 	 */
+ 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
++		if (netif_is_bridge_master(lower_dev))
++			continue;
++
+ 		err = __switchdev_handle_port_obj_del(lower_dev, port_obj_info,
+ 						      check_cb, del_cb);
+ 		if (err && err != -EOPNOTSUPP)
+@@ -576,6 +582,9 @@ static int __switchdev_handle_port_attr_set(struct net_device *dev,
+ 	 * necessary to go through this helper.
+ 	 */
+ 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
++		if (netif_is_bridge_master(lower_dev))
++			continue;
++
+ 		err = __switchdev_handle_port_attr_set(lower_dev, port_attr_info,
+ 						       check_cb, set_cb);
+ 		if (err && err != -EOPNOTSUPP)
 -- 
 2.20.1
 
