@@ -2,106 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88B2D16FB4F
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCEC16FB57
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:53:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgBZJvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 04:51:41 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22670 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726329AbgBZJvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:51:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582710698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6ryiasZiIIzyC6H3Cs2ZlrTn4bZhFW433koSeRF/avA=;
-        b=W0WiM2LhqkABRFh43V1tngCtQExGkUY/8hmFT8A4yT6NQvbhWBTvocxOYR2EMfKFc2ghSB
-        +FrL78gZgu9vK9wAm3yHVH5UNCjmgbHYBihATw7nkY8jMkWTt9I4O0SXVBvk1aMUE/6mKL
-        6NMkuEgvxcvkWVKeVF9G9OmL0qUM+Dw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-300-sCnDdX9gOwOtMsJxradVaw-1; Wed, 26 Feb 2020 04:51:36 -0500
-X-MC-Unique: sCnDdX9gOwOtMsJxradVaw-1
-Received: by mail-wr1-f70.google.com with SMTP id w18so338108wro.2
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 01:51:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=6ryiasZiIIzyC6H3Cs2ZlrTn4bZhFW433koSeRF/avA=;
-        b=pIeDEG1fau5i0S3bvB7ap1a89o45mRVmY39LYXQZD5DD0aA4NXYtGEWKXFhRYbamVS
-         SbFjUp9BP8oQeXiiG6anoikKEh5pXaFH3L6EnC57o4bg8oCC9L0S7bPdtm+tooxUNwID
-         /Mz8evzWNVEzZcSyYXYC2GAz1XTfUewTgWmg7pkuUI8r2NGk/YNGGxHVDWWfShzeOPLo
-         8URWZHe7hBS0OZaqYTM1YQhj/zw6cBqpZ3d+0upzolTu5oVMArm91ePgcU3t2Tjn/KmU
-         GR/Hr8eb7PJp5KvzGgJcdTqfLtXpOFk7kG8+TDWP7akOiByoc/Lq5/D6Y5gNr/T0QN6E
-         8rSQ==
-X-Gm-Message-State: APjAAAXmTKIZVNYBUPd9Pnn5aFoBLb4d8EEnXobQnNAKYt69DhZ2zuN8
-        rIi6gj0GkjLoyy+dDNZZXA8ibVV8ph0S7ZsUo0ajb350kJhcKUhYy/NNn1zBQNIjN9fIgmYZeBt
-        tnYKZz/TlGsG9cCCR
-X-Received: by 2002:adf:a48f:: with SMTP id g15mr4531873wrb.42.1582710695715;
-        Wed, 26 Feb 2020 01:51:35 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzmr/RXy38AqGVGgUMXadjtsAiGS73zheLkeDvNaPnDzZabOUQttEHk1ROehdDMP99kkRf3QQ==
-X-Received: by 2002:adf:a48f:: with SMTP id g15mr4531857wrb.42.1582710695535;
-        Wed, 26 Feb 2020 01:51:35 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id z21sm2218412wml.5.2020.02.26.01.51.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 01:51:34 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 43E9F180362; Wed, 26 Feb 2020 10:51:33 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        David Ahern <dahern@digitalocean.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: virtio_net: can change MTU after installing program
-In-Reply-To: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
-References: <20200226093330.GA711395@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 26 Feb 2020 10:51:33 +0100
-Message-ID: <87lfopznfe.fsf@toke.dk>
+        id S1727311AbgBZJxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 04:53:15 -0500
+Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:8327
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726329AbgBZJxO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 04:53:14 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nhpyP+DjRlsPLs+xLxfRP+rZb9jy7dwDCD5HkLL86bfevRt/J4rkG5Car/FjtSkNGSGq7eg1fLHo3Qqq56ocNhAEaJzdzLPMdkzGJ63iWBrY+eyXSseGfnRGUSY/Rc1McIn6RYnvlj60Phy2oz26wjtSbfBHgtheMemNxAlufNgDr6b1WmdO1vqLiXDSaDchpjzunoSzguUHkfTioZZodVjQsMlntrmoXNCEg80bn7ciCFT2D1wCirJoe02qZR1P436zGD5TvruC8FXQqJhwkrHVUt6PVEa8QUl6uxgnkvy08Tk9oRSdHFuxW9XEZJtpYhOgY9SV9fpPfVePL7UsMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hxYN6hInXCULpcsdK2L6aqKBELCUqDb6liZMjPWYrMk=;
+ b=kP7dJM+QkCflqj0iNwmBS8+I8j0NAKQrM2C5MdD9qcfUvGrFYzQ+NVp62w2IT5KrosWk1XdKONsMnJhhitk57PiVzgGSrXrh1gnGp9A8HrKPrL+kNuJD/g110MNFN9YaWbjl756Hc/CBhv0nHrfJ+VE3aDWmzyHnBnNczH0vR1D7zx88EhyUW5bY7n+Lx+z6IMKsVYm8xm9b03ckUHoDx8UEoUfojVurR58zhRqaZIZVOPTM/eMYQZBY6D8UaPes0aq9mfrgX7mk6RIGtckOgohti4Ff64Avs9k9nqXI/ufQ0da8IE1Q0wrihJYbMVzBfnv3nCvqqnOmKF9oeRe9XA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hxYN6hInXCULpcsdK2L6aqKBELCUqDb6liZMjPWYrMk=;
+ b=gyqiLoORTy5nflKwb/9EDZMb6jFLd9m6v8WSBpx/Krf/yqAY+MzZDZSs/C3AtYIfrGozV5UeCB8wYGShd+f4+SrxsK+nVnJhi6xL5AZELEmEWUDfFk4cIMGLZPXKFltE1Vf0LdnlcwaJS8IuHE6czETRQup5p12ZmXUeEdlgTcg=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB5443.eurprd05.prod.outlook.com (20.177.117.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.22; Wed, 26 Feb 2020 09:53:08 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2750.021; Wed, 26 Feb 2020
+ 09:53:08 +0000
+Subject: Re: [net-next] net/mlx5e: Remove the unnecessary parameter
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        "saeedm@dev.mellanox.co.il" <saeedm@dev.mellanox.co.il>,
+        "xiangxia.m.yue@gmail.com" <xiangxia.m.yue@gmail.com>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1582646588-91471-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <5361639fee997ea6239d6115978f86f26fb918b4.camel@mellanox.com>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <5c4604cd-1cfc-6116-12e6-95054e77736a@mellanox.com>
+Date:   Wed, 26 Feb 2020 11:53:04 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+In-Reply-To: <5361639fee997ea6239d6115978f86f26fb918b4.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0103.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::44) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.223.6.3] (193.47.165.251) by AM0PR06CA0103.eurprd06.prod.outlook.com (2603:10a6:208:fa::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Wed, 26 Feb 2020 09:53:07 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3e00bb48-0c79-462b-a0a7-08d7baa1aee9
+X-MS-TrafficTypeDiagnostic: AM6PR05MB5443:|AM6PR05MB5443:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB544344436F6C868DEF376E2ACFEA0@AM6PR05MB5443.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0325F6C77B
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(199004)(189003)(110136005)(6486002)(8936002)(81156014)(81166006)(31686004)(2616005)(2906002)(8676002)(16576012)(956004)(36756003)(66476007)(6666004)(53546011)(66946007)(66556008)(498600001)(5660300002)(86362001)(26005)(4326008)(31696002)(52116002)(186003)(16526019);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5443;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RWPZ2KmmtxNjvcYPVjvAMEGL1vWstMk0Adgs76tqIyYnx3lk37HVnRVvtpsZwZK2JbhKuknQXIKPPkIoQSo2uhrArwregWpr+hMOtIC8WF2ljXKeCS2fWF/NDrbn8cMCs+hurxkTSJBltamQvA/jP0+DYYEL4mwFLd8fWFML8BbbqMvD9DGZYXYHp6wpIelUWsuKTPGz80MUk/C2MUE4YU3AZBJmriXwtG76nwc5J8ExmZg22pI853e1YiUtOz0xiM/QVLGx3fOypT+0KQKbRNgAiadgzYRoVDhWFO2BlDdlYZ2YMiC286RlX3rXptytqr5Ktjm8aLBozowyLIpgVqZZva/xdB3m8/M9JMVB0+OOgtaJGmOcMFbEyGb/RpaldvZ//jKL+egkuXlVBzR6o+UctPSVwWxJ8Jab+kTMhwu8kkP5DD69CbT7c+pXro7g
+X-MS-Exchange-AntiSpam-MessageData: Tvzpysa0lhphIVm5n9+gN+vsf9zLNpIsjwjbrOcdJ/3YTsUzCRqOtnkIqpIH+xH2kmmqRc8bKalEoTnwkVtv9lM/MvAI6uIVWmRtJctNEdt28uCG6ZWhxpeWkuAoYUZHlsTOAIL+SfyZyEDAC8cK9g==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e00bb48-0c79-462b-a0a7-08d7baa1aee9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2020 09:53:08.4581
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YKWbPWn0G/cNoNPlq+5LcXW7rC0CLvwNGKQ/zKvKfx6guQdTUZxdWnNWuU+XPL6xu1fjMmZ8rg059T5sC2pR7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5443
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Michael S. Tsirkin" <mst@redhat.com> writes:
 
-> On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
->> Another issue is that virtio_net checks the MTU when a program is
->> installed, but does not restrict an MTU change after:
->> 
->> # ip li sh dev eth0
->> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
->> state UP mode DEFAULT group default qlen 1000
->>     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
->>     prog/xdp id 13 tag c5595e4590d58063 jited
->> 
->> # ip li set dev eth0 mtu 8192
->> 
->> # ip li sh dev eth0
->> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
->> state UP mode DEFAULT group default qlen 1000
->> 
->> 
+On 2/26/2020 12:50 AM, Saeed Mahameed wrote:
+> On Wed, 2020-02-26 at 00:03 +0800, xiangxia.m.yue@gmail.com wrote:
+>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>>
+>> The parameter desired_size is always 0, and there is only one
+>> function calling the mlx5_esw_chains_get_avail_sz_from_pool.
+>> Deleting the parameter desired_size.
+> Paul, what is the reasoning behind desired size, i confirm that it  is
+> not actually used right now, do we have a pending patch that needs it
+> ? 
+> if this is not going to happen in the near future i vote to apply this
+> patch and bring it back when needed.
+
+Right, it will be used in a following patch that reduces the size given for nft flow tables.
+
+I planned on submitting it after connection tracking offload is complete, but it can be sent now.
+
+This is the patch:
+
+From 66d3cb9706ed09f00150a42f555a51404602bba4 Mon Sep 17 00:00:00 2001
+From: Paul Blakey <paulb@mellanox.com>
+Date: Wed, 8 Jan 2020 14:31:53 +0200
+Subject: [PATCH] net/mlx5: Allocate smaller size tables for ft offload
+
+Instead of giving ft tables one of the largest tables available - 4M,
+give it a more reasonable size - 64k. Especially since it will
+always be created as a miss hook in the following patch.
+
+Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Reviewed-by: Mark Bloch <markb@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+index 3990066..dabbc05 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+@@ -39,6 +39,7 @@
+                                          1 * 1024 * 1024,
+                                          64 * 1024,
+                                          128 };
++#define ESW_FT_TBL_SZ (64 * 1024)
+
+ struct mlx5_esw_chains_priv {
+        struct rhashtable chains_ht;
+@@ -205,7 +206,9 @@ static unsigned int mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+                ft_attr.flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+                                  MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
+
+-       sz = mlx5_esw_chains_get_avail_sz_from_pool(esw, POOL_NEXT_SIZE);
++       sz = (chain == mlx5_esw_chains_get_ft_chain(esw)) ?
++            mlx5_esw_chains_get_avail_sz_from_pool(esw, ESW_FT_TBL_SZ) :
++            mlx5_esw_chains_get_avail_sz_from_pool(esw, POOL_NEXT_SIZE);
+        if (!sz)
+                return ERR_PTR(-ENOSPC);
+        ft_attr.max_fte = sz;
+--
+1.8.3.1
+
+
 >
-> Cc Toke who has tested this on other cards and has some input.
-
-Well, my comment was just that we already restrict MTU changes on mlx5
-when an XDP program is loaded:
-
-$ sudo ip link set dev ens1f1 mtu 8192
-RTNETLINK answers: Invalid argument
-
-Reading through the rest of the thread I don't have any strong opinions
-about whether this should propagate out from the host or not. I suspect
-it would not be worth the trouble, though, and as you say it's already
-possible to configure regular network devices in a way that is
-incompatible with the rest of the network.
-
--Toke
-
+> Thanks,
+> Saeed.
+>
+>> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>> ---
+>>  .../net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c | 11
+>> +++--------
+>>  1 file changed, 3 insertions(+), 8 deletions(-)
+>>
+>> diff --git
+>> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+>> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+>> index c5a446e..ce5b7e1 100644
+>> ---
+>> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+>> +++
+>> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+>> @@ -134,19 +134,14 @@ static unsigned int
+>> mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+>>  	return FDB_TC_LEVELS_PER_PRIO;
+>>  }
+>>  
+>> -#define POOL_NEXT_SIZE 0
+>>  static int
+>> -mlx5_esw_chains_get_avail_sz_from_pool(struct mlx5_eswitch *esw,
+>> -				       int desired_size)
+>> +mlx5_esw_chains_get_avail_sz_from_pool(struct mlx5_eswitch *esw)
+>>  {
+>>  	int i, found_i = -1;
+>>  
+>>  	for (i = ARRAY_SIZE(ESW_POOLS) - 1; i >= 0; i--) {
+>> -		if (fdb_pool_left(esw)[i] && ESW_POOLS[i] >
+>> desired_size) {
+>> +		if (fdb_pool_left(esw)[i])
+>>  			found_i = i;
+>> -			if (desired_size != POOL_NEXT_SIZE)
+>> -				break;
+>> -		}
+>>  	}
+>>  
+>>  	if (found_i != -1) {
+>> @@ -198,7 +193,7 @@ static unsigned int
+>> mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+>>  		ft_attr.flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+>>  				  MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
+>>  
+>> -	sz = mlx5_esw_chains_get_avail_sz_from_pool(esw,
+>> POOL_NEXT_SIZE);
+>> +	sz = mlx5_esw_chains_get_avail_sz_from_pool(esw);
+>>  	if (!sz)
+>>  		return ERR_PTR(-ENOSPC);
+>>  	ft_attr.max_fte = sz;
