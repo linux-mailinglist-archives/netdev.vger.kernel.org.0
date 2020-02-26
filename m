@@ -2,102 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C03F61703B2
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:03:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75B801703B9
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727168AbgBZQDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 11:03:51 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:46375 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbgBZQDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 11:03:51 -0500
-Received: by mail-qv1-f65.google.com with SMTP id y2so1492622qvu.13
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 08:03:50 -0800 (PST)
+        id S1727664AbgBZQEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 11:04:40 -0500
+Received: from mail-qk1-f177.google.com ([209.85.222.177]:43671 "EHLO
+        mail-qk1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727048AbgBZQEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 11:04:40 -0500
+Received: by mail-qk1-f177.google.com with SMTP id q18so1536782qki.10
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 08:04:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=digitalocean.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WzyLQQlWicNnCdqBvaK52lOW7eZ6ig2hmAzlMiTl794=;
-        b=GOXJmdveHDe/qk6HNGM7BGJosP672dn2o4d45p7pEZbMd4V/uk5F3wsVYl6fQ7bB2b
-         XCtpje0BUV+BXAf7Hyq0IcTr0gRTQL0J2VxN+UggjuvZZPLFyDT7uNKk58JIKUEHgLAo
-         hXcx5RMMdBK4q8v9ubQx2FH/QI8rTg4fg4Xv8=
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=PdV3aV1pCpoXQD3p7Noc2dkN9/8NUodekoiHxaSf+z0=;
+        b=JB7by65P+FADg4ejR2c+R27+bsyI9BJ58ru56JhoycKbaDLbryNo6Sq/OjORAqCkAB
+         5j19FgXDy70ci4jtCiCx7Z1mBb/5sp1Fd0u7mWVY6kFamvngyncCwN029i/sFflb6+Dj
+         9qSu18qWKUMopmGjHVgusBmVgCFWZxwccowU4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=WzyLQQlWicNnCdqBvaK52lOW7eZ6ig2hmAzlMiTl794=;
-        b=sOQh+B0Ps956viDWW2rqFuyl/OadLWaIyB/I1iCfG8+MxHfDNXaMHc0JCosCH8iRDc
-         GFZmpcBWM2dZfScmOLVo0nohEp2r/9eBBurE96W8H66458b/vn6VPQExEYt4wK8vEER5
-         Xr2+uAJleRVx+e4GSgjj9HFU/VIu0+DCW+an+Q3UPy2ckTxqqhFbAxy084O8cRV+9TL/
-         IjeVM3Wm0bwMlmjO4m367U+wG8uUuRiC2WAkQJiG/xGhjJ8YrPP0Kppc8t2Hh8HWTftv
-         M9KrhoAQg84b1vD3t9elTJh8herbSo67fQABUSBFV0o7wubORHLPBvZEAYtFwNngVyUT
-         SkOw==
-X-Gm-Message-State: APjAAAXNOWdwN3HLh5xFx3M0zfpL/7ZQsLcUV5myboXSaZmfZ8rHRNbf
-        wgcIQ3wwFtiI44MgcTdCSz1b8n02Hl34D2L/
-X-Google-Smtp-Source: APXvYqzodUc5w0ZwwJbED1VHXVL2biZxIyO7gWSTlCOhE10SozCYqOfFlqHE3SfCuOyU1tub4MLlww==
-X-Received: by 2002:ad4:408c:: with SMTP id l12mr6164305qvp.164.1582733029452;
-        Wed, 26 Feb 2020 08:03:49 -0800 (PST)
+        bh=PdV3aV1pCpoXQD3p7Noc2dkN9/8NUodekoiHxaSf+z0=;
+        b=BWLm6d7xfYr6WSp8pqh5QfWrMH1tEesOL+nSbOg1BoM9M3IN5OY7YEm4OVbGcZot79
+         XcEotf6CavM1cO5ewUFQidJf4fanOlUFirhbJknon5vZqnpQz9JQq6qqKSi5VPHnkhjT
+         cI/b4VlieLWLKS9K1k5XlRWiXLyB+TfLwWO3hQlXVYR9Qt+4X+M1UXe8o/PNfMKnGOpZ
+         uaNusBymHHLTPU4kgIz5Htw8neTprywbBeLBmC3gDO9+WGKDKpCQcpA+YIokLuAWH4Pc
+         smZzuL0ddbejk6L5ENk6kigTgZWv0yis+FdiyclPAhECEhUMuEQfeRcPWGwYFW5jax53
+         lYDA==
+X-Gm-Message-State: APjAAAV7ZWVrEnzvdYArzva4wGcND5gANm+E/n/88h/BGURha4IeEmrg
+        YLgo13l6o+7L78EvbwQXo3U/TsZJ77mNqvi0
+X-Google-Smtp-Source: APXvYqzsjGMzKeUZTiydRCPbky1ABYm9Vi3l873Ptt4J1JlAp8QEcEkv1Ep4wmdHXY7w3XIeK7axjA==
+X-Received: by 2002:a05:620a:22ea:: with SMTP id p10mr6050275qki.75.1582733078489;
+        Wed, 26 Feb 2020 08:04:38 -0800 (PST)
 Received: from [10.0.45.36] ([65.158.212.130])
-        by smtp.gmail.com with ESMTPSA id p2sm1327671qkg.102.2020.02.26.08.03.48
+        by smtp.gmail.com with ESMTPSA id p126sm1346512qkd.108.2020.02.26.08.04.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 08:03:48 -0800 (PST)
+        Wed, 26 Feb 2020 08:04:37 -0800 (PST)
 Subject: Re: virtio_net: can change MTU after installing program
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200226093330.GA711395@redhat.com> <87lfopznfe.fsf@toke.dk>
+References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+ <07bb0ad3-c3e9-4a23-6e75-c3df6a557dcf@redhat.com>
+ <bcd3721e-5938-d12d-d0e6-b53d337ff7ff@digitalocean.com>
+ <d4d65b88-b825-b380-22d2-bc61d50248b4@redhat.com>
 From:   David Ahern <dahern@digitalocean.com>
-Message-ID: <0b446fc3-01ed-4dc1-81f0-ef0e1e2cadb0@digitalocean.com>
-Date:   Wed, 26 Feb 2020 09:03:47 -0700
+Message-ID: <87251eff-b30a-9c4d-25fc-5cd900d0ad8d@digitalocean.com>
+Date:   Wed, 26 Feb 2020 09:04:35 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.4.2
 MIME-Version: 1.0
-In-Reply-To: <87lfopznfe.fsf@toke.dk>
+In-Reply-To: <d4d65b88-b825-b380-22d2-bc61d50248b4@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/20 2:51 AM, Toke Høiland-Jørgensen wrote:
-> "Michael S. Tsirkin" <mst@redhat.com> writes:
+On 2/25/20 10:53 PM, Jason Wang wrote:
+> Yes, that's better. But may requires changes in both qemu and virtio
+> spec to work.
 > 
->> On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
->>> Another issue is that virtio_net checks the MTU when a program is
->>> installed, but does not restrict an MTU change after:
->>>
->>> # ip li sh dev eth0
->>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
->>> state UP mode DEFAULT group default qlen 1000
->>>     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
->>>     prog/xdp id 13 tag c5595e4590d58063 jited
->>>
->>> # ip li set dev eth0 mtu 8192
->>>
->>> # ip li sh dev eth0
->>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
->>> state UP mode DEFAULT group default qlen 1000
->>>
->>>
->>
->> Cc Toke who has tested this on other cards and has some input.
-> 
-> Well, my comment was just that we already restrict MTU changes on mlx5
-> when an XDP program is loaded:
-> 
-> $ sudo ip link set dev ens1f1 mtu 8192
-> RTNETLINK answers: Invalid argument
-> 
-> Reading through the rest of the thread I don't have any strong opinions
-> about whether this should propagate out from the host or not. I suspect
-> it would not be worth the trouble, though, and as you say it's already
-> possible to configure regular network devices in a way that is
-> incompatible with the rest of the network.
-> 
+> Do you want to address them? Or if it's not urgent, I can add this in my
+> todo list and address it in the future.
 
-Both mlx5 and sfc restrict MTU change to XDP limits; virtio does not
-which strikes me as a problem.
+I do not understand why a virtio spec change is required, so sounds like
+something you should take care of.
