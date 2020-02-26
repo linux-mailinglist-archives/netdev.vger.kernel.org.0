@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2C416FF7E
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0EE16FF81
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727000AbgBZNEH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Feb 2020 08:04:07 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53545 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726838AbgBZNEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:04:06 -0500
+        id S1727066AbgBZNEN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Feb 2020 08:04:13 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37790 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727028AbgBZNEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:04:12 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-253-bXbVwJ9LP8645almxStZAQ-1; Wed, 26 Feb 2020 08:04:04 -0500
-X-MC-Unique: bXbVwJ9LP8645almxStZAQ-1
+ us-mta-437-7amPEnIUNxqs-5bmvucwzg-1; Wed, 26 Feb 2020 08:04:07 -0500
+X-MC-Unique: 7amPEnIUNxqs-5bmvucwzg-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BDD971083E85;
-        Wed, 26 Feb 2020 13:04:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 35770A0CC2;
+        Wed, 26 Feb 2020 13:04:05 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.43.17.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7655119925;
-        Wed, 26 Feb 2020 13:03:56 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C8DB19756;
+        Wed, 26 Feb 2020 13:04:01 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -36,9 +36,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 03/18] bpf: Add struct bpf_ksym
-Date:   Wed, 26 Feb 2020 14:03:30 +0100
-Message-Id: <20200226130345.209469-4-jolsa@kernel.org>
+Subject: [PATCH 04/18] bpf: Add name to struct bpf_ksym
+Date:   Wed, 26 Feb 2020 14:03:31 +0100
+Message-Id: <20200226130345.209469-5-jolsa@kernel.org>
 In-Reply-To: <20200226130345.209469-1-jolsa@kernel.org>
 References: <20200226130345.209469-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -52,135 +52,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding 'struct bpf_ksym' object that will carry the
-kallsym information for bpf symbol. Adding the start
-and end address to begin with. It will be used by
-bpf_prog, bpf_trampoline, bpf_dispatcher.
+Adding name to 'struct bpf_ksym' object to carry the name
+of the symbol for bpf_prog, bpf_trampoline, bpf_dispatcher.
 
-The symbol_start/symbol_end values were originally used
-to sort bpf_prog objects. For the address displayed in
-/proc/kallsyms we are using prog->bpf_func.
-
-I'm using the bpf_func for program symbol start instead
-of the symbol_start, because it makes no difference for
-sorting bpf_prog objects and we can use it directly as
-an address for display it in /proc/kallsyms.
+The current benefit is that name is now generated only when
+the symbol is added to the list, so we don't need to generate
+it every time it's accessed.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h |  6 ++++++
- kernel/bpf/core.c   | 26 +++++++++++---------------
- 2 files changed, 17 insertions(+), 15 deletions(-)
+ include/linux/bpf.h    | 2 ++
+ include/linux/filter.h | 6 ------
+ kernel/bpf/core.c      | 8 +++++---
+ kernel/events/core.c   | 9 ++++-----
+ 4 files changed, 11 insertions(+), 14 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index be7afccc9459..5ad8eea1cd37 100644
+index 5ad8eea1cd37..e7b2e9fc256c 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -462,6 +462,11 @@ int arch_prepare_bpf_trampoline(void *image, void *image_end,
- u64 notrace __bpf_prog_enter(void);
- void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start);
+@@ -18,6 +18,7 @@
+ #include <linux/refcount.h>
+ #include <linux/mutex.h>
+ #include <linux/module.h>
++#include <linux/kallsyms.h>
  
-+struct bpf_ksym {
-+	unsigned long		 start;
-+	unsigned long		 end;
-+};
-+
+ struct bpf_verifier_env;
+ struct bpf_verifier_log;
+@@ -465,6 +466,7 @@ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start);
+ struct bpf_ksym {
+ 	unsigned long		 start;
+ 	unsigned long		 end;
++	char			 name[KSYM_NAME_LEN];
+ };
+ 
  enum bpf_tramp_prog_type {
- 	BPF_TRAMP_FENTRY,
- 	BPF_TRAMP_FEXIT,
-@@ -643,6 +648,7 @@ struct bpf_prog_aux {
- 	u32 size_poke_tab;
- 	struct latch_tree_node ksym_tnode;
- 	struct list_head ksym_lnode;
-+	struct bpf_ksym ksym;
- 	const struct bpf_prog_ops *ops;
- 	struct bpf_map **used_maps;
- 	struct bpf_prog *prog;
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index eafe72644282..a945c250ad53 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -1062,7 +1062,6 @@ bpf_address_lookup(unsigned long addr, unsigned long *size,
+ 
+ void bpf_prog_kallsyms_add(struct bpf_prog *fp);
+ void bpf_prog_kallsyms_del(struct bpf_prog *fp);
+-void bpf_get_prog_name(const struct bpf_prog *prog, char *sym);
+ 
+ #else /* CONFIG_BPF_JIT */
+ 
+@@ -1131,11 +1130,6 @@ static inline void bpf_prog_kallsyms_del(struct bpf_prog *fp)
+ {
+ }
+ 
+-static inline void bpf_get_prog_name(const struct bpf_prog *prog, char *sym)
+-{
+-	sym[0] = '\0';
+-}
+-
+ #endif /* CONFIG_BPF_JIT */
+ 
+ void bpf_prog_kallsyms_del_all(struct bpf_prog *fp);
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 973a20d49749..39a9e4184900 100644
+index 39a9e4184900..a7aaa81035b1 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -524,17 +524,15 @@ int bpf_jit_harden   __read_mostly;
- long bpf_jit_limit   __read_mostly;
- 
- static __always_inline void
--bpf_get_prog_addr_region(const struct bpf_prog *prog,
--			 unsigned long *symbol_start,
--			 unsigned long *symbol_end)
-+bpf_get_prog_addr_region(const struct bpf_prog *prog)
- {
- 	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
- 	unsigned long addr = (unsigned long)hdr;
- 
- 	WARN_ON_ONCE(!bpf_prog_ebpf_jited(prog));
- 
--	*symbol_start = addr;
--	*symbol_end   = addr + hdr->pages * PAGE_SIZE;
-+	prog->aux->ksym.start = (unsigned long) prog->bpf_func;
-+	prog->aux->ksym.end   = addr + hdr->pages * PAGE_SIZE;
+@@ -535,8 +535,9 @@ bpf_get_prog_addr_region(const struct bpf_prog *prog)
+ 	prog->aux->ksym.end   = addr + hdr->pages * PAGE_SIZE;
  }
  
- void bpf_get_prog_name(const struct bpf_prog *prog, char *sym)
-@@ -575,13 +573,10 @@ void bpf_get_prog_name(const struct bpf_prog *prog, char *sym)
- static __always_inline unsigned long
- bpf_get_prog_addr_start(struct latch_tree_node *n)
+-void bpf_get_prog_name(const struct bpf_prog *prog, char *sym)
++static void bpf_get_prog_name(const struct bpf_prog *prog)
  {
--	unsigned long symbol_start, symbol_end;
- 	const struct bpf_prog_aux *aux;
- 
- 	aux = container_of(n, struct bpf_prog_aux, ksym_tnode);
--	bpf_get_prog_addr_region(aux->prog, &symbol_start, &symbol_end);
--
--	return symbol_start;
-+	return aux->ksym.start;
- }
- 
- static __always_inline bool bpf_tree_less(struct latch_tree_node *a,
-@@ -593,15 +588,13 @@ static __always_inline bool bpf_tree_less(struct latch_tree_node *a,
- static __always_inline int bpf_tree_comp(void *key, struct latch_tree_node *n)
- {
- 	unsigned long val = (unsigned long)key;
--	unsigned long symbol_start, symbol_end;
- 	const struct bpf_prog_aux *aux;
- 
- 	aux = container_of(n, struct bpf_prog_aux, ksym_tnode);
--	bpf_get_prog_addr_region(aux->prog, &symbol_start, &symbol_end);
- 
--	if (val < symbol_start)
-+	if (val < aux->ksym.start)
- 		return -1;
--	if (val >= symbol_end)
-+	if (val >= aux->ksym.end)
- 		return  1;
- 
- 	return 0;
-@@ -649,6 +642,8 @@ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
- 	    !capable(CAP_SYS_ADMIN))
++	char *sym = prog->aux->ksym.name;
+ 	const char *end = sym + KSYM_NAME_LEN;
+ 	const struct btf_type *type;
+ 	const char *func_name;
+@@ -643,6 +644,7 @@ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
  		return;
  
-+	bpf_get_prog_addr_region(fp);
-+
+ 	bpf_get_prog_addr_region(fp);
++	bpf_get_prog_name(fp);
+ 
  	spin_lock_bh(&bpf_lock);
  	bpf_prog_ksym_node_add(fp->aux);
- 	spin_unlock_bh(&bpf_lock);
-@@ -677,14 +672,15 @@ static struct bpf_prog *bpf_prog_kallsyms_find(unsigned long addr)
- const char *__bpf_address_lookup(unsigned long addr, unsigned long *size,
- 				 unsigned long *off, char *sym)
- {
--	unsigned long symbol_start, symbol_end;
- 	struct bpf_prog *prog;
- 	char *ret = NULL;
+@@ -681,7 +683,7 @@ const char *__bpf_address_lookup(unsigned long addr, unsigned long *size,
+ 		unsigned long symbol_start = prog->aux->ksym.start;
+ 		unsigned long symbol_end = prog->aux->ksym.end;
  
- 	rcu_read_lock();
- 	prog = bpf_prog_kallsyms_find(addr);
- 	if (prog) {
--		bpf_get_prog_addr_region(prog, &symbol_start, &symbol_end);
-+		unsigned long symbol_start = prog->aux->ksym.start;
-+		unsigned long symbol_end = prog->aux->ksym.end;
-+
- 		bpf_get_prog_name(prog, sym);
+-		bpf_get_prog_name(prog, sym);
++		strncpy(sym, prog->aux->ksym.name, KSYM_NAME_LEN);
  
  		ret = sym;
+ 		if (size)
+@@ -738,7 +740,7 @@ int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
+ 		if (it++ != symnum)
+ 			continue;
+ 
+-		bpf_get_prog_name(aux->prog, sym);
++		strncpy(sym, aux->ksym.name, KSYM_NAME_LEN);
+ 
+ 		*value = (unsigned long)aux->prog->bpf_func;
+ 		*type  = BPF_SYM_ELF_TYPE;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index e453589da97c..a2cfb9e5f262 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -8255,23 +8255,22 @@ static void perf_event_bpf_emit_ksymbols(struct bpf_prog *prog,
+ 					 enum perf_bpf_event_type type)
+ {
+ 	bool unregister = type == PERF_BPF_EVENT_PROG_UNLOAD;
+-	char sym[KSYM_NAME_LEN];
+ 	int i;
+ 
+ 	if (prog->aux->func_cnt == 0) {
+-		bpf_get_prog_name(prog, sym);
+ 		perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_BPF,
+ 				   (u64)(unsigned long)prog->bpf_func,
+-				   prog->jited_len, unregister, sym);
++				   prog->jited_len, unregister,
++				   prog->aux->ksym.name);
+ 	} else {
+ 		for (i = 0; i < prog->aux->func_cnt; i++) {
+ 			struct bpf_prog *subprog = prog->aux->func[i];
+ 
+-			bpf_get_prog_name(subprog, sym);
+ 			perf_event_ksymbol(
+ 				PERF_RECORD_KSYMBOL_TYPE_BPF,
+ 				(u64)(unsigned long)subprog->bpf_func,
+-				subprog->jited_len, unregister, sym);
++				subprog->jited_len, unregister,
++				prog->aux->ksym.name);
+ 		}
+ 	}
+ }
 -- 
 2.24.1
 
