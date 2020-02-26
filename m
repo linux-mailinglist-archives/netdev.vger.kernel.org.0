@@ -2,155 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D3416FE20
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 12:45:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4BA416FE60
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 12:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbgBZLpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 06:45:40 -0500
-Received: from mail-bn8nam11on2044.outbound.protection.outlook.com ([40.107.236.44]:63712
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726408AbgBZLpj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 06:45:39 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NRCSDnkUHnCTMNLNcLYQ1s32T1t5+o2sZruj84bhuq7Q5bg3M5clHcJ/s7TrqobYqUZSvn7aME2azN1xWfmSmnT7p2pc8hdPewQk3EfSIbFMbIumNwbm3QTw7TcZROzYuXRbw4vFMivuG9XsYvjEndnaHQHw4sbDxJIU9C7gWJRrOxZpTgV7R1eQwyZEfkEVorUUoUvIrOpU8a2O8SQ8oSwgqzp6f74Eyl/H6uAtCJbSj9W4Fyt4LjOfHvMr3ChzgSaRSn/tzpNsm1ysTF6iQ6dXDT0khV9pRSXMWADdJL1X/rkwi+AWcvtgUguG1NAwc6hDye0p75TbV3DqcD4qzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V0Tx7cla70Wkr8H22Zw/p/rcnoWUa/OGSukspUoawkY=;
- b=Tx2nLzDhOYt7SJvZPcSfkFp95jicVpJmq8Bnb4kq0/ZwVWqiqdUWnKtx8WbsXFk1cYp5zqVzxRIFYTAm2N1TH9ve9QsjtCnjqlwnavYGV+jgOxhK5GUPJY9NJf6/XvFUp0M9dGdq0ymFuNmLKLZPmuf+xepkeKbMIJYHLsJqRI6sispOJpbernUluiJfjBhVpaBqt6d076PL9ZlWYvqn9q8UlYu1iEka7NHVptQg/3Cunr69ZAcmiQZiFcwarKosbpM+FrFDx0bKxR7bJVi/LgRDoR+P7LZ0PbqTqOu8QT3FwDBymFTNWdBMkgL5y0oZkTMdiVS5n8KyUNQMAFPs/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V0Tx7cla70Wkr8H22Zw/p/rcnoWUa/OGSukspUoawkY=;
- b=tksybeQ7L4Ycfe6w3FFgEldEUoVbVwumHWzLJi9hqpR8jgyblOJUc7iGWOALEg9rEfbr8LmWk0Mw5zcrU8fp+xkFGIBREqAp2vmbYNm7YEuLZce6rj15SyQOVL3lRsuNgutFhOZZl18kB+ETE5XXZ3vMSaCGQJZ7NBDVxyNZ1Xw=
-Received: from SN6PR05MB4237.namprd05.prod.outlook.com (2603:10b6:805:27::32)
- by SN6PR05MB4878.namprd05.prod.outlook.com (2603:10b6:805:9c::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14; Wed, 26 Feb
- 2020 11:45:35 +0000
-Received: from SN6PR05MB4237.namprd05.prod.outlook.com
- ([fe80::4da8:aefe:5436:af32]) by SN6PR05MB4237.namprd05.prod.outlook.com
- ([fe80::4da8:aefe:5436:af32%4]) with mapi id 15.20.2772.012; Wed, 26 Feb 2020
- 11:45:35 +0000
-From:   Rajender M <manir@vmware.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
+        id S1726688AbgBZL4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 06:56:20 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:47112 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726564AbgBZL4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 06:56:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=gDj4mVuatasof5Pyrcad66Gpw4ynFxkDIJvwyyZzESw=; b=l6Ty9+wRPEIo4QfQmAG1IL4QX
+        +/HhzofQYEOVcB//1+pWsQeYKCAAEuyxiX/0r2xUvUDPsvhAphAKAudIF7RVXZ5TpqWmPQfnDiTDg
+        pfxk2w/485b0nnH+deBmIy+4eXAiXM5CilgGj9kpUVx0w/mUAxKZr2XJc24FQK8bS5//79ONffZsN
+        pr9n7aUg8kamfN/fwdlsgW0b3gbowpw+icOXN88MBkuS53ss/RUYPMUBYBsiXAPIrz8nMj3WBGc9Y
+        mXwOJmVnuK42RV5P++9fjVvBY2dQSWgACycHbN/okG97BKXvqPT9PmUyVaylZ9ZxmSXstGwsJ9iA6
+        ZvCDF8NJA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:53006)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j6vIK-0007O8-Ed; Wed, 26 Feb 2020 11:56:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j6vI5-0008Nm-B4; Wed, 26 Feb 2020 11:55:49 +0000
+Date:   Wed, 26 Feb 2020 11:55:49 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        John Crispin <john@phrozen.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
         "David S. Miller" <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: Performance impact in networking data path tests in Linux 5.5
- Kernel
-Thread-Topic: Performance impact in networking data path tests in Linux 5.5
- Kernel
-Thread-Index: AQHV6wVoaIB7e06hTEGauTCQiUGTXKgtPbEAgAB8+QA=
-Date:   Wed, 26 Feb 2020 11:45:34 +0000
-Message-ID: <A6BD9BBB-B087-4A3C-BF3D-557626AC233A@vmware.com>
-References: <C7D5F99D-B8DB-462B-B665-AE268CDE90D2@vmware.com>
- <CAKfTPtA9275amW4wAnCZpW3bVRv0HssgMJ_YgPzZDRZ3A1rbVg@mail.gmail.com>
-In-Reply-To: <CAKfTPtA9275amW4wAnCZpW3bVRv0HssgMJ_YgPzZDRZ3A1rbVg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=manir@vmware.com; 
-x-originating-ip: [122.182.233.20]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1fe9a142-b952-42a6-047e-08d7bab1644c
-x-ms-traffictypediagnostic: SN6PR05MB4878:
-x-microsoft-antispam-prvs: <SN6PR05MB4878D47A82EED633C68E1DCDD6EA0@SN6PR05MB4878.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0325F6C77B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(189003)(199004)(6506007)(6486002)(6916009)(6512007)(2616005)(33656002)(186003)(26005)(2906002)(4326008)(8936002)(478600001)(66946007)(8676002)(66476007)(71200400001)(91956017)(76116006)(64756008)(316002)(66446008)(5660300002)(54906003)(36756003)(81166006)(66556008)(81156014)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR05MB4878;H:SN6PR05MB4237.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: vmware.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: s0pGQ5392cuPsBQyxZ+WmOmJK1yMHDaUs6eyNV7FcrNXrYX6zCcjWffO8rd3FayrivZaN0S+zvrO29vK7BdGvbT7LEDFPzfJTizuE97/Z4G146hjUKs5IAoOqwusn5n6HNlgsjqtv8CoVadVSo5GdQQVLp8ntdBzBKRks28Fgrg+ePftLtXTLt2lknio/EtA7gX9x1ks+TA6v8s5oftARGRlihfjuUh+5tfQ/kraxajfw89TJmT4IL69+cN9RqFJZG1YVMENtJYpFMxjQKijiiW9m8Q0HXrESMbcQTpx9+xow1uU2bBC7TQVIP5JeaME21Ec4LADEHf8P+f/qMT5kF0ZUZgCPVB9L4+C6tf87CXiAqLVefIAnqvOAvPIkm/B9iL4wOm16fj9OyMXfadFTFS1UsV5z9cl5igyfHJaOUw2iL5FNiW681VLjNS9TmPI
-x-ms-exchange-antispam-messagedata: QZreUTo8l+xvCMP6pYT0Ohnhy4hd74YHuQhLoxBiYmS6Kyamlbp4lz12rfMDGFHo90bx2wfAKBRFxEt4P7fmjvmaj7PbN23ySkPPlB4BsiKfIyfqzubW8zTdwFf9Q85dlY6WhL69MhwF2eiB3Fpgtg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D1E3DD18AA4284418EB6F514A941E721@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] net: phylink: propagate resolved link
+ config via mac_link_up()
+Message-ID: <20200226115549.GZ25745@shell.armlinux.org.uk>
+References: <20200226102312.GX25745@shell.armlinux.org.uk>
+ <E1j6tqv-0003G6-BO@rmk-PC.armlinux.org.uk>
+ <CA+h21hrR1Xkx9gwAT2FHqcH38L=xjWiPxmF2Er7-4fHFTrA8pQ@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1fe9a142-b952-42a6-047e-08d7bab1644c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Feb 2020 11:45:34.8616
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: J0lWoyYjan5flIiWPqOXi2zkx4N0xNAFF8A+6mHuKXVkD1OZPlh6A2+9hfwVjbR7/bZzZ2qa90cazWdECPqy6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB4878
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrR1Xkx9gwAT2FHqcH38L=xjWiPxmF2Er7-4fHFTrA8pQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIGZvciB5b3VyIHJlc3BvbnNlLCBWaW5jZW50LiANCkp1c3QgY3VyaW91cyB0byBrbm93
-LCBpZiB0aGVyZSBhcmUgYW55IHJvb20gZm9yIG9wdGltaXppbmcgDQp0aGUgYWRkaXRpb25hbCBD
-UFUgY29zdC4gDQoNCg0K77u/T24gMjYvMDIvMjAsIDM6MTggUE0sICJWaW5jZW50IEd1aXR0b3Qi
-IDx2aW5jZW50Lmd1aXR0b3RAbGluYXJvLm9yZz4gd3JvdGU6DQoNCiAgICBIaSBSYWplbmRlciwN
-CiAgICANCiAgICBPbiBUdWUsIDI1IEZlYiAyMDIwIGF0IDA2OjQ2LCBSYWplbmRlciBNIDxtYW5p
-ckB2bXdhcmUuY29tPiB3cm90ZToNCiAgICA+DQogICAgPiBBcyBwYXJ0IG9mIFZNd2FyZSdzIHBl
-cmZvcm1hbmNlIHJlZ3Jlc3Npb24gdGVzdGluZyBmb3IgTGludXggS2VybmVsIHVwc3RyZWFtDQog
-ICAgPiAgcmVsZWFzZXMsIHdoZW4gY29tcGFyaW5nIExpbnV4IDUuNSBrZXJuZWwgYWdhaW5zdCBM
-aW51eCA1LjQga2VybmVsLCB3ZSBub3RpY2VkDQogICAgPiAyMCUgaW1wcm92ZW1lbnQgaW4gbmV0
-d29ya2luZyB0aHJvdWdocHV0IHBlcmZvcm1hbmNlIGF0IHRoZSBjb3N0IG9mIGEgMzAlDQogICAg
-PiBpbmNyZWFzZSBpbiB0aGUgQ1BVIHV0aWxpemF0aW9uLg0KICAgIA0KICAgIFRoYW5rcyBmb3Ig
-dGVzdGluZyBhbmQgc2hhcmluZyByZXN1bHRzIHdpdGggdXMuIEl0J3MgYWx3YXlzDQogICAgaW50
-ZXJlc3RpbmcgdG8gZ2V0IGZlZWRiYWNrcyBmcm9tIHZhcmlvdXMgdGVzdHMgY2FzZXMNCiAgICAN
-CiAgICA+DQogICAgPiBBZnRlciBwZXJmb3JtaW5nIHRoZSBiaXNlY3QgYmV0d2VlbiA1LjQgYW5k
-IDUuNSwgd2UgaWRlbnRpZmllZCB0aGUgcm9vdCBjYXVzZQ0KICAgID4gb2YgdGhpcyBiZWhhdmlv
-dXIgdG8gYmUgYSBzY2hlZHVsaW5nIGNoYW5nZSBmcm9tIFZpbmNlbnQgR3VpdHRvdCdzDQogICAg
-PiAyYWI0MDkyZmM4MmQgKCJzY2hlZC9mYWlyOiBTcHJlYWQgb3V0IHRhc2tzIGV2ZW5seSB3aGVu
-IG5vdCBvdmVybG9hZGVkIikuDQogICAgPg0KICAgID4gVGhlIGltcGFjdGVkIHRlc3RjYXNlcyBh
-cmUgVENQX1NUUkVBTSBTRU5EICYgUkVDViDigJMgb24gYm90aCBzbWFsbA0KICAgID4gKDhLIHNv
-Y2tldCAmIDI1NkIgbWVzc2FnZSkgJiBsYXJnZSAoNjRLIHNvY2tldCAmIDE2SyBtZXNzYWdlKSBw
-YWNrZXQgc2l6ZXMuDQogICAgPg0KICAgID4gV2UgYmFja2VkIG91dCBWaW5jZW50J3MgY29tbWl0
-ICYgcmVyYW4gb3VyIG5ldHdvcmtpbmcgdGVzdHMgYW5kIGZvdW5kIHRoYXQNCiAgICA+IHRoZSBw
-ZXJmb3JtYW5jZSB3ZXJlIHNpbWlsYXIgdG8gNS40IGtlcm5lbCAtIGltcHJvdmVtZW50cyBpbiBu
-ZXR3b3JraW5nIHRlc3RzDQogICAgPiB3ZXJlIG5vIG1vcmUuDQogICAgPg0KICAgID4gSW4gb3Vy
-IGN1cnJlbnQgbmV0d29yayBwZXJmb3JtYW5jZSB0ZXN0aW5nLCB3ZSB1c2UgSW50ZWwgMTBHIE5J
-QyB0byBldmFsdWF0ZQ0KICAgID4gYWxsIExpbnV4IEtlcm5lbCByZWxlYXNlcy4gSW4gb3JkZXIg
-dG8gY29uZmlybSB0aGF0IHRoZSBpbXBhY3QgaXMgYWxzbyBzZWVuIGluDQogICAgPiBoaWdoZXIg
-YmFuZHdpZHRoIE5JQywgd2UgcmVwZWF0ZWQgdGhlIHNhbWUgdGVzdCBjYXNlcyB3aXRoIEludGVs
-IDQwRyBhbmQNCiAgICA+IHdlIHdlcmUgYWJsZSB0byByZXByb2R1Y2UgdGhlIHNhbWUgYmVoYXZp
-b3VyIC0gMjUlIGltcHJvdmVtZW50cyBpbg0KICAgID4gdGhyb3VnaHB1dCB3aXRoIDEwJSBtb3Jl
-IENQVSBjb25zdW1wdGlvbi4NCiAgICA+DQogICAgPiBUaGUgb3ZlcmFsbCByZXN1bHRzIGluZGlj
-YXRlIHRoYXQgdGhlIG5ldyBzY2hlZHVsZXIgY2hhbmdlIGhhcyBpbnRyb2R1Y2VkDQogICAgPiBt
-dWNoIGJldHRlciBuZXR3b3JrIHRocm91Z2hwdXQgcGVyZm9ybWFuY2UgYXQgdGhlIGNvc3Qgb2Yg
-aW5jcmVtZW50YWwNCiAgICA+IENQVSB1c2FnZS4gVGhpcyBjYW4gYmUgc2VlbiBhcyBleHBlY3Rl
-ZCBiZWhhdmlvciBiZWNhdXNlIG5vdyB0aGUNCiAgICA+IFRDUCBzdHJlYW1zIGFyZSBldmVubHkg
-c3ByZWFkIGFjcm9zcyBhbGwgdGhlIENQVXMgYW5kIGV2ZW50dWFsbHkgZHJpdmVzDQogICAgPiBt
-b3JlIG5ldHdvcmsgcGFja2V0cywgd2l0aCBhZGRpdGlvbmFsIENQVSBjb25zdW1wdGlvbi4NCiAg
-ICA+DQogICAgPg0KICAgID4gV2UgaGF2ZSBhbHNvIGNvbmZpcm1lZCB0aGlzIHRoZW9yeSBieSBw
-YXJzaW5nIHRoZSBFU1ggc3RhdHMgZm9yIDUuNCBhbmQgNS41DQogICAgPiBrZXJuZWxzIGluIGEg
-NHZDUFUgVk0gcnVubmluZyA4IFRDUCBzdHJlYW1zIC0gYXMgc2hvd24gYmVsb3c7DQogICAgPg0K
-ICAgID4gNS40IGtlcm5lbDoNCiAgICA+ICAgIjIxMzIxNDkiOiB7ImlkIjogMjEzMjE0OSwgInVz
-ZWQiOiA5NC4zNywgInJlYWR5IjogMC4wMSwgImNzdHAiOiAwLjAwLCAibmFtZSI6ICJ2bXgtdmNw
-dS0wOnJoZWw3eDY0LTAiLA0KICAgID4gICAiMjEzMjE1MSI6IHsiaWQiOiAyMTMyMTUxLCAidXNl
-ZCI6IDAuMTMsICJyZWFkeSI6IDAuMDAsICJjc3RwIjogMC4wMCwgIm5hbWUiOiAidm14LXZjcHUt
-MTpyaGVsN3g2NC0wIiwNCiAgICA+ICAgIjIxMzIxNTIiOiB7ImlkIjogMjEzMjE1MiwgInVzZWQi
-OiA5LjA3LCAicmVhZHkiOiAwLjAzLCAiY3N0cCI6IDAuMDAsICJuYW1lIjogInZteC12Y3B1LTI6
-cmhlbDd4NjQtMCIsDQogICAgPiAgICIyMTMyMTUzIjogeyJpZCI6IDIxMzIxNTMsICJ1c2VkIjog
-MzQuNzcsICJyZWFkeSI6IDAuMDEsICJjc3RwIjogMC4wMCwgIm5hbWUiOiAidm14LXZjcHUtMzpy
-aGVsN3g2NC0wIiwNCiAgICA+DQogICAgPiA1LjUga2VybmVsOg0KICAgID4gICAiMjEzMjA0MSI6
-IHsiaWQiOiAyMTMyMDQxLCAidXNlZCI6IDU1LjcwLCAicmVhZHkiOiAwLjAxLCAiY3N0cCI6IDAu
-MDAsICJuYW1lIjogInZteC12Y3B1LTA6cmhlbDd4NjQtMCIsDQogICAgPiAgICIyMTMyMDQzIjog
-eyJpZCI6IDIxMzIwNDMsICJ1c2VkIjogNDcuNTMsICJyZWFkeSI6IDAuMDEsICJjc3RwIjogMC4w
-MCwgIm5hbWUiOiAidm14LXZjcHUtMTpyaGVsN3g2NC0wIiwNCiAgICA+ICAgIjIxMzIwNDQiOiB7
-ImlkIjogMjEzMjA0NCwgInVzZWQiOiA3Ny44MSwgInJlYWR5IjogMC4wMCwgImNzdHAiOiAwLjAw
-LCAibmFtZSI6ICJ2bXgtdmNwdS0yOnJoZWw3eDY0LTAiLA0KICAgID4gICAiMjEzMjA0NSI6IHsi
-aWQiOiAyMTMyMDQ1LCAidXNlZCI6IDU3LjExLCAicmVhZHkiOiAwLjAyLCAiY3N0cCI6IDAuMDAs
-ICJuYW1lIjogInZteC12Y3B1LTM6cmhlbDd4NjQtMCIsDQogICAgPg0KICAgID4gTm90ZSwgInVz
-ZWQgJSIgaW4gYWJvdmUgc3RhdHMgZm9yIDUuNSBrZXJuZWwgaXMgZXZlbmx5IGRpc3RyaWJ1dGVk
-IGFjcm9zcyBhbGwgdkNQVXMuDQogICAgPg0KICAgID4gT24gdGhlIHdob2xlLCB0aGlzIGNoYW5n
-ZSBzaG91bGQgYmUgc2VlbiBhcyBhIHNpZ25pZmljYW50IGltcHJvdmVtZW50IGZvcg0KICAgID4g
-bW9zdCBjdXN0b21lcnMuDQogICAgPg0KICAgID4gUmFqZW5kZXIgTQ0KICAgID4gUGVyZm9ybWFu
-Y2UgRW5naW5lZXJpbmcNCiAgICA+IFZNd2FyZSwgSW5jLg0KICAgID4NCiAgICANCg0K
+On Wed, Feb 26, 2020 at 01:06:06PM +0200, Vladimir Oltean wrote:
+> Hi Russell,
+> 
+> On Wed, 26 Feb 2020 at 12:23, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> >
+> > Propagate the resolved link parameters via the mac_link_up() call for
+> > MACs that do not automatically track their PCS state. We propagate the
+> > link parameters via function arguments so that inappropriate members
+> > of struct phylink_link_state can't be accessed, and creating a new
+> > structure just for this adds needless complexity to the API.
+> >
+> > Tested-by: Andre Przywara <andre.przywara@arm.com>
+> > Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  Documentation/networking/sfp-phylink.rst      | 17 +++++-
+> >  drivers/net/ethernet/cadence/macb_main.c      |  7 ++-
+> >  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  7 ++-
+> >  drivers/net/ethernet/marvell/mvneta.c         |  8 ++-
+> >  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 19 +++++--
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  7 ++-
+> >  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +-
+> >  .../net/ethernet/xilinx/xilinx_axienet_main.c |  7 ++-
+> >  drivers/net/phy/phylink.c                     |  9 ++-
+> >  include/linux/phylink.h                       | 57 ++++++++++++++-----
+> >  net/dsa/port.c                                |  4 +-
+> >  11 files changed, 105 insertions(+), 41 deletions(-)
+> >
+> > diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
+> > index d753a309f9d1..8d7af28cd835 100644
+> > --- a/Documentation/networking/sfp-phylink.rst
+> > +++ b/Documentation/networking/sfp-phylink.rst
+> > @@ -74,10 +74,13 @@ phylib to the sfp/phylink support.  Please send patches to improve
+> >  this documentation.
+> >
+> >  1. Optionally split the network driver's phylib update function into
+> > -   three parts dealing with link-down, link-up and reconfiguring the
+> > -   MAC settings. This can be done as a separate preparation commit.
+> > +   two parts dealing with link-down and link-up. This can be done as
+> > +   a separate preparation commit.
+> >
+> > -   An example of this preparation can be found in git commit fc548b991fb0.
+> > +   An older example of this preparation can be found in git commit
+> > +   fc548b991fb0, although this was splitting into three parts; the
+> > +   link-up part now includes configuring the MAC for the link settings.
+> > +   Please see :c:func:`mac_link_up` for more information on this.
+> >
+> >  2. Replace::
+> >
+> > @@ -207,6 +210,14 @@ this documentation.
+> >     using. This is particularly important for in-band negotiation
+> >     methods such as 1000base-X and SGMII.
+> >
+> > +   The :c:func:`mac_link_up` method is used to inform the MAC that the
+> > +   link has come up. The call includes the negotiation mode and interface
+> > +   for reference only. The finalised link parameters are also supplied
+> > +   (speed, duplex and flow control/pause enablement settings) which
+> > +   should be used to configure the MAC when the MAC and PCS are not
+> > +   tightly integrated, or when the settings are not coming from in-band
+> > +   negotiation.
+> > +
+> >     The :c:func:`mac_config` method is used to update the MAC with the
+> >     requested state, and must avoid unnecessarily taking the link down
+> >     when making changes to the MAC configuration.  This means the
+> 
+> Just to make sure I understand the changes:
+> - A MAC with no PCS can be configured in either .mac_config or .mac_link_up
+
+I would much prefer mac_link_up to be used for setting the speed,
+duplex and pause modes for future-proofing in all cases except for
+the case where these parameters are automatically updated in the
+MAC from its associated PCS.
+
+mac_link_up must not be used to configure the AN mode or interface
+mode; these must be configured in mac_config().
+
+> - A MAC that needs to be manually reconfigured to the link mode
+> negotiated by its PCS needs to have the PCS configured in .mac_config
+> and the MAC in .mac_link_up
+
+I do have further changes that split the PCS ops from the MAC ops, so
+what is in this series is not the full story yet - some of the further
+patches can be found in my "phy" branch and "cex7" branches where I add
+support to dpaa2 for automatically switching between SGMII and
+1000BASE-X.  dpaa2 is one of these split PCS/MAC setups, but with the
+extra complication that there's a firmware layer between the PCS and
+MAC.
+
+However, this series is the first stand-alone step along the road to
+supporting split PCS/MAC setups in a sane manner.
+
+I discussed with Andrew Lunn how much to send, and the conclusion was
+to make the changes in a number of small patch series, as large patch
+series tend not to get reviewed.  My experience with _this_ series is
+that even this is very difficult to get feedback for, so adding any
+additional patches will just make that worse.
+
+> - A MAC with PCS where the MAC follows the PCS negotiation
+> automatically in hardware is basically equivalent with a MAC with no
+> PCS, and therefore can be configured in either .mac_config or
+> .mac_link_up
+
+In this case, mac_link_up doesn't do anything with the speed/duplex/
+pause stuff when those are automatically passed from the PCS.
+
+I'm afraid that sentence contains a subtlety that's going to get
+people: it is not clear cut because of the different natures of the
+various links.
+
+In 1000BASE-X, speed is fixed at 1G, and the PCS autonegotiates the
+duplex and pause with the remote end.  For mvneta (an example of a
+combined PCS/MAC implementation) operating in-band:
+- In mac_config():
+  - configures for 1000BASE-X interface type with in-band AN.
+  - configures fixed 1G.
+  - As mvneta only supports full duplex, we disable duplex negotiation
+    and force full duplex.
+  - Only symmetric pause is supported, and we set the symmetric pause
+    advertisement appropriately, with pause negotiation enabled.
+- In mac_link_up():
+  - merely allow the device to transmit and receive.
+
+The MAC will be forced to 1G, full duplex, and will automatically be
+configured by the PCS for pause support depending on the hardware
+based pause resolution.
+
+The situation is different for SGMII operating in-band:
+- In mac_config():
+  - configures for SGMII interface type with in-band AN.
+  - configures speed and duplex negotiation.
+  - disables pause negotiation; SGMII has no support for this.
+- In mac_link_up():
+  - enables or disables pause frames depending on the tx_pause/
+    rx_pause flags, since this is not available from the MAC.
+  - allow the device to transmit and receive.
+
+If we aren't operating in in-band mode, then:
+- In mac_config():
+  - configures for the interface type without in-band AN.
+  - disables speed, duplex and pause negotiation.
+- In mac_link_up():
+  - sets the speed, duplex and pause frames depending on the passed
+    parameters.
+  - allow the device to transmit and receive.
+
+Please see patch 7 of this series which implements this for mvneta.
+
+So, there is a split between what mac_config() should be doing and what
+mac_link_up() should be doing; this is why I've said in the
+documentation that the "mode" and "interface" are for reference only in
+mac_link_up() - mac_link_up() can use these to decide _how_ to program
+the resolved parameters, but should _not_ use them to determine the
+link configuration (such as changing the interface between SGMII and
+1000BASE-X - that is the responsibility of mac_config().)
+
+I hope that helps clarify the situation.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
