@@ -2,92 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 422CC16F5D5
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 03:54:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AAC616F5E4
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 04:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729627AbgBZCyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Feb 2020 21:54:45 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33303 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727880AbgBZCyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 21:54:45 -0500
-Received: by mail-pf1-f196.google.com with SMTP id n7so661162pfn.0;
-        Tue, 25 Feb 2020 18:54:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WbBbZJtOAAR9ogSmr5inY5EiHXQEhBZaLqZLWsUeMHE=;
-        b=Z8DLeQ8vr4YF3J/w3/lo+xEFAdWWokOTKo3Mqfc0IA4dpLgdjOC/XJBThtdjZEMzIp
-         D2nw4fG2AFBeRDVIwePO+G8fsxbMgixyEy0yt5Pb1VOk/qSp1Sd1SvfSfcDD5bsfL2Nj
-         MTBHgBehwVs/4AQcEbwR4w61KBZYMgVX2E+cBfYunc4e5+6rWhn9uhZz/aHPdF8ycGCa
-         LJW1dIPll5dc6xE6UdT8NjKIeILz69ZhFScaF0mQkTM5Y4gRJ8JFf4VLxsQrwyxZmj9K
-         E50108w4lLu3tQeNLmx7rVuVozH6UOimfgpCjSjn3UbFWUMyELMeiQdKavdivoQjDXl0
-         BFUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WbBbZJtOAAR9ogSmr5inY5EiHXQEhBZaLqZLWsUeMHE=;
-        b=uSaA7jyNBussrtik20qnlXMFx3uezbvsfnOarIVa+FczjHZ6BrWLKrUl2EGfnWXQOw
-         LQxxGFnLbOV578AgFFxkZ3UMx32/4Ethkxp6PyvhimZZ/dq0HNnsxaHm8js1b/fQ3xtC
-         yUlb3nIobUWhzWIffCdGa7nQu7gnQtxqqjCoAOXmFCteNbu63yF0ydfwS1f/F+uSnubG
-         paal/rGfel89pHc5bjsZ9dFdywK6Hc9Ic3v1e/sdZtb8ebae3DC3XvToLeEgaXYiwYYk
-         aQOpTnFir6UZZ8D6VkL0tNAUYUHo0fs2dIZbGh22noq57T5/AgK0cCu+2gA9ymQLF+3P
-         6rmA==
-X-Gm-Message-State: APjAAAU9ETqYPr5AT1RPIfN+CDSrAPOxi0nzEH2o+4Y/0XHqvblLiuRC
-        xYERwv+1vIKgD06tRIc8U3E=
-X-Google-Smtp-Source: APXvYqzDRk/zvtkM2zUmDrx/sUc0QZV4NiKmSYZvj1fKG58TZ+GxwTXEgoX72xhH4fBHxsmcjdLrtw==
-X-Received: by 2002:a63:8f1a:: with SMTP id n26mr1588449pgd.355.1582685683821;
-        Tue, 25 Feb 2020 18:54:43 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id o36sm370352pgl.24.2020.02.25.18.54.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 18:54:43 -0800 (PST)
-Date:   Tue, 25 Feb 2020 18:54:41 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH 0/2] AT8031 PHY timestamping support
-Message-ID: <20200226025441.GB10271@localhost>
-References: <20200225230819.7325-1-michael@walle.cc>
- <20200225235040.GF9749@lunn.ch>
- <9955C44A-8105-4087-8555-BAC5AE4AF25D@walle.cc>
+        id S1729403AbgBZDBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Feb 2020 22:01:04 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:50987 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727880AbgBZDBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Feb 2020 22:01:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582686062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H+NUxlpQe3kCfFqOvCc8dB80unus81dtyuT82SlUBwQ=;
+        b=P1BmYNvj8EJo0EFzczyLtvjMX7Wx08lfslIj3x2F6zmPxDNNnCngNvq2nyDPnC3vEC+KMw
+        wvAPpZ1ewUDnRD75q5tqhDtNbOlJC0jfSfoHBnBzIJAsZRhTAaZ7XHIDTDESws/CKDDru7
+        +RvyLMMidIWAKWhehwDtphEqKGr7GNU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-315-O4gEyti1MQ-CTj6ci_L3OA-1; Tue, 25 Feb 2020 22:00:58 -0500
+X-MC-Unique: O4gEyti1MQ-CTj6ci_L3OA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B118C140F;
+        Wed, 26 Feb 2020 03:00:56 +0000 (UTC)
+Received: from [10.72.13.217] (ovpn-13-217.pek2.redhat.com [10.72.13.217])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E7665C102;
+        Wed, 26 Feb 2020 03:00:42 +0000 (UTC)
+Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
+ using XDP
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        David Ahern <dahern@digitalocean.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+References: <20200226005744.1623-1-dsahern@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
+Date:   Wed, 26 Feb 2020 11:00:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9955C44A-8105-4087-8555-BAC5AE4AF25D@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200226005744.1623-1-dsahern@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 01:07:26AM +0100, Michael Walle wrote:
-> Am 26. Februar 2020 00:50:40 MEZ schrieb Andrew Lunn <andrew@lunn.ch>:
-> >That sounds fundamentally broken.
 
-Right.  It can't work unless the PHY latches the time stamp.
+On 2020/2/26 =E4=B8=8A=E5=8D=888:57, David Ahern wrote:
+> From: David Ahern <dahern@digitalocean.com>
+>
+> virtio_net currently requires extra queues to install an XDP program,
+> with the rule being twice as many queues as vcpus. From a host
+> perspective this means the VM needs to have 2*vcpus vhost threads
+> for each guest NIC for which XDP is to be allowed. For example, a
+> 16 vcpu VM with 2 tap devices needs 64 vhost threads.
+>
+> The extra queues are only needed in case an XDP program wants to
+> return XDP_TX. XDP_PASS, XDP_DROP and XDP_REDIRECT do not need
+> additional queues. Relax the queue requirement and allow XDP
+> functionality based on resources. If an XDP program is loaded and
+> there are insufficient queues, then return a warning to the user
+> and if a program returns XDP_TX just drop the packet. This allows
+> the use of the rest of the XDP functionality to work without
+> putting an unreasonable burden on the host.
+>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: David Ahern <dahern@digitalocean.com>
+> ---
+>   drivers/net/virtio_net.c | 14 ++++++++++----
+>   1 file changed, 10 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 2fe7a3188282..2f4c5b2e674d 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -190,6 +190,8 @@ struct virtnet_info {
+>   	/* # of XDP queue pairs currently used by the driver */
+>   	u16 xdp_queue_pairs;
+>  =20
+> +	bool can_do_xdp_tx;
+> +
+>   	/* I like... big packets and I cannot lie! */
+>   	bool big_packets;
+>  =20
+> @@ -697,6 +699,8 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+>   			len =3D xdp.data_end - xdp.data;
+>   			break;
+>   		case XDP_TX:
+> +			if (!vi->can_do_xdp_tx)
+> +				goto err_xdp;
 
-> This might be the case, but the datasheet (some older revision can
-> be found on the internet, maybe you find something) doesn't mention
-> it. Nor does the PTP "guide" (I don't know the exact name, I'd have
-> to check at work) of this PHY. Besides the timestamp there's also
-> the sequence number and the source port id which would need to be
-> read atomically together with the timestamp.
 
-Maybe the part is not intended to be used at all in this way?
+I wonder if using spinlock to synchronize XDP_TX is better than dropping=20
+here?
 
-AFAICT, PHYs like this are meant to feed a "PTP frame detected" pulse
-into the time stamping unit on the attached MAC.  The interrupt serves
-to allow the SW to gather the matching fields from the frame.
+Thanks
 
-Thanks,
-Richard
 
+>   			stats->xdp_tx++;
+>   			xdpf =3D convert_to_xdp_frame(&xdp);
+>   			if (unlikely(!xdpf))
+> @@ -870,6 +874,8 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   			}
+>   			break;
+>   		case XDP_TX:
+> +			if (!vi->can_do_xdp_tx)
+> +				goto err_xdp;
+>   			stats->xdp_tx++;
+>   			xdpf =3D convert_to_xdp_frame(&xdp);
+>   			if (unlikely(!xdpf))
+> @@ -2435,10 +2441,10 @@ static int virtnet_xdp_set(struct net_device *d=
+ev, struct bpf_prog *prog,
+>  =20
+>   	/* XDP requires extra queues for XDP_TX */
+>   	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> -			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> +		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available; XDP_TX =
+will not be allowed");
+> +		vi->can_do_xdp_tx =3D false;
+> +	} else {
+> +		vi->can_do_xdp_tx =3D true;
+>   	}
+>  =20
+>   	old_prog =3D rtnl_dereference(vi->rq[0].xdp_prog);
 
