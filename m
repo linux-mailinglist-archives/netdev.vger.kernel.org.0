@@ -2,106 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECC31708C2
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6797C1708C5
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 20:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727255AbgBZTO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 14:14:29 -0500
-Received: from correo.us.es ([193.147.175.20]:33608 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727091AbgBZTO2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 14:14:28 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id ACCACFFB62
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 20:14:19 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9EA4BDA3A3
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 20:14:19 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 94477DA38F; Wed, 26 Feb 2020 20:14:19 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BAA81DA72F;
-        Wed, 26 Feb 2020 20:14:17 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 26 Feb 2020 20:14:17 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 9A6BD42EF42A;
-        Wed, 26 Feb 2020 20:14:17 +0100 (CET)
-Date:   Wed, 26 Feb 2020 20:14:25 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        syzbot <syzbot+d195fd3b9a364ddd6731@syzkaller.appspotmail.com>
-Subject: Re: [Patch nf] netfilter: xt_hashlimit: unregister proc file before
- releasing mutex
-Message-ID: <20200226191425.3h2i3rn4xdanzfde@salvia>
-References: <20200213065352.6310-1-xiyou.wangcong@gmail.com>
- <20200218213524.5yuccwnl2eie6p6x@salvia>
- <CAM_iQpWfb7xgd2LuRmaXhRSJskJPsupFk0A7=dRXtMEjZJjr3w@mail.gmail.com>
- <20200218220507.cqlhd4kj4ukyjhuu@salvia>
- <CAM_iQpUYGVpUCatMHVKSx4jM9c6kbYxcWBV0--1mrQi6NbPhhg@mail.gmail.com>
- <20200226181106.ekb2mpmtgbxrpepz@salvia>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200226181106.ekb2mpmtgbxrpepz@salvia>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727470AbgBZTOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 14:14:55 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:60218 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727163AbgBZTOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 14:14:55 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CC65515AA59E0;
+        Wed, 26 Feb 2020 11:14:54 -0800 (PST)
+Date:   Wed, 26 Feb 2020 11:14:54 -0800 (PST)
+Message-Id: <20200226.111454.1070933318178678026.davem@davemloft.net>
+To:     amritha.nambiar@intel.com
+Cc:     netdev@vger.kernel.org, alexander.h.duyck@intel.com,
+        sridhar.samudrala@intel.com, sergei.shtylyov@cogentembedded.com
+Subject: Re: [net PATCH v2] net: Fix Tx hash bound checking
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <158257056094.10327.890174763453610916.stgit@anambiarhost.jf.intel.com>
+References: <158257056094.10327.890174763453610916.stgit@anambiarhost.jf.intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 11:14:55 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 07:11:06PM +0100, Pablo Neira Ayuso wrote:
-> On Wed, Feb 19, 2020 at 07:32:13PM -0800, Cong Wang wrote:
-> > On Tue, Feb 18, 2020 at 2:05 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > >
-> > > On Tue, Feb 18, 2020 at 01:40:26PM -0800, Cong Wang wrote:
-> > > > On Tue, Feb 18, 2020 at 1:35 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > > > >
-> > > > > On Wed, Feb 12, 2020 at 10:53:52PM -0800, Cong Wang wrote:
-> > > > > > Before releasing the global mutex, we only unlink the hashtable
-> > > > > > from the hash list, its proc file is still not unregistered at
-> > > > > > this point. So syzbot could trigger a race condition where a
-> > > > > > parallel htable_create() could register the same file immediately
-> > > > > > after the mutex is released.
-> > > > > >
-> > > > > > Move htable_remove_proc_entry() back to mutex protection to
-> > > > > > fix this. And, fold htable_destroy() into htable_put() to make
-> > > > > > the code slightly easier to understand.
-> > > > >
-> > > > > Probably revert previous one?
-> > > >
-> > > > The hung task could appear again if we move the cleanup
-> > > > back under mutex.
-> > >
-> > > How could the hung task appear again by reverting
-> > > c4a3922d2d20c710f827? Please elaborate.
-> > 
-> > Because the cfg.max could be as large as 8*HASHLIMIT_MAX_SIZE:
-> > 
-> >  311         if (hinfo->cfg.max == 0)
-> >  312                 hinfo->cfg.max = 8 * hinfo->cfg.size;
-> >  313         else if (hinfo->cfg.max < hinfo->cfg.size)
-> >  314                 hinfo->cfg.max = hinfo->cfg.size;
-> > 
-> > Not sure whether we can finish cleaning up 8*HASHLIMIT_MAX_SIZE
-> > entries within the time a hung task tolerates. This largely depends on
-> > how much contention the spinlock has, at least I don't want to bet
-> > on it.
-> 
-> Please, resend. Thanks.
+From: Amritha Nambiar <amritha.nambiar@intel.com>
+Date: Mon, 24 Feb 2020 10:56:00 -0800
 
-Sorry, I meant, applied, thanks.
+> Fixes the lower and upper bounds when there are multiple TCs and
+> traffic is on the the same TC on the same device.
+> 
+> The lower bound is represented by 'qoffset' and the upper limit for
+> hash value is 'qcount + qoffset'. This gives a clean Rx to Tx queue
+> mapping when there are multiple TCs, as the queue indices for upper TCs
+> will be offset by 'qoffset'.
+> 
+> v2: Fixed commit description based on comments.
+> 
+> Fixes: 1b837d489e06 ("net: Revoke export for __skb_tx_hash, update it to just be static skb_tx_hash")
+> Fixes: eadec877ce9c ("net: Add support for subordinate traffic classes to netdev_pick_tx")
+> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+> Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+
+Applied and queued up for -stable, thanks.
