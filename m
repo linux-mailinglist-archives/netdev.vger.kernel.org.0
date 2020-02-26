@@ -2,125 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AFBA170627
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1FC3170635
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:37:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbgBZReK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 12:34:10 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54686 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726695AbgBZReJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:34:09 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 627D0B80084;
-        Wed, 26 Feb 2020 17:34:08 +0000 (UTC)
-Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 26 Feb 2020 17:33:22 +0000
-From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net] sfc: fix timestamp reconstruction at 16-bit rollover
- points
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
-Message-ID: <ec166593-f68f-7834-e260-cd8ec6533054@solarflare.com>
-Date:   Wed, 26 Feb 2020 17:33:19 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726933AbgBZRhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 12:37:05 -0500
+Received: from www62.your-server.de ([213.133.104.62]:42022 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgBZRhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:37:05 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j70c8-0002db-0I; Wed, 26 Feb 2020 18:36:52 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j70c7-000Is6-Fc; Wed, 26 Feb 2020 18:36:51 +0100
+Subject: Re: [PATCH bpf-next v4 0/5] Make probes which emit dmesg warnings
+ optional
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+References: <20200226165941.6379-1-mrostecki@opensuse.org>
+ <e4777396-dbf0-855d-beaf-ba7fd533a4fb@isovalent.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <03558a25-d07c-d4df-6840-4a171f18d893@iogearbox.net>
+Date:   Wed, 26 Feb 2020 18:36:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <e4777396-dbf0-855d-beaf-ba7fd533a4fb@isovalent.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.147]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25254.003
-X-TM-AS-Result: No-8.733100-8.000000-10
-X-TMASE-MatchedRID: Nfvp/n5ZPlyczisXkLghgyNHByyOpYYClS5IbQ8u3TpJfyfUaPjAAU+m
-        MtGpzwaWBew7/wAwiM0A/Q43xHXqx6H2g9syPs888Kg68su2wyFLXPA26IG0hN9RlPzeVuQQNaR
-        gQ20sMyJB/OPnryYt6sq6e77Mgqlnr9KUdnnQCWxo9ddFVIEGi0ewdu9S21aifyjNXlbBvnQF2S
-        1V5QxD3TqRrKEz1WT+rkOiPvIbhYI/m3DAGhtJ3rdHEv7sR/OwbaH3VbOE/TlpsnGGIgWMmT0Az
-        Z9LNhUviborFBsIQOuuZ3ZhBb1yQ2d4rNn/zJIrndu3heVAxaNMhH/KpYxyu46/j5xrRs7T8P3P
-        /jAMQ1MlNmfS6A/uHJsoi2XrUn/JyeMtMD9QOgAYvR9ppOlv1vcUt5lc1lLgRktVxdpRt2LxGmH
-        ZNeitJDjf4ThtY9CGiBv7xN8NyK6qmNwUDsmgup6oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.733100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25254.003
-X-MDID: 1582738449-9SLgBG6u8RTS
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25734/Tue Feb 25 15:06:17 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't just use the top bits of the last sync event as they could be
-off-by-one every 65,536 seconds, giving an error in reconstruction of
-65,536 seconds.
+On 2/26/20 6:22 PM, Quentin Monnet wrote:
+> 2020-02-26 17:59 UTC+0100 ~ Michal Rostecki <mrostecki@opensuse.org>
+>> Feature probes in bpftool related to bpf_probe_write_user and
+>> bpf_trace_printk helpers emit dmesg warnings which might be confusing
+>> for people running bpftool on production environments. This patch series
+>> addresses that by filtering them out by default and introducing the new
+>> positional argument "full" which enables all available probes.
+>>
+>> The main motivation behind those changes is ability the fact that some
+>> probes (for example those related to "trace" or "write_user" helpers)
+>> emit dmesg messages which might be confusing for people who are running
+>> on production environments. For details see the Cilium issue[0].
+>>
+>> v1 -> v2:
+>> - Do not expose regex filters to users, keep filtering logic internal,
+>> expose only the "full" option for including probes which emit dmesg
+>> warnings.
+>>
+>> v2 -> v3:
+>> - Do not use regex for filtering out probes, use function IDs directly.
+>> - Fix bash completion - in v2 only "prefix" was proposed after "macros",
+>>    "dev" and "kernel" were not.
+>> - Rephrase the man page paragraph, highlight helper function names.
+>> - Remove tests which parse the plain output of bpftool (except the
+>>    header/macros test), focus on testing JSON output instead.
+>> - Add test which compares the output with and without "full" option.
+>>
+>> v3 -> v4:
+>> - Use enum to check for helper functions.
+>> - Make selftests compatible with older versions of Python 3.x than 3.7.
+>>
+>> [0] https://github.com/cilium/cilium/issues/10048
+>>
+>> Michal Rostecki (5):
+>>    bpftool: Move out sections to separate functions
+>>    bpftool: Make probes which emit dmesg warnings optional
+>>    bpftool: Update documentation of "bpftool feature" command
+>>    bpftool: Update bash completion for "bpftool feature" command
+>>    selftests/bpf: Add test for "bpftool feature" command
+>>
+>>   .../bpftool/Documentation/bpftool-feature.rst |  19 +-
+>>   tools/bpf/bpftool/bash-completion/bpftool     |   3 +-
+>>   tools/bpf/bpftool/feature.c                   | 283 +++++++++++-------
+>>   tools/testing/selftests/.gitignore            |   5 +-
+>>   tools/testing/selftests/bpf/Makefile          |   3 +-
+>>   tools/testing/selftests/bpf/test_bpftool.py   | 178 +++++++++++
+>>   tools/testing/selftests/bpf/test_bpftool.sh   |   5 +
+>>   7 files changed, 373 insertions(+), 123 deletions(-)
+>>   create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
+>>   create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
+>>
+> 
+> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+> (Please keep tags between versions.)
+> 
+> Your change looks good. The tests in patch 5 still pass with Python 3.7.5 (but I have not tried to run with an older version of Python).
 
-This patch uses the difference in the bottom 16 bits (mod 2^16) to
-calculate an offset that needs to be applied to the last sync event to
-get to the current time.
+Looks better now ...
 
-Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
----
- drivers/net/ethernet/sfc/ptp.c | 38 +++++++++++++++++++++++++++++++---
- 1 file changed, 35 insertions(+), 3 deletions(-)
+# ./test_bpftool.sh
+test_feature_dev_json (test_bpftool.TestBpftool) ... ok
+test_feature_kernel (test_bpftool.TestBpftool) ... ok
+test_feature_kernel_full (test_bpftool.TestBpftool) ... ok
+test_feature_kernel_full_vs_not_full (test_bpftool.TestBpftool) ... ok
+test_feature_macros (test_bpftool.TestBpftool) ... ok
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index af15a737c675..59b4f16896a8 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -560,13 +560,45 @@ efx_ptp_mac_nic_to_ktime_correction(struct efx_nic *efx,
- 				    u32 nic_major, u32 nic_minor,
- 				    s32 correction)
- {
-+	u32 sync_timestamp;
- 	ktime_t kt = { 0 };
-+	s16 delta;
- 
- 	if (!(nic_major & 0x80000000)) {
- 		WARN_ON_ONCE(nic_major >> 16);
--		/* Use the top bits from the latest sync event. */
--		nic_major &= 0xffff;
--		nic_major |= (last_sync_timestamp_major(efx) & 0xffff0000);
-+
-+		/* Medford provides 48 bits of timestamp, so we must get the top
-+		 * 16 bits from the timesync event state.
-+		 *
-+		 * We only have the lower 16 bits of the time now, but we do
-+		 * have a full resolution timestamp at some point in past. As
-+		 * long as the difference between the (real) now and the sync
-+		 * is less than 2^15, then we can reconstruct the difference
-+		 * between those two numbers using only the lower 16 bits of
-+		 * each.
-+		 *
-+		 * Put another way
-+		 *
-+		 * a - b = ((a mod k) - b) mod k
-+		 *
-+		 * when -k/2 < (a-b) < k/2. In our case k is 2^16. We know
-+		 * (a mod k) and b, so can calculate the delta, a - b.
-+		 *
-+		 */
-+		sync_timestamp = last_sync_timestamp_major(efx);
-+
-+		/* Because delta is s16 this does an implicit mask down to
-+		 * 16 bits which is what we need, assuming
-+		 * MEDFORD_TX_SECS_EVENT_BITS is 16. delta is signed so that
-+		 * we can deal with the (unlikely) case of sync timestamps
-+		 * arriving from the future.
-+		 */
-+		delta = nic_major - sync_timestamp;
-+
-+		/* Recover the fully specified time now, by applying the offset
-+		 * to the (fully specified) sync time.
-+		 */
-+		nic_major = sync_timestamp + delta;
- 
- 		kt = ptp->nic_to_kernel_time(nic_major, nic_minor,
- 					     correction);
--- 
-2.20.1
+----------------------------------------------------------------------
+Ran 5 tests in 0.253s
 
+OK
+
+... applied, thanks!
