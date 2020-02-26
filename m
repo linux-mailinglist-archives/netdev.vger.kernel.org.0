@@ -2,118 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 916BC170B50
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:15:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4882F170B60
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727867AbgBZWPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 17:15:06 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56054 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727715AbgBZWPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 17:15:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582755304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BpZS5KpF2EgyTb06d65Ogcl15EGk9qadh3W5g3HMimw=;
-        b=COCz3GIIhK8fGkYIuVhaMhKkZ19Ec0LTBS6pQNVdYQTCclwT/1tliNIpqnlkuvbrFXqHjO
-        Wz+yb0UxZ3WSWadSIgnvLYmHaU5and2dw7alVQEbV8bYpDT++6EYsY8CyWwexy78V9tfta
-        5t+4rctAvnfEYGkXjQARHoiY4LfGGv0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-41-_xyZB9j8PcewRMhx476I6Q-1; Wed, 26 Feb 2020 17:15:00 -0500
-X-MC-Unique: _xyZB9j8PcewRMhx476I6Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B193E800D5A;
-        Wed, 26 Feb 2020 22:14:58 +0000 (UTC)
-Received: from ovpn-112-57.rdu2.redhat.com (ovpn-112-57.rdu2.redhat.com [10.10.112.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3727E60BE2;
-        Wed, 26 Feb 2020 22:14:56 +0000 (UTC)
-Message-ID: <bd04741b8a8f07e1f1b622cf28ac1ed89d964509.camel@redhat.com>
-Subject: Re: [RFC] wwan: add a new WWAN subsystem
-From:   Dan Williams <dcbw@redhat.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Alex Elder <elder@linaro.org>, m.chetan.kumar@intel.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Date:   Wed, 26 Feb 2020 16:15:53 -0600
-In-Reply-To: <983917b5637ce1d9948c94f638d857d37a2ab808.camel@sipsolutions.net>
-References: <20200225100053.16385-1-johannes@sipsolutions.net>
-         <20200225105149.59963c95aa29.Id0e40565452d0d5bb9ce5cc00b8755ec96db8559@changeid>
-         <20200225151521.GA7663@lunn.ch>
-         <983917b5637ce1d9948c94f638d857d37a2ab808.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727859AbgBZWT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 17:19:59 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38880 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727715AbgBZWT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 17:19:59 -0500
+Received: by mail-ot1-f67.google.com with SMTP id z9so1021870oth.5;
+        Wed, 26 Feb 2020 14:19:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=APzUm9Uqdb1AHoFIbybkkvfceWP8Qb3Vps+wDfO9Ixc=;
+        b=AKd+nZpvj1FLe7xAA674eqB2/r4NYLvwss7eL8uLyQZLaHdT48CsVm8WCLQyJLWtOK
+         U5JDKWTjY6vMN2wzhN4fROBspxx2J7O7Vj09EEXtnEbkueqCCg/+2oPSw7EJRH6uZwJV
+         AhzCiIvOzgQK3EKkl8y95k1rYMc3hEhI1pfmewBpBEGpd04ZdUrMb+M8JB3qXstGJfPe
+         rpFi2xCbCztHeMbPMKiMmrj+TxPwW7JJtXS1o4/P9illFMklhd4oXFpPmij8sNp1+O16
+         MEb/Jegc7AveIWG0GAajjXk6Ze5I3kh0q9tQ9BbJpdzScAUQdxWRgEEwTAjJGr2HSR04
+         Nszw==
+X-Gm-Message-State: APjAAAV/ZzBHPcfXJE6hBlOThNKFHATifWSO/vPMsavpDuscbY+1YM6c
+        4XxopJ5h6ZmEjSGGbPSzwA==
+X-Google-Smtp-Source: APXvYqzJ67z3QKNb5f0MEKdgKj5bNuL222LJdlX3AvANxrD0qrkW110WbpjtOgkTN1PvTjI4SZ10xA==
+X-Received: by 2002:a9d:638d:: with SMTP id w13mr862127otk.220.1582755598032;
+        Wed, 26 Feb 2020 14:19:58 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id k18sm1246187oiw.44.2020.02.26.14.19.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 14:19:57 -0800 (PST)
+Received: (nullmailer pid 4045 invoked by uid 1000);
+        Wed, 26 Feb 2020 22:19:56 -0000
+Date:   Wed, 26 Feb 2020 16:19:56 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Re: [for-next PATCH 2/5] dt-bindings: phy: ti: gmii-sel: add support
+ for am654x/j721e soc
+Message-ID: <20200226221956.GA3992@bogus>
+References: <20200222120358.10003-1-grygorii.strashko@ti.com>
+ <20200222120358.10003-3-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200222120358.10003-3-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-02-25 at 16:39 +0100, Johannes Berg wrote:
-> On Tue, 2020-02-25 at 16:15 +0100, Andrew Lunn wrote:
+On Sat, 22 Feb 2020 14:03:55 +0200, Grygorii Strashko wrote:
+> TI AM654x/J721E SoCs have the same PHY interface selection mechanism for
+> CPSWx subsystem as TI SoCs (AM3/4/5/DRA7), but registers and bit-fields
+> placement is different.
 > 
-> > Looking at it bottom up, is the WWAN device itself made up of
-> > multiple
-> > devices? Are the TTYs separate drivers to the packet moving
-> > engines?
+> This patch adds corresponding compatible strings to enable support for TI
+> AM654x/J721E SoCs.
 > 
-> Possibly, yes, it depends a bit.
-> 
-> > They have there own USB end points, and could just be standard CDC
-> > ACM?
-> 
-> Yeah, for a lot of USB devices that's indeed the case.
-
-For exmaple, the most common non-embedded case is USB WWAN cards
-(whether sticks or M.2/PCIe minicard):
-
-* one or more "control" ports, either CDC-ACM that speak AT commands or
-CDC-WDM that speak QMI, AT, or MBIM. Exposed by drivers like cdc-acm,
-cdc-wdm, option, qcserial, qcaux, hso, sierra, etc.
-
-* one or more "data" ports that are exposed by USB network drivers.
-Exposed by drivers like cdc-ether, cdc-ncm, qmi-wwan, sierra-net, hso,
-etc.
-
-In most cases the data port needs to be configured using specific
-commands from the control ports to be useful and pass traffic. They are
-logically the same device, but use totally separate kernel drivers and
-sometimes buses.
-
-But that's only for USB. Qualcomm embedded stuff will use a different
-bus, other devices use PCI, some have both platform serial and USB
-connections. But I don't think we need a perfect solution, just
-something that handles a bunch of the cases that we can improve over
-time.
-
-Dan
-
-> > driver/base/component.c could be useful for bringing together these
-> > individual devices to form the whole WWAN device.
-> 
-> Huh, I was unaware of this, I'll take a look!
-> 
-> A very brief look suggests that it wants to have a driver for the
-> whole
-> thing in the end, which isn't really true here, but perhaps we could
-> "make one up" and have that implement the userspace API. I need to
-> take
-> a closer look, thanks for the pointer.
-> 
-> > Plus you need to avoid confusion by not adding another "component
-> > framework" which means something totally different to the existing
-> > component framework.
-> 
-> :)
-> 
-> johannes
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>  Documentation/devicetree/bindings/phy/ti-phy-gmii-sel.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
+Acked-by: Rob Herring <robh@kernel.org>
