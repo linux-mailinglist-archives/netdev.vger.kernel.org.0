@@ -2,100 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF517170929
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 21:02:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCFDA170936
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 21:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbgBZUCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 15:02:44 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:39282 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727257AbgBZUCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 15:02:43 -0500
-Received: by mail-ot1-f65.google.com with SMTP id 77so647985oty.6
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 12:02:43 -0800 (PST)
+        id S1727457AbgBZUIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 15:08:11 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42252 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727277AbgBZUIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 15:08:11 -0500
+Received: by mail-wr1-f68.google.com with SMTP id p18so297515wre.9
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 12:08:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oYPZLk9fblhfI7X9fM3xbDPsnJvljmxVNytskCU+vlA=;
-        b=UyP5fnk2tcq/pPIf8UiuwxkR5072gZy0q/BJ2uagssjQU8qPl2XlFZef/INcAqm/G/
-         AIzv7Fc+eTguGy7/felWPoIFpMQfSwUovQC59vXMK3nK9Vld9VdxSJVDicbvgWOoN9Hc
-         lp6Ttr3B2PC+IVX+BU48YAaEoSpQUtEPZEVOyu252uIIjzfQutowIm9kF5gwglA+Mga6
-         WWmBOfvwOmDJ4tDldTih3mXrVaeidJaV15tBRGEoVRZ4mnxtChsEM3sWHWTcRg38Tv9P
-         1liVai5ZMM8MDyDZbBiD/OsEkAEtf+9uLwxyaxcV1jCFl7V2wMCKotF0lyMmLkNbF9cb
-         35sQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6nmkRakw8L5BPvaGIGQR5OtpcJrK8hwwBj5MXGXP5Rk=;
+        b=I05naOND32Ne2tXwSFGddJ0mmAtgAHaZuKDa5qhvMQIWdxnKi6uMMKUxFsaEh9iq3W
+         g0dLPQNZDVx96rgPyKtbfBh1z1q0iloohSfvEflcmcZx8s3hWGkdhWb8AFXBoiZoLB8R
+         ludlDfge6p2iRknSRpoufVaYjqSBNIgbgqgpvR5eWCkFjpHT8yziV+EQWMyDO9999ti/
+         RO2cQnH1H7njIkjNeeoedQWy8zvFvGr8WYoL2xZmC7+wv1DIXkPFGfjuzc/Exc2HYHex
+         Papie4zG18EBrg+8nw3aaB637ynKlUuHsVGwO5Hi5DDViPvgEYePXWz5whWjXrsf6Zs/
+         bTFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oYPZLk9fblhfI7X9fM3xbDPsnJvljmxVNytskCU+vlA=;
-        b=Ei+k4s4LH9cy1fbTeVJsLGEJk2jSE4vfe9i/4G0R+qout6cOe5PugribDmZmADNWFs
-         DjVHLs4C0ztMXwbTaMTmCkCx6ceAX8/1AZXKPle2DOkTjEQQYT1paGjqyBLO1sN5hdUX
-         WeSd3kWq8V/E8QGxN08cXlB7LbnY87Cd0wrfY4zuG4phxeADqtcbC0AUJC7eUJ0iSeEm
-         OsIiLYFpPctMOtP//XsxCxm7dB4D0hG7tykikh+Tim/4FbO1TE2wJwX/oH+Kmsl/qVE1
-         PnTe6Lshs87yLuc7XJtyo/9tyxQtFFRpdQtokQg4z2hKKA30BXfCSXO/D2baQ1tnjNZ3
-         jzYA==
-X-Gm-Message-State: APjAAAXuNlUkRNJ2R1nIXvlZA12Hf/VXnKUXVhtspUaIgdq92KS/kNHR
-        ioEsvriHopHize1ZXqfLoOScJ/jpUZeB2a8O1xRQMg==
-X-Google-Smtp-Source: APXvYqwWb32V/0K0pdQElKXeofe1I4diMq4dFnLk2SNlKDa4ZAncUqcmsHgASgI17lp4ZQoieYvDqTld7vL+VECLrE4=
-X-Received: by 2002:a9d:6ac2:: with SMTP id m2mr356628otq.191.1582747362553;
- Wed, 26 Feb 2020 12:02:42 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6nmkRakw8L5BPvaGIGQR5OtpcJrK8hwwBj5MXGXP5Rk=;
+        b=ANVEY0uzti4aQZfmtFeUZVc1VCagxVP5aUj+Jagqk9RGABTABe3YCVfhLdg7UVGYhF
+         TFm3ZLUIQETOSKmC3u9kXnDOt0xkFM6mpF17w28tfobEaB4sT4hCCEfsb2Y9ibI15ZgC
+         /cNPm93JVUvjODYCUhVRV/uvvtkenl+Un54CEBMGIVJTEF//RCdwIG9K09uEeSbPEAUU
+         ZuG/jnB1FU2cOa9E93eWlQUdZQAWqEGz7Xs7P+/zQyZFmgXmrPbFngRbi4s75tjLBEe3
+         pyd04SFHBSkGBXUdYPwFu2CwmE/2G90qAxFlomQtL1ItRxCI3pN9tX32eZ4fjrm/nU3y
+         eYZg==
+X-Gm-Message-State: APjAAAURIYlwdPEefNxv14iQHB7k2aHDmLU5pt9H57xyvtVdNWnfC3+l
+        iywSeEdTqPImJdDC2NdljatBknSj
+X-Google-Smtp-Source: APXvYqxTwe55irC/TjWCYNe9vVXLGOn+90Muxc6WXLOaIKsbK9fMP6lQUL4EZcDNvD4ab0gc6dEHaA==
+X-Received: by 2002:adf:e543:: with SMTP id z3mr301985wrm.369.1582747687927;
+        Wed, 26 Feb 2020 12:08:07 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:38ea:e5eb:bce2:2ee3? (p200300EA8F29600038EAE5EBBCE22EE3.dip0.t-ipconnect.de. [2003:ea:8f29:6000:38ea:e5eb:bce2:2ee3])
+        by smtp.googlemail.com with ESMTPSA id i18sm1493200wrv.30.2020.02.26.12.08.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Feb 2020 12:08:07 -0800 (PST)
+Subject: Re: net/sched/sch_generic.c stacktrace
+To:     Guido Trentalancia <guido@trentalancia.com>, kuznet@ms2.inr.ac.ru
+Cc:     netdev@vger.kernel.org
+References: <1582722037.31734.10.camel@trentalancia.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <140eb61d-6be1-3c0e-d5c4-9390975616a9@gmail.com>
+Date:   Wed, 26 Feb 2020 21:08:01 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200221014604.126118-1-shakeelb@google.com> <20200226.110749.77396284962321904.davem@davemloft.net>
-In-Reply-To: <20200226.110749.77396284962321904.davem@davemloft.net>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 26 Feb 2020 12:02:31 -0800
-Message-ID: <CALvZod5TsauERhaCqa1OZp4FaX4nq_UBL84=siESEG=Uk4LYuQ@mail.gmail.com>
-Subject: Re: [PATCH v3] cgroup: memcg: net: do not associate sock with
- unrelated cgroup
-To:     David Miller <davem@davemloft.net>
-Cc:     Eric Dumazet <edumazet@google.com>, Roman Gushchin <guro@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Tejun Heo <tj@kernel.org>, Greg Thelen <gthelen@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1582722037.31734.10.camel@trentalancia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 11:07 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Shakeel Butt <shakeelb@google.com>
-> Date: Thu, 20 Feb 2020 17:46:04 -0800
->
-> > We are testing network memory accounting in our setup and noticed
-> > inconsistent network memory usage and often unrelated cgroups network
-> > usage correlates with testing workload. On further inspection, it
-> > seems like mem_cgroup_sk_alloc() and cgroup_sk_alloc() are broken in
-> > IRQ context specially for cgroup v1.
-> >
-> > mem_cgroup_sk_alloc() and cgroup_sk_alloc() can be called in IRQ context
-> > and kind of assumes that this can only happen from sk_clone_lock()
-> > and the source sock object has already associated cgroup. However in
-> > cgroup v1, where network memory accounting is opt-in, the source sock
-> > can be unassociated with any cgroup and the new cloned sock can get
-> > associated with unrelated interrupted cgroup.
-> >
-> > Cgroup v2 can also suffer if the source sock object was created by
-> > process in the root cgroup or if sk_alloc() is called in IRQ context.
-> > The fix is to just do nothing in interrupt.
-> >
-> > WARNING: Please note that about half of the TCP sockets are allocated
-> > from the IRQ context, so, memory used by such sockets will not be
-> > accouted by the memcg.
->
-> Then if we do this then we have to have some kind of subsequent change
-> to attach these sockets to the correct cgroup, right?
+On 26.02.2020 14:00, Guido Trentalancia wrote:
+> Here is a stacktrace I get with kernel 5.4.19 after unplugging and
+> replugging the Ethernet interface.
+> 
+Strange is that link comes up with 10Mbps/half. Most likely there's an
+issue with the link, resulting in the tx timeout.
+-> Is this reproducable?
+-> What was the last known good kernel version?
+-> Standard question: did you check with another cable?
 
-Currently we can potentially charge wrong cgroup. With this patch that
-will be fixed but potentially half of sockets remain unaccounted. I
-have a followup (incomplete) patch [1] to fix that. I will send the
-next version soon.
+Also a full dmesg log would be helpful.
 
-[1] https://lore.kernel.org/linux-mm/20200222010456.40635-1-shakeelb@google.com/
+
+> Most probably the issue also affects latest git from a couple of days
+> ago (at least the code in net/sched/sch_generic.c).
+> 
+> The crash is not critical and the network functionality does not seem
+> to be affected.
+> 
+> [ 6663.598726] r8169 0000:02:00.0 eth1: Link is Down
+> [ 6752.433571] r8169 0000:02:00.0 eth1: Link is Up - 10Mbps/Half - flow control off
+> [ 6763.194144] ------------[ cut here ]------------
+> [ 6763.194149] NETDEV WATCHDOG: eth1 (r8169): transmit queue 0 timed out
+> [ 6763.194177] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:447 dev_watchdog+0x1e3/0x1f0
+> [ 6763.194178] Modules linked in: nf_conntrack_netlink nfnetlink xt_iprange nf_conntrack_sip xt_CT ipv6 iptable_raw
+> [ 6763.194245] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G                T 5.4.19 #14
+> [ 6763.194254] RIP: 0010:dev_watchdog+0x1e3/0x1f0
+> [ 6763.194258] Code: 48 63 55 e0 eb 91 4c 89 ef c6 05 20 20 a6 00 01 e8 02 07 fc ff 48 89 c2 44 89 e1 4c 89 ee 48 c7 c7 60 3d dc a3 e8 39 42 a3 ff <0f> 0b eb bc 66 0f 1f 84 00 00 00 00 00 41 54 49 89 d4 55 48 89 f5
+> [ 6763.194260] RSP: 0018:ffff9ba340130ea8 EFLAGS: 00010286
+> [ 6763.194264] RAX: 0000000000000000 RBX: ffff8e009f856400 RCX: 0000000000000006
+> [ 6763.194266] RDX: 0000000000000007 RSI: 0000000000000082 RDI: ffff8e00a6a563d0
+> [ 6763.194268] RBP: ffff8e00a3c7c440 R08: 0000000000000001 R09: 0000000000000366
+> [ 6763.194269] R10: ffffffffa45309e0 R11: 0000000000000004 R12: 0000000000000000
+> [ 6763.194271] R13: ffff8e00a3c7c000 R14: ffff9ba340130ef0 R15: ffffffffa4005100
+> [ 6763.194274] FS:  0000000000000000(0000) GS:ffff8e00a6a40000(0000) knlGS:0000000000000000
+> [ 6763.194277] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 6763.194279] CR2: 00007fb9e2568000 CR3: 000000012000a002 CR4: 00000000003606e0
+> [ 6763.194281] Call Trace:
+> [ 6763.194284]  <IRQ>
+> [ 6763.194292]  ? qdisc_put_unlocked+0x30/0x30
+> [ 6763.194299]  call_timer_fn.isra.0+0x19/0x80
+> [ 6763.194304]  run_timer_softirq+0x310/0x360
+> [ 6763.194311]  ? timerqueue_add+0x6d/0xb0
+> [ 6763.194316]  ? __hrtimer_run_queues+0x125/0x180
+> [ 6763.194323]  __do_softirq+0xd7/0x216
+> [ 6763.194330]  irq_exit+0x9b/0xa0
+> [ 6763.194336]  smp_apic_timer_interrupt+0x5e/0x90
+> [ 6763.194342]  apic_timer_interrupt+0xf/0x20
+> [ 6763.194344]  </IRQ>
+> [ 6763.194350] RIP: 0010:cpuidle_enter_state+0x11f/0x2a0
+> [ 6763.194353] Code: e8 56 3d b0 ff 31 ff 49 89 c6 e8 8c 48 b0 ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 65 01 00 00 31 ff e8 b5 05 b5 ff fb 45 85 ed <0f> 88 c0 00 00 00 49 63 f5 48 8d 04 76 48 c1 e0 05 4c 89 f1 8b 7c
+> [ 6763.194356] RSP: 0018:ffff9ba3400cbe88 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+> [ 6763.194359] RAX: ffff8e00a6a5fb00 RBX: ffffffffa4052460 RCX: 000000000000001f
+> [ 6763.194361] RDX: 0000000000000000 RSI: 00000000471c745e RDI: 0000000000000000
+> [ 6763.194363] RBP: 00000626adb99d58 R08: 00000626adc8a08b R09: 000000007fffffff
+> [ 6763.194365] R10: ffff8e00a6a5ec20 R11: ffff8e00a6a5ec00 R12: ffff8e00a6a68e10
+> [ 6763.194366] R13: 0000000000000004 R14: 00000626adc8a08b R15: 0000000000000000
+> [ 6763.194373]  ? cpuidle_enter_state+0x104/0x2a0
+> [ 6763.194377]  cpuidle_enter+0x24/0x40
+> [ 6763.194382]  do_idle+0x1bf/0x230
+> [ 6763.194387]  cpu_startup_entry+0x14/0x20
+> [ 6763.194392]  start_secondary+0x153/0x1a0
+> [ 6763.194397]  secondary_startup_64+0xa4/0xb0
+> [ 6763.194400] ---[ end trace 56803b552c779a28 ]---
+> 
+
