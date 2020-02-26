@@ -2,127 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2410416F9BA
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9574216F9BB
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:39:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbgBZIjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 03:39:35 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:36330 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727311AbgBZIje (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 03:39:34 -0500
-Received: by mail-wm1-f67.google.com with SMTP id p17so2025725wma.1
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 00:39:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8nVtU03geS64c6/P1IkRrFy9adLtKUAjGMeuUPNWeyk=;
-        b=j61ywaT285WSwG5gzkxzs+l+mbRR3cWKP54v/2DjevEXEeKhPJVPqFwzedFiIsgVOg
-         k/OEDFP/6fVnB9GyOozyYZOI/W8r0lA4g3yaT5FbD+h3+knJkh3V+jBg6l8Y+4enEE3M
-         YaU6B3lk2gaRk8OSWhspDjgKdxNekHSZnsF+6Xke28kQKmDw11JFgJEyCEkJY9A8rp/j
-         thHsHaeAbCNEe+jezbjHMrOrA4Pkeq8fhMnRYcfAJyYndIbgMHC1ikvOjZKSc+qvDobd
-         mYn2D2fq3MMgAfSd5CZsEiUovZlAgqb/Ko/675XYnvCMDv5y4sxvGOWbMCxKXaQuPmnG
-         JJxQ==
+        id S1727699AbgBZIjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 03:39:42 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37730 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727443AbgBZIjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 03:39:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582706381;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=j4ib8rLNz2Tz7MXMOeIU983Q6f8JUZBSKJwKpF7FZSI=;
+        b=UIaQ4bo54h7wex9wUbIO2IoG7pc9XeFg5aooDOSWoOwdbdRRv7EMDDajWvfHiC55h1/Jjk
+        0G3E3hwg79YSewl+tn0pgZrmL+5XlhP2uRiDHwBxX6kJMNTPevGYTRktzGofs2ALPYHQNW
+        67A2qj892yB3Zle4I09Ou6rMlmfC1MQ=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-RwP3s2csOfCF6GHEufrUbw-1; Wed, 26 Feb 2020 03:39:39 -0500
+X-MC-Unique: RwP3s2csOfCF6GHEufrUbw-1
+Received: by mail-qv1-f71.google.com with SMTP id g9so2943934qvy.20
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 00:39:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8nVtU03geS64c6/P1IkRrFy9adLtKUAjGMeuUPNWeyk=;
-        b=fMqXBmX5K48cy+FurU/Lkm4E3F3xEsYB+w9SqqRpR/A2PoR7q+DidQxtufcAFWqPe5
-         sbPmBljMjBi1YvjPL+uqqkQmbTtqujv0e1nicqk/ATV20P4I29hU6FYygh2ZPJNJVQbv
-         Ie58rzCJdoOmTA4h1VR0lAfM9sPjeZZqRRlnhHE3ucz3MIl2s70gfcDoMaeNc2vy7Y6S
-         e2k5UE7GMwTgyFtHeWnSP0Nejob1rPch6LPFvgLkjZ1J3CcBwYuguI7EZ+g5JQvep49s
-         D1ApvzHbB3WmoFKQPE6UzGICcoDTmWqeFs6fqpLruB89+6niGMYJQMrpT+U37n3JdUZ0
-         eJ+w==
-X-Gm-Message-State: APjAAAX2esCd2rDcuafH3ZZlboHOn+ZJCUNSBL1oVkk06QCDqv6j9yYK
-        QnUjObV3A65jSG0w4PudPYy8zMxP4bc=
-X-Google-Smtp-Source: APXvYqyTTKRDnL/Dr386+Uqv9IV/lbqU+VqvrJLMqQg5YlKB34sZdWQK7RkqlqGwwCHZ2kmdKgHzjQ==
-X-Received: by 2002:a1c:f615:: with SMTP id w21mr3284264wmc.152.1582706366496;
-        Wed, 26 Feb 2020 00:39:26 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id t1sm1965206wma.43.2020.02.26.00.39.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j4ib8rLNz2Tz7MXMOeIU983Q6f8JUZBSKJwKpF7FZSI=;
+        b=HyzfQwKlLjaMbAB/LTabFybQj4ejBbCMZSXImQcoMklAHEr7sHTDzcM6NGKtJSug5t
+         CJKyTLFw7E3FOmmEJFYzBxkheqClQi+4aZueKc6wsgg5RhA27vZHFWNxyH2TRJEMjs3i
+         fG38NvHJHZ8UeRV1ibP99nfX4T6C0lRRrp2POgwMaRGhJ24s42RrcbcSfpS+974Yvyt9
+         vWwffThuHmvqxViqrLOkfYNfqLRi8U/QzcQ5OOdRGH3PHZPPDApPojUFVY8hocCFQgaB
+         4ZxJOfLsbghAmQpmh8sKpThyzIEfjFnXZK0oDBVkpiblXNqXZRIUJDMsKnjcDkNw7hOE
+         EPwg==
+X-Gm-Message-State: APjAAAU2SrfjUL/4nLLTwKdU/oBnmkeOr1ShPU6bv1GOsYEyAp/UafWM
+        wDao1AIHcKTT7YQf/7F0A+Q6hejSx8WPzJOTxJLM7CKMvoCxc6ivjk2dxJFY/jap6MaFwfmB6gA
+        S9cwQN4e+OR0aWVQl
+X-Received: by 2002:a0c:fa4b:: with SMTP id k11mr3926130qvo.55.1582706378809;
+        Wed, 26 Feb 2020 00:39:38 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyIY2s4RQq04c8OXA53cLP/e7G2Xm1zfOoi80CXAqXqraoLcoGGR4rm8HaM0w2wNsr/m/HVkw==
+X-Received: by 2002:a0c:fa4b:: with SMTP id k11mr3926114qvo.55.1582706378563;
+        Wed, 26 Feb 2020 00:39:38 -0800 (PST)
+Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
+        by smtp.gmail.com with ESMTPSA id k11sm722492qti.68.2020.02.26.00.39.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 00:39:26 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next 4/4] mlxsw: spectrum: Add mlxsw_sp_span_ops.buffsize_get for Spectrum-3
-Date:   Wed, 26 Feb 2020 09:39:20 +0100
-Message-Id: <20200226083920.16232-5-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200226083920.16232-1-jiri@resnulli.us>
-References: <20200226083920.16232-1-jiri@resnulli.us>
+        Wed, 26 Feb 2020 00:39:37 -0800 (PST)
+Date:   Wed, 26 Feb 2020 03:39:33 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     David Ahern <dahern@digitalocean.com>, netdev@vger.kernel.org
+Subject: Re: virtio_net: can change MTU after installing program
+Message-ID: <20200226032421-mutt-send-email-mst@kernel.org>
+References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+ <20200226015113-mutt-send-email-mst@kernel.org>
+ <172688592.10687939.1582702621880.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <172688592.10687939.1582702621880.JavaMail.zimbra@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+On Wed, Feb 26, 2020 at 02:37:01AM -0500, Jason Wang wrote:
+> 
+> 
+> ----- Original Message -----
+> > On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
+> > > Another issue is that virtio_net checks the MTU when a program is
+> > > installed, but does not restrict an MTU change after:
+> > > 
+> > > # ip li sh dev eth0
+> > > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
+> > > state UP mode DEFAULT group default qlen 1000
+> > >     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
+> > >     prog/xdp id 13 tag c5595e4590d58063 jited
+> > > 
+> > > # ip li set dev eth0 mtu 8192
+> > > 
+> > > # ip li sh dev eth0
+> > > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
+> > > state UP mode DEFAULT group default qlen 1000
+> > 
+> > Well the reason XDP wants to limit MTU is this:
+> >     the MTU must be less than a page
+> >     size to avoid having to handle XDP across multiple pages
+> > 
+> 
+> But even if we limit MTU is guest there's no way to limit the packet
+> size on host.
 
-The buffer factor on Spectrum-3 is larger than on Spectrum-2. Add a new
-callback and use it for mlxsw_sp->span_ops on Spectrum-3.
+Isn't this fundamental? IIUC dev->mtu is mostly a hint to devices about
+how the network is configured. It has to be the same across LAN.  If
+someone misconfigures it that breaks networking, and user gets to keep
+both pieces. E.g. e1000 will use dev->mtu to calculate rx buffer size.
+If you make it too small, well packets that are too big get dropped.
+There's no magic to somehow make them smaller, or anything like that.
+We can certainly drop packet > dev->mtu in the driver right now if we want to,
+and maybe if it somehow becomes important for performance, we
+could teach host to drop such packets for us. Though
+I don't really see why we care ...
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 23 +++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+> It looks to me we need to introduce new commands to
+> change the backend MTU (e.g TAP) accordingly.
+> 
+> Thanks
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 17190ff55555..673fa2fd995c 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4875,16 +4875,35 @@ static const struct mlxsw_sp_span_ops mlxsw_sp1_span_ops = {
- };
- 
- #define MLXSW_SP2_SPAN_EG_MIRROR_BUFFER_FACTOR 38
-+#define MLXSW_SP3_SPAN_EG_MIRROR_BUFFER_FACTOR 50
-+
-+static u32 __mlxsw_sp_span_buffsize_get(int mtu, u32 speed, u32 buffer_factor)
-+{
-+	return 3 * mtu + buffer_factor * speed / 1000;
-+}
- 
- static u32 mlxsw_sp2_span_buffsize_get(int mtu, u32 speed)
- {
--	return 3 * mtu + MLXSW_SP2_SPAN_EG_MIRROR_BUFFER_FACTOR * speed / 1000;
-+	int factor = MLXSW_SP2_SPAN_EG_MIRROR_BUFFER_FACTOR;
-+
-+	return __mlxsw_sp_span_buffsize_get(mtu, speed, factor);
- }
- 
- static const struct mlxsw_sp_span_ops mlxsw_sp2_span_ops = {
- 	.buffsize_get = mlxsw_sp2_span_buffsize_get,
- };
- 
-+static u32 mlxsw_sp3_span_buffsize_get(int mtu, u32 speed)
-+{
-+	int factor = MLXSW_SP3_SPAN_EG_MIRROR_BUFFER_FACTOR;
-+
-+	return __mlxsw_sp_span_buffsize_get(mtu, speed, factor);
-+}
-+
-+static const struct mlxsw_sp_span_ops mlxsw_sp3_span_ops = {
-+	.buffsize_get = mlxsw_sp3_span_buffsize_get,
-+};
-+
- u32 mlxsw_sp_span_buffsize_get(struct mlxsw_sp *mlxsw_sp, int mtu, u32 speed)
- {
- 	u32 buffsize = mlxsw_sp->span_ops->buffsize_get(speed, mtu);
-@@ -5163,7 +5182,7 @@ static int mlxsw_sp3_init(struct mlxsw_core *mlxsw_core,
- 	mlxsw_sp->sb_vals = &mlxsw_sp2_sb_vals;
- 	mlxsw_sp->port_type_speed_ops = &mlxsw_sp2_port_type_speed_ops;
- 	mlxsw_sp->ptp_ops = &mlxsw_sp2_ptp_ops;
--	mlxsw_sp->span_ops = &mlxsw_sp2_span_ops;
-+	mlxsw_sp->span_ops = &mlxsw_sp3_span_ops;
- 	mlxsw_sp->lowest_shaper_bs = MLXSW_REG_QEEC_LOWEST_SHAPER_BS_SP3;
- 
- 	return mlxsw_sp_init(mlxsw_core, mlxsw_bus_info, extack);
+So you are saying there are configurations where host does not know the
+correct MTU, and needs guest's help to figure it out? I guess it's
+possible but it seems beside the point raised here.  TAP in particular
+mostly just seems to ignore MTU, I am not sure why we should bother
+propagating it there from guest or host. Propagating it from guest to
+the actual NIC might be useful e.g. for buffer sizing, but is tricky
+to do safely in case the NIC is shared between VMs.
+
 -- 
-2.21.1
+MST
 
