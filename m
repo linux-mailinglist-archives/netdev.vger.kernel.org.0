@@ -2,156 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED67216FF58
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 13:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 464E016FF67
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:00:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726671AbgBZMwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 07:52:24 -0500
-Received: from mail-il1-f182.google.com ([209.85.166.182]:33540 "EHLO
-        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbgBZMwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 07:52:24 -0500
-Received: by mail-il1-f182.google.com with SMTP id s18so2291562iln.0
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 04:52:23 -0800 (PST)
+        id S1726905AbgBZNAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 08:00:44 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:34583 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbgBZNAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:00:44 -0500
+Received: by mail-ed1-f67.google.com with SMTP id dm3so2826630edb.1;
+        Wed, 26 Feb 2020 05:00:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=X3rB0gf0zhaIdOb+lwYeGRxUQUfRNbGblUm96Z35laQ=;
-        b=G7GKNDlxtZ9rgChnBRF44TWUF+NRqAhmvgPE167wdFEnNq1rbpnWeWUSf8IKRXkUJC
-         f3k6PLkcxwlxkBGLJe9JkQEO6ZA//PFdSMlRJMJJc8wKmJFYlDCEa09N8M51Cp+berSy
-         cO+7rzfgOSy+J/S2MIvMs7NPHy+eYBt2/EIIJ/W9RxIIffsUiVNDySZLA/cshhk2YzJN
-         xctz3xPnHaxYqRh4fckazmMfXSh7YJOeWQreAl/1Kz/n+IU20RWqz9s00z+bEX3FcFOE
-         riBauE93ysSFQv7rL0G97YFzxwpDekLdHD9NjIKxkHzHlH5jGrET98y4TAubWNFYZozh
-         HunQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i7Xarv2hD9KM3iFuS54Ru9bKcOGPu5KjR9uTv1osMOg=;
+        b=fp1uLlhoEDIppUss2KYKNKY4d1mhmPRC8g4ZZUX2FUtGF4674dqcrGEiFURI8s6IJ/
+         Lp5unYBiTaL6m5d8S4+hSSJ/mpPym7jo17nCg6ct8tGl/I++fEao4abWZZNE1j/UDMye
+         Zk+LzdgZ2JEunZiAgYnqCYbwBoeH2US7tG/sYmEG8C3wcGD/k+6d/fh3frvL3kaVmU8Y
+         Fu8atlRj/0Yd332oHmPz+IEYX26/DolqLcp4/mwVAuajSUjedJL3+I/cxgc77IQ7bo2b
+         1onH8FIsA0aSR6jcVhz6kuWiIMLeTN7B6XdNUjPMHrlcLIuVgB5NV2AdtcqQT/q9NuDt
+         oPQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=X3rB0gf0zhaIdOb+lwYeGRxUQUfRNbGblUm96Z35laQ=;
-        b=b+uAoCuRR4Sho7idrwt2xcgPEjP+4FAB6vHF/yPtMMhNoAUI1IJv5Imo6KAuzQFI2C
-         yPbawHJGTKMB655637NkqasiVxQiicTwnQBIova9vokjOUpUn+qMamminhCVE7I89w3C
-         TufDOGvYThShsVVFKDMx0ZT/wMyNFQMuK6jTTVISquwtyFnaYomrHHXgctULd/UyplAD
-         5MzAtlVOym7CBr4mAQSXt3cY+7EgTgfX8LKm3FXDdCFH2qC4z2x5XBncaDo1ux3zobXS
-         eqvmIXu8jZN7nIQNGHrqKKmC7wMcBeFS1jZe92H2gSY4aoFII3UGZUE/f8viDX8QoeNZ
-         EI0w==
-X-Gm-Message-State: APjAAAVfrbNmRXRVazXLqxHBkxBoQdskg3CzAduy1b7vU5+fyxyVS1hy
-        Q6f8ZDQa0FnY0CzFvk1aKzwRag==
-X-Google-Smtp-Source: APXvYqzJK7j2s5q2MTni6uXCKUIYjHl6s+QxVvz5pLEVUpqS0X4aA8EXY3yielStgidiVzi/nnAkog==
-X-Received: by 2002:a05:6e02:690:: with SMTP id o16mr4875443ils.267.1582721543162;
-        Wed, 26 Feb 2020 04:52:23 -0800 (PST)
-Received: from [192.168.0.101] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id v3sm698232ili.0.2020.02.26.04.52.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 04:52:22 -0800 (PST)
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW stats
- type
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, saeedm@mellanox.com, leon@kernel.org,
-        michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, xiyou.wangcong@gmail.com,
-        pablo@netfilter.org, mlxsw@mellanox.com,
-        Marian Pritsak <marianp@mellanox.com>
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
- <20200222063829.GB2228@nanopsycho>
- <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
- <20200224131101.GC16270@nanopsycho>
- <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
- <20200224162521.GE16270@nanopsycho>
- <b93272f2-f76c-10b5-1c2a-6d39e917ffd6@mojatatu.com>
- <20200225162203.GE17869@nanopsycho>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <7c753f81-f659-02c0-7011-9522547b19db@mojatatu.com>
-Date:   Wed, 26 Feb 2020 07:52:20 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i7Xarv2hD9KM3iFuS54Ru9bKcOGPu5KjR9uTv1osMOg=;
+        b=fLSHvSq/q0289xp57ap3zj+7ovZIupG2+hLQZr0EvcBwwBJ1vi81TeX976Y78Wy16F
+         0AY7MiOxn36J+2+/0fZiUu5AABNVZR/JG0L/sO5TdYx8hjkb1jErBi+JsTdIYvrpeFeo
+         ufuw9exoCZq6An/nfM717PlN9PELHZi7lZsv3+oy/iWKYjAxVtmJHVHvhQxl1GsjuzQR
+         laAKJJs2Yj0wVy8rPmvu1YVuf6YFQlLWOm9SYr+7CkSsiUYykJI1jfdMqaZmBIGc7p4U
+         5IM0PkudeyzRSDwmgCwR6EA9RmTTZxYffgmxyHZuvObJ7TvGWq3Wf5gvOxShiue851i+
+         kWRw==
+X-Gm-Message-State: APjAAAV8TvYY2T2eQB/GT5fxKuje2IxGG1L5wGFJVuUiigmilRB+XRJo
+        o7I+rNfu4yh8qoGGO858ZXnC/xu0UXnVMlUy2UQ=
+X-Google-Smtp-Source: APXvYqzP5j9YFugxizJBSHCcJcie/58YM/x3+plzu9o9NKjOQ2J0PzX1ZNdCx8ey6OabcsuTekBFd565F0sozXWKY14=
+X-Received: by 2002:a17:906:af99:: with SMTP id mj25mr4363408ejb.293.1582722041507;
+ Wed, 26 Feb 2020 05:00:41 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200225162203.GE17869@nanopsycho>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20200226102312.GX25745@shell.armlinux.org.uk> <E1j6tqv-0003G6-BO@rmk-PC.armlinux.org.uk>
+ <CA+h21hrR1Xkx9gwAT2FHqcH38L=xjWiPxmF2Er7-4fHFTrA8pQ@mail.gmail.com> <20200226115549.GZ25745@shell.armlinux.org.uk>
+In-Reply-To: <20200226115549.GZ25745@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 26 Feb 2020 15:00:30 +0200
+Message-ID: <CA+h21hqjMBjgQDee8t=Csy5DXVUk9f=PP0hHSDfkuA746ZKzSQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] net: phylink: propagate resolved link
+ config via mac_link_up()
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        John Crispin <john@phrozen.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-02-25 11:22 a.m., Jiri Pirko wrote:
-> Tue, Feb 25, 2020 at 05:01:05PM CET, jhs@mojatatu.com wrote:
->> +Cc Marian.
->>
-
-
-
->> So for the shared mirror action the counter is shared
->> by virtue of specifying index 111.
->>
->> What tc _doesnt allow_ is to re-use the same
->> counter index across different types of actions (example
->> mirror index 111 is not the same instance as drop 111).
->> Thats why i was asking if you are exposing the hw index.
-> 
-> User does not care about any "hw index". That should be abstracted out
-> by the driver.
-> 
-
-My main motivation is proper accounting (which is important
-for the billing and debugging of course). Example:
-if i say "get stats" I should know it is the sum of both
-h/w + s/w stats or the rules are clear in regards to how
-to retrieve each and sum them or differentiate them.
-If your patch takes care of summing up things etc, then i agree.
-Or if the rules for accounting are consistent then we are fine
-as well.
-
->> So i am guessing the hw cant support "branching" i.e based on in
->> some action state sometime you may execute action foo and other times
->> action bar. Those kind of scenarios would need multiple counters.
-> 
-> We don't and when/if we do, we need to put another counter to the
-> branch point.
+On Wed, 26 Feb 2020 at 13:56, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
 >
-
-Ok, that would work.
-> 
->>> and we report stats from action_counter for all the_actual_actionX.
->>
->> This may not be accurate if you are branching - for example
->> a policer or quota enforcer which either accepts or drops or sends next
->> to a marker action etc .
->> IMO, this was fine in the old days when you had one action per match.
->> Best is to leave it to whoever creates the policy to decide what to
->> count. IOW, I think modelling it as a pipe or ok or drop or continue
->> and be placed anywhere in the policy graph instead of the begining.
-> 
-> Eh, that is not that simple. The existing users are used to the fact
-> that the actions are providing counters by themselves. Having and
-> explicit counter action like this would break that expectation.
- >
-> Also, I think it should be up to the driver implementation. Some HW
-> might only support stats per rule, not the actions. Driver should fit
-> into the existing abstraction, I think it is fine.
+> On Wed, Feb 26, 2020 at 01:06:06PM +0200, Vladimir Oltean wrote:
+> > Hi Russell,
+> >
+> > On Wed, 26 Feb 2020 at 12:23, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> > >
+> > > Propagate the resolved link parameters via the mac_link_up() call for
+> > > MACs that do not automatically track their PCS state. We propagate the
+> > > link parameters via function arguments so that inappropriate members
+> > > of struct phylink_link_state can't be accessed, and creating a new
+> > > structure just for this adds needless complexity to the API.
+> > >
+> > > Tested-by: Andre Przywara <andre.przywara@arm.com>
+> > > Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > > Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >  Documentation/networking/sfp-phylink.rst      | 17 +++++-
+> > >  drivers/net/ethernet/cadence/macb_main.c      |  7 ++-
+> > >  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  |  7 ++-
+> > >  drivers/net/ethernet/marvell/mvneta.c         |  8 ++-
+> > >  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 19 +++++--
+> > >  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  7 ++-
+> > >  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +-
+> > >  .../net/ethernet/xilinx/xilinx_axienet_main.c |  7 ++-
+> > >  drivers/net/phy/phylink.c                     |  9 ++-
+> > >  include/linux/phylink.h                       | 57 ++++++++++++++-----
+> > >  net/dsa/port.c                                |  4 +-
+> > >  11 files changed, 105 insertions(+), 41 deletions(-)
+> > >
+> > > diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
+> > > index d753a309f9d1..8d7af28cd835 100644
+> > > --- a/Documentation/networking/sfp-phylink.rst
+> > > +++ b/Documentation/networking/sfp-phylink.rst
+> > > @@ -74,10 +74,13 @@ phylib to the sfp/phylink support.  Please send patches to improve
+> > >  this documentation.
+> > >
+> > >  1. Optionally split the network driver's phylib update function into
+> > > -   three parts dealing with link-down, link-up and reconfiguring the
+> > > -   MAC settings. This can be done as a separate preparation commit.
+> > > +   two parts dealing with link-down and link-up. This can be done as
+> > > +   a separate preparation commit.
+> > >
+> > > -   An example of this preparation can be found in git commit fc548b991fb0.
+> > > +   An older example of this preparation can be found in git commit
+> > > +   fc548b991fb0, although this was splitting into three parts; the
+> > > +   link-up part now includes configuring the MAC for the link settings.
+> > > +   Please see :c:func:`mac_link_up` for more information on this.
+> > >
+> > >  2. Replace::
+> > >
+> > > @@ -207,6 +210,14 @@ this documentation.
+> > >     using. This is particularly important for in-band negotiation
+> > >     methods such as 1000base-X and SGMII.
+> > >
+> > > +   The :c:func:`mac_link_up` method is used to inform the MAC that the
+> > > +   link has come up. The call includes the negotiation mode and interface
+> > > +   for reference only. The finalised link parameters are also supplied
+> > > +   (speed, duplex and flow control/pause enablement settings) which
+> > > +   should be used to configure the MAC when the MAC and PCS are not
+> > > +   tightly integrated, or when the settings are not coming from in-band
+> > > +   negotiation.
+> > > +
+> > >     The :c:func:`mac_config` method is used to update the MAC with the
+> > >     requested state, and must avoid unnecessarily taking the link down
+> > >     when making changes to the MAC configuration.  This means the
+> >
+> > Just to make sure I understand the changes:
+> > - A MAC with no PCS can be configured in either .mac_config or .mac_link_up
 >
+> I would much prefer mac_link_up to be used for setting the speed,
+> duplex and pause modes for future-proofing in all cases except for
+> the case where these parameters are automatically updated in the
+> MAC from its associated PCS.
+>
+> mac_link_up must not be used to configure the AN mode or interface
+> mode; these must be configured in mac_config().
+>
+> > - A MAC that needs to be manually reconfigured to the link mode
+> > negotiated by its PCS needs to have the PCS configured in .mac_config
+> > and the MAC in .mac_link_up
+>
+> I do have further changes that split the PCS ops from the MAC ops, so
+> what is in this series is not the full story yet - some of the further
+> patches can be found in my "phy" branch and "cex7" branches where I add
+> support to dpaa2 for automatically switching between SGMII and
+> 1000BASE-X.  dpaa2 is one of these split PCS/MAC setups, but with the
+> extra complication that there's a firmware layer between the PCS and
+> MAC.
+>
+> However, this series is the first stand-alone step along the road to
+> supporting split PCS/MAC setups in a sane manner.
+>
+> I discussed with Andrew Lunn how much to send, and the conclusion was
+> to make the changes in a number of small patch series, as large patch
+> series tend not to get reviewed.  My experience with _this_ series is
+> that even this is very difficult to get feedback for, so adding any
+> additional patches will just make that worse.
+>
+> > - A MAC with PCS where the MAC follows the PCS negotiation
+> > automatically in hardware is basically equivalent with a MAC with no
+> > PCS, and therefore can be configured in either .mac_config or
+> > .mac_link_up
+>
+> In this case, mac_link_up doesn't do anything with the speed/duplex/
+> pause stuff when those are automatically passed from the PCS.
+>
+> I'm afraid that sentence contains a subtlety that's going to get
+> people: it is not clear cut because of the different natures of the
+> various links.
+>
+> In 1000BASE-X, speed is fixed at 1G, and the PCS autonegotiates the
+> duplex and pause with the remote end.  For mvneta (an example of a
+> combined PCS/MAC implementation) operating in-band:
+> - In mac_config():
+>   - configures for 1000BASE-X interface type with in-band AN.
+>   - configures fixed 1G.
+>   - As mvneta only supports full duplex, we disable duplex negotiation
+>     and force full duplex.
+>   - Only symmetric pause is supported, and we set the symmetric pause
+>     advertisement appropriately, with pause negotiation enabled.
+> - In mac_link_up():
+>   - merely allow the device to transmit and receive.
+>
+> The MAC will be forced to 1G, full duplex, and will automatically be
+> configured by the PCS for pause support depending on the hardware
+> based pause resolution.
+>
+> The situation is different for SGMII operating in-band:
+> - In mac_config():
+>   - configures for SGMII interface type with in-band AN.
+>   - configures speed and duplex negotiation.
+>   - disables pause negotiation; SGMII has no support for this.
+> - In mac_link_up():
+>   - enables or disables pause frames depending on the tx_pause/
+>     rx_pause flags, since this is not available from the MAC.
+>   - allow the device to transmit and receive.
+>
+> If we aren't operating in in-band mode, then:
+> - In mac_config():
+>   - configures for the interface type without in-band AN.
+>   - disables speed, duplex and pause negotiation.
+> - In mac_link_up():
+>   - sets the speed, duplex and pause frames depending on the passed
+>     parameters.
 
-Reasonable point.
-So "count" action is only useful for h/w?
+But there shouldn't be any requirement for this to be configured at
+this step and not earlier?
 
->>> Note that I don't want to share, there is still separate "last_hit"
->>> record in hw I expose in "used X sec". Interestingly enough, in
->>> Spectrum-1 this is per rule, in Spectrum-2,3 this is per action block :)
->>
->> I didnt understand this one..
-> 
-> It's not "stats", it's an information about how long ago the act was
-> used.
+>   - allow the device to transmit and receive.
+>
+> Please see patch 7 of this series which implements this for mvneta.
+>
+> So, there is a split between what mac_config() should be doing and what
+> mac_link_up() should be doing; this is why I've said in the
+> documentation that the "mode" and "interface" are for reference only in
+> mac_link_up() - mac_link_up() can use these to decide _how_ to program
+> the resolved parameters, but should _not_ use them to determine the
+> link configuration (such as changing the interface between SGMII and
+> 1000BASE-X - that is the responsibility of mac_config().)
 
-ah. Given tc has one of those per action, are you looking to introduce
-a new "last used" action?
+Does any driver currently make any use of the phy_interface_t argument
+provided as reference in .mac_link_up?
 
-cheers,
-jamal
+>
+> I hope that helps clarify the situation.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
+
+Ok, so basically what is known early, as well as whatever is needed
+for the in-band AN preparation, is configured in .mac_config and what
+is known late is configured in .mac_link_up.
+Except that you would like to slowly move everything MAC-related to
+.mac_link_up, and everything PCS-related to .mac_config, presumably in
+an effort to convert .mac_config to .pcs_config and .mac_link_up to
+.mac_config. I don't actually know what other patches you have in the
+cex7 branch you mentioned. Please consider that people don't
+necessarily bookmark your git trees. I've spent some good 10 minutes
+searching for the "cex7" and "phy" keywords in emails received from
+you, and haven't found the git links.
+
+Regards,
+-Vladimir
