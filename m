@@ -2,182 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8319E16FFA3
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64ACD16FFB7
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:13:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727444AbgBZNFX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Feb 2020 08:05:23 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:20619 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726920AbgBZNFX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:05:23 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-395-6U9fQxhXO6mbEuh8JtTbYA-1; Wed, 26 Feb 2020 08:05:18 -0500
-X-MC-Unique: 6U9fQxhXO6mbEuh8JtTbYA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B510801E74;
-        Wed, 26 Feb 2020 13:05:16 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.43.17.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1FD4819C7F;
-        Wed, 26 Feb 2020 13:05:10 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 18/18] perf annotate: Add base support for bpf_image
-Date:   Wed, 26 Feb 2020 14:03:45 +0100
-Message-Id: <20200226130345.209469-19-jolsa@kernel.org>
-In-Reply-To: <20200226130345.209469-1-jolsa@kernel.org>
-References: <20200226130345.209469-1-jolsa@kernel.org>
+        id S1726971AbgBZNNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 08:13:01 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:32976 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbgBZNNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:13:01 -0500
+Received: by mail-lf1-f66.google.com with SMTP id n25so1969945lfl.0
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 05:12:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=VdhHrXjl+PKXd1l0Jfah9G+IGjp6vwTwBHwOu50n8sw=;
+        b=HfYfVZsOjXxTr2vxVBObYSDTHYGkeN6N7IhqxGoU5Ok7JykNPVrPCE788nx+fjPl23
+         vZLT3RlQkwS4AhYagHZk7192HG7ODj0FxagKKangVWlLyW6ObJtCFRKRTRl/4UZOwGht
+         rqBqOjEVC9cbo79bs9HABZunZYRAnJP2M3iiw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=VdhHrXjl+PKXd1l0Jfah9G+IGjp6vwTwBHwOu50n8sw=;
+        b=MDr6hX0S9MbvATUJ5psrgmss9Kk9shZZQatb9yozjDSsrc8J2NibLZ49/IM3ZIrC09
+         UETXjt5h1XN9Aycyl+HoSQwi4JRkt4uzW+ELIZrufHLPDSNMeSe+CEE73/aRRmu2xCJ6
+         2eu67fN9rk7fYIq7VviBJ9GFCFDEQ6iHbPsyc6YURvx3jDmv75k1tk/zlGo7aDt4hsMt
+         O0rpzYT9092CTEskitCoft0aP89uCCY8VkKwC8MdXED+0nsbAr7EVaKiLvAtFKapOg0T
+         BQuhN456uBmW2cOAcWeBB/f10Pn2nIQpdtBldjyOpZg/sY5zZaWYyA+/ZuG6XUgBOoGR
+         GR1g==
+X-Gm-Message-State: APjAAAUErhzK6PwKi2RMESs+fyQREecxXk0FpCN2MAtV5csbJqcbdi7c
+        VQAce0kE4MgyxI9s0fl6aDHsJA==
+X-Google-Smtp-Source: APXvYqyk12gk5w3T1MyCmjVV0V/KRRuYtatHfQg26Uspvyk9w+9w+u4vyBYFnMS6zjjSGWSUPmAmcQ==
+X-Received: by 2002:ac2:5a05:: with SMTP id q5mr2451450lfn.143.1582722778414;
+        Wed, 26 Feb 2020 05:12:58 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id n3sm1185849ljc.100.2020.02.26.05.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 05:12:57 -0800 (PST)
+References: <20200225135636.5768-1-lmb@cloudflare.com> <20200225135636.5768-8-lmb@cloudflare.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf-next 7/7] selftests: bpf: enable UDP sockmap reuseport tests
+In-reply-to: <20200225135636.5768-8-lmb@cloudflare.com>
+Date:   Wed, 26 Feb 2020 14:12:56 +0100
+Message-ID: <87d0a1cx0n.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding the DSO_BINARY_TYPE__BPF_IMAGE dso binary type
-to recognize bpf images that carry trampoline or dispatcher.
+On Tue, Feb 25, 2020 at 02:56 PM CET, Lorenz Bauer wrote:
+> Remove the guard that disables UDP tests now that sockmap has support for them.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/select_reuseport.c | 7 -------
+>  1 file changed, 7 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> index 68d452bb9fd9..4c09766344a4 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
+> @@ -816,13 +816,6 @@ static void test_config(int sotype, sa_family_t family, bool inany)
+>  		if (!test__start_subtest(s))
+>  			continue;
+>
+> -		if (sotype == SOCK_DGRAM &&
+> -		    inner_map_type != BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
+> -			/* SOCKMAP/SOCKHASH don't support UDP yet */
+> -			test__skip();
+> -			continue;
+> -		}
+> -
+>  		setup_per_test(sotype, family, inany, t->no_inner_map);
+>  		t->fn(sotype, family);
+>  		cleanup_per_test(t->no_inner_map);
 
-Upcoming patches will add support to read the image data,
-store it within the BPF feature in perf.data and display
-it for annotation purposes.
-
-Currently we only display following message:
-
-  # ./perf annotate bpf_trampoline_24456 --stdio
-   Percent |      Source code & Disassembly of . for cycles (504  ...
-  --------------------------------------------------------------- ...
-           :       to be implemented
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/perf/util/annotate.c | 20 ++++++++++++++++++++
- tools/perf/util/dso.c      |  1 +
- tools/perf/util/dso.h      |  1 +
- tools/perf/util/machine.c  | 11 +++++++++++
- tools/perf/util/symbol.c   |  1 +
- 5 files changed, 34 insertions(+)
-
-diff --git a/tools/perf/util/annotate.c b/tools/perf/util/annotate.c
-index ca73fb74ad03..d9e606e11936 100644
---- a/tools/perf/util/annotate.c
-+++ b/tools/perf/util/annotate.c
-@@ -1843,6 +1843,24 @@ static int symbol__disassemble_bpf(struct symbol *sym __maybe_unused,
- }
- #endif // defined(HAVE_LIBBFD_SUPPORT) && defined(HAVE_LIBBPF_SUPPORT)
- 
-+static int
-+symbol__disassemble_bpf_image(struct symbol *sym,
-+			      struct annotate_args *args)
-+{
-+	struct annotation *notes = symbol__annotation(sym);
-+	struct disasm_line *dl;
-+
-+	args->offset = -1;
-+	args->line = strdup("to be implemented");
-+	args->line_nr = 0;
-+	dl = disasm_line__new(args);
-+	if (dl)
-+		annotation_line__add(&dl->al, &notes->src->source);
-+
-+	free(args->line);
-+	return 0;
-+}
-+
- /*
-  * Possibly create a new version of line with tabs expanded. Returns the
-  * existing or new line, storage is updated if a new line is allocated. If
-@@ -1942,6 +1960,8 @@ static int symbol__disassemble(struct symbol *sym, struct annotate_args *args)
- 
- 	if (dso->binary_type == DSO_BINARY_TYPE__BPF_PROG_INFO) {
- 		return symbol__disassemble_bpf(sym, args);
-+	} else if (dso->binary_type == DSO_BINARY_TYPE__BPF_IMAGE) {
-+		return symbol__disassemble_bpf_image(sym, args);
- 	} else if (dso__is_kcore(dso)) {
- 		kce.kcore_filename = symfs_filename;
- 		kce.addr = map__rip_2objdump(map, sym->start);
-diff --git a/tools/perf/util/dso.c b/tools/perf/util/dso.c
-index 91f21239608b..f338990e0fe6 100644
---- a/tools/perf/util/dso.c
-+++ b/tools/perf/util/dso.c
-@@ -191,6 +191,7 @@ int dso__read_binary_type_filename(const struct dso *dso,
- 	case DSO_BINARY_TYPE__GUEST_KALLSYMS:
- 	case DSO_BINARY_TYPE__JAVA_JIT:
- 	case DSO_BINARY_TYPE__BPF_PROG_INFO:
-+	case DSO_BINARY_TYPE__BPF_IMAGE:
- 	case DSO_BINARY_TYPE__NOT_FOUND:
- 		ret = -1;
- 		break;
-diff --git a/tools/perf/util/dso.h b/tools/perf/util/dso.h
-index 2db64b79617a..9553a1fd9e8a 100644
---- a/tools/perf/util/dso.h
-+++ b/tools/perf/util/dso.h
-@@ -40,6 +40,7 @@ enum dso_binary_type {
- 	DSO_BINARY_TYPE__GUEST_KCORE,
- 	DSO_BINARY_TYPE__OPENEMBEDDED_DEBUGINFO,
- 	DSO_BINARY_TYPE__BPF_PROG_INFO,
-+	DSO_BINARY_TYPE__BPF_IMAGE,
- 	DSO_BINARY_TYPE__NOT_FOUND,
- };
- 
-diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-index 463ada5117f8..372ed147bed5 100644
---- a/tools/perf/util/machine.c
-+++ b/tools/perf/util/machine.c
-@@ -719,6 +719,12 @@ int machine__process_switch_event(struct machine *machine __maybe_unused,
- 	return 0;
- }
- 
-+static int is_bpf_image(const char *name)
-+{
-+	return strncmp(name, "bpf_trampoline_", sizeof("bpf_trampoline_") - 1) ||
-+	       strncmp(name, "bpf_dispatcher_", sizeof("bpf_dispatcher_") - 1);
-+}
-+
- static int machine__process_ksymbol_register(struct machine *machine,
- 					     union perf_event *event,
- 					     struct perf_sample *sample __maybe_unused)
-@@ -743,6 +749,11 @@ static int machine__process_ksymbol_register(struct machine *machine,
- 		map->end = map->start + event->ksymbol.len;
- 		maps__insert(&machine->kmaps, map);
- 		dso__set_loaded(dso);
-+
-+		if (is_bpf_image(event->ksymbol.name)) {
-+			dso->binary_type = DSO_BINARY_TYPE__BPF_IMAGE;
-+			dso__set_long_name(dso, "", false);
-+		}
- 	}
- 
- 	sym = symbol__new(map->map_ip(map, map->start),
-diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
-index 3b379b1296f1..e6caec4b6054 100644
---- a/tools/perf/util/symbol.c
-+++ b/tools/perf/util/symbol.c
-@@ -1537,6 +1537,7 @@ static bool dso__is_compatible_symtab_type(struct dso *dso, bool kmod,
- 		return true;
- 
- 	case DSO_BINARY_TYPE__BPF_PROG_INFO:
-+	case DSO_BINARY_TYPE__BPF_IMAGE:
- 	case DSO_BINARY_TYPE__NOT_FOUND:
- 	default:
- 		return false;
--- 
-2.24.1
-
+This one will need a respin due to 779e422d1198 ("selftests/bpf: Run
+reuseport tests only with supported socket types") that landed recently
+in bpf-next.
