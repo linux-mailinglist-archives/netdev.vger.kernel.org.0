@@ -2,167 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7211217008F
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18A2E170096
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 14:58:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727487AbgBZN4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 08:56:54 -0500
-Received: from mail-wr1-f51.google.com ([209.85.221.51]:39418 "EHLO
-        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgBZN4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 08:56:54 -0500
-Received: by mail-wr1-f51.google.com with SMTP id y17so3131428wrn.6
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 05:56:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kQDNC6yapmI/GW8O195WaF+Fc3cLJNs40DCVr0F1S/U=;
-        b=VcvkNYtLb7PCmvgHr/ILwBcDv1sERqTXaZf7a4h85GTnkG7JXZ6pObvnRuRHb5Hbvi
-         EL+zVs7Eg6igdjDxhe/p1d1Nl0UElQcVwKE5FMBPHylY1IEFEBGcaW4f+KvITpIKfGvA
-         EFJHGGmPeUg0K5SvPlFhLyayTpjDTkVx89+kJss62MdNWulzppABCFNVkyaykiLxMzD0
-         8InyjoFkc7s1/M+gh/r4lY2r2eZMhDcZKU1n5DGfmHjQ56beUW7TJoQBStFw9LbAjtqy
-         XkOlf0V1xcapv51pZ2iAs9Fqvf2xrKMlweU5LHQBrgMNa1e2L/xgHT6OHqMIEHE8IXa+
-         dpgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kQDNC6yapmI/GW8O195WaF+Fc3cLJNs40DCVr0F1S/U=;
-        b=a8NnFmQEPJV6+onIehIICtYQTg2LS71Cku5vLIyfV2MEvGq69CA2oFpRZXz8/Y3twD
-         rXIczKcUxI4soPwKWiIohksnnW6W5L5B4GREEuhlUdQd7xbXgS1fK/505zxBKd6FmyEH
-         xTu/oXHqnvBEfaQ8Ia0D2qmA0fwnc0kWY0JfsBVXazcFbmRrcUdlY4SxzRrfDxoVEJeY
-         A5ef4xy1Uo0rnDXpW5iwwNWheCM31sUyWaQAKO/PGbH1XoPSdxX4czNarkNYMKneR0Ff
-         NM1JH3C8giSB5FfD+zI+Z3hu5rGUtheb4WObl/7VB+ka0Q1PnFhoV00BUtGwlyV6umG5
-         MOWQ==
-X-Gm-Message-State: APjAAAXvQKUYXh/X76T7h8WnSIpKRjHDmRGL+fpFUeyQzeDe69L8Ekls
-        89Osl03Zj3If6eO9g4MfkQ1hvg==
-X-Google-Smtp-Source: APXvYqwXtPl/4kD/J5aBt82o+cYp07wtw6zjgJZXuVx7bxaUlHhd2HIUCjwCz1puvNfHdgnYcqI4Kg==
-X-Received: by 2002:a5d:6986:: with SMTP id g6mr5747726wru.421.1582725411589;
-        Wed, 26 Feb 2020 05:56:51 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id i2sm2925871wmb.28.2020.02.26.05.56.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 05:56:51 -0800 (PST)
-Date:   Wed, 26 Feb 2020 14:56:50 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, saeedm@mellanox.com, leon@kernel.org,
-        michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, xiyou.wangcong@gmail.com,
-        pablo@netfilter.org, mlxsw@mellanox.com,
-        Marian Pritsak <marianp@mellanox.com>
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW
- stats type
-Message-ID: <20200226135650.GA26061@nanopsycho>
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
- <20200222063829.GB2228@nanopsycho>
- <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
- <20200224131101.GC16270@nanopsycho>
- <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
- <20200224162521.GE16270@nanopsycho>
- <b93272f2-f76c-10b5-1c2a-6d39e917ffd6@mojatatu.com>
- <20200225162203.GE17869@nanopsycho>
- <7c753f81-f659-02c0-7011-9522547b19db@mojatatu.com>
+        id S1727527AbgBZN6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 08:58:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55666 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726388AbgBZN6I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 08:58:08 -0500
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D96ED24683;
+        Wed, 26 Feb 2020 13:58:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582725488;
+        bh=1BoQ1ecJ5wWFRscOk4MkaHRIh59ebxQ/fwLgAw2SktQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kiInuYh09C2QC5cNT3mdJz8GNahm52aQa7QJYkvL75ZFDriYxWqKvuJmMUFawShf4
+         yrCRAeioABGvO5xNh4csbP8tWzx9hbZi9/CgSGPiblG9gkU3tyKQTLSxawYaiaNTVQ
+         GjHcSnzOio2utOm5dIOtdJHeglqyc40tMutmEn6g=
+Received: by mail-qt1-f172.google.com with SMTP id g21so2249618qtq.10;
+        Wed, 26 Feb 2020 05:58:07 -0800 (PST)
+X-Gm-Message-State: APjAAAWt8PsLBYZW0hCRXagurUcokouvw+SCkhywP+zzcsaZHdNnaNhk
+        0M2UiGj6zWVKS6icu+ePgA5v0+QKN9kJC3oLFA==
+X-Google-Smtp-Source: APXvYqxao0W/HExVXKLi5ITPoZ8h7I5256qJQ9b+gunDaYgcb4hhUH7vaGwpD+ncnnoclnVnlyafJRsT8mcCwERi+84=
+X-Received: by 2002:aed:2344:: with SMTP id i4mr5644462qtc.136.1582725487044;
+ Wed, 26 Feb 2020 05:58:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c753f81-f659-02c0-7011-9522547b19db@mojatatu.com>
+References: <20200224211035.16897-1-ansuelsmth@gmail.com> <20200224211035.16897-2-ansuelsmth@gmail.com>
+ <CAL_JsqL7hAX81hDg8L24n-xpJGzZLEu+kAvJfw=g2pzEo_LPOw@mail.gmail.com> <007601d5ec0a$fc80df70$f5829e50$@gmail.com>
+In-Reply-To: <007601d5ec0a$fc80df70$f5829e50$@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 26 Feb 2020 07:57:55 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+qSoy9ouYFg8pxRMT+fLwUqYCU85u=mYHnBioqhFpZGQ@mail.gmail.com>
+Message-ID: <CAL_Jsq+qSoy9ouYFg8pxRMT+fLwUqYCU85u=mYHnBioqhFpZGQ@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] Documentation: devictree: Add ipq806x mdio bindings
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Feb 26, 2020 at 01:52:20PM CET, jhs@mojatatu.com wrote:
->On 2020-02-25 11:22 a.m., Jiri Pirko wrote:
->> Tue, Feb 25, 2020 at 05:01:05PM CET, jhs@mojatatu.com wrote:
->> > +Cc Marian.
->> > 
+On Tue, Feb 25, 2020 at 12:40 PM <ansuelsmth@gmail.com> wrote:
 >
+> > On Mon, Feb 24, 2020 at 3:10 PM Ansuel Smith <ansuelsmth@gmail.com>
+> > wrote:
+> > >
+> >
+> > typo in the subject. Use 'dt-bindings: net: ...' for the subject prefix.
+> >
+> > > Add documentations for ipq806x mdio driver.
+> > >
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > > Changes in v7:
+> > > - Fix dt_binding_check problem
+> >
+> > Um, no you didn't...
+> >
 >
->
->> > So for the shared mirror action the counter is shared
->> > by virtue of specifying index 111.
->> > 
->> > What tc _doesnt allow_ is to re-use the same
->> > counter index across different types of actions (example
->> > mirror index 111 is not the same instance as drop 111).
->> > Thats why i was asking if you are exposing the hw index.
->> 
->> User does not care about any "hw index". That should be abstracted out
->> by the driver.
->> 
->
->My main motivation is proper accounting (which is important
->for the billing and debugging of course). Example:
->if i say "get stats" I should know it is the sum of both
->h/w + s/w stats or the rules are clear in regards to how
->to retrieve each and sum them or differentiate them.
->If your patch takes care of summing up things etc, then i agree.
+> Does make dt_check_binding still gives errors?
+> If yes can you give me some advice on how to test only this since it gives me
+> errors on checking other upstream Documentation ?
 
-The current state implemented in the code is summing up the stats. My
-patchset has no relation to that.
+Don't use linux-next. Linus' master is only warnings. If you have
+errors on that, then you may need to update dtschema.
 
+Also, using 'make -k' helps if there are make errors.
 
->Or if the rules for accounting are consistent then we are fine
->as well.
->
->> > So i am guessing the hw cant support "branching" i.e based on in
->> > some action state sometime you may execute action foo and other times
->> > action bar. Those kind of scenarios would need multiple counters.
->> 
->> We don't and when/if we do, we need to put another counter to the
->> branch point.
->> 
->
->Ok, that would work.
->> 
->> > > and we report stats from action_counter for all the_actual_actionX.
->> > 
->> > This may not be accurate if you are branching - for example
->> > a policer or quota enforcer which either accepts or drops or sends next
->> > to a marker action etc .
->> > IMO, this was fine in the old days when you had one action per match.
->> > Best is to leave it to whoever creates the policy to decide what to
->> > count. IOW, I think modelling it as a pipe or ok or drop or continue
->> > and be placed anywhere in the policy graph instead of the begining.
->> 
->> Eh, that is not that simple. The existing users are used to the fact
->> that the actions are providing counters by themselves. Having and
->> explicit counter action like this would break that expectation.
->>
->> Also, I think it should be up to the driver implementation. Some HW
->> might only support stats per rule, not the actions. Driver should fit
->> into the existing abstraction, I think it is fine.
->> 
->
->Reasonable point.
->So "count" action is only useful for h/w?
-
-There is no "count" action and should not be.
-
-
->
->> > > Note that I don't want to share, there is still separate "last_hit"
->> > > record in hw I expose in "used X sec". Interestingly enough, in
->> > > Spectrum-1 this is per rule, in Spectrum-2,3 this is per action block :)
->> > 
->> > I didnt understand this one..
->> 
->> It's not "stats", it's an information about how long ago the act was
->> used.
->
->ah. Given tc has one of those per action, are you looking to introduce
->a new "last used" action?
-
-No.
-
-
->
->cheers,
->jamal
+Rob
