@@ -2,140 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 630DC16FB46
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88B2D16FB4F
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 10:51:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727247AbgBZJsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 04:48:30 -0500
-Received: from mail-lj1-f181.google.com ([209.85.208.181]:35233 "EHLO
-        mail-lj1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726564AbgBZJsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:48:30 -0500
-Received: by mail-lj1-f181.google.com with SMTP id q8so2336849ljb.2
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 01:48:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fMqomt3au4mw3rs+cfmiekqfa2JRktsB+lFu7iDOZLo=;
-        b=SuSQnD3fwI+d+3Pl9Fe/vO8O+Orp2gdJcU9QogT2ewWvj0hA2nPoTK4QQtd4QNxYVV
-         1175e70cfa9ufg/UEU7n0D8Naz6bzHg7zpSw3PWqbWXbq/JKwT2o5qGYBOdxytdY+z1Q
-         V1uGShdASBaAA6gveyQbZoXq7Xh4XF7yvUm//v9xBM1E/f0DMjge3i4ZP3fslxAMqUwy
-         qh1RLTMqZ4DXtMNfIwo7ekbyJOW7XslwdWmzCNr/CVd88vGHots9JFze0EfZvsUHeijX
-         WnojPosrAUcAhnsw543qPlf4FLb0Tw8gXfhnOKsmKnJzSCXgRwwINSFpSNIkj21q4n/u
-         4o7A==
+        id S1727736AbgBZJvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 04:51:41 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22670 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726329AbgBZJvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 04:51:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582710698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6ryiasZiIIzyC6H3Cs2ZlrTn4bZhFW433koSeRF/avA=;
+        b=W0WiM2LhqkABRFh43V1tngCtQExGkUY/8hmFT8A4yT6NQvbhWBTvocxOYR2EMfKFc2ghSB
+        +FrL78gZgu9vK9wAm3yHVH5UNCjmgbHYBihATw7nkY8jMkWTt9I4O0SXVBvk1aMUE/6mKL
+        6NMkuEgvxcvkWVKeVF9G9OmL0qUM+Dw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-300-sCnDdX9gOwOtMsJxradVaw-1; Wed, 26 Feb 2020 04:51:36 -0500
+X-MC-Unique: sCnDdX9gOwOtMsJxradVaw-1
+Received: by mail-wr1-f70.google.com with SMTP id w18so338108wro.2
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 01:51:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fMqomt3au4mw3rs+cfmiekqfa2JRktsB+lFu7iDOZLo=;
-        b=kPSRGUWozEdp8uqW16OAPR/cBxzzGrY1dNoFEI7iDYAkt9BVYfSzitT5e+/uDmuOYd
-         o5kmj79FKqBV0YLE86md9sUlAf1AAV4RrvI2hDx13BJ7FLpYByZfJthzBXjWjsrnFMlg
-         jDmd6uCXCl3dQOWl5bmDP7oAKcjxtEiMQOcjwk/GQXMFh/hQkznmOYOq1IK/rCuOFzLT
-         B0kTp7kSnJ2Z6C4XU83L/4mTWFyHaJ8127BCm+TQZAXDbSw6EBVYPel5gaJWqiO/lafE
-         2Zh3yBBg9fpQCS+/DGcvVaP6qj7UKP5dnELsVLCEh+K8KfFVP9rBmQBhqHxXgoNgSzoS
-         u6gA==
-X-Gm-Message-State: ANhLgQ2nUhT3eJq8XKXDLIV09MD5PvMRyTYu5Ghl6pJYVaWdTXKExHik
-        fZw0c9FNXn0iG9YlECFoyK2fDFF2AmWecxRXmOx5PA==
-X-Google-Smtp-Source: APXvYqxtqmfaB85GL7bWrq5ebCXZx5SS6EurjoExEzjh7n5AUy6x0Zwy/tGRvM1zoeqC5slgqusKzwJfg28DAfbvdtU=
-X-Received: by 2002:a2e:808a:: with SMTP id i10mr2374462ljg.151.1582710508236;
- Wed, 26 Feb 2020 01:48:28 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=6ryiasZiIIzyC6H3Cs2ZlrTn4bZhFW433koSeRF/avA=;
+        b=pIeDEG1fau5i0S3bvB7ap1a89o45mRVmY39LYXQZD5DD0aA4NXYtGEWKXFhRYbamVS
+         SbFjUp9BP8oQeXiiG6anoikKEh5pXaFH3L6EnC57o4bg8oCC9L0S7bPdtm+tooxUNwID
+         /Mz8evzWNVEzZcSyYXYC2GAz1XTfUewTgWmg7pkuUI8r2NGk/YNGGxHVDWWfShzeOPLo
+         8URWZHe7hBS0OZaqYTM1YQhj/zw6cBqpZ3d+0upzolTu5oVMArm91ePgcU3t2Tjn/KmU
+         GR/Hr8eb7PJp5KvzGgJcdTqfLtXpOFk7kG8+TDWP7akOiByoc/Lq5/D6Y5gNr/T0QN6E
+         8rSQ==
+X-Gm-Message-State: APjAAAXmTKIZVNYBUPd9Pnn5aFoBLb4d8EEnXobQnNAKYt69DhZ2zuN8
+        rIi6gj0GkjLoyy+dDNZZXA8ibVV8ph0S7ZsUo0ajb350kJhcKUhYy/NNn1zBQNIjN9fIgmYZeBt
+        tnYKZz/TlGsG9cCCR
+X-Received: by 2002:adf:a48f:: with SMTP id g15mr4531873wrb.42.1582710695715;
+        Wed, 26 Feb 2020 01:51:35 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzmr/RXy38AqGVGgUMXadjtsAiGS73zheLkeDvNaPnDzZabOUQttEHk1ROehdDMP99kkRf3QQ==
+X-Received: by 2002:adf:a48f:: with SMTP id g15mr4531857wrb.42.1582710695535;
+        Wed, 26 Feb 2020 01:51:35 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id z21sm2218412wml.5.2020.02.26.01.51.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 01:51:34 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 43E9F180362; Wed, 26 Feb 2020 10:51:33 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        David Ahern <dahern@digitalocean.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: virtio_net: can change MTU after installing program
+In-Reply-To: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+References: <20200226093330.GA711395@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 26 Feb 2020 10:51:33 +0100
+Message-ID: <87lfopznfe.fsf@toke.dk>
 MIME-Version: 1.0
-References: <C7D5F99D-B8DB-462B-B665-AE268CDE90D2@vmware.com>
-In-Reply-To: <C7D5F99D-B8DB-462B-B665-AE268CDE90D2@vmware.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 26 Feb 2020 10:48:16 +0100
-Message-ID: <CAKfTPtA9275amW4wAnCZpW3bVRv0HssgMJ_YgPzZDRZ3A1rbVg@mail.gmail.com>
-Subject: Re: Performance impact in networking data path tests in Linux 5.5 Kernel
-To:     Rajender M <manir@vmware.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rajender,
+"Michael S. Tsirkin" <mst@redhat.com> writes:
 
-On Tue, 25 Feb 2020 at 06:46, Rajender M <manir@vmware.com> wrote:
+> On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
+>> Another issue is that virtio_net checks the MTU when a program is
+>> installed, but does not restrict an MTU change after:
+>> 
+>> # ip li sh dev eth0
+>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
+>> state UP mode DEFAULT group default qlen 1000
+>>     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
+>>     prog/xdp id 13 tag c5595e4590d58063 jited
+>> 
+>> # ip li set dev eth0 mtu 8192
+>> 
+>> # ip li sh dev eth0
+>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
+>> state UP mode DEFAULT group default qlen 1000
+>> 
+>> 
 >
-> As part of VMware's performance regression testing for Linux Kernel upstr=
-eam
->  releases, when comparing Linux 5.5 kernel against Linux 5.4 kernel, we n=
-oticed
-> 20% improvement in networking throughput performance at the cost of a 30%
-> increase in the CPU utilization.
+> Cc Toke who has tested this on other cards and has some input.
 
-Thanks for testing and sharing results with us. It's always
-interesting to get feedbacks from various tests cases
+Well, my comment was just that we already restrict MTU changes on mlx5
+when an XDP program is loaded:
 
->
-> After performing the bisect between 5.4 and 5.5, we identified the root c=
-ause
-> of this behaviour to be a scheduling change from Vincent Guittot's
-> 2ab4092fc82d ("sched/fair: Spread out tasks evenly when not overloaded").
->
-> The impacted testcases are TCP_STREAM SEND & RECV =E2=80=93 on both small
-> (8K socket & 256B message) & large (64K socket & 16K message) packet size=
-s.
->
-> We backed out Vincent's commit & reran our networking tests and found tha=
-t
-> the performance were similar to 5.4 kernel - improvements in networking t=
-ests
-> were no more.
->
-> In our current network performance testing, we use Intel 10G NIC to evalu=
-ate
-> all Linux Kernel releases. In order to confirm that the impact is also se=
-en in
-> higher bandwidth NIC, we repeated the same test cases with Intel 40G and
-> we were able to reproduce the same behaviour - 25% improvements in
-> throughput with 10% more CPU consumption.
->
-> The overall results indicate that the new scheduler change has introduced
-> much better network throughput performance at the cost of incremental
-> CPU usage. This can be seen as expected behavior because now the
-> TCP streams are evenly spread across all the CPUs and eventually drives
-> more network packets, with additional CPU consumption.
->
->
-> We have also confirmed this theory by parsing the ESX stats for 5.4 and 5=
-.5
-> kernels in a 4vCPU VM running 8 TCP streams - as shown below;
->
-> 5.4 kernel:
->   "2132149": {"id": 2132149, "used": 94.37, "ready": 0.01, "cstp": 0.00, =
-"name": "vmx-vcpu-0:rhel7x64-0",
->   "2132151": {"id": 2132151, "used": 0.13, "ready": 0.00, "cstp": 0.00, "=
-name": "vmx-vcpu-1:rhel7x64-0",
->   "2132152": {"id": 2132152, "used": 9.07, "ready": 0.03, "cstp": 0.00, "=
-name": "vmx-vcpu-2:rhel7x64-0",
->   "2132153": {"id": 2132153, "used": 34.77, "ready": 0.01, "cstp": 0.00, =
-"name": "vmx-vcpu-3:rhel7x64-0",
->
-> 5.5 kernel:
->   "2132041": {"id": 2132041, "used": 55.70, "ready": 0.01, "cstp": 0.00, =
-"name": "vmx-vcpu-0:rhel7x64-0",
->   "2132043": {"id": 2132043, "used": 47.53, "ready": 0.01, "cstp": 0.00, =
-"name": "vmx-vcpu-1:rhel7x64-0",
->   "2132044": {"id": 2132044, "used": 77.81, "ready": 0.00, "cstp": 0.00, =
-"name": "vmx-vcpu-2:rhel7x64-0",
->   "2132045": {"id": 2132045, "used": 57.11, "ready": 0.02, "cstp": 0.00, =
-"name": "vmx-vcpu-3:rhel7x64-0",
->
-> Note, "used %" in above stats for 5.5 kernel is evenly distributed across=
- all vCPUs.
->
-> On the whole, this change should be seen as a significant improvement for
-> most customers.
->
-> Rajender M
-> Performance Engineering
-> VMware, Inc.
->
+$ sudo ip link set dev ens1f1 mtu 8192
+RTNETLINK answers: Invalid argument
+
+Reading through the rest of the thread I don't have any strong opinions
+about whether this should propagate out from the host or not. I suspect
+it would not be worth the trouble, though, and as you say it's already
+possible to configure regular network devices in a way that is
+incompatible with the rest of the network.
+
+-Toke
+
