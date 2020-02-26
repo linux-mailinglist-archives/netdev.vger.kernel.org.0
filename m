@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B03A170506
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54307170515
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 17:59:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbgBZQ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 11:58:05 -0500
-Received: from mail-qk1-f172.google.com ([209.85.222.172]:45646 "EHLO
-        mail-qk1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbgBZQ6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 11:58:05 -0500
-Received: by mail-qk1-f172.google.com with SMTP id a2so27758qko.12
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 08:58:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xJFyvlLF2h5ZPaK+h4e58lxJuU8LLY6y+tye8YklPo0=;
-        b=BdWzX/cXHBGMAi/3L1Jprws73CvBURK76RJkXdUkmEsL4nujbq0NBhqaZjYO2iw6GL
-         LOtpZQjpED6Asd/KPo/FQeYlHikO2zRIShr866Y4/8bhYXyAWqwMTqTlelqkJ8qyxELG
-         p5EVRoC4VRAx6g1H3wwoaDqmLPkZ5ktkZ15RM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xJFyvlLF2h5ZPaK+h4e58lxJuU8LLY6y+tye8YklPo0=;
-        b=CZ4osjXa5S6rGeb+fT0Ub491vHLBt3ZesfrEoOpoqr8OFM4ZOanxn9CwBk0c4OpG1z
-         Xs5j9emqefoXk00c/X3sH7jo/z9sixo/ANA2KtfiYwykuA25H5n0ROIXyI74gWH9eoc7
-         QJhoPf8GWW29u4DNPRiu5iO22uk5VVE0ue5nZJ+xXNmpehHRqT5ZOSvHRxxnOYokjjpk
-         1hdBLw2SXOkQulSI5VQX7PTuhHuKCG8uHve9HhxJKbq/pQEgpZ3fSy+SacVxBakeX8Mz
-         g3Ph+WjhH8hWwtv9LpzfTnfLZ05E4nzVuAvPFq8vQu0SaSYHZeFB/SRoiK1Nfv2oUrtw
-         Gpsg==
-X-Gm-Message-State: APjAAAXntZf7T6dqIl9fmb8jYav/P4Y/68rGD7mfxAIWXoGAFNTRhPgd
-        SR5pcma1fGBlFFk08buzW5a9Lb38trQJvmty
-X-Google-Smtp-Source: APXvYqxQGVqsqRjHqXFckqeGKzHdo/F8yzwYajGoYeS0sXgNkpdUeDKfHFcGEqPje/3UVZjQ4HXMAQ==
-X-Received: by 2002:a37:86c1:: with SMTP id i184mr44548qkd.386.1582736283827;
-        Wed, 26 Feb 2020 08:58:03 -0800 (PST)
-Received: from [10.0.45.36] ([65.158.212.130])
-        by smtp.gmail.com with ESMTPSA id w18sm1416983qki.40.2020.02.26.08.58.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 08:58:03 -0800 (PST)
-Subject: Re: virtio_net: can change MTU after installing program
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200226093330.GA711395@redhat.com> <87lfopznfe.fsf@toke.dk>
- <0b446fc3-01ed-4dc1-81f0-ef0e1e2cadb0@digitalocean.com>
- <20200226115258-mutt-send-email-mst@kernel.org>
-From:   David Ahern <dahern@digitalocean.com>
-Message-ID: <ec1185ac-a2a1-e9d9-c116-ab42483c3b85@digitalocean.com>
-Date:   Wed, 26 Feb 2020 09:58:00 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1727711AbgBZQ7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 11:59:48 -0500
+Received: from mx2.suse.de ([195.135.220.15]:36162 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727141AbgBZQ7s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 11:59:48 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 9B872AE87;
+        Wed, 26 Feb 2020 16:59:45 +0000 (UTC)
+From:   Michal Rostecki <mrostecki@opensuse.org>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v4 0/5] Make probes which emit dmesg warnings optional
+Date:   Wed, 26 Feb 2020 17:59:34 +0100
+Message-Id: <20200226165941.6379-1-mrostecki@opensuse.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200226115258-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/20 9:55 AM, Michael S. Tsirkin wrote:
-> 
-> OK that seems to indicate an ndo callback as a reasonable way
-> to handle this. Right? The only problem is this might break
-> guests if they happen to reverse the order of
-> operations:
-> 	1. set mtu
-> 	2. detach xdp prog
-> would previously work fine, and would now give an error.
+Feature probes in bpftool related to bpf_probe_write_user and
+bpf_trace_printk helpers emit dmesg warnings which might be confusing
+for people running bpftool on production environments. This patch series
+addresses that by filtering them out by default and introducing the new
+positional argument "full" which enables all available probes.
 
-That order should not work at all. You should not be allowed to change
-the MTU size that exceeds XDP limits while an XDP program is attached.
+The main motivation behind those changes is ability the fact that some
+probes (for example those related to "trace" or "write_user" helpers)
+emit dmesg messages which might be confusing for people who are running
+on production environments. For details see the Cilium issue[0].
 
-> 
-> If we want to make it transparent for userspace,
-> I guess we can defer the actual update until xdp prog is detached.
-> Sound ugly and might still confuse some userspace ... worth it?
-> 
+v1 -> v2:
+- Do not expose regex filters to users, keep filtering logic internal,
+expose only the "full" option for including probes which emit dmesg
+warnings.
+
+v2 -> v3:
+- Do not use regex for filtering out probes, use function IDs directly.
+- Fix bash completion - in v2 only "prefix" was proposed after "macros",
+  "dev" and "kernel" were not.
+- Rephrase the man page paragraph, highlight helper function names.
+- Remove tests which parse the plain output of bpftool (except the
+  header/macros test), focus on testing JSON output instead.
+- Add test which compares the output with and without "full" option.
+
+v3 -> v4:
+- Use enum to check for helper functions.
+- Make selftests compatible with older versions of Python 3.x than 3.7.
+
+[0] https://github.com/cilium/cilium/issues/10048
+
+Michal Rostecki (5):
+  bpftool: Move out sections to separate functions
+  bpftool: Make probes which emit dmesg warnings optional
+  bpftool: Update documentation of "bpftool feature" command
+  bpftool: Update bash completion for "bpftool feature" command
+  selftests/bpf: Add test for "bpftool feature" command
+
+ .../bpftool/Documentation/bpftool-feature.rst |  19 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   3 +-
+ tools/bpf/bpftool/feature.c                   | 283 +++++++++++-------
+ tools/testing/selftests/.gitignore            |   5 +-
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ tools/testing/selftests/bpf/test_bpftool.py   | 178 +++++++++++
+ tools/testing/selftests/bpf/test_bpftool.sh   |   5 +
+ 7 files changed, 373 insertions(+), 123 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/test_bpftool.py
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool.sh
+
+-- 
+2.25.1
 
