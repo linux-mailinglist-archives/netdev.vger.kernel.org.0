@@ -2,121 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC19716FB90
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 11:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8119716FBC6
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 11:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727693AbgBZKD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 05:03:59 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:48132 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbgBZKD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 05:03:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1582711439; x=1614247439;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ogBxMdoiImHjr5YAD+7clha6xGTKyhG6C7kTtWh5Y2M=;
-  b=VbZpcWC3Wz5jBXl9GZDEqX8WaOUKuSodcY+2YNGIrzdotbfANFp6JA3U
-   7xI4+2p/zqFpmJTdpPwgyMWUF+U7PLjrboIPnYNKdWXEdGG2pwPIsQJjB
-   QEkuKkBKrZZpdUvICkoNzniez6Q3I/wy9vhqBGhwCZEDUz5klYaTRbval
-   E=;
-IronPort-SDR: BdiholnAs0Cl1Kd/FFoOpiYE5CNBzjTKTiS7ZluPApqxdspSdGHBVnGvQU6kL9QcM61zKH9BYy
- KNs/+kfF5JvA==
-X-IronPort-AV: E=Sophos;i="5.70,487,1574121600"; 
-   d="scan'208";a="18283995"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-22cc717f.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 26 Feb 2020 10:03:44 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-22cc717f.us-west-2.amazon.com (Postfix) with ESMTPS id 557FBA36DE;
-        Wed, 26 Feb 2020 10:03:43 +0000 (UTC)
-Received: from EX13d09UWC004.ant.amazon.com (10.43.162.114) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Wed, 26 Feb 2020 10:03:42 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC004.ant.amazon.com (10.43.162.114) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 26 Feb 2020 10:03:42 +0000
-Received: from HFA15-G63729NC.amazon.com (10.95.71.32) by
- mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Wed, 26 Feb 2020 10:03:37 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>
-Subject: [RESEND PATCH V1 net-next] net: ena: fix broken interface between ENA driver and FW
-Date:   Wed, 26 Feb 2020 12:03:35 +0200
-Message-ID: <1582711415-4442-1-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727550AbgBZKMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 05:12:55 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45312 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgBZKMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 05:12:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=CAamW1A7wSi+dl1kSJ3MLj0iB7qeqpYQKI22daCCGM8=; b=v6DlCO/OJmb9kQvoiXW+Zr432
+        8BvCAsk7BQEZrQZMpP9iJSc7ZzWQ1beEXWg6f1rkJar2gHLh0bO6C6g55IjbliVm8GG4wOPoJ5Ua6
+        vdY5znpf7BdEkxFYx1esKe7H+3s72RVuWJei0owKFkgQfwQhq1p1LxnrcjjwuMtgy8iRnkfHSDWCU
+        ppAdE2TIyan/4aiw8Za37GFy7p9KLPAfuhtItrM+Jis7E9Z6EPwm8rGSfhBsW5F9DrRXs0k6PUwkh
+        r9XT5Ir1bufpF5nVPFO5gkuAhgxd3lpmT5fPbnsxbBNoWcWXG+AklBbInbQTfslvbHfTUtRdAfMqJ
+        fNfXuKgBA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57116)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j6tfp-0006nj-Vd; Wed, 26 Feb 2020 10:12:14 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j6tfh-0008KB-0V; Wed, 26 Feb 2020 10:12:05 +0000
+Date:   Wed, 26 Feb 2020 10:12:04 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Felix Fietkau <nbd@nbd.name>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link config in
+ mac_link_up()
+Message-ID: <20200226101204.GW25745@shell.armlinux.org.uk>
+References: <20200225093703.GS25745@shell.armlinux.org.uk>
+ <E1j6WgG-0000TJ-CC@rmk-PC.armlinux.org.uk>
+ <DB8PR04MB68282F710FB598B977C36F99E0ED0@DB8PR04MB6828.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB68282F710FB598B977C36F99E0ED0@DB8PR04MB6828.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+On Tue, Feb 25, 2020 at 04:36:32PM +0000, Ioana Ciornei wrote:
+> > Subject: [PATCH net-next 5/8] net: dpaa2-mac: use resolved link config in
+> > mac_link_up()
+> > 
+> > Convert the DPAA2 ethernet driver to use the finalised link parameters in
+> > mac_link_up() rather than the parameters in mac_config(), which are more
+> > suited to the needs of the DPAA2 MC firmware than those available via
+> > mac_config().
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In this commit we revert the part of
-commit 1a63443afd70 ("net/amazon: Ensure that driver version is aligned to the linux kernel"),
-which breaks the interface between the ENA driver and FW.
+Thanks.
 
-We also replace the use of DRIVER_VERSION with DRIVER_GENERATION
-when we bring back the deleted constants that are used in interface with
-ENA device FW.
+> > +
+> > +		/* This is lossy; the firmware really should take the pause
+> > +		 * enablement status rather than pause/asym pause status.
+> > +		 */
+> 
+> In what sense it's lossy? I cannot see how information can be lost by translating the rx/tx pause state to pause/asym.
+> If it's just about the unnecessary double translation, then I agree.. this could have been done in an easier manner.
 
-This commit does not change the driver version reported to the user via
-ethtool, which remains the kernel version.
+If you're just translating rx/tx to pause/asym and then doing the
+reverse, then it isn't lossy, but if the firmware is resolving
+pause/asym according to the table in IEEE 802.3, then it will be
+lossy.
 
-Fixes: 1a63443afd70 ("net/amazon: Ensure that driver version is aligned to the linux kernel")
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c |  6 +++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.h | 11 +++++++++++
- 2 files changed, 16 insertions(+), 1 deletion(-)
+If the firmware doesn't interpret the bits, then why not do the
+sensible thing and just pass the enablement status rather than
+trying to confusingly encode it back to pause/asym?
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 4faf81c456d8..555c7273d712 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3090,7 +3090,11 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev,
- 	host_info->os_dist = 0;
- 	strncpy(host_info->os_dist_str, utsname()->release,
- 		sizeof(host_info->os_dist_str) - 1);
--	host_info->driver_version = LINUX_VERSION_CODE;
-+	host_info->driver_version =
-+		(DRV_MODULE_GEN_MAJOR) |
-+		(DRV_MODULE_GEN_MINOR << ENA_ADMIN_HOST_INFO_MINOR_SHIFT) |
-+		(DRV_MODULE_GEN_SUBMINOR << ENA_ADMIN_HOST_INFO_SUB_MINOR_SHIFT) |
-+		("K"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
- 	host_info->num_cpus = num_online_cpus();
- 
- 	host_info->driver_supported_features =
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 74c7f10b60dd..97dfd0c67e84 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -45,7 +45,18 @@
- #include "ena_com.h"
- #include "ena_eth_com.h"
- 
-+#define DRV_MODULE_GEN_MAJOR	2
-+#define DRV_MODULE_GEN_MINOR	1
-+#define DRV_MODULE_GEN_SUBMINOR 0
-+
- #define DRV_MODULE_NAME		"ena"
-+#ifndef DRV_MODULE_GENERATION
-+#define DRV_MODULE_GENERATION \
-+	__stringify(DRV_MODULE_GEN_MAJOR) "."	\
-+	__stringify(DRV_MODULE_GEN_MINOR) "."	\
-+	__stringify(DRV_MODULE_GEN_SUBMINOR) "K"
-+#endif
-+
- #define DEVICE_NAME	"Elastic Network Adapter (ENA)"
- 
- /* 1 for AENQ + ADMIN */
 -- 
-2.23.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
