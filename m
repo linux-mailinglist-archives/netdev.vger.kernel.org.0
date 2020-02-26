@@ -2,132 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F02C16F853
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 08:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D272116F85A
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 08:11:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727193AbgBZHHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 02:07:13 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36749 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbgBZHHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 02:07:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582700831;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yLHUhWBg2bX55RLm9LOQN5uKB1n7VPXQRgofoNBrx+M=;
-        b=PFAF1JRrygPzYSquUIYfGFa3VkVN7USI83kwtdYDQgO/RposhYzrKTLc4EcR9u5itU59cX
-        GHC+kkKRaxsNiZb24vRsSjrRoSUvl/h/5QhgvcoFOKke2+LiNPfIuZYmWgvy1Gloj9yn4o
-        0+p+25PlmAaWafG5nn5abahN93hrBls=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-13-Li1dFNCNMryYbSuRePMO3A-1; Wed, 26 Feb 2020 02:07:10 -0500
-X-MC-Unique: Li1dFNCNMryYbSuRePMO3A-1
-Received: by mail-qt1-f199.google.com with SMTP id r30so3159961qtb.10
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 23:07:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yLHUhWBg2bX55RLm9LOQN5uKB1n7VPXQRgofoNBrx+M=;
-        b=q4jeojdqdyVLvcWuvvy3yFAlB+AUUzsZKxYa67dPrd8zNmR7ppFTzAOYhkwsWs7aQq
-         F+ajPtJYXbiGfi4OpOJH3WWizd76dEoEgI3jdwQFKeACIgxX+wqR9WAetdUZ/K+iDeBN
-         VwKG9netZLNhDiARcNdEQPV9X2RDDiPw925g9YgZdWurv39M4A4uMX5CJymcZrHOyHGc
-         ghSPX3sm491HlqhvQerAv32zrcKA0Avsr8AzMy/Vi+BaKk2bVsdShcTzK10wgUiBYggP
-         Qpp7I96qQWKZj2gSFd/+TCfCD3BbY9wzOPSmaji7yuyxLCg1J5LH+51ulP3kfqNO50sF
-         DBJA==
-X-Gm-Message-State: APjAAAUNU60zUnS+u+LhmKPUAAKy4Ia7uPoIXpiGc6BD3ov+I2FPrA3S
-        mmF/Lr4tFddxJy4rYOYr0Y/c72lbZzsD83ZAVos87R80qXC3Z43yDCNkcsEvUy80VBMh0f7+3in
-        LVmOOHikQzmLV1zH7
-X-Received: by 2002:ac8:138b:: with SMTP id h11mr2963185qtj.153.1582700829734;
-        Tue, 25 Feb 2020 23:07:09 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzRnsWXs8mPrL7JMlDtrOoeTV7tmTs8XtmTA7fhSUFrpj3NwQESvgWoh3J242eLFGFIEu91CA==
-X-Received: by 2002:ac8:138b:: with SMTP id h11mr2963165qtj.153.1582700829424;
-        Tue, 25 Feb 2020 23:07:09 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id s2sm658710qkj.59.2020.02.25.23.07.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 23:07:08 -0800 (PST)
-Date:   Wed, 26 Feb 2020 02:07:04 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Ahern <dahern@digitalocean.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: virtio_net: can change MTU after installing program
-Message-ID: <20200226015113-mutt-send-email-mst@kernel.org>
-References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+        id S1727187AbgBZHL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 02:11:29 -0500
+Received: from mail-bn8nam11on2083.outbound.protection.outlook.com ([40.107.236.83]:56800
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726903AbgBZHL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 02:11:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RsAep52swxy9u4cxoIUhKy2qq/jivDVJT9gc9dURSTHPDPpwT4HZ5CMQvWuy5g1/9g/l2jovc+h0Me3Eyh9kjfoGIHpQcwU0HLhRVcNApq66gZ5CKkM5WjwzurYVSCGMIoyIPQyn0QC+ckavESbh5qIW3kU3NZ50a8+CgwR/aqe5l0ZhixS7MFjOyLE9CCEQ6oKPCFC61dvStlHHjzd+ypvLF/17eyXO0vKin2O/pFYqGjehcIjTS+NyZ+TLBjBXNAW0BRxu1bhEFMM8EAHNqaMDzQRm18QJx7NjLhf/UinzzK6OFk+dX/H+5e0jBx0PaqoYVCBQx1JyIWkY+wxF8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zvzDEMfVq2WyhMExIcQtMMsESFH1bLcNkkk/9M5HqX0=;
+ b=EwdkXizME3DjxZzVR2Vhe2vTjESpSmMt+//FVb4eFftfcEcIxnG5QrgEQYPRY8wB07Vy4Yd+yOqO6SlGXbb6izXLqbmnOz3CesfTUMzVBQ/mXA+AjpZrlCiiwSFfp7reCIIHAbyzC1/earPnfR9ELCTaip3OM2sUmRR4ELHBUIFokHsP2wmfyNVwGnO037l2yJEntvmzIIHOeR2qR4fgeHvzDpWMwbS6s5PcbMKatjj8QQkqIRl83v65U8MqEoCrlj7//gbLvdoaGX5iFORwQS+Tv50ii15R3Fvv4dkKIAFwbTJIvMYu+uXGVQsyZa9fMhllAsATwMwp/ZRMHZ5tYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zvzDEMfVq2WyhMExIcQtMMsESFH1bLcNkkk/9M5HqX0=;
+ b=RdYMGyphQMfQiquIZMK9POI1TppItiqbUxqrs7jj+0VvPiOumNz4JHG6lu8qt2e7AP0aacoWY2Js7kpvK8ZNkECdDjQW+MPhtzLdFSTVL1nJxqKr8VdyaAFN2WVu9Xk9foNc1AHP/6GCXDWnPUqPN8e/Iq4Yev2pECxj8ggvlxM=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=Sudheesh.Mavila@amd.com; 
+Received: from MN2PR12MB2974.namprd12.prod.outlook.com (2603:10b6:208:c1::11)
+ by MN2PR12MB3727.namprd12.prod.outlook.com (2603:10b6:208:15a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.17; Wed, 26 Feb
+ 2020 07:11:26 +0000
+Received: from MN2PR12MB2974.namprd12.prod.outlook.com
+ ([fe80::a142:9294:5865:65c]) by MN2PR12MB2974.namprd12.prod.outlook.com
+ ([fe80::a142:9294:5865:65c%5]) with mapi id 15.20.2750.021; Wed, 26 Feb 2020
+ 07:11:26 +0000
+From:   Sudheesh Mavila <sudheesh.mavila@amd.com>
+To:     sudheesh.mavila@amd.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: =?UTF-8?q?=5BPATCH=20v2=C2=A0=5D=20net=3A=20phy=3A=20corrected=20the=20return=20value=20for=20genphy=5Fcheck=5Fand=5Frestart=5Faneg=20=09and=20=20genphy=5Fc45=5Fcheck=5Fand=5Frestart=5Faneg?=
+Date:   Wed, 26 Feb 2020 12:40:45 +0530
+Message-Id: <20200226071045.79090-1-sudheesh.mavila@amd.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA1PR01CA0124.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:35::18) To MN2PR12MB2974.namprd12.prod.outlook.com
+ (2603:10b6:208:c1::11)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yocto-build.amd.com (165.204.156.251) by MA1PR01CA0124.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:35::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Wed, 26 Feb 2020 07:11:22 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [165.204.156.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3b55511d-b6f2-45ea-1248-08d7ba8b1767
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3727:|MN2PR12MB3727:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3727775E14984B696361115AFCEA0@MN2PR12MB3727.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 0325F6C77B
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(189003)(199004)(36756003)(1076003)(66556008)(7696005)(66476007)(66946007)(956004)(26005)(2616005)(6666004)(5660300002)(44832011)(478600001)(6486002)(316002)(8936002)(2906002)(81156014)(81166006)(186003)(16526019)(86362001)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3727;H:MN2PR12MB2974.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: amd.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VR2aLFHOa/YLPr34+QIz6ZvuJA9qiDihX3KJ+YSAYv191ao/YWY6xAQbcPHqkWeUIhA+sRf8T/aQ0StYHGmhzffl2aV+IHK0nXJO8MK33fcovSgm0u624FHvISlRV5P+lkNxyTyE+TMmmhj0yrNlIbKzy2wiZUZ0RtLbKYrZ/AkMZV5BPGXN3+5V6jtLbFGNMdOLBAt//rozcx7/t+zfZMWL2aeVmpXpOq/xwZc2gYfRfpty+XyPwzJb4Kis1Sz2MGBn6byviseRW0P8ukxBBG/XGtCAeS5Lf2XDs23o8kA6/EYRJrLVFsFfuawoc+GCQFcJsPz0AdkVEq2/mw7c6Ccp/tyd4lIHso8oYPEppr49aSmim6kWO8CjOvnlXWfn5QcWf1TVxIhb5CL5rr9eod4l+ujLJxPW6p3yK/+PH5Q8EP6ZhGqWSx57diUhcYNI
+X-MS-Exchange-AntiSpam-MessageData: 3GGc34Gssbfmmvsa3klW6wllq7Tb5AlJohZfErryuhMjc3kXGQoa//TihM/vEa5X7CNHoP6iVPbSqAP/6sH+k1MwNy3EOk5oEjJtC63Bx56+jnv2CHD8NcPk1iDByhlEi7Fcf9lOuUG2AK8geYXeWg==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b55511d-b6f2-45ea-1248-08d7ba8b1767
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2020 07:11:26.5488
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k1rOVPYNFJoJnnuALooGVYeNBAKKy3848A9ng1z4E3C9SGFvroA4aB2qQ5Mpi2i5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3727
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
-> Another issue is that virtio_net checks the MTU when a program is
-> installed, but does not restrict an MTU change after:
-> 
-> # ip li sh dev eth0
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
-> state UP mode DEFAULT group default qlen 1000
->     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
->     prog/xdp id 13 tag c5595e4590d58063 jited
-> 
-> # ip li set dev eth0 mtu 8192
-> 
-> # ip li sh dev eth0
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
-> state UP mode DEFAULT group default qlen 1000
+When auto-negotiation is not required, return value should be zero.
 
-Well the reason XDP wants to limit MTU is this:
-    the MTU must be less than a page
-    size to avoid having to handle XDP across multiple pages
+Changes v1->v2:
+- improved comments and code as Andrew Lunn and Heiner Kallweit suggestion
+- fixed issue in genphy_c45_check_and_restart_aneg as Russell King
+  suggestion.
 
-however device mtu basically comes from dhcp.
-it is assumed that whoever configured it knew
-what he's doing and configured mtu to match
-what's going on on the underlying backend.
-So we are trusting the user already.
+Fixes: 2a10ab043ac5 ("net: phy: add genphy_check_and_restart_aneg()")
+Fixes: 1af9f16840e9 ("net: phy: add genphy_c45_check_and_restart_aneg()")
+Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
+---
+ drivers/net/phy/phy-c45.c    | 6 +++---
+ drivers/net/phy/phy_device.c | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-But yes, one can configure mtu later and then it's too late
-as xdp was attached.
-
-
-> 
-> 
-> The simple solution is:
-> 
-> @@ -2489,6 +2495,8 @@ static int virtnet_xdp_set(struct net_device *dev,
-> struct bpf_prog *prog,
->                 }
->         }
-> 
-> +       dev->max_mtu = prog ? max_sz : MAX_MTU;
-> +
->         return 0;
-> 
->  err:
-
-
-Well max MTU comes from the device ATM and supplies the limit
-of the underlying backend. Why is it OK to set it to MAX_MTU?
-That's just asking for trouble IMHO, traffic will not
-be packetized properly.
-
-
-> The complicated solution is to implement ndo_change_mtu.
-> 
-> The simple solution causes a user visible change with 'ip -d li sh' by
-> showing a changing max mtu, but the ndo has a poor user experience in
-> that it just fails EINVAL (their is no extack) which is confusing since,
-> for example, 8192 is a totally legit MTU. Changing the max does return a
-> nice extack message.
-
-Just fail with EBUSY instead?
-
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index a1caeee12236..dd2e23fb67c0 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -167,7 +167,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_restart_aneg);
+  */
+ int genphy_c45_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+ {
+-	int ret = 0;
++	int ret;
+ 
+ 	if (!restart) {
+ 		/* Configure and restart aneg if it wasn't set before */
+@@ -180,9 +180,9 @@ int genphy_c45_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+ 	}
+ 
+ 	if (restart)
+-		ret = genphy_c45_restart_aneg(phydev);
++		return genphy_c45_restart_aneg(phydev);
+ 
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_check_and_restart_aneg);
+ 
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 6a5056e0ae77..8b16775b9324 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1792,7 +1792,7 @@ EXPORT_SYMBOL(genphy_restart_aneg);
+  */
+ int genphy_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+ {
+-	int ret = 0;
++	int ret;
+ 
+ 	if (!restart) {
+ 		/* Advertisement hasn't changed, but maybe aneg was never on to
+@@ -1807,9 +1807,9 @@ int genphy_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+ 	}
+ 
+ 	if (restart)
+-		ret = genphy_restart_aneg(phydev);
++		return genphy_restart_aneg(phydev);
+ 
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL(genphy_check_and_restart_aneg);
+ 
 -- 
-MST
+2.17.1
 
