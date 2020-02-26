@@ -2,162 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D13416F837
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 07:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F02C16F853
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 08:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgBZGtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 01:49:02 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53396 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726396AbgBZGtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 01:49:02 -0500
+        id S1727193AbgBZHHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 02:07:13 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36749 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726823AbgBZHHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 02:07:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582699741;
+        s=mimecast20190719; t=1582700831;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zTs0u5uGl9tyXxq8oEd/VN3o2cJO7Hfk1LD3/v5KKQk=;
-        b=INWkw553JmSiJtnrC/N+0K1D4D7x6FgZ38QpprZ4ReAwNoXdf+5LmgrwbbAC7SmaRG3SAW
-        SsRsyTb8ufXOOiX4r5gn1AgCRqeUOdWoq8ZXFrBxA3gaLv+tWcspL8Ziv9Q3PfpAslLwbC
-        A1Up760COiUE9k4ZjO2r6isDybYkPP8=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-453-CiYGB7gkMYqXmPgyyshTcg-1; Wed, 26 Feb 2020 01:48:59 -0500
-X-MC-Unique: CiYGB7gkMYqXmPgyyshTcg-1
-Received: by mail-qv1-f70.google.com with SMTP id ce2so2605871qvb.23
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 22:48:59 -0800 (PST)
+        bh=yLHUhWBg2bX55RLm9LOQN5uKB1n7VPXQRgofoNBrx+M=;
+        b=PFAF1JRrygPzYSquUIYfGFa3VkVN7USI83kwtdYDQgO/RposhYzrKTLc4EcR9u5itU59cX
+        GHC+kkKRaxsNiZb24vRsSjrRoSUvl/h/5QhgvcoFOKke2+LiNPfIuZYmWgvy1Gloj9yn4o
+        0+p+25PlmAaWafG5nn5abahN93hrBls=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-13-Li1dFNCNMryYbSuRePMO3A-1; Wed, 26 Feb 2020 02:07:10 -0500
+X-MC-Unique: Li1dFNCNMryYbSuRePMO3A-1
+Received: by mail-qt1-f199.google.com with SMTP id r30so3159961qtb.10
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 23:07:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=zTs0u5uGl9tyXxq8oEd/VN3o2cJO7Hfk1LD3/v5KKQk=;
-        b=HdygqvTZRC0WT/IjMej9CLqam1UdWy5+qKPWQUkK5cKIkAQYGyqRLfgzREwvk2/VCQ
-         jwWuZXhTpXLe1wM6GKEz8Vn2zFiLPzJ5fXXBtR5AE6cIuiiVXqk2qMcexvV5TU/Hg783
-         73163iPZDvzcieDTlVay1UC0QNhZCfSB4XU0RyjQDnVIVqurZc3ERFKJewADpsIHsdu8
-         G6IhD+lmtAjwlZ8EAlXd6JffW44VeiWhn7dizj6O836svXo9o1gmLaufWJPuQEkrj9zx
-         UQbu4C8Husw/N9g9HXuxmwD8eROiKJE/CHaxTKKjL5PSkzirbCMrwMff3Oi2awWZALJb
-         wikA==
-X-Gm-Message-State: APjAAAX3WxpfaiKyvt94p0nFJYk2O2oXEdPk6FjX30OBVOm0LiadXznH
-        aHqDL7xJ7DpJfFXU16TuOD0QcMLJJhkgakaWLc3Wu70ot9dHuKydwnV7S0g/VMZu75ijG0WeALk
-        hI7zia+BL3/aL/4A8
-X-Received: by 2002:a37:ae85:: with SMTP id x127mr614762qke.190.1582699739092;
-        Tue, 25 Feb 2020 22:48:59 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwnmyAvL0ZjIabQ8fY+cGwWvZWY3SLMpLVp/01Z234rN51OtWm8OZ+fbSs50cRJRsxV+f556g==
-X-Received: by 2002:a37:ae85:: with SMTP id x127mr614739qke.190.1582699738847;
-        Tue, 25 Feb 2020 22:48:58 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to;
+        bh=yLHUhWBg2bX55RLm9LOQN5uKB1n7VPXQRgofoNBrx+M=;
+        b=q4jeojdqdyVLvcWuvvy3yFAlB+AUUzsZKxYa67dPrd8zNmR7ppFTzAOYhkwsWs7aQq
+         F+ajPtJYXbiGfi4OpOJH3WWizd76dEoEgI3jdwQFKeACIgxX+wqR9WAetdUZ/K+iDeBN
+         VwKG9netZLNhDiARcNdEQPV9X2RDDiPw925g9YgZdWurv39M4A4uMX5CJymcZrHOyHGc
+         ghSPX3sm491HlqhvQerAv32zrcKA0Avsr8AzMy/Vi+BaKk2bVsdShcTzK10wgUiBYggP
+         Qpp7I96qQWKZj2gSFd/+TCfCD3BbY9wzOPSmaji7yuyxLCg1J5LH+51ulP3kfqNO50sF
+         DBJA==
+X-Gm-Message-State: APjAAAUNU60zUnS+u+LhmKPUAAKy4Ia7uPoIXpiGc6BD3ov+I2FPrA3S
+        mmF/Lr4tFddxJy4rYOYr0Y/c72lbZzsD83ZAVos87R80qXC3Z43yDCNkcsEvUy80VBMh0f7+3in
+        LVmOOHikQzmLV1zH7
+X-Received: by 2002:ac8:138b:: with SMTP id h11mr2963185qtj.153.1582700829734;
+        Tue, 25 Feb 2020 23:07:09 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzRnsWXs8mPrL7JMlDtrOoeTV7tmTs8XtmTA7fhSUFrpj3NwQESvgWoh3J242eLFGFIEu91CA==
+X-Received: by 2002:ac8:138b:: with SMTP id h11mr2963165qtj.153.1582700829424;
+        Tue, 25 Feb 2020 23:07:09 -0800 (PST)
 Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
-        by smtp.gmail.com with ESMTPSA id j127sm661733qkc.36.2020.02.25.22.48.55
+        by smtp.gmail.com with ESMTPSA id s2sm658710qkj.59.2020.02.25.23.07.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 22:48:57 -0800 (PST)
-Date:   Wed, 26 Feb 2020 01:48:53 -0500
+        Tue, 25 Feb 2020 23:07:08 -0800 (PST)
+Date:   Wed, 26 Feb 2020 02:07:04 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
- using XDP
-Message-ID: <20200226014333-mutt-send-email-mst@kernel.org>
-References: <20200226005744.1623-1-dsahern@kernel.org>
- <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
+To:     David Ahern <dahern@digitalocean.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: virtio_net: can change MTU after installing program
+Message-ID: <20200226015113-mutt-send-email-mst@kernel.org>
+References: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
+In-Reply-To: <7df5bb7f-ea69-7673-642b-f174e45a1e64@digitalocean.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 11:00:40AM +0800, Jason Wang wrote:
+On Tue, Feb 25, 2020 at 08:32:14PM -0700, David Ahern wrote:
+> Another issue is that virtio_net checks the MTU when a program is
+> installed, but does not restrict an MTU change after:
 > 
-> On 2020/2/26 上午8:57, David Ahern wrote:
-> > From: David Ahern <dahern@digitalocean.com>
-> > 
-> > virtio_net currently requires extra queues to install an XDP program,
-> > with the rule being twice as many queues as vcpus. From a host
-> > perspective this means the VM needs to have 2*vcpus vhost threads
-> > for each guest NIC for which XDP is to be allowed. For example, a
-> > 16 vcpu VM with 2 tap devices needs 64 vhost threads.
-> > 
-> > The extra queues are only needed in case an XDP program wants to
-> > return XDP_TX. XDP_PASS, XDP_DROP and XDP_REDIRECT do not need
-> > additional queues. Relax the queue requirement and allow XDP
-> > functionality based on resources. If an XDP program is loaded and
-> > there are insufficient queues, then return a warning to the user
-> > and if a program returns XDP_TX just drop the packet. This allows
-> > the use of the rest of the XDP functionality to work without
-> > putting an unreasonable burden on the host.
-> > 
-> > Cc: Jason Wang <jasowang@redhat.com>
-> > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > Signed-off-by: David Ahern <dahern@digitalocean.com>
-> > ---
-> >   drivers/net/virtio_net.c | 14 ++++++++++----
-> >   1 file changed, 10 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 2fe7a3188282..2f4c5b2e674d 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -190,6 +190,8 @@ struct virtnet_info {
-> >   	/* # of XDP queue pairs currently used by the driver */
-> >   	u16 xdp_queue_pairs;
-> > +	bool can_do_xdp_tx;
-> > +
-> >   	/* I like... big packets and I cannot lie! */
-> >   	bool big_packets;
-> > @@ -697,6 +699,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
-> >   			len = xdp.data_end - xdp.data;
-> >   			break;
-> >   		case XDP_TX:
-> > +			if (!vi->can_do_xdp_tx)
-> > +				goto err_xdp;
+> # ip li sh dev eth0
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc fq_codel
+> state UP mode DEFAULT group default qlen 1000
+>     link/ether 5a:39:e6:01:a5:36 brd ff:ff:ff:ff:ff:ff
+>     prog/xdp id 13 tag c5595e4590d58063 jited
 > 
+> # ip li set dev eth0 mtu 8192
 > 
-> I wonder if using spinlock to synchronize XDP_TX is better than dropping
-> here?
-> 
-> Thanks
+> # ip li sh dev eth0
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8192 xdp qdisc fq_codel
+> state UP mode DEFAULT group default qlen 1000
 
-I think it's less a problem with locking, and more a problem
-with queue being potentially full and XDP being unable to
-transmit.
+Well the reason XDP wants to limit MTU is this:
+    the MTU must be less than a page
+    size to avoid having to handle XDP across multiple pages
 
-From that POV just sharing the queue would already be better than just
-an uncondiitonal drop, however I think this is not what XDP users came
-to expect. So at this point, partitioning the queue might be reasonable.
-When XDP attaches we could block until queue is mostly empty. However,
-how exactly to partition the queue remains open.  Maybe it's reasonable
-to limit number of RX buffers to achieve balance.
+however device mtu basically comes from dhcp.
+it is assumed that whoever configured it knew
+what he's doing and configured mtu to match
+what's going on on the underlying backend.
+So we are trusting the user already.
+
+But yes, one can configure mtu later and then it's too late
+as xdp was attached.
+
 
 > 
-> >   			stats->xdp_tx++;
-> >   			xdpf = convert_to_xdp_frame(&xdp);
-> >   			if (unlikely(!xdpf))
-> > @@ -870,6 +874,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >   			}
-> >   			break;
-> >   		case XDP_TX:
-> > +			if (!vi->can_do_xdp_tx)
-> > +				goto err_xdp;
-> >   			stats->xdp_tx++;
-> >   			xdpf = convert_to_xdp_frame(&xdp);
-> >   			if (unlikely(!xdpf))
-> > @@ -2435,10 +2441,10 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-> >   	/* XDP requires extra queues for XDP_TX */
-> >   	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
-> > -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
-> > -		netdev_warn(dev, "request %i queues but max is %i\n",
-> > -			    curr_qp + xdp_qp, vi->max_queue_pairs);
-> > -		return -ENOMEM;
-> > +		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available; XDP_TX will not be allowed");
-> > +		vi->can_do_xdp_tx = false;
-> > +	} else {
-> > +		vi->can_do_xdp_tx = true;
-> >   	}
-> >   	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+> 
+> The simple solution is:
+> 
+> @@ -2489,6 +2495,8 @@ static int virtnet_xdp_set(struct net_device *dev,
+> struct bpf_prog *prog,
+>                 }
+>         }
+> 
+> +       dev->max_mtu = prog ? max_sz : MAX_MTU;
+> +
+>         return 0;
+> 
+>  err:
+
+
+Well max MTU comes from the device ATM and supplies the limit
+of the underlying backend. Why is it OK to set it to MAX_MTU?
+That's just asking for trouble IMHO, traffic will not
+be packetized properly.
+
+
+> The complicated solution is to implement ndo_change_mtu.
+> 
+> The simple solution causes a user visible change with 'ip -d li sh' by
+> showing a changing max mtu, but the ndo has a poor user experience in
+> that it just fails EINVAL (their is no extack) which is confusing since,
+> for example, 8192 is a totally legit MTU. Changing the max does return a
+> nice extack message.
+
+Just fail with EBUSY instead?
+
+-- 
+MST
 
