@@ -2,82 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0CA6170C98
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 00:32:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4C7170CA4
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 00:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727974AbgBZXcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 18:32:39 -0500
-Received: from mga18.intel.com ([134.134.136.126]:21925 "EHLO mga18.intel.com"
+        id S1727958AbgBZXge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 18:36:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726413AbgBZXci (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 18:32:38 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Feb 2020 15:32:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,489,1574150400"; 
-   d="scan'208";a="350511839"
-Received: from sneftin-mobl1.ger.corp.intel.com (HELO [10.24.14.90]) ([10.24.14.90])
-  by fmsmga001.fm.intel.com with ESMTP; 26 Feb 2020 15:32:37 -0800
-Subject: Re: [Intel-wired-lan] [PATCH next] igc: make non-global functions
- static
-To:     Chen Zhou <chenzhou10@huawei.com>, jeffrey.t.kirsher@intel.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org
-References: <20200108133959.93035-1-chenzhou10@huawei.com>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <1453037a-4370-8c08-f8c9-dfaa629e96b0@intel.com>
-Date:   Wed, 26 Feb 2020 15:32:37 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1727930AbgBZXgd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 18:36:33 -0500
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17A2B2467D;
+        Wed, 26 Feb 2020 23:36:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582760193;
+        bh=vXpyWwhUGUQiX5wgoNX1FisqdYdJy20No/deVFYlJkU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dJwxw/RfS7DkTN3k0AP1N+HpEWoJbxSsE0e6+DYSovGR46ynSqqFv9D754Y/Q1Ikw
+         xYTx0ARYUqQ5u90E+Z8Cf3dVP53FUC/r9Bbf7hAB2p/FHST7R7TKXq4czeBgvu4L4N
+         B41SyCeQdkgtkebcaqeYPgyuXftjAsTUsmxZPGN0=
+Received: by mail-lf1-f45.google.com with SMTP id r14so631613lfm.5;
+        Wed, 26 Feb 2020 15:36:33 -0800 (PST)
+X-Gm-Message-State: ANhLgQ3wjuUJoTpmx04/hGGTP6x41Pc2TGDklTWUPED1S8dhk254HIEN
+        CUML3JFo9hN1RapqbrK6scRTpwQiFiG/qv1m68I=
+X-Google-Smtp-Source: ADFU+vsNWFvucc6bvsLVTB4fTBz+IMK7M5fkkSPO8WUB3Nxr327qnEK3G2xJo9hTTPGa/Xvx5Ux01f4AIiPq/lcYA70=
+X-Received: by 2002:a19:840d:: with SMTP id g13mr527766lfd.162.1582760191201;
+ Wed, 26 Feb 2020 15:36:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200108133959.93035-1-chenzhou10@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-13-jolsa@kernel.org>
+In-Reply-To: <20200226130345.209469-13-jolsa@kernel.org>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 26 Feb 2020 15:36:19 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5mb=3VNnyvy4k5FHRh9-OdKDE5cz6vW=0qVqfP7-x7yg@mail.gmail.com>
+Message-ID: <CAPhsuW5mb=3VNnyvy4k5FHRh9-OdKDE5cz6vW=0qVqfP7-x7yg@mail.gmail.com>
+Subject: Re: [PATCH 12/18] bpf: Add trampolines to kallsyms
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/8/2020 05:39, Chen Zhou wrote:
-> Fix sparse warning:
-> drivers/net/ethernet/intel/igc/igc_ptp.c:512:6:
-> 	warning: symbol 'igc_ptp_tx_work' was not declared. Should it be static?
-> drivers/net/ethernet/intel/igc/igc_ptp.c:644:6:
-> 	warning: symbol 'igc_ptp_suspend' was not declared. Should it be static?
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> ---
->   drivers/net/ethernet/intel/igc/igc_ptp.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> index 6935065..389a969 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> @@ -509,7 +509,7 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
->    * This work function polls the TSYNCTXCTL valid bit to determine when a
->    * timestamp has been taken for the current stored skb.
->    */
-> -void igc_ptp_tx_work(struct work_struct *work)
-> +static void igc_ptp_tx_work(struct work_struct *work)
->   {
->   	struct igc_adapter *adapter = container_of(work, struct igc_adapter,
->   						   ptp_tx_work);
-> @@ -641,7 +641,7 @@ void igc_ptp_init(struct igc_adapter *adapter)
->    * This function stops the overflow check work and PTP Tx timestamp work, and
->    * will prepare the device for OS suspend.
->    */
-> -void igc_ptp_suspend(struct igc_adapter *adapter)
-> +static void igc_ptp_suspend(struct igc_adapter *adapter)
->   {
->   	if (!(adapter->ptp_flags & IGC_PTP_ENABLED))
->   		return;
-> 
-This patch should be partially reverted for "igc_ptp_suspend".
-"igc_ptp_suspend" declared in igc.h file and used in "__igc_shutdown" 
-method.
+On Wed, Feb 26, 2020 at 5:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding trampolines to kallsyms. It's displayed as
+>   bpf_trampoline_<ID> [bpf]
+>
+> where ID is the BTF id of the trampoline function.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+
+Acked-by: Song Liu <songliubraving@fb.com>
