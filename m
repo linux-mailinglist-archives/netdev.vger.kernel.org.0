@@ -2,75 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83499170BE3
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8DE170BEB
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 23:54:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgBZWv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 17:51:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44936 "EHLO mail.kernel.org"
+        id S1727181AbgBZWyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 17:54:52 -0500
+Received: from correo.us.es ([193.147.175.20]:36380 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727763AbgBZWv1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 17:51:27 -0500
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E44BB2467D;
-        Wed, 26 Feb 2020 22:51:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582757487;
-        bh=+YWv/+rohBZC7pJpEZSYUsyDYUXcGFFvUizlm3YA5Yw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZgTiZUQ61x3NUjOL5NiPPoVaFM4dhfdAqx1DCQsfeGMbYXe3kLPCmoDFo8Qu7u1AI
-         zUNuuU6Q+H5mPPXMzeejqrGX5c+mI5CvltynClmIWiaHQzo9pUMNG4PyZNq04I5hcQ
-         lU2anuBcsXzJiTJvBfnsxSxIOacoCEjdz5LzkKyU=
-Received: by mail-lf1-f53.google.com with SMTP id n25so583964lfl.0;
-        Wed, 26 Feb 2020 14:51:26 -0800 (PST)
-X-Gm-Message-State: ANhLgQ1fLRFdlbKZLMC2u7pJGmMoLcVYnMFOPsKNHe8lIDyGFtCr6ock
-        +YojV4XG0/fVnAbnXy5a3wY4GyVm3QETe94/naw=
-X-Google-Smtp-Source: ADFU+vulNT+qEuR789y3B6OTGrquPLcLVjoVwOHBZKzWvL/YdHCLiZ9YJrhVo3uJ2ugjAsMqGM9uHx7537LBaQD7W6o=
-X-Received: by 2002:a05:6512:6cb:: with SMTP id u11mr444948lff.69.1582757485012;
- Wed, 26 Feb 2020 14:51:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-6-jolsa@kernel.org>
-In-Reply-To: <20200226130345.209469-6-jolsa@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 26 Feb 2020 14:51:14 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6NCwxW2qQCFcA3qGOeyd=qz0ZHQGUidWfO-oXeen0r2g@mail.gmail.com>
-Message-ID: <CAPhsuW6NCwxW2qQCFcA3qGOeyd=qz0ZHQGUidWfO-oXeen0r2g@mail.gmail.com>
-Subject: Re: [PATCH 05/18] bpf: Add lnode list node to struct bpf_ksym
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727329AbgBZWyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 17:54:52 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9144C1C4387
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:54:39 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 83089DA3A0
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:54:39 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 78C2BDA390; Wed, 26 Feb 2020 23:54:39 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8607CDA72F;
+        Wed, 26 Feb 2020 23:54:37 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 26 Feb 2020 23:54:37 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 60D8842EF4E0;
+        Wed, 26 Feb 2020 23:54:37 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/6] Netfilter fixes for net
+Date:   Wed, 26 Feb 2020 23:54:36 +0100
+Message-Id: <20200226225442.9598-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 5:05 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding lnode list node to 'struct bpf_ksym' object,
-> so the symbol itself can be chained and used in other
-> objects like bpf_trampoline and bpf_dispatcher.
->
-> Changing iterator to bpf_ksym in bpf_get_kallsym.
->
-> The ksym->start is holding the prog->bpf_func value,
-> so it's ok to use it in bpf_get_kallsym.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Hi,
 
-Acked-by: Song Liu <songliubraving@fb.com>
+The following patchset contains Netfilter fixes:
 
-nit: I think we should describe this as "move lnode list node to
-struct bpf_ksym".
+1) Perform garbage collection from workqueue to fix rcu detected
+   stall in ipset hash set types, from Jozsef Kadlecsik.
+
+2) Fix the forceadd evaluation path, also from Jozsef.
+
+3) Fix nft_set_pipapo selftest, from Stefano Brivio.
+
+4) Crash when add-flush-add element in pipapo set, also from Stefano.
+   Add test to cover this crash.
+
+5) Remove sysctl entry under mutex in hashlimit, from Cong Wang.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 3614d05b5e6baf487e88fb114d884da172edd61a:
+
+  Merge tag 'mac80211-for-net-2020-02-24' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211 (2020-02-24 15:43:38 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 99b79c3900d4627672c85d9f344b5b0f06bc2a4d:
+
+  netfilter: xt_hashlimit: unregister proc file before releasing mutex (2020-02-26 23:25:07 +0100)
+
+----------------------------------------------------------------
+Cong Wang (1):
+      netfilter: xt_hashlimit: unregister proc file before releasing mutex
+
+Jozsef Kadlecsik (2):
+      netfilter: ipset: Fix "INFO: rcu detected stall in hash_xxx" reports
+      netfilter: ipset: Fix forceadd evaluation path
+
+Pablo Neira Ayuso (1):
+      Merge branch 'master' of git://blackhole.kfki.hu/nf
+
+Stefano Brivio (3):
+      selftests: nft_concat_range: Move option for 'list ruleset' before command
+      nft_set_pipapo: Actually fetch key data in nft_pipapo_remove()
+      selftests: nft_concat_range: Add test for reported add/flush/add issue
+
+ include/linux/netfilter/ipset/ip_set.h             |  11 +-
+ net/netfilter/ipset/ip_set_core.c                  |  34 +-
+ net/netfilter/ipset/ip_set_hash_gen.h              | 635 ++++++++++++++-------
+ net/netfilter/nft_set_pipapo.c                     |   6 +-
+ net/netfilter/xt_hashlimit.c                       |  16 +-
+ .../selftests/netfilter/nft_concat_range.sh        |  55 +-
+ 6 files changed, 529 insertions(+), 228 deletions(-)
