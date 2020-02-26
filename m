@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47C3F16F971
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6881E16F976
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 09:18:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727553AbgBZIQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 03:16:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40640 "EHLO mail.kernel.org"
+        id S1727486AbgBZISB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 03:18:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727267AbgBZIQk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 03:16:40 -0500
+        id S1727247AbgBZISB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 03:18:01 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20EC220714;
-        Wed, 26 Feb 2020 08:16:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 397F120714;
+        Wed, 26 Feb 2020 08:18:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582704999;
-        bh=AQwB89v8ebH3YVd21IcGyMfmH8x1a5GN9DmaECnRUtY=;
+        s=default; t=1582705080;
+        bh=dQJfSSq/VBRG50lk2yy5WSenygsHghFYvH7m+uxwttI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PRkjcHSAHnkmQwJOgjia5+LSNgc5zjeYq7D4GjztfneR5zOA8+AegH3+z6+Gvw8Qy
-         786HsZxrVEj7aQu6fJ0agvRqcfNvWR5n1PluH5fnb+uC5646ngnuMAAvjv5nNysBlz
-         T+en5jyS/PR1Dd1a/NDtBbVXk4I/KvvxPHA6LYq4=
-Date:   Wed, 26 Feb 2020 09:16:36 +0100
+        b=UVKyzIgWJbq/9N2C/n50JXzjd7rdCfB+D3oFT417X5GpLqv48Z2XuOiAJcWFi6at3
+         PQulPTTAE+yd3coPJEOkev0ga9lVBMmv5eFBxkUysXsfhsoQXIj/Q11rqSFFVLPD0V
+         2a0OJZfcRPX67tjJ+WgsYEDMfDLplAVrXO9YlOks=
+Date:   Wed, 26 Feb 2020 09:17:57 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Christian Brauner <christian.brauner@ubuntu.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -33,26 +33,36 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-pm@vger.kernel.org
-Subject: Re: [PATCH v6 6/9] drivers/base/power: add dpm_sysfs_change_owner()
-Message-ID: <20200226081636.GE24447@kroah.com>
+Subject: Re: [PATCH v6 0/9] net: fix sysfs permssions when device changes
+ network
+Message-ID: <20200226081757.GF24447@kroah.com>
 References: <20200225131938.120447-1-christian.brauner@ubuntu.com>
- <20200225131938.120447-7-christian.brauner@ubuntu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200225131938.120447-7-christian.brauner@ubuntu.com>
+In-Reply-To: <20200225131938.120447-1-christian.brauner@ubuntu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 02:19:35PM +0100, Christian Brauner wrote:
-> Add a helper to change the owner of a device's power entries. This
-> needs to happen when the ownership of a device is changed, e.g. when
-> moving network devices between network namespaces.
-> This function will be used to correctly account for ownership changes,
-> e.g. when moving network devices between network namespaces.
+On Tue, Feb 25, 2020 at 02:19:29PM +0100, Christian Brauner wrote:
+> Hey everyone,
 > 
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> /* v6 */
+> This is v6 with two small fixups. I missed adapting the commit message
+> to reflect the renamed helper for changing the owner of sysfs files and
+> I also forgot to make the new dpm helper static inline.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+All of the sysfs and driver core bits look good to me now.  Thanks for
+taking the time to update the documentation and other bits based on
+reviews.
+
+So now it's just up to the netdev developers to review the netdev parts :)
+
+The sysfs and driver core patches can all go through the netdev tree to
+make it easier for you.
+
+thanks,
+
+greg k-h
