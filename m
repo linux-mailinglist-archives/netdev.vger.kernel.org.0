@@ -2,101 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D5F16F892
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 08:34:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01FF616F894
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 08:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbgBZHem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 02:34:42 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40898 "EHLO
+        id S1726990AbgBZHgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 02:36:06 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38623 "EHLO
         mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbgBZHem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 02:34:42 -0500
-Received: by mail-wr1-f66.google.com with SMTP id t3so1642743wru.7
-        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 23:34:41 -0800 (PST)
+        with ESMTP id S1726823AbgBZHgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 02:36:06 -0500
+Received: by mail-wr1-f66.google.com with SMTP id e8so1657832wrm.5
+        for <netdev@vger.kernel.org>; Tue, 25 Feb 2020 23:36:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KKvQDSMKmlOxfHSTnIGVb6ns63OWcc76lfWq2snJrSY=;
-        b=grng1kWooZofkMSpnSOBcsqP5vAhxp1Xf3LO/bdkdC7XAnL29fI3x3hhBqkQrjERI1
-         tizX3z9n82G4jD5bJKotSHnSqLJNLm+zPsU/iy9gROJ92f4sYxSkiEYZnP9OP6fr/L5t
-         2xT5crHd5qXHNHFUU6nwOibwWtR+z7EI+95v+MtfeTawWclZlNb1cAlo7iivM4QdMiJL
-         we/XKsSDTROCy0ER/0eJV5VBYixUH8G/Bu/G98jHc9Xb7VED8m79jhPPafGz8FGgAiHV
-         9NJSVKSC613hc/BgqYFQ2oZrJthbZCd3Xyp/TElm3J0I3mWF4wCILHm0ob785W5CAZhN
-         Y1iw==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=vZJyBk9lu1rD2qT5SftmPMZtuEheybwJNwMh28DMtwM=;
+        b=McHjfQiP2MfCWpWh6In+efTkmR5day2EdpVK0zz9aWXVFtXNyFr5s+Ty0Jp09bnv5x
+         giwD1pYAlibYR8WpBdokLDZU/JAkRJixIff1M4uF8wKM02YoLB76CctCk80dXlFh5x0w
+         LAnVPm5I0Uiqj1wnz4nl1Wvm1preX89tkJnnEJQuVQhUsok1YA7cZ/EkHym50wg+B3Tv
+         qtCpjF2rW80aE+ghH2PAcZ0el3b3Eptw+h7NttFdMEHH+D1upTwvvG1r1mlBtRKF65gb
+         jGWjLflPkAYX6mftH2pWKjBIAKik3bI61l0k/A5XRxe+VKb3lGCWSmoG9vEeTiZ1KZme
+         3l5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KKvQDSMKmlOxfHSTnIGVb6ns63OWcc76lfWq2snJrSY=;
-        b=ASGZFMww5bPvV21qooKktCKSkxS5AJb91utJ2GiBEzlqgkt3hYYZNklwtHTBwuZXMM
-         yGG1lCHKnM6Nr57UTbhlzvAGbM4OiAZSlSpcszioH9562zzLGO4tkpSzaa764VchN6Gx
-         1ro2zajRWcP6Q+Xa63FyPEGiEIBhScUYCudDIqdhyJFQH6k40H9uH2Pz85prs4f8Ed7i
-         sMpJq3poTviXL1AOvhcNlnSa/rczfhguzhoiLukLn4IS9Ulq8gvgQtwvrQKew11jR1rQ
-         cW2Aeug7cevuiNxAVEidEVk7Fml9yszycSYcTVQ9BrjYd8Q06tUyORhUJ1F4TlaKUGDO
-         ig9Q==
-X-Gm-Message-State: APjAAAU/O8nfOGkzp24oPiGVi/i31R4+BTVfiuwXb9K1187dhzOin4+W
-        hzy54ISLZnvXStnQir9/FcdGAQ==
-X-Google-Smtp-Source: APXvYqzeHYeB9Rp+sgCM2lTWwcw4Dy+fg0WOvuQgkOoxyskFdYMlwsPUStYHampiJncUp8/d1R3feQ==
-X-Received: by 2002:a5d:604c:: with SMTP id j12mr3710552wrt.162.1582702480823;
-        Tue, 25 Feb 2020 23:34:40 -0800 (PST)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=vZJyBk9lu1rD2qT5SftmPMZtuEheybwJNwMh28DMtwM=;
+        b=cPfuKBOeNQhqS2OAu+jgeBra1/NlI0GeF9D8yuXkKA8hVwlHUyiq00NGCe3wacQ/FT
+         ZxDnLtSCKUsCZnaHrONzcZ3FymwvcQX6fjW2D6jYllm3v2OE3kzinZKoNqzgcgoWclSx
+         nfOucFIM5vlNNKubQjBCNrl1MPGEixvqnh+X8bMBdiFLPIPp0TyLRPv+/3EQnGNGh7DC
+         HiCe3JejWtK0I8nJnKAAyxlo7LO1W2YV/5xm0HXbXu6nh9HnnWrbvm82TcrceF/16faC
+         0dNkmAbpO1biUrsj+2Jg00FarEsHg3d6Ep8El4+X79ZBFWINwE+/Anka6nUkK2TjlS1o
+         HMew==
+X-Gm-Message-State: APjAAAVeWOfgkPDTi2/ohrPxUKyBcGrD0JHoCHDb1PdcCJSay69ss9wk
+        tbFFyNDXK5wronyUoKy2YPci4w==
+X-Google-Smtp-Source: APXvYqxIauiL13oUpxV81Yw9mPEJVigE5VceP3aF7sZGpUet2XmW8W0jTNx39PdZp5mLUTL7ce5yOw==
+X-Received: by 2002:adf:edd0:: with SMTP id v16mr3920831wro.357.1582702564250;
+        Tue, 25 Feb 2020 23:36:04 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id c141sm1685337wme.41.2020.02.25.23.34.39
+        by smtp.gmail.com with ESMTPSA id q3sm1967095wrs.1.2020.02.25.23.36.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Feb 2020 23:34:40 -0800 (PST)
-Date:   Wed, 26 Feb 2020 08:34:39 +0100
+        Tue, 25 Feb 2020 23:36:03 -0800 (PST)
+Date:   Wed, 26 Feb 2020 08:36:02 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, idosch@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch net-next 10/10] selftests: netdevsim: Extend devlink trap
- test to include flow action cookie
-Message-ID: <20200226073439.GA10533@nanopsycho>
-References: <20200224210758.18481-1-jiri@resnulli.us>
- <20200224210758.18481-11-jiri@resnulli.us>
- <20200224204332.1e126fb4@cakuba.hsd1.ca.comcast.net>
- <20200225074603.GC17869@nanopsycho>
- <20200225095721.657095ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
+        kuba@kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [patch net-next] iavf: use tc_cls_can_offload_basic() instead of
+ chain check
+Message-ID: <20200226073602.GB10533@nanopsycho>
+References: <20200225121023.6011-1-jiri@resnulli.us>
+ <469b51add666cf3df7381b6409a3972c70024c12.camel@intel.com>
+ <20200225.132041.1071108395246034738.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200225095721.657095ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200225.132041.1071108395246034738.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Feb 25, 2020 at 06:57:21PM CET, kuba@kernel.org wrote:
->On Tue, 25 Feb 2020 08:46:03 +0100 Jiri Pirko wrote:
->> >>  		devlink_trap_metadata_test $trap_name "input_port"
->> >>  		check_err $? "Input port not reported as metadata of trap $trap_name"
->> >> +		if [ $trap_name == "ingress_flow_action_drop" ] ||
->> >> +		   [ $trap_name == "egress_flow_action_drop" ]; then
->> >> +			devlink_trap_metadata_test $trap_name "flow_action_cookie"
->> >> +			check_err $? "Flow action cookie not reported as metadata of trap $trap_name"
->> >> +		fi
->> >>  	done
->> >>  
->> >>  	log_test "Trap metadata"  
->> >
->> >Oh, this doesn't seem to check the contents of the trap at all, does it?  
->> 
->> No. This is not the test for the actual trapped packets. It is a test to
->> list devlink traps and supported metadata.
->> 
->> The packet trapping is done using dropmonitor which is currently
->> not implemented in selftests, even for the existing traps. Not even for
->> mlxsw. There is a plan to introduce these tests in the future, Ido is
->> working on a tool to catch those packets to pcap using dropmon. I think
->> he plans to send it to dropmon git soon. Then we can implement the
->> selftests using it.
+Tue, Feb 25, 2020 at 10:20:41PM CET, davem@davemloft.net wrote:
+>From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+>Date: Tue, 25 Feb 2020 13:15:46 -0800
 >
->The extra 100 lines of code in netdevsim which is not used by selftests
->does make me a little sad.. but okay, looking forward to fuller tests.
->Those tests better make use of the variable cookie size, 'cause
->otherwise we could have just stored the cookie on a u64 and avoided the
->custom read/write functions all together ;)
+>> On Tue, 2020-02-25 at 13:10 +0100, Jiri Pirko wrote:
+>>> From: Jiri Pirko <jiri@mellanox.com>
+>>> 
+>>> Looks like the iavf code actually experienced a race condition, when
+>>> a
+>>> developer took code before the check for chain 0 was put to helper.
+>>> So use tc_cls_can_offload_basic() helper instead of direct check and
+>>> move the check to _cb() so this is similar to i40e code.
+>>> 
+>>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+>> 
+>> Go ahead and pick this up Dave, thanks!
+>
+>Hmmm, Jiri this doesn't compile?
 
-Will do.
+Crap :/ I shuffled with the patches too much. Will send v2. Sorry.
 
+>
+>  CC [M]  drivers/net/ethernet/intel/iavf/iavf_main.o
+>drivers/net/ethernet/intel/iavf/iavf_main.c: In function ‘iavf_setup_tc_block_cb’:
+>drivers/net/ethernet/intel/iavf/iavf_main.c:3089:7: error: implicit declaration of function ‘tc_cls_can_offload_basic’; did you mean ‘tc_cls_common_offload_init’? [-Werror=implicit-function-declaration]
+>  if (!tc_cls_can_offload_basic(adapter->netdev, type_data))
+>       ^~~~~~~~~~~~~~~~~~~~~~~~
+>       tc_cls_common_offload_init
+>
+>Maybe it does depend upon something in the tc filter patch series?
