@@ -2,177 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDC1A1705D8
-	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BCCE1705C9
+	for <lists+netdev@lfdr.de>; Wed, 26 Feb 2020 18:14:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgBZRTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 12:19:10 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:51272 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbgBZRTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:19:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Gw/3Yv4ngA16wm0hNLzB3P+ACdWnM9OBh2QAn3PhDM0=; b=mZeBMuBaa26gFH5qiCradvo/B
-        mFeSpmXSeaUXBrUzQT++HrzUAYMK2vHXGVATrTtFVJiUI9ICnZKkPjJxSNWvTopMUWJr6LWnIH4vi
-        yxF711BYAHm9fFKSnTso48x3iyqhbGY7TA03e71sUWMqfM9Zl/cyy8mnA1PKeRGzbb02EqVe8cW0H
-        E/sy252yzysaD7M050jdrV3qBcvuIVzMJr4XRybKi35fE8ZY9P+e/m2bM4vPnsY/RoT4dRPDalmRF
-        7mtEex+s5y6W+BU3n47TDTn+dk+yBP9j05aAtVkAPUGWPPTSjhNmBTr1xxDUb9d93t2XU6fxIKeql
-        VDhqfzc7g==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45592)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j70Fr-0000Ox-8Q; Wed, 26 Feb 2020 17:13:51 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j70Fp-00008X-R3; Wed, 26 Feb 2020 17:13:49 +0000
-Date:   Wed, 26 Feb 2020 17:13:49 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 0/2] VLANs, DSA switches and multiple bridges
-Message-ID: <20200226171349.GD25745@shell.armlinux.org.uk>
+        id S1726583AbgBZRON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 12:14:13 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:34729 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726148AbgBZROM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 12:14:12 -0500
+Received: by mail-wm1-f65.google.com with SMTP id i10so3929108wmd.1
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 09:14:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hs1Dnv8OkUX4sAKXU675PNsCaAiph3nxzHoSQ2tz4mY=;
+        b=Fvd0znyFAvs/Z+RQe56DZVCoHHGI0mH5KwABX5dKxqnpfPB7pd+27P572tMfDmx2j3
+         7EF0B55OLQsWoPY1hL5SbRUynxBS/H+uH1GznO+Atf27r7N5lH/asoNTIdVEaSotqztW
+         RmKHurYYiqYble4Xz7rs7l3LBe0IpJ6FEF7+YWLWIxRH+tKdBV+lm2oYFiHn+HL7HQ4w
+         w8BtJiFBtWziNs1/rxN2+YwTbBwcBlfNJBI42jIYoZCpjKtTGO/In6/LOS5w2zYI4XOZ
+         QrTxhoYpWQbdW3UTUOWIVk5tb/ny+k/yxes6JSYrmoI8XoaE8X5R8aVUFMU2h8VB/Fn9
+         3CeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hs1Dnv8OkUX4sAKXU675PNsCaAiph3nxzHoSQ2tz4mY=;
+        b=jFKH2v+zGjzpuuHA17tcGU2bmZVhuujT631EJvApvz7kA8PVoFGkbPmbP0qpN+W1pY
+         B0uoeuPzO+y9LpLrC9ZqlNSdsombvXWfgzxpHNz3/IzZsgPDC/vLcHYjQksXXj6ElBGr
+         Ldpc+lO8rhZB/whrGtTIcjayu0xjZvzQN2tBMOo+jIDUGVq3i0o9eNIhhlWEv+UGJr2C
+         GVSSwxZy0MynSOlezgOXX46EghvkrQx/FuSpWcM/2N6eV56Rk1YA4lZgRJqhYTnC7Vgb
+         h1rBeMf5oAKorBnhGUDulV2ddos0N6UrmqAlil2a8IOl4dniyrmxcpZVVgXdn0jJ+/oF
+         f7Wg==
+X-Gm-Message-State: APjAAAUyM6tLHSqsNssgyO+oUHF4EcUdAoMApSQxk6uaVdEEhopKgcTK
+        95UhSBDQpFJ630E7/urw7rGADg==
+X-Google-Smtp-Source: APXvYqxVisx0WWuxbZMRqmE/joqQNU3c6aUjq7FmETJiXmXkhS0yvH+WurdWR1QhvsZ+k3KlpLyI2Q==
+X-Received: by 2002:a7b:c8d7:: with SMTP id f23mr6436992wml.173.1582737250916;
+        Wed, 26 Feb 2020 09:14:10 -0800 (PST)
+Received: from localhost.localdomain ([194.35.116.65])
+        by smtp.gmail.com with ESMTPSA id b10sm3962802wrw.61.2020.02.26.09.14.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 09:14:10 -0800 (PST)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf] mailmap: update email address
+Date:   Wed, 26 Feb 2020 17:13:53 +0000
+Message-Id: <20200226171353.18982-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+My Netronome address is no longer active. I am no maintainer, but
+get_maintainer.pl sometimes returns my name for a small number of files
+(BPF-related). Add an entry to .mailmap for good measure.
 
-This is a repost of the previously posted RFC back in December, which
-did not get fully reviewed.  I've dropped the RFC tag this time as no
-one really found anything too problematical in the RFC posting.
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+---
+ .mailmap | 1 +
+ 1 file changed, 1 insertion(+)
 
-I've been trying to configure DSA for VLANs and not having much success.
-The setup is quite simple:
-
-- The main network is untagged
-- The wifi network is a vlan tagged with id $VN running over the main
-  network.
-
-I have an Armada 388 Clearfog with a PCIe wifi card which I'm trying to
-setup to provide wifi access to the vlan $VN network, while the switch
-is also part of the main network.
-
-However, I'm encountering problems:
-
-1) vlan support in DSA has a different behaviour from the Linux
-   software bridge implementation.
-
-    # bridge vlan
-    port    vlan ids
-    lan1     1 PVID Egress Untagged
-    ...
-
-   shows the default setup - the bridge ports are all configured for
-   vlan 1, untagged egress, and vlan 1 as the port vid.  Issuing:
-
-    # ip li set dev br0 type bridge vlan_filtering 1
-
-   with no other vlan configuration commands on a Linux software bridge
-   continues to allow untagged traffic to flow across the bridge.
-   
-   This difference in behaviour is because the MV88E6xxx VTU is
-   completely empty - because net/dsa ignores all vlan settings for
-   a port if br_vlan_enabled(dp->bridge_dev) is false - this reflects
-   the vlan filtering state of the bridge, not whether the bridge is
-   vlan aware.
-   
-   What this means is that attempting to configure the bridge port
-   vlans before enabling vlan filtering works for Linux software
-   bridges, but fails for DSA bridges.
-
-2) Assuming the above is sorted, we move on to the next issue, which
-   is altogether more weird.  Let's take a setup where we have a
-   DSA bridge with lan1..6 in a bridge device, br0, with vlan
-   filtering enabled.  lan1 is the upstream port, lan2 is a downstream
-   port that also wants to see traffic on vlan id $VN.
-
-   Both lan1 and lan2 are configured for that:
-
-     # bridge vlan add vid $VN dev lan1
-     # bridge vlan add vid $VN dev lan2
-     # ip li set br0 type bridge vlan_filtering 1
-
-   Untagged traffic can now pass between all the six lan ports, and
-   vlan $VN between lan1 and lan2 only.  The MV88E6xxx 8021q_mode
-   debugfs file shows all lan ports are in mode "secure" - this is
-   important!  /sys/class/net/br0/bridge/vlan_filtering contains 1.
-
-   tcpdumping from another machine on lan4 shows that no $VN traffic
-   reaches it.  Everything seems to be working correctly...
-   
-   In order to further bridge vlan $VN traffic to hostapd's wifi
-   interface, things get a little more complex - we can't add hostapd's
-   wifi interface to br0 directly, because hostapd will bring up the
-   wifi interface and leak the main, untagged traffic onto the wifi.
-   (hostapd does have vlan support, but only as a dynamic per-client
-   thing, and there's no hooks I can see to allow script-based config
-   of the network setup before hostapd up's the wifi interface.)
-
-   So, what I tried was:
-
-     # ip li add link br0 name br0.$VN type vlan id $VN
-     # bridge vlan add vid $VN dev br0 self
-     # ip li set dev br0.$VN up
-
-   So far so good, we get a vlan interface on top of the bridge, and
-   tcpdumping it shows we get traffic.  The 8021q_mode file has not
-   changed state.  Everything still seems to be correct.
-
-     # bridge addbr br1
-
-   Still nothing has changed.
-
-     # bridge addif br1 br0.$VN
-
-   And now the 8021q_mode debugfs file shows that all ports are now in
-   "disabled" mode, but /sys/class/net/br0/bridge/vlan_filtering still
-   contains '1'.  In other words, br0 still thinks vlan filtering is
-   enabled, but the hardware has had vlan filtering disabled.
-
-   Adding some stack traces to an appropriate point indicates that this
-   is because __switchdev_handle_port_attr_set() recurses down through
-   the tree of interfaces, skipping over the vlan interface, applying
-   br1's configuration to br0's ports.
-
-   This surely can not be right - surely
-   __switchdev_handle_port_attr_set() and similar should stop recursing
-   down through another master bridge device?  There are probably other
-   network device classes that switchdev shouldn't recurse down too.
-
-   I've considered whether switchdev is the right level to do it, and
-   I think it is - as we want the check/set callbacks to be called for
-   the top level device even if it is a master bridge device, but we
-   don't want to recurse through a lower master bridge device.
-
-v2: dropped patch 3, since that has an outstanding issue, and my
-question on it has not been answered.  Otherwise, these are the
-same patches.  Maybe we can move forward with just these two?
-
-v3: include DSA ports in patch 2
-
- drivers/net/dsa/mv88e6xxx/chip.c | 12 +++++++++---
- net/switchdev/switchdev.c        |  9 +++++++++
- 2 files changed, 18 insertions(+), 3 deletions(-)
-
+diff --git a/.mailmap b/.mailmap
+index ffb8f28290c7..a0dfce8de1ba 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -225,6 +225,7 @@ Pratyush Anand <pratyush.anand@gmail.com> <pratyush.anand@st.com>
+ Praveen BP <praveenbp@ti.com>
+ Punit Agrawal <punitagrawal@gmail.com> <punit.agrawal@arm.com>
+ Qais Yousef <qsyousef@gmail.com> <qais.yousef@imgtec.com>
++Quentin Monnet <quentin@isovalent.com> <quentin.monnet@netronome.com>
+ Quentin Perret <qperret@qperret.net> <quentin.perret@arm.com>
+ Rafael J. Wysocki <rjw@rjwysocki.net> <rjw@sisk.pl>
+ Rajesh Shah <rajesh.shah@intel.com>
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
