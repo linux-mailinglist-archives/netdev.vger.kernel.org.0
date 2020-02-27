@@ -2,204 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AA0171191
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 790331711B3
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728420AbgB0HgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 02:36:15 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34374 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbgB0HgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:36:15 -0500
-Received: by mail-lj1-f196.google.com with SMTP id x7so2215470ljc.1
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:36:13 -0800 (PST)
+        id S1728455AbgB0HuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 02:50:25 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43693 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727661AbgB0HuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:24 -0500
+Received: by mail-wr1-f67.google.com with SMTP id c13so2020425wrq.10
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qZLAbOLHePXemWTFYvKdWHA10bGozpnZp4LM38PR+z0=;
-        b=b+AJsk5jr31tyAKiCqdIzFUvdN2oZZ2gOdL39Foj4wuMVEX1liO5YyDRQMVtQ+AbJV
-         2DY7e4KejQqmUr3GZmYvjv3MsZQGN2nxVOMdSyK+6+l8XRl6b6xjxQaw2dRyBEveLwtb
-         JhRUpVSaafnxPlEfYsxzPCH6r5/meVEmw56N1ugVm/gvgmcKpJWmK5eCbK1n4epVSsyQ
-         /Id0rYFX5zYt/uiLndttF13JvIWXRIE1kdjM3RthTSjUknBylG5KKbR0aJsi0pBOykHs
-         YhGSMJBv3v8MS5s9ZKiyEhABZPtsUEAe7CoJsplCmL9+pEr76gLTqnG6yyKVz+WNaNDr
-         u5Qg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jB/sTRteWZ9jdQS/ghmQ033Z3sQv1bwzUEePogES9Vk=;
+        b=UJKI9HJcyqId6xAsTPOByYiPFVDeqWXIJoSif8pD5T/ZskUkqGPYDeQmF9e6iF8v0D
+         wPoJGu9lhUNf3wpwPJ1/PHiZzUtNtNWH/0ycd1QEXrocXmGyhKLXJA8eXGvAyHdu1mNk
+         3gzDqYb/YLH9Fx0EI5C2C7p3jTEwa2o4eZTXvTdiyNxfQV4AgM/YyksMu4IH/cgRUF0B
+         Ck/mlDxi4Ca+Wb9C8hhBI6yR98e+Ox8jdZoX5H3y3QjiZB+y3TT8QTz+A44wSfK3rShQ
+         z/+MRDyYwtll2oQpd1f/bRlys1D5ZoS/vqjbpKxs0+AJNTamrOg9L+fOvpy9g0UpT1QX
+         hTlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qZLAbOLHePXemWTFYvKdWHA10bGozpnZp4LM38PR+z0=;
-        b=TFu1myc4g9jgjAlRYfCOKU32qHrSFKeEkmMwz0AvoqzdXterEHwcl9CnKGKwxT8uoD
-         WtT6L6iYt/OKnt7NZp58jwGwI4klVu9PhAV/q4jcrwadiX6JHmPpKuJNVhBN+c72vtq6
-         REEZrwiXiNRS5num67yvDLN5bmtXv5Q9Z/oYLjCCXGOXT4HgUd1HcLIui86aQ9QTBGA9
-         WNb2Nxblz3hsO39Kl2e6A2thMsjEOoFj1pk3/giX0PiXR1wQg7Suc6IHZwpdUgrwqJGV
-         eq78xPnBSEJWPk4prl3mnxwuPb+sXnEc6ImUQwEQIRcPNQY3czr/lVPzwn6xFSOIgaeD
-         qLnw==
-X-Gm-Message-State: ANhLgQ2ejCc1beLtIBfsAifzhFBpMFLbdVluGTEdpnGjxjh9G9FKrsrV
-        4QfMa4r2fL9yINLefjo3wcBrFJ+eAueihQ55jBPIkfCECBI=
-X-Google-Smtp-Source: ADFU+vuGaek6yZUix0+4WS+0mZcT69Uw9ImAtpnISLK4ZtMqAyKUq4EzXLMJI7GZgT1bN3spfgsMLPYnFIfE/PVHOhc=
-X-Received: by 2002:a2e:809a:: with SMTP id i26mr2035571ljg.108.1582788972784;
- Wed, 26 Feb 2020 23:36:12 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jB/sTRteWZ9jdQS/ghmQ033Z3sQv1bwzUEePogES9Vk=;
+        b=UZyiaXoPfa/kn4J1AYKGbxT2w19SZm8ZNk76U7XdH1YXlNI4DF6PF+Y8I1L4Sc6uiw
+         xdupTS/WbqzpJ2QRIN+JjgDB6Mih7/6nz6hUq6kyi6JvvK/UGY2RbQ1CqrzRv71wAV/0
+         Z8RMZp8UneEaniNOQPOJWi8Bo2Yh1kk6AEnuv/ngqZThtjjMw9PK5g0Z7Tv+VNkhWudR
+         mrGJDq9kgK2AcxMCzxq8htoxtS/13GOwXZclBA/StFieVrS+2vEPl3uDnes6Fc21x3fl
+         Nb6uI5r7IBuHQ67TIfsds981TH/pg+FR47nEXfHBhGHcGP0FCyL0JeEpt1oXitYuTN/Z
+         ZjUQ==
+X-Gm-Message-State: APjAAAUI+SY0Jm6id3AewCBBjKeKSrEpjgGWVbOO87dStxtfNnr4cgT3
+        Njmd7Oc3w6tz4Sv+mET+pn+KL8Wgyps=
+X-Google-Smtp-Source: APXvYqxAHjtamsF5jaiKX71Em0gwYkWwGKKfPYUxoHVmpHe5kc2O0jnVPPb18wfPwLo9lWOcXo4Uag==
+X-Received: by 2002:a5d:4bd0:: with SMTP id l16mr3440184wrt.271.1582789822523;
+        Wed, 26 Feb 2020 23:50:22 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id a7sm2645437wmb.0.2020.02.26.23.50.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 23:50:22 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
+        mlxsw@mellanox.com, shuah@kernel.org
+Subject: [patch net-next 00/16] selftests: updates for mlxsw driver test
+Date:   Thu, 27 Feb 2020 08:50:05 +0100
+Message-Id: <20200227075021.3472-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-References: <20200226174740.5636-1-ap420073@gmail.com> <84eb4ca7add20145fc427c3183d67ef6@codeaurora.org>
-In-Reply-To: <84eb4ca7add20145fc427c3183d67ef6@codeaurora.org>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Thu, 27 Feb 2020 16:36:01 +0900
-Message-ID: <CAMArcTW_dgUVjMD5+yUPQrJxjQOaGyHJ0DT1Kx6m=fGeMrA2=g@mail.gmail.com>
-Subject: Re: [PATCH net 06/10] net: rmnet: print error message when command fails
-To:     subashab@codeaurora.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, stranche@codeaurora.org,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Feb 2020 at 05:37, <subashab@codeaurora.org> wrote:
->
+From: Jiri Pirko <jiri@mellanox.com>
 
-Hi,
-Thank you for the review :)
+This patchset contains tweaks to the existing tests and is also adding
+couple of new ones, namely tests for shared buffer and red offload.
 
-> On 2020-02-26 10:47, Taehee Yoo wrote:
-> > When rmnet netlink command fails, it doesn't print any error message.
-> > So, users couldn't know the exact reason.
-> > In order to tell the exact reason to the user, the extack error message
-> > is used in this patch.
-> >
-> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> > ---
-> >  .../ethernet/qualcomm/rmnet/rmnet_config.c    | 26 ++++++++++++-------
-> >  .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   | 10 +++----
-> >  .../net/ethernet/qualcomm/rmnet/rmnet_vnd.h   |  3 ++-
-> >  3 files changed, 24 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> > b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> > index c8b1bfe127ac..93745cd45c29 100644
-> > --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> > +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> > @@ -141,11 +141,10 @@ static int rmnet_newlink(struct net *src_net,
-> > struct net_device *dev,
-> >       }
-> >
-> >       real_dev = __dev_get_by_index(src_net, nla_get_u32(tb[IFLA_LINK]));
-> > -     if (!real_dev || !dev)
-> > +     if (!real_dev || !dev) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "link does not exist");
-> >               return -ENODEV;
-> > -
-> > -     if (!data[IFLA_RMNET_MUX_ID])
-> > -             return -EINVAL;
-> > +     }
-> >
-> >       ep = kzalloc(sizeof(*ep), GFP_ATOMIC);
-> >       if (!ep)
-> > @@ -158,7 +157,7 @@ static int rmnet_newlink(struct net *src_net,
-> > struct net_device *dev,
-> >               goto err0;
-> >
-> >       port = rmnet_get_port_rtnl(real_dev);
-> > -     err = rmnet_vnd_newlink(mux_id, dev, port, real_dev, ep);
-> > +     err = rmnet_vnd_newlink(mux_id, dev, port, real_dev, ep, extack);
-> >       if (err)
-> >               goto err1;
-> >
-> > @@ -275,12 +274,16 @@ static int rmnet_rtnl_validate(struct nlattr
-> > *tb[], struct nlattr *data[],
-> >  {
-> >       u16 mux_id;
-> >
-> > -     if (!data || !data[IFLA_RMNET_MUX_ID])
-> > +     if (!data || !data[IFLA_RMNET_MUX_ID]) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "MUX ID not specifies");
-> >               return -EINVAL;
-> > +     }
-> >
-> >       mux_id = nla_get_u16(data[IFLA_RMNET_MUX_ID]);
-> > -     if (mux_id > (RMNET_MAX_LOGICAL_EP - 1))
-> > +     if (mux_id > (RMNET_MAX_LOGICAL_EP - 1)) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "invalid MUX ID");
-> >               return -ERANGE;
-> > +     }
-> >
-> >       return 0;
-> >  }
-> > @@ -414,11 +417,16 @@ int rmnet_add_bridge(struct net_device
-> > *rmnet_dev,
-> >       /* If there is more than one rmnet dev attached, its probably being
-> >        * used for muxing. Skip the briding in that case
-> >        */
-> > -     if (port->nr_rmnet_devs > 1)
-> > +     if (port->nr_rmnet_devs > 1) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "more than one rmnet dev attached");
-> >               return -EINVAL;
-> > +     }
-> >
-> > -     if (rmnet_is_real_dev_registered(slave_dev))
-> > +     if (rmnet_is_real_dev_registered(slave_dev)) {
-> > +             NL_SET_ERR_MSG_MOD(extack,
-> > +                                "dev is already attached another rmnet dev");
-> >               return -EBUSY;
-> > +     }
-> >
-> >       err = rmnet_register_real_device(slave_dev);
-> >       if (err)
-> > diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> > b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> > index a26e76e9d382..90c19033ebe0 100644
-> > --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> > +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> > @@ -224,16 +224,16 @@ void rmnet_vnd_setup(struct net_device
-> > *rmnet_dev)
-> >  int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
-> >                     struct rmnet_port *port,
-> >                     struct net_device *real_dev,
-> > -                   struct rmnet_endpoint *ep)
-> > +                   struct rmnet_endpoint *ep,
-> > +                   struct netlink_ext_ack *extack)
-> >  {
-> >       struct rmnet_priv *priv = netdev_priv(rmnet_dev);
-> >       int rc;
-> >
-> > -     if (ep->egress_dev)
-> > -             return -EINVAL;
-> > -
-> > -     if (rmnet_get_endpoint(port, id))
-> > +     if (rmnet_get_endpoint(port, id)) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "MUX ID already exists");
-> >               return -EBUSY;
-> > +     }
-> >
-> >       rmnet_dev->hw_features = NETIF_F_RXCSUM;
-> >       rmnet_dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
-> > diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-> > b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-> > index 54cbaf3c3bc4..d8fa76e8e9c4 100644
-> > --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-> > +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-> > @@ -11,7 +11,8 @@ int rmnet_vnd_do_flow_control(struct net_device
-> > *dev, int enable);
-> >  int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
-> >                     struct rmnet_port *port,
-> >                     struct net_device *real_dev,
-> > -                   struct rmnet_endpoint *ep);
-> > +                   struct rmnet_endpoint *ep,
-> > +                   struct netlink_ext_ack *extack);
-> >  int rmnet_vnd_dellink(u8 id, struct rmnet_port *port,
-> >                     struct rmnet_endpoint *ep);
-> >  void rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev);
->
-> This patch and [PATCH net 02/10] "net: rmnet: add missing module alias"
-> seem
-> to be adding new functionality. Perhaps it can be sent to net-next
-> instead
-> of net.
+Amit Cohen (1):
+  selftests: mlxsw: resource_scale: Invoke for Spectrum-3
 
-Okay, I will drop these two patches from this patchset.
-And I will send these two patches to net-next separately.
+Danielle Ratson (5):
+  selftests: mlxsw: Use busywait helper in blackhole routes test
+  selftests: mlxsw: Use busywait helper in vxlan test
+  selftests: mlxsw: Use busywait helper in rtnetlink test
+  selftests: mlxsw: Reduce running time using offload indication
+  selftests: mlxsw: Reduce router scale running time using offload
+    indication
 
-Thanks a lot!
-Taehee Yoo
+Ido Schimmel (1):
+  selftests: devlink_trap_l3_drops: Avoid race condition
+
+Jiri Pirko (2):
+  selftests: add egress redirect test to mlxsw tc flower restrictions
+  selftests: add a mirror test to mlxsw tc flower restrictions
+
+Petr Machata (2):
+  selftests: forwarding: lib.sh: Add start_tcp_traffic
+  selftests: mlxsw: Add a RED selftest
+
+Shalom Toledo (5):
+  selftests: mlxsw: Add shared buffer configuration test
+  selftests: devlink_lib: Check devlink info command is supported
+  selftests: devlink_lib: Add devlink port helpers
+  selftests: mlxsw: Add mlxsw lib
+  selftests: mlxsw: Add shared buffer traffic test
+
+ .../drivers/net/mlxsw/blackhole_routes.sh     |   5 +-
+ .../net/mlxsw/devlink_trap_l3_drops.sh        |  11 +-
+ .../selftests/drivers/net/mlxsw/mlxsw_lib.sh  |  13 +
+ .../drivers/net/mlxsw/router_scale.sh         |  53 +-
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  |  68 ++-
+ .../drivers/net/mlxsw/sch_red_core.sh         | 499 ++++++++++++++++++
+ .../drivers/net/mlxsw/sch_red_ets.sh          |  83 +++
+ .../drivers/net/mlxsw/sch_red_prio.sh         |   5 +
+ .../drivers/net/mlxsw/sch_red_root.sh         |  60 +++
+ .../drivers/net/mlxsw/sharedbuffer.sh         | 222 ++++++++
+ .../net/mlxsw/sharedbuffer_configuration.py   | 416 +++++++++++++++
+ .../net/mlxsw/spectrum-2/resource_scale.sh    |   5 +-
+ .../net/mlxsw/tc_flower_restrictions.sh       |  88 ++-
+ .../drivers/net/mlxsw/tc_flower_scale.sh      |  31 +-
+ .../selftests/drivers/net/mlxsw/vxlan.sh      | 206 ++++----
+ .../selftests/net/forwarding/devlink_lib.sh   |  22 +
+ tools/testing/selftests/net/forwarding/lib.sh |  52 +-
+ 17 files changed, 1653 insertions(+), 186 deletions(-)
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/mlxsw_lib.sh
+ create mode 100644 tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sch_red_prio.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sharedbuffer.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py
+
+-- 
+2.21.1
+
