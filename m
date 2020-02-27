@@ -2,56 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2CB172347
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 784891723D7
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:47:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730039AbgB0QZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 11:25:11 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37192 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729263AbgB0QZL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Feb 2020 11:25:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=myK1TSi18MdPxmOQZpDiX3sYSnyZ25KLFXk55FWunf4=; b=X5NOBosuXvExNlJSbVImpgBJGs
-        tDGCWPSZ2beY8QTPnQYFBM3qzW57GqVUJoyEwRO9pbJDm0CXlmElPMEpJACZOhTynfPPSIJMEtFEm
-        njf7hh6vQB+q/fRGQly3KXs7Hd0Q0dPVaotLl8BEwaR/u1KR+IGaUp1cWpIvR+mr9w1g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j7LyE-0006AU-Iq; Thu, 27 Feb 2020 17:25:06 +0100
-Date:   Thu, 27 Feb 2020 17:25:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Quentin Schulz <foss@0leil.net>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net: phy: mscc: implement RGMII skew delay
- configuration
-Message-ID: <20200227162506.GD5245@lunn.ch>
-References: <20200227152859.1687119-1-antoine.tenart@bootlin.com>
- <20200227152859.1687119-4-antoine.tenart@bootlin.com>
- <1f267571ddd9d1caf3e95afe31e47e30@0leil.net>
+        id S1730516AbgB0QqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 11:46:21 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:20192 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730033AbgB0QqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:46:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582821980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=358Vnk4CWTRZaVQrJkbFfTGl3klRgzHDoM1RTAPVi14=;
+        b=PKaQxRV3qwSuag3Oy7S73Wvo/bFA8FuFWwPAFigdhXYXfU9oG/cjLDPPVxKLOdYtwXLeLL
+        WWQ1YDQM+BC1O9l1TJWYofJObDAJOAZ+IjWtJgNt6VDACqua80L4NdlESX0PRyIzKC8bUb
+        y7MhuvlIDkKDtHKbzSu/g/XkVyvZZQE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-438-Z4P_8cgFOiqBq-0GyvcaIw-1; Thu, 27 Feb 2020 11:46:13 -0500
+X-MC-Unique: Z4P_8cgFOiqBq-0GyvcaIw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 870FB14E6;
+        Thu, 27 Feb 2020 16:46:12 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.36.118.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B885F92994;
+        Thu, 27 Feb 2020 16:46:07 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] man: ip.8: Add missing vrf subcommand description
+Date:   Thu, 27 Feb 2020 17:45:43 +0100
+Message-Id: <acd21cee80dfcb99c131059a8e393b6a62de0d64.1582821904.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f267571ddd9d1caf3e95afe31e47e30@0leil.net>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Also, do we actually need to write that register only when skews are defined
-> in the DT? Can't we just write to it anyway (I guess the fact that 0_2 skew
-> is actually 0 in value should put me on the right path but I prefer to ask).
+Add description to the vrf subcommand and a reference to the
+dedicated man page.
 
-Hi Quentin
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ man/man8/ip.8 | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Ideally, you don't want to rely on the boot loader doing some
-magic. So i would prefer the skew is set to 0 if the properties are
-not present.
+diff --git a/man/man8/ip.8 b/man/man8/ip.8
+index 1661aa678f7b2..1613f790a14b2 100644
+--- a/man/man8/ip.8
++++ b/man/man8/ip.8
+@@ -22,7 +22,7 @@ ip \- show / manipulate routing, network devices, inter=
+faces and tunnels
+ .BR link " | " address " | " addrlabel " | " route " | " rule " | " neig=
+h " | "\
+  ntable " | " tunnel " | " tuntap " | " maddress " | "  mroute " | " mru=
+le " | "\
+  monitor " | " xfrm " | " netns " | "  l2tp " | "  tcp_metrics " | " tok=
+en " | "\
+- macsec " }"
++ macsec " | " vrf " }"
+ .sp
+=20
+ .ti -8
+@@ -312,6 +312,10 @@ readability.
+ .B tuntap
+ - manage TUN/TAP devices.
+=20
++.TP
++.B vrf
++- manage virtual routing and forwarding devices.
++
+ .TP
+ .B xfrm
+ - manage IPSec policies.
+@@ -410,6 +414,7 @@ was written by Alexey N. Kuznetsov and added in Linux=
+ 2.2.
+ .BR ip-tcp_metrics (8),
+ .BR ip-token (8),
+ .BR ip-tunnel (8),
++.BR ip-vrf (8),
+ .BR ip-xfrm (8)
+ .br
+ .RB "IP Command reference " ip-cref.ps
+--=20
+2.24.1
 
-    Andrew
