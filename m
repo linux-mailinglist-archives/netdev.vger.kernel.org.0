@@ -2,86 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0E8817229A
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 16:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 942C21722A2
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 16:55:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729844AbgB0Pxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 10:53:38 -0500
-Received: from mail-qk1-f178.google.com ([209.85.222.178]:39759 "EHLO
-        mail-qk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729110AbgB0Pxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 10:53:37 -0500
-Received: by mail-qk1-f178.google.com with SMTP id e16so3581192qkl.6
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 07:53:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=EH0SNO5Rcc4XYOUSFVK7bK7rNzgEXpv0OLPCvUs1MKM=;
-        b=PMtqoD+Qorl+adIp7K03I0mEvU1rioCUSaRdmWReGiwltATTH6RJtRscNq5iIqT9cY
-         JSA9CN5t7cEAsNpiP/S+TdjCZcTKeZJ7h8ZLu9IL9vsnjmxAe95o1Ckuho0hdEY+xmNL
-         CEMDj98AiR3AVKxOVA67huauMos3yZqp1HaKRkhsgTyCF1cBspSyrV/tJ29QVVd5jreq
-         w1KuhoOK/p1h2CGmmtI3EtJOoNYVhOHIwcABWJUfIsCW9XUbZe25fZvxtRdPN6d4SWIp
-         wAezUlU0JJj25Yv2HvrdtSeIUrtAoCBHpz/VsuoRmrD7sJUQdQ9hHwbfqYD5c3XQp6ND
-         1fCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EH0SNO5Rcc4XYOUSFVK7bK7rNzgEXpv0OLPCvUs1MKM=;
-        b=EV4t94V2wmGYBTLDfBtyhJu6ueqP0Dxt5NZ/qcL70uTIXYNPqeXnsdVmqQIEZmTGT/
-         yyNu0Hoxoq8HyPUvjkOMSgEitTMJLoj8yT2rjCY/7VPuqYdpxCWdf8RZVx0I59+Haz1r
-         rUEqnx6qTj4BP4D4+wYoRhYZRkniEmmTf+B1pEbwdUOq6XbppSsdWzNzpN27/qqIwRWW
-         YanIUWIQGE4b4k8NQmee/aO7AFTPAQ7gJ10jZmscxjDbyZhs382GHArF6+Vb5HYpP4Ui
-         OcL5WSfPByhSkL5gcdiRAs253akl7gxH8FWBQaUdyBHlg63ZRV2vKqtDtiygNkevuJp3
-         Fj2g==
-X-Gm-Message-State: APjAAAV9MFZg40WYhkYlk7k977CtFE6eH0t5JDxfTBFuNATOg/X7YIp4
-        cLe6whGyqa3HcOCOJXMPevOoLw==
-X-Google-Smtp-Source: APXvYqwdqVD1HKLQD9Dk+yGMQZm/xAmaIFr/8snWfVHM3u7MryqrGdgt6o3CYFD+XYsHevMncfcZeg==
-X-Received: by 2002:ae9:ed06:: with SMTP id c6mr6871655qkg.7.1582818816659;
-        Thu, 27 Feb 2020 07:53:36 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id h12sm3241397qtn.56.2020.02.27.07.53.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 27 Feb 2020 07:53:36 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j7LTj-0005VV-D2; Thu, 27 Feb 2020 11:53:35 -0400
-Date:   Thu, 27 Feb 2020 11:53:35 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Bernard Metzler <BMT@zurich.ibm.com>
-Cc:     syzbot <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
-        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, parav@mellanox.com,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Subject: Re: possible deadlock in cma_netdev_callback
-Message-ID: <20200227155335.GI31668@ziepe.ca>
-References: <20200226204238.GC31668@ziepe.ca>
- <000000000000153fac059f740693@google.com>
- <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
+        id S1729617AbgB0Pyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 10:54:44 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37110 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727909AbgB0Pyn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 10:54:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=zHHu7uxl1TzDluMl9in9OmdrZA/yJJUaPHGV/HDELSI=; b=d2SWqEpTYc4/VsbeZu+W6FYy93
+        0oZigveIoNEF5ttFeDl3Mm0PR1mPZOIhJdKZ3Xo8Ngu2SU0WwAE+G4UWjpqc6mXGrCe5akII2s4+C
+        EI7hRTGKMJF4vNxIqrH1FCDbG9MUL7O1D6NxBmek7/COwzd2yOImqoezR7ave+vyirGE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j7LUm-0005xD-KW; Thu, 27 Feb 2020 16:54:40 +0100
+Date:   Thu, 27 Feb 2020 16:54:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] net: phy: mscc: support LOS active low
+Message-ID: <20200227155440.GC5245@lunn.ch>
+References: <20200227154033.1688498-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200227154033.1688498-1-antoine.tenart@bootlin.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 10:11:13AM +0000, Bernard Metzler wrote:
+On Thu, Feb 27, 2020 at 04:40:31PM +0100, Antoine Tenart wrote:
+> Hello,
+> 
+> This series adds a device tree property for the VSC8584 PHY family to
+> describe the LOS pin connected to the PHY as being active low. This new
+> property is then used in the MSCC PHY driver.
 
-> Thanks for letting me know! Hmm, we cannot use RCU locks since
-> we potentially sleep. One solution would be to create a list
-> of matching interfaces while under lock, unlock and use that
-> list for calling siw_listen_address() (which may sleep),
-> right...?
+Hi Antoine
 
-Why do you need to iterate over addresses anyhow? Shouldn't the listen
-just be done with the address the user gave and a BIND DEVICE to the
-device siw is connected to?
+I think i'm missing the big picture.
 
-Also that loop in siw_create looks wrong to me
+Is this for when an SFP is connected directly to the PHY? The SFP
+output LOS, indicating loss of received fibre/copper signal, is active
+low?
 
-Jason
+	Andrew
