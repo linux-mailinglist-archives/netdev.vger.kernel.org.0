@@ -2,51 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E22170D6A
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 01:46:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A77D6170D6C
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 01:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbgB0AqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 19:46:06 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:35408 "EHLO
+        id S1728146AbgB0AqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 19:46:12 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:35414 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbgB0AqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 19:46:06 -0500
+        with ESMTP id S1727987AbgB0AqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 19:46:11 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A355E15ADF456;
-        Wed, 26 Feb 2020 16:46:05 -0800 (PST)
-Date:   Wed, 26 Feb 2020 16:46:04 -0800 (PST)
-Message-Id: <20200226.164604.813084352067535153.davem@davemloft.net>
-To:     f.fainelli@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] Revert "net: dsa: bcm_sf2: Also configure
- Port 5 for 2Gb/sec on 7278"
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3EAFD15ADF458;
+        Wed, 26 Feb 2020 16:46:11 -0800 (PST)
+Date:   Wed, 26 Feb 2020 16:46:10 -0800 (PST)
+Message-Id: <20200226.164610.139650350909990851.davem@davemloft.net>
+To:     gustavo@embeddedor.com
+Cc:     manishc@marvell.com, rahulv@marvell.com, shshaikh@marvell.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] qlogic: Replace zero-length array with
+ flexible-array member
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200224234427.12736-1-f.fainelli@gmail.com>
-References: <20200224234427.12736-1-f.fainelli@gmail.com>
+In-Reply-To: <20200225000355.GA16193@embeddedor>
+References: <20200225000355.GA16193@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 16:46:05 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 16:46:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-Date: Mon, 24 Feb 2020 15:44:26 -0800
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Date: Mon, 24 Feb 2020 18:03:55 -0600
 
-> This reverts commit 7458bd540fa0a90220b9e8c349d910d9dde9caf8 ("net: dsa:
-> bcm_sf2: Also configure Port 5 for 2Gb/sec on 7278") as it causes
-> advanced congestion buffering issues with 7278 switch devices when using
-> their internal Giabit PHY. While this is being debugged, continue with
-> conservative defaults that work and do not cause packet loss.
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
 > 
-> Fixes: 7458bd540fa0 ("net: dsa: bcm_sf2: Also configure Port 5 for 2Gb/sec on 7278")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+> 
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+> 
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+> 
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> This issue was detected with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
 Applied.
