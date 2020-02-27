@@ -2,133 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE8E172BC6
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 23:54:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7765C172C30
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 00:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729876AbgB0Wy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 17:54:29 -0500
-Received: from mail-lj1-f178.google.com ([209.85.208.178]:40083 "EHLO
-        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbgB0Wy3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 17:54:29 -0500
-Received: by mail-lj1-f178.google.com with SMTP id 143so1114564ljj.7
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 14:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=iTU/SDq7uYV9y9In9DkLe5ApMN0GwI2MOYTtzWU5wLU=;
-        b=hZEx1khQvYl48qeBhw9XSA7c2v2eP0oWTdsIWsjp2hyZ6lFVqUAgQM7sZYYRwvZPQL
-         tfjyFU1CgdDZQPKy/iwwl8xJs4IPgQNVER0ipLjs6PNeu5NLraSFyuAyxqrwBE0MLMvF
-         zEmPVUNDPb6DC2tuOz6GzG5H9QDfHo32EIsMsAZ3/U6NvrTBCYbUwf4eqPX/uGSSB0sR
-         xmHIJuuaD6CGJ2nmqmcCWpxJ9QZnb+uELhfrB9TLvuzgOrMJxZLDR6M+yEUIAC1FN/Dx
-         TmrhrMDJwe8pNrgv3oog6N2uaXw1Q0i2Hoqu32b92zvXHOZCD79mge2FGH+jEqCMFMml
-         3/Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=iTU/SDq7uYV9y9In9DkLe5ApMN0GwI2MOYTtzWU5wLU=;
-        b=ZkiUyV5u6lBbOs8UDHc1ueyEa8HzJaIN0qsLvZHM/oMtDO3hzzInP7U2z0SLL+wqgu
-         xUz+YWGN/dFkFly1KT6ctGl4neAntu6iviOyRHmwBLjgB/LC2yagifEA5tXQ9ZluW4vl
-         trR9YVVVqJOM/r+FBxTR+7hW8+VIHYwcxZDHhCl/W7j+nR+efQ7W0Phkbo3NEoXv6n9r
-         aCWMIqaliG9pvOPOLdg+nMcnitzG16b7EXPJ7qZTpBEtenmX615ppUtGqUKu+fvPSXUq
-         wBy8m0FHpjJeEGmiK5G1B8g68iUMtETUo7NnuzkVLPctGX4nkurOenrHtmcyLgcycITU
-         7TfA==
-X-Gm-Message-State: ANhLgQ22WL9fvuKWt0E6euwksQS9pdt5wNAJeTZiwH4R8+qpbicgOOZl
-        /xNxZ4OfZk6ZEmLg5pCq+m3UBS4IM0c4CQYUxp0dpQsRms8=
-X-Google-Smtp-Source: ADFU+vs0DVTMJkrMkrhXj8mM4rBJjCTRFlzdnbqOUM+WO3/p3S/G7eJ1rcZSNBtL2T1m0LbUbLIuUFzfdfT3XuvDF5Q=
-X-Received: by 2002:a2e:9e4c:: with SMTP id g12mr830532ljk.15.1582844067140;
- Thu, 27 Feb 2020 14:54:27 -0800 (PST)
+        id S1729861AbgB0XZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 18:25:00 -0500
+Received: from ozlabs.org ([203.11.71.1]:38043 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729391AbgB0XZA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 18:25:00 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48T808521Qz9sPk;
+        Fri, 28 Feb 2020 10:24:55 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1582845898;
+        bh=To3tzqfMsnkCEAkQZKONomjnYrthyCCicrzs9dIy7to=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dTuaz+BzpPrKtQu42RNSwZPRg+oncKghmYa7G1kwVghJr9dUlIK4huqzAVrsfF1G1
+         o+9T8GKSkjbPpigAI2/XcNl+Ma78uM1CI7pJDL9RONt4P0mr9aBdbqH5aN/cjwGmUt
+         3wpfLyNV2z990izlCVcl5t8kf4p+7XdweRkCVR8gkY0QKdkPchl5k0yg/M37rdSF1e
+         fwyyFoU43TdAoEtY9YHrWBWmyS4R45mlE96Cf0X+zJDrxZrd0UkByWFIAvi+zvOXvj
+         CBerchfBrKzyXIV3/K/9GJJADLqER9Y0UtOrgCxhnDequEWQiu0crOqoPTE/Q0dyzP
+         j4nqE3KRS28dA==
+Date:   Fri, 28 Feb 2020 10:24:51 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200228102451.0a3d2057@canb.auug.org.au>
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Thu, 27 Feb 2020 14:54:15 -0800
-Message-ID: <CAHo-OozeA2Dp_4pRZr84A+nH8pLbM3L26_50enHgPV4HpevpCg@mail.gmail.com>
-Subject: ixgbe 2.5 / 5 gbit support works but is not reported as supported/advertised
-To:     Linux NetDev <netdev@vger.kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/JVbqX+zVa7eXIucuJAD39hv";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-https://www.startech.com/Networking-IO/Adapter-Cards/dual-port-network-card~ST10GPEXNDPI
+--Sig_/JVbqX+zVa7eXIucuJAD39hv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-84:00.0 Ethernet controller [0200]: Intel Corporation Ethernet
-Controller 10G X550T [8086:1563] (rev 01)
-84:00.1 Ethernet controller [0200]: Intel Corporation Ethernet
-Controller 10G X550T [8086:1563] (rev 01)
+Hi all,
 
-This card will negotiate 2.5g or 5g if plugged in to a 2.5/5g port on
-the other end of a 7ft cat 5e cable.
-But it doesn't *claim* to support it.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-# ethtool eix1
-Settings for eix1:
-        Supported ports: [ TP ]
-        Supported link modes:   100baseT/Full
-                                1000baseT/Full
-                                10000baseT/Full
-        Supported pause frame use: Symmetric
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  100baseT/Full
-                                1000baseT/Full
-                                10000baseT/Full
-        Advertised pause frame use: Symmetric
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Speed: 2500Mb/s     <-- or 5000Mb/s
-        Duplex: Full
-        Port: Twisted Pair
-        PHYAD: 0
-        Transceiver: internal
-        Auto-negotiation: on
-        MDI-X: Unknown
-        Supports Wake-on: d
-        Wake-on: d
-        Current message level: 0x00000007 (7)
-                               drv probe link
-        Link detected: yes
+  net/mptcp/protocol.c
 
-(note the lack of
-                                2500baseT/Full
-                                5000baseT/Full
-under supported/advertised)
+between commit:
 
-5.2.17-1rodete3-amd64 #1 SMP Debian
-[240677.031802] ixgbe: Intel(R) 10 Gigabit PCI Express Network Driver
-- version 5.1.0-k
-[240677.031806] ixgbe: Copyright (c) 1999-2016 Intel Corporation.
-[240677.717538] ixgbe 0000:84:00.0: Multiqueue Enabled: Rx Queue count
-= 56, Tx Queue count = 56 XDP Queue count = 0
-[240677.816262] ixgbe 0000:84:00.0: 31.504 Gb/s available PCIe
-bandwidth (8 GT/s x4 link)
-[240677.844663] ixgbe 0000:84:00.0: MAC: 4, PHY: 0, PBA No: 000500-000
-[240677.844668] ixgbe 0000:84:00.0: 00:0a:...
-[240677.994928] ixgbe 0000:84:00.0 eix1: renamed from eth1
-[240678.005278] ixgbe 0000:84:00.0: Intel(R) 10 Gigabit Network Connection
-[240678.005360] libphy: ixgbe-mdio: probed
-[240678.694408] ixgbe 0000:84:00.1: Multiqueue Enabled: Rx Queue count
-= 56, Tx Queue count = 56 XDP Queue count = 0
-[240678.792505] ixgbe 0000:84:00.1: 31.504 Gb/s available PCIe
-bandwidth (8 GT/s x4 link)
-[240678.820671] ixgbe 0000:84:00.1: MAC: 4, PHY: 0, PBA No: 000500-000
-[240678.820677] ixgbe 0000:84:00.1: 00:0a:...
-[240678.970174] ixgbe 0000:84:00.1 eix2: renamed from eth1
-[240678.980665] ixgbe 0000:84:00.1: Intel(R) 10 Gigabit Network Connection
-[240678.980747] libphy: ixgbe-mdio: probed
-[242612.969243] ixgbe 0000:84:00.0: registered PHC device on eix1
-[242615.246740] ixgbe 0000:84:00.1: registered PHC device on eix2
-[242620.138766] ixgbe 0000:84:00.0 eix1: NIC Link is Up 10 Gbps, Flow
-Control: RX/TX
-[242620.162687] ixgbe 0000:84:00.1 eix2: NIC Link is Up 10 Gbps, Flow
-Control: RX/TX
-[242712.081620] ixgbe 0000:84:00.0 eix1: NIC Link is Down
-[242712.280592] ixgbe 0000:84:00.1 eix2: NIC Link is Down
-[242867.346797] ixgbe 0000:84:00.0 eix1: NIC Link is Up 5 Gbps, Flow
-Control: RX/TX
-[243018.281569] ixgbe 0000:84:00.0 eix1: NIC Link is Down
-[243028.975451] ixgbe 0000:84:00.0 eix1: NIC Link is Up 2.5 Gbps, Flow
-Control: RX/TX
-[243405.309056] ixgbe 0000:84:00.0 eix1: NIC Link is Down
+  dc24f8b4ecd3 ("mptcp: add dummy icsk_sync_mss()")
+
+from the net tree and commit:
+
+  80992017150b ("mptcp: add work queue skeleton")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/mptcp/protocol.c
+index 3c19a8efdcea,044295707bbf..000000000000
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@@ -543,20 -666,26 +666,32 @@@ static void __mptcp_close_ssk(struct so
+  	}
+  }
+ =20
+ +static unsigned int mptcp_sync_mss(struct sock *sk, u32 pmtu)
+ +{
+ +	return 0;
+ +}
+ +
++ static void mptcp_worker(struct work_struct *work)
++ {
++ 	struct mptcp_sock *msk =3D container_of(work, struct mptcp_sock, work);
++ 	struct sock *sk =3D &msk->sk.icsk_inet.sk;
++=20
++ 	lock_sock(sk);
++ 	__mptcp_move_skbs(msk);
++ 	release_sock(sk);
++ 	sock_put(sk);
++ }
++=20
+  static int __mptcp_init_sock(struct sock *sk)
+  {
+  	struct mptcp_sock *msk =3D mptcp_sk(sk);
+ =20
+  	INIT_LIST_HEAD(&msk->conn_list);
+  	__set_bit(MPTCP_SEND_SPACE, &msk->flags);
++ 	INIT_WORK(&msk->work, mptcp_worker);
+ =20
+  	msk->first =3D NULL;
+ +	inet_csk(sk)->icsk_sync_mss =3D mptcp_sync_mss;
+ =20
+  	return 0;
+  }
+
+--Sig_/JVbqX+zVa7eXIucuJAD39hv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5YT8MACgkQAVBC80lX
+0GxXUgf/eb8o92fkFNcCN1qB8ycZGoXyKwCqNr7xKpnIJoj16vINIdmVcxdPippj
+41ME2k0DE7xp94UioXDKX+jnquLu9/eFXtxzW3Q/4kh8rEfM8DPxpC0eqtbKASOK
++QhF3qJ7P05oXaweUnjwWfOxKN09wJmlHNihQy3SePLXaqDbisubrDD652cljv8z
+/GmOVssH7LmRup+HvpABOcJnST7+y08x6KEVqmlUr+y4WFRNaX7p66XeLmKhoYKN
+V2xY6/7IXgg6GUmkJgFDy9a81usJd9BdOZCFatUoIfYrVnKATxzMVJkROuBRyMpU
+IxL+nPwvoEcU8P7qLXsx8ElUqlpNGg==
+=qjZb
+-----END PGP SIGNATURE-----
+
+--Sig_/JVbqX+zVa7eXIucuJAD39hv--
