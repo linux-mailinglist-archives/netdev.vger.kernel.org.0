@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB7B1724C5
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 18:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BDCB1724CC
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 18:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729811AbgB0RPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 12:15:15 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40862 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729334AbgB0RPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 12:15:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=noUPQ8VF9BgHXXRmi4Zafg9lbKawS8P8sb9LIKLRyWA=; b=XtHKNl5/arohmn+d0Hb12YLZq
-        K/INo0Fy8/F9JtT3GwQgnRdJLjVb5JzuPwQixo5mN73/TWTfHRc+bnlDYGKIu/65eaHA7K6wXI25a
-        Qx78mmjK/fVtU1rp2IaWWCatHW7bMoBYHLjDFRQREBbUWZa7mI0hRJp1mKa9vqMK4gFmcAuudJ2ic
-        Y8ApC5gPR8rDAqHLxVxldeBGHLwf/HoPtUH+Fgo9mNJRdaotiso1zZUevWpCSWjCiodfrbP7iPFgX
-        Rrl4bNQpNoD/OosY50F0MYHCtju28ZYot9n0/A+wEOfpaRVLECUHHQTtlxSOzH4FdxHeEi776rxnO
-        hV78Yzq5Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:46042)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j7MkY-0006tm-7R; Thu, 27 Feb 2020 17:15:02 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j7MkU-00018x-Se; Thu, 27 Feb 2020 17:14:58 +0000
-Date:   Thu, 27 Feb 2020 17:14:58 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: add dt bindings for
- marvell10g  driver
-Message-ID: <20200227171458.GN25745@shell.armlinux.org.uk>
-References: <20200227095159.GJ25745@shell.armlinux.org.uk>
- <E1j7FqO-0003sv-Ho@rmk-PC.armlinux.org.uk>
- <20200227170858.GA2831@bogus>
+        id S1729601AbgB0RQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 12:16:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43162 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728413AbgB0RQl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 12:16:41 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 590FA2469B;
+        Thu, 27 Feb 2020 17:16:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582823800;
+        bh=HZ8JA798jZ3ZkxMdLKYoSksXBTJ+5w5059x5kmCyyXg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bJ3umOcm6DzWHJOznuW0Ph/ofqL6tZ7qMW4FruIl1DSQ2QvUuP3ZaqZaJp1WBELYH
+         XobPjsrZZXcI8HeJGFX8bp+VmiKKnILDJfh/EQJ2GbCF1iEWNMqEM8Kvuj9qaRrDkA
+         3exAn1dIEAp9NgcNa7SDw0bdPrDbqE9ewxOfU/+8=
+Date:   Thu, 27 Feb 2020 09:16:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     David Ahern <dahern@digitalocean.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jason Wang <jasowang@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: virtio_net: can change MTU after installing program
+Message-ID: <20200227091637.1822b9ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200227030914-mutt-send-email-mst@kernel.org>
+References: <20200226093330.GA711395@redhat.com>
+        <87lfopznfe.fsf@toke.dk>
+        <0b446fc3-01ed-4dc1-81f0-ef0e1e2cadb0@digitalocean.com>
+        <20200226115258-mutt-send-email-mst@kernel.org>
+        <ec1185ac-a2a1-e9d9-c116-ab42483c3b85@digitalocean.com>
+        <20200226120142-mutt-send-email-mst@kernel.org>
+        <20200226173751.0b078185@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200227030914-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200227170858.GA2831@bogus>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 11:08:58AM -0600, Rob Herring wrote:
-> On Thu, 27 Feb 2020 09:52:36 +0000, Russell King wrote:
-> > Add a DT bindings document for the Marvell 10G driver, which will
-> > augment the generic ethernet PHY binding by having LED mode
-> > configuration.
+On Thu, 27 Feb 2020 03:14:20 -0500 Michael S. Tsirkin wrote:
+> On Wed, Feb 26, 2020 at 05:37:51PM -0800, Jakub Kicinski wrote:
+> > On Wed, 26 Feb 2020 12:02:03 -0500 Michael S. Tsirkin wrote:  
+> > I'd vote that we don't care. We should care more about consistency
+> > across drivers than committing to buggy behavior.
 > > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  .../devicetree/bindings/net/marvell,10g.yaml  | 31 +++++++++++++++++++
-> >  1 file changed, 31 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/marvell,10g.yaml
-> > 
+> > All drivers should have this check (intel, mlx, nfp definitely do),
+> > I had a look at Broadcom and it seems to be missing there as well :(
+> > Qlogic also. Ugh.  
 > 
-> My bot found errors running 'make dt_binding_check' on your patch:
-> 
-> Documentation/devicetree/bindings/display/simple-framebuffer.example.dts:21.16-37.11: Warning (chosen_node_is_root): /example-0/chosen: chosen node must be at root node
-> Documentation/devicetree/bindings/net/marvell,10g.example.dts:18.13-23: Warning (reg_format): /example-0/ethernet-phy@0:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
-> Documentation/devicetree/bindings/net/marvell,10g.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-> Documentation/devicetree/bindings/net/marvell,10g.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-> Documentation/devicetree/bindings/net/marvell,10g.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+> Any chance to put it in net core then? Seems straight-forward enough ...
 
-It looks like your bot has made a mistake, or I don't understand the
-error messages. It seems to be trying to treat the example as a PCI
-device, but it isn't, it is a PHY device.
-
-I don't think that's something I can fix, sorry.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+It's not impossible, but generally the RX buf geometry requirements
+are not universal (see ixgbe or nfp).
