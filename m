@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A5C1711B7
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A821711B6
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728511AbgB0Huc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 02:50:32 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46483 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728493AbgB0Hua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:30 -0500
-Received: by mail-wr1-f68.google.com with SMTP id j7so1995332wrp.13
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:29 -0800 (PST)
+        id S1728520AbgB0Hue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 02:50:34 -0500
+Received: from mail-wm1-f43.google.com ([209.85.128.43]:32836 "EHLO
+        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728496AbgB0Hub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:31 -0500
+Received: by mail-wm1-f43.google.com with SMTP id m10so6342220wmc.0
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IQSqhv3gQjmQAlmfbYZiLUfJL9sse2D9bBNEvcjkVYU=;
-        b=pxjZqkQdMlhalQhtwqy2yTqHhJDcOhtINz15jOXXGKwltVT5Dw0T1zmJMDqthwrSS1
-         /Ll1Kk+MTjx0jw9ZLWfvJSYBd4u3GFfoclhkdj7LKmGM98MtgoTRkhhOL3yQWNDZtNPo
-         7pLwrbqRkSzYhhQIT8xgJiaHOI4tiXEbsimsDJFPnNa6siHK+peQzySGfWf0uOaYB0j1
-         75dmAHnvoV4noqRYQnTLPQTItw2woHdSzSa0AZrer3Lmrhh8GwWk5FHTYTLE6pkkr7wX
-         Ft5XIeHnC3WNRgYGi/tt0l7FjbGGPSZM1Ohfp/Pa77cVJsKWVRSig1kVpcNB8nnBLVej
-         eJdg==
+        bh=IAQxSzVXZys9GhkIrPqglRbI2DnOG8JPgiF2m5M8aTI=;
+        b=fF1j27SI0nEaDwfmVerXui2F42L3FY1hxpG8K1/dYmh0MmE1Il7K9GB0WU7otDTiVm
+         luI7YDRwcAUq6UvIWzOq4ZznHk/9waiPaqCiGcjGPwWXYjhGFmUG60y3O5+xD7mYQ/LW
+         fu3kf9p7Vi1pJLJmcnFuiWslQkF9Bm+k5ky5Hwb6g1X08UgHS1kOjUkkSprhIYz7EhcO
+         sUwwoApOljFcYB+SRd6rKbU6Q4QtCECL+2pc7R3WebZ6Ky6PJ8rZuH53x9sRMvFcB374
+         fEhrYFdIyWNcHjNjwkN3hgIZyB9nsUpqxvEZuPFANmK/z1gt+9mYzxFl9nNtHUZKwOyx
+         S93g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IQSqhv3gQjmQAlmfbYZiLUfJL9sse2D9bBNEvcjkVYU=;
-        b=QBjWJuVt/ntYNun4UjXeuidgKgPJ9NWDSa69hUsjbKNW2L2D9I+n8NUkQLST0QH06x
-         KNQ+fe3BAhTMAW+Mo1BnmvIljsG8avRtiyVrWbgT7CXcPM+oOje4KUumSV2gB8FpSCuR
-         IMP0c67wWU7g4iikaa1u45ablvD2x/v+Qt4MrN6qlCQZ20z4/PxjhC1McJNMLqJBYpWc
-         bFZDWV29PMFQE6rfNtOSe8/7z7KriTIQfBemqpwPzYkih6OFn8bz5xPZeVjZz48x8tBD
-         XzCUDsrdA/KEXS9OhZasxYYpTbZOdLanFA39Ob1aYGLWEan1MYi3hXReD+CSo6OonQga
-         eWfA==
-X-Gm-Message-State: APjAAAVcFcxnip9u+LYdN3FxZFAP3uT7ZInx6THed/Ik1gp31vyRPZF3
-        ReDRklZOPWO5uH30GC/M37KNMhY6iYY=
-X-Google-Smtp-Source: APXvYqzAM24N8YwrUU1XH4lp9Nzaam6g70Bj7PSNKNCRcsJj1yCm2rOMiKGJtUW+j2eJDLFVWsQH7Q==
-X-Received: by 2002:adf:f6c8:: with SMTP id y8mr3208223wrp.167.1582789828687;
-        Wed, 26 Feb 2020 23:50:28 -0800 (PST)
+        bh=IAQxSzVXZys9GhkIrPqglRbI2DnOG8JPgiF2m5M8aTI=;
+        b=Iq5+LfmCK/dIAt2uy8ccy7oJYUsVeorYZcc2rVbiCxl6mSgiq5h4CfQ2QFRjhpoiri
+         FeCpAxdEDsSoFLvD9Djgd/hM+qRGxLe3/42YVW7y7Jn0wKVO8Uhru6ic49ErIpBU+Ovp
+         lFhMuvXN6ZGMPs9YNaCP/h/8/i9pgXMufGCTwMLet2oTJnMOWm2IOmuzD8M8Z/IhfGkJ
+         q5LDlAr85nZNwDeI4UQzQPxD8cwVvardXiFqZ8xRWGz6N2I44Ty2NQGpa+TCRf96hF4e
+         updSVrKhSt+jwjoAzx26l6GONgYNGZkHiGgze75BUZvkCh/W4wkawjrXNFFkQkFW/85l
+         dbyw==
+X-Gm-Message-State: APjAAAVJvNfw8l2GWcpZTGNwAUht1CgPLaD38271QSS1sRRS1yQQTUkX
+        0Oc8ViB+m7HzSDGXIeDqAmgD8LnmUDY=
+X-Google-Smtp-Source: APXvYqzhWMD5m+KK8jmyJTVoQUbfGdvkfiuX04QFw6WexD+ZklKAx5/b6BeQS+UbvBSWgIzJbu50zw==
+X-Received: by 2002:a1c:1b86:: with SMTP id b128mr3435635wmb.64.1582789829912;
+        Wed, 26 Feb 2020 23:50:29 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id h10sm6652630wml.18.2020.02.26.23.50.28
+        by smtp.gmail.com with ESMTPSA id g10sm7144770wrr.13.2020.02.26.23.50.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 23:50:28 -0800 (PST)
+        Wed, 26 Feb 2020 23:50:29 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com, shuah@kernel.org
-Subject: [patch net-next 05/16] selftests: devlink_trap_l3_drops: Avoid race condition
-Date:   Thu, 27 Feb 2020 08:50:10 +0100
-Message-Id: <20200227075021.3472-6-jiri@resnulli.us>
+Subject: [patch net-next 06/16] selftests: mlxsw: Use busywait helper in blackhole routes test
+Date:   Thu, 27 Feb 2020 08:50:11 +0100
+Message-Id: <20200227075021.3472-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200227075021.3472-1-jiri@resnulli.us>
 References: <20200227075021.3472-1-jiri@resnulli.us>
@@ -61,61 +61,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Danielle Ratson <danieller@mellanox.com>
 
-The test checks that packets are trapped when they should egress a
-router interface (RIF) that has become disabled. This is a temporary
-state in a RIF's deletion sequence.
+Blackhole routes test uses offload indication checks.
 
-Currently, the test deletes the RIF by flushing all the IP addresses
-configured on the associated netdev (br0). However, this is racy, as
-this also flushes all the routes pointing to the netdev and if the
-routes are deleted from the device before the RIF is disabled, then no
-packets will try to egress the disabled RIF and the trap will not be
-triggered.
+Use busywait helper and wait until the routes offload indication is set or
+fail if it reaches timeout.
 
-Instead, trigger the deletion of the RIF by unlinking the mlxsw port
-from the bridge that is backing the RIF. Unlike before, this will not
-cause the kernel to delete the routes pointing to the bridge.
-
-Note that due to current mlxsw locking scheme the RIF is always deleted
-first, but this is going to change.
-
+Signed-off-by: Danielle Ratson <danieller@mellanox.com>
+Reviewed-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../drivers/net/mlxsw/devlink_trap_l3_drops.sh        | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ .../testing/selftests/drivers/net/mlxsw/blackhole_routes.sh  | 5 +++--
+ tools/testing/selftests/net/forwarding/lib.sh                | 5 +++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
-index 053e5c7b303d..616f47d86a61 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
-@@ -641,13 +641,9 @@ erif_disabled_test()
- 	mz_pid=$!
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/blackhole_routes.sh b/tools/testing/selftests/drivers/net/mlxsw/blackhole_routes.sh
+index 5ba5bef44d5b..bdffe698e1d1 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/blackhole_routes.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/blackhole_routes.sh
+@@ -45,6 +45,7 @@ ALL_TESTS="
+ 	blackhole_ipv6
+ "
+ NUM_NETIFS=4
++: ${TIMEOUT:=20000} # ms
+ source $lib_dir/tc_common.sh
+ source $lib_dir/lib.sh
  
- 	sleep 5
--	# In order to see this trap we need a route that points to disabled RIF.
--	# When ipv6 address is flushed, there is a delay and the routes are
--	# deleted before the RIF and we cannot get state that we have route
--	# to disabled RIF.
--	# Delete IPv6 address first and then check this trap with flushing IPv4.
--	ip -6 add flush dev br0
--	ip -4 add flush dev br0
-+	# Unlinking the port from the bridge will disable the RIF associated
-+	# with br0 as it is no longer an upper of any mlxsw port.
-+	ip link set dev $rp1 nomaster
+@@ -123,7 +124,7 @@ blackhole_ipv4()
+ 		skip_hw dst_ip 198.51.100.1 src_ip 192.0.2.1 ip_proto icmp \
+ 		action pass
  
- 	t1_packets=$(devlink_trap_rx_packets_get $trap_name)
- 	t1_bytes=$(devlink_trap_rx_bytes_get $trap_name)
-@@ -659,7 +655,6 @@ erif_disabled_test()
- 	log_test "Egress RIF disabled"
+-	ip -4 route show 198.51.100.0/30 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload ip -4 route show 198.51.100.0/30
+ 	check_err $? "route not marked as offloaded when should"
  
- 	kill $mz_pid && wait $mz_pid &> /dev/null
--	ip link set dev $rp1 nomaster
- 	__addr_add_del $rp1 add 192.0.2.2/24 2001:db8:1::2/64
- 	ip link del dev br0 type bridge
- 	devlink_trap_action_set $trap_name "drop"
+ 	ping_do $h1 198.51.100.1
+@@ -147,7 +148,7 @@ blackhole_ipv6()
+ 		skip_hw dst_ip 2001:db8:2::1 src_ip 2001:db8:1::1 \
+ 		ip_proto icmpv6 action pass
+ 
+-	ip -6 route show 2001:db8:2::/120 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload ip -6 route show 2001:db8:2::/120
+ 	check_err $? "route not marked as offloaded when should"
+ 
+ 	ping6_do $h1 2001:db8:2::1
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index aff3178edf6d..5ea33c72f468 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -248,6 +248,11 @@ busywait()
+ 	done
+ }
+ 
++wait_for_offload()
++{
++	"$@" | grep -q offload
++}
++
+ until_counter_is()
+ {
+ 	local value=$1; shift
 -- 
 2.21.1
 
