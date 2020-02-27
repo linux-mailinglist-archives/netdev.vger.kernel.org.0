@@ -2,165 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE3D172C75
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 00:45:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9789A172C89
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 00:51:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729882AbgB0Xp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 18:45:56 -0500
-Received: from www62.your-server.de ([213.133.104.62]:50790 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729796AbgB0Xp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 18:45:56 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j7Sqe-0002lT-Nj; Fri, 28 Feb 2020 00:45:44 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j7Sqe-000XAx-Cs; Fri, 28 Feb 2020 00:45:44 +0100
-Subject: Re: [PATCH bpf-next v2 4/4] bpf: inet_diag: Dump bpf_sk_storages in
- inet_diag_dump()
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-References: <20200225230402.1974723-1-kafai@fb.com>
- <20200225230427.1976129-1-kafai@fb.com>
- <938a0461-fd8d-b4b9-4fef-95d46409c0d6@iogearbox.net>
- <20200227013448.srxy5kkpve7yheln@kafai-mbp>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ca31484f-4656-fb3e-8982-6a068bcb0738@iogearbox.net>
-Date:   Fri, 28 Feb 2020 00:45:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200227013448.srxy5kkpve7yheln@kafai-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1730120AbgB0XvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 18:51:03 -0500
+Received: from mail-vi1eur05on2090.outbound.protection.outlook.com ([40.107.21.90]:17729
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729796AbgB0XvD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 18:51:03 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F+cF5ucuvkwxrJ0joWb4WWDBqiWWMmpOaOpHTgDb2WWHlxVdisC6Om2DdXtzff4D9O3PqNapUkoeDix5WqqCawnlYfHVJlEBTEkd4a7+25MqpMRyEzm3CX+TzGgKaQ0F8ijivMjSHsr8wh2PQ57LHkFR7kIPUIhMbteVK9uZ/HOYaJKKlxyJ+8t7bG07R2j12shbm8aRtqD/KqyaO9bVUdh7A4mfj4BD7M+bm0qE9+HrK4F7QQAePdO2Cpc0MiGOPJN34kkauUEc8nNYmvLZfGRApHIdqiXL90SXoxeIAOq0i/vMF8cgKpE79IQlz2eT86ih0PjP8R3lc+o0n2SQnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x0I5a1/JVcQmsyWyTYhGIWdnwKoxjoDjJMprHOBxHVo=;
+ b=D1YwMJGO3j11XGaVIEs5ZjW/lqwmi+BgdmygKWwlpVQjUuoa65ZdeCQZok8VrGA5lIIHInRLX9jMZIdr9uJlLMNAXPG+983+bCnP1meSoZy5pDnpu6rwdmvFbQz/EZZWhtBcfBNnyYMM9TnujyONRPNm9ZSX6rMGySNewI6P8VM+vI+5X92C+a12q9WSJmfU/Ytn6ctP3w1eDpSXPuogqHUSXz1b6zBjMxwWF7eUl2AKY8VgmmbWecl5J8Lm4xx3BbHIYL8TDLYzNxVaKpIVjFDD+zJOVQBwvXQwTaMNdFUP1r+gVzY5hCnmeVPr+Y/gZmsuvJlw1raSGCUNu/8rqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x0I5a1/JVcQmsyWyTYhGIWdnwKoxjoDjJMprHOBxHVo=;
+ b=asFs04S6rWEfAykxq25gArJ8IZOwZo/4U+yvOls5Zca0FHAKMsjXJo1QEd4aKxjunsorz36q7D0t1wsQBVFJjXl/rZiTrmQ2bdahNQDQhspw3bW9LoaoAC9qGG6XU4XvR8t0dc3EhCxFerBd9us0HAe4rVaTGRfzTX+uLmQl+08=
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (10.165.195.138) by
+ VI1P190MB0285.EURP190.PROD.OUTLOOK.COM (10.165.195.24) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2750.22; Thu, 27 Feb 2020 23:50:59 +0000
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a587:f64e:cbb8:af96]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::a587:f64e:cbb8:af96%4]) with mapi id 15.20.2772.012; Thu, 27 Feb 2020
+ 23:50:59 +0000
+Received: from plvision.eu (217.20.186.93) by AM7PR03CA0011.eurprd03.prod.outlook.com (2603:10a6:20b:130::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.21 via Frontend Transport; Thu, 27 Feb 2020 23:50:57 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jiri Pirko <jiri@resnulli.us>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+Subject: Re: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
+ for Prestera family ASIC device 98DX325x (AC3x)
+Thread-Topic: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
+ for Prestera family ASIC device 98DX325x (AC3x)
+Thread-Index: AQHV6/jzY7yqWky1LUqTk1e6REHYB6gtohWAgAHwnQCAAANjgIAAI3EA
+Date:   Thu, 27 Feb 2020 23:50:58 +0000
+Message-ID: <20200227235048.GA21304@plvision.eu>
+References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
+ <20200225163025.9430-2-vadym.kochan@plvision.eu>
+ <20200226155423.GC26061@nanopsycho> <20200227213150.GA9372@plvision.eu>
+ <20200227214357.GB29979@lunn.ch>
+In-Reply-To: <20200227214357.GB29979@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25735/Thu Feb 27 20:18:16 2020)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM7PR03CA0011.eurprd03.prod.outlook.com
+ (2603:10a6:20b:130::21) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:802:35::10)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vadym.kochan@plvision.eu; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [217.20.186.93]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8c31fb22-e719-4eb8-8cb0-08d7bbdfe4ba
+x-ms-traffictypediagnostic: VI1P190MB0285:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1P190MB028510E45B86E0C81A95E15F95EB0@VI1P190MB0285.EURP190.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 03264AEA72
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(346002)(136003)(376002)(39830400003)(199004)(189003)(16526019)(5660300002)(186003)(66446008)(26005)(7696005)(1076003)(66946007)(64756008)(4326008)(52116002)(55016002)(66556008)(66476007)(508600001)(36756003)(8676002)(71200400001)(86362001)(316002)(8936002)(33656002)(4744005)(2906002)(107886003)(54906003)(956004)(6916009)(8886007)(2616005)(81156014)(81166006)(44832011);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1P190MB0285;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: plvision.eu does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GH4jXdYHPvKEnsJINzz8UyPk17KPcAM084bOqO17A2f3UND36Ex9DAFlQwy7ChXrljJ099EGrWX2B4J4BZ+S2gM4gVkWqZF4bix2np6O87konNP1lpLTDacNuUmBP8bJn37WMbe82YOTaFXKxXQtNTY3ykos1iyAlVv7EwnGl4EmIDnMAtDSuN8hpft4B1KPVzoojO5Zm7OxQf0TAKhKnoEf+j4GKBKgdRHL08JMG+rPc2j4+Sw5FsnZsbnE2VLnZoc8FjyGzKfgCecGqo+11ScH/uGUjDaBApycqozQ2VfDPzCMCgU1ll4u4hVaME9g5ENl9hzf9NwErV/BMvwfGpiQoC3pOdc7h0Ajkg0rBt36ySfnYluwlNhVyKRifmERS7N9dbgJXGVbP4BTcDD0Ico/7ig4RKwfLeEM5k1ewlbZ6wDrDyTMJgA3FpJhcmf+
+x-ms-exchange-antispam-messagedata: uVQJmN5m5uzsUGb8PXi2phd6bCV7hEo0Ae7/E8NsTcs9B+F3SFq5jZqUu7pamz6N5VhJX1s3PBnUQhNpI2uocIBYCxdAv8Ai6FfRCAixqjt9/aRStJCkhp+8+Ey5YiVMmRDda+Zas1qjJNnTonCTeA==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1E5A8E04E48F7D4A988E7C1F5FCD531A@EURP190.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c31fb22-e719-4eb8-8cb0-08d7bbdfe4ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2020 23:50:58.9374
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /g/gg6rH89H1wblBYrIPZievNcAsQp+MSg8CwFIeKTyQJL9oIpox3qyr8vSltprBqHGroKzYcug+3UvytH6swCH7lIJnx33toa6KW1b5zqo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0285
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/27/20 2:34 AM, Martin KaFai Lau wrote:
-> On Wed, Feb 26, 2020 at 06:21:33PM +0100, Daniel Borkmann wrote:
->> On 2/26/20 12:04 AM, Martin KaFai Lau wrote:
->>> This patch will dump out the bpf_sk_storages of a sk
->>> if the request has the INET_DIAG_REQ_SK_BPF_STORAGES nlattr.
->>>
->>> An array of SK_DIAG_BPF_STORAGE_REQ_MAP_FD can be specified in
->>> INET_DIAG_REQ_SK_BPF_STORAGES to select which bpf_sk_storage to dump.
->>> If no map_fd is specified, all bpf_sk_storages of a sk will be dumped.
->>>
->>> bpf_sk_storages can be added to the system at runtime.  It is difficult
->>> to find a proper static value for cb->min_dump_alloc.
->>>
->>> This patch learns the nlattr size required to dump the bpf_sk_storages
->>> of a sk.  If it happens to be the very first nlmsg of a dump and it
->>> cannot fit the needed bpf_sk_storages,  it will try to expand the
->>> skb by "pskb_expand_head()".
->>>
->>> Instead of expanding it in inet_sk_diag_fill(), it is expanded at a
->>> sleepable context in __inet_diag_dump() so __GFP_DIRECT_RECLAIM can
->>> be used.  In __inet_diag_dump(), it will retry as long as the
->>> skb is empty and the cb->min_dump_alloc becomes larger than before.
->>> cb->min_dump_alloc is bounded by KMALLOC_MAX_SIZE.  The min_dump_alloc
->>> is also changed from 'u16' to 'u32' to accommodate a sk that may have
->>> a few large bpf_sk_storages.
->>>
->>> The updated cb->min_dump_alloc will also be used to allocate the skb in
->>> the next dump.  This logic already exists in netlink_dump().
->>>
->>> Here is the sample output of a locally modified 'ss' and it could be made
->>> more readable by using BTF later:
->>> [root@arch-fb-vm1 ~]# ss --bpf-map-id 14 --bpf-map-id 13 -t6an 'dst [::1]:8989'
->>> State Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
->>> ESTAB 0      0              [::1]:51072        [::1]:8989
->>> 	 bpf_map_id:14 value:[ 3feb ]
->>> 	 bpf_map_id:13 value:[ 3f ]
->>> ESTAB 0      0              [::1]:51070        [::1]:8989
->>> 	 bpf_map_id:14 value:[ 3feb ]
->>> 	 bpf_map_id:13 value:[ 3f ]
->>>
->>> [root@arch-fb-vm1 ~]# ~/devshare/github/iproute2/misc/ss --bpf-maps -t6an 'dst [::1]:8989'
->>> State         Recv-Q         Send-Q                   Local Address:Port                    Peer Address:Port         Process
->>> ESTAB         0              0                                [::1]:51072                          [::1]:8989
->>> 	 bpf_map_id:14 value:[ 3feb ]
->>> 	 bpf_map_id:13 value:[ 3f ]
->>> 	 bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
->>> ESTAB         0              0                                [::1]:51070                          [::1]:8989
->>> 	 bpf_map_id:14 value:[ 3feb ]
->>> 	 bpf_map_id:13 value:[ 3f ]
->>> 	 bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
->>>
->>> Acked-by: Song Liu <songliubraving@fb.com>
->>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
->>
->> Hmm, the whole approach is not too pleasant to be honest. I can see why you need
->> it since the regular sk_storage lookup only takes sock fd as a key and you don't
->> have it otherwise available from outside, but then dumping up to KMALLOC_MAX_SIZE
->> via netlink skb is not a great experience either. :( Also, are we planning to add
->> the BTF dump there in addition to bpftool? Thus resulting in two different lookup
->> APIs and several tools needed for introspection instead of one? :/ Also, how do we
->> dump task local storage maps in future? Does it need a third lookup interface?
->>
->> In your commit logs I haven't read on other approaches and why they won't work;
->> I was wondering, given sockets are backed by inodes, couldn't we have a variant
->> of iget_locked() (minus the alloc_inode() part from there) where you pass in ino
->> number to eventually get to the socket and then dump the map value associated with
->> it the regular way from bpf() syscall?
-> Thanks for the feedback!
-> 
-> I think (1) dumping all sk(s) in a system is different from
-> (2) dumping all sk of a bpf_sk_storage_map or lookup a particular
-> sk from a bpf_sk_storage_map.
+On Thu, Feb 27, 2020 at 10:43:57PM +0100, Andrew Lunn wrote:
+> > > Please be consistent. Make your prefixes, name, filenames the same.
+> > > For example:
+> > > prestera_driver_kind[] =3D "prestera";
+> > >=20
+> > > Applied to the whole code.
+> > >=20
+> > So you suggested to use prestera_ as a prefix, I dont see a problem
+> > with that, but why not mvsw_pr_ ? So it has the vendor, device name par=
+ts
+> > together as a key. Also it is necessary to apply prefix for the static
+> > names ?
+>=20
+> Although static names don't cause linker issues, you do still see them
+> in opps stack traces, etc. It just helps track down where the symbols
+> come from, if they all have a prefix.
+>=20
+>      Andrew
 
-Yeah, it is; I was mostly brain-storming if there is a cleaner way for (1)
-by having (2)b resolved as an intermediate step (1) can then build on, but
-seems it's tricky w/o much extra infra.
+Sure, thanks, makes sense. But is it necessary that prefix should match
+filenames too ? Would it be OK to use just 'mvpr_' instead of 'prestera_'
+for funcs & types in this particular case ?
 
-[...]
-> 
-> or the netlink can return map_id only when the max-sized skb cannot fit
-> all the bpf_sk_storages.  The userspace then do another syscall to
-> lookup the data from each individual bpf_sk_storage_map and
-> that requires to lookup side support with another key (non-fd).
-> IMO, it is weird and a bit opposite of what bpf_sk_storage should be (fast
-> bpf_sk_storage lookup while holding a sk).  The iteration API already
-> holds the sk but instead it is asking the usespace to go back to find
-> out the sk again in order to get the bpf_sk_storages.  I think that
-> should be avoided if possible.
-> 
-> Regarding i_ino, after looking at sock_alloc() and get_next_ino(),
-> hmmm...is it unique?
-
-It would wrap around after 2^32 allocations, so scratch that thought,
-iget_locked()/find_inode_fast()-based lookup usage must ensure it's unique.
-
-> If it is, what is the different usecase between i_ino and
-> sk->sk_cookie?
-
-Agree that advantage of reusing diag is that you already hold the sk and
-are able to iterate through all of them, the ugly part is having to place
-the value data into netlink as an API along with all other socket data as
-a, for better or worse, bpf sk map lookup/introspection interface given
-there is no other way to have a fast and global (non-fd based) id->socket
-lookup interface that we could reuse atm.
-
-I was wondering about sk->sk_cookie as well, but it wouldn't make sense
-to do a ss dump, get (sk cookie, map_id) from the dump and use that for
-a bpf() lookup if we need to reiterate the diag tables once again in the
-background just to get the storage data. And I presume it won't make sense
-either to reuse the diag's walk as a stand-alone for a bpf sk storage dump
-interface API via bpf() ... at least from ss tool side it would require a
-correlation based on sk cookie. Not nice either ... so current approach
-might indeed be the tradeoff. :/
-
-Thanks,
-Daniel
+Regards,
+Vadym Kochan
