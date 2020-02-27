@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B77F717166F
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 12:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3F09171682
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 12:58:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728915AbgB0LzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 06:55:22 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57740 "EHLO
+        id S1728926AbgB0L6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 06:58:18 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59239 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728865AbgB0LzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 06:55:22 -0500
+        with ESMTP id S1728856AbgB0L6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 06:58:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582804520;
+        s=mimecast20190719; t=1582804697;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=pISu8CDqEJIgMiUxbezRRj+6x7kk8ktkrirr8izxN5o=;
-        b=JfUOtrFIylx1qgKQi03+FdxSdFA4FN7q+5VSAjKsb5JFnDPzPtxAZEJbRbB0Z2MjzW0MsM
-        o6UTC8Ol77OB2LlhZ9hUSPl7macdnDQm/ez2vJp7xVt89bKNYxwXJ85mdlPFvLpTmvgBZb
-        BUvEQQUpP32yZ0lRQji+gZhG83l+xns=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-306-JT99rzw0NrCy-eTKpysgvA-1; Thu, 27 Feb 2020 06:55:19 -0500
-X-MC-Unique: JT99rzw0NrCy-eTKpysgvA-1
-Received: by mail-wm1-f72.google.com with SMTP id y7so910702wmd.4
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 03:55:18 -0800 (PST)
+        bh=QztQ88wOWQTVVeka2DWOfrjJ2vaSyJD2GkM2TLVhNgo=;
+        b=KZeP1ZoDuwLjzZH7ICU0PTmni3BkmXSuFPjw0thMdHTXjU93EPWJs4A3UEnpfCPu2hzb5r
+        UXpBuIBbOTqNK6/MRihcMQS4/53THWXR3gxGb0xGC5mb6DO9NIzmuCVMXc8+HHADDOh4Ee
+        7jZCyL+erCz3RMbT7NYdwl3Jhqxh1Hg=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-481-_ouCKjiDMm6bfNFe6PN8_g-1; Thu, 27 Feb 2020 06:58:15 -0500
+X-MC-Unique: _ouCKjiDMm6bfNFe6PN8_g-1
+Received: by mail-lf1-f72.google.com with SMTP id q2so334167lfo.5
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 03:58:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=pISu8CDqEJIgMiUxbezRRj+6x7kk8ktkrirr8izxN5o=;
-        b=UOOttIBOYgfPcRTycCELszEiFQ82+gEaUHi81APzvmGEjz008tcpnMywh3ZCH254HM
-         w7AJjAv3lNAu5XSctO2qNyPJFW4sukSErP5dM46R4SGLTa8LxFlWRKiW8BR2CNB0l/uS
-         aFXmGflEfF+VeUr4+WzQ8hhP8fAtuqSLvpyI8rjQ+YgCqIVy4ylGUGH19t5bqk2TJHd/
-         0jUj4pNjwJ7ERu+YETHeUlAN9NH1tQ78lsAsDMxa6ejyDLWWSqwQ8TCqOHjmqKoinqE6
-         In5FaC0Sta/aciunYFJOyapbHlatJndSwC3I+L2mZa/LMbrcc/N1vMVyIKFlKKdsCzrW
-         pNCA==
-X-Gm-Message-State: APjAAAXP+gcMb+dSHw8zXU2urIyGy4DTj8SJpRNQW0+3o9oivrd1GRyh
-        p8mYGLiQSmuogDiml40iQBQQOTZC/LMDPY7ekDpb5UlvW506dvPJM1OrLHe2c6KO5PM/p26ONpv
-        9fVM2xITwidc4U5dE
-X-Received: by 2002:a5d:56ca:: with SMTP id m10mr4693056wrw.313.1582804517842;
-        Thu, 27 Feb 2020 03:55:17 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyz2npC8cPvJ9XPAlOm0U2NtLuwPU3kVFClqNO22fDLYtRc25fZt8Kfz2ZqEmQ4vYybLNBfxA==
-X-Received: by 2002:a5d:56ca:: with SMTP id m10mr4693022wrw.313.1582804517596;
-        Thu, 27 Feb 2020 03:55:17 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id a5sm7426128wmb.37.2020.02.27.03.55.16
+        bh=QztQ88wOWQTVVeka2DWOfrjJ2vaSyJD2GkM2TLVhNgo=;
+        b=LA9r34HOnSppiV7BO8rFv5xS1e7COSsS/bYeUZaZ9sobHLu/ksE9eTBTt74RQkTiBS
+         S8DOMz5It0vEJZrvoSQAwHHQM0seQk9sjrPgSTG0EjYvVM81U7gBGmzfCUujCvaSPpo0
+         p8LQwMu3lpqU9k3ys4DjRdleSDQi88d4isqtwVF6V4UtcoPELxKpdtP13WwwvzVZYpjn
+         npDlx3ixMpKVyBfU2ls8V1DHQlImMleVMemo+MH47AAVA4xzHtPpLIXFdWYVsc1SeNvb
+         wh0xPNo7Upfu2igmsy00r93+/9uMLBuOlPLuFYWqpOpOR0VqqHUaH4+lCWLPoHUDIydQ
+         KaRQ==
+X-Gm-Message-State: ANhLgQ2S7DZQKqSqgN6r6fp5HG3dWINesMyAOxtf88wW+KKRCZiFpPB4
+        u62PgA7I66zgotT/PmBIH2mfvMxMa3hAZAGsYlS+EQiYzgH0VR/UyvGY+boj6m1dT36j0rproUL
+        sx757nnZdTwdvE3Aa
+X-Received: by 2002:a2e:98ca:: with SMTP id s10mr2688109ljj.160.1582804693023;
+        Thu, 27 Feb 2020 03:58:13 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vtiJt/uaOnk6dKNkgScp5OTEvb2L16f3vHJlaE/iA26dxdEeGCfj+x5gBU6jvgvIbyqi0zGFA==
+X-Received: by 2002:a2e:98ca:: with SMTP id s10mr2688084ljj.160.1582804692640;
+        Thu, 27 Feb 2020 03:58:12 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id o7sm3009814ljp.95.2020.02.27.03.58.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Feb 2020 03:55:16 -0800 (PST)
+        Thu, 27 Feb 2020 03:58:11 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 24B6A180362; Thu, 27 Feb 2020 12:55:16 +0100 (CET)
+        id D85FE180362; Thu, 27 Feb 2020 12:58:10 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH RFC v4 bpf-next 00/11] Add support for XDP in egress path
-In-Reply-To: <20200227032013.12385-1-dsahern@kernel.org>
-References: <20200227032013.12385-1-dsahern@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
+In-Reply-To: <20200227090046.3e3177b3@carbon>
+References: <20200227032013.12385-1-dsahern@kernel.org> <20200227032013.12385-4-dsahern@kernel.org> <20200227090046.3e3177b3@carbon>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 27 Feb 2020 12:55:16 +0100
-Message-ID: <87a754w8gr.fsf@toke.dk>
+Date:   Thu, 27 Feb 2020 12:58:10 +0100
+Message-ID: <877e08w8bx.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -72,59 +74,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> writes:
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-> From: David Ahern <dsahern@gmail.com>
+> On Wed, 26 Feb 2020 20:20:05 -0700
+> David Ahern <dsahern@kernel.org> wrote:
 >
-> This series adds support for XDP in the egress path by introducing
-> a new XDP attachment type, BPF_XDP_EGRESS, and adding an if_link API
-> for attaching the program to a netdevice and reporting the program.
-> The intent is to emulate the current RX path for XDP as much as
-> possible to maintain consistency and symmetry in the 2 paths with
-> their APIs and when the programs are run: at first touch in the Rx
-> path and last touch in the Tx path.
+>> From: David Ahern <dahern@digitalocean.com>
+>> 
+>> Add xdp_txq_info as the Tx counterpart to xdp_rxq_info. At the
+>> moment only the device is added. Other fields (queue_index)
+>> can be added as use cases arise.
+>> 
+>> From a UAPI perspective, egress_ifindex is a union with ingress_ifindex
+>> since only one applies based on where the program is attached.
+>> 
+>> Signed-off-by: David Ahern <dahern@digitalocean.com>
+>> ---
+>>  include/net/xdp.h        |  5 +++++
+>>  include/uapi/linux/bpf.h |  6 ++++--
+>>  net/core/filter.c        | 27 +++++++++++++++++++--------
+>>  3 files changed, 28 insertions(+), 10 deletions(-)
+>> 
+>> diff --git a/include/net/xdp.h b/include/net/xdp.h
+>> index 40c6d3398458..5584b9db86fe 100644
+>> --- a/include/net/xdp.h
+>> +++ b/include/net/xdp.h
+>> @@ -63,6 +63,10 @@ struct xdp_rxq_info {
+>>  	struct xdp_mem_info mem;
+>>  } ____cacheline_aligned; /* perf critical, avoid false-sharing */
+>>  
+>> +struct xdp_txq_info {
+>> +	struct net_device *dev;
+>> +};
+>> +
+>>  struct xdp_buff {
+>>  	void *data;
+>>  	void *data_end;
+>> @@ -70,6 +74,7 @@ struct xdp_buff {
+>>  	void *data_hard_start;
+>>  	unsigned long handle;
+>>  	struct xdp_rxq_info *rxq;
+>> +	struct xdp_txq_info *txq;
+>>  };
+>>  
+>>  struct xdp_frame {
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 7850f8683b81..5e3f8aefad41 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+>> @@ -3334,8 +3334,10 @@ struct xdp_md {
+>>  	__u32 data;
+>>  	__u32 data_end;
+>>  	__u32 data_meta;
+>> -	/* Below access go through struct xdp_rxq_info */
+>> -	__u32 ingress_ifindex; /* rxq->dev->ifindex */
+>> +	union {
+>> +		__u32 ingress_ifindex; /* rxq->dev->ifindex */
+>> +		__u32 egress_ifindex;  /* txq->dev->ifindex */
+>> +	};
 >
-> The intent is to be able to run bpf programs on all packets regardless
-> of how they got to the xmit function of the netdevice - as an skb or a
-> redirected xdp frame. This is a missing primitive for XDP allowing
-> solutions to build small, targeted programs properly distributed in the
-> networking path allowing for example an egress firewall / ACL / traffic
-> verification or packet manipulation and encapping an entire ethernet
-> frame whether it is locally generated traffic, forwarded via the slow
-> path (ie., full stack processing) or xdp redirected frames.
+> Are we sure it is wise to "union share" (struct) xdp_md as the
+> XDP-context in the XDP programs, with different expected_attach_type?
+> As this allows the XDP-programmer to code an EGRESS program that access
+> ctx->ingress_ifindex, this will under the hood be translated to
+> ctx->egress_ifindex, because from the compilers-PoV this will just be an
+> offset.
+>
+> We are setting up the XDP-programmer for a long debugging session, as
+> she will be expecting to read 'ingress_ifindex', but will be getting
+> 'egress_ifindex'.  (As the compiler cannot warn her, and it is also
+> correct seen from the verifier).
 
-I'm totally on board with these goals!
++1 on this; also, an egress program may want to actually know which
+ingress iface the packet was first received on. So why not just keep
+both fields? Since ifindex 0 is invalid anyway, the field could just be
+0 when it isn't known (e.g., egress ifindex on RX, or ingress ifindex if
+it comes from the stack)?
 
-As for this:
+>>  	__u32 rx_queue_index;  /* rxq->queue_index  */
+>
+> So, the TX program can still read 'rx_queue_index', is this wise?
 
-> Attempting to tag the EGRESS path as yet another mode is inconsistent
-> on a number of levels - from the current usage of XDP_FLAGS to options
-> passed to the verifier for restricting xdp_md accesses. Using the API
-> as listed above maintains consistency with all existing code.
-
-You *are* effectively tagging the EGRESS path as another mode: You are
-restricting which fields of the context object the program can access,
-and you're restricting where the program can be attached. I am pretty
-sure we will end up accumulating more differences, either in more
-metadata that is only available in one mode (we've already discussed
-exposing TX qlen on egress programs), or even helpers that only make
-sense in one mode.
-
-So it doesn't make sense to discuss whether egress programs are a
-distinct type from ingress programs: They clearly are. What we are
-discussing is how to encode this type difference. You are proposing to
-encode it using expected_attach_type as a subtype identifier instead of
-using a new type number. There is already precedence for this with the
-tracing programs, and I do think it makes sense - ingress and egress XDP
-programs are clearly related, just as (e.g.) fentry/fexit/freplace
-programs are.
-
-However, my issue with this encoding is that it is write-only: You can't
-inspect a BPF program already loaded into the kernel and tell which type
-it is. So my proposal would be to make it explicit: Expose the
-expected_attach_type as a new field in bpf_prog_info so userspace can
-query it, and clearly document it as, essentially, a program subtype
-that can significantly affect how a program is treated by the kernel.
+Why shouldn't it be able to (as well as ingress ifindex)?
 
 -Toke
 
