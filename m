@@ -2,56 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 571D4171650
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 12:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B77F717166F
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 12:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729073AbgB0LtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 06:49:14 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:36914 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729056AbgB0LtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 06:49:13 -0500
-Received: by mail-lf1-f68.google.com with SMTP id b15so1858749lfc.4
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 03:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=1+mwtXP7Acp4rPP10KQIKzHg35JqBTN2HvSJj+dugs4=;
-        b=rsGEZQZEUgK2Nr4TC0uZOvwCoFTFG+KhXDqqJ/Ght92e7F8yHGRC7X/SgdHXLMDmyz
-         OAP14zWqI+Wp+XYZNBwAmdQopgjPW/K/IjA1OE1jzoMWO8eKAwiJ7vUYDHT4AQoReJ/d
-         gx8WSbmnGtlZ9u5MFerMqqUqZGrgD0gBVN/v0=
+        id S1728915AbgB0LzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 06:55:22 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57740 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728865AbgB0LzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 06:55:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582804520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pISu8CDqEJIgMiUxbezRRj+6x7kk8ktkrirr8izxN5o=;
+        b=JfUOtrFIylx1qgKQi03+FdxSdFA4FN7q+5VSAjKsb5JFnDPzPtxAZEJbRbB0Z2MjzW0MsM
+        o6UTC8Ol77OB2LlhZ9hUSPl7macdnDQm/ez2vJp7xVt89bKNYxwXJ85mdlPFvLpTmvgBZb
+        BUvEQQUpP32yZ0lRQji+gZhG83l+xns=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-306-JT99rzw0NrCy-eTKpysgvA-1; Thu, 27 Feb 2020 06:55:19 -0500
+X-MC-Unique: JT99rzw0NrCy-eTKpysgvA-1
+Received: by mail-wm1-f72.google.com with SMTP id y7so910702wmd.4
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 03:55:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=1+mwtXP7Acp4rPP10KQIKzHg35JqBTN2HvSJj+dugs4=;
-        b=QaaDtjGkNznxl36KQ8sGjo87WAu7jhY/m10qIhhDgig1EPVtjrZJWgng/FwZ8qN0TX
-         YkK5s7ahDEOVTjkxWzPmsOZdvT0CSbIrXOuOt4RhfNR1mZrn2ZpGJwj33BG36K73C8A3
-         zGdP8HdCpaxD3ryTskAFOtNYtG7ebEuyT0z9OUY0DbP4mPq1gr1pynKRN/v3HZ+eip+D
-         5CD8mxSZ0JlVi1iIThDP6Neyc76m/PEl/KHRyLTStPtz0kPuWpiGMHmm06u8sJdUUr/2
-         aEmtbB03oOjTUL0mYWJ4syb+s6KXjaxird5bECpgA00slCiAXGa2V1YHrmvZBpw0NykH
-         DRiQ==
-X-Gm-Message-State: ANhLgQ1GZ8U0zBhf3Ibfr78mD/dq3EJV1pd4czuchsfZwzAlVnK7MqLT
-        kHQCY/bAyxgqZcKJTn+kSgPxLg==
-X-Google-Smtp-Source: ADFU+vuALOCRpJ7LYk7zU7ulDkFadaExzGaifT9dm69nNJefE1PewYx9283/gk2MgENZB245KhB1OQ==
-X-Received: by 2002:ac2:4467:: with SMTP id y7mr1994051lfl.167.1582804151132;
-        Thu, 27 Feb 2020 03:49:11 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id q13sm3670741ljj.63.2020.02.27.03.49.10
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=pISu8CDqEJIgMiUxbezRRj+6x7kk8ktkrirr8izxN5o=;
+        b=UOOttIBOYgfPcRTycCELszEiFQ82+gEaUHi81APzvmGEjz008tcpnMywh3ZCH254HM
+         w7AJjAv3lNAu5XSctO2qNyPJFW4sukSErP5dM46R4SGLTa8LxFlWRKiW8BR2CNB0l/uS
+         aFXmGflEfF+VeUr4+WzQ8hhP8fAtuqSLvpyI8rjQ+YgCqIVy4ylGUGH19t5bqk2TJHd/
+         0jUj4pNjwJ7ERu+YETHeUlAN9NH1tQ78lsAsDMxa6ejyDLWWSqwQ8TCqOHjmqKoinqE6
+         In5FaC0Sta/aciunYFJOyapbHlatJndSwC3I+L2mZa/LMbrcc/N1vMVyIKFlKKdsCzrW
+         pNCA==
+X-Gm-Message-State: APjAAAXP+gcMb+dSHw8zXU2urIyGy4DTj8SJpRNQW0+3o9oivrd1GRyh
+        p8mYGLiQSmuogDiml40iQBQQOTZC/LMDPY7ekDpb5UlvW506dvPJM1OrLHe2c6KO5PM/p26ONpv
+        9fVM2xITwidc4U5dE
+X-Received: by 2002:a5d:56ca:: with SMTP id m10mr4693056wrw.313.1582804517842;
+        Thu, 27 Feb 2020 03:55:17 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyz2npC8cPvJ9XPAlOm0U2NtLuwPU3kVFClqNO22fDLYtRc25fZt8Kfz2ZqEmQ4vYybLNBfxA==
+X-Received: by 2002:a5d:56ca:: with SMTP id m10mr4693022wrw.313.1582804517596;
+        Thu, 27 Feb 2020 03:55:17 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id a5sm7426128wmb.37.2020.02.27.03.55.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Feb 2020 03:49:10 -0800 (PST)
-References: <20200225135636.5768-1-lmb@cloudflare.com> <20200225135636.5768-7-lmb@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 6/7] selftests: bpf: add tests for UDP sockets in sockmap
-In-reply-to: <20200225135636.5768-7-lmb@cloudflare.com>
-Date:   Thu, 27 Feb 2020 12:49:09 +0100
-Message-ID: <877e08cksq.fsf@cloudflare.com>
+        Thu, 27 Feb 2020 03:55:16 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 24B6A180362; Thu, 27 Feb 2020 12:55:16 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com
+Subject: Re: [PATCH RFC v4 bpf-next 00/11] Add support for XDP in egress path
+In-Reply-To: <20200227032013.12385-1-dsahern@kernel.org>
+References: <20200227032013.12385-1-dsahern@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 27 Feb 2020 12:55:16 +0100
+Message-ID: <87a754w8gr.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -59,411 +72,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 02:56 PM CET, Lorenz Bauer wrote:
-> Expand the TCP sockmap test suite to also check UDP sockets.
->
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->  .../selftests/bpf/prog_tests/sockmap_listen.c | 92 +++++++++++++------
->  1 file changed, 63 insertions(+), 29 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> index 4ba41dd26d6b..72e578a5a5d2 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> @@ -330,7 +330,7 @@ static void test_insert_bound(int family, int sotype, int mapfd)
->  	xclose(s);
->  }
->
-> -static void test_insert_listening(int family, int sotype, int mapfd)
-> +static void test_insert(int family, int sotype, int mapfd)
->  {
->  	u64 value;
->  	u32 key;
-> @@ -467,7 +467,7 @@ static void test_lookup_32_bit_value(int family, int sotype, int mapfd)
->  	xclose(s);
->  }
->
-> -static void test_update_listening(int family, int sotype, int mapfd)
-> +static void test_update_existing(int family, int sotype, int mapfd)
->  {
->  	int s1, s2;
->  	u64 value;
-> @@ -1302,11 +1302,15 @@ static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
->  	xclose(s1);
->  }
->
-> -#define TEST(fn)                                                               \
-> +#define TEST_SOTYPE(fn, sotype)                                                \
->  	{                                                                      \
-> -		fn, #fn                                                        \
-> +		fn, #fn, sotype                                                \
->  	}
->
-> +#define TEST(fn) TEST_SOTYPE(fn, 0)
-> +#define TEST_STREAM(fn) TEST_SOTYPE(fn, SOCK_STREAM)
-> +#define TEST_DGRAM(fn) TEST_SOTYPE(fn, SOCK_DGRAM)
-> +
+David Ahern <dsahern@kernel.org> writes:
 
-An alternative would be to use __VA_ARGS__ and designated intializers,
-as I did recently in e0360423d020 ("selftests/bpf: Run SYN cookies with
-reuseport BPF test only for TCP"). TEST_DGRAM is unused at the moment,
-so that's something to consider.
+> From: David Ahern <dsahern@gmail.com>
+>
+> This series adds support for XDP in the egress path by introducing
+> a new XDP attachment type, BPF_XDP_EGRESS, and adding an if_link API
+> for attaching the program to a netdevice and reporting the program.
+> The intent is to emulate the current RX path for XDP as much as
+> possible to maintain consistency and symmetry in the 2 paths with
+> their APIs and when the programs are run: at first touch in the Rx
+> path and last touch in the Tx path.
+>
+> The intent is to be able to run bpf programs on all packets regardless
+> of how they got to the xmit function of the netdevice - as an skb or a
+> redirected xdp frame. This is a missing primitive for XDP allowing
+> solutions to build small, targeted programs properly distributed in the
+> networking path allowing for example an egress firewall / ACL / traffic
+> verification or packet manipulation and encapping an entire ethernet
+> frame whether it is locally generated traffic, forwarded via the slow
+> path (ie., full stack processing) or xdp redirected frames.
 
->  static void test_ops_cleanup(const struct bpf_map *map)
->  {
->  	const struct bpf_map_def *def;
-> @@ -1353,18 +1357,31 @@ static const char *map_type_str(const struct bpf_map *map)
->  	}
->  }
->
-> +static const char *sotype_str(int sotype)
-> +{
-> +	switch (sotype) {
-> +	case SOCK_DGRAM:
-> +		return "UDP";
-> +	case SOCK_STREAM:
-> +		return "TCP";
-> +	default:
-> +		return "unknown";
-> +	}
-> +}
-> +
->  static void test_ops(struct test_sockmap_listen *skel, struct bpf_map *map,
->  		     int family, int sotype)
->  {
->  	const struct op_test {
->  		void (*fn)(int family, int sotype, int mapfd);
->  		const char *name;
-> +		int sotype;
->  	} tests[] = {
->  		/* insert */
->  		TEST(test_insert_invalid),
->  		TEST(test_insert_opened),
-> -		TEST(test_insert_bound),
-> -		TEST(test_insert_listening),
-> +		TEST_STREAM(test_insert_bound),
-> +		TEST(test_insert),
->  		/* delete */
->  		TEST(test_delete_after_insert),
->  		TEST(test_delete_after_close),
-> @@ -1373,28 +1390,33 @@ static void test_ops(struct test_sockmap_listen *skel, struct bpf_map *map,
->  		TEST(test_lookup_after_delete),
->  		TEST(test_lookup_32_bit_value),
->  		/* update */
-> -		TEST(test_update_listening),
-> +		TEST(test_update_existing),
->  		/* races with insert/delete */
-> -		TEST(test_destroy_orphan_child),
-> -		TEST(test_syn_recv_insert_delete),
-> -		TEST(test_race_insert_listen),
-> +		TEST_STREAM(test_destroy_orphan_child),
-> +		TEST_STREAM(test_syn_recv_insert_delete),
-> +		TEST_STREAM(test_race_insert_listen),
->  		/* child clone */
-> -		TEST(test_clone_after_delete),
-> -		TEST(test_accept_after_delete),
-> -		TEST(test_accept_before_delete),
-> +		TEST_STREAM(test_clone_after_delete),
-> +		TEST_STREAM(test_accept_after_delete),
-> +		TEST_STREAM(test_accept_before_delete),
->  	};
-> -	const char *family_name, *map_name;
-> +	const char *family_name, *map_name, *sotype_name;
->  	const struct op_test *t;
->  	char s[MAX_TEST_NAME];
->  	int map_fd;
->
->  	family_name = family_str(family);
->  	map_name = map_type_str(map);
-> +	sotype_name = sotype_str(sotype);
->  	map_fd = bpf_map__fd(map);
->
-> +
->  	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-> -		snprintf(s, sizeof(s), "%s %s %s", map_name, family_name,
-> -			 t->name);
-> +		snprintf(s, sizeof(s), "%s %s %s %s", map_name, family_name,
-> +			 sotype_name, t->name);
-> +
-> +		if (t->sotype != 0 && t->sotype != sotype)
-> +			continue;
->
->  		if (!test__start_subtest(s))
->  			continue;
-> @@ -1411,22 +1433,28 @@ static void test_redir(struct test_sockmap_listen *skel, struct bpf_map *map,
->  		void (*fn)(struct test_sockmap_listen *skel,
->  			   struct bpf_map *map, int family, int sotype);
->  		const char *name;
-> +		int sotype;
->  	} tests[] = {
-> -		TEST(test_skb_redir_to_connected),
-> -		TEST(test_skb_redir_to_listening),
-> -		TEST(test_msg_redir_to_connected),
-> -		TEST(test_msg_redir_to_listening),
-> +		TEST_STREAM(test_skb_redir_to_connected),
-> +		TEST_STREAM(test_skb_redir_to_listening),
-> +		TEST_STREAM(test_msg_redir_to_connected),
-> +		TEST_STREAM(test_msg_redir_to_listening),
->  	};
-> -	const char *family_name, *map_name;
-> +	const char *family_name, *map_name, *sotype_name;
->  	const struct redir_test *t;
->  	char s[MAX_TEST_NAME];
->
->  	family_name = family_str(family);
->  	map_name = map_type_str(map);
-> +	sotype_name = sotype_str(sotype);
->
->  	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-> -		snprintf(s, sizeof(s), "%s %s %s", map_name, family_name,
-> -			 t->name);
-> +		snprintf(s, sizeof(s), "%s %s %s %s", map_name, family_name,
-> +			 sotype_name, t->name);
-> +
-> +		if (t->sotype != 0 && t->sotype != sotype)
-> +			continue;
-> +
->  		if (!test__start_subtest(s))
->  			continue;
->
+I'm totally on board with these goals!
 
-test_redir() doesn't get called with SOCK_DGRAM, because redirection
-with sockmap and UDP is not supported yet, so perhaps no need to touch
-this function. 
+As for this:
 
-> @@ -1441,26 +1469,31 @@ static void test_reuseport(struct test_sockmap_listen *skel,
->  		void (*fn)(int family, int sotype, int socket_map,
->  			   int verdict_map, int reuseport_prog);
->  		const char *name;
-> +		int sotype;
->  	} tests[] = {
-> -		TEST(test_reuseport_select_listening),
-> -		TEST(test_reuseport_select_connected),
-> -		TEST(test_reuseport_mixed_groups),
-> +		TEST_STREAM(test_reuseport_select_listening),
-> +		TEST_STREAM(test_reuseport_select_connected),
-> +		TEST_STREAM(test_reuseport_mixed_groups),
->  	};
->  	int socket_map, verdict_map, reuseport_prog;
-> -	const char *family_name, *map_name;
-> +	const char *family_name, *map_name, *sotype_name;
->  	const struct reuseport_test *t;
->  	char s[MAX_TEST_NAME];
->
->  	family_name = family_str(family);
->  	map_name = map_type_str(map);
-> +	sotype_name = sotype_str(sotype);
->
->  	socket_map = bpf_map__fd(map);
->  	verdict_map = bpf_map__fd(skel->maps.verdict_map);
->  	reuseport_prog = bpf_program__fd(skel->progs.prog_reuseport);
->
->  	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-> -		snprintf(s, sizeof(s), "%s %s %s", map_name, family_name,
-> -			 t->name);
-> +		snprintf(s, sizeof(s), "%s %s %s %s", map_name, family_name,
-> +			 sotype_name, t->name);
-> +
-> +		if (t->sotype != 0 && t->sotype != sotype)
-> +			continue;
->
->  		if (!test__start_subtest(s))
->  			continue;
-> @@ -1473,6 +1506,7 @@ static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
->  		      int family)
->  {
->  	test_ops(skel, map, family, SOCK_STREAM);
-> +	test_ops(skel, map, family, SOCK_DGRAM);
->  	test_redir(skel, map, family, SOCK_STREAM);
->  	test_reuseport(skel, map, family, SOCK_STREAM);
->  }
+> Attempting to tag the EGRESS path as yet another mode is inconsistent
+> on a number of levels - from the current usage of XDP_FLAGS to options
+> passed to the verifier for restricting xdp_md accesses. Using the API
+> as listed above maintains consistency with all existing code.
 
-Looks like we can enable reuseport tests with not too much effort.
-I managed to get them working with the changes below.
+You *are* effectively tagging the EGRESS path as another mode: You are
+restricting which fields of the context object the program can access,
+and you're restricting where the program can be attached. I am pretty
+sure we will end up accumulating more differences, either in more
+metadata that is only available in one mode (we've already discussed
+exposing TX qlen on egress programs), or even helpers that only make
+sense in one mode.
 
----
- .../selftests/bpf/prog_tests/sockmap_listen.c | 102 +++++++++++++++---
- 1 file changed, 87 insertions(+), 15 deletions(-)
+So it doesn't make sense to discuss whether egress programs are a
+distinct type from ingress programs: They clearly are. What we are
+discussing is how to encode this type difference. You are proposing to
+encode it using expected_attach_type as a subtype identifier instead of
+using a new type number. There is already precedence for this with the
+tracing programs, and I do think it makes sense - ingress and egress XDP
+programs are clearly related, just as (e.g.) fentry/fexit/freplace
+programs are.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 72e578a5a5d2..6850994fc4d5 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -108,6 +108,22 @@
- 		__ret;                                                         \
- 	})
- 
-+#define xsend(fd, buf, len, flags)                                             \
-+	({                                                                     \
-+		ssize_t __ret = send((fd), (buf), (len), (flags));             \
-+		if (__ret == -1)                                               \
-+			FAIL_ERRNO("send");                                    \
-+		__ret;                                                         \
-+	})
-+
-+#define xrecv(fd, buf, len, flags)                                             \
-+	({                                                                     \
-+		ssize_t __ret = recv((fd), (buf), (len), (flags));             \
-+		if (__ret == -1)                                               \
-+			FAIL_ERRNO("recv");                                    \
-+		__ret;                                                         \
-+	})
-+
- #define xsocket(family, sotype, flags)                                         \
- 	({                                                                     \
- 		int __ret = socket(family, sotype, flags);                     \
-@@ -1116,7 +1132,7 @@ static void test_reuseport_select_listening(int family, int sotype,
- {
- 	struct sockaddr_storage addr;
- 	unsigned int pass;
--	int s, c, p, err;
-+	int s, c, err;
- 	socklen_t len;
- 	u64 value;
- 	u32 key;
-@@ -1145,19 +1161,33 @@ static void test_reuseport_select_listening(int family, int sotype,
- 	if (err)
- 		goto close_cli;
- 
--	p = xaccept(s, NULL, NULL);
--	if (p < 0)
--		goto close_cli;
-+	if (sotype == SOCK_STREAM) {
-+		int p;
-+
-+		p = xaccept(s, NULL, NULL);
-+		if (p < 0)
-+			goto close_cli;
-+		xclose(p);
-+	} else {
-+		char b = 'a';
-+		ssize_t n;
-+
-+		n = xsend(c, &b, sizeof(b), 0);
-+		if (n == -1)
-+			goto close_cli;
-+
-+		n = xrecv(s, &b, sizeof(b), 0);
-+		if (n == -1)
-+			goto close_cli;
-+	}
- 
- 	key = SK_PASS;
- 	err = xbpf_map_lookup_elem(verd_map, &key, &pass);
- 	if (err)
--		goto close_peer;
-+		goto close_cli;
- 	if (pass != 1)
- 		FAIL("want pass count 1, have %d", pass);
- 
--close_peer:
--	xclose(p);
- close_cli:
- 	xclose(c);
- close_srv:
-@@ -1201,9 +1231,24 @@ static void test_reuseport_select_connected(int family, int sotype,
- 	if (err)
- 		goto close_cli0;
- 
--	p0 = xaccept(s, NULL, NULL);
--	if (err)
--		goto close_cli0;
-+	if (sotype == SOCK_STREAM) {
-+		p0 = xaccept(s, NULL, NULL);
-+		if (p0 < 0)
-+			goto close_cli0;
-+	} else {
-+		p0 = xsocket(family, sotype, 0);
-+		if (p0 < 0)
-+			goto close_cli0;
-+
-+		len = sizeof(addr);
-+		err = xgetsockname(c0, sockaddr(&addr), &len);
-+		if (err)
-+			goto close_cli0;
-+
-+		err = xconnect(p0, sockaddr(&addr), len);
-+		if (err)
-+			goto close_cli0;
-+	}
- 
- 	/* Update sock_map[0] to redirect to a connected socket */
- 	key = 0;
-@@ -1216,8 +1261,24 @@ static void test_reuseport_select_connected(int family, int sotype,
- 	if (c1 < 0)
- 		goto close_peer0;
- 
-+	len = sizeof(addr);
-+	err = xgetsockname(s, sockaddr(&addr), &len);
-+	if (err)
-+		goto close_srv;
-+
- 	errno = 0;
- 	err = connect(c1, sockaddr(&addr), len);
-+	if (sotype == SOCK_DGRAM) {
-+		char b = 'a';
-+		ssize_t n;
-+
-+		n = xsend(c1, &b, sizeof(b), 0);
-+		if (n == -1)
-+			goto close_cli1;
-+
-+		n = recv(c1, &b, sizeof(b), 0);
-+		err = n == -1;
-+	}
- 	if (!err || errno != ECONNREFUSED)
- 		FAIL_ERRNO("connect: expected ECONNREFUSED");
- 
-@@ -1281,7 +1342,18 @@ static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
- 		goto close_srv2;
- 
- 	err = connect(c, sockaddr(&addr), len);
--	if (err && errno != ECONNREFUSED) {
-+	if (sotype == SOCK_DGRAM) {
-+		char b = 'a';
-+		ssize_t n;
-+
-+		n = xsend(c, &b, sizeof(b), 0);
-+		if (n == -1)
-+			goto close_cli;
-+
-+		n = recv(c, &b, sizeof(b), 0);
-+		err = n == -1;
-+	}
-+	if (!err || errno != ECONNREFUSED) {
- 		FAIL_ERRNO("connect: expected ECONNREFUSED");
- 		goto close_cli;
- 	}
-@@ -1410,7 +1482,6 @@ static void test_ops(struct test_sockmap_listen *skel, struct bpf_map *map,
- 	sotype_name = sotype_str(sotype);
- 	map_fd = bpf_map__fd(map);
- 
--
- 	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
- 		snprintf(s, sizeof(s), "%s %s %s %s", map_name, family_name,
- 			 sotype_name, t->name);
-@@ -1471,9 +1542,9 @@ static void test_reuseport(struct test_sockmap_listen *skel,
- 		const char *name;
- 		int sotype;
- 	} tests[] = {
--		TEST_STREAM(test_reuseport_select_listening),
--		TEST_STREAM(test_reuseport_select_connected),
--		TEST_STREAM(test_reuseport_mixed_groups),
-+		TEST(test_reuseport_select_listening),
-+		TEST(test_reuseport_select_connected),
-+		TEST(test_reuseport_mixed_groups),
- 	};
- 	int socket_map, verdict_map, reuseport_prog;
- 	const char *family_name, *map_name, *sotype_name;
-@@ -1509,6 +1580,7 @@ static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
- 	test_ops(skel, map, family, SOCK_DGRAM);
- 	test_redir(skel, map, family, SOCK_STREAM);
- 	test_reuseport(skel, map, family, SOCK_STREAM);
-+	test_reuseport(skel, map, family, SOCK_DGRAM);
- }
- 
- void test_sockmap_listen(void)
--- 
-2.24.1
+However, my issue with this encoding is that it is write-only: You can't
+inspect a BPF program already loaded into the kernel and tell which type
+it is. So my proposal would be to make it explicit: Expose the
+expected_attach_type as a new field in bpf_prog_info so userspace can
+query it, and clearly document it as, essentially, a program subtype
+that can significantly affect how a program is treated by the kernel.
+
+-Toke
 
