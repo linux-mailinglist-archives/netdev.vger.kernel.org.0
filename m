@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1565A171099
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 06:50:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E33C1710A4
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 06:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725970AbgB0Fuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 00:50:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53606 "EHLO mail.kernel.org"
+        id S1726798AbgB0Fw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 00:52:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbgB0Fuo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Feb 2020 00:50:44 -0500
+        id S1725730AbgB0Fwz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 00:52:55 -0500
 Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A805024680;
-        Thu, 27 Feb 2020 05:50:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 25E1024680;
+        Thu, 27 Feb 2020 05:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582782644;
-        bh=7+AymGkpgCvTVed8pXjGExj3prYwnBhgL/+sRv0lwx0=;
+        s=default; t=1582782775;
+        bh=ZVaYG2q3mWiMXyHqafBEBn+Nfh7u032ddY3cVMj1SoQ=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=k4Hl+bujJWPDMuKBnwFaE2Mf2Y25igI/gcmPm53ZzJxkiirmX6TZpVx0zjhYEyVWG
-         hzbeln/3tpbqdGSZ08dABwL/hOtx+jKHfc/M1e7GMqreas5D3XiAEwd8ZzXhSWckGF
-         dd+tFmfJ5pqgjz/ENKHInp5km8isJ2vIAsF73AkU=
-Received: by mail-lf1-f45.google.com with SMTP id y17so1105593lfe.8;
-        Wed, 26 Feb 2020 21:50:43 -0800 (PST)
-X-Gm-Message-State: ANhLgQ3rO5KwRTvN4AVPaRVjo+MztKH4qsLmK4RRxzlVZ6R8A75wuZrL
-        tQFzRGkZ61yxcn0tadPZ/b9npt50ZUX7l/E2vbQ=
-X-Google-Smtp-Source: ADFU+vuw0MYnlKbnUhFFuXrFa1ekwqxq5TT8UqPXLURZOWtSogZrGUuOOMpXZ0iE4LoeYjbCwoFTJbH7rZhrBhQm56A=
-X-Received: by 2002:ac2:52a2:: with SMTP id r2mr1136598lfm.33.1582782641730;
- Wed, 26 Feb 2020 21:50:41 -0800 (PST)
+        b=EIHisrC6nf+cjUy3v3HyET8XgVQIvPDzBvg+k6D/ebCz57LKok12icKKG0f/36pcO
+         m2H1N7TrWCx8+wVC8E67xOGYjGBw6CyE96ZI2r93tFCJI9+p+fvyOnVI2o2WIulCnL
+         4QK77oP8Y9D8c3+VYJV+q6nNu2ZVwHKyRbXd7EdU=
+Received: by mail-lf1-f45.google.com with SMTP id y17so1108555lfe.8;
+        Wed, 26 Feb 2020 21:52:55 -0800 (PST)
+X-Gm-Message-State: ANhLgQ1nURr/oIxLgM6Mmac72/bI6yTmHN0s4afBvDuCpmHsOUjlOtxq
+        sEkDRmZQdjt47zKK0XVzZ0okd2FuVL9Ow2td80I=
+X-Google-Smtp-Source: ADFU+vu/i9jT0l4BRuWXkjmpgwcQrGkD2CQcAWPJVF/FPUWxIUa9xbVYmTlTu++sT9NqD64cwrniv6iadZobW1of5nA=
+X-Received: by 2002:a19:9155:: with SMTP id y21mr1189938lfj.28.1582782773280;
+ Wed, 26 Feb 2020 21:52:53 -0800 (PST)
 MIME-Version: 1.0
-References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-17-jolsa@kernel.org>
-In-Reply-To: <20200226130345.209469-17-jolsa@kernel.org>
+References: <20200226130345.209469-1-jolsa@kernel.org> <20200226130345.209469-18-jolsa@kernel.org>
+In-Reply-To: <20200226130345.209469-18-jolsa@kernel.org>
 From:   Song Liu <song@kernel.org>
-Date:   Wed, 26 Feb 2020 21:50:30 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4cupgimwMHYzHXuTynxgs6oWuw46Z6DW2oyyAuszExmQ@mail.gmail.com>
-Message-ID: <CAPhsuW4cupgimwMHYzHXuTynxgs6oWuw46Z6DW2oyyAuszExmQ@mail.gmail.com>
-Subject: Re: [PATCH 16/18] perf tools: Synthesize bpf_trampoline/dispatcher
- ksymbol event
+Date:   Wed, 26 Feb 2020 21:52:42 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7GkNuiWjAdoAEKEa1=3wgV=jUfc144U=OiTXHn3aY=Gw@mail.gmail.com>
+Message-ID: <CAPhsuW7GkNuiWjAdoAEKEa1=3wgV=jUfc144U=OiTXHn3aY=Gw@mail.gmail.com>
+Subject: Re: [PATCH 17/18] perf tools: Set ksymbol dso as loaded on arrival
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -60,24 +59,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Feb 26, 2020 at 5:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Synthesize bpf images (trampolines/dispatchers) on start,
-> as ksymbol events from /proc/kallsyms. Having this perf
-> can recognize samples from those images and perf report
-> and top shows them correctly.
+> There's no special load action for ksymbol data on
+> map__load/dso__load action, where the kernel is getting
+> loaded. It only gets confused with kernel kallsyms/vmlinux
+> load for bpf object, which fails and could mess up with
+> the map.
 >
-> The rest of the ksymbol handling is already in place from
-> for the bpf programs monitoring, so only the initial state
-> was needed.
->
-> perf report output:
->
->   # Overhead  Command     Shared Object                  Symbol
->
->     12.37%  test_progs  [kernel.vmlinux]                 [k] entry_SYSCALL_64
->     11.80%  test_progs  [kernel.vmlinux]                 [k] syscall_return_via_sysret
->      9.63%  test_progs  bpf_prog_bcf7977d3b93787c_prog2  [k] bpf_prog_bcf7977d3b93787c_prog2
->      6.90%  test_progs  bpf_trampoline_24456             [k] bpf_trampoline_24456
->      6.36%  test_progs  [kernel.vmlinux]                 [k] memcpy_erms
+> Disabling any further load of the map for ksymbol related dso/map.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
