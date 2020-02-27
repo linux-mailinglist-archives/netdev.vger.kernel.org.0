@@ -2,138 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4978A1718DB
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 14:37:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 887D2171B00
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 14:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729198AbgB0NhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 08:37:15 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:50437 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729124AbgB0NhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 08:37:14 -0500
-Received: by mail-io1-f72.google.com with SMTP id e13so3521812iob.17
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 05:37:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=91gKwAo30RdFaoLYbTACNeuWe8Uq9JMFGOgZLkn6DM0=;
-        b=CGVEt6NIpyanzSVK8ZPn352VUSFZpXUGkcHQEvGKUUF9/0XdZ1/Irpn0ufi0GDrN8+
-         amauIez97+W9vJFxelf7fcPPJmxrZHd8YGTWm99vfdR7feqy2qZGIEEwmYfb1imqnPbB
-         rLYM5Yt+bWNoHXwuwjrQapiu2P3locAye0o0gk7Q6Kw4MGD5VF8vCr/ZYscTAjNllNEo
-         EnlC4hfc6nGSnZdDTCkhtKq3DHdJG5BD9inQvavrQ4WA2X/AJHOyKv6m/La/pE8miQnC
-         Z8bsLv7e8Xr55grJPYM6nYXHGm7ft49ECF7iJ3A9Wm3Zw99wG2THw/PKyvJiayzo4PIM
-         OLog==
-X-Gm-Message-State: APjAAAWv34adOg8NfDXVtcLDnUGV5CuRvWObObfZnRZbSC9JkDFrpZWm
-        cw5pFdFYFEQv6p+gf2d9KtcdF9T5B7vesRYoA4ED1DWGYTtN
-X-Google-Smtp-Source: APXvYqywGKnMFJjs3rWZe5+hj65axWzzB3kF4VtBPQi5BXaiJgAILiOuOj0JukUfrY/DGKVti4s28K4XgJrVV2ZrQrQZRCY6QLH9
+        id S1732509AbgB0N6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 08:58:43 -0500
+Received: from mail-bn8nam12on2057.outbound.protection.outlook.com ([40.107.237.57]:34589
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732502AbgB0N6m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 08:58:42 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XVb9vx1ndN3Aog7wAgiZj4Fs9DeXmHdoGn3BeecFhzMhTCxgfthXgABqaQi44x7paeSM4AIjEi9/vu9NQt32w8BNDMS+FqoRazGrPzZBq+J4Gt2tH8RBP+vJ8omZOSq6Br8lwSW4pTv7wKLDErBy9mWIDRz+PLL3gqWe7SZdGP4WGX6quvqdT7o8mCL2Le2fH1/MuvUKrSm71x1s/+GOZfF+TS7CfO5ikbU8HjIotOCgKveYWZAHapzGxWJQjpstUKIKYZtGlppPZjZOGMW55IKyO/eklgayYgCrrCyxc+fbw6I/y2UMotkzCXdZgfcoL31s9G+pJ81KrsqzgzpRcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uys8GvF9hdKV3QsGt1Vfkdyf0b/Z+MIbxqEzB0iEA40=;
+ b=c7TiHN96mpUrwkSiFBcwkouxgHRhqPSWsjIlJ04kLdnyetLUIQkKPCoepXhFaE1YYJdx6X8cdUDOknPSo/2acWSWVSP57DcIJCGyKWFK4Y3KR9i9EXzw5wIubJN1U9tolfU7+94Vc73OjQ1u5aBZyC0DJrw0JKyU4jvVzgvuDPNUX+W3u/yZ9o65ad6decKOeeL8L+MTaKX4DPIY819gZxx6ggEM6RwdL2/mtwpAHmAoZcbf2E4skLXgBAb10709g543UmzykFzU/CF1B32rWJKE1CJp1tGX0pcnujho4CtbU8MR9kjiKCHp04Xh6qOdXIAvPakgGzNBJC6likxYYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uys8GvF9hdKV3QsGt1Vfkdyf0b/Z+MIbxqEzB0iEA40=;
+ b=fQ9qJHQzo2AX+RCKUsdWo9+tvVARz7LRo44OaSxSh8oea0aHHhpNkxsEAueT3YTDFiprt6fnxZHGrk+dzC6WI7P5Pax9jTL8i8OhNw1Cha84M8XnaZ48yxUbyPj72VpXPXegQjKltIXUbEhBSgiEWzPapg2B+SOpDV53MFMpPx8=
+Received: from SN6PR05MB5326.namprd05.prod.outlook.com (2603:10b6:805:b9::27)
+ by SN6PR05MB5934.namprd05.prod.outlook.com (2603:10b6:805:fa::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.11; Thu, 27 Feb
+ 2020 13:58:39 +0000
+Received: from SN6PR05MB5326.namprd05.prod.outlook.com
+ ([fe80::8482:b122:870c:eec6]) by SN6PR05MB5326.namprd05.prod.outlook.com
+ ([fe80::8482:b122:870c:eec6%5]) with mapi id 15.20.2772.012; Thu, 27 Feb 2020
+ 13:58:39 +0000
+Received: from sc2-cpbu2-b0737.eng.vmware.com (66.170.99.1) by BYAPR08CA0011.namprd08.prod.outlook.com (2603:10b6:a03:100::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2750.18 via Frontend Transport; Thu, 27 Feb 2020 13:58:38 +0000
+From:   Vivek Thampi <vithampi@vmware.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Pv-drivers <Pv-drivers@vmware.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH] ptp: add VMware virtual PTP clock driver
+Thread-Topic: [PATCH] ptp: add VMware virtual PTP clock driver
+Thread-Index: AQHV7XYC1rThvPdYh0WXI1nYohlQZg==
+Date:   Thu, 27 Feb 2020 13:58:39 +0000
+Message-ID: <20200227135824.GA389099@sc2-cpbu2-b0737.eng.vmware.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [66.170.99.1]
+x-clientproxiedby: BYAPR08CA0011.namprd08.prod.outlook.com
+ (2603:10b6:a03:100::24) To SN6PR05MB5326.namprd05.prod.outlook.com
+ (2603:10b6:805:b9::27)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vithampi@vmware.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 20e5883e-ac1a-4400-840a-08d7bb8d2554
+x-ms-traffictypediagnostic: SN6PR05MB5934:|SN6PR05MB5934:
+x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR05MB5934D3C2F57D69759F0817E0B9EB0@SN6PR05MB5934.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 03264AEA72
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(199004)(189003)(6916009)(5660300002)(478600001)(956004)(81166006)(66946007)(64756008)(71200400001)(66556008)(66476007)(2906002)(26005)(1076003)(4326008)(16526019)(186003)(8936002)(7696005)(316002)(86362001)(66446008)(81156014)(54906003)(33656002)(52116002)(55016002)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR05MB5934;H:SN6PR05MB5326.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: vmware.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4eCy8ckfS+qfiHPOylHR2HO1heYdkGKzMMNbzY2rRN8SKPibe23HWsHhsUsbR3GRVZzGb8CaXbrvWoUg5mh9M17F2ud9CnItcJ1rxd+QREvcFfgf0047RPuGl7GpndcMEqNoYoVttM3/QvKaoLx8AKKJztlFufP76mf1oFJSFtdbeRSqxGEe1ZNxA77QSJz0iohrTrSZziB+0CW1LOWiZiI7ZGjG6+UmtxqrUZZafYXtQdqX9hpoa7OLwDNOWBkYAjkERxb3Bpaa/9za06Vi53i1yVlx1F4texqR2Pl0XZbzJEl5bYPDI1RmF1rysLqtQJuZwk3TpijN0vf3mG8f21fkMGvAl0Z2dzgwVELzUqAuqNitu4SwE+F7fqTPXlN2ihtv4pp+FSCrGBeS2+k7tdbYRdyRzkCywsczEBLkLuFn0idjDJFsVPI6T209rFfe
+x-ms-exchange-antispam-messagedata: 0MU1CTPz+tby6exmRcYlUu2OTruqeZQ4RQ0jBHgm/O4L91Xg6/X9mUiSDO0mX7PkujZXvGkW1R7bXVgHC6+W5nRav+PCqDdlkMtyhMb2fVZs88jP0RYtMY5Sss9hUA8TaJY6NOXklHuIalZ84OGxqA==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1DBDE32F9A7C314C80A00A38A0CD8C21@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8c0d:: with SMTP id n13mr4788017ioj.138.1582810634019;
- Thu, 27 Feb 2020 05:37:14 -0800 (PST)
-Date:   Thu, 27 Feb 2020 05:37:14 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000966862059f8ed1c8@google.com>
-Subject: general protection fault in alb_fasten_mac_swap
-From:   syzbot <syzbot+d54e40cf758e447e088e@syzkaller.appspotmail.com>
-To:     andy@greyhouse.net, davem@davemloft.net, j.vosburgh@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, vfalico@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20e5883e-ac1a-4400-840a-08d7bb8d2554
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2020 13:58:39.0261
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kvSvv97UKxgmJCX1zKCyJm2SR5ZbyO7cV7IAZLJumdwZf19VGHqBGxZJPBbrfF+CF7bBBF7XRS1se1vudlsvlg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB5934
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add a PTP clock driver called ptp_vmw, for guests running on VMware ESXi
+hypervisor. The driver attaches to a VMware virtual device called
+"precision clock" that provides a mechanism for querying host system time.
+Similar to existing virtual PTP clock drivers (e.g. ptp_kvm), ptp_vmw
+utilizes the kernel's PTP hardware clock API to implement a clock device
+that can be used as a reference in Chrony for synchronizing guest time with
+host.
 
-syzbot found the following crash on:
+The driver is only applicable to x86 guests running in VMware virtual
+machines with precision clock virtual device present. It uses a VMware
+specific hypercall mechanism to read time from the device.
 
-HEAD commit:    54dedb5b Merge tag 'for-linus-5.6-rc3-tag' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15d7da7ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3e57a6b450fb9883
-dashboard link: https://syzkaller.appspot.com/bug?extid=d54e40cf758e447e088e
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d54e40cf758e447e088e@syzkaller.appspotmail.com
-
-bond189: (slave bridge130): making interface the new active one
-device bridge130 entered promiscuous mode
-general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
-CPU: 0 PID: 2313 Comm: syz-executor.3 Not tainted 5.6.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:rlb_req_update_slave_clients drivers/net/bonding/bond_alb.c:505 [inline]
-RIP: 0010:alb_fasten_mac_swap+0x67c/0xda0 drivers/net/bonding/bond_alb.c:1063
-Code: f7 48 8b 45 98 42 80 3c 30 00 74 08 48 89 df e8 6a bd e4 fc 4c 8b 33 45 89 e4 49 c1 e4 06 4b 8d 5c 26 30 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 45 bd e4 fc 48 8b 45 90 48 39 03
-RSP: 0018:ffffc90004edee40 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: 0000000000000030 RCX: 0000000000000002
-RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000ffffffff
-RBP: ffffc90004edeeb0 R08: ffffffff84cf74ca R09: fffff520009dbdbc
-R10: fffff520009dbdbc R11: 0000000000000000 R12: 0000000000000000
-R13: ffff888044db0b80 R14: 0000000000000000 R15: dffffc0000000000
-FS:  00007fcb902f3700(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000071a158 CR3: 00000000a816b000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- bond_alb_handle_active_change+0x147f/0x1ba0 drivers/net/bonding/bond_alb.c:1750
- bond_change_active_slave+0x8c0/0x2b20 drivers/net/bonding/bond_main.c:910
- bond_select_active_slave+0x584/0xa80 drivers/net/bonding/bond_main.c:986
- bond_enslave+0x42af/0x59c0 drivers/net/bonding/bond_main.c:1823
- do_set_master net/core/rtnetlink.c:2468 [inline]
- __rtnl_newlink net/core/rtnetlink.c:3346 [inline]
- rtnl_newlink+0x182f/0x1c00 net/core/rtnetlink.c:3377
- rtnetlink_rcv_msg+0x889/0xd40 net/core/rtnetlink.c:5436
- netlink_rcv_skb+0x19e/0x3e0 net/netlink/af_netlink.c:2478
- rtnetlink_rcv+0x1c/0x20 net/core/rtnetlink.c:5454
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x766/0x920 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa2b/0xd40 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2343
- ___sys_sendmsg net/socket.c:2397 [inline]
- __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2437
- do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c429
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fcb902f2c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fcb902f36d4 RCX: 000000000045c429
-RDX: 0000000006000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 000000000076bfc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000009f9 R14: 00000000004cc6da R15: 000000000076bfcc
-Modules linked in:
----[ end trace 360aa5d46d32c48b ]---
-RIP: 0010:rlb_req_update_slave_clients drivers/net/bonding/bond_alb.c:505 [inline]
-RIP: 0010:alb_fasten_mac_swap+0x67c/0xda0 drivers/net/bonding/bond_alb.c:1063
-Code: f7 48 8b 45 98 42 80 3c 30 00 74 08 48 89 df e8 6a bd e4 fc 4c 8b 33 45 89 e4 49 c1 e4 06 4b 8d 5c 26 30 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 45 bd e4 fc 48 8b 45 90 48 39 03
-RSP: 0018:ffffc90004edee40 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: 0000000000000030 RCX: 0000000000000002
-RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000ffffffff
-RBP: ffffc90004edeeb0 R08: ffffffff84cf74ca R09: fffff520009dbdbc
-R10: fffff520009dbdbc R11: 0000000000000000 R12: 0000000000000000
-R13: ffff888044db0b80 R14: 0000000000000000 R15: dffffc0000000000
-FS:  00007fcb902f3700(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000071a158 CR3: 00000000a816b000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Reviewed-by: Thomas Hellstrom <thellstrom@vmware.com>
+Signed-off-by: Vivek Thampi <vithampi@vmware.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ MAINTAINERS           |   7 +++
+ drivers/ptp/Kconfig   |  12 +++++
+ drivers/ptp/Makefile  |   1 +
+ drivers/ptp/ptp_vmw.c | 144 ++++++++++++++++++++++++++++++++++++++++++++++=
+++++
+ 4 files changed, 164 insertions(+)
+ create mode 100644 drivers/ptp/ptp_vmw.c
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fcd79fc..871bb39 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17854,6 +17854,13 @@ S:	Supported
+ F:	arch/x86/kernel/cpu/vmware.c
+ F:	arch/x86/include/asm/vmware.h
+=20
++VMWARE VIRTUAL PTP CLOCK DRIVER
++M:	Vivek Thampi <vithampi@vmware.com>
++M:	"VMware, Inc." <pv-drivers@vmware.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++F:	drivers/ptp/ptp_vmw.c
++
+ VMWARE PVRDMA DRIVER
+ M:	Adit Ranadive <aditr@vmware.com>
+ M:	VMware PV-Drivers <pv-drivers@vmware.com>
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 475c60d..7d7bb99 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -127,4 +127,16 @@ config PTP_1588_CLOCK_IDTCM
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ptp_clockmatrix.
+=20
++config PTP_1588_CLOCK_VMW
++	tristate "VMware virtual PTP clock"
++	depends on ACPI && HYPERVISOR_GUEST && X86
++	depends on PTP_1588_CLOCK
++	help
++	  This driver adds support for using VMware virtual precision
++	  clock device as a PTP clock. This is only useful in virtual
++	  machines running on VMware virtual infrastructure.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called ptp_vmw.
++
+ endmenu
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index 8c83033..04b9acc 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -13,3 +13,4 @@ obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+=3D ptp-qoriq.o
+ ptp-qoriq-y				+=3D ptp_qoriq.o
+ ptp-qoriq-$(CONFIG_DEBUG_FS)		+=3D ptp_qoriq_debugfs.o
+ obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+=3D ptp_clockmatrix.o
++obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+=3D ptp_vmw.o
+diff --git a/drivers/ptp/ptp_vmw.c b/drivers/ptp/ptp_vmw.c
+new file mode 100644
+index 0000000..5dca26e
+--- /dev/null
++++ b/drivers/ptp/ptp_vmw.c
+@@ -0,0 +1,144 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++/*
++ * Copyright (C) 2020 VMware, Inc., Palo Alto, CA., USA
++ *
++ * PTP clock driver for VMware precision clock virtual device.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/acpi.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/ptp_clock_kernel.h>
++#include <asm/hypervisor.h>
++#include <asm/vmware.h>
++
++#define VMWARE_MAGIC 0x564D5868
++#define VMWARE_CMD_PCLK(nr) ((nr << 16) | 97)
++#define VMWARE_CMD_PCLK_GETTIME VMWARE_CMD_PCLK(0)
++
++static struct acpi_device *ptp_vmw_acpi_device;
++static struct ptp_clock *ptp_vmw_clock;
++
++
++static int ptp_vmw_pclk_read(u64 *ns)
++{
++	u32 ret, nsec_hi, nsec_lo, unused1, unused2, unused3;
++
++	asm volatile (VMWARE_HYPERCALL :
++		"=3Da"(ret), "=3Db"(nsec_hi), "=3Dc"(nsec_lo), "=3Dd"(unused1),
++		"=3DS"(unused2), "=3DD"(unused3) :
++		"a"(VMWARE_MAGIC), "b"(0),
++		"c"(VMWARE_CMD_PCLK_GETTIME), "d"(0) :
++		"memory");
++
++	if (ret =3D=3D 0)
++		*ns =3D ((u64)nsec_hi << 32) | nsec_lo;
++	return ret;
++}
++
++/*
++ * PTP clock ops.
++ */
++
++static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
++{
++	return -EOPNOTSUPP;
++}
++
++static int ptp_vmw_adjfreq(struct ptp_clock_info *info, s32 delta)
++{
++	return -EOPNOTSUPP;
++}
++
++static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 =
+*ts)
++{
++	u64 ns;
++
++	if (ptp_vmw_pclk_read(&ns) !=3D 0)
++		return -EIO;
++	*ts =3D ns_to_timespec64(ns);
++	return 0;
++}
++
++static int ptp_vmw_settime(struct ptp_clock_info *info,
++			  const struct timespec64 *ts)
++{
++	return -EOPNOTSUPP;
++}
++
++static int ptp_vmw_enable(struct ptp_clock_info *info,
++			 struct ptp_clock_request *request, int on)
++{
++	return -EOPNOTSUPP;
++}
++
++static struct ptp_clock_info ptp_vmw_clock_info =3D {
++	.owner		=3D THIS_MODULE,
++	.name		=3D "ptp_vmw",
++	.max_adj	=3D 0,
++	.adjtime	=3D ptp_vmw_adjtime,
++	.adjfreq	=3D ptp_vmw_adjfreq,
++	.gettime64	=3D ptp_vmw_gettime,
++	.settime64	=3D ptp_vmw_settime,
++	.enable		=3D ptp_vmw_enable,
++};
++
++/*
++ * ACPI driver ops for VMware "precision clock" virtual device.
++ */
++
++static int ptp_vmw_acpi_add(struct acpi_device *device)
++{
++	ptp_vmw_clock =3D ptp_clock_register(&ptp_vmw_clock_info, NULL);
++	if (IS_ERR(ptp_vmw_clock)) {
++		pr_err("failed to register ptp clock\n");
++		return PTR_ERR(ptp_vmw_clock);
++	}
++
++	ptp_vmw_acpi_device =3D device;
++	return 0;
++}
++
++static int ptp_vmw_acpi_remove(struct acpi_device *device)
++{
++	ptp_clock_unregister(ptp_vmw_clock);
++	return 0;
++}
++
++static const struct acpi_device_id ptp_vmw_acpi_device_ids[] =3D {
++	{ "VMW0005", 0 },
++	{ "", 0 },
++};
++
++MODULE_DEVICE_TABLE(acpi, ptp_vmw_acpi_device_ids);
++
++static struct acpi_driver ptp_vmw_acpi_driver =3D {
++	.name =3D "ptp_vmw",
++	.ids =3D ptp_vmw_acpi_device_ids,
++	.ops =3D {
++		.add =3D ptp_vmw_acpi_add,
++		.remove	=3D ptp_vmw_acpi_remove
++	},
++	.owner	=3D THIS_MODULE
++};
++
++static int __init ptp_vmw_init(void)
++{
++	if (x86_hyper_type !=3D X86_HYPER_VMWARE)
++		return -1;
++	return acpi_bus_register_driver(&ptp_vmw_acpi_driver);
++}
++
++static void __exit ptp_vmw_exit(void)
++{
++	acpi_bus_unregister_driver(&ptp_vmw_acpi_driver);
++}
++
++module_init(ptp_vmw_init);
++module_exit(ptp_vmw_exit);
++
++MODULE_DESCRIPTION("VMware virtual PTP clock driver");
++MODULE_AUTHOR("VMware, Inc.");
++MODULE_LICENSE("Dual BSD/GPL");
+--=20
+1.8.5.6
+
