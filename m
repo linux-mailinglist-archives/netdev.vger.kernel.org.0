@@ -2,61 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE320170FCD
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 05:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADA4170FCE
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 05:50:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgB0EsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 23:48:10 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:37098 "EHLO
+        id S1728386AbgB0EuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 23:50:11 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:37106 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728284AbgB0EsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 23:48:10 -0500
+        with ESMTP id S1728284AbgB0EuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 23:50:11 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 74FDD15B47C90;
-        Wed, 26 Feb 2020 20:48:09 -0800 (PST)
-Date:   Wed, 26 Feb 2020 20:48:09 -0800 (PST)
-Message-Id: <20200226.204809.102099518712120120.davem@davemloft.net>
-To:     akiyano@amazon.com
-Cc:     netdev@vger.kernel.org, dwmw@amazon.com, zorik@amazon.com,
-        matua@amazon.com, saeedb@amazon.com, msw@amazon.com,
-        aliguori@amazon.com, nafea@amazon.com, gtzalik@amazon.com,
-        netanel@amazon.com, alisaidi@amazon.com, benh@amazon.com,
-        ndagan@amazon.com, shayagr@amazon.com, sameehj@amazon.com
-Subject: Re: [RESEND PATCH V1 net-next] net: ena: fix broken interface
- between ENA driver and FW
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D92FF15B47C9D;
+        Wed, 26 Feb 2020 20:50:10 -0800 (PST)
+Date:   Wed, 26 Feb 2020 20:50:10 -0800 (PST)
+Message-Id: <20200226.205010.187250062705880561.davem@davemloft.net>
+To:     pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, paul@paul-moore.com,
+        syzkaller-bugs@googlegroups.com, matthieu.baerts@tessares.net,
+        mathew.j.martineau@linux.intel.com
+Subject: Re: [PATCH net] mptcp: add dummy icsk_sync_mss()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1582711415-4442-1-git-send-email-akiyano@amazon.com>
-References: <1582711415-4442-1-git-send-email-akiyano@amazon.com>
+In-Reply-To: <3b06c9fdc9d0e00a8a6eaef4dc08eeb9322be4a0.1582715453.git.pabeni@redhat.com>
+References: <3b06c9fdc9d0e00a8a6eaef4dc08eeb9322be4a0.1582715453.git.pabeni@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 20:48:10 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 20:50:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: <akiyano@amazon.com>
-Date: Wed, 26 Feb 2020 12:03:35 +0200
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Wed, 26 Feb 2020 12:19:03 +0100
 
-> From: Arthur Kiyanovski <akiyano@amazon.com>
+> syzbot noted that the master MPTCP socket lacks the icsk_sync_mss
+> callback, and was able to trigger a null pointer dereference:
+ ...
+> Address the issue adding a dummy icsk_sync_mss callback.
+> To properly sync the subflows mss and options list we need some
+> additional infrastructure, which will land to net-next.
 > 
-> In this commit we revert the part of
-> commit 1a63443afd70 ("net/amazon: Ensure that driver version is aligned to the linux kernel"),
-> which breaks the interface between the ENA driver and FW.
-> 
-> We also replace the use of DRIVER_VERSION with DRIVER_GENERATION
-> when we bring back the deleted constants that are used in interface with
-> ENA device FW.
-> 
-> This commit does not change the driver version reported to the user via
-> ethtool, which remains the kernel version.
-> 
-> Fixes: 1a63443afd70 ("net/amazon: Ensure that driver version is aligned to the linux kernel")
-> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+> Reported-by: syzbot+f4dfece964792d80b139@syzkaller.appspotmail.com
+> Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Applied.
+Applied, thanks.
