@@ -2,97 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFA51714D9
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 11:19:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76437171530
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 11:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728725AbgB0KTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 05:19:38 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32977 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728454AbgB0KTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 05:19:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582798776;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=olxhZg+Lu0ojFRBIe5W7f9k+bGj829JWtT8ipS4rrQI=;
-        b=gdVCHUH7OI5eZfsW54mVvBVwSrnULISL/6UepwMulTYnCRTqs/1k9a3CNDkleQct2ww4AJ
-        3WwR7Iwe7/4nDz3kKSnPgVUdYXIrGzK51o7bqfEP2HPJKtrU/C84Czy8jGZ4n9LctjdJ81
-        k6BVjvlyFOLVPtr6rAHG6MHi7mBhqRI=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-238-odDj0EPnPXKu1XH1hhMhPQ-1; Thu, 27 Feb 2020 05:19:28 -0500
-X-MC-Unique: odDj0EPnPXKu1XH1hhMhPQ-1
-Received: by mail-lj1-f200.google.com with SMTP id l14so735347ljb.10
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 02:19:28 -0800 (PST)
+        id S1728743AbgB0Klg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 05:41:36 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:41071 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728729AbgB0Klg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 05:41:36 -0500
+Received: by mail-oi1-f195.google.com with SMTP id i1so2790039oie.8
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 02:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Jpiav8fKOwVu0TUVR7UwwTMPFM0cFCBF2DyYYg5YgDY=;
+        b=ngaSYzm6MKTTw3cw8N+eC3tcGz8rF+p+q8HQUProMdhEUg7hBYAKChodn050qgjpvR
+         yq9RRV0phhGe/dYv5IqrtRFMWsbZWu1uKYtC0Y5D/itc7LLNnIc+TK7FI13bxc+PC/wn
+         uoFhtGitcYtuHKF2LUluXqr50xXvCTtPZa9NKpvcKyMCqHz+yk2zGaXvsfSvywA5HOIx
+         qWcopZxV7ApTXiN0+33eCoGpwLTBaBNq4vzOK8XD+OgCbng1g/thw6dBayW0szfmAF1k
+         20Yb5aFkzcobRCgK+gTLjQtOxexvIZYfWy5GYILbX84dzDgBdtKD+foL4MIDGeOvquot
+         X0fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=olxhZg+Lu0ojFRBIe5W7f9k+bGj829JWtT8ipS4rrQI=;
-        b=sjoxOQ/5yUTfi70qhDcNxFeXPZJH8IkDAj2TEh0zc3DaMzuyCT8caWyTbufYQAbqJP
-         Eqo4frHzplVU89H0Hcq4MT2eXgfMbgVXgrJiKkUSHP8YEdaXhhJt1gpVgy3cK1YJaGzA
-         Pb4bg988BiW1qbUb/MrgoPYqTilc8xfcizK5O8SUEydj6X9r6Tstu7OJbW6Exz8C0WiD
-         aVoIJpMhWlF4gnAI33YJytyjVb0FyPdXf3977dbPFyhFhtFr7oq1FsZXEbNDFmxfGZns
-         wBA9S2RUilSwRU0CxrPjDR0SPapK428qR2SAq27Dk75EMDF4pIJHvWUNbWiSlBlygH1+
-         5wMQ==
-X-Gm-Message-State: ANhLgQ2m1z0ngnjDh7faUwMsYV84ECniCEEVY/49/y9frgpRYJ7nnhTY
-        DC+368U7iTFnp6/l2XxcqUakClW1q36XDl754urUVCLgAcyz5/UGMAXNTDGC6mc5WqsPq3710I1
-        YazJNqZmEZrArdffx
-X-Received: by 2002:a2e:7c08:: with SMTP id x8mr2318569ljc.185.1582798766837;
-        Thu, 27 Feb 2020 02:19:26 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vtwQk/Jef8wpAo4hy+RNQ/OQtGr4/GTjzfCpT7qlTzC82arClLScPygo97zJFMv6KLsiOX9MQ==
-X-Received: by 2002:a2e:7c08:: with SMTP id x8mr2318559ljc.185.1582798766674;
-        Thu, 27 Feb 2020 02:19:26 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id t1sm2849581lji.98.2020.02.27.02.19.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Feb 2020 02:19:25 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 59671180362; Thu, 27 Feb 2020 11:19:25 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dahern@digitalocean.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Jpiav8fKOwVu0TUVR7UwwTMPFM0cFCBF2DyYYg5YgDY=;
+        b=KIVbks68/IlapAF8gCq3KSK/NKk0EF6jm0G3QOWfZcE7MezEDGD/JCfJpXgyTVjv54
+         VcOOm+HlH+Xm3jNnJ6ExQy+4BUwrI3Kv0jaOaLGbrjJVjAbr0Xk4tbA0SYHDlRxHn27h
+         Eh8BUOWeuT2BoNrALugbkG7nli7rhp/zZMz/Z4IpgnyA+b7EsriQzAupPhvFSFwuPyiO
+         KqA+gNup1ax3ei1dW8kePb13sBTs0n/tvm5aY1OVmQ5UV558v5pdcI2Tx5MmXbv9HyqX
+         eTV5lKqI4m4dPPWzv6AcoOvXpc2rfAFWm1rPI77jf2+iX5p8oJQTDIAgBEGvzOLwl9v9
+         k1mw==
+X-Gm-Message-State: APjAAAW1WGYgJU4DadJ4ytwgFqz7STw2f5KrzLnl4TMJ8nCpzVmlcHPy
+        ZGEWLrgHzTSWfjGJdq7WPFMCUMUYa8wwn1DBkI4=
+X-Google-Smtp-Source: APXvYqxxajQvPar1mr+dY//Rjw7pAD98j9iRgtYWdM5c03ICRv0uM0yGhuonCGpeiAgWxAwbWjDo2BLsV2N3JEvp/+k=
+X-Received: by 2002:aca:dc45:: with SMTP id t66mr2825383oig.39.1582800095098;
+ Thu, 27 Feb 2020 02:41:35 -0800 (PST)
+MIME-Version: 1.0
+References: <20200226005744.1623-1-dsahern@kernel.org> <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
+ <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk>
+ <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk>
+ <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com> <87wo88wcwi.fsf@toke.dk>
+In-Reply-To: <87wo88wcwi.fsf@toke.dk>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 27 Feb 2020 11:41:23 +0100
+Message-ID: <CAJ8uoz2++_D_XFwUjFri0HmNaNWKtiPNrJr=Fvc8grj-8hRzfg@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
+ using XDP
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     David Ahern <dahern@digitalocean.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for using XDP
-In-Reply-To: <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
-References: <20200226005744.1623-1-dsahern@kernel.org> <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com> <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk> <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk> <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 27 Feb 2020 11:19:25 +0100
-Message-ID: <87wo88wcwi.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dahern@digitalocean.com> writes:
-
-> On 2/26/20 1:34 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>> OK so basically there would be commands to configure which TX queue is
->>> used by XDP. With enough resources default is to use dedicated queues.
->>> With not enough resources default is to fail binding xdp program
->>> unless queues are specified. Does this sound reasonable?
->> Yeah, that was the idea. See this talk from LPC last year for more
->> details: https://linuxplumbersconf.org/event/4/contributions/462/
->>=20
+On Thu, Feb 27, 2020 at 11:22 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
 >
-> Can we use one of the breakout timeslots at netdevconf and discuss this
-> proposal and status?
+> David Ahern <dahern@digitalocean.com> writes:
+>
+> > On 2/26/20 1:34 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >>> OK so basically there would be commands to configure which TX queue i=
+s
+> >>> used by XDP. With enough resources default is to use dedicated queues=
+.
+> >>> With not enough resources default is to fail binding xdp program
+> >>> unless queues are specified. Does this sound reasonable?
+> >> Yeah, that was the idea. See this talk from LPC last year for more
+> >> details: https://linuxplumbersconf.org/event/4/contributions/462/
+> >>
+> >
+> > Can we use one of the breakout timeslots at netdevconf and discuss this
+> > proposal and status?
+>
+> Adding in Magnus and Jesper; I won't be at netdevconf, sadly, but you
+> guys go ahead :)
+>
+> Magnus indicated he may have some preliminary code to share soonish.
+> Maybe that means before netdevconf? ;)
 
-Adding in Magnus and Jesper; I won't be at netdevconf, sadly, but you
-guys go ahead :)
+I will unfortunately be after Netdevconf due to other commitments. The
+plan is to send out the RFC to the co-authors of the Plumbers
+presentation first, just to check the sanity of it. And after that
+send it to the mailing list. Note that I have taken two shortcuts in
+the RFC to be able to make quicker progress. The first on is the
+driver implementation of the dynamic queue allocation and
+de-allocation. It just does this within a statically pre-allocated set
+of queues. The second is that the user space interface is just a
+setsockopt instead of a rtnetlink interface. Again, just to save some
+time in this initial phase. The information communicated in the
+interface is the same though. In the current code, the queue manager
+can handle the queues of the networking stack, the XDP_TX queues and
+queues allocated by user space and used for AF_XDP. Other uses from
+user space is not covered due to my setsockopt shortcut. Hopefully
+though, this should be enough for an initial assessment.
 
-Magnus indicated he may have some preliminary code to share soonish.
-Maybe that means before netdevconf? ;)
+/Magnus
 
--Toke
-
+> -Toke
+>r
