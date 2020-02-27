@@ -2,58 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B300170D3F
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 01:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C085170D4B
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 01:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbgB0Acb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 19:32:31 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:35276 "EHLO
+        id S1728080AbgB0Aju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 19:39:50 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:35320 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbgB0Acb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 19:32:31 -0500
+        with ESMTP id S1727987AbgB0Aju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 19:39:50 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E869315ADD8E8;
-        Wed, 26 Feb 2020 16:32:30 -0800 (PST)
-Date:   Wed, 26 Feb 2020 16:32:28 -0800 (PST)
-Message-Id: <20200226.163228.593757014713725708.davem@davemloft.net>
-To:     pablo@netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/6] Netfilter fixes for net
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D29E915ADF427;
+        Wed, 26 Feb 2020 16:39:49 -0800 (PST)
+Date:   Wed, 26 Feb 2020 16:39:49 -0800 (PST)
+Message-Id: <20200226.163949.936741955680517789.davem@davemloft.net>
+To:     f.fainelli@gmail.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: bcm_sf2: Forcibly configure IMP port for
+ 1Gb/sec
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200226225442.9598-1-pablo@netfilter.org>
-References: <20200226225442.9598-1-pablo@netfilter.org>
+In-Reply-To: <20200224235632.5163-1-f.fainelli@gmail.com>
+References: <20200224235632.5163-1-f.fainelli@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 16:32:31 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Feb 2020 16:39:50 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
-Date: Wed, 26 Feb 2020 23:54:36 +0100
+From: Florian Fainelli <f.fainelli@gmail.com>
+Date: Mon, 24 Feb 2020 15:56:32 -0800
 
-> The following patchset contains Netfilter fixes:
+> We are still experiencing some packet loss with the existing advanced
+> congestion buffering (ACB) settings with the IMP port configured for
+> 2Gb/sec, so revert to conservative link speeds that do not produce
+> packet loss until this is resolved.
 > 
-> 1) Perform garbage collection from workqueue to fix rcu detected
->    stall in ipset hash set types, from Jozsef Kadlecsik.
-> 
-> 2) Fix the forceadd evaluation path, also from Jozsef.
-> 
-> 3) Fix nft_set_pipapo selftest, from Stefano Brivio.
-> 
-> 4) Crash when add-flush-add element in pipapo set, also from Stefano.
->    Add test to cover this crash.
-> 
-> 5) Remove sysctl entry under mutex in hashlimit, from Cong Wang.
-> 
-> You can pull these changes from:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+> Fixes: 8f1880cbe8d0 ("net: dsa: bcm_sf2: Configure IMP port for 2Gb/sec")
+> Fixes: de34d7084edd ("net: dsa: bcm_sf2: Only 7278 supports 2Gb/sec IMP port")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Pulled, thanks Pablo.
+Applied and queued up for v5.5 -stable.
+
+Thanks.
