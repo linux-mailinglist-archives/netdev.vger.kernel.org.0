@@ -2,93 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0707A1711C3
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF2091711DB
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 09:01:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728589AbgB0Huq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 02:50:46 -0500
-Received: from mail-wm1-f52.google.com ([209.85.128.52]:39810 "EHLO
-        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728420AbgB0Hun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:43 -0500
-Received: by mail-wm1-f52.google.com with SMTP id c84so2196347wme.4
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+BYUl5E8HS+BoOqdXIBVlH04Ok6pveU38Xhautf0ypI=;
-        b=RS2fawju/wUN7HXPZ6fZx2kUEvvIqnzJ07dX6Eh239TD+cwHOvBJoyFMoehUNsM4Qk
-         pU9s2procfv5/fUd3itcBkLN2fczku0zmf5R3QzermoHAoV7NFXrakScV1VyFzX0MTiY
-         eZo2HsNVxMD9Jx3cenh3IJvkt/PaAkJKGx//vgp282lqn7kJOnWoByW5AkUXikUH/6aX
-         mOLTu9d21Kc78ZTYV89kjQmoPOSzi93mBpDmGKYWp+ClLrBi2ZR1nhh4vdgpXLkfDDjt
-         0R8nkCPhWmUFt7OQAgFO65YLIE8RZTonaFiM0IOPozxzdAll3w57+EOVjUAgJ6+E6C8L
-         IZzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+BYUl5E8HS+BoOqdXIBVlH04Ok6pveU38Xhautf0ypI=;
-        b=KmKSEq/Rauco0wBXfGjJAZEDSNV2qc3jYOoV3wVX5D9KwERPsb9gtO4uXOcEN5mA0A
-         mNW3Z2t4AZnStpmme/EUpgzi4uszvuLl83FjfEcDnFzMmwWiMQvQD3Ja7Kj9DnUEaR6C
-         Ae02NAUGza+/F3KajeTgpfy6f5skcwji6MJDL/hWR8GWkjcCl6qKCROq7D9A/z3XsWJT
-         cxKjXKKT2yqMHRkDl+2wn+psPWXwH+0GTBwrdcpY3DgU9QUEIFtqixt3K7xiu+oZV8Co
-         xYufHMxziJ0cvNPj+W40mfXxmm2CTG11lE3l2EEU2plm+6ssTDeX2CkerdmGrZTRpOCw
-         +yYQ==
-X-Gm-Message-State: APjAAAV9wQneD4yp+fFiU79X6t8fb6ObURSd0pBEybuzu6q59xYM/Bcn
-        YlK7rXDMKPmooa0Cv2LIhP35nbmsoUY=
-X-Google-Smtp-Source: APXvYqwbNl1y68mJCmiJO5WNO24Tehg8Eq6d2hzj4UHuY6pGSjF/yV6ytc9M/QfxyBHMxo4ILuAUpg==
-X-Received: by 2002:a05:600c:242:: with SMTP id 2mr3485647wmj.2.1582789841939;
-        Wed, 26 Feb 2020 23:50:41 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id h3sm7271980wrb.23.2020.02.26.23.50.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 23:50:41 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
-        mlxsw@mellanox.com, shuah@kernel.org
-Subject: [patch net-next 16/16] selftests: mlxsw: resource_scale: Invoke for Spectrum-3
-Date:   Thu, 27 Feb 2020 08:50:21 +0100
-Message-Id: <20200227075021.3472-17-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200227075021.3472-1-jiri@resnulli.us>
-References: <20200227075021.3472-1-jiri@resnulli.us>
+        id S1728466AbgB0IBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 03:01:08 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32800 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726999AbgB0IBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 03:01:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582790467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Snk15xKUMrdySmfwWraoLwyhXgJAGndOaWgXe+ZNgXE=;
+        b=cKFcdvUCoEAXcqcc80cnWoWSJIxytzQCak0jV2iRTquhTeyO8RkO+XEWsGti072LkNTqqx
+        jzwMK/XC6kje8gN7zYse4de8WTgRqM8TCgQna9RFHpe6ahSI/3GdeRXpZtSFD7Mf3Hi6TV
+        jFwHgGKozmp6fVBQWuiPOCEYPmm/ARk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-188-AyHGgI8uOsCl6T5oLf35YA-1; Thu, 27 Feb 2020 03:01:03 -0500
+X-MC-Unique: AyHGgI8uOsCl6T5oLf35YA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3254C801E6D;
+        Thu, 27 Feb 2020 08:01:01 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB28490F5B;
+        Thu, 27 Feb 2020 08:00:47 +0000 (UTC)
+Date:   Thu, 27 Feb 2020 09:00:46 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        toke@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
+Message-ID: <20200227090046.3e3177b3@carbon>
+In-Reply-To: <20200227032013.12385-4-dsahern@kernel.org>
+References: <20200227032013.12385-1-dsahern@kernel.org>
+        <20200227032013.12385-4-dsahern@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amitc@mellanox.com>
+On Wed, 26 Feb 2020 20:20:05 -0700
+David Ahern <dsahern@kernel.org> wrote:
 
-The scale test for Spectrum-2 should be invoked for Spectrum-2 and
-Spectrum-3. Add the appropriate device ID.
+> From: David Ahern <dahern@digitalocean.com>
+> 
+> Add xdp_txq_info as the Tx counterpart to xdp_rxq_info. At the
+> moment only the device is added. Other fields (queue_index)
+> can be added as use cases arise.
+> 
+> From a UAPI perspective, egress_ifindex is a union with ingress_ifindex
+> since only one applies based on where the program is attached.
+> 
+> Signed-off-by: David Ahern <dahern@digitalocean.com>
+> ---
+>  include/net/xdp.h        |  5 +++++
+>  include/uapi/linux/bpf.h |  6 ++++--
+>  net/core/filter.c        | 27 +++++++++++++++++++--------
+>  3 files changed, 28 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 40c6d3398458..5584b9db86fe 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -63,6 +63,10 @@ struct xdp_rxq_info {
+>  	struct xdp_mem_info mem;
+>  } ____cacheline_aligned; /* perf critical, avoid false-sharing */
+>  
+> +struct xdp_txq_info {
+> +	struct net_device *dev;
+> +};
+> +
+>  struct xdp_buff {
+>  	void *data;
+>  	void *data_end;
+> @@ -70,6 +74,7 @@ struct xdp_buff {
+>  	void *data_hard_start;
+>  	unsigned long handle;
+>  	struct xdp_rxq_info *rxq;
+> +	struct xdp_txq_info *txq;
+>  };
+>  
+>  struct xdp_frame {
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 7850f8683b81..5e3f8aefad41 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3334,8 +3334,10 @@ struct xdp_md {
+>  	__u32 data;
+>  	__u32 data_end;
+>  	__u32 data_meta;
+> -	/* Below access go through struct xdp_rxq_info */
+> -	__u32 ingress_ifindex; /* rxq->dev->ifindex */
+> +	union {
+> +		__u32 ingress_ifindex; /* rxq->dev->ifindex */
+> +		__u32 egress_ifindex;  /* txq->dev->ifindex */
+> +	};
 
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- .../selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Are we sure it is wise to "union share" (struct) xdp_md as the
+XDP-context in the XDP programs, with different expected_attach_type?
+As this allows the XDP-programmer to code an EGRESS program that access
+ctx->ingress_ifindex, this will under the hood be translated to
+ctx->egress_ifindex, because from the compilers-PoV this will just be an
+offset.
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-index 7b2acba82a49..fd583a171db7 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-@@ -8,8 +8,9 @@ source $lib_dir/lib.sh
- source $lib_dir/tc_common.sh
- source $lib_dir/devlink_lib.sh
- 
--if [ "$DEVLINK_VIDDID" != "15b3:cf6c" ]; then
--	echo "SKIP: test is tailored for Mellanox Spectrum-2"
-+if [[ "$DEVLINK_VIDDID" != "15b3:cf6c" && \
-+	"$DEVLINK_VIDDID" != "15b3:cf70" ]]; then
-+	echo "SKIP: test is tailored for Mellanox Spectrum-2 and Spectrum-3"
- 	exit 1
- fi
- 
+We are setting up the XDP-programmer for a long debugging session, as
+she will be expecting to read 'ingress_ifindex', but will be getting
+'egress_ifindex'.  (As the compiler cannot warn her, and it is also
+correct seen from the verifier).
+
+
+>  	__u32 rx_queue_index;  /* rxq->queue_index  */
+
+So, the TX program can still read 'rx_queue_index', is this wise?
+(It should be easy to catch below and reject).
+
+
+>  };
+>  
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index c7cc98c55621..d1c65dccd671 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7716,14 +7716,25 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+>  				      offsetof(struct xdp_buff, data_end));
+>  		break;
+>  	case offsetof(struct xdp_md, ingress_ifindex):
+> -		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, rxq),
+> -				      si->dst_reg, si->src_reg,
+> -				      offsetof(struct xdp_buff, rxq));
+> -		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_rxq_info, dev),
+> -				      si->dst_reg, si->dst_reg,
+> -				      offsetof(struct xdp_rxq_info, dev));
+> -		*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
+> -				      offsetof(struct net_device, ifindex));
+> +		if (prog->expected_attach_type == BPF_XDP_EGRESS) {
+> +			*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, txq),
+> +					      si->dst_reg, si->src_reg,
+> +					      offsetof(struct xdp_buff, txq));
+> +			*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_txq_info, dev),
+> +					      si->dst_reg, si->dst_reg,
+> +					      offsetof(struct xdp_txq_info, dev));
+> +			*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
+> +					      offsetof(struct net_device, ifindex));
+> +		} else {
+> +			*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, rxq),
+> +					      si->dst_reg, si->src_reg,
+> +					      offsetof(struct xdp_buff, rxq));
+> +			*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_rxq_info, dev),
+> +					      si->dst_reg, si->dst_reg,
+> +					      offsetof(struct xdp_rxq_info, dev));
+> +			*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
+> +					      offsetof(struct net_device, ifindex));
+> +		}
+>  		break;
+>  	case offsetof(struct xdp_md, rx_queue_index):
+>  		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, rxq),
+
+We can catch and disallow access to rx_queue_index from expected_attach_type
+BPF_XDP_EGRESS, here.  But then we are adding more code to handle/separate
+egress from normal RX/ingress.
+
 -- 
-2.21.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
