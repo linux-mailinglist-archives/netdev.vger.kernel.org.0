@@ -2,88 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1884D1716A1
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 13:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A5017170A
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 13:23:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728994AbgB0MCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 07:02:40 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:46496 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728986AbgB0MCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 07:02:40 -0500
-Received: by mail-oi1-f194.google.com with SMTP id a22so2967467oid.13
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 04:02:39 -0800 (PST)
+        id S1729016AbgB0MXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 07:23:35 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:44992 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729010AbgB0MXe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 07:23:34 -0500
+Received: by mail-pf1-f193.google.com with SMTP id y5so1541140pfb.11
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 04:23:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BrW5LZwrgusNW5R7fWdBcyZoH5Id25Lj621CnfewVCc=;
-        b=R7ucxzv9WX65DnqA/knWAtXzG4aPD3M+Asthh3S1KCrJkFmamDtuptP8MO97MSHPba
-         e34rpQIqPzJrIS5t+m2Tbc5VplqIasAxwwwWAF/g02+wjLvXAycRrcQgceZ/5e3sPx6V
-         FEQqshY/WSxH/1/V4meq2t1Hh1fEGRnWWai7w=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=RQ1R3TRDtNYXVBosYqMikPWgjTItHvzcC5WgHnEGuak=;
+        b=dLFD1l6JiwHRyb/ynEK/YbeTMQlCg53EW23Zy8ieIjzOLg74QbgS4PUkFL3AVSPt7y
+         oj67Iku6nydycI2uNp4ZmZLfpLredoEi5JBYMNJLeU/IN+tTE3eZmMOKONwC/2KVDRaC
+         iBhF9zLQmkyN5qHmdb0QUtRbp5kwKwLgEaLr9qR+R+xnF22kiCf0Ag73VmsoqUJgjuRn
+         p0OyHrUVZarwkytwkn3b0bf0WPbolgox9fybh9PW2I5dpuy9WJk9gmFBVGFiyRCwDwcv
+         OK7J9PtTtY5+PmxEGFiGN0ykByieK4G3RRCIDVByUgMJnma64L5j3Mb15T9icom1iXn7
+         qWRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BrW5LZwrgusNW5R7fWdBcyZoH5Id25Lj621CnfewVCc=;
-        b=sTUzG2EQ64pb1jX4jSOlDlDSW4GSgmfRoLwol+EWv0lIz09lODE/lZnlB/Ui9fT4Kr
-         NYTVp+LlrAMCOL70h+Rr1zHpN2udnrvROW3Jq8/fVdJEnjLNj3DHQW4BeyKwm2JLDmwB
-         7MxiAbSWWDEvNjW37BBFLkMlT+noA+8pezmCcvd7P2RXf5PK9SdBDhgPlDh8Ic8syIns
-         dzknEY4YVMMrdck5x6ijwgXFAAd6KKHy18QwpZ0A/TKyJkkjaOfByY9OepsjpzTyZVx8
-         4atm9VSR1u/ChGB7aTrVC0j/V6hSO5HkpCzqzQbBNdQLvgxkhNWCL4Q7A3d6S7rooaJr
-         pHWg==
-X-Gm-Message-State: APjAAAXaetcL22xvqusBnJuv8HayRkLeNukPasT3dEjGqHQAhYPkj16m
-        yRjKK0ageEu+ZkElyJdST6/ivNv+bgWicPJptXQ4uA==
-X-Google-Smtp-Source: APXvYqxGGnZ2YlIzPYcumkmeZ2az1g8ikQk+YksINp58lf1d1j35iK2m2bjoEozqq7jJAU097AlwLPvODXTA3KcrXgY=
-X-Received: by 2002:aca:d4c1:: with SMTP id l184mr3007527oig.172.1582804959343;
- Thu, 27 Feb 2020 04:02:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20200225135636.5768-1-lmb@cloudflare.com> <20200225135636.5768-7-lmb@cloudflare.com>
- <877e08cksq.fsf@cloudflare.com>
-In-Reply-To: <877e08cksq.fsf@cloudflare.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Thu, 27 Feb 2020 12:02:28 +0000
-Message-ID: <CACAyw9832Q+uLfYgzs5oAmYZDF+3U5pPGYKViMKovqb_hKY0gw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 6/7] selftests: bpf: add tests for UDP sockets in sockmap
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RQ1R3TRDtNYXVBosYqMikPWgjTItHvzcC5WgHnEGuak=;
+        b=ohjman502TK3cePFhV+mxJwm5sS3O2ONr/ymUGPBl6rJYy44BDqs9H7fioMWJKZdSU
+         roGbvreoED3jCQwFNR4jxki5KYuheNA2hBlvxe7sQWM+AKBJ5KHoyWeMDw5lWHSj3eNm
+         UdoNb45aE8DkrHaEv8fFJv1R0z1/phqjKVkJfwrxFUAnyrKs5yJukkbZ4wFRC4Upo1jp
+         b+yHk9lhaNzLHgVx9aQYnubsV5IQ8G/F1Nnb1aIjPy3wg/6MtNvwTMjhEWIeEs3j1ZAb
+         9L13yyIehVuvQbc5AbkWhcMwU1pDOHLTHdyL+VXcDbuSqnBpdHMpxXnbW4aGPDBlbil0
+         RuAA==
+X-Gm-Message-State: APjAAAXRp6AzHUFSF2Ty+AqxeWYy1Qyq+8K6u/IThx4V0HkiUiW1r9DV
+        MB4uKtyjDXKSGNoIRxsdz+s=
+X-Google-Smtp-Source: APXvYqxUotUU/EFzN6tOX6humQnn/0Uua6Q1OgKxEjJBWgvd3RR5TWRG4J1U/bxGWdE1JVxtk8+yiw==
+X-Received: by 2002:a63:7d59:: with SMTP id m25mr3739852pgn.356.1582806213556;
+        Thu, 27 Feb 2020 04:23:33 -0800 (PST)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id r66sm7485562pfc.74.2020.02.27.04.23.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2020 04:23:32 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, subashab@codeaurora.org,
+        stranche@codeaurora.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net v2 0/8] net: rmnet: fix several bugs
+Date:   Thu, 27 Feb 2020 12:23:24 +0000
+Message-Id: <20200227122324.18855-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Feb 2020 at 11:49, Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> > +#define TEST(fn) TEST_SOTYPE(fn, 0)
-> > +#define TEST_STREAM(fn) TEST_SOTYPE(fn, SOCK_STREAM)
-> > +#define TEST_DGRAM(fn) TEST_SOTYPE(fn, SOCK_DGRAM)
-> > +
->
-> An alternative would be to use __VA_ARGS__ and designated intializers,
-> as I did recently in e0360423d020 ("selftests/bpf: Run SYN cookies with
-> reuseport BPF test only for TCP"). TEST_DGRAM is unused at the moment,
-> so that's something to consider.
+This patchset is to fix several bugs in RMNET module.
 
-Good idea, I'll pick it up!
+1. The first patch fixes NULL-ptr-deref in rmnet_newlink().
+When rmnet interface is being created, it uses IFLA_LINK
+without checking NULL.
+So, if userspace doesn't set IFLA_LINK, panic will occur.
+In this patch, checking NULL pointer code is added.
 
-> test_redir() doesn't get called with SOCK_DGRAM, because redirection
-> with sockmap and UDP is not supported yet, so perhaps no need to touch
-> this function.
+2. The second patch fixes NULL-ptr-deref in rmnet_changelink().
+To get real device in rmnet_changelink(), it uses IFLA_LINK.
+But, IFLA_LINK should not be used in rmnet_changelink().
 
-I did this to avoid needing another macro, it should be possible to skip this
-with your VA_ARGS idea.
+3. The third patch fixes suspicious RCU usage in rmnet_get_port().
+rmnet_get_port() uses rcu_dereference_rtnl().
+But, rmnet_get_port() is used by datapath.
+So, rcu_dereference_bh() should be used instead of rcu_dereference_rtnl().
 
-> Looks like we can enable reuseport tests with not too much effort.
-> I managed to get them working with the changes below.
+4. The fourth patch fixes suspicious RCU usage in
+rmnet_force_unassociate_device().
+RCU critical section should not be scheduled.
+But, unregister_netdevice_queue() in the rmnet_force_unassociate_device()
+would be scheduled.
+So, the RCU warning occurs.
+In this patch, the rcu_read_lock() in the rmnet_force_unassociate_device()
+is removed because it's unnecessary.
 
-Thanks, I'll add this to the next revision!
+5. The fifth patch fixes duplicate MUX ID case.
+RMNET MUX ID is unique.
+So, rmnet interface isn't allowed to be created, which have
+a duplicate MUX ID.
+But, only rmnet_newlink() checks this condition, rmnet_changelink()
+doesn't check this.
+So, duplicate MUX ID case would happen.
+
+6. The sixth patch fixes upper/lower interface relationship problems.
+When IFLA_LINK is used, the upper/lower infrastructure should be used.
+Because it checks the maximum depth of upper/lower interfaces and it also
+checks circular interface relationship, etc.
+In this patch, netdev_upper_dev_link() is used.
+
+7. The seventh patch fixes bridge related problems.
+a) ->ndo_del_slave() doesn't work.
+b) It couldn't detect circular upper/lower interface relationship.
+c) It couldn't prevent stack overflow because of too deep depth
+of upper/lower interface
+d) It doesn't check the number of lower interfaces.
+e) Panics because of several reasons.
+These problems are actually the same problem.
+So, this patch fixes these problems.
+
+8. The eighth patch fixes packet forwarding issue in bridge mode
+Packet forwarding is not working in rmnet bridge mode.
+Because when a packet is forwarded, skb_push() for an ethernet header
+is needed. But it doesn't call skb_push().
+So, the ethernet header will be lost.
+
+Change log:
+ - update commit logs.
+ - drop two patches in this patchset because of wrong target branch.
+   - ("net: rmnet: add missing module alias")
+   - ("net: rmnet: print error message when command fails")
+ - remove unneessary rcu_read_lock() in the third patch.
+ - use rcu_dereference_bh() instead of rcu_dereference in third patch.
+ - do not allow to add a bridge device if rmnet interface is already
+   bridge mode in the seventh patch.
+
+Taehee Yoo (8):
+  net: rmnet: fix NULL pointer dereference in rmnet_newlink()
+  net: rmnet: fix NULL pointer dereference in rmnet_changelink()
+  net: rmnet: fix suspicious RCU usage
+  net: rmnet: remove rcu_read_lock in rmnet_force_unassociate_device()
+  net: rmnet: do not allow to change mux id if mux id is duplicated
+  net: rmnet: use upper/lower device infrastructure
+  net: rmnet: fix bridge mode bugs
+  net: rmnet: fix packet forwarding in rmnet bridge mode
+
+ .../ethernet/qualcomm/rmnet/rmnet_config.c    | 186 +++++++++---------
+ .../ethernet/qualcomm/rmnet/rmnet_config.h    |   3 +-
+ .../ethernet/qualcomm/rmnet/rmnet_handlers.c  |   7 +-
+ .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |   8 -
+ .../net/ethernet/qualcomm/rmnet/rmnet_vnd.h   |   1 -
+ 5 files changed, 98 insertions(+), 107 deletions(-)
 
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.17.1
 
-www.cloudflare.com
