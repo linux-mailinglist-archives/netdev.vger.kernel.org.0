@@ -2,266 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7E3170E19
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 02:59:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A90F2170E29
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 03:03:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728243AbgB0B66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 20:58:58 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:10700 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728177AbgB0B66 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 20:58:58 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 9AEA941909B378DF80C2;
-        Thu, 27 Feb 2020 09:58:47 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 27 Feb 2020 09:58:41 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     yuqi jin <jinyuqi@huawei.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michal Hocko <mhocko@suse.com>,
-        "Michael Ellerman" <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        "Anshuman Khandual" <anshuman.khandual@arm.com>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>
-Subject: [PATCH v5] lib: optimize cpumask_local_spread()
-Date:   Thu, 27 Feb 2020 09:58:08 +0800
-Message-ID: <1582768688-2314-1-git-send-email-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728299AbgB0CDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 21:03:35 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:43607 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728217AbgB0CDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 21:03:35 -0500
+Received: by mail-qv1-f67.google.com with SMTP id p2so808314qvo.10
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 18:03:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dj3JZX0q2OpOOXag2h/QC53oxoboWgqRwB4PESV/rCs=;
+        b=Z0LRS+HYsvTxuPtTio2pS3YEoq0lCNakoa+EDNWzCCW+g1lx3tIlvDdZgCB/xNBzbu
+         LHf84sMIx6A6LDZwglRupbC5lms0jk5REHmqUrQh+1el5/OqadRL7MwKqvdvUpaGJk4Y
+         2+koVjB94HUPSMT3aSxID26J+HlsOBbVNpivWzj2mbBiOXYAWDoAYnbVIMRmy3/K4Nf4
+         RoiXRnwra4EJLMG1JCnquLkIM41pLGkkoJvj8j5fbaMEL1+2g79rWByBH2zAmLbIkse0
+         +epV9SOUCFRJ8lxXFKoD2q+UEZCFArHmq4/OGUIbcu52SMAccoW7HbiZZu5ydFFb8DPo
+         9e9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dj3JZX0q2OpOOXag2h/QC53oxoboWgqRwB4PESV/rCs=;
+        b=F/vtuGnxBZo6xoKOd0s7X2sDZo1mVP3wiQdcMtNnS+NwBUx2ze3FaCSfenlCv6HYBW
+         vMFyb2PTRzwVLcZJPfluF//kJZl2CiiQjElJl+SwhyxavOJ4aGGfq5tHoPrPcs2VHzdJ
+         W/48+GYgGwAX4TseaPcDLJzoR7y01yfSqWfMRlxe+reVmfVndmpNAYjsVnq+CmUVVG4W
+         0G3MxdJODrlPjPWmXae1zhrWmj+thnj2+EGFS1orNN+j71Og0Y4FdleA3SC1efflR9yv
+         xtCtRUS/s4u7rDp4PKOj6XLIGkCUCzycxwL8FwMExYga1TlzY+H60ckDvH/Ab2ZysM/M
+         kivA==
+X-Gm-Message-State: APjAAAWjzvSDshP0wMumHIYaKA0jdiUnPF/+1BikCm2mGo+ORcRwhsJP
+        cvt4uKsQbFEcnHDg4nOOzawUT20PEQrvenfIf1c=
+X-Google-Smtp-Source: APXvYqz342qU6CWnSjwTgN/IhtZAmssfGzfIp3hSvDhjR5YmHyCNzQ3O9R2dw4n4uBoej2Qb5xJZf5HwRq4oMrYxns8=
+X-Received: by 2002:a0c:fe10:: with SMTP id x16mr2258531qvr.188.1582769013728;
+ Wed, 26 Feb 2020 18:03:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+References: <1582646588-91471-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <5361639fee997ea6239d6115978f86f26fb918b4.camel@mellanox.com> <5c4604cd-1cfc-6116-12e6-95054e77736a@mellanox.com>
+In-Reply-To: <5c4604cd-1cfc-6116-12e6-95054e77736a@mellanox.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 27 Feb 2020 10:02:57 +0800
+Message-ID: <CAMDZJNV1PVZ7NYp7KZiq_WsZrXOse5=sAHv=HAe_5mVtrGZSfA@mail.gmail.com>
+Subject: Re: [net-next] net/mlx5e: Remove the unnecessary parameter
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        "saeedm@dev.mellanox.co.il" <saeedm@dev.mellanox.co.il>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: yuqi jin <jinyuqi@huawei.com>
-
-In multi-processor and NUMA system, I/O driver will find cpu cores that
-which shall be bound IRQ. When cpu cores in the local numa have been
-used, it is better to find the node closest to the local numa node for
-performance, instead of choosing any online cpu immediately.
-
-On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
-system(0 - 1). The topology of this server is followed:
-available: 4 nodes (0-3)
-node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-node 0 size: 63379 MB
-node 0 free: 61899 MB
-node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
-node 1 size: 64509 MB
-node 1 free: 63942 MB
-node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
-node 2 size: 64509 MB
-node 2 free: 63056 MB
-node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
-node 3 size: 63997 MB
-node 3 free: 63420 MB
-node distances:
-node   0   1   2   3
-  0:  10  16  32  33
-  1:  16  10  25  32
-  2:  32  25  10  16
-  3:  33  32  16  10
-
-We perform PS (parameter server) business test, the behavior of the
-service is that the client initiates a request through the network card,
-the server responds to the request after calculation. When two PS
-processes run on node2 and node3 separately and the network card is
-located on 'node2' which is in cpu1, the performance of node2 (26W QPS)
-and node3 (22W QPS) is different.
-It is better that the NIC queues are bound to the cpu1 cores in turn,
-then XPS will also be properly initialized, while cpumask_local_spread
-only considers the local node. When the number of NIC queues exceeds the
-number of cores in the local node, it returns to the online core directly.
-So when PS runs on node3 sending a calculated request, the performance is
-not as good as the node2.
-The IRQ from 369-392 will be bound from NUMA node0 to NUMA node3 with this
-patch, before the patch:
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-0
-Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-1
-...
-Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-22
-Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-23
-After the patch:
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-72
-Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-73
-...
-Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-94
-Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-95
-So the performance of the node3 is the same as node2 that is 26W QPS when
-the network card is still in 'node2' with the patch.
-
-It is considered that the NIC and other I/O devices shall initialize the
-interrupt binding, if the cores of the local node are used up, it is
-reasonable to return the node closest to it. Let's optimize it and find
-the nearest node through NUMA distance for the non-local NUMA nodes.
-
-Cc: Rusty Russell <rusty@rustcorp.com.au>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Paul Burton <paul.burton@mips.com>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Mike Rapoport <rppt@linux.ibm.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: yuqi jin <jinyuqi@huawei.com>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
-ChangeLog from v4:
-    1. Rebase to 5.6-rc3 
-
-ChangeLog from v3:
-    1. Make spread_lock local to cpumask_local_spread();
-    2. Add more descriptions on the affinities change in log;
-
-ChangeLog from v2:
-    1. Change the variables as static and use spinlock to protect;
-    2. Give more explantation on test and performance;
-
- lib/cpumask.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 90 insertions(+), 12 deletions(-)
-
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index 0cb672eb107c..f7394ba36116 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -6,6 +6,7 @@
- #include <linux/export.h>
- #include <linux/memblock.h>
- #include <linux/numa.h>
-+#include <linux/spinlock.h>
- 
- /**
-  * cpumask_next - get the next cpu in a cpumask
-@@ -192,18 +193,39 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
- }
- #endif
- 
--/**
-- * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-- * @i: index number
-- * @node: local numa_node
-- *
-- * This function selects an online CPU according to a numa aware policy;
-- * local cpus are returned first, followed by non-local ones, then it
-- * wraps around.
-- *
-- * It's not very efficient, but useful for setup.
-- */
--unsigned int cpumask_local_spread(unsigned int i, int node)
-+static void calc_node_distance(int *node_dist, int node)
-+{
-+	int i;
-+
-+	for (i = 0; i < nr_node_ids; i++)
-+		node_dist[i] = node_distance(node, i);
-+}
-+
-+static int find_nearest_node(int *node_dist, bool *used)
-+{
-+	int i, min_dist = node_dist[0], node_id = -1;
-+
-+	/* Choose the first unused node to compare */
-+	for (i = 0; i < nr_node_ids; i++) {
-+		if (used[i] == 0) {
-+			min_dist = node_dist[i];
-+			node_id = i;
-+			break;
-+		}
-+	}
-+
-+	/* Compare and return the nearest node */
-+	for (i = 0; i < nr_node_ids; i++) {
-+		if (node_dist[i] < min_dist && used[i] == 0) {
-+			min_dist = node_dist[i];
-+			node_id = i;
-+		}
-+	}
-+
-+	return node_id;
-+}
-+
-+static unsigned int __cpumask_local_spread(unsigned int i, int node)
- {
- 	int cpu;
- 
-@@ -231,4 +253,60 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
- 	}
- 	BUG();
- }
-+
-+/**
-+ * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-+ * @i: index number
-+ * @node: local numa_node
-+ *
-+ * This function selects an online CPU according to a numa aware policy;
-+ * local cpus are returned first, followed by the nearest non-local ones,
-+ * then it wraps around.
-+ *
-+ * It's not very efficient, but useful for setup.
-+ */
-+unsigned int cpumask_local_spread(unsigned int i, int node)
-+{
-+	static DEFINE_SPINLOCK(spread_lock);
-+	static int node_dist[MAX_NUMNODES];
-+	static bool used[MAX_NUMNODES];
-+	unsigned long flags;
-+	int cpu, j, id;
-+
-+	/* Wrap: we always want a cpu. */
-+	i %= num_online_cpus();
-+
-+	if (node == NUMA_NO_NODE) {
-+		for_each_cpu(cpu, cpu_online_mask)
-+			if (i-- == 0)
-+				return cpu;
-+	} else {
-+		if (nr_node_ids > MAX_NUMNODES)
-+			return __cpumask_local_spread(i, node);
-+
-+		spin_lock_irqsave(&spread_lock, flags);
-+		memset(used, 0, nr_node_ids * sizeof(bool));
-+		calc_node_distance(node_dist, node);
-+		for (j = 0; j < nr_node_ids; j++) {
-+			id = find_nearest_node(node_dist, used);
-+			if (id < 0)
-+				break;
-+
-+			for_each_cpu_and(cpu, cpumask_of_node(id),
-+					 cpu_online_mask)
-+				if (i-- == 0) {
-+					spin_unlock_irqrestore(&spread_lock,
-+							       flags);
-+					return cpu;
-+				}
-+			used[id] = 1;
-+		}
-+		spin_unlock_irqrestore(&spread_lock, flags);
-+
-+		for_each_cpu(cpu, cpu_online_mask)
-+			if (i-- == 0)
-+				return cpu;
-+	}
-+	BUG();
-+}
- EXPORT_SYMBOL(cpumask_local_spread);
--- 
-2.7.4
-
+On Wed, Feb 26, 2020 at 5:53 PM Paul Blakey <paulb@mellanox.com> wrote:
+>
+>
+> On 2/26/2020 12:50 AM, Saeed Mahameed wrote:
+> > On Wed, 2020-02-26 at 00:03 +0800, xiangxia.m.yue@gmail.com wrote:
+> >> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >>
+> >> The parameter desired_size is always 0, and there is only one
+> >> function calling the mlx5_esw_chains_get_avail_sz_from_pool.
+> >> Deleting the parameter desired_size.
+> > Paul, what is the reasoning behind desired size, i confirm that it  is
+> > not actually used right now, do we have a pending patch that needs it
+> > ?
+> > if this is not going to happen in the near future i vote to apply this
+> > patch and bring it back when needed.
+>
+> Right, it will be used in a following patch that reduces the size given for nft flow tables.
+>
+> I planned on submitting it after connection tracking offload is complete, but it can be sent now.
+Hi, Paul, and Saeed
+The function will be used, so my patch is unnecessary. Thanks for explaining.
+> This is the patch:
+>
+> From 66d3cb9706ed09f00150a42f555a51404602bba4 Mon Sep 17 00:00:00 2001
+> From: Paul Blakey <paulb@mellanox.com>
+> Date: Wed, 8 Jan 2020 14:31:53 +0200
+> Subject: [PATCH] net/mlx5: Allocate smaller size tables for ft offload
+>
+> Instead of giving ft tables one of the largest tables available - 4M,
+> give it a more reasonable size - 64k. Especially since it will
+> always be created as a miss hook in the following patch.
+>
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Reviewed-by: Mark Bloch <markb@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> index 3990066..dabbc05 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> @@ -39,6 +39,7 @@
+>                                           1 * 1024 * 1024,
+>                                           64 * 1024,
+>                                           128 };
+> +#define ESW_FT_TBL_SZ (64 * 1024)
+>
+>  struct mlx5_esw_chains_priv {
+>         struct rhashtable chains_ht;
+> @@ -205,7 +206,9 @@ static unsigned int mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+>                 ft_attr.flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+>                                   MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
+>
+> -       sz = mlx5_esw_chains_get_avail_sz_from_pool(esw, POOL_NEXT_SIZE);
+> +       sz = (chain == mlx5_esw_chains_get_ft_chain(esw)) ?
+> +            mlx5_esw_chains_get_avail_sz_from_pool(esw, ESW_FT_TBL_SZ) :
+> +            mlx5_esw_chains_get_avail_sz_from_pool(esw, POOL_NEXT_SIZE);
+>         if (!sz)
+>                 return ERR_PTR(-ENOSPC);
+>         ft_attr.max_fte = sz;
+> --
+> 1.8.3.1
+>
+>
+> >
+> > Thanks,
+> > Saeed.
+> >
+> >> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >> ---
+> >>  .../net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c | 11
+> >> +++--------
+> >>  1 file changed, 3 insertions(+), 8 deletions(-)
+> >>
+> >> diff --git
+> >> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> >> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> >> index c5a446e..ce5b7e1 100644
+> >> ---
+> >> a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> >> +++
+> >> b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+> >> @@ -134,19 +134,14 @@ static unsigned int
+> >> mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+> >>      return FDB_TC_LEVELS_PER_PRIO;
+> >>  }
+> >>
+> >> -#define POOL_NEXT_SIZE 0
+> >>  static int
+> >> -mlx5_esw_chains_get_avail_sz_from_pool(struct mlx5_eswitch *esw,
+> >> -                                   int desired_size)
+> >> +mlx5_esw_chains_get_avail_sz_from_pool(struct mlx5_eswitch *esw)
+> >>  {
+> >>      int i, found_i = -1;
+> >>
+> >>      for (i = ARRAY_SIZE(ESW_POOLS) - 1; i >= 0; i--) {
+> >> -            if (fdb_pool_left(esw)[i] && ESW_POOLS[i] >
+> >> desired_size) {
+> >> +            if (fdb_pool_left(esw)[i])
+> >>                      found_i = i;
+> >> -                    if (desired_size != POOL_NEXT_SIZE)
+> >> -                            break;
+> >> -            }
+> >>      }
+> >>
+> >>      if (found_i != -1) {
+> >> @@ -198,7 +193,7 @@ static unsigned int
+> >> mlx5_esw_chains_get_level_range(struct mlx5_eswitch *esw)
+> >>              ft_attr.flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
+> >>                                MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
+> >>
+> >> -    sz = mlx5_esw_chains_get_avail_sz_from_pool(esw,
+> >> POOL_NEXT_SIZE);
+> >> +    sz = mlx5_esw_chains_get_avail_sz_from_pool(esw);
+> >>      if (!sz)
+> >>              return ERR_PTR(-ENOSPC);
+> >>      ft_attr.max_fte = sz;
