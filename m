@@ -2,164 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9BA617185B
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 14:14:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7520171883
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 14:19:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbgB0NN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 08:13:59 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:24308 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729030AbgB0NN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 08:13:59 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RDBpYT016160
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 08:13:58 -0500
-Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ydh92b9h2-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 08:13:57 -0500
-Received: from localhost
-        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Thu, 27 Feb 2020 13:13:53 -0000
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
-        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 27 Feb 2020 13:13:49 -0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01RDDnaR58065142
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 27 Feb 2020 13:13:49 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0DF1C4C040;
-        Thu, 27 Feb 2020 13:13:49 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BF78D4C052;
-        Thu, 27 Feb 2020 13:13:48 +0000 (GMT)
-Received: from [9.145.6.242] (unknown [9.145.6.242])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 27 Feb 2020 13:13:48 +0000 (GMT)
-Subject: Re: [RFC net-next] net/smc: update peer ID on device changes
-To:     Hans Wippel <ndev@hwipl.net>, ubraun@linux.ibm.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20200227113902.318060-1-ndev@hwipl.net>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-Date:   Thu, 27 Feb 2020 14:13:48 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200227113902.318060-1-ndev@hwipl.net>
-Content-Type: text/plain; charset=utf-8
+        id S1729125AbgB0NTU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Feb 2020 08:19:20 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:54562 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729088AbgB0NTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 08:19:20 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-97-AtnrpEANOW2WKzaBD74Z0g-1; Thu, 27 Feb 2020 13:19:16 +0000
+X-MC-Unique: AtnrpEANOW2WKzaBD74Z0g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 27 Feb 2020 13:19:15 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 27 Feb 2020 13:19:15 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     netdev <netdev@vger.kernel.org>
+Subject: sys_sendto() spinning for 1.6ms
+Thread-Topic: sys_sendto() spinning for 1.6ms
+Thread-Index: AdXtbb8kfVfk26r1Rfib7iXWKp20CA==
+Date:   Thu, 27 Feb 2020 13:19:15 +0000
+Message-ID: <303c8600e4964d1593b038239779ba4b@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-x-cbid: 20022713-0016-0000-0000-000002EACE4A
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20022713-0017-0000-0000-0000334E0293
-Message-Id: <b56d4bbc-2a4e-634f-10d4-17bd0253c033@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_03:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- malwarescore=0 priorityscore=1501 lowpriorityscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 bulkscore=0 mlxscore=0 suspectscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002270104
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/02/2020 12:39, Hans Wippel wrote:
-> From: hwipl <ndev@hwipl.net>
-> 
-> A SMC host's peer ID contains the MAC address of the first active RoCE
-> device. However, if this device becomes inactive or is removed, the peer
-> ID is not updated. This patch adds peer ID updates on device changes.
+I'm looking into unexpected delays in some real time (RTP audio) processing.
+Mostly they are a few 100 usecs in the softint code.
 
-The peer ID is used to uniquely identify an SMC host and to check if there
-are already established link groups to the peer which can be reused.
-In failover scenarios RoCE devices can go down and get active again later,
-but this must not change the current peer ID of the host.  
-The part of the MAC address that is included in the peer ID is not used for
-other purposes than the identification of an SMC host.
+However I've just triggered in sendto() on a raw IPV4 socket taking 1.6ms.
+Most of the sends take less than 32us.
+The process isn't sleeping and there are no interrupts.
+Any idea where it might be spinning?
 
-> 
-> Signed-off-by: hwipl <ndev@hwipl.net>
-> ---
->  net/smc/smc_ib.c | 32 ++++++++++++++++++++++++--------
->  1 file changed, 24 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-> index 3444de27fecd..5818636962c6 100644
-> --- a/net/smc/smc_ib.c
-> +++ b/net/smc/smc_ib.c
-> @@ -159,11 +159,29 @@ static int smc_ib_fill_mac(struct smc_ib_device *smcibdev, u8 ibport)
->   * plus a random 2-byte number is used to create this identifier.
->   * This name is delivered to the peer during connection initialization.
->   */
-> -static inline void smc_ib_define_local_systemid(struct smc_ib_device *smcibdev,
-> -						u8 ibport)
-> +static void smc_ib_update_local_systemid(void)
->  {
-> -	memcpy(&local_systemid[2], &smcibdev->mac[ibport - 1],
-> -	       sizeof(smcibdev->mac[ibport - 1]));
-> +	struct smc_ib_device *smcibdev;
-> +	u8 ibport;
-> +
-> +	/* get first ib device with an active port */
-> +	spin_lock(&smc_ib_devices.lock);
-> +	list_for_each_entry(smcibdev, &smc_ib_devices.list, list) {
-> +		for (ibport = 1; ibport <= SMC_MAX_PORTS; ibport++) {
-> +			if (smc_ib_port_active(smcibdev, ibport))
-> +				goto out;
-> +		}
-> +	}
-> +	smcibdev = NULL;
-> +out:
-> +	spin_unlock(&smc_ib_devices.lock);
-> +
-> +	/* set (new) mac address or reset to zero */
-> +	if (smcibdev)
-> +		ether_addr_copy(&local_systemid[2],
-> +				(u8 *)&smcibdev->mac[ibport - 1]);
-> +	else
-> +		eth_zero_addr(&local_systemid[2]);
->  }
->  
->  bool smc_ib_is_valid_local_systemid(void)
-> @@ -229,10 +247,6 @@ static int smc_ib_remember_port_attr(struct smc_ib_device *smcibdev, u8 ibport)
->  	rc = smc_ib_fill_mac(smcibdev, ibport);
->  	if (rc)
->  		goto out;
-> -	if (!smc_ib_is_valid_local_systemid() &&
-> -	    smc_ib_port_active(smcibdev, ibport))
-> -		/* create unique system identifier */
-> -		smc_ib_define_local_systemid(smcibdev, ibport);
->  out:
->  	return rc;
->  }
-> @@ -254,6 +268,7 @@ static void smc_ib_port_event_work(struct work_struct *work)
->  			clear_bit(port_idx, smcibdev->ports_going_away);
->  		}
->  	}
-> +	smc_ib_update_local_systemid();
->  }
->  
->  /* can be called in IRQ context */
-> @@ -599,6 +614,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
->  	smc_ib_cleanup_per_ibdev(smcibdev);
->  	ib_unregister_event_handler(&smcibdev->event_handler);
->  	kfree(smcibdev);
-> +	smc_ib_update_local_systemid();
->  }
->  
->  static struct ib_client smc_ib_client = {
-> 
+I'm running ftrace monitoring scheduler events, system calls and
+interrupts (hard and soft) but can't turn on anything other than
+selective function trace (the trace cost is far too high).
 
--- 
-Karsten
+The ftrace at the time of the sendto() is (I'm only running 4 cpu):
+    pid-28219 [002] .... 1979891.159912: sys_sendto(fd: 394, buff: 7ffbcb2e2940, len: c8, flags: 0, addr: 7ffbccdc9490, addr_len: 10)
+    pid-28217 [003] .... 1979891.159912: sys_recvfrom(fd: 23c, ubuf: 7ffbcb1db100, size: 748, flags: 0, addr: 7ffbcddcb5b0, addr_len: 7ffbcddcb5ac)
+    pid-28218 [001] .... 1979891.159912: sys_futex(uaddr: 113d8e0, op: 80, val: 2, utime: 0, uaddr2: 113d8e0, val3: 6e3a)
+    pid-28216 [000] .... 1979891.159912: sys_futex(uaddr: 113d8e0, op: 81, val: 1, utime: 7ffbce5cc920, uaddr2: 113d8e0, val3: 6e38)
+    pid-28217 [003] .... 1979891.159912: sys_recvfrom -> 0xac
 
-(I'm a dude)
+Cpu 2 trace is:
+    pid-28219 [002] .... 1979891.159910: sys_futex(uaddr: 113d8e0, op: 81, val: 1, utime: 7ffbccdc9920, uaddr2: 113d8e0, val3: 6e3b)
+    pid-28219 [002] .... 1979891.159911: sys_futex -> 0x0
+    pid-28219 [002] .... 1979891.159912: sys_sendto(fd: 394, buff: 7ffbcb2e2940, len: c8, flags: 0, addr: 7ffbccdc9490, addr_len: 10)
+    pid-28219 [002] .... 1979891.161647: sys_sendto -> 0xc8
+    pid-28219 [002] .... 1979891.161648: sys_pread64(fd: 3ae, buf: 7ffbccdc9420, count: 1, pos: 0)
+    pid-28219 [002] .... 1979891.161650: sys_pread64 -> 0x1
+    pid-28219 [002] .... 1979891.161651: sys_pwrite64(fd: 3ae, buf: d495e8, count: 1, pos: 0)
+
+The previous send on fd 394 was much earlier and that socket is only used
+by that process, and only for sends (to avoid sleeping on the socket lock).
+
+It can't be an problem with the socket send buffer - because that would sleep.
+
+The other 3 cpu carry on processing (the futex calls return immediately).
+In fact they all sleep 1.4ms before the sento() finishes.
+
+At the moment the trace is a sample of 1 - so I don't know if the concurrent
+sento() and recvfrom() are significant.
+They will both be the same remote IP, and might be the same port.
+
+Ideas before I start trying to bisect the call graph?
+
+A rough histogram of the time (ns) for the sendto() call.
+0k: 71866866
+48k: 99213
+80k: 3583
+112k: 371
+144k: 245
+176k: 694
+208k: 382
+240k: 214
+272k: 20
+304k: 13
+336k: 15
+368k: 13
+400k: 11
+432k: 14
+464k: 12
+496k: 7
+528k: 10
+560k: 2
+592k: 1
+624k: 2
+656k: 1
+688k: 0 (twice)
+752k: 1
+784k: 0 (twice)
+848k: 1
+880k: 1
+912k: 0 (24 times)
+1680k: 1
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
