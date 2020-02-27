@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94657170EFA
+	by mail.lfdr.de (Postfix) with ESMTP id 2324C170EF9
 	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbgB0DUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 22:20:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48736 "EHLO mail.kernel.org"
+        id S1728388AbgB0DUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 22:20:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728375AbgB0DUd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 22:20:33 -0500
+        id S1728381AbgB0DUe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 22:20:34 -0500
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B735A2467F;
-        Thu, 27 Feb 2020 03:20:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D28762468D;
+        Thu, 27 Feb 2020 03:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582773631;
-        bh=bWUIt0Y0qiawoUkuDWq7R7xaJuQP8uAqD+wd6XdF8z4=;
+        s=default; t=1582773632;
+        bh=EfTAn5mwHDeL7VcK/Dul+M1bNJ14Gpphqty6Accb/V4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uX1FEMdhRL9jTLcovsXP2qh5AxVHXLvDoqXXS6w3z2BekoCu7hQCizfXu6UgQT2Xa
-         6yLGSP0EGYYNm8aVLU7gZq53q2ToVRzL4Uz+pMt2YorymilK6/DbpY/oReWxseELst
-         kCuszHNFuRVuutIKF/zoL4SUK2JWMk05kZSEXZVQ=
+        b=OrG3ZYsyhwk7huJnB5INk6aRTvSur01JyoF1Nz+12ysuDzGKkvvk9OibOU47rxh6E
+         s0t96rJlsQ3nmKVGp4KTp7xAVqxwQOddpVGmy93+iV6ub5/oxNNNzJRNR5zg5vaseX
+         j15XltBiUN9F5BBlkxdSWenvuRM7iHqfGfzgSW4Q=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,10 +31,10 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         toshiaki.makita1@gmail.com, daniel@iogearbox.net,
         john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH RFC v4 bpf-next 10/11] libbpf: Add egress XDP support
-Date:   Wed, 26 Feb 2020 20:20:12 -0700
-Message-Id: <20200227032013.12385-11-dsahern@kernel.org>
+        dsahern@gmail.com
+Subject: [PATCH RFC v4 bpf-next 11/11] samples/bpf: xdp1, add egress XDP support
+Date:   Wed, 26 Feb 2020 20:20:13 -0700
+Message-Id: <20200227032013.12385-12-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200227032013.12385-1-dsahern@kernel.org>
 References: <20200227032013.12385-1-dsahern@kernel.org>
@@ -45,205 +45,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dahern@digitalocean.com>
+From: Prashant Bhole <prashantbhole.linux@gmail.com>
 
-Patch adds egress XDP support in libbpf.
-
-First, new section name hint, xdp_egress, is added to set expected attach
-type at program load. Programs can use xdp_egress as the prefix in
-the SEC statement to load the program with the BPF_XDP_EGRESS
-attach type set.
-
-Second, new APIs are added that parallel the existing xdp ones which
-can be changed:
-        bpf_set_link_xdp_egress_fd - attach program at fd to device as
-                                     xdp egress
-        bpf_get_link_xdp_egress_id - get id for xdp egress program
-        bpf_get_link_xdp_egress_info - get info for xdp egress program
-
-Internally, the libbpf code is re-factored to be common for both
-XDP use cases with a new egress argument to specify which netlink
-attribute to use.
+xdp1 and xdp2 now accept -E flag to set XDP program in the egress
+path.
 
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
-Co-developed-by: David Ahern <dahern@digitalocean.com>
-Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- tools/lib/bpf/libbpf.c   |  2 ++
- tools/lib/bpf/libbpf.h   |  6 +++++
- tools/lib/bpf/libbpf.map |  3 +++
- tools/lib/bpf/netlink.c  | 52 ++++++++++++++++++++++++++++++++++------
- 4 files changed, 56 insertions(+), 7 deletions(-)
+ samples/bpf/xdp1_user.c | 30 +++++++++++++++++++++++++-----
+ 1 file changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 996162801f7a..d90f7f034aad 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -6295,6 +6295,8 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("freplace/", EXT,
- 		.is_attach_btf = true,
- 		.attach_fn = attach_trace),
-+	BPF_EAPROG_SEC("xdp_egress",		BPF_PROG_TYPE_XDP,
-+						BPF_XDP_EGRESS),
- 	BPF_PROG_SEC("xdp",			BPF_PROG_TYPE_XDP),
- 	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
- 	BPF_PROG_SEC("lwt_in",			BPF_PROG_TYPE_LWT_IN),
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 02fc58a21a7f..6d4071215b06 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -443,6 +443,12 @@ LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
- LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags);
- LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
- 				     size_t info_size, __u32 flags);
-+LIBBPF_API int bpf_set_link_xdp_egress_fd(int ifindex, int fd, __u32 flags);
-+LIBBPF_API int bpf_get_link_xdp_egress_id(int ifindex, __u32 *prog_id,
-+					  __u32 flags);
-+LIBBPF_API int bpf_get_link_xdp_egress_info(int ifindex,
-+					    struct xdp_link_info *info,
-+					    size_t info_size, __u32 flags);
+diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
+index c447ad9e3a1d..72c5bedbd030 100644
+--- a/samples/bpf/xdp1_user.c
++++ b/samples/bpf/xdp1_user.c
+@@ -21,17 +21,27 @@
+ static int ifindex;
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+ static __u32 prog_id;
++static bool egress;
  
- struct perf_buffer;
+ static void int_exit(int sig)
+ {
+ 	__u32 curr_prog_id = 0;
++	int err;
  
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 7b014c8cdece..7441b2bd267a 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -239,4 +239,7 @@ LIBBPF_0.0.7 {
- LIBBPF_0.0.8 {
- 	global:
- 		bpf_program__set_attach_target;
-+		bpf_set_link_xdp_egress_fd;
-+		bpf_get_link_xdp_egress_id;
-+		bpf_get_link_xdp_egress_info;
- } LIBBPF_0.0.7;
-diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index 431bd25c6cdb..3c53c5dff122 100644
---- a/tools/lib/bpf/netlink.c
-+++ b/tools/lib/bpf/netlink.c
-@@ -28,6 +28,7 @@ typedef int (*__dump_nlmsg_t)(struct nlmsghdr *nlmsg, libbpf_dump_nlmsg_t,
- struct xdp_id_md {
- 	int ifindex;
- 	__u32 flags;
-+	bool egress;
- 	struct xdp_link_info info;
- };
- 
-@@ -132,7 +133,7 @@ static int bpf_netlink_recv(int sock, __u32 nl_pid, int seq,
- 	return ret;
+-	if (bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags)) {
++	if (egress)
++		err = bpf_get_link_xdp_egress_id(ifindex, &curr_prog_id,
++						 xdp_flags);
++	else
++		err = bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags);
++	if (err) {
+ 		printf("bpf_get_link_xdp_id failed\n");
+ 		exit(1);
+ 	}
+ 	if (prog_id == curr_prog_id)
+-		bpf_set_link_xdp_fd(ifindex, -1, xdp_flags);
++		if (egress)
++			bpf_set_link_xdp_egress_fd(ifindex, -1, xdp_flags);
++		else
++			bpf_set_link_xdp_fd(ifindex, -1, xdp_flags);
+ 	else if (!curr_prog_id)
+ 		printf("couldn't find a prog id on a given interface\n");
+ 	else
+@@ -73,7 +83,8 @@ static void usage(const char *prog)
+ 		"OPTS:\n"
+ 		"    -S    use skb-mode\n"
+ 		"    -N    enforce native mode\n"
+-		"    -F    force loading prog\n",
++		"    -F    force loading prog\n"
++		"    -E	   egress path program\n",
+ 		prog);
  }
  
--int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
-+static int __bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags, bool egress)
- {
- 	int sock, seq = 0, ret;
- 	struct nlattr *nla, *nla_xdp;
-@@ -159,7 +160,7 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
- 	/* started nested attribute for XDP */
- 	nla = (struct nlattr *)(((char *)&req)
- 				+ NLMSG_ALIGN(req.nh.nlmsg_len));
--	nla->nla_type = NLA_F_NESTED | IFLA_XDP;
-+	nla->nla_type = NLA_F_NESTED | (egress ? IFLA_XDP_EGRESS : IFLA_XDP);
- 	nla->nla_len = NLA_HDRLEN;
+@@ -85,7 +96,7 @@ int main(int argc, char **argv)
+ 	};
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+-	const char *optstr = "FSN";
++	const char *optstr = "FSNE";
+ 	int prog_fd, map_fd, opt;
+ 	struct bpf_object *obj;
+ 	struct bpf_map *map;
+@@ -103,6 +114,9 @@ int main(int argc, char **argv)
+ 		case 'F':
+ 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 			break;
++		case 'E':
++			egress = true;
++			break;
+ 		default:
+ 			usage(basename(argv[0]));
+ 			return 1;
+@@ -130,6 +144,8 @@ int main(int argc, char **argv)
  
- 	/* add XDP fd */
-@@ -191,6 +192,16 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
- 	return ret;
- }
+ 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+ 	prog_load_attr.file = filename;
++	if (egress)
++		prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
  
-+int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
-+{
-+	return __bpf_set_link_xdp_fd(ifindex, fd, flags, false);
-+}
-+
-+int bpf_set_link_xdp_egress_fd(int ifindex, int fd, __u32 flags)
-+{
-+	return __bpf_set_link_xdp_fd(ifindex, fd, flags, true);
-+}
-+
- static int __dump_link_nlmsg(struct nlmsghdr *nlh,
- 			     libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
- {
-@@ -211,15 +222,17 @@ static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
- 	struct nlattr *xdp_tb[IFLA_XDP_MAX + 1];
- 	struct xdp_id_md *xdp_id = cookie;
- 	struct ifinfomsg *ifinfo = msg;
-+	unsigned int atype;
- 	int ret;
+ 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+ 		return 1;
+@@ -149,7 +165,11 @@ int main(int argc, char **argv)
+ 	signal(SIGINT, int_exit);
+ 	signal(SIGTERM, int_exit);
  
- 	if (xdp_id->ifindex && xdp_id->ifindex != ifinfo->ifi_index)
- 		return 0;
- 
--	if (!tb[IFLA_XDP])
-+	atype = xdp_id->egress ? IFLA_XDP_EGRESS : IFLA_XDP;
-+	if (!tb[atype])
- 		return 0;
- 
--	ret = libbpf_nla_parse_nested(xdp_tb, IFLA_XDP_MAX, tb[IFLA_XDP], NULL);
-+	ret = libbpf_nla_parse_nested(xdp_tb, IFLA_XDP_MAX, tb[atype], NULL);
- 	if (ret)
- 		return ret;
- 
-@@ -251,10 +264,10 @@ static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
- 	return 0;
- }
- 
--int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
--			  size_t info_size, __u32 flags)
-+static int __bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
-+				   size_t info_size, __u32 flags, bool egress)
- {
--	struct xdp_id_md xdp_id = {};
-+	struct xdp_id_md xdp_id;
- 	int sock, ret;
- 	__u32 nl_pid;
- 	__u32 mask;
-@@ -274,6 +287,7 @@ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
- 
- 	xdp_id.ifindex = ifindex;
- 	xdp_id.flags = flags;
-+	xdp_id.egress = egress;
- 
- 	ret = libbpf_nl_get_link(sock, nl_pid, get_xdp_info, &xdp_id);
- 	if (!ret) {
-@@ -287,6 +301,18 @@ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
- 	return ret;
- }
- 
-+int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
-+			  size_t info_size, __u32 flags)
-+{
-+	return __bpf_get_link_xdp_info(ifindex, info, info_size, flags, false);
-+}
-+
-+int bpf_get_link_xdp_egress_info(int ifindex, struct xdp_link_info *info,
-+				 size_t info_size, __u32 flags)
-+{
-+	return __bpf_get_link_xdp_info(ifindex, info, info_size, flags, true);
-+}
-+
- static __u32 get_xdp_id(struct xdp_link_info *info, __u32 flags)
- {
- 	if (info->attach_mode != XDP_ATTACHED_MULTI)
-@@ -313,6 +339,18 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
- 	return ret;
- }
- 
-+int bpf_get_link_xdp_egress_id(int ifindex, __u32 *prog_id, __u32 flags)
-+{
-+	struct xdp_link_info info;
-+	int ret;
-+
-+	ret = bpf_get_link_xdp_egress_info(ifindex, &info, sizeof(info), flags);
-+	if (!ret)
-+		*prog_id = get_xdp_id(&info, flags);
-+
-+	return ret;
-+}
-+
- int libbpf_nl_get_link(int sock, unsigned int nl_pid,
- 		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
- {
+-	if (bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags) < 0) {
++	if (egress)
++		err = bpf_set_link_xdp_egress_fd(ifindex, prog_fd, xdp_flags);
++	else
++		err = bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags);
++	if (err < 0) {
+ 		printf("link set xdp fd failed\n");
+ 		return 1;
+ 	}
 -- 
 2.21.1 (Apple Git-122.3)
 
