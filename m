@@ -2,106 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D59172AED
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 23:13:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44020172AF1
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 23:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729982AbgB0WNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 17:13:42 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44722 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729773AbgB0WNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 17:13:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TLyRnJ1kCDzmRuRPTz7K92VaFFh1/vMyyOGH0HaTtQU=; b=hCxh6qfDzl2vp7DfzH7YiKHP4
-        DhRLp6tdz6Pf8sxKQD3D3uLhUeE+80ZYoKZT3UyLGQSdNw2BZ2vr/HFjStzNnKnsTYpuy/9jOOGfk
-        6he1mGrm1X7/9X5DeNZUs1Z0YBlJbGOhyg/Mxqn/zwJREwIsRGrpgC623yJdZzyZ7xB5x/DQCzdNa
-        fm5KA+xAB23YrLCSiNZBi0hBMiSRKZamKETgxTXepn1R/l59dEmUXwWzllDpEEhgRZJDxCjgOc3kp
-        mQO+YUx+2XZASMjQcq5zZM75k/L8YzXGdqB7mqjRvkBPzH4TlE6bzD5IbwetU/vIwC7WwXYqo+UDW
-        J0cfEvkEA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:53650)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j7RPK-0008OF-2y; Thu, 27 Feb 2020 22:13:26 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j7RP9-0001Kj-JH; Thu, 27 Feb 2020 22:13:15 +0000
-Date:   Thu, 27 Feb 2020 22:13:15 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, linux-doc@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, ioana.ciornei@nxp.com,
-        linux-stm32@st-md-mailman.stormreply.com, f.fainelli@gmail.com,
-        corbet@lwn.net, michal.simek@xilinx.com, joabreu@synopsys.com,
-        kuba@kernel.org, Mark-MC.Lee@mediatek.com, sean.wang@mediatek.com,
-        alexandre.torgue@st.com, hauke@hauke-m.de,
-        radhey.shyam.pandey@xilinx.com, linux-mediatek@lists.infradead.org,
-        john@phrozen.org, matthias.bgg@gmail.com, peppe.cavallaro@st.com,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        vivien.didelot@gmail.com, mcoquelin.stm32@gmail.com, nbd@nbd.name,
-        olteanv@gmail.com, hkallweit1@gmail.com
-Subject: Re: [PATCH net-next v2 0/8] rework phylink interface for split
- MAC/PCS support
-Message-ID: <20200227221315.GS25745@shell.armlinux.org.uk>
-References: <20200226102312.GX25745@shell.armlinux.org.uk>
- <20200227.120254.241641132362203475.davem@davemloft.net>
+        id S1730043AbgB0WO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 17:14:29 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:9222 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726460AbgB0WO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 17:14:29 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RLwhjW090823;
+        Thu, 27 Feb 2020 17:14:23 -0500
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ydq6y1p7f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Feb 2020 17:14:23 -0500
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 01RLxYp2092805;
+        Thu, 27 Feb 2020 17:14:23 -0500
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ydq6y1p6v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Feb 2020 17:14:23 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 01RMBrKV027117;
+        Thu, 27 Feb 2020 22:14:22 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma01wdc.us.ibm.com with ESMTP id 2ydcmkrkpy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Feb 2020 22:14:22 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01RMELmS45875524
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Feb 2020 22:14:21 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7F0D811208E;
+        Thu, 27 Feb 2020 22:14:21 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7FCBC11208A;
+        Thu, 27 Feb 2020 22:14:20 +0000 (GMT)
+Received: from Criss-MacBook-Pro.local (unknown [9.160.52.65])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Thu, 27 Feb 2020 22:14:20 +0000 (GMT)
+From:   Cris Forno <cforno12@linux.ibm.com>
+To:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org
+Cc:     Cris Forno <cforno12@linux.vnet.ibm.com>, mst@redhat.com,
+        jasowang@redhat.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, sashal@kernel.org, tlfalcon@linux.ibm.com,
+        davem@davemloft.net, willemdebruijn.kernel@gmail.com,
+        kuba@kernel.org
+Subject: Re: [PATCH, net-next, v6, 1/2] ethtool: Factored out similar ethtool link settings for virtual devices to core
+In-Reply-To: <20200226161248.GC22401@unicorn.suse.cz>
+Date:   Thu, 27 Feb 2020 16:14:17 -0600
+Message-ID: <m21rqf65l2.fsf@Criss-MacBook-Pro.local.i-did-not-set--mail-host-address--so-tickle-me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200227.120254.241641132362203475.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-27_07:2020-02-26,2020-02-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 malwarescore=0 lowpriorityscore=0 spamscore=0
+ mlxlogscore=999 clxscore=1011 mlxscore=0 adultscore=0 impostorscore=0
+ phishscore=0 suspectscore=1 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2001150001 definitions=main-2002270146
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 12:02:54PM -0800, David Miller wrote:
-> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Date: Wed, 26 Feb 2020 10:23:12 +0000
-> 
-> > The following series changes the phylink interface to allow us to
-> > better support split MAC / MAC PCS setups.  The fundamental change
-> > required for this turns out to be quite simple.
-> > 
-> > Today, mac_config() is used for everything to do with setting the
-> > parameters for the MAC, and mac_link_up() is used to inform the
-> > MAC driver that the link is now up (and so to allow packet flow.)
-> > mac_config() also has had a few implementation issues, with folk
-> > who believe that members such as "speed" and "duplex" are always
-> > valid, where "link" gets used inappropriately, etc.
-> > 
-> > With the proposed patches, all this changes subtly - but in a
-> > backwards compatible way at this stage.
-> > 
-> > We pass the the full resolved link state (speed, duplex, pause) to
-> > mac_link_up(), and it is now guaranteed that these parameters to
-> > this function will always be valid (no more SPEED_UNKNOWN or
-> > DUPLEX_UNKNOWN here - unless phylink is fed with such things.)
-> > 
-> > Drivers should convert over to using the state in mac_link_up()
-> > rather than configuring the speed, duplex and pause in the
-> > mac_config() method. The patch series includes a number of MAC
-> > drivers which I've thought have been easy targets - I've left the
-> > remainder as I think they need maintainer input. However, *all*
-> > drivers will need conversion for future phylink development.
-> > 
-> > v2: add ocelot/felix and qca/ar9331 DSA drivers to patch 2, add
-> >   received tested-by so far.
-> 
-> In order to end the storm in a teacup, I've applied this series.
-> 
-> :-)
-> 
-> Thanks Russell.
+Michal Kubecek <mkubecek@suse.cz> writes:
 
-Thanks David, I was getting concerned that the teacup might break! :p
+> On Tue, Feb 25, 2020 at 03:41:10PM -0600, Cris Forno wrote:
+>> Three virtual devices (ibmveth, virtio_net, and netvsc) all have
+>> similar code to get link settings and validate ethtool command. To
+>> eliminate duplication of code, it is factored out into core/ethtool.c.
+>> 
+>> Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
+>> ---
+> [...]
+>> +int ethtool_virtdev_set_link_ksettings(struct net_device *dev,
+>> +				       const struct ethtool_link_ksettings *cmd,
+>> +				       u32 *dev_speed, u8 *dev_duplex,
+>> +				       bool (*dev_virtdev_validate_cmd)
+>> +				       (const struct ethtool_link_ksettings *))
+>> +{
+>> +	bool (*validate)(const struct ethtool_link_ksettings *);
+>> +	u32 speed;
+>> +	u8 duplex;
+>> +
+>> +	validate = dev_virtdev_validate_cmd ?: ethtool_virtdev_validate_cmd;
+>> +	speed = cmd->base.speed;
+>> +	duplex = cmd->base.duplex;
+>> +	/* don't allow custom speed and duplex */
+>> +	if (!ethtool_validate_speed(speed) ||
+>> +	    !ethtool_validate_duplex(duplex) ||
+>> +	    !(*validate)(cmd))
+>> +		return -EINVAL;
+>> +	*dev_speed = speed;
+>> +	*dev_duplex = duplex;
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL(ethtool_virtdev_set_link_ksettings);
+>
+> I didn't realize it when I asked about netvsc_validate_ethtool_ss_cmd() 
+> while reviewing v5 but after you got rid of it, all three callers of
+> ethtool_virtdev_set_link_ksettings() call it with NULL as validator,
+> i.e. use the default ethtool_virtdev_validate_cmd().
+>
+> This brings a question if we really need the possibility to provide
+> a custom validator function. Do you think we should expect some driver
+> needing a custom validator function soon? If not, we should probably use
+> the default validation unconditionally for now and only add the option
+> to provide custom validator function when (if) there is use for it.
+>
+> Michal
+I agree, we do not need the custom validator function pointer parameter
+in the set_link_ksettings function since it is currently not needed. The
+parameter will be removed in v7. Thanks again Michal!
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+--Cris Forno
+
