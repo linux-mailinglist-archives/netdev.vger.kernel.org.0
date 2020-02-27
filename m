@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78AB91711C4
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E18071711BF
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728607AbgB0Hut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 02:50:49 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43722 "EHLO
+        id S1728601AbgB0Hus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 02:50:48 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42919 "EHLO
         mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728552AbgB0Huk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:40 -0500
-Received: by mail-wr1-f65.google.com with SMTP id c13so2021196wrq.10
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:38 -0800 (PST)
+        with ESMTP id S1728547AbgB0Hul (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:41 -0500
+Received: by mail-wr1-f65.google.com with SMTP id p18so2029311wre.9
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tyV9lcuBVrqFGYoHSGSXpAbJnERsNWRXUp/Gmv6cyH0=;
-        b=nEONzRwsGDMvKUJ+ebLxaw9hhwamy/wf81aKa42SdxFn4/eVtlMdmG5adGac0DDmqv
-         9W58uIrefKk8MQg/UZNRzZYwtBemYcLJlE1xoAfLIwgXQcm4MaWXrt+YVVI1oOwdoyHV
-         PH6vqyHceYFmQx04I99zZd5nnkCmK3HP2jtqWaLYhjPikPXZZGKqILO9ms/2I1/ji/h4
-         xg0LSKmUoCjpQ690wIusgw1WPs0hcfC35Eo820Me3ALv58w+lhe3skBi7SQqk2X7Bbsj
-         qVYaI4LRWwqNTNuhnIXEqbzmHTQF8Llw+0ttdspEJyH3pzUU5ZUhpg0HezOmokysXTCI
-         5Gqg==
+        bh=u+69PkjTDlqhdwSpfojKEXU9sYxW/SQJqES4cIW7flI=;
+        b=S+e2A6pdXwBkywG6IUabR/anyFZmCd8sNYmW96jhwcZfY8j3gVOL9JajUrqcg1EM40
+         1kUEKwxXijGJfyDmwLpacmF8mvJRI5X/hmVuLjmMR1IiN3iUWNVVEdffVCXY4x1UHWsu
+         CE73KlxxGFigMRjTwQWmB/cFTpI0WLpGiIhauq3L64vhf39pTy3Y0WoZWkE1az1B79O0
+         CaVQE8E8W8zWasY4UzWdfSJI6nx997efBr1JYsXL8lWWjmH5zZ247+6dKPNlnahK+ff0
+         f8h+0fESGebjFAVH6GcdACEgEsOisqnnzQz+8kRnhTxnWx2uPotSRyeOodoULBXLZNwJ
+         rTRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tyV9lcuBVrqFGYoHSGSXpAbJnERsNWRXUp/Gmv6cyH0=;
-        b=BER8erSsaXdoG15FIt/d8C1zGGpWI9Vo9veezUkJgovtVUmpST9z7uAnrLovAz+1QM
-         1MZr8JSRkzP9tJADeakgc4AM1nFK1uWg/G3lLZP5l3dE88XYSy3cA4e3m7N4m+7yE15x
-         +TtISFu8cDfx6jy5vndQ49IgVhrG50z+KR2fQrnylGe3+Mde2OkXqtmb9Mv1/yEznOqg
-         82XESVCcvR1dUeKHRk2LDpove1tdQ+QOUw31ZJ843c9s+BPR47Rins+X5mcrJefpu1tI
-         zHshgLNyAhoTVLgWyJGXBTdGmjR8dtHb49KydvLvpwl4fSVn33l30qGKKIe8Y7LNtuBk
-         ELnw==
-X-Gm-Message-State: APjAAAXM73DXgm2UOUVMepanhz39g89lh/cMjWfsphsozVu759nLW90C
-        oVQQvw8c9XVUKETmySIJuDSOZPzf95w=
-X-Google-Smtp-Source: APXvYqxnuvcdWCyNL5ZOa0hVixr22JK5rNEwaGPbh0hIn+QaNP//CPrMf4Xht3wnaF6KtiFJZqbi5Q==
-X-Received: by 2002:adf:eb51:: with SMTP id u17mr3479768wrn.29.1582789837946;
-        Wed, 26 Feb 2020 23:50:37 -0800 (PST)
+        bh=u+69PkjTDlqhdwSpfojKEXU9sYxW/SQJqES4cIW7flI=;
+        b=ZrZtsy4nuA94r68J1UWSri+vXbf964CjvLkLDHdDwyybfs9iubOJarWNSnTDHaef+2
+         Na/+X/mnAkX6GfAtmrBAp5GShqBIvYkg2n0WM4dbi+sSH+r0UrckItwBQ+YZHqU2ppbc
+         8be8mtHDxK2WFkbRmYtB5QMFzT7go+F57dtrhvbya7zWdT3GHMGB6dRoNWglzTqgowox
+         22WfNfucGTXq+U4tJ2l7gk50ArFC1rcdrjMwSqHeYcvKiAqNct881JhDu8vIQMAyCvkW
+         3ZsNDrjRjKqISLJI4c2wb5gvzwD67nzF+y0fW/EKDpg/SJ91iVeka35WeqBaLx6KTbrk
+         jxAQ==
+X-Gm-Message-State: APjAAAXKVOr+2dh7+38U2vkWeo4F2hrDzoDg2nftACJkUdSfid0SQCfZ
+        lNgni5ULi1r5iABXznEoXL4fWAw8Sew=
+X-Google-Smtp-Source: APXvYqyhxy4IuQFxB+rGykXsPOIB4SwOo90BzbdadV3ywojN2fAaSra4WQ5i84DJ0+DwY1TAjbGftg==
+X-Received: by 2002:a5d:6986:: with SMTP id g6mr3262927wru.421.1582789839844;
+        Wed, 26 Feb 2020 23:50:39 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id a26sm6557155wmm.18.2020.02.26.23.50.37
+        by smtp.gmail.com with ESMTPSA id i2sm6392615wmb.28.2020.02.26.23.50.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 23:50:37 -0800 (PST)
+        Wed, 26 Feb 2020 23:50:38 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com, shuah@kernel.org
-Subject: [patch net-next 13/16] selftests: mlxsw: Add shared buffer traffic test
-Date:   Thu, 27 Feb 2020 08:50:18 +0100
-Message-Id: <20200227075021.3472-14-jiri@resnulli.us>
+Subject: [patch net-next 14/16] selftests: mlxsw: Reduce running time using offload indication
+Date:   Thu, 27 Feb 2020 08:50:19 +0100
+Message-Id: <20200227075021.3472-15-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200227075021.3472-1-jiri@resnulli.us>
 References: <20200227075021.3472-1-jiri@resnulli.us>
@@ -61,247 +61,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shalom Toledo <shalomt@mellanox.com>
+From: Danielle Ratson <danieller@mellanox.com>
 
-Test the max shared buffer occupancy for port's pool and port's TC's (using
-different types of packets).
+After adding a given number of flower rules for different IPv6
+addresses, the test generates traffic and ensures that each packet is
+received, which is time-consuming.
 
-Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
+Instead, test the offload indication of the tc flower rules and reduce
+the running time by half.
+
+Signed-off-by: Danielle Ratson <danieller@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../drivers/net/mlxsw/sharedbuffer.sh         | 222 ++++++++++++++++++
- 1 file changed, 222 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sharedbuffer.sh
+ .../drivers/net/mlxsw/tc_flower_scale.sh      | 31 +++++++------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sharedbuffer.sh b/tools/testing/selftests/drivers/net/mlxsw/sharedbuffer.sh
-new file mode 100755
-index 000000000000..58f3a05f08af
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sharedbuffer.sh
-@@ -0,0 +1,222 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="
-+	port_pool_test
-+	port_tc_ip_test
-+	port_tc_arp_test
-+"
-+
-+NUM_NETIFS=2
-+source ../../../net/forwarding/lib.sh
-+source ../../../net/forwarding/devlink_lib.sh
-+source mlxsw_lib.sh
-+
-+SB_POOL_ING=0
-+SB_POOL_EGR_CPU=10
-+
-+SB_ITC_CPU_IP=3
-+SB_ITC_CPU_ARP=2
-+SB_ITC=0
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.1.1/24
-+}
-+
-+h1_destroy()
-+{
-+	simple_if_fini $h1 192.0.1.1/24
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.1.2/24
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 192.0.1.2/24
-+}
-+
-+sb_occ_pool_check()
-+{
-+	local dl_port=$1; shift
-+	local pool=$1; shift
-+	local exp_max_occ=$1
-+	local max_occ
-+	local err=0
-+
-+	max_occ=$(devlink sb -j occupancy show $dl_port \
-+		  | jq -e ".[][][\"pool\"][\"$pool\"][\"max\"]")
-+
-+	if [[ "$max_occ" -ne "$exp_max_occ" ]]; then
-+		err=1
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+index a6d733d2a4b4..cc0f07e72cf2 100644
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+@@ -2,9 +2,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ # Test for resource limit of offloaded flower rules. The test adds a given
+-# number of flower matches for different IPv6 addresses, then generates traffic,
+-# and ensures each was hit exactly once. This file contains functions to set up
+-# a testing topology and run the test, and is meant to be sourced from a test
++# number of flower matches for different IPv6 addresses, then check the offload
++# indication for all of the tc flower rules. This file contains functions to set
++# up a testing topology and run the test, and is meant to be sourced from a test
+ # script that calls the testing routine with a given number of rules.
+ 
+ TC_FLOWER_NUM_NETIFS=2
+@@ -94,22 +94,15 @@ __tc_flower_test()
+ 
+ 	tc_flower_rules_create $count $should_fail
+ 
+-	for ((i = 0; i < count; ++i)); do
+-		$MZ $h1 -q -c 1 -t ip -p 20 -b bc -6 \
+-			-A 2001:db8:2::1 \
+-			-B $(tc_flower_addr $i)
+-	done
+-
+-	MISMATCHES=$(
+-		tc -j -s filter show dev $h2 ingress |
+-		jq -r '[ .[] | select(.kind == "flower") | .options |
+-		         values as $rule | .actions[].stats.packets |
+-		         select(. != 1) | "\(.) on \($rule.keys.dst_ip)" ] |
+-		       join(", ")'
+-	)
+-
+-	test -z "$MISMATCHES"
+-	check_err $? "Expected to capture 1 packet for each IP, but got $MISMATCHES"
++	offload_count=$(tc -j -s filter show dev $h2 ingress    |
++			jq -r '[ .[] | select(.kind == "flower") |
++			.options | .in_hw ]' | jq .[] | wc -l)
++	[[ $((offload_count - 1)) -eq $count ]]
++	if [[ $should_fail -eq 0 ]]; then
++		check_err $? "Offload mismatch"
++	else
++		check_err_fail $should_fail $? "Offload more than expacted"
 +	fi
-+
-+	echo $max_occ
-+	return $err
-+}
-+
-+sb_occ_itc_check()
-+{
-+	local dl_port=$1; shift
-+	local itc=$1; shift
-+	local exp_max_occ=$1
-+	local max_occ
-+	local err=0
-+
-+	max_occ=$(devlink sb -j occupancy show $dl_port \
-+		  | jq -e ".[][][\"itc\"][\"$itc\"][\"max\"]")
-+
-+	if [[ "$max_occ" -ne "$exp_max_occ" ]]; then
-+		err=1
-+	fi
-+
-+	echo $max_occ
-+	return $err
-+}
-+
-+sb_occ_etc_check()
-+{
-+	local dl_port=$1; shift
-+	local etc=$1; shift
-+	local exp_max_occ=$1; shift
-+	local max_occ
-+	local err=0
-+
-+	max_occ=$(devlink sb -j occupancy show $dl_port \
-+		  | jq -e ".[][][\"etc\"][\"$etc\"][\"max\"]")
-+
-+	if [[ "$max_occ" -ne "$exp_max_occ" ]]; then
-+		err=1
-+	fi
-+
-+	echo $max_occ
-+	return $err
-+}
-+
-+port_pool_test()
-+{
-+	local exp_max_occ=288
-+	local max_occ
-+
-+	devlink sb occupancy clearmax $DEVLINK_DEV
-+
-+	$MZ $h1 -c 1 -p 160 -a $h1mac -b $h2mac -A 192.0.1.1 -B 192.0.1.2 \
-+		-t ip -q
-+
-+	devlink sb occupancy snapshot $DEVLINK_DEV
-+
-+	RET=0
-+	max_occ=$(sb_occ_pool_check $dl_port1 $SB_POOL_ING $exp_max_occ)
-+	check_err $? "Expected iPool($SB_POOL_ING) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h1) ingress pool"
-+
-+	RET=0
-+	max_occ=$(sb_occ_pool_check $dl_port2 $SB_POOL_ING $exp_max_occ)
-+	check_err $? "Expected iPool($SB_POOL_ING) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h2) ingress pool"
-+
-+	RET=0
-+	max_occ=$(sb_occ_pool_check $cpu_dl_port $SB_POOL_EGR_CPU $exp_max_occ)
-+	check_err $? "Expected ePool($SB_POOL_EGR_CPU) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "CPU port's egress pool"
-+}
-+
-+port_tc_ip_test()
-+{
-+	local exp_max_occ=288
-+	local max_occ
-+
-+	devlink sb occupancy clearmax $DEVLINK_DEV
-+
-+	$MZ $h1 -c 1 -p 160 -a $h1mac -b $h2mac -A 192.0.1.1 -B 192.0.1.2 \
-+		-t ip -q
-+
-+	devlink sb occupancy snapshot $DEVLINK_DEV
-+
-+	RET=0
-+	max_occ=$(sb_occ_itc_check $dl_port2 $SB_ITC $exp_max_occ)
-+	check_err $? "Expected ingress TC($SB_ITC) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h1) ingress TC - IP packet"
-+
-+	RET=0
-+	max_occ=$(sb_occ_itc_check $dl_port2 $SB_ITC $exp_max_occ)
-+	check_err $? "Expected ingress TC($SB_ITC) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h2) ingress TC - IP packet"
-+
-+	RET=0
-+	max_occ=$(sb_occ_etc_check $cpu_dl_port $SB_ITC_CPU_IP $exp_max_occ)
-+	check_err $? "Expected egress TC($SB_ITC_CPU_IP) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "CPU port's egress TC - IP packet"
-+}
-+
-+port_tc_arp_test()
-+{
-+	local exp_max_occ=96
-+	local max_occ
-+
-+	if [[ $MLXSW_CHIP != "mlxsw_spectrum" ]]; then
-+		exp_max_occ=144
-+	fi
-+
-+	devlink sb occupancy clearmax $DEVLINK_DEV
-+
-+	$MZ $h1 -c 1 -p 160 -a $h1mac -A 192.0.1.1 -t arp -q
-+
-+	devlink sb occupancy snapshot $DEVLINK_DEV
-+
-+	RET=0
-+	max_occ=$(sb_occ_itc_check $dl_port2 $SB_ITC $exp_max_occ)
-+	check_err $? "Expected ingress TC($SB_ITC) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h1) ingress TC - ARP packet"
-+
-+	RET=0
-+	max_occ=$(sb_occ_itc_check $dl_port2 $SB_ITC $exp_max_occ)
-+	check_err $? "Expected ingress TC($SB_ITC) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "physical port's($h2) ingress TC - ARP packet"
-+
-+	RET=0
-+	max_occ=$(sb_occ_etc_check $cpu_dl_port $SB_ITC_CPU_ARP $exp_max_occ)
-+	check_err $? "Expected egress TC($SB_ITC_IP2ME) max occupancy to be $exp_max_occ, but got $max_occ"
-+	log_test "CPU port's egress TC - ARP packet"
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	h2=${NETIFS[p2]}
-+
-+	h1mac=$(mac_get $h1)
-+	h2mac=$(mac_get $h2)
-+
-+	dl_port1=$(devlink_port_by_netdev $h1)
-+	dl_port2=$(devlink_port_by_netdev $h2)
-+
-+	cpu_dl_port=$(devlink_cpu_port_get)
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+ }
+ 
+ tc_flower_test()
 -- 
 2.21.1
 
