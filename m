@@ -2,119 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 517E317216D
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 15:49:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29773171FA3
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 15:38:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732091AbgB0Osz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 09:48:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37080 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729254AbgB0NmM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Feb 2020 08:42:12 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1732734AbgB0Ogh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 09:36:37 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21336 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732563AbgB0Ogh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 09:36:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582814190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9tIesucwMqH+2V5E2X7KW3mciip11JU2RizdKZJEE5I=;
+        b=SxKRJku29AQDMff4NJiHi5OgnjD+S0r6NYzQ9CM+W46jPCKllPZSzDM9r0ARsYx4hAwGPN
+        np1G3ScrnaC3B1T0NPWaVxKvxXA/S9k0Va309L3PzlEWbSMK+dmxCBpmy5OCi3AWnqDeyd
+        sJzhUbhx2XsAB1N7AL26/mAmICdx8BY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-250--7nvov-LOUG1TJypGDKdqw-1; Thu, 27 Feb 2020 09:36:26 -0500
+X-MC-Unique: -7nvov-LOUG1TJypGDKdqw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E3AC20726;
-        Thu, 27 Feb 2020 13:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582810930;
-        bh=WfLUugpGPKXn/iHU2isoZ0mKXtTg4eIb74duBSFyh0I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KN47diZ6H4cvrVoF3kO1QlgyLpmDCYtRC/Z5xMlN/Onf48gHvxfKNQWQ0cC90K5mL
-         WZSJSuBUYJemmlw3Tg9FpkwAemdDloKhP6zIkNZy96o5Bs3rY6amyPe3msA11OY6QZ
-         wIhvgZcEn8feQeo//BPw3VJsghTaUrOiw7WGJwGI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Petr Mladek <pmladek@suse.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 051/113] tools lib api fs: Fix gcc9 stringop-truncation compilation error
-Date:   Thu, 27 Feb 2020 14:36:07 +0100
-Message-Id: <20200227132219.917375247@linuxfoundation.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200227132211.791484803@linuxfoundation.org>
-References: <20200227132211.791484803@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1DD671005512;
+        Thu, 27 Feb 2020 14:36:22 +0000 (UTC)
+Received: from ovpn-117-88.ams2.redhat.com (ovpn-117-88.ams2.redhat.com [10.36.117.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DE22D19E9C;
+        Thu, 27 Feb 2020 14:36:20 +0000 (UTC)
+Message-ID: <240ebdbd3f8df2712e542db18d8137f928a1f08d.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/2] net: datagram: drop 'destructor' argument
+ from several helpers
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kirill Tkhai <ktkhai@virtuozzo.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 27 Feb 2020 15:36:19 +0100
+In-Reply-To: <8ccc7d2f-dfa9-a67d-1c0d-d012efa7d81d@virtuozzo.com>
+References: <cover.1582802470.git.pabeni@redhat.com>
+         <42639d3f3b1da6959ed42c683780c48a8fe08f4e.1582802470.git.pabeni@redhat.com>
+         <8ccc7d2f-dfa9-a67d-1c0d-d012efa7d81d@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrey Zhizhikin <andrey.z@gmail.com>
+On Thu, 2020-02-27 at 15:31 +0300, Kirill Tkhai wrote:
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> > index 145a3965341e..194e7b93e404 100644
+> > --- a/net/unix/af_unix.c
+> > +++ b/net/unix/af_unix.c
+> > @@ -2102,9 +2102,11 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+> >  
+> >  		skip = sk_peek_offset(sk, flags);
+> >  		skb = __skb_try_recv_datagram(sk, &sk->sk_receive_queue, flags,
+> > -					      scm_stat_del, &skip, &err, &last);
+> > -		if (skb)
+> > +					      &skip, &err, &last);
+> > +		if (skb) {
+> > +			scm_stat_del(sk, skb);
+> 
+> Shouldn't we care about MSG_PEEK here?
 
-[ Upstream commit 6794200fa3c9c3e6759dae099145f23e4310f4f7 ]
+Thank you for checking this! You are right, I'll fix in the next
+iteration.
 
-GCC9 introduced string hardening mechanisms, which exhibits the error
-during fs api compilation:
+Cheers,
 
-error: '__builtin_strncpy' specified bound 4096 equals destination size
-[-Werror=stringop-truncation]
-
-This comes when the length of copy passed to strncpy is is equal to
-destination size, which could potentially lead to buffer overflow.
-
-There is a need to mitigate this potential issue by limiting the size of
-destination by 1 and explicitly terminate the destination with NULL.
-
-Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191211080109.18765-1-andrey.zhizhikin@leica-geosystems.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/lib/api/fs/fs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
-index 459599d1b6c41..58f05748dd39e 100644
---- a/tools/lib/api/fs/fs.c
-+++ b/tools/lib/api/fs/fs.c
-@@ -179,6 +179,7 @@ static bool fs__env_override(struct fs *fs)
- 	size_t name_len = strlen(fs->name);
- 	/* name + "_PATH" + '\0' */
- 	char upper_name[name_len + 5 + 1];
-+
- 	memcpy(upper_name, fs->name, name_len);
- 	mem_toupper(upper_name, name_len);
- 	strcpy(&upper_name[name_len], "_PATH");
-@@ -188,7 +189,8 @@ static bool fs__env_override(struct fs *fs)
- 		return false;
- 
- 	fs->found = true;
--	strncpy(fs->path, override_path, sizeof(fs->path));
-+	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
-+	fs->path[sizeof(fs->path) - 1] = '\0';
- 	return true;
- }
- 
--- 
-2.20.1
-
-
+Paolo
 
