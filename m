@@ -2,116 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 058451722A9
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 16:57:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CABF1722AD
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729471AbgB0P5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 10:57:45 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53244 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729274AbgB0P5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 10:57:45 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8D5444C0059;
-        Thu, 27 Feb 2020 15:57:43 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 27 Feb
- 2020 15:57:34 +0000
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW stats
- type
-To:     Jiri Pirko <jiri@resnulli.us>, Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
-        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <xiyou.wangcong@gmail.com>,
-        <pablo@netfilter.org>, <mlxsw@mellanox.com>
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
- <20200222063829.GB2228@nanopsycho>
- <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
- <20200224131101.GC16270@nanopsycho>
- <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
- <20200224162521.GE16270@nanopsycho>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <c149d5e1-e2a4-71c8-68e8-5a08b02a57f7@solarflare.com>
-Date:   Thu, 27 Feb 2020 15:57:30 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1729431AbgB0QAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 11:00:24 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:56716 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727592AbgB0QAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:00:24 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-233-BmOBkgAOPui3H26LTnpTgA-1; Thu, 27 Feb 2020 16:00:20 +0000
+X-MC-Unique: BmOBkgAOPui3H26LTnpTgA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 27 Feb 2020 16:00:19 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 27 Feb 2020 16:00:19 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        netdev <netdev@vger.kernel.org>
+Subject: RE: sys_sendto() spinning for 1.6ms
+Thread-Topic: sys_sendto() spinning for 1.6ms
+Thread-Index: AdXtbb8kfVfk26r1Rfib7iXWKp20CAAF9gmA
+Date:   Thu, 27 Feb 2020 16:00:19 +0000
+Message-ID: <683b4f4779fc490197e4bf48eb6c5a60@AcuMS.aculab.com>
+References: <303c8600e4964d1593b038239779ba4b@AcuMS.aculab.com>
+In-Reply-To: <303c8600e4964d1593b038239779ba4b@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200224162521.GE16270@nanopsycho>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25256.003
-X-TM-AS-Result: No-6.892900-8.000000-10
-X-TMASE-MatchedRID: vEvJ7Rh1lGjmLzc6AOD8DfHkpkyUphL9sKi4EXb8AIprvf5eVgMu7Pl+
-        hNlUoH3vCbljYuBjZafMWIN5/xAIPFXKKbgrtyh88sc9oYKBve0edbTsDE6BP//rgj9ncWz9MeT
-        dqMbWFbkKz3nQwl8s8lznGj19LiwL7VVa6H+v8r/KpUenZy+yng73P4/aDCIFAv57j5eT9BYtgg
-        Ft5MvFq6QOANr8fESAHjp5FN0r1FiPG6kqlFlR4r09KAokwDFU9e5am3m57X1WPcnrekBHfKeeg
-        I8Z8ffsfMtvnnFP0XjhreRc/fcXVa42liFPoJXkuZBZOg7RfX8A+JHhu0IR5hQUOSCpbPwO94do
-        8m0JE5LPBTE2aRq1vCjmA30q8LSsojetVtTnysHvVbHa5Rs8t30tCKdnhB581B0Hk1Q1KyL3PDi
-        XO/tFSY6HM5rqDwqtnp8dbM32b4Jiz/oWO4ocKisrDnP4JEe5k24LsI9E/qUhyLeDpg+JL0MMpr
-        cbiest
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.892900-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25256.003
-X-MDID: 1582819064-GhxrtL4MtYYW
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/02/2020 16:25, Jiri Pirko wrote:
-> In hardware, we have a separate "counter" action with counter index.
-> You can reuse this index in multiple counter action instances.
-> However, in tc there is implicit separate counter for every action.
-Importantly, not all actions have counters.  Only those with a
- .stats_update() method in their struct tc_action_ops have an implicit
- counter (which requires hardware offload), and to a first approximation
- those are the 'deliverish' actions (pass, drop, mirred).
-This informs the sfc design below.
+RnJvbTogRGF2aWQgTGFpZ2h0DQo+IFNlbnQ6IDI3IEZlYnJ1YXJ5IDIwMjAgMTM6MTkNCj4gDQo+
+IEknbSBsb29raW5nIGludG8gdW5leHBlY3RlZCBkZWxheXMgaW4gc29tZSByZWFsIHRpbWUgKFJU
+UCBhdWRpbykgcHJvY2Vzc2luZy4NCj4gTW9zdGx5IHRoZXkgYXJlIGEgZmV3IDEwMCB1c2VjcyBp
+biB0aGUgc29mdGludCBjb2RlLg0KPiANCj4gSG93ZXZlciBJJ3ZlIGp1c3QgdHJpZ2dlcmVkIGlu
+IHNlbmR0bygpIG9uIGEgcmF3IElQVjQgc29ja2V0IHRha2luZyAxLjZtcy4NCj4gTW9zdCBvZiB0
+aGUgc2VuZHMgdGFrZSBsZXNzIHRoYW4gMzJ1cy4NCi4uLg0KPiBDcHUgMiB0cmFjZSBpczoNCj4g
+ICAgIHBpZC0yODIxOSBbMDAyXSAuLi4uIDE5Nzk4OTEuMTU5OTEyOiBzeXNfc2VuZHRvKGZkOiAz
+OTQsIGJ1ZmY6IDdmZmJjYjJlMjk0MCwgbGVuOiBjOCwgZmxhZ3M6IDAsDQo+IGFkZHI6IDdmZmJj
+Y2RjOTQ5MCwgYWRkcl9sZW46IDEwKQ0KPiAgICAgcGlkLTI4MjE5IFswMDJdIC4uLi4gMTk3OTg5
+MS4xNjE2NDc6IHN5c19zZW5kdG8gLT4gMHhjOA0KPiANCg0KT2ssIEkndmUgZm91bmQgdGhlIGJ1
+Z2d5IHBpZWNlIG9mIGNyYXAgcmVzcG9uc2libGU6DQoNCjE5OTI4NTcuMjk0OTEwIHwgICAyKSAg
+UHJvc29keS01ODEyICB8ICAgICAgICAgICAgICAgfCAgcmF3X3NlbmRtc2coKSB7DQoxOTkyODU3
+LjI5NDkxMiB8ICAgMikgIFByb3NvZHktNTgxMiAgfCAgIDEuMDk5IHVzICAgIHwgICAgX19ldzMy
+X3ByZXBhcmUgW2UxMDAwZV0oKTsNCjE5OTI4NTcuMjk0OTEzIHwgICAyKSAgUHJvc29keS01ODEy
+ICB8ICAgMC44NTUgdXMgICAgfCAgICBfX2V3MzJfcHJlcGFyZSBbZTEwMDBlXSgpOw0KMTk5Mjg1
+Ny4yOTQ5MTUgfCAgIDIpICBQcm9zb2R5LTU4MTIgIHwgICAwLjc3MyB1cyAgICB8ICAgIF9fZXcz
+Ml9wcmVwYXJlIFtlMTAwMGVdKCk7DQoxOTkyODU3LjI5NDkxNiB8ICAgMikgIFByb3NvZHktNTgx
+MiAgfCAhIDIwMi42ODkgdXMgIHwgICAgX19ldzMyX3ByZXBhcmUgW2UxMDAwZV0oKTsNCjE5OTI4
+NTcuMjk1MTU1IHwgICAyKSAgUHJvc29keS01ODEyICB8ICEgMjUzLjE2MiB1cyAgfCAgICBfX2V3
+MzJfcHJlcGFyZSBbZTEwMDBlXSgpOw0KMTk5Mjg1Ny4yOTU0MDkgfCAgIDIpICBQcm9zb2R5LTU4
+MTIgIHwgICAwLjg1NSB1cyAgICB8ICAgIF9fZXczMl9wcmVwYXJlIFtlMTAwMGVdKCk7DQoxOTky
+ODU3LjI5NTQxMSB8ICAgMikgIFByb3NvZHktNTgxMiAgfCAhIDUwMC44MjggdXMgIHwgIH0NCg0K
+LyoqDQogKiBfX2V3MzJfcHJlcGFyZSAtIHByZXBhcmUgdG8gd3JpdGUgdG8gTUFDIENTUiByZWdp
+c3RlciBvbiBjZXJ0YWluIHBhcnRzDQogKiBAaHc6IHBvaW50ZXIgdG8gdGhlIEhXIHN0cnVjdHVy
+ZQ0KICoNCiAqIFdoZW4gdXBkYXRpbmcgdGhlIE1BQyBDU1IgcmVnaXN0ZXJzLCB0aGUgTWFuYWdl
+YWJpbGl0eSBFbmdpbmUgKE1FKSBjb3VsZA0KICogYmUgYWNjZXNzaW5nIHRoZSByZWdpc3RlcnMg
+YXQgdGhlIHNhbWUgdGltZS4gIE5vcm1hbGx5LCB0aGlzIGlzIGhhbmRsZWQgaW4NCiAqIGgvdyBi
+eSBhbiBhcmJpdGVyIGJ1dCBvbiBzb21lIHBhcnRzIHRoZXJlIGlzIGEgYnVnIHRoYXQgYWNrbm93
+bGVkZ2VzIEhvc3QNCiAqIGFjY2Vzc2VzIGxhdGVyIHRoYW4gaXQgc2hvdWxkIHdoaWNoIGNvdWxk
+IHJlc3VsdCBpbiB0aGUgcmVnaXN0ZXIgdG8gaGF2ZQ0KICogYW4gaW5jb3JyZWN0IHZhbHVlLiAg
+V29ya2Fyb3VuZCB0aGlzIGJ5IGNoZWNraW5nIHRoZSBGV1NNIHJlZ2lzdGVyIHdoaWNoDQogKiBo
+YXMgYml0IDI0IHNldCB3aGlsZSBNRSBpcyBhY2Nlc3NpbmcgTUFDIENTUiByZWdpc3RlcnMsIHdh
+aXQgaWYgaXQgaXMgc2V0DQogKiBhbmQgdHJ5IGFnYWluIGEgbnVtYmVyIG9mIHRpbWVzLg0KICoq
+Lw0KczMyIF9fZXczMl9wcmVwYXJlKHN0cnVjdCBlMTAwMF9odyAqaHcpDQp7DQogICAgICAgIHMz
+MiBpID0gRTEwMDBfSUNIX0ZXU01fUENJTTJQQ0lfQ09VTlQ7IC8vIDIwMDANCg0KICAgICAgICB3
+aGlsZSAoKGVyMzIoRldTTSkgJiBFMTAwMF9JQ0hfRldTTV9QQ0lNMlBDSSkgJiYgLS1pKQ0KICAg
+ICAgICAgICAgICAgIHVkZWxheSg1MCk7DQoNCiAgICAgICAgcmV0dXJuIGk7DQp9DQoNCldURiEh
+ISEhISEhISEhISEhISEhISEhISEhISEhISEhIQ0KDQpUaGF0IGl0IGp1c3Qgc28gYnJva2VuLi4u
+Lg0KDQpOb3R3aXRoc3RhbmRpbmcgYW55dGhpbmcgZWxzZSB0aGUgYml0IGNhbiBnZXQgc2V0IGp1
+c3QgYWZ0ZXINCndlJ3ZlIGNoZWNrZWQgaXQgaXNuJ3Qgc2V0Lg0KU28gdGhlIGNvZGUgZG9lc24n
+dCBzb2x2ZSBhbnl0aGluZyBhdCBhbGwuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
+c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
+IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-> The counter is limited resource. So we overcome this mismatch in mlxsw
-> by having action "counter" always first for every rule inserted:
-> rule->action_counter,the_actual_action,the_actual_action2,...the_actual_actionN
->
-> and we report stats from action_counter for all the_actual_actionX.
-For comparison, here's how we're doing it in the upcoming sfc hardware:
-Rather than a sequence of actions in an arbitrary order (applied
- cumulatively to the original packet), we have a concept of an 'action
- set', which is some subset of a fixed sequence of actions, the last of
- which is a delivery.  (One of these actions is 'count', which takes one
- or more counter IDs as its metadata.)  Then the result of a rule match
- is an _action set list_, one or more action sets each of which is
- applied to a separate copy of the original packet.
-This works because the delivery (hw) action corresponds to the only (tc)
- action that wants stats, combined with some cleverness in the defined
- order of our fixed action sequence.  And it means that we can properly
- support per-action counters, including making stats type be a per-action
- property (if one of the mirreds doesn't want stats, just don't put a
- 'count' in that action-set).
-For shared counters we just use the same counter index.  Mapping from
- tc action index to hw counter index is handled in the driver (transparent
- to userspace).
-
-So from our perspective, making stats-type a property of the TC action is
- the Right Thing and fits in with the existing design of TC.  See also my
- old RFC series restoring per-action stats to flow_offload [1] which (in
- patch 4/4) added a 'want_stats' field to struct flow_action_entry; this
- would presumably become an enum flow_cls_hw_stats_typeto support these
- new stats-type semantics, and would be set to
- FLOW_CLS_HW_STATS_TYPE_DISABLEDif act->ops->stats_update == NULL
- regardless of the stats-type specified by the user.
-
--ed
-
-[1] http://patchwork.ozlabs.org/cover/1110071/
