@@ -2,87 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B9B171247
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 09:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5EE1712AA
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 09:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbgB0IPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 03:15:37 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:56420 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726999AbgB0IPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 03:15:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582791335;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7o/p8pDDttSiLBZgxQ9UIjGFY27nTgqHuXNlOOnP6Q0=;
-        b=S5B4xWCUT/7IFMrm1fOLHU0gM7/W0TYWK1+4QH0FzIsa8CzRZvKQHGfM1awfdittH3t1lA
-        MT/zj1y93gxyB0YoGYReSE5XaaotXkOLPXjB+NrK0DqIHUZU5EDewexa2eLHuwlJ+wz3Yb
-        NMm8d/TKiY0lgh4sd5BS2r7B4IsGzzg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-405-wqSCsniaN3GE-JPbLaa2HQ-1; Thu, 27 Feb 2020 03:15:31 -0500
-X-MC-Unique: wqSCsniaN3GE-JPbLaa2HQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4EE1C107B7D7;
-        Thu, 27 Feb 2020 08:15:29 +0000 (UTC)
-Received: from krava (ovpn-204-93.brq.redhat.com [10.40.204.93])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7894E101D487;
-        Thu, 27 Feb 2020 08:15:25 +0000 (UTC)
-Date:   Thu, 27 Feb 2020 09:15:22 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Song Liu <song@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: Re: [PATCH 05/18] bpf: Add lnode list node to struct bpf_ksym
-Message-ID: <20200227080902.GB34774@krava>
-References: <20200226130345.209469-1-jolsa@kernel.org>
- <20200226130345.209469-6-jolsa@kernel.org>
- <CAPhsuW6NCwxW2qQCFcA3qGOeyd=qz0ZHQGUidWfO-oXeen0r2g@mail.gmail.com>
+        id S1728656AbgB0Ijg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 03:39:36 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3027 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728440AbgB0Ijf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 03:39:35 -0500
+Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.53])
+        by Forcepoint Email with ESMTP id E19E8D2589D9E7932342;
+        Thu, 27 Feb 2020 16:39:29 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 27 Feb 2020 16:39:15 +0800
+Received: from [10.173.219.71] (10.173.219.71) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Thu, 27 Feb 2020 16:39:15 +0800
+Subject: Re: [PATCH net-next 1/2] hinic: Fix a irq affinity bug
+To:     David Miller <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <aviad.krawczyk@huawei.com>, <luoxianjun@huawei.com>
+References: <20200218194013.23837-1-luobin9@huawei.com>
+ <20200219.104754.1226041715847841139.davem@davemloft.net>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <5797dc75-4f93-77db-9a72-e138cb15a7df@huawei.com>
+Date:   Thu, 27 Feb 2020 16:39:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW6NCwxW2qQCFcA3qGOeyd=qz0ZHQGUidWfO-oXeen0r2g@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20200219.104754.1226041715847841139.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.173.219.71]
+X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 02:51:14PM -0800, Song Liu wrote:
-> On Wed, Feb 26, 2020 at 5:05 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding lnode list node to 'struct bpf_ksym' object,
-> > so the symbol itself can be chained and used in other
-> > objects like bpf_trampoline and bpf_dispatcher.
-> >
-> > Changing iterator to bpf_ksym in bpf_get_kallsym.
-> >
-> > The ksym->start is holding the prog->bpf_func value,
-> > so it's ok to use it in bpf_get_kallsym.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> 
-> Acked-by: Song Liu <songliubraving@fb.com>
-> 
-> nit: I think we should describe this as "move lnode list node to
-> struct bpf_ksym".
+Hi David:
 
-true, will change
+Thanks for your reply, we'll fix and resubmit.
 
-thanks,
-jirka
-
+On 2020/2/20 2:47, David Miller wrote:
+> From: Luo bin <luobin9@huawei.com>
+> Date: Tue, 18 Feb 2020 19:40:12 +0000
+>
+>> do not use a local variable as an input parameter of irq_set_affinity_hint
+>>
+>> Signed-off-by: Luo bin <luobin9@huawei.com>
+> Bug fixes should target 'net' instead of 'net-next'.
+>
+> Every patch series containing more than one patch should have an appropriate
+> header posting.
+> .
