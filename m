@@ -2,166 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 829A81714C5
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 11:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECFA51714D9
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 11:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728712AbgB0KLZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Feb 2020 05:11:25 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32832 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728454AbgB0KLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 05:11:25 -0500
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RA9cOR175435
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 05:11:23 -0500
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [158.85.210.110])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ydq6x8xhq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 05:11:23 -0500
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Thu, 27 Feb 2020 10:11:23 -0000
-Received: from us1b3-smtp06.a3dr.sjc01.isc4sb.com (10.122.203.184)
-        by smtp.notes.na.collabserv.com (10.122.47.50) with smtp.notes.na.collabserv.com ESMTP;
-        Thu, 27 Feb 2020 10:11:13 -0000
-Received: from us1b3-mail162.a3dr.sjc03.isc4sb.com ([10.160.174.187])
-          by us1b3-smtp06.a3dr.sjc01.isc4sb.com
-          with ESMTP id 2020022710111331-238493 ;
-          Thu, 27 Feb 2020 10:11:13 +0000 
-In-Reply-To: <20200226204238.GC31668@ziepe.ca>
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     "Jason Gunthorpe" <jgg@ziepe.ca>
-Cc:     "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
-        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, parav@mellanox.com,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Date:   Thu, 27 Feb 2020 10:11:13 +0000
+        id S1728725AbgB0KTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 05:19:38 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32977 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728454AbgB0KTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 05:19:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582798776;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=olxhZg+Lu0ojFRBIe5W7f9k+bGj829JWtT8ipS4rrQI=;
+        b=gdVCHUH7OI5eZfsW54mVvBVwSrnULISL/6UepwMulTYnCRTqs/1k9a3CNDkleQct2ww4AJ
+        3WwR7Iwe7/4nDz3kKSnPgVUdYXIrGzK51o7bqfEP2HPJKtrU/C84Czy8jGZ4n9LctjdJ81
+        k6BVjvlyFOLVPtr6rAHG6MHi7mBhqRI=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-odDj0EPnPXKu1XH1hhMhPQ-1; Thu, 27 Feb 2020 05:19:28 -0500
+X-MC-Unique: odDj0EPnPXKu1XH1hhMhPQ-1
+Received: by mail-lj1-f200.google.com with SMTP id l14so735347ljb.10
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 02:19:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=olxhZg+Lu0ojFRBIe5W7f9k+bGj829JWtT8ipS4rrQI=;
+        b=sjoxOQ/5yUTfi70qhDcNxFeXPZJH8IkDAj2TEh0zc3DaMzuyCT8caWyTbufYQAbqJP
+         Eqo4frHzplVU89H0Hcq4MT2eXgfMbgVXgrJiKkUSHP8YEdaXhhJt1gpVgy3cK1YJaGzA
+         Pb4bg988BiW1qbUb/MrgoPYqTilc8xfcizK5O8SUEydj6X9r6Tstu7OJbW6Exz8C0WiD
+         aVoIJpMhWlF4gnAI33YJytyjVb0FyPdXf3977dbPFyhFhtFr7oq1FsZXEbNDFmxfGZns
+         wBA9S2RUilSwRU0CxrPjDR0SPapK428qR2SAq27Dk75EMDF4pIJHvWUNbWiSlBlygH1+
+         5wMQ==
+X-Gm-Message-State: ANhLgQ2m1z0ngnjDh7faUwMsYV84ECniCEEVY/49/y9frgpRYJ7nnhTY
+        DC+368U7iTFnp6/l2XxcqUakClW1q36XDl754urUVCLgAcyz5/UGMAXNTDGC6mc5WqsPq3710I1
+        YazJNqZmEZrArdffx
+X-Received: by 2002:a2e:7c08:: with SMTP id x8mr2318569ljc.185.1582798766837;
+        Thu, 27 Feb 2020 02:19:26 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vtwQk/Jef8wpAo4hy+RNQ/OQtGr4/GTjzfCpT7qlTzC82arClLScPygo97zJFMv6KLsiOX9MQ==
+X-Received: by 2002:a2e:7c08:: with SMTP id x8mr2318559ljc.185.1582798766674;
+        Thu, 27 Feb 2020 02:19:26 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id t1sm2849581lji.98.2020.02.27.02.19.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2020 02:19:25 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 59671180362; Thu, 27 Feb 2020 11:19:25 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dahern@digitalocean.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for using XDP
+In-Reply-To: <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
+References: <20200226005744.1623-1-dsahern@kernel.org> <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com> <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk> <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk> <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 27 Feb 2020 11:19:25 +0100
+Message-ID: <87wo88wcwi.fsf@toke.dk>
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20200226204238.GC31668@ziepe.ca>,<000000000000153fac059f740693@google.com>
-X-Mailer: IBM iNotes ($HaikuForm 1054.1) | IBM Domino Build
- SCN1812108_20180501T0841_FP62 November 04, 2019 at 09:47
-X-KeepSent: 0B62EDE7:E13D40E8-0025851B:0037F560;
- type=4; name=$KeepSent
-X-LLNOutbound: False
-X-Disclaimed: 60603
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 20022710-1059-0000-0000-0000017D012E
-X-IBM-SpamModules-Scores: BY=0.209162; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.378364; ST=0; TS=0; UL=0; ISC=; MB=0.076051
-X-IBM-SpamModules-Versions: BY=3.00012650; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000293; SDB=6.01339935; UDB=6.00714070; IPR=6.01122299;
- MB=3.00030991; MTD=3.00000008; XFM=3.00000015; UTC=2020-02-27 10:11:20
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2020-02-27 07:10:20 - 6.00011054
-x-cbparentid: 20022710-1060-0000-0000-00004A270103
-Message-Id: <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
-Subject: RE: possible deadlock in cma_netdev_callback
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_02:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------"Jason Gunthorpe" <jgg@ziepe.ca> wrote: -----
+David Ahern <dahern@digitalocean.com> writes:
 
->To: "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>
->From: "Jason Gunthorpe" <jgg@ziepe.ca>
->Date: 02/26/2020 09:42PM
->Cc: chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
->linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
->netdev@vger.kernel.org, parav@mellanox.com,
->syzkaller-bugs@googlegroups.com, willy@infradead.org, "Bernard
->Metzler" <bmt@zurich.ibm.com>
->Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
+> On 2/26/20 1:34 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>> OK so basically there would be commands to configure which TX queue is
+>>> used by XDP. With enough resources default is to use dedicated queues.
+>>> With not enough resources default is to fail binding xdp program
+>>> unless queues are specified. Does this sound reasonable?
+>> Yeah, that was the idea. See this talk from LPC last year for more
+>> details: https://linuxplumbersconf.org/event/4/contributions/462/
+>>=20
 >
->On Tue, Feb 25, 2020 at 09:39:10PM -0800, syzbot wrote:
->> Hello,
->> 
->> syzbot found the following crash on:
->> 
->> HEAD commit:    6132c1d9 net: core: devlink.c: Hold devlink->lock
->from the..
->> git tree:       net
->> console output:
->https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspo
->t.com_x_log.txt-3Fx-3D16978909e00000&d=DwIBAg&c=jf_iaSHvJObTbx-siA1ZO
->g&r=2TaYXQ0T-r8ZO1PP1alNwU_QJcRRLfmYTAgd3QCvqSc&m=I4mBjC4dKAL61lpQH5f
->iT4hLQEibtRif2HwliI2VpTA&s=Pd7_6w9kZzU3DupxBL6qo6piAhk8us2gO-BbCVTDj3
->Q&e= 
->> kernel config:
->https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspo
->t.com_x_.config-3Fx-3D3b8906eb6a7d6028&d=DwIBAg&c=jf_iaSHvJObTbx-siA1
->ZOg&r=2TaYXQ0T-r8ZO1PP1alNwU_QJcRRLfmYTAgd3QCvqSc&m=I4mBjC4dKAL61lpQH
->5fiT4hLQEibtRif2HwliI2VpTA&s=qI_ppGZR3Vy01oD9xwfU3or7fBrclf20NYgmTJ0N
->v4k&e= 
->> dashboard link:
->https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspo
->t.com_bug-3Fextid-3D55de90ab5f44172b0c90&d=DwIBAg&c=jf_iaSHvJObTbx-si
->A1ZOg&r=2TaYXQ0T-r8ZO1PP1alNwU_QJcRRLfmYTAgd3QCvqSc&m=I4mBjC4dKAL61lp
->QH5fiT4hLQEibtRif2HwliI2VpTA&s=OCNawVVe2X3ySwQUmRx_s2XM3p0r4d4cMFkYU_
->IIAmM&e= 
->> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->> syz repro:
->https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspo
->t.com_x_repro.syz-3Fx-3D12808281e00000&d=DwIBAg&c=jf_iaSHvJObTbx-siA1
->ZOg&r=2TaYXQ0T-r8ZO1PP1alNwU_QJcRRLfmYTAgd3QCvqSc&m=I4mBjC4dKAL61lpQH
->5fiT4hLQEibtRif2HwliI2VpTA&s=_-Ba4z4VxFdS5ran1HOTqcCl5KtbdPUvvthP_yOT
->bJw&e= 
->> C reproducer:
->https://urldefense.proofpoint.com/v2/url?u=https-3A__syzkaller.appspo
->t.com_x_repro.c-3Fx-3D134ca6fde00000&d=DwIBAg&c=jf_iaSHvJObTbx-siA1ZO
->g&r=2TaYXQ0T-r8ZO1PP1alNwU_QJcRRLfmYTAgd3QCvqSc&m=I4mBjC4dKAL61lpQH5f
->iT4hLQEibtRif2HwliI2VpTA&s=tTrtxQFoWaR89fJY7q7Z2shNBhVzrshezgxE17uS34
->o&e= 
->> 
->> IMPORTANT: if you fix the bug, please add the following tag to the
->commit:
->> Reported-by: syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com
->> 
->> iwpm_register_pid: Unable to send a nlmsg (client = 2)
->> infiniband syz1: RDMA CMA: cma_listen_on_dev, error -98
->> netlink: 'syz-executor639': attribute type 1 has an invalid length.
->> 8021q: adding VLAN 0 to HW filter on device bond1
->> bond1: (slave gretap1): making interface the new active one
->> ======================================================
->> WARNING: possible circular locking dependency detected
->> 5.6.0-rc2-syzkaller #0 Not tainted
->> syz-executor639/9689 is trying to acquire lock:
->> ffffffff8a5d2a60 (lock#3){+.+.}, at: cma_netdev_callback+0xc6/0x380
->drivers/infiniband/core/cma.c:4605
->> 
->> but task is already holding lock:
->> ffffffff8a74da00 (rtnl_mutex){+.+.}, at: rtnl_lock
->net/core/rtnetlink.c:72 [inline]
->> ffffffff8a74da00 (rtnl_mutex){+.+.}, at:
->rtnetlink_rcv_msg+0x405/0xaf0 net/core/rtnetlink.c:5433
->>
->
->Bernard, this is a siw bug too, it is not allowed to get RTNL in
->siw_create_listen() (though this is probably for silly reasons and
->could be fixed)
->
->It is not easy to get this into the lockdep, I'll send a different
->patch too
->
->Jason
-Hi Jason,
+> Can we use one of the breakout timeslots at netdevconf and discuss this
+> proposal and status?
 
-Thanks for letting me know! Hmm, we cannot use RCU locks since
-we potentially sleep. One solution would be to create a list
-of matching interfaces while under lock, unlock and use that
-list for calling siw_listen_address() (which may sleep),
-right...?
+Adding in Magnus and Jesper; I won't be at netdevconf, sadly, but you
+guys go ahead :)
 
-Many thanks,
-Bernard.
+Magnus indicated he may have some preliminary code to share soonish.
+Maybe that means before netdevconf? ;)
+
+-Toke
 
