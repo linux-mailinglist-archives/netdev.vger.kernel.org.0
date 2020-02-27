@@ -2,115 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4591A172328
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4911F172335
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730140AbgB0QWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 11:22:01 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:37215 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729854AbgB0QWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:22:01 -0500
-Received: from webmail.gandi.net (webmail18.sd4.0x35.net [10.200.201.18])
-        (Authenticated sender: foss@0leil.net)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPA id D2E121C000C;
-        Thu, 27 Feb 2020 16:21:58 +0000 (UTC)
+        id S1730176AbgB0QXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 11:23:02 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:46804 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729689AbgB0QXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:23:02 -0500
+Received: by mail-lj1-f193.google.com with SMTP id w19so4091532lje.13
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 08:23:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YmWeTRNmfTQKqKsHRSs7xFxE8r5h0EFqFL8ygC7o+QI=;
+        b=u4QrWuu7oyoa5zsAEa3hO2ungqW72W1OhM6M/XtTxwRUlE2pdm/ehAStPRE4iY6EH/
+         znlG1J288Fc1b3y7pbFQ/zICvZFilPsiEP+bPLPXWp/dgYD14Rlu2E9zMCtbUAohd4tS
+         Cx5O5M5xFtDiLqqHTxgSWaI5wrCoPfcuY4jIGjBvNU5yLtAEhpqEtjw2Kuae0AZ4Kda1
+         UibnMn8tIQohr8f3AGyabN+RP5xYwecyF+7SUvbbHpqgBA9w7aI+4D+O6+jD5aicZ+IN
+         K+nd6shptV5lkcvPCPOPT6CjOFrLEl7AURCnusrWYpvF2M2Vm5pCzy3obf6nU9M3zglS
+         ueMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YmWeTRNmfTQKqKsHRSs7xFxE8r5h0EFqFL8ygC7o+QI=;
+        b=HQIp6wgbVlXcSyVc4tHIxKGlb66yhfOJEsgBdZXAkRmO0TmR/wCsDM6gSAoOUb77mJ
+         s8D6Fj+rQAXx8xIpGWwOUKv9S0RpI4VTD3MfMhW3jWjQFx0MdvLyYjvf1N6Y9RnIR3pm
+         9gLdJIw1X3qCPhoupKvNNQ/8U8erM13qJs+SDTy+rli5VuPrlls3LIto7a33qMWMVwZq
+         pCvQizJjPD7b1/JOb+FHOAEFoKJnYl7/rjdM8WR7eoXR3/FA1jqsNOEvhl2QN2hPKrTH
+         9NqKPK3EW6ZO3bfHB2ds6eeFclJdOUCT6ymeUDKOYB7UuRXRUcr8o0kcQbX+n8pURWq/
+         rTng==
+X-Gm-Message-State: ANhLgQ38ygJFUlAd3K4ejbFTAy6JOYpamot15o0jcUhfUWwEirM0Bear
+        752Ry++vK6Ykogr0sRMmFhnaNOdIJiJ6aZ0MRCU=
+X-Google-Smtp-Source: ADFU+vsKotMdGLr3Kcr9qucD3aeKaS5Y+m2fwC02t1YIRexVIWPfGcg2oh8b6KQAPeDyayaADaYkMGCxCos6DCkyUZI=
+X-Received: by 2002:a2e:84d0:: with SMTP id q16mr193373ljh.138.1582820579974;
+ Thu, 27 Feb 2020 08:22:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 27 Feb 2020 17:21:58 +0100
-From:   Quentin Schulz <foss@0leil.net>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net: phy: mscc: implement RGMII skew delay
- configuration
-In-Reply-To: <20200227152859.1687119-4-antoine.tenart@bootlin.com>
-References: <20200227152859.1687119-1-antoine.tenart@bootlin.com>
- <20200227152859.1687119-4-antoine.tenart@bootlin.com>
-Message-ID: <1f267571ddd9d1caf3e95afe31e47e30@0leil.net>
-X-Sender: foss@0leil.net
-User-Agent: Roundcube Webmail/1.3.8
+References: <20200227032013.12385-1-dsahern@kernel.org> <87a754w8gr.fsf@toke.dk>
+In-Reply-To: <87a754w8gr.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 27 Feb 2020 08:22:48 -0800
+Message-ID: <CAADnVQJOZNP+=woGk8OjUgT8yApkrZ1mCKOgzD1mdqi91F1AYw@mail.gmail.com>
+Subject: Re: [PATCH RFC v4 bpf-next 00/11] Add support for XDP in egress path
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Antoine,
+On Thu, Feb 27, 2020 at 3:55 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> However, my issue with this encoding is that it is write-only: You can't
+> inspect a BPF program already loaded into the kernel and tell which type
+> it is. So my proposal would be to make it explicit: Expose the
+> expected_attach_type as a new field in bpf_prog_info so userspace can
+> query it, and clearly document it as, essentially, a program subtype
+> that can significantly affect how a program is treated by the kernel.
 
-It's still me, nitpicker.
-
-On 2020-02-27 16:28, Antoine Tenart wrote:
-> This patch adds support for configuring the RGMII skews in Rx and Tx
-> thanks to properties defined in the device tree.
-> 
-> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
-> ---
->  drivers/net/phy/mscc.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-> index ecb45c43e5ed..56d6a45a90c2 100644
-> --- a/drivers/net/phy/mscc.c
-> +++ b/drivers/net/phy/mscc.c
-> @@ -192,6 +192,10 @@ enum macsec_bank {
->  /* Extended Page 2 Registers */
->  #define MSCC_PHY_CU_PMD_TX_CNTL		  16
-> 
-> +#define MSCC_PHY_RGMII_SETTINGS		  18
-> +#define RGMII_SKEW_RX_POS		  1
-> +#define RGMII_SKEW_TX_POS		  4
-> +
->  #define MSCC_PHY_RGMII_CNTL		  20
->  #define RGMII_RX_CLK_DELAY_MASK		  0x0070
->  #define RGMII_RX_CLK_DELAY_POS		  4
-> @@ -2682,6 +2686,7 @@ static bool vsc8584_is_pkg_init(struct
-> phy_device *phydev, bool reversed)
-> 
->  static int vsc8584_config_init(struct phy_device *phydev)
->  {
-> +	u32 skew_rx = VSC8584_RGMII_SKEW_0_2, skew_tx = 
-> VSC8584_RGMII_SKEW_0_2;
->  	struct vsc8531_private *vsc8531 = phydev->priv;
->  	u16 addr, val;
->  	int ret, i;
-> @@ -2830,6 +2835,19 @@ static int vsc8584_config_init(struct phy_device 
-> *phydev)
->  	if (ret)
->  		return ret;
-> 
-> +	if (of_find_property(dev->of_node, "vsc8584,rgmii-skew-rx", NULL) ||
-> +	    of_find_property(dev->of_node, "vsc8584,rgmii-skew-tx", NULL)) {
-> +		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-rx", 
-> &skew_rx);
-> +		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-tx", 
-> &skew_tx);
-> +
-
-Reading the code, I think **!**of_property_read_u32 could directly 
-replace of_find_property in your condition and spare you two calls to 
-that function.
-
-Also, do we actually need to write that register only when skews are 
-defined in the DT? Can't we just write to it anyway (I guess the fact 
-that 0_2 skew is actually 0 in value should put me on the right path but 
-I prefer to ask).
-
-Final nitpick: I would see a check of the skew_rx/tx from DT before you 
-put them in the following line, they could be drastically different from 
-0-8 value set that you expect considering you're reading a u32 (pass 
-them through a GENMASK at least?)
-
-> +		phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
-> +				 MSCC_PHY_RGMII_SETTINGS,
-> +				 (0x7 << RGMII_SKEW_RX_POS) |
-> +				 (0x7 << RGMII_SKEW_TX_POS),
-> +				 (skew_rx << RGMII_SKEW_RX_POS) |
-> +				 (skew_tx << RGMII_SKEW_TX_POS));
-> +	}
-> +
-
-Thanks,
-Quentin
+You had the same request for "freplace" target prog.
+My answer to both is still the same:
+Please take a look at drgn and the script that Andrey posted.
+All this information is trivial to extract from the kernel
+without introducing new uapi.
