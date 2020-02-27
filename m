@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 415CA170EF5
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:20:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1563170EF6
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:20:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728363AbgB0DU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 22:20:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48652 "EHLO mail.kernel.org"
+        id S1728373AbgB0DUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 22:20:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48682 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728355AbgB0DU1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Feb 2020 22:20:27 -0500
+        id S1728352AbgB0DU3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Feb 2020 22:20:29 -0500
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 057172468A;
-        Thu, 27 Feb 2020 03:20:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 14AB324687;
+        Thu, 27 Feb 2020 03:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582773626;
-        bh=kX8BuZfbH9hIfaBPD4m1e+3r80SU/A/yPOwlea0pHjY=;
+        s=default; t=1582773628;
+        bh=WBS6TILPwmpt1uslfWFLaf7jr+kbYILGd0NoC+AwvIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVI+Eo5J10iBij5xpbgKUTPuXpAQ930ipseT8cVyD9I+O9pv8XC9GvMHuS+Fq55mv
-         vfwHnhJ5g9OX21RLg1LzabyIYBoZpwlYUAL+zZ9Yw1kYGFbb4i2xTt5AhZucHqArxB
-         i1Pz+TIK3ZepguTMvxs7fio1dyCKQAUGsugVuObg=
+        b=lXk96rmgtU7ALIxzGzQfo4hJZx4s9tL8vwa9G4nsQQyZ8JTegWH3hHjfvA12Ueu0Z
+         68jYt3Y0BXabNggcbOwrXjBoEGIq/hgoljm+D4JXsvHOPAXTQVe8TTKgyH9MPo3L/9
+         w/1vvEePtk0fLugSr06yjihAGuBkTkENs4QWyT5E=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -32,9 +32,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
         songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH RFC v4 bpf-next 06/11] net: core: Rename do_xdp_generic to do_xdp_generic_rx and export
-Date:   Wed, 26 Feb 2020 20:20:08 -0700
-Message-Id: <20200227032013.12385-7-dsahern@kernel.org>
+Subject: [PATCH RFC v4 bpf-next 07/11] tun: set egress XDP program
+Date:   Wed, 26 Feb 2020 20:20:09 -0700
+Message-Id: <20200227032013.12385-8-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200227032013.12385-1-dsahern@kernel.org>
 References: <20200227032013.12385-1-dsahern@kernel.org>
@@ -47,86 +47,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Rename do_xdp_generic to do_xdp_generic_rx to emphasize its use in the
-Rx path, and export it as a general purpose function. It will just run
-XDP program on skb but will not handle XDP actions.
+This patch adds a way to set tx path XDP program in tun driver
+by handling XDP_SETUP_PROG_EGRESS and XDP_QUERY_PROG_EGRESS in
+ndo_bpf handler.
 
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 Signed-off-by: David Ahern <dahern@digitalocean.com>
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- drivers/net/tun.c         | 4 ++--
- include/linux/netdevice.h | 2 +-
- net/core/dev.c            | 7 ++++---
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/tun.c | 34 ++++++++++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 650c937ed56b..7cc5a1acaef2 100644
+index 7cc5a1acaef2..6aae398b904b 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -1932,7 +1932,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		rcu_read_lock();
- 		xdp_prog = rcu_dereference(tun->xdp_prog);
- 		if (xdp_prog) {
--			ret = do_xdp_generic(xdp_prog, skb);
-+			ret = do_xdp_generic_rx(xdp_prog, skb);
- 			if (ret != XDP_PASS) {
- 				rcu_read_unlock();
- 				local_bh_enable();
-@@ -2498,7 +2498,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	skb_probe_transport_header(skb);
+@@ -239,6 +239,7 @@ struct tun_struct {
+ 	u32 rx_batched;
+ 	struct tun_pcpu_stats __percpu *pcpu_stats;
+ 	struct bpf_prog __rcu *xdp_prog;
++	struct bpf_prog __rcu *xdp_egress_prog;
+ 	struct tun_prog __rcu *steering_prog;
+ 	struct tun_prog __rcu *filter_prog;
+ 	struct ethtool_link_ksettings link_ksettings;
+@@ -1189,15 +1190,21 @@ tun_net_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ }
  
- 	if (skb_xdp) {
--		err = do_xdp_generic(xdp_prog, skb);
-+		err = do_xdp_generic_rx(xdp_prog, skb);
- 		if (err != XDP_PASS)
- 			goto out;
+ static int tun_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+-		       struct netlink_ext_ack *extack)
++		       bool egress, struct netlink_ext_ack *extack)
+ {
+ 	struct tun_struct *tun = netdev_priv(dev);
+ 	struct tun_file *tfile;
+ 	struct bpf_prog *old_prog;
+ 	int i;
+ 
+-	old_prog = rtnl_dereference(tun->xdp_prog);
+-	rcu_assign_pointer(tun->xdp_prog, prog);
++	if (egress) {
++		old_prog = rtnl_dereference(tun->xdp_egress_prog);
++		rcu_assign_pointer(tun->xdp_egress_prog, prog);
++	} else {
++		old_prog = rtnl_dereference(tun->xdp_prog);
++		rcu_assign_pointer(tun->xdp_prog, prog);
++	}
++
+ 	if (old_prog)
+ 		bpf_prog_put(old_prog);
+ 
+@@ -1218,12 +1225,16 @@ static int tun_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	return 0;
+ }
+ 
+-static u32 tun_xdp_query(struct net_device *dev)
++static u32 tun_xdp_query(struct net_device *dev, bool egress)
+ {
+ 	struct tun_struct *tun = netdev_priv(dev);
+ 	const struct bpf_prog *xdp_prog;
+ 
+-	xdp_prog = rtnl_dereference(tun->xdp_prog);
++	if (egress)
++		xdp_prog = rtnl_dereference(tun->xdp_egress_prog);
++	else
++		xdp_prog = rtnl_dereference(tun->xdp_prog);
++
+ 	if (xdp_prog)
+ 		return xdp_prog->aux->id;
+ 
+@@ -1234,13 +1245,20 @@ static int tun_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+ {
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+-		return tun_xdp_set(dev, xdp->prog, xdp->extack);
++		return tun_xdp_set(dev, xdp->prog, false, xdp->extack);
++	case XDP_SETUP_PROG_EGRESS:
++		return tun_xdp_set(dev, xdp->prog, true, xdp->extack);
+ 	case XDP_QUERY_PROG:
+-		xdp->prog_id = tun_xdp_query(dev);
+-		return 0;
++		xdp->prog_id = tun_xdp_query(dev, false);
++		break;
++	case XDP_QUERY_PROG_EGRESS:
++		xdp->prog_id = tun_xdp_query(dev, true);
++		break;
+ 	default:
+ 		return -EINVAL;
  	}
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index bc58c489e959..c3549006b8fc 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3700,7 +3700,7 @@ static inline void dev_consume_skb_any(struct sk_buff *skb)
++
++	return 0;
  }
  
- void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
--int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb);
-+int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- u32 do_xdp_generic_core(struct sk_buff *skb, struct xdp_buff *xdp,
- 			struct bpf_prog *xdp_prog);
- int netif_rx(struct sk_buff *skb);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index bfa7a64c4e68..c943fc7b8054 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4636,7 +4636,7 @@ EXPORT_SYMBOL_GPL(generic_xdp_tx);
- 
- static DEFINE_STATIC_KEY_FALSE(generic_xdp_needed_key);
- 
--int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
-+int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb)
- {
- 	if (xdp_prog) {
- 		struct netdev_rx_queue *rxqueue;
-@@ -4668,7 +4668,7 @@ int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
- 	kfree_skb(skb);
- 	return XDP_DROP;
- }
--EXPORT_SYMBOL_GPL(do_xdp_generic);
-+EXPORT_SYMBOL_GPL(do_xdp_generic_rx);
- 
- static int netif_rx_internal(struct sk_buff *skb)
- {
-@@ -5017,7 +5017,8 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 		int ret2;
- 
- 		preempt_disable();
--		ret2 = do_xdp_generic(rcu_dereference(skb->dev->xdp_prog), skb);
-+		ret2 = do_xdp_generic_rx(rcu_dereference(skb->dev->xdp_prog),
-+					 skb);
- 		preempt_enable();
- 
- 		if (ret2 != XDP_PASS)
+ static int tun_net_change_carrier(struct net_device *dev, bool new_carrier)
 -- 
 2.21.1 (Apple Git-122.3)
 
