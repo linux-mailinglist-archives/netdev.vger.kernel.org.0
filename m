@@ -2,81 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 027C4170F01
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C95170F22
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbgB0D1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 22:27:31 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38435 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728238AbgB0D1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 22:27:31 -0500
-Received: by mail-qt1-f196.google.com with SMTP id e20so539576qto.5
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 19:27:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pmaPe19WB2ZFYGWPJMidDfkgFMRVVu0THKJ2EY7sg1Q=;
-        b=Bx/BSYFqBsuGrUVgHdY6YunH+jg8ZTG/JvmTF90WZMPBnYsNWiwIxe9gOyVVgoI2Dd
-         cvmd556QB7poYFa2sgZL+NJU0nwQJ1zyRYacbiVVJkrWk5iJWoF8hOu2Et8Y1C7srKgq
-         oUaCu3xSTD2il7FBVGEerHbO3GxT5E0JLla7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pmaPe19WB2ZFYGWPJMidDfkgFMRVVu0THKJ2EY7sg1Q=;
-        b=aOgSijWeCaBg/8yZjUiwWblpWiHCfHSViA2UjTppcsQAmS/mzn8WU1EAsTxLUgCcA0
-         ydbD7TOGWXbeHYNvBXq6yWgRSDHVJhiuT969vXLvLuNyzlZmmyutuozMdT83DuPF7PY5
-         BXS5epCBsUG9T9YAuLm5xT3RInRXeA2zHO4ZE7sJIVjUE56iMsJuyLXhR7TWBnqOOyt5
-         x47lcpXwka5O7kuCwxPn+B/BqWDWUM7b2zpQytcR5A/KXplYdiBA0sVnCTSNyzKeqBox
-         WTvQcS+nHGg1HW35AWIFFPVUs3CB1Wy8AuLU7BJmQskyKllB5usZjcT3i2V7RZJOKgPg
-         3yXw==
-X-Gm-Message-State: APjAAAUzc1CRxta8PcYA19mhbt/D5dfJEQmSS5Erad3wM4FpSsoB18Lu
-        dkI1uoZ2Tg5UKqFDfapHrTmQFw==
-X-Google-Smtp-Source: APXvYqyWvTo/Drr+PQojvpjpEG1//54WYTYUu8ln+h8TIaUfgqJ3fU8uPvv4VfWSHi2Ies7bEKa3VA==
-X-Received: by 2002:ac8:73c7:: with SMTP id v7mr2354336qtp.269.1582774050000;
-        Wed, 26 Feb 2020 19:27:30 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:a58e:e5e0:4900:6bcd? ([2601:282:803:7700:a58e:e5e0:4900:6bcd])
-        by smtp.gmail.com with ESMTPSA id q39sm29135qtb.43.2020.02.26.19.27.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Feb 2020 19:27:29 -0800 (PST)
-Subject: Re: [PATCH RFC net-next] virtio_net: Relax queue requirement for
- using XDP
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-References: <20200226005744.1623-1-dsahern@kernel.org>
- <23fe48b6-71d1-55a3-e0e8-ca4b3fac1f7f@redhat.com>
- <9a5391fb-1d80-43d1-5e88-902738cc2528@gmail.com> <87wo89zroe.fsf@toke.dk>
- <20200226032204-mutt-send-email-mst@kernel.org> <87r1yhzqz8.fsf@toke.dk>
-From:   David Ahern <dahern@digitalocean.com>
-Message-ID: <0dc879c5-12ce-0df2-24b0-97d105547150@digitalocean.com>
-Date:   Wed, 26 Feb 2020 20:27:27 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1728328AbgB0Djy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 22:39:54 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40145 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728255AbgB0Djy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 22:39:54 -0500
+Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1j7A1f-00030x-Iy; Thu, 27 Feb 2020 03:39:51 +0000
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-pm@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: [PATCH v7 0/9] net: fix sysfs permssions when device changes network
+Date:   Thu, 27 Feb 2020 04:37:10 +0100
+Message-Id: <20200227033719.1652190-1-christian.brauner@ubuntu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <87r1yhzqz8.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/20 1:34 AM, Toke Høiland-Jørgensen wrote:
->> OK so basically there would be commands to configure which TX queue is
->> used by XDP. With enough resources default is to use dedicated queues.
->> With not enough resources default is to fail binding xdp program
->> unless queues are specified. Does this sound reasonable?
-> Yeah, that was the idea. See this talk from LPC last year for more
-> details: https://linuxplumbersconf.org/event/4/contributions/462/
-> 
+Hey everyone,
 
-Can we use one of the breakout timeslots at netdevconf and discuss this
-proposal and status?
+/* v7 */
+This is v7 with a build warning fixup that slipped past me the last
+time. It removes to unused variables in sysfs_group_change_owner(). I
+observed no warning when building just now.
+
+/* v6 */
+This is v6 with two small fixups. I missed adapting the commit message
+to reflect the renamed helper for changing the owner of sysfs files and
+I also forgot to make the new dpm helper static inline.
+
+/* v5 */
+This is v5 with a small fixup requested by Rafael.
+
+/* v4 */
+This is v4 with more documentation and other fixes that Greg requested.
+
+/* v3 */
+This is v3 with explicit uid and gid parameters added to functions that
+change sysfs object ownership as Greg requested.
+
+(I've tagged this with net-next since it's triggered by a bug for
+ network device files but it also touches driver core aspects so it's
+ not clear-cut. I can of course split this series into separate
+ patchsets.) 
+We have been struggling with a bug surrounding the ownership of network
+device sysfs files when moving network devices between network
+namespaces owned by different user namespaces reported by multiple
+users.
+
+Currently, when moving network devices between network namespaces the
+ownership of the corresponding sysfs entries is not changed. This leads
+to problems when tools try to operate on the corresponding sysfs files.
+
+I also causes a bug when creating a network device in a network
+namespaces owned by a user namespace and moving that network device back
+to the host network namespaces. Because when a network device is created
+in a network namespaces it will be owned by the root user of the user
+namespace and all its associated sysfs files will also be owned by the
+root user of the corresponding user namespace.
+If such a network device has to be moved back to the host network
+namespace the permissions will still be set to the root user of the
+owning user namespaces of the originating network namespace. This means
+unprivileged users can e.g. re-trigger uevents for such incorrectly
+owned devices on the host or in other network namespaces. They can also
+modify the settings of the device itself through sysfs when they
+wouldn't be able to do the same through netlink. Both of these things
+are unwanted.
+
+For example, quite a few workloads will create network devices in the
+host network namespace. Other tools will then proceed to move such
+devices between network namespaces owner by other user namespaces. While
+the ownership of the device itself is updated in
+net/core/net-sysfs.c:dev_change_net_namespace() the corresponding sysfs
+entry for the device is not. Below you'll find that moving a network
+device (here a veth device) from a network namespace into another
+network namespaces owned by a different user namespace with a different
+id mapping. As you can see the permissions are wrong even though it is
+owned by the userns root user after it has been moved and can be
+interacted with through netlink: 
+
+drwxr-xr-x 5 nobody nobody    0 Jan 25 18:08 .
+drwxr-xr-x 9 nobody nobody    0 Jan 25 18:08 ..
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 addr_assign_type
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 addr_len
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 address
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 broadcast
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_changes
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_down_count
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 carrier_up_count
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dev_id
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dev_port
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 dormant
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 duplex
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 flags
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 gro_flush_timeout
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 ifalias
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 ifindex
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 iflink
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 link_mode
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 mtu
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 name_assign_type
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 netdev_group
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 operstate
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_port_id
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_port_name
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 phys_switch_id
+drwxr-xr-x 2 nobody nobody    0 Jan 25 18:09 power
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 proto_down
+drwxr-xr-x 4 nobody nobody    0 Jan 25 18:09 queues
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 speed
+drwxr-xr-x 2 nobody nobody    0 Jan 25 18:09 statistics
+lrwxrwxrwx 1 nobody nobody    0 Jan 25 18:08 subsystem -> ../../../../class/net
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:09 tx_queue_len
+-r--r--r-- 1 nobody nobody 4096 Jan 25 18:09 type
+-rw-r--r-- 1 nobody nobody 4096 Jan 25 18:08 uevent
+
+Constrast this with creating a device of the same type in the network
+namespace directly. In this case the device's sysfs permissions will be
+correctly updated.
+(Please also note, that in a lot of workloads this strategy of creating
+ the network device directly in the network device to workaround this
+ issue can not be used. Either because the network device is dedicated
+ after it has been created or because it used by a process that is
+ heavily sandboxed and couldn't create network devices itself.):
+
+drwxr-xr-x 5 root   root      0 Jan 25 18:12 .
+drwxr-xr-x 9 nobody nobody    0 Jan 25 18:08 ..
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 addr_assign_type
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 addr_len
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 address
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 broadcast
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 carrier
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_changes
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_down_count
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 carrier_up_count
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 dev_id
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 dev_port
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 dormant
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 duplex
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 flags
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 gro_flush_timeout
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 ifalias
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 ifindex
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 iflink
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 link_mode
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 mtu
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 name_assign_type
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 netdev_group
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 operstate
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_port_id
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_port_name
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 phys_switch_id
+drwxr-xr-x 2 root   root      0 Jan 25 18:12 power
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 proto_down
+drwxr-xr-x 4 root   root      0 Jan 25 18:12 queues
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 speed
+drwxr-xr-x 2 root   root      0 Jan 25 18:12 statistics
+lrwxrwxrwx 1 nobody nobody    0 Jan 25 18:12 subsystem -> ../../../../class/net
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 tx_queue_len
+-r--r--r-- 1 root   root   4096 Jan 25 18:12 type
+-rw-r--r-- 1 root   root   4096 Jan 25 18:12 uevent
+
+Now, when creating a network device in a network namespace owned by a
+user namespace and moving it to the host the permissions will be set to
+the id that the user namespace root user has been mapped to on the host
+leading to all sorts of permission issues mentioned above:
+
+458752
+drwxr-xr-x 5 458752 458752      0 Jan 25 18:12 .
+drwxr-xr-x 9 root   root        0 Jan 25 18:08 ..
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 addr_assign_type
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 addr_len
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 address
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 broadcast
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_changes
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_down_count
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 carrier_up_count
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dev_id
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dev_port
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 dormant
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 duplex
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 flags
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 gro_flush_timeout
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 ifalias
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 ifindex
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 iflink
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 link_mode
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 mtu
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 name_assign_type
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 netdev_group
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 operstate
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_port_id
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_port_name
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 phys_switch_id
+drwxr-xr-x 2 458752 458752      0 Jan 25 18:12 power
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 proto_down
+drwxr-xr-x 4 458752 458752      0 Jan 25 18:12 queues
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 speed
+drwxr-xr-x 2 458752 458752      0 Jan 25 18:12 statistics
+lrwxrwxrwx 1 root   root        0 Jan 25 18:12 subsystem -> ../../../../class/net
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 tx_queue_len
+-r--r--r-- 1 458752 458752   4096 Jan 25 18:12 type
+-rw-r--r-- 1 458752 458752   4096 Jan 25 18:12 uevent
+
+Fix this by changing the basic sysfs files associated with network
+devices when moving them between network namespaces. To this end we add
+some infrastructure to sysfs.
+
+The patchset takes care to only do this when the owning user namespaces
+changes and the kids differ. So there's only a performance overhead,
+when the owning user namespace of the network namespace is different
+__and__ the kid mappings for the root user are different for the two
+user namespaces:
+Assume we have a netdev eth0 which we create in netns1 owned by userns1.
+userns1 has an id mapping of 0 100000 100000. Now we move eth0 into
+netns2 which is owned by userns2 which also defines an id mapping of 0
+100000 100000. In this case sysfs doesn't need updating. The patch will
+handle this case and not do any needless work. Now assume eth0 is moved
+into netns3 which is owned by userns3 which defines an id mapping of 0
+123456 65536. In this case the root user in each namespace corresponds
+to different kid and sysfs needs updating.
+
+Thanks!
+Christian
+
+Christian Brauner (9):
+  sysfs: add sysfs_file_change_owner()
+  sysfs: add sysfs_link_change_owner()
+  sysfs: add sysfs_group{s}_change_owner()
+  sysfs: add sysfs_change_owner()
+  device: add device_change_owner()
+  drivers/base/power: add dpm_sysfs_change_owner()
+  net-sysfs: add netdev_change_owner()
+  net-sysfs: add queue_change_owner()
+  net: fix sysfs permssions when device changes network namespace
+
+ drivers/base/core.c        | 120 ++++++++++++++++++++++++++++++
+ drivers/base/power/power.h |   3 +
+ drivers/base/power/sysfs.c |  55 +++++++++++++-
+ fs/sysfs/file.c            | 148 +++++++++++++++++++++++++++++++++++++
+ fs/sysfs/group.c           | 115 ++++++++++++++++++++++++++++
+ include/linux/device.h     |   1 +
+ include/linux/sysfs.h      |  46 ++++++++++++
+ net/core/dev.c             |   9 ++-
+ net/core/net-sysfs.c       | 133 +++++++++++++++++++++++++++++++++
+ net/core/net-sysfs.h       |   2 +
+ 10 files changed, 630 insertions(+), 2 deletions(-)
+
+
+base-commit: bb6d3fb354c5ee8d6bde2d576eb7220ea09862b9
+-- 
+2.25.1
 
