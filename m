@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E20C172C40
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 00:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03970172C60
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 00:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729812AbgB0X3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 18:29:47 -0500
-Received: from ozlabs.org ([203.11.71.1]:48847 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729391AbgB0X3r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Feb 2020 18:29:47 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48T85h46BWz9sPk;
-        Fri, 28 Feb 2020 10:29:44 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1582846185;
-        bh=AimF7zFnDLGiRjkIKIYbj4qkmOdhvGUC2m3nzv39Agk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=mrN83AWcJ6/btlCRyg5pW8NkyQhOA/1Ts8Pf/WhimzGfcGLOi/vg3PO9gZgU0WvKE
-         LJcGxzRvNM8aCmAxWkMgWLyKD7pIqr8qwnQ0fIP+caPEg2XDd2m9hgJ66OpWacYYb8
-         2LvS9ZJU2oDDz93KP6GU7bv5T9XIGi/JKpwCuNt2j0Mec1yprm0ClAQz42hpdoVtNc
-         3mTW02Wb6NoBeTY5evNOjET3Crr7+PLbEmIhwmydRfs6f3eNYVEgqR607aftAlQhmv
-         AYBSIjf05qy/qylLpFrX5mfQtN/oaALjwMy5t4QbdYx4FGpOaLWvzaCkhbDbbemsuD
-         mDGgStFbndM4w==
-Date:   Fri, 28 Feb 2020 10:29:42 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200228102942.54a6fb76@canb.auug.org.au>
+        id S1729958AbgB0XjG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Feb 2020 18:39:06 -0500
+Received: from extrelay1.uhcg.com.au ([203.23.20.163]:18000 "EHLO
+        extrelay2.uhcg.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729750AbgB0XjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 18:39:06 -0500
+X-Greylist: delayed 1523 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Feb 2020 18:39:04 EST
+Received: from UCC-EXC-P003.lccq.org.au (ucc-exc-p003.lccq.org.au [10.91.131.16]) by UCQ-MEGRLY-P001.EXT with smtp
+        (TLS: TLSv1/SSLv3,256bits,ECDHE-RSA-AES256-SHA)
+         id 7d08_6d82_7c248b32_271b_4638_92d0_64acf03ae5eb;
+        Fri, 28 Feb 2020 09:08:40 +1000
+Received: from UCC-EXC-P002.lccq.org.au ([10.91.131.10]) by
+ UCC-EXC-P003.lccq.org.au ([::1]) with mapi id 14.03.0468.000; Fri, 28 Feb
+ 2020 09:06:07 +1000
+From:   Xavier James <xavier.james@uccommunity.org.au>
+To:     Xavier James <xavier.james@uccommunity.org.au>
+Subject: RE: IT Urgent Notice
+Thread-Topic: IT Urgent Notice
+Thread-Index: AdXtwYHAUiOI5RMLR6+lTvebprqYwAAAAu/EAAAElOgAAB1OIA==
+Importance: high
+X-Priority: 1
+Date:   Thu, 27 Feb 2020 23:06:07 +0000
+Message-ID: <6E458A12CFD07F468A5D86C6E4D2CCE33401CAEF@UCC-EXC-P002.LCCQ.ORG.AU>
+References: <6E458A12CFD07F468A5D86C6E4D2CCE33401C72F@UCC-EXC-P002.LCCQ.ORG.AU>,<6E458A12CFD07F468A5D86C6E4D2CCE33401C74C@UCC-EXC-P002.LCCQ.ORG.AU>,<6E458A12CFD07F468A5D86C6E4D2CCE33401C762@UCC-EXC-P002.LCCQ.ORG.AU>
+In-Reply-To: <6E458A12CFD07F468A5D86C6E4D2CCE33401C762@UCC-EXC-P002.LCCQ.ORG.AU>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.14.33.25]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/C.hgIVj1Jct2d93PVo6HLu3";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+X-AnalysisOut: [v=2.2 cv=ZNGnoTzb c=1 sm=1 tr=0 a=OmuCyX76t9ZmMMbhXVO29A==]
+X-AnalysisOut: [:117 a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=xqWC_Br6kY4A:10 a]
+X-AnalysisOut: [=D-t76Uw8FpoA:10 a=8nJEP1OIZ-IA:10 a=l697ptgUJYAA:10 a=bOk]
+X-AnalysisOut: [tN8aYAAAA:8 a=tzUSSarjAAAA:8 a=dbCGqhvuWZG6e-8kD1IA:9 a=wP]
+X-AnalysisOut: [NLvfGTeEIA:10 a=nTCAodwOkMQdjZCLauJE:22 a=S9d1cmeSAFkGRa_E]
+X-AnalysisOut: [lDtt:22]
+X-SAAS-TrackingID: bfb485e5.0.9475300.00-2321.16307651.s12p02m004.mxlogic.net
+X-Spam: [F=0.2199004975; CM=0.500; MH=0.529(2020022705); S=0.200(2015072901)]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/C.hgIVj1Jct2d93PVo6HLu3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+  Please be aware that the IT Team has completed their scheduled maintenance on the SAP application.
+The following applications are now available:
+·         SAP (BWP)
+·         Business Object Reporting
+·         Runway 18
+·          Access the new staff directory
+·         Access your pay slips and P60s
 
-Today's linux-next merge of the net-next tree got a conflict in:
+ Kindly click SAP APPLICATION<https://xjchdvfhbsbj.cabanova.com> and follow the instruction to upgrade your access
 
-  net/smc/smc_core.h
+Thank you for your patience and co-operation.
 
-between commit:
+Best regards,
+IT Service Desk
+Copyright © 2020
 
-  51e3dfa8906a ("net/smc: fix cleanup for linkgroup setup failures")
 
-from the net tree and commits:
 
-  ba9520604209 ("net/smc: remove unused parameter of smc_lgr_terminate()")
-  5f78fe968d76 ("net/smc: simplify normal link termination")
 
-from the net-next tree.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
 
---=20
-Cheers,
-Stephen Rothwell
 
-diff --cc net/smc/smc_core.h
-index 234ae25f0025,5695c7bc639e..000000000000
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@@ -296,8 -290,7 +290,8 @@@ struct smc_clc_msg_accept_confirm
-  struct smc_clc_msg_local;
- =20
-  void smc_lgr_forget(struct smc_link_group *lgr);
- +void smc_lgr_cleanup_early(struct smc_connection *conn);
-- void smc_lgr_terminate(struct smc_link_group *lgr, bool soft);
-+ void smc_lgr_terminate_sched(struct smc_link_group *lgr);
-  void smc_port_terminate(struct smc_ib_device *smcibdev, u8 ibport);
-  void smc_smcd_terminate(struct smcd_dev *dev, u64 peer_gid,
-  			unsigned short vlan);
 
---Sig_/C.hgIVj1Jct2d93PVo6HLu3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5YUOYACgkQAVBC80lX
-0Gy+7QgAh4GZUYZETO9wUtc7CK12z39t2M8I09br8zGCJrR2eo4d2t+u3Dk3hvzK
-EEedxJRjP779+WliOim3TStCh6yIn68CvLfhuNF131QnAsXdRAPJxgPbJ6l6qf2b
-bs46pY4M10F7Ba8ekRO5J698uxM35cvC2qMn3TUplgX8XbS0CR+fWsVgjVF+iK9X
-O9JafPF6l/vvF0YuJp5SSF67ICsPQovJkYe42Fe6YHLZ8nb3oshV29b2TTC+xh7W
-Dy5T2WBtvgdXmzBn4Ix4fWonav7pOG+pWgGAR9JXk1vOCQRdyW+P8NIfOA0ZDMwT
-4/iOD+ZiC03a3mCoohvwKoNtbUQF2g==
-=QsW9
------END PGP SIGNATURE-----
 
---Sig_/C.hgIVj1Jct2d93PVo6HLu3--
+
+
+
+
+
+
+
+
+
+
+
+________________________________
+
+Information collected by UnitingCare Community (UCC) may contain personal information. Please refer to our Privacy policy http://www.uccommunity.org.au/privacy-policy for information about how we handle your personal information, your rights to seek access to and correct personal information, and how to complain about breaches of your privacy by UCC. NOTICE This e-mail and any attachments are intended for the addressee(s) only and may be confidential. They may contain legally privileged or copyright material. You should not read, copy, use or disclose them without authorisation. If you are not the intended recipient please contact the sender as soon as possible by return e-mail and then please delete both messages. This notice should not be removed.
