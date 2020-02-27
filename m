@@ -2,112 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48826172321
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4591A172328
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 17:23:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730127AbgB0QVe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Feb 2020 11:21:34 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:41880 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728963AbgB0QVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:21:33 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RGKied080801
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 11:21:32 -0500
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [158.85.210.111])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2yden2p6ay-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 11:21:32 -0500
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Thu, 27 Feb 2020 16:21:30 -0000
-Received: from us1b3-smtp06.a3dr.sjc01.isc4sb.com (10.122.203.184)
-        by smtp.notes.na.collabserv.com (10.122.47.52) with smtp.notes.na.collabserv.com ESMTP;
-        Thu, 27 Feb 2020 16:21:22 -0000
-Received: from us1b3-mail162.a3dr.sjc03.isc4sb.com ([10.160.174.187])
-          by us1b3-smtp06.a3dr.sjc01.isc4sb.com
-          with ESMTP id 2020022716212224-572447 ;
-          Thu, 27 Feb 2020 16:21:22 +0000 
-In-Reply-To: <20200227155335.GI31668@ziepe.ca>
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     "Jason Gunthorpe" <jgg@ziepe.ca>
-Cc:     "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
-        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, parav@mellanox.com,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Date:   Thu, 27 Feb 2020 16:21:21 +0000
+        id S1730140AbgB0QWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 11:22:01 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:37215 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729854AbgB0QWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 11:22:01 -0500
+Received: from webmail.gandi.net (webmail18.sd4.0x35.net [10.200.201.18])
+        (Authenticated sender: foss@0leil.net)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPA id D2E121C000C;
+        Thu, 27 Feb 2020 16:21:58 +0000 (UTC)
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20200227155335.GI31668@ziepe.ca>,<20200226204238.GC31668@ziepe.ca>
- <000000000000153fac059f740693@google.com>
- <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
-X-Mailer: IBM iNotes ($HaikuForm 1054.1) | IBM Domino Build
- SCN1812108_20180501T0841_FP62 November 04, 2019 at 09:47
-X-KeepSent: 0C6D63D8:F1817050-0025851B:0059D878;
- type=4; name=$KeepSent
-X-LLNOutbound: False
-X-Disclaimed: 18363
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 20022716-3633-0000-0000-000001C8796B
-X-IBM-SpamModules-Scores: BY=0.021699; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.399202; ST=0; TS=0; UL=0; ISC=; MB=0.012841
-X-IBM-SpamModules-Versions: BY=3.00012651; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000293; SDB=6.01340059; UDB=6.00714142; IPR=6.01122420;
- MB=3.00030996; MTD=3.00000008; XFM=3.00000015; UTC=2020-02-27 16:21:29
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2020-02-27 12:31:36 - 6.00011055
-x-cbparentid: 20022716-3634-0000-0000-0000AD5397FE
-Message-Id: <OF0C6D63D8.F1817050-ON0025851B.0059D878-0025851B.0059D887@notes.na.collabserv.com>
-Subject: RE: possible deadlock in cma_netdev_callback
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_05:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 27 Feb 2020 17:21:58 +0100
+From:   Quentin Schulz <foss@0leil.net>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] net: phy: mscc: implement RGMII skew delay
+ configuration
+In-Reply-To: <20200227152859.1687119-4-antoine.tenart@bootlin.com>
+References: <20200227152859.1687119-1-antoine.tenart@bootlin.com>
+ <20200227152859.1687119-4-antoine.tenart@bootlin.com>
+Message-ID: <1f267571ddd9d1caf3e95afe31e47e30@0leil.net>
+X-Sender: foss@0leil.net
+User-Agent: Roundcube Webmail/1.3.8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------"Jason Gunthorpe" <jgg@ziepe.ca> wrote: -----
+Hi Antoine,
 
->To: "Bernard Metzler" <BMT@zurich.ibm.com>
->From: "Jason Gunthorpe" <jgg@ziepe.ca>
->Date: 02/27/2020 04:53PM
->Cc: "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
->chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
->linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
->netdev@vger.kernel.org, parav@mellanox.com,
->syzkaller-bugs@googlegroups.com, willy@infradead.org
->Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
->
->On Thu, Feb 27, 2020 at 10:11:13AM +0000, Bernard Metzler wrote:
->
->> Thanks for letting me know! Hmm, we cannot use RCU locks since
->> we potentially sleep. One solution would be to create a list
->> of matching interfaces while under lock, unlock and use that
->> list for calling siw_listen_address() (which may sleep),
->> right...?
->
->Why do you need to iterate over addresses anyhow? Shouldn't the
->listen
->just be done with the address the user gave and a BIND DEVICE to the
->device siw is connected to?
+It's still me, nitpicker.
 
-The user may give a wildcard local address, so we'd have
-to bind to all addresses of that device...
+On 2020-02-27 16:28, Antoine Tenart wrote:
+> This patch adds support for configuring the RGMII skews in Rx and Tx
+> thanks to properties defined in the device tree.
+> 
+> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> ---
+>  drivers/net/phy/mscc.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
+> index ecb45c43e5ed..56d6a45a90c2 100644
+> --- a/drivers/net/phy/mscc.c
+> +++ b/drivers/net/phy/mscc.c
+> @@ -192,6 +192,10 @@ enum macsec_bank {
+>  /* Extended Page 2 Registers */
+>  #define MSCC_PHY_CU_PMD_TX_CNTL		  16
+> 
+> +#define MSCC_PHY_RGMII_SETTINGS		  18
+> +#define RGMII_SKEW_RX_POS		  1
+> +#define RGMII_SKEW_TX_POS		  4
+> +
+>  #define MSCC_PHY_RGMII_CNTL		  20
+>  #define RGMII_RX_CLK_DELAY_MASK		  0x0070
+>  #define RGMII_RX_CLK_DELAY_POS		  4
+> @@ -2682,6 +2686,7 @@ static bool vsc8584_is_pkg_init(struct
+> phy_device *phydev, bool reversed)
+> 
+>  static int vsc8584_config_init(struct phy_device *phydev)
+>  {
+> +	u32 skew_rx = VSC8584_RGMII_SKEW_0_2, skew_tx = 
+> VSC8584_RGMII_SKEW_0_2;
+>  	struct vsc8531_private *vsc8531 = phydev->priv;
+>  	u16 addr, val;
+>  	int ret, i;
+> @@ -2830,6 +2835,19 @@ static int vsc8584_config_init(struct phy_device 
+> *phydev)
+>  	if (ret)
+>  		return ret;
+> 
+> +	if (of_find_property(dev->of_node, "vsc8584,rgmii-skew-rx", NULL) ||
+> +	    of_find_property(dev->of_node, "vsc8584,rgmii-skew-tx", NULL)) {
+> +		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-rx", 
+> &skew_rx);
+> +		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-tx", 
+> &skew_tx);
+> +
 
-Best,
-Bernard.
+Reading the code, I think **!**of_property_read_u32 could directly 
+replace of_find_property in your condition and spare you two calls to 
+that function.
 
->
->Also that loop in siw_create looks wrong to me
->
->Jason
->
->
+Also, do we actually need to write that register only when skews are 
+defined in the DT? Can't we just write to it anyway (I guess the fact 
+that 0_2 skew is actually 0 in value should put me on the right path but 
+I prefer to ask).
 
+Final nitpick: I would see a check of the skew_rx/tx from DT before you 
+put them in the following line, they could be drastically different from 
+0-8 value set that you expect considering you're reading a u32 (pass 
+them through a GENMASK at least?)
+
+> +		phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
+> +				 MSCC_PHY_RGMII_SETTINGS,
+> +				 (0x7 << RGMII_SKEW_RX_POS) |
+> +				 (0x7 << RGMII_SKEW_TX_POS),
+> +				 (skew_rx << RGMII_SKEW_RX_POS) |
+> +				 (skew_tx << RGMII_SKEW_TX_POS));
+> +	}
+> +
+
+Thanks,
+Quentin
