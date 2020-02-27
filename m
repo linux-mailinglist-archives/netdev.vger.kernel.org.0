@@ -2,93 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6089E171E91
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 15:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 321E8171D0E
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 15:17:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388070AbgB0OHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 09:07:17 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6574 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388053AbgB0OHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 09:07:15 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RE56Oo019530;
-        Thu, 27 Feb 2020 09:06:58 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ydtrx3bry-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Feb 2020 09:06:58 -0500
-Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01RE6vJg021702
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 27 Feb 2020 09:06:57 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 27 Feb
- 2020 09:06:55 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 27 Feb 2020 09:06:55 -0500
-Received: from analog.ad.analog.com ([10.48.65.180])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01RE6pPD029488;
-        Thu, 27 Feb 2020 09:06:51 -0500
-From:   Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>,
-        <libertas-dev@lists.infradead.org>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <gregkh@linuxfoundation.org>
-CC:     <dcbw@redhat.com>, <allison@lohutok.net>, <tglx@linutronix.de>,
-        Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-Subject: [PATCH] net: wireless: marvell: libertas: Use new structure for SPI transfer delays
-Date:   Thu, 27 Feb 2020 16:06:34 +0200
-Message-ID: <20200227140634.9286-1-sergiu.cuciurean@analog.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_04:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- malwarescore=0 impostorscore=0 clxscore=1011 priorityscore=1501
- lowpriorityscore=0 phishscore=0 spamscore=0 adultscore=0 mlxlogscore=903
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002270112
+        id S2389372AbgB0ORa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 09:17:30 -0500
+Received: from smtprelay07.ispgateway.de ([134.119.228.99]:42917 "EHLO
+        smtprelay07.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389709AbgB0OR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 09:17:28 -0500
+X-Greylist: delayed 441 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Feb 2020 09:17:28 EST
+Received: from [87.123.206.167] (helo=kiste)
+        by smtprelay07.ispgateway.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <ndev@hwipl.net>)
+        id 1j7JrU-0006mO-HJ; Thu, 27 Feb 2020 15:10:00 +0100
+Date:   Thu, 27 Feb 2020 15:09:46 +0100
+From:   Hans Wippel <ndev@hwipl.net>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     ubraun@linux.ibm.com, davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [RFC net-next] net/smc: update peer ID on device changes
+Message-Id: <20200227150946.60f12541f7541a64150afe2a@hwipl.net>
+In-Reply-To: <b56d4bbc-2a4e-634f-10d4-17bd0253c033@linux.ibm.com>
+References: <20200227113902.318060-1-ndev@hwipl.net>
+        <b56d4bbc-2a4e-634f-10d4-17bd0253c033@linux.ibm.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-unknown-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Df-Sender: bmRldkBod2lwbC5uZXQ=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a recent change to the SPI subsystem [1], a new `delay` struct was added
-to replace the `delay_usecs`. This change replaces the current
-`delay_usecs` with `delay` for this driver.
+On Thu, 27 Feb 2020 14:13:48 +0100
+Karsten Graul <kgraul@linux.ibm.com> wrote:
 
-The `spi_transfer_delay_exec()` function [in the SPI framework] makes sure
-that both `delay_usecs` & `delay` are used (in this order to preserve
-backwards compatibility).
+> On 27/02/2020 12:39, Hans Wippel wrote:
+> > From: hwipl <ndev@hwipl.net>
+> > 
+> > A SMC host's peer ID contains the MAC address of the first active RoCE
+> > device. However, if this device becomes inactive or is removed, the peer
+> > ID is not updated. This patch adds peer ID updates on device changes.
+> 
+> The peer ID is used to uniquely identify an SMC host and to check if there
+> are already established link groups to the peer which can be reused.
+> In failover scenarios RoCE devices can go down and get active again later,
+> but this must not change the current peer ID of the host.  
+> The part of the MAC address that is included in the peer ID is not used for
+> other purposes than the identification of an SMC host.
 
-[1] commit bebcfd272df6 ("spi: introduce `delay` field for
-`spi_transfer` + spi_transfer_delay_exec()")
+Is it OK to keep the peer ID if, for example, the device is removed and
+used in a different VM?
 
-Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
----
- drivers/net/wireless/marvell/libertas/if_spi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Hans
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_spi.c b/drivers/net/wireless/marvell/libertas/if_spi.c
-index d07fe82c557e..3c3f266bf116 100644
---- a/drivers/net/wireless/marvell/libertas/if_spi.c
-+++ b/drivers/net/wireless/marvell/libertas/if_spi.c
-@@ -235,8 +235,9 @@ static int spu_read(struct if_spi_card *card, u16 reg, u8 *buf, int len)
- 		spi_message_add_tail(&dummy_trans, &m);
- 	} else {
- 		/* Busy-wait while the SPU fills the FIFO */
--		reg_trans.delay_usecs =
-+		reg_trans.delay.value =
- 			DIV_ROUND_UP((100 + (delay * 10)), 1000);
-+		reg_trans.delay.unit = SPI_DELAY_UNIT_USECS;
- 	}
- 
- 	/* read in data */
--- 
-2.17.1
 
+> > 
+> > Signed-off-by: hwipl <ndev@hwipl.net>
+> > ---
+> >  net/smc/smc_ib.c | 32 ++++++++++++++++++++++++--------
+> >  1 file changed, 24 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+> > index 3444de27fecd..5818636962c6 100644
+> > --- a/net/smc/smc_ib.c
+> > +++ b/net/smc/smc_ib.c
+> > @@ -159,11 +159,29 @@ static int smc_ib_fill_mac(struct smc_ib_device *smcibdev, u8 ibport)
+> >   * plus a random 2-byte number is used to create this identifier.
+> >   * This name is delivered to the peer during connection initialization.
+> >   */
+> > -static inline void smc_ib_define_local_systemid(struct smc_ib_device *smcibdev,
+> > -						u8 ibport)
+> > +static void smc_ib_update_local_systemid(void)
+> >  {
+> > -	memcpy(&local_systemid[2], &smcibdev->mac[ibport - 1],
+> > -	       sizeof(smcibdev->mac[ibport - 1]));
+> > +	struct smc_ib_device *smcibdev;
+> > +	u8 ibport;
+> > +
+> > +	/* get first ib device with an active port */
+> > +	spin_lock(&smc_ib_devices.lock);
+> > +	list_for_each_entry(smcibdev, &smc_ib_devices.list, list) {
+> > +		for (ibport = 1; ibport <= SMC_MAX_PORTS; ibport++) {
+> > +			if (smc_ib_port_active(smcibdev, ibport))
+> > +				goto out;
+> > +		}
+> > +	}
+> > +	smcibdev = NULL;
+> > +out:
+> > +	spin_unlock(&smc_ib_devices.lock);
+> > +
+> > +	/* set (new) mac address or reset to zero */
+> > +	if (smcibdev)
+> > +		ether_addr_copy(&local_systemid[2],
+> > +				(u8 *)&smcibdev->mac[ibport - 1]);
+> > +	else
+> > +		eth_zero_addr(&local_systemid[2]);
+> >  }
+> >  
+> >  bool smc_ib_is_valid_local_systemid(void)
+> > @@ -229,10 +247,6 @@ static int smc_ib_remember_port_attr(struct smc_ib_device *smcibdev, u8 ibport)
+> >  	rc = smc_ib_fill_mac(smcibdev, ibport);
+> >  	if (rc)
+> >  		goto out;
+> > -	if (!smc_ib_is_valid_local_systemid() &&
+> > -	    smc_ib_port_active(smcibdev, ibport))
+> > -		/* create unique system identifier */
+> > -		smc_ib_define_local_systemid(smcibdev, ibport);
+> >  out:
+> >  	return rc;
+> >  }
+> > @@ -254,6 +268,7 @@ static void smc_ib_port_event_work(struct work_struct *work)
+> >  			clear_bit(port_idx, smcibdev->ports_going_away);
+> >  		}
+> >  	}
+> > +	smc_ib_update_local_systemid();
+> >  }
+> >  
+> >  /* can be called in IRQ context */
+> > @@ -599,6 +614,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
+> >  	smc_ib_cleanup_per_ibdev(smcibdev);
+> >  	ib_unregister_event_handler(&smcibdev->event_handler);
+> >  	kfree(smcibdev);
+> > +	smc_ib_update_local_systemid();
+> >  }
+> >  
+> >  static struct ib_client smc_ib_client = {
+> > 
+> 
+> -- 
+> Karsten
+> 
+> (I'm a dude)
+> 
