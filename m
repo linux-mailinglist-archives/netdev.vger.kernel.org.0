@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E041711F5
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 09:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 946391711FD
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 09:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbgB0IIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 03:08:49 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:56918 "EHLO
+        id S1728532AbgB0IKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 03:10:00 -0500
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:57069 "EHLO
         esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbgB0IIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 03:08:49 -0500
+        with ESMTP id S1728441AbgB0IKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 03:10:00 -0500
 Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
   Allan.Nielsen@microchip.com designates 198.175.253.82 as
   permitted sender) identity=mailfrom;
@@ -30,23 +30,23 @@ Received-SPF: None (esa2.microchip.iphmx.com: no sender
   x-sender="postmaster@email.microchip.com";
   x-conformance=spf_only
 Authentication-Results: esa2.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: Xcm7E3maG8gVGOrYBJSL4jS6NJ12ltxPd23nMF4KQBECYBdjzTOQx1I3XvoAGOfcN5qXDFFt8l
- 0fpBloDwWyKfgN6oHIvaHdV6/rdzJQAgJ7ihKqhNuek/EPUHfFqjVtAotR6oRnvsgxIXwuqDDH
- lU+tx+ObWkLPOhRev3kbocZ1JKFE3GA3fYihkSE8P/BdtNj0b7/izhBLVuLAttMt4VBY+611Vn
- IF4Ir6pxIZQcayonB1sWdjtm1X2Fs/GU5p+c6Z5umwudJjCiVnWi46R/815D/aWw8GuOA5SXV0
- Lnk=
+IronPort-SDR: AGGEUQER8H9Vvku6YF0Lzdcqd7Gi1HQ5xTocnRcGuvCXJghvpGDr9p1Z7ZZZKUyloqbRNKpOXH
+ pALARDYJIJZgpQZaz2yW5iTIBeNFnWtqVVNbgOJdosxtszS6l6SgsJHqn4ti2HbQ3QGuetW2VD
+ pUBMAGjbU6OKGvb9DkwarXIM2DGOzD4MHx+b6NNcFwGJ+/D0b2ILcY2+QbtZZEv5HA2oKmvUpp
+ slyYYnvGDLcNGhseHzrlZgkc0+JcgUlCjmoechmlSwGmsSDjb/Y0psLUHCgyiznJqer8if1JlH
+ JVo=
 X-IronPort-AV: E=Sophos;i="5.70,491,1574146800"; 
-   d="scan'208";a="67212784"
+   d="scan'208";a="67212924"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Feb 2020 01:08:47 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Feb 2020 01:09:58 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 27 Feb 2020 01:08:42 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Thu, 27 Feb 2020 01:08:42 -0700
-Date:   Thu, 27 Feb 2020 09:08:41 +0100
+ 15.1.1713.5; Thu, 27 Feb 2020 01:09:57 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 27 Feb 2020 01:09:57 -0700
+Date:   Thu, 27 Feb 2020 09:09:57 +0100
 From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 CC:     <davem@davemloft.net>, <horatiu.vultur@microchip.com>,
@@ -57,15 +57,15 @@ CC:     <davem@davemloft.net>, <horatiu.vultur@microchip.com>,
         <alexandru.marginean@nxp.com>, <xiaoliang.yang_1@nxp.com>,
         <yangbo.lu@nxp.com>, <po.liu@nxp.com>, <jiri@mellanox.com>,
         <idosch@idosch.org>, <kuba@kernel.org>
-Subject: Re: [PATCH net-next 02/10] net: mscc: ocelot: simplify tc-flower
- offload structures
-Message-ID: <20200227080841.xyzejgokyio3uz4e@lx-anielsen.microsemi.net>
+Subject: Re: [PATCH net-next 03/10] net: mscc: ocelot: replace "rule" and
+ "ocelot_rule" variable names with "ace"
+Message-ID: <20200227080957.aiec5zpj2xxhirue@lx-anielsen.microsemi.net>
 References: <20200224130831.25347-1-olteanv@gmail.com>
- <20200224130831.25347-3-olteanv@gmail.com>
+ <20200224130831.25347-4-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20200224130831.25347-3-olteanv@gmail.com>
+In-Reply-To: <20200224130831.25347-4-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -76,588 +76,247 @@ On 24.02.2020 15:08, Vladimir Oltean wrote:
 >
 >From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
->The ocelot tc-flower offload binds a second flow block callback (apart
->from the one for matchall) just because it uses a different block
->private structure (ocelot_port_private for matchall, ocelot_port_block
->for flower).
+>The "ocelot_rule" variable name is both annoyingly long trying to
+>distinguish itself from struct flow_rule *rule =
+>flow_cls_offload_flow_rule(f), as well as actually different from the
+>"ace" variable name which is used all over the place in ocelot_ace.c and
+>is referring to the same structure.
 >
->But ocelot_port_block just appears to be boilerplate, and doesn't help
->with anything in particular at all, it's just useless glue between the
->(global!) struct ocelot_acl_block *block pointer, and a per-netdevice
->struct ocelot_port_private *priv.
+>And the "rule" variable name is, confusingly, different from f->rule,
+>but sometimes one has to look up to the beginning of the function to get
+>an understanding of what structure type is actually being handled.
 >
->So let's just simplify that, and make struct ocelot_port_private be the
->private structure for the block offload. This makes us able to use the
->same flow callback as in the case of matchall.
->
->This also reveals that the struct ocelot_acl_block *block is used rather
->strangely, as mentioned above: it is defined globally, allocated at
->probe time, and freed at unbind time. So just move the structure to the
->main ocelot structure, which gives further opportunity for
->simplification.
->
->Also get rid of backpointers from struct ocelot_acl_block and struct
->ocelot_ace_rule back to struct ocelot, by reworking the function
->prototypes, where necessary, to use a more DSA-friendly "struct ocelot
->*ocelot, int port" format.
->
->And finally, remove the debugging prints that were added during
->development, since they provide no useful information at this point.
+>So let's use the "ace" name wherever possible ("Access Control Entry").
 >
 >Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 >---
-> drivers/net/ethernet/mscc/ocelot.c        |   1 -
-> drivers/net/ethernet/mscc/ocelot_ace.c    |  81 +++++------
-> drivers/net/ethernet/mscc/ocelot_ace.h    |  24 ++--
-> drivers/net/ethernet/mscc/ocelot_flower.c | 155 ++++------------------
-> drivers/net/ethernet/mscc/ocelot_tc.c     |  22 +--
-> include/soc/mscc/ocelot.h                 |   7 +
-> 6 files changed, 75 insertions(+), 215 deletions(-)
+> drivers/net/ethernet/mscc/ocelot_flower.c | 102 +++++++++++-----------
+> 1 file changed, 51 insertions(+), 51 deletions(-)
 >
->diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
->index b85e4fe9466d..3de8267180e2 100644
->--- a/drivers/net/ethernet/mscc/ocelot.c
->+++ b/drivers/net/ethernet/mscc/ocelot.c
->@@ -2502,7 +2502,6 @@ void ocelot_deinit(struct ocelot *ocelot)
->        cancel_delayed_work(&ocelot->stats_work);
->        destroy_workqueue(ocelot->stats_queue);
->        mutex_destroy(&ocelot->stats_lock);
->-       ocelot_ace_deinit();
->        if (ocelot->ptp_clock)
->                ptp_clock_unregister(ocelot->ptp_clock);
->
->diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
->index 18670645d47f..375c7c6aa7d5 100644
->--- a/drivers/net/ethernet/mscc/ocelot_ace.c
->+++ b/drivers/net/ethernet/mscc/ocelot_ace.c
->@@ -12,8 +12,6 @@
->
-> #define OCELOT_POLICER_DISCARD 0x17f
->
->-static struct ocelot_acl_block *acl_block;
->-
-> struct vcap_props {
->        const char *name; /* Symbolic name */
->        u16 tg_width; /* Type-group width (in bits) */
->@@ -574,15 +572,15 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
->        vcap_row_cmd(ocelot, row, VCAP_CMD_WRITE, VCAP_SEL_ALL);
-> }
->
->-static void is2_entry_get(struct ocelot_ace_rule *rule, int ix)
->+static void is2_entry_get(struct ocelot *ocelot, struct ocelot_ace_rule *rule,
->+                         int ix)
-> {
->-       struct ocelot *op = rule->ocelot;
->        struct vcap_data data;
->        int row = (ix / 2);
->        u32 cnt;
->
->-       vcap_row_cmd(op, row, VCAP_CMD_READ, VCAP_SEL_COUNTER);
->-       vcap_cache2action(op, &data);
->+       vcap_row_cmd(ocelot, row, VCAP_CMD_READ, VCAP_SEL_COUNTER);
->+       vcap_cache2action(ocelot, &data);
->        data.tg_sw = VCAP_TG_HALF;
->        is2_data_get(&data, ix);
->        cnt = vcap_data_get(data.counter, data.counter_offset,
->@@ -641,25 +639,27 @@ ocelot_ace_rule_get_rule_index(struct ocelot_acl_block *block, int index)
->        return NULL;
-> }
->
->-int ocelot_ace_rule_offload_add(struct ocelot_ace_rule *rule)
->+int ocelot_ace_rule_offload_add(struct ocelot *ocelot,
->+                               struct ocelot_ace_rule *rule)
-> {
->+       struct ocelot_acl_block *block = &ocelot->acl_block;
->        struct ocelot_ace_rule *ace;
->        int i, index;
->
->        /* Add rule to the linked list */
->-       ocelot_ace_rule_add(acl_block, rule);
->+       ocelot_ace_rule_add(block, rule);
->
->        /* Get the index of the inserted rule */
->-       index = ocelot_ace_rule_get_index_id(acl_block, rule);
->+       index = ocelot_ace_rule_get_index_id(block, rule);
->
->        /* Move down the rules to make place for the new rule */
->-       for (i = acl_block->count - 1; i > index; i--) {
->-               ace = ocelot_ace_rule_get_rule_index(acl_block, i);
->-               is2_entry_set(rule->ocelot, i, ace);
->+       for (i = block->count - 1; i > index; i--) {
->+               ace = ocelot_ace_rule_get_rule_index(block, i);
->+               is2_entry_set(ocelot, i, ace);
->        }
->
->        /* Now insert the new rule */
->-       is2_entry_set(rule->ocelot, index, rule);
->+       is2_entry_set(ocelot, index, rule);
->        return 0;
-> }
->
->@@ -680,8 +680,10 @@ static void ocelot_ace_rule_del(struct ocelot_acl_block *block,
->        block->count--;
-> }
->
->-int ocelot_ace_rule_offload_del(struct ocelot_ace_rule *rule)
->+int ocelot_ace_rule_offload_del(struct ocelot *ocelot,
->+                               struct ocelot_ace_rule *rule)
-> {
->+       struct ocelot_acl_block *block = &ocelot->acl_block;
->        struct ocelot_ace_rule del_ace;
->        struct ocelot_ace_rule *ace;
->        int i, index;
->@@ -689,59 +691,41 @@ int ocelot_ace_rule_offload_del(struct ocelot_ace_rule *rule)
->        memset(&del_ace, 0, sizeof(del_ace));
->
->        /* Gets index of the rule */
->-       index = ocelot_ace_rule_get_index_id(acl_block, rule);
->+       index = ocelot_ace_rule_get_index_id(block, rule);
->
->        /* Delete rule */
->-       ocelot_ace_rule_del(acl_block, rule);
->+       ocelot_ace_rule_del(block, rule);
->
->        /* Move up all the blocks over the deleted rule */
->-       for (i = index; i < acl_block->count; i++) {
->-               ace = ocelot_ace_rule_get_rule_index(acl_block, i);
->-               is2_entry_set(rule->ocelot, i, ace);
->+       for (i = index; i < block->count; i++) {
->+               ace = ocelot_ace_rule_get_rule_index(block, i);
->+               is2_entry_set(ocelot, i, ace);
->        }
->
->        /* Now delete the last rule, because it is duplicated */
->-       is2_entry_set(rule->ocelot, acl_block->count, &del_ace);
->+       is2_entry_set(ocelot, block->count, &del_ace);
->
->        return 0;
-> }
->
->-int ocelot_ace_rule_stats_update(struct ocelot_ace_rule *rule)
->+int ocelot_ace_rule_stats_update(struct ocelot *ocelot,
->+                                struct ocelot_ace_rule *rule)
-> {
->+       struct ocelot_acl_block *block = &ocelot->acl_block;
->        struct ocelot_ace_rule *tmp;
->        int index;
->
->-       index = ocelot_ace_rule_get_index_id(acl_block, rule);
->-       is2_entry_get(rule, index);
->+       index = ocelot_ace_rule_get_index_id(block, rule);
->+       is2_entry_get(ocelot, rule, index);
->
->        /* After we get the result we need to clear the counters */
->-       tmp = ocelot_ace_rule_get_rule_index(acl_block, index);
->+       tmp = ocelot_ace_rule_get_rule_index(block, index);
->        tmp->stats.pkts = 0;
->-       is2_entry_set(rule->ocelot, index, tmp);
->+       is2_entry_set(ocelot, index, tmp);
->
->        return 0;
-> }
->
->-static struct ocelot_acl_block *ocelot_acl_block_create(struct ocelot *ocelot)
->-{
->-       struct ocelot_acl_block *block;
->-
->-       block = kzalloc(sizeof(*block), GFP_KERNEL);
->-       if (!block)
->-               return NULL;
->-
->-       INIT_LIST_HEAD(&block->rules);
->-       block->count = 0;
->-       block->ocelot = ocelot;
->-
->-       return block;
->-}
->-
->-static void ocelot_acl_block_destroy(struct ocelot_acl_block *block)
->-{
->-       kfree(block);
->-}
->-
-> int ocelot_ace_init(struct ocelot *ocelot)
-> {
->        struct vcap_data data;
->@@ -771,12 +755,7 @@ int ocelot_ace_init(struct ocelot *ocelot)
->        ocelot_write_gix(ocelot, 0x3fffff, ANA_POL_CIR_STATE,
->                         OCELOT_POLICER_DISCARD);
->
->-       acl_block = ocelot_acl_block_create(ocelot);
->+       INIT_LIST_HEAD(&ocelot->acl_block.rules);
->
->        return 0;
-> }
->-
->-void ocelot_ace_deinit(void)
->-{
->-       ocelot_acl_block_destroy(acl_block);
->-}
->diff --git a/drivers/net/ethernet/mscc/ocelot_ace.h b/drivers/net/ethernet/mscc/ocelot_ace.h
->index 2927ac83741b..b9a5868e3f15 100644
->--- a/drivers/net/ethernet/mscc/ocelot_ace.h
->+++ b/drivers/net/ethernet/mscc/ocelot_ace.h
->@@ -186,7 +186,6 @@ struct ocelot_ace_stats {
->
-> struct ocelot_ace_rule {
->        struct list_head list;
->-       struct ocelot *ocelot;
->
->        u16 prio;
->        u32 id;
->@@ -211,22 +210,17 @@ struct ocelot_ace_rule {
->        } frame;
-> };
->
->-struct ocelot_acl_block {
->-       struct list_head rules;
->-       struct ocelot *ocelot;
->-       int count;
->-};
->-
->-int ocelot_ace_rule_offload_add(struct ocelot_ace_rule *rule);
->-int ocelot_ace_rule_offload_del(struct ocelot_ace_rule *rule);
->-int ocelot_ace_rule_stats_update(struct ocelot_ace_rule *rule);
->+int ocelot_ace_rule_offload_add(struct ocelot *ocelot,
->+                               struct ocelot_ace_rule *rule);
->+int ocelot_ace_rule_offload_del(struct ocelot *ocelot,
->+                               struct ocelot_ace_rule *rule);
->+int ocelot_ace_rule_stats_update(struct ocelot *ocelot,
->+                                struct ocelot_ace_rule *rule);
->
-> int ocelot_ace_init(struct ocelot *ocelot);
->-void ocelot_ace_deinit(void);
->
->-int ocelot_setup_tc_block_flower_bind(struct ocelot_port_private *priv,
->-                                     struct flow_block_offload *f);
->-void ocelot_setup_tc_block_flower_unbind(struct ocelot_port_private *priv,
->-                                        struct flow_block_offload *f);
->+int ocelot_setup_tc_cls_flower(struct ocelot_port_private *priv,
->+                              struct flow_cls_offload *f,
->+                              bool ingress);
->
-> #endif /* _MSCC_OCELOT_ACE_H_ */
 >diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
->index ffd2bb50cfc3..b9673df6dbc5 100644
+>index b9673df6dbc5..698e9fee6b1a 100644
 >--- a/drivers/net/ethernet/mscc/ocelot_flower.c
 >+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
->@@ -8,11 +8,6 @@
->
+>@@ -9,7 +9,7 @@
 > #include "ocelot_ace.h"
 >
->-struct ocelot_port_block {
->-       struct ocelot_acl_block *block;
->-       struct ocelot_port_private *priv;
->-};
->-
 > static int ocelot_flower_parse_action(struct flow_cls_offload *f,
->                                      struct ocelot_ace_rule *rule)
+>-                                     struct ocelot_ace_rule *rule)
+>+                                     struct ocelot_ace_rule *ace)
 > {
->@@ -168,8 +163,8 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+>        const struct flow_action_entry *a;
+>        int i;
+>@@ -20,10 +20,10 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
+>        flow_action_for_each(i, a, &f->rule->action) {
+>                switch (a->id) {
+>                case FLOW_ACTION_DROP:
+>-                       rule->action = OCELOT_ACL_ACTION_DROP;
+>+                       ace->action = OCELOT_ACL_ACTION_DROP;
+>                        break;
+>                case FLOW_ACTION_TRAP:
+>-                       rule->action = OCELOT_ACL_ACTION_TRAP;
+>+                       ace->action = OCELOT_ACL_ACTION_TRAP;
+>                        break;
+>                default:
+>                        return -EOPNOTSUPP;
+>@@ -34,7 +34,7 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
+> }
+>
+> static int ocelot_flower_parse(struct flow_cls_offload *f,
+>-                              struct ocelot_ace_rule *ocelot_rule)
+>+                              struct ocelot_ace_rule *ace)
+> {
+>        struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+>        struct flow_dissector *dissector = rule->match.dissector;
+>@@ -79,14 +79,14 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+>                        return -EOPNOTSUPP;
+>
+>                flow_rule_match_eth_addrs(rule, &match);
+>-               ocelot_rule->type = OCELOT_ACE_TYPE_ETYPE;
+>-               ether_addr_copy(ocelot_rule->frame.etype.dmac.value,
+>+               ace->type = OCELOT_ACE_TYPE_ETYPE;
+>+               ether_addr_copy(ace->frame.etype.dmac.value,
+>                                match.key->dst);
+>-               ether_addr_copy(ocelot_rule->frame.etype.smac.value,
+>+               ether_addr_copy(ace->frame.etype.smac.value,
+>                                match.key->src);
+>-               ether_addr_copy(ocelot_rule->frame.etype.dmac.mask,
+>+               ether_addr_copy(ace->frame.etype.dmac.mask,
+>                                match.mask->dst);
+>-               ether_addr_copy(ocelot_rule->frame.etype.smac.mask,
+>+               ether_addr_copy(ace->frame.etype.smac.mask,
+>                                match.mask->src);
+>                goto finished_key_parsing;
+>        }
+>@@ -96,17 +96,17 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+>
+>                flow_rule_match_basic(rule, &match);
+>                if (ntohs(match.key->n_proto) == ETH_P_IP) {
+>-                       ocelot_rule->type = OCELOT_ACE_TYPE_IPV4;
+>-                       ocelot_rule->frame.ipv4.proto.value[0] =
+>+                       ace->type = OCELOT_ACE_TYPE_IPV4;
+>+                       ace->frame.ipv4.proto.value[0] =
+>                                match.key->ip_proto;
+>-                       ocelot_rule->frame.ipv4.proto.mask[0] =
+>+                       ace->frame.ipv4.proto.mask[0] =
+>                                match.mask->ip_proto;
+>                }
+>                if (ntohs(match.key->n_proto) == ETH_P_IPV6) {
+>-                       ocelot_rule->type = OCELOT_ACE_TYPE_IPV6;
+>-                       ocelot_rule->frame.ipv6.proto.value[0] =
+>+                       ace->type = OCELOT_ACE_TYPE_IPV6;
+>+                       ace->frame.ipv6.proto.value[0] =
+>                                match.key->ip_proto;
+>-                       ocelot_rule->frame.ipv6.proto.mask[0] =
+>+                       ace->frame.ipv6.proto.mask[0] =
+>                                match.mask->ip_proto;
+>                }
+>        }
+>@@ -117,16 +117,16 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+>                u8 *tmp;
+>
+>                flow_rule_match_ipv4_addrs(rule, &match);
+>-               tmp = &ocelot_rule->frame.ipv4.sip.value.addr[0];
+>+               tmp = &ace->frame.ipv4.sip.value.addr[0];
+>                memcpy(tmp, &match.key->src, 4);
+>
+>-               tmp = &ocelot_rule->frame.ipv4.sip.mask.addr[0];
+>+               tmp = &ace->frame.ipv4.sip.mask.addr[0];
+>                memcpy(tmp, &match.mask->src, 4);
+>
+>-               tmp = &ocelot_rule->frame.ipv4.dip.value.addr[0];
+>+               tmp = &ace->frame.ipv4.dip.value.addr[0];
+>                memcpy(tmp, &match.key->dst, 4);
+>
+>-               tmp = &ocelot_rule->frame.ipv4.dip.mask.addr[0];
+>+               tmp = &ace->frame.ipv4.dip.mask.addr[0];
+>                memcpy(tmp, &match.mask->dst, 4);
+>        }
+>
+>@@ -139,60 +139,60 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+>                struct flow_match_ports match;
+>
+>                flow_rule_match_ports(rule, &match);
+>-               ocelot_rule->frame.ipv4.sport.value = ntohs(match.key->src);
+>-               ocelot_rule->frame.ipv4.sport.mask = ntohs(match.mask->src);
+>-               ocelot_rule->frame.ipv4.dport.value = ntohs(match.key->dst);
+>-               ocelot_rule->frame.ipv4.dport.mask = ntohs(match.mask->dst);
+>+               ace->frame.ipv4.sport.value = ntohs(match.key->src);
+>+               ace->frame.ipv4.sport.mask = ntohs(match.mask->src);
+>+               ace->frame.ipv4.dport.value = ntohs(match.key->dst);
+>+               ace->frame.ipv4.dport.mask = ntohs(match.mask->dst);
+>        }
+>
+>        if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
+>                struct flow_match_vlan match;
+>
+>                flow_rule_match_vlan(rule, &match);
+>-               ocelot_rule->type = OCELOT_ACE_TYPE_ANY;
+>-               ocelot_rule->vlan.vid.value = match.key->vlan_id;
+>-               ocelot_rule->vlan.vid.mask = match.mask->vlan_id;
+>-               ocelot_rule->vlan.pcp.value[0] = match.key->vlan_priority;
+>-               ocelot_rule->vlan.pcp.mask[0] = match.mask->vlan_priority;
+>+               ace->type = OCELOT_ACE_TYPE_ANY;
+>+               ace->vlan.vid.value = match.key->vlan_id;
+>+               ace->vlan.vid.mask = match.mask->vlan_id;
+>+               ace->vlan.pcp.value[0] = match.key->vlan_priority;
+>+               ace->vlan.pcp.mask[0] = match.mask->vlan_priority;
+>        }
+>
+> finished_key_parsing:
+>-       ocelot_rule->prio = f->common.prio;
+>-       ocelot_rule->id = f->cookie;
+>-       return ocelot_flower_parse_action(f, ocelot_rule);
+>+       ace->prio = f->common.prio;
+>+       ace->id = f->cookie;
+>+       return ocelot_flower_parse_action(f, ace);
 > }
 >
 > static
->-struct ocelot_ace_rule *ocelot_ace_rule_create(struct flow_cls_offload *f,
->-                                              struct ocelot_port_block *block)
->+struct ocelot_ace_rule *ocelot_ace_rule_create(struct ocelot *ocelot, int port,
->+                                              struct flow_cls_offload *f)
+> struct ocelot_ace_rule *ocelot_ace_rule_create(struct ocelot *ocelot, int port,
+>                                               struct flow_cls_offload *f)
 > {
->        struct ocelot_ace_rule *rule;
+>-       struct ocelot_ace_rule *rule;
+>+       struct ocelot_ace_rule *ace;
 >
->@@ -177,18 +172,17 @@ struct ocelot_ace_rule *ocelot_ace_rule_create(struct flow_cls_offload *f,
->        if (!rule)
+>-       rule = kzalloc(sizeof(*rule), GFP_KERNEL);
+>-       if (!rule)
+>+       ace = kzalloc(sizeof(*ace), GFP_KERNEL);
+>+       if (!ace)
 >                return NULL;
 >
->-       rule->ocelot = block->priv->port.ocelot;
->-       rule->ingress_port_mask = BIT(block->priv->chip_port);
->+       rule->ingress_port_mask = BIT(port);
->        return rule;
+>-       rule->ingress_port_mask = BIT(port);
+>-       return rule;
+>+       ace->ingress_port_mask = BIT(port);
+>+       return ace;
 > }
 >
->-static int ocelot_flower_replace(struct flow_cls_offload *f,
->-                                struct ocelot_port_block *port_block)
->+int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
->+                             struct flow_cls_offload *f, bool ingress)
+> int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
+>                              struct flow_cls_offload *f, bool ingress)
 > {
->        struct ocelot_ace_rule *rule;
+>-       struct ocelot_ace_rule *rule;
+>+       struct ocelot_ace_rule *ace;
 >        int ret;
 >
->-       rule = ocelot_ace_rule_create(f, port_block);
->+       rule = ocelot_ace_rule_create(ocelot, port, f);
->        if (!rule)
+>-       rule = ocelot_ace_rule_create(ocelot, port, f);
+>-       if (!rule)
+>+       ace = ocelot_ace_rule_create(ocelot, port, f);
+>+       if (!ace)
 >                return -ENOMEM;
 >
->@@ -198,159 +192,66 @@ static int ocelot_flower_replace(struct flow_cls_offload *f,
+>-       ret = ocelot_flower_parse(f, rule);
+>+       ret = ocelot_flower_parse(f, ace);
+>        if (ret) {
+>-               kfree(rule);
+>+               kfree(ace);
 >                return ret;
 >        }
 >
->-       ret = ocelot_ace_rule_offload_add(rule);
->+       ret = ocelot_ace_rule_offload_add(ocelot, rule);
+>-       ret = ocelot_ace_rule_offload_add(ocelot, rule);
+>+       ret = ocelot_ace_rule_offload_add(ocelot, ace);
 >        if (ret)
 >                return ret;
 >
->-       port_block->priv->tc.offload_cnt++;
->        return 0;
-> }
->+EXPORT_SYMBOL_GPL(ocelot_cls_flower_replace);
->
->-static int ocelot_flower_destroy(struct flow_cls_offload *f,
->-                                struct ocelot_port_block *port_block)
->+int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
->+                             struct flow_cls_offload *f, bool ingress)
+>@@ -203,13 +203,13 @@ EXPORT_SYMBOL_GPL(ocelot_cls_flower_replace);
+> int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
+>                              struct flow_cls_offload *f, bool ingress)
 > {
->        struct ocelot_ace_rule rule;
+>-       struct ocelot_ace_rule rule;
+>+       struct ocelot_ace_rule ace;
 >        int ret;
 >
->        rule.prio = f->common.prio;
->-       rule.ocelot = port_block->priv->port.ocelot;
->        rule.id = f->cookie;
+>-       rule.prio = f->common.prio;
+>-       rule.id = f->cookie;
+>+       ace.prio = f->common.prio;
+>+       ace.id = f->cookie;
 >
->-       ret = ocelot_ace_rule_offload_del(&rule);
->+       ret = ocelot_ace_rule_offload_del(ocelot, &rule);
+>-       ret = ocelot_ace_rule_offload_del(ocelot, &rule);
+>+       ret = ocelot_ace_rule_offload_del(ocelot, &ace);
 >        if (ret)
 >                return ret;
 >
->-       port_block->priv->tc.offload_cnt--;
->        return 0;
-> }
->+EXPORT_SYMBOL_GPL(ocelot_cls_flower_destroy);
->
->-static int ocelot_flower_stats_update(struct flow_cls_offload *f,
->-                                     struct ocelot_port_block *port_block)
->+int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
->+                           struct flow_cls_offload *f, bool ingress)
+>@@ -220,16 +220,16 @@ EXPORT_SYMBOL_GPL(ocelot_cls_flower_destroy);
+> int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
+>                            struct flow_cls_offload *f, bool ingress)
 > {
->        struct ocelot_ace_rule rule;
+>-       struct ocelot_ace_rule rule;
+>+       struct ocelot_ace_rule ace;
 >        int ret;
 >
->        rule.prio = f->common.prio;
->-       rule.ocelot = port_block->priv->port.ocelot;
->        rule.id = f->cookie;
->-       ret = ocelot_ace_rule_stats_update(&rule);
->+       ret = ocelot_ace_rule_stats_update(ocelot, &rule);
+>-       rule.prio = f->common.prio;
+>-       rule.id = f->cookie;
+>-       ret = ocelot_ace_rule_stats_update(ocelot, &rule);
+>+       ace.prio = f->common.prio;
+>+       ace.id = f->cookie;
+>+       ret = ocelot_ace_rule_stats_update(ocelot, &ace);
 >        if (ret)
 >                return ret;
 >
->        flow_stats_update(&f->stats, 0x0, rule.stats.pkts, 0x0);
+>-       flow_stats_update(&f->stats, 0x0, rule.stats.pkts, 0x0);
+>+       flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0);
 >        return 0;
 > }
->+EXPORT_SYMBOL_GPL(ocelot_cls_flower_stats);
->
->-static int ocelot_setup_tc_cls_flower(struct flow_cls_offload *f,
->-                                     struct ocelot_port_block *port_block)
->+int ocelot_setup_tc_cls_flower(struct ocelot_port_private *priv,
->+                              struct flow_cls_offload *f,
->+                              bool ingress)
-> {
->+       struct ocelot *ocelot = priv->port.ocelot;
->+       int port = priv->chip_port;
->+
->+       if (!ingress)
->+               return -EOPNOTSUPP;
->+
->        switch (f->command) {
->        case FLOW_CLS_REPLACE:
->-               return ocelot_flower_replace(f, port_block);
->+               return ocelot_cls_flower_replace(ocelot, port, f, ingress);
->        case FLOW_CLS_DESTROY:
->-               return ocelot_flower_destroy(f, port_block);
->+               return ocelot_cls_flower_destroy(ocelot, port, f, ingress);
->        case FLOW_CLS_STATS:
->-               return ocelot_flower_stats_update(f, port_block);
->+               return ocelot_cls_flower_stats(ocelot, port, f, ingress);
->        default:
->                return -EOPNOTSUPP;
->        }
-> }
->-
->-static int ocelot_setup_tc_block_cb_flower(enum tc_setup_type type,
->-                                          void *type_data, void *cb_priv)
->-{
->-       struct ocelot_port_block *port_block = cb_priv;
->-
->-       if (!tc_cls_can_offload_and_chain0(port_block->priv->dev, type_data))
->-               return -EOPNOTSUPP;
->-
->-       switch (type) {
->-       case TC_SETUP_CLSFLOWER:
->-               return ocelot_setup_tc_cls_flower(type_data, cb_priv);
->-       case TC_SETUP_CLSMATCHALL:
->-               return 0;
->-       default:
->-               return -EOPNOTSUPP;
->-       }
->-}
->-
->-static struct ocelot_port_block*
->-ocelot_port_block_create(struct ocelot_port_private *priv)
->-{
->-       struct ocelot_port_block *port_block;
->-
->-       port_block = kzalloc(sizeof(*port_block), GFP_KERNEL);
->-       if (!port_block)
->-               return NULL;
->-
->-       port_block->priv = priv;
->-
->-       return port_block;
->-}
->-
->-static void ocelot_port_block_destroy(struct ocelot_port_block *block)
->-{
->-       kfree(block);
->-}
->-
->-static void ocelot_tc_block_unbind(void *cb_priv)
->-{
->-       struct ocelot_port_block *port_block = cb_priv;
->-
->-       ocelot_port_block_destroy(port_block);
->-}
->-
->-int ocelot_setup_tc_block_flower_bind(struct ocelot_port_private *priv,
->-                                     struct flow_block_offload *f)
->-{
->-       struct ocelot_port_block *port_block;
->-       struct flow_block_cb *block_cb;
->-       int ret;
->-
->-       if (f->binder_type == FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS)
->-               return -EOPNOTSUPP;
->-
->-       block_cb = flow_block_cb_lookup(f->block,
->-                                       ocelot_setup_tc_block_cb_flower, priv);
->-       if (!block_cb) {
->-               port_block = ocelot_port_block_create(priv);
->-               if (!port_block)
->-                       return -ENOMEM;
->-
->-               block_cb = flow_block_cb_alloc(ocelot_setup_tc_block_cb_flower,
->-                                              priv, port_block,
->-                                              ocelot_tc_block_unbind);
->-               if (IS_ERR(block_cb)) {
->-                       ret = PTR_ERR(block_cb);
->-                       goto err_cb_register;
->-               }
->-               flow_block_cb_add(block_cb, f);
->-               list_add_tail(&block_cb->driver_list, f->driver_block_list);
->-       } else {
->-               port_block = flow_block_cb_priv(block_cb);
->-       }
->-
->-       flow_block_cb_incref(block_cb);
->-       return 0;
->-
->-err_cb_register:
->-       ocelot_port_block_destroy(port_block);
->-
->-       return ret;
->-}
->-
->-void ocelot_setup_tc_block_flower_unbind(struct ocelot_port_private *priv,
->-                                        struct flow_block_offload *f)
->-{
->-       struct flow_block_cb *block_cb;
->-
->-       block_cb = flow_block_cb_lookup(f->block,
->-                                       ocelot_setup_tc_block_cb_flower, priv);
->-       if (!block_cb)
->-               return;
->-
->-       if (!flow_block_cb_decref(block_cb)) {
->-               flow_block_cb_remove(block_cb, f);
->-               list_del(&block_cb->driver_list);
->-       }
->-}
->diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
->index a4f7fbd76507..3ff5ef41eccf 100644
->--- a/drivers/net/ethernet/mscc/ocelot_tc.c
->+++ b/drivers/net/ethernet/mscc/ocelot_tc.c
->@@ -20,9 +20,6 @@ static int ocelot_setup_tc_cls_matchall(struct ocelot_port_private *priv,
->        int port = priv->chip_port;
->        int err;
->
->-       netdev_dbg(priv->dev, "%s: port %u command %d cookie %lu\n",
->-                  __func__, port, f->command, f->cookie);
->-
->        if (!ingress) {
->                NL_SET_ERR_MSG_MOD(extack, "Only ingress is supported");
->                return -EOPNOTSUPP;
->@@ -99,17 +96,10 @@ static int ocelot_setup_tc_block_cb(enum tc_setup_type type,
->
->        switch (type) {
->        case TC_SETUP_CLSMATCHALL:
->-               netdev_dbg(priv->dev, "tc_block_cb: TC_SETUP_CLSMATCHALL %s\n",
->-                          ingress ? "ingress" : "egress");
->-
->                return ocelot_setup_tc_cls_matchall(priv, type_data, ingress);
->        case TC_SETUP_CLSFLOWER:
->-               return 0;
->+               return ocelot_setup_tc_cls_flower(priv, type_data, ingress);
->        default:
->-               netdev_dbg(priv->dev, "tc_block_cb: type %d %s\n",
->-                          type,
->-                          ingress ? "ingress" : "egress");
->-
->                return -EOPNOTSUPP;
->        }
-> }
->@@ -137,10 +127,6 @@ static int ocelot_setup_tc_block(struct ocelot_port_private *priv,
-> {
->        struct flow_block_cb *block_cb;
->        flow_setup_cb_t *cb;
->-       int err;
->-
->-       netdev_dbg(priv->dev, "tc_block command %d, binder_type %d\n",
->-                  f->command, f->binder_type);
->
->        if (f->binder_type == FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS) {
->                cb = ocelot_setup_tc_block_cb_ig;
->@@ -162,11 +148,6 @@ static int ocelot_setup_tc_block(struct ocelot_port_private *priv,
->                if (IS_ERR(block_cb))
->                        return PTR_ERR(block_cb);
->
->-               err = ocelot_setup_tc_block_flower_bind(priv, f);
->-               if (err < 0) {
->-                       flow_block_cb_free(block_cb);
->-                       return err;
->-               }
->                flow_block_cb_add(block_cb, f);
->                list_add_tail(&block_cb->driver_list, f->driver_block_list);
->                return 0;
->@@ -175,7 +156,6 @@ static int ocelot_setup_tc_block(struct ocelot_port_private *priv,
->                if (!block_cb)
->                        return -ENOENT;
->
->-               ocelot_setup_tc_block_flower_unbind(priv, f);
->                flow_block_cb_remove(block_cb, f);
->                list_del(&block_cb->driver_list);
->                return 0;
->diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
->index 068f96b1a83e..74e7c63adad4 100644
->--- a/include/soc/mscc/ocelot.h
->+++ b/include/soc/mscc/ocelot.h
->@@ -406,6 +406,11 @@ struct ocelot_ops {
->        int (*reset)(struct ocelot *ocelot);
-> };
->
->+struct ocelot_acl_block {
->+       struct list_head rules;
->+       int count;
->+};
->+
-> struct ocelot_port {
->        struct ocelot                   *ocelot;
->
->@@ -455,6 +460,8 @@ struct ocelot {
->
->        struct list_head                multicast;
->
->+       struct ocelot_acl_block         acl_block;
->+
->        /* Workqueue to check statistics for overflow with its lock */
->        struct mutex                    stats_lock;
->        u64                             *stats;
+> EXPORT_SYMBOL_GPL(ocelot_cls_flower_stats);
 >--
 >2.17.1
 >
