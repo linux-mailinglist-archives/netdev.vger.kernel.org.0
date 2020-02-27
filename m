@@ -2,72 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0125D1721D6
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 16:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBFC17222E
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 16:24:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729930AbgB0PJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 10:09:27 -0500
-Received: from smtprelay06.ispgateway.de ([80.67.31.102]:16449 "EHLO
-        smtprelay06.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729468AbgB0PJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 10:09:27 -0500
-X-Greylist: delayed 353 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Feb 2020 10:09:27 EST
-Received: from [87.123.206.167] (helo=kiste)
-        by smtprelay06.ispgateway.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <ndev@hwipl.net>)
-        id 1j7KhE-0001jh-SV; Thu, 27 Feb 2020 16:03:28 +0100
-Date:   Thu, 27 Feb 2020 16:03:28 +0100
-From:   Hans Wippel <ndev@hwipl.net>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     ubraun@linux.ibm.com, davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [RFC net-next] net/smc: update peer ID on device changes
-Message-Id: <20200227160328.30726cdf8b639fc3512c9b18@hwipl.net>
-In-Reply-To: <4c3b6802-7b27-73ec-f53c-ec1326aecb2b@linux.ibm.com>
-References: <20200227113902.318060-1-ndev@hwipl.net>
-        <b56d4bbc-2a4e-634f-10d4-17bd0253c033@linux.ibm.com>
-        <20200227150946.60f12541f7541a64150afe2a@hwipl.net>
-        <4c3b6802-7b27-73ec-f53c-ec1326aecb2b@linux.ibm.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-unknown-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Df-Sender: bmRldkBod2lwbC5uZXQ=
+        id S1729708AbgB0PYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 10:24:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37028 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728211AbgB0PYD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Feb 2020 10:24:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8od8Fg9UDsLXZZZf0SrhBLscz18q2goIHtPuNLjCpCE=; b=MKG6Is9kISZ9v6oy1X03Ax4HEL
+        cTPvT4HqFl31Uthj3/PO8V5FMEB4H/0zWBCadTFcd4GMUhDFUaoX1+n+fqwofOh/0tEDok0KVSXgD
+        9Lx1REMMJlIieQHTCLGtDE8jfLwJrMMcnEmEAkMfTjSnoItsR8H9IGpdlp5AgIp3HLpI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j7L11-0005kX-BF; Thu, 27 Feb 2020 16:23:55 +0100
+Date:   Thu, 27 Feb 2020 16:23:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] dpaa2-eth: add support for mii ioctls
+Message-ID: <20200227152355.GD19662@lunn.ch>
+References: <E1j7Hq1-0004Fc-MX@rmk-PC.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1j7Hq1-0004Fc-MX@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Feb 2020 15:44:52 +0100
-Karsten Graul <kgraul@linux.ibm.com> wrote:
+On Thu, Feb 27, 2020 at 12:00:21PM +0000, Russell King wrote:
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-> On 27/02/2020 15:09, Hans Wippel wrote:
-> > On Thu, 27 Feb 2020 14:13:48 +0100
-> > Karsten Graul <kgraul@linux.ibm.com> wrote:
-> > 
-> >> On 27/02/2020 12:39, Hans Wippel wrote:
-> >>> From: hwipl <ndev@hwipl.net>
-> >>>
-> >>> A SMC host's peer ID contains the MAC address of the first active RoCE
-> >>> device. However, if this device becomes inactive or is removed, the peer
-> >>> ID is not updated. This patch adds peer ID updates on device changes.
-> >>
-> >> The peer ID is used to uniquely identify an SMC host and to check if there
-> >> are already established link groups to the peer which can be reused.
-> >> In failover scenarios RoCE devices can go down and get active again later,
-> >> but this must not change the current peer ID of the host.  
-> >> The part of the MAC address that is included in the peer ID is not used for
-> >> other purposes than the identification of an SMC host.
-> > 
-> > Is it OK to keep the peer ID if, for example, the device is removed and
-> > used in a different VM?
-> > 
-> > Hans
-> > 
-> 
-> Yes, exactly this case is described in the RFC (instance id):
-> 
-> https://tools.ietf.org/html/rfc7609#page-93
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-OK, thanks for clarifying. I guess, you can ignore the RFC/patch then ;)
-  Hans
+    Andrew
