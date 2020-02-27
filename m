@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A30261711B8
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 459721711B9
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 08:50:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728526AbgB0Huf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 02:50:35 -0500
-Received: from mail-wr1-f44.google.com ([209.85.221.44]:38900 "EHLO
-        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728506AbgB0Hue (ORCPT
+        id S1728534AbgB0Huh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 02:50:37 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39699 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728515AbgB0Hue (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 02:50:34 -0500
-Received: by mail-wr1-f44.google.com with SMTP id e8so2051693wrm.5
-        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:32 -0800 (PST)
+Received: by mail-wm1-f68.google.com with SMTP id c84so2195893wme.4
+        for <netdev@vger.kernel.org>; Wed, 26 Feb 2020 23:50:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uIiGWek2/G6dZi5fJLTVDeUbi91g0b9JWYOcfcj1ltY=;
-        b=NvpZ4YlBItAlUhNLAoIYIAL2ytqkHLYU8v7Tm3a4fHjGtmLkShF653nS/c00q8WUSR
-         Ks8b60u53jN43erFdcDMFrMRDCAA/tUNEsYw05yMNMkKWisML4q1ckMzP0pdh+dd/VL/
-         lotMvdnyu1ZH/050AniqwGi9EzvJW1pT1okFNu7CgsXsnizVZQ0HtwLn6VDRCjeZTQJo
-         7tJ1rdP8oA8U5sUwv8vkie/fL45a+6AVXO2oSKNgS/Oxth9WFupgvH43UZvoqZpcFJRT
-         zLI0StlBnZ2QQhKbJarP7Lk7rFTYebVedT/UPuOJVYjV9BoDfA/+wmxJUE81CYEowo7w
-         fRJA==
+        bh=BEok8qy4oCPS0IomUC3NLwFLec0QwhSl930Djm/sr7U=;
+        b=lWo02HS+PUiRV6SSNkjbS6IfNba9ZZhxdDFPEm/Sl0rJYaMqcWFNJSYg9+kTcf6YJz
+         n6Exo/7Y7gVFARa6nyUOUryViiz4bB4PkqIPXpy3QJlXaqBDHx0190aXxNIHpo2QFL9W
+         VWAeKNpT8/NR0aqoDw7kF5OMwVAe1QkeKNRjvZK/q5eMWFtoQs3t8DvfH1XncLDno3Pc
+         aemJaPmKC8gi9gT2NIUIOsCofEReDArutUvHp2ER56DMLuT9OE4c0CnxAWv1f513KX3b
+         ucEAXlPhXPHndFFAA/sT2PkRC1Nfd3mA+tGVesizXun3VVgbEjgc4fzJe4zbigG/J9gn
+         cjSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uIiGWek2/G6dZi5fJLTVDeUbi91g0b9JWYOcfcj1ltY=;
-        b=soAGL1pnal56UekW2Nf58mSnBIW5z2m9GfxCUQwlpqeh9cHytuHOam+CSZ9lJI1PA9
-         mAbmwCDoCs/PS/Nra8c2Dp4pnY2jb67l5EjGhTOi1kEAPMaAhwZTCkeJOq5/jVXHYYAj
-         sBjHcefCjkS9/IWfBV0trWeNp+qjtME+zOnqxrJ8gGXQf2ADlDZ/FyCCGAgMag3QxNN4
-         ocBXu1kVBZbTdm+ynMJD3+8oPCSc4Yw+0hjQ8jU61RC8R7Ja71qtqtWT48cdNRyL+jcm
-         hiSAYiMvf+99E95IopUcwoPX9wbZt9iPoD7TkpvbHqHXYQySm76gLUhaWvXobiGAtKlD
-         pIyA==
-X-Gm-Message-State: APjAAAWvcVkUbDhIFA7ZBp5KVOzM3E6KxCA5wc1PW6K6eQPTaT7MreK4
-        LVHCcN7VSMP89s4SzgJDoKePxZxieLc=
-X-Google-Smtp-Source: APXvYqxehE1bpQKHA8gxASxuzjGG7ZY2tCeN23YbY9z4ULGfBLEihSndfDAgI9zjT8Rc8g7jpYNqkw==
-X-Received: by 2002:a5d:504e:: with SMTP id h14mr3224841wrt.82.1582789830992;
-        Wed, 26 Feb 2020 23:50:30 -0800 (PST)
+        bh=BEok8qy4oCPS0IomUC3NLwFLec0QwhSl930Djm/sr7U=;
+        b=ONujfB1/jzPDHNv8/tOsYVDoi+s3kRlID/Ek1Z4aX9Gf7nmnjKWRed4yih1+aE5Q2/
+         u6CNWdUgoRSE35BQETcZONgGWp7caLVyRdH9qpKZMvKm4iDT8iMiT34Ndln9w2b0YFNQ
+         8/4blcHCnl0R9FXtfIQqzEGFxlrFA3vaxXq4DoX6tBAyKCaRvNovO/9SEUv+4PQQt4vV
+         2m0mJ7ruY0vG365RRL0AnPeyF6zGwu2aK/NCwBPWgCaCYp1EMNEWD3tM+byDw4+2T+UB
+         VCIejFNLnEP9EJCtjEWN1DApfaw9txaM01mM5X/qNoANTBED0ziIEfKtBgi1gpEPIbQB
+         SeoA==
+X-Gm-Message-State: APjAAAVHoukL6cWpa7yMlXyBCf2vIldzCsLU8e7PTkzoJ+beQoB0AlAk
+        TY8/6Q9mU10+obVrN+gooWGHS5rVoaQ=
+X-Google-Smtp-Source: APXvYqwbdkWwSsppPYkmATM4q2uK8Cj9rEzAcnRKiILqTWuzIgcGqNt693oa6cbvbqQtL255TIn4dQ==
+X-Received: by 2002:a7b:ce0b:: with SMTP id m11mr3694963wmc.4.1582789832076;
+        Wed, 26 Feb 2020 23:50:32 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id q125sm6759970wme.19.2020.02.26.23.50.30
+        by smtp.gmail.com with ESMTPSA id u8sm6683788wmm.15.2020.02.26.23.50.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 23:50:30 -0800 (PST)
+        Wed, 26 Feb 2020 23:50:31 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@mellanox.com,
         mlxsw@mellanox.com, shuah@kernel.org
-Subject: [patch net-next 07/16] selftests: mlxsw: Use busywait helper in vxlan test
-Date:   Thu, 27 Feb 2020 08:50:12 +0100
-Message-Id: <20200227075021.3472-8-jiri@resnulli.us>
+Subject: [patch net-next 08/16] selftests: mlxsw: Use busywait helper in rtnetlink test
+Date:   Thu, 27 Feb 2020 08:50:13 +0100
+Message-Id: <20200227075021.3472-9-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200227075021.3472-1-jiri@resnulli.us>
 References: <20200227075021.3472-1-jiri@resnulli.us>
@@ -63,7 +63,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@mellanox.com>
 
-Vxlan test uses offload indication checks.
+Rtnetlink test uses offload indication checks.
 
 Use a busywait helper and wait until the offload indication is set or
 fail if it reaches timeout.
@@ -73,500 +73,152 @@ Reviewed-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../selftests/drivers/net/mlxsw/vxlan.sh      | 206 ++++++++++--------
- tools/testing/selftests/net/forwarding/lib.sh |  22 ++
- 2 files changed, 139 insertions(+), 89 deletions(-)
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 68 ++++++++++++-------
+ 1 file changed, 44 insertions(+), 24 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh b/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
-index 15eb0dc9a685..729a86cc4ede 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh
-@@ -9,6 +9,7 @@ lib_dir=$(dirname $0)/../../../net/forwarding
- ALL_TESTS="sanitization_test offload_indication_test \
- 	sanitization_vlan_aware_test offload_indication_vlan_aware_test"
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh b/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
+index 5c39e5f6a480..f4031002d5e9 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/rtnetlink.sh
+@@ -32,6 +32,7 @@ ALL_TESTS="
+ 	devlink_reload_test
+ "
  NUM_NETIFS=2
 +: ${TIMEOUT:=20000} # ms
  source $lib_dir/lib.sh
+ source $lib_dir/devlink_lib.sh
  
- setup_prepare()
-@@ -470,8 +471,8 @@ offload_indication_fdb_flood_test()
+@@ -360,20 +361,24 @@ vlan_rif_refcount_test()
+ 	ip link add link br0 name br0.10 up type vlan id 10
+ 	ip -6 address add 2001:db8:1::1/64 dev br0.10
  
- 	bridge fdb append 00:00:00:00:00:00 dev vxlan0 self dst 198.51.100.2
- 
--	bridge fdb show brport vxlan0 | grep 00:00:00:00:00:00 \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb 00:00:00:00:00:00 \
-+		bridge fdb show brport vxlan0
- 	check_err $?
- 
- 	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self
-@@ -486,11 +487,11 @@ offload_indication_fdb_bridge_test()
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan0 self master static \
- 		dst 198.51.100.2
- 
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan0
- 	check_err $?
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan0
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - initial state"
-@@ -500,9 +501,9 @@ offload_indication_fdb_bridge_test()
- 	RET=0
- 
- 	bridge fdb del de:ad:be:ef:13:37 dev vxlan0 master
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan0
-+	check_err $?
- 
- 	log_test "vxlan entry offload indication - after removal from bridge"
- 
-@@ -511,11 +512,11 @@ offload_indication_fdb_bridge_test()
- 	RET=0
- 
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan0 master static
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan0
- 	check_err $?
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan0
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - after re-add to bridge"
-@@ -525,9 +526,9 @@ offload_indication_fdb_bridge_test()
- 	RET=0
- 
- 	bridge fdb del de:ad:be:ef:13:37 dev vxlan0 self
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan0
-+	check_err $?
- 
- 	log_test "vxlan entry offload indication - after removal from vxlan"
- 
-@@ -536,11 +537,11 @@ offload_indication_fdb_bridge_test()
- 	RET=0
- 
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan0 self dst 198.51.100.2
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan0
- 	check_err $?
--	bridge fdb show brport vxlan0 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan0
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - after re-add to vxlan"
-@@ -558,27 +559,32 @@ offload_indication_decap_route_test()
- {
- 	RET=0
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+-	ip -6 route get fibmatch 2001:db8:1::2 dev br0.10 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		ip -6 route get fibmatch 2001:db8:1::2 dev br0.10
+ 	check_err $? "vlan rif was not created before adding port to vlan"
  
- 	ip link set dev vxlan0 down
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+ 	bridge vlan add vid 10 dev $swp1
+-	ip -6 route get fibmatch 2001:db8:1::2 dev br0.10 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		ip -6 route get fibmatch 2001:db8:1::2 dev br0.10
+ 	check_err $? "vlan rif was destroyed after adding port to vlan"
  
- 	ip link set dev vxlan1 down
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
- 
- 	log_test "vxlan decap route - vxlan device down"
- 
- 	RET=0
- 
- 	ip link set dev vxlan1 up
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+ 	bridge vlan del vid 10 dev $swp1
+-	ip -6 route get fibmatch 2001:db8:1::2 dev br0.10 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	ip link set dev vxlan0 up
--	ip route show table local | grep 198.51.100.1 | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	log_test "vxlan decap route - vxlan device up"
-@@ -586,11 +592,13 @@ offload_indication_decap_route_test()
- 	RET=0
- 
- 	ip address delete 198.51.100.1/32 dev lo
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
- 
- 	ip address add 198.51.100.1/32 dev lo
--	ip route show table local | grep 198.51.100.1 | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	log_test "vxlan decap route - add local route"
-@@ -598,16 +606,19 @@ offload_indication_decap_route_test()
- 	RET=0
++		ip -6 route get fibmatch 2001:db8:1::2 dev br0.10
+ 	check_err $? "vlan rif was destroyed after removing port from vlan"
  
  	ip link set dev $swp1 nomaster
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+-	ip -6 route get fibmatch 2001:db8:1::2 dev br0.10 | grep -q offload
+-	check_fail $? "vlan rif was not destroyed after unlinking port from bridge"
++	busywait "$TIMEOUT" not wait_for_offload \
++		ip -6 route get fibmatch 2001:db8:1::2 dev br0.10
++	check_err $? "vlan rif was not destroyed after unlinking port from bridge"
+ 
+ 	log_test "vlan rif refcount"
+ 
+@@ -401,22 +406,28 @@ subport_rif_refcount_test()
+ 	ip -6 address add 2001:db8:1::1/64 dev bond1
+ 	ip -6 address add 2001:db8:2::1/64 dev bond1.10
+ 
+-	ip -6 route get fibmatch 2001:db8:1::2 dev bond1 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		ip -6 route get fibmatch 2001:db8:1::2 dev bond1
+ 	check_err $? "subport rif was not created on lag device"
+-	ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10
+ 	check_err $? "subport rif was not created on vlan device"
+ 
+ 	ip link set dev $swp1 nomaster
+-	ip -6 route get fibmatch 2001:db8:1::2 dev bond1 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -6 route get fibmatch 2001:db8:1::2 dev bond1
+ 	check_err $? "subport rif of lag device was destroyed when should not"
+-	ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10
+ 	check_err $? "subport rif of vlan device was destroyed when should not"
  
  	ip link set dev $swp2 nomaster
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
+-	ip -6 route get fibmatch 2001:db8:1::2 dev bond1 | grep -q offload
+-	check_fail $? "subport rif of lag device was not destroyed when should"
+-	ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10 | grep -q offload
+-	check_fail $? "subport rif of vlan device was not destroyed when should"
 +	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
- 
- 	ip link set dev $swp1 master br0
- 	ip link set dev $swp2 master br1
--	ip route show table local | grep 198.51.100.1 | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	log_test "vxlan decap route - local ports enslavement"
-@@ -615,12 +626,14 @@ offload_indication_decap_route_test()
- 	RET=0
- 
- 	ip link del dev br0
--	ip route show table local | grep 198.51.100.1 | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	ip link del dev br1
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
++		ip -6 route get fibmatch 2001:db8:1::2 dev bond1
++	check_err $? "subport rif of lag device was not destroyed when should"
 +	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
++		ip -6 route get fibmatch 2001:db8:2::2 dev bond1.10
++	check_err $? "subport rif of vlan device was not destroyed when should"
  
- 	log_test "vxlan decap route - bridge device deletion"
+ 	log_test "subport rif refcount"
  
-@@ -632,16 +645,19 @@ offload_indication_decap_route_test()
- 	ip link set dev $swp2 master br1
- 	ip link set dev vxlan0 master br0
- 	ip link set dev vxlan1 master br1
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+@@ -575,7 +586,8 @@ bridge_extern_learn_test()
+ 
+ 	bridge fdb add de:ad:be:ef:13:37 dev $swp1 master extern_learn
+ 
+-	bridge fdb show brport $swp1 | grep de:ad:be:ef:13:37 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		bridge fdb show brport $swp1 de:ad:be:ef:13:37
+ 	check_err $? "fdb entry not marked as offloaded when should"
  
- 	ip link del dev vxlan0
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+ 	log_test "externally learned fdb entry"
+@@ -595,9 +607,11 @@ neigh_offload_test()
+ 	ip -6 neigh add 2001:db8:1::2 lladdr de:ad:be:ef:13:37 nud perm \
+ 		dev $swp1
+ 
+-	ip -4 neigh show dev $swp1 | grep 192.0.2.2 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		ip -4 neigh show dev $swp1 192.0.2.2
+ 	check_err $? "ipv4 neigh entry not marked as offloaded when should"
+-	ip -6 neigh show dev $swp1 | grep 2001:db8:1::2 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -6 neigh show dev $swp1 2001:db8:1::2
+ 	check_err $? "ipv6 neigh entry not marked as offloaded when should"
  
- 	ip link del dev vxlan1
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
+ 	log_test "neighbour offload indication"
+@@ -623,25 +637,31 @@ nexthop_offload_test()
+ 	ip -6 route add 2001:db8:2::/64 vrf v$swp1 \
+ 		nexthop via 2001:db8:1::2 dev $swp1
+ 
+-	ip -4 route show 198.51.100.0/24 vrf v$swp1 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -4 route show 198.51.100.0/24 vrf v$swp1
+ 	check_err $? "ipv4 nexthop not marked as offloaded when should"
+-	ip -6 route show 2001:db8:2::/64 vrf v$swp1 | grep -q offload
++	busywait "$TIMEOUT" wait_for_offload \
++		ip -6 route show 2001:db8:2::/64 vrf v$swp1
+ 	check_err $? "ipv6 nexthop not marked as offloaded when should"
+ 
+ 	ip link set dev $swp2 down
+ 	sleep 1
+ 
+-	ip -4 route show 198.51.100.0/24 vrf v$swp1 | grep -q offload
+-	check_fail $? "ipv4 nexthop marked as offloaded when should not"
+-	ip -6 route show 2001:db8:2::/64 vrf v$swp1 | grep -q offload
+-	check_fail $? "ipv6 nexthop marked as offloaded when should not"
 +	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
- 
- 	log_test "vxlan decap route - vxlan device deletion"
- 
-@@ -656,12 +672,15 @@ check_fdb_offloaded()
- 	local mac=00:11:22:33:44:55
- 	local zmac=00:00:00:00:00:00
- 
--	bridge fdb show dev vxlan0 | grep $mac | grep self | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $mac self \
-+		bridge fdb show dev vxlan0
- 	check_err $?
--	bridge fdb show dev vxlan0 | grep $mac | grep master | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $mac master \
-+		bridge fdb show dev vxlan0
- 	check_err $?
- 
--	bridge fdb show dev vxlan0 | grep $zmac | grep self | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show dev vxlan0
- 	check_err $?
- }
- 
-@@ -672,13 +691,15 @@ check_vxlan_fdb_not_offloaded()
- 
- 	bridge fdb show dev vxlan0 | grep $mac | grep -q self
- 	check_err $?
--	bridge fdb show dev vxlan0 | grep $mac | grep self | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $mac self \
-+		bridge fdb show dev vxlan0
-+	check_err $?
- 
- 	bridge fdb show dev vxlan0 | grep $zmac | grep -q self
- 	check_err $?
--	bridge fdb show dev vxlan0 | grep $zmac | grep self | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show dev vxlan0
-+	check_err $?
- }
- 
- check_bridge_fdb_not_offloaded()
-@@ -688,8 +709,9 @@ check_bridge_fdb_not_offloaded()
- 
- 	bridge fdb show dev vxlan0 | grep $mac | grep -q master
- 	check_err $?
--	bridge fdb show dev vxlan0 | grep $mac | grep master | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $mac master \
-+		bridge fdb show dev vxlan0
-+	check_err $?
- }
- 
- __offload_indication_join_vxlan_first()
-@@ -771,12 +793,14 @@ __offload_indication_join_vxlan_last()
- 
- 	ip link set dev $swp1 master br0
- 
--	bridge fdb show dev vxlan0 | grep $zmac | grep self | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show dev vxlan0
-+	check_err $?
- 
- 	ip link set dev vxlan0 master br0
- 
--	bridge fdb show dev vxlan0 | grep $zmac | grep self | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show dev vxlan0
- 	check_err $?
- 
- 	log_test "offload indication - attach vxlan last"
-@@ -866,8 +890,9 @@ sanitization_vlan_aware_test()
- 	ip link set dev $swp1 master br0 &> /dev/null
- 	check_fail $?
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
++		ip -4 route show 198.51.100.0/24 vrf v$swp1
++	check_err $? "ipv4 nexthop marked as offloaded when should not"
 +	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
++		ip -6 route show 2001:db8:2::/64 vrf v$swp1
++	check_err $? "ipv6 nexthop marked as offloaded when should not"
  
- 	log_test "vlan-aware - failed enslavement to bridge due to conflict"
+ 	ip link set dev $swp2 up
+ 	setup_wait
  
-@@ -929,11 +954,11 @@ offload_indication_vlan_aware_fdb_test()
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan10 self master static \
- 		dst 198.51.100.2 vlan 10
- 
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan10
- 	check_err $?
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan10
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - initial state"
-@@ -943,9 +968,9 @@ offload_indication_vlan_aware_fdb_test()
- 	RET=0
- 
- 	bridge fdb del de:ad:be:ef:13:37 dev vxlan10 master vlan 10
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan10
-+	check_err $?
- 
- 	log_test "vxlan entry offload indication - after removal from bridge"
- 
-@@ -954,11 +979,11 @@ offload_indication_vlan_aware_fdb_test()
- 	RET=0
- 
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan10 master static vlan 10
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan10
- 	check_err $?
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan10
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - after re-add to bridge"
-@@ -968,9 +993,9 @@ offload_indication_vlan_aware_fdb_test()
- 	RET=0
- 
- 	bridge fdb del de:ad:be:ef:13:37 dev vxlan10 self
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan10
-+	check_err $?
- 
- 	log_test "vxlan entry offload indication - after removal from vxlan"
- 
-@@ -979,11 +1004,11 @@ offload_indication_vlan_aware_fdb_test()
- 	RET=0
- 
- 	bridge fdb add de:ad:be:ef:13:37 dev vxlan10 self dst 198.51.100.2
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self bridge fdb show brport vxlan10
- 	check_err $?
--	bridge fdb show brport vxlan10 | grep de:ad:be:ef:13:37 | grep -v self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb \
-+		de:ad:be:ef:13:37 self -v bridge fdb show brport vxlan10
- 	check_err $?
- 
- 	log_test "vxlan entry offload indication - after re-add to vxlan"
-@@ -995,28 +1020,31 @@ offload_indication_vlan_aware_decap_route_test()
- {
- 	RET=0
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
+-	ip -4 route show 198.51.100.0/24 vrf v$swp1 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	# Toggle PVID flag on one VxLAN device and make sure route is still
- 	# marked as offloaded
- 	bridge vlan add vid 10 dev vxlan10 untagged
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
++		ip -4 route show 198.51.100.0/24 vrf v$swp1
+ 	check_err $? "ipv4 nexthop not marked as offloaded after neigh add"
+-	ip -6 route show 2001:db8:2::/64 vrf v$swp1 | grep -q offload
 +	busywait "$TIMEOUT" wait_for_offload \
-+		ip route show table local 198.51.100.1
- 	check_err $?
++		ip -6 route show 2001:db8:2::/64 vrf v$swp1
+ 	check_err $? "ipv6 nexthop not marked as offloaded after neigh add"
  
- 	# Toggle PVID flag on second VxLAN device and make sure route is no
- 	# longer marked as offloaded
- 	bridge vlan add vid 20 dev vxlan20 untagged
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
--	check_fail $?
-+	busywait "$TIMEOUT" not wait_for_offload \
-+		ip route show table local 198.51.100.1
-+	check_err $?
- 
- 	# Toggle PVID flag back and make sure route is marked as offloaded
- 	bridge vlan add vid 10 dev vxlan10 pvid untagged
- 	bridge vlan add vid 20 dev vxlan20 pvid untagged
- 
--	ip route show table local | grep 198.51.100.1 | grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload ip route show table local 198.51.100.1
- 	check_err $?
- 
- 	log_test "vxlan decap route - vni map/unmap"
-@@ -1069,33 +1097,33 @@ offload_indication_vlan_aware_l3vni_test()
- 	ip link set dev vxlan0 master br0
- 	bridge vlan add dev vxlan0 vid 10 pvid untagged
- 
--	bridge fdb show brport vxlan0 | grep $zmac | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show brport vxlan0
- 	check_err $? "vxlan tunnel not offloaded when should"
- 
- 	# Configure a VLAN interface and make sure tunnel is offloaded
- 	ip link add link br0 name br10 up type vlan id 10
- 	sysctl_set net.ipv6.conf.br10.disable_ipv6 0
- 	ip -6 address add 2001:db8:1::1/64 dev br10
--	bridge fdb show brport vxlan0 | grep $zmac | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show brport vxlan0
- 	check_err $? "vxlan tunnel not offloaded when should"
- 
- 	# Unlink the VXLAN device, make sure tunnel is no longer offloaded,
- 	# then add it back to the bridge and make sure it is offloaded
- 	ip link set dev vxlan0 nomaster
--	bridge fdb show brport vxlan0 | grep $zmac | grep self \
--		| grep -q offload
--	check_fail $? "vxlan tunnel offloaded after unlinked from bridge"
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show brport vxlan0
-+	check_err $? "vxlan tunnel offloaded after unlinked from bridge"
- 
- 	ip link set dev vxlan0 master br0
--	bridge fdb show brport vxlan0 | grep $zmac | grep self \
--		| grep -q offload
--	check_fail $? "vxlan tunnel offloaded despite no matching vid"
-+	busywait "$TIMEOUT" not wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show brport vxlan0
-+	check_err $? "vxlan tunnel offloaded despite no matching vid"
- 
- 	bridge vlan add dev vxlan0 vid 10 pvid untagged
--	bridge fdb show brport vxlan0 | grep $zmac | grep self \
--		| grep -q offload
-+	busywait "$TIMEOUT" wait_for_offload grep_bridge_fdb $zmac self \
-+		bridge fdb show brport vxlan0
- 	check_err $? "vxlan tunnel not offloaded after adding vid"
- 
- 	log_test "vxlan - l3 vni"
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 5ea33c72f468..83fd15e3e545 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -248,6 +248,28 @@ busywait()
- 	done
- }
- 
-+not()
-+{
-+	"$@"
-+	[[ $? != 0 ]]
-+}
-+
-+grep_bridge_fdb()
-+{
-+	local addr=$1; shift
-+	local word
-+	local flag
-+
-+	if [ "$1" == "self" ] || [ "$1" == "master" ]; then
-+		word=$1; shift
-+		if [ "$1" == "-v" ]; then
-+			flag=$1; shift
-+		fi
-+	fi
-+
-+	$@ | grep $addr | grep $flag "$word"
-+}
-+
- wait_for_offload()
- {
- 	"$@" | grep -q offload
+ 	log_test "nexthop offload indication"
 -- 
 2.21.1
 
