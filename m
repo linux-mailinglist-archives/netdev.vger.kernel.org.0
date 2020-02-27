@@ -2,112 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F071729A2
-	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 21:44:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 942821729CC
+	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 21:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729570AbgB0UoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 15:44:08 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38792 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgB0UoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 15:44:07 -0500
-Received: by mail-qt1-f196.google.com with SMTP id e20so363349qto.5
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 12:44:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wNQXZQVRVzF3/QhY3WxQnPzwhdQB95qxj0q9fin+SqI=;
-        b=Pn4zkzyNxL7BPyga2pEYeOHop8FSLaTJhANeeA4KSbkdQk9pxJHVvoNrtRLf62uEVY
-         q23I2MEioQHZYLZOyp+z7FZNFb9Tr229u6+egBBpmIrCZRw7sIV8jVdgrtdLoqYrjJmz
-         s0wScrDho+MbrbvjyFfAusA3MSV4qdbaFYtso=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wNQXZQVRVzF3/QhY3WxQnPzwhdQB95qxj0q9fin+SqI=;
-        b=GqM5xXdlvnfN8rOGy+H7wYt/EJ7USQ//rSP1e6EI4z8IXsuBe/V81yzOTyAIUsqA3u
-         zEi6uD6+/Tz46+eNVVsHeY1Cydq9XEhvNbTrA58XYrrze1Up1mEQqmks6z+aAychFoMq
-         HSa6T8jMmYaAdG44cwZ6AsSb/ulgxEclxO5GHTaFpBsUFoQsQGwbcA6zpakH4b+CuvQn
-         9ZT/dmm9j1PCDmQX6Vtk2gKYD6V0xY4TYs3POCUpf/tgBZniHDa+3qBC3M2maWnztlnY
-         5B0nOxdcCCenu/6njItLjZ+vnDuqUM64GwJOEYDPvQYxw5ZshCfW/vmvH7bCIWaxBKOD
-         /1lA==
-X-Gm-Message-State: APjAAAWHvmR23gTZtK1+3qSNyd7fHoR1wjTrasgF2otS6/IhC1GiSIbX
-        DqpgHadG63CNcKHfZY3C4DADNA==
-X-Google-Smtp-Source: APXvYqzjaiwbsoC+DCM5pwHoVfRSjO4rM+mT5tt7FaixV7buklJ8jjCsAB4TuS5xDW2v0FiVVepi0Q==
-X-Received: by 2002:ac8:377a:: with SMTP id p55mr1174351qtb.87.1582836247002;
-        Thu, 27 Feb 2020 12:44:07 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:a58e:e5e0:4900:6bcd? ([2601:282:803:7700:a58e:e5e0:4900:6bcd])
-        by smtp.gmail.com with ESMTPSA id u2sm3920215qtd.72.2020.02.27.12.44.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Feb 2020 12:44:06 -0800 (PST)
-Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        toke@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dsahern@kernel.org>
-References: <20200227032013.12385-1-dsahern@kernel.org>
- <20200227032013.12385-4-dsahern@kernel.org> <20200227090046.3e3177b3@carbon>
-From:   David Ahern <dahern@digitalocean.com>
-Message-ID: <423dd8d6-6e84-01d4-c529-ce85d84fa24b@digitalocean.com>
-Date:   Thu, 27 Feb 2020 13:44:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.4.2
+        id S1729740AbgB0Uzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 15:55:55 -0500
+Received: from gateway21.websitewelcome.com ([192.185.45.38]:25197 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729439AbgB0Uzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 15:55:55 -0500
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id 3EFB1400C9C5A
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 14:55:54 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 7QCIjhr1gXVkQ7QCIj2smD; Thu, 27 Feb 2020 14:55:54 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=MJVDWhNS0EA1OFOvhs7NhRz+ei3OwBXs0MRwTBoRDU4=; b=Oh64htQAJlmzOqavF6aI+lLuQJ
+        yi2B+nKcpQZfFWrZv5idvV/Q/+hXpQZTxNa9KjVtZ+NVIcSPHAkQPeVPoJzgaNpOn8oOBRl/yJpNI
+        6IXWFhyg0UV2A9SKm3l/FfvLLH5moAfzOnMjkeSkASwzKcWnB2p+LA/n8As+H3cSDp58G1mR6l2tW
+        Y9JPYyCFF8pdl/rM3LkT94GzUsj7XzMd9ecaG/iPC7nK8ZQNZUyhjfKjAnjlGJeeG1AYUgM95vQav
+        Hhiq7LtryQNNXCR0mb0Q1t5pki/ZLmSF6etUd0tNwjKghmm8r5Se+qW+y3X9RO7RsrbBTrlsSNIQ7
+        C9UM2cNg==;
+Received: from [201.162.169.69] (port=8222 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j7QCF-000kyF-UD; Thu, 27 Feb 2020 14:55:52 -0600
+Date:   Thu, 27 Feb 2020 14:58:44 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: sched: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200227205844.GA18578@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <20200227090046.3e3177b3@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.169.69
+X-Source-L: No
+X-Exim-ID: 1j7QCF-000kyF-UD
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.162.169.69]:8222
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 18
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/27/20 1:00 AM, Jesper Dangaard Brouer wrote:
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 7850f8683b81..5e3f8aefad41 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -3334,8 +3334,10 @@ struct xdp_md {
->>  	__u32 data;
->>  	__u32 data_end;
->>  	__u32 data_meta;
->> -	/* Below access go through struct xdp_rxq_info */
->> -	__u32 ingress_ifindex; /* rxq->dev->ifindex */
->> +	union {
->> +		__u32 ingress_ifindex; /* rxq->dev->ifindex */
->> +		__u32 egress_ifindex;  /* txq->dev->ifindex */
->> +	};
-> 
-> Are we sure it is wise to "union share" (struct) xdp_md as the
-> XDP-context in the XDP programs, with different expected_attach_type?
-> As this allows the XDP-programmer to code an EGRESS program that access
-> ctx->ingress_ifindex, this will under the hood be translated to
-> ctx->egress_ifindex, because from the compilers-PoV this will just be an
-> offset.
-> 
-> We are setting up the XDP-programmer for a long debugging session, as
-> she will be expecting to read 'ingress_ifindex', but will be getting
-> 'egress_ifindex'.  (As the compiler cannot warn her, and it is also
-> correct seen from the verifier).
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-It both cases it means the device handling the packet. ingress_ifindex
-== device handling the Rx, egress_ifindex == device handling the Tx.
-Really, it is syntactic sugar for program writers. It would have been
-better had xdp_md only called it ifindex from the beginning.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-> 
-> 
->>  	__u32 rx_queue_index;  /* rxq->queue_index  */
-> 
-> So, the TX program can still read 'rx_queue_index', is this wise?
-> (It should be easy to catch below and reject).
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-See patch 2.
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-In time I expect rx_queue_index to be a union with tx_queue_index for
-the same reasons as the ifindex.
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ include/net/pkt_sched.h | 2 +-
+ net/sched/em_ipt.c      | 2 +-
+ net/sched/em_nbyte.c    | 2 +-
+ net/sched/sch_atm.c     | 2 +-
+ net/sched/sch_netem.c   | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 6a70845bd9ab..20d2c6419612 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -181,7 +181,7 @@ struct tc_taprio_qopt_offload {
+ 	u64 cycle_time_extension;
+ 
+ 	size_t num_entries;
+-	struct tc_taprio_sched_entry entries[0];
++	struct tc_taprio_sched_entry entries[];
+ };
+ 
+ /* Reference counting */
+diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
+index 9fff6480acc6..eecfe072c508 100644
+--- a/net/sched/em_ipt.c
++++ b/net/sched/em_ipt.c
+@@ -22,7 +22,7 @@ struct em_ipt_match {
+ 	const struct xt_match *match;
+ 	u32 hook;
+ 	u8 nfproto;
+-	u8 match_data[0] __aligned(8);
++	u8 match_data[] __aligned(8);
+ };
+ 
+ struct em_ipt_xt_match {
+diff --git a/net/sched/em_nbyte.c b/net/sched/em_nbyte.c
+index 88c7ce42df7e..2c1192a2ee5e 100644
+--- a/net/sched/em_nbyte.c
++++ b/net/sched/em_nbyte.c
+@@ -16,7 +16,7 @@
+ 
+ struct nbyte_data {
+ 	struct tcf_em_nbyte	hdr;
+-	char			pattern[0];
++	char			pattern[];
+ };
+ 
+ static int em_nbyte_change(struct net *net, void *data, int data_len,
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index f4f9b8cdbffb..ee12ca9f55b4 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -58,7 +58,7 @@ struct atm_flow_data {
+ 	struct atm_flow_data	*excess;	/* flow for excess traffic;
+ 						   NULL to set CLP instead */
+ 	int			hdr_len;
+-	unsigned char		hdr[0];		/* header data; MUST BE LAST */
++	unsigned char		hdr[];		/* header data; MUST BE LAST */
+ };
+ 
+ struct atm_qdisc_data {
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 42e557d48e4e..84f82771cdf5 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -66,7 +66,7 @@
+ 
+ struct disttable {
+ 	u32  size;
+-	s16 table[0];
++	s16 table[];
+ };
+ 
+ struct netem_sched_data {
+-- 
+2.25.0
+
