@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D396170F1D
+	by mail.lfdr.de (Postfix) with ESMTP id F1FDB170F1F
 	for <lists+netdev@lfdr.de>; Thu, 27 Feb 2020 04:40:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728386AbgB0Dj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Feb 2020 22:39:56 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:40152 "EHLO
+        id S1728495AbgB0Dk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Feb 2020 22:40:29 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40157 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728316AbgB0Djz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 22:39:55 -0500
+        with ESMTP id S1728344AbgB0Dj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Feb 2020 22:39:56 -0500
 Received: from ip5f5bf7ec.dynamic.kabel-deutschland.de ([95.91.247.236] helo=wittgenstein.fritz.box)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <christian.brauner@ubuntu.com>)
-        id 1j7A1h-00030x-7A; Thu, 27 Feb 2020 03:39:53 +0000
+        id 1j7A1h-00030x-OL; Thu, 27 Feb 2020 03:39:53 +0000
 From:   Christian Brauner <christian.brauner@ubuntu.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -26,9 +26,9 @@ Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-pm@vger.kernel.org,
         Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH v7 3/9] sysfs: add sysfs_group{s}_change_owner()
-Date:   Thu, 27 Feb 2020 04:37:13 +0100
-Message-Id: <20200227033719.1652190-4-christian.brauner@ubuntu.com>
+Subject: [PATCH v7 4/9] sysfs: add sysfs_change_owner()
+Date:   Thu, 27 Feb 2020 04:37:14 +0100
+Message-Id: <20200227033719.1652190-5-christian.brauner@ubuntu.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200227033719.1652190-1-christian.brauner@ubuntu.com>
 References: <20200227033719.1652190-1-christian.brauner@ubuntu.com>
@@ -39,9 +39,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helpers to change the owner of sysfs groups.
+Add a helper to change the owner of sysfs objects.
 This function will be used to correctly account for kobject ownership
 changes, e.g. when moving network devices between network namespaces.
+
+This mirrors how a kobject is added through driver core which in its guts is
+done via kobject_add_internal() which in summary creates the main directory via
+create_dir(), populates that directory with the groups associated with the
+ktype of the kobject (if any) and populates the directory with the basic
+attributes associated with the ktype of the kobject (if any). These are the
+basic steps that are associated with adding a kobject in sysfs.
+Any additional properties are added by the specific subsystem itself (not by
+driver core) after it has registered the device. So for the example of network
+devices, a network device will e.g. register a queue subdirectory under the
+basic sysfs directory for the network device and than further subdirectories
+within that queues subdirectory.  But that is all specific to network devices
+and they call the corresponding sysfs functions to do that directly when they
+create those queue objects. So anything that a subsystem adds outside of what
+driver core does must also be changed by it (That's already true for removal of
+files it created outside of driver core.) and it's the same for ownership
+changes.
 
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
@@ -53,11 +70,12 @@ Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 /* v3 */
 -  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
    - Add explicit uid/gid parameters.
-- Christian Brauner <christian.brauner@ubuntu.com>:
-  - Collapse groups ownership helper patches into a single patch.
 
 /* v4 */
-unchanged
+-  Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+   - Change the ownership of the kobject itself directly in
+     sysfs_change_owner() and do not rely on separate function to do that.
+   - Add more documentation.
 
 /* v5 */
 unchanged
@@ -66,181 +84,104 @@ unchanged
 unchanged
 
 /* v7 */
-- David Miller <davem@davemloft.net>:
-  - Fix two build warnings.
+unchanged
 ---
- fs/sysfs/group.c      | 115 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/sysfs.h |  20 ++++++++
- 2 files changed, 135 insertions(+)
+ fs/sysfs/file.c       | 60 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/sysfs.h |  6 +++++
+ 2 files changed, 66 insertions(+)
 
-diff --git a/fs/sysfs/group.c b/fs/sysfs/group.c
-index c4ab045926b7..5afe0e7ff7cd 100644
---- a/fs/sysfs/group.c
-+++ b/fs/sysfs/group.c
-@@ -13,6 +13,7 @@
- #include <linux/dcache.h>
- #include <linux/namei.h>
- #include <linux/err.h>
-+#include <linux/fs.h>
- #include "sysfs.h"
- 
- 
-@@ -457,3 +458,117 @@ int __compat_only_sysfs_link_entry_to_kobj(struct kobject *kobj,
- 	return PTR_ERR_OR_ZERO(link);
+diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+index 332cd69b378c..26bbf960e2a2 100644
+--- a/fs/sysfs/file.c
++++ b/fs/sysfs/file.c
+@@ -646,3 +646,63 @@ int sysfs_file_change_owner(struct kobject *kobj, const char *name, kuid_t kuid,
+ 	return error;
  }
- EXPORT_SYMBOL_GPL(__compat_only_sysfs_link_entry_to_kobj);
+ EXPORT_SYMBOL_GPL(sysfs_file_change_owner);
 +
-+static int sysfs_group_attrs_change_owner(struct kernfs_node *grp_kn,
-+					  const struct attribute_group *grp,
-+					  struct iattr *newattrs)
++/**
++ *	sysfs_change_owner - change owner of the given object.
++ *	@kobj:	object.
++ *	@kuid:	new owner's kuid
++ *	@kgid:	new owner's kgid
++ *
++ * Change the owner of the default directory, files, groups, and attributes of
++ * @kobj to @kuid/@kgid. Note that sysfs_change_owner mirrors how the sysfs
++ * entries for a kobject are added by driver core. In summary,
++ * sysfs_change_owner() takes care of the default directory entry for @kobj,
++ * the default attributes associated with the ktype of @kobj and the default
++ * attributes associated with the ktype of @kobj.
++ * Additional properties not added by driver core have to be changed by the
++ * driver or subsystem which created them. This is similar to how
++ * driver/subsystem specific entries are removed.
++ *
++ * Returns 0 on success or error code on failure.
++ */
++int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid)
 +{
-+	struct kernfs_node *kn;
 +	int error;
++	const struct kobj_type *ktype;
 +
-+	if (grp->attrs) {
-+		struct attribute *const *attr;
++	if (!kobj->state_in_sysfs)
++		return -EINVAL;
 +
-+		for (attr = grp->attrs; *attr; attr++) {
-+			kn = kernfs_find_and_get(grp_kn, (*attr)->name);
-+			if (!kn)
-+				return -ENOENT;
++	/* Change the owner of the kobject itself. */
++	error = internal_change_owner(kobj->sd, kuid, kgid);
++	if (error)
++		return error;
 +
-+			error = kernfs_setattr(kn, newattrs);
-+			kernfs_put(kn);
++	ktype = get_ktype(kobj);
++	if (ktype) {
++		struct attribute **kattr;
++
++		/*
++		 * Change owner of the default attributes associated with the
++		 * ktype of @kobj.
++		 */
++		for (kattr = ktype->default_attrs; kattr && *kattr; kattr++) {
++			error = sysfs_file_change_owner(kobj, (*kattr)->name,
++							kuid, kgid);
 +			if (error)
 +				return error;
 +		}
-+	}
 +
-+	if (grp->bin_attrs) {
-+		struct bin_attribute *const *bin_attr;
-+
-+		for (bin_attr = grp->bin_attrs; *bin_attr; bin_attr++) {
-+			kn = kernfs_find_and_get(grp_kn, (*bin_attr)->attr.name);
-+			if (!kn)
-+				return -ENOENT;
-+
-+			error = kernfs_setattr(kn, newattrs);
-+			kernfs_put(kn);
-+			if (error)
-+				return error;
-+		}
++		/*
++		 * Change owner of the default groups associated with the
++		 * ktype of @kobj.
++		 */
++		error = sysfs_groups_change_owner(kobj, ktype->default_groups,
++						  kuid, kgid);
++		if (error)
++			return error;
 +	}
 +
 +	return 0;
 +}
-+
-+/**
-+ * sysfs_group_change_owner - change owner of an attribute group.
-+ * @kobj:	The kobject containing the group.
-+ * @grp:	The attribute group.
-+ * @kuid:	new owner's kuid
-+ * @kgid:	new owner's kgid
-+ *
-+ * Returns 0 on success or error code on failure.
-+ */
-+int sysfs_group_change_owner(struct kobject *kobj,
-+			     const struct attribute_group *grp, kuid_t kuid,
-+			     kgid_t kgid)
-+{
-+	struct kernfs_node *grp_kn;
-+	int error;
-+	struct iattr newattrs = {
-+		.ia_valid = ATTR_UID | ATTR_GID,
-+		.ia_uid = kuid,
-+		.ia_gid = kgid,
-+	};
-+
-+	if (!kobj->state_in_sysfs)
-+		return -EINVAL;
-+
-+	if (grp->name) {
-+		grp_kn = kernfs_find_and_get(kobj->sd, grp->name);
-+	} else {
-+		kernfs_get(kobj->sd);
-+		grp_kn = kobj->sd;
-+	}
-+	if (!grp_kn)
-+		return -ENOENT;
-+
-+	error = kernfs_setattr(grp_kn, &newattrs);
-+	if (!error)
-+		error = sysfs_group_attrs_change_owner(grp_kn, grp, &newattrs);
-+
-+	kernfs_put(grp_kn);
-+
-+	return error;
-+}
-+EXPORT_SYMBOL_GPL(sysfs_group_change_owner);
-+
-+/**
-+ * sysfs_groups_change_owner - change owner of a set of attribute groups.
-+ * @kobj:	The kobject containing the groups.
-+ * @groups:	The attribute groups.
-+ * @kuid:	new owner's kuid
-+ * @kgid:	new owner's kgid
-+ *
-+ * Returns 0 on success or error code on failure.
-+ */
-+int sysfs_groups_change_owner(struct kobject *kobj,
-+			      const struct attribute_group **groups,
-+			      kuid_t kuid, kgid_t kgid)
-+{
-+	int error = 0, i;
-+
-+	if (!kobj->state_in_sysfs)
-+		return -EINVAL;
-+
-+	if (!groups)
-+		return 0;
-+
-+	for (i = 0; groups[i]; i++) {
-+		error = sysfs_group_change_owner(kobj, groups[i], kuid, kgid);
-+		if (error)
-+			break;
-+	}
-+
-+	return error;
-+}
-+EXPORT_SYMBOL_GPL(sysfs_groups_change_owner);
++EXPORT_SYMBOL_GPL(sysfs_change_owner);
 diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
-index 7e15ebfd750e..3fcaabdb05ef 100644
+index 3fcaabdb05ef..9e531ec76274 100644
 --- a/include/linux/sysfs.h
 +++ b/include/linux/sysfs.h
-@@ -314,6 +314,12 @@ int sysfs_file_change_owner(struct kobject *kobj, const char *name, kuid_t kuid,
+@@ -312,6 +312,7 @@ static inline void sysfs_enable_ns(struct kernfs_node *kn)
+ 
+ int sysfs_file_change_owner(struct kobject *kobj, const char *name, kuid_t kuid,
  			    kgid_t kgid);
++int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid);
  int sysfs_link_change_owner(struct kobject *kobj, struct kobject *targ,
  			    const char *name, kuid_t kuid, kgid_t kgid);
-+int sysfs_groups_change_owner(struct kobject *kobj,
-+			      const struct attribute_group **groups,
-+			      kuid_t kuid, kgid_t kgid);
-+int sysfs_group_change_owner(struct kobject *kobj,
-+			     const struct attribute_group *groups, kuid_t kuid,
-+			     kgid_t kgid);
- 
- #else /* CONFIG_SYSFS */
- 
-@@ -542,6 +548,20 @@ static inline int sysfs_link_change_owner(struct kobject *kobj,
+ int sysfs_groups_change_owner(struct kobject *kobj,
+@@ -548,6 +549,11 @@ static inline int sysfs_link_change_owner(struct kobject *kobj,
  	return 0;
  }
  
-+static inline int sysfs_groups_change_owner(struct kobject *kobj,
-+			  const struct attribute_group **groups,
-+			  kuid_t kuid, kgid_t kgid)
++static inline int sysfs_change_owner(struct kobject *kobj, kuid_t kuid, kgid_t kgid)
 +{
 +	return 0;
 +}
 +
-+static inline int sysfs_group_change_owner(struct kobject *kobj,
-+			 const struct attribute_group **groups,
-+			 kuid_t kuid, kgid_t kgid)
-+{
-+	return 0;
-+}
-+
- #endif /* CONFIG_SYSFS */
- 
- static inline int __must_check sysfs_create_file(struct kobject *kobj,
+ static inline int sysfs_groups_change_owner(struct kobject *kobj,
+ 			  const struct attribute_group **groups,
+ 			  kuid_t kuid, kgid_t kgid)
 -- 
 2.25.1
 
