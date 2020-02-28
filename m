@@ -2,90 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4051A173F8C
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:26:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A0E173F9C
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:30:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgB1S0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:26:13 -0500
-Received: from mga05.intel.com ([192.55.52.43]:61875 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725877AbgB1S0N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 13:26:13 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Feb 2020 10:26:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,497,1574150400"; 
-   d="scan'208";a="231166116"
-Received: from rdunst-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.40.10])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Feb 2020 10:26:10 -0800
-Subject: Re: [PATCH] [next] xdp: Replace zero-length array with flexible-array
- member
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200228131907.GA17911@embeddedor>
- <6FEAF24E-27CF-4840-8134-595D27275976@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <4f7c8a2f-e49e-beb5-9188-1bebac804d8d@intel.com>
-Date:   Fri, 28 Feb 2020 19:26:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726603AbgB1Sa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:30:29 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38820 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725730AbgB1Sa2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:30:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582914628;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9SQXHw9XzSbeXpj41JHDbfEF82zI7AsxsM9UfBTDMG8=;
+        b=ZxGDOaonvUnlR2sxu+XPjuJroKIZvKPgdUmplu5HKVowxPfqwihsGPyMYtOgBf7vNabaqQ
+        yuoo/K0LcGtmhCvHVx5O5RQA/0Oy9zOz1jy2Y+9ZJfAki5g0UczPmy9kOAIuzRnVyQzAEt
+        gyaR5o2aIcTZTivIBcLUqeoBI9259o8=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-301-R3XtDy2tNt-cXtQRKsQMMQ-1; Fri, 28 Feb 2020 13:30:25 -0500
+X-MC-Unique: R3XtDy2tNt-cXtQRKsQMMQ-1
+Received: by mail-ed1-f72.google.com with SMTP id k6so2904918edq.8
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:30:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9SQXHw9XzSbeXpj41JHDbfEF82zI7AsxsM9UfBTDMG8=;
+        b=T7wrF9pjj6gCMbu9HIkJFbj8D3rK2DNP0xwM8OIbFuMvmKoRXLu83YJFUztPttd1Nw
+         qYCz+ee+G8gsU9YkCK2P3lYlQ4MVwYgxofR4Oygizw7Q5RSxzepwMLfD0t5JM5qA9VDn
+         Kn6zTuBpJ2Twv85zJc0OInJdaJPvojLziEf7u2rsawHA0QryHjHiGDQfrt3YHH4qBJ2Q
+         p93jz/vfWt0u6V/x2M6kuat6iU42D0Lt2/VTD0P7DMotRlUS94Ru24Umew5fiwnx8H5f
+         tDzUsWsoNDojHps6Zpll1d2vkdZQyelkddxuuR92FwXCdeWSGgkzKLEzmY+2GHi0D/sm
+         54Cg==
+X-Gm-Message-State: APjAAAX/lj3UygbmZP3GXN8bLJJFRk4xvybSJ4gFYSPnC3O/x6ePZyso
+        M7J+jUSrk+1adbu/iUFGTajj0GuHXhb9eZhwPcpfS+7m6NRR0qCY3bI0pqxghlfkivuUcoTGSlY
+        5acRD0VTh601rJNNSXkaqUlED8DUiJYA6
+X-Received: by 2002:a17:906:5210:: with SMTP id g16mr5235507ejm.305.1582914623693;
+        Fri, 28 Feb 2020 10:30:23 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy2k0kyziTCuXtDsDmQRSPPZDTNCJcyd4zumdXYHZ3UQPHdHXIdNaH5hE2OpUdMwUlMZCM50jFSmW/FScjamn0=
+X-Received: by 2002:a17:906:5210:: with SMTP id g16mr5235484ejm.305.1582914623404;
+ Fri, 28 Feb 2020 10:30:23 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <6FEAF24E-27CF-4840-8134-595D27275976@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
+In-Reply-To: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Fri, 28 Feb 2020 19:30:12 +0100
+Message-ID: <CAPpH65z3GZgdHGiTJt+UZzBS94V0NN17VQFgDanNmoSdF7-_3Q@mail.gmail.com>
+Subject: Re: [PATCH] ip route: Do not imply pref and ttl-propagate are per nexthop
+To:     Donald Sharp <sharpd@cumulusnetworks.com>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>, roopa@cumulusnetworks.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-02-28 18:14, Jonathan Lemon wrote:
-> 
-> 
-> On 28 Feb 2020, at 5:19, Gustavo A. R. Silva wrote:
-> 
->> The current codebase makes use of the zero-length array language
->> extension to the C90 standard, but the preferred mechanism to declare
->> variable-length types such as these ones is a flexible array member[1][2],
->> introduced in C99:
->>
->> struct foo {
->>          int stuff;
->>          struct boo array[];
->> };
->>
->> By making use of the mechanism above, we will get a compiler warning
->> in case the flexible array does not occur last in the structure, which
->> will help us prevent some kind of undefined behavior bugs from being
->> inadvertently introduced[3] to the codebase from now on.
->>
->> Also, notice that, dynamic memory allocations won't be affected by
->> this change:
->>
->> "Flexible array members have incomplete type, and so the sizeof operator
->> may not be applied. As a quirk of the original implementation of
->> zero-length arrays, sizeof evaluates to zero."[1]
->>
->> This issue was found with the help of Coccinelle.
->>
->> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
->> [2] https://github.com/KSPP/linux/issues/21
->> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> 
-> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> 
+On Tue, Feb 25, 2020 at 2:12 PM Donald Sharp <sharpd@cumulusnetworks.com> wrote:
+>
+> Currently `ip -6 route show` gives us this output:
+>
+> sharpd@eva ~/i/ip (master)> ip -6 route show
+> ::1 dev lo proto kernel metric 256 pref medium
+> 4:5::6:7 nhid 18 proto static metric 20
+>         nexthop via fe80::99 dev enp39s0 weight 1
+>         nexthop via fe80::44 dev enp39s0 weight 1 pref medium
+>
+> Displaying `pref medium` as the last bit of output implies
+> that the RTA_PREF is a per nexthop value, when it is infact
+> a per route piece of data.
+>
+> Change the output to display RTA_PREF and RTA_TTL_PROPAGATE
+> before the RTA_MULTIPATH data is shown:
+>
+> sharpd@eva ~/i/ip (master)> ./ip -6 route show
+> ::1 dev lo proto kernel metric 256 pref medium
+> 4:5::6:7 nhid 18 proto static metric 20 pref medium
+>         nexthop via fe80::99 dev enp39s0 weight 1
+>         nexthop via fe80::44 dev enp39s0 weight 1
+>
+> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
+> ---
+>  ip/iproute.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+>
+> diff --git a/ip/iproute.c b/ip/iproute.c
+> index 93b805c9..07c45169 100644
+> --- a/ip/iproute.c
+> +++ b/ip/iproute.c
+> @@ -933,9 +933,6 @@ int print_route(struct nlmsghdr *n, void *arg)
+>         if (tb[RTA_IIF] && filter.iifmask != -1)
+>                 print_rta_if(fp, tb[RTA_IIF], "iif");
+>
+> -       if (tb[RTA_MULTIPATH])
+> -               print_rta_multipath(fp, r, tb[RTA_MULTIPATH]);
+> -
+>         if (tb[RTA_PREF])
+>                 print_rt_pref(fp, rta_getattr_u8(tb[RTA_PREF]));
+>
+> @@ -951,6 +948,14 @@ int print_route(struct nlmsghdr *n, void *arg)
+>                                      propagate ? "enabled" : "disabled");
+>         }
+>
+> +       if (tb[RTA_MULTIPATH])
+> +               print_rta_multipath(fp, r, tb[RTA_MULTIPATH]);
+> +
+> +       /* If you are adding new route RTA_XXXX then place it above
+> +        * the RTA_MULTIPATH else it will appear that the last nexthop
+> +        * in the ECMP has new attributes
+> +        */
+> +
+>         print_string(PRINT_FP, NULL, "\n", NULL);
+>         close_json_object();
+>         fflush(fp);
+> --
+> 2.25.0
+>
 
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
+LGTM. Can you please add:
+Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
+
+Reviewed-by: Andrea Claudi <aclaudi@redhat.com>
+
