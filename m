@@ -2,136 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0468C173874
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:36:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52A2017386F
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:35:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgB1NgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:36:21 -0500
-Received: from gateway32.websitewelcome.com ([192.185.144.98]:39047 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726151AbgB1NgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:36:20 -0500
-X-Greylist: delayed 366 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Feb 2020 08:36:20 EST
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 0452B1A2BB
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 07:30:44 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 7fj1jCUij8vkB7fj1j7Goa; Fri, 28 Feb 2020 07:30:44 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Lu2UNNDEeNiF01lLdVnT5hMzc2S6yAIGWedaWMTmuQY=; b=ZSBryY7s+UYvF2h7EmzUfUGGpi
-        kkz4X1ZLl+3mp2mk9lDTwGX65cXpHnsQhZ2EcB3P8Z/D54g7jJG2nr3QHB7tA4jXWJbBQ0QBxeDwf
-        td+c/BkT3XeCR0T1djdkEW4i9iUL4dcK4Fw0/pNnf4SS14Q7/6kBp666BJh400eWmZP7TO5O6uT3/
-        VxFZ2ug1JFD+u6KhwirQsDfLIrsI4vG+Df9EF6hswflK0CORs8wY5F2krITiFRgy3yrM+sxeBDsrS
-        EkZmGzxB8hEaktOoZPEF1invSKxbjrb5cHfpiu85L/4xq2hCY9MSpicokh1bbapMwETkH99A+mSVI
-        gFPCmWGA==;
-Received: from [201.162.240.44] (port=16592 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j7fiz-001MVV-WD; Fri, 28 Feb 2020 07:30:42 -0600
-Date:   Fri, 28 Feb 2020 07:33:37 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     dccp@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: dccp: Replace zero-length array with
- flexible-array member
-Message-ID: <20200228133337.GA23619@embeddedor>
+        id S1726896AbgB1NfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:35:02 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:34141 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726798AbgB1NfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:35:02 -0500
+Received: by mail-qt1-f195.google.com with SMTP id l16so2015612qtq.1
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 05:35:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=SO4k+cEae+kcaRUxuLpklhk4ez8pzokBlgA+/XnFpzY=;
+        b=YVBzc0fPtfTWU3WI4CpD6wflzlKNfGdtBy6xeStvbbJrgzA1/3+LYWWJJUKFHLlNe6
+         estvGTicQLamm11cs7CeJACAaxInS7RYp50Ztlq8H6enN1ap/uDBCZGrp01GO+iJRfIo
+         f9AQLO3nan12oFT4cROZv+gFhJRYiiUvK/NiN1xOGXaQVrAU3sF5LpTxKxD41jmRvNf8
+         PaL+thoLLUdzf38op6Q1/pE7SJNflTxQSjoshQsa2XyYGSpX/1fVU/9woELTNFVBP8L6
+         j4p3BrvBSXmHOMVMeKrnH+22GmcJSgmom5xUSelUdQBcdQiwVibPhsEnqQPTwhfKHlje
+         6KdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SO4k+cEae+kcaRUxuLpklhk4ez8pzokBlgA+/XnFpzY=;
+        b=h3daA+QiScRVO5KeG1cA/VuYA5lTfcEgmTrabew+NPHB3vF5arPPoLcTtb+fQnRoSG
+         RV//omtQ51CKqhPCSEA/8t619KVOr77oVtAH++HS/0MMywfL27QbdRJNcjoz1r9+emA8
+         qX+ShBAECdsl9NUB+nhsjA7RJ0AdGJMg4Tq/fhZuB/pndi/QzImm+7qXke8zJqWdFoFD
+         neGIn8o/8J6gQi3wfjXjqLEDYaDV8CDeJCvY+vIMGzjFVcp1BWyHbofLumt5+sYhaFux
+         6NsUOQniaDcNLhsfS28NI5s1E9qLiZQ0s7JLizujdd7qPHdxj1J2dmEsRq0GeS0zqerX
+         crag==
+X-Gm-Message-State: APjAAAWtor9vhkb7W1RONfOy+OnnVzrM/TamwNRa5ZSwLv1JStYHCgu/
+        eaTSeIaTEbXANu403Ie3kZ9XAA==
+X-Google-Smtp-Source: APXvYqz34jQPrszufJ93Ceni4PEZYOnNx21NiUQdDnBqKX3jqVT7UroWcBUFS7T8hVPeCfHcAR4H6g==
+X-Received: by 2002:ac8:5190:: with SMTP id c16mr4174211qtn.200.1582896901187;
+        Fri, 28 Feb 2020 05:35:01 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id o25sm5120118qkk.7.2020.02.28.05.35.00
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 28 Feb 2020 05:35:00 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1j7fnA-0007ph-1Q; Fri, 28 Feb 2020 09:35:00 -0400
+Date:   Fri, 28 Feb 2020 09:35:00 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Bernard Metzler <BMT@zurich.ibm.com>
+Cc:     syzbot <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, parav@mellanox.com,
+        syzkaller-bugs@googlegroups.com, willy@infradead.org
+Subject: Re: Re: possible deadlock in cma_netdev_callback
+Message-ID: <20200228133500.GN31668@ziepe.ca>
+References: <20200227164622.GJ31668@ziepe.ca>
+ <20200227155335.GI31668@ziepe.ca>
+ <20200226204238.GC31668@ziepe.ca>
+ <000000000000153fac059f740693@google.com>
+ <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
+ <OF0C6D63D8.F1817050-ON0025851B.0059D878-0025851B.0059D887@notes.na.collabserv.com>
+ <OFF9E6CFC6.7E79459D-ON0025851C.00472582-0025851C.0047F357@notes.na.collabserv.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <OFF9E6CFC6.7E79459D-ON0025851C.00472582-0025851C.0047F357@notes.na.collabserv.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.162.240.44
-X-Source-L: No
-X-Exim-ID: 1j7fiz-001MVV-WD
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.162.240.44]:16592
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 32
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On Fri, Feb 28, 2020 at 01:05:53PM +0000, Bernard Metzler wrote:
+> 
+> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
+> >From: "Jason Gunthorpe" <jgg@ziepe.ca>
+> >Date: 02/27/2020 05:46PM
+> >Cc: "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+> >chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+> >linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+> >netdev@vger.kernel.org, parav@mellanox.com,
+> >syzkaller-bugs@googlegroups.com, willy@infradead.org
+> >Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
+> >
+> >On Thu, Feb 27, 2020 at 04:21:21PM +0000, Bernard Metzler wrote:
+> >> 
+> >> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
+> >> >From: "Jason Gunthorpe" <jgg@ziepe.ca>
+> >> >Date: 02/27/2020 04:53PM
+> >> >Cc: "syzbot"
+> ><syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+> >> >chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+> >> >linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+> >> >netdev@vger.kernel.org, parav@mellanox.com,
+> >> >syzkaller-bugs@googlegroups.com, willy@infradead.org
+> >> >Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
+> >> >
+> >> >On Thu, Feb 27, 2020 at 10:11:13AM +0000, Bernard Metzler wrote:
+> >> >
+> >> >> Thanks for letting me know! Hmm, we cannot use RCU locks since
+> >> >> we potentially sleep. One solution would be to create a list
+> >> >> of matching interfaces while under lock, unlock and use that
+> >> >> list for calling siw_listen_address() (which may sleep),
+> >> >> right...?
+> >> >
+> >> >Why do you need to iterate over addresses anyhow? Shouldn't the
+> >> >listen
+> >> >just be done with the address the user gave and a BIND DEVICE to
+> >the
+> >> >device siw is connected to?
+> >> 
+> >> The user may give a wildcard local address, so we'd have
+> >> to bind to all addresses of that device...
+> >
+> >AFAIK a wild card bind using BIND DEVICE works just fine?
+> >
+> >Jason
+> >
+> Thanks Jason, absolutely! And it makes things so easy...
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+Probably check to confirm, it just my memory..
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- include/linux/dccp.h | 2 +-
- net/dccp/ccid.h      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/dccp.h b/include/linux/dccp.h
-index 6b64b6cc2175..07e547c02fd8 100644
---- a/include/linux/dccp.h
-+++ b/include/linux/dccp.h
-@@ -198,7 +198,7 @@ enum dccp_role {
- 
- struct dccp_service_list {
- 	__u32	dccpsl_nr;
--	__be32	dccpsl_list[0];
-+	__be32	dccpsl_list[];
- };
- 
- #define DCCP_SERVICE_INVALID_VALUE htonl((__u32)-1)
-diff --git a/net/dccp/ccid.h b/net/dccp/ccid.h
-index 70f88f2b4456..105f3734dadb 100644
---- a/net/dccp/ccid.h
-+++ b/net/dccp/ccid.h
-@@ -95,7 +95,7 @@ void ccid_cleanup_builtins(void);
- 
- struct ccid {
- 	struct ccid_operations *ccid_ops;
--	char		       ccid_priv[0];
-+	char		       ccid_priv[];
- };
- 
- static inline void *ccid_priv(const struct ccid *ccid)
--- 
-2.25.0
-
+Jason
