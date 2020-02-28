@@ -2,87 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C364F17371A
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 13:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16924173737
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 13:30:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725861AbgB1MUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 07:20:13 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:52655 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725769AbgB1MUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 07:20:12 -0500
+        id S1726366AbgB1MaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 07:30:00 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60393 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725730AbgB1M36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 07:29:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582892411;
+        s=mimecast20190719; t=1582892997;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=w9cxFp8LDEAVTHlgkfdjkdM6yZMYvsET80U5OR5BNZU=;
-        b=YhiUiTltYJ6YwAxy0RFGDQm98tc9aoyCV3I/jVQsjfzRUeHuGIMaqK17BzSz+MCX47lLnK
-        AQEYykzhSw8dPC/1jk7enDo6uHCyLk3jh+Xl/5C2v01NdZ5Ozs693e/x/WaeeWbxIaN1Nu
-        H99IT6FiyY8pm0PW5JYb0QUW2ly1IzE=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5/CKKzpFbreU0OMtvAw+wBkJ7+z4oVGyCnkh7UnzzUc=;
+        b=Oz2u5g16OQPR9wsDeH6tJygTJQrvlYqpVdIlWwAAFSJllzmV9s5/kpht4X+NuFiVCS1eyN
+        Iri4oNc2oOdzuwZKHNZpSip+BJDnzzs7TfE8cUpDhSgdhqc0d1mpRvxFEkzKq2DhuKlZBR
+        eyYV2QonKRnSDZHji+ImxRqtp1EV7aw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-293-L8ZPG99NPxWSgrPGihX6Ag-1; Fri, 28 Feb 2020 07:20:09 -0500
-X-MC-Unique: L8ZPG99NPxWSgrPGihX6Ag-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-263-qfCMnb08OkGv40O0IKxkTQ-1; Fri, 28 Feb 2020 07:29:53 -0500
+X-MC-Unique: qfCMnb08OkGv40O0IKxkTQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 854C81882CDD;
-        Fri, 28 Feb 2020 12:20:08 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-200-20.brq.redhat.com [10.40.200.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA9BC1CB;
-        Fri, 28 Feb 2020 12:20:05 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 42BB130737E05;
-        Fri, 28 Feb 2020 13:20:04 +0100 (CET)
-Subject: [net-next PATCH] ixgbe: fix XDP redirect on archs with PAGE_SIZE
- above 4K
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Date:   Fri, 28 Feb 2020 13:20:04 +0100
-Message-ID: <158289240414.1877500.8426359194461700361.stgit@firesoul>
-User-Agent: StGit/0.19
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 982ED18A6ECC;
+        Fri, 28 Feb 2020 12:29:51 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 680E460BE0;
+        Fri, 28 Feb 2020 12:29:46 +0000 (UTC)
+Date:   Fri, 28 Feb 2020 13:29:41 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     Luigi Rizzo <lrizzo@google.com>
+Cc:     netdev@vger.kernel.org, toke@redhat.com, davem@davemloft.net,
+        hawk@kernel.org, sameehj@amazon.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb
+ linearization
+Message-ID: <20200228132941.2c8b8d01@carbon>
+In-Reply-To: <20200228105435.75298-1-lrizzo@google.com>
+References: <20200228105435.75298-1-lrizzo@google.com>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ixgbe driver have another memory model when compiled on archs with
-PAGE_SIZE above 4096 bytes. In this mode it doesn't split the page in
-two halves, but instead increment rx_buffer->page_offset by truesize of
-packet (which include headroom and tailroom for skb_shared_info).
+On Fri, 28 Feb 2020 02:54:35 -0800
+Luigi Rizzo <lrizzo@google.com> wrote:
 
-This is done correctly in ixgbe_build_skb(), but in ixgbe_rx_buffer_flip
-which is currently only called on XDP_TX and XDP_REDIRECT, it forgets
-to add the tailroom for skb_shared_info. This breaks XDP_REDIRECT, for
-veth and cpumap.  Fix by adding size of skb_shared_info tailroom.
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index dbbfff123196..c539489d3166 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4520,9 +4520,12 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+>  	/* XDP packets must be linear and must have sufficient headroom
+>  	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
+>  	 * native XDP provides, thus we need to do it here as well.
+> +	 * For non shared skbs, xdpgeneric_linearize controls linearization.
+>  	 */
+> -	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
+> -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
+> +	if (skb_cloned(skb) ||
+> +	    (skb->dev->xdpgeneric_linearize &&
+> +	     (skb_is_nonlinear(skb) ||
+> +	      skb_headroom(skb) < XDP_PACKET_HEADROOM))) {
+>  		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+>  		int troom = skb->tail + skb->data_len - skb->end;
+>  
 
-Fixes: 6453073987ba ("ixgbe: add initial support for xdp redirect")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Have you checked that calling bpf_xdp_adjust_tail() is not breaking anything?
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 718931d951bc..ea6834bae04c 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2254,7 +2254,8 @@ static void ixgbe_rx_buffer_flip(struct ixgbe_ring *rx_ring,
- 	rx_buffer->page_offset ^= truesize;
- #else
- 	unsigned int truesize = ring_uses_build_skb(rx_ring) ?
--				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) :
-+				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
-+				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
- 				SKB_DATA_ALIGN(size);
- 
- 	rx_buffer->page_offset += truesize;
-
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
