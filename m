@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B16C1740A4
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 21:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB871740A5
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 21:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbgB1UBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 15:01:51 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:55714 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725769AbgB1UBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 15:01:51 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D1274159742F2;
-        Fri, 28 Feb 2020 12:01:50 -0800 (PST)
-Date:   Fri, 28 Feb 2020 12:01:50 -0800 (PST)
-Message-Id: <20200228.120150.302053489768447737.davem@davemloft.net>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     kyk.segfault@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CA+FuTSfaTYB0p1yBuJK4226D-vjhhO_-zN3PUFKFdvyKVT5JdA@mail.gmail.com>
-References: <CA+FuTSe8VKTMO9CA2F-oNvZLbtfMqhyf+ZjruXbqz_WTrj-F1A@mail.gmail.com>
-        <CABGOaVRF9D21--aFi6VJ9MWMn0GxR-s8PssXnzbEjSneafbh5A@mail.gmail.com>
-        <CA+FuTSfaTYB0p1yBuJK4226D-vjhhO_-zN3PUFKFdvyKVT5JdA@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726063AbgB1UEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 15:04:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34412 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725769AbgB1UEk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Feb 2020 15:04:40 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 34C1224677;
+        Fri, 28 Feb 2020 20:04:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582920279;
+        bh=dhyy/EF/RYGrLhHYMT2CeRPAd7BGBv5EWjO98YpJ4mg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=njNKiJsrg3Se2Clw2t6+GjvXaOgIYfYS37oCyzMqr9XTc1/pnfKdfrWEfYQYSzJ4H
+         SebKf7NmU9SI+zK57lqknMlG12UhbUtVcuk4d0hlwqs4RSHaPviiGjWCRPd225rdye
+         liJeMxHMZ2gZt3mRDrptoVDrrufxbLyi85L6+/zc=
+Date:   Fri, 28 Feb 2020 12:04:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rohit Maheshwari <rohitm@chelsio.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        herbert@gondor.apana.org.au, secdev@chelsio.com, varun@chelsio.com
+Subject: Re: [PATCH net-next v2 0/6] cxgb4/chcr: ktls tx offload support on
+ T6 adapter
+Message-ID: <20200228120437.547bdb97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200228183945.11594-1-rohitm@chelsio.com>
+References: <20200228183945.11594-1-rohitm@chelsio.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 28 Feb 2020 12:01:51 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Fri, 28 Feb 2020 09:30:56 -0500
+On Sat, 29 Feb 2020 00:09:39 +0530 Rohit Maheshwari wrote:
+> This series of patches add support for kernel tls offload in Tx direction,
+> over Chelsio T6 NICs. SKBs marked as decrypted will be treated as tls plain
+> text packets and then offloaded to encrypt using network device (chelsio T6
+> adapter).
 
-> Can you contrast this against a run with your changes? The thought is
-> that the majority of this cost is due to the memory loads and stores, not
-> the arithmetic ops to compute the checksum. When enabling checksum
-> offload, the same stalls will occur, but will simply be attributed to
-> memcpy instead of to do_csum.
+You need to try harder CCing people who can give you reviews.
 
-Agreed.
+Please resend CCing at least Boris and myself, we gave you reviews 
+on your recent patch..
