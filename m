@@ -2,137 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EB8172E30
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 02:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6350172E79
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 03:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730592AbgB1BVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 20:21:03 -0500
-Received: from gateway33.websitewelcome.com ([192.185.146.78]:12861 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730562AbgB1BVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 20:21:02 -0500
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 0469B9D6C0
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 19:21:00 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 7UKpjcUm7Efyq7UKqjhxIq; Thu, 27 Feb 2020 19:21:00 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VMte2PIX7leaNL5ZekA5LooPhAUODzPVu9/uehnbNN4=; b=Yt4mD7mQL/iFedRNoIMFMlXJ/m
-        vhpJjzW4sQn9Vy3AvB3RKlF3SQN8VSO5eUnQRp6ihWid/OOunJUtptnUketWLeB6lnBWMCjfUjiMF
-        RBOU/Z3Hqmh4CfBbhUXAJz/j9DXl76bGH34BXTVMn/Nh5psBxd8GdVJVYVx0/mlr0dezQoPKOWh3G
-        qIKsVwpwPYyz1+bxWHXx2y1SMnS5DYXtxSwMGgh4iAcogYDkCYxNciBRSntl5Gl/0NqC1Vr2luthY
-        wMO5+OR3N9+zL18ECJ19P+Mh1n+t8rzaqCCy0n2dxuI3jEN5w02l0WS7Q2B16EHQJHEnJIGLLmIvj
-        wNsMVC3A==;
-Received: from [201.162.240.44] (port=32155 helo=[192.168.43.132])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j7UKp-002wEB-DV; Thu, 27 Feb 2020 19:20:59 -0600
-Subject: Re: [PATCH] bpf: Replace zero-length array with flexible-array member
-To:     Daniel Borkmann <daniel@iogearbox.net>,
+        id S1730442AbgB1CGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 21:06:17 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37059 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726943AbgB1CGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 21:06:17 -0500
+Received: by mail-pf1-f193.google.com with SMTP id p14so856736pfn.4;
+        Thu, 27 Feb 2020 18:06:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v4cW/g3fUQ91WwKvWZgmCpE4Uu5W0M0pWvBhsguMerc=;
+        b=OkFr7WdwskVqohIbd4HRcgQv2Ym3y3Vd7MN+9P4GDcECeFy42oV6Kl3iBL1iITlnlY
+         2wPQezDgruBZSwDFwbeHNOH8uhEdL3BfBCZUAvItv9tXF4CVvuTn4nVx3aX2KHWkUbXm
+         V0dhYRtVEmWCIXt7MpQk3P+JHGCoTxcOEyeXUYTDo9Xx2W5/KfrvRe6y7wJVT1XS4zjT
+         ZtKstqtqnwZyzDyu4Kg3jsIuPG3XPnbgxWp7m2nbxPrXTU4sptmPOHVcLDJA4OkQHD8j
+         UTB+ZpnSgMn6XMLDAIhj4dzCt4NIqKhBABlEhy51qg4XJP3cxgHRmIqCtcJqHHoqzryM
+         gudA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v4cW/g3fUQ91WwKvWZgmCpE4Uu5W0M0pWvBhsguMerc=;
+        b=INOtpCk+ByfbHZRF7STXFuyjspflvdnlrBdFsfwX3kTF72YW5u1QwBERtHTdOe6VTf
+         abJ3bSvvp8sLiC2lnENlxwK34Sj05+U0IquKRDAH6J6J6d16vKUIz1VGuncEsXWMVtS3
+         ZDx8YJHHw/+pujUn3bhA8+uMa1hhVNXLp2L22c8DFxVnJQJ46SqenRdWf0J0JcHISEGm
+         weFHcymViPBs23DkwTq9cdHsBF7MAAZuqUOmtoeRkzER4+gOPi0+vPFS7qOAKalu4Oj4
+         8T2XBH6vHrM4V1RBt13hr+T0v9vuiex1Nk5YUo7W6fQFmBoaH8DrHdPtE8L/3F0hJJKx
+         nh8Q==
+X-Gm-Message-State: APjAAAVSspEqTNsFTEr4ZaAWbL27zVkMIKyn5sLj4Zl6e1EiXraVc00f
+        zWJBOSC8YsxJ1QB1TQqfTW8=
+X-Google-Smtp-Source: APXvYqwgdyo6WXIrdhbbJVgTMnvQNyrnMA7SFaJ3vEvG46q6qIUupMhVHTjiaVlluvrQ+9OuLqRkQw==
+X-Received: by 2002:a63:4e4a:: with SMTP id o10mr2302846pgl.212.1582855575406;
+        Thu, 27 Feb 2020 18:06:15 -0800 (PST)
+Received: from hpg8-3.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id f1sm7533007pjq.31.2020.02.27.18.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2020 18:06:14 -0800 (PST)
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200227001744.GA3317@embeddedor>
- <1c4b814a-0f7d-ae10-9bc0-086b2bd6dea0@iogearbox.net>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <48ffa2f7-f1b5-53d0-d1d4-17345bc157db@embeddedor.com>
-Date:   Thu, 27 Feb 2020 19:23:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf] bpf: btf: Fix BTF verification of the enum size in struct/union
+Date:   Fri, 28 Feb 2020 11:02:12 +0900
+Message-Id: <20200228020212.16183-1-komachi.yoshiki@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <1c4b814a-0f7d-ae10-9bc0-086b2bd6dea0@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.162.240.44
-X-Source-L: No
-X-Exim-ID: 1j7UKp-002wEB-DV
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.43.132]) [201.162.240.44]:32155
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+btf_enum_check_member() checked if the size of "enum" as a struct
+member exceeded struct_size or not. Then, the function definitely
+compared it with the size of "int" now. Therefore, errors could occur
+when the size of the "enum" type was changed.
 
+Although the size of "enum" is 4-byte by default, users can change it
+as needed (e.g., the size of the following test variable is not 4-byte
+but 1-byte). It can be used as a struct member as below:
 
-On 2/27/20 18:25, Daniel Borkmann wrote:
+enum test : char {
+	X,
+	Y,
+	Z,
+};
 
->>
->> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
->> [2] https://github.com/KSPP/linux/issues/21
->> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> 
-> Applied, thanks!
+struct {
+	char a;
+	enum test b;
+	char c;
+} tmp;
 
-Thanks, Daniel.
---
-Gustavo
+With the setup above, when I tried to load BTF, the error was given
+as below:
+
+------------------------------------------------------------------
+
+[58] STRUCT (anon) size=3 vlen=3
+	a type_id=55 bits_offset=0
+	b type_id=59 bits_offset=8
+	c type_id=55 bits_offset=16
+[59] ENUM test size=1 vlen=3
+	X val=0
+	Y val=1
+	Z val=2
+
+[58] STRUCT (anon) size=3 vlen=3
+	b type_id=59 bits_offset=8 Member exceeds struct_size
+
+libbpf: Error loading .BTF into kernel: -22.
+
+------------------------------------------------------------------
+
+The related issue was previously fixed by the commit 9eea98497951 ("bpf:
+fix BTF verification of enums"). On the other hand, this patch fixes
+my explained issue by using the correct size of "enum" declared in
+BPF programs.
+
+Fixes: 179cde8cef7e ("bpf: btf: Check members of struct/union")
+Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+---
+ kernel/bpf/btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 7871400..32ab922 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -2418,7 +2418,7 @@ static int btf_enum_check_member(struct btf_verifier_env *env,
+ 
+ 	struct_size = struct_type->size;
+ 	bytes_offset = BITS_ROUNDDOWN_BYTES(struct_bits_off);
+-	if (struct_size - bytes_offset < sizeof(int)) {
++	if (struct_size - bytes_offset < member_type->size) {
+ 		btf_verifier_log_member(env, struct_type, member,
+ 					"Member exceeds struct_size");
+ 		return -EINVAL;
+-- 
+1.8.3.1
+
