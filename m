@@ -2,104 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A441738C4
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9A61738D1
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbgB1NpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:45:22 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:46319 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbgB1NpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:45:22 -0500
-Received: by mail-qt1-f193.google.com with SMTP id i14so1974045qtv.13
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 05:45:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Rzv670Spk0hNYyQG/ooKntntEH6hH/3Fmmslil28mxY=;
-        b=ONhA0pz5RNqC6ajCrhMmnR5avnW2Bs73Jfdzjb8+XyXd6B7x5bcBGbIhaKLHuqMJlP
-         TdmAWyqKwOOBVZgfDz5D9/NJaz6Pf0feHBEC+eAH8fxLPTRVnURa8TW8+6UCGiqf0FbA
-         695cMK8p1G9V4Nv4Lr9CenFVxXXwUvrntO331foH3EJms/DianIhw11ukTbgONB6/mFb
-         mNnp7t4SsiYJQ2ENYdnVQxxV1Tbd/kajTIGtKoMog57Nt/4612RTlCMh1u3vTxgOZ/6N
-         jC/JdIdI9dQ/dBfoRbCmK4kUlTbVnM806IUIjFFZ6IJBNq7zyXO6SDcQG5EJCJ3tsdL8
-         +npQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Rzv670Spk0hNYyQG/ooKntntEH6hH/3Fmmslil28mxY=;
-        b=g7ubxtQX+x3DoX0p2TBhj4HQCuJL2Camk367p35cTMiW4N74WlT4LS48EaYeLM/0jT
-         M16I6CZH7yApJ6p1Dot2AytZPHIUAvaFtvEX7bsgJ5VoQ8NDVojra5Kji1dPJw62cm+o
-         XYSpN0GTV3jTMerWstn3jdFqLMbfTbDBcKuelF4P015NVuCUxi8gmZNRlpcg8N++ZAub
-         rH3/cp9SYV1kQezMaPOEVD2WxIbMioQ3CzUea/jCOvt+r+MUG8c/x40dCZ2+3vHje2nR
-         igw49FMulqXh6cd4ZVRWrVV7lwANKA/I8bP7tX+w0smcxDt6p7KekChcQxKlDXkqQoVH
-         ANpA==
-X-Gm-Message-State: APjAAAU0QCizhvuVWsCa1MDlXMNMXQj1QoO9e7Rdkn36ALpYnpV5hNbY
-        IgV8TlbVfjvT+zOkAJxSWUo=
-X-Google-Smtp-Source: APXvYqw5V392gIQEn/Uf0USj+99RRmMEw7gnzbIXJOp2w3ZMh0/fl5zMCkHVKEeXBL/cN7PrQJUnwA==
-X-Received: by 2002:ac8:60d5:: with SMTP id i21mr4321381qtm.341.1582897520416;
-        Fri, 28 Feb 2020 05:45:20 -0800 (PST)
-Received: from localhost.localdomain ([168.181.48.223])
-        by smtp.gmail.com with ESMTPSA id j17sm5276550qth.27.2020.02.28.05.45.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 05:45:19 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 145E0C4B66; Fri, 28 Feb 2020 10:45:17 -0300 (-03)
-Date:   Fri, 28 Feb 2020 10:45:17 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: Re: [PATCH net-next 4/6] net/sched: act_ct: Create nf flow table per
- zone
-Message-ID: <20200228134517.GA2546@localhost.localdomain>
-References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
- <1582458307-17067-5-git-send-email-paulb@mellanox.com>
+        id S1727320AbgB1Npy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:45:54 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23366 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727031AbgB1Npv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:45:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582897550;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ogktrVYZtCFQty5C20zFxRtlpSvUxdJSscrT/vhvY1k=;
+        b=VYmi/iyeCYdePodmLV8r4u4T53Fldn4FXLoxxoD8j3KE47KDc+sd79vkF2cxwWHIyoD4Np
+        xU67MRGOWFyy+7Cdqi1t8JxPHfkSPJE0z8oRxMQSXD8J8rYdzevGNZgce6vyQmm1TYihHI
+        I//IT1tD9+kmKyHpWAjrWQx7DEsM8QY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-252-ncgtDUUDNTqhffi6Yy4mMg-1; Fri, 28 Feb 2020 08:45:46 -0500
+X-MC-Unique: ncgtDUUDNTqhffi6Yy4mMg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1159910CE781;
+        Fri, 28 Feb 2020 13:45:45 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.36.118.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DC4DC9299C;
+        Fri, 28 Feb 2020 13:45:43 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>
+Subject: [PATCH net-next v2 0/2] net: cleanup datagram receive helpers
+Date:   Fri, 28 Feb 2020 14:45:20 +0100
+Message-Id: <cover.1582897428.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1582458307-17067-5-git-send-email-paulb@mellanox.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Several receive helpers have an optional destructor argument, which uglif=
+y
+the code a bit and is taxed by retpoline overhead.
 
-On Sun, Feb 23, 2020 at 01:45:05PM +0200, Paul Blakey wrote:
-> Use the NF flow tables infrastructure for CT offload.
-> 
-> Create a nf flow table per zone.
-> 
-> Next patches will add FT entries to this table, and do
-> the software offload.
-> 
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |   1 +
->  include/net/tc_act/tc_ct.h                      |   2 +
->  net/sched/Kconfig                               |   2 +-
->  net/sched/act_ct.c                              | 159 +++++++++++++++++++++++-
->  4 files changed, 162 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index 70b5fe2..eb16136 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -45,6 +45,7 @@
->  #include <net/tc_act/tc_tunnel_key.h>
->  #include <net/tc_act/tc_pedit.h>
->  #include <net/tc_act/tc_csum.h>
-> +#include <net/tc_act/tc_ct.h>
->  #include <net/arp.h>
->  #include <net/ipv6_stubs.h>
->  #include "en.h"
+This series refactor the code so that we can drop such optional argument,
+cleaning the helpers a bit and avoiding an indirect call in fast path.
 
-This chunk is not really needed for this patchset, right?
+The first patch refactor a bit the caller, so that the second patch
+actually dropping the argument is more straight-forward
+
+v1 -> v2:
+ - call scm_stat_del() only when not peeking - Kirill
+ - fix build issue with CONFIG_INET_ESPINTCP
+
+Paolo Abeni (2):
+  unix: uses an atomic type for scm files accounting
+  net: datagram: drop 'destructor' argument from several helpers
+
+ include/linux/skbuff.h | 12 ++----------
+ include/net/af_unix.h  |  2 +-
+ net/core/datagram.c    | 25 +++++++------------------
+ net/ipv4/udp.c         | 14 ++++++++------
+ net/unix/af_unix.c     | 28 +++++++++++-----------------
+ net/xfrm/espintcp.c    |  2 +-
+ 6 files changed, 30 insertions(+), 53 deletions(-)
+
+--=20
+2.21.1
+
