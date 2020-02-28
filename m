@@ -2,68 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01CBA1742D8
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 00:14:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FB81742F3
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 00:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbgB1XOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 18:14:46 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34064 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbgB1XOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 18:14:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=8pDsHz6RetCNui6JYWKr66Fx8NY1FuyyASaCfvg/lxg=; b=XvmPksJeCDRXQQ5cf5W6h+Oyq
-        07ckpCnqKtXSeEZHq0eDZjLkdffizLd1S1gB8DyrRI+E7yTcx29QP5VTQqjOhsXngaXGCncZj7FCU
-        GV9Uj6UZvOljifCkTCmiGkq5WEKu+tQcukwSjaT6xeJVNwyIGSS3zGpwYwAZzWZ9y7MjlkRYkKC+x
-        NT19YcagLlX7y/IukSvsABe8EeZr3xuT3uNFWvFDi+CXmQR0dS65zJ6i5vCq4JO8KZwRnNhSLCvIc
-        F+9VR5aYhdF3Wpe7F2kuCzk6ZsSbhkSIVYZamt0gFxkagG/n1sNUSJs2o6kZ3fNP+/sbqhjGNdahW
-        Ez8iyOR+g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58244)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j7oq3-0006ca-Vk; Fri, 28 Feb 2020 23:14:36 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j7oq1-0002N1-7N; Fri, 28 Feb 2020 23:14:33 +0000
-Date:   Fri, 28 Feb 2020 23:14:33 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Chris Snook <chris.snook@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH v9] net: ag71xx: port to phylink
-Message-ID: <20200228231433.GW25745@shell.armlinux.org.uk>
-References: <20200228145049.17602-1-o.rempel@pengutronix.de>
+        id S1726527AbgB1XVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 18:21:41 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:34246 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725957AbgB1XVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 18:21:41 -0500
+Received: by mail-qt1-f193.google.com with SMTP id l16so3382584qtq.1;
+        Fri, 28 Feb 2020 15:21:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=irfR243etnowtrBaZTxlqkSN/p6uwkEixC/FhFjbiBA=;
+        b=vTYUSomiDcqQLb9RWmLAPHrVWnwGu44FmvFb0qyvJEChBSSF1gkvJ6Y91juxUtVmLv
+         yW4APRnbDAI6bWzlfOgzWv9fY+IbXAqVYDH8LZ036bNkX9+8Y3T+rYY/uFoBkkoE0CBF
+         TTyURT3zcx0igwUgXZl6cH+tXf303SRrAwWitybgD6Gb61XVwAsB5jrIpjjqxLjbk711
+         sHYWO75/c2RRWswuVIpAwZ/xuXRs5+IwKoOL7n7++pMt03nhVg5sNblggTId2C4TAR16
+         6oFC+/M51KqlZQr62mTqEx0bLCJZnobv4YqtNAPQm/NufjEiIIYFaCdM5mkmX4tSzgqk
+         XEjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=irfR243etnowtrBaZTxlqkSN/p6uwkEixC/FhFjbiBA=;
+        b=HG1be9O7TgbKfX7AdmYBrIAycxUexikvrWNlc4rDo5bpf9U1pUtOYgs1FyrBYldjaw
+         9r8wakuL0bPZoukBuz+VW0ATgYPebwyyXP1Wmtd5qMfT+vGeiSO/PTyqUWUoJO4KLSNu
+         LjqmqgGBnwTy4gvDW5eh+2PrFkPxYkgGZcTmOyJejDSB4p4ypzh0766rU6n7HW3ZiSy3
+         OHnG3F595//krPzjEYSDbVfLw31O4lNHdwBDBlfe6K2JGyfrbXIlVoz0FBKNpqO0Ana0
+         4fNpMSIjZVoUeNV35lCMP4qW78EFlKxShlloG0/b7wFijnTmJbaBF2a2+9rtBZASLs22
+         TWlQ==
+X-Gm-Message-State: APjAAAWLDjCvZ3FA05RRUyZTPyIzeL8JIST7MBS+ORlBs4IKVHGdLcWS
+        hPtGxglGDAsKjN3kcUk2lwse32YzSZy8GuPPV7M=
+X-Google-Smtp-Source: APXvYqzJlz0qwxh4W38T6U8XtVqTY0BWG+pFj5Sz4URWaB4eX8OA+EPMVt9qD3TD5XsXVoBMhTlHVZIAJd5e1BzfHmY=
+X-Received: by 2002:ac8:4581:: with SMTP id l1mr3577770qtn.59.1582932099922;
+ Fri, 28 Feb 2020 15:21:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200228145049.17602-1-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <158289973977.337029.3637846294079508848.stgit@toke.dk>
+In-Reply-To: <158289973977.337029.3637846294079508848.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 28 Feb 2020 15:21:28 -0800
+Message-ID: <CAEf4Bzaqr2uZca2iZvRpz54C-ohLsNK1sdN8daBr1qkRQ+NhWg@mail.gmail.com>
+Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs
+ on an interface
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 03:50:49PM +0100, Oleksij Rempel wrote:
-> The port to phylink was done as close as possible to initial
-> functionality.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+On Fri, Feb 28, 2020 at 6:22 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Hi everyone
+>
+> As most of you are no doubt aware, we've had various discussions on how
+> to handle multiple XDP programs on a single interface. With the freplace
+> functionality, the kernel infrastructure is now there to handle this
+> (almost, see "missing pieces" below).
+>
+> While the freplace mechanism offers userspace a lot of flexibility in
+> how to handle dispatching of multiple XDP programs, userspace also has
+> to do quite a bit of work to implement this (compared to just issuing
+> load+attach). The goal of this email is to get some feedback on a
+> library to implement this, in the hope that we can converge on something
+> that will be widely applicable, ensuring that both (a) everyone doesn't
+> have to reinvent the wheel, and (b) we don't end up with a proliferation
+> of subtly incompatible dispatcher models that makes it hard or
+> impossible to mix and match XDP programs from multiple sources.
+>
 
-Looks fine from a phylink point of view now, thanks.
+[...]
 
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+>
+> **** Missing pieces
+> While the libxdp code can assemble a basic dispatcher and load it into th=
+e
+> kernel, there are a couple of missing pieces on the kernel side; I will p=
+ropose
+> patches to fix these, but figured there was no reason to hold back postin=
+g of
+> the library for comments because of this. These missing pieces are:
+>
+> - There is currently no way to persist the freplace after the program exi=
+ts; the
+>   file descriptor returned by bpf_raw_tracepoint_open() will release the =
+program
+>   when it is closed, and it cannot be pinned.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+This is completely addressed by patch set [0] I just posted. It will
+allow you to pin freplace BPF link in BPF FS. Feel free to review and
+comment there, if anything is missing.
+
+  [0] https://patchwork.ozlabs.org/project/netdev/list/?series=3D161582&sta=
+te=3D*
+
+>
+> - There is no way to re-attach an already loaded program to another funct=
+ion;
+>   this is needed for updating the call sequence: When a new program is lo=
+aded,
+>   libxdp should get the existing list of component programs on the interf=
+ace and
+>   insert the new one into the chain in the appropriate place. To do this =
+it
+>   needs to build a new dispatcher and reattach all the old programs to it=
+.
+>   Ideally, this should be doable without detaching them from the old disp=
+atcher;
+>   that way, we can build the new dispatcher completely, and atomically re=
+place
+>   it on the interface by the usual XDP attach mechanism.
+>
+> ---
+>
+> Toke H=C3=B8iland-J=C3=B8rgensen (1):
+>       libxdp: Add libxdp (FOR COMMENT ONLY)
+>
+>
+>  tools/lib/xdp/libxdp.c          |  856 +++++++++++++++++++++++++++++++++=
+++++++
+>  tools/lib/xdp/libxdp.h          |   38 ++
+>  tools/lib/xdp/prog_dispatcher.h |   17 +
+>  tools/lib/xdp/xdp-dispatcher.c  |  178 ++++++++
+>  tools/lib/xdp/xdp_helpers.h     |   12 +
+>  5 files changed, 1101 insertions(+)
+>  create mode 100644 tools/lib/xdp/libxdp.c
+>  create mode 100644 tools/lib/xdp/libxdp.h
+>  create mode 100644 tools/lib/xdp/prog_dispatcher.h
+>  create mode 100644 tools/lib/xdp/xdp-dispatcher.c
+>  create mode 100644 tools/lib/xdp/xdp_helpers.h
+>
