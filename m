@@ -2,155 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B49B3173884
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A441738C4
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgB1Nkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:40:35 -0500
-Received: from gateway24.websitewelcome.com ([192.185.51.202]:47557 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725796AbgB1Nkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:40:32 -0500
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id CEB9181618
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 07:40:30 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 7fsUjIdnKRP4z7fsUjh2rg; Fri, 28 Feb 2020 07:40:30 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vo0s0HHcKUWbR9UQkp85XxEyo8pNBh5ee/gMXGBhILo=; b=g+4fKStdx4DsG5MhPZ1ImJeoAQ
-        nxPmXBYvHhSIK6R/+xXj0oX1FMiZfo/8iRMYOfx1Nws8/MH57qvSkWs0ChCYz09LkM7cYM39s4oYO
-        ub7PMz8jrFSTYz8JvlwmwkEIcLCdW7WeOuTzZRwc4EnSDb8gtc0LL6Y8YC5N+VntqTofnMKWQ9M83
-        rFgslmPY1Qwp3b677NVkxUmvRelrCatITwxdyCqoGIUXGbTSJL3lOdU2IvUXNIxWIXbRTHUzIwekO
-        0uWpJfGWeT0Rh3fEVHLkPFvTX5kOoL4qcH8P7zZy7PsJXwlCCH76ILHktJHSxyyPJ2XJSZuNUEXpQ
-        gEwkk7YA==;
-Received: from [201.162.240.44] (port=19035 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j7fsS-001RcU-L0; Fri, 28 Feb 2020 07:40:29 -0600
-Date:   Fri, 28 Feb 2020 07:43:24 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: core: Replace zero-length array with
- flexible-array member
-Message-ID: <20200228134324.GA29394@embeddedor>
+        id S1727207AbgB1NpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:45:22 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:46319 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726388AbgB1NpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:45:22 -0500
+Received: by mail-qt1-f193.google.com with SMTP id i14so1974045qtv.13
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 05:45:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Rzv670Spk0hNYyQG/ooKntntEH6hH/3Fmmslil28mxY=;
+        b=ONhA0pz5RNqC6ajCrhMmnR5avnW2Bs73Jfdzjb8+XyXd6B7x5bcBGbIhaKLHuqMJlP
+         TdmAWyqKwOOBVZgfDz5D9/NJaz6Pf0feHBEC+eAH8fxLPTRVnURa8TW8+6UCGiqf0FbA
+         695cMK8p1G9V4Nv4Lr9CenFVxXXwUvrntO331foH3EJms/DianIhw11ukTbgONB6/mFb
+         mNnp7t4SsiYJQ2ENYdnVQxxV1Tbd/kajTIGtKoMog57Nt/4612RTlCMh1u3vTxgOZ/6N
+         jC/JdIdI9dQ/dBfoRbCmK4kUlTbVnM806IUIjFFZ6IJBNq7zyXO6SDcQG5EJCJ3tsdL8
+         +npQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Rzv670Spk0hNYyQG/ooKntntEH6hH/3Fmmslil28mxY=;
+        b=g7ubxtQX+x3DoX0p2TBhj4HQCuJL2Camk367p35cTMiW4N74WlT4LS48EaYeLM/0jT
+         M16I6CZH7yApJ6p1Dot2AytZPHIUAvaFtvEX7bsgJ5VoQ8NDVojra5Kji1dPJw62cm+o
+         XYSpN0GTV3jTMerWstn3jdFqLMbfTbDBcKuelF4P015NVuCUxi8gmZNRlpcg8N++ZAub
+         rH3/cp9SYV1kQezMaPOEVD2WxIbMioQ3CzUea/jCOvt+r+MUG8c/x40dCZ2+3vHje2nR
+         igw49FMulqXh6cd4ZVRWrVV7lwANKA/I8bP7tX+w0smcxDt6p7KekChcQxKlDXkqQoVH
+         ANpA==
+X-Gm-Message-State: APjAAAU0QCizhvuVWsCa1MDlXMNMXQj1QoO9e7Rdkn36ALpYnpV5hNbY
+        IgV8TlbVfjvT+zOkAJxSWUo=
+X-Google-Smtp-Source: APXvYqw5V392gIQEn/Uf0USj+99RRmMEw7gnzbIXJOp2w3ZMh0/fl5zMCkHVKEeXBL/cN7PrQJUnwA==
+X-Received: by 2002:ac8:60d5:: with SMTP id i21mr4321381qtm.341.1582897520416;
+        Fri, 28 Feb 2020 05:45:20 -0800 (PST)
+Received: from localhost.localdomain ([168.181.48.223])
+        by smtp.gmail.com with ESMTPSA id j17sm5276550qth.27.2020.02.28.05.45.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 05:45:19 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 145E0C4B66; Fri, 28 Feb 2020 10:45:17 -0300 (-03)
+Date:   Fri, 28 Feb 2020 10:45:17 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH net-next 4/6] net/sched: act_ct: Create nf flow table per
+ zone
+Message-ID: <20200228134517.GA2546@localhost.localdomain>
+References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
+ <1582458307-17067-5-git-send-email-paulb@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.162.240.44
-X-Source-L: No
-X-Exim-ID: 1j7fsS-001RcU-L0
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.162.240.44]:19035
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 51
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+In-Reply-To: <1582458307-17067-5-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+Hi,
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+On Sun, Feb 23, 2020 at 01:45:05PM +0200, Paul Blakey wrote:
+> Use the NF flow tables infrastructure for CT offload.
+> 
+> Create a nf flow table per zone.
+> 
+> Next patches will add FT entries to this table, and do
+> the software offload.
+> 
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |   1 +
+>  include/net/tc_act/tc_ct.h                      |   2 +
+>  net/sched/Kconfig                               |   2 +-
+>  net/sched/act_ct.c                              | 159 +++++++++++++++++++++++-
+>  4 files changed, 162 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> index 70b5fe2..eb16136 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> @@ -45,6 +45,7 @@
+>  #include <net/tc_act/tc_tunnel_key.h>
+>  #include <net/tc_act/tc_pedit.h>
+>  #include <net/tc_act/tc_csum.h>
+> +#include <net/tc_act/tc_ct.h>
+>  #include <net/arp.h>
+>  #include <net/ipv6_stubs.h>
+>  #include "en.h"
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- net/core/bpf_sk_storage.c | 2 +-
- net/core/devlink.c        | 2 +-
- net/core/drop_monitor.c   | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 3ab23f698221..427cfbc0d50d 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -60,7 +60,7 @@ struct bpf_sk_storage_data {
- 	 * the number of cachelines access during the cache hit case.
- 	 */
- 	struct bpf_sk_storage_map __rcu *smap;
--	u8 data[0] __aligned(8);
-+	u8 data[] __aligned(8);
- };
- 
- /* Linked to bpf_sk_storage and bpf_sk_storage_map */
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index f8af5e2d748b..295d761cbfb1 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4232,7 +4232,7 @@ struct devlink_fmsg_item {
- 	int attrtype;
- 	u8 nla_type;
- 	u16 len;
--	int value[0];
-+	int value[];
- };
- 
- struct devlink_fmsg {
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index d58c1c45a895..8e33cec9fc4e 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -68,7 +68,7 @@ struct net_dm_hw_entry {
- 
- struct net_dm_hw_entries {
- 	u32 num_entries;
--	struct net_dm_hw_entry entries[0];
-+	struct net_dm_hw_entry entries[];
- };
- 
- struct per_cpu_dm_data {
--- 
-2.25.0
-
+This chunk is not really needed for this patchset, right?
