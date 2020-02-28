@@ -2,101 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFA017382F
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D769A173839
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbgB1NUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:20:07 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35550 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbgB1NUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:20:07 -0500
-Received: by mail-ed1-f68.google.com with SMTP id c7so3336840edu.2
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 05:20:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a1o3ZaVxV/UHmnlqOInMF9HnyNuLw4+witDWbmSfAHA=;
-        b=fY67vAMmBHerQM7XkvTQBkSA8tEf+aCHqDBjwlzp5a4bTCOvfypvTHAj/eaojnLgpC
-         V0+x4GMOypHHEgXfD1t8O8qsBR/iRbzm6ukGvgnPNS39YyBh4c1F4r5dWQQ8wNXxJvE0
-         cjU7yXLgSVLiUvLfB/ngIGRXrStBYZo2mQNeA4qs6oR6KnhRzFgurZq0RkEVC5ao11bZ
-         aPLkKZ10jKrw/5QDiUmqA4dWZtCMucPm1f8fo1E3pgBCQIDF7t++cfKSWXScAmAFpOgZ
-         BG5crqbc3wGq04qzPo04HjySY5if6xLywXFJw+5r7Y/pKWEM9y763qH/a38E2wKuE1Hg
-         14Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a1o3ZaVxV/UHmnlqOInMF9HnyNuLw4+witDWbmSfAHA=;
-        b=TvB0yP3Q9qvbo4LGr+qTFYQXsgAmP7QE07LeyQGsnhisXBPG81EqE2llUL79w6tmiV
-         sWv17RlMRt26eGbEnG5Rft5mHV9ZlNiQ/zTFXUtehL75OhspMrATdVCMiYY++VmOvAUf
-         /eekq4pNPcC6C/TQAU8cmFkZ0XbfiPdQMcWVsKLOLE/usIh4vGdHChOKBOxK9sBTt1rv
-         pnV5jBQOb8P5w+YTYvGUKX8r8eni5bLWaUf0yP0z/2/b4B/6llWKZX4t+KTfZrPNLu50
-         JANKHb/mj5zIVT7Vxx7rKPWWOZ0ionC9JOx1kBgyKPs6DEpsnVZ1Q18lVJ9Ink/8Uwf5
-         odjA==
-X-Gm-Message-State: APjAAAWQvVlsIOaEl1EoztVH5/OnX/tz5JX6h2EAB8IsEZuCXqa9y+Zq
-        i47K82PSk6sguAE32/Xc1BjoMykgJQRQvdgYhnPyAQ==
-X-Google-Smtp-Source: APXvYqyJQGGzScOu1xNpz+S7N8XNCiv+gfOglc2WrYXHEDHviX3IvuW5D87BD0xwI83XTKj18Iegtoqje98Vl3Zxp2M=
-X-Received: by 2002:a05:6402:1694:: with SMTP id a20mr3977439edv.211.1582896005450;
- Fri, 28 Feb 2020 05:20:05 -0800 (PST)
+        id S1726621AbgB1NXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:23:23 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.179]:48566 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725892AbgB1NXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:23:23 -0500
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id AC8F9BE2C
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 07:23:21 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 7fbtjIEGCRP4z7fbtjgdTM; Fri, 28 Feb 2020 07:23:21 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=y+AqmC2SGru3SV3ge9VUUzpHaqfMGHl4h5dsMx1cDYo=; b=YWFcRZqkiHU+7yHmFpfrU3yzok
+        lBDHXGDx4g8MGQvAmh/qrwM1Hz4zVS099snqdDp+pzdwVm1hLq8FSQLOHjVWgmWKyyufkPFZXq4dV
+        jMGidt8/jsOJyQ17fiqIyKHO7E6MzhdPGz76vm9YsgR4c4ml8C/BL18NngMK2K3+OyYMlev3Q9VAS
+        tChoTtyQ5qhQPKpnPSvK3TGA5afQdrJQ8b2ug8DghMjSfRD8hc6rEJzobw6FbTUyCx4D6H5Y1GV65
+        +2oSV0LNPCInv8DN0/aRrj6UAiDJ6CAV57USMw0Cg4zbFheWOXzYb43TdzlT7xqxNxB9Db4qUl2pk
+        QjsWJ68g==;
+Received: from [201.162.240.44] (port=24168 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j7fbr-001IEU-Pt; Fri, 28 Feb 2020 07:23:20 -0600
+Date:   Fri, 28 Feb 2020 07:26:15 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: mpls: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200228132615.GA21172@embeddedor>
 MIME-Version: 1.0
-References: <20200228105435.75298-1-lrizzo@google.com> <20200228132941.2c8b8d01@carbon>
-In-Reply-To: <20200228132941.2c8b8d01@carbon>
-From:   Luigi Rizzo <lrizzo@google.com>
-Date:   Fri, 28 Feb 2020 05:19:54 -0800
-Message-ID: <CAMOZA0KnC0n+U+n3vjx4bb6o_1_MtzLxUfoGj22NdNVQO33uAA@mail.gmail.com>
-Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb linearization
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>, sameehj@amazon.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.240.44
+X-Source-L: No
+X-Exim-ID: 1j7fbr-001IEU-Pt
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.162.240.44]:24168
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 21
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 4:30 AM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
-> On Fri, 28 Feb 2020 02:54:35 -0800
-> Luigi Rizzo <lrizzo@google.com> wrote:
->
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index dbbfff123196..c539489d3166 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -4520,9 +4520,12 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
-> >       /* XDP packets must be linear and must have sufficient headroom
-> >        * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
-> >        * native XDP provides, thus we need to do it here as well.
-> > +      * For non shared skbs, xdpgeneric_linearize controls linearization.
-> >        */
-> > -     if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
-> > -         skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-> > +     if (skb_cloned(skb) ||
-> > +         (skb->dev->xdpgeneric_linearize &&
-> > +          (skb_is_nonlinear(skb) ||
-> > +           skb_headroom(skb) < XDP_PACKET_HEADROOM))) {
-> >               int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
-> >               int troom = skb->tail + skb->data_len - skb->end;
-> >
->
-> Have you checked that calling bpf_xdp_adjust_tail() is not breaking anything?
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-It won't leak memory or cause crashes if that is what you mean.
-Of course if there are more segments the effect won't be the desired one,
-as it will chop off the tail of the first segment.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-But this is an opt-in feature and requires the same permissions needed to load
-an xdp program, so I expect it to be used consciously.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-It would be nice if we had a flag in the xdp_buff to communicate that
-the packet is
-incomplete, but there isn't a way that I can see.
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-cheers
-luigi
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ include/net/mpls_iptunnel.h | 2 +-
+ net/mpls/internal.h         | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/net/mpls_iptunnel.h b/include/net/mpls_iptunnel.h
+index 6b4759eae158..9deb3a3735da 100644
+--- a/include/net/mpls_iptunnel.h
++++ b/include/net/mpls_iptunnel.h
+@@ -11,7 +11,7 @@ struct mpls_iptunnel_encap {
+ 	u8	ttl_propagate;
+ 	u8	default_ttl;
+ 	u8	reserved1;
+-	u32	label[0];
++	u32	label[];
+ };
+ 
+ static inline struct mpls_iptunnel_encap *mpls_lwtunnel_encap(struct lwtunnel_state *lwtstate)
+diff --git a/net/mpls/internal.h b/net/mpls/internal.h
+index 768a302879b4..0e9aa94adc07 100644
+--- a/net/mpls/internal.h
++++ b/net/mpls/internal.h
+@@ -98,7 +98,7 @@ struct mpls_nh { /* next hop label forwarding entry */
+ 	u8			nh_via_table;
+ 	u8			nh_reserved1;
+ 
+-	u32			nh_label[0];
++	u32			nh_label[];
+ };
+ 
+ /* offset of via from beginning of mpls_nh */
+@@ -154,7 +154,7 @@ struct mpls_route { /* next hop label forwarding entry */
+ 	u8			rt_nh_size;
+ 	u8			rt_via_offset;
+ 	u8			rt_reserved1;
+-	struct mpls_nh		rt_nh[0];
++	struct mpls_nh		rt_nh[];
+ };
+ 
+ #define for_nexthops(rt) {						\
+-- 
+2.25.0
+
