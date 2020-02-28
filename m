@@ -2,182 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84621172EF5
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 03:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F22172F0C
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 04:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730626AbgB1C6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 21:58:07 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:37818 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730445AbgB1C6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 21:58:07 -0500
-Received: by mail-lf1-f66.google.com with SMTP id b15so992016lfc.4;
-        Thu, 27 Feb 2020 18:58:04 -0800 (PST)
+        id S1730654AbgB1DBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Feb 2020 22:01:40 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:33497 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730445AbgB1DBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 22:01:40 -0500
+Received: by mail-qk1-f194.google.com with SMTP id h4so1718739qkm.0
+        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 19:01:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G5nc7Ra8Buzd+enRZlcZV/Xbln391xZv5XUvG2qsBDw=;
-        b=DfToJC/AnuEtgeHWi6MRYROd42RgYU59jIVWO+SQwD5qQXwW2toLDeoP6FiLBeSrdV
-         T7xJYlfvqWt5OSTD7Ux0PGHCODgcNiV8RRxRSudGHs45jEdODKeCv6IT6dPE32dtNigx
-         d+FPG+sklEFXIONZ55hNqvJ6wKNGzwvH87zRXtxI+q1YfAy/UEmsvZk0hKtFgf3ydF8z
-         +re7OFt3UpP52MDJWLlFZOmJFYUGQ5551yteLsi3CFu4OdgJ/6gerZQ6kiJOAupXGmOM
-         rSIdi7VRMEguKEvkKo0BJO1X8XtHwLz+0uigrJxZvVrIjfOCu67WZWRzo0W9cHoecwsw
-         u2aQ==
+        d=digitalocean.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SxuB25G6FK6qjdMW5Vaf++niTekBbeYkhQkklWHqLR4=;
+        b=JPUIcJdEygkAa6/XdDEOwV7IN0qvBWawKUVwmbrZuU4gYwfJ5gKLyFWyhy0B/tEQh3
+         7bshqeugR3U/+c5EaaRdXOnZ26G5ShnJdlZsjnOvAd3PLdfI0u/VgGPCtR71NbGIKIS1
+         UQZ2vDDzqKS6KOp48E29P8J9vMgDEa+lWLklk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G5nc7Ra8Buzd+enRZlcZV/Xbln391xZv5XUvG2qsBDw=;
-        b=GGq2BWFSIfKfY431PmzrI5OCOueTGbqT2mZ3DybZTqAbOQzFyI3oFKSLUW7BGU4gUh
-         0g+Hbe7RBrQDeuVi/57G1jPrOrUCaFgldovBX2yUjS0Qhe9fJCYGL+lhEh5Yrzn0I57I
-         0X3llhlHaZBG0NRivBfhqD95h9bttEp8JnWJ8fYtMhGvYYxTSKhj0HLDn+aBiJrktCeS
-         pnSCx02WSIYQetryWz2Lg2JhHiYinGK+cn7UCn4YygnNL9GP3SVKw5iP1JhbYppYpYjf
-         eyei9xt3OEsTb77V3zilWwfwl6YBVLM9cb5eq+PJTxKw0yeGtHNtVcCzb4nGD2GXWHSA
-         5zuw==
-X-Gm-Message-State: ANhLgQ1FHLF0Gf1t1c+tXo9GHwy6N13MbgDG0229NgdGvGTsacHCzXyV
-        DYLi3OzXRG37WUUp60xa+oRTMwaSJMxMtNf4Mvs=
-X-Google-Smtp-Source: ADFU+vv9RYm92ssPFQTn3yIomzfh+Ik6kS/D/rJa+wDPsVBYnxL7/uM/PTUMuWSCMKmrB0LWHmxti3l2eLeaGIwgkvY=
-X-Received: by 2002:a05:6512:304d:: with SMTP id b13mr1349272lfb.134.1582858683187;
- Thu, 27 Feb 2020 18:58:03 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SxuB25G6FK6qjdMW5Vaf++niTekBbeYkhQkklWHqLR4=;
+        b=cigjIE/piQdGaqk9TOEUwkLC+KQOrMieK5eOhn/3m5Z/l/QyV7Hicl8ixHTjZXWbTW
+         l6STLcqbTgMfTInXw4W79qWD8Wi5hzxzhxUMZj8obwWfwe2VIHnJn0kfydBb6hXJRHd6
+         EcBweBm1F0dD6nHICPeNCdoW0E+57348djggfMrnSbNCrpP84el1TgkxpTaWsGGOR6iL
+         6EB1Z0e+KvaTMIclCksig9O4JcveYUxmXAvNY0Azb+E8k23/4Kzy7A3iewJGlubBfCiz
+         yJ2m8S7kaVdUdTEfj0We1s/dxcptXWiLBQ3YfVWk4FV7peaiI2JYoZb9xhJom4P2M44y
+         ABQQ==
+X-Gm-Message-State: APjAAAVieArsPizOwu5PMIr1YAl7fRNCHw4OCVgHVAi3n3GevzytYm/V
+        786cxo7mJIsUwTnGJmNJzlvHfw==
+X-Google-Smtp-Source: APXvYqwOY3FqIDtA5GxCEK5VKr6fa2+wFvME9idQ01MwgsUnKZPvlepbUWcfa6/THqCFt73CDVJI8A==
+X-Received: by 2002:a37:48c3:: with SMTP id v186mr2593106qka.188.1582858899128;
+        Thu, 27 Feb 2020 19:01:39 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:a58e:e5e0:4900:6bcd? ([2601:282:803:7700:a58e:e5e0:4900:6bcd])
+        by smtp.gmail.com with ESMTPSA id e3sm4322378qtb.65.2020.02.27.19.01.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Feb 2020 19:01:38 -0800 (PST)
+Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com
+References: <20200227032013.12385-1-dsahern@kernel.org>
+ <20200227032013.12385-4-dsahern@kernel.org> <20200227090046.3e3177b3@carbon>
+ <877e08w8bx.fsf@toke.dk>
+From:   David Ahern <dahern@digitalocean.com>
+Message-ID: <3b57af56-e1c1-acc7-6392-db95337bf564@digitalocean.com>
+Date:   Thu, 27 Feb 2020 20:01:35 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.4.2
 MIME-Version: 1.0
-References: <20200225230402.1974723-1-kafai@fb.com> <20200225230427.1976129-1-kafai@fb.com>
- <938a0461-fd8d-b4b9-4fef-95d46409c0d6@iogearbox.net> <20200227013448.srxy5kkpve7yheln@kafai-mbp>
- <ca31484f-4656-fb3e-8982-6a068bcb0738@iogearbox.net>
-In-Reply-To: <ca31484f-4656-fb3e-8982-6a068bcb0738@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 27 Feb 2020 18:57:51 -0800
-Message-ID: <CAADnVQJpb3xL0ynW3+R8ikVpc0L1LwZG_HqzE+6JzEYfZWnZ=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/4] bpf: inet_diag: Dump bpf_sk_storages in inet_diag_dump()
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <877e08w8bx.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 3:45 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 2/27/20 2:34 AM, Martin KaFai Lau wrote:
-> > On Wed, Feb 26, 2020 at 06:21:33PM +0100, Daniel Borkmann wrote:
-> >> On 2/26/20 12:04 AM, Martin KaFai Lau wrote:
-> >>> This patch will dump out the bpf_sk_storages of a sk
-> >>> if the request has the INET_DIAG_REQ_SK_BPF_STORAGES nlattr.
-> >>>
-> >>> An array of SK_DIAG_BPF_STORAGE_REQ_MAP_FD can be specified in
-> >>> INET_DIAG_REQ_SK_BPF_STORAGES to select which bpf_sk_storage to dump.
-> >>> If no map_fd is specified, all bpf_sk_storages of a sk will be dumped.
-> >>>
-> >>> bpf_sk_storages can be added to the system at runtime.  It is difficult
-> >>> to find a proper static value for cb->min_dump_alloc.
-> >>>
-> >>> This patch learns the nlattr size required to dump the bpf_sk_storages
-> >>> of a sk.  If it happens to be the very first nlmsg of a dump and it
-> >>> cannot fit the needed bpf_sk_storages,  it will try to expand the
-> >>> skb by "pskb_expand_head()".
-> >>>
-> >>> Instead of expanding it in inet_sk_diag_fill(), it is expanded at a
-> >>> sleepable context in __inet_diag_dump() so __GFP_DIRECT_RECLAIM can
-> >>> be used.  In __inet_diag_dump(), it will retry as long as the
-> >>> skb is empty and the cb->min_dump_alloc becomes larger than before.
-> >>> cb->min_dump_alloc is bounded by KMALLOC_MAX_SIZE.  The min_dump_alloc
-> >>> is also changed from 'u16' to 'u32' to accommodate a sk that may have
-> >>> a few large bpf_sk_storages.
-> >>>
-> >>> The updated cb->min_dump_alloc will also be used to allocate the skb in
-> >>> the next dump.  This logic already exists in netlink_dump().
-> >>>
-> >>> Here is the sample output of a locally modified 'ss' and it could be made
-> >>> more readable by using BTF later:
-> >>> [root@arch-fb-vm1 ~]# ss --bpf-map-id 14 --bpf-map-id 13 -t6an 'dst [::1]:8989'
-> >>> State Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
-> >>> ESTAB 0      0              [::1]:51072        [::1]:8989
-> >>>      bpf_map_id:14 value:[ 3feb ]
-> >>>      bpf_map_id:13 value:[ 3f ]
-> >>> ESTAB 0      0              [::1]:51070        [::1]:8989
-> >>>      bpf_map_id:14 value:[ 3feb ]
-> >>>      bpf_map_id:13 value:[ 3f ]
-> >>>
-> >>> [root@arch-fb-vm1 ~]# ~/devshare/github/iproute2/misc/ss --bpf-maps -t6an 'dst [::1]:8989'
-> >>> State         Recv-Q         Send-Q                   Local Address:Port                    Peer Address:Port         Process
-> >>> ESTAB         0              0                                [::1]:51072                          [::1]:8989
-> >>>      bpf_map_id:14 value:[ 3feb ]
-> >>>      bpf_map_id:13 value:[ 3f ]
-> >>>      bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
-> >>> ESTAB         0              0                                [::1]:51070                          [::1]:8989
-> >>>      bpf_map_id:14 value:[ 3feb ]
-> >>>      bpf_map_id:13 value:[ 3f ]
-> >>>      bpf_map_id:12 value:[ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000... total:65407 ]
-> >>>
-> >>> Acked-by: Song Liu <songliubraving@fb.com>
-> >>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> >>
-> >> Hmm, the whole approach is not too pleasant to be honest. I can see why you need
-> >> it since the regular sk_storage lookup only takes sock fd as a key and you don't
-> >> have it otherwise available from outside, but then dumping up to KMALLOC_MAX_SIZE
-> >> via netlink skb is not a great experience either. :( Also, are we planning to add
-> >> the BTF dump there in addition to bpftool? Thus resulting in two different lookup
-> >> APIs and several tools needed for introspection instead of one? :/ Also, how do we
-> >> dump task local storage maps in future? Does it need a third lookup interface?
-> >>
-> >> In your commit logs I haven't read on other approaches and why they won't work;
-> >> I was wondering, given sockets are backed by inodes, couldn't we have a variant
-> >> of iget_locked() (minus the alloc_inode() part from there) where you pass in ino
-> >> number to eventually get to the socket and then dump the map value associated with
-> >> it the regular way from bpf() syscall?
-> > Thanks for the feedback!
-> >
-> > I think (1) dumping all sk(s) in a system is different from
-> > (2) dumping all sk of a bpf_sk_storage_map or lookup a particular
-> > sk from a bpf_sk_storage_map.
->
-> Yeah, it is; I was mostly brain-storming if there is a cleaner way for (1)
-> by having (2)b resolved as an intermediate step (1) can then build on, but
-> seems it's tricky w/o much extra infra.
->
-> [...]
-> >
-> > or the netlink can return map_id only when the max-sized skb cannot fit
-> > all the bpf_sk_storages.  The userspace then do another syscall to
-> > lookup the data from each individual bpf_sk_storage_map and
-> > that requires to lookup side support with another key (non-fd).
-> > IMO, it is weird and a bit opposite of what bpf_sk_storage should be (fast
-> > bpf_sk_storage lookup while holding a sk).  The iteration API already
-> > holds the sk but instead it is asking the usespace to go back to find
-> > out the sk again in order to get the bpf_sk_storages.  I think that
-> > should be avoided if possible.
-> >
-> > Regarding i_ino, after looking at sock_alloc() and get_next_ino(),
-> > hmmm...is it unique?
->
-> It would wrap around after 2^32 allocations, so scratch that thought,
-> iget_locked()/find_inode_fast()-based lookup usage must ensure it's unique.
->
-> > If it is, what is the different usecase between i_ino and
-> > sk->sk_cookie?
->
-> Agree that advantage of reusing diag is that you already hold the sk and
-> are able to iterate through all of them, the ugly part is having to place
-> the value data into netlink as an API along with all other socket data as
-> a, for better or worse, bpf sk map lookup/introspection interface given
-> there is no other way to have a fast and global (non-fd based) id->socket
-> lookup interface that we could reuse atm.
->
-> I was wondering about sk->sk_cookie as well, but it wouldn't make sense
-> to do a ss dump, get (sk cookie, map_id) from the dump and use that for
-> a bpf() lookup if we need to reiterate the diag tables once again in the
-> background just to get the storage data. And I presume it won't make sense
-> either to reuse the diag's walk as a stand-alone for a bpf sk storage dump
-> interface API via bpf() ... at least from ss tool side it would require a
-> correlation based on sk cookie. Not nice either ... so current approach
-> might indeed be the tradeoff. :/
+On 2/27/20 4:58 AM, Toke Høiland-Jørgensen wrote:
+>  also, an egress program may want to actually know which
+> ingress iface the packet was first received on. So why not just keep
+> both fields? Since ifindex 0 is invalid anyway, the field could just be
+> 0 when it isn't known (e.g., egress ifindex on RX, or ingress ifindex if
+> it comes from the stack)?
 
-I agree with all the points above.
-I've applied this set. I think making ss show it via standard way is necessary.
-We should continue thinking on other options.
+Today, the ingress device is lost in the conversion from xdp_buff to
+xdp_frame. The plumbing needed to keep that information is beyond the
+scope of this set.
+
+I am open to making the UAPI separate entries if there is a real reason
+for it. Do you have a specific use case? I am not aware of any situation
+where a packet queued up for Tx on a device would want to know the
+ingress device. At that point it is kind of irrelevant; the packet is
+about to hit the "wire". Further, it would only apply to XDP_redirected
+frames which could be only a limited set in the ways that a packet can
+end up at a device for Tx. I suspect the flow is more relevant than the
+device. When you factor on other details - e.g., bonds, vlans - the
+ingress device is not the full story. Perhaps the metadata area is more
+appropriate than the overhead of managing that information in the kernel
+code.
