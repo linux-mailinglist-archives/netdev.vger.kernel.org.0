@@ -2,123 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78AC91739DC
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 15:31:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E39A173A20
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 15:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbgB1Obh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 09:31:37 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:42499 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbgB1Obg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 09:31:36 -0500
-Received: by mail-yw1-f65.google.com with SMTP id n127so3417198ywd.9
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 06:31:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qJiZNnqWc4caNiOq4IoG0CuDMSK+NvjfI5ITeE/8QOE=;
-        b=fNbefomLY7lJa1NK+hqyRAvPhyNkXKQxZj5du7bV0+gOBpy/kqu1wLBLXRdT/8OS4E
-         WS6GAFDCmOc5vtYlA13dR8Qi/mdOi5qTaGm3pAvFVVJU1eiFcN8c+3hFnPypCuGy6xwv
-         V70g9/ovaGVvMQJzq2kOX+x+bIrkmOwPcmk4tMCn7eE7fGpsCyA78RwzYtdqjwEXafns
-         APl4WXCpjkdtKDKz9JFBoAkE0H/jS07FH/vnXyqBfE6gSlhTs8DV7ceFi7cqQNq0qjA3
-         CUuUKcDsdKE+yhGBf2gRWJK7j111hAOlRpTY+io1bHOi814L+D7ON+hKMlN2J97t8T1o
-         76Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qJiZNnqWc4caNiOq4IoG0CuDMSK+NvjfI5ITeE/8QOE=;
-        b=abcuiMBxD8mWT+H4GVf627e8zk5f4GEyDdoSUAd6r5bBxmdULXXx+qztH3E0mUnqmy
-         CNZJjY8xL1oPRm+uFY0BAtzs1KNXNBtRIeMVKjaUI46KFyrRuco754QYMwBeny+Qqw41
-         vGQmN4hkJV6Oe7J0N71sbxbgrA6oOWRMWJBkvRGZKxJ/2s4eLQ252J4oHD/zPhp1Qntf
-         cU7Qgl7B5e1wcowS6hjeMzHMZh59NQrtu/EDdH7Gb0IyDVGHYVfBXOrMMsVrPW1+2tI3
-         ydt0zfFKo3JXE3+yKW0OGetdn7/+wT0wh7Y55FJ/w+NfyQPVsTJ8Y2aFQlb3vAt2iThy
-         AytQ==
-X-Gm-Message-State: APjAAAWcW+ZhYxeRakEGccpOibW3dnVrpSsVERybZPJqmYBnuGdQOGOF
-        Vy3i3tUsPMtWMtGFUyPNa4D0sFdu
-X-Google-Smtp-Source: APXvYqwhY4kFhlI28dXSzP7P1Pb1gd7yL7D8EKRJIJ1ahFcxFWNCx9DxZ5lXs1X0RxTXM3FBhRVD9A==
-X-Received: by 2002:a25:c8c3:: with SMTP id y186mr3759483ybf.159.1582900295272;
-        Fri, 28 Feb 2020 06:31:35 -0800 (PST)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id y189sm3905375ywe.21.2020.02.28.06.31.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Feb 2020 06:31:34 -0800 (PST)
-Received: by mail-yw1-f49.google.com with SMTP id j186so3485976ywe.0
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 06:31:34 -0800 (PST)
-X-Received: by 2002:a0d:fb82:: with SMTP id l124mr4938885ywf.507.1582900293494;
- Fri, 28 Feb 2020 06:31:33 -0800 (PST)
+        id S1726926AbgB1OoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 09:44:10 -0500
+Received: from relay.sw.ru ([185.231.240.75]:56082 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726682AbgB1OoJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Feb 2020 09:44:09 -0500
+Received: from dhcp-172-16-24-104.sw.ru ([172.16.24.104])
+        by relay.sw.ru with esmtp (Exim 4.92.3)
+        (envelope-from <ktkhai@virtuozzo.com>)
+        id 1j7grm-000633-He; Fri, 28 Feb 2020 17:43:50 +0300
+Subject: Re: [PATCH net-next v2 1/2] unix: uses an atomic type for scm files
+ accounting
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+References: <cover.1582897428.git.pabeni@redhat.com>
+ <a995b03e54307b878870810e2cf4083ce50f4dac.1582897428.git.pabeni@redhat.com>
+From:   Kirill Tkhai <ktkhai@virtuozzo.com>
+Message-ID: <d3a47cb1-a320-cc2f-d0ea-afa64c590d33@virtuozzo.com>
+Date:   Fri, 28 Feb 2020 17:43:49 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <CA+FuTSeYGYr3Umij+Mezk9CUcaxYwqEe5sPSuXF8jPE2yMFJAw@mail.gmail.com>
- <1582262039-25359-1-git-send-email-kyk.segfault@gmail.com>
- <CA+FuTSe8VKTMO9CA2F-oNvZLbtfMqhyf+ZjruXbqz_WTrj-F1A@mail.gmail.com> <CABGOaVRF9D21--aFi6VJ9MWMn0GxR-s8PssXnzbEjSneafbh5A@mail.gmail.com>
-In-Reply-To: <CABGOaVRF9D21--aFi6VJ9MWMn0GxR-s8PssXnzbEjSneafbh5A@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 28 Feb 2020 09:30:56 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfaTYB0p1yBuJK4226D-vjhhO_-zN3PUFKFdvyKVT5JdA@mail.gmail.com>
-Message-ID: <CA+FuTSfaTYB0p1yBuJK4226D-vjhhO_-zN3PUFKFdvyKVT5JdA@mail.gmail.com>
-Subject: Re: [PATCH] net: Make skb_segment not to compute checksum if network
- controller supports checksumming
-To:     Yadu Kishore <kyk.segfault@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <a995b03e54307b878870810e2cf4083ce50f4dac.1582897428.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 12:25 AM Yadu Kishore <kyk.segfault@gmail.com> wrote:
->
-> > Did you measure a cycle efficiency improvement? As discussed in the
-> > referred email thread, the kernel uses checksum_and_copy because it is
-> > generally not significantly more expensive than copy alone
-> > skb_segment already is a very complex function. New code needs to
-> > offer a tangible benefit.
->
-> I ran iperf TCP Tx traffic of 1000 megabytes and captured the cpu cycle
-> utilization using perf:
-> "perf record -e cycles -a iperf \
-> -c 192.168.2.53 -p 5002 -fm -n 1048576000 -i 2  -l 8k -w 8m"
->
-> I see the following are the top consumers of cpu cycles:
->
-> Function                                   %cpu cycles
-> =======                                   =========
-> skb_mac_gso_segment            0.02
-> inet_gso_segment                     0.26
-> tcp4_gso_segment                    0.02
-> tcp_gso_segment                      0.19
-> skb_segment                             0.52
-> skb_copy_and_csum_bits         0.64
-> do_csum                                    7.25
-> memcpy                                     3.71
-> __alloc_skb                                0.91
-> ==========                              ====
-> SUM                                           13.52
->
-> The measurement was done on an arm64 hikey960 platform running android with
-> linux kernel ver 4.19.23.
-> I see that 7.25% of the cpu cycles is spent computing the checksum against the
-> total of 13.52% of cpu cycles.
-> Which means around 52.9% of the total cycles is spent doing checksum.
-> Hence the attempt to try to offload checksum in the case of GSO also.
+On 28.02.2020 16:45, Paolo Abeni wrote:
+> So the scm_stat_{add,del} helper can be invoked with no
+> additional lock held.
+> 
+> This clean-up the code a bit and will make the next
+> patch easier.
+> 
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Can you contrast this against a run with your changes? The thought is
-that the majority of this cost is due to the memory loads and stores, not
-the arithmetic ops to compute the checksum. When enabling checksum
-offload, the same stalls will occur, but will simply be attributed to
-memcpy instead of to do_csum. A:B comparisons of absolute (-n) cycle
-counts are usually very noisy, but it's worth a shot.
+Reviewed-by: Kirill Tkhai <ktkhai@virtuozzo.com>
 
+> ---
+>  include/net/af_unix.h |  2 +-
+>  net/unix/af_unix.c    | 21 ++++++---------------
+>  2 files changed, 7 insertions(+), 16 deletions(-)
+> 
+> diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+> index 17e10fba2152..5cb65227b7a9 100644
+> --- a/include/net/af_unix.h
+> +++ b/include/net/af_unix.h
+> @@ -42,7 +42,7 @@ struct unix_skb_parms {
+>  } __randomize_layout;
+>  
+>  struct scm_stat {
+> -	u32 nr_fds;
+> +	atomic_t nr_fds;
+>  };
+>  
+>  #define UNIXCB(skb)	(*(struct unix_skb_parms *)&((skb)->cb))
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index cbd7dc01e147..145a3965341e 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -689,7 +689,8 @@ static void unix_show_fdinfo(struct seq_file *m, struct socket *sock)
+>  
+>  	if (sk) {
+>  		u = unix_sk(sock->sk);
+> -		seq_printf(m, "scm_fds: %u\n", READ_ONCE(u->scm_stat.nr_fds));
+> +		seq_printf(m, "scm_fds: %u\n",
+> +			   atomic_read(&u->scm_stat.nr_fds));
+>  	}
+>  }
+>  
+> @@ -1598,10 +1599,8 @@ static void scm_stat_add(struct sock *sk, struct sk_buff *skb)
+>  	struct scm_fp_list *fp = UNIXCB(skb).fp;
+>  	struct unix_sock *u = unix_sk(sk);
+>  
+> -	lockdep_assert_held(&sk->sk_receive_queue.lock);
+> -
+>  	if (unlikely(fp && fp->count))
+> -		u->scm_stat.nr_fds += fp->count;
+> +		atomic_add(fp->count, &u->scm_stat.nr_fds);
+>  }
+>  
+>  static void scm_stat_del(struct sock *sk, struct sk_buff *skb)
+> @@ -1609,10 +1608,8 @@ static void scm_stat_del(struct sock *sk, struct sk_buff *skb)
+>  	struct scm_fp_list *fp = UNIXCB(skb).fp;
+>  	struct unix_sock *u = unix_sk(sk);
+>  
+> -	lockdep_assert_held(&sk->sk_receive_queue.lock);
+> -
+>  	if (unlikely(fp && fp->count))
+> -		u->scm_stat.nr_fds -= fp->count;
+> +		atomic_sub(fp->count, &u->scm_stat.nr_fds);
+>  }
+>  
+>  /*
+> @@ -1801,10 +1798,8 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+>  	if (sock_flag(other, SOCK_RCVTSTAMP))
+>  		__net_timestamp(skb);
+>  	maybe_add_creds(skb, sock, other);
+> -	spin_lock(&other->sk_receive_queue.lock);
+>  	scm_stat_add(other, skb);
+> -	__skb_queue_tail(&other->sk_receive_queue, skb);
+> -	spin_unlock(&other->sk_receive_queue.lock);
+> +	skb_queue_tail(&other->sk_receive_queue, skb);
+>  	unix_state_unlock(other);
+>  	other->sk_data_ready(other);
+>  	sock_put(other);
+> @@ -1906,10 +1901,8 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+>  			goto pipe_err_free;
+>  
+>  		maybe_add_creds(skb, sock, other);
+> -		spin_lock(&other->sk_receive_queue.lock);
+>  		scm_stat_add(other, skb);
+> -		__skb_queue_tail(&other->sk_receive_queue, skb);
+> -		spin_unlock(&other->sk_receive_queue.lock);
+> +		skb_queue_tail(&other->sk_receive_queue, skb);
+>  		unix_state_unlock(other);
+>  		other->sk_data_ready(other);
+>  		sent += size;
+> @@ -2405,9 +2398,7 @@ static int unix_stream_read_generic(struct unix_stream_read_state *state,
+>  			sk_peek_offset_bwd(sk, chunk);
+>  
+>  			if (UNIXCB(skb).fp) {
+> -				spin_lock(&sk->sk_receive_queue.lock);
+>  				scm_stat_del(sk, skb);
+> -				spin_unlock(&sk->sk_receive_queue.lock);
+>  				unix_detach_fds(&scm, skb);
+>  			}
+>  
+> 
 
-> > Is this not already handled by __copy_skb_header above? If ip_summed
-> > has to be initialized, so have csum_start and csum_offset. That call
-> > should have initialized all three.
->
-> Thanks, I will look into why even though __copy_skb_header is being
-> called, I am still
-> seeing skb->ip_summed set to CHECKSUM_NONE in the network driver.
-
-Thanks.
