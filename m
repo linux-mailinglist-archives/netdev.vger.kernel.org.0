@@ -2,63 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A3A173869
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7B86173893
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgB1Ndy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:33:54 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:33530 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726388AbgB1Ndy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 08:33:54 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 6EEC59F670D228EA0821;
-        Fri, 28 Feb 2020 21:33:45 +0800 (CST)
-Received: from localhost.localdomain (10.90.53.225) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 28 Feb 2020 21:33:36 +0800
-From:   yangerkun <yangerkun@huawei.com>
-To:     <gregkh@linuxfoundation.org>
-CC:     <stable@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <yangerkun@huawei.com>
-Subject: [PATCH linux-4.4.y/linux-4.9.y v2] slip: stop double free sl->dev in slip_open
-Date:   Fri, 28 Feb 2020 21:40:48 +0800
-Message-ID: <20200228134048.19675-1-yangerkun@huawei.com>
-X-Mailer: git-send-email 2.23.0.rc2.8.gff66981f45
+        id S1726897AbgB1NnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:43:03 -0500
+Received: from foss.arm.com ([217.140.110.172]:38328 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726366AbgB1NnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Feb 2020 08:43:02 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A33A31B;
+        Fri, 28 Feb 2020 05:43:01 -0800 (PST)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C8153F7B4;
+        Fri, 28 Feb 2020 05:42:57 -0800 (PST)
+Date:   Fri, 28 Feb 2020 13:42:54 +0000
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        soc@kernel.org, Robert Richter <rrichter@marvell.com>,
+        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Mark Langsdorf <mlangsdo@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        James Morse <james.morse@arm.com>,
+        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
+        linux-edac <linux-edac@vger.kernel.org>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode
+ quirk
+Message-ID: <20200228134254.03fc5e1b@donnerap.cambridge.arm.com>
+In-Reply-To: <20200228105024.GC2395@willie-the-truck>
+References: <20200218171321.30990-1-robh@kernel.org>
+        <20200218171321.30990-7-robh@kernel.org>
+        <20200218172000.GF1133@willie-the-truck>
+        <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
+        <20200228100446.GA2395@willie-the-truck>
+        <20200228102556.1dde016e@donnerap.cambridge.arm.com>
+        <20200228105024.GC2395@willie-the-truck>
+Organization: ARM
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.225]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After include 3b5a39979daf ("slip: Fix memory leak in slip_open error path")
-and e58c19124189 ("slip: Fix use-after-free Read in slip_open") with 4.4.y/4.9.y.
-We will trigger a bug since we can double free sl->dev in slip_open. Actually,
-we should backport cf124db566e6 ("net: Fix inconsistent teardown and release
-of private netdev state.") too since it has delete free_netdev from sl_free_netdev.
-Fix it by delete free_netdev from slip_open.
+On Fri, 28 Feb 2020 10:50:25 +0000
+Will Deacon <will@kernel.org> wrote:
 
-Signed-off-by: yangerkun <yangerkun@huawei.com>
----
- drivers/net/slip/slip.c | 1 -
- 1 file changed, 1 deletion(-)
+> On Fri, Feb 28, 2020 at 10:25:56AM +0000, Andre Przywara wrote:
+> > On Fri, 28 Feb 2020 10:04:47 +0000
+> > Will Deacon <will@kernel.org> wrote:
+> > 
+> > Hi,
+> >   
+> > > On Tue, Feb 25, 2020 at 04:01:54PM -0600, Rob Herring wrote:  
+> > > > On Tue, Feb 18, 2020 at 11:20 AM Will Deacon <will@kernel.org> wrote:    
+> > > > >
+> > > > > On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:    
+> > > > > > Cc: Will Deacon <will@kernel.org>
+> > > > > > Cc: Robin Murphy <robin.murphy@arm.com>
+> > > > > > Cc: Joerg Roedel <joro@8bytes.org>
+> > > > > > Cc: iommu@lists.linux-foundation.org
+> > > > > > Signed-off-by: Rob Herring <robh@kernel.org>
+> > > > > > ---
+> > > > > > Do not apply yet.    
+> > > > >
+> > > > > Pleeeeease? ;)
+> > > > >    
+> > > > > >  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
+> > > > > >  1 file changed, 43 deletions(-)    
+> > > > >
+> > > > > Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
+> > > > > anything from 'struct arm_smmu_impl' because most implementations fall
+> > > > > just short of perfect.
+> > > > >
+> > > > > Anyway, let me know when I can push the button and I'll queue this in
+> > > > > the arm-smmu tree.    
+> > > > 
+> > > > Seems we're leaving the platform support for now, but I think we never
+> > > > actually enabled SMMU support. It's not in the dts either in mainline
+> > > > nor the version I have which should be close to what shipped in
+> > > > firmware. So as long as Andre agrees, this one is good to apply.    
+> > > 
+> > > Andre? Can I queue this one for 5.7, please?  
+> > 
+> > I was wondering how much of a pain it is to keep it in? AFAICS there are
+> > other users of the "impl" indirection. If those goes away, I would be
+> > happy to let Calxeda go.  
+> 
+> The impl stuff is new, so we'll keep it around. The concern is more about
+> testing (see below).
+> 
+> > But Eric had the magic DT nodes to get the SMMU working, and I used that
+> > before, with updating the DT either on flash or dynamically via U-Boot.  
+> 
+> What did you actually use the SMMU for, though? The
+> 'arm_iommu_create_mapping()' interface isn't widely used and, given that
+> highbank doesn't support KVM, the use-cases for VFIO are pretty limited
+> too.
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 0f8d5609ed51..d4a33baa33b6 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -868,7 +868,6 @@ err_free_chan:
- 	tty->disc_data = NULL;
- 	clear_bit(SLF_INUSE, &sl->flags);
- 	sl_free_netdev(sl->dev);
--	free_netdev(sl->dev);
- 
- err_exit:
- 	rtnl_unlock();
--- 
-2.23.0.rc2.8.gff66981f45
+AFAIK Highbank doesn't have the SMMU, probably mostly for that reason.
+I have a DT snippet for Midway, and that puts the MMIO base at ~36GB, which is not possible on Highbank.
+So I think that the quirk is really meant and needed for Midway.
+
+> > So I don't know exactly *how* desperate you are with removing this, or if
+> > there are other reasons than "negative diffstat", but if possible I would
+> > like to keep it in.  
+> 
+> It's more that we *do* make quite a lot of changes to the arm-smmu driver
+> and it's never tested with this quirk. If you're stepping up to run smmu
+> tests on my queue for each release on highbank, then great, but otherwise
+> I'd rather not carry the code for fun. The change in diffstat is minimal
+> (we're going to need to hooks for nvidia, who broke things in a different
+> way).
+
+I am about to set up some more sophisticated testing, and will include some SMMU bits in it.
+
+Cheers,
+Andre.
+
+> Also, since the hooks aren't going away, if you /do/ end up using the SMMU
+> in future, then we could re-add the driver quirk without any fuss.
+> 
+> Will
 
