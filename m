@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 950DA173EF7
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD26173EFC
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:01:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725928AbgB1SBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:01:01 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35049 "EHLO
+        id S1726589AbgB1SB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:01:28 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36945 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgB1SBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:01:01 -0500
-Received: by mail-pf1-f196.google.com with SMTP id i19so2099246pfa.2
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:01:00 -0800 (PST)
+        with ESMTP id S1725730AbgB1SB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:01:28 -0500
+Received: by mail-pf1-f196.google.com with SMTP id p14so2096132pfn.4
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:01:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=8X/4s9GyLmWx112j3K8JJPsv4rz/J3NykmvsiKtuVuA=;
-        b=skzrCPLBtadLV8EUr0rQat/+JfInLW55z1RPbns1tcvmQQrC91+fdsALuh8sUXhMgb
-         MjiXBqniWn+a2+jtYmPxFmWo0B6SXDtS548qE3Zz1+Ax2JrsVxql3NOZSClcJ5MieajD
-         51kO0wil204Wrv53JRHaC+p12lG1PicPhDsR3otpCkrcklhkt/EJ2JBvOpMELaYbzExB
-         a4IdUYkV1AFYCawDN6Bcib2xk41NNB8qjnEWDzK7qrdwY5o/C7lY84haxWC/BK8lE5Ca
-         AWwm+r3NizKWzEO3sKoEtSXcCKHv9DvnaCIZt+I4Ecmhe2DqfbDf6VaaH7ePrXNrETc/
-         Jd7Q==
+        bh=WGt1LOtTJ38d9oY/wyO/YVJWKclgx0/xeYE6MF+b/As=;
+        b=Htgle/fMjcKDmcjljxOpIgYZ4kdPOCYIHGIVfbMr5Xm7QEyX3N7jMK8y3rpNW5Zxtk
+         sBfAI/+StL9e3g5VHShWMirbbQL1QcdoPfXQqcAAAY2K7uoRJL9MDT5dIxw9+ZgO50hZ
+         Y8K5gSEYMDoEQQ6c25uAdRX8Pea7C9RHqtTgY2ic0LzjI4sp+xVfoxO/cE1E/GNHnycl
+         bI8dh0O6rohHXuPV5Gb1TQD7IhpK3lMHbN8ijVlSGr0O99xI03/2IuldHGXPasX0UvST
+         svaX9fr4MYJrrqCAGRCM7zUvkzINjOfDtulkKf2Dpxkf+vzycYtCUYHr+oc60O3bYc56
+         F6Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8X/4s9GyLmWx112j3K8JJPsv4rz/J3NykmvsiKtuVuA=;
-        b=KPdRy99E4GWio6o4e4WnqmBczZFZC7xuYBOJYNs5I5ZjoxfBqgHLvbmve2RdBL+hMi
-         q0xVg6+oiXJgm3+8THPORRu4C2rQcc3/TH8FgSI8TFkOYT3FkFnRTtdvaX7rpVbnCnbP
-         DRzSxL3hW5HvKQGL09etB3ng4sTUW4oywWd+H3l0QS4KRsIYk/fONCyLTkQGb7C1WgA0
-         krOa6s6dKgS9EgCgKPoxsi+QQ66IrXTXBypEFVmZSOUHlgWmTTL9z133ZosGUghxjtbl
-         RczmcOO/u8BOJuxayFViUEOoV+XBFfsJrlZnHZw1vY3W32yMbjLUujnGevgZDEjO7xhD
-         yueA==
-X-Gm-Message-State: APjAAAV7tzgzGwPvsOD8cpjBKhn5iIt0kzy8cigvhKA2Yn27nzXYX21c
-        yvqKp4LRPeoVwwz2RLlBHAMo2OrgZf4=
-X-Google-Smtp-Source: APXvYqzMiDt2YrAQTs3boScOt9bnWZ9Qcqk+sKnp8AwgTF8fFAadJUOxE3kv3+sp4EuZaGQnJLnBFQ==
-X-Received: by 2002:a62:1709:: with SMTP id 9mr5679886pfx.196.1582912859807;
-        Fri, 28 Feb 2020 10:00:59 -0800 (PST)
+        bh=WGt1LOtTJ38d9oY/wyO/YVJWKclgx0/xeYE6MF+b/As=;
+        b=hfxrIu277Qvpv+ZJDZlJkc2c/vHRjbiAndqBXhVZRtyXycFVY4l7VUyjKqqMZf1UhQ
+         uOJBT2+J865Ac7t3Icp8QIngGoqViXir1vRQSLYqNsiQ0LWMDpq7PIy1vltf02A9vGyn
+         Gu79qpVZFADvt8nCHCDAanFoakpYtrLeUXrCAriDfFlk6AxI2mnmtEEIMSrJat0X7y25
+         ODwMRUQjXNuzLs6I9mtsRWNequ/C5yu6gm26hEmeDi+fFroOmTzBK+YhvEdonIngAKvF
+         gaVKy5OSZpl1eYBmJxHRjbHYALvC/7ktEf9IiRcGsZX4O0GETX2WVSDXnbH2UbzUfv0v
+         Wggw==
+X-Gm-Message-State: APjAAAUS1V8c/ilwHXeFu+/ZhHIU8IMDfTUZGgyf9frw3VRQKvBwf8M5
+        C/wWjwLIxOP06lUR1rewW7c=
+X-Google-Smtp-Source: APXvYqy7c/F5FHo7a9kHFKM+aaO0nriSW7mZId0MNGQHubEZ0I7sy61b6o2vFXhsHT/meyA+rs8Qsw==
+X-Received: by 2002:a63:450b:: with SMTP id s11mr5681731pga.45.1582912887337;
+        Fri, 28 Feb 2020 10:01:27 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id w195sm7977496pfd.65.2020.02.28.10.00.57
+        by smtp.gmail.com with ESMTPSA id 7sm43119pfg.12.2020.02.28.10.01.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 10:00:58 -0800 (PST)
+        Fri, 28 Feb 2020 10:01:26 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net-next 0/5] hsr: several code cleanup for hsr module
-Date:   Fri, 28 Feb 2020 18:00:46 +0000
-Message-Id: <20200228180046.27511-1-ap420073@gmail.com>
+Subject: [PATCH net-next 1/5] hsr: use debugfs_remove_recursive() instead of debugfs_remove()
+Date:   Fri, 28 Feb 2020 18:01:20 +0000
+Message-Id: <20200228180120.27604-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset is to clean up hsr module code.
-
-1. The first patch is to use debugfs_remove_recursive().
 If it uses debugfs_remove_recursive() instead of debugfs_remove(),
 hsr_priv() doesn't need to have "node_tbl_file" pointer variable.
 
-2. The second patch is to use extack error message.
-If HSR uses the extack instead of netdev_info(), users can get
-error messages immediately without any checking the kernel message.
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ net/hsr/hsr_debugfs.c | 5 +----
+ net/hsr/hsr_main.h    | 1 -
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-3. The third patch is to use netdev_err() instead of WARN_ONCE().
-When a packet is being sent, hsr_addr_subst_dest() is called and
-it tries to find the node with the ethernet destination address.
-If it couldn't find a node, it warns with WARN_ONCE().
-But, using WARN_ONCE() is a little bit overdoing.
-So, in this patch, netdev_err() is used instead.
-
-4. The fourth patch is to remove unnecessary rcu_read_{lock/unlock}().
-There are some rcu_read_{lock/unlock}() in hsr module and some of
-them are unnecessary. In this patch,
-these unnecessary rcu_read_{lock/unlock}() will be removed.
-
-5. The fifth patch is to use upper/lower device infrastructure.
-netdev_upper_dev_link() is useful to manage lower/upper interfaces.
-And this function internally validates looping, maximum depth.
-If hsr module uses upper/lower device infrastructure,
-it can prevent these above problems.
-
-Taehee Yoo (5):
-  hsr: use debugfs_remove_recursive() instead of debugfs_remove()
-  hsr: use extack error message instead of netdev_info
-  hsr: use netdev_err() instead of WARN_ONCE()
-  hsr: remove unnecessary rcu_read_lock() in hsr module
-  hsr: use upper/lower device infrastructure
-
- net/hsr/hsr_debugfs.c  |  5 +---
- net/hsr/hsr_device.c   | 64 +++++++++++++++++++++---------------------
- net/hsr/hsr_device.h   |  3 +-
- net/hsr/hsr_framereg.c |  3 +-
- net/hsr/hsr_main.c     |  3 +-
- net/hsr/hsr_main.h     |  1 -
- net/hsr/hsr_netlink.c  | 49 ++++++++++++++++----------------
- net/hsr/hsr_slave.c    | 58 ++++++++++++++++++++------------------
- net/hsr/hsr_slave.h    |  2 +-
- 9 files changed, 94 insertions(+), 94 deletions(-)
-
+diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
+index d5f709b940ff..9787ef11ca71 100644
+--- a/net/hsr/hsr_debugfs.c
++++ b/net/hsr/hsr_debugfs.c
+@@ -113,7 +113,6 @@ void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
+ 		priv->node_tbl_root = NULL;
+ 		return;
+ 	}
+-	priv->node_tbl_file = de;
+ }
+ 
+ /* hsr_debugfs_term - Tear down debugfs intrastructure
+@@ -125,9 +124,7 @@ void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
+ void
+ hsr_debugfs_term(struct hsr_priv *priv)
+ {
+-	debugfs_remove(priv->node_tbl_file);
+-	priv->node_tbl_file = NULL;
+-	debugfs_remove(priv->node_tbl_root);
++	debugfs_remove_recursive(priv->node_tbl_root);
+ 	priv->node_tbl_root = NULL;
+ }
+ 
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 754d84b217f0..7321cf8d6d2c 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -166,7 +166,6 @@ struct hsr_priv {
+ 	unsigned char		sup_multicast_addr[ETH_ALEN];
+ #ifdef	CONFIG_DEBUG_FS
+ 	struct dentry *node_tbl_root;
+-	struct dentry *node_tbl_file;
+ #endif
+ };
+ 
 -- 
 2.17.1
 
