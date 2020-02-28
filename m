@@ -2,151 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C18B17334E
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 09:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EFB17337E
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 10:07:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgB1IwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 03:52:21 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:53174 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbgB1IwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 03:52:21 -0500
-X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Feb 2020 03:52:19 EST
-Received: from localhost.localdomain (p200300E9D71B9939E2C0865DB6B8C4EC.dip0.t-ipconnect.de [IPv6:2003:e9:d71b:9939:e2c0:865d:b6b8:c4ec])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726525AbgB1JHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 04:07:33 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46401 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726413AbgB1JHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 04:07:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582880852;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ncZBWSzM/kFbj3x0UGhhSEnICwSq6R9DhzO5S1kkIIA=;
+        b=HXnktP/ZsV/sbbbD8LhZA4GBbuM1rt1o8SNFEO/9eH7HzCEmnjorqQ1FqZJhC9ddN/dxu4
+        oq/AAQqTvZoYcUHZ3dQYA04prfnjlzQ2xmtwi+QSPVP93NA8WNhq5fi9NJ/0in+dssOsii
+        VDjVnvGLfj0jv//yZxDt13ck9cfYXyI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-323-i6weTFKaNMi8MuaY3GQJ0w-1; Fri, 28 Feb 2020 04:07:28 -0500
+X-MC-Unique: i6weTFKaNMi8MuaY3GQJ0w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 53688C3201;
-        Fri, 28 Feb 2020 09:46:30 +0100 (CET)
-Subject: Re: [PATCH 02/28] docs: networking: convert 6lowpan.txt to ReST
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
-References: <cover.1581002062.git.mchehab+huawei@kernel.org>
- <bfa773f25584a3939e0a3e1fc6bc0e91f415cd91.1581002063.git.mchehab+huawei@kernel.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <f81edab9-3ca8-5421-5bf8-029cefc96ad6@datenfreihafen.org>
-Date:   Fri, 28 Feb 2020 09:46:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F29C2190D340;
+        Fri, 28 Feb 2020 09:07:26 +0000 (UTC)
+Received: from ovpn-118-48.ams2.redhat.com (unknown [10.36.118.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 29F6B87B08;
+        Fri, 28 Feb 2020 09:07:24 +0000 (UTC)
+Message-ID: <938e596f257f782f36c51b849ae7e37f3718c42b.camel@redhat.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>
+Date:   Fri, 28 Feb 2020 10:07:26 +0100
+In-Reply-To: <20200228102451.0a3d2057@canb.auug.org.au>
+References: <20200228102451.0a3d2057@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-In-Reply-To: <bfa773f25584a3939e0a3e1fc6bc0e91f415cd91.1581002063.git.mchehab+huawei@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 06.02.20 16:17, Mauro Carvalho Chehab wrote:
-> - add SPDX header;
-> - use document title markup;
-> - mark code blocks and literals as such;
-> - adjust identation, whitespaces and blank lines;
-> - add to networking/index.rst.
+On Fri, 2020-02-28 at 10:24 +1100, Stephen Rothwell wrote:
+> Today's linux-next merge of the net-next tree got a conflict in:
 > 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->   .../networking/{6lowpan.txt => 6lowpan.rst}   | 29 ++++++++++---------
->   Documentation/networking/index.rst            |  1 +
->   2 files changed, 17 insertions(+), 13 deletions(-)
->   rename Documentation/networking/{6lowpan.txt => 6lowpan.rst} (64%)
+>   net/mptcp/protocol.c
 > 
-> diff --git a/Documentation/networking/6lowpan.txt b/Documentation/networking/6lowpan.rst
-> similarity index 64%
-> rename from Documentation/networking/6lowpan.txt
-> rename to Documentation/networking/6lowpan.rst
-> index 2e5a939d7e6f..e70a6520cc33 100644
-> --- a/Documentation/networking/6lowpan.txt
-> +++ b/Documentation/networking/6lowpan.rst
-> @@ -1,37 +1,40 @@
-> +.. SPDX-License-Identifier: GPL-2.0
->   
-> -Netdev private dataroom for 6lowpan interfaces:
-> +==============================================
-> +Netdev private dataroom for 6lowpan interfaces
-> +==============================================
->   
->   All 6lowpan able net devices, means all interfaces with ARPHRD_6LOWPAN,
->   must have "struct lowpan_priv" placed at beginning of netdev_priv.
->   
-> -The priv_size of each interface should be calculate by:
-> +The priv_size of each interface should be calculate by::
->   
->    dev->priv_size = LOWPAN_PRIV_SIZE(LL_6LOWPAN_PRIV_DATA);
->   
->   Where LL_PRIV_6LOWPAN_DATA is sizeof linklayer 6lowpan private data struct.
-> -To access the LL_PRIV_6LOWPAN_DATA structure you can cast:
-> +To access the LL_PRIV_6LOWPAN_DATA structure you can cast::
->   
->    lowpan_priv(dev)-priv;
->   
->   to your LL_6LOWPAN_PRIV_DATA structure.
->   
-> -Before registering the lowpan netdev interface you must run:
-> +Before registering the lowpan netdev interface you must run::
->   
->    lowpan_netdev_setup(dev, LOWPAN_LLTYPE_FOOBAR);
->   
->   wheres LOWPAN_LLTYPE_FOOBAR is a define for your 6LoWPAN linklayer type of
->   enum lowpan_lltypes.
->   
-> -Example to evaluate the private usually you can do:
-> +Example to evaluate the private usually you can do::
->   
-> -static inline struct lowpan_priv_foobar *
-> -lowpan_foobar_priv(struct net_device *dev)
-> -{
-> + static inline struct lowpan_priv_foobar *
-> + lowpan_foobar_priv(struct net_device *dev)
-> + {
->   	return (struct lowpan_priv_foobar *)lowpan_priv(dev)->priv;
-> -}
-> + }
->   
-> -switch (dev->type) {
-> -case ARPHRD_6LOWPAN:
-> + switch (dev->type) {
-> + case ARPHRD_6LOWPAN:
->   	lowpan_priv = lowpan_priv(dev);
->   	/* do great stuff which is ARPHRD_6LOWPAN related */
->   	switch (lowpan_priv->lltype) {
-> @@ -42,8 +45,8 @@ case ARPHRD_6LOWPAN:
->   	...
->   	}
->   	break;
-> -...
-> -}
-> + ...
-> + }
->   
->   In case of generic 6lowpan branch ("net/6lowpan") you can remove the check
->   on ARPHRD_6LOWPAN, because you can be sure that these function are called
-> diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-> index 3ccb89bf5585..cc34c06477eb 100644
-> --- a/Documentation/networking/index.rst
-> +++ b/Documentation/networking/index.rst
-> @@ -34,6 +34,7 @@ Contents:
->      tls
->      tls-offload
->      nfc
-> +   6lowpan
->   
->   .. only::  subproject and html
->   
+> between commit:
 > 
+>   dc24f8b4ecd3 ("mptcp: add dummy icsk_sync_mss()")
+> 
+> from the net tree and commit:
+> 
+>   80992017150b ("mptcp: add work queue skeleton")
+> 
+> from the net-next tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
 
-Reviewed-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Thank you, the conflict resolution looks good to me.
 
-regards
-Stefan Schmidt
+I did not notice the conflict beforehands, sorry.
+
+Cheers,
+
+Paolo
+
