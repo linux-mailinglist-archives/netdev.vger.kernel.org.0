@@ -2,123 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3D9B173847
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 410C4173905
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbgB1N0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:26:55 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46859 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726673AbgB1N0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:26:54 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j7ffG-00051B-1D; Fri, 28 Feb 2020 14:26:50 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j7ffE-0006RR-91; Fri, 28 Feb 2020 14:26:48 +0100
-Date:   Fri, 28 Feb 2020 14:26:48 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     devicetree@vger.kernel.org, Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v8 1/1] net: ag71xx: port to phylink
-Message-ID: <20200228132648.fgeoify3qdeb53qn@pengutronix.de>
-References: <20200226054624.14199-1-o.rempel@pengutronix.de>
- <20200226092138.GV25745@shell.armlinux.org.uk>
- <20200228114753.GN18808@shell.armlinux.org.uk>
+        id S1727254AbgB1Nwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:52:41 -0500
+Received: from gateway31.websitewelcome.com ([192.185.144.218]:47302 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726388AbgB1Nwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:52:40 -0500
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id CF084845893
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 07:27:52 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 7fgGjJ3nZvBMd7fgGjEUCg; Fri, 28 Feb 2020 07:27:52 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=arRYXiDb6WyCDYMZcCGJW6no8X0qWd9RaYLstjwKJ2w=; b=h39UGB4ezyb2xE4jBSWQqhkIod
+        lJeFub8UQJBNs+j2o0LWtStK171i/ElA8nicf7KHRm8xDV8Gmh+baHKzzKGmXA1CEBq63n7CrJAte
+        T9fWIA9L1c87GSWcvG19FwzHKYXmQ1LotZPGXckZ71Saa7nSdks57J+m8kTRAWjlhXFAxs0cjjPS+
+        itahoJUYalOZy7N8oeWXkUijIvXB2sROEkDWX2kxkFiePUoJOyH4QzWqEYOW/Q79glG1cGUOtcSwC
+        h+Kt2BYBaEupo67wwvxsXCfGfUYZWplKkH2qpaUK0dGrOP15U+JmFFokntPgeWGhTNQaOUUI3+kRH
+        ENvcqPgQ==;
+Received: from [201.162.240.44] (port=22657 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j7fgD-001Kes-Ip; Fri, 28 Feb 2020 07:27:51 -0600
+Date:   Fri, 28 Feb 2020 07:30:45 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] l2tp: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200228133045.GA22318@embeddedor>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4s5yhyplebixnzcf"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200228114753.GN18808@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:25:56 up 105 days,  4:44, 122 users,  load average: 0.47, 0.18,
- 0.11
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.240.44
+X-Source-L: No
+X-Exim-ID: 1j7fgD-001Kes-Ip
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.162.240.44]:22657
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 25
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
---4s5yhyplebixnzcf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-On Fri, Feb 28, 2020 at 11:47:53AM +0000, Russell King - ARM Linux admin wr=
-ote:
-> On Wed, Feb 26, 2020 at 09:21:38AM +0000, Russell King - ARM Linux admin =
-wrote:
-> > On Wed, Feb 26, 2020 at 06:46:24AM +0100, Oleksij Rempel wrote:
-> > > The port to phylink was done as close as possible to initial
-> > > functionality.
-> > >=20
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> > > changes v8:
-> > > - set the autoneg bit
-> > > - provide implementations for the mac_pcs_get_state and mac_an_restart
-> > >   methods
-> > > - do phylink_disconnect_phy() on _stop()
-> > > - rename ag71xx_phy_setup() to ag71xx_phylink_setup()=20
-> >=20
-> > There will be one more change required; I'm changing the prototype for
-> > the mac_link_up() function, and I suggest as you don't support in-band
-> > AN that most of the setup for speed and duplex gets moved out of your
-> > mac_config() implementation to mac_link_up().
-> >=20
-> > The patches have been available on netdev for just over a week now.
->=20
-> The patches are now in net-next.  Please respin your patch against these
-> changes, which basically means the code which programs the speed and
-> duplex in ag71xx_mac_config() needs to be moved to ag71xx_mac_link_up().
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-OK, Thank you!
-I'll  update it.
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-Regards,
-Oleksij
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Lastly, fix the following checkpatch warning:
+CHECK: Prefer kernel type 'u8' over 'uint8_t'
+#50: FILE: net/l2tp/l2tp_core.h:119:
++	uint8_t			priv[];	/* private data */
 
---4s5yhyplebixnzcf
-Content-Type: application/pgp-signature; name="signature.asc"
+This issue was found with the help of Coccinelle.
 
------BEGIN PGP SIGNATURE-----
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
 
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl5ZFRMACgkQ4omh9DUa
-UbNtTxAAhCmNOMd5vUqbiJM1/w/s11cV8lfHjVZxuDKKrAeo6h+/L1xs+/Aw8ybN
-AFt2LojGejRo96MkotlhDcM5XjRpG2J7SA5tnPziTaRXwTuuyhItsxJtHcCJJrf7
-HFRnVmrEOclwfzGXFhnUsttaNgtTQrheEVgQzzfZi22o0qLOVp8jtnMoRk5XUWFB
-YtWCGMxsGyK72L3UpyXufYalpTKWnIAcWcEtL0SzAkrMIg55MoJDq3lHrecvyP1/
-FnjCToGwFDYBA0/ym0gQtlsGCeMJ4+qfgnHnMz1H8nUd9t7T5uXJOENXo3Ua/a/c
-d2BEbtgXX42QsDz3SEQDWdeQtpZv5lWPiO3xmBentFjpqkXldhLdVSSXOT+lwF0K
-puY8vSQqOt0OLoPedABEFLhUUrjndcndERdAzfuyjAtbUgSDKgiDnBW8ihjfVt9n
-Q3yWtrnSlltE8QgRlbok8DpyjZ1SoTnm3GIvlaZbHVnVWLSC1d8OY4Ev4fRr78K3
-JwmstQibR0AWWvKUsil0IPGrrNPk+AzR2lDJbdLCpnXOEHHpPLYL0dSVk103G9mx
-ntVYCNfd6BARiT55cwWrLU9zVb0n3Or8KMryTZZ9G0Vr6f+HTWr1bu7q5QrfY+Md
-c4NDy37wq1UelojjiYIg5Heli/nR6VSCvYfJyhcmp0Q9Dz56rpg=
-=vVIQ
------END PGP SIGNATURE-----
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ net/l2tp/l2tp_core.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---4s5yhyplebixnzcf--
+diff --git a/net/l2tp/l2tp_core.h b/net/l2tp/l2tp_core.h
+index 2db3d50d10a4..10cf7c3dcbb3 100644
+--- a/net/l2tp/l2tp_core.h
++++ b/net/l2tp/l2tp_core.h
+@@ -116,7 +116,7 @@ struct l2tp_session {
+ 	void (*recv_skb)(struct l2tp_session *session, struct sk_buff *skb, int data_len);
+ 	void (*session_close)(struct l2tp_session *session);
+ 	void (*show)(struct seq_file *m, void *priv);
+-	uint8_t			priv[0];	/* private data */
++	u8			priv[];	/* private data */
+ };
+ 
+ /* Describes the tunnel. It contains info to track all the associated
+-- 
+2.25.0
+
