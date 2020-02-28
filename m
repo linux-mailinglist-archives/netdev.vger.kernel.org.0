@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26598173F41
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:15:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4051A173F8C
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:26:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726077AbgB1SPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:15:13 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41590 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgB1SPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:15:12 -0500
-Received: by mail-pg1-f193.google.com with SMTP id b1so1907698pgm.8;
-        Fri, 28 Feb 2020 10:15:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Clif/mEcnn3ME/k5ycRzrGKqtOc9D+bOeqjCbBVwdps=;
-        b=QGgynOA/VJOt/cG7OnLMz+tVY8zs6kY14i9YkqCvq1ahYk47pCnYiv/aqOf/3LTayR
-         ZaUOLFUzqVsLIewhEEKma7/IjqWgzAUizeJpcAzf6BdNwxt1ENmE3tJ+jCUabTX1TpEq
-         g4D6LXm38BYO72RrF1NOIztO8b9g3/CyJQ3Ym5A75lOj5yWaShYE3nHie3OIZY0oKzYq
-         3cA4qDtaY4M2uLTc7FS5OXhp+LWYNLbgDls8zw0B+Y+tZK6OgHwl6sarj1kK489NVc2g
-         jR1UY1btuYEsvbwn28cQXnRw92zOl2xpiE760psokXpVjQQsIRMjFdMKv6BhIbWFY/D2
-         wU5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Clif/mEcnn3ME/k5ycRzrGKqtOc9D+bOeqjCbBVwdps=;
-        b=U9kCpWvGQHuOmhReg/JNR6d9mxPfFi23RibuZukAlBZbPiqUdKQKcIfLTgkTvXB20J
-         0MaWkSI3byBskPnOqJCUwLWps+T+4jWmHQetTbjTP2x5jW4zfAeTLPyIymhJHPJpZXsv
-         5dBIjo+JeOq3Wa+X8tJdWvkQAaoSRJkToppWLzACozV8weorn6UNXFIvXXS+CYtTsS6q
-         JBXWX17TNLFyOGO5zafJrvzC1OR8/ZM/AQaX2vR4/xirrEn+prWxE39Sjj1/nWR3bSRN
-         vFFixsKncVaxrniIO6MbPyuDRh/pU3Ezs+OtAYQez4s2OIkRNXFykBmAaKve1lLCbwqW
-         w+ew==
-X-Gm-Message-State: APjAAAX88l3q3l51we9ou+SMnlWiYrx0GeiIBUairqR5kg5DvmylCr6T
-        RLF1zmGTzmV+J1VkX6qZ6fM=
-X-Google-Smtp-Source: APXvYqxWA8rvGE5/pCJKCoTTMPwDvIxb42dP3gBtBzfZ3HBMzKlZQp9VC5RuRR2HgISpMP+Xw1cRCw==
-X-Received: by 2002:a63:257:: with SMTP id 84mr5681448pgc.304.1582913710121;
-        Fri, 28 Feb 2020 10:15:10 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id 1sm7990801pff.11.2020.02.28.10.15.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 10:15:09 -0800 (PST)
-Date:   Fri, 28 Feb 2020 10:15:07 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 0/2] AT8031 PHY timestamping support
-Message-ID: <20200228181507.GA4744@localhost>
-References: <20200228180226.22986-1-michael@walle.cc>
+        id S1726970AbgB1S0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:26:13 -0500
+Received: from mga05.intel.com ([192.55.52.43]:61875 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725877AbgB1S0N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Feb 2020 13:26:13 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Feb 2020 10:26:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,497,1574150400"; 
+   d="scan'208";a="231166116"
+Received: from rdunst-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.40.10])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Feb 2020 10:26:10 -0800
+Subject: Re: [PATCH] [next] xdp: Replace zero-length array with flexible-array
+ member
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200228131907.GA17911@embeddedor>
+ <6FEAF24E-27CF-4840-8134-595D27275976@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <4f7c8a2f-e49e-beb5-9188-1bebac804d8d@intel.com>
+Date:   Fri, 28 Feb 2020 19:26:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200228180226.22986-1-michael@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <6FEAF24E-27CF-4840-8134-595D27275976@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 07:02:24PM +0100, Michael Walle wrote:
->  (1) The PHY doesn't support atomic reading of the (timestamp,
->      messageType, sequenceId) tuple. The workaround is to read the
->      timestamp again and check if it has changed. Actually, you'd have
->      to read the complete tuple again.
+On 2020-02-28 18:14, Jonathan Lemon wrote:
+> 
+> 
+> On 28 Feb 2020, at 5:19, Gustavo A. R. Silva wrote:
+> 
+>> The current codebase makes use of the zero-length array language
+>> extension to the C90 standard, but the preferred mechanism to declare
+>> variable-length types such as these ones is a flexible array member[1][2],
+>> introduced in C99:
+>>
+>> struct foo {
+>>          int stuff;
+>>          struct boo array[];
+>> };
+>>
+>> By making use of the mechanism above, we will get a compiler warning
+>> in case the flexible array does not occur last in the structure, which
+>> will help us prevent some kind of undefined behavior bugs from being
+>> inadvertently introduced[3] to the codebase from now on.
+>>
+>> Also, notice that, dynamic memory allocations won't be affected by
+>> this change:
+>>
+>> "Flexible array members have incomplete type, and so the sizeof operator
+>> may not be applied. As a quirk of the original implementation of
+>> zero-length arrays, sizeof evaluates to zero."[1]
+>>
+>> This issue was found with the help of Coccinelle.
+>>
+>> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+>> [2] https://github.com/KSPP/linux/issues/21
+>> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> 
+> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> 
 
-This HW is broken by design :(
-
-> But if you're using a P2P clock with peer delay requests this whole
-> thing falls apart because of caveat (3). You'll often see messages like
->   received SYNC without timestamp
-> or
->  received PDELAY_RESP without timestamp
-> in linuxptp. Sometimes it working for some time and then it starts to
-> loosing packets. I suspect this depends on how the PDELAY messages are
-> interleaved with the SYNC message. If there is not enough time to until
-> the next event message is received either of these two messages won't
-> have a timestamp.
-
-And even the case where a Sync and a DelayResp arrive at nearly the
-same time will fail.
-
-> The PHY also supports appending the timestamp to the actual ethernet frame,
-> but this seems to only work when the PHY is connected via RGMII. I've never
-> get it to work with a SGMII connection.
-
-This is the way to go.  I would try to get the vendor's help in making
-this work.
-
-Thanks,
-Richard
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
