@@ -2,126 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DCC1173C54
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 16:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C4B7173C97
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 17:11:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727283AbgB1P5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 10:57:20 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:39555 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727159AbgB1P5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 10:57:14 -0500
-X-Originating-IP: 90.89.41.158
-Received: from localhost (lfbn-tou-1-1473-158.w90-89.abo.wanadoo.fr [90.89.41.158])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id E129060015;
-        Fri, 28 Feb 2020 15:57:10 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        foss@0leil.net
-Subject: [PATCH net-next v2 3/3] net: phy: mscc: RGMII skew delay configuration
-Date:   Fri, 28 Feb 2020 16:57:02 +0100
-Message-Id: <20200228155702.2062570-4-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200228155702.2062570-1-antoine.tenart@bootlin.com>
-References: <20200228155702.2062570-1-antoine.tenart@bootlin.com>
+        id S1726094AbgB1QLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 11:11:36 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:34020 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgB1QLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 11:11:36 -0500
+Received: by mail-yw1-f68.google.com with SMTP id b186so3811583ywc.1
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:11:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jwoj9BQOLJS3MEsoQc1zDfo1HZksZEv1KxnRAg4XdU4=;
+        b=t1F7wCOidRuOZOIOcu6MxruVOxJjBrS+c7haLY/0vWS9MeiRas9oi01IsGGgxQ73CH
+         WAMJy0a4H7UtHtuh90QmPoTvAfFcrJnDvH+7sjG3nw/I0JJTl1C1uaT+W96q/jqG49y5
+         FP/my6E9ZDlKQicUbajyaAhoSYeOqAJtwLDEh1QvZEtxwTcdlZaBVZtgR/2OlaGsFL1t
+         CvSkc2q7iUrmd09wvIZ/m0D7PHDDE50L/WmWBCIWH4RF5t1l0Ge+4FCzQPa0nNW+SUoD
+         CuBgoOGi5RL/sVc+8aNj/0p7R+8bKyayeVun5WwLEYAEKLWEVHFvh96PvGhXqjNNkumU
+         m0Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jwoj9BQOLJS3MEsoQc1zDfo1HZksZEv1KxnRAg4XdU4=;
+        b=sdiPnxvfe8+dJJu+XSJLLcYO9HKSUfTRHhbey1QNkVIenNhYGcJIOb7bN00VnynC88
+         +DVdHEvdbkGOwXsK4Sx4wv2VEF2LrnZsY4krM8503vXLG9F90+yPgo/qyhY3Irido8VR
+         8NISgJXgsub5IJu/6FhUxvj4Ken50xKKQvHNVT80kYuxBNYLy1/sHYJ7Z4ING5+6oku2
+         J81RLpWzdujSCAEz7UUFs8U8cVarztZkghTRf46LLVMGaAOO0D5mTj3oPADObbj+2LPO
+         2J24vdpVuXzc0PFnl0QjfGpXLQFOaeJ993bvHMbNNz1PE7rMrOj2UaDtN5rU5a+s2Obm
+         CWpQ==
+X-Gm-Message-State: APjAAAVC1slgv5LPwKLOgP7G85VN4r5GEsTvvsXdDce8UrvszDmYIGRN
+        6fh7WY1ts3AG+ryqYKiDyvi4h6gG
+X-Google-Smtp-Source: APXvYqzlRpASXKykgrmUvcqdyDyWwojeL43sfsi3KzRltGqTexPKTtqrHUPei9xQSS4t1gFkqr4Y2Q==
+X-Received: by 2002:a25:5041:: with SMTP id e62mr4102270ybb.179.1582906294345;
+        Fri, 28 Feb 2020 08:11:34 -0800 (PST)
+Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
+        by smtp.gmail.com with ESMTPSA id y9sm4019590ywc.19.2020.02.28.08.11.33
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Feb 2020 08:11:33 -0800 (PST)
+Received: by mail-yw1-f49.google.com with SMTP id n127so3750129ywd.9
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:11:33 -0800 (PST)
+X-Received: by 2002:a81:168e:: with SMTP id 136mr1024757yww.172.1582906292751;
+ Fri, 28 Feb 2020 08:11:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1582897428.git.pabeni@redhat.com> <0f2bbdfbcd497e5f22d32049ebb34e168ed8fecc.1582897428.git.pabeni@redhat.com>
+ <f4494fd4-323e-cc1a-cc53-284a0de03eb2@virtuozzo.com>
+In-Reply-To: <f4494fd4-323e-cc1a-cc53-284a0de03eb2@virtuozzo.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 28 Feb 2020 11:10:56 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfD157LSzfswU5ssVwc-kbTSVooKFmCo1pjJC+cO+crzA@mail.gmail.com>
+Message-ID: <CA+FuTSfD157LSzfswU5ssVwc-kbTSVooKFmCo1pjJC+cO+crzA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/2] net: datagram: drop 'destructor' argument
+ from several helpers
+To:     Kirill Tkhai <ktkhai@virtuozzo.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for configuring the RGMII skew delays in Rx and
-Tx. The delay value is retrieved from the device tree, and set based on
-the PHY interface mode (rgmii, rgmii-id, rgmii-rx, rgmii-tx). If no
-configuration is provided in the device tree, or of a delay isn't used,
-its value will be set to the default one at probe time: this driver do
-not rely anymore on the bootloader configuration for RGMII skews.
+On Fri, Feb 28, 2020 at 9:50 AM Kirill Tkhai <ktkhai@virtuozzo.com> wrote:
+>
+> On 28.02.2020 16:45, Paolo Abeni wrote:
+> > The only users for such argument are the UDP protocol and the UNIX
+> > socket family. We can safely reclaim the accounted memory directly
+> > from the UDP code and, after the previous patch, we can do scm
+> > stats accounting outside the datagram helpers.
+> >
+> > Overall this cleans up a bit some datagram-related helpers, and
+> > avoids an indirect call per packet in the UDP receive path.
+> >
+> > v1 -> v2:
+> >  - call scm_stat_del() only when not peeking - Kirill
+> >  - fix build issue with CONFIG_INET_ESPINTCP
+> >
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+>
+> Reviewed-by: Kirill Tkhai <ktkhai@virtuozzo.com>
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/phy/mscc.c | 50 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+Reviewed-by: Willem de Bruijn <willemb@google.com>
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index c389d7e59f91..4e9d788d95b9 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -192,6 +192,10 @@ enum macsec_bank {
- /* Extended Page 2 Registers */
- #define MSCC_PHY_CU_PMD_TX_CNTL		  16
- 
-+#define MSCC_PHY_RGMII_SETTINGS		  18
-+#define RGMII_SKEW_RX_POS		  1
-+#define RGMII_SKEW_TX_POS		  4
-+
- #define MSCC_PHY_RGMII_CNTL		  20
- #define RGMII_RX_CLK_DELAY_MASK		  0x0070
- #define RGMII_RX_CLK_DELAY_POS		  4
-@@ -2680,6 +2684,49 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
- 	return false;
- }
- 
-+static void vsc8584_rgmii_set_skews(struct phy_device *phydev)
-+{
-+	u32 skew_rx, skew_tx;
-+	struct device *dev = &phydev->mdio.dev;
-+
-+	/* We first set the Rx and Tx skews to their default value in h/w
-+	 * (0.2 ns).
-+	 */
-+	skew_rx = VSC8584_RGMII_SKEW_0_2;
-+	skew_tx = VSC8584_RGMII_SKEW_0_2;
-+
-+	/* Based on the interface mode, we then retrieve (if available) Rx
-+	 * and/or Tx skews from the device tree. We do not fail if the
-+	 * properties do not exist, the default skew configuration is a valid
-+	 * one.
-+	 */
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-rx",
-+				     &skew_rx);
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+		of_property_read_u32(dev->of_node, "vsc8584,rgmii-skew-tx",
-+				     &skew_tx);
-+
-+	/* Make sure we did not retrieve unsupported values. */
-+	if (skew_rx > VSC8584_RGMII_SKEW_3_4) {
-+		phydev_err(phydev, "Invalid Rx skew, fix the device tree.");
-+		skew_rx = VSC8584_RGMII_SKEW_0_2;
-+	}
-+	if (skew_tx > VSC8584_RGMII_SKEW_3_4) {
-+		phydev_err(phydev, "Invalid Tx skew, fix the device tree.");
-+		skew_tx = VSC8584_RGMII_SKEW_0_2;
-+	}
-+
-+	/* Finally we do apply the skew configuration. */
-+	phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
-+			 MSCC_PHY_RGMII_SETTINGS,
-+			 (0x7 << RGMII_SKEW_RX_POS) | (0x7 << RGMII_SKEW_TX_POS),
-+			 (skew_rx << RGMII_SKEW_RX_POS) |
-+			 (skew_tx << RGMII_SKEW_TX_POS));
-+}
-+
- static int vsc8584_config_init(struct phy_device *phydev)
- {
- 	struct vsc8531_private *vsc8531 = phydev->priv;
-@@ -2826,6 +2873,9 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	       (VSC8584_MAC_IF_SELECTION_SGMII << VSC8584_MAC_IF_SELECTION_POS);
- 	ret = phy_write(phydev, MSCC_PHY_EXT_PHY_CNTL_1, val);
- 
-+	if (phy_interface_is_rgmii(phydev))
-+		vsc8584_rgmii_set_skews(phydev);
-+
- 	ret = genphy_soft_reset(phydev);
- 	if (ret)
- 		return ret;
--- 
-2.24.1
-
+Nice cleanup, thanks!
