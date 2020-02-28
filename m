@@ -2,103 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 675EF173509
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:10:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EC517351B
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgB1KKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 05:10:36 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:40947 "EHLO
+        id S1726887AbgB1KQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 05:16:44 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:34500 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726400AbgB1KKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:10:36 -0500
+        by vger.kernel.org with ESMTP id S1726063AbgB1KQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:16:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582884635;
+        s=mimecast20190719; t=1582885002;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GvH5sN9UdVxq7uySrn24Y2fuNAKD/E3xegJnUN0q9BE=;
-        b=V3Spff5dIik0aw5bFOuwpFyQWq0603ShAYNHCPlyBTnFs6BxvScYZUJomfHoTKrnkxv6ft
-        JpX6psS94VhutRhCO9cS2vkGIqkJFr59bGJBBhGv/wgEoxMPjDm2wAQkxEmE9H7M112cPO
-        pqDw6a+bA9dcMFz0makPnmnV1NYyckc=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-467-H09FdKnqOoiwpSKMxjKq1g-1; Fri, 28 Feb 2020 05:10:33 -0500
-X-MC-Unique: H09FdKnqOoiwpSKMxjKq1g-1
-Received: by mail-lf1-f71.google.com with SMTP id t141so343270lff.4
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 02:10:33 -0800 (PST)
+        bh=eVoGLbtnYzXWlmc48w0t/0qrnxkTvQefS/f9aokidUA=;
+        b=I25S4OL3W5DO/IKq0F2mP5ltH69hg4MKpfS+/8+cj9ye+vJVfpZKZ3PcJowdeH2peYxrgQ
+        TIGm6/brjWVvb3Ym84ZzqiP1oqg6x0rvu9XTZovG1BsMPzDGTXNuDFEkL0B5Xcvg2eP9cp
+        oRP9U04JZOtqZ+W7AwuM83S+qBSv/+k=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-224-tuTwk0sjNwapV7gtUNxV2g-1; Fri, 28 Feb 2020 05:16:40 -0500
+X-MC-Unique: tuTwk0sjNwapV7gtUNxV2g-1
+Received: by mail-lf1-f72.google.com with SMTP id r24so341826lfi.23
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 02:16:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=GvH5sN9UdVxq7uySrn24Y2fuNAKD/E3xegJnUN0q9BE=;
-        b=A8ZomUvYKD0dQ3mooehLw9m+y8cGyKYLRYZXOkzvPsGDXj0sLSDgxPIjE1ZSzsHodo
-         b4OD90Rot8Nvl7tF85qz6Hb51EUD/CaL66FL7qX7GOyNb3q56JzPIYoZkxVuOPEcmjsS
-         3gmpSJULfUqCu1xDPKu1KCXx3BamSCVjdMr0yW8/3iTLn+A/Ikwj0erkyjsd5wOcUF6X
-         l6R6mrrAVABF1Aeaf/sJZdgUwLE8fDBkb0QtqiovY6uNblVc/etKrYOZWDwr4R0omvRO
-         CbpJA/yz1dgxUws7OJu7p/cQbewFtm4VIsatVw2m3A6XCIIbljq2nF0pTjbcO1TbxfQA
-         dTew==
-X-Gm-Message-State: ANhLgQ0OjT5P/6mT8spTVopJbWHo3skiGsx/ZzEzsCmvTdoJePZEnp8b
-        dBf5NpawygaL2OITUtQsuwRDb+G0VkSCcySUYFpYm88OIIRFg+h1oNIS6py0fqNwRFK4/TGbtEK
-        MtiGsTlhhqHxq6X9k
-X-Received: by 2002:ac2:5299:: with SMTP id q25mr2217453lfm.213.1582884632133;
-        Fri, 28 Feb 2020 02:10:32 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vtrk6e2bqNHHLe6tlbtoX+YGKrvCJcudDLZi7WCuhh4Zoe9WawzvSGrA08dLfCvv/wjbniNzA==
-X-Received: by 2002:ac2:5299:: with SMTP id q25mr2217429lfm.213.1582884631905;
-        Fri, 28 Feb 2020 02:10:31 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id r25sm5194027lfn.36.2020.02.28.02.10.31
+         :message-id:mime-version;
+        bh=eVoGLbtnYzXWlmc48w0t/0qrnxkTvQefS/f9aokidUA=;
+        b=KK2xjndRNeaYyPIx2TYh/4k/cPiiyhZAtZRAF4XJLlRzLCHajHN4WAcg5FZVOsl1LR
+         StACxUYIg45YHKflgqPZ3D1GqPIQ9vi9UdGPCVgVBMLROD8BYpcn6SZ9kyFa10SS13IB
+         PSVFlUBgJmidGfGnmoXwo2FH7K31ddh5dYYJy4xUhgZba5+HOnirOLeJbiLZHVNhRl9C
+         ZKdHo+NQW0KOMrRBTZBj0/LfLgEgxR4DCvimncKV+VSpVc+m/NvKZH+0dFDv1ldDn73J
+         /Ek6lHwpFAd+pUXv5v/1gg1yB44EIAWdeRxVp6b3lTTLhsjj6ZNZdpQbtsxt1B+TYnhL
+         9Fkg==
+X-Gm-Message-State: ANhLgQ3t01ku/wZKXep2QcRWr2PE3lpXS4zwV5m4bPH1I/eKLNvSpDps
+        uP61xXJS6bSyvKYusA8RKKjBKQl0T+m6cHsa/+CgIbRChCybnQXnRVpdToKbQmMXXcGDowgL2Hw
+        k9NYVtYrT7l9I87RP
+X-Received: by 2002:a19:7d04:: with SMTP id y4mr2282663lfc.111.1582884998571;
+        Fri, 28 Feb 2020 02:16:38 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vvXO5F7cH4hg0ivZxLRqZGLTBjzmF9Evdui+BrIiVguCGiV5KpQodnEEMWnFVLVq1UTeuRPKQ==
+X-Received: by 2002:a19:7d04:: with SMTP id y4mr2282655lfc.111.1582884998373;
+        Fri, 28 Feb 2020 02:16:38 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 19sm4543665lfp.86.2020.02.28.02.16.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 02:10:31 -0800 (PST)
+        Fri, 28 Feb 2020 02:16:37 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6007A180362; Fri, 28 Feb 2020 11:10:30 +0100 (CET)
+        id AC741180362; Fri, 28 Feb 2020 11:16:36 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dahern@digitalocean.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
-In-Reply-To: <3b57af56-e1c1-acc7-6392-db95337bf564@digitalocean.com>
-References: <20200227032013.12385-1-dsahern@kernel.org> <20200227032013.12385-4-dsahern@kernel.org> <20200227090046.3e3177b3@carbon> <877e08w8bx.fsf@toke.dk> <3b57af56-e1c1-acc7-6392-db95337bf564@digitalocean.com>
+To:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, hawk@kernel.org, sameehj@amazon.com
+Cc:     linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
+Subject: Re: [PATCH v3 net-next] netdev attribute to control xdpgeneric skb linearization
+In-Reply-To: <20200227173428.5298-1-lrizzo@google.com>
+References: <20200227173428.5298-1-lrizzo@google.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 Feb 2020 11:10:30 +0100
-Message-ID: <87lfonuind.fsf@toke.dk>
+Date:   Fri, 28 Feb 2020 11:16:36 +0100
+Message-ID: <87h7zbuid7.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dahern@digitalocean.com> writes:
+Luigi Rizzo <lrizzo@google.com> writes:
 
-> On 2/27/20 4:58 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>  also, an egress program may want to actually know which
->> ingress iface the packet was first received on. So why not just keep
->> both fields? Since ifindex 0 is invalid anyway, the field could just be
->> 0 when it isn't known (e.g., egress ifindex on RX, or ingress ifindex if
->> it comes from the stack)?
+> Add a netdevice flag to control skb linearization in generic xdp mode.
 >
-> Today, the ingress device is lost in the conversion from xdp_buff to
-> xdp_frame. The plumbing needed to keep that information is beyond the
-> scope of this set.
->
-> I am open to making the UAPI separate entries if there is a real reason
-> for it. Do you have a specific use case?
+> The attribute can be modified through
+> 	/sys/class/net/<DEVICE>/xdp_linearize
+> The default is 1 (on)
 
-I was thinking it could be a nice shorthand for whether a packet comes
-from the local stack or was forwarded (0 =3D=3D stack). But no, I don't have
-a concrete application where this is useful. However, if we define it as
-a union we lose the ability to change our mind. Together with the
-debugability issue I just replied with to your other email, I think it
-would be better to expend the four bytes keep them as separate fields,
-but still restrict access to the RX ifindex for now.
+Calling it just 'xdp_linearize' implies (to me) that it also affects
+driver-mode XDP. So maybe generic_xdp_linearize ?
+
+[...]
+
+> +
+> +What:		/sys/class/net/<iface>/xdp_linearize
+> +Date:		Jan 2020
+> +KernelVersion:	5.6
+> +Contact:	netdev@vger.kernel.org
+> +Description:
+> +		boolean controlling whether skb should be linearized in
+> +		generic xdp. Defaults to true.
+
+Could you also add a few words explaining what the tradeoff here is?
+Something like: "turning this off can increase the performance of
+generic XDP at the cost of making the content of making the XDP program
+unable to access packet fragments after the first one"
 
 -Toke
 
