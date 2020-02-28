@@ -2,328 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEFDA1735CB
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 12:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 250141735F8
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 12:20:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgB1LDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 06:03:36 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35439 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726700AbgB1LDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 06:03:36 -0500
-Received: by mail-wr1-f65.google.com with SMTP id r7so2492696wro.2
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 03:03:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tIj3gme9XHR/3amZRjYhLO6cJtss0/lzE+AjL+bHEMw=;
-        b=hgusxU3SM+AqZmB61xlexU7vQzofwM5FlHw9VmUFDoqv7OC2MHii6y1bXC2S4ydc4X
-         ys9uylj25tUSEu6Wv2dcb/sgzQpWS8qNk2TMYnrmnhjJMQE3Zst3AIBrHsnL9f4hcZa/
-         XNHvktx73vIcPf3+yaApUybh7iz6yJpY+DySr5NpSk5gL2f1NcW643jV9VA67+9esrl4
-         VewPftJfpLofoPSaPjBSdfcOTZJX9aIpcmY4aAUDn15V1BeIVhuWYyVG0o6Ss7wYzdh/
-         gTli2fYNM2j8ZHDktV1e0RjjqHkUr6rFPwOHNb2CZBQrrK8wQyc3PZ095Gt9QYnn3hdi
-         cDYw==
+        id S1725876AbgB1LUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 06:20:39 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28475 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725802AbgB1LUj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 06:20:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582888838;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JwHjZB5Q4dc3T+wcDE5rzrvHt7xSnx1p8Z0SDiY1kIk=;
+        b=c0HdOOIi8e1qJlfHLzO6srhTaV2HhFSHlSO/Wadj6jT7m9LgFxofDgenzOfFC8+BTMSl4D
+        16sIiTbzLd+0A9xZ9+j7Q53SSow0kFXSoPQIguepyq/+k2rSsJc3nI5JiOatN2zWnkCnKm
+        yQKeeCOjLHHfTr1FGuqVfcfV+d1LcO4=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-135-9XZG7IMSNuq45kX1OQtDsA-1; Fri, 28 Feb 2020 06:20:36 -0500
+X-MC-Unique: 9XZG7IMSNuq45kX1OQtDsA-1
+Received: by mail-lj1-f198.google.com with SMTP id s15so809571ljp.14
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 03:20:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tIj3gme9XHR/3amZRjYhLO6cJtss0/lzE+AjL+bHEMw=;
-        b=uPMtbq++nY76bRbHYxF8X9SWgSsO6SQKYTsvnE09F2gf6k4P7A1UsoQYET+4zDz7qF
-         ExtooUuNKeg6rEdBuWrKnQE9Zpfg1K9ZdJ0MxctuQq8uX2prkGCfOjDs2XH03ucoHVOR
-         NAcL3FsFhi4MIGnNJACJwe1ROqFugO82kH7MWJ3RRd5FBMngkE0U+mBp5nxY/ki39GIp
-         oJFkrzkmPnGu6n8ttuM05MZXkZzeg8f3noLal7v90w6MGxGVnigshVjcGMUCOM2gvKqB
-         GCYEPfufa74h0Az6CAok7HDM3f5J0rz2+pH1CT0Nz0+xxQEi0ZYSDWK1MH0C1sOPoUWi
-         YnPQ==
-X-Gm-Message-State: APjAAAWRAE4mNYKn2pJ6drambUy9TTl9U9r//Xo+JST6gijAQ18IzGYD
-        6DZVynZWwcsiOE9OgDwpZePTJIkZFoo=
-X-Google-Smtp-Source: APXvYqxgV911niRv4BkflCHF+xunY8kdAkFKZzO7USFg0ONpuK7z/eB+eSZp9VRQkx2YJVP/nJtQ0Q==
-X-Received: by 2002:a5d:4984:: with SMTP id r4mr4227689wrq.137.1582887813552;
-        Fri, 28 Feb 2020 03:03:33 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id b14sm1357586wrn.75.2020.02.28.03.03.32
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=JwHjZB5Q4dc3T+wcDE5rzrvHt7xSnx1p8Z0SDiY1kIk=;
+        b=Z0vkfcddu7Y9ZiBQHQXis85101r0aYWj+Nfhum9VqD4hf6EPPUkvomwWqYRbag4TH1
+         eqBiKyA2SmmJGWbeZlI59J+2tuJsUFEeaAr9/HaTcSMhwRBbkICFXrvefQXqs6Ka+XOd
+         LYhqH+Wj6Ml+eiJaz6xqGjTIdtflYWiFdnl9YSbxYF2jjQXXpijHC4i7poC/lKoelWOX
+         lpgOs89cldOEdYhQaSRyaq/KhakDSfEtWIjehedynufu1pRlWFMLJGoqKJrPfsz1Cgnx
+         cjBED6ml9hNSxqOG6hri213T7kojh4EgXpCNN/iS/Y9uYxbuyGAp8gaF7TK0jIWGFfVv
+         wJ3A==
+X-Gm-Message-State: ANhLgQ1tZP7LdvIqZ+lgMEQXPkmdW7zeZkMio3zY5num6z5SWgwdcpki
+        arK60T+GFkue7Lq0tzZUpozRbI1f1/6hYenACK7EBbnPQCPAqJYTorrxf7Bdxjwq/+rxRsHvWHV
+        wan86Posiz7aeFCZe
+X-Received: by 2002:a19:3fc7:: with SMTP id m190mr1451722lfa.102.1582888834997;
+        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vtI5wLvOQGFZRXtz+6/xGXuDpaXgvo5ohMGmXLtvABy0daimE/d6cqn/rcnriOUuWqv4Jz45g==
+X-Received: by 2002:a19:3fc7:: with SMTP id m190mr1451710lfa.102.1582888834787;
+        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id q16sm4676857lfd.83.2020.02.28.03.20.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 03:03:33 -0800 (PST)
-Date:   Fri, 28 Feb 2020 12:03:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
-Subject: Re: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
- for Prestera family ASIC device 98DX325x (AC3x)
-Message-ID: <20200228110332.GK26061@nanopsycho>
-References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
- <20200225163025.9430-2-vadym.kochan@plvision.eu>
- <20200227142259.GF26061@nanopsycho>
- <20200228080554.GA17929@plvision.eu>
+        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2F8EF180362; Fri, 28 Feb 2020 12:20:33 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, hawk@kernel.org, sameehj@amazon.com
+Cc:     linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
+Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb linearization
+In-Reply-To: <20200228105435.75298-1-lrizzo@google.com>
+References: <20200228105435.75298-1-lrizzo@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 28 Feb 2020 12:20:33 +0100
+Message-ID: <875zfrufem.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200228080554.GA17929@plvision.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 28, 2020 at 09:06:02AM CET, vadym.kochan@plvision.eu wrote:
->Hi Jiri,
->
->On Thu, Feb 27, 2020 at 03:22:59PM +0100, Jiri Pirko wrote:
->> Tue, Feb 25, 2020 at 05:30:54PM CET, vadym.kochan@plvision.eu wrote:
->> >Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
->> >ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
->> >wireless SMB deployment.
->> >
->> >This driver implementation includes only L1 & basic L2 support.
->> >
->> >The core Prestera switching logic is implemented in prestera.c, there is
->> >an intermediate hw layer between core logic and firmware. It is
->> >implemented in prestera_hw.c, the purpose of it is to encapsulate hw
->> >related logic, in future there is a plan to support more devices with
->> >different HW related configurations.
->> >
->> >The following Switchdev features are supported:
->> >
->> >    - VLAN-aware bridge offloading
->> >    - VLAN-unaware bridge offloading
->> >    - FDB offloading (learning, ageing)
->> >    - Switchport configuration
->> >
->> >Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
->> >Signed-off-by: Andrii Savka <andrii.savka@plvision.eu>
->> >Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
->> >Signed-off-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
->> >Signed-off-by: Serhiy Pshyk <serhiy.pshyk@plvision.eu>
->> >Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
->> >Signed-off-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
->> >---
->
->[SNIP]
->
->> >+};
->> >+
->> >+struct mvsw_msg_cmd {
->> >+	u32 type;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_ret {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 status;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_common_request {
->> >+	struct mvsw_msg_cmd cmd;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_common_response {
->> >+	struct mvsw_msg_ret ret;
->> >+} __packed __aligned(4);
->> >+
->> >+union mvsw_msg_switch_param {
->> >+	u32 ageing_timeout;
->> >+};
->> >+
->> >+struct mvsw_msg_switch_attr_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	union mvsw_msg_switch_param param;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_switch_init_ret {
->> >+	struct mvsw_msg_ret ret;
->> >+	u32 port_count;
->> >+	u32 mtu_max;
->> >+	u8  switch_id;
->> >+	u8  mac[ETH_ALEN];
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_port_autoneg_param {
->> >+	u64 link_mode;
->> >+	u8  enable;
->> >+	u8  fec;
->> >+};
->> >+
->> >+struct mvsw_msg_port_cap_param {
->> >+	u64 link_mode;
->> >+	u8  type;
->> >+	u8  fec;
->> >+	u8  transceiver;
->> >+};
->> >+
->> >+union mvsw_msg_port_param {
->> >+	u8  admin_state;
->> >+	u8  oper_state;
->> >+	u32 mtu;
->> >+	u8  mac[ETH_ALEN];
->> >+	u8  accept_frm_type;
->> >+	u8  learning;
->> >+	u32 speed;
->> >+	u8  flood;
->> >+	u32 link_mode;
->> >+	u8  type;
->> >+	u8  duplex;
->> >+	u8  fec;
->> >+	u8  mdix;
->> >+	struct mvsw_msg_port_autoneg_param autoneg;
->> >+	struct mvsw_msg_port_cap_param cap;
->> >+};
->> >+
->> >+struct mvsw_msg_port_attr_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 attr;
->> >+	u32 port;
->> >+	u32 dev;
->> >+	union mvsw_msg_port_param param;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_port_attr_ret {
->> >+	struct mvsw_msg_ret ret;
->> >+	union mvsw_msg_port_param param;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_port_stats_ret {
->> >+	struct mvsw_msg_ret ret;
->> >+	u64 stats[MVSW_PORT_CNT_MAX];
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_port_info_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 port;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_port_info_ret {
->> >+	struct mvsw_msg_ret ret;
->> >+	u32 hw_id;
->> >+	u32 dev_id;
->> >+	u16 fp_id;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_vlan_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 port;
->> >+	u32 dev;
->> >+	u16 vid;
->> >+	u8  is_member;
->> >+	u8  is_tagged;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_fdb_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 port;
->> >+	u32 dev;
->> >+	u8  mac[ETH_ALEN];
->> >+	u16 vid;
->> >+	u8  dynamic;
->> >+	u32 flush_mode;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_event {
->> >+	u16 type;
->> >+	u16 id;
->> >+} __packed __aligned(4);
->> >+
->> >+union mvsw_msg_event_fdb_param {
->> >+	u8 mac[ETH_ALEN];
->> >+};
->> >+
->> >+struct mvsw_msg_event_fdb {
->> >+	struct mvsw_msg_event id;
->> >+	u32 port_id;
->> >+	u32 vid;
->> >+	union mvsw_msg_event_fdb_param param;
->> >+} __packed __aligned(4);
->> >+
->> >+union mvsw_msg_event_port_param {
->> >+	u32 oper_state;
->> >+};
->> >+
->> >+struct mvsw_msg_event_port {
->> >+	struct mvsw_msg_event id;
->> >+	u32 port_id;
->> >+	union mvsw_msg_event_port_param param;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_bridge_cmd {
->> >+	struct mvsw_msg_cmd cmd;
->> >+	u32 port;
->> >+	u32 dev;
->> >+	u16 bridge;
->> >+} __packed __aligned(4);
->> >+
->> >+struct mvsw_msg_bridge_ret {
->> >+	struct mvsw_msg_ret ret;
->> >+	u16 bridge;
->> >+} __packed __aligned(4);
->> >+
->> >+#define fw_check_resp(_response)	\
->> >+({								\
->> >+	int __er = 0;						\
->> >+	typeof(_response) __r = (_response);			\
->> >+	if (__r->ret.cmd.type != MVSW_MSG_TYPE_ACK)		\
->> >+		__er = -EBADE;					\
->> >+	else if (__r->ret.status != MVSW_MSG_ACK_OK)		\
->> >+		__er = -EINVAL;					\
->> >+	(__er);							\
->> >+})
->> >+
->> >+#define __fw_send_req_resp(_switch, _type, _request, _response, _wait)	\
->> 
->> Please try to avoid doing functions in macros like this one and the
->> previous one.
->> 
->> 
->> >+({								\
->> >+	int __e;						\
->> >+	typeof(_switch) __sw = (_switch);			\
->> >+	typeof(_request) __req = (_request);			\
->> >+	typeof(_response) __resp = (_response);			\
->> >+	__req->cmd.type = (_type);				\
->> >+	__e = __sw->dev->send_req(__sw->dev,			\
->> >+		(u8 *)__req, sizeof(*__req),			\
->> >+		(u8 *)__resp, sizeof(*__resp),			\
->> >+		_wait);						\
->> >+	if (!__e)						\
->> >+		__e = fw_check_resp(__resp);			\
->> >+	(__e);							\
->> >+})
->> >+
->> >+#define fw_send_req_resp(_sw, _t, _req, _resp)	\
->> >+	__fw_send_req_resp(_sw, _t, _req, _resp, 0)
->> >+
->> >+#define fw_send_req_resp_wait(_sw, _t, _req, _resp, _wait)	\
->> >+	__fw_send_req_resp(_sw, _t, _req, _resp, _wait)
->> >+
->> >+#define fw_send_req(_sw, _t, _req)	\
->> 
->> This should be function, not define
->
->Yeah, I understand your point, but here was the reason:
->
->all packed structs which defined here in prestera_hw.c
->are used for transmission request/return to/from the firmware, each of
->the struct requires to have req/ret member (depends if it is request or
->return from the firmware), and the purpose of the macro is to avoid case
->when someone can forget to add req/ret member to the new such structure.
+Luigi Rizzo <lrizzo@google.com> writes:
 
-You should refactor your code to make this cleaner. Define acting as
-a function working with random structures counting with 2 member names in
-them, that is not nice :/
-
-
+> Add a netdevice flag to control skb linearization in generic xdp mode.
 >
->> 
->> 
->> >+({							\
->> >+	struct mvsw_msg_common_response __re;		\
->> >+	(fw_send_req_resp(_sw, _t, _req, &__re));	\
->> >+})
->> >+
+> The attribute can be modified through
+> 	/sys/class/net/<DEVICE>/xdpgeneric_linearize
+> The default is 1 (on)
 >
->Regards,
->Vadym Kochan,
+> Motivation: xdp expects linear skbs with some minimum headroom, and
+> generic xdp calls skb_linearize() if needed. The linearization is
+> expensive, and may be unnecessary e.g. when the xdp program does
+> not need access to the whole payload.
+> This sysfs entry allows users to opt out of linearization on a
+> per-device basis (linearization is still performed on cloned skbs).
+>
+> On a kernel instrumented to grab timestamps around the linearization
+> code in netif_receive_generic_xdp, and heavy netperf traffic with 1500b
+> mtu, I see the following times (nanoseconds/pkt)
+>
+> The receiver generally sees larger packets so the difference is more
+> significant.
+>
+> ns/pkt                   RECEIVER                 SENDER
+>
+>                     p50     p90     p99       p50   p90    p99
+>
+> LINEARIZATION:    600ns  1090ns  4900ns     149ns 249ns  460ns
+> NO LINEARIZATION:  40ns    59ns    90ns      40ns  50ns  100ns
+>
+> v1 --> v2 : added Documentation
+> v2 --> v3 : adjusted for skb_cloned
+> v3 --> v4 : renamed to xdpgeneric_linearize, documentation
+>
+> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
+
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+
