@@ -2,136 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D5E1737E0
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA82017380A
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:15:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgB1NGJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Feb 2020 08:06:09 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2796 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725906AbgB1NGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:06:06 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01SCwlNE038894
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:06:04 -0500
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [158.85.210.103])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2yepwj5twj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:06:04 -0500
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Fri, 28 Feb 2020 13:06:03 -0000
-Received: from us1b3-smtp04.a3dr.sjc01.isc4sb.com (10.122.203.161)
-        by smtp.notes.na.collabserv.com (10.122.47.39) with smtp.notes.na.collabserv.com ESMTP;
-        Fri, 28 Feb 2020 13:05:54 -0000
-Received: from us1b3-mail162.a3dr.sjc03.isc4sb.com ([10.160.174.187])
-          by us1b3-smtp04.a3dr.sjc01.isc4sb.com
-          with ESMTP id 2020022813055366-387445 ;
-          Fri, 28 Feb 2020 13:05:53 +0000 
-In-Reply-To: <20200227164622.GJ31668@ziepe.ca>
-Subject: Re: Re: possible deadlock in cma_netdev_callback
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     "Jason Gunthorpe" <jgg@ziepe.ca>
-Cc:     "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
-        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, parav@mellanox.com,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Date:   Fri, 28 Feb 2020 13:05:53 +0000
+        id S1725906AbgB1NPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:15:06 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:39818 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725796AbgB1NPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:15:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582895704;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QgYXOPRR1ZOR3Vv3MwriHbMmIPHi0egmaHv7X5ygYH0=;
+        b=HMiqan1aoshxs3sAwyQOXcZeePj5kPmu2+YbXX4q8+5VwwBQ125j36FJ4Obqg5jppfC+gr
+        BHzsB1J0t9u1PPHDffAEDzdOSGjx5UsZ721FIwRIziAYNGvPf7h2fZuOsPfyzSj4VXCiH5
+        TG/uxVLSS9DbImrCg825BWOxCdGtaG8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-233-sKjRMc0wMRuIoVGwHuRPiQ-1; Fri, 28 Feb 2020 08:14:57 -0500
+X-MC-Unique: sKjRMc0wMRuIoVGwHuRPiQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DCB1A107ACC7;
+        Fri, 28 Feb 2020 13:14:54 +0000 (UTC)
+Received: from sandy.ghostprotocols.net (ovpn-112-19.phx2.redhat.com [10.3.112.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DB91E60C18;
+        Fri, 28 Feb 2020 13:14:53 +0000 (UTC)
+Received: by sandy.ghostprotocols.net (Postfix, from userid 1000)
+        id B3B1BFD; Fri, 28 Feb 2020 10:14:50 -0300 (BRT)
+Date:   Fri, 28 Feb 2020 10:14:50 -0300
+From:   Arnaldo Carvalho de Melo <acme@redhat.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [PATCH 16/18] perf tools: Synthesize bpf_trampoline/dispatcher
+ ksymbol event
+Message-ID: <20200228131450.GA4010@redhat.com>
+References: <20200226130345.209469-1-jolsa@kernel.org>
+ <20200226130345.209469-17-jolsa@kernel.org>
 MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20200227164622.GJ31668@ziepe.ca>,<20200227155335.GI31668@ziepe.ca>
- <20200226204238.GC31668@ziepe.ca> <000000000000153fac059f740693@google.com>
- <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
- <OF0C6D63D8.F1817050-ON0025851B.0059D878-0025851B.0059D887@notes.na.collabserv.com>
-X-Mailer: IBM iNotes ($HaikuForm 1054.1) | IBM Domino Build
- SCN1812108_20180501T0841_FP62 November 04, 2019 at 09:47
-X-KeepSent: F9E6CFC6:7E79459D-0025851C:00472582;
- type=4; name=$KeepSent
-X-LLNOutbound: False
-X-Disclaimed: 15259
-X-TNEFEvaluated: 1
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 20022813-6283-0000-0000-000000FF3003
-X-IBM-SpamModules-Scores: BY=0.02035; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.399202; ST=0; TS=0; UL=0; ISC=; MB=0.005929
-X-IBM-SpamModules-Versions: BY=3.00012657; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000293; SDB=6.01340466; UDB=6.00714387; IPR=6.01122828;
- MB=3.00031010; MTD=3.00000008; XFM=3.00000015; UTC=2020-02-28 13:06:01
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2020-02-28 12:46:26 - 6.00011059
-x-cbparentid: 20022813-6284-0000-0000-000000CD3278
-Message-Id: <OFF9E6CFC6.7E79459D-ON0025851C.00472582-0025851C.0047F357@notes.na.collabserv.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-28_04:2020-02-26,2020-02-28 signatures=0
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200226130345.209469-17-jolsa@kernel.org>
+X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.5.20 (2009-12-10)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------"Jason Gunthorpe" <jgg@ziepe.ca> wrote: -----
+Em Wed, Feb 26, 2020 at 02:03:43PM +0100, Jiri Olsa escreveu:
+> Synthesize bpf images (trampolines/dispatchers) on start,
+> as ksymbol events from /proc/kallsyms. Having this perf
+> can recognize samples from those images and perf report
+> and top shows them correctly.
+> 
+> The rest of the ksymbol handling is already in place from
+> for the bpf programs monitoring, so only the initial state
+> was needed.
 
->To: "Bernard Metzler" <BMT@zurich.ibm.com>
->From: "Jason Gunthorpe" <jgg@ziepe.ca>
->Date: 02/27/2020 05:46PM
->Cc: "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
->chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
->linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
->netdev@vger.kernel.org, parav@mellanox.com,
->syzkaller-bugs@googlegroups.com, willy@infradead.org
->Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
->
->On Thu, Feb 27, 2020 at 04:21:21PM +0000, Bernard Metzler wrote:
->> 
->> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
->> >From: "Jason Gunthorpe" <jgg@ziepe.ca>
->> >Date: 02/27/2020 04:53PM
->> >Cc: "syzbot"
-><syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
->> >chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
->> >linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
->> >netdev@vger.kernel.org, parav@mellanox.com,
->> >syzkaller-bugs@googlegroups.com, willy@infradead.org
->> >Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
->> >
->> >On Thu, Feb 27, 2020 at 10:11:13AM +0000, Bernard Metzler wrote:
->> >
->> >> Thanks for letting me know! Hmm, we cannot use RCU locks since
->> >> we potentially sleep. One solution would be to create a list
->> >> of matching interfaces while under lock, unlock and use that
->> >> list for calling siw_listen_address() (which may sleep),
->> >> right...?
->> >
->> >Why do you need to iterate over addresses anyhow? Shouldn't the
->> >listen
->> >just be done with the address the user gave and a BIND DEVICE to
->the
->> >device siw is connected to?
->> 
->> The user may give a wildcard local address, so we'd have
->> to bind to all addresses of that device...
->
->AFAIK a wild card bind using BIND DEVICE works just fine?
->
->Jason
->
-Thanks Jason, absolutely! And it makes things so easy...
+Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-Let me prepare and send a patch which drops all that
-jumbo mumbo logic to iterate over interface addresses
-if the socket interface does the right things anyway.
+But at some point we should try and consolidate all those
+kallsym__parse() calls we have in tools/perf/ not to do it that many
+times, see below _before_ this patch:
 
-It implies further simplifications to the siw connection
-management, since with that we never have to maintain a
-list of listening siw endpoints on a given cm_id; it will
-always be max one. I'll cleanup the code accordingly and
-prepare an extra cleanup patch, which I can send only
-later (have a very tight schedule this week).
+[root@five ~]# perf probe -x ~/bin/perf kallsyms__parse
+Added new event:
+  probe_perf:kallsyms__parse (on kallsyms__parse in /home/acme/bin/perf)
 
-Bernard.
+You can now use it in all perf tools, such as:
+
+	perf record -e probe_perf:kallsyms__parse -aR sleep 1
+
+[root@five ~]# perf trace -e probe_perf:kallsyms__parse/max-stack=8/ -- perf record sleep 1
+     0.000 perf/6444 probe_perf:kallsyms__parse(__probe_ip: 4904384)
+                                       kallsyms__parse (/home/acme/bin/perf)
+                                       machine__get_running_kernel_start (/home/acme/bin/perf)
+                                       machine__create_kernel_maps (/home/acme/bin/perf)
+                                       perf_session__new (/home/acme/bin/perf)
+                                       cmd_record (/home/acme/bin/perf)
+                                       run_builtin (/home/acme/bin/perf)
+                                       main (/home/acme/bin/perf)
+                                       __libc_start_main (/usr/lib64/libc-2.30.so)
+     0.124 perf/6444 probe_perf:kallsyms__parse(__probe_ip: 4904384)
+                                       kallsyms__parse (/home/acme/bin/perf)
+                                       machine__get_running_kernel_start (/home/acme/bin/perf)
+                                       machine__create_kernel_maps (/home/acme/bin/perf)
+                                       perf_session__new (/home/acme/bin/perf)
+                                       cmd_record (/home/acme/bin/perf)
+                                       run_builtin (/home/acme/bin/perf)
+                                       main (/home/acme/bin/perf)
+                                       __libc_start_main (/usr/lib64/libc-2.30.so)
+    15.489 perf/6444 probe_perf:kallsyms__parse(__probe_ip: 4904384)
+                                       kallsyms__parse (/home/acme/bin/perf)
+                                       machine__create_kernel_maps (/home/acme/bin/perf)
+                                       perf_session__new (/home/acme/bin/perf)
+                                       cmd_record (/home/acme/bin/perf)
+                                       run_builtin (/home/acme/bin/perf)
+                                       main (/home/acme/bin/perf)
+                                       __libc_start_main (/usr/lib64/libc-2.30.so)
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.019 MB perf.data (7 samples) ]
+[root@five ~]#
+
+- Arnaldo
+
+ 
+> perf report output:
+> 
+>   # Overhead  Command     Shared Object                  Symbol
+> 
+>     12.37%  test_progs  [kernel.vmlinux]                 [k] entry_SYSCALL_64
+>     11.80%  test_progs  [kernel.vmlinux]                 [k] syscall_return_via_sysret
+>      9.63%  test_progs  bpf_prog_bcf7977d3b93787c_prog2  [k] bpf_prog_bcf7977d3b93787c_prog2
+>      6.90%  test_progs  bpf_trampoline_24456             [k] bpf_trampoline_24456
+>      6.36%  test_progs  [kernel.vmlinux]                 [k] memcpy_erms
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  tools/perf/util/bpf-event.c | 98 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 98 insertions(+)
+> 
+> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+> index a3207d900339..120ec547ae75 100644
+> --- a/tools/perf/util/bpf-event.c
+> +++ b/tools/perf/util/bpf-event.c
+> @@ -6,6 +6,9 @@
+>  #include <bpf/libbpf.h>
+>  #include <linux/btf.h>
+>  #include <linux/err.h>
+> +#include <linux/string.h>
+> +#include <internal/lib.h>
+> +#include <symbol/kallsyms.h>
+>  #include "bpf-event.h"
+>  #include "debug.h"
+>  #include "dso.h"
+> @@ -290,11 +293,87 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
+>  	return err ? -1 : 0;
+>  }
+>  
+> +struct kallsyms_parse {
+> +	union perf_event	*event;
+> +	perf_event__handler_t	 process;
+> +	struct machine		*machine;
+> +	struct perf_tool	*tool;
+> +};
+> +
+> +static int
+> +process_bpf_image(char *name, u64 addr, struct kallsyms_parse *data)
+> +{
+> +	struct machine *machine = data->machine;
+> +	union perf_event *event = data->event;
+> +	struct perf_record_ksymbol *ksymbol;
+> +	u32 size;
+> +
+> +	ksymbol = &event->ksymbol;
+> +
+> +	/*
+> +	 * The bpf image (trampoline/dispatcher) size is aligned to
+> +	 * page, while it starts little bit after the page boundary.
+> +	 */
+> +	size = page_size - (addr - PERF_ALIGN(addr, page_size));
+> +
+> +	*ksymbol = (struct perf_record_ksymbol) {
+> +		.header = {
+> +			.type = PERF_RECORD_KSYMBOL,
+> +			.size = offsetof(struct perf_record_ksymbol, name),
+> +		},
+> +		.addr      = addr,
+> +		.len       = size,
+> +		.ksym_type = PERF_RECORD_KSYMBOL_TYPE_BPF,
+> +		.flags     = 0,
+> +	};
+> +
+> +	strncpy(ksymbol->name, name, KSYM_NAME_LEN);
+> +	ksymbol->header.size += PERF_ALIGN(strlen(name) + 1, sizeof(u64));
+> +	memset((void *) event + event->header.size, 0, machine->id_hdr_size);
+> +	event->header.size += machine->id_hdr_size;
+> +
+> +	return perf_tool__process_synth_event(data->tool, event, machine,
+> +					      data->process);
+> +}
+> +
+> +static int
+> +kallsyms_process_symbol(void *data, const char *_name,
+> +			char type __maybe_unused, u64 start)
+> +{
+> +	char *module, *name;
+> +	unsigned long id;
+> +	int err = 0;
+> +
+> +	module = strchr(_name, '\t');
+> +	if (!module)
+> +		return 0;
+> +
+> +	/* We are going after [bpf] module ... */
+> +	if (strcmp(module + 1, "[bpf]"))
+> +		return 0;
+> +
+> +	name = memdup(_name, (module - _name) + 1);
+> +	if (!name)
+> +		return -ENOMEM;
+> +
+> +	name[module - _name] = 0;
+> +
+> +	/* .. and only for trampolines and dispatchers */
+> +	if ((sscanf(name, "bpf_trampoline_%lu", &id) == 1) ||
+> +	    (sscanf(name, "bpf_dispatcher_%lu", &id) == 1))
+> +		err = process_bpf_image(name, start, data);
+> +
+> +	free(name);
+> +	return err;
+> +}
+> +
+>  int perf_event__synthesize_bpf_events(struct perf_session *session,
+>  				      perf_event__handler_t process,
+>  				      struct machine *machine,
+>  				      struct record_opts *opts)
+>  {
+> +	const char *kallsyms_filename = "/proc/kallsyms";
+> +	struct kallsyms_parse arg;
+>  	union perf_event *event;
+>  	__u32 id = 0;
+>  	int err;
+> @@ -303,6 +382,8 @@ int perf_event__synthesize_bpf_events(struct perf_session *session,
+>  	event = malloc(sizeof(event->bpf) + KSYM_NAME_LEN + machine->id_hdr_size);
+>  	if (!event)
+>  		return -1;
+> +
+> +	/* Synthesize all the bpf programs in system. */
+>  	while (true) {
+>  		err = bpf_prog_get_next_id(id, &id);
+>  		if (err) {
+> @@ -335,6 +416,23 @@ int perf_event__synthesize_bpf_events(struct perf_session *session,
+>  			break;
+>  		}
+>  	}
+> +
+> +	/* Synthesize all the bpf images - trampolines/dispatchers. */
+> +	if (symbol_conf.kallsyms_name != NULL)
+> +		kallsyms_filename = symbol_conf.kallsyms_name;
+> +
+> +	arg = (struct kallsyms_parse) {
+> +		.event   = event,
+> +		.process = process,
+> +		.machine = machine,
+> +		.tool    = session->tool,
+> +	};
+> +
+> +	if (kallsyms__parse(kallsyms_filename, &arg, kallsyms_process_symbol)) {
+> +		pr_err("%s: failed to synthesize bpf images: %s\n",
+> +		       __func__, strerror(errno));
+> +	}
+> +
+>  	free(event);
+>  	return err;
+>  }
+> -- 
+> 2.24.1
 
