@@ -2,328 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C94173FCA
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 977D3173FF6
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:54:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgB1SkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:40:16 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:4079 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgB1SkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:40:15 -0500
-Received: from redhouse.blr.asicdesginers.com ([10.193.187.72])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 01SIdlBH032397;
-        Fri, 28 Feb 2020 10:40:09 -0800
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        herbert@gondor.apana.org.au
-Cc:     secdev@chelsio.com, varun@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net-next v2 6/6] cxgb4/chcr: Add ipv6 support and statistics
-Date:   Sat, 29 Feb 2020 00:09:45 +0530
-Message-Id: <20200228183945.11594-7-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.25.0.191.gde93cc1
-In-Reply-To: <20200228183945.11594-1-rohitm@chelsio.com>
-References: <20200228183945.11594-1-rohitm@chelsio.com>
+        id S1726490AbgB1SyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:54:10 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39378 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgB1SyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:54:10 -0500
+Received: by mail-io1-f67.google.com with SMTP id h3so4555084ioj.6
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:54:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gothF0XmeP6cNGj7rIU/CzUNi9bpALC+/4legdueZHE=;
+        b=epzR63TycgbLuPQ5Y45+JweRvMUaHM7TUPzksCGa7ZbTE+2zaBN4ZiZHp4K3B0QkUU
+         hRTruGXpWEuIm4FSwcK5kfn06upKCaxBg260IlcbU4Opj+evmV1MNXb43onzE00yhvCi
+         f8eaTjrd8Optfc4MbJqONGiSN7FEvZ6MY0tlECcf0kfLplL5EqV/nPV5s6ZyCxms7mjW
+         87xagvmdinkhrwlq6z/+DEAiMjrHed7XVkSKNJ7wCYQge4/WZVLkZ3fFNADVen2xhCbI
+         aTqCubM5foGCgcdKBHfDn6sFA+hQwR8scGS6RT58pw4ERwqkaH0G+Duu4lqh9XRHTFx7
+         t6oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gothF0XmeP6cNGj7rIU/CzUNi9bpALC+/4legdueZHE=;
+        b=a7lGzrKdKjNqbzOvGfGPDd1hBDA3kVS5U0K5DJ6MzJCshfXNQdKC9NoJJMxbTQfcny
+         dHWibvy5iSluJ4ef2LL0MMtp5nvQCOGne/MRezL/1BfIJuW30Do4gzRGhrXn5MRRad9w
+         RtaVozOEy/vRN07Gd+GMqA2UsKhxBVpgPwN4FqDphBFRzLguNQoiVap2njmG9jx2AVrW
+         EOSGxtiq0tZBp6MesueVVPI1OetUfNhnAq9zISoJO/E5ABFuu6KH1a3UFZmt8BSzuiSk
+         7PBbEeR16CUX3zHZW1CwaFbgyLD+7prK6Hr7LTR74D5UR24wrZTHXa0PXfcu+kZO4Omt
+         jQsw==
+X-Gm-Message-State: APjAAAUhNkfyaZBUYSbwKn5fEIt4rjaFG4BvSLiCHB8BF5KQuG8QYy9k
+        OdtGT9s1HZ0/D9PMxc4dtRSSP0BLp/Xztv8gfzuTShhw
+X-Google-Smtp-Source: APXvYqxijjojQVpxN3yyF+N1z+92h7uUw8VS+JklTjlG+jtKmiavixD88/T6wA8UgZPyUH1+22k/BIt4LmL93VhCirY=
+X-Received: by 2002:a05:6602:154d:: with SMTP id h13mr4835260iow.237.1582916049682;
+ Fri, 28 Feb 2020 10:54:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <158289240414.1877500.8426359194461700361.stgit@firesoul>
+In-Reply-To: <158289240414.1877500.8426359194461700361.stgit@firesoul>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 28 Feb 2020 10:53:58 -0800
+Message-ID: <CAKgT0Udj=BRNh3=TkNk5XyY5zbXtY_3kw+VORspUZLhvUFDN+w@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [net-next PATCH] ixgbe: fix XDP redirect on
+ archs with PAGE_SIZE above 4K
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ipv6 support and ktls related statistics.
+On Fri, Feb 28, 2020 at 4:20 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> The ixgbe driver have another memory model when compiled on archs with
+> PAGE_SIZE above 4096 bytes. In this mode it doesn't split the page in
+> two halves, but instead increment rx_buffer->page_offset by truesize of
+> packet (which include headroom and tailroom for skb_shared_info).
+>
+> This is done correctly in ixgbe_build_skb(), but in ixgbe_rx_buffer_flip
+> which is currently only called on XDP_TX and XDP_REDIRECT, it forgets
+> to add the tailroom for skb_shared_info. This breaks XDP_REDIRECT, for
+> veth and cpumap.  Fix by adding size of skb_shared_info tailroom.
+>
+> Fixes: 6453073987ba ("ixgbe: add initial support for xdp redirect")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-v1->v2:
-- aaded blank lines at 2 places.
+This approach to fixing it seems problematic at best. From what I can
+tell there wasn't an issue until this frame gets up into the
+XDP_REDIRECT path. In the case of XDP_TX the ixgbe driver has not need
+for the extra shared info space. I assume you need this because you
+are converting the buffer to an skbuff.
 
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- drivers/crypto/chelsio/chcr_ktls.c            | 84 ++++++++++++++++++-
- drivers/crypto/chelsio/chcr_ktls.h            |  1 +
- .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    | 25 ++++++
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    | 13 +++
- 4 files changed, 121 insertions(+), 2 deletions(-)
+The question I have is exactly how is this failing, are we talking
+about it resulting in the region being shared with the next frame, or
+is it being correctly identified that there is no tailroom and the
+frame is dropped? If we are seeing memory corruption due to it sharing
+the memory I would say we have a problem with the design for
+XDP_REDIRECT since it is assuming things about the buffer that may or
+may not be true. At a minimum we are going to need to guarantee that
+all XDP devices going forward provide this padding on the end of the
+frame which has not been anything that was communicated up until now.
 
-diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
-index 04f4ee568c99..c437e640f34d 100644
---- a/drivers/crypto/chelsio/chcr_ktls.c
-+++ b/drivers/crypto/chelsio/chcr_ktls.c
-@@ -3,6 +3,7 @@
- 
- #ifdef CONFIG_CHELSIO_TLS_DEVICE
- #include "chcr_ktls.h"
-+#include "clip_tbl.h"
- 
- static int chcr_init_tcb_fields(struct chcr_ktls_info *tx_info);
- /*
-@@ -219,6 +220,56 @@ static int chcr_ktls_act_open_req(struct sock *sk,
- 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
- }
- 
-+/*
-+ * chcr_ktls_act_open_req6: creates TCB entry for ipv6 connection.
-+ * @sk - tcp socket.
-+ * @tx_info - driver specific tls info.
-+ * @atid - connection active tid.
-+ * return - send success/failure.
-+ */
-+static int chcr_ktls_act_open_req6(struct sock *sk,
-+				   struct chcr_ktls_info *tx_info,
-+				   int atid)
-+{
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct cpl_t6_act_open_req6 *cpl6;
-+	struct cpl_act_open_req6 *cpl;
-+	struct sk_buff *skb;
-+	unsigned int len;
-+	int qid_atid;
-+	u64 options;
-+
-+	len = sizeof(*cpl6);
-+	skb = alloc_skb(len, GFP_KERNEL);
-+	if (unlikely(!skb))
-+		return -ENOMEM;
-+	/* mark it a control pkt */
-+	set_wr_txq(skb, CPL_PRIORITY_CONTROL, tx_info->port_id);
-+
-+	cpl6 = __skb_put_zero(skb, len);
-+	cpl = (struct cpl_act_open_req6 *)cpl6;
-+	INIT_TP_WR(cpl6, 0);
-+	qid_atid = TID_QID_V(tx_info->rx_qid) | TID_TID_V(atid);
-+	OPCODE_TID(cpl) = htonl(MK_OPCODE_TID(CPL_ACT_OPEN_REQ6, qid_atid));
-+	cpl->local_port = inet->inet_sport;
-+	cpl->peer_port = inet->inet_dport;
-+	cpl->local_ip_hi = *(__be64 *)&sk->sk_v6_rcv_saddr.in6_u.u6_addr8[0];
-+	cpl->local_ip_lo = *(__be64 *)&sk->sk_v6_rcv_saddr.in6_u.u6_addr8[8];
-+	cpl->peer_ip_hi = *(__be64 *)&sk->sk_v6_daddr.in6_u.u6_addr8[0];
-+	cpl->peer_ip_lo = *(__be64 *)&sk->sk_v6_daddr.in6_u.u6_addr8[8];
-+
-+	/* first 64 bit option field. */
-+	options = TCAM_BYPASS_F | ULP_MODE_V(ULP_MODE_NONE) | NON_OFFLOAD_F |
-+		  SMAC_SEL_V(tx_info->smt_idx) | TX_CHAN_V(tx_info->tx_chan);
-+	cpl->opt0 = cpu_to_be64(options);
-+	/* next 64 bit option field. */
-+	options =
-+		TX_QUEUE_V(tx_info->adap->params.tp.tx_modq[tx_info->tx_chan]);
-+	cpl->opt2 = htonl(options);
-+
-+	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
-+}
-+
- /*
-  * chcr_setup_connection:  create a TCB entry so that TP will form tcp packets.
-  * @sk - tcp socket.
-@@ -245,7 +296,13 @@ static int chcr_setup_connection(struct sock *sk,
- 		ret = chcr_ktls_act_open_req(sk, tx_info, atid);
- 	} else {
- 		tx_info->ip_family = AF_INET6;
--		ret = -EOPNOTSUPP;
-+		ret =
-+		cxgb4_clip_get(tx_info->netdev,
-+			       (const u32 *)&sk->sk_v6_rcv_saddr.in6_u.u6_addr8,
-+			       1);
-+		if (ret)
-+			goto out;
-+		ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
- 	}
- 
- 	/* if return type is NET_XMIT_CN, msg will be sent but delayed, mark ret
-@@ -322,23 +379,35 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
- 	struct chcr_ktls_ofld_ctx_tx *tx_ctx =
- 				chcr_get_ktls_tx_context(tls_ctx);
- 	struct chcr_ktls_info *tx_info = tx_ctx->chcr_info;
-+	struct sock *sk;
- 
- 	if (!tx_info)
- 		return;
-+	sk = tx_info->sk;
- 
- 	spin_lock(&tx_info->lock);
- 	tx_info->connection_state = KTLS_CONN_CLOSED;
- 	spin_unlock(&tx_info->lock);
- 
-+	/* clear l2t entry */
- 	if (tx_info->l2te)
- 		cxgb4_l2t_release(tx_info->l2te);
- 
-+	/* clear clip entry */
-+	if (tx_info->ip_family == AF_INET6)
-+		cxgb4_clip_release(netdev,
-+				   (const u32 *)&sk->sk_v6_daddr.in6_u.u6_addr8,
-+				   1);
-+
-+	/* clear tid */
- 	if (tx_info->tid != -1) {
- 		/* clear tcb state and then release tid */
- 		chcr_ktls_mark_tcb_close(tx_info);
- 		cxgb4_remove_tid(&tx_info->adap->tids, tx_info->tx_chan,
- 				 tx_info->tid, tx_info->ip_family);
- 	}
-+
-+	atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_connection_close);
- 	kvfree(tx_info);
- 	tx_ctx->chcr_info = NULL;
- }
-@@ -424,7 +493,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
- 		memcpy(daaddr, &sk->sk_daddr, 4);
- 	} else {
--		goto out2;
-+		memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
- 	}
- 
- 	/* get the l2t index */
-@@ -458,10 +527,12 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 	if (ret)
- 		goto out2;
- 
-+	atomic_inc(&adap->chcr_stats.ktls_tx_connection_open);
- 	return 0;
- out2:
- 	kvfree(tx_info);
- out:
-+	atomic_inc(&adap->chcr_stats.ktls_tx_connection_fail);
- 	return ret;
- }
- 
-@@ -728,6 +799,7 @@ static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
- 						 TCB_SND_UNA_RAW_V
- 						 (TCB_SND_UNA_RAW_M),
- 						 TCB_SND_UNA_RAW_V(0), 0);
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_retransmit_pkts);
- 		cpl++;
- 	}
- 	/* update ack */
-@@ -1152,6 +1224,7 @@ static int chcr_ktls_xmit_wr_complete(struct sk_buff *skb,
- 
- 	chcr_txq_advance(&q->q, ndesc);
- 	cxgb4_ring_tx_db(adap, &q->q, ndesc);
-+	atomic_inc(&adap->chcr_stats.ktls_tx_send_records);
- 
- 	return 0;
- }
-@@ -1562,6 +1635,7 @@ static int chcr_end_part_handler(struct chcr_ktls_info *tx_info,
- 	/* check if it is a complete record */
- 	if (tls_end_offset == record->len) {
- 		nskb = skb;
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_complete_pkts);
- 	} else {
- 		nskb = alloc_skb(0, GFP_KERNEL);
- 		if (!nskb) {
-@@ -1580,6 +1654,7 @@ static int chcr_end_part_handler(struct chcr_ktls_info *tx_info,
- 		 */
- 		if (chcr_ktls_update_snd_una(tx_info, q))
- 			goto out;
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_end_pkts);
- 	}
- 
- 	if (chcr_ktls_xmit_wr_complete(nskb, tx_info, q, tcp_seq,
-@@ -1650,6 +1725,7 @@ static int chcr_short_record_handler(struct chcr_ktls_info *tx_info,
- 		/* free the last trimmed portion */
- 		kfree_skb(skb);
- 		skb = tmp_skb;
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_trimmed_pkts);
- 	}
- 	data_len = skb->data_len;
- 	/* check if the middle record's start point is 16 byte aligned. CTR
-@@ -1721,6 +1797,7 @@ static int chcr_short_record_handler(struct chcr_ktls_info *tx_info,
- 		 */
- 		if (chcr_ktls_update_snd_una(tx_info, q))
- 			goto out;
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_middle_pkts);
- 	} else {
- 		/* Else means, its a partial first part of the record. Check if
- 		 * its only the header, don't need to send for encryption then.
-@@ -1735,6 +1812,7 @@ static int chcr_short_record_handler(struct chcr_ktls_info *tx_info,
- 			}
- 			return 0;
- 		}
-+		atomic_inc(&tx_info->adap->chcr_stats.ktls_tx_start_pkts);
- 	}
- 
- 	if (chcr_ktls_xmit_wr_short(skb, tx_info, q, tcp_seq, tcp_push_no_fin,
-@@ -1811,6 +1889,8 @@ int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 				      ntohs(th->window));
- 	if (ret)
- 		return NETDEV_TX_BUSY;
-+
-+	atomic_inc(&adap->chcr_stats.ktls_tx_pkts_received);
- 	/* don't touch the original skb, make a new skb to extract each records
- 	 * and send them separately.
- 	 */
-diff --git a/drivers/crypto/chelsio/chcr_ktls.h b/drivers/crypto/chelsio/chcr_ktls.h
-index 9ffb8cc85db1..5a7ae2ca446e 100644
---- a/drivers/crypto/chelsio/chcr_ktls.h
-+++ b/drivers/crypto/chelsio/chcr_ktls.h
-@@ -11,6 +11,7 @@
- #include "t4_tcb.h"
- #include "l2t.h"
- #include "chcr_common.h"
-+#include "cxgb4_uld.h"
- 
- #define CHCR_TCB_STATE_CLOSED	0
- #define CHCR_KTLS_KEY_CTX_LEN	16
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index de30d61af065..ae71f3832988 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -3409,6 +3409,31 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
- 		   atomic_read(&adap->chcr_stats.tls_pdu_rx));
- 	seq_printf(seq, "TLS Keys (DDR) Count: %10u\n",
- 		   atomic_read(&adap->chcr_stats.tls_key));
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+	seq_puts(seq, "\nChelsio KTLS Crypto Accelerator Stats\n");
-+	seq_printf(seq, "KTLS connection opened:                  %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_connection_open));
-+	seq_printf(seq, "KTLS connection failed:                  %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_connection_fail));
-+	seq_printf(seq, "KTLS connection closed:                  %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_connection_close));
-+	seq_printf(seq, "KTLS Tx pkt received from stack:         %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_pkts_received));
-+	seq_printf(seq, "KTLS tx records send:                    %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_send_records));
-+	seq_printf(seq, "KTLS tx partial start of records:        %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_start_pkts));
-+	seq_printf(seq, "KTLS tx partial middle of records:       %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_middle_pkts));
-+	seq_printf(seq, "KTLS tx partial end of record:           %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_end_pkts));
-+	seq_printf(seq, "KTLS tx complete records:                %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_complete_pkts));
-+	seq_printf(seq, "KTLS tx trim pkts :                      %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_trimmed_pkts));
-+	seq_printf(seq, "KTLS tx retransmit packets:              %10u\n",
-+		   atomic_read(&adap->chcr_stats.ktls_tx_retransmit_pkts));
-+#endif
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index d9d27bc1ae67..c07339abfade 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -357,6 +357,19 @@ struct chcr_stats_debug {
- 	atomic_t tls_pdu_tx;
- 	atomic_t tls_pdu_rx;
- 	atomic_t tls_key;
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+	atomic_t ktls_tx_pkts_received;
-+	atomic_t ktls_tx_connection_open;
-+	atomic_t ktls_tx_connection_fail;
-+	atomic_t ktls_tx_connection_close;
-+	atomic_t ktls_tx_send_records;
-+	atomic_t ktls_tx_end_pkts;
-+	atomic_t ktls_tx_start_pkts;
-+	atomic_t ktls_tx_middle_pkts;
-+	atomic_t ktls_tx_retransmit_pkts;
-+	atomic_t ktls_tx_complete_pkts;
-+	atomic_t ktls_tx_trimmed_pkts;
-+#endif
- };
- 
- #define OCQ_WIN_OFFSET(pdev, vres) \
--- 
-2.25.0.191.gde93cc1
+I would argue that we should not be using build_skb on XDP buffers
+since it is going to lead to similar issues in the future. It would be
+much better to simply add the XDP frame as a fragment and to pull the
+headers as we have done in the past.
 
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 718931d951bc..ea6834bae04c 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -2254,7 +2254,8 @@ static void ixgbe_rx_buffer_flip(struct ixgbe_ring *rx_ring,
+>         rx_buffer->page_offset ^= truesize;
+>  #else
+>         unsigned int truesize = ring_uses_build_skb(rx_ring) ?
+> -                               SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) :
+> +                               SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
+> +                               SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
+>                                 SKB_DATA_ALIGN(size);
+>
+>         rx_buffer->page_offset += truesize;
+>
+>
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
