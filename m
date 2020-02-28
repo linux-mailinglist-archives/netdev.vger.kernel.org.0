@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEE81741A2
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 22:49:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A911741B0
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 22:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726527AbgB1VtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 16:49:05 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42374 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbgB1VtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 16:49:05 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 15so2368386pfo.9
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 13:49:04 -0800 (PST)
+        id S1726627AbgB1Vv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 16:51:59 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:36824 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726151AbgB1Vv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 16:51:58 -0500
+Received: by mail-pg1-f195.google.com with SMTP id d9so2184441pgu.3
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 13:51:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0HbNbeB7e1helNnmZbFPkwWSE2TTIQWxHgGDuHAEWCg=;
-        b=TkjLuRNaT3etHuahZvsiL85VkCSIrmMAnV++0B0Z/S68L+rtbwZ48zvv+oRNBGIG9G
-         yDjOqImcKYqinQKdEZKjhA3c8rub2cxD4igN/8YFZNIMIJYqSUwuue6sV23B8sejmCrw
-         zbiAhSUvOOzYeWqfWzLpZd7QhbdfqJ2PdkxbIbSb5wdAwlgHs2ZTCae0S5l6xg/sKlIJ
-         y4lj4bfw/lWypijPBijugolA9l6xo5D4qwG+cduOw1sVXeqpUHPfArcm66jT8NbYiwnL
-         sKeRcaaOKEeV6nyyfpdBqySCGpa6sZimdayUv9bCdgKKlPOtKaezYKDJKqaJew6wAnaO
-         UIdQ==
+        bh=9GD06KjmcX8Sy3WIFzeZWhTdIK/pX438q54YaqvPvvI=;
+        b=fWHM8bcuUIy3Q+qDmIs+uxScpsCcqiXdlsTqZ8FdkhAGiRavhUUklWjmQxYsLLbrif
+         rzi7RWP23ZU+tQjgC/Xc3+keDJTdMnbz/6Pz3HSMFDdm/XjSQ+Jcnx2/ZR8y+U3qlxS5
+         /eMVaRJvcYdcP+GIWi5X2H+VafwAjDbykR7HgIUYqswi4DtXyL3bFg0B/XcCWrMqvzsy
+         PR5I4SxDXqCg4u6MefjNfdvMO63S7hLX0bHcrXYfaWPH+gCvx2sg2/uBDkXjpipHZgwZ
+         tz17oe4faKeezYSrrYe9wLVpgHTLEG0mr29blN1SWFxe7FUXMBhQm4c5x7VD5GvlJtCe
+         7H9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0HbNbeB7e1helNnmZbFPkwWSE2TTIQWxHgGDuHAEWCg=;
-        b=csW6NWT3hhiaYLyWpQHmpLCnNvsLDbXwXFbjQa6IO/9M7FENdqpUrZDR5x6fSM7a8l
-         5dH8GzEaLFTh1Z7sSZ4MLvW3rS2wB0XljwNkyrtJ3CITiZRWKjbu0q4fznw7HPWajeb1
-         +TY2f9VTvQ2OLNrp+Scd2PoRFpXGfP+XXmPMNIxqkK824xrPKfGXvDfd5cfVUdMmWNA/
-         7Kf0zQvmTbpTd/KI63IQgYHToNOpjs6ad2b3g8wwClgHskn/HXkor8JIHUDxc+76CoFp
-         YS51aaoC8EUBtVrhMNXMrbxpqr5IzLgiTLe6ger6w97AQZ2xkTZgJYSwTGTyixhRa3Ni
-         PJ2w==
-X-Gm-Message-State: APjAAAXVCED2nZMR+sZ/Gk9RNEdZ/jKP1VUufS+FJ/lJ55sugiDSm5Yw
-        dTAK9ubmEINaUKMso+MOLPybHw==
-X-Google-Smtp-Source: APXvYqz3Din8eHaAx+263OjuuOAQPAcbNyUhDel+DaQOdHt+rGonY40fwiHGwJOkCSlM2MZTTbOLPg==
-X-Received: by 2002:a63:3449:: with SMTP id b70mr6618836pga.242.1582926544420;
-        Fri, 28 Feb 2020 13:49:04 -0800 (PST)
+        bh=9GD06KjmcX8Sy3WIFzeZWhTdIK/pX438q54YaqvPvvI=;
+        b=YrNmhr+p9JDrss3Fcfem56sIH7N3MInZqOh5xXndvfw0Wznx1PoN2DT7XAHWO3CB7f
+         4Zo+FffuZOj0LWKLU2Rn9jzGnP5/JZyuG8Xh2C+fS8bJ6ip2DEfHk0WLc3U0P9ARM5M5
+         agSrvU6Ja59BfNYiyabVjUh+BRBUAIMriIQxljoFoNxwP3NDav6V0gtrOR8LMISR7e4t
+         UhOIr75hPrhP94mfgYw4Ykx+gfrTdX7/xW1W6oWs0ZQD13Si4noFZXnKqjvS9g5bFJhv
+         U8GKjC9tVxPDwwTNn4ArY87kGySTWxdBC0ddpNVZoTn6nkJALnC8ql8jUsqWKSp2S4a0
+         Eluw==
+X-Gm-Message-State: APjAAAUV7oIG5feFMqS258yDUD75VRTZR8Vub1Sd48MQiPFLqprCs7FI
+        2XZ+1rh0w9/uJSORX3KB7cf0jbV1m0E=
+X-Google-Smtp-Source: APXvYqx6+sK6n/hI5KG2udv8SfKhh3dkgcuqpYjiAwVNGXDPR9uFA4MwzbfKy0eicFU3uBra5zULkw==
+X-Received: by 2002:a65:668c:: with SMTP id b12mr6693914pgw.14.1582926717800;
+        Fri, 28 Feb 2020 13:51:57 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 188sm7782042pfa.62.2020.02.28.13.49.03
+        by smtp.gmail.com with ESMTPSA id r145sm12570956pfr.5.2020.02.28.13.51.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 13:49:04 -0800 (PST)
-Date:   Fri, 28 Feb 2020 13:49:01 -0800
+        Fri, 28 Feb 2020 13:51:57 -0800 (PST)
+Date:   Fri, 28 Feb 2020 13:51:54 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH iproute2] man: ip.8: Add missing vrf subcommand
- description
-Message-ID: <20200228134901.6449358a@hermes.lan>
-In-Reply-To: <acd21cee80dfcb99c131059a8e393b6a62de0d64.1582821904.git.aclaudi@redhat.com>
-References: <acd21cee80dfcb99c131059a8e393b6a62de0d64.1582821904.git.aclaudi@redhat.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, steffen.klassert@secunet.com,
+        sd@queasysnail.net
+Subject: Re: [PATCH iproute2] xfrm: not try to delete ipcomp states when
+ using deleteall
+Message-ID: <20200228135154.61960560@hermes.lan>
+In-Reply-To: <6d87af76cc3c311647c961e2f94e026bb15869d8.1582556221.git.lucien.xin@gmail.com>
+References: <6d87af76cc3c311647c961e2f94e026bb15869d8.1582556221.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,12 +62,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Feb 2020 17:45:43 +0100
-Andrea Claudi <aclaudi@redhat.com> wrote:
+On Mon, 24 Feb 2020 09:57:01 -0500
+Xin Long <lucien.xin@gmail.com> wrote:
 
-> Add description to the vrf subcommand and a reference to the
-> dedicated man page.
+> In kernel space, ipcomp(sub) states used by main states are not
+> allowed to be deleted by users, they would be freed only when
+> all main states are destroyed and no one uses them.
 > 
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> In user space, ip xfrm sta deleteall doesn't filter these ipcomp
+> states out, and it causes errors:
+> 
+>   # ip xfrm state add src 192.168.0.1 dst 192.168.0.2 spi 0x1000 \
+>       proto comp comp deflate mode tunnel sel src 192.168.0.1 dst \
+>       192.168.0.2 proto gre
+>   # ip xfrm sta deleteall
+>   Failed to send delete-all request
+>   : Operation not permitted
+> 
+> This patch is to fix it by filtering ipcomp states with a check
+> xsinfo->id.proto == IPPROTO_IPIP.
+> 
+> Fixes: c7699875bee0 ("Import patch ipxfrm-20040707_2.diff")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Looks good, applied
+
+Wow that has been broken for a long time, does anyone use this?
+
+Applied
