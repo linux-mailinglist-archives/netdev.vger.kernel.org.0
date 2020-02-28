@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1EC517351B
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:16:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09046173533
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:23:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbgB1KQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 05:16:44 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:34500 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726063AbgB1KQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:16:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582885002;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eVoGLbtnYzXWlmc48w0t/0qrnxkTvQefS/f9aokidUA=;
-        b=I25S4OL3W5DO/IKq0F2mP5ltH69hg4MKpfS+/8+cj9ye+vJVfpZKZ3PcJowdeH2peYxrgQ
-        TIGm6/brjWVvb3Ym84ZzqiP1oqg6x0rvu9XTZovG1BsMPzDGTXNuDFEkL0B5Xcvg2eP9cp
-        oRP9U04JZOtqZ+W7AwuM83S+qBSv/+k=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-224-tuTwk0sjNwapV7gtUNxV2g-1; Fri, 28 Feb 2020 05:16:40 -0500
-X-MC-Unique: tuTwk0sjNwapV7gtUNxV2g-1
-Received: by mail-lf1-f72.google.com with SMTP id r24so341826lfi.23
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 02:16:39 -0800 (PST)
+        id S1726838AbgB1KXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 05:23:33 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:40331 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726614AbgB1KXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:23:32 -0500
+Received: by mail-io1-f66.google.com with SMTP id x1so2842829iop.7;
+        Fri, 28 Feb 2020 02:23:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IHJZiLPZ3d84yInYn+06VlShgDYFte97xEhqlxTF18E=;
+        b=fdr2DIkB8LHJz9/EjmLx9Q7PWWivAJOWiGOjqHdyhtpkd67QTw1bG8Y8JsDvd9O0kT
+         3COh6VCFUO9h6ir3Rb1V5a4ZH9VbnV4HpTfZPV1i6ZTZn9EWNpE4Hp4TOz9JGwB7kuZj
+         MnuD+wywq3Q58rCRkg+Ty5og4chuYSvR9lww9m7gbq8ztkGlC1RHozLDAH3ev7PKofwf
+         zFLPbG/alRlb1087Dn86bo4NpHY31zlxMLx+Dh9M33yl8+zRapIP+mRKUe8FvOq3V+YO
+         PTAbUPTFpxP+QjoFCicgfA2BGRaQR4VytaNJJc6KnCOjvQKQ7MUMslH/Vn0xpMQdAvZN
+         IpIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=eVoGLbtnYzXWlmc48w0t/0qrnxkTvQefS/f9aokidUA=;
-        b=KK2xjndRNeaYyPIx2TYh/4k/cPiiyhZAtZRAF4XJLlRzLCHajHN4WAcg5FZVOsl1LR
-         StACxUYIg45YHKflgqPZ3D1GqPIQ9vi9UdGPCVgVBMLROD8BYpcn6SZ9kyFa10SS13IB
-         PSVFlUBgJmidGfGnmoXwo2FH7K31ddh5dYYJy4xUhgZba5+HOnirOLeJbiLZHVNhRl9C
-         ZKdHo+NQW0KOMrRBTZBj0/LfLgEgxR4DCvimncKV+VSpVc+m/NvKZH+0dFDv1ldDn73J
-         /Ek6lHwpFAd+pUXv5v/1gg1yB44EIAWdeRxVp6b3lTTLhsjj6ZNZdpQbtsxt1B+TYnhL
-         9Fkg==
-X-Gm-Message-State: ANhLgQ3t01ku/wZKXep2QcRWr2PE3lpXS4zwV5m4bPH1I/eKLNvSpDps
-        uP61xXJS6bSyvKYusA8RKKjBKQl0T+m6cHsa/+CgIbRChCybnQXnRVpdToKbQmMXXcGDowgL2Hw
-        k9NYVtYrT7l9I87RP
-X-Received: by 2002:a19:7d04:: with SMTP id y4mr2282663lfc.111.1582884998571;
-        Fri, 28 Feb 2020 02:16:38 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vvXO5F7cH4hg0ivZxLRqZGLTBjzmF9Evdui+BrIiVguCGiV5KpQodnEEMWnFVLVq1UTeuRPKQ==
-X-Received: by 2002:a19:7d04:: with SMTP id y4mr2282655lfc.111.1582884998373;
-        Fri, 28 Feb 2020 02:16:38 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 19sm4543665lfp.86.2020.02.28.02.16.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 02:16:37 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AC741180362; Fri, 28 Feb 2020 11:16:36 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, hawk@kernel.org, sameehj@amazon.com
-Cc:     linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
-Subject: Re: [PATCH v3 net-next] netdev attribute to control xdpgeneric skb linearization
-In-Reply-To: <20200227173428.5298-1-lrizzo@google.com>
-References: <20200227173428.5298-1-lrizzo@google.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 Feb 2020 11:16:36 +0100
-Message-ID: <87h7zbuid7.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IHJZiLPZ3d84yInYn+06VlShgDYFte97xEhqlxTF18E=;
+        b=dv6k+tbvCb4gz0+ZJ7Ly1ip6rMZTMIZ4Yw0fVFJF+iEQNgNBGrzjytnv6+h6Gzzwnd
+         VzpYSAyAHv6Kg4We5rR3Si9/0FVcw3pbh8mXP02yqI2l5lZlhxDIfVn/CAsVMPrf0PhN
+         1E1OZYuM6XAmFAzQvS15hvE25neht4cko0y9K3l9IU0VXV1uUG5BOMO8uNeTW+uynRCn
+         sPrSgj6RvjRXxkXVGEG9fZt751nerbbefh+U91f0pqxOFanzOUH4toI2nhuaf0IiFlr8
+         C2Mq19O+Bz1NlkgUuZ0XFXq6AQeM/Tk4cVya4O3CpcxwIvo3r4RtQqzIZ2nzVJ9huwoP
+         h1RA==
+X-Gm-Message-State: APjAAAVuhOIc3k+F+pImqb3K0lxH1bgo1pLczLgLdeZMlvvkgPjg5HWA
+        D2OapSsH1iCIwZ1uq0dHAzfT9P0UIR/4EJAYN9A=
+X-Google-Smtp-Source: APXvYqxMrFonMOeeWgF3H4kyIbFxNkNfxuh6QUZc4eEnjbUcCaH4zISiGpEczOH1OFW7Fp0285tV6vjUB4n6kx37qhQ=
+X-Received: by 2002:a6b:9188:: with SMTP id t130mr2801012iod.215.1582885411923;
+ Fri, 28 Feb 2020 02:23:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200228044518.20314-1-gmayyyha@gmail.com>
+In-Reply-To: <20200228044518.20314-1-gmayyyha@gmail.com>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Fri, 28 Feb 2020 11:23:25 +0100
+Message-ID: <CAOi1vP-K+e0N26qpthLcst8HLE-FAMGSE9XwBhj1dPBiLyN-iA@mail.gmail.com>
+Subject: Re: [PATCH] ceph: using POOL FULL flag instead of OSDMAP FULL flag
+To:     Yanhu Cao <gmayyyha@gmail.com>
+Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luigi Rizzo <lrizzo@google.com> writes:
-
-> Add a netdevice flag to control skb linearization in generic xdp mode.
+On Fri, Feb 28, 2020 at 5:45 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
 >
-> The attribute can be modified through
-> 	/sys/class/net/<DEVICE>/xdp_linearize
-> The default is 1 (on)
+> OSDMAP_FULL and OSDMAP_NEARFULL are deprecated since mimic.
+>
+> Signed-off-by: Yanhu Cao <gmayyyha@gmail.com>
+> ---
+>  fs/ceph/file.c                  |  6 ++++--
+>  include/linux/ceph/osd_client.h |  2 ++
+>  include/linux/ceph/osdmap.h     |  3 ++-
+>  net/ceph/osd_client.c           | 23 +++++++++++++----------
+>  4 files changed, 21 insertions(+), 13 deletions(-)
+>
+> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> index 7e0190b1f821..60ea1eed1b84 100644
+> --- a/fs/ceph/file.c
+> +++ b/fs/ceph/file.c
+> @@ -1482,7 +1482,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>         }
+>
+>         /* FIXME: not complete since it doesn't account for being at quota */
+> -       if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_FULL)) {
+> +       if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> +                               CEPH_POOL_FLAG_FULL)) {
+>                 err = -ENOSPC;
+>                 goto out;
+>         }
+> @@ -1575,7 +1576,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>         }
+>
+>         if (written >= 0) {
+> -               if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_NEARFULL))
+> +               if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> +                                       CEPH_POOL_FLAG_NEARFULL))
 
-Calling it just 'xdp_linearize' implies (to me) that it also affects
-driver-mode XDP. So maybe generic_xdp_linearize ?
+Hi Yanhu,
 
-[...]
+Have you considered pre-mimic clusters here?  They are still supported
+(and will continue to be supported for the foreseeable future).
 
-> +
-> +What:		/sys/class/net/<iface>/xdp_linearize
-> +Date:		Jan 2020
-> +KernelVersion:	5.6
-> +Contact:	netdev@vger.kernel.org
-> +Description:
-> +		boolean controlling whether skb should be linearized in
-> +		generic xdp. Defaults to true.
+Thanks,
 
-Could you also add a few words explaining what the tradeoff here is?
-Something like: "turning this off can increase the performance of
-generic XDP at the cost of making the content of making the XDP program
-unable to access packet fragments after the first one"
-
--Toke
-
+                Ilya
