@@ -2,206 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6434F173EFF
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E934C173F00
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:02:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgB1SCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:02:04 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:54960 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgB1SCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:02:04 -0500
-Received: by mail-pj1-f65.google.com with SMTP id dw13so1595130pjb.4
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:02:03 -0800 (PST)
+        id S1726765AbgB1SCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:02:18 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40147 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgB1SCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:02:18 -0500
+Received: by mail-pg1-f195.google.com with SMTP id t24so1893315pgj.7
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:02:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=1wj0tuS0GdkZUdja4ZsgAE8dIYmZ2kpjseZ0Vnnf+pU=;
-        b=DBGRoOXjR6w6D0MHalsgRm0MtTusVkb4GLhAqG7aKzOA+oYAl5M3buHxYC3ntcoaLw
-         grsbJNDn4+JZL5OPODBlO7N6pzJT7dlm0rBpF4r8ldaRlWAyBf5L3bXsmeiNXQKdFPbS
-         i1VsaJTxHGsdJwo1k0MxPwdn3YgxsnalS2eKJe4Do5MCymFIO27w3F+0V2UUNtAbcsP1
-         7vgBBTXE+ikqd9gSabMkNW4gXXpEMjhiirY0g85rcTGUPv6FaiChjf4cdIgEUggxOB+r
-         +7v989ePTmm3JOX50BKx2SE9BF9S5e+pGVX3VS8WFdFB+hCrfWctvbTzL0cZWvTP6+rw
-         Wi+A==
+        bh=dh8cj01nYdUYJjeSSaiv1Lu2wcuphSMfktQi/Z4uiCE=;
+        b=QjAzlG/UeFzn4WgN1RRQbdcjtoTrg69JQTU2JmXEKTVnokpr+zAIbtW7WZL9YkYw+s
+         iSS79ibXstdhd0NdHBNLiW6txQgaMiY4/KWH/H3k1VICknXgYfg1vJOdzhJCAXvyqsI0
+         87uPPNxgMvllETpHJxV3h7Y77UUWPYYK3VQMxzrGoAl37+2gbTPF99tA9ufflGURc3fV
+         igMo51URoNASWptsjyHkB6IhibmNViy5BNQKretCv7H3JLb+qmKP2ZjdNzKIiBm6egct
+         dRhdEu084tT6626twuKVK4EDxnKl/lL4PUIk11+xwdT5kWZuuzx/ILu4MJZ2jEUfEEQI
+         ra4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1wj0tuS0GdkZUdja4ZsgAE8dIYmZ2kpjseZ0Vnnf+pU=;
-        b=MSrt+NNFFNpJ170im6Q879jIwvarCDFpk3UmCS0gs99U08OdcjBM4otV1//GZ1DWwg
-         lLjzqMHDpec6HF0Mde8gPjPEpYZl+iwJsJ7w9UiqtwJnvrP4UrXDrajThpZDBQq4teSy
-         in0XU3Kk2Q3cA2eMgnk0u0gxrhST0FEeCBis8FYJK/HlEwnKoNvvHhkrLQNZ1irqTAmp
-         KF+IfdCXszRIyrwed1xnuVIB9uLAEzmFyQLH9mkwlX7BreD73bigFuwqdV6BhUNoDsGI
-         pjM5q07AZXmuzAbyONw3bkOmHrS6wb3vKHj89sKvWzPxE3wBj0u20EolZ9ic5rJvdtoE
-         bkfg==
-X-Gm-Message-State: APjAAAUo7s5fpIZqu7iMOxvPU84/wUCvBzTDPgLlrPvBmyj1l+//bd5p
-        J7yCVx/lyzWpKr7JHEwLdgA=
-X-Google-Smtp-Source: APXvYqzVq4iCgJd/Lx1PJ+8VJ8vyc8CKvZqkKAm7ULSEQMoLWy8hD3nK2S199WsLCrUXtW0rz6O59Q==
-X-Received: by 2002:a17:90a:cc04:: with SMTP id b4mr5780707pju.136.1582912923087;
-        Fri, 28 Feb 2020 10:02:03 -0800 (PST)
+        bh=dh8cj01nYdUYJjeSSaiv1Lu2wcuphSMfktQi/Z4uiCE=;
+        b=Hj1M4xSFObZ12tJh+ASbk+baflt8xOMQx0VEHcPrclAYQ0FNEUHopn58jqRiicCl26
+         dWk8nGdQ+xYNEtxlJuZsGgwzITDOdWlqyHCVzB2QRl/b1OPDXaaR0hdJEwPoYtL0veNJ
+         MJm1ShrZZ7pRmnWRwqtaEY7hKgQFtKhcqlBu4kgoME+mZU5yteFXV4w1/gtBj1AKyzGQ
+         5Y4p4UdMiguReEidOBvIsirKR/nXJdF5au36GakDyc2yHut7ReUPanth16nZHDE5lthf
+         uBL3ehHGNgq/gs7O9A4WvwHrXLSfhwpHAljhfpIrnF2tQb0f07uGOdVZjqSDSP8/h3Ao
+         J7ig==
+X-Gm-Message-State: APjAAAVyp6wWRfhQlBT+MtGN+UtXSBPiE0se/ieChH/sBFFw8eemoUYX
+        AKf4jQMeRYJJl0X3TO4eFd7Mvhzu8Ls=
+X-Google-Smtp-Source: APXvYqy0qS3eCH4nmDW5cX+P629sHzyqmX/y+5cuH7Xh5VOZWlS5sgf86zGgwXDbI8YN1+mGfzbHGw==
+X-Received: by 2002:a63:c30e:: with SMTP id c14mr6065559pgd.168.1582912937004;
+        Fri, 28 Feb 2020 10:02:17 -0800 (PST)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id l13sm3043467pjq.23.2020.02.28.10.02.00
+        by smtp.gmail.com with ESMTPSA id e4sm3159457pfj.22.2020.02.28.10.02.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 10:02:01 -0800 (PST)
+        Fri, 28 Feb 2020 10:02:16 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net-next 4/5] hsr: remove unnecessary rcu_read_lock() in hsr module
-Date:   Fri, 28 Feb 2020 18:01:56 +0000
-Message-Id: <20200228180156.27841-1-ap420073@gmail.com>
+Subject: [PATCH net-next 5/5] hsr: use upper/lower device infrastructure
+Date:   Fri, 28 Feb 2020 18:02:10 +0000
+Message-Id: <20200228180210.27920-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to access the port list, the hsr_port_get_hsr() is used.
-And this is protected by RTNL and RCU.
-The hsr_fill_info(), hsr_check_carrier(), hsr_dev_open() and
-hsr_get_max_mtu() are protected by RTNL.
-So, rcu_read_lock() in these functions are not necessary.
-The hsr_handle_frame() also uses rcu_read_lock() but this function
-is called by packet path.
-It's already protected by RCU.
-So, the rcu_read_lock() in hsr_handle_frame() can be removed.
+netdev_upper_dev_link() is useful to manage lower/upper interfaces.
+And this function internally validates looping, maximum depth.
+All or most virtual interfaces that could have a real interface
+(e.g. macsec, macvlan, ipvlan etc.) use lower/upper infrastructure.
 
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- net/hsr/hsr_device.c  | 23 +++++++----------------
- net/hsr/hsr_netlink.c | 27 +++++++++------------------
- net/hsr/hsr_slave.c   |  3 ---
- 3 files changed, 16 insertions(+), 37 deletions(-)
+ net/hsr/hsr_device.c | 32 ++++++++++++++++++++------------
+ net/hsr/hsr_main.c   |  3 ++-
+ net/hsr/hsr_slave.c  | 35 ++++++++++++++++++-----------------
+ 3 files changed, 40 insertions(+), 30 deletions(-)
 
 diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index a48f621c2fec..00532d14fc7c 100644
+index 00532d14fc7c..fc7027314ad8 100644
 --- a/net/hsr/hsr_device.c
 +++ b/net/hsr/hsr_device.c
-@@ -57,24 +57,19 @@ static void hsr_set_operstate(struct hsr_port *master, bool has_carrier)
- static bool hsr_check_carrier(struct hsr_port *master)
- {
- 	struct hsr_port *port;
--	bool has_carrier;
- 
--	has_carrier = false;
-+	ASSERT_RTNL();
- 
--	rcu_read_lock();
--	hsr_for_each_port(master->hsr, port)
-+	hsr_for_each_port(master->hsr, port) {
- 		if (port->type != HSR_PT_MASTER && is_slave_up(port->dev)) {
--			has_carrier = true;
--			break;
-+			netif_carrier_on(master->dev);
-+			return true;
- 		}
--	rcu_read_unlock();
-+	}
- 
--	if (has_carrier)
--		netif_carrier_on(master->dev);
--	else
--		netif_carrier_off(master->dev);
-+	netif_carrier_off(master->dev);
- 
--	return has_carrier;
-+	return false;
+@@ -341,22 +341,33 @@ static void hsr_announce(struct timer_list *t)
+ 	rcu_read_unlock();
  }
  
- static void hsr_check_announce(struct net_device *hsr_dev,
-@@ -118,11 +113,9 @@ int hsr_get_max_mtu(struct hsr_priv *hsr)
- 	struct hsr_port *port;
- 
- 	mtu_max = ETH_DATA_LEN;
--	rcu_read_lock();
- 	hsr_for_each_port(hsr, port)
- 		if (port->type != HSR_PT_MASTER)
- 			mtu_max = min(port->dev->mtu, mtu_max);
--	rcu_read_unlock();
- 
- 	if (mtu_max < HSR_HLEN)
- 		return 0;
-@@ -157,7 +150,6 @@ static int hsr_dev_open(struct net_device *dev)
- 	hsr = netdev_priv(dev);
- 	designation = '\0';
- 
--	rcu_read_lock();
- 	hsr_for_each_port(hsr, port) {
- 		if (port->type == HSR_PT_MASTER)
- 			continue;
-@@ -175,7 +167,6 @@ static int hsr_dev_open(struct net_device *dev)
- 			netdev_warn(dev, "Slave %c (%s) is not up; please bring it up to get a fully working HSR network\n",
- 				    designation, port->dev->name);
- 	}
--	rcu_read_unlock();
- 
- 	if (designation == '\0')
- 		netdev_warn(dev, "No slave devices configured\n");
-diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
-index 7ed308a0c035..64d39c1e93a2 100644
---- a/net/hsr/hsr_netlink.c
-+++ b/net/hsr/hsr_netlink.c
-@@ -79,29 +79,20 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
- 
- static int hsr_fill_info(struct sk_buff *skb, const struct net_device *dev)
++static void hsr_del_ports(struct hsr_priv *hsr)
++{
++	struct hsr_port *port;
++
++	port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_A);
++	if (port)
++		hsr_del_port(port);
++
++	port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_B);
++	if (port)
++		hsr_del_port(port);
++
++	port = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
++	if (port)
++		hsr_del_port(port);
++}
++
+ /* This has to be called after all the readers are gone.
+  * Otherwise we would have to check the return value of
+  * hsr_port_get_hsr().
+  */
+ static void hsr_dev_destroy(struct net_device *hsr_dev)
  {
 -	struct hsr_priv *hsr;
-+	struct hsr_priv *hsr = netdev_priv(dev);
- 	struct hsr_port *port;
--	int res;
+-	struct hsr_port *port;
+-	struct hsr_port *tmp;
 -
--	hsr = netdev_priv(dev);
+-	hsr = netdev_priv(hsr_dev);
++	struct hsr_priv *hsr = netdev_priv(hsr_dev);
+ 
+ 	hsr_debugfs_term(hsr);
 -
--	res = 0;
+-	list_for_each_entry_safe(port, tmp, &hsr->ports, port_list)
+-		hsr_del_port(port);
++	hsr_del_ports(hsr);
  
--	rcu_read_lock();
- 	port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_A);
--	if (port)
--		res = nla_put_u32(skb, IFLA_HSR_SLAVE1, port->dev->ifindex);
--	rcu_read_unlock();
--	if (res)
--		goto nla_put_failure;
-+	if (port) {
-+		if (nla_put_u32(skb, IFLA_HSR_SLAVE1, port->dev->ifindex))
-+			goto nla_put_failure;
-+	}
+ 	del_timer_sync(&hsr->prune_timer);
+ 	del_timer_sync(&hsr->announce_timer);
+@@ -426,8 +437,6 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+ 		     struct netlink_ext_ack *extack)
+ {
+ 	struct hsr_priv *hsr;
+-	struct hsr_port *port;
+-	struct hsr_port *tmp;
+ 	int res;
  
--	rcu_read_lock();
- 	port = hsr_port_get_hsr(hsr, HSR_PT_SLAVE_B);
--	if (port)
--		res = nla_put_u32(skb, IFLA_HSR_SLAVE2, port->dev->ifindex);
--	rcu_read_unlock();
--	if (res)
--		goto nla_put_failure;
-+	if (port) {
-+		if (nla_put_u32(skb, IFLA_HSR_SLAVE2, port->dev->ifindex))
-+			goto nla_put_failure;
-+	}
+ 	hsr = netdev_priv(hsr_dev);
+@@ -494,8 +503,7 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+ err_add_slaves:
+ 	unregister_netdevice(hsr_dev);
+ err_unregister:
+-	list_for_each_entry_safe(port, tmp, &hsr->ports, port_list)
+-		hsr_del_port(port);
++	hsr_del_ports(hsr);
+ err_add_master:
+ 	hsr_del_self_node(hsr);
  
- 	if (nla_put(skb, IFLA_HSR_SUPERVISION_ADDR, ETH_ALEN,
- 		    hsr->sup_multicast_addr) ||
+diff --git a/net/hsr/hsr_main.c b/net/hsr/hsr_main.c
+index 9e389accbfc7..26d6c39f24e1 100644
+--- a/net/hsr/hsr_main.c
++++ b/net/hsr/hsr_main.c
+@@ -85,7 +85,8 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
+ 		master->dev->mtu = mtu_max;
+ 		break;
+ 	case NETDEV_UNREGISTER:
+-		hsr_del_port(port);
++		if (!is_hsr_master(dev))
++			hsr_del_port(port);
+ 		break;
+ 	case NETDEV_PRE_TYPE_CHANGE:
+ 		/* HSR works only on Ethernet devices. Refuse slave to change
 diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
-index 127ebcc0e28f..07edc7f626fe 100644
+index 07edc7f626fe..123605cb5420 100644
 --- a/net/hsr/hsr_slave.c
 +++ b/net/hsr/hsr_slave.c
-@@ -25,7 +25,6 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
- 		return RX_HANDLER_PASS;
- 	}
- 
--	rcu_read_lock(); /* hsr->node_db, hsr->ports */
- 	port = hsr_port_get_rcu(skb->dev);
- 	if (!port)
- 		goto finish_pass;
-@@ -45,11 +44,9 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
- 	hsr_forward_skb(skb, port);
- 
- finish_consume:
--	rcu_read_unlock(); /* hsr->node_db, hsr->ports */
- 	return RX_HANDLER_CONSUMED;
- 
- finish_pass:
--	rcu_read_unlock(); /* hsr->node_db, hsr->ports */
- 	return RX_HANDLER_PASS;
+@@ -97,19 +97,25 @@ static int hsr_check_dev_ok(struct net_device *dev,
  }
  
+ /* Setup device to be added to the HSR bridge. */
+-static int hsr_portdev_setup(struct net_device *dev, struct hsr_port *port)
++static int hsr_portdev_setup(struct hsr_priv *hsr, struct net_device *dev,
++			     struct hsr_port *port,
++			     struct netlink_ext_ack *extack)
++
+ {
++	struct net_device *hsr_dev;
++	struct hsr_port *master;
+ 	int res;
+ 
+-	dev_hold(dev);
+ 	res = dev_set_promiscuity(dev, 1);
+ 	if (res)
+ 		goto fail_promiscuity;
+ 
+-	/* FIXME:
+-	 * What does net device "adjacency" mean? Should we do
+-	 * res = netdev_master_upper_dev_link(port->dev, port->hsr->dev); ?
+-	 */
++	master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
++	hsr_dev = master->dev;
++
++	res = netdev_upper_dev_link(dev, hsr_dev, extack);
++	if (res)
++		goto fail_upper_dev_link;
+ 
+ 	res = netdev_rx_handler_register(dev, hsr_handle_frame, port);
+ 	if (res)
+@@ -119,6 +125,8 @@ static int hsr_portdev_setup(struct net_device *dev, struct hsr_port *port)
+ 	return 0;
+ 
+ fail_rx_handler:
++	netdev_upper_dev_unlink(dev, hsr_dev);
++fail_upper_dev_link:
+ 	dev_set_promiscuity(dev, -1);
+ fail_promiscuity:
+ 	dev_put(dev);
+@@ -147,7 +155,7 @@ int hsr_add_port(struct hsr_priv *hsr, struct net_device *dev,
+ 		return -ENOMEM;
+ 
+ 	if (type != HSR_PT_MASTER) {
+-		res = hsr_portdev_setup(dev, port);
++		res = hsr_portdev_setup(hsr, dev, port, extack);
+ 		if (res)
+ 			goto fail_dev_setup;
+ 	}
+@@ -180,21 +188,14 @@ void hsr_del_port(struct hsr_port *port)
+ 	list_del_rcu(&port->port_list);
+ 
+ 	if (port != master) {
+-		if (master) {
+-			netdev_update_features(master->dev);
+-			dev_set_mtu(master->dev, hsr_get_max_mtu(hsr));
+-		}
++		netdev_update_features(master->dev);
++		dev_set_mtu(master->dev, hsr_get_max_mtu(hsr));
+ 		netdev_rx_handler_unregister(port->dev);
+ 		dev_set_promiscuity(port->dev, -1);
++		netdev_upper_dev_unlink(port->dev, master->dev);
+ 	}
+ 
+-	/* FIXME?
+-	 * netdev_upper_dev_unlink(port->dev, port->hsr->dev);
+-	 */
+-
+ 	synchronize_rcu();
+ 
+-	if (port != master)
+-		dev_put(port->dev);
+ 	kfree(port);
+ }
 -- 
 2.17.1
 
