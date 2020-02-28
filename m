@@ -2,36 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA728173336
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 09:47:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C18B17334E
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 09:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgB1IrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 03:47:21 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:53144 "EHLO
+        id S1726673AbgB1IwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 03:52:21 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:53174 "EHLO
         proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbgB1IrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 03:47:21 -0500
-X-Greylist: delayed 329 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Feb 2020 03:47:19 EST
+        with ESMTP id S1726005AbgB1IwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 03:52:21 -0500
+X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Feb 2020 03:52:19 EST
 Received: from localhost.localdomain (p200300E9D71B9939E2C0865DB6B8C4EC.dip0.t-ipconnect.de [IPv6:2003:e9:d71b:9939:e2c0:865d:b6b8:c4ec])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 53515C087E;
-        Fri, 28 Feb 2020 09:41:49 +0100 (CET)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 53688C3201;
+        Fri, 28 Feb 2020 09:46:30 +0100 (CET)
+Subject: Re: [PATCH 02/28] docs: networking: convert 6lowpan.txt to ReST
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
+References: <cover.1581002062.git.mchehab+huawei@kernel.org>
+ <bfa773f25584a3939e0a3e1fc6bc0e91f415cd91.1581002063.git.mchehab+huawei@kernel.org>
 From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: Re: [PATCH] net: ieee802154: ca8210: Use new structure for SPI
- transfer delays
-To:     Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wpan@vger.kernel.org, davem@davemloft.net,
-        alex.aring@gmail.com, h.morris@cascoda.com
-References: <20200227131245.30309-1-sergiu.cuciurean@analog.com>
-Message-ID: <70e215d7-b523-8aff-d0bc-eea6bfce3dac@datenfreihafen.org>
-Date:   Fri, 28 Feb 2020 09:41:48 +0100
+Message-ID: <f81edab9-3ca8-5421-5bf8-029cefc96ad6@datenfreihafen.org>
+Date:   Fri, 28 Feb 2020 09:46:30 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200227131245.30309-1-sergiu.cuciurean@analog.com>
+In-Reply-To: <bfa773f25584a3939e0a3e1fc6bc0e91f415cd91.1581002063.git.mchehab+huawei@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -42,42 +48,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello.
 
-On 27.02.20 14:12, Sergiu Cuciurean wrote:
-> In a recent change to the SPI subsystem [1], a new `delay` struct was added
-> to replace the `delay_usecs`. This change replaces the current
-> `delay_usecs` with `delay` for this driver.
+On 06.02.20 16:17, Mauro Carvalho Chehab wrote:
+> - add SPDX header;
+> - use document title markup;
+> - mark code blocks and literals as such;
+> - adjust identation, whitespaces and blank lines;
+> - add to networking/index.rst.
 > 
-> The `spi_transfer_delay_exec()` function [in the SPI framework] makes sure
-> that both `delay_usecs` & `delay` are used (in this order to preserve
-> backwards compatibility).
-> 
-> [1] commit bebcfd272df6 ("spi: introduce `delay` field for
-> `spi_transfer` + spi_transfer_delay_exec()")
-> 
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 > ---
->   drivers/net/ieee802154/ca8210.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
+>   .../networking/{6lowpan.txt => 6lowpan.rst}   | 29 ++++++++++---------
+>   Documentation/networking/index.rst            |  1 +
+>   2 files changed, 17 insertions(+), 13 deletions(-)
+>   rename Documentation/networking/{6lowpan.txt => 6lowpan.rst} (64%)
 > 
-> diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-> index 430c93786153..e04c3b60cae7 100644
-> --- a/drivers/net/ieee802154/ca8210.c
-> +++ b/drivers/net/ieee802154/ca8210.c
-> @@ -946,7 +946,8 @@ static int ca8210_spi_transfer(
->   	cas_ctl->transfer.bits_per_word = 0; /* Use device setting */
->   	cas_ctl->transfer.tx_buf = cas_ctl->tx_buf;
->   	cas_ctl->transfer.rx_buf = cas_ctl->tx_in_buf;
-> -	cas_ctl->transfer.delay_usecs = 0;
-> +	cas_ctl->transfer.delay.value = 0;
-> +	cas_ctl->transfer.delay.unit = SPI_DELAY_UNIT_USECS;
->   	cas_ctl->transfer.cs_change = 0;
->   	cas_ctl->transfer.len = sizeof(struct mac_message);
->   	cas_ctl->msg.complete = ca8210_spi_transfer_complete;
+> diff --git a/Documentation/networking/6lowpan.txt b/Documentation/networking/6lowpan.rst
+> similarity index 64%
+> rename from Documentation/networking/6lowpan.txt
+> rename to Documentation/networking/6lowpan.rst
+> index 2e5a939d7e6f..e70a6520cc33 100644
+> --- a/Documentation/networking/6lowpan.txt
+> +++ b/Documentation/networking/6lowpan.rst
+> @@ -1,37 +1,40 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+>   
+> -Netdev private dataroom for 6lowpan interfaces:
+> +==============================================
+> +Netdev private dataroom for 6lowpan interfaces
+> +==============================================
+>   
+>   All 6lowpan able net devices, means all interfaces with ARPHRD_6LOWPAN,
+>   must have "struct lowpan_priv" placed at beginning of netdev_priv.
+>   
+> -The priv_size of each interface should be calculate by:
+> +The priv_size of each interface should be calculate by::
+>   
+>    dev->priv_size = LOWPAN_PRIV_SIZE(LL_6LOWPAN_PRIV_DATA);
+>   
+>   Where LL_PRIV_6LOWPAN_DATA is sizeof linklayer 6lowpan private data struct.
+> -To access the LL_PRIV_6LOWPAN_DATA structure you can cast:
+> +To access the LL_PRIV_6LOWPAN_DATA structure you can cast::
+>   
+>    lowpan_priv(dev)-priv;
+>   
+>   to your LL_6LOWPAN_PRIV_DATA structure.
+>   
+> -Before registering the lowpan netdev interface you must run:
+> +Before registering the lowpan netdev interface you must run::
+>   
+>    lowpan_netdev_setup(dev, LOWPAN_LLTYPE_FOOBAR);
+>   
+>   wheres LOWPAN_LLTYPE_FOOBAR is a define for your 6LoWPAN linklayer type of
+>   enum lowpan_lltypes.
+>   
+> -Example to evaluate the private usually you can do:
+> +Example to evaluate the private usually you can do::
+>   
+> -static inline struct lowpan_priv_foobar *
+> -lowpan_foobar_priv(struct net_device *dev)
+> -{
+> + static inline struct lowpan_priv_foobar *
+> + lowpan_foobar_priv(struct net_device *dev)
+> + {
+>   	return (struct lowpan_priv_foobar *)lowpan_priv(dev)->priv;
+> -}
+> + }
+>   
+> -switch (dev->type) {
+> -case ARPHRD_6LOWPAN:
+> + switch (dev->type) {
+> + case ARPHRD_6LOWPAN:
+>   	lowpan_priv = lowpan_priv(dev);
+>   	/* do great stuff which is ARPHRD_6LOWPAN related */
+>   	switch (lowpan_priv->lltype) {
+> @@ -42,8 +45,8 @@ case ARPHRD_6LOWPAN:
+>   	...
+>   	}
+>   	break;
+> -...
+> -}
+> + ...
+> + }
+>   
+>   In case of generic 6lowpan branch ("net/6lowpan") you can remove the check
+>   on ARPHRD_6LOWPAN, because you can be sure that these function are called
+> diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+> index 3ccb89bf5585..cc34c06477eb 100644
+> --- a/Documentation/networking/index.rst
+> +++ b/Documentation/networking/index.rst
+> @@ -34,6 +34,7 @@ Contents:
+>      tls
+>      tls-offload
+>      nfc
+> +   6lowpan
+>   
+>   .. only::  subproject and html
+>   
 > 
 
-
-This patch has been applied to the wpan-next tree and will be
-part of the next pull request to net-next. Thanks!
+Reviewed-by: Stefan Schmidt <stefan@datenfreihafen.org>
 
 regards
 Stefan Schmidt
