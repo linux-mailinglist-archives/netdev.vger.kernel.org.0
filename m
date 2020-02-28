@@ -2,214 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E10173D90
+	by mail.lfdr.de (Postfix) with ESMTP id DA6C4173D91
 	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 17:50:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbgB1Quo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 11:50:44 -0500
-Received: from mail-eopbgr70135.outbound.protection.outlook.com ([40.107.7.135]:25030
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726857AbgB1Qun (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 11:50:43 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nWQ2mSEaX49sQW3WXGZczjdFwSUYq2RgGTO2GJqVFpgGhmcVsuFlFNkLwU+aQGol0hTOjK/li2osGw1hGRTyy8aozZZJ4DIsKeFoGSYyARNzzx84pKzRII5V9Ht0esg5egYJu77x6S1IdUy60VnvUEadVtyycFZQPhdDSwlTQTGJp8ccRGThXr3IqeZIE3eiOxCSEkNz1rH8EmyED4/NS7bcObJdschIP1iUZpCxVIW3CRze7faaq2aOvYmgh0/+MMqD20KxLW5jP0eGDY5TD1gyqdc5o90zVMlS32ZQxVEg5W6Kb4C06hkUso9JCkf7eab4anvdbHQ7KNvXymQH6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kd4KSFABL8IoFAR0aGk0+bt0lmJIVKI0jjM3ig3Igf8=;
- b=l/vTewu9XPvHzmC9I1axFvsOOBmgSHnsPl8acvvpqF9y8VhdkrAFbHtSgnVx77D4gw5vX3XZnMGsHfaJyXcfYeNJuTtWCcAWhy+FhKFdqYde0WkfE4KyTBzx1Dl6VMELvPekXqhBs0oECu4EQW9AM+TvOlqmrjukET5+N5nNnKEnQi6I2MxyRnNUKMNJ3O1v4XYgBu2wlM8aNYY2+2ZQVI9ufeL2DY4JahY1+NbD491d7UsP53ohwgPzBr+Zy8BptJ+k5Qfl0l/gqL/H3rwpTC0XCz74RaQer7gMnlJn1II2TsnuF4OdvSakvqMbUZkx73QvBH4VLw3NIj7vyelLUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kd4KSFABL8IoFAR0aGk0+bt0lmJIVKI0jjM3ig3Igf8=;
- b=wlq5oCvp7ItLo02dx0anP+nl76q+wlUl+mxmqR9jZEeJiOFHpBQLzCf9UcY64htj6qDPAh8RDSWQPgJrMcrUkAws3bWU6wfdUfafzGBKGJJKHIgSsBD7ujNYCskeuQeJqfEs3DBXzGajpeTZ7TgjHPuTw7QK2OXe1vwu4Kzq6yg=
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (10.165.195.138) by
- VI1P190MB0271.EURP190.PROD.OUTLOOK.COM (10.165.190.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2750.22; Fri, 28 Feb 2020 16:50:37 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::a587:f64e:cbb8:af96]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::a587:f64e:cbb8:af96%4]) with mapi id 15.20.2772.012; Fri, 28 Feb 2020
- 16:50:37 +0000
-Received: from plvision.eu (217.20.186.93) by AM6PR0202CA0068.eurprd02.prod.outlook.com (2603:10a6:20b:3a::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15 via Frontend Transport; Fri, 28 Feb 2020 16:50:36 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>
-Subject: Re: [RFC net-next 0/3] net: marvell: prestera: Add Switchdev driver
- for Prestera family ASIC device 98DX326x (AC3x)
-Thread-Topic: [RFC net-next 0/3] net: marvell: prestera: Add Switchdev driver
- for Prestera family ASIC device 98DX326x (AC3x)
-Thread-Index: AQHV6/jy7mjUjxYwxkS7hliqOPvXRagrqJaAgAUt1AA=
-Date:   Fri, 28 Feb 2020 16:50:37 +0000
-Message-ID: <20200228165028.GA8409@plvision.eu>
-References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
- <1810583047af2d41d2521960f7a39f768748f2cb.camel@alliedtelesis.co.nz>
-In-Reply-To: <1810583047af2d41d2521960f7a39f768748f2cb.camel@alliedtelesis.co.nz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM6PR0202CA0068.eurprd02.prod.outlook.com
- (2603:10a6:20b:3a::45) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vadym.kochan@plvision.eu; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [217.20.186.93]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fd8a5b65-1dff-4f60-d238-08d7bc6e5622
-x-ms-traffictypediagnostic: VI1P190MB0271:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1P190MB0271C08EF1AFA81B2DD4403C95E80@VI1P190MB0271.EURP190.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0327618309
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39830400003)(376002)(396003)(346002)(136003)(189003)(199004)(54906003)(316002)(2616005)(66946007)(33656002)(8676002)(186003)(66446008)(81166006)(5660300002)(66556008)(64756008)(44832011)(7696005)(16526019)(26005)(36756003)(8936002)(52116002)(81156014)(956004)(66476007)(508600001)(55016002)(107886003)(8886007)(6916009)(2906002)(1076003)(4326008)(71200400001)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1P190MB0271;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: plvision.eu does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: N7iUymqcmgnMmPP4CNs955GUGXtrYjBlAIfoP2C2Qqk9u51+AYoF3Fh/xGp72cNVazkCCLgyukFL/G/hvCQ0dhB3MLl4YmTH58KTbGDSB5Se/VkA6en8aJnQdvVlgOQDljE3miMbL5Tf+nmh7QXBNuz/OuqjO6MHrEzx6x1JxgFO9z9jH3hzfWqLdBMfqkwaZUCG4xCqDxYGuWnvZzNIEO8tGJRF9WJA462rBq772Q/nvROgkpE98nCDR1sevT1LXxTDKdoMhBi+LD0q/OtiTM70Z7/yVePczx4e2oiXCOI9IXcqzeuxFuGnrxJxYfBTXlJU2RZdBXaAQPVyXmjLOvYPPFJ+WWXfB1hyhhPYC+d9WUqUUZW5M4OfJBBHEXYh/BAbAqwJ4JgsgunURpZxUKM5m00fk2toR5+T3RPcSoOgVssBPIX/mB6cd7BysbSS
-x-ms-exchange-antispam-messagedata: nHqpgxzlWpzxNhZcOsa5phyvgsDRVDvlS0rhX5yCDVEjxfveh815CZjxJsSJeGKsSye/jSJ1yR7fHJ8IR04+7u40rgdCgIuV3mJDdA+nht1cALAEwhLikvAkF/JdGpdOc+uATPx7RD2ojPjx2MAc0A==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <CC503871D04B454EB24D6C0EE494E006@EURP190.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: quoted-printable
+        id S1727080AbgB1Qus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 11:50:48 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:45886 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726857AbgB1Qus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 11:50:48 -0500
+Received: by mail-io1-f68.google.com with SMTP id w9so4063228iob.12
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:50:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s1rSiHirhSqVf7V/F+chR2/xeTbz4ClkU+rCnEj8pEs=;
+        b=MQIaG57q1uvWpVI6r0I1QkMj3DX5JfgbwN+f8118XUfmLbaT6NUeEpF8A31lEpPHGY
+         WjucGnT3q2MPWppg2El+CW/vwa7+3rREzUIJt0wt/gXHxd8VEQbxLJvriN6k6WUZUDXo
+         dVLLyBdGpfH6oD4vw9NDkrDtTwZSOgZLgU+Jo4SsbT3O7lB74iwaaPg+IRjCK7Zfw3Oq
+         A2x6dUD/EcdNow3V3PszV9uxiXE8YPqhaEzBkFkf8QvM8bac08Pj7jOcryeJeuR45q4X
+         TKa+IPhf9MU7Hp2upAGoPme5o1PeTwxLLQo5loaG5UXvKKQKELxdkUlzVs063VdK0kYv
+         IAtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=s1rSiHirhSqVf7V/F+chR2/xeTbz4ClkU+rCnEj8pEs=;
+        b=i4eLkzww7oF9v58p1ZouHF661ILEiKbfRxO+LWU+Cgb9XKbsmd0yZutJC67cqM2vef
+         SfLWNEh3XDqwDfRrHsP3eihWVrWrYgJ4fdupeQPNcu1gEfGd8tnHjzRJbgRC/aKIJwMH
+         9qNvk9pcP00PdvZ1FGi9B7yP2u4Z1wCZBbclQndPn6r3zVYXNT6oXc9dJisZNGkbSR+k
+         IJkNJkAxjZPMPqIGfhCUyWy3FN/1s8FkxGtQRXiEytJNth3mA0fIcb3IVoKTwmR3ZN6D
+         Kmj71yrxP1ywVjr1vQMLxhOPGzTFD/iC43gRpsfKWINiUvniEoIDw/Wki0E06+4scgYh
+         I42A==
+X-Gm-Message-State: APjAAAUHX+BgsFw2mnYjG5RY3AYdk/iN9DzoiU3roUaE0Xz3vYXvNmv+
+        iNoauvMObcUz/K6dHFRkgL9xfsA2
+X-Google-Smtp-Source: APXvYqw4Jl6v23Fx4NUY6b6e3QHXDMgsLGIlhkXDS5hmDpC1pyKdqorvuWVbn3vGNT9t9w0m6AdIdw==
+X-Received: by 2002:a02:a48e:: with SMTP id d14mr4107131jam.30.1582908647697;
+        Fri, 28 Feb 2020 08:50:47 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:29b4:b20:7e73:23f9? ([2601:282:803:7700:29b4:b20:7e73:23f9])
+        by smtp.googlemail.com with ESMTPSA id j4sm1041347ilf.21.2020.02.28.08.50.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Feb 2020 08:50:46 -0800 (PST)
+Subject: Re: [PATCH net] net/ipv6: use configured matric when add peer route
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     Jianlin Shi <jishi@redhat.com>, David Miller <davem@davemloft.net>
+References: <20200228091858.19729-1-liuhangbin@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5ad3ee1d-32d2-c84d-ea8a-f4daf44b4fa1@gmail.com>
+Date:   Fri, 28 Feb 2020 09:50:45 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: fd8a5b65-1dff-4f60-d238-08d7bc6e5622
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Feb 2020 16:50:37.6090
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7YFHApc9ObC3CDSkIvpaxVNoILg/X1aNo3AK9Ej6FI5qQjeluLwJBfUnKQ7Yyn5SpKa59u+RIlLUXygo5j/ubYFbU1dZbjguiwVMNoh/Oxk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0271
+In-Reply-To: <20200228091858.19729-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Chris,
+On 2/28/20 2:18 AM, Hangbin Liu wrote:
+> When we add peer address with metric configured, IPv4 could set the dest
+> metric correctly, but IPv6 do not. e.g.
+> 
+> ]# ip addr add 192.0.2.1 peer 192.0.2.2/32 dev eth1 metric 20
+> ]# ip route show dev eth1
+> 192.0.2.2 proto kernel scope link src 192.0.2.1 metric 20
+> ]# ip addr add 2001:db8::1 peer 2001:db8::2/128 dev eth1 metric 20
+> ]# ip -6 route show dev eth1
+> 2001:db8::1 proto kernel metric 20 pref medium
+> 2001:db8::2 proto kernel metric 256 pref medium
+> 
+> Fix this by using configured matric instead of default one.
+> 
+> Reported-by: Jianlin Shi <jishi@redhat.com>
+> Fixes: 8308f3ff1753 ("net/ipv6: Add support for specifying metric of connected routes")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  net/ipv6/addrconf.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index cb493e15959c..164c71c54b5c 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -5983,9 +5983,9 @@ static void __ipv6_ifa_notify(int event, struct inet6_ifaddr *ifp)
+>  		if (ifp->idev->cnf.forwarding)
+>  			addrconf_join_anycast(ifp);
+>  		if (!ipv6_addr_any(&ifp->peer_addr))
+> -			addrconf_prefix_route(&ifp->peer_addr, 128, 0,
+> -					      ifp->idev->dev, 0, 0,
+> -					      GFP_ATOMIC);
+> +			addrconf_prefix_route(&ifp->peer_addr, 128,
+> +					      ifp->rt_priority, ifp->idev->dev,
+> +					      0, 0, GFP_ATOMIC);
+>  		break;tools/testing/selftests/net
+>  	case RTM_DELADDR:
+>  		if (ifp->idev->cnf.forwarding)
+> 
 
-On Tue, Feb 25, 2020 at 10:45:09PM +0000, Chris Packham wrote:
-> Hi Vadym,
->=20
-> On Tue, 2020-02-25 at 16:30 +0000, Vadym Kochan wrote:
-> > Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
-> > ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
-> > wireless SMB deployment.
-> >=20
-> > Prestera Switchdev is a firmware based driver which operates via PCI
-> > bus. The driver is split into 2 modules:
-> >=20
-> >     - prestera_sw.ko - main generic Switchdev Prestera ASIC related log=
-ic.
-> >=20
-> >     - prestera_pci.ko - bus specific code which also implements firmwar=
-e
-> >                         loading and low-level messaging protocol betwee=
-n
-> >                         firmware and the switchdev driver.
-> >=20
-> > This driver implementation includes only L1 & basic L2 support.
-> >=20
-> > The core Prestera switching logic is implemented in prestera.c, there i=
-s
-> > an intermediate hw layer between core logic and firmware. It is
-> > implemented in prestera_hw.c, the purpose of it is to encapsulate hw
-> > related logic, in future there is a plan to support more devices with
-> > different HW related configurations.
->=20
-> Very excited by this patch series. We have some custom designs using
-> the AC3x. I'm in the process of getting the board dtses ready for
-> submitting upstream.=20
->=20
-> Please feel free to add me to the Cc list for future versions of this
-> patch set (and releated ones).
->=20
-> I'll also look to see what we can do to test on our hardware platforms.
->=20
+ugh, missed that one. Thanks for the patch. Please add the tests in the
+commit message to tools/testing/selftests/net/fib_tests.sh,
+ipv{4,6}_addr_metric_test sections.
 
-Sure. I will add you to CC's list. Please note that you need to make
-sure that your board design follows Marvell Design Guide for switchdev
-solution.
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-> >=20
-> > The firmware has to be loaded each time device is reset. The driver is
-> > loading it from:
-> >=20
-> >     /lib/firmware/marvell/prestera_fw_img.bin
-> >=20
-> > The firmware image version is located within internal header and consis=
-ts
-> > of 3 numbers - MAJOR.MINOR.PATCH. Additionally, driver has hard-coded
-> > minimum supported firmware version which it can work with:
-> >=20
-> >     MAJOR - reflects the support on ABI level between driver and loaded
-> >             firmware, this number should be the same for driver and
-> >             loaded firmware.
-> >=20
-> >     MINOR - this is the minimal supported version between driver and th=
-e
-> >             firmware.
-> >=20
-> >     PATCH - indicates only fixes, firmware ABI is not changed.
-> >=20
-> > The firmware image will be submitted to the linux-firmware after the
-> > driver is accepted.
-> >=20
-> > The following Switchdev features are supported:
-> >=20
-> >     - VLAN-aware bridge offloading
-> >     - VLAN-unaware bridge offloading
-> >     - FDB offloading (learning, ageing)
-> >     - Switchport configuration
-> >=20
-> > CPU RX/TX support will be provided in the next contribution.
-> >=20
-> > Vadym Kochan (3):
-> >   net: marvell: prestera: Add Switchdev driver for Prestera family ASIC
-> >     device 98DX325x (AC3x)
-> >   net: marvell: prestera: Add PCI interface support
-> >   dt-bindings: marvell,prestera: Add address mapping for Prestera
-> >     Switchdev PCIe driver
-> >=20
-> >  .../bindings/net/marvell,prestera.txt         |   13 +
-> >  drivers/net/ethernet/marvell/Kconfig          |    1 +
-> >  drivers/net/ethernet/marvell/Makefile         |    1 +
-> >  drivers/net/ethernet/marvell/prestera/Kconfig |   24 +
-> >  .../net/ethernet/marvell/prestera/Makefile    |    5 +
-> >  .../net/ethernet/marvell/prestera/prestera.c  | 1502 +++++++++++++++++
-> >  .../net/ethernet/marvell/prestera/prestera.h  |  244 +++
-> >  .../marvell/prestera/prestera_drv_ver.h       |   23 +
-> >  .../ethernet/marvell/prestera/prestera_hw.c   | 1094 ++++++++++++
-> >  .../ethernet/marvell/prestera/prestera_hw.h   |  159 ++
-> >  .../ethernet/marvell/prestera/prestera_pci.c  |  840 +++++++++
-> >  .../marvell/prestera/prestera_switchdev.c     | 1217 +++++++++++++
-> >  12 files changed, 5123 insertions(+)
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/Kconfig
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/Makefile
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.c
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.h
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_drv_=
-ver.h
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.h
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_pci.=
-c
-> >  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_swit=
-chdev.c
-> >=20
-
-Regards,
-Vadym Kochan
+(and s/matric/metric/ in a couple of places as noted by roopa)
