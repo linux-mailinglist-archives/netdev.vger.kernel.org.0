@@ -2,95 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD9C174061
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 20:39:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9182174064
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 20:41:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgB1Tjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 14:39:51 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:59842 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbgB1Tju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 14:39:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vURnJZJ/G6MDzIDdvCfG0FaTMvWEx+3K5PgdDKMyvnQ=; b=g/zJEiVDGryzheC2vJRJ2kAE4q
-        kJdstEf2xymnaE3u6eUVFayDxHb1xU7+mYfm7Psh6PnxNiT1G2Jy9f8P+1mQ+YNFfQVD+zuCSKOzU
-        I+RBf5av2Q1f2RAjYuFj4ZNZJa+Z4LSHOxzo2GCtQ7P6HLf9syy+nVJqTHtoHUMbRJKJxD6Pg0ANu
-        f3X6AVofI9nJ/+w2NWhVcu7p5vEDMhHupm+5v0tBqmmXlWfxboQsx+ZnSdr+pOLaCNlY8iFjpjHtJ
-        kZ/yGiHnxaoImPnbnzwezUwr/QQyDCdYZ/+dATIQOb4dmsFNd0ZKor9QMSsP0E3Oppr/PObr9HDdo
-        TZ59y6Hg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:48420 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j7lU6-0005iO-Qd; Fri, 28 Feb 2020 19:39:42 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j7lU5-0003px-JX; Fri, 28 Feb 2020 19:39:41 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: mv88e6xxx: fix lockup on warm boot
+        id S1726896AbgB1TlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 14:41:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56780 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726046AbgB1Tk7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Feb 2020 14:40:59 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8AE852072A;
+        Fri, 28 Feb 2020 19:40:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582918859;
+        bh=otP5wMssbtbJ1SBWr9iRXUUxW65YKSBhSR5JoAWSb5k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T9gcakM+7ZJpoU9qdx121pLHeiFvFej+3cyuEbT2Bbo14yyCRD+YhllpfR++68K5+
+         LTr0ymC4azJM6gZ98pypzr7ftQZ6K5lu+5nSpxoU+5HIuqFCew5irTLZQgyicak/O1
+         aaBvoB1BBsg5/Mcyg2dC8aD0xWCoVK7T3Ajac8jY=
+Date:   Fri, 28 Feb 2020 11:40:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, pablo@netfilter.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 03/12] flow_offload: check for basic action
+ hw stats type
+Message-ID: <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200228172505.14386-4-jiri@resnulli.us>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+        <20200228172505.14386-4-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j7lU5-0003px-JX@rmk-PC.armlinux.org.uk>
-Date:   Fri, 28 Feb 2020 19:39:41 +0000
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the switch is not hardware reset on a warm boot, interrupts can be
-left enabled, and possibly pending. This will cause us to enter an
-infinite loop trying to service an interrupt we are unable to handle,
-thereby preventing the kernel from booting.
+On Fri, 28 Feb 2020 18:24:56 +0100 Jiri Pirko wrote:
+> @@ -299,6 +300,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
+> +		return -EOPNOTSUPP;
 
-Ensure that the global 2 interrupt sources are disabled before we claim
-the parent interrupt.
+Could we have this helper take one stat type? To let drivers pass the
+stat type they support? 
 
-Observed on the ZII development revision B and C platforms with
-reworked serdes support, and using reboot -f to reboot the platform.
+At some point we should come up with a way to express the limitations
+at callback registration time so we don't need to add checks like this
+to all the drivers. On the TODO list it goes :)
 
-Fixes: dc30c35be720 ("net: dsa: mv88e6xxx: Implement interrupt support.")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/global2.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
-index 01503014b1ee..8fd483020c5b 100644
---- a/drivers/net/dsa/mv88e6xxx/global2.c
-+++ b/drivers/net/dsa/mv88e6xxx/global2.c
-@@ -1099,6 +1099,13 @@ int mv88e6xxx_g2_irq_setup(struct mv88e6xxx_chip *chip)
- {
- 	int err, irq, virq;
- 
-+	chip->g2_irq.masked = ~0;
-+	mv88e6xxx_reg_lock(chip);
-+	err = mv88e6xxx_g2_int_mask(chip, ~chip->g2_irq.masked);
-+	mv88e6xxx_reg_unlock(chip);
-+	if (err)
-+		return err;
-+
- 	chip->g2_irq.domain = irq_domain_add_simple(
- 		chip->dev->of_node, 16, 0, &mv88e6xxx_g2_irq_domain_ops, chip);
- 	if (!chip->g2_irq.domain)
-@@ -1108,7 +1115,6 @@ int mv88e6xxx_g2_irq_setup(struct mv88e6xxx_chip *chip)
- 		irq_create_mapping(chip->g2_irq.domain, irq);
- 
- 	chip->g2_irq.chip = mv88e6xxx_g2_irq_chip;
--	chip->g2_irq.masked = ~0;
- 
- 	chip->device_irq = irq_find_mapping(chip->g1_irq.domain,
- 					    MV88E6XXX_G1_STS_IRQ_DEVICE);
--- 
-2.20.1
+>  	flow_action_for_each(i, act, flow_action) {
+>  		switch (act->id) {
+>  		case FLOW_ACTION_DROP:
 
