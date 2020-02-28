@@ -2,84 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D8C173738
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 13:31:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D5E1737E0
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725886AbgB1MbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 07:31:07 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:44514 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725805AbgB1MbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 07:31:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582893066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2RooJPrqf81zft4ke8YUUk8aT1Ot7fHdQHDbAT/pgK0=;
-        b=NwOPK07i7IoY2NLS+1PZcsr+CC3IpVbfgJxPwhAE5S1uJfK1+YL0KVRe9NNh+LkpHhTVio
-        ua2p4vVPxxyg3T05a42OyITV42c9cL2DkSM1ppCpmzCeZHNeZdmlEtLN7+rUeyryAlnL8C
-        sN7OM0rGshH3+dBQbnyST+ZpPQgJRG8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-197-xA0PywavMw-iwRf2hXkv3g-1; Fri, 28 Feb 2020 07:31:05 -0500
-X-MC-Unique: xA0PywavMw-iwRf2hXkv3g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A185C108C314;
-        Fri, 28 Feb 2020 12:31:03 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D1056E3EE;
-        Fri, 28 Feb 2020 12:30:55 +0000 (UTC)
-Date:   Fri, 28 Feb 2020 13:30:54 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Luigi Rizzo <lrizzo@google.com>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, toke@redhat.com,
-        davem@davemloft.net, sameehj@amazon.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb
- linearization
-Message-ID: <20200228133054.47cc4d71@carbon>
-In-Reply-To: <20200228105435.75298-1-lrizzo@google.com>
-References: <20200228105435.75298-1-lrizzo@google.com>
+        id S1726766AbgB1NGJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Feb 2020 08:06:09 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2796 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725906AbgB1NGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:06:06 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01SCwlNE038894
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:06:04 -0500
+Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [158.85.210.103])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2yepwj5twj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 08:06:04 -0500
+Received: from localhost
+        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
+        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
+        Fri, 28 Feb 2020 13:06:03 -0000
+Received: from us1b3-smtp04.a3dr.sjc01.isc4sb.com (10.122.203.161)
+        by smtp.notes.na.collabserv.com (10.122.47.39) with smtp.notes.na.collabserv.com ESMTP;
+        Fri, 28 Feb 2020 13:05:54 -0000
+Received: from us1b3-mail162.a3dr.sjc03.isc4sb.com ([10.160.174.187])
+          by us1b3-smtp04.a3dr.sjc01.isc4sb.com
+          with ESMTP id 2020022813055366-387445 ;
+          Fri, 28 Feb 2020 13:05:53 +0000 
+In-Reply-To: <20200227164622.GJ31668@ziepe.ca>
+Subject: Re: Re: possible deadlock in cma_netdev_callback
+From:   "Bernard Metzler" <BMT@zurich.ibm.com>
+To:     "Jason Gunthorpe" <jgg@ziepe.ca>
+Cc:     "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+        chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, parav@mellanox.com,
+        syzkaller-bugs@googlegroups.com, willy@infradead.org
+Date:   Fri, 28 Feb 2020 13:05:53 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Sensitivity: 
+Importance: Normal
+X-Priority: 3 (Normal)
+References: <20200227164622.GJ31668@ziepe.ca>,<20200227155335.GI31668@ziepe.ca>
+ <20200226204238.GC31668@ziepe.ca> <000000000000153fac059f740693@google.com>
+ <OF0B62EDE7.E13D40E8-ON0025851B.0037F560-0025851B.0037F56C@notes.na.collabserv.com>
+ <OF0C6D63D8.F1817050-ON0025851B.0059D878-0025851B.0059D887@notes.na.collabserv.com>
+X-Mailer: IBM iNotes ($HaikuForm 1054.1) | IBM Domino Build
+ SCN1812108_20180501T0841_FP62 November 04, 2019 at 09:47
+X-KeepSent: F9E6CFC6:7E79459D-0025851C:00472582;
+ type=4; name=$KeepSent
+X-LLNOutbound: False
+X-Disclaimed: 15259
+X-TNEFEvaluated: 1
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+x-cbid: 20022813-6283-0000-0000-000000FF3003
+X-IBM-SpamModules-Scores: BY=0.02035; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
+ SC=0.399202; ST=0; TS=0; UL=0; ISC=; MB=0.005929
+X-IBM-SpamModules-Versions: BY=3.00012657; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000293; SDB=6.01340466; UDB=6.00714387; IPR=6.01122828;
+ MB=3.00031010; MTD=3.00000008; XFM=3.00000015; UTC=2020-02-28 13:06:01
+X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
+X-IBM-AV-VERSION: SAVI=2020-02-28 12:46:26 - 6.00011059
+x-cbparentid: 20022813-6284-0000-0000-000000CD3278
+Message-Id: <OFF9E6CFC6.7E79459D-ON0025851C.00472582-0025851C.0047F357@notes.na.collabserv.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-28_04:2020-02-26,2020-02-28 signatures=0
+X-Proofpoint-Spam-Reason: safe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Feb 2020 02:54:35 -0800
-Luigi Rizzo <lrizzo@google.com> wrote:
+-----"Jason Gunthorpe" <jgg@ziepe.ca> wrote: -----
 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index dbbfff123196..c539489d3166 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4520,9 +4520,12 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	/* XDP packets must be linear and must have sufficient headroom
->  	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
->  	 * native XDP provides, thus we need to do it here as well.
-> +	 * For non shared skbs, xdpgeneric_linearize controls linearization.
->  	 */
-> -	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
-> -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-> +	if (skb_cloned(skb) ||
-> +	    (skb->dev->xdpgeneric_linearize &&
-> +	     (skb_is_nonlinear(skb) ||
-> +	      skb_headroom(skb) < XDP_PACKET_HEADROOM))) {
->  		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
->  		int troom = skb->tail + skb->data_len - skb->end;
+>To: "Bernard Metzler" <BMT@zurich.ibm.com>
+>From: "Jason Gunthorpe" <jgg@ziepe.ca>
+>Date: 02/27/2020 05:46PM
+>Cc: "syzbot" <syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+>chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+>linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+>netdev@vger.kernel.org, parav@mellanox.com,
+>syzkaller-bugs@googlegroups.com, willy@infradead.org
+>Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
+>
+>On Thu, Feb 27, 2020 at 04:21:21PM +0000, Bernard Metzler wrote:
+>> 
+>> >To: "Bernard Metzler" <BMT@zurich.ibm.com>
+>> >From: "Jason Gunthorpe" <jgg@ziepe.ca>
+>> >Date: 02/27/2020 04:53PM
+>> >Cc: "syzbot"
+><syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com>,
+>> >chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
+>> >linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+>> >netdev@vger.kernel.org, parav@mellanox.com,
+>> >syzkaller-bugs@googlegroups.com, willy@infradead.org
+>> >Subject: [EXTERNAL] Re: possible deadlock in cma_netdev_callback
+>> >
+>> >On Thu, Feb 27, 2020 at 10:11:13AM +0000, Bernard Metzler wrote:
+>> >
+>> >> Thanks for letting me know! Hmm, we cannot use RCU locks since
+>> >> we potentially sleep. One solution would be to create a list
+>> >> of matching interfaces while under lock, unlock and use that
+>> >> list for calling siw_listen_address() (which may sleep),
+>> >> right...?
+>> >
+>> >Why do you need to iterate over addresses anyhow? Shouldn't the
+>> >listen
+>> >just be done with the address the user gave and a BIND DEVICE to
+>the
+>> >device siw is connected to?
+>> 
+>> The user may give a wildcard local address, so we'd have
+>> to bind to all addresses of that device...
+>
+>AFAIK a wild card bind using BIND DEVICE works just fine?
+>
+>Jason
+>
+Thanks Jason, absolutely! And it makes things so easy...
 
-Have you checked that calling bpf_xdp_adjust_tail() is not breaking anything?
+Let me prepare and send a patch which drops all that
+jumbo mumbo logic to iterate over interface addresses
+if the socket interface does the right things anyway.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+It implies further simplifications to the siw connection
+management, since with that we never have to maintain a
+list of listening siw endpoints on a given cm_id; it will
+always be max one. I'll cleanup the code accordingly and
+prepare an extra cleanup patch, which I can send only
+later (have a very tight schedule this week).
+
+Bernard.
 
