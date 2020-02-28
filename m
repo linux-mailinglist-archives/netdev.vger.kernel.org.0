@@ -2,370 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5142E173A4F
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 15:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8949A173A5D
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 15:53:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbgB1Ou5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 09:50:57 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37643 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726796AbgB1Ou5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 09:50:57 -0500
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j7gyb-0006mu-Az; Fri, 28 Feb 2020 15:50:53 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j7gyY-0004ap-Ex; Fri, 28 Feb 2020 15:50:50 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Chris Snook <chris.snook@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH v9] net: ag71xx: port to phylink
-Date:   Fri, 28 Feb 2020 15:50:49 +0100
-Message-Id: <20200228145049.17602-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.25.0
+        id S1727228AbgB1Owv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 09:52:51 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45138 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726788AbgB1Owv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 09:52:51 -0500
+Received: by mail-qk1-f195.google.com with SMTP id z12so3119270qkg.12
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 06:52:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3oCxYOBVlNEeTrXKz4IvQIi6tC335bh3WV4Zx+iMPvY=;
+        b=mrNVDVhKxLjtykJtDYrXpjeoMZbtgoFXixYV+MLXcj9jfVWANuaTfD+PrNx8xF//OR
+         hcg4Oxv2/2k3T52QwfnqzjgLR84ruvHOG+W+LdFLmP9vPg1GSdWHhAqBvtcqa0c7Ex5V
+         7UMbMHIiTQ0A2GjWpVs+l0px35v0zJDuN05P8cJ6UHmBfesAg6Atwoh9sdBFyLuo1LwJ
+         wlw0G6uYuD5SdwJD5gVPMqG1s5pOvPtIxqLG3uoryeDcBdU3d3aqV3uPJK/EmOht2GZ7
+         Ywq2ihqudtfk9f7Lo9iYkAuEjkYgP/VjgFSOyK2LfQ4GHtom/CjylvN8K/MiimbG7SDa
+         kBRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3oCxYOBVlNEeTrXKz4IvQIi6tC335bh3WV4Zx+iMPvY=;
+        b=NUkeA6AbjkEP+ferVh0/JC2KceRwbv6QsKj85zKBc1OVoPY9FjKH6LHQCnYGL70Mjl
+         codkxxrGZXF/Z3Vpw0vasTv5Nn8hCztiobuTfJN8nf+DQlxDbEf6+YTM7X9qFZhaSYM9
+         gwa7e0WwGwSQ/COR4lHLg5KgRjpilY2y1QdFMXIcSJS1px4vQQ5iw7yI8r2nk5MhMv7C
+         02d0isYmCMNF29Ec9+0Vgvwg/tyUYV0Yq7Ml2pVqxl95FoHwY9Fj8FnZhUctF+aimIYf
+         dSHqGu23yuLjye1UC4BmLW7gZITVaZFBWR4fWp76qLMkF18MdMlZSYh4w1HEhRoUBg0u
+         23Uw==
+X-Gm-Message-State: APjAAAUZpEdkAdvSTUybVeRCw/eVtRCrO1vt4wfn9UT8T7yPJWzCQvGQ
+        UA/dHmxA2KtuOk5mZMJ0vwM=
+X-Google-Smtp-Source: APXvYqyCQRYbHjGDvyjJ4v2Z8F+UvlTKpQ4/DCN6uo2JvLeBIj1d8t/Bk4u0GLuiZRlBSdU/iqXUmA==
+X-Received: by 2002:a37:e111:: with SMTP id c17mr4723579qkm.182.1582901568974;
+        Fri, 28 Feb 2020 06:52:48 -0800 (PST)
+Received: from localhost.localdomain ([168.181.48.223])
+        by smtp.gmail.com with ESMTPSA id w83sm4607194qkb.83.2020.02.28.06.52.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 06:52:48 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C7D7FC4B66; Fri, 28 Feb 2020 11:52:45 -0300 (-03)
+Date:   Fri, 28 Feb 2020 11:52:45 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH net-next 6/6] net/sched: act_ct: Software offload of
+ established flows
+Message-ID: <20200228145245.GB2546@localhost.localdomain>
+References: <1582458307-17067-1-git-send-email-paulb@mellanox.com>
+ <1582458307-17067-7-git-send-email-paulb@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1582458307-17067-7-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The port to phylink was done as close as possible to initial
-functionality.
+On Sun, Feb 23, 2020 at 01:45:07PM +0200, Paul Blakey wrote:
+> Offload nf conntrack processing by looking up the 5-tuple in the
+> zone's flow table.
+> 
+> The nf conntrack module will process the packets until a connection is
+> in established state. Once in established state, the ct state pointer
+> (nf_conn) will be restored on the skb from a successful ft lookup.
+> 
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>  net/sched/act_ct.c | 163 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 160 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> index b2bc885..3592e24 100644
+> --- a/net/sched/act_ct.c
+> +++ b/net/sched/act_ct.c
+> @@ -211,6 +211,157 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
+>  	tcf_ct_flow_table_add(ct_ft, ct, tcp);
+>  }
+>  
+> +static bool
+> +tcf_ct_flow_table_fill_tuple_ipv4(struct sk_buff *skb,
+> +				  struct flow_offload_tuple *tuple)
+> +{
+> +	struct flow_ports *ports;
+> +	unsigned int thoff;
+> +	struct iphdr *iph;
+> +
+> +	if (!pskb_may_pull(skb, sizeof(*iph)))
+> +		return false;
+> +
+> +	iph = ip_hdr(skb);
+> +	thoff = iph->ihl * 4;
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v9:
-- rebase to latest net-next
-- move part of mac_config() implementation to the mac_link_up()
+[A]
 
-changes v8:
-- set the autoneg bit
-- provide implementations for the mac_pcs_get_state and mac_an_restart
-  methods
-- do phylink_disconnect_phy() on _stop()
-- rename ag71xx_phy_setup() to ag71xx_phylink_setup() 
+> +
+> +	if (ip_is_fragment(iph) ||
+> +	    unlikely(thoff != sizeof(struct iphdr)))
+> +		return false;
+> +
+> +	if (iph->protocol != IPPROTO_TCP &&
+> +	    iph->protocol != IPPROTO_UDP)
+> +		return false;
+> +
+> +	if (iph->ttl <= 1)
+> +		return false;
+> +
+> +	thoff = iph->ihl * 4;
 
- drivers/net/ethernet/atheros/Kconfig  |   2 +-
- drivers/net/ethernet/atheros/ag71xx.c | 188 ++++++++++++++++----------
- 2 files changed, 118 insertions(+), 72 deletions(-)
+This is not needed, as already done in [A].
 
-diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
-index 0058051ba925..2720bde5034e 100644
---- a/drivers/net/ethernet/atheros/Kconfig
-+++ b/drivers/net/ethernet/atheros/Kconfig
-@@ -20,7 +20,7 @@ if NET_VENDOR_ATHEROS
- config AG71XX
- 	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
- 	depends on ATH79
--	select PHYLIB
-+	select PHYLINK
- 	help
- 	  If you wish to compile a kernel for AR7XXX/91XXX and enable
- 	  ethernet support, then you should always answer Y to this.
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index e95687a780fb..02b7705393ca 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -32,6 +32,7 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
-+#include <linux/phylink.h>
- #include <linux/regmap.h>
- #include <linux/reset.h>
- #include <linux/clk.h>
-@@ -314,6 +315,8 @@ struct ag71xx {
- 	dma_addr_t stop_desc_dma;
- 
- 	phy_interface_t phy_if_mode;
-+	struct phylink *phylink;
-+	struct phylink_config phylink_config;
- 
- 	struct delayed_work restart_work;
- 	struct timer_list oom_timer;
-@@ -845,24 +848,91 @@ static void ag71xx_hw_start(struct ag71xx *ag)
- 	netif_wake_queue(ag->ndev);
- }
- 
--static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
-+static void ag71xx_mac_config(struct phylink_config *config, unsigned int mode,
-+			      const struct phylink_link_state *state)
- {
--	struct phy_device *phydev = ag->ndev->phydev;
--	u32 cfg2;
--	u32 ifctl;
--	u32 fifo5;
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
- 
--	if (!phydev->link && update) {
--		ag71xx_hw_stop(ag);
-+	if (phylink_autoneg_inband(mode))
- 		return;
--	}
- 
- 	if (!ag71xx_is(ag, AR7100) && !ag71xx_is(ag, AR9130))
- 		ag71xx_fast_reset(ag);
- 
-+	if (ag->tx_ring.desc_split) {
-+		ag->fifodata[2] &= 0xffff;
-+		ag->fifodata[2] |= ((2048 - ag->tx_ring.desc_split) / 4) << 16;
-+	}
-+
-+	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG3, ag->fifodata[2]);
-+}
-+
-+static void ag71xx_mac_validate(struct phylink_config *config,
-+			    unsigned long *supported,
-+			    struct phylink_link_state *state)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != PHY_INTERFACE_MODE_GMII &&
-+	    state->interface != PHY_INTERFACE_MODE_MII) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	phylink_set(mask, MII);
-+
-+	phylink_set(mask, Autoneg);
-+	phylink_set(mask, 10baseT_Half);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
-+	phylink_set(mask, 100baseT_Full);
-+
-+	if (state->interface == PHY_INTERFACE_MODE_NA ||
-+	    state->interface == PHY_INTERFACE_MODE_GMII) {
-+		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+	}
-+
-+	bitmap_and(supported, supported, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static void ag71xx_mac_pcs_get_state(struct phylink_config *config,
-+				     struct phylink_link_state *state)
-+{
-+	state->link = 0;
-+}
-+
-+static void ag71xx_mac_an_restart(struct phylink_config *config)
-+{
-+	/* Not Supported */
-+}
-+
-+static void ag71xx_mac_link_down(struct phylink_config *config,
-+				 unsigned int mode, phy_interface_t interface)
-+{
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
-+
-+	ag71xx_hw_stop(ag);
-+}
-+
-+static void ag71xx_mac_link_up(struct phylink_config *config,
-+			       struct phy_device *phy,
-+			       unsigned int mode, phy_interface_t interface,
-+			       int speed, int duplex,
-+			       bool tx_pause, bool rx_pause)
-+{
-+	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
-+	u32 cfg2;
-+	u32 ifctl;
-+	u32 fifo5;
-+
- 	cfg2 = ag71xx_rr(ag, AG71XX_REG_MAC_CFG2);
- 	cfg2 &= ~(MAC_CFG2_IF_1000 | MAC_CFG2_IF_10_100 | MAC_CFG2_FDX);
--	cfg2 |= (phydev->duplex) ? MAC_CFG2_FDX : 0;
-+	cfg2 |= duplex ? MAC_CFG2_FDX : 0;
- 
- 	ifctl = ag71xx_rr(ag, AG71XX_REG_MAC_IFCTL);
- 	ifctl &= ~(MAC_IFCTL_SPEED);
-@@ -870,7 +940,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- 	fifo5 = ag71xx_rr(ag, AG71XX_REG_FIFO_CFG5);
- 	fifo5 &= ~FIFO_CFG5_BM;
- 
--	switch (phydev->speed) {
-+	switch (speed) {
- 	case SPEED_1000:
- 		cfg2 |= MAC_CFG2_IF_1000;
- 		fifo5 |= FIFO_CFG5_BM;
-@@ -883,72 +953,38 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
- 		cfg2 |= MAC_CFG2_IF_10_100;
- 		break;
- 	default:
--		WARN(1, "not supported speed %i\n", phydev->speed);
- 		return;
- 	}
- 
--	if (ag->tx_ring.desc_split) {
--		ag->fifodata[2] &= 0xffff;
--		ag->fifodata[2] |= ((2048 - ag->tx_ring.desc_split) / 4) << 16;
--	}
--
--	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG3, ag->fifodata[2]);
--
- 	ag71xx_wr(ag, AG71XX_REG_MAC_CFG2, cfg2);
- 	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG5, fifo5);
- 	ag71xx_wr(ag, AG71XX_REG_MAC_IFCTL, ifctl);
- 
- 	ag71xx_hw_start(ag);
--
--	if (update)
--		phy_print_status(phydev);
- }
- 
--static void ag71xx_phy_link_adjust(struct net_device *ndev)
--{
--	struct ag71xx *ag = netdev_priv(ndev);
--
--	ag71xx_link_adjust(ag, true);
--}
-+static const struct phylink_mac_ops ag71xx_phylink_mac_ops = {
-+	.validate = ag71xx_mac_validate,
-+	.mac_pcs_get_state = ag71xx_mac_pcs_get_state,
-+	.mac_an_restart = ag71xx_mac_an_restart,
-+	.mac_config = ag71xx_mac_config,
-+	.mac_link_down = ag71xx_mac_link_down,
-+	.mac_link_up = ag71xx_mac_link_up,
-+};
- 
--static int ag71xx_phy_connect(struct ag71xx *ag)
-+static int ag71xx_phylink_setup(struct ag71xx *ag)
- {
--	struct device_node *np = ag->pdev->dev.of_node;
--	struct net_device *ndev = ag->ndev;
--	struct device_node *phy_node;
--	struct phy_device *phydev;
--	int ret;
--
--	if (of_phy_is_fixed_link(np)) {
--		ret = of_phy_register_fixed_link(np);
--		if (ret < 0) {
--			netif_err(ag, probe, ndev, "Failed to register fixed PHY link: %d\n",
--				  ret);
--			return ret;
--		}
-+	struct phylink *phylink;
- 
--		phy_node = of_node_get(np);
--	} else {
--		phy_node = of_parse_phandle(np, "phy-handle", 0);
--	}
-+	ag->phylink_config.dev = &ag->ndev->dev;
-+	ag->phylink_config.type = PHYLINK_NETDEV;
- 
--	if (!phy_node) {
--		netif_err(ag, probe, ndev, "Could not find valid phy node\n");
--		return -ENODEV;
--	}
--
--	phydev = of_phy_connect(ag->ndev, phy_node, ag71xx_phy_link_adjust,
--				0, ag->phy_if_mode);
--
--	of_node_put(phy_node);
--
--	if (!phydev) {
--		netif_err(ag, probe, ndev, "Could not connect to PHY device\n");
--		return -ENODEV;
--	}
--
--	phy_attached_info(phydev);
-+	phylink = phylink_create(&ag->phylink_config, ag->pdev->dev.fwnode,
-+				 ag->phy_if_mode, &ag71xx_phylink_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
- 
-+	ag->phylink = phylink;
- 	return 0;
- }
- 
-@@ -1239,6 +1275,13 @@ static int ag71xx_open(struct net_device *ndev)
- 	unsigned int max_frame_len;
- 	int ret;
- 
-+	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
-+	if (ret) {
-+		netif_err(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
-+			  ret);
-+		goto err;
-+	}
-+
- 	max_frame_len = ag71xx_max_frame_len(ndev->mtu);
- 	ag->rx_buf_size =
- 		SKB_DATA_ALIGN(max_frame_len + NET_SKB_PAD + NET_IP_ALIGN);
-@@ -1251,11 +1294,7 @@ static int ag71xx_open(struct net_device *ndev)
- 	if (ret)
- 		goto err;
- 
--	ret = ag71xx_phy_connect(ag);
--	if (ret)
--		goto err;
--
--	phy_start(ndev->phydev);
-+	phylink_start(ag->phylink);
- 
- 	return 0;
- 
-@@ -1268,8 +1307,8 @@ static int ag71xx_stop(struct net_device *ndev)
- {
- 	struct ag71xx *ag = netdev_priv(ndev);
- 
--	phy_stop(ndev->phydev);
--	phy_disconnect(ndev->phydev);
-+	phylink_stop(ag->phylink);
-+	phylink_disconnect_phy(ag->phylink);
- 	ag71xx_hw_disable(ag);
- 
- 	return 0;
-@@ -1414,13 +1453,14 @@ static void ag71xx_restart_work_func(struct work_struct *work)
- {
- 	struct ag71xx *ag = container_of(work, struct ag71xx,
- 					 restart_work.work);
--	struct net_device *ndev = ag->ndev;
- 
- 	rtnl_lock();
- 	ag71xx_hw_disable(ag);
- 	ag71xx_hw_enable(ag);
--	if (ndev->phydev->link)
--		ag71xx_link_adjust(ag, false);
-+
-+	phylink_stop(ag->phylink);
-+	phylink_start(ag->phylink);
-+
- 	rtnl_unlock();
- }
- 
-@@ -1759,6 +1799,12 @@ static int ag71xx_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, ndev);
- 
-+	err = ag71xx_phylink_setup(ag);
-+	if (err) {
-+		netif_err(ag, probe, ndev, "failed to setup phylink (%d)\n", err);
-+		goto err_mdio_remove;
-+	}
-+
- 	err = register_netdev(ndev);
- 	if (err) {
- 		netif_err(ag, probe, ndev, "unable to register net device\n");
--- 
-2.25.0
+> +	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
+> +		return false;
+> +
+> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
+> +
+> +	tuple->src_v4.s_addr = iph->saddr;
+> +	tuple->dst_v4.s_addr = iph->daddr;
+> +	tuple->src_port = ports->source;
+> +	tuple->dst_port = ports->dest;
+> +	tuple->l3proto = AF_INET;
+> +	tuple->l4proto = iph->protocol;
+> +
+> +	return true;
+> +}
+> +
+> +static bool
+> +tcf_ct_flow_table_fill_tuple_ipv6(struct sk_buff *skb,
+> +				  struct flow_offload_tuple *tuple)
+> +{
+> +	struct flow_ports *ports;
+> +	struct ipv6hdr *ip6h;
+> +	unsigned int thoff;
+> +
+> +	if (!pskb_may_pull(skb, sizeof(*ip6h)))
+> +		return false;
+> +
+> +	ip6h = ipv6_hdr(skb);
+> +
+> +	if (ip6h->nexthdr != IPPROTO_TCP &&
+> +	    ip6h->nexthdr != IPPROTO_UDP)
+> +		return false;
+> +
+> +	if (ip6h->hop_limit <= 1)
+> +		return false;
+> +
+> +	thoff = sizeof(*ip6h);
+> +	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
+> +		return false;
+> +
+> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
+> +
+> +	tuple->src_v6 = ip6h->saddr;
+> +	tuple->dst_v6 = ip6h->daddr;
+> +	tuple->src_port = ports->source;
+> +	tuple->dst_port = ports->dest;
+> +	tuple->l3proto = AF_INET6;
+> +	tuple->l4proto = ip6h->nexthdr;
+> +
+> +	return true;
+> +}
+> +
+> +static bool tcf_ct_flow_table_check_tcp(struct flow_offload *flow, int proto,
+> +					struct sk_buff *skb,
+> +					unsigned int thoff)
+> +{
+> +	struct tcphdr *tcph;
+> +
+> +	if (proto != IPPROTO_TCP)
+> +		return true;
 
+I suppose this is a way to do additional checks for TCP while allowing
+everything, but it does give the feeling that the 'return true' is
+wrong and should have been 'return false' instead. The function name
+works both ways too, at least to me. :-)
+
+Can we have a comment to make it explicit, or a different construct?
+Like, instead of 'return true' here, a 'goto out_ok' and reuse the
+last return.
+
+
+These are all my comments on this series. LGTM otherwise. Thanks!
+
+> +
+> +	if (!pskb_may_pull(skb, thoff + sizeof(*tcph)))
+> +		return false;
+> +
+> +	tcph = (void *)(skb_network_header(skb) + thoff);
+> +	if (unlikely(tcph->fin || tcph->rst)) {
+> +		flow_offload_teardown(flow);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+> +static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
+> +				     struct sk_buff *skb,
+> +				     u8 family)
+> +{
+> +	struct nf_flowtable *nf_ft = &p->ct_ft->nf_ft;
+> +	struct flow_offload_tuple_rhash *tuplehash;
+> +	struct flow_offload_tuple tuple = {};
+> +	enum ip_conntrack_info ctinfo;
+> +	struct flow_offload *flow;
+> +	struct nf_conn *ct;
+> +	unsigned int thoff;
+> +	u8 dir;
+> +
+> +	/* Previously seen or loopback */
+> +	ct = nf_ct_get(skb, &ctinfo);
+> +	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
+> +		return false;
+> +
+> +	switch (family) {
+> +	case NFPROTO_IPV4:
+> +		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple))
+> +			return false;
+> +		break;
+> +	case NFPROTO_IPV6:
+> +		if (!tcf_ct_flow_table_fill_tuple_ipv6(skb, &tuple))
+> +			return false;
+> +		break;
+> +	default:
+> +		return false;
+> +	}
+> +
+> +	tuplehash = flow_offload_lookup(nf_ft, &tuple);
+> +	if (!tuplehash)
+> +		return false;
+> +
+> +	dir = tuplehash->tuple.dir;
+> +	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
+> +	ct = flow->ct;
+> +
+> +	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
+> +						    IP_CT_ESTABLISHED_REPLY;
+> +
+> +	thoff = ip_hdr(skb)->ihl * 4;
+> +	if (!tcf_ct_flow_table_check_tcp(flow, ip_hdr(skb)->protocol, skb,
+> +					 thoff))
+> +		return false;
+> +
+> +	nf_conntrack_get(&ct->ct_general);
+> +	nf_ct_set(skb, ct, ctinfo);
+> +
+> +	return true;
+> +}
+> +
+>  static int tcf_ct_flow_tables_init(void)
+>  {
+>  	return rhashtable_init(&zones_ht, &zones_params);
+> @@ -579,6 +730,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>  	struct nf_hook_state state;
+>  	int nh_ofs, err, retval;
+>  	struct tcf_ct_params *p;
+> +	bool skip_add = false;
+>  	struct nf_conn *ct;
+>  	u8 family;
+>  
+> @@ -628,6 +780,11 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>  	 */
+>  	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
+>  	if (!cached) {
+> +		if (!commit && tcf_ct_flow_table_lookup(p, skb, family)) {
+> +			skip_add = true;
+> +			goto do_nat;
+> +		}
+> +
+>  		/* Associate skb with specified zone. */
+>  		if (tmpl) {
+>  			ct = nf_ct_get(skb, &ctinfo);
+> @@ -645,6 +802,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>  			goto out_push;
+>  	}
+>  
+> +do_nat:
+>  	ct = nf_ct_get(skb, &ctinfo);
+>  	if (!ct)
+>  		goto out_push;
+> @@ -662,9 +820,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>  		 * even if the connection is already confirmed.
+>  		 */
+>  		nf_conntrack_confirm(skb);
+> -	}
+> -
+> -	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+> +	} else if (!skip_add)
+> +		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+>  
+>  out_push:
+>  	skb_push_rcsum(skb, nh_ofs);
+> -- 
+> 1.8.3.1
+> 
