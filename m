@@ -2,128 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A0E173F9C
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E654173FC4
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 19:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgB1Sa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 13:30:29 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38820 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725730AbgB1Sa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:30:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582914628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9SQXHw9XzSbeXpj41JHDbfEF82zI7AsxsM9UfBTDMG8=;
-        b=ZxGDOaonvUnlR2sxu+XPjuJroKIZvKPgdUmplu5HKVowxPfqwihsGPyMYtOgBf7vNabaqQ
-        yuoo/K0LcGtmhCvHVx5O5RQA/0Oy9zOz1jy2Y+9ZJfAki5g0UczPmy9kOAIuzRnVyQzAEt
-        gyaR5o2aIcTZTivIBcLUqeoBI9259o8=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-301-R3XtDy2tNt-cXtQRKsQMMQ-1; Fri, 28 Feb 2020 13:30:25 -0500
-X-MC-Unique: R3XtDy2tNt-cXtQRKsQMMQ-1
-Received: by mail-ed1-f72.google.com with SMTP id k6so2904918edq.8
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 10:30:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9SQXHw9XzSbeXpj41JHDbfEF82zI7AsxsM9UfBTDMG8=;
-        b=T7wrF9pjj6gCMbu9HIkJFbj8D3rK2DNP0xwM8OIbFuMvmKoRXLu83YJFUztPttd1Nw
-         qYCz+ee+G8gsU9YkCK2P3lYlQ4MVwYgxofR4Oygizw7Q5RSxzepwMLfD0t5JM5qA9VDn
-         Kn6zTuBpJ2Twv85zJc0OInJdaJPvojLziEf7u2rsawHA0QryHjHiGDQfrt3YHH4qBJ2Q
-         p93jz/vfWt0u6V/x2M6kuat6iU42D0Lt2/VTD0P7DMotRlUS94Ru24Umew5fiwnx8H5f
-         tDzUsWsoNDojHps6Zpll1d2vkdZQyelkddxuuR92FwXCdeWSGgkzKLEzmY+2GHi0D/sm
-         54Cg==
-X-Gm-Message-State: APjAAAX/lj3UygbmZP3GXN8bLJJFRk4xvybSJ4gFYSPnC3O/x6ePZyso
-        M7J+jUSrk+1adbu/iUFGTajj0GuHXhb9eZhwPcpfS+7m6NRR0qCY3bI0pqxghlfkivuUcoTGSlY
-        5acRD0VTh601rJNNSXkaqUlED8DUiJYA6
-X-Received: by 2002:a17:906:5210:: with SMTP id g16mr5235507ejm.305.1582914623693;
-        Fri, 28 Feb 2020 10:30:23 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy2k0kyziTCuXtDsDmQRSPPZDTNCJcyd4zumdXYHZ3UQPHdHXIdNaH5hE2OpUdMwUlMZCM50jFSmW/FScjamn0=
-X-Received: by 2002:a17:906:5210:: with SMTP id g16mr5235484ejm.305.1582914623404;
- Fri, 28 Feb 2020 10:30:23 -0800 (PST)
+        id S1725900AbgB1Sj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 13:39:57 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:38159 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgB1Sj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 13:39:57 -0500
+Received: from redhouse.blr.asicdesginers.com ([10.193.187.72])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 01SIdlBB032397;
+        Fri, 28 Feb 2020 10:39:48 -0800
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        herbert@gondor.apana.org.au
+Cc:     secdev@chelsio.com, varun@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net-next v2 0/6] cxgb4/chcr: ktls tx offload support on T6 adapter
+Date:   Sat, 29 Feb 2020 00:09:39 +0530
+Message-Id: <20200228183945.11594-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.25.0.191.gde93cc1
 MIME-Version: 1.0
-References: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
-In-Reply-To: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Fri, 28 Feb 2020 19:30:12 +0100
-Message-ID: <CAPpH65z3GZgdHGiTJt+UZzBS94V0NN17VQFgDanNmoSdF7-_3Q@mail.gmail.com>
-Subject: Re: [PATCH] ip route: Do not imply pref and ttl-propagate are per nexthop
-To:     Donald Sharp <sharpd@cumulusnetworks.com>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>, roopa@cumulusnetworks.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 25, 2020 at 2:12 PM Donald Sharp <sharpd@cumulusnetworks.com> wrote:
->
-> Currently `ip -6 route show` gives us this output:
->
-> sharpd@eva ~/i/ip (master)> ip -6 route show
-> ::1 dev lo proto kernel metric 256 pref medium
-> 4:5::6:7 nhid 18 proto static metric 20
->         nexthop via fe80::99 dev enp39s0 weight 1
->         nexthop via fe80::44 dev enp39s0 weight 1 pref medium
->
-> Displaying `pref medium` as the last bit of output implies
-> that the RTA_PREF is a per nexthop value, when it is infact
-> a per route piece of data.
->
-> Change the output to display RTA_PREF and RTA_TTL_PROPAGATE
-> before the RTA_MULTIPATH data is shown:
->
-> sharpd@eva ~/i/ip (master)> ./ip -6 route show
-> ::1 dev lo proto kernel metric 256 pref medium
-> 4:5::6:7 nhid 18 proto static metric 20 pref medium
->         nexthop via fe80::99 dev enp39s0 weight 1
->         nexthop via fe80::44 dev enp39s0 weight 1
->
-> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
-> ---
->  ip/iproute.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
->
-> diff --git a/ip/iproute.c b/ip/iproute.c
-> index 93b805c9..07c45169 100644
-> --- a/ip/iproute.c
-> +++ b/ip/iproute.c
-> @@ -933,9 +933,6 @@ int print_route(struct nlmsghdr *n, void *arg)
->         if (tb[RTA_IIF] && filter.iifmask != -1)
->                 print_rta_if(fp, tb[RTA_IIF], "iif");
->
-> -       if (tb[RTA_MULTIPATH])
-> -               print_rta_multipath(fp, r, tb[RTA_MULTIPATH]);
-> -
->         if (tb[RTA_PREF])
->                 print_rt_pref(fp, rta_getattr_u8(tb[RTA_PREF]));
->
-> @@ -951,6 +948,14 @@ int print_route(struct nlmsghdr *n, void *arg)
->                                      propagate ? "enabled" : "disabled");
->         }
->
-> +       if (tb[RTA_MULTIPATH])
-> +               print_rta_multipath(fp, r, tb[RTA_MULTIPATH]);
-> +
-> +       /* If you are adding new route RTA_XXXX then place it above
-> +        * the RTA_MULTIPATH else it will appear that the last nexthop
-> +        * in the ECMP has new attributes
-> +        */
-> +
->         print_string(PRINT_FP, NULL, "\n", NULL);
->         close_json_object();
->         fflush(fp);
-> --
-> 2.25.0
->
+This series of patches add support for kernel tls offload in Tx direction,
+over Chelsio T6 NICs. SKBs marked as decrypted will be treated as tls plain
+text packets and then offloaded to encrypt using network device (chelsio T6
+adapter).
 
-LGTM. Can you please add:
-Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
+This series is broken down as follows:
 
-Reviewed-by: Andrea Claudi <aclaudi@redhat.com>
+Patch 1 defines a new macro and registers tls_dev_add and tls_dev_del
+callbacks. When tls_dev_add gets called we send a connection request to
+our hardware and to make HW understand about tls offload. Its a partial
+connection setup and only ipv4 part is done.
+
+Patch 2 handles the HW response of the connection request and then we
+request to update TCB and handle it's HW response as well. Also we save
+crypto key locally. Only supporting TLS_CIPHER_AES_GCM_128_KEY_SIZE.
+
+Patch 3 handles tls marked skbs (decrypted bit set) and sends it to ULD for
+crypto handling. This code has a minimal portion of tx handler, to handle
+only one complete record per skb.
+
+Patch 4 hanldes partial end part of records. Also added logic to handle
+multiple records in one single skb. It also adds support to send out tcp
+option(/s) if exists in skb. If a record is partial but has end part of a
+record, we'll fetch complete record and then only send it to HW to generate
+HASH on complete record.
+
+Patch 5 handles partial first or middle part of record, it uses AES_CTR to
+encrypt the partial record. If we are trying to send middle record, it's
+start should be 16 byte aligned, so we'll fetch few earlier bytes from the
+record and then send it to HW for encryption.
+
+Patch 6 enables ipv6 support and also includes ktls startistics.
+
+v1->v2:
+- mark tcb state to close in tls_dev_del.
+- u_ctx is now picked from adapter structure.
+- clear atid in case of failure.
+- corrected ULP_CRYPTO_KTLS_INLINE value.
+- optimized tcb update using control queue.
+- state machine handling when earlier states received.
+- chcr_write_cpl_set_tcb_ulp  function is shifted to patch3.
+- un-necessary updating left variable.
+
+Rohit Maheshwari (6):
+  cxgb4/chcr : Register to tls add and del callbacks
+  cxgb4/chcr: Save tx keys and handle HW response
+  cxgb4/chcr: complete record tx handling
+  chcr: handle partial end part of a record
+  chcr: Handle first or middle part of record
+  cxgb4/chcr: Add ipv6 support and statistics
+
+ drivers/crypto/chelsio/Kconfig                |   11 +
+ drivers/crypto/chelsio/Makefile               |    3 +
+ drivers/crypto/chelsio/chcr_common.h          |  135 ++
+ drivers/crypto/chelsio/chcr_core.c            |   51 +-
+ drivers/crypto/chelsio/chcr_core.h            |    7 +
+ drivers/crypto/chelsio/chcr_ktls.c            | 2003 +++++++++++++++++
+ drivers/crypto/chelsio/chcr_ktls.h            |   98 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |    1 +
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   25 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.c    |   31 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |   13 +
+ drivers/net/ethernet/chelsio/cxgb4/l2t.c      |   11 +
+ drivers/net/ethernet/chelsio/cxgb4/l2t.h      |    1 +
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |    6 +-
+ drivers/net/ethernet/chelsio/cxgb4/t4_msg.h   |   28 +
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h   |   62 +-
+ drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h |    2 +
+ 17 files changed, 2468 insertions(+), 20 deletions(-)
+ create mode 100644 drivers/crypto/chelsio/chcr_common.h
+ create mode 100644 drivers/crypto/chelsio/chcr_ktls.c
+ create mode 100644 drivers/crypto/chelsio/chcr_ktls.h
+
+-- 
+2.25.0.191.gde93cc1
 
