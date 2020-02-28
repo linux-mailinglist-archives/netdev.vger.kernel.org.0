@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C005D1740C2
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 21:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60A61740C0
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 21:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbgB1UM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 15:12:29 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14346 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726974AbgB1UM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 15:12:29 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01SJwX7U170907;
-        Fri, 28 Feb 2020 15:12:23 -0500
+        id S1726910AbgB1UMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 15:12:25 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:42842 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726287AbgB1UMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 15:12:25 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01SJtcno104724;
+        Fri, 28 Feb 2020 15:12:18 -0500
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2yepy3yvrg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Feb 2020 15:12:20 -0500
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 01SJwvK6171492;
-        Fri, 28 Feb 2020 15:12:18 -0500
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2yepy3yvq4-1
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2yepwjjwv0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Fri, 28 Feb 2020 15:12:18 -0500
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 01SK66FN001663;
-        Fri, 28 Feb 2020 20:12:16 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma04dal.us.ibm.com with ESMTP id 2yepv30nve-1
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 01SJuAgw106098;
+        Fri, 28 Feb 2020 15:12:17 -0500
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2yepwjjwu9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Feb 2020 20:12:16 +0000
+        Fri, 28 Feb 2020 15:12:17 -0500
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 01SJoanZ019667;
+        Fri, 28 Feb 2020 20:12:17 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma05wdc.us.ibm.com with ESMTP id 2yepv2xxkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Feb 2020 20:12:17 +0000
 Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01SKCF6K60424564
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 01SKCGXc52101450
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 28 Feb 2020 20:12:15 GMT
+        Fri, 28 Feb 2020 20:12:16 GMT
 Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 362056A04D;
+        by IMSVA (Postfix) with ESMTP id 0508A6A04F;
+        Fri, 28 Feb 2020 20:12:16 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 60C4D6A04D;
         Fri, 28 Feb 2020 20:12:15 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 88B856A047;
-        Fri, 28 Feb 2020 20:12:14 +0000 (GMT)
 Received: from localhost.localdomain (unknown [9.163.83.215])
         by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 28 Feb 2020 20:12:14 +0000 (GMT)
+        Fri, 28 Feb 2020 20:12:15 +0000 (GMT)
 From:   Cris Forno <cforno12@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     mst@redhat.com, jasowang@redhat.com, haiyangz@microsoft.com,
@@ -52,9 +52,9 @@ Cc:     mst@redhat.com, jasowang@redhat.com, haiyangz@microsoft.com,
         davem@davemloft.net, mkubecek@suse.cz,
         willemdebruijn.kernel@gmail.com, kuba@kernel.org,
         Cris Forno <cforno12@linux.vnet.ibm.com>
-Subject: [PATCH, net-next, v7, 1/2] ethtool: Factored out similar ethtool link settings for virtual devices to core
-Date:   Fri, 28 Feb 2020 14:12:04 -0600
-Message-Id: <20200228201205.15846-2-cforno12@linux.ibm.com>
+Subject: [PATCH, net-next, v7, 2/2] net/ethtool: Introduce link_ksettings API for virtual network devices
+Date:   Fri, 28 Feb 2020 14:12:05 -0600
+Message-Id: <20200228201205.15846-3-cforno12@linux.ibm.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200228201205.15846-1-cforno12@linux.ibm.com>
 References: <20200228201205.15846-1-cforno12@linux.ibm.com>
@@ -63,10 +63,10 @@ Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-02-28_07:2020-02-28,2020-02-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=1 mlxscore=0 spamscore=0 phishscore=0 adultscore=0
- impostorscore=0 bulkscore=0 clxscore=1015 malwarescore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ adultscore=0 suspectscore=1 malwarescore=0 spamscore=0 impostorscore=0
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2001150001 definitions=main-2002280140
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -75,88 +75,258 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cris Forno <cforno12@linux.vnet.ibm.com>
 
-Three virtual devices (ibmveth, virtio_net, and netvsc) all have
-similar code to set link settings and validate ethtool command. To
-eliminate duplication of code, it is factored out into core/ethtool.c.
+With the ethtool_virtdev_set_link_ksettings function in core/ethtool.c,
+ibmveth, netvsc, and virtio now use the core's helper function.
+
+Funtionality changes that pertain to ibmveth driver include:
+
+  1. Changed the initial hardcoded link speed to 1GB.
+
+  2. Added support for allowing a user to change the reported link
+  speed via ethtool.
+
+Functionality changes to the netvsc driver include:
+
+  1. When netvsc_get_link_ksettings is called, it will defer to the VF
+  device if it exists to pull accelerated networking values, otherwise
+  pull default or user-defined values.
+
+  2. Similarly, if netvsc_set_link_ksettings called and a VF device
+  exists, the real values of speed and duplex are changed.
 
 Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
 ---
- include/linux/ethtool.h |  6 ++++++
- net/ethtool/ioctl.c     | 39 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 45 insertions(+)
+ drivers/net/ethernet/ibm/ibmveth.c | 57 +++++++++++++++++-------------
+ drivers/net/ethernet/ibm/ibmveth.h |  3 ++
+ drivers/net/hyperv/netvsc_drv.c    | 41 ++++++++-------------
+ drivers/net/virtio_net.c           | 39 ++------------------
+ 4 files changed, 53 insertions(+), 87 deletions(-)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 95991e4300bf..23373978cb3c 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -420,4 +420,10 @@ struct ethtool_rx_flow_rule *
- ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input);
- void ethtool_rx_flow_rule_destroy(struct ethtool_rx_flow_rule *rule);
- 
-+bool ethtool_virtdev_validate_cmd(const struct ethtool_link_ksettings *cmd);
-+int ethtool_virtdev_set_link_ksettings(struct net_device *dev,
-+				       const struct ethtool_link_ksettings *cmd,
-+				       u32 *dev_speed, u8 *dev_duplex);
-+
-+
- #endif /* _LINUX_ETHTOOL_H */
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index b987052d91ef..f2fe8e5896dc 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -459,6 +459,24 @@ static int load_link_ksettings_from_user(struct ethtool_link_ksettings *to,
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 84121aab7ff1..1fdbd7649f0f 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -712,29 +712,36 @@ static int ibmveth_close(struct net_device *netdev)
  	return 0;
  }
  
-+/* Check if the user is trying to change anything besides speed/duplex */
-+bool ethtool_virtdev_validate_cmd(const struct ethtool_link_ksettings *cmd)
-+{
-+	struct ethtool_link_settings base2 = {};
+-static int netdev_get_link_ksettings(struct net_device *dev,
+-				     struct ethtool_link_ksettings *cmd)
++static int ibmveth_set_link_ksettings(struct net_device *dev,
++				      const struct ethtool_link_ksettings *cmd)
+ {
+-	u32 supported, advertising;
+-
+-	supported = (SUPPORTED_1000baseT_Full | SUPPORTED_Autoneg |
+-				SUPPORTED_FIBRE);
+-	advertising = (ADVERTISED_1000baseT_Full | ADVERTISED_Autoneg |
+-				ADVERTISED_FIBRE);
+-	cmd->base.speed = SPEED_1000;
+-	cmd->base.duplex = DUPLEX_FULL;
+-	cmd->base.port = PORT_FIBRE;
+-	cmd->base.phy_address = 0;
+-	cmd->base.autoneg = AUTONEG_ENABLE;
+-
+-	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+-						supported);
+-	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+-						advertising);
++	struct ibmveth_adapter *adapter = netdev_priv(dev);
 +
-+	base2.speed = cmd->base.speed;
-+	base2.port = PORT_OTHER;
-+	base2.duplex = cmd->base.duplex;
-+	base2.cmd = cmd->base.cmd;
-+	base2.link_mode_masks_nwords = cmd->base.link_mode_masks_nwords;
-+
-+	return !memcmp(&base2, &cmd->base, sizeof(base2)) &&
-+		bitmap_empty(cmd->link_modes.supported,
-+			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
-+		bitmap_empty(cmd->link_modes.lp_advertising,
-+			     __ETHTOOL_LINK_MODE_MASK_NBITS);
++	return ethtool_virtdev_set_link_ksettings(dev, cmd,
++						  &adapter->speed,
++						  &adapter->duplex);
 +}
 +
- /* convert a kernel internal ethtool_link_ksettings to
-  * ethtool_link_usettings in user space. return 0 on success, errno on
-  * error.
-@@ -581,6 +599,27 @@ static int ethtool_set_link_ksettings(struct net_device *dev,
- 	return err;
++static int ibmveth_get_link_ksettings(struct net_device *dev,
++				      struct ethtool_link_ksettings *cmd)
++{
++	struct ibmveth_adapter *adapter = netdev_priv(dev);
++
++	cmd->base.speed = adapter->speed;
++	cmd->base.duplex = adapter->duplex;
++	cmd->base.port = PORT_OTHER;
+ 
+ 	return 0;
  }
  
-+int ethtool_virtdev_set_link_ksettings(struct net_device *dev,
-+				       const struct ethtool_link_ksettings *cmd,
-+				       u32 *dev_speed, u8 *dev_duplex)
++static void ibmveth_init_link_settings(struct net_device *dev)
 +{
-+	u32 speed;
-+	u8 duplex;
++	struct ibmveth_adapter *adapter = netdev_priv(dev);
 +
-+	speed = cmd->base.speed;
-+	duplex = cmd->base.duplex;
-+	/* don't allow custom speed and duplex */
-+	if (!ethtool_validate_speed(speed) ||
-+	    !ethtool_validate_duplex(duplex) ||
-+	    !ethtool_virtdev_validate_cmd(cmd))
-+		return -EINVAL;
-+	*dev_speed = speed;
-+	*dev_duplex = duplex;
-+
-+	return 0;
++	adapter->speed = SPEED_1000;
++	adapter->duplex = DUPLEX_FULL;
 +}
-+EXPORT_SYMBOL(ethtool_virtdev_set_link_ksettings);
 +
- /* Query device for its ethtool_cmd settings.
-  *
-  * Backward compatibility note: for compatibility with legacy ethtool, this is
+ static void netdev_get_drvinfo(struct net_device *dev,
+ 			       struct ethtool_drvinfo *info)
+ {
+@@ -965,12 +972,13 @@ static void ibmveth_get_ethtool_stats(struct net_device *dev,
+ }
+ 
+ static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-	.get_link		= ethtool_op_get_link,
+-	.get_strings		= ibmveth_get_strings,
+-	.get_sset_count		= ibmveth_get_sset_count,
+-	.get_ethtool_stats	= ibmveth_get_ethtool_stats,
+-	.get_link_ksettings	= netdev_get_link_ksettings,
++	.get_drvinfo		         = netdev_get_drvinfo,
++	.get_link		         = ethtool_op_get_link,
++	.get_strings		         = ibmveth_get_strings,
++	.get_sset_count		         = ibmveth_get_sset_count,
++	.get_ethtool_stats	         = ibmveth_get_ethtool_stats,
++	.get_link_ksettings	         = ibmveth_get_link_ksettings,
++	.set_link_ksettings              = ibmveth_set_link_ksettings,
+ };
+ 
+ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+@@ -1674,6 +1682,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	adapter->netdev = netdev;
+ 	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
+ 	adapter->pool_config = 0;
++	ibmveth_init_link_settings(netdev);
+ 
+ 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
+index 4e9bf3421f4f..27dfff200166 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.h
++++ b/drivers/net/ethernet/ibm/ibmveth.h
+@@ -162,6 +162,9 @@ struct ibmveth_adapter {
+     u64 tx_send_failed;
+     u64 tx_large_packets;
+     u64 rx_large_packets;
++    /* Ethtool settings */
++	u8 duplex;
++	u32 speed;
+ };
+ 
+ /*
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 5ee282b20ecb..57716f5292a5 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -1139,23 +1139,6 @@ static int netvsc_set_channels(struct net_device *net,
+ 	return ret;
+ }
+ 
+-static bool
+-netvsc_validate_ethtool_ss_cmd(const struct ethtool_link_ksettings *cmd)
+-{
+-	struct ethtool_link_ksettings diff1 = *cmd;
+-	struct ethtool_link_ksettings diff2 = {};
+-
+-	diff1.base.speed = 0;
+-	diff1.base.duplex = 0;
+-	/* advertising and cmd are usually set */
+-	ethtool_link_ksettings_zero_link_mode(&diff1, advertising);
+-	diff1.base.cmd = 0;
+-	/* We set port to PORT_OTHER */
+-	diff2.base.port = PORT_OTHER;
+-
+-	return !memcmp(&diff1, &diff2, sizeof(diff1));
+-}
+-
+ static void netvsc_init_settings(struct net_device *dev)
+ {
+ 	struct net_device_context *ndc = netdev_priv(dev);
+@@ -1172,6 +1155,12 @@ static int netvsc_get_link_ksettings(struct net_device *dev,
+ 				     struct ethtool_link_ksettings *cmd)
+ {
+ 	struct net_device_context *ndc = netdev_priv(dev);
++	struct net_device *vf_netdev;
++
++	vf_netdev = rtnl_dereference(ndc->vf_netdev);
++
++	if (vf_netdev)
++		return __ethtool_get_link_ksettings(vf_netdev, cmd);
+ 
+ 	cmd->base.speed = ndc->speed;
+ 	cmd->base.duplex = ndc->duplex;
+@@ -1184,18 +1173,18 @@ static int netvsc_set_link_ksettings(struct net_device *dev,
+ 				     const struct ethtool_link_ksettings *cmd)
+ {
+ 	struct net_device_context *ndc = netdev_priv(dev);
+-	u32 speed;
++	struct net_device *vf_netdev = rtnl_dereference(ndc->vf_netdev);
+ 
+-	speed = cmd->base.speed;
+-	if (!ethtool_validate_speed(speed) ||
+-	    !ethtool_validate_duplex(cmd->base.duplex) ||
+-	    !netvsc_validate_ethtool_ss_cmd(cmd))
+-		return -EINVAL;
++	if (vf_netdev) {
++		if (!vf_netdev->ethtool_ops->set_link_ksettings)
++			return -EOPNOTSUPP;
+ 
+-	ndc->speed = speed;
+-	ndc->duplex = cmd->base.duplex;
++		return vf_netdev->ethtool_ops->set_link_ksettings(vf_netdev,
++								  cmd);
++	}
+ 
+-	return 0;
++	return ethtool_virtdev_set_link_ksettings(dev, cmd,
++						  &ndc->speed, &ndc->duplex);
+ }
+ 
+ static int netvsc_change_mtu(struct net_device *ndev, int mtu)
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 2fe7a3188282..d473b51045b9 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2166,48 +2166,13 @@ static void virtnet_get_channels(struct net_device *dev,
+ 	channels->other_count = 0;
+ }
+ 
+-/* Check if the user is trying to change anything besides speed/duplex */
+-static bool
+-virtnet_validate_ethtool_cmd(const struct ethtool_link_ksettings *cmd)
+-{
+-	struct ethtool_link_ksettings diff1 = *cmd;
+-	struct ethtool_link_ksettings diff2 = {};
+-
+-	/* cmd is always set so we need to clear it, validate the port type
+-	 * and also without autonegotiation we can ignore advertising
+-	 */
+-	diff1.base.speed = 0;
+-	diff2.base.port = PORT_OTHER;
+-	ethtool_link_ksettings_zero_link_mode(&diff1, advertising);
+-	diff1.base.duplex = 0;
+-	diff1.base.cmd = 0;
+-	diff1.base.link_mode_masks_nwords = 0;
+-
+-	return !memcmp(&diff1.base, &diff2.base, sizeof(diff1.base)) &&
+-		bitmap_empty(diff1.link_modes.supported,
+-			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
+-		bitmap_empty(diff1.link_modes.advertising,
+-			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
+-		bitmap_empty(diff1.link_modes.lp_advertising,
+-			     __ETHTOOL_LINK_MODE_MASK_NBITS);
+-}
+-
+ static int virtnet_set_link_ksettings(struct net_device *dev,
+ 				      const struct ethtool_link_ksettings *cmd)
+ {
+ 	struct virtnet_info *vi = netdev_priv(dev);
+-	u32 speed;
+-
+-	speed = cmd->base.speed;
+-	/* don't allow custom speed and duplex */
+-	if (!ethtool_validate_speed(speed) ||
+-	    !ethtool_validate_duplex(cmd->base.duplex) ||
+-	    !virtnet_validate_ethtool_cmd(cmd))
+-		return -EINVAL;
+-	vi->speed = speed;
+-	vi->duplex = cmd->base.duplex;
+ 
+-	return 0;
++	return ethtool_virtdev_set_link_ksettings(dev, cmd,
++						  &vi->speed, &vi->duplex);
+ }
+ 
+ static int virtnet_get_link_ksettings(struct net_device *dev,
 -- 
 2.25.0
 
