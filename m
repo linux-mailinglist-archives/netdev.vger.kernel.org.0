@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 250141735F8
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 12:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C608173645
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 12:42:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgB1LUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 06:20:39 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28475 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725802AbgB1LUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 06:20:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582888838;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JwHjZB5Q4dc3T+wcDE5rzrvHt7xSnx1p8Z0SDiY1kIk=;
-        b=c0HdOOIi8e1qJlfHLzO6srhTaV2HhFSHlSO/Wadj6jT7m9LgFxofDgenzOfFC8+BTMSl4D
-        16sIiTbzLd+0A9xZ9+j7Q53SSow0kFXSoPQIguepyq/+k2rSsJc3nI5JiOatN2zWnkCnKm
-        yQKeeCOjLHHfTr1FGuqVfcfV+d1LcO4=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-135-9XZG7IMSNuq45kX1OQtDsA-1; Fri, 28 Feb 2020 06:20:36 -0500
-X-MC-Unique: 9XZG7IMSNuq45kX1OQtDsA-1
-Received: by mail-lj1-f198.google.com with SMTP id s15so809571ljp.14
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 03:20:36 -0800 (PST)
+        id S1726418AbgB1Ll4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 06:41:56 -0500
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:39011 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgB1Ll4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 06:41:56 -0500
+Received: by mail-ua1-f68.google.com with SMTP id c21so849651uam.6;
+        Fri, 28 Feb 2020 03:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qgRBXu3UXujfUu/YLJD5NKUPvJ1HubicGzZMJLwxdxg=;
+        b=IAEW3CVv+KdBq/tsDmXVgbaGMpkVLw+nS6/uh+feLTX2l/1du9WV8lusAvjmcEmOIV
+         bNu2OCsnBP45jQuDGoCKbt9l5pmQE8rHCL3QyU0kWtTKlSWNdfw8NzPLglFuHqGjA4of
+         eWRId6NmuKmUVV4FBVpvpsKuH2jKQMyqVoYkZ792Gn63fWXY7177B2UB469VAukJ3/Yn
+         zGHrRZBilpo6WHVZtm465Eth9XVfMRS/9d7NjqyIVBoKtXA9qvyAKaWaYw7isPvoHRNW
+         jzU1nMB430hd4068R/xsTj59X4e47eyMJOsC3Vf51CwwRs+P8z7eqRL4NawHSJPXYN8Z
+         yigg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=JwHjZB5Q4dc3T+wcDE5rzrvHt7xSnx1p8Z0SDiY1kIk=;
-        b=Z0vkfcddu7Y9ZiBQHQXis85101r0aYWj+Nfhum9VqD4hf6EPPUkvomwWqYRbag4TH1
-         eqBiKyA2SmmJGWbeZlI59J+2tuJsUFEeaAr9/HaTcSMhwRBbkICFXrvefQXqs6Ka+XOd
-         LYhqH+Wj6Ml+eiJaz6xqGjTIdtflYWiFdnl9YSbxYF2jjQXXpijHC4i7poC/lKoelWOX
-         lpgOs89cldOEdYhQaSRyaq/KhakDSfEtWIjehedynufu1pRlWFMLJGoqKJrPfsz1Cgnx
-         cjBED6ml9hNSxqOG6hri213T7kojh4EgXpCNN/iS/Y9uYxbuyGAp8gaF7TK0jIWGFfVv
-         wJ3A==
-X-Gm-Message-State: ANhLgQ1tZP7LdvIqZ+lgMEQXPkmdW7zeZkMio3zY5num6z5SWgwdcpki
-        arK60T+GFkue7Lq0tzZUpozRbI1f1/6hYenACK7EBbnPQCPAqJYTorrxf7Bdxjwq/+rxRsHvWHV
-        wan86Posiz7aeFCZe
-X-Received: by 2002:a19:3fc7:: with SMTP id m190mr1451722lfa.102.1582888834997;
-        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vtI5wLvOQGFZRXtz+6/xGXuDpaXgvo5ohMGmXLtvABy0daimE/d6cqn/rcnriOUuWqv4Jz45g==
-X-Received: by 2002:a19:3fc7:: with SMTP id m190mr1451710lfa.102.1582888834787;
-        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id q16sm4676857lfd.83.2020.02.28.03.20.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 03:20:34 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 2F8EF180362; Fri, 28 Feb 2020 12:20:33 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Luigi Rizzo <lrizzo@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, hawk@kernel.org, sameehj@amazon.com
-Cc:     linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
-Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb linearization
-In-Reply-To: <20200228105435.75298-1-lrizzo@google.com>
-References: <20200228105435.75298-1-lrizzo@google.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 Feb 2020 12:20:33 +0100
-Message-ID: <875zfrufem.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qgRBXu3UXujfUu/YLJD5NKUPvJ1HubicGzZMJLwxdxg=;
+        b=CidnHKZXUjNIDdsJbKGsHViptlw2bO+921uqoo5JgE66zGNVPsveB3qRyROUH36O07
+         rjS+Qg4mD78O1dDIJ2m/rD9ricykbUlIRlethFE99VzKZea7/C0lm6o6dhwE7W8Bsb8f
+         ys0yKNVNgdRCWTdjroJyDzRYLoPTi2KZg2G9x9yRAoGOEYBthgOXtD8j+EHHWRs2aSX6
+         /p5yc1R/2Wx6I+pEMYtdg4rwTgdTMMkHpv7kHiFB2DWMH5p32rvjHFiRQam3qvIdAVsa
+         vQ2l5x4tPE+q/h2Jajl84PciNimbQTBNCKdsPmbsm6A4NXIMUDMlYVDDF2mYwBJ8YR9g
+         1G9A==
+X-Gm-Message-State: ANhLgQ2iXziaWLLLYnNCHOBbG75iZBgFvQJtAMXNwMCzUVAvK99IDRxe
+        +UltbXMauKF8Q6Ur/AU+wa2jLZVN0r4urAY7qeDlzdOtsw4=
+X-Google-Smtp-Source: ADFU+vviIyKdulGmcFSh6KBXyhcte0zMAWs0zR8cPkGD3oMYMNar1XHGJ2FhVykv3IvpNgamMnEP8S9KxVjPWCkDT7I=
+X-Received: by 2002:a9f:3b02:: with SMTP id i2mr1670019uah.33.1582890115091;
+ Fri, 28 Feb 2020 03:41:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200228044518.20314-1-gmayyyha@gmail.com> <CAOi1vP-K+e0N26qpthLcst8HLE-FAMGSE9XwBhj1dPBiLyN-iA@mail.gmail.com>
+In-Reply-To: <CAOi1vP-K+e0N26qpthLcst8HLE-FAMGSE9XwBhj1dPBiLyN-iA@mail.gmail.com>
+From:   Yanhu Cao <gmayyyha@gmail.com>
+Date:   Fri, 28 Feb 2020 19:41:44 +0800
+Message-ID: <CAB9OAC0dURDHgqGDVCg_Gd+EhH-9_n4-mycgsqfxS64GRgd4Og@mail.gmail.com>
+Subject: Re: [PATCH] ceph: using POOL FULL flag instead of OSDMAP FULL flag
+To:     Ilya Dryomov <idryomov@gmail.com>
+Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luigi Rizzo <lrizzo@google.com> writes:
+On Fri, Feb 28, 2020 at 6:23 PM Ilya Dryomov <idryomov@gmail.com> wrote:
+>
+> On Fri, Feb 28, 2020 at 5:45 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
+> >
+> > OSDMAP_FULL and OSDMAP_NEARFULL are deprecated since mimic.
+> >
+> > Signed-off-by: Yanhu Cao <gmayyyha@gmail.com>
+> > ---
+> >  fs/ceph/file.c                  |  6 ++++--
+> >  include/linux/ceph/osd_client.h |  2 ++
+> >  include/linux/ceph/osdmap.h     |  3 ++-
+> >  net/ceph/osd_client.c           | 23 +++++++++++++----------
+> >  4 files changed, 21 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> > index 7e0190b1f821..60ea1eed1b84 100644
+> > --- a/fs/ceph/file.c
+> > +++ b/fs/ceph/file.c
+> > @@ -1482,7 +1482,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+> >         }
+> >
+> >         /* FIXME: not complete since it doesn't account for being at quota */
+> > -       if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_FULL)) {
+> > +       if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> > +                               CEPH_POOL_FLAG_FULL)) {
+> >                 err = -ENOSPC;
+> >                 goto out;
+> >         }
+> > @@ -1575,7 +1576,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+> >         }
+> >
+> >         if (written >= 0) {
+> > -               if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_NEARFULL))
+> > +               if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> > +                                       CEPH_POOL_FLAG_NEARFULL))
+>
+> Hi Yanhu,
+>
+> Have you considered pre-mimic clusters here?  They are still supported
+> (and will continue to be supported for the foreseeable future).
+>
+> Thanks,
+>
+>                 Ilya
 
-> Add a netdevice flag to control skb linearization in generic xdp mode.
->
-> The attribute can be modified through
-> 	/sys/class/net/<DEVICE>/xdpgeneric_linearize
-> The default is 1 (on)
->
-> Motivation: xdp expects linear skbs with some minimum headroom, and
-> generic xdp calls skb_linearize() if needed. The linearization is
-> expensive, and may be unnecessary e.g. when the xdp program does
-> not need access to the whole payload.
-> This sysfs entry allows users to opt out of linearization on a
-> per-device basis (linearization is still performed on cloned skbs).
->
-> On a kernel instrumented to grab timestamps around the linearization
-> code in netif_receive_generic_xdp, and heavy netperf traffic with 1500b
-> mtu, I see the following times (nanoseconds/pkt)
->
-> The receiver generally sees larger packets so the difference is more
-> significant.
->
-> ns/pkt                   RECEIVER                 SENDER
->
->                     p50     p90     p99       p50   p90    p99
->
-> LINEARIZATION:    600ns  1090ns  4900ns     149ns 249ns  460ns
-> NO LINEARIZATION:  40ns    59ns    90ns      40ns  50ns  100ns
->
-> v1 --> v2 : added Documentation
-> v2 --> v3 : adjusted for skb_cloned
-> v3 --> v4 : renamed to xdpgeneric_linearize, documentation
->
-> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
+I have tested it work on Luminous, I think it work too since
+ceph-v0.80(https://github.com/ceph/ceph/blob/b78644e7dee100e48dfeca32c9270a6b210d3003/src/osd/osd_types.h#L815)
+alread have pool FLAG_FULL.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-
+CephFS doesn't write synchronously even if CEPH_OSDMAP_NEARFULL is
+used, then should fixed by CEPH_POOL_FLAG_NEARFULL.
