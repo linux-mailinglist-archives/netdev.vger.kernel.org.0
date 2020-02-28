@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 367C8172E98
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 03:09:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D0BD172EDF
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 03:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730460AbgB1CJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Feb 2020 21:09:47 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:38464 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730343AbgB1CJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 21:09:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=O2/XxYHXZhTXCp5fyW8svvdVtbM3DtHhBu801xlyEKI=; b=Xo8+ihGOAEicomrAmkUdwgMxXN
-        UhauYvz0+5Z9GL1eoSBhFLMsN3UCZ12scQ0utaKddSYzGCAyzCMaYWuEHZc5HA9gaJztYa1vxKksK
-        gK3PFPQDRlxrqzwGDrKqsvV9Qf7Pv1cs+Q1k+E0eInW5LONs0E3RMFlSr4NkcaX8vKuHnysRmSng9
-        lWMtLyzomo6Zm3ca9FlhKjor6ErmGcLrGvqL3jKoIZ6UgtB9sjGjIXR51bHbNRxbEILk60ARU0D6T
-        S5lCVr/lAcgCtT5NinL7WlSNWmA9T2VfkNRZNrlNjU0py1L+k5YEltuiVxXB8VdqoQPOrKBLcZcJR
-        99SgF05A==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j7V61-0004rr-2B; Fri, 28 Feb 2020 02:09:45 +0000
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] atm: nicstar: fix if-statement empty body warning
-Message-ID: <0ce2604d-191f-0af2-a2f4-9c70da21e907@infradead.org>
-Date:   Thu, 27 Feb 2020 18:09:44 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1730509AbgB1ClR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Feb 2020 21:41:17 -0500
+Received: from atlantico.unifap.br ([200.139.21.37]:40892 "EHLO
+        atlantico.unifap.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726943AbgB1ClR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Feb 2020 21:41:17 -0500
+X-Greylist: delayed 2759 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Feb 2020 21:41:16 EST
+Received: from localhost (localhost [127.0.0.1])
+        by atlantico.unifap.br (Postfix) with ESMTP id 943803C912F1;
+        Thu, 27 Feb 2020 22:16:17 -0300 (-03)
+Received: from atlantico.unifap.br ([127.0.0.1])
+        by localhost (atlantico.unifap.br [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id PPNCF6dJO80c; Thu, 27 Feb 2020 22:16:17 -0300 (-03)
+Received: from localhost (localhost [127.0.0.1])
+        by atlantico.unifap.br (Postfix) with ESMTP id EF6D73C9128B;
+        Thu, 27 Feb 2020 22:16:16 -0300 (-03)
+X-Virus-Scanned: amavisd-new at unifap.br
+Received: from atlantico.unifap.br ([127.0.0.1])
+        by localhost (atlantico.unifap.br [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Xajd0FWFyhlZ; Thu, 27 Feb 2020 22:16:16 -0300 (-03)
+Received: from atlantico.unifap.br (atlantico.unifap.br [200.139.21.37])
+        by atlantico.unifap.br (Postfix) with ESMTP id 0E0D83C91259;
+        Thu, 27 Feb 2020 22:16:16 -0300 (-03)
+Date:   Thu, 27 Feb 2020 22:16:16 -0300 (BRT)
+From:   Lending BBVA <rubens.alex@unifap.br>
+Reply-To: Lending BBVA <lending@lendingbbva.org>
+Message-ID: <225893736.442721.1582852576021.JavaMail.zimbra@unifap.br>
+Subject: lening
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [200.139.21.37]
+X-Mailer: Zimbra 8.8.12_GA_3807 (zclient/8.8.12_GA_3807)
+Thread-Index: WU3wXCJhTKTzlVW+/ko5vemMMFQUGA==
+Thread-Topic: lening
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Lieve
 
-When debugging via PRINTK() is not enabled, make the PRINTK()
-macro be an empty do-while block.
+Wij verstrekken BBVA leningen per postadvertentie. Wij bieden verschillende soorten leningen of projecten, INVESTERINGSleningen ZAKELIJKE leningen hypotheekleningen enz.) Met een rentevoet van 3%. We verstrekken leningen aan mensen in nood, niet ongeacht hun locatie, maar moeten een wettelijke manier van terugbetaling hebben. Onze leningen variëren van 15.000,00 tot 50.000.000,00 EURO met een maximale looptijd van 15 jaar.
 
-Thix fixes a gcc warning when -Wextra is set:
-../drivers/atm/nicstar.c:1819:23: warning: suggest braces around empty body in an ‘else’ statement [-Wempty-body]
+U kunt ook contact met ons opnemen op onze website: https://lendingbbva.com/
 
-I have verified that there is no object code change (with gcc 7.5.0).
+Laat deze kans niet voorbijgaan. Als u geïnteresseerd bent in een lening, vult u het aanvraagformulier in en stuurt u het onmiddellijk terug.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Chas Williams <3chas3@gmail.com>
-Cc: linux-atm-general@lists.sourceforge.net
-Cc: netdev@vger.kernel.org
-Cc: David S. Miller <davem@davemloft.net>
----
- drivers/atm/nicstar.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+INFORMATIE NODIG:
 
---- linux-next-20200225.orig/drivers/atm/nicstar.c
-+++ linux-next-20200225/drivers/atm/nicstar.c
-@@ -91,7 +91,7 @@
- #ifdef GENERAL_DEBUG
- #define PRINTK(args...) printk(args)
- #else
--#define PRINTK(args...)
-+#define PRINTK(args...) do {} while (0)
- #endif /* GENERAL_DEBUG */
- 
- #ifdef EXTRA_DEBUG
+* Jullie namen:
+* Benodigd bedrag:
+* Looptijd:
+* Beroep:
+* Telefoonnummer:
+* Maandelijks inkomen niveau:
+* Geslacht:
+* Land:
 
+Bedankt voor uw begrip.
+
+Beste wensen:
+
+Mr. Roel De Lange
++447481355726
+Whatsapp: +447481355726
+E-mail: lending@lendingbbva.org
+Website: https://lendingbbva.com/
