@@ -2,121 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A7217357A
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:42:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DFE617359D
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:48:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgB1KmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 05:42:18 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21637 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726063AbgB1KmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:42:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582886536;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wlYYRATcRw1REN9gQxnb1xLG+z0JVZsLAObIn2DKGmc=;
-        b=BRHH6fmXCb2zqGmmZk+CL0+WTGQC9K40vxccHg+s9ZvMlBw34gCZht/cE8KmY5TrGxh+Et
-        FkOF4CL57lHNgE5mZVdQsHROtUESdyRsDR6FJcfH0ViM5yIRW84roqwbLuJl1KZandv44j
-        MMHI47tS2GRKRiEwigejQrr9SYKxvco=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-191-pSUkARetOyK5IsLxdZyWNg-1; Fri, 28 Feb 2020 05:42:14 -0500
-X-MC-Unique: pSUkARetOyK5IsLxdZyWNg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 175CEDBA5;
-        Fri, 28 Feb 2020 10:42:12 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7FDF51CB;
-        Fri, 28 Feb 2020 10:41:56 +0000 (UTC)
-Date:   Fri, 28 Feb 2020 11:41:55 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     David Ahern <dahern@digitalocean.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dsahern@kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
-Message-ID: <20200228114155.648f897e@carbon>
-In-Reply-To: <87o8tjuisk.fsf@toke.dk>
-References: <20200227032013.12385-1-dsahern@kernel.org>
-        <20200227032013.12385-4-dsahern@kernel.org>
-        <20200227090046.3e3177b3@carbon>
-        <423dd8d6-6e84-01d4-c529-ce85d84fa24b@digitalocean.com>
-        <87o8tjuisk.fsf@toke.dk>
+        id S1726811AbgB1Ksq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 05:48:46 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38184 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726673AbgB1Ksp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:48:45 -0500
+Received: by mail-ot1-f67.google.com with SMTP id z9so2161500oth.5
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 02:48:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MpoN/z4EwKEqxgzjR1c7PsvZNdK1eW/yjUEe0W4lv5k=;
+        b=m2eJfkhXG5gnjCDjAyVtr6Y0WVyN1TxvXhmOar6O95eJGFpumXPtjEKp5Q2Rgu0qeR
+         8N1x+FZXz+XxFCFEfjiqFj3P6HdLFmB47YQS65jxoSUynXGNXSQUsd+5oyjOse+ShQui
+         aGpT1E14QZky8luiGXeHMLJzj5xQSi/Tqu7Vg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MpoN/z4EwKEqxgzjR1c7PsvZNdK1eW/yjUEe0W4lv5k=;
+        b=mlI0upmUN7/keODkOHfs80GXZ4VqyPrBhel+w61WJvKcPDcBwYJBZRsCQAiJYjVu0Z
+         NhIgX2G6SMOWiQBxaXYAyDpN5udRhVP36fm/jBR4mQEcQgRgOTzOvwEP7X3c//YKwvvh
+         9FLsjogYf16NWpvmbjDM20ZD/aa2UX/bBJUc1UbnesDmF+MSp4wrOGPv/Nbwdn5hhdK6
+         kIlwUguMGU8lSQn22BJOYmJ5f4hU22ZDlYoV74U/8CZOxUpghgDKG9dJBT15aijlHBID
+         vsp6/ne9CQ+CWxywIpkNjp5i7ofWCN4nGQk9eNfNWehi0+l4sz4nkll977cS7thYxi/F
+         aBRQ==
+X-Gm-Message-State: APjAAAWT6WqL/fx+IUTpXLcGfk3y/fEjsVqsRYu9tzNLwnnn39dPCpfG
+        19/YrX27oOxVg4VDL4DIVnZZXZcR5/Ds7+/uW5TpBA==
+X-Google-Smtp-Source: APXvYqxVTETzTExegu7yyTuh0tZ2ID/kOglog1lkA5qXP4gomeiGfxe6s7V7iJdtN+t+4JweQbzKjKKoKwilvvzg6hA=
+X-Received: by 2002:a05:6830:1185:: with SMTP id u5mr2540766otq.147.1582886925219;
+ Fri, 28 Feb 2020 02:48:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20200225135636.5768-1-lmb@cloudflare.com> <20200225135636.5768-4-lmb@cloudflare.com>
+ <20200226183746.wvkp2mrstotyepyc@kafai-mbp>
+In-Reply-To: <20200226183746.wvkp2mrstotyepyc@kafai-mbp>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 28 Feb 2020 10:48:33 +0000
+Message-ID: <CACAyw99=ZL2dfpS9bCjNtCe7x8NOskTJbd06_X-UzieuhSrcJA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/7] skmsg: introduce sk_psock_hooks
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Feb 2020 11:07:23 +0100
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+On Wed, 26 Feb 2020 at 18:37, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> > +int sk_psock_hooks_install(struct sk_psock_hooks *hooks, struct sock *sk)
+> > +{
+> > +     struct sk_psock *psock = sk_psock(sk);
+> > +     struct proto *prot_base;
+> > +
+> > +     WARN_ON_ONCE(!rcu_read_lock_held());
+> Is this only for the earlier sk_psock(sk)?
 
-> David Ahern <dahern@digitalocean.com> writes:
->=20
-> > On 2/27/20 1:00 AM, Jesper Dangaard Brouer wrote: =20
-> >>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> >>> index 7850f8683b81..5e3f8aefad41 100644
-> >>> --- a/include/uapi/linux/bpf.h
-> >>> +++ b/include/uapi/linux/bpf.h
-> >>> @@ -3334,8 +3334,10 @@ struct xdp_md {
-> >>>  	__u32 data;
-> >>>  	__u32 data_end;
-> >>>  	__u32 data_meta;
-> >>> -	/* Below access go through struct xdp_rxq_info */
-> >>> -	__u32 ingress_ifindex; /* rxq->dev->ifindex */
-> >>> +	union {
-> >>> +		__u32 ingress_ifindex; /* rxq->dev->ifindex */
-> >>> +		__u32 egress_ifindex;  /* txq->dev->ifindex */
-> >>> +	}; =20
-> >>=20
-> >> Are we sure it is wise to "union share" (struct) xdp_md as the
-> >> XDP-context in the XDP programs, with different expected_attach_type?
-> >> As this allows the XDP-programmer to code an EGRESS program that access
-> >> ctx->ingress_ifindex, this will under the hood be translated to
-> >> ctx->egress_ifindex, because from the compilers-PoV this will just be =
-an
-> >> offset.
-> >>=20
-> >> We are setting up the XDP-programmer for a long debugging session, as
-> >> she will be expecting to read 'ingress_ifindex', but will be getting
-> >> 'egress_ifindex'.  (As the compiler cannot warn her, and it is also
-> >> correct seen from the verifier). =20
-> >
-> > It both cases it means the device handling the packet. ingress_ifindex
-> > =3D=3D device handling the Rx, egress_ifindex =3D=3D device handling th=
-e Tx.
-> > Really, it is syntactic sugar for program writers. It would have been
-> > better had xdp_md only called it ifindex from the beginning. =20
->=20
-> Telling users that they are doing it wrong is not going to make their
-> debugging session any less frustrating :)
->=20
-> If we keep rx_ifindex a separate field we can unambiguously reject a TX
-> program that tries to access it, *and* we keep the option of allowing
-> access to it later if it does turn out to be useful. IMO that is worth
-> the four extra bytes.
+The function is an amalgamation of tcp_bpf_reinit and tcp_bpf_init,
+which both take the
+read lock. I figured it would make sense to assert this behaviour in
+sk_psock_hooks_install.
 
-I agree. We need unambiguously to help the program writer.
+>
+> > +
+> > +     if (unlikely(!psock))
+> When will this happen?
 
-This is the wrong kind of 'syntactic sugar'.  If you want a straight
-'ifindex', that translates to the running_ifindex, when you need to add
-a new member 'ifindex' that does this rewriting based on attach type.
+I don't know to be honest, this is adapted from tcp_bpf_init:
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+       psock = sk_psock(sk);
+       if (unlikely(!psock || psock->sk_proto ||
+                    tcp_bpf_assert_proto_ops(ops))) {
+               rcu_read_unlock();
+               return -EINVAL;
+       }
 
+>
+> > +             return -EINVAL;
+> > +
+> > +     /* Initialize saved callbacks and original proto only once.
+> > +      * Since we've not installed the hooks, psock is not yet in use and
+> > +      * we can initialize it without synchronization.
+> > +      */
+> > +     if (!psock->sk_proto) {
+> If I read it correctly, this is to replace the tcp_bpf_reinit_sk_prot()?
+>
+> I think some of the current reinit comment is useful to keep also:
+>
+> /* Reinit occurs when program types change e.g. TCP_BPF_TX is removed ... */
+
+Ack, I will elaborate.
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
