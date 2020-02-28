@@ -2,198 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD2D174196
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 22:43:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7324217419C
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 22:47:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbgB1Vm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 16:42:57 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46971 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbgB1Vm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 16:42:57 -0500
-Received: by mail-pg1-f194.google.com with SMTP id y30so2147779pga.13
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 13:42:55 -0800 (PST)
+        id S1726490AbgB1VrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 16:47:11 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35758 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbgB1VrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 16:47:11 -0500
+Received: by mail-pf1-f193.google.com with SMTP id i19so2383179pfa.2
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 13:47:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rxl8Z4zjv55KVDE1T0Q9cCSbbPKGHOJh2+MBJXLfJN4=;
-        b=11NAhYaWqFPw06BFkTIlJ3qxgihL4rYe0scKY7fTZM4rZS2TnwUObpwM8IwugzledV
-         kHLrIpNsASrpvRNgBOci3GoTi11Ok9kO7e/cZtu2Y1Etc565+0SsmPJcOJmywH8nrniX
-         9hHpTZwLqYE1wFjYJnOv/pB1mW5NBCYZ70XUvkGdLhjcMXeKS2DmE4/SFSWSzOubUc1j
-         r1zv7WMRUN+PH1+WkMO03fUq+v/isEBdjJM0xaUpJaSiBMlVqAVyxLQBXLwvtCHgb+Fd
-         8IMF4Ha4C5FodENbVqXTiPKTv+vr4COkilO2Vt70XTSM4AXXKKdx3i4Xbk2l0U8R3cdz
-         tCqA==
+        bh=okh/E+IxqroHYWUgG/V6OdIYz06xGNRkAT5AiFwava4=;
+        b=zFG0VzEJFaXI8H8fHpLARNibvSF3lWx+TdvLB+e0ORyfyBn5EHd11N5FCfKQ1fybTp
+         aUFCkqHAwsFkhkH+shlNwx4JMN1qU7a6MwgloTOo4RIlfwLzjONkE5H6pJvqh1PtIVPI
+         r5n4BGYitO9vTJ1OPz0qGW4pj7KWojMJe+NfbLAihQk4zp5z92sHj2izXkpjW01QEdh7
+         epmGqjFaegVMetZKLB2ZCqSm/mZALR27jccXTCdxUWxfdBCMZJqgMbk1ZOt29iH+ZZPK
+         RV2UIUSk2iLwsHEFEor6DmkD83w+VGRMmiERl8+Xm0bjMGm3ib+a9N0yVjyExJL6it4j
+         m9cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rxl8Z4zjv55KVDE1T0Q9cCSbbPKGHOJh2+MBJXLfJN4=;
-        b=QvH6IQmxvqEup0WT/h45+VBw0vsCi5OHqIE2M4141f2KsTHVVxCkXWCwEiapl87q2I
-         I1vFiDuj2LYCjPT27b9UBRBduz1lUjmUn9k2LbYbuZmfvEkjoHU/6zaBbnU8ZKVwaCry
-         9Z5/ci45vE3Wd3hcGvjYA6iUh2QMXbdDBjVBxANZy+oTBzedPVBzlE1f0gxUZnryea4Y
-         wpWI8cRV8qH+kwpeBGV/eUarf8/4+7I2gPcpEcb2k25QjeCaUIKRURTwFQqHZv6Rfs0v
-         msSdB/TZdilkTc67MvF9FjH9ktLgeJk3Y92QKynVEjY96V/voaz/4qVlL9zY5SX3QKOS
-         oZDg==
-X-Gm-Message-State: ANhLgQ2XcJVAeVSuLZb3VVcPh1ukI+RDgAXXZbKspvWrEeX2VgxTQhqo
-        +Uzaca6qTLEq+JkSF5X1kkSo6RVTB00=
-X-Google-Smtp-Source: ADFU+vsxMPjkxCN3PuAn3vql1/zyofv+aXYUy9Q/2aOimty/gqn8/lJsJDlZRTMQ/7jB/Q2vhtf3nw==
-X-Received: by 2002:aa7:8d82:: with SMTP id i2mr340128pfr.179.1582926174243;
-        Fri, 28 Feb 2020 13:42:54 -0800 (PST)
+        bh=okh/E+IxqroHYWUgG/V6OdIYz06xGNRkAT5AiFwava4=;
+        b=dupBsrPP4OaX7B9S+c5ADvGXO//IY4NFNWMOtpro0WlGKAcSYtruD1kxr2UOeoskFu
+         Jb0wPVdsIxcivWklEf6q9jLjpAGk3SiPZg0zcM1C8pRD0vg2jfS/sBt6D580CaPn1wX0
+         4+LYmjVqds7N/NBXnqnn+gpev1ajxfZjo5dh/Iz8Nd2ZZehopNGDuTB8QAITzx/rRuPI
+         eF9gELPcfXtvuftMQ/oUJHvZni+m0BbiW2QgSCKn5oHFlwkJveUdbJsUuN3ar2YvpeMr
+         CqeMSQyWOcBAuffW5zvdoVJRgLO1mor2fAz0P7Bmhe8u4P+Cj0g9TiMdPxNq3kg/pqOV
+         iGsQ==
+X-Gm-Message-State: APjAAAVmIYj3Pve5xqHoPBXu5XSd5Fv9Ot2CxbsPtnA5zjb9uZfWP0ym
+        GHIlC6Oo6qwLz2O9S695ppKnXF5g2yw=
+X-Google-Smtp-Source: APXvYqx6bf9PI70z+MlcbOA3cpNCY5tZRGQNJNFbdUmEhpE29jq+eFBV+5+uW3p0FJDZhmGh9Z3qig==
+X-Received: by 2002:a63:4763:: with SMTP id w35mr6738863pgk.113.1582926430413;
+        Fri, 28 Feb 2020 13:47:10 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id u41sm11856780pgn.8.2020.02.28.13.42.52
+        by smtp.gmail.com with ESMTPSA id w184sm10820737pgw.84.2020.02.28.13.47.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 13:42:53 -0800 (PST)
+        Fri, 28 Feb 2020 13:47:10 -0800 (PST)
+Date:   Fri, 28 Feb 2020 13:47:06 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 2/2] ss: indentation in ssfilter
-Date:   Fri, 28 Feb 2020 13:42:43 -0800
-Message-Id: <20200228214243.27344-2-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200228214243.27344-1-stephen@networkplumber.org>
-References: <20200228214243.27344-1-stephen@networkplumber.org>
+To:     Donald Sharp <sharpd@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org,
+        roopa@cumulusnetworks.com
+Subject: Re: [PATCH] ip route: Do not imply pref and ttl-propagate are per
+ nexthop
+Message-ID: <20200228134706.38c873cf@hermes.lan>
+In-Reply-To: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
+References: <20200225131213.2709230-1-sharpd@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Indent switch statement like kernel.
+On Tue, 25 Feb 2020 08:12:13 -0500
+Donald Sharp <sharpd@cumulusnetworks.com> wrote:
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- misc/ss.c | 46 ++++++++++++++++++++++------------------------
- 1 file changed, 22 insertions(+), 24 deletions(-)
+> Currently `ip -6 route show` gives us this output:
+> 
+> sharpd@eva ~/i/ip (master)> ip -6 route show
+> ::1 dev lo proto kernel metric 256 pref medium
+> 4:5::6:7 nhid 18 proto static metric 20
+>         nexthop via fe80::99 dev enp39s0 weight 1
+>         nexthop via fe80::44 dev enp39s0 weight 1 pref medium
+> 
+> Displaying `pref medium` as the last bit of output implies
+> that the RTA_PREF is a per nexthop value, when it is infact
+> a per route piece of data.
+> 
+> Change the output to display RTA_PREF and RTA_TTL_PROPAGATE
+> before the RTA_MULTIPATH data is shown:
+> 
+> sharpd@eva ~/i/ip (master)> ./ip -6 route show
+> ::1 dev lo proto kernel metric 256 pref medium
+> 4:5::6:7 nhid 18 proto static metric 20 pref medium
+>         nexthop via fe80::99 dev enp39s0 weight 1
+>         nexthop via fe80::44 dev enp39s0 weight 1
+> 
+> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
 
-diff --git a/misc/ss.c b/misc/ss.c
-index b478ab47da4e..40b55d8bdd82 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -1806,15 +1806,14 @@ static void ssfilter_patch(char *a, int len, int reloc)
- static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- {
- 	switch (f->type) {
--		case SSF_S_AUTO:
--	{
-+	case SSF_S_AUTO: {
- 		if (!(*bytecode = malloc(4))) abort();
- 		((struct inet_diag_bc_op *)*bytecode)[0] = (struct inet_diag_bc_op){ INET_DIAG_BC_AUTO, 4, 8 };
- 		return 4;
- 	}
--		case SSF_DCOND:
--		case SSF_SCOND:
--	{
-+
-+	case SSF_DCOND:
-+	case SSF_SCOND:	{
- 		struct aafilter *a = (void *)f->pred;
- 		struct aafilter *b;
- 		char *ptr;
-@@ -1852,8 +1851,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		}
- 		return ptr - *bytecode;
- 	}
--		case SSF_D_GE:
--	{
-+
-+	case SSF_D_GE: {
- 		struct aafilter *x = (void *)f->pred;
- 
- 		if (!(*bytecode = malloc(8))) abort();
-@@ -1861,8 +1860,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		((struct inet_diag_bc_op *)*bytecode)[1] = (struct inet_diag_bc_op){ 0, 0, x->port };
- 		return 8;
- 	}
--		case SSF_D_LE:
--	{
-+
-+	case SSF_D_LE: {
- 		struct aafilter *x = (void *)f->pred;
- 
- 		if (!(*bytecode = malloc(8))) abort();
-@@ -1870,8 +1869,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		((struct inet_diag_bc_op *)*bytecode)[1] = (struct inet_diag_bc_op){ 0, 0, x->port };
- 		return 8;
- 	}
--		case SSF_S_GE:
--	{
-+
-+	case SSF_S_GE: {
- 		struct aafilter *x = (void *)f->pred;
- 
- 		if (!(*bytecode = malloc(8))) abort();
-@@ -1879,8 +1878,7 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		((struct inet_diag_bc_op *)*bytecode)[1] = (struct inet_diag_bc_op){ 0, 0, x->port };
- 		return 8;
- 	}
--		case SSF_S_LE:
--	{
-+	case SSF_S_LE: {
- 		struct aafilter *x = (void *)f->pred;
- 
- 		if (!(*bytecode = malloc(8))) abort();
-@@ -1889,8 +1887,7 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		return 8;
- 	}
- 
--		case SSF_AND:
--	{
-+	case SSF_AND: {
- 		char *a1 = NULL, *a2 = NULL, *a;
- 		int l1, l2;
- 
-@@ -1909,8 +1906,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		*bytecode = a;
- 		return l1+l2;
- 	}
--		case SSF_OR:
--	{
-+
-+	case SSF_OR: {
- 		char *a1 = NULL, *a2 = NULL, *a;
- 		int l1, l2;
- 
-@@ -1929,8 +1926,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		*bytecode = a;
- 		return l1+l2+4;
- 	}
--		case SSF_NOT:
--	{
-+
-+	case SSF_NOT: {
- 		char *a1 = NULL, *a;
- 		int l1;
- 
-@@ -1946,13 +1943,13 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 		*bytecode = a;
- 		return l1+4;
- 	}
--		case SSF_DEVCOND:
--	{
-+
-+	case SSF_DEVCOND: {
- 		/* bytecompile for SSF_DEVCOND not supported yet */
- 		return 0;
- 	}
--		case SSF_MARKMASK:
--	{
-+
-+	case SSF_MARKMASK: {
- 		struct aafilter *a = (void *)f->pred;
- 		struct instr {
- 			struct inet_diag_bc_op op;
-@@ -1968,7 +1965,8 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 
- 		return inslen;
- 	}
--		default:
-+
-+	default:
- 		abort();
- 	}
- }
--- 
-2.20.1
-
+Looks good applied
