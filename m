@@ -2,151 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7B86173893
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B49B3173884
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 14:40:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgB1NnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 08:43:03 -0500
-Received: from foss.arm.com ([217.140.110.172]:38328 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726366AbgB1NnC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 08:43:02 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A33A31B;
-        Fri, 28 Feb 2020 05:43:01 -0800 (PST)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C8153F7B4;
-        Fri, 28 Feb 2020 05:42:57 -0800 (PST)
-Date:   Fri, 28 Feb 2020 13:42:54 +0000
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        soc@kernel.org, Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode
- quirk
-Message-ID: <20200228134254.03fc5e1b@donnerap.cambridge.arm.com>
-In-Reply-To: <20200228105024.GC2395@willie-the-truck>
-References: <20200218171321.30990-1-robh@kernel.org>
-        <20200218171321.30990-7-robh@kernel.org>
-        <20200218172000.GF1133@willie-the-truck>
-        <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
-        <20200228100446.GA2395@willie-the-truck>
-        <20200228102556.1dde016e@donnerap.cambridge.arm.com>
-        <20200228105024.GC2395@willie-the-truck>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        id S1726809AbgB1Nkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 08:40:35 -0500
+Received: from gateway24.websitewelcome.com ([192.185.51.202]:47557 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725796AbgB1Nkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 08:40:32 -0500
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id CEB9181618
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 07:40:30 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 7fsUjIdnKRP4z7fsUjh2rg; Fri, 28 Feb 2020 07:40:30 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vo0s0HHcKUWbR9UQkp85XxEyo8pNBh5ee/gMXGBhILo=; b=g+4fKStdx4DsG5MhPZ1ImJeoAQ
+        nxPmXBYvHhSIK6R/+xXj0oX1FMiZfo/8iRMYOfx1Nws8/MH57qvSkWs0ChCYz09LkM7cYM39s4oYO
+        ub7PMz8jrFSTYz8JvlwmwkEIcLCdW7WeOuTzZRwc4EnSDb8gtc0LL6Y8YC5N+VntqTofnMKWQ9M83
+        rFgslmPY1Qwp3b677NVkxUmvRelrCatITwxdyCqoGIUXGbTSJL3lOdU2IvUXNIxWIXbRTHUzIwekO
+        0uWpJfGWeT0Rh3fEVHLkPFvTX5kOoL4qcH8P7zZy7PsJXwlCCH76ILHktJHSxyyPJ2XJSZuNUEXpQ
+        gEwkk7YA==;
+Received: from [201.162.240.44] (port=19035 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j7fsS-001RcU-L0; Fri, 28 Feb 2020 07:40:29 -0600
+Date:   Fri, 28 Feb 2020 07:43:24 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: core: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200228134324.GA29394@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.162.240.44
+X-Source-L: No
+X-Exim-ID: 1j7fsS-001RcU-L0
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [201.162.240.44]:19035
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 51
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Feb 2020 10:50:25 +0000
-Will Deacon <will@kernel.org> wrote:
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-> On Fri, Feb 28, 2020 at 10:25:56AM +0000, Andre Przywara wrote:
-> > On Fri, 28 Feb 2020 10:04:47 +0000
-> > Will Deacon <will@kernel.org> wrote:
-> > 
-> > Hi,
-> >   
-> > > On Tue, Feb 25, 2020 at 04:01:54PM -0600, Rob Herring wrote:  
-> > > > On Tue, Feb 18, 2020 at 11:20 AM Will Deacon <will@kernel.org> wrote:    
-> > > > >
-> > > > > On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:    
-> > > > > > Cc: Will Deacon <will@kernel.org>
-> > > > > > Cc: Robin Murphy <robin.murphy@arm.com>
-> > > > > > Cc: Joerg Roedel <joro@8bytes.org>
-> > > > > > Cc: iommu@lists.linux-foundation.org
-> > > > > > Signed-off-by: Rob Herring <robh@kernel.org>
-> > > > > > ---
-> > > > > > Do not apply yet.    
-> > > > >
-> > > > > Pleeeeease? ;)
-> > > > >    
-> > > > > >  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
-> > > > > >  1 file changed, 43 deletions(-)    
-> > > > >
-> > > > > Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
-> > > > > anything from 'struct arm_smmu_impl' because most implementations fall
-> > > > > just short of perfect.
-> > > > >
-> > > > > Anyway, let me know when I can push the button and I'll queue this in
-> > > > > the arm-smmu tree.    
-> > > > 
-> > > > Seems we're leaving the platform support for now, but I think we never
-> > > > actually enabled SMMU support. It's not in the dts either in mainline
-> > > > nor the version I have which should be close to what shipped in
-> > > > firmware. So as long as Andre agrees, this one is good to apply.    
-> > > 
-> > > Andre? Can I queue this one for 5.7, please?  
-> > 
-> > I was wondering how much of a pain it is to keep it in? AFAICS there are
-> > other users of the "impl" indirection. If those goes away, I would be
-> > happy to let Calxeda go.  
-> 
-> The impl stuff is new, so we'll keep it around. The concern is more about
-> testing (see below).
-> 
-> > But Eric had the magic DT nodes to get the SMMU working, and I used that
-> > before, with updating the DT either on flash or dynamically via U-Boot.  
-> 
-> What did you actually use the SMMU for, though? The
-> 'arm_iommu_create_mapping()' interface isn't widely used and, given that
-> highbank doesn't support KVM, the use-cases for VFIO are pretty limited
-> too.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-AFAIK Highbank doesn't have the SMMU, probably mostly for that reason.
-I have a DT snippet for Midway, and that puts the MMIO base at ~36GB, which is not possible on Highbank.
-So I think that the quirk is really meant and needed for Midway.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-> > So I don't know exactly *how* desperate you are with removing this, or if
-> > there are other reasons than "negative diffstat", but if possible I would
-> > like to keep it in.  
-> 
-> It's more that we *do* make quite a lot of changes to the arm-smmu driver
-> and it's never tested with this quirk. If you're stepping up to run smmu
-> tests on my queue for each release on highbank, then great, but otherwise
-> I'd rather not carry the code for fun. The change in diffstat is minimal
-> (we're going to need to hooks for nvidia, who broke things in a different
-> way).
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-I am about to set up some more sophisticated testing, and will include some SMMU bits in it.
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
-Cheers,
-Andre.
+This issue was found with the help of Coccinelle.
 
-> Also, since the hooks aren't going away, if you /do/ end up using the SMMU
-> in future, then we could re-add the driver quirk without any fuss.
-> 
-> Will
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ net/core/bpf_sk_storage.c | 2 +-
+ net/core/devlink.c        | 2 +-
+ net/core/drop_monitor.c   | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index 3ab23f698221..427cfbc0d50d 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -60,7 +60,7 @@ struct bpf_sk_storage_data {
+ 	 * the number of cachelines access during the cache hit case.
+ 	 */
+ 	struct bpf_sk_storage_map __rcu *smap;
+-	u8 data[0] __aligned(8);
++	u8 data[] __aligned(8);
+ };
+ 
+ /* Linked to bpf_sk_storage and bpf_sk_storage_map */
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index f8af5e2d748b..295d761cbfb1 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4232,7 +4232,7 @@ struct devlink_fmsg_item {
+ 	int attrtype;
+ 	u8 nla_type;
+ 	u16 len;
+-	int value[0];
++	int value[];
+ };
+ 
+ struct devlink_fmsg {
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index d58c1c45a895..8e33cec9fc4e 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -68,7 +68,7 @@ struct net_dm_hw_entry {
+ 
+ struct net_dm_hw_entries {
+ 	u32 num_entries;
+-	struct net_dm_hw_entry entries[0];
++	struct net_dm_hw_entry entries[];
+ };
+ 
+ struct per_cpu_dm_data {
+-- 
+2.25.0
 
