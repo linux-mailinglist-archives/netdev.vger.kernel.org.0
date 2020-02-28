@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4BB173E70
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 18:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5717173E72
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 18:25:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbgB1RZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 12:25:26 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35216 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726860AbgB1RZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 12:25:21 -0500
-Received: by mail-wr1-f65.google.com with SMTP id r7so3884288wro.2
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 09:25:20 -0800 (PST)
+        id S1726946AbgB1RZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 12:25:27 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:39391 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbgB1RZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 12:25:23 -0500
+Received: by mail-wr1-f68.google.com with SMTP id y17so3856648wrn.6
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 09:25:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pvvbQVmpASp887Wf4l9C6603WfCd+ki2MzoZkRT2QyE=;
-        b=XNJyf0E7c8ZH3Xni+t6DYBHjB+mwaMEJYh68iZzibDLWgyKsiziAS0lcDJEd8Sw/KG
-         jnyQpk8pDOhlX+7zk2K+gJ0ROEcvOgqpI3Vkidv9A/Ke39reKJfDO+IB0z3RO/CNAVNT
-         Z5PxRw5eRmKpHqGpUsnMRtOZaFfLPaCnUJxqBKCFq5Z0eGFi5XW+rIMz11NFKT/Yh38P
-         jYn5ae4/5rFxIX0JlNUUu+1yxiAgjl8Xn9JJtJSgC+/MXNl4s+rAGlSAF2hrlD/vtMLy
-         lmtV0S9NLBqXkRfc4JIUZoeycfHfC2RAIil5ocqcrebHQu2zaJy5kraOVxuANVeZvY3E
-         ytzg==
+        bh=q+/8XFiELLnPTzk9UD4aWUQN80ABra/fExvaMD/f8l0=;
+        b=O98XmHGfXzFy0R1BFjkspGW00VYOCAsE7nNV51rd85K3tSIVJZrdGmJEIRsasd4kcG
+         DV/djrZl69VVh6AmdqU5B/ED6EoX6PBWarifM6cU0PHhseN89pAsdOWoqghAH0GanOn8
+         zuy+pJqefgLBaAD+2sn2QUIEYt9+XQliBLxwiRSNhwmgS1ZynTlwpvfi1QiWq143jELX
+         J+H0vYVf9Yf4Md/EqCC+KudLlEl487qIe91Hz2VayzZFkUoLeQjHHXT8dapB0/H+Xg7p
+         whU4incWC6V4oSTKRnFK5mF3K66LzPD+mOgMwNm8tDf1PDuK5fiE8gi2sA6+fnRtvEHo
+         tdYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pvvbQVmpASp887Wf4l9C6603WfCd+ki2MzoZkRT2QyE=;
-        b=WoBnaL6GuSFVoAQGJtQ9xwxAS1HZufOBJH09HaucerAxNTukke+c6UkP98MwXNhvKo
-         tgVBetLEDeC0Rn04o9oqHSegNcDNUDALdS0wSFEyMoqItXTTp1MR96g4AlMDuCupL9mC
-         MNimtiklBhwYEsmb/yjOTvI6YqXHo5CgHHQ8Vp4Td12oCd5WfCKDJIEczLe9IcfHJhtT
-         1TcLxnkGZgkt0ucqzm2YZXXFpc5yIPev22b9SDBkSA0JtH0BU/Zt40hg0YnXZb0mIen8
-         d+f3Jls3gvkp2Ep5IEj0ZHwlH62tUTLKWMWgKEuwDST+k9kRHuE9R3tXznapI8M/7/Cm
-         LNoQ==
-X-Gm-Message-State: APjAAAW3k9nK1TNJuPp0/pytm769sNcMEqgxbIoutAYNg+IqgWzIuzIu
-        dnUG4Xm5dnmIDRR5atMzMCBYFn8uw3g=
-X-Google-Smtp-Source: APXvYqyoeVHHcx7VBf1vvFEa8hYNL7Wal+HqiopcMg8M8NnXVIAhUU5vL48Qsxvgbx1UqQDT/ugNXw==
-X-Received: by 2002:adf:8b59:: with SMTP id v25mr5964107wra.419.1582910719572;
-        Fri, 28 Feb 2020 09:25:19 -0800 (PST)
+        bh=q+/8XFiELLnPTzk9UD4aWUQN80ABra/fExvaMD/f8l0=;
+        b=d3Tv6NGKbcWyHxFZqBf3yT8fp93BUyaHCIqQaHj/H+HhPxzTk27jpPSQnvxvWaDgXz
+         ou0nx0ufkysMO4dlYn4eILbI2laNGvW68jifKBOZKHV7tbNhsONT+JYKJJjK168HROIV
+         txy6cwGn7zhYmMUo1b6QqfyYdCs8urejefUROJwHU9n45WGRFJq3pGreLRboXpX6BTDv
+         4lDLlFGv7znxnLKPp3lB7hDSFI9BTBHG8iUCqX/zZ4zNaWPMdP5+6Eb3RHZnaCJdrpxf
+         8ZN21kjNmEazhevQKGbPfc+iJDrliW6oP3aVnuzh9a/Onz5+mokWlvT6BI4zvBscRS3g
+         YJqA==
+X-Gm-Message-State: APjAAAXhmt7OzuYV7QDvkg0//bNuE6elAobmRb8rutnddcEW/tDeCASn
+        EwGWzmEgB5TNRQOkvjVf5xq52X9bwMA=
+X-Google-Smtp-Source: APXvYqxh5LXQuTCLX+G4oahyrKzC+nDJ5J/CSgig6wIYAtsofzwp1KUbWCHojlNN4UaVPHDr49szFQ==
+X-Received: by 2002:a5d:5224:: with SMTP id i4mr5324469wra.285.1582910720854;
+        Fri, 28 Feb 2020 09:25:20 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id l8sm3149679wmj.2.2020.02.28.09.25.18
+        by smtp.gmail.com with ESMTPSA id o27sm13571288wro.27.2020.02.28.09.25.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 09:25:19 -0800 (PST)
+        Fri, 28 Feb 2020 09:25:20 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
@@ -53,9 +53,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
         alexandre.torgue@st.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v2 10/12] mlxsw: spectrum_acl: Ask device for rule stats only if counter was created
-Date:   Fri, 28 Feb 2020 18:25:03 +0100
-Message-Id: <20200228172505.14386-11-jiri@resnulli.us>
+Subject: [patch net-next v2 11/12] flow_offload: introduce "disabled" HW stats type and allow it in mlxsw
+Date:   Fri, 28 Feb 2020 18:25:04 +0100
+Message-Id: <20200228172505.14386-12-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200228172505.14386-1-jiri@resnulli.us>
 References: <20200228172505.14386-1-jiri@resnulli.us>
@@ -68,76 +68,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Set a flag in case rule counter was created. Only query the device for
-stats of a rule, which has the valid counter assigned.
+Introduce new type for disabled HW stats and allow the value in
+mlxsw offload.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v1->v2:
-- new patch
+- moved to action
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  3 ++-
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 25 +++++++++++++------
- 2 files changed, 19 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c | 2 ++
+ include/net/flow_offload.h                            | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 9708156e7871..ea712e6fa390 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -641,7 +641,8 @@ struct mlxsw_sp_acl_rule_info {
- 	struct mlxsw_afa_block *act_block;
- 	u8 action_created:1,
- 	   ingress_bind_blocker:1,
--	   egress_bind_blocker:1;
-+	   egress_bind_blocker:1,
-+	   counter_valid:1;
- 	unsigned int counter_index;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index dcf04fae0c59..2f87b7c1e28e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -38,6 +38,8 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
+ 		if (err)
+ 			return err;
+ 		break;
++	case FLOW_ACTION_HW_STATS_TYPE_DISABLED:
++		break;
+ 	default:
+ 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
+ 		return -EOPNOTSUPP;
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 79a0fda9b7bd..a5b50d8abc0a 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -159,6 +159,7 @@ enum flow_action_hw_stats_type {
+ 	FLOW_ACTION_HW_STATS_TYPE_ANY,
+ 	FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE,
+ 	FLOW_ACTION_HW_STATS_TYPE_DELAYED,
++	FLOW_ACTION_HW_STATS_TYPE_DISABLED,
  };
  
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index 36b264798f04..889330ac39dc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -642,8 +642,14 @@ int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
- 				 struct mlxsw_sp_acl_rule_info *rulei,
- 				 struct netlink_ext_ack *extack)
- {
--	return mlxsw_afa_block_append_counter(rulei->act_block,
--					      &rulei->counter_index, extack);
-+	int err;
-+
-+	err = mlxsw_afa_block_append_counter(rulei->act_block,
-+					     &rulei->counter_index, extack);
-+	if (err)
-+		return err;
-+	rulei->counter_valid = true;
-+	return 0;
- }
- 
- int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
-@@ -862,13 +868,16 @@ int mlxsw_sp_acl_rule_get_stats(struct mlxsw_sp *mlxsw_sp,
- 	int err;
- 
- 	rulei = mlxsw_sp_acl_rule_rulei(rule);
--	err = mlxsw_sp_flow_counter_get(mlxsw_sp, rulei->counter_index,
--					&current_packets, &current_bytes);
--	if (err)
--		return err;
-+	if (rulei->counter_valid) {
-+		err = mlxsw_sp_flow_counter_get(mlxsw_sp, rulei->counter_index,
-+						&current_packets,
-+						&current_bytes);
-+		if (err)
-+			return err;
- 
--	*packets = current_packets - rule->last_packets;
--	*bytes = current_bytes - rule->last_bytes;
-+		*packets = current_packets - rule->last_packets;
-+		*bytes = current_bytes - rule->last_bytes;
-+	}
- 	*last_use = rule->last_used;
- 
- 	rule->last_bytes = current_bytes;
+ typedef void (*action_destr)(void *priv);
 -- 
 2.21.1
 
