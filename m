@@ -2,217 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CC7174213
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 23:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1D017421F
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 23:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgB1WkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 17:40:01 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2906 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726277AbgB1WkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 17:40:01 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01SMX195031212
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 14:40:00 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=qyVhPGmp3ezkdda4gNOK0tREMIZBeQy3ChgkVcwVWZs=;
- b=a7ClLwHuqN+JmCNvUWxQrma8S+WnfvXbp7bXX4+k/ACIsYXJTPdHCxaOkZU6o8LEra0U
- t6W9BzZvAGBm4Bwp7ttN9AS06WT9VjQnfK52VHyIIjyn9ftp8beOgFtAT0Nb3r+pb66U
- w4xIFavb3Tex9ub8+AxG+/iFaVs6LXsuDoQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yepv4p01s-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 14:40:00 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 28 Feb 2020 14:39:59 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 791672EC2D20; Fri, 28 Feb 2020 14:39:57 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/3] selftests/bpf: add link pinning selftests
-Date:   Fri, 28 Feb 2020 14:39:48 -0800
-Message-ID: <20200228223948.360936-4-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200228223948.360936-1-andriin@fb.com>
-References: <20200228223948.360936-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1726887AbgB1WmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 17:42:13 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:39774 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbgB1WmM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 17:42:12 -0500
+Received: by mail-yw1-f66.google.com with SMTP id x184so4941378ywd.6
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 14:42:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oMZxZrJ7Bl6W7lIllps1//BZzQUZEEMLhplq5QKAqeg=;
+        b=oDzkbR7R4NzPzmaT//fTmrzHcCOKEMQHBe9r7VqhE/ldZx8JdDmCONOjnyK/uYRDKj
+         mabkq79qRqJFZc3w4CK7VhFMvdD5YMSC8mnkI5sn/Z9fREwE2S8WGpbjppe0XUp9N9p4
+         Q/98pdlJq28+U8ixvVWL4fZ7tL+9/Uk5F9CDtLpIaMlNeY1ncYQ26MUqRR0wSXJk5MJv
+         buWtsnriVQeWjjWc5v3fj1hgaF8OToIEcqHOf38c3AEkiic8+HDTQLOvtqr8HP1WyRSS
+         qACdW2pHSHnSbcR7+CS5mHA6ICpZTuA5ajDJG0+bjZE0Ru3AM2qyQ5ageuDrWXPyHhcX
+         fiQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oMZxZrJ7Bl6W7lIllps1//BZzQUZEEMLhplq5QKAqeg=;
+        b=b1TGy9BajXBTwA157ScykQ2uoNl+GN/8OKZDjsa2ZUzgN7geGls+UXWpwpHbKWe57P
+         o1EdQeAXhTT2j3XnPXjOUf1oYornaOkC2/d2IGVZfdX1CRfAa5VU2Md8w6wouV6Oy3EW
+         /gT++KY0lsMng2BIB5RxNOZs0KooF/4jnzln/HM2qv0vHdbP6K8AnnX7wndTmPlqcmfO
+         Jd7/FxqkRTjWZOyGXGjF/+miECDjYH3vBxIhqmcwNmBQOVwxb3kHYu07XdSxJ87IJs7o
+         hZrvrIJSjVcCP/sNcO4eP/u7O/n9KlpORmNlJ1BiU0F8qoFdaV9rEO3EpBh/an4pNy3s
+         UUnw==
+X-Gm-Message-State: APjAAAXobn9FBaPa8E8M8RspAaRTn5wM39ShAvWVI00tK3Dl/WIyE6dZ
+        nE80d2YLuMTYAj58vRhp+JhA5w==
+X-Google-Smtp-Source: APXvYqwbqaT0saJvvn1kO9AMPxhCtCU02r6P8JPFybRCZw7gJ1GttFT36f9OLbROm/kzLbUGxjOrBg==
+X-Received: by 2002:a81:82c5:: with SMTP id s188mr6858670ywf.59.1582929729704;
+        Fri, 28 Feb 2020 14:42:09 -0800 (PST)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id d188sm4637830ywe.50.2020.02.28.14.42.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 14:42:08 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     Arnd Bergmann <arnd@arndb.de>, David Miller <davem@davemloft.net>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Dan Williams <dcbw@redhat.com>,
+        Evan Green <evgreen@google.com>,
+        Eric Caruso <ejcaruso@google.com>,
+        Susheel Yadav Yadagiri <syadagir@codeaurora.org>,
+        Chaitanya Pratapa <cpratapa@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/17] net: introduce Qualcomm IPA driver (UPDATED)
+Date:   Fri, 28 Feb 2020 16:41:47 -0600
+Message-Id: <20200228224204.17746-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-28_08:2020-02-28,2020-02-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=955
- mlxscore=0 suspectscore=8 spamscore=0 malwarescore=0 impostorscore=0
- bulkscore=0 adultscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002280162
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add selftests validating link pinning/unpinning and associated BPF link
-(attachment) lifetime.
+This series presents the driver for the Qualcomm IP Accelerator (IPA).
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/link_pinning.c   | 105 ++++++++++++++++++
- .../selftests/bpf/progs/test_link_pinning.c   |  25 +++++
- 2 files changed, 130 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/link_pinning.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_link_pinning.c
+I have posted earlier versions of this code previously, but it has
+undergone quite a bit of development since the last time, so rather
+than calling it "version 3" I'm just treating it as a new series
+(indicating it's been updated in this message).  The fast/data path
+is the same as before.  But the driver now (nearly) supports a
+second platform, its transaction handling has been generalized
+and improved, and modem activities are now handled in a more
+unified way.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/link_pinning.c b/tools/testing/selftests/bpf/prog_tests/link_pinning.c
-new file mode 100644
-index 000000000000..a743288cf384
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/link_pinning.c
-@@ -0,0 +1,105 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include <sys/stat.h>
-+
-+#include "test_link_pinning.skel.h"
-+
-+static int duration = 0;
-+
-+void test_link_pinning_subtest(struct bpf_program *prog,
-+			       struct test_link_pinning__bss *bss)
-+{
-+	const char *link_pin_path = "/sys/fs/bpf/pinned_link_test";
-+	struct stat statbuf = {};
-+	struct bpf_link *link;
-+	int err, i;
-+
-+	link = bpf_program__attach(prog);
-+	if (CHECK(IS_ERR(link), "link_attach", "err: %ld\n", PTR_ERR(link)))
-+		goto cleanup;
-+
-+	bss->in = 1;
-+	usleep(1);
-+	CHECK(bss->out != 1, "res_check1", "exp %d, got %d\n", 1, bss->out);
-+
-+	/* pin link */
-+	err = bpf_link__pin(link, link_pin_path);
-+	if (CHECK(err, "link_pin", "err: %d\n", err))
-+		goto cleanup;
-+
-+	CHECK(strcmp(link_pin_path, bpf_link__pin_path(link)), "pin_path1",
-+	      "exp %s, got %s\n", link_pin_path, bpf_link__pin_path(link));
-+
-+	/* check that link was pinned */
-+	err = stat(link_pin_path, &statbuf);
-+	if (CHECK(err, "stat_link", "err %d errno %d\n", err, errno))
-+		goto cleanup;
-+
-+	bss->in = 2;
-+	usleep(1);
-+	CHECK(bss->out != 2, "res_check2", "exp %d, got %d\n", 2, bss->out);
-+
-+	/* destroy link, pinned link should keep program attached */
-+	bpf_link__destroy(link);
-+	link = NULL;
-+
-+	bss->in = 3;
-+	usleep(1);
-+	CHECK(bss->out != 3, "res_check3", "exp %d, got %d\n", 3, bss->out);
-+
-+	/* re-open link from BPFFS */
-+	link = bpf_link__open(link_pin_path);
-+	if (CHECK(IS_ERR(link), "link_open", "err: %ld\n", PTR_ERR(link)))
-+		goto cleanup;
-+
-+	CHECK(strcmp(link_pin_path, bpf_link__pin_path(link)), "pin_path2",
-+	      "exp %s, got %s\n", link_pin_path, bpf_link__pin_path(link));
-+
-+	/* unpin link from BPFFS, program still attached */
-+	err = bpf_link__unpin(link);
-+	if (CHECK(err, "link_unpin", "err: %d\n", err))
-+		goto cleanup;
-+
-+	/* still active, as we have FD open now */
-+	bss->in = 4;
-+	usleep(1);
-+	CHECK(bss->out != 4, "res_check4", "exp %d, got %d\n", 4, bss->out);
-+
-+	bpf_link__destroy(link);
-+	link = NULL;
-+
-+	/* Validate it's finally detached.
-+	 * Actual detachment might get delayed a bit, so there is no reliable
-+	 * way to validate it immediately here, let's count up for long enough
-+	 * and see if eventually output stops being updated
-+	 */
-+	for (i = 5; i < 10000; i++) {
-+		bss->in = i;
-+		usleep(1);
-+		if (bss->out == i - 1)
-+			break;
-+	}
-+	CHECK(i == 10000, "link_attached", "got to iteration #%d\n", i);
-+
-+cleanup:
-+	if (!IS_ERR(link))
-+		bpf_link__destroy(link);
-+}
-+
-+void test_link_pinning(void)
-+{
-+	struct test_link_pinning* skel;
-+
-+	skel = test_link_pinning__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+
-+	if (test__start_subtest("pin_raw_tp"))
-+		test_link_pinning_subtest(skel->progs.raw_tp_prog, skel->bss);
-+	if (test__start_subtest("pin_tp_btf"))
-+		test_link_pinning_subtest(skel->progs.tp_btf_prog, skel->bss);
-+
-+	test_link_pinning__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_link_pinning.c b/tools/testing/selftests/bpf/progs/test_link_pinning.c
-new file mode 100644
-index 000000000000..bbf2a5264dc0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_link_pinning.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+int in = 0;
-+int out = 0;
-+
-+SEC("raw_tp/sys_enter")
-+int raw_tp_prog(const void *ctx)
-+{
-+	out = in;
-+	return 0;
-+}
-+
-+SEC("tp_btf/sys_enter")
-+int tp_btf_prog(const void *ctx)
-+{
-+	out = in;
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+This series is available (based on v5.6-rc3) in branch "ipa_updated-v1"
+in this git repository:
+  https://git.linaro.org/people/alex.elder/linux.git
+
+The branch depends on other code that I sent out for review earlier
+today.  The first is a very simple patch (which I already know will
+be updated, but generally seems acceptable), and the second is a small
+series of bugfixes for remoteproc:
+  https://lore.kernel.org/lkml/20200228165343.8272-1-elder@linaro.org/
+  https://lore.kernel.org/lkml/20200228183359.16229-1-elder@linaro.org/
+
+
+I want to address some of the discussion that arose last time.
+
+First, there was the WWAN discussion.  Here's the history:
+  - This was last posted nine months ago.
+  - Reviewers at that time favored developing a new WWAN subsystem that
+    would be used for managing devices like this.  And the suggestion
+    was to not accept this driver until that could be developed.
+  - Along the way, Apple acquired much of Intel's modem business.
+    And as a result, the generic framework became less pressing.
+  - I did participate in the WWAN subsystem design however, and
+    although it went dormant for a while it's been resurrected:
+      https://lore.kernel.org/netdev/20200225100053.16385-1-johannes@sipsolutions.net/
+  - Unfortunately the proposed WWAN design was not an easy fit
+    with Qualcomm's integrated modem interfaces.  Given that
+    rmnet is a supported link type for in the upstream "iproute2"
+    package (more on this below), I have opted not to integrate
+    with any WWAN subsystem.
+
+So in summary, this driver does not integrate with a generic WWAN
+framework.  And I'd like it to be accepted upstream despite that.
+
+
+Next, Arnd Bergmann had some concerns about flow control.  (Note:
+some of my discussions with Arnd about this were offline.) The
+overall architecture here also involves the "rmnet" driver:
+  drivers/net/ethernet/qualcomm/rmnet
+
+The rmnet driver presents a network device for use.  It connects
+with another network device presented, by the IPA driver.  The
+rmnet driver wraps (and unwraps) packets transferred to (and from)
+the IPA driver with QMAP headers.
+
+   ---------------
+   | rmnet_data0 |    <-- "real" netdev
+   ---------------
+          ||       }- QMAP spoken here
+   --------------
+   | rmnet_ipa0 |     <-- also netdev, transporting QMAP packets
+   --------------
+          ||
+   --------------
+  ( IPA hardware )
+   --------------
+
+Arnd's concern was that the rmnet_data0 network device does not
+have the benefit of information about the state of the underlying
+IPA hardware in order to be effective in controlling TX flow.
+The feared result is over-buffering of TX packets (bufferbloat).
+I began working on some simple experiments to see whether (or how
+much) his concern was warranted.  But it turned out that completing
+these experiments was much more work than had been hoped.
+
+The rmnet driver is present in the upstream kernel.  There is also
+support for the rmnet link type in the upstream "ip" user space
+command in the "iproute2" package.  Changing the layering of rmnet
+over IPA likely involves deprecating the rmnet driver and its
+support in "iproute2".  I would really rather not go down that
+path.
+
+There is precedent for this sort of layering of network devices
+(L2TP, VLAN).  And any architecture like this would suffer the
+issues Arnd mentioned; the problem is not limited to rmnet and IPA.
+I do think this is a problem worth solving, but the prudent thing
+to do might be to try to solve it more generally.
+
+So to summarize on this issue, this driver does not attempt to
+change the way the rmnet and IPA drivers work together.  And even
+though I think Arnd's concerns warrant more investigation, I'd like
+this driver to to be accepted upstream without any change to this
+architecture.
+
+
+Finally, a more technical description for the series, and some
+acknowledgements to some people who contributed to it.
+
+The IPA is a component present in some Qualcomm SoCs that allows
+network functions such as aggregation, filtering, routing, and NAT
+to be performed without active involvement of the main application
+processor (AP).
+
+In this initial patch series these advanced features are not
+implemented.  The IPA driver simply provides a network interface
+that makes the modem's LTE network available in Linux.  This initial
+series supports only the Qualcomm SDM845 SoC.  The Qualcomm SC7180
+SoC is partially supported, and support for other platforms will
+follow.
+
+This code is derived from a driver developed by Qualcomm.  A version
+of the original source can be seen here:
+  https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree
+in the "drivers/platform/msm/ipa" directory.  Many were involved in
+developing this, but the following individuals deserve explicit
+acknowledgement for their substantial contributions:
+
+    Abhishek Choubey
+    Ady Abraham
+    Chaitanya Pratapa
+    David Arinzon
+    Ghanim Fodi
+    Gidon Studinski
+    Ravi Gummadidala
+    Shihuan Liu
+    Skylar Chang
+
+					-Alex
+
+Alex Elder (17):
+  remoteproc: add IPA notification to q6v5 driver
+  dt-bindings: soc: qcom: add IPA bindings
+  soc: qcom: ipa: main code
+  soc: qcom: ipa: configuration data
+  soc: qcom: ipa: clocking, interrupts, and memory
+  soc: qcom: ipa: GSI headers
+  soc: qcom: ipa: the generic software interface
+  soc: qcom: ipa: IPA interface to GSI
+  soc: qcom: ipa: GSI transactions
+  soc: qcom: ipa: IPA endpoints
+  soc: qcom: ipa: filter and routing tables
+  soc: qcom: ipa: immediate commands
+  soc: qcom: ipa: modem and microcontroller
+  soc: qcom: ipa: AP/modem communications
+  soc: qcom: ipa: support build of IPA code
+  MAINTAINERS: add entry for the Qualcomm IPA driver
+  arm64: dts: sdm845: add IPA information
+
+ .../devicetree/bindings/net/qcom,ipa.yaml     |  192 ++
+ MAINTAINERS                                   |    6 +
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |   51 +
+ drivers/net/Kconfig                           |    2 +
+ drivers/net/Makefile                          |    1 +
+ drivers/net/ipa/Kconfig                       |   19 +
+ drivers/net/ipa/Makefile                      |   12 +
+ drivers/net/ipa/gsi.c                         | 2097 +++++++++++++++++
+ drivers/net/ipa/gsi.h                         |  257 ++
+ drivers/net/ipa/gsi_private.h                 |  118 +
+ drivers/net/ipa/gsi_reg.h                     |  417 ++++
+ drivers/net/ipa/gsi_trans.c                   |  786 ++++++
+ drivers/net/ipa/gsi_trans.h                   |  226 ++
+ drivers/net/ipa/ipa.h                         |  148 ++
+ drivers/net/ipa/ipa_clock.c                   |  313 +++
+ drivers/net/ipa/ipa_clock.h                   |   53 +
+ drivers/net/ipa/ipa_cmd.c                     |  680 ++++++
+ drivers/net/ipa/ipa_cmd.h                     |  195 ++
+ drivers/net/ipa/ipa_data-sc7180.c             |  307 +++
+ drivers/net/ipa/ipa_data-sdm845.c             |  329 +++
+ drivers/net/ipa/ipa_data.h                    |  280 +++
+ drivers/net/ipa/ipa_endpoint.c                | 1706 ++++++++++++++
+ drivers/net/ipa/ipa_endpoint.h                |  110 +
+ drivers/net/ipa/ipa_gsi.c                     |   54 +
+ drivers/net/ipa/ipa_gsi.h                     |   60 +
+ drivers/net/ipa/ipa_interrupt.c               |  253 ++
+ drivers/net/ipa/ipa_interrupt.h               |  117 +
+ drivers/net/ipa/ipa_main.c                    |  954 ++++++++
+ drivers/net/ipa/ipa_mem.c                     |  314 +++
+ drivers/net/ipa/ipa_mem.h                     |   90 +
+ drivers/net/ipa/ipa_modem.c                   |  383 +++
+ drivers/net/ipa/ipa_modem.h                   |   31 +
+ drivers/net/ipa/ipa_qmi.c                     |  538 +++++
+ drivers/net/ipa/ipa_qmi.h                     |   41 +
+ drivers/net/ipa/ipa_qmi_msg.c                 |  663 ++++++
+ drivers/net/ipa/ipa_qmi_msg.h                 |  252 ++
+ drivers/net/ipa/ipa_reg.c                     |   38 +
+ drivers/net/ipa/ipa_reg.h                     |  476 ++++
+ drivers/net/ipa/ipa_smp2p.c                   |  335 +++
+ drivers/net/ipa/ipa_smp2p.h                   |   48 +
+ drivers/net/ipa/ipa_table.c                   |  700 ++++++
+ drivers/net/ipa/ipa_table.h                   |  103 +
+ drivers/net/ipa/ipa_uc.c                      |  211 ++
+ drivers/net/ipa/ipa_uc.h                      |   32 +
+ drivers/net/ipa/ipa_version.h                 |   23 +
+ drivers/remoteproc/Kconfig                    |    6 +
+ drivers/remoteproc/Makefile                   |    1 +
+ drivers/remoteproc/qcom_q6v5_ipa_notify.c     |   85 +
+ drivers/remoteproc/qcom_q6v5_mss.c            |   42 +-
+ .../linux/remoteproc/qcom_q6v5_ipa_notify.h   |   82 +
+ 50 files changed, 14235 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipa.yaml
+ create mode 100644 drivers/net/ipa/Kconfig
+ create mode 100644 drivers/net/ipa/Makefile
+ create mode 100644 drivers/net/ipa/gsi.c
+ create mode 100644 drivers/net/ipa/gsi.h
+ create mode 100644 drivers/net/ipa/gsi_private.h
+ create mode 100644 drivers/net/ipa/gsi_reg.h
+ create mode 100644 drivers/net/ipa/gsi_trans.c
+ create mode 100644 drivers/net/ipa/gsi_trans.h
+ create mode 100644 drivers/net/ipa/ipa.h
+ create mode 100644 drivers/net/ipa/ipa_clock.c
+ create mode 100644 drivers/net/ipa/ipa_clock.h
+ create mode 100644 drivers/net/ipa/ipa_cmd.c
+ create mode 100644 drivers/net/ipa/ipa_cmd.h
+ create mode 100644 drivers/net/ipa/ipa_data-sc7180.c
+ create mode 100644 drivers/net/ipa/ipa_data-sdm845.c
+ create mode 100644 drivers/net/ipa/ipa_data.h
+ create mode 100644 drivers/net/ipa/ipa_endpoint.c
+ create mode 100644 drivers/net/ipa/ipa_endpoint.h
+ create mode 100644 drivers/net/ipa/ipa_gsi.c
+ create mode 100644 drivers/net/ipa/ipa_gsi.h
+ create mode 100644 drivers/net/ipa/ipa_interrupt.c
+ create mode 100644 drivers/net/ipa/ipa_interrupt.h
+ create mode 100644 drivers/net/ipa/ipa_main.c
+ create mode 100644 drivers/net/ipa/ipa_mem.c
+ create mode 100644 drivers/net/ipa/ipa_mem.h
+ create mode 100644 drivers/net/ipa/ipa_modem.c
+ create mode 100644 drivers/net/ipa/ipa_modem.h
+ create mode 100644 drivers/net/ipa/ipa_qmi.c
+ create mode 100644 drivers/net/ipa/ipa_qmi.h
+ create mode 100644 drivers/net/ipa/ipa_qmi_msg.c
+ create mode 100644 drivers/net/ipa/ipa_qmi_msg.h
+ create mode 100644 drivers/net/ipa/ipa_reg.c
+ create mode 100644 drivers/net/ipa/ipa_reg.h
+ create mode 100644 drivers/net/ipa/ipa_smp2p.c
+ create mode 100644 drivers/net/ipa/ipa_smp2p.h
+ create mode 100644 drivers/net/ipa/ipa_table.c
+ create mode 100644 drivers/net/ipa/ipa_table.h
+ create mode 100644 drivers/net/ipa/ipa_uc.c
+ create mode 100644 drivers/net/ipa/ipa_uc.h
+ create mode 100644 drivers/net/ipa/ipa_version.h
+ create mode 100644 drivers/remoteproc/qcom_q6v5_ipa_notify.c
+ create mode 100644 include/linux/remoteproc/qcom_q6v5_ipa_notify.h
+
 -- 
-2.17.1
+2.20.1
 
