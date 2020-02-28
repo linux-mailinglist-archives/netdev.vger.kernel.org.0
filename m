@@ -2,105 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54BDE173126
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 07:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1161731CF
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 08:32:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbgB1Gg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 01:36:27 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35429 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbgB1Gg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 01:36:26 -0500
-Received: by mail-wm1-f67.google.com with SMTP id m3so1995483wmi.0
-        for <netdev@vger.kernel.org>; Thu, 27 Feb 2020 22:36:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m49OdKPe1I/oPM1RnkJb6B2gHY6zkx2O7ln3AzFZcfU=;
-        b=ATAbGjogBvVdPfzGc7nWLhIysYWI0IeFcclb3bwuMJA/jCu1D+zew5i++bdrqRSqaK
-         WdfsIsfHlggASETKp2IrEB2lX4ZSQ3Kdzh+vvufqEVmJWY2Uo7QaPihzBYDAWZHkTFzX
-         UqF5EagV2+pQu6ToENGYUbBlLkh1igMHH/694s6EcKN1Or/cU8RU/09xf5eYHwKXPSHR
-         m9G6z4J4NRqP9aajm/6xfPTLZgoD1aUwBpDTUWbgSSsJOeVW2l4iHHL5ByhgyxFQenSu
-         i/zoWc/CO50mhPR4P7DA2wtIwVYfpy3ZLS1ihleCQBM/CwRJsQf0y6ODMavx9WU2XJHi
-         /Peg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m49OdKPe1I/oPM1RnkJb6B2gHY6zkx2O7ln3AzFZcfU=;
-        b=MjJpxtyC9e5KBWJWDAHGBKPHagy0jtirTaJuBRWTV6PIAOBGBWmV+zfzZ32egRf4BS
-         LprmT1ZQVKOY8p2ou3jBhuQnGEotHGXfDPovWOtSO5qshOlfQ+vlgZFfc9RaaBafb9G+
-         h5EqLVg31kdUSRWJMHPBUv6fNKHxUKG7xlrkgNkV/9vMU5dfynKFif9Sp+8ySG9cSsE0
-         vA2utNU5eUGZnA9AqEXPW76KEew33r+AEwwDtg5pqlewgbll7oNc4JrnsjqJazxv+XVt
-         3a7m3gmGdN6GiFan5PR5HIF0KuuA9Ghi23yLcI7bv2UpLS9I+AnNKy9T1WI798tOedxa
-         VlFw==
-X-Gm-Message-State: APjAAAWKCVKrhpZIfPmSYiGJ5NtvQVxTPEtAHaIOmwr3XkM4eO+Va7/p
-        grrj41SNQqaXM0cKAAMzAqvPZQ==
-X-Google-Smtp-Source: APXvYqz0V6Uk9J3YCoC1wGe50nb9nt68xJZQGKZs6eOrVSfnA0BSW27zUDWztk3gdFiF+lGVMzQxGg==
-X-Received: by 2002:a05:600c:2409:: with SMTP id 9mr3208126wmp.140.1582871784752;
-        Thu, 27 Feb 2020 22:36:24 -0800 (PST)
-Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id l4sm11640069wrv.22.2020.02.27.22.36.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Feb 2020 22:36:24 -0800 (PST)
-Date:   Fri, 28 Feb 2020 07:36:23 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
-Subject: Re: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
- for Prestera family ASIC device 98DX325x (AC3x)
-Message-ID: <20200228063623.GI26061@nanopsycho>
-References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
- <20200225163025.9430-2-vadym.kochan@plvision.eu>
- <20200226155423.GC26061@nanopsycho>
- <20200227213150.GA9372@plvision.eu>
- <20200227214357.GB29979@lunn.ch>
- <20200227235048.GA21304@plvision.eu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200227235048.GA21304@plvision.eu>
+        id S1726917AbgB1HcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 02:32:14 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:45131 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726671AbgB1HcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 02:32:13 -0500
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id A3CF5CECF5;
+        Fri, 28 Feb 2020 08:41:37 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH][next] Bluetooth: Replace zero-length array with
+ flexible-array member
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200226230227.GA31639@embeddedor>
+Date:   Fri, 28 Feb 2020 08:32:10 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <1E945B13-0BCB-4908-BA32-87DC0F982154@holtmann.org>
+References: <20200226230227.GA31639@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 28, 2020 at 12:50:58AM CET, vadym.kochan@plvision.eu wrote:
->On Thu, Feb 27, 2020 at 10:43:57PM +0100, Andrew Lunn wrote:
->> > > Please be consistent. Make your prefixes, name, filenames the same.
->> > > For example:
->> > > prestera_driver_kind[] = "prestera";
->> > > 
->> > > Applied to the whole code.
->> > > 
->> > So you suggested to use prestera_ as a prefix, I dont see a problem
->> > with that, but why not mvsw_pr_ ? So it has the vendor, device name parts
->> > together as a key. Also it is necessary to apply prefix for the static
->> > names ?
->> 
->> Although static names don't cause linker issues, you do still see them
->> in opps stack traces, etc. It just helps track down where the symbols
->> come from, if they all have a prefix.
->> 
->>      Andrew
->
->Sure, thanks, makes sense. But is it necessary that prefix should match
->filenames too ? Would it be OK to use just 'mvpr_' instead of 'prestera_'
+Hi Gustavo,
 
-I would vote for "prestera_". It is clean, consistent, obvious.
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
+> 
+> struct foo {
+>        int stuff;
+>        struct boo array[];
+> };
+> 
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+> 
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+> 
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+> drivers/bluetooth/btqca.h        |  6 +++---
+> drivers/bluetooth/btrtl.h        |  4 ++--
+> include/net/bluetooth/hci.h      | 30 +++++++++++++++---------------
+> include/net/bluetooth/hci_sock.h |  6 +++---
+> include/net/bluetooth/l2cap.h    |  8 ++++----
+> include/net/bluetooth/rfcomm.h   |  2 +-
+> net/bluetooth/a2mp.h             | 10 +++++-----
+> net/bluetooth/bnep/bnep.h        |  6 +++---
+> 8 files changed, 36 insertions(+), 36 deletions(-)
 
+Patch has been applied to bluetooth-next tree.
 
->for funcs & types in this particular case ?
->
->Regards,
->Vadym Kochan
+Regards
+
+Marcel
+
