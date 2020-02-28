@@ -2,98 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 680B1173B39
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 16:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DABF173C50
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 16:57:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgB1PWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 10:22:07 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:55736 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726650AbgB1PWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 10:22:07 -0500
-Received: from localhost.localdomain (p200300E9D71B9939E2C0865DB6B8C4EC.dip0.t-ipconnect.de [IPv6:2003:e9:d71b:9939:e2c0:865d:b6b8:c4ec])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id EBB8DC08EE;
-        Fri, 28 Feb 2020 16:22:04 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: Re: [PATCH][next] cfg802154: Replace zero-length array with
- flexible-array member
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200228135959.GA30464@embeddedor>
-Message-ID: <2711894b-b78d-aebe-79fd-aa274d4ff977@datenfreihafen.org>
-Date:   Fri, 28 Feb 2020 16:22:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727176AbgB1P5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 10:57:12 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:47701 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726974AbgB1P5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 10:57:11 -0500
+X-Originating-IP: 90.89.41.158
+Received: from localhost (lfbn-tou-1-1473-158.w90-89.abo.wanadoo.fr [90.89.41.158])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 7CCB560003;
+        Fri, 28 Feb 2020 15:57:08 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        foss@0leil.net
+Subject: [PATCH net-next v2 0/3] net: phy: mscc: add support for RGMII MAC mode
+Date:   Fri, 28 Feb 2020 16:56:59 +0100
+Message-Id: <20200228155702.2062570-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200228135959.GA30464@embeddedor>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hello,
 
-On 28.02.20 14:59, Gustavo A. R. Silva wrote:
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->          int stuff;
->          struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->   include/net/cfg802154.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> index 6f86073a5d7d..6ed07844eb24 100644
-> --- a/include/net/cfg802154.h
-> +++ b/include/net/cfg802154.h
-> @@ -214,7 +214,7 @@ struct wpan_phy {
->   	/* the network namespace this phy lives in currently */
->   	possible_net_t _net;
->   
-> -	char priv[0] __aligned(NETDEV_ALIGN);
-> +	char priv[] __aligned(NETDEV_ALIGN);
->   };
->   
->   static inline struct net *wpan_phy_net(struct wpan_phy *wpan_phy)
-> 
+This series adds support for the RGMII MAC mode for the VSC8584 PHY
+family.
 
-This patch has been applied to the wpan-next tree and will be
-part of the next pull request to net-next. Thanks!
+The first patch adds support for configuring the PHY MAC mode based on
+phydev->interface.
 
-regards
-Stefan Schmidt
+The second and third patches add new dt bindings for the MSCC driver, to
+configure the RGMII Tx and Rx skews from the device tree.
+
+Thanks!
+Antoine
+
+Since v1:
+  - The RGMII skew delays are now set based on the PHY interface mode
+    being used (RGMII vs ID vs RXID vs TXID).
+  - When RGMII is used, the skew delays are set to their default value,
+    meaning we do not rely anymore on the bootloader's configuration.
+  - Improved the commit messages.
+  - s/phy_interface_mode_is_rgmii/phy_interface_is_rgmii/
+
+
+Antoine Tenart (3):
+  net: phy: mscc: add support for RGMII MAC mode
+  dt-bindings: net: phy: mscc: document rgmii skew properties
+  net: phy: mscc: RGMII skew delay configuration
+
+ .../bindings/net/mscc-phy-vsc8531.txt         |  8 ++
+ drivers/net/phy/mscc.c                        | 83 ++++++++++++++++---
+ include/dt-bindings/net/mscc-phy-vsc8531.h    | 10 +++
+ 3 files changed, 89 insertions(+), 12 deletions(-)
+
+-- 
+2.24.1
+
