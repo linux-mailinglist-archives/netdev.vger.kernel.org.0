@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34581173E6B
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 18:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C859173E6D
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 18:25:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgB1RZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 12:25:23 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46877 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726796AbgB1RZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 12:25:16 -0500
-Received: by mail-wr1-f68.google.com with SMTP id j7so3779994wrp.13
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 09:25:15 -0800 (PST)
+        id S1726867AbgB1RZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 12:25:22 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35367 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbgB1RZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 12:25:17 -0500
+Received: by mail-wm1-f68.google.com with SMTP id m3so4102680wmi.0
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 09:25:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NG5K05N11XaPTdvejQYs+YX5yZc4z0gYOOR7cCu0MH0=;
-        b=nODkpBvyBj2oSTpyUYA0nrfQTaRVFXh3oto2CGAS6bNH4tYS7r38Q1/N+ngj9lFXMc
-         JwimUAumJk78gOix7KD2FJcvK11Zha79gizS5KAg0ZaaZlYp3OtyIgOg5K+kCQ6d/eGm
-         UqriOrjHzO9B9vs65cjTXrE5lvm8E7hXZw1/gnlW8Bg5Suq+FZrRGxGE5fQKpykrZBiK
-         +g+qWO8NtgCrHhl+NHxXbie8mqK6zVDpJYrd7jkptXLbWujSQBdJQPw9bcdjriMutN1T
-         sFM05Mk9RegPJFjH3hl5gJ3XN6AG+IqTAYgFTf5Pc1BLMJJ1xUitGBIealG2RUinP0DU
-         gnEQ==
+        bh=8AHLRNrQSUpqq5kx3mM6e23WdkQldZ02uKkhtFrtK+c=;
+        b=nzdqVanDZW53VBEqm9MpF2ZbvleGRgNSbvf6it++pUUHqpKRpP+uLNNcGYEmQNJPd2
+         5eYIQDUf2fZFR6+LHW9SsIr57eKnUQTSanCOPTVrREdJKn7ZIQR3t9dBS1m6rf3op+4G
+         txjc7IADBrKadl75HfMKNYN7pXUDT2mtnIpLJNvYE80KVhhWCmT/a89dbJc0xN7UPeKK
+         6s2uZAUJkfyNy5Vc+AT3VJc3KqOt7c/8gk/AcEwh1++9r9bjUlSAEVqUnMlsQ6N/Wtri
+         mtboAGCeJL6uV13ELUnMg+USZEYWuGIHZyYs2BCUEomI3MC5U3E+XOUBChsM7AnGj/FQ
+         6Nnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NG5K05N11XaPTdvejQYs+YX5yZc4z0gYOOR7cCu0MH0=;
-        b=YBeRD7d/bfaOSfK9GMW3YJWJ6nRlVlxLeYwS4qCLN4tjtf3aVe2LN9KczwRcvyYaqB
-         TnZ0cS/orArRM7x0PGA8X2+WQsniDyCD+YlZA+WXYnPTyo/seCcvY58WnoR7xniTcn2l
-         5aZAHKf+vGgvwKuLk8e3EKgrF47R6m+9nQ6uKJzg/qm+G7wUA59oOrSBTRbkFRd8j6p1
-         PQV2AIg1B9+M7FGICpc03OYsfpGFzY0Tjwp2p0QmNr4Q6+xM7XflaXwYAFwSV7wjVjo7
-         RGZGDERZk/ac7DClTVfosCUJtcH6wTDYIjKwF5xznytfXu79AIqAF+O71a/1SygqFtgD
-         sv3Q==
-X-Gm-Message-State: APjAAAXOYYrMMxdWc0vXOuV/vp7sy74Jfk/zPNGzfVHX3XX4PPibM3Cr
-        PQJFom//N6oSjMMO7D0VmYV638mEgZA=
-X-Google-Smtp-Source: APXvYqwqDkovwezXBMPgte9B08GEkWr7ez0jwUygFBt3vRagylrutnSfWAeJWPoNoOZy+BNs+y5LVQ==
-X-Received: by 2002:a5d:534f:: with SMTP id t15mr5465882wrv.190.1582910714416;
-        Fri, 28 Feb 2020 09:25:14 -0800 (PST)
+        bh=8AHLRNrQSUpqq5kx3mM6e23WdkQldZ02uKkhtFrtK+c=;
+        b=blB9fQIPsxEADa+ZDQl1axlWTxF7mubk4VyXYDJud395/Qof37/PfbxMkbt8xpA3Aw
+         vClrveINMx0gi+yvXi5EXlMjm1YuJyjJs9NBPtjZw3csK/dHdjc3RpERT4T0vYiHLSi4
+         pcMnTFWdgkIP6hyl532E+uPPwKJW2UWZS3Hv+pE3+NPpAd7U/V8yruzPEDFIJkFpBN6R
+         HM22N1ZS8bnloFLRm9qVR4TZSgnkJqR0r9eW/kFRb4qVEPcyqZzdTMBD9AxnyEaJXnC7
+         i032HNma7u8hdq0qYcUngruN1M70wSacp1mWszeWsKtaykmtj88HwHGDDNTRkhTDHOsH
+         5sHg==
+X-Gm-Message-State: APjAAAWYC+4JAWC7uOchWt3r71RnQTRUa0NAX837xDKgN4k8THEg65cd
+        4r6mE0mTvSWA+RLnhS1uiWMMVNwMwzA=
+X-Google-Smtp-Source: APXvYqxUMOl2wN2JjNIZ4guEfAUXzczpiZOAwl1Co1HMWqHH7xXs6s9kE6RoKc11v4Vn5KCBipUKug==
+X-Received: by 2002:a1c:8041:: with SMTP id b62mr5057743wmd.76.1582910715657;
+        Fri, 28 Feb 2020 09:25:15 -0800 (PST)
 Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
-        by smtp.gmail.com with ESMTPSA id h81sm2474917wme.12.2020.02.28.09.25.13
+        by smtp.gmail.com with ESMTPSA id m125sm2993022wmf.8.2020.02.28.09.25.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Feb 2020 09:25:14 -0800 (PST)
+        Fri, 28 Feb 2020 09:25:15 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
@@ -53,9 +53,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
         alexandre.torgue@st.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v2 06/12] mlx5: restrict supported HW stats type to "any"
-Date:   Fri, 28 Feb 2020 18:24:59 +0100
-Message-Id: <20200228172505.14386-7-jiri@resnulli.us>
+Subject: [patch net-next v2 07/12] mlxsw: restrict supported HW stats type to "any"
+Date:   Fri, 28 Feb 2020 18:25:00 +0100
+Message-Id: <20200228172505.14386-8-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200228172505.14386-1-jiri@resnulli.us>
 References: <20200228172505.14386-1-jiri@resnulli.us>
@@ -68,47 +68,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Currently don't allow action with any other type than "any"
-to be inserted.
+Currently don't allow actions with any other type to be inserted.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v1->v2:
-- moved the check to action
+- move the code to the first action processing
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 82e08b10598f..9a8da84e88c9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2885,6 +2885,12 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index 7435629c9e65..40d3ed2f4961 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -29,10 +29,18 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
  	if (!flow_action_mixed_hw_stats_types_check(flow_action, extack))
  		return -EOPNOTSUPP;
  
+-	/* Count action is inserted first */
+-	err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
+-	if (err)
+-		return err;
 +	act = flow_action_first_entry_get(flow_action);
-+	if (act->hw_stats_type != FLOW_ACTION_HW_STATS_TYPE_ANY) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported HW stats type");
++	switch (act->hw_stats_type) {
++	case FLOW_ACTION_HW_STATS_TYPE_ANY:
++		/* Count action is inserted first */
++		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
++		if (err)
++			return err;
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
 +		return -EOPNOTSUPP;
 +	}
-+
- 	attr->flow_tag = MLX5_FS_DEFAULT_FLOW_TAG;
  
- 	flow_action_for_each(i, act, flow_action) {
-@@ -3340,6 +3346,12 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	if (!flow_action_mixed_hw_stats_types_check(flow_action, extack))
- 		return -EOPNOTSUPP;
- 
-+	act = flow_action_first_entry_get(flow_action);
-+	if (act->hw_stats_type != FLOW_ACTION_HW_STATS_TYPE_ANY) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported HW stats type");
-+		return -EOPNOTSUPP;
-+	}
-+
  	flow_action_for_each(i, act, flow_action) {
  		switch (act->id) {
- 		case FLOW_ACTION_DROP:
 -- 
 2.21.1
 
