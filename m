@@ -2,112 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A026517353F
-	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:26:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46A7217357A
+	for <lists+netdev@lfdr.de>; Fri, 28 Feb 2020 11:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgB1K0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 05:26:09 -0500
-Received: from foss.arm.com ([217.140.110.172]:36148 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbgB1K0J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 05:26:09 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0806D4B2;
-        Fri, 28 Feb 2020 02:26:08 -0800 (PST)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1FBBF3F73B;
-        Fri, 28 Feb 2020 02:26:04 -0800 (PST)
-Date:   Fri, 28 Feb 2020 10:25:56 +0000
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        soc@kernel.org, Robert Richter <rrichter@marvell.com>,
-        Jon Loeliger <jdl@jdl.com>, Alexander Graf <graf@amazon.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Mark Langsdorf <mlangsdo@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        James Morse <james.morse@arm.com>,
-        Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-        kvm@vger.kernel.org, linux-clk <linux-clk@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode
- quirk
-Message-ID: <20200228102556.1dde016e@donnerap.cambridge.arm.com>
-In-Reply-To: <20200228100446.GA2395@willie-the-truck>
-References: <20200218171321.30990-1-robh@kernel.org>
-        <20200218171321.30990-7-robh@kernel.org>
-        <20200218172000.GF1133@willie-the-truck>
-        <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
-        <20200228100446.GA2395@willie-the-truck>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        id S1726700AbgB1KmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 05:42:18 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21637 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726063AbgB1KmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 05:42:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1582886536;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wlYYRATcRw1REN9gQxnb1xLG+z0JVZsLAObIn2DKGmc=;
+        b=BRHH6fmXCb2zqGmmZk+CL0+WTGQC9K40vxccHg+s9ZvMlBw34gCZht/cE8KmY5TrGxh+Et
+        FkOF4CL57lHNgE5mZVdQsHROtUESdyRsDR6FJcfH0ViM5yIRW84roqwbLuJl1KZandv44j
+        MMHI47tS2GRKRiEwigejQrr9SYKxvco=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-191-pSUkARetOyK5IsLxdZyWNg-1; Fri, 28 Feb 2020 05:42:14 -0500
+X-MC-Unique: pSUkARetOyK5IsLxdZyWNg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 175CEDBA5;
+        Fri, 28 Feb 2020 10:42:12 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7FDF51CB;
+        Fri, 28 Feb 2020 10:41:56 +0000 (UTC)
+Date:   Fri, 28 Feb 2020 11:41:55 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     David Ahern <dahern@digitalocean.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com, mst@redhat.com,
+        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dsahern@kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH RFC v4 bpf-next 03/11] xdp: Add xdp_txq_info to xdp_buff
+Message-ID: <20200228114155.648f897e@carbon>
+In-Reply-To: <87o8tjuisk.fsf@toke.dk>
+References: <20200227032013.12385-1-dsahern@kernel.org>
+        <20200227032013.12385-4-dsahern@kernel.org>
+        <20200227090046.3e3177b3@carbon>
+        <423dd8d6-6e84-01d4-c529-ce85d84fa24b@digitalocean.com>
+        <87o8tjuisk.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Feb 2020 10:04:47 +0000
-Will Deacon <will@kernel.org> wrote:
+On Fri, 28 Feb 2020 11:07:23 +0100
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-Hi,
+> David Ahern <dahern@digitalocean.com> writes:
+>=20
+> > On 2/27/20 1:00 AM, Jesper Dangaard Brouer wrote: =20
+> >>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> >>> index 7850f8683b81..5e3f8aefad41 100644
+> >>> --- a/include/uapi/linux/bpf.h
+> >>> +++ b/include/uapi/linux/bpf.h
+> >>> @@ -3334,8 +3334,10 @@ struct xdp_md {
+> >>>  	__u32 data;
+> >>>  	__u32 data_end;
+> >>>  	__u32 data_meta;
+> >>> -	/* Below access go through struct xdp_rxq_info */
+> >>> -	__u32 ingress_ifindex; /* rxq->dev->ifindex */
+> >>> +	union {
+> >>> +		__u32 ingress_ifindex; /* rxq->dev->ifindex */
+> >>> +		__u32 egress_ifindex;  /* txq->dev->ifindex */
+> >>> +	}; =20
+> >>=20
+> >> Are we sure it is wise to "union share" (struct) xdp_md as the
+> >> XDP-context in the XDP programs, with different expected_attach_type?
+> >> As this allows the XDP-programmer to code an EGRESS program that access
+> >> ctx->ingress_ifindex, this will under the hood be translated to
+> >> ctx->egress_ifindex, because from the compilers-PoV this will just be =
+an
+> >> offset.
+> >>=20
+> >> We are setting up the XDP-programmer for a long debugging session, as
+> >> she will be expecting to read 'ingress_ifindex', but will be getting
+> >> 'egress_ifindex'.  (As the compiler cannot warn her, and it is also
+> >> correct seen from the verifier). =20
+> >
+> > It both cases it means the device handling the packet. ingress_ifindex
+> > =3D=3D device handling the Rx, egress_ifindex =3D=3D device handling th=
+e Tx.
+> > Really, it is syntactic sugar for program writers. It would have been
+> > better had xdp_md only called it ifindex from the beginning. =20
+>=20
+> Telling users that they are doing it wrong is not going to make their
+> debugging session any less frustrating :)
+>=20
+> If we keep rx_ifindex a separate field we can unambiguously reject a TX
+> program that tries to access it, *and* we keep the option of allowing
+> access to it later if it does turn out to be useful. IMO that is worth
+> the four extra bytes.
 
-> On Tue, Feb 25, 2020 at 04:01:54PM -0600, Rob Herring wrote:
-> > On Tue, Feb 18, 2020 at 11:20 AM Will Deacon <will@kernel.org> wrote:  
-> > >
-> > > On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:  
-> > > > Cc: Will Deacon <will@kernel.org>
-> > > > Cc: Robin Murphy <robin.murphy@arm.com>
-> > > > Cc: Joerg Roedel <joro@8bytes.org>
-> > > > Cc: iommu@lists.linux-foundation.org
-> > > > Signed-off-by: Rob Herring <robh@kernel.org>
-> > > > ---
-> > > > Do not apply yet.  
-> > >
-> > > Pleeeeease? ;)
-> > >  
-> > > >  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
-> > > >  1 file changed, 43 deletions(-)  
-> > >
-> > > Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
-> > > anything from 'struct arm_smmu_impl' because most implementations fall
-> > > just short of perfect.
-> > >
-> > > Anyway, let me know when I can push the button and I'll queue this in
-> > > the arm-smmu tree.  
-> > 
-> > Seems we're leaving the platform support for now, but I think we never
-> > actually enabled SMMU support. It's not in the dts either in mainline
-> > nor the version I have which should be close to what shipped in
-> > firmware. So as long as Andre agrees, this one is good to apply.  
-> 
-> Andre? Can I queue this one for 5.7, please?
+I agree. We need unambiguously to help the program writer.
 
-I was wondering how much of a pain it is to keep it in? AFAICS there are other users of the "impl" indirection. If those goes away, I would be happy to let Calxeda go.
-But Eric had the magic DT nodes to get the SMMU working, and I used that before, with updating the DT either on flash or dynamically via U-Boot.
+This is the wrong kind of 'syntactic sugar'.  If you want a straight
+'ifindex', that translates to the running_ifindex, when you need to add
+a new member 'ifindex' that does this rewriting based on attach type.
 
-So I don't know exactly *how* desperate you are with removing this, or if there are other reasons than "negative diffstat", but if possible I would like to keep it in.
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Cheers,
-Andre.
