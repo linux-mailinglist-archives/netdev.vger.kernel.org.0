@@ -2,134 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B7A17463C
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 11:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFD7174684
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 12:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbgB2Khj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 05:37:39 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:41869 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725747AbgB2Khj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 05:37:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1582972657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8u7jXv2qhhtEzwiGsMt8eapSSfx6lCwcuLjHW90uxZQ=;
-        b=TRo4YOT1GzaMNo0JheAigz2WwcC5yD50neu/d/IyrHjEH62cZ/G9TTdwMb/F4EjyxlRpvk
-        +SINj3fJfGpi2b+drxYZhW9rv0DfyjO9gTm2AiDkiYgXWn16uTi5cFK1uk1kaIaqeQaBJa
-        2vaVNpHE000GyHQMbqoZHqPzMpsrSmg=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-424-dyrtKMykOmaHWHi6PSLWng-1; Sat, 29 Feb 2020 05:37:30 -0500
-X-MC-Unique: dyrtKMykOmaHWHi6PSLWng-1
-Received: by mail-wr1-f69.google.com with SMTP id y28so2663356wrd.23
-        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 02:37:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=8u7jXv2qhhtEzwiGsMt8eapSSfx6lCwcuLjHW90uxZQ=;
-        b=duuFMJcdZRd42G6+c0GCm5t+mRkej0id9nHVNgIx2wkMRSz878XLt/873rCCqHY+Kf
-         Bbq13MxrUtHPrT9XGTxEAELvgc+69zK+yPMrTwpcnIuPpKUdZ97jo9QuUzUs0khchU9+
-         dmIXzn+fzkYPJt513RSaAeS6RzibnYmNmhJdu5rDFOEi1g/ufF6CK+c63m335HcBVnUQ
-         ruIfPvrMDfSd1MqxEqPS206Q/x8q9O9hq7Qh6rQ3V57VGo86b4H++a3sVhLKFS1hCkHb
-         4Z6Pp1OhMXJI9EBfzQn6e6PLooN2N7J0FImgbPOA2rQGHmB3eczkWOEFLyMMN+dTUuw/
-         sdzw==
-X-Gm-Message-State: APjAAAWxJRF2cgHXImmxsMxMs24sKSBNxAERuxqF8LObtsDrp9ptkhSR
-        LNO5Bc3OdLkdLHoLtZTOZvPnVLaSkfxFOcqNrEKtCRXTP8OLolXDYU5rlf4mtQWkx8PmF6EBqku
-        stYRzy88w5gbQJiU8
-X-Received: by 2002:adf:ffcb:: with SMTP id x11mr9966975wrs.367.1582972649604;
-        Sat, 29 Feb 2020 02:37:29 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxpjfoeXTVsCs7yYwr8FL5KPh0cz0jRGDeDcYxGWVBFbLy+WCuHWckSdUPCJukOzdjhHLRMFg==
-X-Received: by 2002:adf:ffcb:: with SMTP id x11mr9966949wrs.367.1582972649363;
-        Sat, 29 Feb 2020 02:37:29 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id c9sm5869600wmc.47.2020.02.29.02.37.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Feb 2020 02:37:28 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 482F6180362; Sat, 29 Feb 2020 11:37:28 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs on an interface
-In-Reply-To: <CAEf4Bzaqr2uZca2iZvRpz54C-ohLsNK1sdN8daBr1qkRQ+NhWg@mail.gmail.com>
-References: <158289973977.337029.3637846294079508848.stgit@toke.dk> <CAEf4Bzaqr2uZca2iZvRpz54C-ohLsNK1sdN8daBr1qkRQ+NhWg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 29 Feb 2020 11:37:28 +0100
-Message-ID: <87sgitu1av.fsf@toke.dk>
+        id S1726933AbgB2LgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 06:36:10 -0500
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:31616 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgB2LgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 06:36:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1582976169; x=1614512169;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=T8j3ByA2QmjSIujsgJLntP0SvfcC7xZNgCsUSXItJpg=;
+  b=ninsaUK0tPkrgnGX8dV+w0Cp8ro+nRDTe1lbaYm8w7OBJvsQX2TXom9D
+   PLhMirYp4o0L4mX27TCSmMu0t9qVRSpS9vgltA8n+kve5DOl3y/mxrCcq
+   +iBA4o/aKpGBmxAn+4DFn1L8rByNAUa+VJLf1azGlfxZusyP0jR/ecdDA
+   E=;
+IronPort-SDR: JLsE6Q96/9GIVGXAYCdS5BH6AQxhnIbUKzlATcVVLwEHsdhnycG7j2BcGYnWgn+G5q/fFCuNr1
+ qpgKV2t8oDlw==
+X-IronPort-AV: E=Sophos;i="5.70,499,1574121600"; 
+   d="scan'208";a="19148045"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 29 Feb 2020 11:36:08 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com (Postfix) with ESMTPS id A47A8A249F;
+        Sat, 29 Feb 2020 11:36:06 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sat, 29 Feb 2020 11:36:06 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.171) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 29 Feb 2020 11:36:02 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <edumazet@google.com>
+CC:     <kuniyu@amazon.co.jp>, <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>
+Subject: [PATCH v3 net-next 0/4] Improve bind(addr, 0) behaviour.
+Date:   Sat, 29 Feb 2020 20:35:50 +0900
+Message-ID: <20200229113554.78338-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.171]
+X-ClientProxiedBy: EX13D23UWA003.ant.amazon.com (10.43.160.194) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Currently we fail to bind sockets to ephemeral ports when all of the ports
+are exhausted even if all sockets have SO_REUSEADDR enabled. In this case,
+we still have a chance to connect to the different remote hosts.
 
-> On Fri, Feb 28, 2020 at 6:22 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Hi everyone
->>
->> As most of you are no doubt aware, we've had various discussions on how
->> to handle multiple XDP programs on a single interface. With the freplace
->> functionality, the kernel infrastructure is now there to handle this
->> (almost, see "missing pieces" below).
->>
->> While the freplace mechanism offers userspace a lot of flexibility in
->> how to handle dispatching of multiple XDP programs, userspace also has
->> to do quite a bit of work to implement this (compared to just issuing
->> load+attach). The goal of this email is to get some feedback on a
->> library to implement this, in the hope that we can converge on something
->> that will be widely applicable, ensuring that both (a) everyone doesn't
->> have to reinvent the wheel, and (b) we don't end up with a proliferation
->> of subtly incompatible dispatcher models that makes it hard or
->> impossible to mix and match XDP programs from multiple sources.
->>
->
-> [...]
->
->>
->> **** Missing pieces
->> While the libxdp code can assemble a basic dispatcher and load it into t=
-he
->> kernel, there are a couple of missing pieces on the kernel side; I will =
-propose
->> patches to fix these, but figured there was no reason to hold back posti=
-ng of
->> the library for comments because of this. These missing pieces are:
->>
->> - There is currently no way to persist the freplace after the program ex=
-its; the
->>   file descriptor returned by bpf_raw_tracepoint_open() will release the=
- program
->>   when it is closed, and it cannot be pinned.
->
-> This is completely addressed by patch set [0] I just posted. It will
-> allow you to pin freplace BPF link in BPF FS. Feel free to review and
-> comment there, if anything is missing.
->
->   [0]
->   https://patchwork.ozlabs.org/project/netdev/list/?series=3D161582&state=
-=3D*
+The second and third patches fix the behaviour to fully utilize all space
+of the local (addr, port) tuples.
 
-Ah, excellent! I'll take a look, thanks for the pointer :)
+---
+Changes in v3:
+  - Change the title and write more specific description of the 3rd patch.
+  - Add a test in tools/testing/selftests/net/ as the 4th patch.
 
--Toke
+Changes in v2:
+  - Change the description of the 2nd patch ('localhost' -> 'address').
+  - Correct the description and the if statement of the 3rd patch.
+  https://lore.kernel.org/netdev/20200226074631.67688-1-kuniyu@amazon.co.jp/
+
+v1 with tests:
+  https://lore.kernel.org/netdev/20200220152020.13056-1-kuniyu@amazon.co.jp/
+---
+
+Kuniyuki Iwashima (4):
+  tcp: Remove unnecessary conditions in inet_csk_bind_conflict().
+  tcp: bind(0) remove the SO_REUSEADDR restriction when ephemeral ports
+    are exhausted.
+  tcp: Forbid to bind more than one sockets haveing SO_REUSEADDR and
+    SO_REUSEPORT per EUID.
+  selftests: net: Add SO_REUSEADDR test to check if 4-tuples are fully
+    utilized.
+
+ net/ipv4/inet_connection_sock.c               |  36 ++--
+ tools/testing/selftests/net/Makefile          |   2 +
+ .../selftests/net/reuseaddr_ports_exhausted.c | 162 ++++++++++++++++++
+ .../net/reuseaddr_ports_exhausted.sh          |  33 ++++
+ 4 files changed, 221 insertions(+), 12 deletions(-)
+ create mode 100644 tools/testing/selftests/net/reuseaddr_ports_exhausted.c
+ create mode 100755 tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
+
+-- 
+2.17.2 (Apple Git-113)
 
