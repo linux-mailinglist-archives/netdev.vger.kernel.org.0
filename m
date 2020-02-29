@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B29331743E9
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:47:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E52CE1743F3
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbgB2Ara (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 19:47:30 -0500
-Received: from gateway31.websitewelcome.com ([192.185.143.40]:28825 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726359AbgB2Ara (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:47:30 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 03AF28C6978
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:47:29 -0600 (CST)
+        id S1726783AbgB2AuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 19:50:18 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.163]:21406 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726418AbgB2AuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:50:17 -0500
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id F126965C71
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:50:16 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 7qHwjdEJXAGTX7qHwjm5bf; Fri, 28 Feb 2020 18:47:28 -0600
+        id 7qKejRhm88vkB7qKejMOZs; Fri, 28 Feb 2020 18:50:16 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,25 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1kBV8i/FuTFc7scOAcfC0C6xpXRKNE9rNfOuADX0M/c=; b=BjbkhLEsUj8bHs+lF5w2ihZ8UW
-        qDZfDEkx+e7uMeSGP2NdQE3qmb4H2nBZ2eOhNhmwy411TjZ+eQj4lW1596PvEOcCDTFXJZfIxRyGA
-        j6RzqCGkG53ileexILqk0iQp72QcuZzmf850ZLFabF2V7+qoByb7JZGXsfTzJaZlRANnKtCp1Cm1V
-        8sjw8VyP8NqeVIaGuBbFGDqqP/6EN8YvmedNDnCEOy4YmSWqg4iXwy5L6fIAwPv0nw5m39JGLbuNi
-        0C7j2OhyPkMWKYUcHz33EzOjCa8FbEzp8ejjML5LQ2tDayXYtEOXRf4Q4Iehahoa2vAjlaIH6U2cm
-        eUzHzjFQ==;
-Received: from [200.39.15.57] (port=26146 helo=embeddedor)
+        bh=f8vhCCp3OOzlAffu+dZicuZhO8OF+Y4bPnu/LSD79Jo=; b=ADV34/l40VcoT5ws8TKqjwodLl
+        jVADoHzrLqvLxNu+pzKpcr9OBUQi/gFuEYxaIl1BzXp1R6k5EP2LkqgSd5J/uWYkWlzBd9sM29FbW
+        EKyzThtDRSpPRU6JFyXvGdHSiREvZkQs0t54pdLJpvA/5psSDGGu+/LuOf1zKvAzffvVTFER1VvsP
+        s/Zp6+PfEU0a51O9xoEVfxAooecit0Y+9+QKp/+2x/uRDzY/JHgiOt2LuPUCqfEX01Wgdf3ES/2bc
+        01c2Q3pRrVSCCzrABRGWCMz9fMzkEfw6bjFGWDYbpPNKDQhCUXqtS/PPDZpWdaDX3s9t4A7IGn5Xs
+        7vTj5xxg==;
+Received: from [200.39.15.57] (port=22066 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j7qHu-002tbk-Qn; Fri, 28 Feb 2020 18:47:27 -0600
-Date:   Fri, 28 Feb 2020 18:50:23 -0600
+        id 1j7qKd-002urX-07; Fri, 28 Feb 2020 18:50:15 -0600
+Date:   Fri, 28 Feb 2020 18:53:11 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: lwtunnel: Replace zero-length array with
- flexible-array member
-Message-ID: <20200229005023.GA8657@embeddedor>
+Subject: [PATCH][next] ndisc: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200229005311.GA8953@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,13 +55,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.39.15.57
 X-Source-L: No
-X-Exim-ID: 1j7qHu-002tbk-Qn
+X-Exim-ID: 1j7qKd-002urX-07
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.39.15.57]:26146
+X-Source-Sender: (embeddedor) [200.39.15.57]:22066
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 26
+X-Email-Count: 34
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -99,22 +99,37 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/net/lwtunnel.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/ndisc.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/lwtunnel.h b/include/net/lwtunnel.h
-index 5d6c5b1fc695..b5e6edf74b70 100644
---- a/include/net/lwtunnel.h
-+++ b/include/net/lwtunnel.h
-@@ -30,7 +30,7 @@ struct lwtunnel_state {
- 	int		(*orig_output)(struct net *net, struct sock *sk, struct sk_buff *skb);
- 	int		(*orig_input)(struct sk_buff *);
- 	struct		rcu_head rcu;
--	__u8            data[0];
-+	__u8            data[];
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index b5ebeb3b0de0..1c61aeb3a1c0 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -80,12 +80,12 @@ extern struct neigh_table nd_tbl;
+ struct nd_msg {
+         struct icmp6hdr	icmph;
+         struct in6_addr	target;
+-	__u8		opt[0];
++	__u8		opt[];
  };
  
- struct lwtunnel_encap_ops {
+ struct rs_msg {
+ 	struct icmp6hdr	icmph;
+-	__u8		opt[0];
++	__u8		opt[];
+ };
+ 
+ struct ra_msg {
+@@ -98,7 +98,7 @@ struct rd_msg {
+ 	struct icmp6hdr icmph;
+ 	struct in6_addr	target;
+ 	struct in6_addr	dest;
+-	__u8		opt[0];
++	__u8		opt[];
+ };
+ 
+ struct nd_opt_hdr {
 -- 
 2.25.0
 
