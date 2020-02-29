@@ -2,88 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D92761744D3
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 05:02:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFCF174580
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 08:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbgB2ECQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 23:02:16 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43598 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726418AbgB2ECQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 23:02:16 -0500
-Received: by mail-wr1-f65.google.com with SMTP id e10so4151292wrr.10
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 20:02:14 -0800 (PST)
+        id S1726785AbgB2HTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 02:19:30 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:43023 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726227AbgB2HTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 02:19:30 -0500
+Received: by mail-lf1-f66.google.com with SMTP id s23so3777101lfs.10
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 23:19:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=jsteward.moe; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U3/FZKx6L8Q08jTmbSx0oGLnqltCqMCplv25d8moljU=;
-        b=u7iSFj436wN6MQy3DeLBB35LUAjwFG/7SWJaA7P+mz7Ts1R6SKm7E/7eapveSp2UDQ
-         DXGrm8NhWOQ+exdaNPZTB6KOhVWEsBdObHewsr1nThi2sBC5UYg1W6ivHaTveAZHzMrC
-         +og09biKQ8HEwVVX1pY59WflpX2VgVpKok5pDoBlhuGht+Ra9YNnaCaJuja6/yTDngj4
-         1yM/UPktXNeDFGDDDSHPJD1ojbzvITyD5mzy12q76K83hoRFu0TQ3yTbQlyX3vbletbA
-         zTOvnT8OeltrlpYpHfBJ+c98moN9kVRqcUiqj9OY+eZ82zGtiBrh4E7CUgBwHOgVT+eH
-         C6SQ==
+         :cc:content-transfer-encoding;
+        bh=WPAzadvMLcFlPpBLWtaNTOLgIC32jAs7Hyvm5Qo9aW8=;
+        b=gMYIVksi0dFDz77rpt3nWQG/Hbw8CwsgDCQCdXqB5EaaSwfqyPDoUkkIn+fVol/cqY
+         cDGgxbrZhLnZPXuQA83VrLqd7pTwRKPNHhAL5Bsv5/el09cthmQCTntCO1HJQueo4NGw
+         MZsiM3G45ioDs0NOHOQtvFMecpMrrLNXTdDV4BaDPQ6Wu/oymVdc0U6lvrKhrOUjvnfT
+         34PRY4/+MCUCmpYugIvuBeSlZa1x8sjkhChoqv8VBSfFkDRK4yH2dKDOjQMtB1ne+hVL
+         DfUUInNw7nVWOlbGNRfRUrGYrt4ZyXJJf/K5McdInxStRKLcE3V1AYb8dz0pvJV+5900
+         6RHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U3/FZKx6L8Q08jTmbSx0oGLnqltCqMCplv25d8moljU=;
-        b=NwbK0BDBaaJ1WSggEGD7dZvj57sV/v3A5JYlYV0Dhgg/asT6TaWBwYXN9FZb8tIos4
-         7ayjGwgxK369LCWVW89P+wZuiK2h5G4sNasMyhMcd/X+d5c/etmKm/hwiImFP3O4uhmm
-         wcRoZzsO1XY67QXIqodeZni1ApT1q70TJObBlx/urKq+dbfi2fWx5W6kOV4tDnVWFy02
-         qeVteCwB/NgI/+TjA7ulHsqsO78+0LL7O/ftiDiIWlAwIn5Cfb1pvHiIeqFs/jascHtu
-         By3l230U7ioeUA9DoM5rIPOSvzwHSRhFrAGiZ7E0wtrjw5PcLgajtMj1wHzC1LVBqjOh
-         OCWg==
-X-Gm-Message-State: APjAAAUD+mQWGcvKFjtvGjELZggiLxjnqQOjl7jl3jtQHZP+ubeK/RJA
-        2NWABDCRBKRi9Y7G6DdjtdmC605iFVPQOsW+pwM=
-X-Google-Smtp-Source: APXvYqzk7d7tOyduB+JDH8H87neiv8iFZgKuquwpGZSjc9dOyBz2sz3EMKO/V53e0g7EMHtJePF9u28u4JurBClZnKU=
-X-Received: by 2002:adf:ec0e:: with SMTP id x14mr7787928wrn.270.1582948934331;
- Fri, 28 Feb 2020 20:02:14 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WPAzadvMLcFlPpBLWtaNTOLgIC32jAs7Hyvm5Qo9aW8=;
+        b=DCUT3uCDAKfLwkNj0z0IEQ1wzjqakklC436EDj5hnC45loxiJpS1cZJ/uSvYWy/5V7
+         Gedb4aB7a3fca6f/OVwjoQPwbFRjwS8EhzxyWUolv+dHAtnSUxW4aEOjL9P11C7mYxZC
+         9Z7jJoA66t24C1QmWd0QnKywJxkuTmmlzndmWBTgtZlOWFcYP4E1b25pnrL1cwVjCh8V
+         CL1e26I0+Ncffx7M3pEL3gxM8xMHNu5lncfPgTbVRdTkTu0HayBtgfmrmRtctwmSef+2
+         C5VRkyOt7owLK/Uf9rCJ8VV5NYBhxI3nHRlix75SfSQ0XOTy5gQDIRBhyRgLghpyz0wH
+         zAjw==
+X-Gm-Message-State: ANhLgQ37H07zzI90hjunUlXin3P44+uae8dn9ROiYDS2fPCTl7BzvyYi
+        ni7StP787/wL+XuwhbWS2R6jjxLeXkRRdljh2ngjOw==
+X-Google-Smtp-Source: ADFU+vt6oKs6+JrOJlA7O2Sr7BLob3BFsLEYA8mJcI1RDRo8bDVa90StvFpMiiCb/X4KU+KZRfFEsYiq05NFuSIYy6o=
+X-Received: by 2002:a19:ee0d:: with SMTP id g13mr4772580lfb.179.1582960766475;
+ Fri, 28 Feb 2020 23:19:26 -0800 (PST)
 MIME-Version: 1.0
-References: <6d87af76cc3c311647c961e2f94e026bb15869d8.1582556221.git.lucien.xin@gmail.com>
- <20200228135154.61960560@hermes.lan>
-In-Reply-To: <20200228135154.61960560@hermes.lan>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 29 Feb 2020 12:03:57 +0800
-Message-ID: <CADvbK_eR=s6ctXK7UwXCKddyeSDSRZx3Ok+qy_ZJ_4vxkXN9bA@mail.gmail.com>
-Subject: Re: [PATCH iproute2] xfrm: not try to delete ipcomp states when using deleteall
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
+References: <20200229070902.1294280-1-i@jsteward.moe>
+In-Reply-To: <20200229070902.1294280-1-i@jsteward.moe>
+From:   Pengcheng Xu <i@jsteward.moe>
+Date:   Sat, 29 Feb 2020 15:19:15 +0800
+Message-ID: <CADuippAvUXHH2Mjuxyz+9JFf-SR5j8itmRi5YvUJowmbVXR9Og@mail.gmail.com>
+Subject: Re: [PATCH] net: macb: add support for fixed-link
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 29, 2020 at 5:51 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+Sorry for forgetting to CC the mailing lists.  Adding them now.
+
+2020=E5=B9=B42=E6=9C=8829=E6=97=A5(=E5=9C=9F) 15:09 Pengcheng Xu <i@jstewar=
+d.moe>:
 >
-> On Mon, 24 Feb 2020 09:57:01 -0500
-> Xin Long <lucien.xin@gmail.com> wrote:
+> The Cadence macb driver did not support fixed-link PHYs.  This patch
+> adds support for fixed-link PHYs to the driver.
 >
-> > In kernel space, ipcomp(sub) states used by main states are not
-> > allowed to be deleted by users, they would be freed only when
-> > all main states are destroyed and no one uses them.
-> >
-> > In user space, ip xfrm sta deleteall doesn't filter these ipcomp
-> > states out, and it causes errors:
-> >
-> >   # ip xfrm state add src 192.168.0.1 dst 192.168.0.2 spi 0x1000 \
-> >       proto comp comp deflate mode tunnel sel src 192.168.0.1 dst \
-> >       192.168.0.2 proto gre
-> >   # ip xfrm sta deleteall
-> >   Failed to send delete-all request
-> >   : Operation not permitted
-> >
-> > This patch is to fix it by filtering ipcomp states with a check
-> > xsinfo->id.proto == IPPROTO_IPIP.
-> >
-> > Fixes: c7699875bee0 ("Import patch ipxfrm-20040707_2.diff")
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> The driver only checks if there's a valid PHY over MDIO, which is either
+> present as a device tree node, or (if absent) searched on the MDIO bus.
+> This patch detects if there is a `fixed-link` PHY instead of a regular
+> MDIO-attached PHY.  The device tree node of the MAC is checked for a
+> fixed-link PHY via `of_phy_is_fixed_link`, and, if so, the normal MDIO
+> register routine is skipped, and `of_phy_register_fixed_link` is
+> performed instead.
 >
+> The changes were borrowed from
+> drivers/net/ethernet/altera/altera_tse_main.c and tested to work on a
+> Xilinx Zynq UltraScale+ device.
 >
-> Wow that has been broken for a long time, does anyone use this?
-I don't know, it was just found in our testcase.
+> Signed-off-by: Pengcheng Xu <i@jsteward.moe>
+> ---
+>  drivers/net/ethernet/cadence/macb_main.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ether=
+net/cadence/macb_main.c
+> index 2c28da1737fe..fb359ce90ae4 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -744,6 +744,7 @@ static int macb_mdiobus_register(struct macb *bp)
+>
+>  static int macb_mii_init(struct macb *bp)
+>  {
+> +       struct device_node *np =3D bp->pdev->dev.of_node;
+>         int err =3D -ENXIO;
+>
+>         /* Enable management port */
+> @@ -765,9 +766,17 @@ static int macb_mii_init(struct macb *bp)
+>
+>         dev_set_drvdata(&bp->dev->dev, bp->mii_bus);
+>
+> -       err =3D macb_mdiobus_register(bp);
+> -       if (err)
+> -               goto err_out_free_mdiobus;
+> +       if (of_phy_is_fixed_link(np)) {
+> +               err =3D of_phy_register_fixed_link(np);
+> +               if (err) {
+> +                       netdev_err(bp->dev, "cannot register fixed-link P=
+HY\n");
+> +                       goto err_out_free_mdiobus;
+> +               }
+> +       } else {
+> +               err =3D macb_mdiobus_register(bp);
+> +               if (err)
+> +                       goto err_out_free_mdiobus;
+> +       }
+>
+>         err =3D macb_mii_probe(bp->dev);
+>         if (err)
+> --
+> 2.25.1
+>
