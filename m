@@ -2,73 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D87317484B
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 18:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EC611748B4
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 19:37:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbgB2RGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 12:06:52 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39846 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727176AbgB2RGw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Feb 2020 12:06:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=kvDszULOHU2THHkE1gFvbsX46BUGU952QWYH97S/Pzg=; b=Il+UOTDqA5c1PQLZvj5CipCZ0q
-        N2WADRXXFNz3ChvyHB1FfsTEGpQNebtYp4P7JE/7ZOHs8cGLsdkTdddtpk0UIIed747rI8xSzY7Mq
-        kAt0hBZ42MGrfdJxceCOKomRxAaSvzRSuNDqSnS4ueBD4y9unuVK6949+zL/Z8wGolpw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j85ZZ-000263-Su; Sat, 29 Feb 2020 18:06:41 +0100
-Date:   Sat, 29 Feb 2020 18:06:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: fix phylink_start()/phylink_stop() calls
-Message-ID: <20200229170641.GE6305@lunn.ch>
-References: <E1j7lU0-0003pp-Ff@rmk-PC.armlinux.org.uk>
- <20200229154215.GD6305@lunn.ch>
- <20200229164538.GB25745@shell.armlinux.org.uk>
+        id S1727465AbgB2Sh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 13:37:27 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:9959 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727258AbgB2Sh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 13:37:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1583001447; x=1614537447;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=a4XpAiRW79efX2H16U6R7uBPzIU8Gf3VZ+6fOrT8S+k=;
+  b=wC4FH/ZQkIV1mg4d6rTwHZ25p/+WeUzJevkVJcRb2a3dOMZp1BRFwhWF
+   1VkZMTxgCjEawH0yga49tkTuBARI6MpEUjLXZ/IZFwBsAEV9aB62pS5W8
+   I2PdJxVS8CyMVWpdr1hutp07WDCbUypASVgG1gZbsLHMQ4qouZjgOG2Ye
+   0=;
+IronPort-SDR: krO5D5pTU43OFz2wfENgD0XLbIev71adhQW3UI6rXMKUMQrsZd7pjZc++MBrCoWZ8iSrv88zME
+ AjUKmIeI6cBA==
+X-IronPort-AV: E=Sophos;i="5.70,500,1574121600"; 
+   d="scan'208";a="28311009"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 29 Feb 2020 18:37:26 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com (Postfix) with ESMTPS id 3D3A1A17C5;
+        Sat, 29 Feb 2020 18:37:25 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sat, 29 Feb 2020 18:37:24 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.173) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 29 Feb 2020 18:37:20 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
+        <osa-contribution-log@amazon.com>, <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 net-next 3/3] tcp: Prevent port hijacking when ports are exhausted.
+Date:   Sun, 1 Mar 2020 03:37:17 +0900
+Message-ID: <20200229183717.14616-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <CANn89i+m9yKkaVLUm9P8+gTSOMtvrJgsvHfKAjXCZ5_9Wf0-9w@mail.gmail.com>
+References: <CANn89i+m9yKkaVLUm9P8+gTSOMtvrJgsvHfKAjXCZ5_9Wf0-9w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200229164538.GB25745@shell.armlinux.org.uk>
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.173]
+X-ClientProxiedBy: EX13D34UWA001.ant.amazon.com (10.43.160.173) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell
-
-> > The current code in dsa_slave_open() first enables the port, then
-> > calls phylink_start(). So maybe we should keep the ordering the same?
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 26 Feb 2020 09:47:26 -0800
+> This changelog is rather confusing, and your patch does not solve this
+> precise problem.
+> Patch titles are important, you are claiming something, but I fail to
+> see how the patch solves the problem stated in the title.
 > 
-> However, dsa_port_setup() does it in the reverse order, so it was a
-> bit of guess work which is right.  So, if the port needs to be enabled
-> first, then the dsa_port_setup() path for DSA and CPU ports is wrong.
+> Please be more specific, and add tests officially, in tools/testing/selftests/
 > 
-> It's not clear what dsa_port_enable() actually does, and should a port
-> be enabled before its interface mode and link parameters have been
-> set?
+> 
+> > If both of SO_REUSEADDR and SO_REUSEPORT are enabled, the restriction of
+> > SO_REUSEPORT should be taken into account so that can only one socket be in
+> > TCP_LISTEN.
+> 
+> Sorry, I do not understand this. If I do not understand the sentence,
+> I do not read the patch
+> changing one piece of code that has been very often broken in the past.
+> 
+> Please spend time on the changelog to give the exact outcome and goals.
 
-Agreed, it is not clearly defined. port_enable()/port_disable() are
-mostly used for power saving. If a port is not used, it can be turned
-off.
+I am so sorry that I wrote the changelog roughly. I appreciate for your
+kind advice. I could rewrite more precise description of this issue and
+respin these patches with tests.
 
-Having phylink for DSA and CPU ports is a new thing. Slaves have
-always had phylib/phylink. So i think it would be safest to follow the
-order used for slave interfaces, enable the port first, then start
-phylink.
+  [PATCH v3 net-next 0/4] Improve bind(addr, 0) behaviour.
+  https://lore.kernel.org/netdev/20200229113554.78338-1-kuniyu@amazon.co.jp/
 
-We should probably also change the order for DSA and CPU ports so it
-is consistent.
-
-   Andrew
+Thank you so much!
