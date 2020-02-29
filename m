@@ -2,63 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F334B1743CF
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:33:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 760661743DB
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgB2Adl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 19:33:41 -0500
-Received: from mga12.intel.com ([192.55.52.136]:5255 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725957AbgB2Adl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Feb 2020 19:33:41 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Feb 2020 16:33:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,497,1574150400"; 
-   d="scan'208";a="232694615"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.87]) ([134.134.177.87])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Feb 2020 16:33:40 -0800
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>, Thomas Graf <tgraf@suug.ch>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Subject: ip link vf info truncating with many VFs
-Organization: Intel Corporation
-Message-ID: <16b289f6-b025-5dd3-443d-92d4c167e79c@intel.com>
-Date:   Fri, 28 Feb 2020 16:33:40 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726720AbgB2AlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 19:41:17 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.163]:21598 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726359AbgB2AlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:41:17 -0500
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 248119919
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:41:16 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 7qBwjRbKx8vkB7qBwjMICl; Fri, 28 Feb 2020 18:41:16 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=N/hhIq6iWRTBqUapgvxGTLwwi+HQloiivG28+tCAbEo=; b=Ww8/bVXSclbVP/+MIayGTzCmfS
+        xZBKuynEcQo5CgQKN18XhIp8Ohyxpypm9XYfr9aUiYjVzYAYIVLov0nD0fzzDV0Xl2UUnTWK5cjNi
+        3hfhXN83gSGatiNVgtabPW6FeIJJwgQB+KJFaEnn5X1WoGNkTwlF4c0LAZpUVhdKde/tSerMi6Tlj
+        ZlC8WyJvN88g2fws0JQlRwnHokd2aj2NSkTXNmrFvAysUhMkYGV2DxuDMoK57G9IcH10yPZJM3aCe
+        ebUQxj43Sqcrchdj4JQcWw9oI2r9Td9FFzXfccZ8DEobpfXrJVnOCsjSj2daUS1IbLY6A0W5ZlaYc
+        zNtLTykQ==;
+Received: from [200.39.15.57] (port=1520 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j7qBu-002qxf-5o; Fri, 28 Feb 2020 18:41:14 -0600
+Date:   Fri, 28 Feb 2020 18:44:10 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: ip6_route: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200229004410.GA8069@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 200.39.15.57
+X-Source-L: No
+X-Exim-ID: 1j7qBu-002qxf-5o
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [200.39.15.57]:1520
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 22
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-I recently noticed an issue in the rtnetlink API for obtaining VF
-information.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-If a device creates 222 or more VF devices, the rtnl_fill_vf function
-will incorrectly label the size of the IFLA_VFINFO_LIST attribute. This
-occurs because rtnl_fill_vfinfo will have added more than 65k (maximum
-size of a single attribute since nla_len is a __u16).
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-This causes the calculation in nla_nest_end to overflow and report a
-significantly shorter length value. Worse case, with 222 VFs, the "ip
-link show <device>" reports no VF info at all.
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-For some reason, the nla_put calls do not trigger an EMSGSIZE error,
-because the skb itself is capable of holding the data.
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
-I think the right thing is probably to do some sort of
-overflow-protected calculation and print a warning... or find a way to
-fix nla_put to error with -EMSGSIZE if we would exceed the nested
-attribute size limit... I am not sure how to do that at a glance.
+This issue was found with the help of Coccinelle.
 
-Thanks,
-Jake
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ include/net/ip6_route.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index b69c16cbbf71..f7543c095b33 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -16,7 +16,7 @@ struct route_info {
+ 				reserved_h:3;
+ #endif
+ 	__be32			lifetime;
+-	__u8			prefix[0];	/* 0,8 or 16 */
++	__u8			prefix[];	/* 0,8 or 16 */
+ };
+ 
+ #include <net/addrconf.h>
+-- 
+2.25.0
+
