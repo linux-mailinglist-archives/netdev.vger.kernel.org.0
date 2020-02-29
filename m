@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A7711749A7
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3A4A1749A3
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgB2W3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 17:29:53 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45204 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727637AbgB2W3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:36 -0500
-Received: by mail-wr1-f65.google.com with SMTP id v2so7723233wrp.12;
-        Sat, 29 Feb 2020 14:29:34 -0800 (PST)
+        id S1727706AbgB2W3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 17:29:39 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:36282 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727683AbgB2W3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:37 -0500
+Received: by mail-wm1-f68.google.com with SMTP id g83so4986254wme.1;
+        Sat, 29 Feb 2020 14:29:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HnjyZ2rP4r4R9QdkadbJqDIvo+cFcKMufZXST9ow+bc=;
-        b=OgxTpXc/q+X92Qj3X1cZMo0lx5igTtCtGdTurqDnTiaf1QFOKRRZOXyFXe2KFVyKhZ
-         2bR4To+kT3lsL3jev58Bj2lD2AJ3aAlFyNLELlArikgum1jVu5GomwH3es4sc/PA1NBi
-         /M40QJo7vPEGCs+9qjDxlnC1KVs6eNZ21+m3dx4zrebZOTa6/ORltkwWk4qVhxZsSw0T
-         1m7kFTQxzZUG6woTqAUMWue2voMASzwfGc4N3Je3yXAkMBorKSbVHFhwBPhnVD5laBYN
-         GiRSuXZC0i7pq9Oi0a+Wt6tmfOGcMvFNJ2WvxVjN7pyLucmUUHmX7tqklShFcK3UeKiq
-         6tHQ==
+        bh=ArTAv9akc7/LkDwjVGNvRKjk3sNTR9LtjKLQSrks0NI=;
+        b=KTjP3MnXb3IuC17bTkl0ejBvKT9Av9U/SFFskEbtdMsCVKLvXyFvSi+aOCBLj+zIDQ
+         q14C0rai6OSDkiCQCFm4nXrbLC4MNqQM4H59v2hZm7cU99aKVP11LSRCoHb8gc4df5JV
+         NZSt4dtNMS5U5j62NRFBH6+e14MEdEIRy0y3F28lNynncr8/IRqBabT0YYv03Zx8vG5Q
+         aJxCPgm89P4xXot19eR0FapPagr9vdMjBgoqHMub62EA4OCUX5dp5JWz9qUmm/ZELYlO
+         B10fGE+Vmz2OuMbEwwyMUwTiP82wOnK+I9DtyfIrtbxPVSEAHRiAkYWbGF2xIl3HS+i6
+         Syug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=HnjyZ2rP4r4R9QdkadbJqDIvo+cFcKMufZXST9ow+bc=;
-        b=YbM3w8D47X12/Q4tSPYDShqqcK6JXbdLtIwXrhE+XoRoGFBOQqfNFS/Iq+zXCCOW1C
-         /ozyv5j8ajx8ocCY5177IWZyxMAh2fOuZ2BI9gGhRNW6iewDYgro10D9CsumoP6zLxHg
-         2YVyRHzXsliibYE7tem406b4UWss+i6Ov1qAGmpWAu3QfpzMdqeAKhyqt45fCNo93/w6
-         UFqZjaqq4HZ+J4OJonVVgAV5tk/28mjM39jFCkX5OrPHPrG8bHPiIYAwrcHtRSUUXU7B
-         OkEtiPfQsn90G01lQuEuN5bJotU3L2x/uGYYp8TyS/0GLe/wQPDmSJj/ii3FelJPa4jk
-         5b6w==
-X-Gm-Message-State: ANhLgQ3mrHBdxN3WqOunMzzqig4+b1SKgK52plwhL0PVOjV6mB1J44Ds
-        JMXuaQQJ4bP3h5Q7CYS2nZk=
-X-Google-Smtp-Source: ADFU+vvnu0rLKBCTigw0gSq5LRERDVrun/+wOc0XCFZmlFglPZdGaovMBe8s6lwAq8kH1D8kB4DHFA==
-X-Received: by 2002:a5d:4d10:: with SMTP id z16mr2936727wrt.271.1583015374193;
-        Sat, 29 Feb 2020 14:29:34 -0800 (PST)
+        bh=ArTAv9akc7/LkDwjVGNvRKjk3sNTR9LtjKLQSrks0NI=;
+        b=E6mWfZMV2E9kFuJ8aBl923jS5c6LMo12S0qKtur2zIFtMNR/egANVZEiwERytWikvT
+         vz2jp+25l/v1nBVvoYfyy+3UzKMMXcMC0bWW4uXSF5Dv+FAR2OKkNX9wR1LzhWlhj2pR
+         o4NmBGBREyLsbCWflNhLi4rmN0B4u50Gg05yBqJqrcF3wU5EGJjwUySaIWSr1IkcuBHQ
+         eUipDqj4ajJyycZDQZYmh6LRSTBRl2tclDCN0dFSDWEOBnmH06MRANcohy41W1dA9bEK
+         8xgK6twmLQZKFw3vLyQWdf5ObN2SaiFurND3CJrvZ2LdR+zgcd4QFoBajaPGDTvA0k9r
+         Z/LA==
+X-Gm-Message-State: APjAAAX178ymRNX+c9Je9i/6wbrRMV4t4CC44jebkQ30KzlaNfcmZame
+        y3kG9F3pYanO3fLvh1mbhxM=
+X-Google-Smtp-Source: APXvYqz8zstsmbCwyCSgdDGDvjCyOgoD6VFSBh/oElf4FvZFQ/a9OG+ckjo41iEPN8XCm++cEHZ2Fg==
+X-Received: by 2002:a7b:cb46:: with SMTP id v6mr4613642wmj.0.1583015375725;
+        Sat, 29 Feb 2020 14:29:35 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:7150:76fe:91ca:7ab5? (p200300EA8F296000715076FE91CA7AB5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7150:76fe:91ca:7ab5])
-        by smtp.googlemail.com with ESMTPSA id j4sm7354174wrr.0.2020.02.29.14.29.33
+        by smtp.googlemail.com with ESMTPSA id e11sm18699606wrm.80.2020.02.29.14.29.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Feb 2020 14:29:33 -0800 (PST)
-Subject: [PATCH v4 09/10] PCI: pci-bridge-emul: Use new constant
- PCI_STATUS_ERROR_BITS
+        Sat, 29 Feb 2020 14:29:35 -0800 (PST)
+Subject: [PATCH v4 10/10] sound: bt87x: use pci_status_get_and_clear_errors
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
@@ -60,8 +59,8 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         alsa-devel@alsa-project.org
 References: <adeb9e6e-9be6-317f-3fc0-a4e6e6af5f81@gmail.com>
-Message-ID: <04851614-b906-2b1b-f937-189c3c210880@gmail.com>
-Date:   Sat, 29 Feb 2020 23:28:18 +0100
+Message-ID: <6362e866-9ce3-31f5-3357-9f086eedf11e@gmail.com>
+Date:   Sat, 29 Feb 2020 23:29:07 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -74,45 +73,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use new constant PCI_STATUS_ERROR_BITS to simplify the code.
+Use new helper pci_status_get_and_clear_errors() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/pci/pci-bridge-emul.c | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+ sound/pci/bt87x.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/pci/pci-bridge-emul.c b/drivers/pci/pci-bridge-emul.c
-index fffa77093..4f4f54bc7 100644
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -50,12 +50,7 @@ static const struct pci_bridge_reg_behavior pci_regs_behavior[] = {
- 		       (PCI_STATUS_CAP_LIST | PCI_STATUS_66MHZ |
- 			PCI_STATUS_FAST_BACK | PCI_STATUS_DEVSEL_MASK) << 16),
- 		.rsvd = GENMASK(15, 10) | ((BIT(6) | GENMASK(3, 0)) << 16),
--		.w1c = (PCI_STATUS_PARITY |
--			PCI_STATUS_SIG_TARGET_ABORT |
--			PCI_STATUS_REC_TARGET_ABORT |
--			PCI_STATUS_REC_MASTER_ABORT |
--			PCI_STATUS_SIG_SYSTEM_ERROR |
--			PCI_STATUS_DETECTED_PARITY) << 16,
-+		.w1c = PCI_STATUS_ERROR_BITS << 16,
- 	},
- 	[PCI_CLASS_REVISION / 4] = { .ro = ~0 },
+diff --git a/sound/pci/bt87x.c b/sound/pci/bt87x.c
+index 8c48864c8..656750466 100644
+--- a/sound/pci/bt87x.c
++++ b/sound/pci/bt87x.c
+@@ -271,13 +271,8 @@ static void snd_bt87x_free_risc(struct snd_bt87x *chip)
  
-@@ -100,12 +95,7 @@ static const struct pci_bridge_reg_behavior pci_regs_behavior[] = {
- 			 PCI_STATUS_DEVSEL_MASK) << 16) |
- 		       GENMASK(11, 8) | GENMASK(3, 0)),
+ static void snd_bt87x_pci_error(struct snd_bt87x *chip, unsigned int status)
+ {
+-	u16 pci_status;
++	int pci_status = pci_status_get_and_clear_errors(chip->pci);
  
--		.w1c = (PCI_STATUS_PARITY |
--			PCI_STATUS_SIG_TARGET_ABORT |
--			PCI_STATUS_REC_TARGET_ABORT |
--			PCI_STATUS_REC_MASTER_ABORT |
--			PCI_STATUS_SIG_SYSTEM_ERROR |
--			PCI_STATUS_DETECTED_PARITY) << 16,
-+		.w1c = PCI_STATUS_ERROR_BITS << 16,
- 
- 		.rsvd = ((BIT(6) | GENMASK(4, 0)) << 16),
- 	},
+-	pci_read_config_word(chip->pci, PCI_STATUS, &pci_status);
+-	pci_status &= PCI_STATUS_PARITY | PCI_STATUS_SIG_TARGET_ABORT |
+-		PCI_STATUS_REC_TARGET_ABORT | PCI_STATUS_REC_MASTER_ABORT |
+-		PCI_STATUS_SIG_SYSTEM_ERROR | PCI_STATUS_DETECTED_PARITY;
+-	pci_write_config_word(chip->pci, PCI_STATUS, pci_status);
+ 	if (pci_status != PCI_STATUS_DETECTED_PARITY)
+ 		dev_err(chip->card->dev,
+ 			"Aieee - PCI error! status %#08x, PCI status %#04x\n",
 -- 
 2.25.1
 
