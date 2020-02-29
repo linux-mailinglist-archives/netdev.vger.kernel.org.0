@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C40BE174404
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2173B17440A
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 02:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgB2A5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 19:57:48 -0500
-Received: from gateway23.websitewelcome.com ([192.185.49.180]:45024 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726621AbgB2A5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:57:46 -0500
+        id S1726773AbgB2BAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 20:00:00 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.163]:20111 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726418AbgB2BAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 20:00:00 -0500
 Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 56563FCB5A
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:57:45 -0600 (CST)
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 57E54B4D65
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:59:59 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 7qRtjdL6oAGTX7qRtjmCKN; Fri, 28 Feb 2020 18:57:45 -0600
+        id 7qU3jdMVXAGTX7qU3jmDi7; Fri, 28 Feb 2020 18:59:59 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,25 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5zJGKP6eSAdHRVVreVQHGM36vc/G0+uFEcDovAOw10k=; b=vSgabok4xn8RNfrUuKOQZ4yqmr
-        VmOjEEtxyoillPI5x+Gl59KPmauCOPhea93zjwfmBWe+nmrigx7bzu9SPqeCB2QjrQsKgnG4b8lgS
-        clcgerM68QKiY+68JCxAOMySSqboKZjPy1ViqfHpeH8Kvj156DRbMjURKAoDHz5h6sNk/QJAWNDBi
-        Vhto7Bqtjg9sp9GlDItiGS2sY/t2AjfB9kvwGXwOwVElLeNgOlpO1ebbcmPnf+vY5EWhpZmmRYq3H
-        D4SQXSXTYa3lxQARmRHpRG94cU/ReXXwDwMg3CMwi6/KzfhWdwT/fuYv/yOCpETUAEoox4L+woBrQ
-        PniqWdug==;
-Received: from [200.39.15.57] (port=13359 helo=embeddedor)
+        bh=09qBJCuV/qfG9uVAPQck4bm+6ufBYKRI0cgJkKY3QlE=; b=TsGPF8Ib7thdSZ5hUAKHUjEtl1
+        7G/Y+oqHWJBnFwf7tiD7GazelZ/06uaJjjdPxiNCQWF0mab4VIWCrDaG2YMuJcDkZewT2CoQwRZRA
+        Y7k5RQOLAru1+DyYYfYWW8kQoEGOAX4VhT2FmVQFWSJaZtwD5I261dwJ8PWDOrq8GyhJ+VTBc4Vsr
+        7Ig0jxIRUNkdESYJ6ej/VU2nBUyRg/8Ke3TfFGQld1ZgBhYiVFdc69Qo+vkbZZWhQVefhnooDfsel
+        OFO+RVFGV1+scG3Vo8G4rG8i8wjI9s+cMQ2kNnfVdr728IwYeFJLJly8YQl3uPbNAXFj2FuScIR5Z
+        wcJV1Ajg==;
+Received: from [200.39.15.57] (port=20013 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j7qRr-002y0f-O0; Fri, 28 Feb 2020 18:57:43 -0600
-Date:   Fri, 28 Feb 2020 19:00:40 -0600
+        id 1j7qU1-002yoq-Gw; Fri, 28 Feb 2020 18:59:57 -0600
+Date:   Fri, 28 Feb 2020 19:02:54 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: dn_fib: Replace zero-length array with
+Subject: [PATCH][next] net: flow_offload: Replace zero-length array with
  flexible-array member
-Message-ID: <20200229010040.GA9287@embeddedor>
+Message-ID: <20200229010254.GA9547@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -55,13 +55,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.39.15.57
 X-Source-L: No
-X-Exim-ID: 1j7qRr-002y0f-O0
+X-Exim-ID: 1j7qU1-002yoq-Gw
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.39.15.57]:13359
+X-Source-Sender: (embeddedor) [200.39.15.57]:20013
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 38
+X-Email-Count: 42
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -99,22 +99,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/net/dn_fib.h | 2 +-
+ include/net/flow_offload.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/dn_fib.h b/include/net/dn_fib.h
-index 6dd2213c5eb2..ccc6e9df178b 100644
---- a/include/net/dn_fib.h
-+++ b/include/net/dn_fib.h
-@@ -90,7 +90,7 @@ struct dn_fib_table {
- 	int (*flush)(struct dn_fib_table *t);
- 	int (*dump)(struct dn_fib_table *t, struct sk_buff *skb, struct netlink_callback *cb);
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 4e864c34a1b0..cd3510ac66b0 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -229,7 +229,7 @@ struct flow_action_entry {
  
--	unsigned char data[0];
-+	unsigned char data[];
+ struct flow_action {
+ 	unsigned int			num_entries;
+-	struct flow_action_entry 	entries[0];
++	struct flow_action_entry	entries[];
  };
  
- #ifdef CONFIG_DECNET_ROUTER
+ static inline bool flow_action_has_entries(const struct flow_action *action)
 -- 
 2.25.0
 
