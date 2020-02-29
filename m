@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F5C1749A1
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8DA01749A0
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727445AbgB2W3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 17:29:36 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36883 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727518AbgB2W3e (ORCPT
+        id S1727661AbgB2W3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 17:29:35 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:39612 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727445AbgB2W3e (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:34 -0500
-Received: by mail-wr1-f65.google.com with SMTP id l5so7805651wrx.4;
-        Sat, 29 Feb 2020 14:29:32 -0800 (PST)
+Received: by mail-wr1-f68.google.com with SMTP id y17so7803871wrn.6;
+        Sat, 29 Feb 2020 14:29:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jVYqGE3zFQNBfIcS/dkWQZWOWyucD3CajAp6Ynd+Hzk=;
-        b=OaATaKOfIaajcpbpgibKbkpwskhmu50Vjjtlx2EirgUo5PV1p5HL+/rxdUohgs5iZY
-         A8oIht778UYbAlaUXkTCmf//DoQnHtIepIR3OvL9Jirl/sXhOgqtAk09MGrtxgbUsUiK
-         b4BpBIqXGvtrb+5Bt0mz24l5kOqniJIzXCwrR/sIlUgInT9DImbycfK3K6nNJIdUB59n
-         gzkNJ5KejFTsGlpy3Pp4nM3xZF/OhO5wZCg7S6vt+RNkuOkZllGWGCaIrvmtimXxfu7s
-         jkO+ccPv8WUy4Gho96D33awi8wM+ejiuuilJcsjlYp3uPQEOx4lFku456WeLbKWGx5QM
-         vjHg==
+        bh=3oxaHy7GUp3VvIUdefqSTFgeBUI+Ntzm5rsd6wjLj2E=;
+        b=XeT3zQv8D4p9/s7KFaC2XLvJIa0Y4bgNxvat+uiOPGGcra6jfHBmxfPbJeQOwtxl/T
+         VBoYIZUDJsR/XrnZcFYYGbKNo76X8n8p3yUsPpyF8MEfvLeL6eUWRHiaSL/HsDv5EZDo
+         ZXWTAq4le1YCxxzPz0mbC6JUB/Y/W8mELLXy672tU/vI7ASLGohQeHxbCKGv/kErMkzo
+         5O6ELKUlcs15++amA5vkc2bCkUftYfRJa/iWc42t5WN66u8OiYMpiR3Q0lApQ/a36eAj
+         HcJVUsBFomdYIGEqQzMr/v8iRP2D63UBloX+zJMQjGRbQyTYDSJGl0QcF7se85Fw+pcW
+         VEEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jVYqGE3zFQNBfIcS/dkWQZWOWyucD3CajAp6Ynd+Hzk=;
-        b=fmMxIzUFdziyLo9WcJrCrFoV8g6RX2P7Q2A4GxaOQvOd+iCb78gQNS+BWJQ0QU+e1i
-         LjdD5HA9yIp3eUTNPoDbHd25fA8CRYjAP6yh5J3Ir+vwhRQkJEqxV2yNa/aV6EzRWuID
-         qIMvSr7eycMItoNFPCOgnLX+dS37j0J/L3IWOS2J7MYzIKSU36c/DcBk418lAfqv5pHi
-         h1p4pPqELPR7jOZxn1likHxIsqfqDexRDbsvj9eOkI7lgbGb+sKpUBSr6NnusjVSIqkg
-         IXOf7QDg2oNcoz1hvGBvDNmUmUuJtVSTzKW3KqiU7tE6Z2G9kHtHPPgbxZAUYey7ih2o
-         p+2w==
-X-Gm-Message-State: APjAAAU+14ClTHNuP1drys5lsBaWZbljK74RPR7z6eGrBJwP/pEzyHyq
-        VfMvZ3lV9nX/kmepBkQ32aI=
-X-Google-Smtp-Source: APXvYqzl/hXV0qSgKwkh/YikHZvhUeSMY6k/AO3khueq4Xn4PyW7j2eWXvjgOcfRyRaKxbbmWmPRXA==
-X-Received: by 2002:adf:ff84:: with SMTP id j4mr7958780wrr.426.1583015371300;
-        Sat, 29 Feb 2020 14:29:31 -0800 (PST)
+        bh=3oxaHy7GUp3VvIUdefqSTFgeBUI+Ntzm5rsd6wjLj2E=;
+        b=dq7oyKwE2IbcMLozP4XOm7kP5nii9eTstNEhZqlihMFCz0nky7sJLMGDAeTUW6Dgh3
+         8mNIY0UmOTODcSxddkDK8KldRdIuhI67j/HxllPfr+cbSIEoBZQ3NTtFEzvcPK7D2/tZ
+         JoNTrmNMAM6S1Y8mGRw6HqbQo9iKoHsVmVCe8uLdU16mhx4gnn3ctOgkmVCmsd/ckchy
+         Lejhz4wDgZrJRog3ad5VV1nx7x3bvOzr8lhj1KqvBszjtfXuvFDPuGOTneVr45pn0YHB
+         QN17ziIqOSsOmT1OqwV1kZf7mzdoNLOKHv9aiggpkABi8w5gFKDbA4kSwA2LnDnE2fMD
+         mzJA==
+X-Gm-Message-State: APjAAAVKSYZxECil6O2/jgrbQ3gjPO5PBXR6pQRisuR0wXLcBQJUeaob
+        5PPeYqPOMTyOKGEwaVbvP2U=
+X-Google-Smtp-Source: APXvYqzk7VrcL96l5dY+NPmzgSag4xUmdFPBQ59DKdg5xfhQIEdG89bjaM6n1y0fvBLJqx46WzfhCw==
+X-Received: by 2002:adf:edd0:: with SMTP id v16mr12853225wro.357.1583015372768;
+        Sat, 29 Feb 2020 14:29:32 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:7150:76fe:91ca:7ab5? (p200300EA8F296000715076FE91CA7AB5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7150:76fe:91ca:7ab5])
-        by smtp.googlemail.com with ESMTPSA id b21sm8012210wmd.37.2020.02.29.14.29.30
+        by smtp.googlemail.com with ESMTPSA id c11sm18770976wrp.51.2020.02.29.14.29.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Feb 2020 14:29:30 -0800 (PST)
-Subject: [PATCH v4 07/10] net: sun: use pci_status_get_and_clear_errors
+        Sat, 29 Feb 2020 14:29:32 -0800 (PST)
+Subject: [PATCH v4 08/10] net: skfp: use new constant PCI_STATUS_ERROR_BITS
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
@@ -59,8 +59,8 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         alsa-devel@alsa-project.org
 References: <adeb9e6e-9be6-317f-3fc0-a4e6e6af5f81@gmail.com>
-Message-ID: <f2b690d8-bae5-6172-7f8c-1fe9b9e8e421@gmail.com>
-Date:   Sat, 29 Feb 2020 23:26:49 +0100
+Message-ID: <bd47367e-45f2-96e3-a5b6-b63471c946b7@gmail.com>
+Date:   Sat, 29 Feb 2020 23:27:34 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -73,114 +73,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use new helper pci_status_get_and_clear_errors() to simplify the code.
+Use new PCI core constant PCI_STATUS_ERROR_BITS to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/sun/cassini.c | 28 ++++++++++------------------
- drivers/net/ethernet/sun/sungem.c  | 30 +++++++++---------------------
- 2 files changed, 19 insertions(+), 39 deletions(-)
+ drivers/net/fddi/skfp/drvfbi.c  | 4 ++--
+ drivers/net/fddi/skfp/h/skfbi.h | 5 -----
+ 2 files changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index 6ec9163e2..e6d1aa882 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -1716,34 +1716,26 @@ static int cas_pci_interrupt(struct net_device *dev, struct cas *cp,
- 	pr_cont("\n");
+diff --git a/drivers/net/fddi/skfp/drvfbi.c b/drivers/net/fddi/skfp/drvfbi.c
+index 9c8aa3a95..cc9ac5724 100644
+--- a/drivers/net/fddi/skfp/drvfbi.c
++++ b/drivers/net/fddi/skfp/drvfbi.c
+@@ -20,7 +20,7 @@
+ #include "h/supern_2.h"
+ #include "h/skfbiinc.h"
+ #include <linux/bitrev.h>
+-#include <linux/pci_regs.h>
++#include <linux/pci.h>
  
- 	if (stat & PCI_ERR_OTHER) {
--		u16 cfg;
-+		int pci_errs;
+ #ifndef	lint
+ static const char ID_sccs[] = "@(#)drvfbi.c	1.63 99/02/11 (C) SK " ;
+@@ -112,7 +112,7 @@ static void card_start(struct s_smc *smc)
+ 	 */
+ 	outp(ADDR(B0_TST_CTRL), TST_CFG_WRITE_ON) ;	/* enable for writes */
+ 	word = inpw(PCI_C(PCI_STATUS)) ;
+-	outpw(PCI_C(PCI_STATUS), word | PCI_ERRBITS) ;
++	outpw(PCI_C(PCI_STATUS), word | PCI_STATUS_ERROR_BITS);
+ 	outp(ADDR(B0_TST_CTRL), TST_CFG_WRITE_OFF) ;	/* disable writes */
  
- 		/* Interrogate PCI config space for the
- 		 * true cause.
- 		 */
--		pci_read_config_word(cp->pdev, PCI_STATUS, &cfg);
--		netdev_err(dev, "Read PCI cfg space status [%04x]\n", cfg);
--		if (cfg & PCI_STATUS_PARITY)
-+		pci_errs = pci_status_get_and_clear_errors(cp->pdev);
-+
-+		netdev_err(dev, "PCI status errors[%04x]\n", pci_errs);
-+		if (pci_errs & PCI_STATUS_PARITY)
- 			netdev_err(dev, "PCI parity error detected\n");
--		if (cfg & PCI_STATUS_SIG_TARGET_ABORT)
-+		if (pci_errs & PCI_STATUS_SIG_TARGET_ABORT)
- 			netdev_err(dev, "PCI target abort\n");
--		if (cfg & PCI_STATUS_REC_TARGET_ABORT)
-+		if (pci_errs & PCI_STATUS_REC_TARGET_ABORT)
- 			netdev_err(dev, "PCI master acks target abort\n");
--		if (cfg & PCI_STATUS_REC_MASTER_ABORT)
-+		if (pci_errs & PCI_STATUS_REC_MASTER_ABORT)
- 			netdev_err(dev, "PCI master abort\n");
--		if (cfg & PCI_STATUS_SIG_SYSTEM_ERROR)
-+		if (pci_errs & PCI_STATUS_SIG_SYSTEM_ERROR)
- 			netdev_err(dev, "PCI system error SERR#\n");
--		if (cfg & PCI_STATUS_DETECTED_PARITY)
-+		if (pci_errs & PCI_STATUS_DETECTED_PARITY)
- 			netdev_err(dev, "PCI parity error\n");
+ 	/*
+diff --git a/drivers/net/fddi/skfp/h/skfbi.h b/drivers/net/fddi/skfp/h/skfbi.h
+index 36e20a514..ccee00b71 100644
+--- a/drivers/net/fddi/skfp/h/skfbi.h
++++ b/drivers/net/fddi/skfp/h/skfbi.h
+@@ -33,11 +33,6 @@
+  */
+ #define I2C_ADDR_VPD	0xA0	/* I2C address for the VPD EEPROM */ 
+ 
 -
--		/* Write the error bits back to clear them. */
--		cfg &= (PCI_STATUS_PARITY |
--			PCI_STATUS_SIG_TARGET_ABORT |
--			PCI_STATUS_REC_TARGET_ABORT |
--			PCI_STATUS_REC_MASTER_ABORT |
--			PCI_STATUS_SIG_SYSTEM_ERROR |
--			PCI_STATUS_DETECTED_PARITY);
--		pci_write_config_word(cp->pdev, PCI_STATUS, cfg);
- 	}
- 
- 	/* For all PCI errors, we should reset the chip. */
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 8358064fb..2d392a7b1 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -545,37 +545,25 @@ static int gem_pci_interrupt(struct net_device *dev, struct gem *gp, u32 gem_sta
- 	}
- 
- 	if (pci_estat & GREG_PCIESTAT_OTHER) {
--		u16 pci_cfg_stat;
-+		int pci_errs;
- 
- 		/* Interrogate PCI config space for the
- 		 * true cause.
- 		 */
--		pci_read_config_word(gp->pdev, PCI_STATUS,
--				     &pci_cfg_stat);
--		netdev_err(dev, "Read PCI cfg space status [%04x]\n",
--			   pci_cfg_stat);
--		if (pci_cfg_stat & PCI_STATUS_PARITY)
-+		pci_errs = pci_status_get_and_clear_errors(gp->pdev);
-+		netdev_err(dev, "PCI status errors[%04x]\n", pci_errs);
-+		if (pci_errs & PCI_STATUS_PARITY)
- 			netdev_err(dev, "PCI parity error detected\n");
--		if (pci_cfg_stat & PCI_STATUS_SIG_TARGET_ABORT)
-+		if (pci_errs & PCI_STATUS_SIG_TARGET_ABORT)
- 			netdev_err(dev, "PCI target abort\n");
--		if (pci_cfg_stat & PCI_STATUS_REC_TARGET_ABORT)
-+		if (pci_errs & PCI_STATUS_REC_TARGET_ABORT)
- 			netdev_err(dev, "PCI master acks target abort\n");
--		if (pci_cfg_stat & PCI_STATUS_REC_MASTER_ABORT)
-+		if (pci_errs & PCI_STATUS_REC_MASTER_ABORT)
- 			netdev_err(dev, "PCI master abort\n");
--		if (pci_cfg_stat & PCI_STATUS_SIG_SYSTEM_ERROR)
-+		if (pci_errs & PCI_STATUS_SIG_SYSTEM_ERROR)
- 			netdev_err(dev, "PCI system error SERR#\n");
--		if (pci_cfg_stat & PCI_STATUS_DETECTED_PARITY)
-+		if (pci_errs & PCI_STATUS_DETECTED_PARITY)
- 			netdev_err(dev, "PCI parity error\n");
+-#define PCI_ERRBITS	(PCI_STATUS_DETECTED_PARITY | PCI_STATUS_SIG_SYSTEM_ERROR | PCI_STATUS_REC_MASTER_ABORT | PCI_STATUS_REC_TARGET_ABORT | PCI_STATUS_SIG_TARGET_ABORT | PCI_STATUS_PARITY)
 -
--		/* Write the error bits back to clear them. */
--		pci_cfg_stat &= (PCI_STATUS_PARITY |
--				 PCI_STATUS_SIG_TARGET_ABORT |
--				 PCI_STATUS_REC_TARGET_ABORT |
--				 PCI_STATUS_REC_MASTER_ABORT |
--				 PCI_STATUS_SIG_SYSTEM_ERROR |
--				 PCI_STATUS_DETECTED_PARITY);
--		pci_write_config_word(gp->pdev,
--				      PCI_STATUS, pci_cfg_stat);
- 	}
- 
- 	/* For all PCI errors, we should reset the chip. */
+-
+-
+ /*
+  *	Control Register File:
+  *	Bank 0
 -- 
 2.25.1
 
