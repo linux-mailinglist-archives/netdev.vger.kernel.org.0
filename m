@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A4A1749A3
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A85091749F4
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 00:11:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727706AbgB2W3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 17:29:39 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36282 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727683AbgB2W3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:37 -0500
-Received: by mail-wm1-f68.google.com with SMTP id g83so4986254wme.1;
-        Sat, 29 Feb 2020 14:29:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ArTAv9akc7/LkDwjVGNvRKjk3sNTR9LtjKLQSrks0NI=;
-        b=KTjP3MnXb3IuC17bTkl0ejBvKT9Av9U/SFFskEbtdMsCVKLvXyFvSi+aOCBLj+zIDQ
-         q14C0rai6OSDkiCQCFm4nXrbLC4MNqQM4H59v2hZm7cU99aKVP11LSRCoHb8gc4df5JV
-         NZSt4dtNMS5U5j62NRFBH6+e14MEdEIRy0y3F28lNynncr8/IRqBabT0YYv03Zx8vG5Q
-         aJxCPgm89P4xXot19eR0FapPagr9vdMjBgoqHMub62EA4OCUX5dp5JWz9qUmm/ZELYlO
-         B10fGE+Vmz2OuMbEwwyMUwTiP82wOnK+I9DtyfIrtbxPVSEAHRiAkYWbGF2xIl3HS+i6
-         Syug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ArTAv9akc7/LkDwjVGNvRKjk3sNTR9LtjKLQSrks0NI=;
-        b=E6mWfZMV2E9kFuJ8aBl923jS5c6LMo12S0qKtur2zIFtMNR/egANVZEiwERytWikvT
-         vz2jp+25l/v1nBVvoYfyy+3UzKMMXcMC0bWW4uXSF5Dv+FAR2OKkNX9wR1LzhWlhj2pR
-         o4NmBGBREyLsbCWflNhLi4rmN0B4u50Gg05yBqJqrcF3wU5EGJjwUySaIWSr1IkcuBHQ
-         eUipDqj4ajJyycZDQZYmh6LRSTBRl2tclDCN0dFSDWEOBnmH06MRANcohy41W1dA9bEK
-         8xgK6twmLQZKFw3vLyQWdf5ObN2SaiFurND3CJrvZ2LdR+zgcd4QFoBajaPGDTvA0k9r
-         Z/LA==
-X-Gm-Message-State: APjAAAX178ymRNX+c9Je9i/6wbrRMV4t4CC44jebkQ30KzlaNfcmZame
-        y3kG9F3pYanO3fLvh1mbhxM=
-X-Google-Smtp-Source: APXvYqz8zstsmbCwyCSgdDGDvjCyOgoD6VFSBh/oElf4FvZFQ/a9OG+ckjo41iEPN8XCm++cEHZ2Fg==
-X-Received: by 2002:a7b:cb46:: with SMTP id v6mr4613642wmj.0.1583015375725;
-        Sat, 29 Feb 2020 14:29:35 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:7150:76fe:91ca:7ab5? (p200300EA8F296000715076FE91CA7AB5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7150:76fe:91ca:7ab5])
-        by smtp.googlemail.com with ESMTPSA id e11sm18699606wrm.80.2020.02.29.14.29.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Feb 2020 14:29:35 -0800 (PST)
-Subject: [PATCH v4 10/10] sound: bt87x: use pci_status_get_and_clear_errors
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        alsa-devel@alsa-project.org
-References: <adeb9e6e-9be6-317f-3fc0-a4e6e6af5f81@gmail.com>
-Message-ID: <6362e866-9ce3-31f5-3357-9f086eedf11e@gmail.com>
-Date:   Sat, 29 Feb 2020 23:29:07 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727459AbgB2XLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 18:11:21 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:61596 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726786AbgB2XLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 18:11:21 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01TN5hgS016646
+        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 15:11:20 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=P1R6PlcUBhbW7iFB1PDhfa3Wd08SJbxVdl+ijmv4BMc=;
+ b=B7raW3U++2pPpLXFPqehlZSFItV11YEHOdmLXuPn0Z0ed7ZYXhSJ1+VWUfb1HIQPpXYH
+ CMlU9iteKA4IYIYApOkwZoDY93JHgTuIYDiGhn9wOa2ge2VDJfr88z6Yfcfb2VJvmZoD
+ v85VKHA/xp2ia4FQ21PxtzMX2Fy/qBq8wgI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yfpjv9tgs-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 15:11:20 -0800
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Sat, 29 Feb 2020 15:11:19 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id AEB902EC2C66; Sat, 29 Feb 2020 15:11:14 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/4] Move BPF_PROG, BPF_KPROBE, and BPF_KRETPROBE to libbpf
+Date:   Sat, 29 Feb 2020 15:11:08 -0800
+Message-ID: <20200229231112.1240137-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <adeb9e6e-9be6-317f-3fc0-a4e6e6af5f81@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-29_09:2020-02-28,2020-02-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ mlxlogscore=783 suspectscore=0 adultscore=0 priorityscore=1501 bulkscore=0
+ mlxscore=0 spamscore=0 impostorscore=0 phishscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002290180
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use new helper pci_status_get_and_clear_errors() to simplify the code.
+Move BPF_PROG, BPF_KPROBE, and BPF_KRETPROBE helper macros from private
+selftests helpers to public libbpf ones. These helpers are extremely helpful
+for writing tracing BPF applications and have been requested to be exposed for
+easy use (e.g., [0]).
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- sound/pci/bt87x.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+As part of this move, fix up BPF_KRETPROBE to not allow for capturing input
+arguments (as it's unreliable and they will be often clobbered). Also, add
+vmlinux.h header guard to allow multi-time inclusion, if necessary; but also
+to let PT_REGS_PARM do proper detection of struct pt_regs field names on x86
+arch. See relevant patches for more details.
 
-diff --git a/sound/pci/bt87x.c b/sound/pci/bt87x.c
-index 8c48864c8..656750466 100644
---- a/sound/pci/bt87x.c
-+++ b/sound/pci/bt87x.c
-@@ -271,13 +271,8 @@ static void snd_bt87x_free_risc(struct snd_bt87x *chip)
- 
- static void snd_bt87x_pci_error(struct snd_bt87x *chip, unsigned int status)
- {
--	u16 pci_status;
-+	int pci_status = pci_status_get_and_clear_errors(chip->pci);
- 
--	pci_read_config_word(chip->pci, PCI_STATUS, &pci_status);
--	pci_status &= PCI_STATUS_PARITY | PCI_STATUS_SIG_TARGET_ABORT |
--		PCI_STATUS_REC_TARGET_ABORT | PCI_STATUS_REC_MASTER_ABORT |
--		PCI_STATUS_SIG_SYSTEM_ERROR | PCI_STATUS_DETECTED_PARITY;
--	pci_write_config_word(chip->pci, PCI_STATUS, pci_status);
- 	if (pci_status != PCI_STATUS_DETECTED_PARITY)
- 		dev_err(chip->card->dev,
- 			"Aieee - PCI error! status %#08x, PCI status %#04x\n",
+  [0] https://github.com/iovisor/bcc/pull/2778#issue-381642907
+
+Andrii Nakryiko (4):
+  bpftool: add header guards to generated vmlinux.h
+  libbpf: fix use of PT_REGS_PARM macros with vmlinux.h
+  selftests/bpf: fix BPF_KRETPROBE macro and use it in attach_probe test
+  libbpf: merge selftests' bpf_trace_helpers.h into libbpf's
+    bpf_tracing.h
+
+ tools/bpf/bpftool/btf.c                       |   5 +
+ tools/lib/bpf/bpf_tracing.h                   | 120 +++++++++++++++++-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |   2 +-
+ .../testing/selftests/bpf/bpf_trace_helpers.h | 120 ------------------
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c |   2 +-
+ .../testing/selftests/bpf/progs/fentry_test.c |   2 +-
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |   2 +-
+ .../bpf/progs/fexit_bpf2bpf_simple.c          |   2 +-
+ .../testing/selftests/bpf/progs/fexit_test.c  |   2 +-
+ tools/testing/selftests/bpf/progs/kfree_skb.c |   2 +-
+ .../selftests/bpf/progs/test_attach_probe.c   |   3 +-
+ .../selftests/bpf/progs/test_overhead.c       |   7 +-
+ .../selftests/bpf/progs/test_perf_branches.c  |   2 +-
+ .../selftests/bpf/progs/test_perf_buffer.c    |   2 +-
+ .../selftests/bpf/progs/test_probe_user.c     |   1 -
+ .../bpf/progs/test_trampoline_count.c         |   3 +-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ 17 files changed, 140 insertions(+), 139 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/bpf_trace_helpers.h
+
 -- 
-2.25.1
-
+2.17.1
 
