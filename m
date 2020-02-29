@@ -2,121 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FFCF174580
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 08:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C51174586
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 08:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgB2HTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 02:19:30 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:43023 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbgB2HTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 02:19:30 -0500
-Received: by mail-lf1-f66.google.com with SMTP id s23so3777101lfs.10
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 23:19:27 -0800 (PST)
+        id S1726671AbgB2HkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 02:40:10 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39792 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgB2HkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 02:40:10 -0500
+Received: by mail-wm1-f66.google.com with SMTP id c84so5732911wme.4
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 23:40:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jsteward.moe; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WPAzadvMLcFlPpBLWtaNTOLgIC32jAs7Hyvm5Qo9aW8=;
-        b=gMYIVksi0dFDz77rpt3nWQG/Hbw8CwsgDCQCdXqB5EaaSwfqyPDoUkkIn+fVol/cqY
-         cDGgxbrZhLnZPXuQA83VrLqd7pTwRKPNHhAL5Bsv5/el09cthmQCTntCO1HJQueo4NGw
-         MZsiM3G45ioDs0NOHOQtvFMecpMrrLNXTdDV4BaDPQ6Wu/oymVdc0U6lvrKhrOUjvnfT
-         34PRY4/+MCUCmpYugIvuBeSlZa1x8sjkhChoqv8VBSfFkDRK4yH2dKDOjQMtB1ne+hVL
-         DfUUInNw7nVWOlbGNRfRUrGYrt4ZyXJJf/K5McdInxStRKLcE3V1AYb8dz0pvJV+5900
-         6RHg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rLmUIYkhANYVwW9T8NdrOJvFHT5x96ctHk3w7LpE4r8=;
+        b=ro3VTaQUOTrlUVnIVmDVDqWAAT5+yCVTkTRJB2J+9wFj8uJhGsPAmUJRa36KkMKZJt
+         6T2haE2MkFE6/2HRNMEYqQHJ9qNKPEFO5svc3kwoe4QlNet7FY0pgqCRBqWfHilgL1eM
+         Fidov6727TRUxvFQiEJ7ikCXM4QdnYugwcjT5VFjWsczgcJbHdJj8hS0xO7+JDD0mJVo
+         HabtRmyprTclfrwkYjyFu+xv+A5OJVqcvEc/LHIVnDNeqAVP1gLczzPIFU+SGT6G+UcW
+         UhfGWXHM3WqS1GzeI6sQZdTDB5xsHC39Cm40aivtVxFZLdh/b73P08UJpIhtV8FKXi2L
+         KhKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WPAzadvMLcFlPpBLWtaNTOLgIC32jAs7Hyvm5Qo9aW8=;
-        b=DCUT3uCDAKfLwkNj0z0IEQ1wzjqakklC436EDj5hnC45loxiJpS1cZJ/uSvYWy/5V7
-         Gedb4aB7a3fca6f/OVwjoQPwbFRjwS8EhzxyWUolv+dHAtnSUxW4aEOjL9P11C7mYxZC
-         9Z7jJoA66t24C1QmWd0QnKywJxkuTmmlzndmWBTgtZlOWFcYP4E1b25pnrL1cwVjCh8V
-         CL1e26I0+Ncffx7M3pEL3gxM8xMHNu5lncfPgTbVRdTkTu0HayBtgfmrmRtctwmSef+2
-         C5VRkyOt7owLK/Uf9rCJ8VV5NYBhxI3nHRlix75SfSQ0XOTy5gQDIRBhyRgLghpyz0wH
-         zAjw==
-X-Gm-Message-State: ANhLgQ37H07zzI90hjunUlXin3P44+uae8dn9ROiYDS2fPCTl7BzvyYi
-        ni7StP787/wL+XuwhbWS2R6jjxLeXkRRdljh2ngjOw==
-X-Google-Smtp-Source: ADFU+vt6oKs6+JrOJlA7O2Sr7BLob3BFsLEYA8mJcI1RDRo8bDVa90StvFpMiiCb/X4KU+KZRfFEsYiq05NFuSIYy6o=
-X-Received: by 2002:a19:ee0d:: with SMTP id g13mr4772580lfb.179.1582960766475;
- Fri, 28 Feb 2020 23:19:26 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rLmUIYkhANYVwW9T8NdrOJvFHT5x96ctHk3w7LpE4r8=;
+        b=c7WAT8h5u3NJz2B9dAwroWuFBmKGNfrwaaLJRQHxB3eDK3IJpXpufb2ZMjjNOL2xSA
+         inQJ1TqxQh7Rl7WYzi9J30y+ToT/SeeD1atA9Yc3RGqbPGleRJ9b0QatqknDy0lybRBB
+         jVgMQmNE8CDTbcHj/7GYS7C9jIo7S0V4gI6FOxAuQq8LxJwPfE9eWofNRrTAB5GWPU92
+         kTYZp3/g+Z9f5WQ8/icMiAuFK+9OwJ5/hhccAbpcMViTknB4lI0TE6YpfUFm3aKG5z27
+         XK1NymrFXPrHPUAWbDVRKJTEtil5YFGLqEfbyn+B0i/lfGZpljrfF8CTgfQZtmxgpafk
+         7M4w==
+X-Gm-Message-State: APjAAAXsR35wgQ2SzPOjoylUsQoNL25P/VvpG4/bEZkAtgux2cmE/J/8
+        Vdm0fv+OXe9+PPNHSfg7BZrf6w==
+X-Google-Smtp-Source: APXvYqxR2NY6LMLIbf45ezAAwxL76TtbDd+ILrXvRkiHvssr4nFhM/rIs7bqoiPO5OIBEL8bUQ7Ymg==
+X-Received: by 2002:a1c:1d15:: with SMTP id d21mr6924328wmd.101.1582962007020;
+        Fri, 28 Feb 2020 23:40:07 -0800 (PST)
+Received: from localhost (ip-89-177-130-96.net.upcbroadband.cz. [89.177.130.96])
+        by smtp.gmail.com with ESMTPSA id c8sm5997781wru.7.2020.02.28.23.40.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 23:40:06 -0800 (PST)
+Date:   Sat, 29 Feb 2020 08:40:04 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, pablo@netfilter.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 03/12] flow_offload: check for basic action
+ hw stats type
+Message-ID: <20200229074004.GL26061@nanopsycho>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-4-jiri@resnulli.us>
+ <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200229070902.1294280-1-i@jsteward.moe>
-In-Reply-To: <20200229070902.1294280-1-i@jsteward.moe>
-From:   Pengcheng Xu <i@jsteward.moe>
-Date:   Sat, 29 Feb 2020 15:19:15 +0800
-Message-ID: <CADuippAvUXHH2Mjuxyz+9JFf-SR5j8itmRi5YvUJowmbVXR9Og@mail.gmail.com>
-Subject: Re: [PATCH] net: macb: add support for fixed-link
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for forgetting to CC the mailing lists.  Adding them now.
+Fri, Feb 28, 2020 at 08:40:56PM CET, kuba@kernel.org wrote:
+>On Fri, 28 Feb 2020 18:24:56 +0100 Jiri Pirko wrote:
+>> @@ -299,6 +300,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
+>>  		return -EINVAL;
+>>  	}
+>>  
+>> +	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
+>> +		return -EOPNOTSUPP;
+>
+>Could we have this helper take one stat type? To let drivers pass the
+>stat type they support? 
 
-2020=E5=B9=B42=E6=9C=8829=E6=97=A5(=E5=9C=9F) 15:09 Pengcheng Xu <i@jstewar=
-d.moe>:
+That would be always "any" as "any" is supported by all drivers.
+And that is exactly what the helper checks..
+
+
 >
-> The Cadence macb driver did not support fixed-link PHYs.  This patch
-> adds support for fixed-link PHYs to the driver.
+>At some point we should come up with a way to express the limitations
+>at callback registration time so we don't need to add checks like this
+>to all the drivers. On the TODO list it goes :)
+
+I was thinking about that. Not really easy with the currect infra.
+
 >
-> The driver only checks if there's a valid PHY over MDIO, which is either
-> present as a device tree node, or (if absent) searched on the MDIO bus.
-> This patch detects if there is a `fixed-link` PHY instead of a regular
-> MDIO-attached PHY.  The device tree node of the MAC is checked for a
-> fixed-link PHY via `of_phy_is_fixed_link`, and, if so, the normal MDIO
-> register routine is skipped, and `of_phy_register_fixed_link` is
-> performed instead.
->
-> The changes were borrowed from
-> drivers/net/ethernet/altera/altera_tse_main.c and tested to work on a
-> Xilinx Zynq UltraScale+ device.
->
-> Signed-off-by: Pengcheng Xu <i@jsteward.moe>
-> ---
->  drivers/net/ethernet/cadence/macb_main.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ether=
-net/cadence/macb_main.c
-> index 2c28da1737fe..fb359ce90ae4 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -744,6 +744,7 @@ static int macb_mdiobus_register(struct macb *bp)
->
->  static int macb_mii_init(struct macb *bp)
->  {
-> +       struct device_node *np =3D bp->pdev->dev.of_node;
->         int err =3D -ENXIO;
->
->         /* Enable management port */
-> @@ -765,9 +766,17 @@ static int macb_mii_init(struct macb *bp)
->
->         dev_set_drvdata(&bp->dev->dev, bp->mii_bus);
->
-> -       err =3D macb_mdiobus_register(bp);
-> -       if (err)
-> -               goto err_out_free_mdiobus;
-> +       if (of_phy_is_fixed_link(np)) {
-> +               err =3D of_phy_register_fixed_link(np);
-> +               if (err) {
-> +                       netdev_err(bp->dev, "cannot register fixed-link P=
-HY\n");
-> +                       goto err_out_free_mdiobus;
-> +               }
-> +       } else {
-> +               err =3D macb_mdiobus_register(bp);
-> +               if (err)
-> +                       goto err_out_free_mdiobus;
-> +       }
->
->         err =3D macb_mii_probe(bp->dev);
->         if (err)
-> --
-> 2.25.1
+>>  	flow_action_for_each(i, act, flow_action) {
+>>  		switch (act->id) {
+>>  		case FLOW_ACTION_DROP:
 >
