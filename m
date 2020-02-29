@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E71D51743A9
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:10:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E9C1743B7
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgB2AKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 19:10:14 -0500
-Received: from gateway34.websitewelcome.com ([192.185.148.212]:22494 "EHLO
+        id S1726951AbgB2ALS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 19:11:18 -0500
+Received: from gateway34.websitewelcome.com ([192.185.148.212]:20692 "EHLO
         gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726418AbgB2AKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:10:14 -0500
+        by vger.kernel.org with ESMTP id S1726892AbgB2ALS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:11:18 -0500
 Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id CEE692793D0
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:10:12 -0600 (CST)
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 642204CEC35
+        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:11:17 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 7phsj8jQ5Sl8q7phsjmcT0; Fri, 28 Feb 2020 18:10:12 -0600
+        id 7pivj8kl3Sl8q7pivjmdnG; Fri, 28 Feb 2020 18:11:17 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,29 +24,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xNOoVJXsQbHnYoAPlqTzBSpU3sayaB7un57WUVRF4FU=; b=LBGYo6LshgUkcdiSBa0nmaAXXe
-        OcV/VoGtUETVQ+4F4FxUjBDEvsIrXEGAjJ+NugNxt28ekCSY7AnG6zELbrsdQuswt8/XF+3kbxACm
-        l52EovVYi3wjqHX4LYaI4AmmJJ6jyhyC9dzVb7m7x9GupsX989cS1ffPIPPmzm4KGUMWUWqRgLImk
-        gW++/eNhnnqLTt51nBqAMGLdZRnhCT22/52nEWWcKRuMNs5dCBeyJ06di3bLRE6YXINxM/FK4qnCD
-        ZKB68xtYJcGxiaKHckJAEDhDqU44Bgq3iUNbml+ZTl1cAnO3RuXjwiQziRwClF2kFFhgL2ufXgY8C
-        tIteve2Q==;
-Received: from [200.39.15.57] (port=31903 helo=embeddedor)
+        bh=5b/2M8suuafk8OeTPNdtw9kguzC0VV2KliEDV8H4iH0=; b=y8Dn6BzyXZs47uWtFFyTX03RMH
+        azDCmEAktwjGR/0Dhtif3bovuvGmHyrrBuPp+L3/e3vV30/b11fIBWloQ9uP+RkUAom+NRS27KQk7
+        4glYaXzsWF47Otdm3tqGcfKFa9yWMmQau48ru/o8k0/7GEEYkUgdmKmALKDPKFeHptIt8BuOT3td0
+        VTANAshuvEdzITPxkRAv9fIreRD3F2FTSUsPppfnCyPs/8sNQkg+YFkwDFIxl5ehHCE5upWaFrQPx
+        oeXU6LCVL/Oq42QIkm/VmAh7T0rpvD0P/LBUbQ9E+s1kEXimn9bKP3fWNxsSVT1/skF1veiE1Mi0t
+        PrZcK8aA==;
+Received: from [200.39.15.57] (port=32151 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j7php-002dlM-48; Fri, 28 Feb 2020 18:10:10 -0600
-Date:   Fri, 28 Feb 2020 18:13:05 -0600
+        id 1j7pit-002eIL-I1; Fri, 28 Feb 2020 18:11:15 -0600
+Date:   Fri, 28 Feb 2020 18:14:11 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+To:     David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: sctp: Replace zero-length array with
+Subject: [PATCH][next] net: nexthop: Replace zero-length array with
  flexible-array member
-Message-ID: <20200229001305.GA7465@embeddedor>
+Message-ID: <20200229001411.GA7580@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,13 +56,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.39.15.57
 X-Source-L: No
-X-Exim-ID: 1j7php-002dlM-48
+X-Exim-ID: 1j7pit-002eIL-I1
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.39.15.57]:31903
+X-Source-Sender: (embeddedor) [200.39.15.57]:32151
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 11
+X-Email-Count: 16
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -103,22 +100,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/net/sctp/structs.h | 2 +-
+ include/net/nexthop.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 314a2fa21d6b..fb42c90348d3 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -326,7 +326,7 @@ struct sctp_cookie {
- 	 * the association TCB is re-constructed from the cookie.
- 	 */
- 	__u32 raw_addr_list_len;
--	struct sctp_init_chunk peer_init[0];
-+	struct sctp_init_chunk peer_init[];
+diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+index 331ebbc94fe7..c440ccc861fc 100644
+--- a/include/net/nexthop.h
++++ b/include/net/nexthop.h
+@@ -73,7 +73,7 @@ struct nh_group {
+ 	u16			num_nh;
+ 	bool			mpath;
+ 	bool			has_v4;
+-	struct nh_grp_entry	nh_entries[0];
++	struct nh_grp_entry	nh_entries[];
  };
  
- 
+ struct nexthop {
 -- 
 2.25.0
 
