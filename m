@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF3F174783
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 15:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE80174784
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 15:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727159AbgB2Ou6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 09:50:58 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33549 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727093AbgB2Ou6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 09:50:58 -0500
-Received: by mail-wr1-f66.google.com with SMTP id x7so6897508wrr.0
-        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 06:50:55 -0800 (PST)
+        id S1727170AbgB2Ou7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 09:50:59 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53276 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727068AbgB2Ou7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 09:50:59 -0500
+Received: by mail-wm1-f66.google.com with SMTP id f15so6549116wml.3
+        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 06:50:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=uLNHyRAjC4wov5hS8QIrpAiZebqdM/djVwvCaNIiAvw=;
-        b=FQwOG5Lho9hxft+hEXWJfXH8BSHkHgLdACYHyiy3n1/QaSKrQf8hIFYJq0syzMng0B
-         5DA6qSKpXDGV8dhmQi+LOQbeZkSJBfwb9NbUW+n5fSzyY/4gLX9LXp4w8C8SuKlzW0zk
-         nB2StB2xUzmHJD5UG10qULSYFujdtD8Et9MN+shVTex1IhYATlfwuIYMJRaI4AdTWaEx
-         mQpq0WWUeUIOPAupc4NXQEC6GuRzKGUB5xuXOigiRN5Rd8HEzA8vaR24voOyM6Wxdeug
-         VVUbCz44eyo+MlYVkE+p49eCiy/vg8+D9YsF7mQehy+hQYscP+PPGAbE7fRPtUC40RtS
-         2q6g==
+        bh=bnWMx9WgRv2qqn9Scuv6TKu8fNaY9jd/m4caBZ1MbV8=;
+        b=ilX0PCCnjMHcAKSqoV4ql05hO7NJKoiR3BxdXWRloh52VNSKgsfWEHV3ihbEGxzXyX
+         +JoTUs+zJ5Yj54lbv5hFa3TYk9mMMWxQi604eerp5Tmc5ylDQzZ3ChwRS742c5a2+K5v
+         jDB398shiApI11MatobYjfQxhCmOk9QlvF/rHbDdvStd/aPdOrps0ErXgvXw/dRj9BLT
+         Cas7EvWSaemDuLw9C8EIfwVCi/gV5LYMR7tcXtGPJdgoDooq34PXgf5b5dLoLOh+kdYe
+         X5YZiwpZIbQPJ81hLB+3owsQpRnPypCKQ0SpUHrq/ukp7l0GS95qmos2vfcKca2Qv2nw
+         HYzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=uLNHyRAjC4wov5hS8QIrpAiZebqdM/djVwvCaNIiAvw=;
-        b=UGE2D0FLewruiD41uhubHLk8qV4FJsw9D4RbTy1RyHv4q/0pHeiGsZSStUAGO1zua+
-         hlxuh/JcqyIlCTX8Cq89JNjSKua+BQ+boIsnzYAT1Iza4adX9rpx7mmJ4iSBErLg0Z2Y
-         OUe3MzNY+TNBliVgaMlk4h0hD8Yys6S7whd0WTTpkcfzrzgUvQtS5t/OKpliYcvghDwo
-         JejW6wyBILxPOzzc8G2O2ADA8RHcBYGnTAM3reLfbXSzlTQNGl3ZQNl4IPUYMdRNDYs8
-         fQ2zc4Wj7oyZ//kbLAl4J0VrhGjr6tpaMIgicnhKzM1G3+qyLQnoOMhbSDBxl/Hf572Q
-         1cQw==
-X-Gm-Message-State: APjAAAXU16tKHZELuLegL1FrEhUtAl1mW/h97zIdloRviYqJjKCg/29h
-        tM+8yfmlYL7oJmQrOJLhvbM=
-X-Google-Smtp-Source: APXvYqynnVLjE4uD01953yGNiRGoJbceLyZL+KKGc59LPfBizSjY6ug+mts61GF+H65295PJ+f8XwA==
-X-Received: by 2002:adf:a48f:: with SMTP id g15mr11079553wrb.42.1582987855115;
-        Sat, 29 Feb 2020 06:50:55 -0800 (PST)
+        bh=bnWMx9WgRv2qqn9Scuv6TKu8fNaY9jd/m4caBZ1MbV8=;
+        b=VBm0Kytf7XmaKiIEwkXEy3ezAy3atkIN/5dzpxxNBpgRfEqOT6D5tOkI3HV2mI4pgF
+         9ySXadGUFKZFs5nObH3/3NLIfTUD+5hHpt3gYNQrXWE5dbRO7NOPGll2IGPpn3fdUnSl
+         9/YtW8Bahoaxx80wwH+rovbdCfH64KiNAXuPC+oVyxa8E8XuAVGFahGoUR7f+YDnoAsi
+         kLmxdOOzb1oRONVMqub/cyJ2FWamZvtSu6njj41iHr/hsrn0Q4YXcMjJOVjG+uSdqMVX
+         niDD2h5qnV+X3ednEyauU2xNuM8J5r6yIUFHQ+YtTi5r2n3LvFAUacY9Lj9OtUjlG4HB
+         r3sA==
+X-Gm-Message-State: APjAAAXQeHXFUT7mnOYwmJYj9Ts3l1HD97z9xH/pPr+qKps8fdrKGXj3
+        ge9Hbhv2k1bXp6C0XXcVUfk=
+X-Google-Smtp-Source: APXvYqxjm66rGVskYMfNB3Bg0v0iVyJiJduw7K7qUsGeTd6tcvJ94z3R56LhWwm6JaBhLEOZ2Mn61Q==
+X-Received: by 2002:a1c:5684:: with SMTP id k126mr10386594wmb.181.1582987856348;
+        Sat, 29 Feb 2020 06:50:56 -0800 (PST)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id j14sm18164015wrn.32.2020.02.29.06.50.53
+        by smtp.gmail.com with ESMTPSA id j14sm18164015wrn.32.2020.02.29.06.50.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Feb 2020 06:50:54 -0800 (PST)
+        Sat, 29 Feb 2020 06:50:55 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
@@ -50,9 +50,9 @@ Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
         joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
         claudiu.manoil@nxp.com, netdev@vger.kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v3 net-next 1/2] net: mscc: ocelot: eliminate confusion between CPU and NPI port
-Date:   Sat, 29 Feb 2020 16:50:02 +0200
-Message-Id: <20200229145003.23751-2-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast traffic towards the CPU port module
+Date:   Sat, 29 Feb 2020 16:50:03 +0200
+Message-Id: <20200229145003.23751-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200229145003.23751-1-olteanv@gmail.com>
 References: <20200229145003.23751-1-olteanv@gmail.com>
@@ -63,261 +63,196 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Ocelot has the concept of a CPU port. The CPU port is represented in the
-forwarding and the queueing system, but it is not a physical device. The
-CPU port can either be accessed via register-based injection/extraction
-(which is the case of Ocelot), via Frame-DMA (similar to the first one),
-or "connected" to a physical Ethernet port (called NPI in the datasheet)
-which is the case of the Felix DSA switch.
+Compared to other DSA switches, in the Ocelot cores, the RX filtering is
+a much more important concern.
 
-In Ocelot the CPU port is at index 11.
-In Felix the CPU port is at index 6.
+Firstly, the primary use case for Ocelot is non-DSA, so there isn't any
+secondary Ethernet MAC [the DSA master's one] to implicitly drop frames
+having a DMAC we are not interested in.  So the switch driver itself
+needs to install FDB entries towards the CPU port module (PGID_CPU) for
+the MAC address of each switch port, in each VLAN installed on the port.
+Every address that is not whitelisted is implicitly dropped. This is in
+order to achieve a behavior similar to N standalone net devices.
 
-The CPU bit is treated special in the forwarding, as it is never cleared
-from the forwarding port mask (once added to it). Other than that, it is
-treated the same as a normal front port.
+Secondly, even in the secondary use case of DSA, such as illustrated by
+Felix with the NPI port mode, that secondary Ethernet MAC is present,
+but its RX filter is bypassed. This is because the DSA tags themselves
+are placed before Ethernet, so the DMAC that the switch ports see is
+not seen by the DSA master too (since it's shifter to the right).
 
-Both Felix and Ocelot should use the CPU port in the same way. This
-means that Felix should not use the NPI port directly when forwarding to
-the CPU, but instead use the CPU port.
+So RX filtering is pretty important. A good RX filter won't bother the
+CPU in case the switch port receives a frame that it's not interested
+in, and there exists no other line of defense.
 
-This patch is fixing this such that Felix will use port 6 as its CPU
-port, and just use the NPI port to carry the traffic.
+Ocelot is pretty strict when it comes to RX filtering: non-IP multicast
+and broadcast traffic is allowed to go to the CPU port module, but
+unknown unicast isn't. This means that traffic reception for any other
+MAC addresses than the ones configured on each switch port net device
+won't work. This includes use cases such as macvlan or bridging with a
+non-Ocelot (so-called "foreign") interface. But this seems to be fine
+for the scenarios that the Linux system embedded inside an Ocelot switch
+is intended for - it is simply not interested in unknown unicast
+traffic, as explained in Allan Nielsen's presentation [0].
 
-Therefore, eliminate the "ocelot->cpu" variable which was holding the
-index of the NPI port for Felix, and the index of the CPU port module
-for Ocelot, so the variable was actually configuring different things
-for different drivers and causing at least part of the confusion.
+On the other hand, the Felix DSA switch is integrated in more
+general-purpose Linux systems, so it can't afford to drop that sort of
+traffic in hardware, even if it will end up doing so later, in software.
 
-Also remove the "ocelot->num_cpu_ports" variable, which is the result of
-another confusion. The 2 CPU ports mentioned in the datasheet are
-because there are two frame extraction channels (register based or DMA
-based). This is of no relevance to the driver at the moment, and
-invisible to the analyzer module.
+Actually, unknown unicast means more for Felix than it does for Ocelot.
+Felix doesn't attempt to perform the whitelisting of switch port MAC
+addresses towards PGID_CPU at all, mainly because it is too complicated
+to be feasible: while the MAC addresses are unique in Ocelot, by default
+in DSA all ports are equal and inherited from the DSA master. This adds
+into account the question of reference counting MAC addresses (delayed
+ocelot_mact_forget), not to mention reference counting for the VLAN IDs
+that those MAC addresses are installed in. This reference counting
+should be done in the DSA core, and the fact that it wasn't needed so
+far is due to the fact that the other DSA switches don't have the DSA
+tag placed before Ethernet, so the DSA master is able to whitelist the
+MAC addresses in hardware.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+So this means that even regular traffic termination on a Felix switch
+port happens through flooding (because neither Felix nor Ocelot learn
+source MAC addresses from CPU-injected frames).
+
+So far we've explained that whitelisting towards PGID_CPU:
+- helps to reduce the likelihood of spamming the CPU with frames it
+  won't process very far anyway
+- is implemented in the ocelot driver
+- is sufficient for the ocelot use cases
+- is not feasible in DSA
+- breaks use cases in DSA, in the current status (whitelisting enabled
+  but no MAC address whitelisted)
+
+So the proposed patch allows unknown unicast frames to be sent to the
+CPU port module. This is done for the Felix DSA driver only, as Ocelot
+seems to be happy without it.
+
+[0]: https://www.youtube.com/watch?v=B1HhxEcU7Jg
+
 Suggested-by: Allan W. Nielsen <allan.nielsen@microchip.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
-Replaced commit message verbiage with text from Allan Nielsen.
+None.
 
- drivers/net/dsa/ocelot/felix.c           |  7 +--
- drivers/net/ethernet/mscc/ocelot.c       | 62 ++++++++++++++----------
- drivers/net/ethernet/mscc/ocelot_board.c |  7 ++-
- include/soc/mscc/ocelot.h                | 12 +++--
- net/dsa/tag_ocelot.c                     |  3 +-
- 5 files changed, 52 insertions(+), 39 deletions(-)
+ drivers/net/dsa/ocelot/felix.c     |  9 +++++
+ drivers/net/ethernet/mscc/ocelot.h | 10 -----
+ include/soc/mscc/ocelot.h          | 60 ++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 7e66821b05b4..65b753b78221 100644
+index 65b753b78221..f14595b8dad5 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -512,10 +512,11 @@ static int felix_setup(struct dsa_switch *ds)
- 	for (port = 0; port < ds->num_ports; port++) {
- 		ocelot_init_port(ocelot, port);
- 
-+		/* Bring up the CPU port module and configure the NPI port */
- 		if (dsa_is_cpu_port(ds, port))
--			ocelot_set_cpu_port(ocelot, port,
--					    OCELOT_TAG_PREFIX_NONE,
--					    OCELOT_TAG_PREFIX_LONG);
-+			ocelot_configure_cpu(ocelot, port,
-+					     OCELOT_TAG_PREFIX_NONE,
-+					     OCELOT_TAG_PREFIX_LONG);
+@@ -519,6 +519,15 @@ static int felix_setup(struct dsa_switch *ds)
+ 					     OCELOT_TAG_PREFIX_LONG);
  	}
  
- 	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 86d543ab1ab9..341092f9097c 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1398,7 +1398,7 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- 	 * a source for the other ports.
- 	 */
- 	for (p = 0; p < ocelot->num_phys_ports; p++) {
--		if (p == ocelot->cpu || (ocelot->bridge_fwd_mask & BIT(p))) {
-+		if (ocelot->bridge_fwd_mask & BIT(p)) {
- 			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
- 
- 			for (i = 0; i < ocelot->num_phys_ports; i++) {
-@@ -1413,18 +1413,10 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- 				}
- 			}
- 
--			/* Avoid the NPI port from looping back to itself */
--			if (p != ocelot->cpu)
--				mask |= BIT(ocelot->cpu);
--
- 			ocelot_write_rix(ocelot, mask,
- 					 ANA_PGID_PGID, PGID_SRC + p);
- 		} else {
--			/* Only the CPU port, this is compatible with link
--			 * aggregation.
--			 */
--			ocelot_write_rix(ocelot,
--					 BIT(ocelot->cpu),
-+			ocelot_write_rix(ocelot, 0,
- 					 ANA_PGID_PGID, PGID_SRC + p);
- 		}
- 	}
-@@ -2293,27 +2285,34 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
- }
- EXPORT_SYMBOL(ocelot_probe_port);
- 
--void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
--			 enum ocelot_tag_prefix injection,
--			 enum ocelot_tag_prefix extraction)
-+/* Configure and enable the CPU port module, which is a set of queues.
-+ * If @npi contains a valid port index, the CPU port module is connected
-+ * to the Node Processor Interface (NPI). This is the mode through which
-+ * frames can be injected from and extracted to an external CPU,
-+ * over Ethernet.
-+ */
-+void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
-+			  enum ocelot_tag_prefix injection,
-+			  enum ocelot_tag_prefix extraction)
- {
--	/* Configure and enable the CPU port. */
-+	int cpu = ocelot->num_phys_ports;
-+
-+	/* The unicast destination PGID for the CPU port module is unused */
- 	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, cpu);
-+	/* Instead set up a multicast destination PGID for traffic copied to
-+	 * the CPU. Whitelisted MAC addresses like the port netdevice MAC
-+	 * addresses will be copied to the CPU via this PGID.
++	/* Include the CPU port module in the forwarding mask for unknown
++	 * unicast - the hardware default value for ANA_FLOODING_FLD_UNICAST
++	 * excludes BIT(ocelot->num_phys_ports), and so does ocelot_init, since
++	 * Ocelot relies on whitelisting MAC addresses towards PGID_CPU.
 +	 */
- 	ocelot_write_rix(ocelot, BIT(cpu), ANA_PGID_PGID, PGID_CPU);
- 	ocelot_write_gix(ocelot, ANA_PORT_PORT_CFG_RECV_ENA |
- 			 ANA_PORT_PORT_CFG_PORTID_VAL(cpu),
- 			 ANA_PORT_PORT_CFG, cpu);
- 
--	/* If the CPU port is a physical port, set up the port in Node
--	 * Processor Interface (NPI) mode. This is the mode through which
--	 * frames can be injected from and extracted to an external CPU.
--	 * Only one port can be an NPI at the same time.
--	 */
--	if (cpu < ocelot->num_phys_ports) {
-+	if (npi >= 0 && npi < ocelot->num_phys_ports) {
- 		int mtu = VLAN_ETH_FRAME_LEN + OCELOT_TAG_LEN;
- 
- 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
--			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(cpu),
-+			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(npi),
- 			     QSYS_EXT_CPU_CFG);
- 
- 		if (injection == OCELOT_TAG_PREFIX_SHORT)
-@@ -2321,14 +2320,27 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
- 		else if (injection == OCELOT_TAG_PREFIX_LONG)
- 			mtu += OCELOT_LONG_PREFIX_LEN;
- 
--		ocelot_port_set_mtu(ocelot, cpu, mtu);
-+		ocelot_port_set_mtu(ocelot, npi, mtu);
++	ocelot_write_rix(ocelot,
++			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
++			 ANA_PGID_PGID, PGID_UC);
 +
-+		/* Enable NPI port */
-+		ocelot_write_rix(ocelot,
-+				 QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
-+				 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
-+				 QSYS_SWITCH_PORT_MODE_PORT_ENA,
-+				 QSYS_SWITCH_PORT_MODE, npi);
-+		/* NPI port Injection/Extraction configuration */
-+		ocelot_write_rix(ocelot,
-+				 SYS_PORT_MODE_INCL_XTR_HDR(extraction) |
-+				 SYS_PORT_MODE_INCL_INJ_HDR(injection),
-+				 SYS_PORT_MODE, npi);
- 	}
+ 	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
+ 	 * isn't instantiated for the Felix PF.
+ 	 * In-band AN may take a few ms to complete, so we need to poll.
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index 04372ba72fec..e34ef8380eb3 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -28,16 +28,6 @@
+ #include "ocelot_tc.h"
+ #include "ocelot_ptp.h"
  
--	/* CPU port Injection/Extraction configuration */
-+	/* Enable CPU port module */
- 	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
- 			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
- 			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
- 			 QSYS_SWITCH_PORT_MODE, cpu);
-+	/* CPU port Injection/Extraction configuration */
- 	ocelot_write_rix(ocelot, SYS_PORT_MODE_INCL_XTR_HDR(extraction) |
- 			 SYS_PORT_MODE_INCL_INJ_HDR(injection),
- 			 SYS_PORT_MODE, cpu);
-@@ -2338,10 +2350,8 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
- 				 ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
- 				 ANA_PORT_VLAN_CFG_VLAN_POP_CNT(1),
- 			 ANA_PORT_VLAN_CFG, cpu);
+-#define PGID_AGGR    64
+-#define PGID_SRC     80
 -
--	ocelot->cpu = cpu;
- }
--EXPORT_SYMBOL(ocelot_set_cpu_port);
-+EXPORT_SYMBOL(ocelot_configure_cpu);
- 
- int ocelot_init(struct ocelot *ocelot)
- {
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index 1135a18019c7..87ff775897da 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -349,8 +349,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 		ocelot->ptp = 1;
- 	}
- 
--	ocelot->num_cpu_ports = 1; /* 1 port on the switch, two groups */
+-/* Reserved PGIDs */
+-#define PGID_CPU     (PGID_AGGR - 5)
+-#define PGID_UC      (PGID_AGGR - 4)
+-#define PGID_MC      (PGID_AGGR - 3)
+-#define PGID_MCIPV4  (PGID_AGGR - 2)
+-#define PGID_MCIPV6  (PGID_AGGR - 1)
 -
- 	ports = of_get_child_by_name(np, "ethernet-ports");
- 	if (!ports) {
- 		dev_err(&pdev->dev, "no ethernet-ports child node found\n");
-@@ -363,8 +361,9 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 				     sizeof(struct ocelot_port *), GFP_KERNEL);
+ #define OCELOT_BUFFER_CELL_SZ 60
  
- 	ocelot_init(ocelot);
--	ocelot_set_cpu_port(ocelot, ocelot->num_phys_ports,
--			    OCELOT_TAG_PREFIX_NONE, OCELOT_TAG_PREFIX_NONE);
-+	/* No NPI port */
-+	ocelot_configure_cpu(ocelot, -1, OCELOT_TAG_PREFIX_NONE,
-+			     OCELOT_TAG_PREFIX_NONE);
- 
- 	for_each_available_child_of_node(ports, portnp) {
- 		struct ocelot_port_private *priv;
+ #define OCELOT_STATS_CHECK_DELAY (2 * HZ)
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 068f96b1a83e..247b537fc7ef 100644
+index 247b537fc7ef..a4c72ae0b60e 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -447,9 +447,11 @@ struct ocelot {
- 	/* Keep track of the vlan port masks */
- 	u32				vlan_mask[VLAN_N_VID];
+@@ -11,6 +11,66 @@
+ #include <linux/regmap.h>
+ #include <net/dsa.h>
  
-+	/* In tables like ANA:PORT and the ANA:PGID:PGID mask,
-+	 * the CPU is located after the physical ports (at the
-+	 * num_phys_ports index).
-+	 */
- 	u8				num_phys_ports;
--	u8				num_cpu_ports;
--	u8				cpu;
++/* Port Group IDs (PGID) are masks of destination ports.
++ *
++ * For L2 forwarding, the switch performs 3 lookups in the PGID table for each
++ * frame, and forwards the frame to the ports that are present in the logical
++ * AND of all 3 PGIDs.
++ *
++ * These PGID lookups are:
++ * - In one of PGID[0-63]: for the destination masks. There are 2 paths by
++ *   which the switch selects a destination PGID:
++ *     - The {DMAC, VID} is present in the MAC table. In that case, the
++ *       destination PGID is given by the DEST_IDX field of the MAC table entry
++ *       that matched.
++ *     - The {DMAC, VID} is not present in the MAC table (it is unknown). The
++ *       frame is disseminated as being either unicast, multicast or broadcast,
++ *       and according to that, the destination PGID is chosen as being the
++ *       value contained by ANA_FLOODING_FLD_UNICAST,
++ *       ANA_FLOODING_FLD_MULTICAST or ANA_FLOODING_FLD_BROADCAST.
++ *   The destination PGID can be an unicast set: the first PGIDs, 0 to
++ *   ocelot->num_phys_ports - 1, or a multicast set: the PGIDs from
++ *   ocelot->num_phys_ports to 63. By convention, a unicast PGID corresponds to
++ *   a physical port and has a single bit set in the destination ports mask:
++ *   that corresponding to the port number itself. In contrast, a multicast
++ *   PGID will have potentially more than one single bit set in the destination
++ *   ports mask.
++ * - In one of PGID[64-79]: for the aggregation mask. The switch classifier
++ *   dissects each frame and generates a 4-bit Link Aggregation Code which is
++ *   used for this second PGID table lookup. The goal of link aggregation is to
++ *   hash multiple flows within the same LAG on to different destination ports.
++ *   The first lookup will result in a PGID with all the LAG members present in
++ *   the destination ports mask, and the second lookup, by Link Aggregation
++ *   Code, will ensure that each flow gets forwarded only to a single port out
++ *   of that mask (there are no duplicates).
++ * - In one of PGID[80-90]: for the source mask. The third time, the PGID table
++ *   is indexed with the ingress port (plus 80). These PGIDs answer the
++ *   question "is port i allowed to forward traffic to port j?" If yes, then
++ *   BIT(j) of PGID 80+i will be found set. The third PGID lookup can be used
++ *   to enforce the L2 forwarding matrix imposed by e.g. a Linux bridge.
++ */
++
++/* Reserve some destination PGIDs at the end of the range:
++ * PGID_CPU: used for whitelisting certain MAC addresses, such as the addresses
++ *           of the switch port net devices, towards the CPU port module.
++ * PGID_UC: the flooding destinations for unknown unicast traffic.
++ * PGID_MC: the flooding destinations for broadcast and non-IP multicast
++ *          traffic.
++ * PGID_MCIPV4: the flooding destinations for IPv4 multicast traffic.
++ * PGID_MCIPV6: the flooding destinations for IPv6 multicast traffic.
++ */
++#define PGID_CPU			59
++#define PGID_UC				60
++#define PGID_MC				61
++#define PGID_MCIPV4			62
++#define PGID_MCIPV6			63
++
++/* Aggregation PGIDs, one per Link Aggregation Code */
++#define PGID_AGGR			64
++
++/* Source PGIDs, one per physical port */
++#define PGID_SRC			80
++
+ #define IFH_INJ_BYPASS			BIT(31)
+ #define IFH_INJ_POP_CNT_DISABLE		(3 << 28)
  
- 	u32				*lags;
- 
-@@ -500,9 +502,9 @@ void __ocelot_rmw_ix(struct ocelot *ocelot, u32 val, u32 mask, u32 reg,
- int ocelot_regfields_init(struct ocelot *ocelot,
- 			  const struct reg_field *const regfields);
- struct regmap *ocelot_regmap_init(struct ocelot *ocelot, struct resource *res);
--void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
--			 enum ocelot_tag_prefix injection,
--			 enum ocelot_tag_prefix extraction);
-+void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
-+			  enum ocelot_tag_prefix injection,
-+			  enum ocelot_tag_prefix extraction);
- int ocelot_init(struct ocelot *ocelot);
- void ocelot_deinit(struct ocelot *ocelot);
- void ocelot_init_port(struct ocelot *ocelot, int port);
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index 8e3e7283d430..59de1315100f 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -153,7 +153,8 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 
- 	memset(injection, 0, OCELOT_TAG_LEN);
- 
--	src = dsa_upstream_port(ds, port);
-+	/* Set the source port as the CPU port module and not the NPI port */
-+	src = ocelot->num_phys_ports;
- 	dest = BIT(port);
- 	bypass = true;
- 	qos_class = skb->priority;
 -- 
 2.17.1
 
