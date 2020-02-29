@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA53174687
+	by mail.lfdr.de (Postfix) with ESMTP id A20F1174688
 	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 12:36:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbgB2LgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 06:36:15 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:9976 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbgB2LgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 06:36:14 -0500
+        id S1726975AbgB2LgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 06:36:16 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:9830 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726910AbgB2LgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 06:36:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1582976175; x=1614512175;
+  s=amazon201209; t=1582976176; x=1614512176;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=HIXyNmOJ8/d4F3iwP8yU6z0U8CCnk4bMqrJAD3qAXLM=;
-  b=TMc0KPAQweaQLEXTE2sv4NwwIpjkoE8H2KU41XmHK4JxZtrrFfEMQ0Ek
-   XL//FFsQJdWh8x6ykg5JC+qsdBzUVP3Y10+5kHzBt8jrv7IPgeFj4J6FG
-   R+1Zm91ao9SYLuM7n61wnhZHTbYYTZRXkfg4reySg0ZDQV2g7S6/P5r+p
-   s=;
-IronPort-SDR: 2SFHWefm5IBliCy6PxdBVpdMPJLRAuth5PuSXFbxWimi6lCVMjMbn1flA2bCVFBYbNVtKY0pZ0
- 0YnGiIw1Hndg==
+  bh=+2ibarsN5r55A6BMzFDa5heUaaQUHOdFJOmU5niC9gg=;
+  b=IRIXNbfAoX87qfZdH3oC9/cx6EKnJF54JlCZPN/G2bNpYJn+t2l3MjFs
+   0bqhYdrR+ItsMNQjqrSIS4qbvuMUaGhiz47Ww6KCt7ylCUIPhjnFsJHjf
+   7KPZBECxobCYE2b6fTGHHrjE8DlG1Wmx15xOAQP2Ev1/nanSnMz9tD88b
+   g=;
+IronPort-SDR: AvRZBwejZP9pHysSBS1z1kNNdfKhLta1AKL9heiAMRtvjVA2WBXGWSLClfv+3WYcETvtL28m5S
+ pX8CretIJZYQ==
 X-IronPort-AV: E=Sophos;i="5.70,499,1574121600"; 
-   d="scan'208";a="19405126"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-e7be2041.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 29 Feb 2020 11:36:13 +0000
+   d="scan'208";a="19914946"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 29 Feb 2020 11:36:15 +0000
 Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-e7be2041.us-west-2.amazon.com (Postfix) with ESMTPS id 0EE69A22FA;
-        Sat, 29 Feb 2020 11:36:12 +0000 (UTC)
+        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 96A26A1D29;
+        Sat, 29 Feb 2020 11:36:14 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sat, 29 Feb 2020 11:36:11 +0000
+ id 15.0.1367.3; Sat, 29 Feb 2020 11:36:14 +0000
 Received: from 38f9d3582de7.ant.amazon.com (10.43.162.171) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sat, 29 Feb 2020 11:36:07 +0000
+ id 15.0.1497.2; Sat, 29 Feb 2020 11:36:10 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
         <yoshfuji@linux-ipv6.org>, <edumazet@google.com>
 CC:     <kuniyu@amazon.co.jp>, <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>
-Subject: [PATCH v3 net-next 2/4] tcp: bind(addr, 0) remove the SO_REUSEADDR restriction when ephemeral ports are exhausted.
-Date:   Sat, 29 Feb 2020 20:35:52 +0900
-Message-ID: <20200229113554.78338-3-kuniyu@amazon.co.jp>
+Subject: [PATCH v3 net-next 3/4] tcp: Forbid to automatically bind more than one sockets haveing SO_REUSEADDR and SO_REUSEPORT per EUID.
+Date:   Sat, 29 Feb 2020 20:35:53 +0900
+Message-ID: <20200229113554.78338-4-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 In-Reply-To: <20200229113554.78338-1-kuniyu@amazon.co.jp>
 References: <20200229113554.78338-1-kuniyu@amazon.co.jp>
@@ -57,79 +57,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit aacd9289af8b82f5fb01bcdd53d0e3406d1333c7 ("tcp: bind() use stronger
-condition for bind_conflict") introduced a restriction to forbid to bind
-SO_REUSEADDR enabled sockets to the same (addr, port) tuple in order to
-assign ports dispersedly so that we can connect to the same remote host.
+If there is no TCP_LISTEN socket on a ephemeral port, we can bind multiple
+sockets having SO_REUSEADDR to the same port. Then if all sockets bound to
+the port have also SO_REUSEPORT enabled and have the same EUID, all of them
+can be listened. This is not safe.
 
-The change results in accelerating port depletion so that we fail to bind
-sockets to the same local port even if we want to connect to the different
-remote hosts.
+Let's say, an application has root privilege and binds sockets to an
+ephemeral port with both of SO_REUSEADDR and SO_REUSEPORT. When none of
+sockets is not listened yet, other applications can use sudo, exhaust
+ephemeral ports, and autobind sockets to the same ephemeral port, then they
+may call listen and steal the port unintentionally.
 
-You can reproduce this issue by following instructions below.
-  1. # sysctl -w net.ipv4.ip_local_port_range="32768 32768"
-  2. set SO_REUSEADDR to two sockets.
-  3. bind two sockets to (address, 0) and the latter fails.
+To prevent this issue, when selecting a ephemeral port automatically, we
+must not bind more than one sockets that have the same EUID and both of
+SO_REUSEADDR and SO_REUSEPORT.
 
-Therefore, when ephemeral ports are exhausted, bind(addr, 0) should
-fallback to the legacy behaviour to enable the SO_REUSEADDR option and make
-it possible to connect to different remote (addr, port) tuples.
+On the other hand, if the sockets have different EUIDs, the issue above does
+not occur. After sockets with different EUIDs are bound to the same port and
+one of them is listened, no more socket can be listened. This is because the
+condition below in the inet_csk_bind_conflict() is evaluated true and
+listen() for the second socket fails.
 
-This patch allows us to bind SO_REUSEADDR enabled sockets to the same
-(addr, port) only when all ephemeral ports are exhausted.
+			} else if (!reuseport_ok ||
+				   !reuseport || !sk2->sk_reuseport ||
+				   rcu_access_pointer(sk->sk_reuseport_cb) ||
+				   (sk2->sk_state != TCP_TIME_WAIT &&
+				    !uid_eq(uid, sock_i_uid(sk2)))) {
+				if (inet_rcv_saddr_equal(sk, sk2, true))
+					break;
+			}
 
-The only notable thing is that if all sockets bound to the same port have
-both SO_REUSEADDR and SO_REUSEPORT enabled, we can bind sockets to an
-ephemeral port and also do listen().
+Therefore, on the same port, we cannot do listen() for multiple sockets with
+different EUIDs and any other listen syscalls fail, so the problem does not
+happen. In this case, we can still call connect() for other sockets that
+cannot be listened, so we have to succeed to call bind() in order to fully
+utilize 4-tuples.
 
-Fixes: aacd9289af8b ("tcp: bind() use stronger condition for bind_conflict")
+Summarizing the above, we should be able to autobind only one socket having
+SO_REUSEADDR and SO_REUSEPORT per EUID. Moreover, this is realised by the
+negation of the quoted condition above from reuseport to uid_eq.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- net/ipv4/inet_connection_sock.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ net/ipv4/inet_connection_sock.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 2e9549f49a82..cddeab240ea6 100644
+index cddeab240ea6..d27ed5fe7147 100644
 --- a/net/ipv4/inet_connection_sock.c
 +++ b/net/ipv4/inet_connection_sock.c
-@@ -174,12 +174,14 @@ inet_csk_find_open_port(struct sock *sk, struct inet_bind_bucket **tb_ret, int *
- 	int port = 0;
- 	struct inet_bind_hashbucket *head;
- 	struct net *net = sock_net(sk);
-+	bool relax = false;
- 	int i, low, high, attempt_half;
- 	struct inet_bind_bucket *tb;
- 	u32 remaining, offset;
- 	int l3mdev;
+@@ -131,7 +131,7 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ {
+ 	struct sock *sk2;
+ 	bool reuse = sk->sk_reuse;
+-	bool reuseport = !!sk->sk_reuseport && reuseport_ok;
++	bool reuseport = !!sk->sk_reuseport;
+ 	kuid_t uid = sock_i_uid((struct sock *)sk);
  
- 	l3mdev = inet_sk_bound_l3mdev(sk);
-+ports_exhausted:
- 	attempt_half = (sk->sk_reuse == SK_CAN_REUSE) ? 1 : 0;
- other_half_scan:
- 	inet_get_local_port_range(net, &low, &high);
-@@ -217,7 +219,7 @@ inet_csk_find_open_port(struct sock *sk, struct inet_bind_bucket **tb_ret, int *
- 		inet_bind_bucket_for_each(tb, &head->chain)
- 			if (net_eq(ib_net(tb), net) && tb->l3mdev == l3mdev &&
- 			    tb->port == port) {
--				if (!inet_csk_bind_conflict(sk, tb, false, false))
-+				if (!inet_csk_bind_conflict(sk, tb, relax, false))
- 					goto success;
- 				goto next_port;
- 			}
-@@ -237,6 +239,12 @@ inet_csk_find_open_port(struct sock *sk, struct inet_bind_bucket **tb_ret, int *
- 		attempt_half = 2;
- 		goto other_half_scan;
- 	}
-+
-+	if (!relax) {
-+		/* We still have a chance to connect to different destinations */
-+		relax = true;
-+		goto ports_exhausted;
-+	}
- 	return NULL;
- success:
- 	*port_ret = port;
+ 	/*
+@@ -148,10 +148,16 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ 		     sk->sk_bound_dev_if == sk2->sk_bound_dev_if)) {
+ 			if (reuse && sk2->sk_reuse &&
+ 			    sk2->sk_state != TCP_LISTEN) {
+-				if (!relax &&
++				if ((!relax ||
++				     (!reuseport_ok &&
++				      reuseport && sk2->sk_reuseport &&
++				      !rcu_access_pointer(sk->sk_reuseport_cb) &&
++				      (sk2->sk_state == TCP_TIME_WAIT ||
++				       uid_eq(uid, sock_i_uid(sk2))))) &&
+ 				    inet_rcv_saddr_equal(sk, sk2, true))
+ 					break;
+-			} else if (!reuseport || !sk2->sk_reuseport ||
++			} else if (!reuseport_ok ||
++				   !reuseport || !sk2->sk_reuseport ||
+ 				   rcu_access_pointer(sk->sk_reuseport_cb) ||
+ 				   (sk2->sk_state != TCP_TIME_WAIT &&
+ 				    !uid_eq(uid, sock_i_uid(sk2)))) {
 -- 
 2.17.2 (Apple Git-113)
 
