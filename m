@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78B5D174763
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 15:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7099F174765
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 15:31:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgB2Obe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 09:31:34 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38543 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727079AbgB2Obd (ORCPT
+        id S1727173AbgB2Obg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 09:31:36 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38543 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727141AbgB2Obd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 09:31:33 -0500
-Received: by mail-wr1-f68.google.com with SMTP id t11so418231wrw.5
-        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 06:31:31 -0800 (PST)
+Received: by mail-wr1-f65.google.com with SMTP id t11so418278wrw.5
+        for <netdev@vger.kernel.org>; Sat, 29 Feb 2020 06:31:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=33RobL7+HZmp2as975Kl4ye6lqiG4AuU4ai+EAwojcA=;
-        b=OpX1htBGhhOabO44Js2eeMEAenUA6EtYq9lihG+VKjT5VoWqw/3ioC1CVRfj67EgED
-         EZtKnNMVd+4dVoWtPGSrbMK7WDkxKQxxz+4X2yPU/Qs6boDtz+cy51WKxx/z+k1tQHaV
-         OoV9R9gduA79PcbiwkqViPBYJBaEGQNyGO13tm/wcLLNE7R9QoDzAAce9o4Hvi/VqwRo
-         Rl6Vvlg6m5JRXFibIVzJH67zWwTbhdZuomCRPc7U/mi/0YlINP8GaZY90KLkV/MWcHFi
-         BmMQD9bYnxQq7YUM5D4K1svnwWu0ZvfLnxJGUjsPenU9hpy6yjc5IX7N1EKgtjwTadme
-         mPbA==
+        bh=CF+72A1NA3lO3JgnakxoXZ9JJ5ZN+e0ML/CgbqDNJuY=;
+        b=JqJVfHfQ4XN+87cmpUkoJo7lWHqivhQ+pMr/pL3RivK1Hc1MZxcIwEM9sOJ9clau41
+         jANhddi7MUzdcjJ2fVzQBEELUTRmipnfPGyU0yy5HsML+G+SMkMCf9No1j3GQb1bJKHl
+         9IbPWFYuaOiPDBGT73bCc/eTnK3j/HWTWW66tJ/QvzQLbNtr1bGITnDwjYK+VWJpt5Ay
+         txrYsdHxzzEVPCAYbnQqMg2Mk+EjaOZb6tJEZ1kIF+yWZAkCwye+fLHvUYkgGI+41aI0
+         r4XHN6ZjjVyi8CRJFHzffxzEu9BmZkWj+8/yim3BZyWmCyTyqi2Ve8J2ThMp/sFOnWhN
+         O5wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=33RobL7+HZmp2as975Kl4ye6lqiG4AuU4ai+EAwojcA=;
-        b=gb01uaCQB+xZk3EvExcIsBpzwn3tN34H1JqZ2YrcEAe88hrNWC3nUYcJGKAyFODDH3
-         iLNSIM0zHgEzOXAlX6mtNgbUPc8wYbRIicn6oRNO+zscBtKyn8jaqEnoyZuvT08FcWIv
-         jY8lfMWLDBdpb4dq3ZC+y6Py6Njsfp2nz2nWgXsZrA8nUFEUdZUbvsbc+xLluW5zZZUG
-         A+SFccCsXXmAtQgyAQXtkryg/YsUv9QgPFh5tieKFaL/OslKuKeiEluAt5gaDpNpWebf
-         46xTLySTztZnnFOJ1ah/ynoVOkf05tJ2FbpzhUqg13G/KYNSebuJR6lp7utptzBaH48N
-         Yd9w==
-X-Gm-Message-State: APjAAAXTCfQ54TYsnJsIp7zgl2kGOEkFrW8Q1kMw+txlmEx0oOO4xTXb
-        tfDH9wMVkkitNorH6cd8rYA=
-X-Google-Smtp-Source: APXvYqwI9QbgVmvdUcmuHmumjNtVQgAIA47znU30bI0HBkfU4JblzYDo5cJUGsk1CnoD+jTuWJxFuA==
-X-Received: by 2002:adf:dfcc:: with SMTP id q12mr10804813wrn.171.1582986690357;
-        Sat, 29 Feb 2020 06:31:30 -0800 (PST)
+        bh=CF+72A1NA3lO3JgnakxoXZ9JJ5ZN+e0ML/CgbqDNJuY=;
+        b=M5PF5HaIN084Ju70j52xyv3JHNLnzn/yoxfEG4e6/xHuB7jm32xPLxbU1i3Mq67+oN
+         2QtBXysffb5nZBXE0zd/o7h2EVL19EuxddqmlRhwBZMhVmVLlx5GMdMhdznqU4pE6tGP
+         JF9vypUB9uK+Ds7qP3BnWEhLLaASVUYXCs0wIe31Q9jlX3Lxg5kXjSYcHdEr+sGalh6o
+         gV669IfZXUhgKHPP/8eLNl5I7xs1QNH8COlQBDXqXlb/qDh3Hbd56gB9SqnCSzhJz8Tt
+         y7OgjmfbcrZBBxhOh3UmhAzPlU2KjT8LAq9Z/VfFtShCMO/CnC4WsTZwtCqhpOy6Vtaj
+         ojaA==
+X-Gm-Message-State: APjAAAVuT78ZnvfmRLo6Q84pgmF7qzxBtS+ySb8GRjtZBP62fC8iZHBN
+        n9qBa2cXIuzbk/OkZ1cPzko=
+X-Google-Smtp-Source: APXvYqx9VQGyAX4aREQuuic40XGuTQ8w/A+dPfGPib5wwY4r1ED/6o6hfPjaur7rRuLtA/15VPuZ4w==
+X-Received: by 2002:adf:dd8f:: with SMTP id x15mr6405090wrl.284.1582986691860;
+        Sat, 29 Feb 2020 06:31:31 -0800 (PST)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id d7sm7573528wmc.6.2020.02.29.06.31.28
+        by smtp.gmail.com with ESMTPSA id d7sm7573528wmc.6.2020.02.29.06.31.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Feb 2020 06:31:29 -0800 (PST)
+        Sat, 29 Feb 2020 06:31:31 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
@@ -52,9 +52,9 @@ Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
         UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
         xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com,
         jiri@mellanox.com, idosch@idosch.org, kuba@kernel.org
-Subject: [PATCH v2 net-next 08/10] net: mscc: ocelot: parameterize the vcap_is2 properties
-Date:   Sat, 29 Feb 2020 16:31:12 +0200
-Message-Id: <20200229143114.10656-9-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 09/10] net: dsa: Add bypass operations for the flower classifier-action filter
+Date:   Sat, 29 Feb 2020 16:31:13 +0200
+Message-Id: <20200229143114.10656-10-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200229143114.10656-1-olteanv@gmail.com>
 References: <20200229143114.10656-1-olteanv@gmail.com>
@@ -65,430 +65,119 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Remove the definitions for the VCAP IS2 table from ocelot_ace.c, since
-it is specific to VSC7514.
+Due to the immense variety of classification keys and actions available
+for tc-flower, as well as due to potentially very different DSA switch
+capabilities, it doesn't make a lot of sense for the DSA mid layer to
+even attempt to interpret these. So just pass them on to the underlying
+switch driver.
 
-The VSC9959 VCAP IS2 table supports more rules (1024 instead of 64) and
-has a different width for the action (89 bits instead of 99).
+DSA implements just the standard boilerplate for binding and unbinding
+flow blocks to ports, since nobody wants to deal with that.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
-Added back macro definitions for VSC7514 port count and rule count.
+None.
 
- drivers/net/ethernet/mscc/ocelot_ace.c   | 134 +++++++++--------------
- drivers/net/ethernet/mscc/ocelot_board.c |  30 +++++
- include/soc/mscc/ocelot.h                |   1 +
- include/soc/mscc/ocelot_vcap.h           |  37 +++++--
- 4 files changed, 114 insertions(+), 88 deletions(-)
+ include/net/dsa.h |  6 +++++
+ net/dsa/slave.c   | 60 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 66 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
-index 9922033a2aaf..906b54025b17 100644
---- a/drivers/net/ethernet/mscc/ocelot_ace.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ace.c
-@@ -11,53 +11,7 @@
- #include "ocelot_s2.h"
- 
- #define OCELOT_POLICER_DISCARD 0x17f
--
--struct vcap_props {
--	const char *name; /* Symbolic name */
--	u16 tg_width; /* Type-group width (in bits) */
--	u16 sw_count; /* Sub word count */
--	u16 entry_count; /* Entry count */
--	u16 entry_words; /* Number of entry words */
--	u16 entry_width; /* Entry width (in bits) */
--	u16 action_count; /* Action count */
--	u16 action_words; /* Number of action words */
--	u16 action_width; /* Action width (in bits) */
--	u16 action_type_width; /* Action type width (in bits) */
--	struct {
--		u16 width; /* Action type width (in bits) */
--		u16 count; /* Action type sub word count */
--	} action_table[2];
--	u16 counter_words; /* Number of counter words */
--	u16 counter_width; /* Counter width (in bits) */
--};
--
- #define ENTRY_WIDTH 32
--#define BITS_TO_32BIT(x) (1 + (((x) - 1) / ENTRY_WIDTH))
--
--static const struct vcap_props vcap_is2 = {
--	.name = "IS2",
--	.tg_width = 2,
--	.sw_count = 4,
--	.entry_count = VCAP_IS2_CNT,
--	.entry_words = BITS_TO_32BIT(VCAP_IS2_ENTRY_WIDTH),
--	.entry_width = VCAP_IS2_ENTRY_WIDTH,
--	.action_count = (VCAP_IS2_CNT + VCAP_PORT_CNT + 2),
--	.action_words = BITS_TO_32BIT(VCAP_IS2_ACTION_WIDTH),
--	.action_width = (VCAP_IS2_ACTION_WIDTH),
--	.action_type_width = 1,
--	.action_table = {
--		{
--			.width = 49,
--			.count = 2
--		},
--		{
--			.width = 6,
--			.count = 4
--		},
--	},
--	.counter_words = BITS_TO_32BIT(4 * ENTRY_WIDTH),
--	.counter_width = ENTRY_WIDTH,
--};
- 
- enum vcap_sel {
- 	VCAP_SEL_ENTRY = 0x1,
-@@ -100,11 +54,13 @@ static u32 vcap_s2_read_update_ctrl(struct ocelot *ocelot)
- 
- static void vcap_cmd(struct ocelot *ocelot, u16 ix, int cmd, int sel)
- {
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+
- 	u32 value = (S2_CORE_UPDATE_CTRL_UPDATE_CMD(cmd) |
- 		     S2_CORE_UPDATE_CTRL_UPDATE_ADDR(ix) |
- 		     S2_CORE_UPDATE_CTRL_UPDATE_SHOT);
- 
--	if ((sel & VCAP_SEL_ENTRY) && ix >= vcap_is2.entry_count)
-+	if ((sel & VCAP_SEL_ENTRY) && ix >= vcap_is2->entry_count)
- 		return;
- 
- 	if (!(sel & VCAP_SEL_ENTRY))
-@@ -125,14 +81,19 @@ static void vcap_cmd(struct ocelot *ocelot, u16 ix, int cmd, int sel)
- /* Convert from 0-based row to VCAP entry row and run command */
- static void vcap_row_cmd(struct ocelot *ocelot, u32 row, int cmd, int sel)
- {
--	vcap_cmd(ocelot, vcap_is2.entry_count - row - 1, cmd, sel);
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+
-+	vcap_cmd(ocelot, vcap_is2->entry_count - row - 1, cmd, sel);
- }
- 
- static void vcap_entry2cache(struct ocelot *ocelot, struct vcap_data *data)
- {
--	u32 i;
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+	u32 entry_words, i;
-+
-+	entry_words = DIV_ROUND_UP(vcap_is2->entry_width, ENTRY_WIDTH);
- 
--	for (i = 0; i < vcap_is2.entry_words; i++) {
-+	for (i = 0; i < entry_words; i++) {
- 		ocelot_write_rix(ocelot, data->entry[i], S2_CACHE_ENTRY_DAT, i);
- 		ocelot_write_rix(ocelot, ~data->mask[i], S2_CACHE_MASK_DAT, i);
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 7d3d84f0ef42..beeb81a532e3 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -540,6 +540,12 @@ struct dsa_switch_ops {
+ 	/*
+ 	 * TC integration
+ 	 */
++	int	(*cls_flower_add)(struct dsa_switch *ds, int port,
++				  struct flow_cls_offload *cls, bool ingress);
++	int	(*cls_flower_del)(struct dsa_switch *ds, int port,
++				  struct flow_cls_offload *cls, bool ingress);
++	int	(*cls_flower_stats)(struct dsa_switch *ds, int port,
++				    struct flow_cls_offload *cls, bool ingress);
+ 	int	(*port_mirror_add)(struct dsa_switch *ds, int port,
+ 				   struct dsa_mall_mirror_tc_entry *mirror,
+ 				   bool ingress);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 088c886e609e..79d9b4384d7b 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -946,6 +946,64 @@ static int dsa_slave_setup_tc_cls_matchall(struct net_device *dev,
  	}
-@@ -141,9 +102,12 @@ static void vcap_entry2cache(struct ocelot *ocelot, struct vcap_data *data)
- 
- static void vcap_cache2entry(struct ocelot *ocelot, struct vcap_data *data)
- {
--	u32 i;
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+	u32 entry_words, i;
-+
-+	entry_words = DIV_ROUND_UP(vcap_is2->entry_width, ENTRY_WIDTH);
- 
--	for (i = 0; i < vcap_is2.entry_words; i++) {
-+	for (i = 0; i < entry_words; i++) {
- 		data->entry[i] = ocelot_read_rix(ocelot, S2_CACHE_ENTRY_DAT, i);
- 		// Invert mask
- 		data->mask[i] = ~ocelot_read_rix(ocelot, S2_CACHE_MASK_DAT, i);
-@@ -153,49 +117,56 @@ static void vcap_cache2entry(struct ocelot *ocelot, struct vcap_data *data)
- 
- static void vcap_action2cache(struct ocelot *ocelot, struct vcap_data *data)
- {
--	u32 i, width, mask;
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+	u32 action_words, i, width, mask;
- 
- 	/* Encode action type */
--	width = vcap_is2.action_type_width;
-+	width = vcap_is2->action_type_width;
- 	if (width) {
- 		mask = GENMASK(width, 0);
- 		data->action[0] = ((data->action[0] & ~mask) | data->type);
- 	}
- 
--	for (i = 0; i < vcap_is2.action_words; i++)
--		ocelot_write_rix(ocelot, data->action[i],
--				 S2_CACHE_ACTION_DAT, i);
-+	action_words = DIV_ROUND_UP(vcap_is2->action_width, ENTRY_WIDTH);
- 
--	for (i = 0; i < vcap_is2.counter_words; i++)
--		ocelot_write_rix(ocelot, data->counter[i],
--				 S2_CACHE_CNT_DAT, i);
-+	for (i = 0; i < action_words; i++)
-+		ocelot_write_rix(ocelot, data->action[i], S2_CACHE_ACTION_DAT,
-+				 i);
-+
-+	for (i = 0; i < vcap_is2->counter_words; i++)
-+		ocelot_write_rix(ocelot, data->counter[i], S2_CACHE_CNT_DAT, i);
  }
  
- static void vcap_cache2action(struct ocelot *ocelot, struct vcap_data *data)
- {
--	u32 i, width;
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+	u32 action_words, i, width;
++static int dsa_slave_add_cls_flower(struct net_device *dev,
++				    struct flow_cls_offload *cls,
++				    bool ingress)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
 +
-+	action_words = DIV_ROUND_UP(vcap_is2->action_width, ENTRY_WIDTH);
- 
--	for (i = 0; i < vcap_is2.action_words; i++)
-+	for (i = 0; i < action_words; i++)
- 		data->action[i] = ocelot_read_rix(ocelot, S2_CACHE_ACTION_DAT,
- 						  i);
- 
--	for (i = 0; i < vcap_is2.counter_words; i++)
-+	for (i = 0; i < vcap_is2->counter_words; i++)
- 		data->counter[i] = ocelot_read_rix(ocelot, S2_CACHE_CNT_DAT, i);
- 
- 	/* Extract action type */
--	width = vcap_is2.action_type_width;
-+	width = vcap_is2->action_type_width;
- 	data->type = (width ? (data->action[0] & GENMASK(width, 0)) : 0);
- }
- 
- /* Calculate offsets for entry */
--static void is2_data_get(struct vcap_data *data, int ix)
-+static void is2_data_get(struct ocelot *ocelot, struct vcap_data *data, int ix)
++	if (!ds->ops->cls_flower_add)
++		return -EOPNOTSUPP;
++
++	return ds->ops->cls_flower_add(ds, port, cls, ingress);
++}
++
++static int dsa_slave_del_cls_flower(struct net_device *dev,
++				    struct flow_cls_offload *cls,
++				    bool ingress)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
++
++	if (!ds->ops->cls_flower_del)
++		return -EOPNOTSUPP;
++
++	return ds->ops->cls_flower_del(ds, port, cls, ingress);
++}
++
++static int dsa_slave_stats_cls_flower(struct net_device *dev,
++				      struct flow_cls_offload *cls,
++				      bool ingress)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
++
++	if (!ds->ops->cls_flower_stats)
++		return -EOPNOTSUPP;
++
++	return ds->ops->cls_flower_stats(ds, port, cls, ingress);
++}
++
++static int dsa_slave_setup_tc_cls_flower(struct net_device *dev,
++					 struct flow_cls_offload *cls,
++					 bool ingress)
++{
++	switch (cls->command) {
++	case FLOW_CLS_REPLACE:
++		return dsa_slave_add_cls_flower(dev, cls, ingress);
++	case FLOW_CLS_DESTROY:
++		return dsa_slave_del_cls_flower(dev, cls, ingress);
++	case FLOW_CLS_STATS:
++		return dsa_slave_stats_cls_flower(dev, cls, ingress);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static int dsa_slave_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ 				       void *cb_priv, bool ingress)
  {
--	u32 i, col, offset, count, cnt, base, width = vcap_is2.tg_width;
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
-+	u32 i, col, offset, count, cnt, base;
-+	u32 width = vcap_is2->tg_width;
- 
- 	count = (data->tg_sw == VCAP_TG_HALF ? 2 : 4);
- 	col = (ix % 2);
--	cnt = (vcap_is2.sw_count / count);
--	base = (vcap_is2.sw_count - col * cnt - cnt);
-+	cnt = (vcap_is2->sw_count / count);
-+	base = (vcap_is2->sw_count - col * cnt - cnt);
- 	data->tg_value = 0;
- 	data->tg_mask = 0;
- 	for (i = 0; i < cnt; i++) {
-@@ -206,13 +177,13 @@ static void is2_data_get(struct vcap_data *data, int ix)
- 
- 	/* Calculate key/action/counter offsets */
- 	col = (count - col - 1);
--	data->key_offset = (base * vcap_is2.entry_width) / vcap_is2.sw_count;
--	data->counter_offset = (cnt * col * vcap_is2.counter_width);
-+	data->key_offset = (base * vcap_is2->entry_width) / vcap_is2->sw_count;
-+	data->counter_offset = (cnt * col * vcap_is2->counter_width);
- 	i = data->type;
--	width = vcap_is2.action_table[i].width;
--	cnt = vcap_is2.action_table[i].count;
-+	width = vcap_is2->action_table[i].width;
-+	cnt = vcap_is2->action_table[i].count;
- 	data->action_offset =
--		(((cnt * col * width) / count) + vcap_is2.action_type_width);
-+		(((cnt * col * width) / count) + vcap_is2->action_type_width);
- }
- 
- static void vcap_data_set(u32 *data, u32 offset, u32 len, u32 value)
-@@ -354,6 +325,7 @@ static void is2_action_set(struct ocelot *ocelot, struct vcap_data *data,
- static void is2_entry_set(struct ocelot *ocelot, int ix,
- 			  struct ocelot_ace_rule *ace)
- {
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
- 	u32 val, msk, type, type_mask = 0xf, i, count;
- 	struct ocelot_ace_vlan *tag = &ace->vlan;
- 	struct ocelot_vcap_u64 payload;
-@@ -369,7 +341,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
- 	vcap_cache2action(ocelot, &data);
- 
- 	data.tg_sw = VCAP_TG_HALF;
--	is2_data_get(&data, ix);
-+	is2_data_get(ocelot, &data, ix);
- 	data.tg = (data.tg & ~data.tg_mask);
- 	if (ace->prio != 0)
- 		data.tg |= data.tg_value;
-@@ -627,7 +599,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
+@@ -957,6 +1015,8 @@ static int dsa_slave_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ 	switch (type) {
+ 	case TC_SETUP_CLSMATCHALL:
+ 		return dsa_slave_setup_tc_cls_matchall(dev, type_data, ingress);
++	case TC_SETUP_CLSFLOWER:
++		return dsa_slave_setup_tc_cls_flower(dev, type_data, ingress);
  	default:
- 		type = 0;
- 		type_mask = 0;
--		count = (vcap_is2.entry_width / 2);
-+		count = vcap_is2->entry_width / 2;
- 		/* Iterate over the non-common part of the key and
- 		 * clear entry data
- 		 */
-@@ -641,7 +613,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
- 	vcap_key_set(ocelot, &data, VCAP_IS2_TYPE, type, type_mask);
- 	is2_action_set(ocelot, &data, ace->action);
- 	vcap_data_set(data.counter, data.counter_offset,
--		      vcap_is2.counter_width, ace->stats.pkts);
-+		      vcap_is2->counter_width, ace->stats.pkts);
- 
- 	/* Write row */
- 	vcap_entry2cache(ocelot, &data);
-@@ -652,6 +624,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
- static void is2_entry_get(struct ocelot *ocelot, struct ocelot_ace_rule *rule,
- 			  int ix)
- {
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
- 	struct vcap_data data;
- 	int row = (ix / 2);
- 	u32 cnt;
-@@ -659,9 +632,9 @@ static void is2_entry_get(struct ocelot *ocelot, struct ocelot_ace_rule *rule,
- 	vcap_row_cmd(ocelot, row, VCAP_CMD_READ, VCAP_SEL_COUNTER);
- 	vcap_cache2action(ocelot, &data);
- 	data.tg_sw = VCAP_TG_HALF;
--	is2_data_get(&data, ix);
-+	is2_data_get(ocelot, &data, ix);
- 	cnt = vcap_data_get(data.counter, data.counter_offset,
--			    vcap_is2.counter_width);
-+			    vcap_is2->counter_width);
- 
- 	rule->stats.pkts = cnt;
- }
-@@ -805,16 +778,17 @@ int ocelot_ace_rule_stats_update(struct ocelot *ocelot,
- 
- int ocelot_ace_init(struct ocelot *ocelot)
- {
-+	const struct vcap_props *vcap_is2 = &ocelot->vcap[VCAP_IS2];
- 	struct vcap_data data;
- 
- 	memset(&data, 0, sizeof(data));
- 
- 	vcap_entry2cache(ocelot, &data);
--	ocelot_write(ocelot, vcap_is2.entry_count, S2_CORE_MV_CFG);
-+	ocelot_write(ocelot, vcap_is2->entry_count, S2_CORE_MV_CFG);
- 	vcap_cmd(ocelot, 0, VCAP_CMD_INITIALIZE, VCAP_SEL_ENTRY);
- 
- 	vcap_action2cache(ocelot, &data);
--	ocelot_write(ocelot, vcap_is2.action_count, S2_CORE_MV_CFG);
-+	ocelot_write(ocelot, vcap_is2->action_count, S2_CORE_MV_CFG);
- 	vcap_cmd(ocelot, 0, VCAP_CMD_INITIALIZE,
- 		 VCAP_SEL_ACTION | VCAP_SEL_COUNTER);
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index 8234631a0911..3eb40a2dd0c9 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -18,6 +18,10 @@
- #include "ocelot.h"
- 
- #define IFH_EXTRACT_BITFIELD64(x, o, w) (((x) >> (o)) & GENMASK_ULL((w) - 1, 0))
-+#define VSC7514_VCAP_IS2_CNT 64
-+#define VSC7514_VCAP_IS2_ENTRY_WIDTH 376
-+#define VSC7514_VCAP_IS2_ACTION_WIDTH 99
-+#define VSC7514_VCAP_PORT_CNT 11
- 
- static int ocelot_parse_ifh(u32 *_ifh, struct frame_info *info)
- {
-@@ -337,6 +341,31 @@ static const struct vcap_field vsc7514_vcap_is2_actions[] = {
- 	[VCAP_IS2_ACT_HIT_CNT]			= { 49, 32},
- };
- 
-+static const struct vcap_props vsc7514_vcap_props[] = {
-+	[VCAP_IS2] = {
-+		.tg_width = 2,
-+		.sw_count = 4,
-+		.entry_count = VSC7514_VCAP_IS2_CNT,
-+		.entry_width = VSC7514_VCAP_IS2_ENTRY_WIDTH,
-+		.action_count = VSC7514_VCAP_IS2_CNT +
-+				VSC7514_VCAP_PORT_CNT + 2,
-+		.action_width = 99,
-+		.action_type_width = 1,
-+		.action_table = {
-+			[IS2_ACTION_TYPE_NORMAL] = {
-+				.width = 49,
-+				.count = 2
-+			},
-+			[IS2_ACTION_TYPE_SMAC_SIP] = {
-+				.width = 6,
-+				.count = 4
-+			},
-+		},
-+		.counter_words = 4,
-+		.counter_width = 32,
-+	},
-+};
-+
- static int mscc_ocelot_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-@@ -439,6 +468,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 
- 	ocelot->vcap_is2_keys = vsc7514_vcap_is2_keys;
- 	ocelot->vcap_is2_actions = vsc7514_vcap_is2_actions;
-+	ocelot->vcap = vsc7514_vcap_props;
- 
- 	ocelot_init(ocelot);
- 	/* No NPI port */
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ab342eef251c..e572c6446df0 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -522,6 +522,7 @@ struct ocelot {
- 
- 	const struct vcap_field		*vcap_is2_keys;
- 	const struct vcap_field		*vcap_is2_actions;
-+	const struct vcap_props		*vcap;
- 
- 	/* Workqueue to check statistics for overflow with its lock */
- 	struct mutex			stats_lock;
-diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
-index 0783f0ffc813..5748373ab4d3 100644
---- a/include/soc/mscc/ocelot_vcap.h
-+++ b/include/soc/mscc/ocelot_vcap.h
-@@ -11,6 +11,30 @@
-  * =================================================================
-  */
- 
-+enum {
-+	/* VCAP_IS1, */
-+	VCAP_IS2,
-+	/* VCAP_ES0, */
-+};
-+
-+struct vcap_props {
-+	u16 tg_width; /* Type-group width (in bits) */
-+	u16 sw_count; /* Sub word count */
-+	u16 entry_count; /* Entry count */
-+	u16 entry_words; /* Number of entry words */
-+	u16 entry_width; /* Entry width (in bits) */
-+	u16 action_count; /* Action count */
-+	u16 action_words; /* Number of action words */
-+	u16 action_width; /* Action width (in bits) */
-+	u16 action_type_width; /* Action type width (in bits) */
-+	struct {
-+		u16 width; /* Action type width (in bits) */
-+		u16 count; /* Action type sub word count */
-+	} action_table[2];
-+	u16 counter_words; /* Number of counter words */
-+	u16 counter_width; /* Counter width (in bits) */
-+};
-+
- /* VCAP Type-Group values */
- #define VCAP_TG_NONE 0 /* Entry is invalid */
- #define VCAP_TG_FULL 1 /* Full entry */
-@@ -22,11 +46,6 @@
-  * =================================================================
-  */
- 
--#define VCAP_IS2_CNT 64
--#define VCAP_IS2_ENTRY_WIDTH 376
--#define VCAP_IS2_ACTION_WIDTH 99
--#define VCAP_PORT_CNT 11
--
- /* IS2 half key types */
- #define IS2_TYPE_ETYPE 0
- #define IS2_TYPE_LLC 1
-@@ -42,9 +61,11 @@
- /* IS2 half key type mask for matching any IP */
- #define IS2_TYPE_MASK_IP_ANY 0xe
- 
--/* IS2 action types */
--#define IS2_ACTION_TYPE_NORMAL 0
--#define IS2_ACTION_TYPE_SMAC_SIP 1
-+enum {
-+	IS2_ACTION_TYPE_NORMAL,
-+	IS2_ACTION_TYPE_SMAC_SIP,
-+	IS2_ACTION_TYPE_MAX,
-+};
- 
- /* IS2 MASK_MODE values */
- #define IS2_ACT_MASK_MODE_NONE 0
+ 		return -EOPNOTSUPP;
+ 	}
 -- 
 2.17.1
 
