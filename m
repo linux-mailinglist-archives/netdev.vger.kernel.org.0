@@ -2,120 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E9C1743B7
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:11:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5051743C9
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 01:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbgB2ALS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Feb 2020 19:11:18 -0500
-Received: from gateway34.websitewelcome.com ([192.185.148.212]:20692 "EHLO
-        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726892AbgB2ALS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:11:18 -0500
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 642204CEC35
-        for <netdev@vger.kernel.org>; Fri, 28 Feb 2020 18:11:17 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 7pivj8kl3Sl8q7pivjmdnG; Fri, 28 Feb 2020 18:11:17 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5b/2M8suuafk8OeTPNdtw9kguzC0VV2KliEDV8H4iH0=; b=y8Dn6BzyXZs47uWtFFyTX03RMH
-        azDCmEAktwjGR/0Dhtif3bovuvGmHyrrBuPp+L3/e3vV30/b11fIBWloQ9uP+RkUAom+NRS27KQk7
-        4glYaXzsWF47Otdm3tqGcfKFa9yWMmQau48ru/o8k0/7GEEYkUgdmKmALKDPKFeHptIt8BuOT3td0
-        VTANAshuvEdzITPxkRAv9fIreRD3F2FTSUsPppfnCyPs/8sNQkg+YFkwDFIxl5ehHCE5upWaFrQPx
-        oeXU6LCVL/Oq42QIkm/VmAh7T0rpvD0P/LBUbQ9E+s1kEXimn9bKP3fWNxsSVT1/skF1veiE1Mi0t
-        PrZcK8aA==;
-Received: from [200.39.15.57] (port=32151 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j7pit-002eIL-I1; Fri, 28 Feb 2020 18:11:15 -0600
-Date:   Fri, 28 Feb 2020 18:14:11 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: nexthop: Replace zero-length array with
- flexible-array member
-Message-ID: <20200229001411.GA7580@embeddedor>
+        id S1726682AbgB2AXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Feb 2020 19:23:53 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:42536 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726359AbgB2AXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Feb 2020 19:23:53 -0500
+Received: by mail-qt1-f194.google.com with SMTP id r5so3414173qtt.9;
+        Fri, 28 Feb 2020 16:23:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MiQaTVw+NEXi6UZVua5Gb5oGF/n2CDbDGU7d6kef8X4=;
+        b=IOqBli+8eMXqXIl24zDSLiuX5dwknHb8PffBOFfGaRRdfd0FcsWP1HxDuwlDjaaifw
+         7JImQhpp2hLAzslfx+0grIZ68rnFtoXDeIh5wTB5XzjxHe70Nv1UKtbE5Kin+fVMJmDD
+         aKw5+ZlM2Qz7xMiRvzYkKXCmY4E6Qo5y+1wtdcV2pzHtx0gtyoucG9USq9zCziiEQ/5a
+         TBHesKYVWZJ4iBoJRlZOHG7x7Dp4QKxcEvmN+cBlTr8sIEqW/HR1qkJTGNziazb2QzDO
+         UvY7Am9xPPINZg/S2RW34Rn2t/pKYF1MPw6htTtw6+q1IgeQdCH7E3hCCpTswKW3RyLP
+         rCyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MiQaTVw+NEXi6UZVua5Gb5oGF/n2CDbDGU7d6kef8X4=;
+        b=VOLEBdPm+zEK29SElqRlDQwJvF3D1/iETJLUB/U35R5Ys3omlBQ47GAp2kPMRAYDyv
+         iWkGi4Jk7+QGypbuLGVyR4+lvrpP6reZAtxL6Buj7AJ/8k7aDlYcCJmjOgiJQuGJaWYE
+         S5aNNzM4qQNzrdXyOjBbuAP0l9zr8suiBHP+56WC6vbLuQ0eTMbpZC/KLS1L4c3l3Ji3
+         lC/CmHRzB5Xe0hBDSg0JghSJBb478uZIUFLPFHTf+S0FpcfeEYd8S6iB5uQ+QZ5NJml4
+         HoZo/YTyPrh+Vw1FvVy1YtdNZNgYD3EakDsCK2THQ3Tsg+ucUetzadrJj2yfJAz1xV5O
+         FJAQ==
+X-Gm-Message-State: APjAAAV986BYxfCxd+mbr0HsCk7oX6Ctt9TV9glLk/AanzpcYoYa2u1d
+        y8w2xV6AZf3QTuVAuvp9XVB68kGniddDdWJv1rY=
+X-Google-Smtp-Source: APXvYqwBDifEhSSUWTgsvv2LuzVQ7lhkZ02Psr6krpxKJnYa/EcZ+hrNlWS+TX8h0OjLzY2AvvAza249k7ORdHQPTxw=
+X-Received: by 2002:ac8:5457:: with SMTP id d23mr6140156qtq.93.1582935832248;
+ Fri, 28 Feb 2020 16:23:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 200.39.15.57
-X-Source-L: No
-X-Exim-ID: 1j7pit-002eIL-I1
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.39.15.57]:32151
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 16
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20200228020212.16183-1-komachi.yoshiki@gmail.com>
+In-Reply-To: <20200228020212.16183-1-komachi.yoshiki@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 28 Feb 2020 16:23:41 -0800
+Message-ID: <CAEf4Bza9J3e=dfzDud6KY7_=4Qv77YqW2srfdxKg9ieiUCJgXw@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: btf: Fix BTF verification of the enum size in struct/union
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On Thu, Feb 27, 2020 at 6:07 PM Yoshiki Komachi
+<komachi.yoshiki@gmail.com> wrote:
+>
+> btf_enum_check_member() checked if the size of "enum" as a struct
+> member exceeded struct_size or not. Then, the function definitely
+> compared it with the size of "int" now. Therefore, errors could occur
+> when the size of the "enum" type was changed.
+>
+> Although the size of "enum" is 4-byte by default, users can change it
+> as needed (e.g., the size of the following test variable is not 4-byte
+> but 1-byte). It can be used as a struct member as below:
+>
+> enum test : char {
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+you can't specify that in pure C, but this will work for C:
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+struct {
+    enum { X, Y, Z } __attribute__((packed)) e;
+} tmp;
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
+Please add such a selftest, as part of fixing this bug. Thanks!
 
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
+Otherwise logic looks good.
 
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- include/net/nexthop.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index 331ebbc94fe7..c440ccc861fc 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -73,7 +73,7 @@ struct nh_group {
- 	u16			num_nh;
- 	bool			mpath;
- 	bool			has_v4;
--	struct nh_grp_entry	nh_entries[0];
-+	struct nh_grp_entry	nh_entries[];
- };
- 
- struct nexthop {
--- 
-2.25.0
-
+>         X,
+>         Y,
+>         Z,
+> };
+>
+> struct {
+>         char a;
+>         enum test b;
+>         char c;
+> } tmp;
+>
+> With the setup above, when I tried to load BTF, the error was given
+> as below:
+>
+> ------------------------------------------------------------------
+>
+> [58] STRUCT (anon) size=3 vlen=3
+>         a type_id=55 bits_offset=0
+>         b type_id=59 bits_offset=8
+>         c type_id=55 bits_offset=16
+> [59] ENUM test size=1 vlen=3
+>         X val=0
+>         Y val=1
+>         Z val=2
+>
+> [58] STRUCT (anon) size=3 vlen=3
+>         b type_id=59 bits_offset=8 Member exceeds struct_size
+>
+> libbpf: Error loading .BTF into kernel: -22.
+>
+> ------------------------------------------------------------------
+>
+> The related issue was previously fixed by the commit 9eea98497951 ("bpf:
+> fix BTF verification of enums"). On the other hand, this patch fixes
+> my explained issue by using the correct size of "enum" declared in
+> BPF programs.
+>
+> Fixes: 179cde8cef7e ("bpf: btf: Check members of struct/union")
+> Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+> ---
+>  kernel/bpf/btf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 7871400..32ab922 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -2418,7 +2418,7 @@ static int btf_enum_check_member(struct btf_verifier_env *env,
+>
+>         struct_size = struct_type->size;
+>         bytes_offset = BITS_ROUNDDOWN_BYTES(struct_bits_off);
+> -       if (struct_size - bytes_offset < sizeof(int)) {
+> +       if (struct_size - bytes_offset < member_type->size) {
+>                 btf_verifier_log_member(env, struct_type, member,
+>                                         "Member exceeds struct_size");
+>                 return -EINVAL;
+> --
+> 1.8.3.1
+>
