@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3E41749AC
-	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:30:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02F5C1749A1
+	for <lists+netdev@lfdr.de>; Sat, 29 Feb 2020 23:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727618AbgB2W3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Feb 2020 17:29:32 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38797 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727445AbgB2W3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:32 -0500
-Received: by mail-wm1-f67.google.com with SMTP id u9so1307283wml.3;
-        Sat, 29 Feb 2020 14:29:30 -0800 (PST)
+        id S1727445AbgB2W3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Feb 2020 17:29:36 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36883 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727518AbgB2W3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Feb 2020 17:29:34 -0500
+Received: by mail-wr1-f65.google.com with SMTP id l5so7805651wrx.4;
+        Sat, 29 Feb 2020 14:29:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5ecRrf1/V6B1CB3S5yVtFNvzXeyCocerP3hSIfKLkMA=;
-        b=ryn3luSmm8QmTP8w9thNRNUH22Ta29tZvFO3g8hkxwVjbp1M3OrDLGa3BeiPequhMC
-         sqf+ekkMQSvwm++PMD5RcWrtnTugbshuqFMJRb3A4Oa2JOddZkCArCG4CWn2KHkQvxQC
-         gQiJAfnQJwX7B7WaEMK891vIeoOcSbnTuNOrBvQXC4AJACvQj2Nu2j4KpcUR9oZUUT0a
-         drAu3UND2LhLXP+jPDovdbbgQZdOXA1N+dm4hu65nA6rJ9c3wXAnbfbeIH3lxlRRpQAM
-         KxXmSF1RUeQytEiAnlG95vik+2hl0c4gabr07zRJXdGgPu0giWaEv7nRHb6sH1gQlpZq
-         vWHw==
+        bh=jVYqGE3zFQNBfIcS/dkWQZWOWyucD3CajAp6Ynd+Hzk=;
+        b=OaATaKOfIaajcpbpgibKbkpwskhmu50Vjjtlx2EirgUo5PV1p5HL+/rxdUohgs5iZY
+         A8oIht778UYbAlaUXkTCmf//DoQnHtIepIR3OvL9Jirl/sXhOgqtAk09MGrtxgbUsUiK
+         b4BpBIqXGvtrb+5Bt0mz24l5kOqniJIzXCwrR/sIlUgInT9DImbycfK3K6nNJIdUB59n
+         gzkNJ5KejFTsGlpy3Pp4nM3xZF/OhO5wZCg7S6vt+RNkuOkZllGWGCaIrvmtimXxfu7s
+         jkO+ccPv8WUy4Gho96D33awi8wM+ejiuuilJcsjlYp3uPQEOx4lFku456WeLbKWGx5QM
+         vjHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=5ecRrf1/V6B1CB3S5yVtFNvzXeyCocerP3hSIfKLkMA=;
-        b=IFyK23UOG5DjYerd3S750zsY6+79U9ppR0x1zuIm6jmA3tzmCZLpyKgGXfukgNeejw
-         S+EvxTnrW2Duy7NKAhO8vmbwi9QF7ZXNybKaYCDHGLG2uMnFVNsva+++7NGainTBGVBC
-         +OJwa2rp8aSBbKRi3it6+MxV8Z2503Dd9+oHsKthMvbKYynEggXMVJLmlZQZoymPLgpn
-         lH3s11AS53xvbJKBdxlYPVycjg0MbIClGkS8upCy9+mwG07jAZVGQ3kQgtvRv2UJL7Xe
-         helQzZffq0nAqK45vjJf91+Mro+P79NaULV4HIZa2Kr84UeFtCdLkpuGOuQiyN2LXjfK
-         ojTg==
-X-Gm-Message-State: APjAAAXb1VXNbjxJMPgCj+GH0QmaXRsTuFrUiOpcWk5kamzk+ZstvLof
-        vgN9tuuDvYAxe/9GbK/hUbfiLjzc
-X-Google-Smtp-Source: APXvYqx3ZAaL08Q5gur34JZGBFCqs6CgMQ4PCsqEDX+qNrcrsXclX+kybkTR9nKILr5gkKEoHBCEIQ==
-X-Received: by 2002:a05:600c:2104:: with SMTP id u4mr11363395wml.93.1583015370047;
-        Sat, 29 Feb 2020 14:29:30 -0800 (PST)
+        bh=jVYqGE3zFQNBfIcS/dkWQZWOWyucD3CajAp6Ynd+Hzk=;
+        b=fmMxIzUFdziyLo9WcJrCrFoV8g6RX2P7Q2A4GxaOQvOd+iCb78gQNS+BWJQ0QU+e1i
+         LjdD5HA9yIp3eUTNPoDbHd25fA8CRYjAP6yh5J3Ir+vwhRQkJEqxV2yNa/aV6EzRWuID
+         qIMvSr7eycMItoNFPCOgnLX+dS37j0J/L3IWOS2J7MYzIKSU36c/DcBk418lAfqv5pHi
+         h1p4pPqELPR7jOZxn1likHxIsqfqDexRDbsvj9eOkI7lgbGb+sKpUBSr6NnusjVSIqkg
+         IXOf7QDg2oNcoz1hvGBvDNmUmUuJtVSTzKW3KqiU7tE6Z2G9kHtHPPgbxZAUYey7ih2o
+         p+2w==
+X-Gm-Message-State: APjAAAU+14ClTHNuP1drys5lsBaWZbljK74RPR7z6eGrBJwP/pEzyHyq
+        VfMvZ3lV9nX/kmepBkQ32aI=
+X-Google-Smtp-Source: APXvYqzl/hXV0qSgKwkh/YikHZvhUeSMY6k/AO3khueq4Xn4PyW7j2eWXvjgOcfRyRaKxbbmWmPRXA==
+X-Received: by 2002:adf:ff84:: with SMTP id j4mr7958780wrr.426.1583015371300;
+        Sat, 29 Feb 2020 14:29:31 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:7150:76fe:91ca:7ab5? (p200300EA8F296000715076FE91CA7AB5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7150:76fe:91ca:7ab5])
-        by smtp.googlemail.com with ESMTPSA id a26sm8442970wmm.18.2020.02.29.14.29.29
+        by smtp.googlemail.com with ESMTPSA id b21sm8012210wmd.37.2020.02.29.14.29.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Feb 2020 14:29:29 -0800 (PST)
-Subject: [PATCH v4 06/10] r8169: use pci_status_get_and_clear_errors
+        Sat, 29 Feb 2020 14:29:30 -0800 (PST)
+Subject: [PATCH v4 07/10] net: sun: use pci_status_get_and_clear_errors
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
@@ -59,8 +59,8 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         alsa-devel@alsa-project.org
 References: <adeb9e6e-9be6-317f-3fc0-a4e6e6af5f81@gmail.com>
-Message-ID: <823d89ad-7161-fd62-0933-f3e52f32ff95@gmail.com>
-Date:   Sat, 29 Feb 2020 23:25:05 +0100
+Message-ID: <f2b690d8-bae5-6172-7f8c-1fe9b9e8e421@gmail.com>
+Date:   Sat, 29 Feb 2020 23:26:49 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
@@ -77,45 +77,110 @@ Use new helper pci_status_get_and_clear_errors() to simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/sun/cassini.c | 28 ++++++++++------------------
+ drivers/net/ethernet/sun/sungem.c  | 30 +++++++++---------------------
+ 2 files changed, 19 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7c9892a16..4495a3cf9 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4357,13 +4357,15 @@ static void rtl8169_pcierr_interrupt(struct net_device *dev)
- {
- 	struct rtl8169_private *tp = netdev_priv(dev);
- 	struct pci_dev *pdev = tp->pci_dev;
--	u16 pci_status, pci_cmd;
-+	int pci_status_errs;
-+	u16 pci_cmd;
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index 6ec9163e2..e6d1aa882 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -1716,34 +1716,26 @@ static int cas_pci_interrupt(struct net_device *dev, struct cas *cp,
+ 	pr_cont("\n");
  
- 	pci_read_config_word(pdev, PCI_COMMAND, &pci_cmd);
--	pci_read_config_word(pdev, PCI_STATUS, &pci_status);
+ 	if (stat & PCI_ERR_OTHER) {
+-		u16 cfg;
++		int pci_errs;
  
--	netif_err(tp, intr, dev, "PCI error (cmd = 0x%04x, status = 0x%04x)\n",
--		  pci_cmd, pci_status);
-+	pci_status_errs = pci_status_get_and_clear_errors(pdev);
+ 		/* Interrogate PCI config space for the
+ 		 * true cause.
+ 		 */
+-		pci_read_config_word(cp->pdev, PCI_STATUS, &cfg);
+-		netdev_err(dev, "Read PCI cfg space status [%04x]\n", cfg);
+-		if (cfg & PCI_STATUS_PARITY)
++		pci_errs = pci_status_get_and_clear_errors(cp->pdev);
 +
-+	netif_err(tp, intr, dev, "PCI error (cmd = 0x%04x, status_errs = 0x%04x)\n",
-+		  pci_cmd, pci_status_errs);
- 
- 	/*
- 	 * The recovery sequence below admits a very elaborated explanation:
-@@ -4380,11 +4382,6 @@ static void rtl8169_pcierr_interrupt(struct net_device *dev)
- 
- 	pci_write_config_word(pdev, PCI_COMMAND, pci_cmd);
- 
--	pci_write_config_word(pdev, PCI_STATUS,
--		pci_status & (PCI_STATUS_DETECTED_PARITY | PCI_STATUS_PARITY |
--		PCI_STATUS_SIG_SYSTEM_ERROR | PCI_STATUS_REC_MASTER_ABORT |
--		PCI_STATUS_REC_TARGET_ABORT | PCI_STATUS_SIG_TARGET_ABORT));
++		netdev_err(dev, "PCI status errors[%04x]\n", pci_errs);
++		if (pci_errs & PCI_STATUS_PARITY)
+ 			netdev_err(dev, "PCI parity error detected\n");
+-		if (cfg & PCI_STATUS_SIG_TARGET_ABORT)
++		if (pci_errs & PCI_STATUS_SIG_TARGET_ABORT)
+ 			netdev_err(dev, "PCI target abort\n");
+-		if (cfg & PCI_STATUS_REC_TARGET_ABORT)
++		if (pci_errs & PCI_STATUS_REC_TARGET_ABORT)
+ 			netdev_err(dev, "PCI master acks target abort\n");
+-		if (cfg & PCI_STATUS_REC_MASTER_ABORT)
++		if (pci_errs & PCI_STATUS_REC_MASTER_ABORT)
+ 			netdev_err(dev, "PCI master abort\n");
+-		if (cfg & PCI_STATUS_SIG_SYSTEM_ERROR)
++		if (pci_errs & PCI_STATUS_SIG_SYSTEM_ERROR)
+ 			netdev_err(dev, "PCI system error SERR#\n");
+-		if (cfg & PCI_STATUS_DETECTED_PARITY)
++		if (pci_errs & PCI_STATUS_DETECTED_PARITY)
+ 			netdev_err(dev, "PCI parity error\n");
 -
- 	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
- }
+-		/* Write the error bits back to clear them. */
+-		cfg &= (PCI_STATUS_PARITY |
+-			PCI_STATUS_SIG_TARGET_ABORT |
+-			PCI_STATUS_REC_TARGET_ABORT |
+-			PCI_STATUS_REC_MASTER_ABORT |
+-			PCI_STATUS_SIG_SYSTEM_ERROR |
+-			PCI_STATUS_DETECTED_PARITY);
+-		pci_write_config_word(cp->pdev, PCI_STATUS, cfg);
+ 	}
  
+ 	/* For all PCI errors, we should reset the chip. */
+diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
+index 8358064fb..2d392a7b1 100644
+--- a/drivers/net/ethernet/sun/sungem.c
++++ b/drivers/net/ethernet/sun/sungem.c
+@@ -545,37 +545,25 @@ static int gem_pci_interrupt(struct net_device *dev, struct gem *gp, u32 gem_sta
+ 	}
+ 
+ 	if (pci_estat & GREG_PCIESTAT_OTHER) {
+-		u16 pci_cfg_stat;
++		int pci_errs;
+ 
+ 		/* Interrogate PCI config space for the
+ 		 * true cause.
+ 		 */
+-		pci_read_config_word(gp->pdev, PCI_STATUS,
+-				     &pci_cfg_stat);
+-		netdev_err(dev, "Read PCI cfg space status [%04x]\n",
+-			   pci_cfg_stat);
+-		if (pci_cfg_stat & PCI_STATUS_PARITY)
++		pci_errs = pci_status_get_and_clear_errors(gp->pdev);
++		netdev_err(dev, "PCI status errors[%04x]\n", pci_errs);
++		if (pci_errs & PCI_STATUS_PARITY)
+ 			netdev_err(dev, "PCI parity error detected\n");
+-		if (pci_cfg_stat & PCI_STATUS_SIG_TARGET_ABORT)
++		if (pci_errs & PCI_STATUS_SIG_TARGET_ABORT)
+ 			netdev_err(dev, "PCI target abort\n");
+-		if (pci_cfg_stat & PCI_STATUS_REC_TARGET_ABORT)
++		if (pci_errs & PCI_STATUS_REC_TARGET_ABORT)
+ 			netdev_err(dev, "PCI master acks target abort\n");
+-		if (pci_cfg_stat & PCI_STATUS_REC_MASTER_ABORT)
++		if (pci_errs & PCI_STATUS_REC_MASTER_ABORT)
+ 			netdev_err(dev, "PCI master abort\n");
+-		if (pci_cfg_stat & PCI_STATUS_SIG_SYSTEM_ERROR)
++		if (pci_errs & PCI_STATUS_SIG_SYSTEM_ERROR)
+ 			netdev_err(dev, "PCI system error SERR#\n");
+-		if (pci_cfg_stat & PCI_STATUS_DETECTED_PARITY)
++		if (pci_errs & PCI_STATUS_DETECTED_PARITY)
+ 			netdev_err(dev, "PCI parity error\n");
+-
+-		/* Write the error bits back to clear them. */
+-		pci_cfg_stat &= (PCI_STATUS_PARITY |
+-				 PCI_STATUS_SIG_TARGET_ABORT |
+-				 PCI_STATUS_REC_TARGET_ABORT |
+-				 PCI_STATUS_REC_MASTER_ABORT |
+-				 PCI_STATUS_SIG_SYSTEM_ERROR |
+-				 PCI_STATUS_DETECTED_PARITY);
+-		pci_write_config_word(gp->pdev,
+-				      PCI_STATUS, pci_cfg_stat);
+ 	}
+ 
+ 	/* For all PCI errors, we should reset the chip. */
 -- 
 2.25.1
 
