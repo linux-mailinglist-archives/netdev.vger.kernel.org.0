@@ -2,38 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB57174DD0
-	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 15:45:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E683D174DD1
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 15:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727000AbgCAOp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 09:45:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52780 "EHLO mail.kernel.org"
+        id S1727027AbgCAOqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 09:46:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726954AbgCAOp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Mar 2020 09:45:56 -0500
+        id S1726954AbgCAOp7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Mar 2020 09:45:59 -0500
 Received: from localhost (unknown [193.47.165.251])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 79A51222C4;
-        Sun,  1 Mar 2020 14:45:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A565C222C4;
+        Sun,  1 Mar 2020 14:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583073956;
-        bh=d18xuB9t1vwSw0bXxYz/rYEe9wk60AfEPi4z/xXa2OU=;
+        s=default; t=1583073959;
+        bh=yenWz8BchI84GkC+Hn+D/76fjJSi2RJKhkKXec3PBZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lxMDPmUcHJZ22fP1CMzMEmXbi3CqYE5r6qZtFeOV+UVLsvTY0aDBARNy302c+SjEb
-         QcY+Nhhrd5/GxskTdQa0iopBXyWPrpAPcwOGzCREsa30dXKrQ2kJc/ev7KcNAdoqeF
-         i40CQ3WM9AIX6Vujj3D+IQj4rvkiO5eDVVd8Q8jc=
+        b=I2rdv4uBTGJ8U2lcwkE/pS6D4STwjVyYX7yWZZ1HTweCJwysFdeiNSOKawTLxss//
+         xgmSjmUmT0Iba2ClOcz7yCl61TK0PbxLLPvAqNnjLTO20ma8fCclDopgfj6u60iTaz
+         hAnAEmgLFjRkq0V/EsdIDU9aFwgLbSGp9V3QBqqc=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        netdev@vger.kernel.org, Sathya Perla <sathya.perla@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: [PATCH net-next 17/23] net/emulex: Delete driver version
-Date:   Sun,  1 Mar 2020 16:44:50 +0200
-Message-Id: <20200301144457.119795-18-leon@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next 18/23] net/faraday: Delete driver version from the drivers
+Date:   Sun,  1 Mar 2020 16:44:51 +0200
+Message-Id: <20200301144457.119795-19-leon@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200301144457.119795-1-leon@kernel.org>
 References: <20200301144457.119795-1-leon@kernel.org>
@@ -46,62 +42,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@mellanox.com>
 
-Remove driver version in favor of general linux kernel version.
+Use general linux kernel version instead of static driver version.
 
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/ethernet/emulex/benet/be.h         | 1 -
- drivers/net/ethernet/emulex/benet/be_ethtool.c | 1 -
- drivers/net/ethernet/emulex/benet/be_main.c    | 5 +----
- 3 files changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 2 --
+ drivers/net/ethernet/faraday/ftmac100.c  | 3 ---
+ 2 files changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
-index cf3e6f2892ff..6e9022083004 100644
---- a/drivers/net/ethernet/emulex/benet/be.h
-+++ b/drivers/net/ethernet/emulex/benet/be.h
-@@ -33,7 +33,6 @@
- #include "be_hw.h"
- #include "be_roce.h"
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 4572797f00d7..71a7709f7cc8 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -30,7 +30,6 @@
+ #include "ftgmac100.h"
  
--#define DRV_VER			"12.0.0.0"
- #define DRV_NAME		"be2net"
- #define BE_NAME			"Emulex BladeEngine2"
- #define BE3_NAME		"Emulex BladeEngine3"
-diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-index 022a54a1805b..9d9f0545fbfe 100644
---- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
-+++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-@@ -221,7 +221,6 @@ static void be_get_drvinfo(struct net_device *netdev,
- 	struct be_adapter *adapter = netdev_priv(netdev);
+ #define DRV_NAME	"ftgmac100"
+-#define DRV_VERSION	"0.7"
  
- 	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, DRV_VER, sizeof(drvinfo->version));
- 	if (!memcmp(adapter->fw_ver, adapter->fw_on_flash, FW_VER_LEN))
- 		strlcpy(drvinfo->fw_version, adapter->fw_ver,
- 			sizeof(drvinfo->fw_version));
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 56f59db6ebf2..a7ac23a6862b 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -21,8 +21,7 @@
- #include <net/busy_poll.h>
- #include <net/vxlan.h>
+ /* Arbitrary values, I am not sure the HW has limits */
+ #define MAX_RX_QUEUE_ENTRIES	1024
+@@ -1150,7 +1149,6 @@ static void ftgmac100_get_drvinfo(struct net_device *netdev,
+ 				  struct ethtool_drvinfo *info)
+ {
+ 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
+ 	strlcpy(info->bus_info, dev_name(&netdev->dev), sizeof(info->bus_info));
+ }
  
--MODULE_VERSION(DRV_VER);
--MODULE_DESCRIPTION(DRV_DESC " " DRV_VER);
-+MODULE_DESCRIPTION(DRV_DESC);
- MODULE_AUTHOR("Emulex Corporation");
- MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
+index 6c247cbbd23e..32cf54f0e35b 100644
+--- a/drivers/net/ethernet/faraday/ftmac100.c
++++ b/drivers/net/ethernet/faraday/ftmac100.c
+@@ -23,7 +23,6 @@
+ #include "ftmac100.h"
  
-@@ -5949,8 +5948,6 @@ static int be_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
- 	struct net_device *netdev;
- 	int status = 0;
+ #define DRV_NAME	"ftmac100"
+-#define DRV_VERSION	"0.2"
  
--	dev_info(&pdev->dev, "%s version is %s\n", DRV_NAME, DRV_VER);
--
- 	status = pci_enable_device(pdev);
- 	if (status)
- 		goto do_none;
+ #define RX_QUEUE_ENTRIES	128	/* must be power of 2 */
+ #define TX_QUEUE_ENTRIES	16	/* must be power of 2 */
+@@ -809,7 +808,6 @@ static void ftmac100_get_drvinfo(struct net_device *netdev,
+ 				 struct ethtool_drvinfo *info)
+ {
+ 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
+ 	strlcpy(info->bus_info, dev_name(&netdev->dev), sizeof(info->bus_info));
+ }
+ 
+@@ -1184,7 +1182,6 @@ static struct platform_driver ftmac100_driver = {
+  *****************************************************************************/
+ static int __init ftmac100_init(void)
+ {
+-	pr_info("Loading version " DRV_VERSION " ...\n");
+ 	return platform_driver_register(&ftmac100_driver);
+ }
+ 
 -- 
 2.24.1
 
