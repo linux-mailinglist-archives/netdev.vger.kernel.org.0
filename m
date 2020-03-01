@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D3B174BF3
-	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 06:54:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BB4174BF5
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 06:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727526AbgCAFxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 00:53:51 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38940 "EHLO
+        id S1726490AbgCAF4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 00:56:37 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38960 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbgCAFxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 00:53:51 -0500
+        with ESMTP id S1725821AbgCAF4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 00:56:37 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E870D15BDA6EC;
-        Sat, 29 Feb 2020 21:53:50 -0800 (PST)
-Date:   Sat, 29 Feb 2020 21:53:50 -0800 (PST)
-Message-Id: <20200229.215350.727729817720801193.davem@davemloft.net>
-To:     gustavo@embeddedor.com
-Cc:     m.grzeschik@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] arcnet: Replace zero-length array with
- flexible-array member
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 88F7515BDA709;
+        Sat, 29 Feb 2020 21:56:36 -0800 (PST)
+Date:   Sat, 29 Feb 2020 21:56:35 -0800 (PST)
+Message-Id: <20200229.215635.2114179824389352796.davem@davemloft.net>
+To:     liuhangbin@gmail.com
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, jishi@redhat.com,
+        roopa@cumulusnetworks.com
+Subject: Re: [PATCHv2 net] net/ipv6: use configured metric when add peer
+ route
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200229010701.GA9883@embeddedor>
-References: <20200229010701.GA9883@embeddedor>
+In-Reply-To: <20200229092713.29433-1-liuhangbin@gmail.com>
+References: <20200228091858.19729-1-liuhangbin@gmail.com>
+        <20200229092713.29433-1-liuhangbin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Feb 2020 21:53:51 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Feb 2020 21:56:36 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Fri, 28 Feb 2020 19:07:01 -0600
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Sat, 29 Feb 2020 17:27:13 +0800
 
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
+> When we add peer address with metric configured, IPv4 could set the dest
+> metric correctly, but IPv6 do not. e.g.
 > 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
+> ]# ip addr add 192.0.2.1 peer 192.0.2.2/32 dev eth1 metric 20
+> ]# ip route show dev eth1
+> 192.0.2.2 proto kernel scope link src 192.0.2.1 metric 20
+> ]# ip addr add 2001:db8::1 peer 2001:db8::2/128 dev eth1 metric 20
+> ]# ip -6 route show dev eth1
+> 2001:db8::1 proto kernel metric 20 pref medium
+> 2001:db8::2 proto kernel metric 256 pref medium
 > 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
+> Fix this by using configured metric instead of default one.
 > 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
+> Reported-by: Jianlin Shi <jishi@redhat.com>
+> Fixes: 8308f3ff1753 ("net/ipv6: Add support for specifying metric of connected routes")
+> Reviewed-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+> v2: fix metric typo
 
-Applied.
+Applied and queued up for -stable, thank you.
