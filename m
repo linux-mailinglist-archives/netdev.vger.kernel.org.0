@@ -2,101 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88B9E174EF7
-	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 19:31:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A96ED174F4A
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 20:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgCASbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 13:31:50 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:39955 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726146AbgCASbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 13:31:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583087508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KDH61zEqTkfSRUoPHaRxUIdXy1ZoZJl+/pi5nX+flFM=;
-        b=cnVhI0QwT9xGX7xIg5TQ/AK6cqshkaJYguQ8mGqCgZgYFI3Aayab/tB9k6SK17ay0Uvrnz
-        BhF0oqR5XjOKl3zcTQiAVpLWznp29Ahhkt1IAmE3Kti1ortWjosp7StxX7k5UDCnIufhZ4
-        zmbAtRqPEAuElpvL4/k2msDehyMQKJg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-476-5IMCXbJRO121tFcv9_PgTA-1; Sun, 01 Mar 2020 13:31:45 -0500
-X-MC-Unique: 5IMCXbJRO121tFcv9_PgTA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EAF55100550E;
-        Sun,  1 Mar 2020 18:31:42 +0000 (UTC)
-Received: from krava (ovpn-204-60.brq.redhat.com [10.40.204.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AAF7B399;
-        Sun,  1 Mar 2020 18:31:32 +0000 (UTC)
-Date:   Sun, 1 Mar 2020 19:31:30 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Song Liu <song@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: Re: [PATCH 04/18] bpf: Add name to struct bpf_ksym
-Message-ID: <20200301183130.GA165525@krava>
-References: <20200226130345.209469-1-jolsa@kernel.org>
- <20200226130345.209469-5-jolsa@kernel.org>
- <CAPhsuW5u=6MEWKU4-Cfdr3VfYn+NuTgX6SezC_W33WZsM3j8ng@mail.gmail.com>
- <20200227085002.GC34774@krava>
- <CAPhsuW78oZ=g51B55z0etMzYyotztFC+4kMaYPOUaMVD-=mOvg@mail.gmail.com>
+        id S1726579AbgCATzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 14:55:48 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:58862 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbgCATzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 14:55:48 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 021JsiXA191883;
+        Sun, 1 Mar 2020 19:55:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=gptipmtQiztgMocuC7kl9HcYPDLpmxEg8SraJxSTp5s=;
+ b=amgrnIHJJaP38d3KmzG5YwVOyIhw0a11+I7+XYIhfzToZ6zOsablanq2+g7WyVA8ztLn
+ 4LQ217Dpx7KqbVXPZpvd9rEr3qGVrGP48XttxMfoTDIU7lNZk8/rG9vEfpoV7ruSWXdN
+ y78saON9kJjVATV3UrXRbFHWxZJzumWsz1k+DYjBSV8KwHs61zhus1spa2m2RvAKIwRR
+ hDJs04AQTnZCBiGGfhffYTZs/HZYTL92L+vMrO2xL2ZKH/f4cb8hAZSQS4nIM/NXQVaC
+ UF1CpijrSrvHyJnZRzaiyWFe9DoiMGRZ5pS1hb6PhamekytxZgKg3q+Dce/TFewQ5MD7 AQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2yffwqca5n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 01 Mar 2020 19:55:30 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 021Jh0RV091005;
+        Sun, 1 Mar 2020 19:55:30 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2yg1gthgyu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 01 Mar 2020 19:55:30 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 021JtTND012567;
+        Sun, 1 Mar 2020 19:55:29 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 2yg1gthgyf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 01 Mar 2020 19:55:29 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 021JtReW024791;
+        Sun, 1 Mar 2020 19:55:27 GMT
+Received: from [10.159.150.254] (/10.159.150.254)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 01 Mar 2020 11:55:27 -0800
+Subject: Re: general protection fault in rds_ib_add_one
+To:     =?UTF-8?Q?H=c3=a5kon_Bugge?= <haakon.bugge@oracle.com>,
+        Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+274094e62023782eeb17@syzkaller.appspotmail.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        syzkaller-bugs@googlegroups.com,
+        Andy Grover <andy.grover@oracle.com>
+References: <20200224103913.2776-1-hdanton@sina.com>
+ <20200225044734.14680-1-hdanton@sina.com>
+ <b35981ca-f565-0169-5f99-35d67828d0b7@oracle.com>
+ <E8CFF16A-4C5C-46B8-9F6E-8406765591A7@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <8f857cf7-6e02-ac80-e873-f9c40b743566@oracle.com>
+Date:   Sun, 1 Mar 2020 11:55:25 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPhsuW78oZ=g51B55z0etMzYyotztFC+4kMaYPOUaMVD-=mOvg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <E8CFF16A-4C5C-46B8-9F6E-8406765591A7@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9547 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ phishscore=0 clxscore=1015 bulkscore=0 adultscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2003010155
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 10:59:57AM -0800, Song Liu wrote:
-> On Thu, Feb 27, 2020 at 12:50 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Wed, Feb 26, 2020 at 01:14:43PM -0800, Song Liu wrote:
-> > > On Wed, Feb 26, 2020 at 5:04 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > >
-> > > > Adding name to 'struct bpf_ksym' object to carry the name
-> > > > of the symbol for bpf_prog, bpf_trampoline, bpf_dispatcher.
-> > > >
-> > > > The current benefit is that name is now generated only when
-> > > > the symbol is added to the list, so we don't need to generate
-> > > > it every time it's accessed.
-> > > >
-> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > >
-> > > The patch looks good. But I wonder whether we want pay the cost of
-> > > extra 128 bytes per bpf program. Maybe make it a pointer and only
-> > > generate the string when it is first used?
-> >
-> > I thought 128 would not be that bad, also the code is quite
-> > simple because of that.. if that's really a concern I could
-> > make the changes, but that would probably mean changing the
-> > design
+
+
+On 3/1/20 9:46 AM, Håkon Bugge wrote:
 > 
-> I guess this is OK. We can further optimize it if needed.
 > 
-> Acked-by: Song Liu <songliubraving@fb.com>
->
+>> On 25 Feb 2020, at 19:05, santosh.shilimkar@oracle.com wrote:
+>>
+>>
+>>
+>> On 2/24/20 8:47 PM, Hillf Danton wrote:
+>>> On Mon, 24 Feb 2020 09:51:01 -0800 Santosh Shilimkar wrote:
+>>>> On 2/24/20 2:39 AM, Hillf Danton wrote:
+>>>>>
+>>>>> Fall back to NUMA_NO_NODE if needed.
+>>> [...]
+>>>>>
+>>>> This seems good. Can you please post it as properly formatted patch ?
+>> Thanks !!
+>>
+>>> ---8<---
+>>> Subject: [PATCH] net/rds: fix gpf in rds_ib_add_one
+>>> From: Hillf Danton <hdanton@sina.com>
+>>> The devoted syzbot posted a gpf report.
+>>> general protection fault, probably for non-canonical address 0xdffffc0000000086: 0000 [#1] PREEMPT SMP KASAN
+>>> KASAN: null-ptr-deref in range [0x0000000000000430-0x0000000000000437]
+>>> CPU: 0 PID: 8852 Comm: syz-executor043 Not tainted 5.6.0-rc2-syzkaller #0
+>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>> RIP: 0010:dev_to_node include/linux/device.h:663 [inline]
+>>> RIP: 0010:rds_ib_add_one+0x81/0xe50 net/rds/ib.c:140
+>>> Code: b7 a8 06 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 28 00 74 08 4c 89 f7 e8 0e e4 1d fa bb 30 04 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 8a 04 28 84 c0 0f 85 f0 0a 00 00 8b 1b 48 c7 c0 28 0c 09 89 48
+>>> RSP: 0018:ffffc90003087298 EFLAGS: 00010202
+>>> RAX: 0000000000000086 RBX: 0000000000000430 RCX: 0000000000000000
+>>> RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
+>>> RBP: ffffc900030872f0 R08: ffffffff87964c3c R09: ffffed1014fd109c
+>>> R10: ffffed1014fd109c R11: 0000000000000000 R12: 0000000000000000
+>>> R13: dffffc0000000000 R14: ffff8880a7e886a8 R15: ffff8880a7e88000
+>>> FS:  0000000000c3d880(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 00007f0318ed0000 CR3: 00000000a3167000 CR4: 00000000001406f0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>> Call Trace:
+>>>   add_client_context+0x482/0x660 drivers/infiniband/core/device.c:681
+>>>   enable_device_and_get+0x15b/0x370 drivers/infiniband/core/device.c:1316
+>>>   ib_register_device+0x124d/0x15b0 drivers/infiniband/core/device.c:1382
+>>>   rxe_register_device+0x3f6/0x530 drivers/infiniband/sw/rxe/rxe_verbs.c:1231
+>>>   rxe_add+0x1373/0x14f0 drivers/infiniband/sw/rxe/rxe.c:302
+>>>   rxe_net_add+0x79/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:539
+>>>   rxe_newlink+0x31/0x90 drivers/infiniband/sw/rxe/rxe.c:318
+>>>   nldev_newlink+0x403/0x4a0 drivers/infiniband/core/nldev.c:1538
+>>>   rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
+>>>   rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
+>>>   rdma_nl_rcv+0x701/0xa20 drivers/infiniband/core/netlink.c:259
+>>>   netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+>>>   netlink_unicast+0x766/0x920 net/netlink/af_netlink.c:1328
+>>>   netlink_sendmsg+0xa2b/0xd40 net/netlink/af_netlink.c:1917
+>>>   sock_sendmsg_nosec net/socket.c:652 [inline]
+>>>   sock_sendmsg net/socket.c:672 [inline]
+>>>   ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2343
+>>>   ___sys_sendmsg net/socket.c:2397 [inline]
+>>>   __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
+>>>   __do_sys_sendmsg net/socket.c:2439 [inline]
+>>>   __se_sys_sendmsg net/socket.c:2437 [inline]
+>>>   __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2437
+>>>   do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
+>>>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+>>> It's fixed by falling back to NUMA_NO_NODE if needed while allocating
+>>> memory slices for send/recv rings at some cost of dip in performance.
+>>> Reported-by: syzbot <syzbot+274094e62023782eeb17@syzkaller.appspotmail.com>
+>>> Fixes: e4c52c98e049 ("RDS/IB: add _to_node() macros for numa and use {k,v}malloc_node()")
+>>> Cc: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+>>> Cc: Andy Grover <andy.grover@oracle.com>
+>>> Signed-off-by: Hillf Danton <hdanton@sina.com>
+>>> ---
+>> Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+>>
+>>> --- a/net/rds/ib.c
+>>> +++ b/net/rds/ib.c
+>>> @@ -137,7 +137,8 @@ static void rds_ib_add_one(struct ib_dev
+>>>   		return;
+>>>     	rds_ibdev = kzalloc_node(sizeof(struct rds_ib_device), GFP_KERNEL,
+>>> -				 ibdev_to_node(device));
+>>> +				 device->dev.parent ?
+>>> +				 ibdev_to_node(device) : NUMA_NO_NODE);
+> 
+> I would strongly advice this fix to be applied to the define itself, so the fix will be made for all 4 calls as well. Aka:
+> 
+> #define ibdev_to_node(ibdev) (ibdev)->dev.parent ? dev_to_node((ibdev)->dev.parent) : NUMA_NO_NODE
+> 
+Indeed.
 
-ok, thanks for the review, I still have to make some changes,
-so I'll keep your acked-by on patches that won't be changed,
-please scream otherwise ;-)
-
-thanks,
-jirka
-
+Hillf, Can you please spin V2 with it ?
