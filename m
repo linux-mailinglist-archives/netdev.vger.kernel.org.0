@@ -2,100 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AE8174FBD
-	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 21:57:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 059E1174FE5
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 22:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbgCAU5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 15:57:25 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52385 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726188AbgCAU5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 15:57:24 -0500
-Received: by mail-wm1-f67.google.com with SMTP id p9so9010287wmc.2
-        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 12:57:15 -0800 (PST)
+        id S1726536AbgCAV0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 16:26:47 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:38339 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726366AbgCAV0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 16:26:47 -0500
+Received: by mail-lf1-f68.google.com with SMTP id w22so5320214lfk.5
+        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 13:26:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=0OGCgsunf9EvquF6Ai13UgGPqjgXcqRb6OOTuXW/MJU=;
-        b=ejOeqDwwvwmgPSxDmT+9R9yug/rYwR1WGBszljH6ZWs1HhT5qod9k/gKdjIZ/Asxog
-         a6SvrW1n3ABa81OiiQznrTrsR09hje7jb2moz+Vyscxkk0rHG+dF3f0ebfwsDWVBdR7C
-         AARsGoqzthVWJhYJxf/gpW0cwvjz9J0icHQkea7SZBEEddm2hbNhdGwtGtHhUsUQUx1Q
-         YUGhcwBXdDDkWVTJEYW6kCFKbxcQn0DIxdGOZctsnY4GKln9TFXxEz+/jQ8oS6bJd+nJ
-         R0VT11TURfLsx5/bkAi/G/L+oeg61K95o9xzR85Jpe31GJEPkgEvBel9Ymz5Alwemo3j
-         a1wQ==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=9ChqPHQH4n+KZdKDaLvbA3opt3V3GK36fgbVk5eUyaw=;
+        b=QG1FQ1WSUPpC1BKqu4S3LzB4MaSsyG4SaBm1uKbNf6uXXOsphx5tWjADzinWEFwZrA
+         6IGJu7qmOCOtLlP3TkcOAZhwVUAroApkE/kBx5fpeKg1t1grhjmOF3hrfjb6/88uU6qk
+         8I05sbn09Mg8+EaPphR5iU7H9lYNFHG04dvnc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=0OGCgsunf9EvquF6Ai13UgGPqjgXcqRb6OOTuXW/MJU=;
-        b=IP5p2HGzzi605/fmnVn6XtveZFv7qz2SWXNwBrQm7V/XVsySEsJXzUa3k651jqT0xr
-         K+dB59GO1S2nxrjKgmHcMPSsRizn0F0y4SG3eDomMyusoij1/6zlEHEQM0bbzJ4sZEGk
-         0tbkN+0Now0BGmB0MQI85BOc4qcD4ikxvZ8GE/l5sqTI6VjiKvoW1ID6TPV07dNybr0g
-         QyASd+4IIHXqJXE1kV3sR4qWjPkXxmsO1zqSmppZV5GVzBNhhJN3bAu0o3VVIkdknNwN
-         v11sLHgjoMJHBDuEm6hCSG6hbUtOFvfcz1g7u9eMNIUNWp0YfDrFbgqZtUEdBO2wVy/y
-         Y+jg==
-X-Gm-Message-State: APjAAAU5/U7AtQSwrHr2T0ojnUVnvv+1jPDYYRyQ0NQeWkf2ADj/74xz
-        wTHgwRrjqGsiuYdv9w/+WthRTALk
-X-Google-Smtp-Source: APXvYqx1nzK64HNL/tu7Ogg6Tw5oXxL3xa0v310HKl1NAXTetghNTytQ75H9LSiVta2a5J28rZMD/g==
-X-Received: by 2002:a05:600c:104d:: with SMTP id 13mr15688411wmx.50.1583096234843;
-        Sun, 01 Mar 2020 12:57:14 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:f915:e49c:5a8a:4fcb? (p200300EA8F296000F915E49C5A8A4FCB.dip0.t-ipconnect.de. [2003:ea:8f29:6000:f915:e49c:5a8a:4fcb])
-        by smtp.googlemail.com with ESMTPSA id z9sm11209588wrh.91.2020.03.01.12.57.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Mar 2020 12:57:14 -0800 (PST)
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: phy: mscc: add constants for used interrupt
- mask bits
-Message-ID: <6503f7cf-477d-954b-ab7c-c9805cfa3692@gmail.com>
-Date:   Sun, 1 Mar 2020 21:57:08 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=9ChqPHQH4n+KZdKDaLvbA3opt3V3GK36fgbVk5eUyaw=;
+        b=megtsPj9PW8RaYc7ekdbGrH5a5LLaIvT9+x6xwzRAlYQG4VquG1lzy20GkNU8uh9XX
+         mCfP2k1fnNduaV+c4GBOkv5vOsWxdM0+Hkj8pcMBMu2mpA0lbisCmNTNgwElRS6I36BX
+         Py4GP6/vYFqzPDADu1WKDG1CUlzMwgqm46EEujh+IXzkURwc1P9yrhynzZZaTWHjdyar
+         nABH2JMLMsw2tEn9duLX34lAvIJ9NIJjrMSBTnFQ91Ckhn21RTag8I2woqX3exgK7tT3
+         gbVI1oJ7VPeVnWAM3qhhgcI+LgCXzxty8emIbUzzcWry2yhDZvi5mfFmPbgsxKL8tVT+
+         chJA==
+X-Gm-Message-State: ANhLgQ2ClecoyINf3GoUxRxzQHXb+DuE/CZ046NWO+9ryIxVH8zEbKDm
+        cZlnEDEXqzNQh6YpCdLNsHgEcQ==
+X-Google-Smtp-Source: ADFU+vupC7v8Os2lX3z7yQH8PaugHzGwlvbsdW6JexF1dUKO7vyGmY0AWftVPTojH+98t+0VhuiwgA==
+X-Received: by 2002:ac2:599e:: with SMTP id w30mr4964572lfn.80.1583098003137;
+        Sun, 01 Mar 2020 13:26:43 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id z67sm9396409lfa.50.2020.03.01.13.26.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Mar 2020 13:26:42 -0800 (PST)
+References: <20200228115344.17742-1-lmb@cloudflare.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     john.fastabend@gmail.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 0/9] bpf: sockmap, sockhash: support storing UDP sockets
+In-reply-to: <20200228115344.17742-1-lmb@cloudflare.com>
+Date:   Sun, 01 Mar 2020 22:26:40 +0100
+Message-ID: <875zfndawf.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add constants for the used interrupts bits. This avoids the magic
-number for MII_VSC85XX_INT_MASK_MASK.
+On Fri, Feb 28, 2020 at 12:53 PM CET, Lorenz Bauer wrote:
+> Thanks for all the reviews so far! I've fixed the identified bug and addressed
+> feedback as much as possible.
+>
+> I've not taken up Jakub's suggestion to get rid of sk_psock_hooks_init. My
+> intention is to encapsulate initializing both v4 and v6 protos. Really, it's
+> down to personal preference, and I'm happy to remove it if others prefer
+> Jakub's approach. I'm also still eager for a solution that requires less
+> machinery.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/mscc.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+I was going to do expenses but this seemed more fun. Challenge accepted.
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index 8b1535c4d..32b551cbb 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -80,10 +80,16 @@ enum rgmii_rx_clock_delay {
- #define MSCC_PHY_EXT_PHY_CNTL_2		  24
- 
- #define MII_VSC85XX_INT_MASK		  25
--#define MII_VSC85XX_INT_MASK_MASK	  0xa020
--#define MII_VSC85XX_INT_MASK_WOL	  0x0040
-+#define MII_VSC85XX_INT_MASK_MDINT	  BIT(15)
-+#define MII_VSC85XX_INT_MASK_LINK_CHG	  BIT(13)
-+#define MII_VSC85XX_INT_MASK_WOL	  BIT(6)
-+#define MII_VSC85XX_INT_MASK_EXT	  BIT(5)
- #define MII_VSC85XX_INT_STATUS		  26
- 
-+#define MII_VSC85XX_INT_MASK_MASK	  (MII_VSC85XX_INT_MASK_MDINT    | \
-+					   MII_VSC85XX_INT_MASK_LINK_CHG | \
-+					   MII_VSC85XX_INT_MASK_EXT)
-+
- #define MSCC_PHY_WOL_MAC_CONTROL          27
- #define EDGE_RATE_CNTL_POS                5
- #define EDGE_RATE_CNTL_MASK               0x00E0
--- 
-2.25.1
+I think we can massage tcp_bpf to extract sk_prot initialization bits
+out of it into skmsg, and have skmsg call back into tcp/udp_bpf.
 
+3 callbacks from skmsg back to tcp/udp_bpf would be needed to get there:
+
+ - assert_proto_ops
+ - check_v6_needs_rebuild
+ - get_proto (akin to choose_proto in this series)
+
+With that in place we could go for a direct dispatch based on sock type:
+
+#define sk_psock_assert_proto_ops(sk, ops)		\
+	(sk->sk_type == SOCK_STREAM			\
+	 ? tcp_bpf_assert_proto_ops(ops)		\
+	 : udp_bpf_assert_proto_ops(ops))
+
+The steps to get there would be:
+
+ 1. extract tcp_bpf_get_proto
+ 2. fold tcp_bpf_update_sk_prot
+ 3. move tcp_bpf_init -> sk_psock_init_proto
+ 4. fold tcp_bpf_reinit_sk_prot
+ 5. move tcp_bpf_reinit -> sk_psock_reinit_proto
+ 6. add macros for callbacks into tcp_bpf
+ 7. add udp_bpf
+
+... which I've given a shot at, mixing it into your patches:
+
+  https://github.com/jsitnicki/linux/commits/extract-sk-psock-proto
+
+Note, I didn't make an effort to share the code for rebuilding v6 proto
+between tcp_bpf and udp_bpf. This construct seems hard to read already
+as is without making it generic.
+
+Final thought, I would probably place the bits common between tcp_bpf
+and udp_bpf in skmsg under sk_psock_* namespace, instead of sockmap.
+
+It is just my interpretation, but I think that was the idea outlined in
+commit 604326b41a6f ("bpf, sockmap: convert to generic sk_msg
+interface"):
+
+    The code itself has been split and refactored into three bigger
+    pieces: i) the generic sk_msg API which deals with managing the
+    scatter gather ring, providing helpers for walking and mangling,
+    transferring application data from user space into it, and preparing
+    it for BPF pre/post-processing, ii) the plain sock map itself
+    where sockets can be attached to or detached from; these bits
+    are independent of i) which can now be used also without sock
+    map, and iii) the integration with plain TCP as one protocol
+    to be used for processing L7 application data (later this could
+    e.g. also be extended to other protocols like UDP).
+
+As skmsg already hosts some sk_psock_* functions used by tcp_bpf, and
+they share the same build toggle NET_SK_MSG, that seems natural.
+
+>
+> Changes since v1:
+> - Check newsk->sk_prot in tcp_bpf_clone
+> - Fix compilation with BPF_STREAM_PARSER disabled
+> - Use spin_lock_init instead of static initializer
+> - Elaborate on TCPF_SYN_RECV
+> - Cosmetic changes to TEST macros, and more tests
+> - Add Jakub and me as maintainers
+>
+> Lorenz Bauer (9):
+>   bpf: sockmap: only check ULP for TCP sockets
+>   bpf: tcp: guard declarations with CONFIG_NET_SOCK_MSG
+>   bpf: sockmap: move generic sockmap hooks from BPF TCP
+>   skmsg: introduce sk_psock_hooks
+>   bpf: sockmap: allow UDP sockets
+>   selftests: bpf: don't listen() on UDP sockets
+>   selftests: bpf: add tests for UDP sockets in sockmap
+>   selftests: bpf: enable UDP sockmap reuseport tests
+>   bpf, doc: update maintainers for L7 BPF
+>
+>  MAINTAINERS                                   |   3 +
+>  include/linux/bpf.h                           |   4 +-
+>  include/linux/skmsg.h                         |  72 +++----
+>  include/linux/udp.h                           |   4 +
+>  include/net/tcp.h                             |  18 +-
+>  net/core/skmsg.c                              |  55 +++++
+>  net/core/sock_map.c                           | 160 ++++++++++----
+>  net/ipv4/Makefile                             |   1 +
+>  net/ipv4/tcp_bpf.c                            | 169 +++------------
+>  net/ipv4/udp_bpf.c                            |  53 +++++
+>  .../bpf/prog_tests/select_reuseport.c         |   6 -
+>  .../selftests/bpf/prog_tests/sockmap_listen.c | 204 +++++++++++++-----
+>  12 files changed, 465 insertions(+), 284 deletions(-)
+>  create mode 100644 net/ipv4/udp_bpf.c
