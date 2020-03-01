@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E94174BF0
-	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 06:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C4B174BF2
+	for <lists+netdev@lfdr.de>; Sun,  1 Mar 2020 06:54:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbgCAFxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 00:53:39 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38926 "EHLO
+        id S1727512AbgCAFxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 00:53:45 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38930 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbgCAFxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 00:53:38 -0500
+        with ESMTP id S1726351AbgCAFxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 00:53:45 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 61D3615BDA6EC;
-        Sat, 29 Feb 2020 21:53:38 -0800 (PST)
-Date:   Sat, 29 Feb 2020 21:53:37 -0800 (PST)
-Message-Id: <20200229.215337.1465396375350017101.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6436E15BDA6F1;
+        Sat, 29 Feb 2020 21:53:44 -0800 (PST)
+Date:   Sat, 29 Feb 2020 21:53:43 -0800 (PST)
+Message-Id: <20200229.215343.1961338411291314671.davem@davemloft.net>
 To:     gustavo@embeddedor.com
 Cc:     kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: flow_offload: Replace zero-length array
- with flexible-array member
+Subject: Re: [PATCH][next] neighbour: Replace zero-length array with
+ flexible-array member
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200229010254.GA9547@embeddedor>
-References: <20200229010254.GA9547@embeddedor>
+In-Reply-To: <20200229010502.GA9706@embeddedor>
+References: <20200229010502.GA9706@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Feb 2020 21:53:38 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Feb 2020 21:53:44 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Fri, 28 Feb 2020 19:02:54 -0600
+Date: Fri, 28 Feb 2020 19:05:02 -0600
 
 > The current codebase makes use of the zero-length array language
 > extension to the C90 standard, but the preferred mechanism to declare
