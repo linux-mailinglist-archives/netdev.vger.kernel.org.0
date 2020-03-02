@@ -2,123 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA73175DA3
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 15:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E50A175E00
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbgCBOyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 09:54:12 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23575 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727121AbgCBOyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 09:54:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583160850;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZTkROsrUTdzNCh0BfP2A3pspJU0Gn3G6vf5gKcgh6ic=;
-        b=FVtLTPPfgTMuNQnGXgRM4aIqiCCxSAsrua7z+g8BqGRVLb98L9y+qbgHtkdCR0qn17AOBH
-        ctwO7WpvMeFe2kDAvKGrtDxlG/NFae0y054V2diJJUqEREldxtUzyCwPPHfz7/vtAF80Gn
-        sxqqPERE7H9QxjO/U6UMlUuH2dD+sG8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-2ECmSnU7Oc-IGQ03IMCBtw-1; Mon, 02 Mar 2020 09:54:09 -0500
-X-MC-Unique: 2ECmSnU7Oc-IGQ03IMCBtw-1
-Received: by mail-wm1-f72.google.com with SMTP id c5so2980047wmd.8
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 06:54:09 -0800 (PST)
+        id S1727070AbgCBPSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 10:18:40 -0500
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:45671 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbgCBPSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 10:18:40 -0500
+Received: by mail-pg1-f172.google.com with SMTP id m15so5563746pgv.12
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 07:18:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=D5Kp8ahs3F58iTsdL1P9SUOlNr8DRrCXCUXB5LpTO2U=;
+        b=k/U9KOKOQjlS8R2H+WUi8eHK6m1rI2+C8pXk7QIYWhpGiCHyeBzR+TzQzBK5KumOdj
+         F9P2NbyRtd2gk7Ua1q1Rz3rwOXFmgzuh+Bv0kiyW40LphcE8ET8BeEFL91Mvr5UVeRKR
+         P2eOlaC0Q8lITDu2yvR5e9vK8xnu0UGXztN7TX4CxARPsvn7LzueEPCJod+f+2Nu0olU
+         ACPWW6dLjbYzx6EOFkBpQdAyTGL0rb5qbCk1syCWFJv+clR1o585gGX+Iin1su2hhk54
+         yiHaSNdYu34M8cTofPcSCZibSj8kALyFt4mb8zKqpm+C4vmUrAT9GUNW7UXrvhx29c/M
+         VWuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZTkROsrUTdzNCh0BfP2A3pspJU0Gn3G6vf5gKcgh6ic=;
-        b=XXO2/0oDRxjjmg5OEYEbI5nPpiuYlRfFkL+0LB0Rn0gIdmwPO3io/+GLridkE3qlx1
-         mya7tZiuhII3tI49GaWHBVv5ITI6Ikj+4JlAxlh4GBc9oOvcwhT0X8891hXt/ta3R/Ip
-         FYwUpFerhzGvXOYXxy/xszioCuLzuW1fhhir0DmHjt7Idg1z5GuiY/874rIZCOieMijc
-         7lfIiRHEs0RnlyrnBCHI/mV41ZyEWrS6S4aYcl0nV3yMxGzEpnlPlTX4vjdjzL16uj66
-         5yjJ+9leYeCffPYileaOgaYFofRPa0ZwfTi8GpQ0ly3oEjyxW6/sUF0ZtmQof6Qpt1EL
-         TYnQ==
-X-Gm-Message-State: ANhLgQ10ZHWQU3rJ4AU/4lG2PP1h4NbAtKfaWUcSCXz+qUN/g/0PuXuu
-        hdYqI7M+6nD164Jjgc/2PxS5iUmw6WkP4dirmy5bbRfQGhcSZPpLUt5nvnTfGTxPs0CWAHDVlar
-        GSny1U6dOXnjLfMGu
-X-Received: by 2002:adf:e5d1:: with SMTP id a17mr2558wrn.412.1583160848132;
-        Mon, 02 Mar 2020 06:54:08 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vvf8Xk8oDca8+rjR4ZesAQxWjFtwuxOEnlT6X1h5GQF5BXAG+hD6IlWC37uYrSFSYkWOZpfXw==
-X-Received: by 2002:adf:e5d1:: with SMTP id a17mr2536wrn.412.1583160847943;
-        Mon, 02 Mar 2020 06:54:07 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id u185sm16632096wmg.6.2020.03.02.06.54.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=D5Kp8ahs3F58iTsdL1P9SUOlNr8DRrCXCUXB5LpTO2U=;
+        b=to6mFgxwGz6tHH3p3sES3KneMmHpwF5yMct3Lz7WNcoQ5wuV7DqlsNJZImdWxgUfBI
+         d/MXx0df4IdwL5wLJ1ahWBYI4UwiH6TIA4b6c61UPEjf9X45ZHL/cBnacyjjmH/SyYlo
+         kn30OO+UFuMmvDKUeo9QxrZHIz86W0byTbLfE490nUFtFnnA4QOKGRevEhCzqPRjMM2A
+         zKewlddKGiGex4UIo8ZOUMvZNAGYpzd7CMNPXJKNftDAeGaR7ybTtwKpOmEXOZJyGcgh
+         T7PUG9zbPv/X+1RlQA44zzZalErQeWZnOvN7yWFxk6tyFO23ReZ2v6PGZwSTZiohHmLh
+         0lNA==
+X-Gm-Message-State: APjAAAVyLcrKzxRK4+4vi3GnaugeZ4Xd1HgyhXq0pI1WLB7gN3FdXDwU
+        62qy+GM3zrRF80xQgikERWsk2+8m
+X-Google-Smtp-Source: APXvYqyfCYO+KEnGEuKN6JuTFoS2mhBwMdpH4NdxClKgMom9cudZQM9JGF3JWi1TDLSNqnsD0piY4A==
+X-Received: by 2002:a63:8ec9:: with SMTP id k192mr19960858pge.293.1583162318581;
+        Mon, 02 Mar 2020 07:18:38 -0800 (PST)
+Received: from localhost.localdomain ([103.89.235.106])
+        by smtp.gmail.com with ESMTPSA id s206sm21908529pfs.100.2020.03.02.07.18.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2020 06:54:07 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7B1B7180362; Mon,  2 Mar 2020 15:54:05 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Andrey Ignatov <rdna@fb.com>
-Subject: [PATCH bpf] selftests/bpf: Declare bpf_log_buf variables as static
-Date:   Mon,  2 Mar 2020 15:53:48 +0100
-Message-Id: <20200302145348.559177-1-toke@redhat.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 02 Mar 2020 07:18:37 -0800 (PST)
+From:   Leslie Monis <lesliemonis@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, tahiliani@nitk.edu.in, gautamramk@gmail.com
+Subject: [PATCH net-next 0/4] pie: minor improvements
+Date:   Mon,  2 Mar 2020 20:48:27 +0530
+Message-Id: <20200302151831.2811-1-lesliemonis@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cgroup selftests did not declare the bpf_log_buf variable as static, leading
-to a linker error with GCC 10 (which defaults to -fno-common). Fix this by
-adding the missing static declarations.
+This patch series includes the following minor changes with
+respect to the PIE/FQ-PIE qdiscs:
 
-Fixes: 257c88559f36 ("selftests/bpf: Convert test_cgroup_attach to prog_tests")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c | 2 +-
- tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c    | 2 +-
- tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ - Patch 1 removes some ambiguity by using the term "backlog"
+           instead of "qlen" when referring to the queue length
+           in bytes.
+ - Patch 2 removes redundant type casting on two expressions.
+ - Patch 3 removes the pie_vars->accu_prob_overflows variable
+           without affecting the precision in calculations and
+           makes the size of the pie_vars structure exactly 64
+           bytes.
+ - Patch 4 realigns a comment affected by a change in patch 3.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
-index 5b13f2c6c402..70e94e783070 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
-@@ -6,7 +6,7 @@
- 
- #define PING_CMD	"ping -q -c1 -w1 127.0.0.1 > /dev/null"
- 
--char bpf_log_buf[BPF_LOG_BUF_SIZE];
-+static char bpf_log_buf[BPF_LOG_BUF_SIZE];
- 
- static int prog_load(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-index 2ff21dbce179..139f8e82c7c6 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
-@@ -6,7 +6,7 @@
- 
- #define PING_CMD	"ping -q -c1 -w1 127.0.0.1 > /dev/null"
- 
--char bpf_log_buf[BPF_LOG_BUF_SIZE];
-+static char bpf_log_buf[BPF_LOG_BUF_SIZE];
- 
- static int map_fd = -1;
- 
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
-index 9d8cb48b99de..9e96f8d87fea 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
-@@ -8,7 +8,7 @@
- #define BAR		"/foo/bar/"
- #define PING_CMD	"ping -q -c1 -w1 127.0.0.1 > /dev/null"
- 
--char bpf_log_buf[BPF_LOG_BUF_SIZE];
-+static char bpf_log_buf[BPF_LOG_BUF_SIZE];
- 
- static int prog_load(int verdict)
- {
+Leslie Monis (4):
+  pie: use term backlog instead of qlen
+  pie: remove unnecessary type casting
+  pie: remove pie_vars->accu_prob_overflows
+  pie: realign comment
+
+ include/net/pie.h      | 31 +++++++++++++---------------
+ net/sched/sch_fq_pie.c |  1 -
+ net/sched/sch_pie.c    | 47 +++++++++++++++++-------------------------
+ 3 files changed, 33 insertions(+), 46 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
