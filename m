@@ -2,56 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4AD1763FB
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:32:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2487E176400
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727560AbgCBTbW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Mar 2020 14:31:22 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52734 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727126AbgCBTbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 14:31:22 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3C65F148774D4;
-        Mon,  2 Mar 2020 11:31:22 -0800 (PST)
-Date:   Mon, 02 Mar 2020 11:31:21 -0800 (PST)
-Message-Id: <20200302.113121.562858661345596228.davem@davemloft.net>
-To:     jgross@suse.com
-Cc:     kda@linux-powerpc.org, netdev@vger.kernel.org,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
-References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
-        <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 02 Mar 2020 11:31:22 -0800 (PST)
+        id S1727414AbgCBTdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 14:33:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727234AbgCBTdX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 14:33:23 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C779621D56;
+        Mon,  2 Mar 2020 19:33:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583177602;
+        bh=8Z7VJonbUajpWFyhevM9l7sxdap1t3rDzCpXaKQOhvQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Lc75PEv96Izsso3iMj78DXToSEK7bBdDE627tdaA+m974OZSsOIxbs3nrzKLky7WI
+         vT2eq6tOMpG1GgU9JDztpZGT19QA8HwSXdggtkHbM13X5uKoq+k6S1H2uhABxatHsC
+         5prKMfbQDMhOXLVdlEKC8rQyWjCF1SIAEMRIi3Eg=
+Date:   Mon, 2 Mar 2020 11:33:19 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, pablo@netfilter.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 03/12] flow_offload: check for basic action
+ hw stats type
+Message-ID: <20200302113319.22fb0cb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200301090009.GT26061@nanopsycho>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+        <20200228172505.14386-4-jiri@resnulli.us>
+        <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200229074004.GL26061@nanopsycho>
+        <20200229111848.53450ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200301090009.GT26061@nanopsycho>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jürgen Groß <jgross@suse.com>
-Date: Mon, 2 Mar 2020 16:29:41 +0100
-
-> On 02.03.20 15:21, Denis Kirjanov wrote:
->> the patch adds a basic xdo logic to the netfront driver
->> XDP redirect is not supported yet
->> v2:
->> - avoid data copying while passing to XDP
->> - tell xen-natback that we need the headroom space
+On Sun, 1 Mar 2020 10:00:09 +0100 Jiri Pirko wrote:
+> Sat, Feb 29, 2020 at 08:18:48PM CET, kuba@kernel.org wrote:
+> >On Sat, 29 Feb 2020 08:40:04 +0100 Jiri Pirko wrote:  
+> >> Fri, Feb 28, 2020 at 08:40:56PM CET, kuba@kernel.org wrote:  
+> >> >On Fri, 28 Feb 2020 18:24:56 +0100 Jiri Pirko wrote:    
+> >> >> @@ -299,6 +300,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
+> >> >>  		return -EINVAL;
+> >> >>  	}
+> >> >>  
+> >> >> +	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
+> >> >> +		return -EOPNOTSUPP;    
+> >> >
+> >> >Could we have this helper take one stat type? To let drivers pass the
+> >> >stat type they support?     
+> >> 
+> >> That would be always "any" as "any" is supported by all drivers.
+> >> And that is exactly what the helper checks..  
+> >
+> >I'd think most drivers implement some form of DELAYED today, 'cause for
+> >the number of flows things like OvS need that's the only practical one.
+> >I was thinking to let drivers pass DELAYED here.
+> >
+> >I agree that your patch would most likely pass ANY in almost all cases
+> >as you shouldn't be expected to know all the drivers, but at least the
+> >maintainers can easily just tweak the parameter.
+> >
+> >Does that make sense? Maybe I'm missing something.  
 > 
-> Please add the patch history below the "---" delimiter
+> Well, I guess. mlx5 only supports "delayed". It would work for it.
+> How about having flow_action_basic_hw_stats_types_check() as is and
+> add flow_action_basic_hw_stats_types_check_ext() that would accept extra
+> arg with enum?
 
-Incorrect, I prefer to have them in the commit message and recorded
-in the GIT history.
-
-Please don't give out this advice for networking changes.
-
-Thank you.
+SGTM, perhaps with a more concise name? 
+Just flow_basic_hw_stats_check()?
