@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 208CF175A10
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BFEB175A3A
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727715AbgCBMKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 07:10:08 -0500
-Received: from gateway31.websitewelcome.com ([192.185.143.234]:12368 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726773AbgCBMKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:10:07 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 754CA23CBEC
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:10:06 -0600 (CST)
+        id S1727421AbgCBMQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 07:16:56 -0500
+Received: from gateway32.websitewelcome.com ([192.185.145.189]:27822 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725802AbgCBMQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:16:56 -0500
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id BA880CE8287
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:16:54 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 8jtejXn3DAGTX8jtejgDUG; Mon, 02 Mar 2020 06:10:06 -0600
+        id 8k0EjML7A8vkB8k0EjGb9T; Mon, 02 Mar 2020 06:16:54 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,26 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SI9L7t5+PJPUj9nJSrkM4IY5Y4jla0GxFqwLN6bviuM=; b=c5+T4h6ffuTf0aWn7ux1BWA2Yr
-        hXkYlM9AjdbBIi5V8XZ/z7/oJTlLFZD3hICBaLLQxSZsxdNO2l2p9fTi6H/tkYjDOVu27Vb1N3PVG
-        rR/bFcR6cy/wJSWeRqkqD/6hzBKvr6B4R/ri4yqKX6FDWzDi1IeijJ0ZEW3y3RkCU6S6+STp3nxzk
-        oLWU6DHq5LzuRD38CkYfEPOR8XA8iH8FsVTSkU4ThnNUsYHSilhei9giFG+PueTQHtpbXUaISmIf+
-        9wJrUdx5mzYFXYPT0RE6/tYIOi5shFMXPYpxwaRf+Nx8ZmJgGHjxNEy78a2JYwmBtaH4acM0wTp0R
-        AzhRR0Ew==;
-Received: from [201.166.157.38] (port=42262 helo=embeddedor)
+        bh=fBy+Bpjwg2IJmA+ROxW4TGZvoEbOMzciybHMAJdbmcg=; b=egbht0p08ibDUtG9LAjkpuTbVi
+        W0JNlqOPxlQ3qPvefoYZ6hXsWfn9gUInQabyIn7gd5BjKqMtkknthIDQTpt01L+gkdGibAze4p+qW
+        p/sO91s9sx+DMmnRwSuVuXXil5A66kozf74jybzWVbZzLmEFihXiZetkKrgmJtL5+ArEUCeCV2HXA
+        iIP/asWNjEllVQMOXCRH4EM8RxN+up1461zNm96c1przRKu5+eK5qQC26RDw9LlvROEVWEt7K0J3b
+        bHV7D7XjRlIRxDuX740KlD3pqAjgyzOl/b/+6IK1f9bjZdtNk5bNSmZcWvMrQwmE/jQIE3oVOhDaZ
+        izqFsQtg==;
+Received: from [201.166.157.90] (port=42544 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j8jrV-003wUT-JF; Mon, 02 Mar 2020 06:07:54 -0600
-Date:   Mon, 2 Mar 2020 06:10:51 -0600
+        id 1j8k0C-004457-Si; Mon, 02 Mar 2020 06:16:53 -0600
+Date:   Mon, 2 Mar 2020 06:19:53 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Rasesh Mody <rmody@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        "GR-Linux-NIC-Dev@marvell.com David S. Miller" <davem@davemloft.net>
+To:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] bna: bnad: Replace zero-length array with
+Subject: [PATCH][next] net: atlantic: Replace zero-length array with
  flexible-array member
-Message-ID: <20200302121051.GA28820@embeddedor>
+Message-ID: <20200302121953.GA32574@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -54,15 +53,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.166.157.38
+X-Source-IP: 201.166.157.90
 X-Source-L: No
-X-Exim-ID: 1j8jrV-003wUT-JF
+X-Exim-ID: 1j8k0C-004457-Si
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.157.38]:42262
+X-Source-Sender: (embeddedor) [201.166.157.90]:42544
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 20
+X-Email-Count: 24
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -100,22 +99,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/ethernet/brocade/bna/bnad.h | 2 +-
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/brocade/bna/bnad.h b/drivers/net/ethernet/brocade/bna/bnad.h
-index 492a02d54f14..bfa58b40dc3f 100644
---- a/drivers/net/ethernet/brocade/bna/bnad.h
-+++ b/drivers/net/ethernet/brocade/bna/bnad.h
-@@ -253,7 +253,7 @@ struct bnad_rx_unmap_q {
- 	int			alloc_order;
- 	u32			map_size;
- 	enum bnad_rxbuf_type	type;
--	struct bnad_rx_unmap	unmap[0] ____cacheline_aligned;
-+	struct bnad_rx_unmap	unmap[] ____cacheline_aligned;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+index 42f0c5c6ec2d..6b4f701e7006 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+@@ -225,7 +225,7 @@ struct __packed offload_info {
+ 	struct offload_port_info ports;
+ 	struct offload_ka_info kas;
+ 	struct offload_rr_info rrs;
+-	u8 buf[0];
++	u8 buf[];
  };
  
- #define BNAD_PCI_DEV_IS_CAT2(_bnad) \
+ struct __packed hw_atl_utils_fw_rpc {
 -- 
 2.25.0
 
