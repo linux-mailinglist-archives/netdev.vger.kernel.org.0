@@ -2,131 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2B31751B3
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 03:04:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 293AE1751C4
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 03:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbgCBCE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 21:04:29 -0500
-Received: from mail-eopbgr80043.outbound.protection.outlook.com ([40.107.8.43]:44973
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726673AbgCBCE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Mar 2020 21:04:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VXqMJtZNiomE+Ahd5+ScR1ZFHxvvkoD0WiLtAUVMhAivdhxhlF7id9wdgqPDtx96bIDq5+dErAz/I45pYPLkJFsVOO6nwWIHwij9ABQv/UGQ2kszcRTKRpmt/BlNPD3w7CkhRrdak9wx95bFRaxQkfp0xSW+ZuInIiOd95wrCnUYoLtTcIqKeHywOLaW45PFtwl83jrfF25JAju85cYCKrE8NA8s/9qX90DoT882mIq6MYRGo0UTDGG0p8w4XIbX897MbXQZRyGlGMwdKlxdJs53Jw5LwoCYX7dOsBoqye44wOtrUf7aCEHYSucZmBG/ZA5iIXdeSxbUJGG5v2OL/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1d7zwYcGAeo4QoCiEHh822N8Mr0MKE7cOFcfQfH9w6s=;
- b=bHVivNvYJLZcqCU2SY+WtgFp9XuB1XB0tMPxNBsxCui43RFZjiVhxRq5QK+IawNUFury8a73K6GZ3zqz3LIUGr6uJeU0ERefoD/jmSw3G8svOBJcgVxad29eWZVEyJlkooZqaQfWtULtp3JQpHbUhDDnGBk/C8I75fxIj+usYgerQGn8JDP3hV7VNo8WNAx23UAYpmj+QAqQi6EfJRZMbmYckcI1dQ7N9ydjinN2c4dJ7LTWaR4mgwcTsaFWclrD/4cE09UmzFIOFEHNtwLVih9D0iQ9+DSzaCsUu6bW/SjHeSI3xFAsMmhE9QbadrDR89jggnXHyexQqHLkk7tYIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1d7zwYcGAeo4QoCiEHh822N8Mr0MKE7cOFcfQfH9w6s=;
- b=jFGmuEbHV1ufU20ztTjIUxqVZMuei088Y0hohRwYSVgb0Dq+MEha1kONKB06jPgXs6kqlJvV9vMbCxS/PsUso26kIG6zYlHgZsZhkXNrCzVCn7EFdcHlpO3vsnGbJZqJFH6bah/EjgvKLNB5oK+k3VgpKH8LhF8IObC+irHuNv8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=jianbol@mellanox.com; 
-Received: from VI1PR05MB6255.eurprd05.prod.outlook.com (20.178.127.148) by
- VI1PR05MB6493.eurprd05.prod.outlook.com (20.179.25.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2772.18; Mon, 2 Mar 2020 02:04:24 +0000
-Received: from VI1PR05MB6255.eurprd05.prod.outlook.com
- ([fe80::30bb:bd37:e18:ef64]) by VI1PR05MB6255.eurprd05.prod.outlook.com
- ([fe80::30bb:bd37:e18:ef64%7]) with mapi id 15.20.2772.018; Mon, 2 Mar 2020
- 02:04:24 +0000
-Date:   Mon, 2 Mar 2020 02:04:20 +0000
-From:   Jianbo Liu <jianbol@mellanox.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [net-next 08/16] net/mlx5e: Add devlink fdb_large_groups
- parameter
-Message-ID: <20200302020420.GA14695@mellanox.com>
-References: <20200228004446.159497-1-saeedm@mellanox.com>
- <20200228004446.159497-9-saeedm@mellanox.com>
- <20200228111026.1baa9984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200228111026.1baa9984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-ClientProxiedBy: PR0P264CA0056.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1d::20) To VI1PR05MB6255.eurprd05.prod.outlook.com
- (2603:10a6:803:e6::20)
+        id S1726775AbgCBCWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 21:22:36 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37184 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726690AbgCBCWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 21:22:36 -0500
+Received: by mail-pf1-f194.google.com with SMTP id p14so4783868pfn.4;
+        Sun, 01 Mar 2020 18:22:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=4uaFy22TR9js50Qq2h2sOOpbST6186vMHVNhSpD9BcE=;
+        b=aj7UEz5dX90cLSoIlLkwjYyf1iCACNz4yupk3J6sXyeLrvHRLUsxbMTX4P8tjejYHW
+         TIQHVcrGXHAH/75ZhHJZJH8bqpnAN0Ry8cLObaUZyplMkWQxIMdeO6kcNMTesg6Cn1+a
+         alQ4ozaBUef+UwmUjlcHHTRC8KOeCV1BcGrM0F3OwXbT17/L5e9wA/T+nWn9UArc/1Rh
+         xIlla+RlQZ/Zkvbkx7NLBamZrZ/HySbly0njgCBPYrIe41VV6fIA6sALyl7o+XL7YdEb
+         ycFifkjq+ACT99p6XswsbP0ZPwxH1FFmSd+7POUyecGltYUHC7Fik37UU9C+r+dwdhyx
+         z/2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4uaFy22TR9js50Qq2h2sOOpbST6186vMHVNhSpD9BcE=;
+        b=F07u4i+Q9Wr/GM7obl2+3nfNvpMbX635vb0+neA1ah7CjDlma9X869hx3xI5uFO+Yf
+         fZaIncf7eVTUYqU/E89kpHlDvrMMWKJ3V29h05/ROZdYVaL33P4tovU69MhPNLlSIsfF
+         G8KWvolTpAB7LrEaddrvS8VgdLVI9VINEHGfWoq3cNTogn1uPZ3JwqwYRU7bBBcl9qhD
+         Bsi4K7fS//q2kGhnDbvnAfuDXLybDMbCoRpDOR6OCVNFEqNLBLQs9wCxvY81v3Ohj5yR
+         jKuLc0MINThI6n5xRNYqrIlNk1vnm5tdDKIlj3vEEwK0MbmquMMlWkDAUVM2O/j73AVA
+         QOLA==
+X-Gm-Message-State: APjAAAUZXsfiWkYdchiAXpXu7tRULO0aonCSodmwO+DXOYUyQRVK5Dyj
+        av8CkPovr8Pi/pXiJOWHGUo=
+X-Google-Smtp-Source: APXvYqwHjyoyPvMNunQDsm3u/iTcqtDvEIO+N7HC6dSUPrspIGM42aoRTdst2tYNboB/tox6KwlH6Q==
+X-Received: by 2002:a63:dc0d:: with SMTP id s13mr16466210pgg.129.1583115755265;
+        Sun, 01 Mar 2020 18:22:35 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id w84sm6672665pfc.95.2020.03.01.18.22.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Mar 2020 18:22:34 -0800 (PST)
+Subject: Re: WARNING: refcount bug in __sk_destruct
+To:     syzbot <syzbot+dd803bc0e8adf0003261@syzkaller.appspotmail.com>,
+        andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        hawk@kernel.org, jasowang@redhat.com, jhs@mojatatu.com,
+        jiri@resnulli.us, john.fastabend@gmail.com, kafai@fb.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
+        yhs@fb.com
+References: <000000000000a0ed74059fd52b8d@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <17ea3816-7c96-0092-d686-e89fbb4db7d8@gmail.com>
+Date:   Sun, 1 Mar 2020 18:22:32 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mellanox.com (37.142.13.130) by PR0P264CA0056.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1d::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.18 via Frontend Transport; Mon, 2 Mar 2020 02:04:23 +0000
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2fe644a6-c728-4f8c-a3c8-08d7be4e07fa
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6493:|VI1PR05MB6493:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6493173A71CA2AC76995C7B8C8E70@VI1PR05MB6493.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 033054F29A
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(189003)(199004)(54906003)(4326008)(316002)(86362001)(2616005)(956004)(478600001)(2906002)(8886007)(36756003)(26005)(33656002)(16526019)(186003)(107886003)(8676002)(6916009)(55016002)(8936002)(7696005)(52116002)(5660300002)(81166006)(81156014)(66476007)(66556008)(66946007)(1076003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6493;H:VI1PR05MB6255.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hJlb1hzilnLd3FgRq1Mbh9t4QCYRH5ukmJ814vg24et2daNJn6v7cYlovuXTjCnHmHz8XUnmVnuF1k/cGPCH7j4OqNjzSbeilrV8CH+GzovUU2wZA+RAv37ay2NmOdzpxcN5fdtSMXR6fnf/u0jjHbWyiHhMYfXXjCzhObvS73asYoIjrjU2pd+g6POTbplvcQIRwF73GD4yV32Y2/rXq49DSU9qlJ0u0LqQK6zluko2gEkp9VBft97eY4LtYJfXWg4coh+cGgh2wq0IB+T/sDsMeS0dU57rbf3n0ok16ptzhe4kWR+e4q8KjScFPhdNfM50MMnCX2TPbIFKjxr3EvZarB9WgzzakOo+Wf/VE3BYFHr9C15Uojdaez7AN0COpGjIDawUvx/53xFMiaLsfwztfRVGCR6/pMmv2/zQbUz+Bg7ldb+QDtC3nLhVAvE1
-X-MS-Exchange-AntiSpam-MessageData: HggrXlcGCmKmqHmEnXFVRD4psgss0KwLRgFEE+pObJxo/+96ot5YR19XD69Sg8sISpQe6oliW6KMlNRMX6kB8UezpjOUA8K28o3kqedp0M+QB8VmNnz/IaqFSO7R8mb9A5YR1wXdfa217VlM6ozvIw==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fe644a6-c728-4f8c-a3c8-08d7be4e07fa
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2020 02:04:24.8356
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NziY7GYzgQWqV0syA1JkHkZpynDVzuu7pcfzqtjob+2gRMP/07kMddlvbDaP0KnjnJFHRFKvTp34sgyUpKSN7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6493
+In-Reply-To: <000000000000a0ed74059fd52b8d@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/28/2020 11:10, Jakub Kicinski wrote:
-> On Thu, 27 Feb 2020 16:44:38 -0800 Saeed Mahameed wrote:
-> > From: Jianbo Liu <jianbol@mellanox.com>
-> > 
-> > Add a devlink parameter to control the number of large groups in a
-> > autogrouped flow table. The default value is 15, and the range is between 1
-> > and 1024.
-> > 
-> > The size of each large group can be calculated according to the following
-> > formula: size = 4M / (fdb_large_groups + 1).
-> > 
-> > Examples:
-> > - Set the number of large groups to 20.
-> >     $ devlink dev param set pci/0000:82:00.0 name fdb_large_groups \
-> >       cmode driverinit value 20
-> > 
-> >   Then run devlink reload command to apply the new value.
-> >     $ devlink dev reload pci/0000:82:00.0
-> > 
-> > - Read the number of large groups in flow table.
-> >     $ devlink dev param show pci/0000:82:00.0 name fdb_large_groups
-> >     pci/0000:82:00.0:
-> >       name fdb_large_groups type driver-specific
-> >         values:
-> >           cmode driverinit value 20
-> > 
-> > Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
-> > Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
-> > Reviewed-by: Roi Dayan <roid@mellanox.com>
-> > Acked-by: Jiri Pirko <jiri@mellanox.com>
-> > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+
+
+On 3/1/20 5:33 PM, syzbot wrote:
+> Hello,
 > 
-> Slicing memory up sounds like something that should be supported via
-> the devlink-resource API, not by params and non-obvious calculations :(
+> syzbot found the following crash on:
+> 
+> HEAD commit:    fd786fb1 net: convert suitable drivers to use phy_do_ioctl..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14e9726ee00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7f93900a7904130d
+> dashboard link: https://syzkaller.appspot.com/bug?extid=dd803bc0e8adf0003261
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12af9369e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10583d76e00000
+> 
+> The bug was bisected to:
+> 
+> commit 14215108a1fd7e002c0a1f9faf8fbaf41fdda50d
+> Author: Cong Wang <xiyou.wangcong@gmail.com>
+> Date:   Thu Feb 21 05:37:42 2019 +0000
+> 
+>     net_sched: initialize net pointer inside tcf_exts_init()
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=175b66bee00000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=14db66bee00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10db66bee00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+dd803bc0e8adf0003261@syzkaller.appspotmail.com
+> Fixes: 14215108a1fd ("net_sched: initialize net pointer inside tcf_exts_init()")
+> 
+> RBP: 0000000000000000 R08: 0000000000000002 R09: 00000000bb1414ac
+> R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+> R13: 0000000000000009 R14: 0000000000000000 R15: 0000000000000000
+> ------------[ cut here ]------------
+> refcount_t: underflow; use-after-free.
+> WARNING: CPU: 1 PID: 9577 at lib/refcount.c:28 refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 1 PID: 9577 Comm: syz-executor327 Not tainted 5.5.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x197/0x210 lib/dump_stack.c:118
+>  panic+0x2e3/0x75c kernel/panic.c:221
+>  __warn.cold+0x2f/0x3e kernel/panic.c:582
+>  report_bug+0x289/0x300 lib/bug.c:195
+>  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+>  fixup_bug arch/x86/kernel/traps.c:169 [inline]
+>  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
+>  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
+>  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+> RIP: 0010:refcount_warn_saturate+0x1dc/0x1f0 lib/refcount.c:28
+> Code: e9 d8 fe ff ff 48 89 df e8 c1 f8 16 fe e9 85 fe ff ff e8 a7 77 d8 fd 48 c7 c7 e0 44 71 88 c6 05 9e 86 db 06 01 e8 93 27 a9 fd <0f> 0b e9 ac fe ff ff 0f 1f 00 66 2e 0f 1f 84 00 00 00 00 00 55 48
+> RSP: 0018:ffffc9000c067b00 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: ffffffff815e5dd6 RDI: fffff5200180cf52
+> RBP: ffffc9000c067b10 R08: ffff8880a8630340 R09: ffffed1015d26621
+> R10: ffffed1015d26620 R11: ffff8880ae933107 R12: 0000000000000003
+> R13: ffff888090256000 R14: ffff8880a7e5c040 R15: ffff8880a7e5c044
+>  refcount_sub_and_test include/linux/refcount.h:261 [inline]
+>  refcount_dec_and_test include/linux/refcount.h:281 [inline]
+>  put_net include/net/net_namespace.h:259 [inline]
+>  __sk_destruct+0x6d8/0x7f0 net/core/sock.c:1723
+>  sk_destruct+0xd5/0x110 net/core/sock.c:1739
+>  __sk_free+0xfb/0x3f0 net/core/sock.c:1750
+>  sk_free+0x83/0xb0 net/core/sock.c:1761
+>  sock_put include/net/sock.h:1719 [inline]
+>  __tun_detach+0xbe0/0x1150 drivers/net/tun.c:728
+>  tun_detach drivers/net/tun.c:740 [inline]
+>  tun_chr_close+0xe0/0x180 drivers/net/tun.c:3455
+>  __fput+0x2ff/0x890 fs/file_table.c:280
+>  ____fput+0x16/0x20 fs/file_table.c:313
+>  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+>  exit_task_work include/linux/task_work.h:22 [inline]
+>  do_exit+0xba9/0x2f50 kernel/exit.c:801
+>  do_group_exit+0x135/0x360 kernel/exit.c:899
+>  __do_sys_exit_group kernel/exit.c:910 [inline]
+>  __se_sys_exit_group kernel/exit.c:908 [inline]
+>  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:908
+>  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+>  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> RIP: 0033:0x441a48
+> Code: Bad RIP value.
+> RSP: 002b:00007fffe55809a8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 0000000000441a48
+> RDX: 0000000000000001 RSI: 000000000000003c RDI: 0000000000000001
+> RBP: 00000000004c8430 R08: 00000000000000e7 R09: ffffffffffffffd0
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+> R13: 00000000006dba80 R14: 0000000000000000 R15: 0000000000000000
+> Kernel Offset: disabled
+> Rebooting in 86400 seconds..
+> 
+> 
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+> 
 
-No, it's not to configure memory resource. It is to control how many
-large groups in FW FDB. The calculations to to tell how many rules in each
-large group.
 
--- 
+Hmmm... maybe this patch would fix it ?
+
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index a972244ab1931a2fd52a41efa4f7a6cd78d8746a..6e258a6c1328e38a757d9711f4116a6672995b8f 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -206,11 +206,12 @@ static inline int tcf_exts_init(struct tcf_exts *exts, struct net *net,
+ #ifdef CONFIG_NET_CLS_ACT
+        exts->type = 0;
+        exts->nr_actions = 0;
+-       exts->net = net;
++       exts->net = NULL;
+        exts->actions = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
+                                GFP_KERNEL);
+        if (!exts->actions)
+                return -ENOMEM;
++       exts->net = net;
+ #endif
+        exts->action = action;
+        exts->police = police;
