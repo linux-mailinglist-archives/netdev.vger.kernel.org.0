@@ -2,227 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 611F41766D7
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:25:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8111766DA
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:25:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgCBWZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 17:25:04 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37452 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726728AbgCBWZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 17:25:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583187901;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9hRBKtE+c+GniMKyGrkqhdyv1XsV6MxZ4SgNtQszIdk=;
-        b=h/LIIMf/1GGSs2PqrEN1urzJml6emTkZO3Wa26469aqRTRyKMJ+JPdsqQBoWPLjJyvJZW4
-        +hKEkRx5CxHv5/Gg6Zr037IAOY8xagcx3z6Rjq5Ky490rKfZvh6ekEVMvj71G2ds2a+O/n
-        ketRL9pXeV4PQbrC5R+cVpBCj9Hb7yY=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-13-Sv2cHq2gMOaPy2pPcYt-5w-1; Mon, 02 Mar 2020 17:25:00 -0500
-X-MC-Unique: Sv2cHq2gMOaPy2pPcYt-5w-1
-Received: by mail-wr1-f71.google.com with SMTP id c6so311534wrm.18
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 14:24:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=9hRBKtE+c+GniMKyGrkqhdyv1XsV6MxZ4SgNtQszIdk=;
-        b=ujuAe3el8vCtt6MCgHyIH26DwVCFyHnftu5fsoFXc/EX94C7R9e7dGzz0bMDx+F4xD
-         /HE+eZjko/MH5Z248L6ODF9LVVF/2jptj6R0avzWohgR30e+acA1sxVFKWyvlwKIBq6o
-         hYRxrIxl1hqBhCedR8nVEN1tNJAW/lBko5k3GLv+OO+Ocw9GQ1NCpzyCpb+Gt2HgJXbA
-         3ld5T/lYqf/9ZKt3Y9v2GbCOHpgclhodCcDsQVZd5PtAu3yASJl1MZSRuq4o8rGnFGqE
-         UlUNwKJTBQsZgjEYpUhuR3CMX0kPVerTXNMTah132eDsqpvy/q7vH8jHpaYbNVorOcK8
-         1peg==
-X-Gm-Message-State: ANhLgQ1m38mf9FFkyaGsnjJDAA3OIWhM4yRWWaIbPWh/KHz312IyqEwR
-        9G92BuXYjcbaV5c+cFfEzr3hcoQxsC3Dd1w3IstLuPHp/bcD0TqEkUxWNX/5gGNEnRY4/bUM9g9
-        63l4XywdK10fo3c7r
-X-Received: by 2002:adf:e98f:: with SMTP id h15mr1611426wrm.263.1583187898908;
-        Mon, 02 Mar 2020 14:24:58 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vuAbuSsx0O1zNIkxBIHyrRcg7hxX1SzEWLl9MR22QqpnbKcgKFRz1C5BsRmuNY0YXa0oMVdmA==
-X-Received: by 2002:adf:e98f:: with SMTP id h15mr1611399wrm.263.1583187898481;
-        Mon, 02 Mar 2020 14:24:58 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f127sm606808wma.4.2020.03.02.14.24.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2020 14:24:57 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 27BD1180362; Mon,  2 Mar 2020 23:24:57 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
-In-Reply-To: <CAEf4BzZGn9FcUdEOSR_ouqSNvzY2AdJA=8ffMV5mTmJQS-10VA@mail.gmail.com>
-References: <20200228223948.360936-1-andriin@fb.com> <87mu8zt6a8.fsf@toke.dk> <CAEf4BzZGn9FcUdEOSR_ouqSNvzY2AdJA=8ffMV5mTmJQS-10VA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 02 Mar 2020 23:24:57 +0100
-Message-ID: <87imjms8cm.fsf@toke.dk>
+        id S1726947AbgCBWZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 17:25:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38858 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726700AbgCBWZM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 17:25:12 -0500
+Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B35312465D;
+        Mon,  2 Mar 2020 22:25:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583187912;
+        bh=CDhGcUfw787zc0VE8UcGNS8gfPoiSx89SWQtbWtTV2o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=OAbDxpXPHgpYRpR7263JPUcp0o25FZX50iNMrdhav3mWgeA5PqZ8ZAVy4rDm+V98T
+         tOdzW/rsq1ZvXHLVfHVlEiLAt/Pra7UNb0TqUeHyvpcM3MWEjiRPCi6NXnF47rs0R5
+         IpI1Vt9qmFrrr5wD6NMTGsTio7qssZLWD84tvWS4=
+Date:   Mon, 2 Mar 2020 16:25:10 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        QLogic-Storage-Upstream@cavium.com,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH 1/5] pci: introduce pci_get_dsn
+Message-ID: <20200302222510.GA172509@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200227223635.1021197-3-jacob.e.keller@intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+  PCI: Introduce pci_get_dsn()
 
-> On Mon, Mar 2, 2020 at 2:12 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->>
->> Andrii Nakryiko <andriin@fb.com> writes:
->>
->> > This patch series adds bpf_link abstraction, analogous to libbpf's alr=
-eady
->> > existing bpf_link abstraction. This formalizes and makes more uniform =
-existing
->> > bpf_link-like BPF program link (attachment) types (raw tracepoint and =
-tracing
->> > links), which are FD-based objects that are automatically detached whe=
-n last
->> > file reference is closed. These types of BPF program links are switche=
-d to
->> > using bpf_link framework.
->> >
->> > FD-based bpf_link approach provides great safety guarantees, by ensuri=
-ng there
->> > is not going to be an abandoned BPF program attached, if user process =
-suddenly
->> > exits or forgets to clean up after itself. This is especially importan=
-t in
->> > production environment and is what all the recent new BPF link types f=
-ollowed.
->> >
->> > One of the previously existing  inconveniences of FD-based approach, t=
-hough,
->> > was the scenario in which user process wants to install BPF link and e=
-xit, but
->> > let attached BPF program run. Now, with bpf_link abstraction in place,=
- it's
->> > easy to support pinning links in BPF FS, which is done as part of the =
-same
->> > patch #1. This allows FD-based BPF program links to survive exit of a =
-user
->> > process and original file descriptor being closed, by creating an file=
- entry
->> > in BPF FS. This provides great safety by default, with simple way to o=
-pt out
->> > for cases where it's needed.
->>
->> While being able to pin the fds returned by bpf_raw_tracepoint_open()
->> certainly helps, I still feel like this is the wrong abstraction for
->> freplace(): When I'm building a program using freplace to put in new
->> functions (say, an XDP multi-prog dispatcher :)), I really want the
->> 'new' functions (i.e., the freplace'd bpf_progs) to share their lifetime
->> with the calling BPF program. I.e., I want to be able to do something
->> like:
->
-> freplace programs will take refcount on a BPF program they are
-> replacing, so in that sense they do share lifetime, except dependency
-> is opposite to what you describe: rootlet/dispatcher program can't go
-> away as long it has at least one freplace program attached. It
-> (dispatcher) might get detached, though, but freplace, technically,
-> will still be attached to now-detached dispatcher (so won't be
-> invoked, yet still attached). I hope that makes sense :)
+I learned this from "git log --oneline drivers/pci/pci.c".  It looks
+like the other patches could benefit from this as well.
 
-Yes, I realise that; I just think it's the wrong way 'round :)
+On Thu, Feb 27, 2020 at 02:36:31PM -0800, Jacob Keller wrote:
+> Several device drivers read their Device Serial Number from the PCIe
+> extended config space.
+> 
+> Introduce a new helper function, pci_get_dsn, which will read the
+> eight bytes of the DSN into the provided buffer.
 
->> prog_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
->> func_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // replacement func
->> err =3D sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // doe=
-s *not* return an fd
->>
->> That last call should make the ref-counting be in the prog_fd -> func_fd
->> direction, so that when prog_fd is released, it will do
->> bpf_prog_put(func_fd). There could be an additional call like
->> sys_bpf(BPF_PROG_REPLACE_FUNC_DETACH, prog_fd, btf_id) for explicit
->> detach as well, of course.
->
-> Taking this additional refcount will create a dependency loop (see
-> above), so that's why it wasn't done, I think.
+"pci_get_dsn()"
 
-Right, that's why I want the new operation to 'flip' the direction of
-the refcnt inside the kernel, so there would no longer be a reference
-from the replacement to the dispatcher, only the other way (so no
-loops).
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> Cc: QLogic-Storage-Upstream@cavium.com
+> Cc: Michael Chan <michael.chan@broadcom.com>
+> ---
+>  drivers/pci/pci.c   | 33 +++++++++++++++++++++++++++++++++
+>  include/linux/pci.h |  5 +++++
+>  2 files changed, 38 insertions(+)
+> 
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index d828ca835a98..12d8101724d7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/pci-ats.h>
+>  #include <asm/setup.h>
+>  #include <asm/dma.h>
+> +#include <asm/unaligned.h>
+>  #include <linux/aer.h>
+>  #include "pci.h"
+>  
+> @@ -557,6 +558,38 @@ int pci_find_ext_capability(struct pci_dev *dev, int cap)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_find_ext_capability);
+>  
+> +/**
+> + * pci_get_dsn - Read the 8-byte Device Serial Number
+> + * @dev: PCI device to query
+> + * @dsn: storage for the DSN. Must be at least 8 bytes
+> + *
+> + * Looks up the PCI_EXT_CAP_ID_DSN and reads the 8 bytes into the dsn storage.
+> + * Returns -EOPNOTSUPP if the device does not have the capability.
+> + */
+> +int pci_get_dsn(struct pci_dev *dev, u8 dsn[])
+> +{
+> +	u32 dword;
+> +	int pos;
+> +
+> +
+> +	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DSN);
+> +	if (!pos)
+> +		return -EOPNOTSUPP;
+> +
+> +	/*
+> +	 * The Device Serial Number is two dwords offset 4 bytes from the
+> +	 * capability position.
+> +	 */
+> +	pos += 4;
+> +	pci_read_config_dword(dev, pos, &dword);
+> +	put_unaligned_le32(dword, &dsn[0]);
+> +	pci_read_config_dword(dev, pos + 4, &dword);
+> +	put_unaligned_le32(dword, &dsn[4]);
 
-> With FD-based bpf_link, though, you'll be able to "transfer ownership"
-> from application that installed freplace program in the first place,
-> to the program that eventually will unload/replace dispatcher BPF
-> program. You do that by pinning freplace program in BPFFS location,
-> that's known to this libxdp library, and when you need to detach and
-> unload XDP dispatcher and overriden XDP programs, the "admin process"
-> which manages XDP dispatcher, will be able to just go and unpin and
-> detach everything, if necessary.
+Since the serial number is a 64-bit value, can we just return a u64
+and let the caller worry about any alignment and byte-order issues?
 
-Yes, so let's assume we want to do it this way (with replacement
-programs pinned in a known location in bpffs). First off, that will
-introduce a hard dependency on bpffs for XDP; so now your networking
-program also needs access to mounting filesystems, or you need to rely
-on the system (including your container runtime) to set this up right
-for you.
+This would be the only use of asm/unaligned.h in driver/pci, and I
+don't think DSN should be that special.
 
-Assuming that has been solved, the steps to replace an existing set of
-programs with a new one would be something like:
+I think it's OK if we return 0 if the device doesn't have a DSN
+capability.  A DSN that actually contains a zero serial number would
+be dubious at best.
 
-0. We assume that we already have /sys/fs/bpf/xdp/eth0/mainprog,
-   /sys/fs/bpf/xdp/eth0/prog1, /sys/fs/bpf/xdp/eth0/prog2, and that
-   mainprog is attached to eth0
-=20=20=20
-1. Create new dispatcher, attach programs, pin replacement progs
-   somewhere (/sys/fs/bpf/xdp/eth0.new/{mainprog,prog1,prog2,prog3}?)
-
-2. Attach new mainprog to eth0, replacing the old one
-
-3. `mv /sys/fs/bpf/xdp/eth0 /sys/fs/bpf/xdp/eth0.old`
-
-4. `mv /sys/fs/bpf/xdp/eth0.new /sys/fs/bpf/xdp/eth0`
-
-5. `rm -r /sys/fs/bpf/xdp/eth0.old`
-
-
-Or you could switch steps 2 and 3. Either way, there is no way to do
-steps 2..4 as one atomic operation; so you can end up in an inconsistent
-state.
-
-Oh, and what happens if the netdevice moves namespaces while it has an
-XDP program attached? Then you can end up with the bpffs where you
-pinned the programs originally not being available at all anymore.
-
-Contrast this to the case where the replacement programs are just
-referenced from the main prog: none of the above will be necessary, and
-replacement will just be one atomic operation on the interface.
-
->> With such an API, lifecycle management for an XDP program keeps being
->> obvious: There's an fd for the root program attached to the interface,
->> and that's it. When that is released the whole thing disappears. Whereas
->> with the bpf_raw_tracepoint_open() API, the userspace program suddenly
->> has to make sure all the component function FDs are pinned, which seems
->> cumbersome and error-prone...
->
-> I thought that's what libxdp is supposed to do (among other things).
-> So for user applications it will be all hidden inside the library API,
-> no?
-
-Sure, but that also means that even if we somehow manage to write a
-library without any bugs, it will still be called from arbitrary
-applications that may crash between two operations and leave things in
-an inconsistent state.
-
-So I guess what I'm saying is that while it most likely is *possible* to
-build the multi-prog facility using bpf_raw_tracepoint_open() + pinning,
-I believe that the result will be brittle, and that we would be better
-served with a different kernel primitive.
-
-Do you see what I mean? Or am I missing something obvious here?
-
--Toke
-
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_get_dsn);
+> +
+>  static int __pci_find_next_ht_cap(struct pci_dev *dev, int pos, int ht_cap)
+>  {
+>  	int rc, ttl = PCI_FIND_CAP_TTL;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 3840a541a9de..883562323df3 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1045,6 +1045,8 @@ int pci_find_ht_capability(struct pci_dev *dev, int ht_cap);
+>  int pci_find_next_ht_capability(struct pci_dev *dev, int pos, int ht_cap);
+>  struct pci_bus *pci_find_next_bus(const struct pci_bus *from);
+>  
+> +int pci_get_dsn(struct pci_dev *dev, u8 dsn[]);
+> +
+>  struct pci_dev *pci_get_device(unsigned int vendor, unsigned int device,
+>  			       struct pci_dev *from);
+>  struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
+> @@ -1699,6 +1701,9 @@ static inline int pci_find_next_capability(struct pci_dev *dev, u8 post,
+>  static inline int pci_find_ext_capability(struct pci_dev *dev, int cap)
+>  { return 0; }
+>  
+> +static inline int pci_get_dsn(struct pci_dev *dev, u8 dsn[])
+> +{ return -EOPNOTSUPP; }
+> +
+>  /* Power management related routines */
+>  static inline int pci_save_state(struct pci_dev *dev) { return 0; }
+>  static inline void pci_restore_state(struct pci_dev *dev) { }
+> -- 
+> 2.25.0.368.g28a2d05eebfb
+> 
