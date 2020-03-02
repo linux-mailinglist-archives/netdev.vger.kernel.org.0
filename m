@@ -2,154 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4E61767A4
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:46:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F2E31767AE
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgCBWp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 17:45:57 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46408 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726846AbgCBWp5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 17:45:57 -0500
-Received: by mail-qt1-f195.google.com with SMTP id i14so1345693qtv.13
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 14:45:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6xe7rkkZ8e9v04ote63kzOqh+CNhrdwEbVR3Wk+qf1M=;
-        b=W4s0C6QpajEMOwiV9jzrrLNurI8rUEy6oR0pWDbNdqVsDXs+yg9bygAK76nr6Ita7E
-         o33bI4XaoBQQrlMGN73WOWuJUpjbSyieGjC5LohVn/WQkaLaqQfZxqGdjVajEQXvq/0S
-         6Mz2Ba9Hj56Jb7iTBuDRPkz9FUfBw+GjutsdDAr+Ryi8vVbmJwKXLCSL9USRAc1T+TVF
-         pEmfpzRjtwe7lCwU1sTyrye3p1q1hodtUIQ/rJhlHsPNVlzsCJf7Gdoty3mlnHP99dVr
-         KUopWH5U+KbPn05M06Yf1gs0RgrlWu+1VcfS6m3l5xsuT7lX08VYngPAAYQkseMwWfzo
-         6e8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6xe7rkkZ8e9v04ote63kzOqh+CNhrdwEbVR3Wk+qf1M=;
-        b=dud/RW6HZcecG4PS4w7FQJQDbiOgHnl3ngaN+8j0kJsxeXvj/0N0OD+PiVgCiZwbmc
-         TCLXtieXwZTpPvehgbqd7sdYlV0iywdT18DKsLm0m/nrGYlxpQoThJY1lLfw+u20vLjH
-         ZvM1+8xex/+ugiR8UtDgWKdQwPb171wxX0t8scGXJJ6z9TnuE16I7TS+qk8dAns8sWOi
-         68MLSLDRXMfJtbZWc/ZCCOMF11khDQ8IiaAqTj2CzEhbTY8rA9utr0zaVZIz+4k1neMr
-         dzgvkxFrsL2RIJTAOR81UN4Hy+5g1F5GgKv3KKE3UVgTk4iLbApn3nzyIXpT1qb1Ad2L
-         rHAA==
-X-Gm-Message-State: ANhLgQ1T+zxd28KqnuSJTAZw2fWZF9ET69tNieff0MSpM0I5g5Hq8/RW
-        Xy4/QLsY2/p76DsRNjgqElA0UI+q9AceYL6gctI=
-X-Google-Smtp-Source: ADFU+vsGFiA4P34mMK4FrZX8YJMLWoDFigLxs6YXE5g30Gc616UcUqrHr7xPq28rzQ3wRIyP8D50LHOGsQMrvIzMgN4=
-X-Received: by 2002:ac8:c4f:: with SMTP id l15mr1858121qti.177.1583189155880;
- Mon, 02 Mar 2020 14:45:55 -0800 (PST)
+        id S1726816AbgCBWtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 17:49:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47930 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726728AbgCBWtc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 17:49:32 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6742C208C3;
+        Mon,  2 Mar 2020 22:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583189371;
+        bh=wmG7nx2gKT1ej2x9EGIjzDwZjQRIEbOxHvYx2O8/GNc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g4vnX1NnfAqIGFss7C95ORBUJ2Gyj7CxJVVwMf+erdB285lm4aKcaRKyb62bR7aLX
+         6IoEAS56a6QAmjug8KZ9S6mpZlbPwtfsccMjWh1lD+3RJ/5vFYS+tHN1Y9MVp/Gw3t
+         KQiBv8nuM/DQBhqnZeOS/DKMTTk6yBsT2MHHVTNI=
+Date:   Mon, 2 Mar 2020 14:49:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200302214659.v4zm2whrv4qjz3pe@salvia>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+        <20200228172505.14386-2-jiri@resnulli.us>
+        <20200229192947.oaclokcpn4fjbhzr@salvia>
+        <20200301084443.GQ26061@nanopsycho>
+        <20200302132016.trhysqfkojgx2snt@salvia>
+        <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
+        <20200302192437.wtge3ze775thigzp@salvia>
+        <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200302214659.v4zm2whrv4qjz3pe@salvia>
 MIME-Version: 1.0
-References: <CAA85sZsO9EaS8fZJqx6=QJA+7epe88UE2zScqw-KHZYDRMjk5A@mail.gmail.com>
- <32234f4c5b4adcaf2560098a01b1544d8d8d3c2c.camel@mellanox.com>
-In-Reply-To: <32234f4c5b4adcaf2560098a01b1544d8d8d3c2c.camel@mellanox.com>
-From:   Ian Kumlien <ian.kumlien@gmail.com>
-Date:   Mon, 2 Mar 2020 23:45:44 +0100
-Message-ID: <CAA85sZuoiWSfMt8H+pjN-Ly=f2wNwG5tPiFZzcc6-1F3fqcO9Q@mail.gmail.com>
-Subject: Re: [VXLAN] [MLX5] Lost traffic and issues
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 2, 2020 at 8:10 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
-> On Fri, 2020-02-28 at 16:02 +0100, Ian Kumlien wrote:
-> > Hi,
+On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
+> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
+> > On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote: =20
+> > > On Mon, Mar 02, 2020 at 04:29:32PM +0000, Edward Cree wrote: =20
+> > > > On 02/03/2020 13:20, Pablo Neira Ayuso wrote:   =20
+> > > > > 2) explicit counter action, in this case the user specifies expli=
+citly
+> > > > >    that it needs a counter in a given position of the rule. This
+> > > > >    counter might come before or after the actual action.   =20
+> > > >
+> > > > But the existing API can already do this, with a gact pipe.=C2=A0 P=
+lus, Jiri's
+> > > > =C2=A0new API will allow specifying a counter on any action (rather=
+ than only,
+> > > > =C2=A0implicitly, those which have .stats_update()) should that pro=
+ve to be
+> > > > =C2=A0necessary.
+> > > >=20
+> > > > I really think the 'explicit counter action' is a solution in searc=
+h of a
+> > > > =C2=A0problem, let's not add random orthogonality violations.=C2=A0=
+ (Equally if the
+> > > > =C2=A0counter action had been there first, I'd be against adding co=
+unters to
+> > > > =C2=A0the other actions.)   =20
+> > >=20
+> > > It looks to me that you want to restrict the API to tc for no good
+> > > _technical_ reason. =20
+> >=20
+> > Undeniably part of the reason is that given how complex flow offloads
+> > got there may be some resistance to large re-factoring. IMHO well
+> > thought out refactoring of stats is needed.. but I'm not convinced=20
+> > this is the direction.
 > >
-> > Including netdev - to see if someone else has a clue.
+> > Could you give us clearer understanding of what the use cases for the
+> > counter action is?
+> >=20
+> > AFAIK right now actions do the accounting on input. That seems like the
+> > only logical option. Either action takes the packet out of the action
+> > pipeline, in which case even the counter action after will not see it,
+> > or it doesn't and the input counter of the next action can be used.
 > >
-> > We have a few machines in a cloud and when upgrading from 4.16.7 ->
-> > 5.4.15 we ran in to
-> > unexpected and intermittent problems.
-> > (I have tested 5.5.6 and the problems persists)
-> >
-> > What we saw, using several monitoring points, was that traffic
-> > disappeared after what we can see when tcpdumping on "bond0"
-> >
-> > We had tcpdump running on:
-> > 1, DHCP nodes (local tap interfaces)
-> > 2, Router instances on L3 node
-> > 3, Local node (where the VM runs) (tap, bridge and eventually tap
-> > interface dumping VXLAN traffic)
-> > 4, Using port mirroring on the 100gbit switch to see what ended up on
-> > the physical wire.
-> >
-> > What we can see is that from the four step handshake for DHCP only
-> > two
-> > steps works, the forth step will be dropped "on the nic".
-> >
-> > We can see it go out bond0, in tagged VLAN and within a VXLAN packet
-> > -
-> > however the switch never sees it.
->
-> Hi,
->
-> Have you seen the packets actually going out on one of the mlx5 100gbit
-> legs ?
+> > Given counters must be next to real actions and not other counter
+> > to have value, having them as a separate action seems to make no
+> > difference at all (if users are silly, we can use the pipe/no-op). =20
+>=20
+> This model that is proposed here is correct in the tc world, where
+> counters are tied to actions (as you describe above). However, the
+> flow_offload API already supports for ethtool and netfilter these
+> days.
+>=20
+> In Netfilter, counters are detached from actions. Obviously, a counter
+> must be placed before the action _if_ the action gets the packet out
+> of the pipeline, e.g.
+>=20
+>      ip saddr 1.1.1.1 counter drop
+>=20
+> In this case, the counter is placed before the 'drop' action. Users
+> that need no counters have to remove 'counter' from the rule syntax to
+> opt-out.
 
-We disabled bond and made it go to only one interface to be able to snoop the
-traffic (sorry, sometimes you forget things when writing them down)
+In Jiri's set if counter exists DROP should get the ANY flag, if
+counter is not there - DISABLED.
 
-And no, the traffic that was lost never reached the "wire" to our knowledge
+> > IOW modeling the stats as attribute of other actions or a separate
+> > action is entirely equivalent, and there's nothing to be gained from
+> > moving from the existing scheme to explicit actions... other than it'd
+> > make it look more like nft actions... :) =20
+>=20
+> I just wonder if a model that allows tc and netfilter to use this new
+> statistics infrastructure would make everyone happy. My understanding
+> is that it is not far away from what this patchset provides.
+>=20
+> The retorical question here probably is if you still want to allow the
+> Netfilter front-end to benefit from this new flow_action API
+> extension.
+>=20
+> The real question is: if you think this tc counter+action scheme can
+> be used by netfilter, then please explain how.
 
-> > There has been a few mlx5 changes wrt VXLAN which can be culprits but
-> > it's really hard to judge.
-> >
-> > dmesg |grep mlx
-> > [    2.231399] mlx5_core 0000:0b:00.0: firmware version: 16.26.1040
-> > [    2.912595] mlx5_core 0000:0b:00.0: Rate limit: 127 rates are
-> > supported, range: 0Mbps to 97656Mbps
-> > [    2.935012] mlx5_core 0000:0b:00.0: Port module event: module 0,
-> > Cable plugged
-> > [    2.949528] mlx5_core 0000:0b:00.1: firmware version: 16.26.1040
-> > [    3.638647] mlx5_core 0000:0b:00.1: Rate limit: 127 rates are
-> > supported, range: 0Mbps to 97656Mbps
-> > [    3.661206] mlx5_core 0000:0b:00.1: Port module event: module 1,
-> > Cable plugged
-> > [    3.675562] mlx5_core 0000:0b:00.0: MLX5E: StrdRq(1) RqSz(8)
-> > StrdSz(64) RxCqeCmprss(0)
-> > [    3.846149] mlx5_core 0000:0b:00.1: MLX5E: StrdRq(1) RqSz(8)
-> > StrdSz(64) RxCqeCmprss(0)
-> > [    4.021738] mlx5_core 0000:0b:00.0 enp11s0f0: renamed from eth0
-> > [    4.021962] mlx5_ib: Mellanox Connect-IB Infiniband driver v5.0-0
-> >
-> > I have tried turning all offloads off, but the problem persists as
-> > well - it's really weird that it seems to be only some packets.
-> >
-> > To be clear, the bond0 interface is 2*100gbit, using 802.1ad (LACP)
-> > with layer2+3 hashing.
-> > This seems to be offloaded in to the nic (can it be turned off?) and
-> > messages about modifying the "lag map" was
-> > quite frequent until we did a firmware upgrade - even with upgraded
-> > firmware, it continued but to a lesser extent.
-> >
-> > With 5.5.7 approaching, we would want a path forward to handle
-> > this...
->
->
-> What type of mlx5 configuration you have (Native PV virtualization ?
-> SRIOV ? legacy mode or switchdev mode ? )
+In Jiri's latest patch set the counter type is per action, so just
+"merge right" the counter info into the next action and the models=20
+are converted.
 
-We have:
-tap -> bridge -> ovs -> bond (one legged) -switch-fabric-> <other-end>
+If user is silly and has multiple counter actions in a row - the
+pipe/no-op action comes into play (that isn't part of this set,=20
+as Jiri said).
 
-So a pretty standard openstack setup
+Can you give us examples of what wouldn't work? Can you for instance
+share the counter across rules?
 
-> The only change that i could think of is the lag multi-path support we
-> added, Roi can you please take a look at this ?
+Also neither proposal addresses the problem of reporting _different_
+counter values at different stages in the pipeline, i.e. moving from
+stats per flow to per action. But nobody seems to be willing to work=20
+on that.
 
-I'm also trying to get a setup working where i could try reverting changes
-but so far we've only had this problem with mlx5_core...
-Also the intermittent but reliable patterns are really weird...
-
-All traffic seems fine, except vxlan traffic :/
-
-(The problem is that the actual machines that has the issue is in production
-with 8x V100 nvidia cards... Kinda hard to justify having them "offline" ;))
+AFAICT with Jiri's change we only need one check in the drivers to
+convert from old scheme to new, with explicit action we need two
+(additional one being ignoring the counter action). Not a big deal,
+but 1 is less than 2 =F0=9F=A4=B7=E2=80=8D=E2=99=82=EF=B8=8F
