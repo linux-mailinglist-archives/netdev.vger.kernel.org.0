@@ -2,147 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 571CF175427
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 07:55:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3E017542C
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 07:57:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbgCBGzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 01:55:55 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40707 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbgCBGzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 01:55:55 -0500
-Received: by mail-pl1-f194.google.com with SMTP id y1so3817474plp.7
-        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 22:55:54 -0800 (PST)
+        id S1726263AbgCBG5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 01:57:25 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43723 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726052AbgCBG5Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 01:57:25 -0500
+Received: by mail-pf1-f195.google.com with SMTP id s1so5088522pfh.10;
+        Sun, 01 Mar 2020 22:57:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8/jJwfsO/hMGjU6F0xRuxSCi7oATNbVJFqcLWJXKQlU=;
-        b=feRHnOqmJGnxbNIJ7tQvRXUSZTZAY4fcBnHvsE+gESsXwSAbUzLjz5IMWboPq0rzV6
-         OzgA+oCfbGj1LMw4gwREdcllwOPUza4rmaL+ne/Hvzh+iIhCRaIQNHvfN4kWXFmoj2dV
-         18W9ubZM36V6O5n4JjEN47I2dKG2s6QgiaEPgxzsvjfltovM9j0b0xmEaQSm+7hxEQMo
-         nsRH/Bqp7GyYfzbktJILjyqKg2E6W5M7L+qUdYnmLRjMLvc24ZLKBmEnMuYaLEsFRn9Y
-         xckFCs9aQHRnOkP2NhS+UeqOny/2ExLCh2LAuD0sDtt2FnEQHCQZqcqhfdJyKxEd1pEL
-         /wOQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=yj6/i5PGnAg2vla96UjqFrCdBrIGa+0X2TdjaqrEe/Y=;
+        b=b3YGAK+UaX8TgwholOzZWDvv6xiBB9MBD8W8HCqJKBDjtNZ4yAKmNsvufbvD0WfAUl
+         Ojc82bK5Bjm+5D8Q8lMDrBd7BFFueGhCQrqvSR04Q0Jk0ZjypGlwv4hyNIZsUbAusv7v
+         Ji1aB983yP1zxrJANQVBU22Diz46XD+Htr8bDCERtSNAcyA/5rBIk8epJk1/pE+HC1Tw
+         Ql375z7BhpWDZ6TkeIeU2ZhSegkTExqWy4Q8GVH5fR3MTK7OhngJ7qmd5p1yJViVWmog
+         KISGPrhBp7C1I3mN1BQpg1q7o/SsxhxVQXWqIhSJu+/AmCyjMuMZuBekoavBeNucB3gb
+         bxOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8/jJwfsO/hMGjU6F0xRuxSCi7oATNbVJFqcLWJXKQlU=;
-        b=ajOWE2LFQ0b0yXbB4qDIAH+0M+Zjlk7J647JzS1ZtIly8ManigkPmbvo16Pet7jaJs
-         gzqyekneVIpcBSgFR+t70GLWsuv0mUZO+y+hfwVlxHkoNYOO9UmePaYWMNYW55WlkqKP
-         EggWdiC7LBASvn7NYkigaSIyz6L4pUOpe71kQ1aammn6AlXJYsEuUOh79PUNdGZMFlEr
-         /TE6gPN5qGBLccq1cnqn5yEEte2RHlSvCRMkXzQZckJ54BWpGELrUf7GIbd1S1rCeGGD
-         XsfBMWMdBvDy1JXUeAeTOz8Sm7eMfJmoKF+ZDzp6bOEee+219R7saUcQCmA8LiCOuSQ1
-         DawQ==
-X-Gm-Message-State: APjAAAUcTxXvecKFhpUBa+Jc+qRJofxaDc13GmlhwqOxYvUkGn+wnrE6
-        mfveTLEMxQDE2OZ+Oi2OC4C9xw==
-X-Google-Smtp-Source: APXvYqxxF+h10WuOjzLNgSLgjC6x+I1GajyoqqglQhktKXV+4qMD0GWozaXB3VZHznTmWa7dzF/76w==
-X-Received: by 2002:a17:90a:da01:: with SMTP id e1mr20153262pjv.100.1583132154120;
-        Sun, 01 Mar 2020 22:55:54 -0800 (PST)
-Received: from yoga (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id w25sm19164387pfi.106.2020.03.01.22.55.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Mar 2020 22:55:53 -0800 (PST)
-Date:   Sun, 1 Mar 2020 22:55:51 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: qrtr: Fix FIXME related to qrtr_ns_init()
-Message-ID: <20200302065551.GH210720@yoga>
-References: <20200302032527.552916-1-bjorn.andersson@linaro.org>
- <20200302032527.552916-3-bjorn.andersson@linaro.org>
- <20200302055510.GB23607@Mani-XPS-13-9360>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200302055510.GB23607@Mani-XPS-13-9360>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yj6/i5PGnAg2vla96UjqFrCdBrIGa+0X2TdjaqrEe/Y=;
+        b=TqDTFU6880YieAQxJKwv6J37cSpiocwGea3Kf528L+75aaVRvPlFIb/jE6tzWfobj/
+         GH7fj7jDfYkmRuvSJ4n/Vn63U47JZgD++WGxBQCvqF4WzJJfF4qWAMDP5M8EHdXqX56l
+         GkfJWzp5S9fK/oPJYxz+12TK2z5g799oJTYaUxF1ktO5WOqeCYPcyyZerzNnhmTxrR6i
+         Nm8J9QSzt0J9IYKY+I/isc/iuws9adVCMTmfqIu2nAmWI9qgWn8YODFkQtSypB/TjAFq
+         1Q08x2lo257UGA8D6lzYUJPN16OS9MG2yNJHVl7v7C6BW2wjyTSY05Y9a0DBDR40B13K
+         eo8Q==
+X-Gm-Message-State: APjAAAW52LxyWrLLDIoBoKpbZkSkdYsZof09zxz689uAaBWaahZYkEgh
+        ckvd4n6+El1Y2KbjYtBuqQE1dOs0
+X-Google-Smtp-Source: APXvYqxSXnsiG4+LCZDRHNiley9tMRpBi+u+lobMGf/b4EqgU5kJ6fLJkASc97wabIcXeS/tmmtw5Q==
+X-Received: by 2002:a63:3207:: with SMTP id y7mr18907478pgy.344.1583132243928;
+        Sun, 01 Mar 2020 22:57:23 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o12sm7078715pfp.1.2020.03.01.22.57.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 01 Mar 2020 22:57:23 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, jere.leppanen@nokia.com,
+        michael.tuexen@lurchi.franken.de
+Subject: [PATCH net] sctp: return a one-to-one type socket when doing peeloff
+Date:   Mon,  2 Mar 2020 14:57:15 +0800
+Message-Id: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun 01 Mar 21:55 PST 2020, Manivannan Sadhasivam wrote:
+As it says in rfc6458#section-9.2:
 
-> On Sun, Mar 01, 2020 at 07:25:27PM -0800, Bjorn Andersson wrote:
-> > The 2 second delay before calling qrtr_ns_init() meant that the remote
-> > processors would register as endpoints in qrtr and the say_hello() call
-> > would therefor broadcast the outgoing HELLO to them. With the HELLO
-> > handshake corrected this delay is no longer needed.
-> > 
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > ---
-> >  net/qrtr/ns.c   | 2 +-
-> >  net/qrtr/qrtr.c | 6 +-----
-> >  net/qrtr/qrtr.h | 2 +-
-> >  3 files changed, 3 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-> > index e3f11052b5f6..cfd4bd07a62b 100644
-> > --- a/net/qrtr/ns.c
-> > +++ b/net/qrtr/ns.c
-> > @@ -693,7 +693,7 @@ static void qrtr_ns_data_ready(struct sock *sk)
-> >  	queue_work(qrtr_ns.workqueue, &qrtr_ns.work);
-> >  }
-> >  
-> > -void qrtr_ns_init(struct work_struct *work)
-> > +void qrtr_ns_init(void)
-> >  {
-> >  	struct sockaddr_qrtr sq;
-> >  	int ret;
-> > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> > index 423310896285..313d3194018a 100644
-> > --- a/net/qrtr/qrtr.c
-> > +++ b/net/qrtr/qrtr.c
-> > @@ -1263,11 +1263,7 @@ static int __init qrtr_proto_init(void)
-> >  		return rc;
-> >  	}
-> >  
-> > -	/* FIXME: Currently, this 2s delay is required to catch the NEW_SERVER
-> > -	 * messages from routers. But the fix could be somewhere else.
-> > -	 */
-> > -	INIT_DELAYED_WORK(&qrtr_ns_work, qrtr_ns_init);
-> > -	schedule_delayed_work(&qrtr_ns_work, msecs_to_jiffies(2000));
-> > +	qrtr_ns_init();
-> >  
-> 
-> You forgot to remove the below instances of delayed_work:
-> 
-> #include <linux/workqueue.h>
-> struct delayed_work qrtr_ns_work;
-> cancel_delayed_work_sync(&qrtr_ns_work);
-> 
+  The application uses the sctp_peeloff() call to branch off an
+  association into a separate socket.  (Note that the semantics are
+  somewhat changed from the traditional one-to-one style accept()
+  call.)  Note also that the new socket is a one-to-one style socket.
+  Thus, it will be confined to operations allowed for a one-to-one
+  style socket.
 
-I sure did, thanks for noticing.
+Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
+on which some operations are not allowed, like shutdown, as Jere
+reported.
 
-Regards,
-Bjorn
+This patch is to change it to return a one-to-one type socket instead.
 
-> Other than that,
-> 
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> Thanks,
-> Mani
-> 
-> >  	return rc;
-> >  }
-> > diff --git a/net/qrtr/qrtr.h b/net/qrtr/qrtr.h
-> > index 53a237a28971..dc2b67f17927 100644
-> > --- a/net/qrtr/qrtr.h
-> > +++ b/net/qrtr/qrtr.h
-> > @@ -29,7 +29,7 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep);
-> >  
-> >  int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len);
-> >  
-> > -void qrtr_ns_init(struct work_struct *work);
-> > +void qrtr_ns_init(void);
-> >  
-> >  void qrtr_ns_remove(void);
-> >  
-> > -- 
-> > 2.24.0
-> > 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Leppanen, Jere (Nokia - FI/Espoo) <jere.leppanen@nokia.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/socket.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 1b56fc4..2b55beb 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -88,8 +88,7 @@ static int sctp_send_asconf(struct sctp_association *asoc,
+ static int sctp_do_bind(struct sock *, union sctp_addr *, int);
+ static int sctp_autobind(struct sock *sk);
+ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+-			     struct sctp_association *assoc,
+-			     enum sctp_socket_type type);
++			     struct sctp_association *assoc);
+ 
+ static unsigned long sctp_memory_pressure;
+ static atomic_long_t sctp_memory_allocated;
+@@ -4965,7 +4964,7 @@ static struct sock *sctp_accept(struct sock *sk, int flags, int *err, bool kern)
+ 	/* Populate the fields of the newsk from the oldsk and migrate the
+ 	 * asoc to the newsk.
+ 	 */
+-	error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
++	error = sctp_sock_migrate(sk, newsk, asoc);
+ 	if (error) {
+ 		sk_common_release(newsk);
+ 		newsk = NULL;
+@@ -5711,7 +5710,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
+ 		return -EINVAL;
+ 
+ 	/* Create a new socket.  */
+-	err = sock_create(sk->sk_family, SOCK_SEQPACKET, IPPROTO_SCTP, &sock);
++	err = sock_create(sk->sk_family, SOCK_STREAM, IPPROTO_SCTP, &sock);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -5727,8 +5726,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
+ 	/* Populate the fields of the newsk from the oldsk and migrate the
+ 	 * asoc to the newsk.
+ 	 */
+-	err = sctp_sock_migrate(sk, sock->sk, asoc,
+-				SCTP_SOCKET_UDP_HIGH_BANDWIDTH);
++	err = sctp_sock_migrate(sk, sock->sk, asoc);
+ 	if (err) {
+ 		sock_release(sock);
+ 		sock = NULL;
+@@ -9453,8 +9451,7 @@ static inline void sctp_copy_descendant(struct sock *sk_to,
+  * and its messages to the newsk.
+  */
+ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+-			     struct sctp_association *assoc,
+-			     enum sctp_socket_type type)
++			     struct sctp_association *assoc)
+ {
+ 	struct sctp_sock *oldsp = sctp_sk(oldsk);
+ 	struct sctp_sock *newsp = sctp_sk(newsk);
+@@ -9562,7 +9559,7 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+ 	 * original UDP-style socket or created with the accept() call on a
+ 	 * TCP-style socket..
+ 	 */
+-	newsp->type = type;
++	newsp->type = SCTP_SOCKET_TCP;
+ 
+ 	/* Mark the new socket "in-use" by the user so that any packets
+ 	 * that may arrive on the association after we've moved it are
+-- 
+2.1.0
+
