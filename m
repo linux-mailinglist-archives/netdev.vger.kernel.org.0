@@ -2,167 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2348B176225
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 19:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C9A17629A
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 19:26:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727407AbgCBSNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 13:13:14 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:44740 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727213AbgCBSNO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 13:13:14 -0500
-Received: by mail-io1-f72.google.com with SMTP id q13so328564iob.11
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 10:13:13 -0800 (PST)
+        id S1727341AbgCBS0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 13:26:11 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44036 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbgCBS0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 13:26:11 -0500
+Received: by mail-qk1-f195.google.com with SMTP id f198so603956qke.11;
+        Mon, 02 Mar 2020 10:26:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UJlr4oBO3UMUPF2onmKLJ0zkcX25GwCDTuSzFH9TffE=;
+        b=E2Ftr5r5AIZeEnhoSnNkykd09T53E//ZvQOnPbvAlGFcfmadARn4Kf4ki7/uqI6aEk
+         7I53IBAxAjUU3BzyQaE2KpoEZctV2IXLKkxSga94N3fSi4On7Jdl9e5+b4ZaN1ittZ2O
+         fn7S0Nsdrh9aen94wStqZc3vp+nN63Ca7jcQIYFUHFBMrT0D12TRf+/y3AtPcEsctdY8
+         M1ZIiVFH+x+CQiM1sXlh4iUPgOZHdgTlGL4d5LHPaq76io7YNH79/u4fb/n9YCAit6QQ
+         IXf3MZhq8f3RhObkbSld1H3+YcRikkEdswfcd6X3ph+duDpJmRXoBdMRjj5TNvgykHb1
+         i9iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=j5q7y848T2P70zRiYu3DuUEmCDrFHU6vd+U30aYbPUA=;
-        b=SI82b57r55srUqNuGhor9MJyqN6Wy2ZWMCP3K+TpXDi2gab8zLdszv1NY+uH31GmB5
-         FrOhR3dJ/ONMwbnUHDZjTfQeaMyF6ouXVlAKztSL1fSjWkoeZcEQlUh62TkSl7klADG1
-         Nf2plVplqto/lOgsExRjc4Fawa5Zr6iqJJoI/dlSoKSlZuMKXRfdrQq8Z1v6/FMZE+X/
-         FfcD7JT/jPMU1pqZY7O91n2ZhKSd9ih5MPfhFhoY+vcsW70PrpITwbx0NcWIMNtiusxX
-         7ewgmagzLBpgwk/6dzZnnyH7a8TcAts7kXMEIriKGEZ/td1gF8ck7cS6M5n1eUGLgurq
-         cjnA==
-X-Gm-Message-State: ANhLgQ1Q7VhIyphyM0QlwBjo8VzZVC2oCtuKkVGMN1Gpki9AY3fg90Q9
-        lj1vJEHu5t6/6smgKZA2otmoHdzV34CEYBiJimp9sokeRR72
-X-Google-Smtp-Source: ADFU+vu+B3RE2Nr7LlNkMzHD/kRbMXU0sQ6ZRLYE+JDbNuMCn4CiLjRFuAYhm6mmxFj7MF8LlmZRyzBVbdnZE5LetqppBx2tFP43
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UJlr4oBO3UMUPF2onmKLJ0zkcX25GwCDTuSzFH9TffE=;
+        b=JeyAmaxOjt5vaiEhNdgRZjXDDweMac/HJ0MPqRjkwKXXAmkgz1qLPR1qYUkKlq9ZhE
+         IizXnsWRud+Q4E7W0yb1XRmnktsHdWle9ES7qTQiH5DbImg/KiItm4GChXakZeCxdHXh
+         EmQP8+WWletJ88dWIfDowm3c8TceXJzSeH5u/uGT6nxVA1XYeg4tQgq497Ll431DIZMz
+         t6Xm29oSP7csf+FWUzblsbbCvWUglx8N8cwYRA8gG8WKORpnTdAOTjNhQM5VVTByWykJ
+         sWSqWF4EsSy0luwa5n9gE+3GQdiyBbwPi+xV1d2j6RY/lso1jtfu+PGthb6aFORPfj2B
+         BkYQ==
+X-Gm-Message-State: ANhLgQ3VZG7nh5/qHzP5weKXcVvfNDYcSL1I451GCvTqsWYUsc9Q17kA
+        5r25v2e6xJavFfGb3OJvVje6eUza7HdqfU2ICgJZ+lwj
+X-Google-Smtp-Source: ADFU+vvDYzCoi4Gojb/uRKud/WoT6IZQf/2NXmE+Y8DvKRa7O4uHHnQPCG59TP4nS6LjExXXKsp48sRM9nyIVN6qXg0=
+X-Received: by 2002:a37:a70c:: with SMTP id q12mr597148qke.36.1583173569936;
+ Mon, 02 Mar 2020 10:26:09 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:85e8:: with SMTP id d95mr367885jai.92.1583172793156;
- Mon, 02 Mar 2020 10:13:13 -0800 (PST)
-Date:   Mon, 02 Mar 2020 10:13:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f44aca059fe3232d@google.com>
-Subject: possible deadlock in team_port_change_check
-From:   syzbot <syzbot+eeca95faae43d590987b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jiri@resnulli.us,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <20200301062405.2850114-1-andriin@fb.com> <20200301062405.2850114-2-andriin@fb.com>
+ <b57cdf6d-0849-2d54-982e-352886f86201@fb.com>
+In-Reply-To: <b57cdf6d-0849-2d54-982e-352886f86201@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Mar 2020 10:25:58 -0800
+Message-ID: <CAEf4BzZspu-wXMr6v=Sd-_m-XzXJwJHyU9zd0ydEiWmch8F9GQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to enums
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Mar 2, 2020 at 8:22 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 2/29/20 10:24 PM, Andrii Nakryiko wrote:
+> > Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+> > enum values. This preserves constants values and behavior in expressions, but
+> > has added advantaged of being captured as part of DWARF and, subsequently, BTF
+> > type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+> > for BPF applications, as it will not require BPF users to copy/paste various
+> > flags and constants, which are frequently used with BPF helpers.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >   include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
+> >   include/uapi/linux/bpf_common.h       |  86 ++++----
+> >   include/uapi/linux/btf.h              |  60 +++---
+> >   tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
+> >   tools/include/uapi/linux/bpf_common.h |  86 ++++----
+> >   tools/include/uapi/linux/btf.h        |  60 +++---
+> >   6 files changed, 497 insertions(+), 341 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 8e98ced0963b..03e08f256bd1 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -14,34 +14,36 @@
+> >   /* Extended instruction set based on top of classic BPF */
+> >
+> >   /* instruction classes */
+> > -#define BPF_JMP32    0x06    /* jmp mode in word width */
+> > -#define BPF_ALU64    0x07    /* alu mode in double word width */
+> > +enum {
+> > +     BPF_JMP32       = 0x06, /* jmp mode in word width */
+> > +     BPF_ALU64       = 0x07, /* alu mode in double word width */
+>
+> Not sure whether we have uapi backward compatibility or not.
+> One possibility is to add
+>    #define BPF_ALU64 BPF_ALU64
+> this way, people uses macros will continue to work.
 
-syzbot found the following crash on:
+This is going to be a really ugly solution, though. I wonder if it was
+ever an expected behavior of UAPI constants to be able to do #ifdef on
+them.
 
-HEAD commit:    3b3e808c Merge tag 'mac80211-next-for-net-next-2020-02-24'..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=146c04f9e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6ec9623400ee72
-dashboard link: https://syzkaller.appspot.com/bug?extid=eeca95faae43d590987b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Do you know any existing application that relies on those constants
+being #defines?
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+eeca95faae43d590987b@syzkaller.appspotmail.com
-
-device team_slave_1 left promiscuous mode
-device vlan2 left promiscuous mode
-device team_slave_0 left promiscuous mode
-bridge9: port 1(@) entered disabled state
-============================================
-WARNING: possible recursive locking detected
-5.6.0-rc2-syzkaller #0 Not tainted
---------------------------------------------
-syz-executor.5/26255 is trying to acquire lock:
-ffff88805be96bf0 (team->team_lock_key#6){+.+.}, at: team_port_change_check+0x49/0x140 drivers/net/team/team.c:2962
-
-but task is already holding lock:
-ffff88805be96bf0 (team->team_lock_key#6){+.+.}, at: team_uninit+0x37/0x1c0 drivers/net/team/team.c:1665
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(team->team_lock_key#6);
-  lock(team->team_lock_key#6);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-2 locks held by syz-executor.5/26255:
- #0: ffffffff8a74d740 (rtnl_mutex){+.+.}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
- #0: ffffffff8a74d740 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x405/0xaf0 net/core/rtnetlink.c:5437
- #1: ffff88805be96bf0 (team->team_lock_key#6){+.+.}, at: team_uninit+0x37/0x1c0 drivers/net/team/team.c:1665
-
-stack backtrace:
-CPU: 0 PID: 26255 Comm: syz-executor.5 Not tainted 5.6.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_deadlock_bug kernel/locking/lockdep.c:2370 [inline]
- check_deadlock kernel/locking/lockdep.c:2411 [inline]
- validate_chain kernel/locking/lockdep.c:2954 [inline]
- __lock_acquire.cold+0x15d/0x385 kernel/locking/lockdep.c:3954
- lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
- __mutex_lock_common kernel/locking/mutex.c:956 [inline]
- __mutex_lock+0x156/0x13c0 kernel/locking/mutex.c:1103
- mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
- team_port_change_check+0x49/0x140 drivers/net/team/team.c:2962
- team_device_event+0x16a/0x420 drivers/net/team/team.c:2988
- notifier_call_chain+0xc2/0x230 kernel/notifier.c:83
- __raw_notifier_call_chain kernel/notifier.c:361 [inline]
- raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:368
- call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
- call_netdevice_notifiers_info+0xba/0x130 net/core/dev.c:1933
- call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
- call_netdevice_notifiers net/core/dev.c:1974 [inline]
- dev_close_many+0x32a/0x6c0 net/core/dev.c:1549
- vlan_device_event+0x9a9/0x2370 net/8021q/vlan.c:450
- notifier_call_chain+0xc2/0x230 kernel/notifier.c:83
- __raw_notifier_call_chain kernel/notifier.c:361 [inline]
- raw_notifier_call_chain+0x2e/0x40 kernel/notifier.c:368
- call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
- call_netdevice_notifiers_info+0xba/0x130 net/core/dev.c:1933
- call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
- call_netdevice_notifiers net/core/dev.c:1974 [inline]
- dev_close_many+0x32a/0x6c0 net/core/dev.c:1549
- dev_close.part.0+0x114/0x1e0 net/core/dev.c:1571
- dev_close+0x63/0x80 net/core/dev.c:1574
- team_port_del+0x35c/0x800 drivers/net/team/team.c:1345
- team_uninit+0xc3/0x1c0 drivers/net/team/team.c:1667
- rollback_registered_many+0xa06/0x1030 net/core/dev.c:8824
- unregister_netdevice_many.part.0+0x1b/0x1f0 net/core/dev.c:9963
- unregister_netdevice_many+0x3b/0x50 net/core/dev.c:9962
- rtnl_delete_link+0xda/0x130 net/core/rtnetlink.c:2933
- rtnl_dellink+0x341/0x9e0 net/core/rtnetlink.c:2985
- rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5440
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2478
- rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5458
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xd7/0x130 net/socket.c:672
- ____sys_sendmsg+0x753/0x880 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
- __do_sys_sendmsg net/socket.c:2439 [inline]
- __se_sys_sendmsg net/socket.c:2437 [inline]
- __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c479
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f8bb9fd6c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f8bb9fd76d4 RCX: 000000000045c479
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 000000000000000a
-RBP: 000000000076c060 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000009f9 R14: 00000000004cc71a R15: 000000000076c06c
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> If this is an acceptable solution, we have a lot of constants
+> in net related headers and will benefit from this conversion for
+> kprobe/tracepoint of networking related functions.
+>
+> >
+> >   /* ld/ldx fields */
+> > -#define BPF_DW               0x18    /* double word (64-bit) */
+> > -#define BPF_XADD     0xc0    /* exclusive add */
+> > +     BPF_DW          = 0x18, /* double word (64-bit) */
+> > +     BPF_XADD        = 0xc0, /* exclusive add */
+> >
+> >   /* alu/jmp fields */
+> > -#define BPF_MOV              0xb0    /* mov reg to reg */
+> > -#define BPF_ARSH     0xc0    /* sign extending arithmetic shift right */
+> > +     BPF_MOV         = 0xb0, /* mov reg to reg */
+> > +     BPF_ARSH        = 0xc0, /* sign extending arithmetic shift right */
+> >
+> >   /* change endianness of a register */
+> > -#define BPF_END              0xd0    /* flags for endianness conversion: */
+> > -#define BPF_TO_LE    0x00    /* convert to little-endian */
+> > -#define BPF_TO_BE    0x08    /* convert to big-endian */
+> > -#define BPF_FROM_LE  BPF_TO_LE
+> > -#define BPF_FROM_BE  BPF_TO_BE
+> > +     BPF_END         = 0xd0, /* flags for endianness conversion: */
+> > +     BPF_TO_LE       = 0x00, /* convert to little-endian */
+> > +     BPF_TO_BE       = 0x08, /* convert to big-endian */
+> > +     BPF_FROM_LE     = BPF_TO_LE,
+> > +     BPF_FROM_BE     = BPF_TO_BE,
+> >
+> >   /* jmp encodings */
+> > -#define BPF_JNE              0x50    /* jump != */
+> > -#define BPF_JLT              0xa0    /* LT is unsigned, '<' */
+> > -#define BPF_JLE              0xb0    /* LE is unsigned, '<=' */
+> > -#define BPF_JSGT     0x60    /* SGT is signed '>', GT in x86 */
+> > -#define BPF_JSGE     0x70    /* SGE is signed '>=', GE in x86 */
+> > -#define BPF_JSLT     0xc0    /* SLT is signed, '<' */
+> > -#define BPF_JSLE     0xd0    /* SLE is signed, '<=' */
+> > -#define BPF_CALL     0x80    /* function call */
+> > -#define BPF_EXIT     0x90    /* function return */
+> > +     BPF_JNE         = 0x50, /* jump != */
+> > +     BPF_JLT         = 0xa0, /* LT is unsigned, '<' */
+> > +     BPF_JLE         = 0xb0, /* LE is unsigned, '<=' */
+> > +     BPF_JSGT        = 0x60, /* SGT is signed '>', GT in x86 */
+> > +     BPF_JSGE        = 0x70, /* SGE is signed '>=', GE in x86 */
+> > +     BPF_JSLT        = 0xc0, /* SLT is signed, '<' */
+> > +     BPF_JSLE        = 0xd0, /* SLE is signed, '<=' */
+> > +     BPF_CALL        = 0x80, /* function call */
+> > +     BPF_EXIT        = 0x90, /* function return */
+> > +};
+> >
+> [...]
