@@ -2,68 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2672717647D
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE9A51764B3
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 21:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgCBT7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 14:59:00 -0500
-Received: from mga18.intel.com ([134.134.136.126]:1308 "EHLO mga18.intel.com"
+        id S1726545AbgCBUML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 15:12:11 -0500
+Received: from ms.lwn.net ([45.79.88.28]:58520 "EHLO ms.lwn.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbgCBT7A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 14:59:00 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 11:58:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,508,1574150400"; 
-   d="scan'208";a="258070179"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
-  by orsmga002.jf.intel.com with ESMTP; 02 Mar 2020 11:58:59 -0800
-Subject: Re: [PATCH 1/5] pci: introduce pci_get_dsn
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com, jeffrey.t.kirsher@intel.com,
-        QLogic-Storage-Upstream@cavium.com, michael.chan@broadcom.com
-References: <20200227223635.1021197-1-jacob.e.keller@intel.com>
- <20200227223635.1021197-3-jacob.e.keller@intel.com>
- <20200229.212759.1192215762119235356.davem@davemloft.net>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <e26c36b3-bdd6-2d88-8f38-f59a0c8e2b40@intel.com>
-Date:   Mon, 2 Mar 2020 11:58:59 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1725446AbgCBUMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 15:12:10 -0500
+Received: from lwn.net (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 45B1A823;
+        Mon,  2 Mar 2020 20:12:10 +0000 (UTC)
+Date:   Mon, 2 Mar 2020 13:12:09 -0700
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        "Daniel W . S . Almeida" <dwlsalmeida@gmail.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH] Documentation: nfsroot.rst: Fix references to
+ nfsroot.rst
+Message-ID: <20200302131209.12825f9a@lwn.net>
+In-Reply-To: <CAMuHMdXjafF4s6U=mD6jEWDgx8CsmRsHiQOEVWmye87=soMz-Q@mail.gmail.com>
+References: <20200212181332.520545-1-niklas.soderlund+renesas@ragnatech.se>
+        <CAMuHMdXjafF4s6U=mD6jEWDgx8CsmRsHiQOEVWmye87=soMz-Q@mail.gmail.com>
+Organization: LWN.net
 MIME-Version: 1.0
-In-Reply-To: <20200229.212759.1192215762119235356.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 12 Feb 2020 19:30:37 +0100
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
+> On Wed, Feb 12, 2020 at 7:15 PM Niklas Söderlund
+> <niklas.soderlund+renesas@ragnatech.se> wrote:
+> > When converting and moving nfsroot.txt to nfsroot.rst the references to
+> > the old text file was not updated to match the change, fix this.
+> >
+> > Fixes: f9a9349846f92b2d ("Documentation: nfsroot.txt: convert to ReST")
+> > Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>  
+> 
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-On 2/29/2020 9:27 PM, David Miller wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
-> Date: Thu, 27 Feb 2020 14:36:31 -0800
-> 
->> +int pci_get_dsn(struct pci_dev *dev, u8 dsn[])
->> +{
->> +	u32 dword;
->> +	int pos;
->> +
->> +
-> 
-> Just one empty line after the local variable declarations please.
-> 
-> Thank you.
-> 
+Applied, thanks.
 
-I've fixed this locally, but am going to wait to see if there is any
-further feedback before sending a v2.
-
-Thanks,
-Jake
+jon
