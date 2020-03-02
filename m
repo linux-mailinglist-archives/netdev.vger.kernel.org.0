@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5501C1763D3
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:27:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158961763D7
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727644AbgCBT1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 14:27:31 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52614 "EHLO
+        id S1727683AbgCBT1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 14:27:40 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52620 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727126AbgCBT1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 14:27:31 -0500
+        with ESMTP id S1727126AbgCBT1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 14:27:39 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D236814706615;
-        Mon,  2 Mar 2020 11:27:30 -0800 (PST)
-Date:   Mon, 02 Mar 2020 11:27:30 -0800 (PST)
-Message-Id: <20200302.112730.262691493901474437.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5E9C014706610;
+        Mon,  2 Mar 2020 11:27:39 -0800 (PST)
+Date:   Mon, 02 Mar 2020 11:27:38 -0800 (PST)
+Message-Id: <20200302.112738.804018641496309458.davem@davemloft.net>
 To:     gustavo@embeddedor.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+Cc:     nhorman@tuxdriver.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: mip6: Replace zero-length array with
+Subject: Re: [PATCH][next] drop_monitor: Replace zero-length array with
  flexible-array member
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200302120048.GA15566@embeddedor>
-References: <20200302120048.GA15566@embeddedor>
+In-Reply-To: <20200302120209.GA15699@embeddedor>
+References: <20200302120209.GA15699@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 02 Mar 2020 11:27:31 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 02 Mar 2020 11:27:39 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Mon, 2 Mar 2020 06:00:48 -0600
+Date: Mon, 2 Mar 2020 06:02:09 -0600
 
 > The current codebase makes use of the zero-length array language
 > extension to the C90 standard, but the preferred mechanism to declare
