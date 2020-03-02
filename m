@@ -2,87 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A06175F33
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 17:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E734175F72
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 17:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727159AbgCBQHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 11:07:54 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:39018 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726451AbgCBQHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 11:07:53 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4CD13140073;
-        Mon,  2 Mar 2020 16:07:51 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 2 Mar 2020
- 16:07:40 +0000
-Subject: Re: [patch net-next 00/10] net: allow user specify TC filter HW stats
- type
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
-        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <xiyou.wangcong@gmail.com>,
-        <mlxsw@mellanox.com>, Marian Pritsak <marianp@mellanox.com>
-References: <20200221095643.6642-1-jiri@resnulli.us>
- <20200221102200.1978e10e@kicinski-fedora-PC1C0HJN>
- <20200222063829.GB2228@nanopsycho>
- <b6c5f811-2313-14a0-75c4-96d29196e7e6@solarflare.com>
- <20200224131101.GC16270@nanopsycho>
- <9cd1e555-6253-1856-f21d-43323eb77788@mojatatu.com>
- <20200224162521.GE16270@nanopsycho>
- <b93272f2-f76c-10b5-1c2a-6d39e917ffd6@mojatatu.com>
- <20200225162203.GE17869@nanopsycho> <20200228195909.dfdhifnjy4cescic@salvia>
- <20200229080120.GP26061@nanopsycho>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <b05ffcad-d3ba-7327-54bb-d346f5303ce2@solarflare.com>
-Date:   Mon, 2 Mar 2020 16:07:35 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727194AbgCBQWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 11:22:30 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26998 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726831AbgCBQWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 11:22:30 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 022G9YuO001154;
+        Mon, 2 Mar 2020 08:22:17 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
+ b=mbRCWjEha6ze09BWnv41OpS7HCTaZ232tEFRd5LbuRujWuLBfn9ZQkRuf3C8BvCuVlBl
+ B7ODS1P+5f/HSt63rF93SN3qqTsGitaPDkM1byK43fEAB8/G/S/z0+lZy04zGvBnkaNo
+ 8XIR+FmKAtX6SteBTZaCc3IPLt43IAaRqng= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yfpnqrd66-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 02 Mar 2020 08:22:17 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 2 Mar 2020 08:22:16 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JJE/4jMdWKeRBsjHEM5SjPAjTKG3TGHc0xhc5IIU7UVTj37sT60juRrYCxdARRtmHb8oaf+mPRzrHlhtUc4kewBD1hGEYNXaZiFZBkv152WMECPDW3T6BnbyKxbBGodQqzzqErfdkRVBbUPLy6FEKl2q1mS7LMsoE4jslfo8xuPNKZfJj5ocmDZw11MbCwJB4a0Bn8GxuTsgG0hjwBhqry8NVhIfdxHf8vNQc2duzAcsuOqW+9k+UmOK3N6xVXVJWWc54+QV/Wd33zVa7rH+bcppiGn6FaloKvIxWH+zCplFn6Srow5lt/r4XV9WiqkVjzWe7AgIT79WBG1pcCawVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
+ b=nHNvNbHEMRYK3UlGb436OJpV43sJsp4ORM6PWkxoiO3aYkqyCLS95qLwwMceV/DktO/zZb567MDvCIgyOr7ObkoLduZYX9MfhASSEbuIwzn1cTKrYh9C3xXNm877kYbkMwV4RV0qKXP3OKZl/2tSYp6flxUAUnTQCIxyb6k4+JShV/1EgG2+YY0fanIwQVF7+j2d9IvNpK4qOuTrzYiHZwLA30vwz2iBVDm81eXCqGVB5uwIEGvm9748vymOYsYoKfcrgPJ96GDGm7Qy2KOg7sG8DsksjopOd703/X+fwnRFKpcdmMGb0/4mtkbyzU23HxR9NMeaEVBzbZ9pk2OXjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
+ b=TgeI/CrCPR0/dC+9RBV+PPkAQTFlx3BHJZ8W96cN2lrBm/frwH/cgYdyk2bKpMLhd+CeYlv2MzwclBrpFAgZrbUikkk4KCpJI9UzWcg1sVGuO6zg5RM+iwLsLBx4Vu4CeuPutJrHGV3te4GbypNhbayzpyZ7V9HLzvLnM0aZzII=
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com (2603:10b6:5:13c::16)
+ by DM6PR15MB3338.namprd15.prod.outlook.com (2603:10b6:5:168::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.18; Mon, 2 Mar
+ 2020 16:22:15 +0000
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2772.019; Mon, 2 Mar 2020
+ 16:22:14 +0000
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to
+ enums
+To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>
+References: <20200301062405.2850114-1-andriin@fb.com>
+ <20200301062405.2850114-2-andriin@fb.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <b57cdf6d-0849-2d54-982e-352886f86201@fb.com>
+Date:   Mon, 2 Mar 2020 08:22:11 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
+In-Reply-To: <20200301062405.2850114-2-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR11CA0003.namprd11.prod.outlook.com
+ (2603:10b6:301:1::13) To DM6PR15MB3001.namprd15.prod.outlook.com
+ (2603:10b6:5:13c::16)
 MIME-Version: 1.0
-In-Reply-To: <20200229080120.GP26061@nanopsycho>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25264.003
-X-TM-AS-Result: No-7.126200-8.000000-10
-X-TMASE-MatchedRID: nVQUmLJJeybmLzc6AOD8DfHkpkyUphL96y7Z+mBhUl0Tvdh6VFADyc9x
-        vC1/5d4Z84NB8AEyFvr9LeU/rVo3pZTUoGfImkdk/ccgt/EtX/1Dmn7kzuSuKdfVxEPp7g/kR5T
-        vx+kKh7CSmxTZw6MyoVDfyYbqflqTOJQuSr/cFG7rOLyP6vXu3X0tCKdnhB58ZYJ9vPJ1vSDUCj
-        MSsLl1x+TCMddcL/gjsjvNV98mpPNjCeJDJ8IVkNrikcC6stYqQ0TGvc9gYoM7Q9p2gghMsS12k
-        o7AvGvNftwZ3X11IV0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.126200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25264.003
-X-MDID: 1583165272-nJLE198ELXn9
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:500::6:87b3) by MWHPR11CA0003.namprd11.prod.outlook.com (2603:10b6:301:1::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14 via Frontend Transport; Mon, 2 Mar 2020 16:22:13 +0000
+X-Originating-IP: [2620:10d:c090:500::6:87b3]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d94c60d1-cc0b-4a7c-50a8-08d7bec5de24
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3338:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB333834EE54BE4330AB05783BD3E70@DM6PR15MB3338.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 033054F29A
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(136003)(346002)(396003)(376002)(366004)(39860400002)(199004)(189003)(36756003)(6486002)(316002)(186003)(16526019)(2616005)(66476007)(4326008)(66556008)(86362001)(81156014)(6512007)(31696002)(81166006)(66946007)(8676002)(2906002)(478600001)(8936002)(52116002)(31686004)(5660300002)(6506007)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3338;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eKY51mVM5D8qf/NevavaTbaQi2xl2kSAcpfxk2wUvCUubQv8UD4E7UV1JuI6w5L5yy8sWM4Gr7juuZ6X/+1Cbi7cH3nnY9j6swTS7MrtXwtpZFFOwAwEQ+FLIBLuqpM7rFoWHsTUSFy8Emq+MBDaANeysFNh/zKVVfGnJv+JMejGhoNP8gv0ntYA1u84EWaBGQHXY1v/lSSCWyQFp3l8fA4SsnsrNWjbDzvC59E2W1n+iSqWzs1JQThD/DmKMA/3IzesaGSoabo+YiK+yBDnRy2L9O9txBxYCGOxH6JJCe/EaGrvlTjJAUEXl12m5hhfpfj78dVN/UG69Vhc1vptuDd+mezLvInsColKgppc35iRiUgHu8c3gjXcUKWsX7RdeYu4vFYn4b5tIgKYM18yAVb0WqWFEDITogkXWVEKjwndQRevvEJw8MS3nfy1MP6+
+X-MS-Exchange-AntiSpam-MessageData: ii/JXAlIlUSM57MS8WggCjQW1iXxxxF+FU2aV3RkI4071RVtx6EgGzPaQsJau7euQAGrMw1+PAUhkC0FLSvraeKOblTw0uGkY/rSeu5eOIeIK9GnTiDKm7aFFxlYLZwMu+hPGsnBJzjOx8TFQKulumO7jlNdtSwMqgOgg4QDoWyyRSmHIMo9gszltYhcn28r
+X-MS-Exchange-CrossTenant-Network-Message-Id: d94c60d1-cc0b-4a7c-50a8-08d7bec5de24
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2020 16:22:14.3069
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1B2oJ1lUBnugevDv7fWXnGHmgbemz9O1qv3hkKbBXAWe9Xv+K++FRt5QgoZA4YlG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3338
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-02_06:2020-03-02,2020-03-02 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1015
+ lowpriorityscore=0 priorityscore=1501 suspectscore=0 spamscore=0
+ malwarescore=0 impostorscore=0 mlxlogscore=999 bulkscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003020113
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/02/2020 08:01, Jiri Pirko wrote:
-> Fri, Feb 28, 2020 at 08:59:09PM CET, pablo@netfilter.org wrote:
->> Something like the sketch patch that I'm attaching?
-> But why? Actions are separate entities, with separate counters. The
-> driver is either able to offload that or not. Up to the driver to
-> abstract this out.
-+1
 
-If any of this "fake up a counter action" stuff is common to several
- drivers, we could maybe have some library functions to help them with
- it, but the tc<->driver API shouldn't change (since the change adds
- no expressiveness).
 
--ed
+On 2/29/20 10:24 PM, Andrii Nakryiko wrote:
+> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+> enum values. This preserves constants values and behavior in expressions, but
+> has added advantaged of being captured as part of DWARF and, subsequently, BTF
+> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+> for BPF applications, as it will not require BPF users to copy/paste various
+> flags and constants, which are frequently used with BPF helpers.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>   include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
+>   include/uapi/linux/bpf_common.h       |  86 ++++----
+>   include/uapi/linux/btf.h              |  60 +++---
+>   tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
+>   tools/include/uapi/linux/bpf_common.h |  86 ++++----
+>   tools/include/uapi/linux/btf.h        |  60 +++---
+>   6 files changed, 497 insertions(+), 341 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 8e98ced0963b..03e08f256bd1 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -14,34 +14,36 @@
+>   /* Extended instruction set based on top of classic BPF */
+>   
+>   /* instruction classes */
+> -#define BPF_JMP32	0x06	/* jmp mode in word width */
+> -#define BPF_ALU64	0x07	/* alu mode in double word width */
+> +enum {
+> +	BPF_JMP32	= 0x06,	/* jmp mode in word width */
+> +	BPF_ALU64	= 0x07,	/* alu mode in double word width */
+
+Not sure whether we have uapi backward compatibility or not.
+One possibility is to add
+   #define BPF_ALU64 BPF_ALU64
+this way, people uses macros will continue to work.
+
+If this is an acceptable solution, we have a lot of constants
+in net related headers and will benefit from this conversion for
+kprobe/tracepoint of networking related functions.
+
+>   
+>   /* ld/ldx fields */
+> -#define BPF_DW		0x18	/* double word (64-bit) */
+> -#define BPF_XADD	0xc0	/* exclusive add */
+> +	BPF_DW		= 0x18,	/* double word (64-bit) */
+> +	BPF_XADD	= 0xc0,	/* exclusive add */
+>   
+>   /* alu/jmp fields */
+> -#define BPF_MOV		0xb0	/* mov reg to reg */
+> -#define BPF_ARSH	0xc0	/* sign extending arithmetic shift right */
+> +	BPF_MOV		= 0xb0,	/* mov reg to reg */
+> +	BPF_ARSH	= 0xc0,	/* sign extending arithmetic shift right */
+>   
+>   /* change endianness of a register */
+> -#define BPF_END		0xd0	/* flags for endianness conversion: */
+> -#define BPF_TO_LE	0x00	/* convert to little-endian */
+> -#define BPF_TO_BE	0x08	/* convert to big-endian */
+> -#define BPF_FROM_LE	BPF_TO_LE
+> -#define BPF_FROM_BE	BPF_TO_BE
+> +	BPF_END		= 0xd0,	/* flags for endianness conversion: */
+> +	BPF_TO_LE	= 0x00,	/* convert to little-endian */
+> +	BPF_TO_BE	= 0x08,	/* convert to big-endian */
+> +	BPF_FROM_LE	= BPF_TO_LE,
+> +	BPF_FROM_BE	= BPF_TO_BE,
+>   
+>   /* jmp encodings */
+> -#define BPF_JNE		0x50	/* jump != */
+> -#define BPF_JLT		0xa0	/* LT is unsigned, '<' */
+> -#define BPF_JLE		0xb0	/* LE is unsigned, '<=' */
+> -#define BPF_JSGT	0x60	/* SGT is signed '>', GT in x86 */
+> -#define BPF_JSGE	0x70	/* SGE is signed '>=', GE in x86 */
+> -#define BPF_JSLT	0xc0	/* SLT is signed, '<' */
+> -#define BPF_JSLE	0xd0	/* SLE is signed, '<=' */
+> -#define BPF_CALL	0x80	/* function call */
+> -#define BPF_EXIT	0x90	/* function return */
+> +	BPF_JNE		= 0x50,	/* jump != */
+> +	BPF_JLT		= 0xa0,	/* LT is unsigned, '<' */
+> +	BPF_JLE		= 0xb0,	/* LE is unsigned, '<=' */
+> +	BPF_JSGT	= 0x60,	/* SGT is signed '>', GT in x86 */
+> +	BPF_JSGE	= 0x70,	/* SGE is signed '>=', GE in x86 */
+> +	BPF_JSLT	= 0xc0,	/* SLT is signed, '<' */
+> +	BPF_JSLE	= 0xd0,	/* SLE is signed, '<=' */
+> +	BPF_CALL	= 0x80,	/* function call */
+> +	BPF_EXIT	= 0x90,	/* function return */
+> +};
+>   
+[...]
