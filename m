@@ -2,156 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F2E31767AE
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C141767F9
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 00:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726816AbgCBWtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 17:49:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726728AbgCBWtc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 17:49:32 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6742C208C3;
-        Mon,  2 Mar 2020 22:49:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583189371;
-        bh=wmG7nx2gKT1ej2x9EGIjzDwZjQRIEbOxHvYx2O8/GNc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g4vnX1NnfAqIGFss7C95ORBUJ2Gyj7CxJVVwMf+erdB285lm4aKcaRKyb62bR7aLX
-         6IoEAS56a6QAmjug8KZ9S6mpZlbPwtfsccMjWh1lD+3RJ/5vFYS+tHN1Y9MVp/Gw3t
-         KQiBv8nuM/DQBhqnZeOS/DKMTTk6yBsT2MHHVTNI=
-Date:   Mon, 2 Mar 2020 14:49:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
-        netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200302214659.v4zm2whrv4qjz3pe@salvia>
-References: <20200228172505.14386-1-jiri@resnulli.us>
-        <20200228172505.14386-2-jiri@resnulli.us>
-        <20200229192947.oaclokcpn4fjbhzr@salvia>
-        <20200301084443.GQ26061@nanopsycho>
-        <20200302132016.trhysqfkojgx2snt@salvia>
-        <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
-        <20200302192437.wtge3ze775thigzp@salvia>
-        <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200302214659.v4zm2whrv4qjz3pe@salvia>
+        id S1726859AbgCBXOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 18:14:24 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:41274 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbgCBXOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 18:14:24 -0500
+Received: by mail-qk1-f193.google.com with SMTP id b5so1565352qkh.8;
+        Mon, 02 Mar 2020 15:14:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dnFBmnVWf/IQHXmQjUmB+Yi8mGNU/efuxG2w3lUsero=;
+        b=ZfM/PX1WkUpNQJmJYahkbclJxP6IBVe3keQQ4OLhGtbPPtoR8UA3blogWzsf+qWalR
+         8yQguxpY9eQD8yVIGDVdAFEAIuiW7zLW40QArwgtHkinwS9nSbvpqZ3TKL8IFva96T9D
+         j9GXnwPLcE/COprnssREFvPBqHV1ZUArPCzbTrPYen2jkPIU5/J2HdSGvoUkhvkIPUnG
+         Vi02Ak+F5K5bmSzD6B0pJJAiEkdC23ucYqQGEdVesSRup+WSy7MfrWBCU4uYEKvPJnwH
+         etQ9ebhY8V4Uj4zdLHSgcPmDAVnST6GGRYxv17ECZxDI9bz4irNoLJOXyaSoZGmwfYSU
+         Um5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dnFBmnVWf/IQHXmQjUmB+Yi8mGNU/efuxG2w3lUsero=;
+        b=pkuXArXjLkSbSRHqW2jJ03nAr/iyQoiBOVCtoOuOUEc95gk2ZzkvQgeRMjp+/PHIk4
+         o5qtBZG0TgMV/JoArAl5LUDni5cqh7iBf0HbOr9OU0n0kVISKyJg3NQNQTNL6UPs/X4B
+         Uu/s3LtgqWtRjPlHXsHbnhly4TUEtOuTSCF4vih5KaKt7/XDGtGri16D2QPU1c6QJBXF
+         MQFcgKCndDlmyZd4mF51wF3E0EEnqIlRND97SFOvQLV8bo9Kx0yzgeQrcja/NVSK7SnK
+         PM6JwVbKgmIaXUtCIsIzO2Wcjr0GRcYnvs5mIVPRBi/n4M7W1VnFCFzkih0rkzq/gmvQ
+         SgsQ==
+X-Gm-Message-State: ANhLgQ3t4X7DmapeIKxnvC1ahBzU+UPMN6tg4oyAujhV0rohzJs8LBL0
+        yEc0gpVoXwHntTtpzVdHQjpIYm8dV3lbqxuzaF0=
+X-Google-Smtp-Source: ADFU+vtkuecYScVIERtlpU1JqiGuiD933Np9EViewb6+HwO7ggQuEs5cWyw1stx2AjvRBKhDNGHuwwiwgbfVkxVwaEc=
+X-Received: by 2002:a37:a2d6:: with SMTP id l205mr1582714qke.92.1583190861255;
+ Mon, 02 Mar 2020 15:14:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200301062405.2850114-1-andriin@fb.com> <20200301062405.2850114-2-andriin@fb.com>
+ <20200302223748.v4omummx43pejzfn@ast-mbp>
+In-Reply-To: <20200302223748.v4omummx43pejzfn@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Mar 2020 15:14:10 -0800
+Message-ID: <CAEf4BzYWCyLBNzH9ns-jP7SFeOpGfLbypr7VRhDPSTOMA0nyjA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to enums
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
-> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
-> > On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote: =20
-> > > On Mon, Mar 02, 2020 at 04:29:32PM +0000, Edward Cree wrote: =20
-> > > > On 02/03/2020 13:20, Pablo Neira Ayuso wrote:   =20
-> > > > > 2) explicit counter action, in this case the user specifies expli=
-citly
-> > > > >    that it needs a counter in a given position of the rule. This
-> > > > >    counter might come before or after the actual action.   =20
-> > > >
-> > > > But the existing API can already do this, with a gact pipe.=C2=A0 P=
-lus, Jiri's
-> > > > =C2=A0new API will allow specifying a counter on any action (rather=
- than only,
-> > > > =C2=A0implicitly, those which have .stats_update()) should that pro=
-ve to be
-> > > > =C2=A0necessary.
-> > > >=20
-> > > > I really think the 'explicit counter action' is a solution in searc=
-h of a
-> > > > =C2=A0problem, let's not add random orthogonality violations.=C2=A0=
- (Equally if the
-> > > > =C2=A0counter action had been there first, I'd be against adding co=
-unters to
-> > > > =C2=A0the other actions.)   =20
-> > >=20
-> > > It looks to me that you want to restrict the API to tc for no good
-> > > _technical_ reason. =20
-> >=20
-> > Undeniably part of the reason is that given how complex flow offloads
-> > got there may be some resistance to large re-factoring. IMHO well
-> > thought out refactoring of stats is needed.. but I'm not convinced=20
-> > this is the direction.
+On Mon, Mar 2, 2020 at 2:37 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, Feb 29, 2020 at 10:24:03PM -0800, Andrii Nakryiko wrote:
+> > Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+> > enum values. This preserves constants values and behavior in expressions, but
+> > has added advantaged of being captured as part of DWARF and, subsequently, BTF
+> > type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+> > for BPF applications, as it will not require BPF users to copy/paste various
+> > flags and constants, which are frequently used with BPF helpers.
 > >
-> > Could you give us clearer understanding of what the use cases for the
-> > counter action is?
-> >=20
-> > AFAIK right now actions do the accounting on input. That seems like the
-> > only logical option. Either action takes the packet out of the action
-> > pipeline, in which case even the counter action after will not see it,
-> > or it doesn't and the input counter of the next action can be used.
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
+> >  include/uapi/linux/bpf_common.h       |  86 ++++----
+> >  include/uapi/linux/btf.h              |  60 +++---
+> >  tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
+> >  tools/include/uapi/linux/bpf_common.h |  86 ++++----
+> >  tools/include/uapi/linux/btf.h        |  60 +++---
+> >  6 files changed, 497 insertions(+), 341 deletions(-)
+>
+> I see two reasons why converting #define to enum is useful:
+> 1. bpf progs can use them from vmlinux.h as evident in patch 3.
+> 2. "bpftool feature probe" can be replaced with
+>   bpftool btf dump file /sys/kernel/btf/vmlinux |grep BPF_CGROUP_SETSOCKOPT
+>
+> The second use case is already possible, since bpf_prog_type,
+> bpf_attach_type, bpf_cmd, bpf_func_id are all enums.
+> So kernel is already self describing most bpf features.
+> Does kernel support bpf_probe_read_user() ? Answer is:
+> bpftool btf dump file /sys/kernel/btf/vmlinux | grep BPF_FUNC_probe_read_user
+>
+> The only bit missing is supported kernel flags and instructions.
+
+Yep, my motivation was primarily the former, but I can see benefits
+from the latter as well.
+
+>
+> I think for now I would only convert flags that are going to be
+> used from bpf program and see whether 1st use case works well.
+> Later we can convert flags that are used out of user space too.
+>
+> In other words:
+>
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 8e98ced0963b..03e08f256bd1 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -14,34 +14,36 @@
+> >  /* Extended instruction set based on top of classic BPF */
 > >
-> > Given counters must be next to real actions and not other counter
-> > to have value, having them as a separate action seems to make no
-> > difference at all (if users are silly, we can use the pipe/no-op). =20
->=20
-> This model that is proposed here is correct in the tc world, where
-> counters are tied to actions (as you describe above). However, the
-> flow_offload API already supports for ethtool and netfilter these
-> days.
->=20
-> In Netfilter, counters are detached from actions. Obviously, a counter
-> must be placed before the action _if_ the action gets the packet out
-> of the pipeline, e.g.
->=20
->      ip saddr 1.1.1.1 counter drop
->=20
-> In this case, the counter is placed before the 'drop' action. Users
-> that need no counters have to remove 'counter' from the rule syntax to
-> opt-out.
+> >  /* instruction classes */
+> > -#define BPF_JMP32    0x06    /* jmp mode in word width */
+> > -#define BPF_ALU64    0x07    /* alu mode in double word width */
+> > +enum {
+> > +     BPF_JMP32       = 0x06, /* jmp mode in word width */
+> > +     BPF_ALU64       = 0x07, /* alu mode in double word width */
+>
+> not those.
 
-In Jiri's set if counter exists DROP should get the ANY flag, if
-counter is not there - DISABLED.
+makes sense
 
-> > IOW modeling the stats as attribute of other actions or a separate
-> > action is entirely equivalent, and there's nothing to be gained from
-> > moving from the existing scheme to explicit actions... other than it'd
-> > make it look more like nft actions... :) =20
->=20
-> I just wonder if a model that allows tc and netfilter to use this new
-> statistics infrastructure would make everyone happy. My understanding
-> is that it is not far away from what this patchset provides.
->=20
-> The retorical question here probably is if you still want to allow the
-> Netfilter front-end to benefit from this new flow_action API
-> extension.
->=20
-> The real question is: if you think this tc counter+action scheme can
-> be used by netfilter, then please explain how.
+>
+> > -#define BPF_F_ALLOW_OVERRIDE (1U << 0)
+> > -#define BPF_F_ALLOW_MULTI    (1U << 1)
+> > -#define BPF_F_REPLACE                (1U << 2)
+> > +enum {
+> > +     BPF_F_ALLOW_OVERRIDE    = (1U << 0),
+> > +     BPF_F_ALLOW_MULTI       = (1U << 1),
+> > +     BPF_F_REPLACE           = (1U << 2),
+> > +};
+>
+> not those either. These are the flags for user space. Not for the prog.
 
-In Jiri's latest patch set the counter type is per action, so just
-"merge right" the counter info into the next action and the models=20
-are converted.
+yep...
 
-If user is silly and has multiple counter actions in a row - the
-pipe/no-op action comes into play (that isn't part of this set,=20
-as Jiri said).
+>
+> >  /* flags for BPF_MAP_UPDATE_ELEM command */
+> > -#define BPF_ANY              0 /* create new element or update existing */
+> > -#define BPF_NOEXIST  1 /* create new element if it didn't exist */
+> > -#define BPF_EXIST    2 /* update existing element */
+> > -#define BPF_F_LOCK   4 /* spin_lock-ed map_lookup/map_update */
+> > +enum {
+> > +     BPF_ANY         = 0, /* create new element or update existing */
+> > +     BPF_NOEXIST     = 1, /* create new element if it didn't exist */
+> > +     BPF_EXIST       = 2, /* update existing element */
+> > +     BPF_F_LOCK      = 4, /* spin_lock-ed map_lookup/map_update */
+> > +};
+>
+> yes to these.
 
-Can you give us examples of what wouldn't work? Can you for instance
-share the counter across rules?
+yep, these and below are the most important ones...
 
-Also neither proposal addresses the problem of reporting _different_
-counter values at different stages in the pipeline, i.e. moving from
-stats per flow to per action. But nobody seems to be willing to work=20
-on that.
+[...]
 
-AFAICT with Jiri's change we only need one check in the drivers to
-convert from old scheme to new, with explicit action we need two
-(additional one being ignoring the counter action). Not a big deal,
-but 1 is less than 2 =F0=9F=A4=B7=E2=80=8D=E2=99=82=EF=B8=8F
+>
+> In all such cases I don't think we need #define FOO FOO
+> trick. These are the flags used within bpf program.
+> I don't think any user is doing #ifdef logic there.
+> I cannot come up with a use case of anything useful this way.
+
+Sounds good, I'll revert non-BPF helper flags cases and will post v2, thanks!
