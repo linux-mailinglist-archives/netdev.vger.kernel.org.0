@@ -2,213 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2895E175C03
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:46:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B758B175C7A
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727820AbgCBNqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 08:46:39 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:26353 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727768AbgCBNqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 08:46:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583156798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9QGJ3IFSQKD0aenoqLqaDuoaTCV6qzjmUS2/kCa+Du0=;
-        b=Q3Fo4s51C2U7KHVIXW9sXOh4jpzrE7fmuf6lO8VVH2wkqIRFi2oQW48ljSFxWkxcWhRlR2
-        mkloXBXlcoqfztbouAUD6pe50YMVjOIW3un6YPShlOy7D6TZieyDdCIi45J3IJgT4uuCIL
-        rYH8CigLfWAAH47RCuKLjFDRWcV0b0E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-22-ba81UrnTPDaq7wy_gEACPg-1; Mon, 02 Mar 2020 08:46:36 -0500
-X-MC-Unique: ba81UrnTPDaq7wy_gEACPg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85218107ACC4;
-        Mon,  2 Mar 2020 13:46:34 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-200-20.brq.redhat.com [10.40.200.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 663B65DA7C;
-        Mon,  2 Mar 2020 13:46:29 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 3845930737E05;
-        Mon,  2 Mar 2020 14:46:28 +0100 (CET)
-Subject: [net-next PATCH] mvneta: add XDP ethtool errors stats for TX to
- driver
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>, kuba@kernel.org,
-        andrew@lunn.ch, thomas.petazzoni@bootlin.com
-Date:   Mon, 02 Mar 2020 14:46:28 +0100
-Message-ID: <158315678810.1983667.11239367181663328821.stgit@firesoul>
-User-Agent: StGit/0.19
+        id S1727121AbgCBN6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 08:58:54 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45322 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726451AbgCBN6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 08:58:53 -0500
+Received: by mail-wr1-f66.google.com with SMTP id v2so12624003wrp.12
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 05:58:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=37tJ1WWoA+O7u34iwkULBKZOx8EG6BjIvyNTVarR5og=;
+        b=KXuFf1Im9io17S3N1EFMl1UrMJzY78+OCUJEwEkB443D9VOLyQZspLYoNGznXvK0cd
+         Xn7keviS7T38mFE/lp88Gw9hMij8QuCZn6mAcQpMjuoogb4F+XEKPAtKihMY63xIwrhc
+         0yfVPiOHZeiM4O+3qDCn03i0NbFubX3TfJ61OdhEb7qyLslfn4WzRu1BKeWBHJaevwGC
+         kD9g83ZniIEvgCuZkPqsP0H+dJ+OFenKd6WlJkfWnUbNohlFrn/g/1hKBUZAoLamQQGw
+         pClEflofbjCvL7ylZfFyf3mX3KlSmc2jZnqzwAyp/9RJ1mrFCewI5l0HBEVdTrxrK7kL
+         +ycw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=37tJ1WWoA+O7u34iwkULBKZOx8EG6BjIvyNTVarR5og=;
+        b=F6P1IMaOXZ7W36cWb5C9Sq+67yWkxMHQ0ufbGCXqpUBAUh01B4Qs+BRtYVcXhgsr01
+         lQhicYPp1H5KzWB13yYNs6d3HMp0RUj2PZZKMZeAeIjsioR8GVI7KnSsrWPo0DmiX66j
+         4/0CDccp77NwGbZBf8YRCO8L2by+7WOWmCkTlF16Yd112J3qLhxdWHcfHW6JBP3yFk4H
+         PzKGj2Bphmtq8AAV1/2sf4uDtAYx0mpvmRD4of2c9xcwgFQPjcp8j06eZuxs15lddAa4
+         PCai4fTB3b7/R6p/eV4UZQb4s6WkvTjs/qR4V1HQsrZDG7/YSI/taYceN3QzRmazv+8T
+         TnvA==
+X-Gm-Message-State: APjAAAV1NR3EUVvn0OQ/JJUczUOIUjcLvwaY7nWkK5cCY0Vx6Uj3w+pG
+        j5wV+qHHaAD4BSf6QPrWuwL/iA==
+X-Google-Smtp-Source: APXvYqz3JXIQtxCxlFWB0+pAjW61J9kq3eXosJsHpEEY4eqKO1UF/vnlKjFdfp/kYuH+CCgmpvyD+g==
+X-Received: by 2002:adf:f686:: with SMTP id v6mr13799086wrp.176.1583157532066;
+        Mon, 02 Mar 2020 05:58:52 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id t3sm28333051wrx.38.2020.03.02.05.58.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2020 05:58:51 -0800 (PST)
+Date:   Mon, 2 Mar 2020 14:58:49 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
+        vishal@chelsio.com, jeffrey.t.kirsher@intel.com,
+        idosch@mellanox.com, aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, ecree@solarflare.com, mlxsw@mellanox.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200302135849.GA6497@nanopsycho>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-2-jiri@resnulli.us>
+ <20200229192947.oaclokcpn4fjbhzr@salvia>
+ <20200301084443.GQ26061@nanopsycho>
+ <20200302132016.trhysqfkojgx2snt@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200302132016.trhysqfkojgx2snt@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ethtool stats for when XDP transmitted packets overrun the TX
-queue. This is recorded separately for XDP_TX and ndo_xdp_xmit. This
-is an important aid for troubleshooting XDP based setups.
+Mon, Mar 02, 2020 at 02:20:16PM CET, pablo@netfilter.org wrote:
+>On Sun, Mar 01, 2020 at 09:44:43AM +0100, Jiri Pirko wrote:
+>> Sat, Feb 29, 2020 at 08:29:47PM CET, pablo@netfilter.org wrote:
+>> >On Fri, Feb 28, 2020 at 06:24:54PM +0100, Jiri Pirko wrote:
+>[...]
+>> >> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>> >> index 4e864c34a1b0..eee1cbc5db3c 100644
+>> >> --- a/include/net/flow_offload.h
+>> >> +++ b/include/net/flow_offload.h
+>> >> @@ -154,6 +154,10 @@ enum flow_action_mangle_base {
+>> >>  	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
+>> >>  };
+>> >>  
+>> >> +enum flow_action_hw_stats_type {
+>> >> +	FLOW_ACTION_HW_STATS_TYPE_ANY,
+>> >> +};
+>> >> +
+>> >>  typedef void (*action_destr)(void *priv);
+>> >>  
+>> >>  struct flow_action_cookie {
+>> >> @@ -168,6 +172,7 @@ void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
+>> >>  
+>> >>  struct flow_action_entry {
+>> >>  	enum flow_action_id		id;
+>> >> +	enum flow_action_hw_stats_type	hw_stats_type;
+>> >>  	action_destr			destructor;
+>> >>  	void				*destructor_priv;
+>> >>  	union {
+>> >> @@ -228,6 +233,7 @@ struct flow_action_entry {
+>> >>  };
+>> >>  
+>> >>  struct flow_action {
+>> >> +	bool				mixed_hw_stats_types;
+>> >
+>> >Why do you want to place this built-in into the struct flow_action as
+>> >a boolean?
+>> 
+>> Because it is convenient for the driver to know if multiple hw_stats_type
+>> values are used for multiple actions.
+>> 
+>> >You can express the same thing through a new FLOW_ACTION_COUNTER.
+>[...]
+>> >Please, explain me why it would be a problem from the driver side to
+>> >provide a separated counter action.
+>> 
+>> I don't see any point in doing that. The action itself implies that has
+>> stats, you don't need a separate action for that for the flow_offload
+>> abstraction layer. What you would end up with is:
+>> counter_action1, actual_action1, counter_action2, actual_action2,...
+>> 
+>> What is the point of that?
+>
+>Yes, it's a bit more work for tc to generate counter action + actual
+>action.
+>
+>However, netfilter has two ways to use counters:
+>
+>1) per-rule counter, in this case the counter is updated after rule
+>   matching, right before calling the action. This is the legacy mode.
+>
+>2) explicit counter action, in this case the user specifies explicitly
+>   that it needs a counter in a given position of the rule. This
+>   counter might come before or after the actual action.
+>
+>ethtool does not have counters yet. Now there is a netlink interface
+>for it, there might be counters there at some point.
+>
+>I'm suggesting a model that would work for the existing front-ends
+>using the flow_action API.
 
-It is currently a known weakness and property of XDP that there isn't
-any push-back or congestion feedback when transmitting frames via XDP.
-It's easy to realise when redirecting from a higher speed link into a
-slower speed link, or simply two ingress links into a single egress.
-The situation can also happen when Ethernet flow control is active.
-
-For testing the patch and provoking the situation to occur on my
-Espressobin board, I configured the TX-queue to be smaller (434) than
-RX-queue (512) and overload network with large MTU size frames (as a
-larger frame takes longer to transmit).
-
-Hopefully the upcoming XDP TX hook can be extended to provide insight
-into these TX queue overflows, to allow programmable adaptation
-strategies.
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- drivers/net/ethernet/marvell/mvneta.c |   30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index b22eeb5f8700..bc488e8b8e45 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -344,8 +344,10 @@ enum {
- 	ETHTOOL_XDP_REDIRECT,
- 	ETHTOOL_XDP_PASS,
- 	ETHTOOL_XDP_DROP,
--	ETHTOOL_XDP_XMIT,
- 	ETHTOOL_XDP_TX,
-+	ETHTOOL_XDP_TX_ERR,
-+	ETHTOOL_XDP_XMIT,
-+	ETHTOOL_XDP_XMIT_ERR,
- 	ETHTOOL_MAX_STATS,
- };
- 
-@@ -404,7 +406,9 @@ static const struct mvneta_statistic mvneta_statistics[] = {
- 	{ ETHTOOL_XDP_PASS, T_SW, "rx_xdp_pass", },
- 	{ ETHTOOL_XDP_DROP, T_SW, "rx_xdp_drop", },
- 	{ ETHTOOL_XDP_TX, T_SW, "rx_xdp_tx", },
-+	{ ETHTOOL_XDP_TX_ERR, T_SW, "rx_xdp_tx_errors", },
- 	{ ETHTOOL_XDP_XMIT, T_SW, "tx_xdp_xmit", },
-+	{ ETHTOOL_XDP_XMIT_ERR, T_SW, "tx_xdp_xmit_errors", },
- };
- 
- struct mvneta_stats {
-@@ -417,7 +421,9 @@ struct mvneta_stats {
- 	u64	xdp_pass;
- 	u64	xdp_drop;
- 	u64	xdp_xmit;
-+	u64	xdp_xmit_err;
- 	u64	xdp_tx;
-+	u64	xdp_tx_err;
- };
- 
- struct mvneta_ethtool_stats {
-@@ -2059,6 +2065,7 @@ mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
- static int
- mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- {
-+	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 	struct mvneta_tx_queue *txq;
- 	struct netdev_queue *nq;
- 	struct xdp_frame *xdpf;
-@@ -2076,8 +2083,6 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	__netif_tx_lock(nq, cpu);
- 	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, false);
- 	if (ret == MVNETA_XDP_TX) {
--		struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
--
- 		u64_stats_update_begin(&stats->syncp);
- 		stats->es.ps.tx_bytes += xdpf->len;
- 		stats->es.ps.tx_packets++;
-@@ -2085,6 +2090,10 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 		u64_stats_update_end(&stats->syncp);
- 
- 		mvneta_txq_pend_desc_add(pp, txq, 0);
-+	} else {
-+		u64_stats_update_begin(&stats->syncp);
-+		stats->es.ps.xdp_tx_err++;
-+		u64_stats_update_end(&stats->syncp);
- 	}
- 	__netif_tx_unlock(nq);
- 
-@@ -2128,6 +2137,7 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
- 	stats->es.ps.tx_bytes += nxmit_byte;
- 	stats->es.ps.tx_packets += nxmit;
- 	stats->es.ps.xdp_xmit += nxmit;
-+	stats->es.ps.xdp_xmit_err += num_frame - nxmit;
- 	u64_stats_update_end(&stats->syncp);
- 
- 	return nxmit;
-@@ -2152,7 +2162,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		int err;
- 
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
--		if (err) {
-+		if (unlikely(err)) {
- 			ret = MVNETA_XDP_DROPPED;
- 			page_pool_put_page(rxq->page_pool,
- 					   virt_to_head_page(xdp->data), len,
-@@ -4518,6 +4528,8 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
- 		u64 skb_alloc_error;
- 		u64 refill_error;
- 		u64 xdp_redirect;
-+		u64 xdp_xmit_err;
-+		u64 xdp_tx_err;
- 		u64 xdp_pass;
- 		u64 xdp_drop;
- 		u64 xdp_xmit;
-@@ -4532,7 +4544,9 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
- 			xdp_pass = stats->es.ps.xdp_pass;
- 			xdp_drop = stats->es.ps.xdp_drop;
- 			xdp_xmit = stats->es.ps.xdp_xmit;
-+			xdp_xmit_err = stats->es.ps.xdp_xmit_err;
- 			xdp_tx = stats->es.ps.xdp_tx;
-+			xdp_tx_err = stats->es.ps.xdp_tx_err;
- 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
- 
- 		es->skb_alloc_error += skb_alloc_error;
-@@ -4541,7 +4555,9 @@ mvneta_ethtool_update_pcpu_stats(struct mvneta_port *pp,
- 		es->ps.xdp_pass += xdp_pass;
- 		es->ps.xdp_drop += xdp_drop;
- 		es->ps.xdp_xmit += xdp_xmit;
-+		es->ps.xdp_xmit_err += xdp_xmit_err;
- 		es->ps.xdp_tx += xdp_tx;
-+		es->ps.xdp_tx_err += xdp_tx_err;
- 	}
- }
- 
-@@ -4594,9 +4610,15 @@ static void mvneta_ethtool_update_stats(struct mvneta_port *pp)
- 			case ETHTOOL_XDP_TX:
- 				pp->ethtool_stats[i] = stats.ps.xdp_tx;
- 				break;
-+			case ETHTOOL_XDP_TX_ERR:
-+				pp->ethtool_stats[i] = stats.ps.xdp_tx_err;
-+				break;
- 			case ETHTOOL_XDP_XMIT:
- 				pp->ethtool_stats[i] = stats.ps.xdp_xmit;
- 				break;
-+			case ETHTOOL_XDP_XMIT_ERR:
-+				pp->ethtool_stats[i] = stats.ps.xdp_xmit_err;
-+				break;
- 			}
- 			break;
- 		}
-
+I see. I'm interested in 1) now. If you ever want to implement 2), I see
+no problem in doing it.
 
