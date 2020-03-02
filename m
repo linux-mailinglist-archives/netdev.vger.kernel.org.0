@@ -2,22 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BF5175AD5
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:52:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E580175A9C
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgCBMwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 07:52:36 -0500
-Received: from gateway36.websitewelcome.com ([50.116.124.69]:38648 "EHLO
-        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727267AbgCBMwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:52:36 -0500
-X-Greylist: delayed 1493 seconds by postgrey-1.27 at vger.kernel.org; Mon, 02 Mar 2020 07:52:35 EST
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway36.websitewelcome.com (Postfix) with ESMTP id D6ACD408E8C9B
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 05:18:13 -0600 (CST)
+        id S1727824AbgCBMfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 07:35:10 -0500
+Received: from gateway23.websitewelcome.com ([192.185.47.80]:12127 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727519AbgCBMfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:35:10 -0500
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 5A7C724FCC
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:25:26 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 8jmujShzTvBMd8jmujNcBP; Mon, 02 Mar 2020 06:03:08 -0600
+        id 8k8UjzGFBEfyq8k8Uj3qXd; Mon, 02 Mar 2020 06:25:26 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -25,27 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=R89dgEYKQnx5o1J3Vnuz1dXFwA4KgrUXTckEdxlKpP4=; b=oQ5hR5XCnjLsav/jq8TM5BwWdy
-        kt8OFIsKWOYCqnOFOO5/ZdhuxgaHmEhamjUNQUP0ucg5d/BaiXmHHWR16iEnOUkUQeg1E6BIww8Jn
-        8AaeNQOS/6ieSW8TMWhtZNAjzqyGC4gIOouGC50aCEXdhVT+akgvJNaXqilKy6tdW+akeHN7Itr8c
-        QLZ1f99zg4sz3j1df8KgBpVam/xEEF1OjLEqj2CvwWc7OfMTr+A0Zg4om4Ezt8omFHGwovKq7RoVD
-        b33iop/NzfIi5HveYiag1eofdspDfwi8I2Mzs+09QyXmOERYMEYjgBbnffveb7RPcx7kDCpZ8PdIp
-        vpaJBarw==;
-Received: from [201.162.161.208] (port=42252 helo=embeddedor)
+        bh=tmrBVwLF1GrBgphU2OaUU3NzXEY7Y/RAayCavGXGVGQ=; b=qz6i/Gf6gzF9Rkyk5oV4G6UY5L
+        9sZXGU2DwebYfe2FbT2Cj+HtAoGeyltfzNE1fC6vNSX4bAVUVMdBCnnBzfIqRkbgYpyA1/YfZgXvB
+        G4Ogb1LHC/+TknvTiat+IjgId8UVeV1Y3ebxibbHV4z9ExXNr7AAzc58ZmiDKCN5saaJshi11/LHe
+        r6cStESS3nNpT1nYm8AMUCTCwpPKjDn+PxbfRLdTnmjqVFs25/sSjDJkXjzeMhDzxoyS24EUYGpAQ
+        EroyvBqaXgRXacXBSdrD5bW4KN3a+jwEVyoxwoD5SPovTNts5+k8dPrnnwhOSuddRuFc+NR+H0ZV8
+        I8+7RZ+w==;
+Received: from [201.162.161.240] (port=42570 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j8jms-003tp3-Cn; Mon, 02 Mar 2020 06:03:06 -0600
-Date:   Mon, 2 Mar 2020 06:06:07 -0600
+        id 1j8k8S-004BHO-Md; Mon, 02 Mar 2020 06:25:24 -0600
+Date:   Mon, 2 Mar 2020 06:28:26 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>
+To:     Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: ip6_fib: Replace zero-length array with
- flexible-array member
-Message-ID: <20200302120607.GA15995@embeddedor>
+Subject: [PATCH][next] tehuti: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200302122826.GA2300@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,15 +53,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.162.161.208
+X-Source-IP: 201.162.161.240
 X-Source-L: No
-X-Exim-ID: 1j8jms-003tp3-Cn
+X-Exim-ID: 1j8k8S-004BHO-Md
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.162.161.208]:42252
+X-Source-Sender: (embeddedor) [201.162.161.240]:42570
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 11
+X-Email-Count: 32
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -102,22 +99,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/net/ip6_fib.h | 2 +-
+ drivers/net/ethernet/tehuti/tehuti.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index fd60a8ac02ee..6ec26e4d7f11 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -198,7 +198,7 @@ struct fib6_info {
+diff --git a/drivers/net/ethernet/tehuti/tehuti.h b/drivers/net/ethernet/tehuti/tehuti.h
+index 5fc03c8eba0c..909e7296cecf 100644
+--- a/drivers/net/ethernet/tehuti/tehuti.h
++++ b/drivers/net/ethernet/tehuti/tehuti.h
+@@ -330,7 +330,7 @@ struct txd_desc {
+ 	u16 length;
+ 	u32 va_lo;
+ 	u32 va_hi;
+-	struct pbl pbl[0];	/* Fragments */
++	struct pbl pbl[];	/* Fragments */
+ } __packed;
  
- 	struct rcu_head			rcu;
- 	struct nexthop			*nh;
--	struct fib6_nh			fib6_nh[0];
-+	struct fib6_nh			fib6_nh[];
- };
- 
- struct rt6_info {
+ /* Register region size */
 -- 
 2.25.0
 
