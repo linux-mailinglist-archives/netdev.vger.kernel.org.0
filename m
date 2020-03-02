@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFEB175A3A
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7B3175A58
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:20:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbgCBMQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 07:16:56 -0500
-Received: from gateway32.websitewelcome.com ([192.185.145.189]:27822 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725802AbgCBMQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:16:56 -0500
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id BA880CE8287
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:16:54 -0600 (CST)
+        id S1727595AbgCBMUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 07:20:51 -0500
+Received: from gateway22.websitewelcome.com ([192.185.47.79]:45296 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725802AbgCBMUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:20:51 -0500
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 0111428A09
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:20:07 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 8k0EjML7A8vkB8k0EjGb9T; Mon, 02 Mar 2020 06:16:54 -0600
+        id 8k3Kjz9EBEfyq8k3Kj3jZx; Mon, 02 Mar 2020 06:20:06 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,25 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fBy+Bpjwg2IJmA+ROxW4TGZvoEbOMzciybHMAJdbmcg=; b=egbht0p08ibDUtG9LAjkpuTbVi
-        W0JNlqOPxlQ3qPvefoYZ6hXsWfn9gUInQabyIn7gd5BjKqMtkknthIDQTpt01L+gkdGibAze4p+qW
-        p/sO91s9sx+DMmnRwSuVuXXil5A66kozf74jybzWVbZzLmEFihXiZetkKrgmJtL5+ArEUCeCV2HXA
-        iIP/asWNjEllVQMOXCRH4EM8RxN+up1461zNm96c1przRKu5+eK5qQC26RDw9LlvROEVWEt7K0J3b
-        bHV7D7XjRlIRxDuX740KlD3pqAjgyzOl/b/+6IK1f9bjZdtNk5bNSmZcWvMrQwmE/jQIE3oVOhDaZ
-        izqFsQtg==;
-Received: from [201.166.157.90] (port=42544 helo=embeddedor)
+        bh=LzPJ/4uvjh/hNTol+mYUIodA/9OpKpqV2PAXxF3nbT0=; b=rtImn0oMt1FNc1RKrglfJoSYbX
+        ItmzVSPy3kMLLOP7VGbn0W/KpNEz4y8QDPGhFm0zl4awyXhCXyIYjwvQ8j9ZhCT952qCsVfK6cW1G
+        Ics4BQiwBxmb97rpkclGpczXvUfo4ZZ/Dykp26y9RplkObJN4p1iUVG/SQJf8chRXITJCz1Xjp6sC
+        vdBDDbpPLLUciwZxsckcmrVkt+WMyZjqT0ttsLJzCfAr/iyOWJIsSmKX6lJGr5P7vbPc9TmxdZW+c
+        OeSVTRDZrGGYaifbvRW2aFLP0q770wZYhcgaDpkilM8oEU6iF9wcpkviJCmijUZFWoD58a1sjlV+u
+        CmesmJoQ==;
+Received: from [200.39.29.128] (port=42554 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j8k0C-004457-Si; Mon, 02 Mar 2020 06:16:53 -0600
-Date:   Mon, 2 Mar 2020 06:19:53 -0600
+        id 1j8k3J-0046va-1u; Mon, 02 Mar 2020 06:20:05 -0600
+Date:   Mon, 2 Mar 2020 06:23:05 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: atlantic: Replace zero-length array with
- flexible-array member
-Message-ID: <20200302121953.GA32574@embeddedor>
+Subject: [PATCH][next] r8152: Replace zero-length array with flexible-array
+ member
+Message-ID: <20200302122305.GA1200@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -53,15 +53,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.166.157.90
+X-Source-IP: 200.39.29.128
 X-Source-L: No
-X-Exim-ID: 1j8k0C-004457-Si
+X-Exim-ID: 1j8k3J-0046va-1u
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.157.90]:42544
+X-Source-Sender: (embeddedor) [200.39.29.128]:42554
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 24
+X-Email-Count: 28
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -99,22 +99,40 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-index 42f0c5c6ec2d..6b4f701e7006 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-@@ -225,7 +225,7 @@ struct __packed offload_info {
- 	struct offload_port_info ports;
- 	struct offload_ka_info kas;
- 	struct offload_rr_info rrs;
--	u8 buf[0];
-+	u8 buf[];
- };
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index feedc0f964d8..9adfa2bbf593 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -891,7 +891,7 @@ struct fw_block {
+ struct fw_header {
+ 	u8 checksum[32];
+ 	char version[RTL_VER_SIZE];
+-	struct fw_block blocks[0];
++	struct fw_block blocks[];
+ } __packed;
  
- struct __packed hw_atl_utils_fw_rpc {
+ /**
+@@ -930,7 +930,7 @@ struct fw_mac {
+ 	__le32 reserved;
+ 	__le16 fw_ver_reg;
+ 	u8 fw_ver_data;
+-	char info[0];
++	char info[];
+ } __packed;
+ 
+ /**
+@@ -982,7 +982,7 @@ struct fw_phy_nc {
+ 	__le16 bp_start;
+ 	__le16 bp_num;
+ 	__le16 bp[4];
+-	char info[0];
++	char info[];
+ } __packed;
+ 
+ enum rtl_fw_type {
 -- 
 2.25.0
 
