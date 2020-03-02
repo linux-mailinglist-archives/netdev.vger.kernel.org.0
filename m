@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D26175B7A
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:23:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8D15175B9A
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727659AbgCBNXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 08:23:46 -0500
-Received: from correo.us.es ([193.147.175.20]:45730 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727361AbgCBNXq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 08:23:46 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 45D6B118465
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 14:23:32 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3913AFB378
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 14:23:32 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 373E87843C; Mon,  2 Mar 2020 14:23:32 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+        id S1727993AbgCBN2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 08:28:54 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:63506 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727659AbgCBN2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 08:28:53 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1583155732; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=ozhUO+ck04N8Btq8fadMc/XxQ0L2TIhqsxidXm/rFPs=; b=ktnBKF8fSVPqKCzAKG1nagXgy/biegsF82Xx6k8QBDE61pzxSPozP1x/kzsDa67/dP/TDu1Z
+ ATMP87RL0OISCMxvVeRWejxtl+XgsyERIw86nsNXjwBtu7k99Nd0iamnkHRiFp1zAiubxo1o
+ zV/6Zqmht0pEt1occuyoHt+ZRr8=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e5d0a04.7f5dbf6d93b0-smtp-out-n02;
+ Mon, 02 Mar 2020 13:28:36 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B37C2C447A0; Mon,  2 Mar 2020 13:28:35 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 26F38DA788;
-        Mon,  2 Mar 2020 14:23:30 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 02 Mar 2020 14:23:30 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id DA43F42EF9E1;
-        Mon,  2 Mar 2020 14:23:29 +0100 (CET)
-Date:   Mon, 2 Mar 2020 14:23:42 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
-        vishal@chelsio.com, jeffrey.t.kirsher@intel.com,
-        idosch@mellanox.com, aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 08/12] flow_offload: introduce "immediate" HW
- stats type and allow it in mlxsw
-Message-ID: <20200302132338.inwkbnkbytjsrikw@salvia>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-9-jiri@resnulli.us>
- <20200229193217.ejk3gbwhjcnxlk3c@salvia>
- <20200301084716.GR26061@nanopsycho>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3EAE7C43383;
+        Mon,  2 Mar 2020 13:28:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3EAE7C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] wireless: realtek: Replace zero-length array with flexible-array member
+References: <20200225002746.GA26789@embeddedor>
+Date:   Mon, 02 Mar 2020 15:28:30 +0200
+In-Reply-To: <20200225002746.GA26789@embeddedor> (Gustavo A. R. Silva's
+        message of "Mon, 24 Feb 2020 18:27:46 -0600")
+Message-ID: <87lfoi7uo1.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200301084716.GR26061@nanopsycho>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 01, 2020 at 09:47:16AM +0100, Jiri Pirko wrote:
-> Sat, Feb 29, 2020 at 08:32:18PM CET, pablo@netfilter.org wrote:
-> >On Fri, Feb 28, 2020 at 06:25:01PM +0100, Jiri Pirko wrote:
-> >[...]
-> >> @@ -31,7 +31,8 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
-> >>  
-> >>  	act = flow_action_first_entry_get(flow_action);
-> >>  	switch (act->hw_stats_type) {
-> >> -	case FLOW_ACTION_HW_STATS_TYPE_ANY:
-> >> +	case FLOW_ACTION_HW_STATS_TYPE_ANY: /* fall-through */
-> >> +	case FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE:
-> >
-> >This TYPE_ANY mean that driver picks the counter type for you?
-> 
-> Driver pick any counter, yes.
-> 
-> >Otherwise, users will not have a way to know how to interpret what
-> >kind of counter this is.
-> 
-> User does not care in this case.
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
 
-OK.
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
+>
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+>
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
 
-When listing back the counters, will the user get what counter type
-the driver has selected?
+Preferred by who exactly?
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
