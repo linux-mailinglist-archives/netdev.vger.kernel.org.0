@@ -2,167 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 760361757FD
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 11:09:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4BB175806
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 11:12:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727538AbgCBKJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 05:09:04 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45380 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726887AbgCBKJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 05:09:03 -0500
-Received: by mail-io1-f65.google.com with SMTP id w9so10815463iob.12;
-        Mon, 02 Mar 2020 02:09:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D3j1I17+GMU5nli/eqh+4aHS314u76TvdcOFFOJfXKk=;
-        b=Zz9KQgn5w37Q58MHosY4nzSk/GbOnDoClikcNpoVkOlCovZmZxzyw4g6xXoqFS170A
-         7z3BQMzBR/24hVtj349LRY3f0H//LAJYegYMnpbPdeL8K8Q5lDhwdeU8DnC6QayHRsNF
-         fDx4xA9yORMrUEKWPfT07oTjmZBqhw/ZQNntcZOODgVL5KL6xQ6O+I6xVRSEcq248Loj
-         ktzKr2hMbaqm00hSYoK5nCeUBlKM9MhkwgQgE9HvKYkKfDZ3FkLh4Mu10JjMZn8NuR5k
-         ZLgxKGwk87QtnJAolVDPo4kIFHolnmrmRj6vl41JxN24JrsTL3s9C2fpjnP1elsQrbkb
-         I6Tg==
+        id S1727030AbgCBKMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 05:12:05 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47018 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726874AbgCBKME (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 05:12:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583143924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LaXbm6o9ACOSIA/4eITRQbVMVOSyHXSsuYyUe3P7gC8=;
+        b=DjH8Tx/rc/l4gxwtVKxkUJsiM2i+M6Hq/81Fd2pCN3f0CwxeXGTtf0Kh6ZXM+AmfH+9H7j
+        IiUE3//l0tmHMZXkKUj1WTEnCxfge7pH5NRW5EPdM4S42BnlfBBvRs10j1IR/FRkOb30bf
+        ZFJyQnC0mTua/Wd369ADHmtq8ryD2xk=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-93-EQ3uyBrOPh6CslwoUKnREg-1; Mon, 02 Mar 2020 05:12:02 -0500
+X-MC-Unique: EQ3uyBrOPh6CslwoUKnREg-1
+Received: by mail-wr1-f70.google.com with SMTP id m13so5593242wrw.3
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 02:12:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D3j1I17+GMU5nli/eqh+4aHS314u76TvdcOFFOJfXKk=;
-        b=LHO+NyFQXEaqr42PynjouJgr8S50GONKKMn15bQYtab9Lybr33oK8LPT1aOTKRQCrj
-         TEJnVKYxNGH3P2/c75zMmwG0/eZ7lx1YAJM9zQgskVd6xa8wCe4jLnDlnZ/Q/Bs+e4Zv
-         y5jOnonUXuG54QKITT3TddDJJ9lYeQLlxuEKjiPYkjO7k485KZMTH+hF4rIpBNK0JvDr
-         3rRm/GjM7H9vVmFJ6HTMIfuLOKBAujFsHCfExluHkJBFUJbz2ITTy6JMFjcw15XTKPml
-         x1oUznTeGj1yqHA3kDoqPo4IzxbkMqTmKlnOIqbuM6v+iI861dSNoQ1Cl8AHjgH9Dp8q
-         xN9Q==
-X-Gm-Message-State: APjAAAX+etE7OmZ/excKWZbwK4gl/sFPhphQimtBtv8jkJGO99n4e6/j
-        4HduWEngZ1ew50pGeSnEO/PK1xuz+VM2KeVqViGb0P1aBuI=
-X-Google-Smtp-Source: APXvYqxLqFYFwdl0+uj9r6fVvf6OhWq/lUDow87s3COEogE3QO36C2e42sZIX+vYtyNcueS7MJjf+2ulrAuoQNr5KYc=
-X-Received: by 2002:a02:c84d:: with SMTP id r13mr13284971jao.76.1583143741759;
- Mon, 02 Mar 2020 02:09:01 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=LaXbm6o9ACOSIA/4eITRQbVMVOSyHXSsuYyUe3P7gC8=;
+        b=t95TyDEbX0fsK4kUNZk3oVJB1tyywqAKcsvnXXkq2wxSyq1zD/hugFGfD32aEF7XqA
+         5McxGjVgHQmykkn0t8PSZM1iI0g6yGtwQd/Oi23I15of6/pvTDjkiaBuXUbLuO7sjhml
+         mzw+92goNn1+80BNby5qefMgl20tnC7Sm73FIwIV52luqsvLgTeR8Vc5kUITMZyhP83a
+         cPDQser2KVuKj7g/cju0m8bLRN4ZbtyH+QvxHiwLoa+6ZGuz3bUMY6K+BMu5i/i+sqvu
+         fzfniFV+eJzZvnCJJ68KQpY9U+IAdotsN8HWd08Crqy36rG8ulwMjoDlEb99JjK/dcls
+         7OiQ==
+X-Gm-Message-State: ANhLgQ0u3TAcsN7wviQ95rfwlZAS4mpKPtqsd8hBdUyqqwgyroQwymNx
+        Ozl75L/QZPiSiAq3R6qmVlD/E8GnxGQpZSqGlLMp33j9lVq3i6rLz0teJurGaNSD9KzNbTJYDVY
+        IM+AsNL69ZJ2bkgcO
+X-Received: by 2002:a5d:5411:: with SMTP id g17mr2130086wrv.4.1583143921174;
+        Mon, 02 Mar 2020 02:12:01 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vtczJDy8x17jZMxyB+m7H9GwlALs0hqXR1gDMRMeSn/R/xAKgrk+S6RchUXVJBR4SQZ6hYmYQ==
+X-Received: by 2002:a5d:5411:: with SMTP id g17mr2130064wrv.4.1583143920907;
+        Mon, 02 Mar 2020 02:12:00 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id t124sm16657264wmg.13.2020.03.02.02.11.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2020 02:11:59 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 6942D180362; Mon,  2 Mar 2020 11:11:59 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
+In-Reply-To: <20200228223948.360936-1-andriin@fb.com>
+References: <20200228223948.360936-1-andriin@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 02 Mar 2020 11:11:59 +0100
+Message-ID: <87mu8zt6a8.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20200228044518.20314-1-gmayyyha@gmail.com> <CAOi1vP-K+e0N26qpthLcst8HLE-FAMGSE9XwBhj1dPBiLyN-iA@mail.gmail.com>
- <CAB9OAC0dURDHgqGDVCg_Gd+EhH-9_n4-mycgsqfxS64GRgd4Og@mail.gmail.com>
- <CAOi1vP_opdc=OP70T2eiamMWa-o71nU8t_LYyTCytqT5BT8gdQ@mail.gmail.com> <CAB9OAC08TGgXGFJsZCNpMzqnorn=jw1S_i8Ux2euaG=4-=JGwg@mail.gmail.com>
-In-Reply-To: <CAB9OAC08TGgXGFJsZCNpMzqnorn=jw1S_i8Ux2euaG=4-=JGwg@mail.gmail.com>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Mon, 2 Mar 2020 11:08:58 +0100
-Message-ID: <CAOi1vP-BKfaL-d2GMWDHf7tD=LpDLEug0-NY9dgT=qEi00gpLQ@mail.gmail.com>
-Subject: Re: [PATCH] ceph: using POOL FULL flag instead of OSDMAP FULL flag
-To:     Yanhu Cao <gmayyyha@gmail.com>
-Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 2, 2020 at 3:30 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
+Andrii Nakryiko <andriin@fb.com> writes:
+
+> This patch series adds bpf_link abstraction, analogous to libbpf's already
+> existing bpf_link abstraction. This formalizes and makes more uniform existing
+> bpf_link-like BPF program link (attachment) types (raw tracepoint and tracing
+> links), which are FD-based objects that are automatically detached when last
+> file reference is closed. These types of BPF program links are switched to
+> using bpf_link framework.
 >
-> On Fri, Feb 28, 2020 at 10:02 PM Ilya Dryomov <idryomov@gmail.com> wrote:
-> >
-> > On Fri, Feb 28, 2020 at 12:41 PM Yanhu Cao <gmayyyha@gmail.com> wrote:
-> > >
-> > > On Fri, Feb 28, 2020 at 6:23 PM Ilya Dryomov <idryomov@gmail.com> wrote:
-> > > >
-> > > > On Fri, Feb 28, 2020 at 5:45 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
-> > > > >
-> > > > > OSDMAP_FULL and OSDMAP_NEARFULL are deprecated since mimic.
-> > > > >
-> > > > > Signed-off-by: Yanhu Cao <gmayyyha@gmail.com>
-> > > > > ---
-> > > > >  fs/ceph/file.c                  |  6 ++++--
-> > > > >  include/linux/ceph/osd_client.h |  2 ++
-> > > > >  include/linux/ceph/osdmap.h     |  3 ++-
-> > > > >  net/ceph/osd_client.c           | 23 +++++++++++++----------
-> > > > >  4 files changed, 21 insertions(+), 13 deletions(-)
-> > > > >
-> > > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-> > > > > index 7e0190b1f821..60ea1eed1b84 100644
-> > > > > --- a/fs/ceph/file.c
-> > > > > +++ b/fs/ceph/file.c
-> > > > > @@ -1482,7 +1482,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
-> > > > >         }
-> > > > >
-> > > > >         /* FIXME: not complete since it doesn't account for being at quota */
-> > > > > -       if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_FULL)) {
-> > > > > +       if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
-> > > > > +                               CEPH_POOL_FLAG_FULL)) {
-> > > > >                 err = -ENOSPC;
-> > > > >                 goto out;
-> > > > >         }
-> > > > > @@ -1575,7 +1576,8 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
-> > > > >         }
-> > > > >
-> > > > >         if (written >= 0) {
-> > > > > -               if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_NEARFULL))
-> > > > > +               if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
-> > > > > +                                       CEPH_POOL_FLAG_NEARFULL))
-> > > >
-> > > > Hi Yanhu,
-> > > >
-> > > > Have you considered pre-mimic clusters here?  They are still supported
-> > > > (and will continue to be supported for the foreseeable future).
-> > > >
-> > > > Thanks,
-> > > >
-> > > >                 Ilya
-> > >
-> > > I have tested it work on Luminous, I think it work too since
-> > > ceph-v0.80(https://github.com/ceph/ceph/blob/b78644e7dee100e48dfeca32c9270a6b210d3003/src/osd/osd_types.h#L815)
-> > > alread have pool FLAG_FULL.
-> >
-> > But not FLAG_NEARFULL, which appeared in mimic.
-> FLAG_NEARFULL appeared in Luminous.
-
-Well, it appeared in mimic in v13.0.1 and was backported to luminous
-in v12.2.2.  So technically, some luminous releases don't have it.
-
+> FD-based bpf_link approach provides great safety guarantees, by ensuring there
+> is not going to be an abandoned BPF program attached, if user process suddenly
+> exits or forgets to clean up after itself. This is especially important in
+> production environment and is what all the recent new BPF link types followed.
 >
-> >
-> > >
-> > > CephFS doesn't write synchronously even if CEPH_OSDMAP_NEARFULL is
-> > > used, then should fixed by CEPH_POOL_FLAG_NEARFULL.
-> >
-> > I'm not sure I follow.
-> >
-> > -    if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_NEARFULL))
-> > +    if (pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
-> > +                            CEPH_POOL_FLAG_NEARFULL))
-> >
-> > AFAICT this change would effectively disable this branch for pre-mimic
-> > clusters.  Are you saying this branch is already broken?
-> >
-> > Thanks,
-> >
-> >                 Ilya
-> CEPH_OSDMAP_NEARFULL is not set in Jewel, so it has no effect. And in
-> Luminous version, this flag is cleared as a legacy and has no effect
-> too.
+> One of the previously existing  inconveniences of FD-based approach, though,
+> was the scenario in which user process wants to install BPF link and exit, but
+> let attached BPF program run. Now, with bpf_link abstraction in place, it's
+> easy to support pinning links in BPF FS, which is done as part of the same
+> patch #1. This allows FD-based BPF program links to survive exit of a user
+> process and original file descriptor being closed, by creating an file entry
+> in BPF FS. This provides great safety by default, with simple way to opt out
+> for cases where it's needed.
 
-Are you sure?  What about this code in OSDMonitor::tick() that showed
-up in kraken in v11.0.1 and was backported to jewel in v10.2.4?
+While being able to pin the fds returned by bpf_raw_tracepoint_open()
+certainly helps, I still feel like this is the wrong abstraction for
+freplace(): When I'm building a program using freplace to put in new
+functions (say, an XDP multi-prog dispatcher :)), I really want the
+'new' functions (i.e., the freplace'd bpf_progs) to share their lifetime
+with the calling BPF program. I.e., I want to be able to do something
+like:
 
-  if (!mon->pgmon()->pg_map.nearfull_osds.empty()) {
-    ...
-    add_flag(CEPH_OSDMAP_NEARFULL);
-  } else if (osdmap.test_flag(CEPH_OSDMAP_NEARFULL)){
-    ...
-    remove_flag(CEPH_OSDMAP_NEARFULL);
-  }
-  if (pending_inc.new_flags != -1 &&
-     (pending_inc.new_flags ^ osdmap.flags) & (CEPH_OSDMAP_FULL |
-                                               CEPH_OSDMAP_NEARFULL)) {
-    ...
-    do_propose = true;
+prog_fd = sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
+func_fd = sys_bpf(BPF_PROG_LOAD, ...); // replacement func
+err = sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // does *not* return an fd
 
-It's there in v10.2.11 (the final jewel release).  It's also there
-in hammer since v0.94.10...
+That last call should make the ref-counting be in the prog_fd -> func_fd
+direction, so that when prog_fd is released, it will do
+bpf_prog_put(func_fd). There could be an additional call like
+sys_bpf(BPF_PROG_REPLACE_FUNC_DETACH, prog_fd, btf_id) for explicit
+detach as well, of course.
 
-Thanks,
+With such an API, lifecycle management for an XDP program keeps being
+obvious: There's an fd for the root program attached to the interface,
+and that's it. When that is released the whole thing disappears. Whereas
+with the bpf_raw_tracepoint_open() API, the userspace program suddenly
+has to make sure all the component function FDs are pinned, which seems
+cumbersome and error-prone...
 
-                Ilya
+I'll try to propose patches for what this could look like; I think it
+could co-exist with this bpf_link abstraction, though, so no need to
+hold up this series...
+
+-Toke
+
