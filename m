@@ -2,145 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B7717684D
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 00:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4CE1176856
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 00:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbgCBXho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 18:37:44 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45411 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbgCBXho (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 18:37:44 -0500
-Received: by mail-qk1-f194.google.com with SMTP id z12so1587936qkg.12;
-        Mon, 02 Mar 2020 15:37:43 -0800 (PST)
+        id S1726816AbgCBXkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 18:40:12 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:43251 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbgCBXkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 18:40:12 -0500
+Received: by mail-il1-f195.google.com with SMTP id o18so1079794ilg.10;
+        Mon, 02 Mar 2020 15:40:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bahgYzgAXZPDS0WcmGHpI43ZI7c2XPEoK/ZgXyNwZd4=;
-        b=fUOvMEbSNV3dpMBUlm8BY7X2f80UXsfRkryY6IK1SOLJwAY/r9G0RYYu48H/m2huCE
-         jNcqBx7TlygmnBP+QaQ59t1momwR1sSJFbCHjdtd3WmeC6pHGwYIGdxF0RtdIjH3AoMO
-         VyXs6Z/5UgSrcDVKFFSxmFFulW7J8l5Bj2LNqeFHoARMZtfeMx8fMUmzNETmQdG1kWNE
-         Ps5BLvqh0GsGUb4Nu/9tgL3j/MFmIUHjDupgvceIXTs38MQD+6ITTLZQZ7aYDoSepwXx
-         QyifSdR28/QeIzHq/Ohjy+x2SAuRZ30mLHo6zs/pr0zQ49EUv/EAgTPOKETLdwyjx3G7
-         lsNA==
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=cyfoOa/TKoH02XU+kxLNRHsFUzko3EuCG7r/YxSGrHI=;
+        b=TobbcplPck1BbN5F+NI8A/Ddb003WmYS/FNcNXoeb4Ny2imgynmY277FG5l4iCYwdI
+         4S0+BZLk2TP4lEKC3y87L0725US4HmjZtkRe+wZXvbiFmHp0/4uxAj7TD3Bi8jOCVNp4
+         doVyXytubBHMzYgJ2feIEdWKn9aMDonnLMcjDf9bNlkmqD0K8UMvw21VVAWSx6fRt79/
+         GA+kBG56y9JIQNvW52JP4ERQ4eu4/aNVVcZ42do/C3vfsMsVWw3wcYENTbykvXUe16v2
+         5EwIy08+nGp/zZ+wo7+dqURBaj4KUA6jUgQFVfeB5JNb0Heo6/qjTn5ZdJfKsvsuo645
+         +vlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bahgYzgAXZPDS0WcmGHpI43ZI7c2XPEoK/ZgXyNwZd4=;
-        b=p3okAo7ZmBPIIsAZT7dMWNPX5fUJlaNeX551VlBKRx6w/BtN/FRBHrBquhdAux3tWF
-         N0Y1jiEpK5/BM5o4cJIYz3sAp2LzqJ/wzxlSzv7YMfcAPXOvs+ld4fzToR46faysVOUs
-         +vD9twPNiPULi/xYb5USb/FzZvEGYttD/Ja9OLtyB8Dk7jyJN2st3bgGXimcYjR2/7Xk
-         mUGoe+XqGWdNYhIVLvbCXYmMxq6CTIcmQ0KyimslbWVNGlza5Y8t3v7J/l5s9TT8usym
-         MiYwkpnWnmh6Qjc53+uLLj+L/auXLgnkNK+UiikyFhDYBX/yvsBKSSjlK/M9cytBmCs1
-         rpmA==
-X-Gm-Message-State: ANhLgQ1QJbHUdd/c6p9AbnutlMiQmmUEkbbw3Wu2LI3cslg+lWIqjsss
-        cbVwlLbqecTXJ5YiAKXwDvfD3r4dqZdByKoks5c=
-X-Google-Smtp-Source: ADFU+vt2Qfynp+dh/Mlh4r2veHokcw8aReThEBNPbPqQVxHYaRaP02ujS2k6TOExcUwtPB0icZFRAaf9bBLZF/4nLco=
-X-Received: by 2002:a05:620a:99d:: with SMTP id x29mr1618981qkx.39.1583192263404;
- Mon, 02 Mar 2020 15:37:43 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=cyfoOa/TKoH02XU+kxLNRHsFUzko3EuCG7r/YxSGrHI=;
+        b=sMAxzpWDF3dpRheLBAIWnQs5xfgYGxn+kiOy537nYQ75bQaKsiJyPbxJ9cEFPBQIL1
+         p47kpO7rhBGVDPesU/8NBuHvvWAtap46OgEWXAghAMSLSA6Vlo7BYDB78fg0V021I1tn
+         CHtCJ9V3iFPS0MNLAXSVAvouvxXUpX8lQtXht93xC9Iy0b57yE1KdVukrVGJlB7sz8h/
+         Ix8lMStGh+2C64T0TnGLj8mDvgXWM09aqJiwK4Fdn+WEy33HTSn9RnPGlKGgxMb0UN5g
+         IrmsIqwJGaJy1w9fUkNWWHR4T/FebXzpdn6+wsMHzIyuj5TfnWJUJR9Mk6EN8IFcBkbG
+         eAFg==
+X-Gm-Message-State: ANhLgQ1FY0ECMkGESgiSbtBLzrwSBJY6T/b5oXmHrwvoyhGLhtbB3aiu
+        A2kQnlXD8nWDGbs3hley4bO9McwAcq23zi/l1IA=
+X-Google-Smtp-Source: ADFU+vu1zu+zF1eajOarhgvTEIhC25TIaXxm6UWT6zlCVlYsJa6FVQG2VqRKcJ5ilAUAF23naZM27AkRLEVlHqscFWg=
+X-Received: by 2002:a92:d702:: with SMTP id m2mr1978296iln.149.1583192409639;
+ Mon, 02 Mar 2020 15:40:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20200228223948.360936-1-andriin@fb.com> <20200228223948.360936-2-andriin@fb.com>
- <87k143t682.fsf@toke.dk> <CAEf4BzY_2rLNS4rJnySGr_44e315SGs0FMBNh1010YYBX8OBmg@mail.gmail.com>
- <87r1yasaej.fsf@toke.dk>
-In-Reply-To: <87r1yasaej.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 2 Mar 2020 15:37:32 -0800
-Message-ID: <CAEf4Bza6-5QzArHgq9Uh24mR1C+ARDnnfw78q4CSm1=Rb3qOOQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: introduce pinnable bpf_link abstraction
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200302232057.GA182308@google.com> <2fa00fef-7d11-d0b6-49a0-85a2b08a144d@intel.com>
+In-Reply-To: <2fa00fef-7d11-d0b6-49a0-85a2b08a144d@intel.com>
+Reply-To: bjorn@helgaas.com
+From:   Bjorn Helgaas <bjorn.helgaas@gmail.com>
+Date:   Mon, 2 Mar 2020 17:39:58 -0600
+Message-ID: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
+Subject: Re: [PATCH 1/5] pci: introduce pci_get_dsn
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
+        netdev@vger.kernel.org, Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        QLogic-Storage-Upstream@cavium.com,
+        Michael Chan <michael.chan@broadcom.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 2, 2020 at 1:40 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+On Mon, Mar 2, 2020 at 5:24 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Mon, Mar 2, 2020 at 2:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
-> >>
-> >> Andrii Nakryiko <andriin@fb.com> writes:
-> >>
-> >> > Introduce bpf_link abstraction, representing an attachment of BPF pr=
-ogram to
-> >> > a BPF hook point (e.g., tracepoint, perf event, etc). bpf_link encap=
-sulates
-> >> > ownership of attached BPF program, reference counting of a link itse=
-lf, when
-> >> > reference from multiple anonymous inodes, as well as ensures that re=
-lease
-> >> > callback will be called from a process context, so that users can sa=
-fely take
-> >> > mutex locks and sleep.
-> >> >
-> >> > Additionally, with a new abstraction it's now possible to generalize=
- pinning
-> >> > of a link object in BPF FS, allowing to explicitly prevent BPF progr=
-am
-> >> > detachment on process exit by pinning it in a BPF FS and let it open=
- from
-> >> > independent other process to keep working with it.
-> >> >
-> >> > Convert two existing bpf_link-like objects (raw tracepoint and traci=
-ng BPF
-> >> > program attachments) into utilizing bpf_link framework, making them =
-pinnable
-> >> > in BPF FS. More FD-based bpf_links will be added in follow up patche=
-s.
-> >> >
-> >> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >> > ---
-> >> >  include/linux/bpf.h  |  13 +++
-> >> >  kernel/bpf/inode.c   |  42 ++++++++-
-> >> >  kernel/bpf/syscall.c | 209 ++++++++++++++++++++++++++++++++++++----=
----
-> >> >  3 files changed, 226 insertions(+), 38 deletions(-)
-> >> >
-
-[...]
-
-> >> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> >> > index c536c65256ad..fca8de7e7872 100644
-> >> > --- a/kernel/bpf/syscall.c
-> >> > +++ b/kernel/bpf/syscall.c
-> >> > @@ -2173,23 +2173,153 @@ static int bpf_obj_get(const union bpf_attr=
- *attr)
-> >> >                               attr->file_flags);
-> >> >  }
-> >> >
-> >> > -static int bpf_tracing_prog_release(struct inode *inode, struct fil=
-e *filp)
-> >> > +struct bpf_link {
-> >> > +     atomic64_t refcnt;
-> >>
-> >> refcount_t ?
+> On 3/2/2020 3:20 PM, Bjorn Helgaas wrote:
+> > On Mon, Mar 02, 2020 at 02:33:12PM -0800, Jacob Keller wrote:
+> >> On 3/2/2020 2:25 PM, Bjorn Helgaas wrote:
 > >
-> > Both bpf_map and bpf_prog stick to atomic64 for their refcounting, so
-> > I'd like to stay consistent and use refcount that can't possible leak
-> > resources (which refcount_t can, if it's overflown).
+> >>>> +int pci_get_dsn(struct pci_dev *dev, u8 dsn[])
+> >>>> +{
+> >>>> +  u32 dword;
+> >>>> +  int pos;
+> >>>> +
+> >>>> +
+> >>>> +  pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DSN);
+> >>>> +  if (!pos)
+> >>>> +          return -EOPNOTSUPP;
+> >>>> +
+> >>>> +  /*
+> >>>> +   * The Device Serial Number is two dwords offset 4 bytes from the
+> >>>> +   * capability position.
+> >>>> +   */
+> >>>> +  pos += 4;
+> >>>> +  pci_read_config_dword(dev, pos, &dword);
+> >>>> +  put_unaligned_le32(dword, &dsn[0]);
+> >>>> +  pci_read_config_dword(dev, pos + 4, &dword);
+> >>>> +  put_unaligned_le32(dword, &dsn[4]);
+> >>>
+> >>> Since the serial number is a 64-bit value, can we just return a u64
+> >>> and let the caller worry about any alignment and byte-order issues?
+> >>>
+> >>> This would be the only use of asm/unaligned.h in driver/pci, and I
+> >>> don't think DSN should be that special.
+> >>
+> >> I suppose that's fair, but it ends up leaving most callers having to fix
+> >> this immediately after calling this function.
+> >
+> > PCIe doesn't impose any structure on the value; it just says the first
+> > dword is the lower DW and the second is the upper DW.  As long as we
+> > put that together correctly into a u64, I think further interpretation
+> > is caller-specific.
 >
-> refcount_t is specifically supposed to turn a possible use-after-free on
-> under/overflow into a warning, isn't it? Not going to insist or anything
-> here, just found it odd that you'd prefer the other...
+> Makes sense. So basically, convert pci_get_dsn to a simply return a u64
+> instead of copying to an array, and then make callers assume that a
+> value of 0 is invalid?
 
-Well, underflow is a huge bug that should never happen in well-tested
-code (at least that's assumption for bpf_map and bpf_prog), and we are
-generally very careful about that. Overflow can happen only because
-refcount_t is using 32-bit integer, which atomic64_t side-steps
-completely by going to 64-bit integer. So yeah, I'd rather stick to
-the same stuff that's used for bpf_map and bpf_prog.
+Yep, that's what I would do.
 
->
-> -Toke
->
+You might have to re-jigger the snprintfs so they still pull out the
+same bytes they did before.
