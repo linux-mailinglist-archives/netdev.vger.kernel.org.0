@@ -2,163 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C141767F9
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 00:14:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 673E51767FD
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 00:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726859AbgCBXOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 18:14:24 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41274 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbgCBXOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 18:14:24 -0500
-Received: by mail-qk1-f193.google.com with SMTP id b5so1565352qkh.8;
-        Mon, 02 Mar 2020 15:14:21 -0800 (PST)
+        id S1726843AbgCBXQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 18:16:38 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:55550 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726700AbgCBXQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 18:16:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dnFBmnVWf/IQHXmQjUmB+Yi8mGNU/efuxG2w3lUsero=;
-        b=ZfM/PX1WkUpNQJmJYahkbclJxP6IBVe3keQQ4OLhGtbPPtoR8UA3blogWzsf+qWalR
-         8yQguxpY9eQD8yVIGDVdAFEAIuiW7zLW40QArwgtHkinwS9nSbvpqZ3TKL8IFva96T9D
-         j9GXnwPLcE/COprnssREFvPBqHV1ZUArPCzbTrPYen2jkPIU5/J2HdSGvoUkhvkIPUnG
-         Vi02Ak+F5K5bmSzD6B0pJJAiEkdC23ucYqQGEdVesSRup+WSy7MfrWBCU4uYEKvPJnwH
-         etQ9ebhY8V4Uj4zdLHSgcPmDAVnST6GGRYxv17ECZxDI9bz4irNoLJOXyaSoZGmwfYSU
-         Um5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dnFBmnVWf/IQHXmQjUmB+Yi8mGNU/efuxG2w3lUsero=;
-        b=pkuXArXjLkSbSRHqW2jJ03nAr/iyQoiBOVCtoOuOUEc95gk2ZzkvQgeRMjp+/PHIk4
-         o5qtBZG0TgMV/JoArAl5LUDni5cqh7iBf0HbOr9OU0n0kVISKyJg3NQNQTNL6UPs/X4B
-         Uu/s3LtgqWtRjPlHXsHbnhly4TUEtOuTSCF4vih5KaKt7/XDGtGri16D2QPU1c6QJBXF
-         MQFcgKCndDlmyZd4mF51wF3E0EEnqIlRND97SFOvQLV8bo9Kx0yzgeQrcja/NVSK7SnK
-         PM6JwVbKgmIaXUtCIsIzO2Wcjr0GRcYnvs5mIVPRBi/n4M7W1VnFCFzkih0rkzq/gmvQ
-         SgsQ==
-X-Gm-Message-State: ANhLgQ3t4X7DmapeIKxnvC1ahBzU+UPMN6tg4oyAujhV0rohzJs8LBL0
-        yEc0gpVoXwHntTtpzVdHQjpIYm8dV3lbqxuzaF0=
-X-Google-Smtp-Source: ADFU+vtkuecYScVIERtlpU1JqiGuiD933Np9EViewb6+HwO7ggQuEs5cWyw1stx2AjvRBKhDNGHuwwiwgbfVkxVwaEc=
-X-Received: by 2002:a37:a2d6:: with SMTP id l205mr1582714qke.92.1583190861255;
- Mon, 02 Mar 2020 15:14:21 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1583190996; x=1614726996;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=+UWYgNwVFrpqbsiNpxtMLg5PLNo6oZ8uC9opvMf5BxM=;
+  b=l7tmVuEdKKjSETcMNDAmO+0n+0TkXhUOpDquXdI/8bEHlKCjSY2FfWIH
+   hJDX4Xt/5coGy+K29VzVC0/LeS/a0vgUQ2ibmF64EPpqQ6W2YvxR+AEvM
+   ol2F8vAEa43E1BYD0dC85xk8Ia5v7Wnv3oaReop1937hksg1O2I2MQa02
+   k=;
+IronPort-SDR: XLFV+FAbo74E1bixS7QRul4MEISP8hS7PAr4ilEI1Meh59OGdRLNE/QAoxqdvhOztIdQ4SQCcD
+ aWv1Zg7OTn2g==
+X-IronPort-AV: E=Sophos;i="5.70,508,1574121600"; 
+   d="scan'208";a="20370808"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-81e76b79.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 02 Mar 2020 23:16:34 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2b-81e76b79.us-west-2.amazon.com (Postfix) with ESMTPS id 1B10CA2D8B;
+        Mon,  2 Mar 2020 23:16:34 +0000 (UTC)
+Received: from EX13D22EUB002.ant.amazon.com (10.43.166.131) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Mon, 2 Mar 2020 23:16:33 +0000
+Received: from EX13D10EUB001.ant.amazon.com (10.43.166.211) by
+ EX13D22EUB002.ant.amazon.com (10.43.166.131) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 2 Mar 2020 23:16:32 +0000
+Received: from EX13D10EUB001.ant.amazon.com ([10.43.166.211]) by
+ EX13D10EUB001.ant.amazon.com ([10.43.166.211]) with mapi id 15.00.1497.006;
+ Mon, 2 Mar 2020 23:16:32 +0000
+From:   "Machulsky, Zorik" <zorik@amazon.com>
+To:     Josh Triplett <josh@joshtriplett.org>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ena: Speed up initialization 90x by reducing poll delays
+Thread-Topic: [PATCH] ena: Speed up initialization 90x by reducing poll delays
+Thread-Index: AQHV7pdH5S0f1nvr+k6qVAg9VSe/lqg1beyA
+Date:   Mon, 2 Mar 2020 23:16:32 +0000
+Message-ID: <8B4A52CD-FC5A-4256-B7DE-A659B50654CE@amazon.com>
+References: <20200229002813.GA177044@localhost>
+In-Reply-To: <20200229002813.GA177044@localhost>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.216]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DD4EE2F666C630468D8BA52698FD5338@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200301062405.2850114-1-andriin@fb.com> <20200301062405.2850114-2-andriin@fb.com>
- <20200302223748.v4omummx43pejzfn@ast-mbp>
-In-Reply-To: <20200302223748.v4omummx43pejzfn@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 2 Mar 2020 15:14:10 -0800
-Message-ID: <CAEf4BzYWCyLBNzH9ns-jP7SFeOpGfLbypr7VRhDPSTOMA0nyjA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to enums
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 2, 2020 at 2:37 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sat, Feb 29, 2020 at 10:24:03PM -0800, Andrii Nakryiko wrote:
-> > Switch BPF UAPI constants, previously defined as #define macro, to anonymous
-> > enum values. This preserves constants values and behavior in expressions, but
-> > has added advantaged of being captured as part of DWARF and, subsequently, BTF
-> > type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
-> > for BPF applications, as it will not require BPF users to copy/paste various
-> > flags and constants, which are frequently used with BPF helpers.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
-> >  include/uapi/linux/bpf_common.h       |  86 ++++----
-> >  include/uapi/linux/btf.h              |  60 +++---
-> >  tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
-> >  tools/include/uapi/linux/bpf_common.h |  86 ++++----
-> >  tools/include/uapi/linux/btf.h        |  60 +++---
-> >  6 files changed, 497 insertions(+), 341 deletions(-)
->
-> I see two reasons why converting #define to enum is useful:
-> 1. bpf progs can use them from vmlinux.h as evident in patch 3.
-> 2. "bpftool feature probe" can be replaced with
->   bpftool btf dump file /sys/kernel/btf/vmlinux |grep BPF_CGROUP_SETSOCKOPT
->
-> The second use case is already possible, since bpf_prog_type,
-> bpf_attach_type, bpf_cmd, bpf_func_id are all enums.
-> So kernel is already self describing most bpf features.
-> Does kernel support bpf_probe_read_user() ? Answer is:
-> bpftool btf dump file /sys/kernel/btf/vmlinux | grep BPF_FUNC_probe_read_user
->
-> The only bit missing is supported kernel flags and instructions.
-
-Yep, my motivation was primarily the former, but I can see benefits
-from the latter as well.
-
->
-> I think for now I would only convert flags that are going to be
-> used from bpf program and see whether 1st use case works well.
-> Later we can convert flags that are used out of user space too.
->
-> In other words:
->
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 8e98ced0963b..03e08f256bd1 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -14,34 +14,36 @@
-> >  /* Extended instruction set based on top of classic BPF */
-> >
-> >  /* instruction classes */
-> > -#define BPF_JMP32    0x06    /* jmp mode in word width */
-> > -#define BPF_ALU64    0x07    /* alu mode in double word width */
-> > +enum {
-> > +     BPF_JMP32       = 0x06, /* jmp mode in word width */
-> > +     BPF_ALU64       = 0x07, /* alu mode in double word width */
->
-> not those.
-
-makes sense
-
->
-> > -#define BPF_F_ALLOW_OVERRIDE (1U << 0)
-> > -#define BPF_F_ALLOW_MULTI    (1U << 1)
-> > -#define BPF_F_REPLACE                (1U << 2)
-> > +enum {
-> > +     BPF_F_ALLOW_OVERRIDE    = (1U << 0),
-> > +     BPF_F_ALLOW_MULTI       = (1U << 1),
-> > +     BPF_F_REPLACE           = (1U << 2),
-> > +};
->
-> not those either. These are the flags for user space. Not for the prog.
-
-yep...
-
->
-> >  /* flags for BPF_MAP_UPDATE_ELEM command */
-> > -#define BPF_ANY              0 /* create new element or update existing */
-> > -#define BPF_NOEXIST  1 /* create new element if it didn't exist */
-> > -#define BPF_EXIST    2 /* update existing element */
-> > -#define BPF_F_LOCK   4 /* spin_lock-ed map_lookup/map_update */
-> > +enum {
-> > +     BPF_ANY         = 0, /* create new element or update existing */
-> > +     BPF_NOEXIST     = 1, /* create new element if it didn't exist */
-> > +     BPF_EXIST       = 2, /* update existing element */
-> > +     BPF_F_LOCK      = 4, /* spin_lock-ed map_lookup/map_update */
-> > +};
->
-> yes to these.
-
-yep, these and below are the most important ones...
-
-[...]
-
->
-> In all such cases I don't think we need #define FOO FOO
-> trick. These are the flags used within bpf program.
-> I don't think any user is doing #ifdef logic there.
-> I cannot come up with a use case of anything useful this way.
-
-Sounds good, I'll revert non-BPF helper flags cases and will post v2, thanks!
+DQrvu79PbiAyLzI4LzIwLCA0OjI5IFBNLCAiSm9zaCBUcmlwbGV0dCIgPGpvc2hAam9zaHRyaXBs
+ZXR0Lm9yZz4gd3JvdGU6DQoNCiAgICBCZWZvcmUgaW5pdGlhbGl6aW5nIGNvbXBsZXRpb24gcXVl
+dWUgaW50ZXJydXB0cywgdGhlIGVuYSBkcml2ZXIgdXNlcw0KICAgIHBvbGxpbmcgdG8gd2FpdCBm
+b3IgcmVzcG9uc2VzIG9uIHRoZSBhZG1pbiBjb21tYW5kIHF1ZXVlLiBUaGUgZW5hIGRyaXZlcg0K
+ICAgIHdhaXRzIDVtcyBiZXR3ZWVuIHBvbGxzLCBidXQgdGhlIGhhcmR3YXJlIGhhcyBnZW5lcmFs
+bHkgZmluaXNoZWQgbG9uZw0KICAgIGJlZm9yZSB0aGF0LiBSZWR1Y2UgdGhlIHBvbGwgdGltZSB0
+byAxMHVzLg0KICAgIA0KICAgIE9uIGEgYzUuMTJ4bGFyZ2UsIHRoaXMgaW1wcm92ZXMgZW5hIGlu
+aXRpYWxpemF0aW9uIHRpbWUgZnJvbSAxNzMuNm1zIHRvDQogICAgMS45MjBtcywgYW4gaW1wcm92
+ZW1lbnQgb2YgbW9yZSB0aGFuIDkweC4gVGhpcyBpbXByb3ZlcyBzZXJ2ZXIgYm9vdCB0aW1lDQog
+ICAgYW5kIHRpbWUgdG8gbmV0d29yayBicmluZ3VwLg0KIA0KVGhhbmtzIEpvc2gsDQpXZSBhZ3Jl
+ZSB0aGF0IHBvbGxpbmcgcmF0ZSBzaG91bGQgYmUgaW5jcmVhc2VkLCBidXQgcHJlZmVyIG5vdCB0
+byBkbyBpdCBhZ2dyZXNzaXZlbHkgYW5kIGJsaW5kbHkuDQpGb3IgZXhhbXBsZSBsaW5lYXIgYmFj
+a29mZiBhcHByb2FjaCBtaWdodCBiZSBhIGJldHRlciBjaG9pY2UuIFBsZWFzZSBsZXQgdXMgcmUt
+d29yayBhIGxpdHRsZSB0aGlzIA0KcGF0Y2ggYW5kIGJyaW5nIGl0IHRvIHJldmlldy4gVGhhbmtz
+ISAgICAgIA0KICAgDQogICAgQmVmb3JlOg0KICAgIFsgICAgMC41MzE3MjJdIGNhbGxpbmcgIGVu
+YV9pbml0KzB4MC8weDYzIEAgMQ0KICAgIFsgICAgMC41MzE3MjJdIGVuYTogRWxhc3RpYyBOZXR3
+b3JrIEFkYXB0ZXIgKEVOQSkgdjIuMS4wSw0KICAgIFsgICAgMC41MzE3NTFdIGVuYSAwMDAwOjAw
+OjA1LjA6IEVsYXN0aWMgTmV0d29yayBBZGFwdGVyIChFTkEpIHYyLjEuMEsNCiAgICBbICAgIDAu
+NTMxOTQ2XSBQQ0kgSW50ZXJydXB0IExpbmsgW0xOS0RdIGVuYWJsZWQgYXQgSVJRIDExDQogICAg
+WyAgICAwLjU0NzQyNV0gZW5hOiBlbmEgZGV2aWNlIHZlcnNpb246IDAuMTANCiAgICBbICAgIDAu
+NTQ3NDI3XSBlbmE6IGVuYSBjb250cm9sbGVyIHZlcnNpb246IDAuMC4xIGltcGxlbWVudGF0aW9u
+IHZlcnNpb24gMQ0KICAgIFsgICAgMC43MDk0OTddIGVuYSAwMDAwOjAwOjA1LjA6IEVsYXN0aWMg
+TmV0d29yayBBZGFwdGVyIChFTkEpIGZvdW5kIGF0IG1lbSBmZWJmNDAwMCwgbWFjIGFkZHIgMDY6
+YzQ6MjI6MGU6ZGM6ZGEsIFBsYWNlbWVudCBwb2xpY3k6IExvdyBMYXRlbmN5DQogICAgWyAgICAw
+LjcwOTUwOF0gaW5pdGNhbGwgZW5hX2luaXQrMHgwLzB4NjMgcmV0dXJuZWQgMCBhZnRlciAxNzM2
+MTYgdXNlY3MNCiAgICANCiAgICBBZnRlcjoNCiAgICBbICAgIDAuNTI2OTY1XSBjYWxsaW5nICBl
+bmFfaW5pdCsweDAvMHg2MyBAIDENCiAgICBbICAgIDAuNTI2OTY2XSBlbmE6IEVsYXN0aWMgTmV0
+d29yayBBZGFwdGVyIChFTkEpIHYyLjEuMEsNCiAgICBbICAgIDAuNTI3MDU2XSBlbmEgMDAwMDow
+MDowNS4wOiBFbGFzdGljIE5ldHdvcmsgQWRhcHRlciAoRU5BKSB2Mi4xLjBLDQogICAgWyAgICAw
+LjUyNzE5Nl0gUENJIEludGVycnVwdCBMaW5rIFtMTktEXSBlbmFibGVkIGF0IElSUSAxMQ0KICAg
+IFsgICAgMC41MjcyMTFdIGVuYTogZW5hIGRldmljZSB2ZXJzaW9uOiAwLjEwDQogICAgWyAgICAw
+LjUyNzIxMl0gZW5hOiBlbmEgY29udHJvbGxlciB2ZXJzaW9uOiAwLjAuMSBpbXBsZW1lbnRhdGlv
+biB2ZXJzaW9uIDENCiAgICBbICAgIDAuNTI4OTI1XSBlbmEgMDAwMDowMDowNS4wOiBFbGFzdGlj
+IE5ldHdvcmsgQWRhcHRlciAoRU5BKSBmb3VuZCBhdCBtZW0gZmViZjQwMDAsIG1hYyBhZGRyIDA2
+OmM0OjIyOjBlOmRjOmRhLCBQbGFjZW1lbnQgcG9saWN5OiBMb3cgTGF0ZW5jeQ0KICAgIFsgICAg
+MC41Mjg5MzRdIGluaXRjYWxsIGVuYV9pbml0KzB4MC8weDYzIHJldHVybmVkIDAgYWZ0ZXIgMTky
+MCB1c2Vjcw0KICAgIA0KICAgIFNpZ25lZC1vZmYtYnk6IEpvc2ggVHJpcGxldHQgPGpvc2hAam9z
+aHRyaXBsZXR0Lm9yZz4NCiAgICAtLS0NCiAgICAgZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9u
+L2VuYS9lbmFfY29tLmMgfCAyMiArKysrKysrKysrKystLS0tLS0tLS0tDQogICAgIDEgZmlsZSBj
+aGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAxMCBkZWxldGlvbnMoLSkNCiAgICANCiAgICBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfY29tLmMgYi9kcml2
+ZXJzL25ldC9ldGhlcm5ldC9hbWF6b24vZW5hL2VuYV9jb20uYw0KICAgIGluZGV4IDFmYjU4Zjlh
+ZDgwYi4uMjAzYjIxMzBkNzA3IDEwMDY0NA0KICAgIC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L2FtYXpvbi9lbmEvZW5hX2NvbS5jDQogICAgKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1h
+em9uL2VuYS9lbmFfY29tLmMNCiAgICBAQCAtNjIsNyArNjIsNyBAQA0KICAgICANCiAgICAgI2Rl
+ZmluZSBFTkFfUkVHU19BRE1JTl9JTlRSX01BU0sgMQ0KICAgICANCiAgICAtI2RlZmluZSBFTkFf
+UE9MTF9NUwk1DQogICAgKyNkZWZpbmUgRU5BX1BPTExfVVMJMTANCiAgICAgDQogICAgIC8qKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKi8NCiAgICAgLyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLw0KICAgIEBAIC01
+NzIsNyArNTcyLDcgQEAgc3RhdGljIGludCBlbmFfY29tX3dhaXRfYW5kX3Byb2Nlc3NfYWRtaW5f
+Y3FfcG9sbGluZyhzdHJ1Y3QgZW5hX2NvbXBfY3R4ICpjb21wX2MNCiAgICAgCQkJZ290byBlcnI7
+DQogICAgIAkJfQ0KICAgICANCiAgICAtCQltc2xlZXAoRU5BX1BPTExfTVMpOw0KICAgICsJCXVz
+bGVlcF9yYW5nZShFTkFfUE9MTF9VUywgMiAqIEVOQV9QT0xMX1VTKTsNCiAgICAgCX0NCiAgICAg
+DQogICAgIAlpZiAodW5saWtlbHkoY29tcF9jdHgtPnN0YXR1cyA9PSBFTkFfQ01EX0FCT1JURUQp
+KSB7DQogICAgQEAgLTk0MywxMiArOTQzLDEzIEBAIHN0YXRpYyB2b2lkIGVuYV9jb21faW9fcXVl
+dWVfZnJlZShzdHJ1Y3QgZW5hX2NvbV9kZXYgKmVuYV9kZXYsDQogICAgIHN0YXRpYyBpbnQgd2Fp
+dF9mb3JfcmVzZXRfc3RhdGUoc3RydWN0IGVuYV9jb21fZGV2ICplbmFfZGV2LCB1MzIgdGltZW91
+dCwNCiAgICAgCQkJCXUxNiBleHBfc3RhdGUpDQogICAgIHsNCiAgICAtCXUzMiB2YWwsIGk7DQog
+ICAgKwl1MzIgdmFsOw0KICAgICsJdW5zaWduZWQgbG9uZyB0aW1lb3V0X2ppZmZpZXM7DQogICAg
+IA0KICAgIC0JLyogQ29udmVydCB0aW1lb3V0IGZyb20gcmVzb2x1dGlvbiBvZiAxMDBtcyB0byBF
+TkFfUE9MTF9NUyAqLw0KICAgIC0JdGltZW91dCA9ICh0aW1lb3V0ICogMTAwKSAvIEVOQV9QT0xM
+X01TOw0KICAgICsJLyogQ29udmVydCB0aW1lb3V0IGZyb20gcmVzb2x1dGlvbiBvZiAxMDBtcyAq
+Lw0KICAgICsJdGltZW91dF9qaWZmaWVzID0gamlmZmllcyArIG1zZWNzX3RvX2ppZmZpZXModGlt
+ZW91dCAqIDEwMCk7DQogICAgIA0KICAgIC0JZm9yIChpID0gMDsgaSA8IHRpbWVvdXQ7IGkrKykg
+ew0KICAgICsJd2hpbGUgKDEpIHsNCiAgICAgCQl2YWwgPSBlbmFfY29tX3JlZ19iYXJfcmVhZDMy
+KGVuYV9kZXYsIEVOQV9SRUdTX0RFVl9TVFNfT0ZGKTsNCiAgICAgDQogICAgIAkJaWYgKHVubGlr
+ZWx5KHZhbCA9PSBFTkFfTU1JT19SRUFEX1RJTUVPVVQpKSB7DQogICAgQEAgLTk2MCwxMCArOTYx
+LDExIEBAIHN0YXRpYyBpbnQgd2FpdF9mb3JfcmVzZXRfc3RhdGUoc3RydWN0IGVuYV9jb21fZGV2
+ICplbmFfZGV2LCB1MzIgdGltZW91dCwNCiAgICAgCQkJZXhwX3N0YXRlKQ0KICAgICAJCQlyZXR1
+cm4gMDsNCiAgICAgDQogICAgLQkJbXNsZWVwKEVOQV9QT0xMX01TKTsNCiAgICAtCX0NCiAgICAr
+CQlpZiAodGltZV9pc19iZWZvcmVfamlmZmllcyh0aW1lb3V0X2ppZmZpZXMpKQ0KICAgICsJCQly
+ZXR1cm4gLUVUSU1FOw0KICAgICANCiAgICAtCXJldHVybiAtRVRJTUU7DQogICAgKwkJdXNsZWVw
+X3JhbmdlKEVOQV9QT0xMX1VTLCAyICogRU5BX1BPTExfVVMpOw0KICAgICsJfQ0KICAgICB9DQog
+ICAgIA0KICAgICBzdGF0aWMgYm9vbCBlbmFfY29tX2NoZWNrX3N1cHBvcnRlZF9mZWF0dXJlX2lk
+KHN0cnVjdCBlbmFfY29tX2RldiAqZW5hX2RldiwNCiAgICBAQCAtMTQ1OCw3ICsxNDYwLDcgQEAg
+dm9pZCBlbmFfY29tX3dhaXRfZm9yX2Fib3J0X2NvbXBsZXRpb24oc3RydWN0IGVuYV9jb21fZGV2
+ICplbmFfZGV2KQ0KICAgICAJc3Bpbl9sb2NrX2lycXNhdmUoJmFkbWluX3F1ZXVlLT5xX2xvY2ss
+IGZsYWdzKTsNCiAgICAgCXdoaWxlIChhdG9taWNfcmVhZCgmYWRtaW5fcXVldWUtPm91dHN0YW5k
+aW5nX2NtZHMpICE9IDApIHsNCiAgICAgCQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZhZG1pbl9x
+dWV1ZS0+cV9sb2NrLCBmbGFncyk7DQogICAgLQkJbXNsZWVwKEVOQV9QT0xMX01TKTsNCiAgICAr
+CQl1c2xlZXBfcmFuZ2UoRU5BX1BPTExfVVMsIDIgKiBFTkFfUE9MTF9VUyk7DQogICAgIAkJc3Bp
+bl9sb2NrX2lycXNhdmUoJmFkbWluX3F1ZXVlLT5xX2xvY2ssIGZsYWdzKTsNCiAgICAgCX0NCiAg
+ICAgCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmFkbWluX3F1ZXVlLT5xX2xvY2ssIGZsYWdzKTsN
+CiAgICAtLSANCiAgICAyLjI1LjENCiAgICANCiAgICANCg0K
