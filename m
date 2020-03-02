@@ -2,110 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D09F51762BC
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 19:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B811762CD
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 19:33:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727520AbgCBSat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 13:30:49 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:39751 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727268AbgCBSas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 13:30:48 -0500
-Received: by mail-pj1-f68.google.com with SMTP id o5so138005pjs.4
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 10:30:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Z7//QmbkwzNgGnou8lHzSVEj2ekjhGlSMqF0xFdwdLo=;
-        b=tfA+aryZYJBzGkAfyr43qtZbv9DfOinABuHbsXqrWb5QheTbHH6lrT9J0ztrMeFViX
-         M8TBKGYiS9uKFlxls7LtIkZzNfvYO22dqyZahlC1F2nhjyKIpxhgHYxvPdxHWThor6lC
-         CFoOkM67Ylr0FsC3HJem8Uztff2zGPKc3bYubAzU/1M/YFNUtGzEj+Mj4505dYehnlCV
-         mDqk7Mv7r5LjloINR3fW17BZGrVkIqnIuLXVwJy1lEceQIdDKFs8HtVm4cQsO30BG76A
-         Qlg3P85k/+JnZTN0CpSLnm4YwCTurzziZna3cgo6SZob/A4NWuMwd8SmGjB72UUNtjlo
-         sWtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Z7//QmbkwzNgGnou8lHzSVEj2ekjhGlSMqF0xFdwdLo=;
-        b=YQ9w/423ErEMWjHvC0KA/lwVpIKYqyf7RWL6hXSrdinuzWLr6ydajFLoFeBjRdBGzh
-         fkKD69quCXJOAHreywLrXDC1XgcBagtkLy13fM1w7LyFrNMbjjEZO3VMRnMMYBc/t0FD
-         Sz8jpS5I8UP1Sshj1Aogx+q3hsImdAIAjIMKBS3q6AV0qGtJt6x1o8HBEZOQekNRy+u4
-         njQwQlGvXDHHzWNAGnh/umGnEVadn47+wsBgU6WzALfBFtH3tuLudXZyqAcQxzLf88FX
-         yrMd4pLNn5+C1zKbyFyyASJbkG5SNnhHSOfxtV2JGCAjWgsoQKN6lhiK1RbJI8UWEMaU
-         0znQ==
-X-Gm-Message-State: ANhLgQ1EerWTwlc9EJ4es8RM14K3E4nh2ZUxfkSS9DkqLYxvH30yvWBU
-        cJS7gpLd+pdKjBDdUEX/694=
-X-Google-Smtp-Source: ADFU+vu89R7F+P2BJF4zPrDXGls7PhQfbnzqSkRcDYT9c1P7MfpHTxXUXB4m0mE+bybTkTcROoGM/w==
-X-Received: by 2002:a17:90a:252a:: with SMTP id j39mr216874pje.117.1583173846124;
-        Mon, 02 Mar 2020 10:30:46 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::7:1db6])
-        by smtp.gmail.com with ESMTPSA id k5sm136826pju.29.2020.03.02.10.30.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Mar 2020 10:30:45 -0800 (PST)
-Date:   Mon, 2 Mar 2020 10:30:41 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH RFC v4 bpf-next 09/11] tun: Support xdp in the Tx path
- for xdp_frames
-Message-ID: <20200302183040.tgnrg6tkblrjwsqj@ast-mbp>
-References: <20200227032013.12385-1-dsahern@kernel.org>
- <20200227032013.12385-10-dsahern@kernel.org>
+        id S1727461AbgCBSdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 13:33:39 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:29160 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727255AbgCBSdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 13:33:38 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 022IOvv3022551;
+        Mon, 2 Mar 2020 10:33:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=bPfuQP2eo3bYHKVKZEqxgi9IjvEkRLMS3EwR5lq9s+s=;
+ b=dirMbBDRQ+ZpJmCGjrHFJu1vtiL1AaZlCjKBDAtedP0aYf3PXyZR4ieJKizlB+p33dRa
+ WP301tdSC305YRC3IiLNB9TU3ZNdwVqymz6c38QiH8YH1zfgFSK3673EQ1uUcL9biAwr
+ IYgUguxuBWcCP2S798v/Q5bwsTwUqIFWJhQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yg8x7e56d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 02 Mar 2020 10:33:25 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 2 Mar 2020 10:33:24 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y4QPL2Trj9WKvrK2vOi6Hfj10zSE7ArRuX7pRnvoGFRi25tqLaMYPzWsMYOIGUiEgT4LYZQ8ijMpyrFWnmWfqmqAH+7aJGeZ5wzSQmXCRcJSNw9Cx+G33s+e5qT9cMITJVwPW0QVBo7ourY+Ldhh9wEoOY7v5g1D5avZNb8bP5mHrP+yahmzWLdOGfDja+05495aQ0sdw7VUI2uwrYBLusWsKp6ppFCSwO7ueyphX95imcrgp4zSy8IVWO4WqRT2h13kcO8JzNtU0niO0b+PE7ekUyW+JxtVTrd3xUu5Mu4glgXPrK3UPZBAOtH7DHogLjW63lZAp9ekKhP/2gpp+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bPfuQP2eo3bYHKVKZEqxgi9IjvEkRLMS3EwR5lq9s+s=;
+ b=lymZR57D87sZZdxAeQBh3DY3tgWmxi8Ojv49Uxzmkoj/PIMuIA7LmWGPa88Vw21quiwonh3xf6bB8guS8B06U6C9TiNkoI7geMXxIrfvKd6sg+gFqbNwvjDynNbDah9SkrQM6YVfhODSGdiiyhSXyvlxP4ktXA3K96N2kJjf196/UsQA3vTNOE0zUIBTr0yTUdls/C6uJmKSas2YZlTKPrbLCOrsqV3bH0nM2KsL5JggSTenNoDD++u3vmc4WbmUlOoOUfjH+o46jYWOHtJ8/Fz+ZgzERBmx9YkKID/78KDVfabrKMN4H0ksi20+ks93isFrgrCd6c1w1z5Lbvmmyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bPfuQP2eo3bYHKVKZEqxgi9IjvEkRLMS3EwR5lq9s+s=;
+ b=STosLrH7cpJ7EMii+jsDo7yk6c/kbhia3vhEyxAKCFe8c9NyMoo9c2zxnxV0tzxwxHqOB2sYgxStEId47toPoGgPOlydfN4azoq0ogUvc7FxaNejPwat+VnsmAksSJeRrf6sGD18MKKapsLgdb1KpTUiOAhls//sTkr0dan8m7s=
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com (2603:10b6:5:13c::16)
+ by DM6PR15MB2554.namprd15.prod.outlook.com (2603:10b6:5:1a2::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.16; Mon, 2 Mar
+ 2020 18:33:23 +0000
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2772.019; Mon, 2 Mar 2020
+ 18:33:23 +0000
+Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to
+ enums
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20200301062405.2850114-1-andriin@fb.com>
+ <20200301062405.2850114-2-andriin@fb.com>
+ <b57cdf6d-0849-2d54-982e-352886f86201@fb.com>
+ <CAEf4BzZspu-wXMr6v=Sd-_m-XzXJwJHyU9zd0ydEiWmch8F9GQ@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <af9e3e1e-e1e9-0462-88a4-93fd06c40957@fb.com>
+Date:   Mon, 2 Mar 2020 10:33:19 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
+In-Reply-To: <CAEf4BzZspu-wXMr6v=Sd-_m-XzXJwJHyU9zd0ydEiWmch8F9GQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR2001CA0019.namprd20.prod.outlook.com
+ (2603:10b6:301:15::29) To DM6PR15MB3001.namprd15.prod.outlook.com
+ (2603:10b6:5:13c::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200227032013.12385-10-dsahern@kernel.org>
-User-Agent: NeoMutt/20180223
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:500::6:87b3) by MWHPR2001CA0019.namprd20.prod.outlook.com (2603:10b6:301:15::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.19 via Frontend Transport; Mon, 2 Mar 2020 18:33:22 +0000
+X-Originating-IP: [2620:10d:c090:500::6:87b3]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 025fc4dc-c77d-4b89-5a48-08d7bed83052
+X-MS-TrafficTypeDiagnostic: DM6PR15MB2554:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB2554245E137D23FA37EE407ED3E70@DM6PR15MB2554.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-Forefront-PRVS: 033054F29A
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(396003)(136003)(376002)(366004)(346002)(39860400002)(199004)(189003)(6512007)(5660300002)(2616005)(6666004)(81166006)(8676002)(81156014)(31696002)(53546011)(316002)(16526019)(54906003)(186003)(66574012)(6916009)(66946007)(66476007)(66556008)(52116002)(478600001)(86362001)(6506007)(6486002)(4326008)(31686004)(36756003)(8936002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB2554;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s8ZVBaicgHBcM8A4/t1mGW0tU2YmUrzgycjEKQAed5POtEHf24ImlTn7JuEQy2+GAwnBZ/h3KcOLQs31D95P1carM8wDijNPMpjV29hel6x0xqvWTV3HBvMqoOMUjRy0OvHwRru50aJH1jwftTkthxdgH9zk+FKqBPdTcnCqIpJRa1a8a+sKDkKIsmUvjESm/GFARL2/mbn82NZHROtOCBZFFk/t94OY4bHheKCCtSJNLfe7zS9P/iJfVuQt8QDKqr3+eJzmMGgSh1FmiCYzW8i9xnUXDOyv7quOF4u2n2sV2OLD/YY0BVq2xF0eKv9gQfBSMlCj87ZPowI+HLo8Ua5OtYEaJSLwfnvfd0n1OYXCnszcDkb8CAyP0nZsycLqTGdjaHip2AhlL9bEl5wzOMq4wFpXQw5GKRYAa6zh7cy7aOLKo/+eXQmbvstuYmra
+X-MS-Exchange-AntiSpam-MessageData: ji2E7PXSTOvlAiPansXfH6gZ0ZlKj5bMhYFQwJfmqOhpdK5W9xRdRuq6D1DL4poBJBXXZOt8LW8rI2BRwa4SuhJH4Mm7Y3r8n73PAAsMe6WxcT4y48chRmmjMIgHLoL9L4vF5OHmCZtEFDVScVxlFKZ1iDLGG0Cevu99wTfVotPQhHBVJWtSj0QpJrKvNlu2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 025fc4dc-c77d-4b89-5a48-08d7bed83052
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2020 18:33:23.2199
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mGF6SEPrH2K/6bIPqLAtyiQjRZ120/F3euIrfDF9xbY0emnlI2LqiK2BKNGj1oYT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2554
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-02_07:2020-03-02,2020-03-02 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ adultscore=0 suspectscore=0 bulkscore=0 impostorscore=0 priorityscore=1501
+ spamscore=0 phishscore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003020121
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 26, 2020 at 08:20:11PM -0700, David Ahern wrote:
-> +
-> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> +		switch (act) {
-> +		case XDP_TX:    /* for Tx path, XDP_TX == XDP_PASS */
-> +			act = XDP_PASS;
-> +			break;
-> +		case XDP_PASS:
-> +			break;
-> +		case XDP_REDIRECT:
-> +			/* fall through */
-> +		default:
-> +			bpf_warn_invalid_xdp_action(act);
-> +			/* fall through */
-> +		case XDP_ABORTED:
-> +			trace_xdp_exception(tun->dev, xdp_prog, act);
-> +			/* fall through */
-> +		case XDP_DROP:
-> +			break;
-> +		}
 
-patch 8 has very similar switch. Can you share the code?
 
-I'm worried that XDP_TX is a silent alias to XDP_PASS.
-What were the reasons to go with this approach?
-imo it's less error prone and extensible to warn on XDP_TX.
-Which will mean that both XDP_TX and XDP_REDICT are not supported for egress atm.
+On 3/2/20 10:25 AM, Andrii Nakryiko wrote:
+> On Mon, Mar 2, 2020 at 8:22 AM Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>>
+>> On 2/29/20 10:24 PM, Andrii Nakryiko wrote:
+>>> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+>>> enum values. This preserves constants values and behavior in expressions, but
+>>> has added advantaged of being captured as part of DWARF and, subsequently, BTF
+>>> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+>>> for BPF applications, as it will not require BPF users to copy/paste various
+>>> flags and constants, which are frequently used with BPF helpers.
+>>>
+>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>>> ---
+>>>    include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
+>>>    include/uapi/linux/bpf_common.h       |  86 ++++----
+>>>    include/uapi/linux/btf.h              |  60 +++---
+>>>    tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
+>>>    tools/include/uapi/linux/bpf_common.h |  86 ++++----
+>>>    tools/include/uapi/linux/btf.h        |  60 +++---
+>>>    6 files changed, 497 insertions(+), 341 deletions(-)
+>>>
+>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>> index 8e98ced0963b..03e08f256bd1 100644
+>>> --- a/include/uapi/linux/bpf.h
+>>> +++ b/include/uapi/linux/bpf.h
+>>> @@ -14,34 +14,36 @@
+>>>    /* Extended instruction set based on top of classic BPF */
+>>>
+>>>    /* instruction classes */
+>>> -#define BPF_JMP32    0x06    /* jmp mode in word width */
+>>> -#define BPF_ALU64    0x07    /* alu mode in double word width */
+>>> +enum {
+>>> +     BPF_JMP32       = 0x06, /* jmp mode in word width */
+>>> +     BPF_ALU64       = 0x07, /* alu mode in double word width */
+>>
+>> Not sure whether we have uapi backward compatibility or not.
+>> One possibility is to add
+>>     #define BPF_ALU64 BPF_ALU64
+>> this way, people uses macros will continue to work.
+> 
+> This is going to be a really ugly solution, though. I wonder if it was
+> ever an expected behavior of UAPI constants to be able to do #ifdef on
+> them.
+> 
+> Do you know any existing application that relies on those constants
+> being #defines?
 
-Patches 8 and 9 cover tun only. I'd like to see egress hook to be implemented
-in at least one physical NIC. Pick any hw. Something that handles real frames.
-Adding this hook to virtual NIC is easy, but it doesn't demonstrate design
-trade-offs one would need to think through by adding egress hook to physical
-nic. That's why I think it's mandatory to have it as part of the patch set.
+I did not have enough experience to work with system level applications.
+But in linux/in.h we have
 
-Patch 11 exposes egress to samples/bpf. It's nice, but without selftests it's
-no go. All new features must be exercised as part of selftests/bpf.
+#if __UAPI_DEF_IN_IPPROTO
+/* Standard well-defined IP protocols.  */
+enum {
+   IPPROTO_IP = 0,               /* Dummy protocol for TCP               */
+#define IPPROTO_IP              IPPROTO_IP
+   IPPROTO_ICMP = 1,             /* Internet Control Message Protocol    */
+#define IPPROTO_ICMP            IPPROTO_ICMP
+   IPPROTO_IGMP = 2,             /* Internet Group Management Protocol   */
+#define IPPROTO_IGMP            IPPROTO_IGMP
+   IPPROTO_IPIP = 4,             /* IPIP tunnels (older KA9Q tunnels use 
+94) */
+#define IPPROTO_IPIP            IPPROTO_IPIP
+   IPPROTO_TCP = 6,              /* Transmission Control Protocol        */
+#define IPPROTO_TCP             IPPROTO_TCP
+   IPPROTO_EGP = 8,              /* Exterior Gateway Protocol            */
+#define IPPROTO_EGP             IPPROTO_EGP
+   IPPROTO_PUP = 12,             /* PUP protocol                         */
+#define IPPROTO_PUP             IPPROTO_PUP
+   IPPROTO_UDP = 17,             /* User Datagram Protocol               */
+#define IPPROTO_UDP             IPPROTO_UDP
+   IPPROTO_IDP = 22,             /* XNS IDP protocol                     */
+#define IPPROTO_IDP             IPPROTO_IDP
 
-re: patch 3. I agree with Toke and Jesper that union in uapi is unnecessary.
-Just drop it. xdp_md is a virtual data structure. It's not allocated anywhere.
-There is no need to save non-existent memory.
+...
+
+
+> 
+>>
+>> If this is an acceptable solution, we have a lot of constants
+>> in net related headers and will benefit from this conversion for
+>> kprobe/tracepoint of networking related functions.
+>>
+>>>
+>>>    /* ld/ldx fields */
+>>> -#define BPF_DW               0x18    /* double word (64-bit) */
+>>> -#define BPF_XADD     0xc0    /* exclusive add */
+>>> +     BPF_DW          = 0x18, /* double word (64-bit) */
+>>> +     BPF_XADD        = 0xc0, /* exclusive add */
+>>>
+>>>    /* alu/jmp fields */
+>>> -#define BPF_MOV              0xb0    /* mov reg to reg */
+>>> -#define BPF_ARSH     0xc0    /* sign extending arithmetic shift right */
+>>> +     BPF_MOV         = 0xb0, /* mov reg to reg */
+>>> +     BPF_ARSH        = 0xc0, /* sign extending arithmetic shift right */
+>>>
+>>>    /* change endianness of a register */
+>>> -#define BPF_END              0xd0    /* flags for endianness conversion: */
+>>> -#define BPF_TO_LE    0x00    /* convert to little-endian */
+>>> -#define BPF_TO_BE    0x08    /* convert to big-endian */
+>>> -#define BPF_FROM_LE  BPF_TO_LE
+>>> -#define BPF_FROM_BE  BPF_TO_BE
+>>> +     BPF_END         = 0xd0, /* flags for endianness conversion: */
+>>> +     BPF_TO_LE       = 0x00, /* convert to little-endian */
+>>> +     BPF_TO_BE       = 0x08, /* convert to big-endian */
+>>> +     BPF_FROM_LE     = BPF_TO_LE,
+>>> +     BPF_FROM_BE     = BPF_TO_BE,
+>>>
+>>>    /* jmp encodings */
+>>> -#define BPF_JNE              0x50    /* jump != */
+>>> -#define BPF_JLT              0xa0    /* LT is unsigned, '<' */
+>>> -#define BPF_JLE              0xb0    /* LE is unsigned, '<=' */
+>>> -#define BPF_JSGT     0x60    /* SGT is signed '>', GT in x86 */
+>>> -#define BPF_JSGE     0x70    /* SGE is signed '>=', GE in x86 */
+>>> -#define BPF_JSLT     0xc0    /* SLT is signed, '<' */
+>>> -#define BPF_JSLE     0xd0    /* SLE is signed, '<=' */
+>>> -#define BPF_CALL     0x80    /* function call */
+>>> -#define BPF_EXIT     0x90    /* function return */
+>>> +     BPF_JNE         = 0x50, /* jump != */
+>>> +     BPF_JLT         = 0xa0, /* LT is unsigned, '<' */
+>>> +     BPF_JLE         = 0xb0, /* LE is unsigned, '<=' */
+>>> +     BPF_JSGT        = 0x60, /* SGT is signed '>', GT in x86 */
+>>> +     BPF_JSGE        = 0x70, /* SGE is signed '>=', GE in x86 */
+>>> +     BPF_JSLT        = 0xc0, /* SLT is signed, '<' */
+>>> +     BPF_JSLE        = 0xd0, /* SLE is signed, '<=' */
+>>> +     BPF_CALL        = 0x80, /* function call */
+>>> +     BPF_EXIT        = 0x90, /* function return */
+>>> +};
+>>>
+>> [...]
