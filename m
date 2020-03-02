@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F16176425
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:39:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 517A7176441
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgCBTjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 14:39:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55918 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726451AbgCBTjh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 14:39:37 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CA73F24695;
-        Mon,  2 Mar 2020 19:39:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583177976;
-        bh=p837LGQ4Z7jtgjkOxZ8CcvR4b4uce2IevOhbpqNjCww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ahwfZXU67IRudBlAqiIlPl0YBjiTZo4pXlWICAyHe0k1Q94geb+lk2n2V6bnHSTZY
-         UgDkOcIJrC92uXmcTMZmdCq7KJ4oKDWJP8S2qg5jMFW+iyii8funqFXaxr4Dp+T6Er
-         z9lnDmYSIbSv3BJGwmNw60TcBxMIRSPWnl7cU+D8=
-Date:   Mon, 2 Mar 2020 11:39:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 12/12] sched: act: allow user to specify
- type of HW stats for a filter
-Message-ID: <20200302113933.34fa6348@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200301085756.GS26061@nanopsycho>
-References: <20200228172505.14386-1-jiri@resnulli.us>
-        <20200228172505.14386-13-jiri@resnulli.us>
-        <20200228115923.0e4c7baf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200229075209.GM26061@nanopsycho>
-        <20200229121452.5dd4963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200301085756.GS26061@nanopsycho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726695AbgCBTtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 14:49:17 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36382 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgCBTtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 14:49:17 -0500
+Received: by mail-wm1-f66.google.com with SMTP id g83so387069wme.1
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 11:49:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=/v3jzhMdKRSg5ahJijbYJL2JRg/6pSJrzS5jEYW61Z0=;
+        b=Sh9Lv0ceSW/5CSvgPZRNHLKcI6vBv8DbKbO0MGNyUgFv5g5ilThb2Q7IOY9F3syorE
+         oeNGLf03Il7LMusuTuhKaYe4vOC2dCPQBaEFjdey3CRERslkWhQR8U2MAKC8+DJRzsvb
+         KC7r/l+0mey0c24muNq5HInOI5GmQUdc/B9ojVayFT8ypOzXQqgHSegtPgRKFnmOFY2o
+         KpGnf27P9SI6fmE2Dzn9hcF7iJ/+Dpj0dBCl6PtnjukaJ3jJkAEfjzz1XTLMF+lPfWkZ
+         uW2Mc3AxTGxjw0dzeY8u4QwioYkDkM7cvCP/7l0lKWpt3/wEN+JMo+ClDddLbwzd6G3J
+         XyFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/v3jzhMdKRSg5ahJijbYJL2JRg/6pSJrzS5jEYW61Z0=;
+        b=qpA/1ua9IUc1XIKN+CG8UV+qaD6wriPPtSUvb4haVuZMz1MAcvoXTeq9qHzE5YH8Yy
+         l27puJZVgw9i0JHc8SSg4YSaaWqj+umdGzgry2gz992LPncTozAUBJaTGIpmQivhVC5y
+         58qtW749/1P94tGCTI7c2rhD1Hpm2uVhN4IMZ10S6FmfZSznCnOvZ2CXky+oTZDVM/Yl
+         uEzRjGwkHdC2w6NWXZq1pI/w2zlVPSSUx8BBOBv9pBDju+wmTJ521VPmUlxMY6TljqpT
+         V0YpIVH7PYtHk3dSBi2NEmyPTNs+wRiBXONR8+P8zs+CFjGylu1OAai1DtklERtEenS2
+         teqA==
+X-Gm-Message-State: ANhLgQ0G22RXR7B9E0KpD25bcmZ3HISOOgs4l31bqqgLJJYOhF/HLRND
+        9qNXyEoFwLmI0/vspUCnPcfxJq9h
+X-Google-Smtp-Source: ADFU+vvUjsIyIfTPXzHvosttvjUG56xKwsA+EEpMDwEJF8pSX+1BLNHSQdj32RrIcgdh3KWwiFZDIQ==
+X-Received: by 2002:a05:600c:2951:: with SMTP id n17mr47722wmd.97.1583178553683;
+        Mon, 02 Mar 2020 11:49:13 -0800 (PST)
+Received: from localhost.localdomain (dslb-088-073-004-194.088.073.pools.vodafone-ip.de. [88.73.4.194])
+        by smtp.gmail.com with ESMTPSA id c11sm29183735wrp.51.2020.03.02.11.49.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 02 Mar 2020 11:49:13 -0800 (PST)
+From:   Jonas Gorski <jonas.gorski@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] net: phy: bcm63xx: fix OOPS due to missing driver name
+Date:   Mon,  2 Mar 2020 20:46:57 +0100
+Message-Id: <20200302194657.14356-1-jonas.gorski@gmail.com>
+X-Mailer: git-send-email 2.13.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 1 Mar 2020 09:57:56 +0100 Jiri Pirko wrote:
-> >> >On request:
-> >> > - no attr -> any stats allowed but some stats must be provided *
-> >> > - 0       -> no stats requested / disabled
-> >> > - 0x1     -> must be stat type0
-> >> > - 0x6     -> stat type1 or stat type2 are both fine    
-> >> 
-> >> I was thinking about this of course. On the write side, this is ok
-> >> however, this is very tricky on read side. See below.
-> >>   
-> >> >* no attr kinda doesn't work 'cause u32 offload has no stats and this
-> >> >  is action-level now, not flower-level :S What about u32 and matchall?    
-> >> 
-> >> The fact that cls does not implement stats offloading is a lack of
-> >> feature of the particular cls.  
-> >
-> >Yeah, I wonder how that squares with strict netlink parsing.
-> >  
-> >> >We can add a separate attribute with "active" stat types:
-> >> > - no attr -> old kernel
-> >> > - 0       -> no stats are provided / stats disabled
-> >> > - 0x1     -> only stat type0 is used by drivers
-> >> > - 0x6     -> at least one driver is using type1 and one type2    
-> >> 
-> >> There are 2 problems:
-> >> 1) There is a mismatch between write and read. User might pass different
-> >> value than it eventually gets from kernel. I guess this might be fine.  
-> >
-> >Separate attribute would work.
-> >  
-> >> 2) Much bigger problem is, that since the same action may be offloaded
-> >> by multiple drivers, the read would have to provide an array of
-> >> bitfields, each array item would represent one offloaded driver. That is
-> >> why I decided for simple value instead of bitfield which is the same on
-> >> write and read.  
-> >
-> >Why an array? The counter itself is added up from all the drivers.
-> >If the value is a bitfield all drivers can just OR-in their type.  
-> 
-> Yeah, for uapi. Internally the array would be still needed. Also the
-> driver would need to somehow "write-back" the value to the offload
-> caller and someone (caller/tc) would have to use the array to track
-> these bitfields for individual callbacks (probably idr of some sort).
-> I don't know, is this excercise worth it?
+719655a14971 ("net: phy: Replace phy driver features u32 with link_mode
+bitmap") was a bit over-eager and also removed the second phy driver's
+name, resulting in a nasty OOPS on registration:
 
-I was thinking of just doing this on HW stats dump. Drivers which don't
-report stats by definition don't need to set any bit :)
+[    1.319854] CPU 0 Unable to handle kernel paging request at virtual address 00000000, epc == 804dd50c, ra == 804dd4f0
+[    1.330859] Oops[#1]:
+[    1.333138] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.22 #0
+[    1.339217] $ 0   : 00000000 00000001 87ca7f00 805c1874
+[    1.344590] $ 4   : 00000000 00000047 00585000 8701f800
+[    1.349965] $ 8   : 8701f800 804f4a5c 00000003 64726976
+[    1.355341] $12   : 00000001 00000000 00000000 00000114
+[    1.360718] $16   : 87ca7f80 00000000 00000000 80639fe4
+[    1.366093] $20   : 00000002 00000000 806441d0 80b90000
+[    1.371470] $24   : 00000000 00000000
+[    1.376847] $28   : 87c1e000 87c1fda0 80b90000 804dd4f0
+[    1.382224] Hi    : d1c8f8da
+[    1.385180] Lo    : 5518a480
+[    1.388182] epc   : 804dd50c kset_find_obj+0x3c/0x114
+[    1.393345] ra    : 804dd4f0 kset_find_obj+0x20/0x114
+[    1.398530] Status: 10008703 KERNEL EXL IE
+[    1.402833] Cause : 00800008 (ExcCode 02)
+[    1.406952] BadVA : 00000000
+[    1.409913] PrId  : 0002a075 (Broadcom BMIPS4350)
+[    1.414745] Modules linked in:
+[    1.417895] Process swapper/0 (pid: 1, threadinfo=(ptrval), task=(ptrval), tls=00000000)
+[    1.426214] Stack : 87cec000 80630000 80639370 80640658 80640000 80049af4 80639fe4 8063a0d8
+[    1.434816]         8063a0d8 802ef078 00000002 00000000 806441d0 80b90000 8063a0d8 802ef114
+[    1.443417]         87cea0de 87c1fde0 00000000 804de488 87cea000 8063a0d8 8063a0d8 80334e48
+[    1.452018]         80640000 8063984c 80639bf4 00000000 8065de48 00000001 8063a0d8 80334ed0
+[    1.460620]         806441d0 80b90000 80b90000 802ef164 8065dd70 80620000 80b90000 8065de58
+[    1.469222]         ...
+[    1.471734] Call Trace:
+[    1.474255] [<804dd50c>] kset_find_obj+0x3c/0x114
+[    1.479141] [<802ef078>] driver_find+0x1c/0x44
+[    1.483665] [<802ef114>] driver_register+0x74/0x148
+[    1.488719] [<80334e48>] phy_driver_register+0x9c/0xd0
+[    1.493968] [<80334ed0>] phy_drivers_register+0x54/0xe8
+[    1.499345] [<8001061c>] do_one_initcall+0x7c/0x1f4
+[    1.504374] [<80644ed8>] kernel_init_freeable+0x1d4/0x2b4
+[    1.509940] [<804f4e24>] kernel_init+0x10/0xf8
+[    1.514502] [<80018e68>] ret_from_kernel_thread+0x14/0x1c
+[    1.520040] Code: 1060000c  02202025  90650000 <90810000> 24630001  14250004  24840001  14a0fffb  90650000
+[    1.530061]
+[    1.531698] ---[ end trace d52f1717cd29bdc8 ]---
 
-> Seems to me like we are overengineering this one a bit.
+Fix it by readding the name.
 
-That's possible, the reporting could be added later... I mostly wanted
-to have the discussion.
+Fixes: 719655a14971 ("net: phy: Replace phy driver features u32 with link_mode bitmap")
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+---
+ drivers/net/phy/bcm63xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Also there would be no "any" it would be type0|type1|type2 the user
-> would have to pass. If new type appears, the userspace would have to be
-> updated to do "any" again :/ This is inconvenient.
+diff --git a/drivers/net/phy/bcm63xx.c b/drivers/net/phy/bcm63xx.c
+index 23f1958ba6ad..459fb2069c7e 100644
+--- a/drivers/net/phy/bcm63xx.c
++++ b/drivers/net/phy/bcm63xx.c
+@@ -73,6 +73,7 @@ static struct phy_driver bcm63xx_driver[] = {
+ 	/* same phy as above, with just a different OUI */
+ 	.phy_id		= 0x002bdc00,
+ 	.phy_id_mask	= 0xfffffc00,
++	.name		= "Broadcom BCM63XX (2)",
+ 	/* PHY_BASIC_FEATURES */
+ 	.flags		= PHY_IS_INTERNAL,
+ 	.config_init	= bcm63xx_config_init,
+-- 
+2.13.2
 
-In my proposal above I was suggesting no attr to mean any. I think in
-your current code ANY already doesn't include disabled so old user
-space should not see any change.
