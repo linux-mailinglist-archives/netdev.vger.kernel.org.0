@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE3817545A
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 08:20:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65EC817545B
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 08:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgCBHUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 02:20:08 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39590 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbgCBHUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 02:20:08 -0500
-Received: by mail-pl1-f196.google.com with SMTP id g6so3848120plp.6
-        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 23:20:08 -0800 (PST)
+        id S1726951AbgCBHUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 02:20:12 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:45721 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726282AbgCBHUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 02:20:12 -0500
+Received: by mail-pl1-f193.google.com with SMTP id b22so3834326pls.12
+        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 23:20:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EPnD6fv58wTeEGDksH+EAPnHmDlhCjkBzmrenjYCO5s=;
-        b=C2Qrh3Xxz2+lWmDo1AKRZWnm7QaTqPExlI+x1q1cI/QdFeFXM0ik2af0QNEZfTrThm
-         8gUoizqW9NoRNg2dxKIprepgTol31WsXa8DYMW4Q775JJWRgCVQoR5rZvNgE2WJTjRAZ
-         plLCjTvGf/esTwRzkDr5ti+ecTQgiGWVPkt+dtWJEkChNBI+EI2G2cFe95O5k5Rmqe/K
-         DXzm2iPJ39nBK3pWYCICTfOVASXxkzxTCep3AwN9T/2ROoJRDh9sOJettjN79C0BG3N5
-         ZnroRH28Y4KBlTn3dNddTgBbooQWE71J6lSmsQlQQcn0pnUhEnDpTHaO7SjtMJ5lyGtx
-         Io7Q==
+        bh=CKNrkDp7iR8h9inR3+aDpmEppR/ZgUPbIIJYolEmrOs=;
+        b=AX14KWhMPZG20ACfW6HGNQ70UEPjmOLleZtCrzx8YCIQL+3FQL/JTkGzIWoQzgpXPF
+         e/uRMutNXSlUlYbGSmwsQIL6Usx9nLfbZ6ZL9paNC8rss+0esnhQYg9coHOVYGjCqWO5
+         EGZYjbdpNP7MvD55BWBsJw1SXqS2UcmHO5N8tiuiCBTkZjwdnngUYksqyrPHCdr8so5R
+         8L9QXylRz34JaFHOZ7z/Hu2idWsOpBXnhjtQaOFCZPFl2dqrhCGUXh2NGsIuCA9CYf2a
+         oh5bRflxy+S6BovR/5xOYJYcY+chqCCtC5eh+Z2XolM0wtWz9HW08/i5nImzLvTO44pH
+         mQrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=EPnD6fv58wTeEGDksH+EAPnHmDlhCjkBzmrenjYCO5s=;
-        b=LGs9prYdTy4uLRNcj7HyrvPJIt1DeiYePmfxjARdteTRE/WtYDvGzzK8zzj8CfLZSf
-         AKBXK79lLVtp0LID9h8dPyw/EmBLsML5UfEOHkxx0l7F2GKWFgNqTugVrxN0uG+t95sh
-         1w1NGFWSO8WElUEdqyFsaoFKwoKRMsD210GGeFSVNATDcs3sFpfsgtwvmalRPrvie/5W
-         TFk/diTW3fATKAG1AgjkW/8nrVDGNGCYfwcsspEmxxe4WQTJSguH7/98WYSV+2RZnhzg
-         7qa5JlQd9XbfQIc9kd+XxCbQPffjbkJIlD2AQ/4gxARNfkZEbknQxNoxXyY5akeLIMvJ
-         S9LA==
-X-Gm-Message-State: APjAAAXqSevM8oWEK3+pzrQkVmaf4mXQaHPyi39M/yaCZu/ilRxF4VvV
-        UFoE7Q5LOPMj4vAFYBVB2tceC9zpAng=
-X-Google-Smtp-Source: APXvYqzXP6m4gExq0aMrQJf47ZUBjE2IGetp4/sU7VACFCBMC6dkBU7JSk5B0mvSFGZe8lNHfYGNXA==
-X-Received: by 2002:a17:90a:f316:: with SMTP id ca22mr19994945pjb.59.1583133607085;
-        Sun, 01 Mar 2020 23:20:07 -0800 (PST)
+        bh=CKNrkDp7iR8h9inR3+aDpmEppR/ZgUPbIIJYolEmrOs=;
+        b=jWC+JsI2fAIcwHLuhCzjcwRE8DcfqSG/t54V38urC96UgOq/P2oMbBXpwdUmNI4o55
+         +nbEkRdbB89BEKfHroMsAgl62hg3WZGAm8EnOshWddM2oboQ0dykz1AytUt4jcX1n2+j
+         emeoEBZOHebB/uQXKgMW1qtvE+291DhqYdP3AHLXL/NEptu+QVqLliE9EQlgKZC9I3ve
+         h1gcB3hPJlmwqHQJLZnW2CPrDBicB7bdr/+6IY6I71dRWixyy4rZk05iFDiVWgm1FY2v
+         2dilP+t2MwN5USWjpGwKDBe5Ea2yTxqiVp0JufYZTi5KtZGS9tBPt/XC/3XNK4ic6KJK
+         uLSg==
+X-Gm-Message-State: APjAAAXY1s7JnoK57FBv/J5nZvW4tOpf2n0Ir1IKHzNmY355TA3LERtC
+        69OnMzNARLRoCMEumocRHW5qsbRuARk=
+X-Google-Smtp-Source: APXvYqyCAfZN2PtJqlngzyCuD+PFS3XKjFmmkiSwJ4pwHivvNcYWhI4gwyxd1yIqyyIWDwclMIeLzQ==
+X-Received: by 2002:a17:902:bf4b:: with SMTP id u11mr16493256pls.324.1583133610502;
+        Sun, 01 Mar 2020 23:20:10 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id j4sm19835042pfh.152.2020.03.01.23.20.04
+        by smtp.googlemail.com with ESMTPSA id j4sm19835042pfh.152.2020.03.01.23.20.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 01 Mar 2020 23:20:06 -0800 (PST)
+        Sun, 01 Mar 2020 23:20:09 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, Geetha sowjanya <gakula@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 2/7] octeontx2-af: Pause frame configuration at cgx
-Date:   Mon,  2 Mar 2020 12:49:23 +0530
-Message-Id: <1583133568-5674-3-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH 3/7] octeontx2-pf: Support to enable/disable pause frames via ethtool
+Date:   Mon,  2 Mar 2020 12:49:24 +0530
+Message-Id: <1583133568-5674-4-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1583133568-5674-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1583133568-5674-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -60,269 +60,275 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geetha sowjanya <gakula@marvell.com>
 
-CGX LMAC, the physical interface can generate pause frames when
-internal resources asserts backpressure due to exhaustion.
+Added mailbox requests to retrieve backpressure IDs from AF and Aura,
+CQ contexts are configured with these BPIDs. So that when resource
+levels reach configured thresholds they assert backpressure on the
+interface which is also mapped to same BPID.
 
-This patch configures CGX to generate 802.3 pause frames.
-Also enabled processing of received pause frames on the line which
-will assert backpressure on the internal transmit path.
-
-Also added mailbox handlers for PF drivers to enable or disable
-pause frames anytime.
+Also added support to enable/disable pause frames generation via ethtool.
 
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 103 +++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  14 +++
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  11 +++
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  24 +++++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   5 +
- 5 files changed, 157 insertions(+)
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 65 ++++++++++++++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  7 +++
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 41 ++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 12 ++++
+ 4 files changed, 125 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 9f5b722..fb1971c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -367,6 +367,107 @@ int cgx_lmac_tx_enable(void *cgxd, int lmac_id, bool enable)
- 	return !!(last & DATA_PKT_TX_EN);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index b945bd3..af4437d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -220,6 +220,25 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ 	return err;
  }
  
-+int cgx_lmac_get_pause_frm(void *cgxd, int lmac_id,
-+			   u8 *tx_pause, u8 *rx_pause)
++int otx2_config_pause_frm(struct otx2_nic *pfvf)
 +{
-+	struct cgx *cgx = cgxd;
-+	u64 cfg;
++	struct cgx_pause_frm_cfg *req;
++	int err;
 +
-+	if (!cgx || lmac_id >= cgx->lmac_count)
-+		return -ENODEV;
++	otx2_mbox_lock(&pfvf->mbox);
++	req = otx2_mbox_alloc_msg_cgx_cfg_pause_frm(&pfvf->mbox);
++	if (!req)
++		return -ENOMEM;
 +
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+	*rx_pause = !!(cfg & CGX_SMUX_RX_FRM_CTL_CTL_BCK);
++	req->rx_pause = !!(pfvf->flags & OTX2_FLAG_RX_PAUSE_ENABLED);
++	req->tx_pause = !!(pfvf->flags & OTX2_FLAG_TX_PAUSE_ENABLED);
++	req->set = 1;
 +
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
-+	*tx_pause = !!(cfg & CGX_SMUX_TX_CTL_L2P_BP_CONV);
-+	return 0;
++	err = otx2_sync_mbox_msg(&pfvf->mbox);
++	otx2_mbox_unlock(&pfvf->mbox);
++	return err;
 +}
 +
-+int cgx_lmac_set_pause_frm(void *cgxd, int lmac_id,
-+			   u8 tx_pause, u8 rx_pause)
-+{
-+	struct cgx *cgx = cgxd;
-+	u64 cfg;
-+
-+	if (!cgx || lmac_id >= cgx->lmac_count)
-+		return -ENODEV;
-+
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+	cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
-+	cfg |= rx_pause ? CGX_SMUX_RX_FRM_CTL_CTL_BCK : 0x0;
-+	cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
-+
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
-+	cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
-+	cfg |= tx_pause ? CGX_SMUX_TX_CTL_L2P_BP_CONV : 0x0;
-+	cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
-+
-+	cfg = cgx_read(cgx, 0, CGXX_CMR_RX_OVR_BP);
-+	if (tx_pause) {
-+		cfg &= ~CGX_CMR_RX_OVR_BP_EN(lmac_id);
-+	} else {
-+		cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
-+		cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
-+	}
-+	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
-+	return 0;
-+}
-+
-+static void cgx_lmac_pause_frm_config(struct cgx *cgx, int lmac_id, bool enable)
-+{
-+	u64 cfg;
-+
-+	if (!cgx || lmac_id >= cgx->lmac_count)
-+		return;
-+	if (enable) {
-+		/* Enable receive pause frames */
-+		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+		cfg |= CGX_SMUX_RX_FRM_CTL_CTL_BCK;
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
-+
-+		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
-+		cfg |= CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
-+		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
-+
-+		/* Enable pause frames transmission */
-+		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
-+		cfg |= CGX_SMUX_TX_CTL_L2P_BP_CONV;
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
-+
-+		/* Set pause time and interval */
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_PAUSE_PKT_TIME,
-+			  DEFAULT_PAUSE_TIME);
-+		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_PAUSE_PKT_INTERVAL);
-+		cfg &= ~0xFFFFULL;
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_PAUSE_PKT_INTERVAL,
-+			  cfg | (DEFAULT_PAUSE_TIME / 2));
-+
-+		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_TX_PAUSE_PKT_TIME,
-+			  DEFAULT_PAUSE_TIME);
-+
-+		cfg = cgx_read(cgx, lmac_id,
-+			       CGXX_GMP_GMI_TX_PAUSE_PKT_INTERVAL);
-+		cfg &= ~0xFFFFULL;
-+		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_TX_PAUSE_PKT_INTERVAL,
-+			  cfg | (DEFAULT_PAUSE_TIME / 2));
-+	} else {
-+		/* ALL pause frames received are completely ignored */
-+		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
-+		cfg &= ~CGX_SMUX_RX_FRM_CTL_CTL_BCK;
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL, cfg);
-+
-+		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
-+		cfg &= ~CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK;
-+		cgx_write(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL, cfg);
-+
-+		/* Disable pause frames transmission */
-+		cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_TX_CTL);
-+		cfg &= ~CGX_SMUX_TX_CTL_L2P_BP_CONV;
-+		cgx_write(cgx, lmac_id, CGXX_SMUX_TX_CTL, cfg);
-+	}
-+}
-+
- /* CGX Firmware interface low level support */
- static int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
+ int otx2_set_flowkey_cfg(struct otx2_nic *pfvf)
  {
-@@ -787,6 +888,7 @@ static int cgx_lmac_init(struct cgx *cgx)
+ 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
+@@ -580,6 +599,7 @@ void otx2_sqb_flush(struct otx2_nic *pfvf)
+  * RED accepts pkts if free pointers > 102 & <= 205.
+  * Drops pkts if free pointers < 102.
+  */
++#define RQ_BP_LVL_AURA   (255 - ((85 * 256) / 100)) /* BP when 85% is full */
+ #define RQ_PASS_LVL_AURA (255 - ((95 * 256) / 100)) /* RED when 95% is full */
+ #define RQ_DROP_LVL_AURA (255 - ((99 * 256) / 100)) /* Drop when 99% is full */
  
- 		/* Add reference */
- 		cgx->lmac_idmap[i] = lmac;
-+		cgx_lmac_pause_frm_config(cgx, i, true);
+@@ -741,6 +761,13 @@ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+ 	if (qidx < pfvf->hw.rx_queues) {
+ 		aq->cq.drop = RQ_DROP_LVL_CQ(pfvf->hw.rq_skid, cq->cqe_cnt);
+ 		aq->cq.drop_ena = 1;
++
++		/* Enable receive CQ backpressure */
++		aq->cq.bp_ena = 1;
++		aq->cq.bpid = pfvf->bpid[0];
++
++		/* Set backpressure level is same as cq pass level */
++		aq->cq.bp = RQ_PASS_LVL_CQ(pfvf->hw.rq_skid, qset->rqe_cnt);
  	}
  
- 	return cgx_lmac_verify_fwi_version(cgx);
-@@ -805,6 +907,7 @@ static int cgx_lmac_exit(struct cgx *cgx)
+ 	/* Fill AQ info */
+@@ -996,6 +1023,14 @@ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
+ 	aq->aura.fc_addr = pool->fc_addr->iova;
+ 	aq->aura.fc_hyst_bits = 0; /* Store count on all updates */
  
- 	/* Free all lmac related resources */
- 	for (i = 0; i < cgx->lmac_count; i++) {
-+		cgx_lmac_pause_frm_config(cgx, i, false);
- 		lmac = cgx->lmac_idmap[i];
- 		if (!lmac)
- 			continue;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-index 9343bf3..115f5ec 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-@@ -60,10 +60,20 @@
- #define CGX_SMUX_RX_FRM_CTL_CTL_BCK	BIT_ULL(3)
- #define CGXX_GMP_GMI_RXX_FRM_CTL	0x38028
- #define CGX_GMP_GMI_RXX_FRM_CTL_CTL_BCK	BIT_ULL(3)
-+#define CGXX_SMUX_TX_CTL		0x20178
-+#define CGXX_SMUX_TX_PAUSE_PKT_TIME	0x20110
-+#define CGXX_SMUX_TX_PAUSE_PKT_INTERVAL	0x20120
-+#define CGXX_GMP_GMI_TX_PAUSE_PKT_TIME	0x38230
-+#define CGXX_GMP_GMI_TX_PAUSE_PKT_INTERVAL	0x38248
-+#define CGX_SMUX_TX_CTL_L2P_BP_CONV	BIT_ULL(7)
-+#define CGXX_CMR_RX_OVR_BP		0x130
-+#define CGX_CMR_RX_OVR_BP_EN(X)		BIT_ULL(((X) + 8))
-+#define CGX_CMR_RX_OVR_BP_BP(X)		BIT_ULL(((X) + 4))
- 
- #define CGX_COMMAND_REG			CGXX_SCRATCH1_REG
- #define CGX_EVENT_REG			CGXX_SCRATCH0_REG
- #define CGX_CMD_TIMEOUT			2200 /* msecs */
-+#define DEFAULT_PAUSE_TIME		0x7FF
- 
- #define CGX_NVEC			37
- #define CGX_LMAC_FWI			0
-@@ -124,5 +134,9 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable);
- int cgx_get_link_info(void *cgxd, int lmac_id,
- 		      struct cgx_link_user_info *linfo);
- int cgx_lmac_linkup_start(void *cgxd);
-+int cgx_lmac_get_pause_frm(void *cgxd, int lmac_id,
-+			   u8 *tx_pause, u8 *rx_pause);
-+int cgx_lmac_set_pause_frm(void *cgxd, int lmac_id,
-+			   u8 tx_pause, u8 rx_pause);
- int cgx_get_mkex_prfl_info(u64 *addr, u64 *size);
- #endif /* CGX_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index a6ae7d9..b2a6bee 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -143,6 +143,8 @@ M(CGX_STOP_LINKEVENTS,	0x208, cgx_stop_linkevents, msg_req, msg_rsp)	\
- M(CGX_GET_LINKINFO,	0x209, cgx_get_linkinfo, msg_req, cgx_link_info_msg) \
- M(CGX_INTLBK_ENABLE,	0x20A, cgx_intlbk_enable, msg_req, msg_rsp)	\
- M(CGX_INTLBK_DISABLE,	0x20B, cgx_intlbk_disable, msg_req, msg_rsp)	\
-+M(CGX_CFG_PAUSE_FRM,	0x20E, cgx_cfg_pause_frm, cgx_pause_frm_cfg,	\
-+			       cgx_pause_frm_cfg)			\
- /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
- M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
- 				npa_lf_alloc_req, npa_lf_alloc_rsp)	\
-@@ -345,6 +347,15 @@ struct cgx_link_info_msg {
- 	struct cgx_link_user_info link_info;
- };
- 
-+struct cgx_pause_frm_cfg {
-+	struct mbox_msghdr hdr;
-+	u8 set;
-+	/* set = 1 if the request is to config pause frames */
-+	/* set = 0 if the request is to fetch pause frames config */
-+	u8 rx_pause;
-+	u8 tx_pause;
-+};
++	/* Enable backpressure for RQ aura */
++	if (aura_id < pfvf->hw.rqpool_cnt) {
++		aq->aura.bp_ena = 0;
++		aq->aura.nix0_bpid = pfvf->bpid[0];
++		/* Set backpressure level for RQ's Aura */
++		aq->aura.bp = RQ_BP_LVL_AURA;
++	}
 +
- /* NPA mbox message formats */
- 
- /* NPA mailbox error codes
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index b8e8f33..f3c82e4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -590,6 +590,30 @@ int rvu_mbox_handler_cgx_intlbk_disable(struct rvu *rvu, struct msg_req *req,
- 	return 0;
+ 	/* Fill AQ info */
+ 	aq->ctype = NPA_AQ_CTYPE_AURA;
+ 	aq->op = NPA_AQ_INSTOP_INIT;
+@@ -1307,6 +1342,25 @@ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa)
+ 	otx2_mbox_unlock(mbox);
  }
  
-+int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
-+				       struct cgx_pause_frm_cfg *req,
-+				       struct cgx_pause_frm_cfg *rsp)
++int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable)
 +{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	u8 cgx_id, lmac_id;
++	struct nix_bp_cfg_req *req;
 +
-+	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
-+	 * if received from other PF/VF simply ACK, nothing to do.
-+	 */
-+	if (!is_pf_cgxmapped(rvu, pf))
-+		return -ENODEV;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+
-+	if (req->set)
-+		cgx_lmac_set_pause_frm(rvu_cgx_pdata(cgx_id, rvu), lmac_id,
-+				       req->tx_pause, req->rx_pause);
++	if (enable)
++		req = otx2_mbox_alloc_msg_nix_bp_enable(&pfvf->mbox);
 +	else
-+		cgx_lmac_get_pause_frm(rvu_cgx_pdata(cgx_id, rvu), lmac_id,
-+				       &rsp->tx_pause, &rsp->rx_pause);
-+	return 0;
++		req = otx2_mbox_alloc_msg_nix_bp_disable(&pfvf->mbox);
++
++	if (!req)
++		return -ENOMEM;
++
++	req->chan_base = 0;
++	req->chan_cnt = 1;
++	req->bpid_per_chan = 0;
++
++	return otx2_sync_mbox_msg(&pfvf->mbox);
 +}
 +
- /* Finds cumulative status of NIX rx/tx counters from LF of a PF and those
-  * from its VFs as well. ie. NIX rx/tx counters at the CGX port level
-  */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 8c3ff63..80b1e39 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -213,6 +213,11 @@ static int nix_interface_init(struct rvu *rvu, u16 pcifunc, int type, int nixlf)
- 		pfvf->tx_chan_cnt = 1;
- 		cgx_set_pkind(rvu_cgx_pdata(cgx_id, rvu), lmac_id, pkind);
- 		rvu_npc_set_pkind(rvu, pkind, pfvf);
+ /* Mbox message handlers */
+ void mbox_handler_cgx_stats(struct otx2_nic *pfvf,
+ 			    struct cgx_stats_rsp *rsp)
+@@ -1355,6 +1409,17 @@ void mbox_handler_msix_offset(struct otx2_nic *pfvf,
+ 	pfvf->hw.nix_msixoff = rsp->nix_msixoff;
+ }
+ 
++void mbox_handler_nix_bp_enable(struct otx2_nic *pfvf,
++				struct nix_bp_cfg_rsp *rsp)
++{
++	int chan, chan_id;
 +
-+		/* By default we enable pause frames */
-+		if ((pcifunc & RVU_PFVF_FUNC_MASK) == 0)
-+			cgx_lmac_set_pause_frm(rvu_cgx_pdata(cgx_id, rvu),
-+					       lmac_id, true, true);
++	for (chan = 0; chan < rsp->chan_cnt; chan++) {
++		chan_id = ((rsp->chan_bpid[chan] >> 10) & 0x7F);
++		pfvf->bpid[chan_id] = rsp->chan_bpid[chan] & 0x3FF;
++	}
++}
++
+ void otx2_free_cints(struct otx2_nic *pfvf, int n)
+ {
+ 	struct otx2_qset *qset = &pfvf->qset;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 320f3b7..885c3dc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -204,6 +204,8 @@ struct otx2_nic {
+ 	u16			rbsize; /* Receive buffer size */
+ 
+ #define OTX2_FLAG_INTF_DOWN			BIT_ULL(2)
++#define OTX2_FLAG_RX_PAUSE_ENABLED		BIT_ULL(9)
++#define OTX2_FLAG_TX_PAUSE_ENABLED		BIT_ULL(10)
+ 	u64			flags;
+ 
+ 	struct otx2_qset	qset;
+@@ -216,6 +218,7 @@ struct otx2_nic {
+ 	struct workqueue_struct *mbox_wq;
+ 
+ 	u16			pcifunc; /* RVU PF_FUNC */
++	u16			bpid[NIX_MAX_BPID_CHAN];
+ 	struct cgx_link_user_info linfo;
+ 
+ 	u64			reset_count;
+@@ -558,6 +561,7 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu);
+ void otx2_tx_timeout(struct net_device *netdev, unsigned int txq);
+ void otx2_get_mac_from_af(struct net_device *netdev);
+ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx);
++int otx2_config_pause_frm(struct otx2_nic *pfvf);
+ 
+ /* RVU block related APIs */
+ int otx2_attach_npa_nix(struct otx2_nic *pfvf);
+@@ -578,6 +582,7 @@ dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+ 			   gfp_t gfp);
+ int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
+ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
++int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
+ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+ 
+@@ -598,6 +603,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
+ 				  struct nix_txsch_alloc_rsp *rsp);
+ void mbox_handler_cgx_stats(struct otx2_nic *pfvf,
+ 			    struct cgx_stats_rsp *rsp);
++void mbox_handler_nix_bp_enable(struct otx2_nic *pfvf,
++				struct nix_bp_cfg_rsp *rsp);
+ 
+ /* Device stats APIs */
+ void otx2_get_dev_stats(struct otx2_nic *pfvf);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index 60fcf82..f450111 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -253,6 +253,45 @@ static int otx2_set_channels(struct net_device *dev,
+ 	return err;
+ }
+ 
++static void otx2_get_pauseparam(struct net_device *netdev,
++				struct ethtool_pauseparam *pause)
++{
++	struct otx2_nic *pfvf = netdev_priv(netdev);
++	struct cgx_pause_frm_cfg *req, *rsp;
++
++	req = otx2_mbox_alloc_msg_cgx_cfg_pause_frm(&pfvf->mbox);
++	if (!req)
++		return;
++
++	if (!otx2_sync_mbox_msg(&pfvf->mbox)) {
++		rsp = (struct cgx_pause_frm_cfg *)
++		       otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
++		pause->rx_pause = rsp->rx_pause;
++		pause->tx_pause = rsp->tx_pause;
++	}
++}
++
++static int otx2_set_pauseparam(struct net_device *netdev,
++			       struct ethtool_pauseparam *pause)
++{
++	struct otx2_nic *pfvf = netdev_priv(netdev);
++
++	if (pause->autoneg)
++		return -EOPNOTSUPP;
++
++	if (pause->rx_pause)
++		pfvf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
++	else
++		pfvf->flags &= ~OTX2_FLAG_RX_PAUSE_ENABLED;
++
++	if (pause->tx_pause)
++		pfvf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
++	else
++		pfvf->flags &= ~OTX2_FLAG_TX_PAUSE_ENABLED;
++
++	return otx2_config_pause_frm(pfvf);
++}
++
+ static void otx2_get_ringparam(struct net_device *netdev,
+ 			       struct ethtool_ringparam *ring)
+ {
+@@ -654,6 +693,8 @@ static const struct ethtool_ops otx2_ethtool_ops = {
+ 	.set_rxfh		= otx2_set_rxfh,
+ 	.get_msglevel		= otx2_get_msglevel,
+ 	.set_msglevel		= otx2_set_msglevel,
++	.get_pauseparam		= otx2_get_pauseparam,
++	.set_pauseparam		= otx2_set_pauseparam,
+ };
+ 
+ void otx2_set_ethtool_ops(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 85f9b9b..22f9a32 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -148,6 +148,9 @@ static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
+ 		mbox_handler_nix_txsch_alloc(pf,
+ 					     (struct nix_txsch_alloc_rsp *)msg);
  		break;
- 	case NIX_INTF_TYPE_LBK:
- 		vf = (pcifunc & RVU_PFVF_FUNC_MASK) - 1;
++	case MBOX_MSG_NIX_BP_ENABLE:
++		mbox_handler_nix_bp_enable(pf, (struct nix_bp_cfg_rsp *)msg);
++		break;
+ 	case MBOX_MSG_CGX_STATS:
+ 		mbox_handler_cgx_stats(pf, (struct cgx_stats_rsp *)msg);
+ 		break;
+@@ -654,6 +657,9 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ 	if (err)
+ 		goto err_free_npa_lf;
+ 
++	/* Enable backpressure */
++	otx2_nix_config_bp(pf, true);
++
+ 	/* Init Auras and pools used by NIX RQ, for free buffer ptrs */
+ 	err = otx2_rq_aura_pool_init(pf);
+ 	if (err) {
+@@ -737,6 +743,12 @@ static void otx2_free_hw_resources(struct otx2_nic *pf)
+ 	if (err)
+ 		dev_err(pf->dev, "RVUPF: Failed to stop/free TX schedulers\n");
+ 
++	otx2_mbox_lock(mbox);
++	/* Disable backpressure */
++	if (!(pf->pcifunc & RVU_PFVF_FUNC_MASK))
++		otx2_nix_config_bp(pf, false);
++	otx2_mbox_unlock(mbox);
++
+ 	/* Disable RQs */
+ 	otx2_ctx_disable(mbox, NIX_AQ_CTYPE_RQ, false);
+ 
 -- 
 2.7.4
 
