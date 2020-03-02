@@ -2,204 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E734175F72
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 17:22:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E2B175F92
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 17:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727194AbgCBQWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 11:22:30 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26998 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726831AbgCBQWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 11:22:30 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 022G9YuO001154;
-        Mon, 2 Mar 2020 08:22:17 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
- b=mbRCWjEha6ze09BWnv41OpS7HCTaZ232tEFRd5LbuRujWuLBfn9ZQkRuf3C8BvCuVlBl
- B7ODS1P+5f/HSt63rF93SN3qqTsGitaPDkM1byK43fEAB8/G/S/z0+lZy04zGvBnkaNo
- 8XIR+FmKAtX6SteBTZaCc3IPLt43IAaRqng= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yfpnqrd66-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 02 Mar 2020 08:22:17 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 2 Mar 2020 08:22:16 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JJE/4jMdWKeRBsjHEM5SjPAjTKG3TGHc0xhc5IIU7UVTj37sT60juRrYCxdARRtmHb8oaf+mPRzrHlhtUc4kewBD1hGEYNXaZiFZBkv152WMECPDW3T6BnbyKxbBGodQqzzqErfdkRVBbUPLy6FEKl2q1mS7LMsoE4jslfo8xuPNKZfJj5ocmDZw11MbCwJB4a0Bn8GxuTsgG0hjwBhqry8NVhIfdxHf8vNQc2duzAcsuOqW+9k+UmOK3N6xVXVJWWc54+QV/Wd33zVa7rH+bcppiGn6FaloKvIxWH+zCplFn6Srow5lt/r4XV9WiqkVjzWe7AgIT79WBG1pcCawVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
- b=nHNvNbHEMRYK3UlGb436OJpV43sJsp4ORM6PWkxoiO3aYkqyCLS95qLwwMceV/DktO/zZb567MDvCIgyOr7ObkoLduZYX9MfhASSEbuIwzn1cTKrYh9C3xXNm877kYbkMwV4RV0qKXP3OKZl/2tSYp6flxUAUnTQCIxyb6k4+JShV/1EgG2+YY0fanIwQVF7+j2d9IvNpK4qOuTrzYiHZwLA30vwz2iBVDm81eXCqGVB5uwIEGvm9748vymOYsYoKfcrgPJ96GDGm7Qy2KOg7sG8DsksjopOd703/X+fwnRFKpcdmMGb0/4mtkbyzU23HxR9NMeaEVBzbZ9pk2OXjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z7kxYs7WGJvlHdOpmZwOPGPJWdSTO1HGf4CTNmPAuAs=;
- b=TgeI/CrCPR0/dC+9RBV+PPkAQTFlx3BHJZ8W96cN2lrBm/frwH/cgYdyk2bKpMLhd+CeYlv2MzwclBrpFAgZrbUikkk4KCpJI9UzWcg1sVGuO6zg5RM+iwLsLBx4Vu4CeuPutJrHGV3te4GbypNhbayzpyZ7V9HLzvLnM0aZzII=
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com (2603:10b6:5:13c::16)
- by DM6PR15MB3338.namprd15.prod.outlook.com (2603:10b6:5:168::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.18; Mon, 2 Mar
- 2020 16:22:15 +0000
-Received: from DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
- ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2772.019; Mon, 2 Mar 2020
- 16:22:14 +0000
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants to
- enums
-To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>
-References: <20200301062405.2850114-1-andriin@fb.com>
- <20200301062405.2850114-2-andriin@fb.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <b57cdf6d-0849-2d54-982e-352886f86201@fb.com>
-Date:   Mon, 2 Mar 2020 08:22:11 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
-In-Reply-To: <20200301062405.2850114-2-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR11CA0003.namprd11.prod.outlook.com
- (2603:10b6:301:1::13) To DM6PR15MB3001.namprd15.prod.outlook.com
- (2603:10b6:5:13c::16)
+        id S1727093AbgCBQ2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 11:28:03 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36920 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726831AbgCBQ2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 11:28:02 -0500
+Received: by mail-wr1-f67.google.com with SMTP id q8so495899wrm.4
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 08:28:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uNu7eEit1yf3M2N9Tj6w1CyhzehwyypTd8FthDbQqQE=;
+        b=WSaCz+FZ6OmLg3Ps65oQvX3SfW9CyzmjpB4PwUlAtbkYeplS1tRMtNPOdwVWZUiiAj
+         te0d7OWUbiR+Th9bufRM/xDYpTYLrmf0HePTB7IEnv/Twe/bMuC0aiMRK/+qPoeHdd1/
+         OdPN+IqAfCRvkN0/B6Qk+gzYAKq03f9/J759oxz3nfzhFShKBlYRddV9kuyShu9/ZgXL
+         ZktUxnx1zoJa6s83Bx9cVHNmF3hIhp0ROYJ210HUmRnqdIYAAHc3UUGmXI5b6WJTdSSA
+         Vsf6xUJYDIpfewjBrzr0nsUvg/VD4Mh9V6voe/GYm1Gol1y5unBriamF5EeEmqnRSbm5
+         qyLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uNu7eEit1yf3M2N9Tj6w1CyhzehwyypTd8FthDbQqQE=;
+        b=HXJNbAYVt5f5pZfFSoZq6gIKXCaWo6l4Fczi6PmqHKyWvwq5IrJlFnFiswCR/Mzyyk
+         yV8Nh6vunMoOyElXupmbYBLLYPw0QRzdQ0vJuUyRunnNpeZXqO1WqfaIY+8Dejxw0hqt
+         FDaR/VUO9HVYamdKKeeK3JbrsSyrMXQJdjXorEOfg9gT6LEI03r6EM0myZ3IJTN2mUjl
+         4Y5FtMdgBdp5JB8aNrp+QYQj4Hv8GpQ71pd73MeTQ71Me5dC1L6Omn8iSZ2OXmAAMsZs
+         7csmdC80nfiKqEw3R/oCPiwtXcy8VYl/PpWP2GAZ1KUhc0btyN74ghRXgq4CiX09GNoL
+         hK0A==
+X-Gm-Message-State: ANhLgQ3QxeiEgZ9W1PHEejX9L/zVaMyIJRQJJG4+jd2oNOHb0MXhjHma
+        PJiswfQrGNvA3tt5NK4yGME1fg==
+X-Google-Smtp-Source: ADFU+vvYMdCCpiyUyYHOS1PTatH1OwBVv9tx17RsHgbatuyhgXSeUVtOGYQaPeFKZty6SwMiDHMrPg==
+X-Received: by 2002:a5d:69cb:: with SMTP id s11mr362684wrw.47.1583166480378;
+        Mon, 02 Mar 2020 08:28:00 -0800 (PST)
+Received: from localhost (78-136-133-133.client.nordic.tel. [78.136.133.133])
+        by smtp.gmail.com with ESMTPSA id f16sm19666134wrx.25.2020.03.02.08.27.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2020 08:27:59 -0800 (PST)
+Date:   Mon, 2 Mar 2020 17:27:58 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org
+Subject: Re: [RFC PATCH v2 00/22] devlink region updates
+Message-ID: <20200302162758.GA2168@nanopsycho>
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:500::6:87b3) by MWHPR11CA0003.namprd11.prod.outlook.com (2603:10b6:301:1::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14 via Frontend Transport; Mon, 2 Mar 2020 16:22:13 +0000
-X-Originating-IP: [2620:10d:c090:500::6:87b3]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d94c60d1-cc0b-4a7c-50a8-08d7bec5de24
-X-MS-TrafficTypeDiagnostic: DM6PR15MB3338:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR15MB333834EE54BE4330AB05783BD3E70@DM6PR15MB3338.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 033054F29A
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(136003)(346002)(396003)(376002)(366004)(39860400002)(199004)(189003)(36756003)(6486002)(316002)(186003)(16526019)(2616005)(66476007)(4326008)(66556008)(86362001)(81156014)(6512007)(31696002)(81166006)(66946007)(8676002)(2906002)(478600001)(8936002)(52116002)(31686004)(5660300002)(6506007)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3338;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eKY51mVM5D8qf/NevavaTbaQi2xl2kSAcpfxk2wUvCUubQv8UD4E7UV1JuI6w5L5yy8sWM4Gr7juuZ6X/+1Cbi7cH3nnY9j6swTS7MrtXwtpZFFOwAwEQ+FLIBLuqpM7rFoWHsTUSFy8Emq+MBDaANeysFNh/zKVVfGnJv+JMejGhoNP8gv0ntYA1u84EWaBGQHXY1v/lSSCWyQFp3l8fA4SsnsrNWjbDzvC59E2W1n+iSqWzs1JQThD/DmKMA/3IzesaGSoabo+YiK+yBDnRy2L9O9txBxYCGOxH6JJCe/EaGrvlTjJAUEXl12m5hhfpfj78dVN/UG69Vhc1vptuDd+mezLvInsColKgppc35iRiUgHu8c3gjXcUKWsX7RdeYu4vFYn4b5tIgKYM18yAVb0WqWFEDITogkXWVEKjwndQRevvEJw8MS3nfy1MP6+
-X-MS-Exchange-AntiSpam-MessageData: ii/JXAlIlUSM57MS8WggCjQW1iXxxxF+FU2aV3RkI4071RVtx6EgGzPaQsJau7euQAGrMw1+PAUhkC0FLSvraeKOblTw0uGkY/rSeu5eOIeIK9GnTiDKm7aFFxlYLZwMu+hPGsnBJzjOx8TFQKulumO7jlNdtSwMqgOgg4QDoWyyRSmHIMo9gszltYhcn28r
-X-MS-Exchange-CrossTenant-Network-Message-Id: d94c60d1-cc0b-4a7c-50a8-08d7bec5de24
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2020 16:22:14.3069
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1B2oJ1lUBnugevDv7fWXnGHmgbemz9O1qv3hkKbBXAWe9Xv+K++FRt5QgoZA4YlG
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3338
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-02_06:2020-03-02,2020-03-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 priorityscore=1501 suspectscore=0 spamscore=0
- malwarescore=0 impostorscore=0 mlxlogscore=999 bulkscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003020113
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200214232223.3442651-1-jacob.e.keller@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sat, Feb 15, 2020 at 12:21:59AM CET, jacob.e.keller@intel.com wrote:
+>This is a second revision of the previous RFC series I sent to enable two
+>new devlink region features.
+>
+>The original series can be viewed on the list archives at
+>
+>https://lore.kernel.org/netdev/20200130225913.1671982-1-jacob.e.keller@intel.com/
+>
+>Overall, this series can be broken into 5 phases:
+>
+> 1) implement basic devlink support in the ice driver, including .info_get
+> 2) convert regions to use the new devlink_region_ops structure
+> 3) implement support for DEVLINK_CMD_REGION_NEW
+> 4) implement support for directly reading from a region
+> 5) use these new features in the ice driver for the Shadow RAM region
+
+Hmm. I think it is better to push this in multiple patchsets. For example,
+for 1) you don't really need RFC as it is only related to the ice driver
+implementing the existing API.
 
 
-On 2/29/20 10:24 PM, Andrii Nakryiko wrote:
-> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
-> enum values. This preserves constants values and behavior in expressions, but
-> has added advantaged of being captured as part of DWARF and, subsequently, BTF
-> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
-> for BPF applications, as it will not require BPF users to copy/paste various
-> flags and constants, which are frequently used with BPF helpers.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->   include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
->   include/uapi/linux/bpf_common.h       |  86 ++++----
->   include/uapi/linux/btf.h              |  60 +++---
->   tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
->   tools/include/uapi/linux/bpf_common.h |  86 ++++----
->   tools/include/uapi/linux/btf.h        |  60 +++---
->   6 files changed, 497 insertions(+), 341 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 8e98ced0963b..03e08f256bd1 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -14,34 +14,36 @@
->   /* Extended instruction set based on top of classic BPF */
->   
->   /* instruction classes */
-> -#define BPF_JMP32	0x06	/* jmp mode in word width */
-> -#define BPF_ALU64	0x07	/* alu mode in double word width */
-> +enum {
-> +	BPF_JMP32	= 0x06,	/* jmp mode in word width */
-> +	BPF_ALU64	= 0x07,	/* alu mode in double word width */
+>
+>(1) comprises 6 patches for the ice driver that add the devlink framework
+>and cleanup a few places in the code in preparation for the new region.
+>
+>(2) comprises 2 patches which convert regions to use the new
+>devlink_region_ops structure, and additionally move the snapshot destructor
+>to a region operation.
+>
+>(3) comprises 6 patches to enable supporting the DEVLINK_CMD_REGION_NEW
+>operation. This replaces what was previously the
+>DEVLINK_CMD_REGION_TAKE_SNAPSHOT, as per Jiri's suggestion. The new
+>operation supports specifying the requested id for the snapshot. To make
+>that possible, first snapshot id management is refactored to use an IDR.
+>Note that the extra complexity of the IDR is necessary in order to maintain
+>the ability for the snapshot IDs to be generated so that multiple regions
+>can use the same ID if triggered at the same time.
+>
+>(4) comprises 6 patches for modifying DEVLINK_CMD_REGION_READ so that it
+>accepts a request without a snapshot id. A new region operation is defined
+>for regions to optionally support the requests. The first few patches
+>refactor and simplify the functions used so that adding the new read method
+>reuses logic where possible.
+>
+>(5) finally comprises a single patch to implement a region for the ice
+>device hardware's Shadow RAM contents.
+>
+>Note that I plan to submit the ice patches through the Intel Wired LAN list,
+>but am sending the complete set here as an RFC in case there is further
+>feedback, and so that reviewers can have the correct context.
+>
+>I expect to get further feedback this RFC revision, and will hopefully send
+>the patches as non-RFC following this, if feedback looks good. Thank you for
+>the diligent review.
+>
+>Changes since v1:
 
-Not sure whether we have uapi backward compatibility or not.
-One possibility is to add
-   #define BPF_ALU64 BPF_ALU64
-this way, people uses macros will continue to work.
+Per-patch please. This is no good for review :/
 
-If this is an acceptable solution, we have a lot of constants
-in net related headers and will benefit from this conversion for
-kprobe/tracepoint of networking related functions.
 
->   
->   /* ld/ldx fields */
-> -#define BPF_DW		0x18	/* double word (64-bit) */
-> -#define BPF_XADD	0xc0	/* exclusive add */
-> +	BPF_DW		= 0x18,	/* double word (64-bit) */
-> +	BPF_XADD	= 0xc0,	/* exclusive add */
->   
->   /* alu/jmp fields */
-> -#define BPF_MOV		0xb0	/* mov reg to reg */
-> -#define BPF_ARSH	0xc0	/* sign extending arithmetic shift right */
-> +	BPF_MOV		= 0xb0,	/* mov reg to reg */
-> +	BPF_ARSH	= 0xc0,	/* sign extending arithmetic shift right */
->   
->   /* change endianness of a register */
-> -#define BPF_END		0xd0	/* flags for endianness conversion: */
-> -#define BPF_TO_LE	0x00	/* convert to little-endian */
-> -#define BPF_TO_BE	0x08	/* convert to big-endian */
-> -#define BPF_FROM_LE	BPF_TO_LE
-> -#define BPF_FROM_BE	BPF_TO_BE
-> +	BPF_END		= 0xd0,	/* flags for endianness conversion: */
-> +	BPF_TO_LE	= 0x00,	/* convert to little-endian */
-> +	BPF_TO_BE	= 0x08,	/* convert to big-endian */
-> +	BPF_FROM_LE	= BPF_TO_LE,
-> +	BPF_FROM_BE	= BPF_TO_BE,
->   
->   /* jmp encodings */
-> -#define BPF_JNE		0x50	/* jump != */
-> -#define BPF_JLT		0xa0	/* LT is unsigned, '<' */
-> -#define BPF_JLE		0xb0	/* LE is unsigned, '<=' */
-> -#define BPF_JSGT	0x60	/* SGT is signed '>', GT in x86 */
-> -#define BPF_JSGE	0x70	/* SGE is signed '>=', GE in x86 */
-> -#define BPF_JSLT	0xc0	/* SLT is signed, '<' */
-> -#define BPF_JSLE	0xd0	/* SLE is signed, '<=' */
-> -#define BPF_CALL	0x80	/* function call */
-> -#define BPF_EXIT	0x90	/* function return */
-> +	BPF_JNE		= 0x50,	/* jump != */
-> +	BPF_JLT		= 0xa0,	/* LT is unsigned, '<' */
-> +	BPF_JLE		= 0xb0,	/* LE is unsigned, '<=' */
-> +	BPF_JSGT	= 0x60,	/* SGT is signed '>', GT in x86 */
-> +	BPF_JSGE	= 0x70,	/* SGE is signed '>=', GE in x86 */
-> +	BPF_JSLT	= 0xc0,	/* SLT is signed, '<' */
-> +	BPF_JSLE	= 0xd0,	/* SLE is signed, '<=' */
-> +	BPF_CALL	= 0x80,	/* function call */
-> +	BPF_EXIT	= 0x90,	/* function return */
-> +};
->   
-[...]
+>
+>* reword some comments and variable names in the ice driver that used the
+>  term "page" to use the term "sector" to avoid confusion with the PAGE_SIZE
+>  of the system.
+>* Fixed a bug in the ice_read_flat_nvm function due to misusing the last_cmd
+>  variable
+>* Remove the devlinkm* functions and just use devm_add_action in the ice
+>  driver for managing the devlink memory similar to how the PF memory was
+>  managed by the devm_kzalloc.
+>* Fix typos in a couple of function comments in ice_devlink.c
+>* use dev_err instead of dev_warn for an error case where the main VSI can't
+>  be found.
+>* Only call devlink_port_type_eth_set if the VSI has a netdev
+>* Move where the devlink_port is created in the ice_probe flow
+>* Update the new ice.rst documentation for info versions, providing more
+>  clear descriptions of the parameters. Give examples for each field as
+>  well. Squash the documentation additions into the relevant patches.
+>* Add a new patch to the ice driver which renames some variables referring
+>  to the Option ROM version.
+>* keep the string constants in the mlx4 crdump.c file, converting them to
+>  "const char * const" so that the compiler understands they can be used in
+>  constant initializers.
+>* Add a patch to convert snapshot destructors into a region operation
+>* Add a patch to fix a trivial typo in a devlink function comment
+>* Use __ as a prefix for static internal functions instead of a _locked
+>  suffix.
+>* Refactor snapshot id management to use an IDR.
+>* Implement DEVLINK_CMD_REGION_NEW of DEVLINK_CMD_REGION_TAKE_SNAPSHOT
+>* Add several patches which refactor devlink_nl_cmd_region_snapshot_fill
+>* Use the new cb_ and cb_priv parameters to implement what was previously
+>  a separate function called devlink_nl_cmd_region_direct_fill
+>
+>Jacob Keller (21):
+>  ice: use __le16 types for explicitly Little Endian values
+>  ice: create function to read a section of the NVM and Shadow RAM
+>  ice: enable initial devlink support
+>  ice: rename variables used for Option ROM version
+>  ice: add basic handler for devlink .info_get
+>  ice: add board identifier info to devlink .info_get
+>  devlink: prepare to support region operations
+>  devlink: convert snapshot destructor callback to region op
+>  devlink: trivial: fix tab in function documentation
+>  devlink: add functions to take snapshot while locked
+>  devlink: convert snapshot id getter to return an error
+>  devlink: track snapshot ids using an IDR and refcounts
+>  devlink: implement DEVLINK_CMD_REGION_NEW
+>  netdevsim: support taking immediate snapshot via devlink
+>  devlink: simplify arguments for read_snapshot_fill
+>  devlink: use min_t to calculate data_size
+>  devlink: report extended error message in region_read_dumpit
+>  devlink: remove unnecessary parameter from chunk_fill function
+>  devlink: refactor region_read_snapshot_fill to use a callback function
+>  devlink: support directly reading from region memory
+>  ice: add a devlink region to dump shadow RAM contents
+>
+>Jesse Brandeburg (1):
+>  ice: implement full NVM read from ETHTOOL_GEEPROM
+>
+> .../networking/devlink/devlink-region.rst     |  20 +-
+> Documentation/networking/devlink/ice.rst      |  87 ++++
+> Documentation/networking/devlink/index.rst    |   1 +
+> drivers/net/ethernet/intel/Kconfig            |   1 +
+> drivers/net/ethernet/intel/ice/Makefile       |   1 +
+> drivers/net/ethernet/intel/ice/ice.h          |   6 +
+> .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   3 +
+> drivers/net/ethernet/intel/ice/ice_common.c   |  85 +---
+> drivers/net/ethernet/intel/ice/ice_common.h   |  10 +-
+> drivers/net/ethernet/intel/ice/ice_devlink.c  | 360 ++++++++++++++
+> drivers/net/ethernet/intel/ice/ice_devlink.h  |  17 +
+> drivers/net/ethernet/intel/ice/ice_ethtool.c  |  44 +-
+> drivers/net/ethernet/intel/ice/ice_main.c     |  23 +-
+> drivers/net/ethernet/intel/ice/ice_nvm.c      | 354 +++++++------
+> drivers/net/ethernet/intel/ice/ice_nvm.h      |  12 +
+> drivers/net/ethernet/intel/ice/ice_type.h     |  17 +-
+> drivers/net/ethernet/mellanox/mlx4/crdump.c   |  32 +-
+> drivers/net/netdevsim/dev.c                   |  41 +-
+> include/net/devlink.h                         |  38 +-
+> net/core/devlink.c                            | 465 ++++++++++++++----
+> .../drivers/net/netdevsim/devlink.sh          |  15 +
+> 21 files changed, 1257 insertions(+), 375 deletions(-)
+> create mode 100644 Documentation/networking/devlink/ice.rst
+> create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.c
+> create mode 100644 drivers/net/ethernet/intel/ice/ice_devlink.h
+>
+>-- 
+>2.25.0.368.g28a2d05eebfb
+>
