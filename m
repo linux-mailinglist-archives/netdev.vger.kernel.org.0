@@ -2,75 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F381175607
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 09:33:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58238175612
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 09:37:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbgCBIde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 03:33:34 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39927 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgCBIde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 03:33:34 -0500
-Received: by mail-lj1-f193.google.com with SMTP id o15so10723268ljg.6
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 00:33:32 -0800 (PST)
+        id S1727143AbgCBIhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 03:37:11 -0500
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:45924 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727030AbgCBIhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 03:37:11 -0500
+Received: by mail-wr1-f52.google.com with SMTP id v2so11279728wrp.12
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 00:37:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jj+czksnzcihibM/pJBiF9v6X/Oa3Q1y37ZDoMAoK3o=;
-        b=KA2FPLTuZNTxG20mxJ670x5Q/MkTw3ryqi/YArF+IRLfOztsEKPS06DLOlYST++Wj9
-         XXJ2cA0S1U+mMv7ZYlyuFDuERuA26Jp1mvf7Y9nTgvQHHGsQp5y93Lh4cCfvMLECLvzK
-         3pxLld28nS5OyXbz6rwuLCGHcLdG3OIJW5n9rufMbMdWXwB7ywukNvHX1+OwEA5pzTf5
-         nLaVjcUVyRNNlxwMr+g+XR6oBkbLmSqKGBPwM1eUr6FjWj1HCwUJynABGruQ46nlPbxY
-         eiKiTKA/g7VvG+8GATHTnVprC/YhnJHlqbajXwenVgqtDTnxIRi22TX3kUIE2XLDZ2C8
-         NkSA==
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=fi95Ss0wvAjDSNzPG+vj3mL6BEi90B+Kfu3eCNujXy4=;
+        b=PDiUafwuZpVj52bWiAdwNbFpFzK8926pycEZKmlLWkm+bbRnTgXJ705JRxN8hdY3E3
+         w6oE6aELWEIEqya1HGp5BTbOmXSgU7AcOZb+tyEUDr2FK+xmIqFEolEPriOLFar5VrDr
+         qHYF9vcNPCIOHhYDGClsdBHv1lLQjmDPOu2L0Gs0Ko/h5jQbdTzBfHSXrQB2HqeEYgvk
+         BihghY6wzFTXOSgB/vNJV6vGK+/hyYhf2HatxRIXev6mt/KkvF+JcUzaZm1zlrApvu5V
+         UF/ltF8SiitwUYfRGDlWUTAoaVjwt3Qr3xnrd6yVrq/q+cNSUTEkeSvlh7aX5/rJfdlY
+         ACng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jj+czksnzcihibM/pJBiF9v6X/Oa3Q1y37ZDoMAoK3o=;
-        b=neQ5szjfeWMzp6b/bDWVAfTEK3M90Q3t7+9lHkWvD8rncmy9wTBAhrVe1HHtNUoUFC
-         83sUt1qfHnTz1QYpZQ0if6pNBfw33PNxIuDZjUfHt4anyIR/pM98TOi+WLjGuxpE6k7N
-         UHeAUBynxAKrIRCGFUpl0msjhEqt4E7ZmHI4e62c/qpndZUXiM4Kn5UXuRYJplpY1iyp
-         /aZlWTcC8Po4VLiiIhXvzvaBJbDyVh0Qaid/mCUorCjIS16bADsPnOYVZBh5096KxIRq
-         Q1CD5Z0svx+oXH9ZVPs5ILc67cg8I++LFvIbQSLl6Nox2XyJco6WUMch9RY7rT2rOeRR
-         jdow==
-X-Gm-Message-State: ANhLgQ1uWmDH0SYrxNkwr0XuXg0wVLn23knaTv5uXvb8x1yC3FElyu8O
-        GpU5SWdlshqTdkz0UqfBXtb86TCPohQXZs3cr6b2YSEX
-X-Google-Smtp-Source: ADFU+vvAO7sF6dKvlWn3obeb7QSbc1SMheAH40VPLq5/KZEo7Jd4FUF6JbB7CSybojasouDEtJcwB1bX4ZBlKwmnK8k=
-X-Received: by 2002:a05:651c:2049:: with SMTP id t9mr10756201ljo.39.1583138011527;
- Mon, 02 Mar 2020 00:33:31 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=fi95Ss0wvAjDSNzPG+vj3mL6BEi90B+Kfu3eCNujXy4=;
+        b=j/JZaS/yXcUhKHNqgNXLDol07FBMBiXZtVom1cJbXHsEg+j+MLH9V6cw50h/LlLZir
+         45UX6/ojP72xjhozPBrH8MCIejNBbAl+1LgIXcCVJf4a4vwFpVtAmkuwH1bsZSS5nNKv
+         5gYbhmIO4tGx0CTwC8QeYz1lM4Bt2ON8Ek+0jYFk+g1y1C6uL1Fq7/sQFqXeffKRs+nc
+         h4joeHzE4aIJ05RFNmO2MtaDLKRSFa43kfIrqvBH32mg7GPNM+WZ2HsbhqLHeBmjj5C0
+         XrZ4oY27ZwF586zZOHPcvVeSPNiud8wi4P8+UOPhZUN5tqu0uBgjg/MrprR4BKWsMwI3
+         zxJg==
+X-Gm-Message-State: APjAAAXvB9Y+9Fsu9NWKKg1qydnA/eHSfszNVduuh5Gek9Evnv14jY+9
+        O6igI8LgE3aQdzNyfJZ9tznrgbRWzxQo11XVdCs/Kx2z
+X-Google-Smtp-Source: APXvYqx94zcmmoVRf7pFXmiQi/La462HqpmdTztP8JDap/3mlkBCL/L101dzpdW0m9r3JxH07D4za2isEmjbs5xU2ZM=
+X-Received: by 2002:adf:fa43:: with SMTP id y3mr20719298wrr.404.1583138229144;
+ Mon, 02 Mar 2020 00:37:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20200301144457.119795-1-leon@kernel.org> <20200301144457.119795-13-leon@kernel.org>
-In-Reply-To: <20200301144457.119795-13-leon@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 2 Mar 2020 09:33:20 +0100
-Message-ID: <CACRpkdY+e4ZoOFk_+MnPC_JrcxETWJ+75PUD3Db+=N65S-NRbg@mail.gmail.com>
-Subject: Re: [PATCH net-next 12/23] net/cortina: Delete driver version from
- ethtool output
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 2 Mar 2020 16:38:59 +0800
+Message-ID: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
+Subject: route: an issue caused by local and main table's merge
+To:     network dev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>, davem <davem@davemloft.net>,
+        mmhatre@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 1, 2020 at 3:45 PM Leon Romanovsky <leon@kernel.org> wrote:
+Hi, David A.
 
-> From: Leon Romanovsky <leonro@mellanox.com>
->
-> Use default ethtool version instead of static variant.
->
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Mithil reported an issue, which can be reproduced by:
 
-These are good changes.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+  # ip link  add dummy0 type dummy
+  # ip link  set dummy0 up
+  # ip route add to broadcast 192.168.122.1 dev dummy0 <--- broadcast
+  # ip route add 192.168.122.1 dev dummy0   <--- unicast
+  # ip route add 1.1.1.1 via 192.168.122.1  <--- [A]
+  Error: Nexthop has invalid gateway.
+  # ip rule  add from 2.2.2.2
+  # ip route add 1.1.1.1 via 192.168.122.1  <--- [B]
 
-Yours,
-Linus Walleij
+cmd [A] failed , as in fib_check_nh_v4_gw():
+
+    if (table)
+            tbl = fib_get_table(net, table);
+
+    if (tbl)
+            err = fib_table_lookup_2(tbl, &fl4, &res,
+                                   FIB_LOOKUP_IGNORE_LINKSTATE |
+                                   FIB_LOOKUP_NOREF);
+
+    if (res.type != RTN_UNICAST && res.type != RTN_LOCAL) { <--- [a]
+            NL_SET_ERR_MSG(extack, "Nexthop has invalid gateway");
+            goto out;  <--[a]
+    }
+
+It gets the route for '192.168.122.1' from the merged (main/local)
+table, and the broadcast one returns, and it fails the check [a].
+
+But the same cmd [B] will work after one rule is added, by which
+main table and local table get separated, it gets the route from
+the main table (the same table for this route), and the unicast
+one returns, and it will pass the check [a].
+
+Any idea on how to fix this, and keep it consistent before and
+after a rule added?
+
+Thanks.
