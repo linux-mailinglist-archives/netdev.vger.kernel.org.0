@@ -2,119 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 219A2175E08
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFFDC175E2F
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:29:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbgCBPTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 10:19:38 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:30091 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726831AbgCBPTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 10:19:38 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-163-2vpWhavWNZS5IFghQn5wXA-1; Mon, 02 Mar 2020 15:19:30 +0000
-X-MC-Unique: 2vpWhavWNZS5IFghQn5wXA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 2 Mar 2020 15:19:29 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 2 Mar 2020 15:19:29 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Yadu Kishore' <kyk.segfault@gmail.com>,
-        David Miller <davem@davemloft.net>
-CC:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-Thread-Topic: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-Thread-Index: AQHV8G6boeAUqLyQLkCRyXn9e/JzBKg1V/WQ
-Date:   Mon, 2 Mar 2020 15:19:29 +0000
-Message-ID: <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
-References: <20200228.120150.302053489768447737.davem@davemloft.net>
- <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
- <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
-In-Reply-To: <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727126AbgCBP3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 10:29:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:55388 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726751AbgCBP3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 10:29:44 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 96E2CAFE8;
+        Mon,  2 Mar 2020 15:29:42 +0000 (UTC)
+Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
+To:     Denis Kirjanov <kda@linux-powerpc.org>, netdev@vger.kernel.org
+Cc:     ilias.apalodimas@linaro.org
+References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Message-ID: <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
+Date:   Mon, 2 Mar 2020 16:29:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+In-Reply-To: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogWWFkdSBLaXNob3JlDQo+IFNlbnQ6IDAyIE1hcmNoIDIwMjAgMDg6NDMNCj4gDQo+IE9u
-IE1vbiwgTWFyIDIsIDIwMjAgYXQgMTI6MjIgUE0gWWFkdSBLaXNob3JlIDxreWsuc2VnZmF1bHRA
-Z21haWwuY29tPiB3cm90ZToNCj4gPg0KPiA+ID4gPiBDYW4geW91IGNvbnRyYXN0IHRoaXMgYWdh
-aW5zdCBhIHJ1biB3aXRoIHlvdXIgY2hhbmdlcz8gVGhlIHRob3VnaHQgaXMNCj4gPiA+ID4gdGhh
-dCB0aGUgbWFqb3JpdHkgb2YgdGhpcyBjb3N0IGlzIGR1ZSB0byB0aGUgbWVtb3J5IGxvYWRzIGFu
-ZCBzdG9yZXMsIG5vdA0KPiA+ID4gPiB0aGUgYXJpdGhtZXRpYyBvcHMgdG8gY29tcHV0ZSB0aGUg
-Y2hlY2tzdW0uIFdoZW4gZW5hYmxpbmcgY2hlY2tzdW0NCj4gPiA+ID4gb2ZmbG9hZCwgdGhlIHNh
-bWUgc3RhbGxzIHdpbGwgb2NjdXIsIGJ1dCB3aWxsIHNpbXBseSBiZSBhdHRyaWJ1dGVkIHRvDQo+
-ID4gPiA+IG1lbWNweSBpbnN0ZWFkIG9mIHRvIGRvX2NzdW0uDQo+ID4NCj4gPiA+IEFncmVlZC4N
-Cj4gPg0KPiA+IEJlbG93IGlzIHRoZSBkYXRhIGZyb20gcGVyZiB3aXRoIGFuZCB3aXRob3V0IHRo
-ZSBwYXRjaCBmb3IgdGhlIHNhbWUNCj4gPiBUQ1AgVHggaXBlcmYgcnVuOiAobmV0d29yayBkcml2
-ZXIgaGFzIE5FVElGX0ZfSFdfQ1NVTSBlbmFibGVkKQ0KPiA+DQo+IEEgc21hbGwgY29ycmVjdGlv
-biB0byB0aGUgZGF0YSBJIHNlbnQgZWFybGllcjoNCj4gDQo+IFdpdGhvdXQgcGF0Y2ggOi0NCj4g
-ID09PT09PT09PT09PQ0KPiBbRnVuY3Rpb24gPSAlY3B1IGN5Y2xlc10NCj4gc2tiX21hY19nc29f
-c2VnbWVudCA9IDAuMDUNCj4gaW5ldF9nc29fc2VnbWVudCA9IDAuMjYNCj4gdGNwNF9nc29fc2Vn
-bWVudCA9IDAuMDUNCj4gdGNwX2dzb19zZWdtZW50ID0gMC4xNw0KPiBza2Jfc2VnbWVudCA9IDAu
-NTUNCj4gc2tiX2NvcHlfYW5kX2NzdW1fYml0cyA9IDAuNjANCj4gZG9fY3N1bSA9IDcuNDMNCj4g
-bWVtY3B5ID0gMy44MQ0KPiBfX2FsbG9jX3NrYiA9IDAuOTMNCj4gPT09PT09PT09PT09PT09PT09
-DQo+IFNVTSA9IDEzLjg1DQo+IA0KPiBXaXRoIHBhdGNoIDotDQo+ID09PT09PT09PT09PQ0KPiBb
-RnVuY3Rpb24gPSAlY3B1IGN5Y2xlc10NCj4gc2tiX21hY19nc29fc2VnbWVudCA9IDAuMDUNCj4g
-aW5ldF9nc29fc2VnbWVudCA9IDAuMzQNCj4gdGNwNF9nc29fc2VnbWVudCA9IDAuMDYNCj4gdGNw
-X2dzb19zZWdtZW50ID0gMC4yNg0KPiBza2Jfc2VnbWVudCA9IDAuNTUNCj4gKiogc2tiX2NvcHlf
-Yml0cyA9IDAuNjIgKiogIDwtLSBjb3JyZWN0ZWQNCj4gZG9fY3N1bSA9IDAuMDQNCj4gbWVtY3B5
-ID0gNC4yOQ0KPiBfX2FsbG9jX3NrYiA9IDAuNzMNCj4gPT09PT09PT09PT09PT09PT09DQo+ICoq
-IFNVTSA9IDYuOTQgKiogPC0tIGNvcnJlY3RlZA0KDQpJIHdhcyB3cml0aW5nIGEgcmVwbHkgYWJv
-dXQgaG93ICdob3JyaWQnIHRoZSBhc20gaW4gY3N1bV9wYXJ0aWFsX2NvcHlfZ2VuZXJpYyBpcy4N
-CihNeSBndWVzcyBpcyBubyBiZXR0ZXIgdGhhbiAzIGNsb2NrcyBmb3IgMTYgYnl0ZXMgLSBhbmQg
-YSAncmVwIG1vdnMnIGNvcHkNCmNvdWxkIGJlIGEgbG90IGZhc3Rlci4pDQpIb3dldmVyIHRoZSBi
-aWcgZGlmZmVyZW5jZSBpbiB0aGUgdGltZXMgZm9yIGRvX2NzdW0oKS4NCg0KVGhlIGZhc3Rlc3Qg
-bG9vcCBJIGNhbiBmaW5kIGZvciBhIG5vbi1jb3B5aW5nIGNoZWNrc3VtIGlzOg0KKyAgICAgICAv
-Kg0KKyAgICAgICAgKiBBbGlnbiB0aGUgYnl0ZSBjb3VudCB0byBhIG11bHRpcGxlIG9mIDE2IHRo
-ZW4NCisgICAgICAgICogYWRkIDY0IGJpdCB3b3JkcyB0byBhbHRlcm5hdGluZyByZWdpc3RlcnMu
-DQorICAgICAgICAqIEZpbmFsbHkgcmVkdWNlIHRvIDY0IGJpdHMuDQorICAgICAgICAqLw0KKyAg
-ICAgICBhc20oICAgICIgICAgICAgYnQgICAgJDQsICVbbGVuXVxuIg0KKyAgICAgICAgICAgICAg
-ICIgICAgICAgam5jICAgMTBmXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGQgICAoJVti
-dWZmXSwgJVtsZW5dKSwgJVtzdW1fMF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAg
-IDgoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMV1cbiINCisgICAgICAgICAgICAgICAiICAgICAg
-IGxlYSAgIDE2KCVbbGVuXSksICVbbGVuXVxuIg0KKyAgICAgICAgICAgICAgICIxMDogICAgamVj
-eHogMjBmXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGMgICAoJVtidWZmXSwgJVtsZW5d
-KSwgJVtzdW1fMF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDgoJVtidWZmXSwg
-JVtsZW5dKSwgJVtzdW1fMV1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGxlYSAgIDMyKCVb
-bGVuXSksICVbbGVuX3RtcF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDE2KCVb
-YnVmZl0sICVbbGVuXSksICVbc3VtXzBdXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGMg
-ICAyNCglW2J1ZmZdLCAlW2xlbl0pLCAlW3N1bV8xXVxuIg0KKyAgICAgICAgICAgICAgICIgICAg
-ICAgbW92ICAgJVtsZW5fdG1wXSwgJVtsZW5dXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBq
-bXAgICAxMGJcbiINCisgICAgICAgICAgICAgICAiMjA6ICAgIGFkYyAgICVbc3VtXzBdLCAlW3N1
-bV1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgICVbc3VtXzFdLCAlW3N1bV1cbiIN
-CisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgICQwLCAlW3N1bV1cbiINCisgICAgICAgICAg
-IDogW3N1bV0gIismciIgKHN1bSksIFtzdW1fMF0gIismciIgKHN1bV8wKSwgW3N1bV8xXSAiKyZy
-IiAoc3VtXzEpLA0KKyAgICAgICAgICAgICAgIFtsZW5dICIrJmMiIChsZW4pLCBbbGVuX3RtcF0g
-Ij0mciIgKGxlbl90bXApDQorICAgICAgICAgICA6IFtidWZmXSAiciIgKGJ1ZmYpDQorICAgICAg
-ICAgICA6ICJtZW1vcnkiICk7DQoNCihJIG5lZWQgdG8gcmVzdWJtaXQgdGhhdCBwYXRjaCkNCg0K
-V2hpY2ggaXMgdHdpY2UgYXMgZmFzdCBhcyB0aGUgb25lIGluIGNzdW0tcGFydGlhbF82NC5jIGZv
-cg0KbW9zdCBjcHUgdHlwZXMgKGVzcGVjaWFsbHkgcHJlLUhhc3dlbGwgb25lcykuDQoNCklJUkMg
-dGhhdCBkb2VzIDcgYnl0ZXMvY2xvY2sgb24gbXkgaXZ5IGJyaWRnZSBhbmQNCm9uZSA4IGJ5dGVz
-L2Nsb2NrIG9uIEhhc3dlbGwuDQpOb3RoaW5nIHByaW9yIHRvIHNhbmR5IGJyaWRnZSBjYW4gYmVh
-dCBhZGRpbmcgMzJiaXQgd29yZHMNCnRvIGEgNjRiaXQgcmVnaXN0ZXIhDQpUaGUgZmFmZmluZyB3
-aXRoICdsZW5fdG1wJyBtYWRlIGEgbWFyZ2luYWwgZGlmZmVyZW5jZS4NCg0KWW91IGNhbid0IGdv
-IGZhc3RlciB0aGFuIDEgcmVhZC9jbG9jayB3aXRob3V0IHVzaW5nIGFkW29jXXguDQpUaGUgbG9v
-cCBhYm92ZSBkb2VzIHdvcmsgKGJvdGggY2FycnkgYW5kIG92ZXJmbG93IGFyZSBwcmVzZXJ2ZWQp
-DQpidXQgaXQgbmVlZHMgZnVydGhlciB1bnJvbGxpbmcgKGFuZCBtb3JlIGVkZ2UgY29kZSkgYW5k
-IG9ubHkNCnJ1bnMgb24gYSBmZXcgY3B1Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRy
-ZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1L
-MSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On 02.03.20 15:21, Denis Kirjanov wrote:
+> the patch adds a basic xdo logic to the netfront driver
+> 
+> XDP redirect is not supported yet
+> 
+> v2:
+> - avoid data copying while passing to XDP
+> - tell xen-natback that we need the headroom space
 
+Please add the patch history below the "---" delimiter
+
+> 
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> ---
+>   drivers/net/xen-netback/common.h |   1 +
+>   drivers/net/xen-netback/rx.c     |   9 ++-
+>   drivers/net/xen-netback/xenbus.c |  21 ++++++
+>   drivers/net/xen-netfront.c       | 157 +++++++++++++++++++++++++++++++++++++++
+>   4 files changed, 186 insertions(+), 2 deletions(-)
+
+You are modifying xen-netback sources. Please Cc the maintainers.
+
+> 
+> diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
+> index 05847eb..0750c6f 100644
+> --- a/drivers/net/xen-netback/common.h
+> +++ b/drivers/net/xen-netback/common.h
+> @@ -280,6 +280,7 @@ struct xenvif {
+>   	u8 ip_csum:1;
+>   	u8 ipv6_csum:1;
+>   	u8 multicast_control:1;
+> +	u8 xdp_enabled:1;
+>   
+>   	/* Is this interface disabled? True when backend discovers
+>   	 * frontend is rogue.
+> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
+> index ef58870..a110a59 100644
+> --- a/drivers/net/xen-netback/rx.c
+> +++ b/drivers/net/xen-netback/rx.c
+> @@ -33,6 +33,11 @@
+>   #include <xen/xen.h>
+>   #include <xen/events.h>
+>   
+> +static inline int xenvif_rx_xdp_offset(struct xenvif *vif)
+> +{
+> +	return (vif->xdp_enabled ? XDP_PACKET_HEADROOM : 0);
+> +}
+> +
+>   static bool xenvif_rx_ring_slots_available(struct xenvif_queue *queue)
+>   {
+>   	RING_IDX prod, cons;
+> @@ -356,7 +361,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
+>   				struct xen_netif_rx_request *req,
+>   				struct xen_netif_rx_response *rsp)
+>   {
+> -	unsigned int offset = 0;
+> +	unsigned int offset = xenvif_rx_xdp_offset(queue->vif);
+>   	unsigned int flags;
+>   
+>   	do {
+> @@ -389,7 +394,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
+>   			flags |= XEN_NETRXF_extra_info;
+>   	}
+>   
+> -	rsp->offset = 0;
+> +	rsp->offset = xenvif_rx_xdp_offset(queue->vif);
+>   	rsp->flags = flags;
+>   	rsp->id = req->id;
+>   	rsp->status = (s16)offset;
+> diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+> index 286054b..81a6023 100644
+> --- a/drivers/net/xen-netback/xenbus.c
+> +++ b/drivers/net/xen-netback/xenbus.c
+> @@ -393,6 +393,20 @@ static void set_backend_state(struct backend_info *be,
+>   	}
+>   }
+>   
+> +static void read_xenbus_fronetend_xdp(struct backend_info *be,
+> +				      struct xenbus_device *dev)
+
+Typo: s/fronetend/frontend/
+
+> +{
+> +	struct xenvif *vif = be->vif;
+> +	unsigned int val;
+> +	int err;
+> +
+> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
+> +			   "feature-xdp", "%u", &val);
+> +	if (err < 0)
+> +		return;
+> +	vif->xdp_enabled = val;
+> +}
+> +
+>   /**
+>    * Callback received when the frontend's state changes.
+>    */
+> @@ -417,6 +431,11 @@ static void frontend_changed(struct xenbus_device *dev,
+>   		set_backend_state(be, XenbusStateConnected);
+>   		break;
+>   
+> +	case XenbusStateReconfiguring:
+> +		read_xenbus_fronetend_xdp(be, dev);
+> +		xenbus_switch_state(dev, XenbusStateReconfigured);
+> +		break;
+> +
+Where is the reaction to the backend being set to "Reconfigured"?
+
+>   	case XenbusStateClosing:
+>   		set_backend_state(be, XenbusStateClosing);
+>   		break;
+> @@ -935,6 +954,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
+>   
+>   	vif->gso_mask = 0;
+>   
+> +	vif->xdp_enabled = 0;
+> +
+>   	if (xenbus_read_unsigned(dev->otherend, "feature-gso-tcpv4", 0))
+>   		vif->gso_mask |= GSO_BIT(TCPV4);
+>   
+> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> index 482c6c8..db8a280 100644
+> --- a/drivers/net/xen-netfront.c
+> +++ b/drivers/net/xen-netfront.c
+> @@ -44,6 +44,8 @@
+>   #include <linux/mm.h>
+>   #include <linux/slab.h>
+>   #include <net/ip.h>
+> +#include <linux/bpf.h>
+> +#include <linux/bpf_trace.h>
+>   
+>   #include <xen/xen.h>
+>   #include <xen/xenbus.h>
+> @@ -102,6 +104,8 @@ struct netfront_queue {
+>   	char name[QUEUE_NAME_SIZE]; /* DEVNAME-qN */
+>   	struct netfront_info *info;
+>   
+> +	struct bpf_prog __rcu *xdp_prog;
+> +
+>   	struct napi_struct napi;
+>   
+>   	/* Split event channels support, tx_* == rx_* when using
+> @@ -778,6 +782,40 @@ static int xennet_get_extras(struct netfront_queue *queue,
+>   	return err;
+>   }
+>   
+> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
+> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
+> +		   struct xdp_buff *xdp)
+> +{
+> +	u32 len = rx->status;
+> +	u32 act = XDP_PASS;
+> +
+> +	xdp->data_hard_start = page_address(pdata);
+> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
+> +	xdp_set_data_meta_invalid(xdp);
+> +	xdp->data_end = xdp->data + len;
+> +	xdp->handle = 0;
+> +
+> +	act = bpf_prog_run_xdp(prog, xdp);
+> +	switch (act) {
+> +	case XDP_PASS:
+> +	case XDP_TX:
+> +	case XDP_DROP:
+> +		break;
+> +
+> +	case XDP_ABORTED:
+> +		trace_xdp_exception(queue->info->netdev, prog, act);
+> +		break;
+> +
+> +	default:
+> +		bpf_warn_invalid_xdp_action(act);
+> +	}
+> +
+> +	if (act != XDP_PASS && act != XDP_TX)
+> +		xdp->data_hard_start = NULL;
+> +
+> +	return act;
+> +}
+> +
+>   static int xennet_get_responses(struct netfront_queue *queue,
+>   				struct netfront_rx_info *rinfo, RING_IDX rp,
+>   				struct sk_buff_head *list)
+> @@ -792,6 +830,9 @@ static int xennet_get_responses(struct netfront_queue *queue,
+>   	int slots = 1;
+>   	int err = 0;
+>   	unsigned long ret;
+> +	struct bpf_prog *xdp_prog;
+> +	struct xdp_buff xdp;
+> +	u32 verdict;
+>   
+>   	if (rx->flags & XEN_NETRXF_extra_info) {
+>   		err = xennet_get_extras(queue, extras, rp);
+> @@ -827,6 +868,22 @@ static int xennet_get_responses(struct netfront_queue *queue,
+>   
+>   		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+>   
+> +		rcu_read_lock();
+> +		xdp_prog = rcu_dereference(queue->xdp_prog);
+> +		if (xdp_prog) {
+> +			/* currently only a single page contains data */
+> +			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags != 1);
+> +			verdict = xennet_run_xdp(queue,
+> +				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
+> +				       rx, xdp_prog, &xdp);
+> +
+> +			if (verdict != XDP_PASS && verdict != XDP_TX) {
+> +				err = -EINVAL;
+> +				goto next;
+> +			}
+> +
+> +		}
+> +		rcu_read_unlock();
+>   		__skb_queue_tail(list, skb);
+>   
+>   next:
+> @@ -1261,6 +1318,105 @@ static void xennet_poll_controller(struct net_device *dev)
+>   }
+>   #endif
+>   
+> +#define NETBACK_XDP_HEADROOM_DISABLE	0
+> +#define NETBACK_XDP_HEADROOM_ENABLE	1
+> +
+> +static int talk_to_netback_xdp(struct netfront_info *np, int xdp)
+> +{
+> +	struct xenbus_transaction xbt;
+> +	const char *message;
+> +	int err;
+> +
+> +again:
+> +	err = xenbus_transaction_start(&xbt);
+> +	if (err) {
+> +		xenbus_dev_fatal(np->xbdev, err, "starting transaction");
+> +		goto out;
+> +	}
+> +
+> +	err = xenbus_printf(xbt, np->xbdev->nodename, "feature-xdp", "%d", xdp);
+> +	if (err) {
+> +		message = "writing feature-xdp";
+> +		goto abort_transaction;
+> +	}
+> +
+> +	err = xenbus_transaction_end(xbt, 0);
+> +	if (err) {
+> +		if (err == -EAGAIN)
+> +			goto again;
+
+Writing a single node to Xenstore doesn't need a transaction.
+
+> +	}
+> +
+> +	return 0;
+> +
+> +abort_transaction:
+> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
+> +	xenbus_transaction_end(xbt, 1);
+> +out:
+> +	return err;
+> +}
+> +
+> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+> +			struct netlink_ext_ack *extack)
+> +{
+> +	struct netfront_info *np = netdev_priv(dev);
+> +	struct bpf_prog *old_prog;
+> +	unsigned int i, err;
+> +
+> +	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
+> +	if (!old_prog && !prog)
+> +		return 0;
+> +
+> +	if (prog)
+> +		bpf_prog_add(prog, dev->real_num_tx_queues);
+> +
+> +	for (i = 0; i < dev->real_num_tx_queues; ++i)
+> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
+> +
+> +	if (old_prog)
+> +		for (i = 0; i < dev->real_num_tx_queues; ++i)
+> +			bpf_prog_put(old_prog);
+> +
+> +	err = talk_to_netback_xdp(np, old_prog ? NETBACK_XDP_HEADROOM_DISABLE:
+> +				  NETBACK_XDP_HEADROOM_ENABLE);
+> +	if (err)
+> +		return err;
+> +
+> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
+
+What is happening in case the backend doesn't support XDP?
+
+Is it really a good idea to communicate xdp_set via a frontend state
+change? This will be rather slow. OTOH I have no idea how often this
+might happen.
+
+
+Juergen
