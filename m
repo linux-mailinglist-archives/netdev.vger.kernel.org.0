@@ -2,210 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD13176787
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:38:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4E61767A4
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 23:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbgCBWhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 17:37:54 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34544 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbgCBWhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 17:37:53 -0500
-Received: by mail-pf1-f196.google.com with SMTP id y21so428761pfp.1;
-        Mon, 02 Mar 2020 14:37:53 -0800 (PST)
+        id S1726981AbgCBWp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 17:45:57 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46408 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbgCBWp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 17:45:57 -0500
+Received: by mail-qt1-f195.google.com with SMTP id i14so1345693qtv.13
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 14:45:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=E4j2khFom9WbWJYI0JJ4Oj4FfVAH6TUg09opZHP3DUQ=;
-        b=VK5km7mC2B7BPdDbwLDq1SFNyVpvEk28HXfPktKbKCcn5P71cZ8mg70Hy6BuTohZk2
-         QZj5FtQJfYfUcCr70N++5IY8Eh/WJOSYja+1U2MH9qCQaBxrsFqdGGlG6UPAO+hQsEyb
-         c2bhlTmhnHS8P8/SimbLzveMZuy/Xmoy+BIYfyljVv453rXrkIA18Ajmvfzjl2uUsw7x
-         xXN4zJFSukJnFLjJsPeIdyUcdYyXcuVHMeRH6XmC96NTdwFlblPJLRJMmS/BqJWoLw6/
-         2JZV3aCsabi/fNm1qV3tygTTG1qNpPFml3I88S9M3AfAdO5JqqjoGmZcY9C4AOV4vtEF
-         ULyw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6xe7rkkZ8e9v04ote63kzOqh+CNhrdwEbVR3Wk+qf1M=;
+        b=W4s0C6QpajEMOwiV9jzrrLNurI8rUEy6oR0pWDbNdqVsDXs+yg9bygAK76nr6Ita7E
+         o33bI4XaoBQQrlMGN73WOWuJUpjbSyieGjC5LohVn/WQkaLaqQfZxqGdjVajEQXvq/0S
+         6Mz2Ba9Hj56Jb7iTBuDRPkz9FUfBw+GjutsdDAr+Ryi8vVbmJwKXLCSL9USRAc1T+TVF
+         pEmfpzRjtwe7lCwU1sTyrye3p1q1hodtUIQ/rJhlHsPNVlzsCJf7Gdoty3mlnHP99dVr
+         KUopWH5U+KbPn05M06Yf1gs0RgrlWu+1VcfS6m3l5xsuT7lX08VYngPAAYQkseMwWfzo
+         6e8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=E4j2khFom9WbWJYI0JJ4Oj4FfVAH6TUg09opZHP3DUQ=;
-        b=e/3jQw/Z/eK7ZdYJJ92c04if2SxfCntwLpNMeUT0p1WvWqSO5dZETEI5ZLP2HB1OXK
-         xIjyoe4Z+GOJckby9Z9WvO6kxtUV3/QEQRXNgJzaBfzSFkDa8FkIz8IED5bo/OdsUr+o
-         mQvvtJ7noQBuVYJ01811RdqROc7HSLDlRuaV+y4Tl9cdgEP6YR0LRnupDS3iUd/ck6pW
-         tI9cYhBbGw5OPB2IIOCA+33XFHqCALWRYcYWvuciIRbvDKv0Io44ar8Xb/jTXZwOr+mK
-         NNOyZF9NQ+nbTfG+zmkkKKsKbwLMPx3k7smYNiwhxhU/GBLbEht9VFoUIjue8Dmyf0j0
-         gF6A==
-X-Gm-Message-State: ANhLgQ04VRzXnuiqb/MfKRkBBrTGHiU8Q1BgYcQmUSpcJOxpaRSvnbPO
-        9gjKBQMkV9YWusRWT5fbbnI=
-X-Google-Smtp-Source: ADFU+vtJA4RWyPwKkN1uOqkCAK/JWk5Gv8JXlQ/+CxP6k9X9t73Ci1S1Yrh5UyzAX98tOkToeqKi+w==
-X-Received: by 2002:a63:78c4:: with SMTP id t187mr1103798pgc.88.1583188672403;
-        Mon, 02 Mar 2020 14:37:52 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::7:1db6])
-        by smtp.gmail.com with ESMTPSA id h7sm23258300pfq.36.2020.03.02.14.37.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Mar 2020 14:37:51 -0800 (PST)
-Date:   Mon, 2 Mar 2020 14:37:49 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: switch BPF UAPI #define constants
- to enums
-Message-ID: <20200302223748.v4omummx43pejzfn@ast-mbp>
-References: <20200301062405.2850114-1-andriin@fb.com>
- <20200301062405.2850114-2-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6xe7rkkZ8e9v04ote63kzOqh+CNhrdwEbVR3Wk+qf1M=;
+        b=dud/RW6HZcecG4PS4w7FQJQDbiOgHnl3ngaN+8j0kJsxeXvj/0N0OD+PiVgCiZwbmc
+         TCLXtieXwZTpPvehgbqd7sdYlV0iywdT18DKsLm0m/nrGYlxpQoThJY1lLfw+u20vLjH
+         ZvM1+8xex/+ugiR8UtDgWKdQwPb171wxX0t8scGXJJ6z9TnuE16I7TS+qk8dAns8sWOi
+         68MLSLDRXMfJtbZWc/ZCCOMF11khDQ8IiaAqTj2CzEhbTY8rA9utr0zaVZIz+4k1neMr
+         dzgvkxFrsL2RIJTAOR81UN4Hy+5g1F5GgKv3KKE3UVgTk4iLbApn3nzyIXpT1qb1Ad2L
+         rHAA==
+X-Gm-Message-State: ANhLgQ1T+zxd28KqnuSJTAZw2fWZF9ET69tNieff0MSpM0I5g5Hq8/RW
+        Xy4/QLsY2/p76DsRNjgqElA0UI+q9AceYL6gctI=
+X-Google-Smtp-Source: ADFU+vsGFiA4P34mMK4FrZX8YJMLWoDFigLxs6YXE5g30Gc616UcUqrHr7xPq28rzQ3wRIyP8D50LHOGsQMrvIzMgN4=
+X-Received: by 2002:ac8:c4f:: with SMTP id l15mr1858121qti.177.1583189155880;
+ Mon, 02 Mar 2020 14:45:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200301062405.2850114-2-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+References: <CAA85sZsO9EaS8fZJqx6=QJA+7epe88UE2zScqw-KHZYDRMjk5A@mail.gmail.com>
+ <32234f4c5b4adcaf2560098a01b1544d8d8d3c2c.camel@mellanox.com>
+In-Reply-To: <32234f4c5b4adcaf2560098a01b1544d8d8d3c2c.camel@mellanox.com>
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Mon, 2 Mar 2020 23:45:44 +0100
+Message-ID: <CAA85sZuoiWSfMt8H+pjN-Ly=f2wNwG5tPiFZzcc6-1F3fqcO9Q@mail.gmail.com>
+Subject: Re: [VXLAN] [MLX5] Lost traffic and issues
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 29, 2020 at 10:24:03PM -0800, Andrii Nakryiko wrote:
-> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
-> enum values. This preserves constants values and behavior in expressions, but
-> has added advantaged of being captured as part of DWARF and, subsequently, BTF
-> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
-> for BPF applications, as it will not require BPF users to copy/paste various
-> flags and constants, which are frequently used with BPF helpers.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  include/uapi/linux/bpf.h              | 272 +++++++++++++++----------
->  include/uapi/linux/bpf_common.h       |  86 ++++----
->  include/uapi/linux/btf.h              |  60 +++---
->  tools/include/uapi/linux/bpf.h        | 274 ++++++++++++++++----------
->  tools/include/uapi/linux/bpf_common.h |  86 ++++----
->  tools/include/uapi/linux/btf.h        |  60 +++---
->  6 files changed, 497 insertions(+), 341 deletions(-)
+On Mon, Mar 2, 2020 at 8:10 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
+> On Fri, 2020-02-28 at 16:02 +0100, Ian Kumlien wrote:
+> > Hi,
+> >
+> > Including netdev - to see if someone else has a clue.
+> >
+> > We have a few machines in a cloud and when upgrading from 4.16.7 ->
+> > 5.4.15 we ran in to
+> > unexpected and intermittent problems.
+> > (I have tested 5.5.6 and the problems persists)
+> >
+> > What we saw, using several monitoring points, was that traffic
+> > disappeared after what we can see when tcpdumping on "bond0"
+> >
+> > We had tcpdump running on:
+> > 1, DHCP nodes (local tap interfaces)
+> > 2, Router instances on L3 node
+> > 3, Local node (where the VM runs) (tap, bridge and eventually tap
+> > interface dumping VXLAN traffic)
+> > 4, Using port mirroring on the 100gbit switch to see what ended up on
+> > the physical wire.
+> >
+> > What we can see is that from the four step handshake for DHCP only
+> > two
+> > steps works, the forth step will be dropped "on the nic".
+> >
+> > We can see it go out bond0, in tagged VLAN and within a VXLAN packet
+> > -
+> > however the switch never sees it.
+>
+> Hi,
+>
+> Have you seen the packets actually going out on one of the mlx5 100gbit
+> legs ?
 
-I see two reasons why converting #define to enum is useful:
-1. bpf progs can use them from vmlinux.h as evident in patch 3.
-2. "bpftool feature probe" can be replaced with
-  bpftool btf dump file /sys/kernel/btf/vmlinux |grep BPF_CGROUP_SETSOCKOPT
+We disabled bond and made it go to only one interface to be able to snoop the
+traffic (sorry, sometimes you forget things when writing them down)
 
-The second use case is already possible, since bpf_prog_type,
-bpf_attach_type, bpf_cmd, bpf_func_id are all enums.
-So kernel is already self describing most bpf features.
-Does kernel support bpf_probe_read_user() ? Answer is:
-bpftool btf dump file /sys/kernel/btf/vmlinux | grep BPF_FUNC_probe_read_user
+And no, the traffic that was lost never reached the "wire" to our knowledge
 
-The only bit missing is supported kernel flags and instructions.
+> > There has been a few mlx5 changes wrt VXLAN which can be culprits but
+> > it's really hard to judge.
+> >
+> > dmesg |grep mlx
+> > [    2.231399] mlx5_core 0000:0b:00.0: firmware version: 16.26.1040
+> > [    2.912595] mlx5_core 0000:0b:00.0: Rate limit: 127 rates are
+> > supported, range: 0Mbps to 97656Mbps
+> > [    2.935012] mlx5_core 0000:0b:00.0: Port module event: module 0,
+> > Cable plugged
+> > [    2.949528] mlx5_core 0000:0b:00.1: firmware version: 16.26.1040
+> > [    3.638647] mlx5_core 0000:0b:00.1: Rate limit: 127 rates are
+> > supported, range: 0Mbps to 97656Mbps
+> > [    3.661206] mlx5_core 0000:0b:00.1: Port module event: module 1,
+> > Cable plugged
+> > [    3.675562] mlx5_core 0000:0b:00.0: MLX5E: StrdRq(1) RqSz(8)
+> > StrdSz(64) RxCqeCmprss(0)
+> > [    3.846149] mlx5_core 0000:0b:00.1: MLX5E: StrdRq(1) RqSz(8)
+> > StrdSz(64) RxCqeCmprss(0)
+> > [    4.021738] mlx5_core 0000:0b:00.0 enp11s0f0: renamed from eth0
+> > [    4.021962] mlx5_ib: Mellanox Connect-IB Infiniband driver v5.0-0
+> >
+> > I have tried turning all offloads off, but the problem persists as
+> > well - it's really weird that it seems to be only some packets.
+> >
+> > To be clear, the bond0 interface is 2*100gbit, using 802.1ad (LACP)
+> > with layer2+3 hashing.
+> > This seems to be offloaded in to the nic (can it be turned off?) and
+> > messages about modifying the "lag map" was
+> > quite frequent until we did a firmware upgrade - even with upgraded
+> > firmware, it continued but to a lesser extent.
+> >
+> > With 5.5.7 approaching, we would want a path forward to handle
+> > this...
+>
+>
+> What type of mlx5 configuration you have (Native PV virtualization ?
+> SRIOV ? legacy mode or switchdev mode ? )
 
-I think for now I would only convert flags that are going to be
-used from bpf program and see whether 1st use case works well.
-Later we can convert flags that are used out of user space too.
+We have:
+tap -> bridge -> ovs -> bond (one legged) -switch-fabric-> <other-end>
 
-In other words:
+So a pretty standard openstack setup
 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 8e98ced0963b..03e08f256bd1 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -14,34 +14,36 @@
->  /* Extended instruction set based on top of classic BPF */
->  
->  /* instruction classes */
-> -#define BPF_JMP32	0x06	/* jmp mode in word width */
-> -#define BPF_ALU64	0x07	/* alu mode in double word width */
-> +enum {
-> +	BPF_JMP32	= 0x06,	/* jmp mode in word width */
-> +	BPF_ALU64	= 0x07,	/* alu mode in double word width */
+> The only change that i could think of is the lag multi-path support we
+> added, Roi can you please take a look at this ?
 
-not those.
+I'm also trying to get a setup working where i could try reverting changes
+but so far we've only had this problem with mlx5_core...
+Also the intermittent but reliable patterns are really weird...
 
-> -#define BPF_F_ALLOW_OVERRIDE	(1U << 0)
-> -#define BPF_F_ALLOW_MULTI	(1U << 1)
-> -#define BPF_F_REPLACE		(1U << 2)
-> +enum {
-> +	BPF_F_ALLOW_OVERRIDE	= (1U << 0),
-> +	BPF_F_ALLOW_MULTI	= (1U << 1),
-> +	BPF_F_REPLACE		= (1U << 2),
-> +};
+All traffic seems fine, except vxlan traffic :/
 
-not those either. These are the flags for user space. Not for the prog.
-
->  /* flags for BPF_MAP_UPDATE_ELEM command */
-> -#define BPF_ANY		0 /* create new element or update existing */
-> -#define BPF_NOEXIST	1 /* create new element if it didn't exist */
-> -#define BPF_EXIST	2 /* update existing element */
-> -#define BPF_F_LOCK	4 /* spin_lock-ed map_lookup/map_update */
-> +enum {
-> +	BPF_ANY		= 0, /* create new element or update existing */
-> +	BPF_NOEXIST	= 1, /* create new element if it didn't exist */
-> +	BPF_EXIST	= 2, /* update existing element */
-> +	BPF_F_LOCK	= 4, /* spin_lock-ed map_lookup/map_update */
-> +};
-
-yes to these.
-
->  /* BPF_FUNC_skb_store_bytes flags. */
-> -#define BPF_F_RECOMPUTE_CSUM		(1ULL << 0)
-> -#define BPF_F_INVALIDATE_HASH		(1ULL << 1)
-> +enum {
-> +	BPF_F_RECOMPUTE_CSUM		= (1ULL << 0),
-> +	BPF_F_INVALIDATE_HASH		= (1ULL << 1),
-> +};
-
-yes.
-
->  /* BPF_FUNC_l3_csum_replace and BPF_FUNC_l4_csum_replace flags.
->   * First 4 bits are for passing the header field size.
->   */
-> -#define BPF_F_HDR_FIELD_MASK		0xfULL
-> +enum {
-> +	BPF_F_HDR_FIELD_MASK		= 0xfULL,
-> +};
-
-yes.
-
->  /* flags for both BPF_FUNC_get_stackid and BPF_FUNC_get_stack. */
-> -#define BPF_F_SKIP_FIELD_MASK		0xffULL
-> -#define BPF_F_USER_STACK		(1ULL << 8)
-> +enum {
-> +	BPF_F_SKIP_FIELD_MASK		= 0xffULL,
-> +	BPF_F_USER_STACK		= (1ULL << 8),
->  /* flags used by BPF_FUNC_get_stackid only. */
-> -#define BPF_F_FAST_STACK_CMP		(1ULL << 9)
-> -#define BPF_F_REUSE_STACKID		(1ULL << 10)
-> +	BPF_F_FAST_STACK_CMP		= (1ULL << 9),
-> +	BPF_F_REUSE_STACKID		= (1ULL << 10),
->  /* flags used by BPF_FUNC_get_stack only. */
-> -#define BPF_F_USER_BUILD_ID		(1ULL << 11)
-> +	BPF_F_USER_BUILD_ID		= (1ULL << 11),
-> +};
-
-yes.
-
->  /* BPF_FUNC_skb_set_tunnel_key flags. */
-> -#define BPF_F_ZERO_CSUM_TX		(1ULL << 1)
-> -#define BPF_F_DONT_FRAGMENT		(1ULL << 2)
-> -#define BPF_F_SEQ_NUMBER		(1ULL << 3)
-> +enum {
-> +	BPF_F_ZERO_CSUM_TX		= (1ULL << 1),
-> +	BPF_F_DONT_FRAGMENT		= (1ULL << 2),
-> +	BPF_F_SEQ_NUMBER		= (1ULL << 3),
-> +};
->  
->  /* BPF_FUNC_perf_event_output, BPF_FUNC_perf_event_read and
->   * BPF_FUNC_perf_event_read_value flags.
->   */
-> -#define BPF_F_INDEX_MASK		0xffffffffULL
-> -#define BPF_F_CURRENT_CPU		BPF_F_INDEX_MASK
-> +enum {
-> +	BPF_F_INDEX_MASK		= 0xffffffffULL,
-> +	BPF_F_CURRENT_CPU		= BPF_F_INDEX_MASK,
->  /* BPF_FUNC_perf_event_output for sk_buff input context. */
-> -#define BPF_F_CTXLEN_MASK		(0xfffffULL << 32)
-> +	BPF_F_CTXLEN_MASK		= (0xfffffULL << 32),
-> +};
-
-yes.
-
-In all such cases I don't think we need #define FOO FOO
-trick. These are the flags used within bpf program.
-I don't think any user is doing #ifdef logic there.
-I cannot come up with a use case of anything useful this way.
+(The problem is that the actual machines that has the issue is in production
+with 8x V100 nvidia cards... Kinda hard to justify having them "offline" ;))
