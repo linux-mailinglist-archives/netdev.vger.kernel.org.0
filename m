@@ -2,331 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFDC175E2F
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:29:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D9D175EA8
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbgCBP3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 10:29:45 -0500
-Received: from mx2.suse.de ([195.135.220.15]:55388 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726751AbgCBP3o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 10:29:44 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 96E2CAFE8;
-        Mon,  2 Mar 2020 15:29:42 +0000 (UTC)
-Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
-To:     Denis Kirjanov <kda@linux-powerpc.org>, netdev@vger.kernel.org
-Cc:     ilias.apalodimas@linaro.org
-References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
-Date:   Mon, 2 Mar 2020 16:29:41 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727250AbgCBPoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 10:44:46 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:36541 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727111AbgCBPoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 10:44:46 -0500
+Received: by mail-il1-f196.google.com with SMTP id b15so9717573iln.3
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 07:44:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+W+ZJNRUa5MT0Cx78b4oMrqrkHSpySREzOkn09S9aKw=;
+        b=AcQrCXfWAYrEEoSPm7Aucgtg90CdpbnhPyAMwEZ9MEb06Tef2T2nIuHXCEqrdEmMUF
+         srXEoZVbHWedZShfEcw3IDLXMaoOzYo3OrNvBrjduxap1VunMpzjqvaVIGbMLDG4fKwg
+         JflMpXT4MaLHHYSsXhdcAlGtjLu5/w3Y5vIgH28WEq3m1hCByYDBrwr2f0RQtI0MORUS
+         bE1wa1JeYWxnqsGUW2aTNv7TXmHdI/gYFiV4zHQ5SG586lpcZMdr5gagS+9QIW4hDC9M
+         qHkOhV7DxpwBKUvrucEyE3KOFwGYBV4MRgA91SfiusTwmXcRO4DxSxuCENrlC3M5WvSX
+         z6TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+W+ZJNRUa5MT0Cx78b4oMrqrkHSpySREzOkn09S9aKw=;
+        b=U7KAIXOeOEQI1GlveeLqGQNK0hySdBnm+6XWLItM0rNJDd6fHrncF3djy5hqD5qVwp
+         pnLHlEe2dwMIcjur5OBHWNrVnV13kgZjCJM5vQ09uT8pcFqIw0FxGjxd13aIKYw5jJA5
+         3CipwCJ6jm5gg28jAjN3y5RqhinLmEjenlNlKuyYKWTPEWJV/9E43iI2d7mPxYSMFZel
+         1cDw4T/u5Fv6hmN0uvkXo6Fy/GU9JufXjqLwfekwuWyJXjzhTflPCAu3TCN7unXy5TKP
+         2Q17ZPono2ljE1wYRV2bDFNj4I4zxDfA/GqsUJGlSNJJSlus+aSyY3egEgsCTaxK5ILc
+         9DXA==
+X-Gm-Message-State: ANhLgQ1cpcPzOkD3MkRKDzx+68FKRsNVYjI7RpoK6HeF3h6KmNXcsHNu
+        AMxXl85+fKxm/UDowxddyOvkHj7xKzWYrdQklL0=
+X-Google-Smtp-Source: ADFU+vvo7rWY5cT+JXiOqpSsgVdIP+b7VK1Izn6JIE7qkC/NHI/ksd0djLD0eaaKzNX0NZM8MBTENcXjYZM7uo8ue0E=
+X-Received: by 2002:a92:d608:: with SMTP id w8mr212846ilm.95.1583163885137;
+ Mon, 02 Mar 2020 07:44:45 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <158289240414.1877500.8426359194461700361.stgit@firesoul>
+ <CAKgT0Udj=BRNh3=TkNk5XyY5zbXtY_3kw+VORspUZLhvUFDN+w@mail.gmail.com> <20200302100059.58763d59@carbon>
+In-Reply-To: <20200302100059.58763d59@carbon>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 2 Mar 2020 07:44:34 -0800
+Message-ID: <CAKgT0Ueqg-HohhtoH4FaBGugqBY3M5+G0reKBr097LSJBhCBtg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [net-next PATCH] ixgbe: fix XDP redirect on
+ archs with PAGE_SIZE above 4K
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.03.20 15:21, Denis Kirjanov wrote:
-> the patch adds a basic xdo logic to the netfront driver
-> 
-> XDP redirect is not supported yet
-> 
-> v2:
-> - avoid data copying while passing to XDP
-> - tell xen-natback that we need the headroom space
+On Mon, Mar 2, 2020 at 1:01 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>
+> On Fri, 28 Feb 2020 10:53:58 -0800
+> Alexander Duyck <alexander.duyck@gmail.com> wrote:
+>
+> > On Fri, Feb 28, 2020 at 4:20 AM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >
+> > > The ixgbe driver have another memory model when compiled on archs with
+> > > PAGE_SIZE above 4096 bytes. In this mode it doesn't split the page in
+> > > two halves, but instead increment rx_buffer->page_offset by truesize of
+> > > packet (which include headroom and tailroom for skb_shared_info).
+> > >
+> > > This is done correctly in ixgbe_build_skb(), but in ixgbe_rx_buffer_flip
+> > > which is currently only called on XDP_TX and XDP_REDIRECT, it forgets
+> > > to add the tailroom for skb_shared_info. This breaks XDP_REDIRECT, for
+> > > veth and cpumap.  Fix by adding size of skb_shared_info tailroom.
+> > >
+> > > Fixes: 6453073987ba ("ixgbe: add initial support for xdp redirect")
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >
+> > This approach to fixing it seems problematic at best. From what I can
+> > tell there wasn't an issue until this frame gets up into the
+> > XDP_REDIRECT path. In the case of XDP_TX the ixgbe driver has not need
+> > for the extra shared info space. I assume you need this because you
+> > are converting the buffer to an skbuff.
+>
+> Except for XDP_TX the extra space is needed (and for our planned
+> multi-frame XDP it will also be needed for XDP_TX). The XDP_PASS case
+> does the correct thing in ixgbe_build_skb(). The XDP_REDIRECT also
+> depend on this extra space for skb_shared_info, as cpumap and veth
+> creates SKBs based on xdp_frame, which I want to generalize further[1].
 
-Please add the patch history below the "---" delimiter
+The thing is in the XDP_PASS case the driver still owns that memory
+region so it isn't an issue. It is only the XDP_REDIRECT case that is
+the problem since it is trying to use memory that was not necessarily
+allocated to it.
 
-> 
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-> ---
->   drivers/net/xen-netback/common.h |   1 +
->   drivers/net/xen-netback/rx.c     |   9 ++-
->   drivers/net/xen-netback/xenbus.c |  21 ++++++
->   drivers/net/xen-netfront.c       | 157 +++++++++++++++++++++++++++++++++++++++
->   4 files changed, 186 insertions(+), 2 deletions(-)
+> > The question I have is exactly how is this failing, are we talking
+> > about it resulting in the region being shared with the next frame, or
+> > is it being correctly identified that there is no tailroom and the
+> > frame is dropped? If we are seeing memory corruption due to it sharing
+> > the memory I would say we have a problem with the design for
+>
+> (Sorry for this rant:)
+> The design was violated when ixgbe added XDP-support, as it complicated
+> the XDP-memory model, with it's split-page approach, and now I realize
+> that is even more complicated, with this bigger PAGE_SIZE approach.
+> One of the XDP performance advantage comes from a simplified memory
+> model.  I'm very tempted to disable XDP on this driver for PAGE_SIZE
+> above 4096 bytes.
 
-You are modifying xen-netback sources. Please Cc the maintainers.
+This is at the heard of the problem with the XDP design. Assuming an
+XDP buffer is always one page is problematic, especially on systems
+where the page size is 64K. That is why most drivers doe the page
+reuse trick for these types of pages.
 
-> 
-> diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-> index 05847eb..0750c6f 100644
-> --- a/drivers/net/xen-netback/common.h
-> +++ b/drivers/net/xen-netback/common.h
-> @@ -280,6 +280,7 @@ struct xenvif {
->   	u8 ip_csum:1;
->   	u8 ipv6_csum:1;
->   	u8 multicast_control:1;
-> +	u8 xdp_enabled:1;
->   
->   	/* Is this interface disabled? True when backend discovers
->   	 * frontend is rogue.
-> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-> index ef58870..a110a59 100644
-> --- a/drivers/net/xen-netback/rx.c
-> +++ b/drivers/net/xen-netback/rx.c
-> @@ -33,6 +33,11 @@
->   #include <xen/xen.h>
->   #include <xen/events.h>
->   
-> +static inline int xenvif_rx_xdp_offset(struct xenvif *vif)
-> +{
-> +	return (vif->xdp_enabled ? XDP_PACKET_HEADROOM : 0);
-> +}
-> +
->   static bool xenvif_rx_ring_slots_available(struct xenvif_queue *queue)
->   {
->   	RING_IDX prod, cons;
-> @@ -356,7 +361,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
->   				struct xen_netif_rx_request *req,
->   				struct xen_netif_rx_response *rsp)
->   {
-> -	unsigned int offset = 0;
-> +	unsigned int offset = xenvif_rx_xdp_offset(queue->vif);
->   	unsigned int flags;
->   
->   	do {
-> @@ -389,7 +394,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
->   			flags |= XEN_NETRXF_extra_info;
->   	}
->   
-> -	rsp->offset = 0;
-> +	rsp->offset = xenvif_rx_xdp_offset(queue->vif);
->   	rsp->flags = flags;
->   	rsp->id = req->id;
->   	rsp->status = (s16)offset;
-> diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-> index 286054b..81a6023 100644
-> --- a/drivers/net/xen-netback/xenbus.c
-> +++ b/drivers/net/xen-netback/xenbus.c
-> @@ -393,6 +393,20 @@ static void set_backend_state(struct backend_info *be,
->   	}
->   }
->   
-> +static void read_xenbus_fronetend_xdp(struct backend_info *be,
-> +				      struct xenbus_device *dev)
+> > XDP_REDIRECT since it is assuming things about the buffer that may or
+> > may not be true. At a minimum we are going to need to guarantee that
+> > all XDP devices going forward provide this padding on the end of the
+> > frame which has not been anything that was communicated up until now.
+>
+> First of all, I'm working on patches for "data_hard_end" such that we
+> can reliably establish the size of the frame / memory, and there by
+> know the size of the padding / tailroom. (Which is why I discovered
+> this bug).
 
-Typo: s/fronetend/frontend/
+This is something that I believe is a must have if you are going to
+allow for XDP programs to push data into the tail section of the
+buffer.
 
-> +{
-> +	struct xenvif *vif = be->vif;
-> +	unsigned int val;
-> +	int err;
-> +
-> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
-> +			   "feature-xdp", "%u", &val);
-> +	if (err < 0)
-> +		return;
-> +	vif->xdp_enabled = val;
-> +}
-> +
->   /**
->    * Callback received when the frontend's state changes.
->    */
-> @@ -417,6 +431,11 @@ static void frontend_changed(struct xenbus_device *dev,
->   		set_backend_state(be, XenbusStateConnected);
->   		break;
->   
-> +	case XenbusStateReconfiguring:
-> +		read_xenbus_fronetend_xdp(be, dev);
-> +		xenbus_switch_state(dev, XenbusStateReconfigured);
-> +		break;
-> +
-Where is the reaction to the backend being set to "Reconfigured"?
+> Second, it have been communicated since day-1, that XDP drivers need to
+> use build_skb(), and we have converted every XDP driver to build_skb
+> before adding XDP support. Thus, this tailroom requirement should not
+> be a surprise.
 
->   	case XenbusStateClosing:
->   		set_backend_state(be, XenbusStateClosing);
->   		break;
-> @@ -935,6 +954,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
->   
->   	vif->gso_mask = 0;
->   
-> +	vif->xdp_enabled = 0;
-> +
->   	if (xenbus_read_unsigned(dev->otherend, "feature-gso-tcpv4", 0))
->   		vif->gso_mask |= GSO_BIT(TCPV4);
->   
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index 482c6c8..db8a280 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-> @@ -44,6 +44,8 @@
->   #include <linux/mm.h>
->   #include <linux/slab.h>
->   #include <net/ip.h>
-> +#include <linux/bpf.h>
-> +#include <linux/bpf_trace.h>
->   
->   #include <xen/xen.h>
->   #include <xen/xenbus.h>
-> @@ -102,6 +104,8 @@ struct netfront_queue {
->   	char name[QUEUE_NAME_SIZE]; /* DEVNAME-qN */
->   	struct netfront_info *info;
->   
-> +	struct bpf_prog __rcu *xdp_prog;
-> +
->   	struct napi_struct napi;
->   
->   	/* Split event channels support, tx_* == rx_* when using
-> @@ -778,6 +782,40 @@ static int xennet_get_extras(struct netfront_queue *queue,
->   	return err;
->   }
->   
-> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
-> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
-> +		   struct xdp_buff *xdp)
-> +{
-> +	u32 len = rx->status;
-> +	u32 act = XDP_PASS;
-> +
-> +	xdp->data_hard_start = page_address(pdata);
-> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-> +	xdp_set_data_meta_invalid(xdp);
-> +	xdp->data_end = xdp->data + len;
-> +	xdp->handle = 0;
-> +
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +	switch (act) {
-> +	case XDP_PASS:
-> +	case XDP_TX:
-> +	case XDP_DROP:
-> +		break;
-> +
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(queue->info->netdev, prog, act);
-> +		break;
-> +
-> +	default:
-> +		bpf_warn_invalid_xdp_action(act);
-> +	}
-> +
-> +	if (act != XDP_PASS && act != XDP_TX)
-> +		xdp->data_hard_start = NULL;
-> +
-> +	return act;
-> +}
-> +
->   static int xennet_get_responses(struct netfront_queue *queue,
->   				struct netfront_rx_info *rinfo, RING_IDX rp,
->   				struct sk_buff_head *list)
-> @@ -792,6 +830,9 @@ static int xennet_get_responses(struct netfront_queue *queue,
->   	int slots = 1;
->   	int err = 0;
->   	unsigned long ret;
-> +	struct bpf_prog *xdp_prog;
-> +	struct xdp_buff xdp;
-> +	u32 verdict;
->   
->   	if (rx->flags & XEN_NETRXF_extra_info) {
->   		err = xennet_get_extras(queue, extras, rp);
-> @@ -827,6 +868,22 @@ static int xennet_get_responses(struct netfront_queue *queue,
->   
->   		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
->   
-> +		rcu_read_lock();
-> +		xdp_prog = rcu_dereference(queue->xdp_prog);
-> +		if (xdp_prog) {
-> +			/* currently only a single page contains data */
-> +			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags != 1);
-> +			verdict = xennet_run_xdp(queue,
-> +				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
-> +				       rx, xdp_prog, &xdp);
-> +
-> +			if (verdict != XDP_PASS && verdict != XDP_TX) {
-> +				err = -EINVAL;
-> +				goto next;
-> +			}
-> +
-> +		}
-> +		rcu_read_unlock();
->   		__skb_queue_tail(list, skb);
->   
->   next:
-> @@ -1261,6 +1318,105 @@ static void xennet_poll_controller(struct net_device *dev)
->   }
->   #endif
->   
-> +#define NETBACK_XDP_HEADROOM_DISABLE	0
-> +#define NETBACK_XDP_HEADROOM_ENABLE	1
-> +
-> +static int talk_to_netback_xdp(struct netfront_info *np, int xdp)
-> +{
-> +	struct xenbus_transaction xbt;
-> +	const char *message;
-> +	int err;
-> +
-> +again:
-> +	err = xenbus_transaction_start(&xbt);
-> +	if (err) {
-> +		xenbus_dev_fatal(np->xbdev, err, "starting transaction");
-> +		goto out;
-> +	}
-> +
-> +	err = xenbus_printf(xbt, np->xbdev->nodename, "feature-xdp", "%d", xdp);
-> +	if (err) {
-> +		message = "writing feature-xdp";
-> +		goto abort_transaction;
-> +	}
-> +
-> +	err = xenbus_transaction_end(xbt, 0);
-> +	if (err) {
-> +		if (err == -EAGAIN)
-> +			goto again;
+Most drivers were already converted over to build_skb before XDP was
+really introduced. They weren't converting over because of XDP, or at
+least that is the case with the Intel drivers.
 
-Writing a single node to Xenstore doesn't need a transaction.
+What I find disconcerting about this change is that you are pushing
+requirements down onto the drivers and I don't see these requirements
+in writing anywhere. One thing that would be useful would be to add
+documentation and also add comments in the driver code so that we
+don't end up with somebody coming through and trying to free back up
+the unused memory.
 
-> +	}
-> +
-> +	return 0;
-> +
-> +abort_transaction:
-> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
-> +	xenbus_transaction_end(xbt, 1);
-> +out:
-> +	return err;
-> +}
-> +
-> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	struct netfront_info *np = netdev_priv(dev);
-> +	struct bpf_prog *old_prog;
-> +	unsigned int i, err;
-> +
-> +	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
-> +	if (!old_prog && !prog)
-> +		return 0;
-> +
-> +	if (prog)
-> +		bpf_prog_add(prog, dev->real_num_tx_queues);
-> +
-> +	for (i = 0; i < dev->real_num_tx_queues; ++i)
-> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
-> +
-> +	if (old_prog)
-> +		for (i = 0; i < dev->real_num_tx_queues; ++i)
-> +			bpf_prog_put(old_prog);
-> +
-> +	err = talk_to_netback_xdp(np, old_prog ? NETBACK_XDP_HEADROOM_DISABLE:
-> +				  NETBACK_XDP_HEADROOM_ENABLE);
-> +	if (err)
-> +		return err;
-> +
-> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
+> > I would argue that we should not be using build_skb on XDP buffers
+> > since it is going to lead to similar issues in the future. It would be
+> > much better to simply add the XDP frame as a fragment and to pull the
+> > headers as we have done in the past.
+>
+> No, absolutely not. Again this will complicate and slowdown SKB
+> creation (as you know, this would require allocating a new memory area
+> for skb_shared_info (+ the SKB), while with the tailroom provided anyhow
+> for build_skb, we can avoid this extra allocation).
 
-What is happening in case the backend doesn't support XDP?
+In the case of redirect I would say that the problem is you don't have
+any guarantee that you have enough tailroom to make the change you are
+wanting to. Until you have the data_hard_end implemented you run the
+risk of corrupting memory and creating more issues like this in the
+future if you are using build_skb assuming that you have enough
+tailroom on the frame. As it stands you will probably still need some
+sort of fall-back solution in cases where something added data to the
+tail of the frame and cut into the tailroom.
 
-Is it really a good idea to communicate xdp_set via a frontend state
-change? This will be rather slow. OTOH I have no idea how often this
-might happen.
+> > > ---
+> > >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > > b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c index
+> > > 718931d951bc..ea6834bae04c 100644 ---
+> > > a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c +++
+> > > b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c @@ -2254,7 +2254,8
+> > > @@ static void ixgbe_rx_buffer_flip(struct ixgbe_ring *rx_ring,
+> > > rx_buffer->page_offset ^= truesize; #else
+> > >         unsigned int truesize = ring_uses_build_skb(rx_ring) ?
+> > > -                               SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) :
+> > > +                               SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
+> > > +                               SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
+> > >                                 SKB_DATA_ALIGN(size);
+> > >
+> > >         rx_buffer->page_offset += truesize;
 
+The change itself is fine. It is just reserving some extra space. I
+just feel like it isn't the complete solution. You are basically
+changing the definition for the truesize without putting in place why
+it should be that value. What I would really like to see put in place
+is some documentation as to why this is being done added to the code
+since most of us are not experts on the requirements for XDP_REDIRECT.
 
-Juergen
+>
+> [1] http://people.netfilter.org/hawk/presentations/KernelRecipes2019/xdp-netstack-concert.pdf
+
+Really the big thing I would like to see solved in XDP is the jumbo
+frames problem since it ties back into all of this. We should have a
+way to express frames larger than 4K via some sort of multi-buffer
+setup. Once we have that then I would think that XDP is finally
+starting to mature.
