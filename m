@@ -2,67 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53FDD17525D
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 04:42:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A248517525F
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 04:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgCBDm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Mar 2020 22:42:29 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:53939 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgCBDm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 22:42:28 -0500
-Received: by mail-pj1-f65.google.com with SMTP id cx7so634428pjb.3
-        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 19:42:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ESaMiaBBpmtpSRdKsJdzm4BjqynM4VAPoAlR77c5o2o=;
-        b=YtlQyJCZTP2koEIe+TGjOXnRqplWtZ2riFABjAH/2EXsLWnfSyIUcUcgeDnKSbh9r5
-         i6eZyiSs0TETzzSrhdpP1M2gwS1uLVpASwN9Jfu3ef1AhgSuCcr+97o6TSt0hcwoe4u3
-         +mn0Idiz3mKqKe8KJPGfb/PyN56WuPqo6zLSUpfehJRGhh9D2wVI6AnyQY88jzD5Bwrw
-         LSy3u/oH1Pod+qKRSNhiEkUEEk0ifjbPTFIYPO32Y7kKxwx8QYDzA81P4d2pP8XGpr88
-         GYT5W1nvBr9nvoXU+46ssRj2TATrZDd/QxxaTR5Y4WiNRu5BKHZ2iH/xFAqF/9mKgm6I
-         BQYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ESaMiaBBpmtpSRdKsJdzm4BjqynM4VAPoAlR77c5o2o=;
-        b=ZDc3Cd9WzV9KjNyCpi9bTxOk9taLN+6VDksmLq83S0RipoCrP+/M5bagMMFkJ2sf+5
-         lmSZRvlkaFkaoaLJs/H8SMHAOqGd0YMDmBIrSeoCnJJsswkq/dKhErBNP80mBsvL5FE4
-         Y3iOD7KxTSqrubU/KObueS1cppVc99hyjIDR2/+hPxs0K0UUBRG4PuTDKuWKxailBk2h
-         78KcoqQVcv/FLkvZCktiIUHD8JbkeEQ11voREfXyc3uj00TA3EdjG4EVPQID+AxiCB7G
-         AuZTPRX3FHhhosFrRyPS/S/DdCnf+V4JXO3JwFH2pzm14tyoOxn67ZxIXW4v8tfIbAi1
-         +63A==
-X-Gm-Message-State: APjAAAUscSqjMw/HkB2vazhYLUrN1c4Qpdzr7NtR3poZ5A6WV824kH1r
-        0+zRFp9Yz2JsMOczIt9udUY=
-X-Google-Smtp-Source: APXvYqzd4T630p+Sf2zk8e3SbFQowGXbuH0TM82c1FmaYJuSbiUp/VthBTEw8CdPd84boe6aiaqRDg==
-X-Received: by 2002:a17:90a:7784:: with SMTP id v4mr19320734pjk.134.1583120547811;
-        Sun, 01 Mar 2020 19:42:27 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id t63sm19171197pfb.70.2020.03.01.19.42.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Mar 2020 19:42:27 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 2/4] tcp: bind(addr, 0) remove the
- SO_REUSEADDR restriction when ephemeral ports are exhausted.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com
-Cc:     kuni1840@gmail.com, netdev@vger.kernel.org,
-        osa-contribution-log@amazon.com
-References: <20200229113554.78338-1-kuniyu@amazon.co.jp>
- <20200229113554.78338-3-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0b9db623-0a69-30e6-1e28-b6acb306c360@gmail.com>
-Date:   Sun, 1 Mar 2020 19:42:25 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200229113554.78338-3-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=utf-8
+        id S1726860AbgCBDn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Mar 2020 22:43:27 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3354 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726758AbgCBDn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Mar 2020 22:43:27 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0223fDrV014317;
+        Sun, 1 Mar 2020 19:43:14 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=6benZCZL+BM5g8ycZwqof67mKu2rhZKZMl1IR59E+BM=;
+ b=XXLb/7AV0Rhho+fJvZvOFiMZBHtR9Q7jtBtgPFXnOBSwEzzZ3RrRK3Hur2LJjTYu8Jo1
+ 3fIia4bieihA/YT/GZs70XMCkNtYAyCJcM/9kvPi6f++C2tKOJnJXdFUrh/hU5q0Np0i
+ iJklGU6i4RElqrqzoIQnvfPjI3Vx8w4qaJU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yfpjvdm64-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sun, 01 Mar 2020 19:43:14 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Sun, 1 Mar 2020 19:43:13 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XrUzxVL+KZydUOuQkp3mwEJKxhj0H31Jdymo6y311eJSqU8JzhDzoEfybquwCCfp82/tYytJgMYPuD+GLe1HaBcmbU2BoAYburlQ95k60yeRCcjYHONV5LoPSXJRHpyG2J8OiA/SRJm3eAiP1nkEJztSbjrWTNEEbNNdL1A+2rmblc6SZX90dwoAQIrom8jbltwEQ/V+Js4Rp5mQNtgt07UGhQG63PbU0rhwZrVqGZfD3CgEIxZ6nrk8N6tL6y4FikqyOkIJCvEJCekWOzbVdZ0gjo/RLNMeekuDd08zfkOIfDX9BtbxspJ5t+NIEF4aKmiF8kyBe+XyFkpQn5r57Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6benZCZL+BM5g8ycZwqof67mKu2rhZKZMl1IR59E+BM=;
+ b=ncc2lfbMJJIwMEYtl87sPVg/9PrdS50PuktDBhlvZyDFX4lokmi5X82c3fEs14nYpBf1yJp2BN+fX2YqDrhmSgjQ9tlO9y7ec49IF+cMHHQNaPBlHOL2Dq+66zET2kpf36Y92t/Wep2czNZ1eK4QP/mMReGjiCYB7fPcZPY0AHhSrgObbq8+I97J9Oh1BhlMFF7/2vWtEBjgh2l5bBN3KnCEdNiOBwQs5Z7dOuoBROSn9DORFk4PnBPh1CrCOQGPGrBircYlADsVPzMY+Stry5lfcJc8ZVmW+YPfagUp8IA9CfY9AH+rpskJNg8LlVYq5NopFpt9LXYxZ0AiFxT9pg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6benZCZL+BM5g8ycZwqof67mKu2rhZKZMl1IR59E+BM=;
+ b=V7KdUu2J+jlJLQVrrV3JhXerd3mBzm3uiBQiwO6gWxWvgnqgl2xngrdCnJ9i0oyA9OiqbwC5ETuVTloGApQm6LOQQeG1fM8i9J4Dxk+9M51F9tTxwnyLpvgp71TpnljE/YyIrPDRaD9O1lqNcqN+2KOnlppyVS2wkJ/3zHPJMj4=
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com (2603:10b6:5:13c::16)
+ by DM6PR15MB3372.namprd15.prod.outlook.com (2603:10b6:5:16b::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.18; Mon, 2 Mar
+ 2020 03:43:10 +0000
+Received: from DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c]) by DM6PR15MB3001.namprd15.prod.outlook.com
+ ([fe80::294e:884:76fd:743c%4]) with mapi id 15.20.2772.019; Mon, 2 Mar 2020
+ 03:43:10 +0000
+Subject: Re: [PATCH v2 bpf-next 1/2] bpftool: introduce "prog profile" command
+To:     Song Liu <songliubraving@fb.com>
+CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "arnaldo.melo@gmail.com" <arnaldo.melo@gmail.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>
+References: <20200228234058.634044-1-songliubraving@fb.com>
+ <20200228234058.634044-2-songliubraving@fb.com>
+ <07478dd7-99e2-3399-3c75-db83a283e754@fb.com>
+ <2FFDA2FF-55D3-41EC-8D6C-34A7D1C93025@fb.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <10ccbad0-0198-eeba-a24e-8090818d8f0a@fb.com>
+Date:   Sun, 1 Mar 2020 19:42:51 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
+In-Reply-To: <2FFDA2FF-55D3-41EC-8D6C-34A7D1C93025@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR11CA0015.namprd11.prod.outlook.com (10.172.48.153) To
+ DM6PR15MB3001.namprd15.prod.outlook.com (20.178.231.16)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:bc5a) by MWHPR11CA0015.namprd11.prod.outlook.com (10.172.48.153) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14 via Frontend Transport; Mon, 2 Mar 2020 03:43:08 +0000
+X-Originating-IP: [2620:10d:c090:400::5:bc5a]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 82825af8-f9d4-4f42-7378-08d7be5bd391
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3372:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB337242932B04046F57C36682D3E70@DM6PR15MB3372.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 033054F29A
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(376002)(396003)(136003)(39860400002)(366004)(199004)(189003)(16526019)(186003)(36756003)(2616005)(6636002)(316002)(2906002)(81156014)(37006003)(8676002)(54906003)(31686004)(81166006)(8936002)(53546011)(6506007)(31696002)(6666004)(6512007)(86362001)(6862004)(4326008)(5660300002)(478600001)(66556008)(52116002)(66476007)(6486002)(66946007);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR15MB3372;H:DM6PR15MB3001.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WlLnQ6ryhVRpGbVuL0tJPhXUWE7NtUX73HwiuLuu66tphB6maa5QuYOBEMWD+vSC9aRDsLtIWDjXupZEUXwlqVuDnTLbxSkSVPzt3W+xNRO6kr2oDQZADag5tgJgMoXq8agjgxvj7DVIbpNOqniinsTGgZhuNfNiJi3Kh0pBXBezYxb/Rb7abI7UcgUZNIydgHuy0GFakvJmHWEiDuWHxOb0Trdr/+UanzTLIMtGGdgOLXdPRHhFnFHcz2S5c0lmghcM/4+Hhx99BVmZihuCB0vKPc3vYu5Yqg/ts7j0mBaCiSn3kzVW/itVNccM7ILKwdDJYiX7yNZEP5LV7ANOPBe1IUeOH0bDH8LIK3YXfgfjJCCnqmA7FocLjKdDCmkNYBi3amOvC2+W5xp4YewawX9ccUUC7RNKPHBC87u2vRGX33gx1+hsdQ4uMYuIib4f
+X-MS-Exchange-AntiSpam-MessageData: aU+VTWmjYKAgIraaIcj2Xpehs6dpcWO6ns92sjMdBT5P6IOlEOrDdLLvkRqJmC+gW2FtUD4OaiLyZNq2ALvV1VYWbA+iTZUTLmxwbIahim81v87bM0KYx0zF+02gHIjZqYvA0pcBohRg2c3aE2prHOQiwhqn5ipNA8DLJjn0JPduzXFUTqDAElxjhkEtcHcK
+X-MS-Exchange-CrossTenant-Network-Message-Id: 82825af8-f9d4-4f42-7378-08d7be5bd391
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2020 03:43:10.0288
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GcIRKQo71+npOSVcymGquMDD33m3q73uYfgX11ZI/DIY6tZ3XbUqYglomQDxFRhh
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3372
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-01_09:2020-02-28,2020-03-01 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ mlxlogscore=999 suspectscore=0 adultscore=0 priorityscore=1501 bulkscore=0
+ mlxscore=0 spamscore=0 impostorscore=0 phishscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003020027
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -70,50 +119,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/29/20 3:35 AM, Kuniyuki Iwashima wrote:
-> Commit aacd9289af8b82f5fb01bcdd53d0e3406d1333c7 ("tcp: bind() use stronger
-> condition for bind_conflict") introduced a restriction to forbid to bind
-> SO_REUSEADDR enabled sockets to the same (addr, port) tuple in order to
-> assign ports dispersedly so that we can connect to the same remote host.
+On 3/1/20 2:37 PM, Song Liu wrote:
 > 
-> The change results in accelerating port depletion so that we fail to bind
-> sockets to the same local port even if we want to connect to the different
-> remote hosts.
 > 
-> You can reproduce this issue by following instructions below.
->   1. # sysctl -w net.ipv4.ip_local_port_range="32768 32768"
->   2. set SO_REUSEADDR to two sockets.
->   3. bind two sockets to (address, 0) and the latter fails.
+>> On Feb 29, 2020, at 7:52 PM, Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>>
+>> On 2/28/20 3:40 PM, Song Liu wrote:
+>>> With fentry/fexit programs, it is possible to profile BPF program with
+>>> hardware counters. Introduce bpftool "prog profile", which measures key
+>>> metrics of a BPF program.
+>>> bpftool prog profile command creates per-cpu perf events. Then it attaches
+>>> fentry/fexit programs to the target BPF program. The fentry program saves
+>>> perf event value to a map. The fexit program reads the perf event again,
+>>> and calculates the difference, which is the instructions/cycles used by
+>>> the target program.
+>>> Example input and output:
+>>>    ./bpftool prog profile 3 id 337 cycles instructions llc_misses
+>>>          4228 run_cnt
+>>>       3403698 cycles                                              (84.08%)
+>>>       3525294 instructions   #  1.04 insn per cycle               (84.05%)
+>>>            13 llc_misses     #  3.69 LLC misses per million isns  (83.50%)
+>>> This command measures cycles and instructions for BPF program with id
+>>> 337 for 3 seconds. The program has triggered 4228 times. The rest of the
+>>> output is similar to perf-stat. In this example, the counters were only
+>>> counting ~84% of the time because of time multiplexing of perf counters.
+>>> Note that, this approach measures cycles and instructions in very small
+>>> increments. So the fentry/fexit programs introduce noticeable errors to
+>>> the measurement results.
+>>> The fentry/fexit programs are generated with BPF skeletons. Therefore, we
+>>> build bpftool twice. The first time _bpftool is built without skeletons.
+>>> Then, _bpftool is used to generate the skeletons. The second time, bpftool
+>>> is built with skeletons.
+>>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>>> ---
+>>>   tools/bpf/bpftool/Makefile                |  18 +
+>>>   tools/bpf/bpftool/prog.c                  | 428 +++++++++++++++++++++-
+>>>   tools/bpf/bpftool/skeleton/profiler.bpf.c | 171 +++++++++
+>>>   tools/bpf/bpftool/skeleton/profiler.h     |  47 +++
+>>>   tools/scripts/Makefile.include            |   1 +
+>>>   5 files changed, 664 insertions(+), 1 deletion(-)
+>>>   create mode 100644 tools/bpf/bpftool/skeleton/profiler.bpf.c
+>>>   create mode 100644 tools/bpf/bpftool/skeleton/profiler.h
+>>> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+>>> index c4e810335810..c035fc107027 100644
+>>> --- a/tools/bpf/bpftool/Makefile
+>>> +++ b/tools/bpf/bpftool/Makefile
+>>> @@ -59,6 +59,7 @@ LIBS = $(LIBBPF) -lelf -lz
+>>>     INSTALL ?= install
+>>>   RM ?= rm -f
+>>> +CLANG ?= clang
+>>>     FEATURE_USER = .bpftool
+>>>   FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib
+>>> @@ -110,6 +111,22 @@ SRCS += $(BFD_SRCS)
+>>>   endif
+>>>     OBJS = $(patsubst %.c,$(OUTPUT)%.o,$(SRCS)) $(OUTPUT)disasm.o
+>>> +_OBJS = $(filter-out $(OUTPUT)prog.o,$(OBJS)) $(OUTPUT)_prog.o
+>>> +
+>>> +$(OUTPUT)_prog.o: prog.c
+>>> +	$(QUIET_CC)$(COMPILE.c) -MMD -DBPFTOOL_WITHOUT_SKELETONS -o $@ $<
+>>> +
+>>> +$(OUTPUT)_bpftool: $(_OBJS) $(LIBBPF)
+>>> +	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(_OBJS) $(LIBS)
+>>> +
+>>> +skeleton/profiler.bpf.o: skeleton/profiler.bpf.c
+>>> +	$(QUIET_CLANG)$(CLANG) -g -O2 -target bpf -c $< -o $@
+>>
+>> With a fresh checkout, applying this patch and just selftests like
+>>   make -C tools/testing/selftests/bpf
+>>
+>> I got the following build error:
+>>
+>> make[2]: Leaving directory `/data/users/yhs/work/net-next/tools/lib/bpf'
+>> clang -g -O2 -target bpf -c skeleton/profiler.bpf.c -o skeleton/profiler.bpf.o
+>> skeleton/profiler.bpf.c:5:10: fatal error: 'bpf/bpf_helpers.h' file not found
+>> #include <bpf/bpf_helpers.h>
+>>          ^~~~~~~~~~~~~~~~~~~
+>> 1 error generated.
+>> make[1]: *** [skeleton/profiler.bpf.o] Error 1
+>>
+>> I think Makefile should be tweaked to avoid selftest failure.
 > 
-> Therefore, when ephemeral ports are exhausted, bind(addr, 0) should
-> fallback to the legacy behaviour to enable the SO_REUSEADDR option and make
-> it possible to connect to different remote (addr, port) tuples.
-> 
-> This patch allows us to bind SO_REUSEADDR enabled sockets to the same
-> (addr, port) only when all ephemeral ports are exhausted.
-> 
-> The only notable thing is that if all sockets bound to the same port have
-> both SO_REUSEADDR and SO_REUSEPORT enabled, we can bind sockets to an
-> ephemeral port and also do listen().
-> 
-> Fixes: aacd9289af8b ("tcp: bind() use stronger condition for bind_conflict")
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Hmm... I am not seeing this error. The build succeeded in the test.
 
-I am unsure about this, since this could double the time taken by this
-function, which is already very time consuming.
+Just tried again with a *fresh* checkout of tools/ directory with the patch.
+   -bash-4.4$ make -C tools/testing/selftests/bpf
+   ...
+   LINK 
+/data/users/yhs/work/net-next/tools/testing/selftests/bpf/tools/build/bpftool//libbpf/libbpf.a
+   LINK 
+/data/users/yhs/work/net-next/tools/testing/selftests/bpf/tools/build/bpftool/_bpftool
+make[1]: *** No rule to make target `skeleton/profiler.bpf.c', needed by 
+`skeleton/profiler.bpf.o'.  Stop.
+make: *** 
+[/data/users/yhs/work/net-next/tools/testing/selftests/bpf/tools/sbin/bpftool] 
+Error 2
+make: Leaving directory 
+`/data/users/yhs/work/net-next/tools/testing/selftests/bpf
 
-We added years ago IP_BIND_ADDRESS_NO_PORT socket option, so that the kernel
-has more choices at connect() time (instead of bind()) time to choose a source port.
+The error is different from my previous try, but the build still fails.
 
-This considerably lowers time taken to find an optimal source port, since
-the kernel has full information (source address, destination address & port)
-
-       IP_BIND_ADDRESS_NO_PORT (since Linux 4.2)
-              Inform the kernel to not reserve an ephemeral port when using
-              bind(2) with a port number of 0.  The port will later be auto‐
-              matically chosen at connect(2) time, in a way that allows
-              sharing a source port as long as the 4-tuple is unique.
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=90c337da1524863838658078ec34241f45d8394d
-
+> 
+> Thanks,
+> Song
+> 
