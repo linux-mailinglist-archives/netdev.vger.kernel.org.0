@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A801761D4
+	by mail.lfdr.de (Postfix) with ESMTP id 640831761D3
 	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 19:04:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727432AbgCBSEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727463AbgCBSEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 2 Mar 2020 13:04:15 -0500
-Received: from mout-u-204.mailbox.org ([91.198.250.253]:65444 "EHLO
+Received: from mout-u-204.mailbox.org ([91.198.250.253]:65448 "EHLO
         mout-u-204.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbgCBSEO (ORCPT
+        with ESMTP id S1727250AbgCBSEO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 13:04:14 -0500
 Received: from mout-u-107.mailbox.org (mout-u-107.mailbox.org [91.198.250.252])
         (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 48WSXX2hP6zQlFj;
-        Mon,  2 Mar 2020 18:57:32 +0100 (CET)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 48WSXY245JzQlFk;
+        Mon,  2 Mar 2020 18:57:33 +0100 (CET)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
         (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mout-u-107.mailbox.org (Postfix) with ESMTPS id 48WSXX27VWzKmkd;
-        Mon,  2 Mar 2020 18:57:32 +0100 (CET)
+        by mout-u-107.mailbox.org (Postfix) with ESMTPS id 48WSXY1ZG2zKmkd;
+        Mon,  2 Mar 2020 18:57:33 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1583171850;
+        s=MBO0001; t=1583171851;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=EFNTj2brS+Suz58LeVaHlX6Fl9PpRMaDjJlJxRijkYk=;
-        b=xp63USG+5hKY8Y+gpBOPGHYASY+r+fjo7cJpEvl+kLDkLNw1xUjcVFy1STnKF8jsKEcVvS
-        Aq/zmOQiPGwswOFLJeU6EA36lik0V2HX8sbQbSMky8doyaDZZpR6zT0ZhoZ/VIGFjMk+WN
-        7QYEulr4TfyBM6XDofoPCGvoUXLMpN326bUWv7OCP/q2zu92GjllmmWd3uvK1oP1p5CvhF
-        pFCuVaXwC61rnn1+7l73U9rzyVtirAmmw63hwnoIaYHTFolBSdO+rKuCidmMdduo3PBmZP
-        N6x+ivrHdEmH2/LIXIZ3pzyqd27J4M9jbbKpHLmh2ccnnuQLzzQDUwL3ffr/cg==
+        bh=Ly331UmSRuFnyUT3f5xDX0sIPjxf59acPiLjIQfcUxA=;
+        b=Qz6/hJ5v1x+ifhPUVdxgW5OtYqt6zn8MmDUeNHtyeUWbWe6bn87j51ZkvU5S/4sR3YRg3P
+        HOROTcbYhC0GIbcatY1l7d0cvwrpMOjALcQXUnC5bpUWU+URn2KcjK5gf9cQbEKvOxxg6y
+        cVOTdbQnRB62bEg/qdhD/3LpODA0sk0LrfwJ81rK6CLHkI5LqMknbiu1Z7IvZ0Jlg+1QcW
+        V0qJHaenHyPBtGT4RL9GERvQYHeVehO0FxIby1hIZEJNgyd5fGBnuwL1KjTKZR4bbZJVrv
+        38dvsHtV4amss88WXs0UCr81WuhgrmFaPbvSIxKUanveS1AIopPTm8PFEf8mmA==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id 3hKnbCX2WzJd; Mon,  2 Mar 2020 18:57:29 +0100 (CET)
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id EwO27NcyP0Oy; Mon,  2 Mar 2020 18:57:30 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org
 Cc:     Ido Schimmel <idosch@mellanox.com>,
         Petr Machata <petrm@mellanox.com>,
         David Miller <davem@davemloft.net>,
         Amit Cohen <amitc@mellanox.com>
-Subject: [PATCH net-next 2/4] selftests: forwarding: Convert until_counter_is() to take expression
-Date:   Mon,  2 Mar 2020 19:56:03 +0200
-Message-Id: <6b4f73d1ec3d11920c5beed8eec7289c74eb66b2.1583170249.git.petrm@mellanox.com>
+Subject: [PATCH net-next 3/4] selftests: forwarding: tc_common: Convert to use busywait
+Date:   Mon,  2 Mar 2020 19:56:04 +0200
+Message-Id: <69173a424aefde8eaef0f25aaf5c7c17790fc384.1583170249.git.petrm@mellanox.com>
 In-Reply-To: <cover.1583170249.git.petrm@mellanox.com>
 References: <cover.1583170249.git.petrm@mellanox.com>
 MIME-Version: 1.0
@@ -57,77 +57,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-until_counter_is() currently takes as an argument a number and the
-condition holds when the current counter value is >= that number. Make the
-function more generic by taking a partial expression instead of just the
-number.
-
-Convert the two existing users.
+A function busywait() was recently added based on the logic in
+__tc_check_packets(). Convert the code in tc_common to use the new
+function.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Reviewed-by: Amit Cohen <amitc@mellanox.com>
 ---
- tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh | 6 +++---
- tools/testing/selftests/net/forwarding/lib.sh             | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ .../selftests/net/forwarding/tc_common.sh     | 32 +++----------------
+ 1 file changed, 4 insertions(+), 28 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index ebf7752f6d93..8f833678ac4d 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -351,7 +351,7 @@ build_backlog()
- 	local i=0
+diff --git a/tools/testing/selftests/net/forwarding/tc_common.sh b/tools/testing/selftests/net/forwarding/tc_common.sh
+index 64f652633585..0e18e8be6e2a 100644
+--- a/tools/testing/selftests/net/forwarding/tc_common.sh
++++ b/tools/testing/selftests/net/forwarding/tc_common.sh
+@@ -6,39 +6,14 @@ CHECK_TC="yes"
+ # Can be overridden by the configuration file. See lib.sh
+ TC_HIT_TIMEOUT=${TC_HIT_TIMEOUT:=1000} # ms
  
- 	while :; do
--		local cur=$(busywait 1100 until_counter_is $((cur + 1)) \
-+		local cur=$(busywait 1100 until_counter_is "> $cur" \
- 					    get_qdisc_backlog $vlan)
- 		local diff=$((size - cur))
- 		local pkts=$(((diff + 7999) / 8000))
-@@ -481,14 +481,14 @@ do_mc_backlog_test()
- 	start_tcp_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) bc
- 	start_tcp_traffic $h2.$vlan $(ipaddr 2 $vlan) $(ipaddr 3 $vlan) bc
- 
--	qbl=$(busywait 5000 until_counter_is 500000 \
-+	qbl=$(busywait 5000 until_counter_is ">= 500000" \
- 		       get_qdisc_backlog $vlan)
- 	check_err $? "Could not build MC backlog"
- 
- 	# Verify that we actually see the backlog on BUM TC. Do a busywait as
- 	# well, performance blips might cause false fail.
- 	local ebl
--	ebl=$(busywait 5000 until_counter_is 500000 \
-+	ebl=$(busywait 5000 until_counter_is ">= 500000" \
- 		       get_mc_transmit_queue $vlan)
- 	check_err $? "MC backlog reported by qdisc not visible in ethtool"
- 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index de57e8887a7c..7ecce65d08f9 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -277,11 +277,11 @@ wait_for_offload()
- 
- until_counter_is()
+-__tc_check_packets()
+-{
+-	local id=$1
+-	local handle=$2
+-	local count=$3
+-	local operator=$4
+-
+-	start_time="$(date -u +%s%3N)"
+-	while true
+-	do
+-		cmd_jq "tc -j -s filter show $id" \
+-		       ".[] | select(.options.handle == $handle) | \
+-			    select(.options.actions[0].stats.packets $operator $count)" \
+-		    &> /dev/null
+-		ret=$?
+-		if [[ $ret -eq 0 ]]; then
+-			return $ret
+-		fi
+-		current_time="$(date -u +%s%3N)"
+-		diff=$(expr $current_time - $start_time)
+-		if [ "$diff" -gt "$TC_HIT_TIMEOUT" ]; then
+-			return 1
+-		fi
+-	done
+-}
+-
+ tc_check_packets()
  {
--	local value=$1; shift
-+	local expr=$1; shift
- 	local current=$("$@")
+ 	local id=$1
+ 	local handle=$2
+ 	local count=$3
  
- 	echo $((current))
--	((current >= value))
-+	((current $expr))
+-	__tc_check_packets "$id" "$handle" "$count" "=="
++	busywait "$TC_HIT_TIMEOUT" until_counter_is "== $count" \
++		 tc_rule_handle_stats_get "$id" "$handle" > /dev/null
  }
  
- busywait_for_counter()
-@@ -290,7 +290,7 @@ busywait_for_counter()
- 	local delta=$1; shift
+ tc_check_packets_hitting()
+@@ -46,5 +21,6 @@ tc_check_packets_hitting()
+ 	local id=$1
+ 	local handle=$2
  
- 	local base=$("$@")
--	busywait "$timeout" until_counter_is $((base + delta)) "$@"
-+	busywait "$timeout" until_counter_is ">= $((base + delta))" "$@"
+-	__tc_check_packets "$id" "$handle" 0 ">"
++	busywait "$TC_HIT_TIMEOUT" until_counter_is "> 0" \
++		 tc_rule_handle_stats_get "$id" "$handle" > /dev/null
  }
- 
- setup_wait_dev()
 -- 
 2.20.1
 
