@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE641763C5
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:22:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 536E61763CC
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727600AbgCBTWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 14:22:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36964 "EHLO mail.kernel.org"
+        id S1727526AbgCBTYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 14:24:41 -0500
+Received: from correo.us.es ([193.147.175.20]:42998 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727126AbgCBTWj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 14:22:39 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        id S1727126AbgCBTYl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 14:24:41 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D6C4E303D06
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 20:24:26 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C2366DA3AB
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 20:24:26 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B2D14DA39F; Mon,  2 Mar 2020 20:24:26 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CF602DA38F;
+        Mon,  2 Mar 2020 20:24:24 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 02 Mar 2020 20:24:24 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 641B42173E;
-        Mon,  2 Mar 2020 19:22:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583176958;
-        bh=UXTQKkSGjTeE+KJ1GPD/JGKupx/qHMGI1vwjG7jNua4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tXCG80ygwKrrTir9Uh96qbP03bDEtIymUUmoiepw/oCUcTXPC1NljLiNyx6b+zWb+
-         Bg2/VPUQ4TCeail7w3yJokz97f22JrI7wxvYEe8pIIGPnN7Aw3ihxYNWdEFXqQBJfO
-         eCYTtt2Tq39BQrACTOLXuzf3OG31fPtQHGOczZ0Q=
-Date:   Mon, 2 Mar 2020 11:22:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianbo Liu <jianbol@mellanox.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [net-next 08/16] net/mlx5e: Add devlink fdb_large_groups
- parameter
-Message-ID: <20200302112236.0474d821@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200302020420.GA14695@mellanox.com>
-References: <20200228004446.159497-1-saeedm@mellanox.com>
-        <20200228004446.159497-9-saeedm@mellanox.com>
-        <20200228111026.1baa9984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200302020420.GA14695@mellanox.com>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 93EAD426CCB9;
+        Mon,  2 Mar 2020 20:24:24 +0100 (CET)
+Date:   Mon, 2 Mar 2020 20:24:37 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200302192437.wtge3ze775thigzp@salvia>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-2-jiri@resnulli.us>
+ <20200229192947.oaclokcpn4fjbhzr@salvia>
+ <20200301084443.GQ26061@nanopsycho>
+ <20200302132016.trhysqfkojgx2snt@salvia>
+ <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 Mar 2020 02:04:20 +0000 Jianbo Liu wrote:
-> The 02/28/2020 11:10, Jakub Kicinski wrote:
-> > On Thu, 27 Feb 2020 16:44:38 -0800 Saeed Mahameed wrote:  
-> > > From: Jianbo Liu <jianbol@mellanox.com>
-> > > 
-> > > Add a devlink parameter to control the number of large groups in a
-> > > autogrouped flow table. The default value is 15, and the range is between 1
-> > > and 1024.
-> > > 
-> > > The size of each large group can be calculated according to the following
-> > > formula: size = 4M / (fdb_large_groups + 1).
-> > > 
-> > > Examples:
-> > > - Set the number of large groups to 20.
-> > >     $ devlink dev param set pci/0000:82:00.0 name fdb_large_groups \
-> > >       cmode driverinit value 20
-> > > 
-> > >   Then run devlink reload command to apply the new value.
-> > >     $ devlink dev reload pci/0000:82:00.0
-> > > 
-> > > - Read the number of large groups in flow table.
-> > >     $ devlink dev param show pci/0000:82:00.0 name fdb_large_groups
-> > >     pci/0000:82:00.0:
-> > >       name fdb_large_groups type driver-specific
-> > >         values:
-> > >           cmode driverinit value 20
-> > > 
-> > > Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
-> > > Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
-> > > Reviewed-by: Roi Dayan <roid@mellanox.com>
-> > > Acked-by: Jiri Pirko <jiri@mellanox.com>
-> > > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>  
-> > 
-> > Slicing memory up sounds like something that should be supported via
-> > the devlink-resource API, not by params and non-obvious calculations :(  
+On Mon, Mar 02, 2020 at 04:29:32PM +0000, Edward Cree wrote:
+> On 02/03/2020 13:20, Pablo Neira Ayuso wrote:
+> > 2) explicit counter action, in this case the user specifies explicitly
+> >    that it needs a counter in a given position of the rule. This
+> >    counter might come before or after the actual action.
+>
+> But the existing API can already do this, with a gact pipe.  Plus, Jiri's
+>  new API will allow specifying a counter on any action (rather than only,
+>  implicitly, those which have .stats_update()) should that prove to be
+>  necessary.
 > 
-> No, it's not to configure memory resource. It is to control how many
-> large groups in FW FDB. The calculations to to tell how many rules in each
-> large group.
+> I really think the 'explicit counter action' is a solution in search of a
+>  problem, let's not add random orthogonality violations.  (Equally if the
+>  counter action had been there first, I'd be against adding counters to
+>  the other actions.)
 
-I don't know what a "large group" is. Please update the documentation
-so it's not an utter pleonasm.
-
-What's a large group? How does twiddling with this knob change the
-behavior of the system? Who and in what conditions may be interested 
-in adjusting it?
+It looks to me that you want to restrict the API to tc for no good
+_technical_ reason.
