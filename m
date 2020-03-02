@@ -2,144 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F3E017542C
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 07:57:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A43E717542F
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 07:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgCBG5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 01:57:25 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43723 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbgCBG5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 01:57:25 -0500
-Received: by mail-pf1-f195.google.com with SMTP id s1so5088522pfh.10;
-        Sun, 01 Mar 2020 22:57:24 -0800 (PST)
+        id S1726728AbgCBG5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 01:57:51 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39332 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbgCBG5u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 01:57:50 -0500
+Received: by mail-io1-f67.google.com with SMTP id h3so10319622ioj.6;
+        Sun, 01 Mar 2020 22:57:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=yj6/i5PGnAg2vla96UjqFrCdBrIGa+0X2TdjaqrEe/Y=;
-        b=b3YGAK+UaX8TgwholOzZWDvv6xiBB9MBD8W8HCqJKBDjtNZ4yAKmNsvufbvD0WfAUl
-         Ojc82bK5Bjm+5D8Q8lMDrBd7BFFueGhCQrqvSR04Q0Jk0ZjypGlwv4hyNIZsUbAusv7v
-         Ji1aB983yP1zxrJANQVBU22Diz46XD+Htr8bDCERtSNAcyA/5rBIk8epJk1/pE+HC1Tw
-         Ql375z7BhpWDZ6TkeIeU2ZhSegkTExqWy4Q8GVH5fR3MTK7OhngJ7qmd5p1yJViVWmog
-         KISGPrhBp7C1I3mN1BQpg1q7o/SsxhxVQXWqIhSJu+/AmCyjMuMZuBekoavBeNucB3gb
-         bxOQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=nrFu2KKyZmxCAHYq/fyE1aIbF4fy/TeMjczCnvnCazg=;
+        b=YldOFDCehBVoWqYwHpoq4EsVquC+KOD4ScKdxAzbtLlwP+gy+k4/dY2jtVh8VjNlEE
+         Bk8BsJhPUIZ8Y3HPFSdzPiqLqtQPLKsPlmJXScfPT4k/dIR8KWV2eYTJgMK7XId4STn8
+         RsT8rm0m3xCGlfwrwjiWYqov43Qx3nSUX2B/Dp988zYm448u19AwKg99WyG/Uk0nxu2i
+         2b10BVGcp/y7CndtYd+VxYK3q2mBN1guPlR5qwxX0J6aEbJ/oZyDdSOOfm3GMCyzj+JX
+         9of2iU9BuMUjl+j4A4+ZtCxw9p2/fu4YVOoC2z96tSzQZOyNpQi/YjOeWjK4cpds8dTY
+         qGCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yj6/i5PGnAg2vla96UjqFrCdBrIGa+0X2TdjaqrEe/Y=;
-        b=TqDTFU6880YieAQxJKwv6J37cSpiocwGea3Kf528L+75aaVRvPlFIb/jE6tzWfobj/
-         GH7fj7jDfYkmRuvSJ4n/Vn63U47JZgD++WGxBQCvqF4WzJJfF4qWAMDP5M8EHdXqX56l
-         GkfJWzp5S9fK/oPJYxz+12TK2z5g799oJTYaUxF1ktO5WOqeCYPcyyZerzNnhmTxrR6i
-         Nm8J9QSzt0J9IYKY+I/isc/iuws9adVCMTmfqIu2nAmWI9qgWn8YODFkQtSypB/TjAFq
-         1Q08x2lo257UGA8D6lzYUJPN16OS9MG2yNJHVl7v7C6BW2wjyTSY05Y9a0DBDR40B13K
-         eo8Q==
-X-Gm-Message-State: APjAAAW52LxyWrLLDIoBoKpbZkSkdYsZof09zxz689uAaBWaahZYkEgh
-        ckvd4n6+El1Y2KbjYtBuqQE1dOs0
-X-Google-Smtp-Source: APXvYqxSXnsiG4+LCZDRHNiley9tMRpBi+u+lobMGf/b4EqgU5kJ6fLJkASc97wabIcXeS/tmmtw5Q==
-X-Received: by 2002:a63:3207:: with SMTP id y7mr18907478pgy.344.1583132243928;
-        Sun, 01 Mar 2020 22:57:23 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o12sm7078715pfp.1.2020.03.01.22.57.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 01 Mar 2020 22:57:23 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, jere.leppanen@nokia.com,
-        michael.tuexen@lurchi.franken.de
-Subject: [PATCH net] sctp: return a one-to-one type socket when doing peeloff
-Date:   Mon,  2 Mar 2020 14:57:15 +0800
-Message-Id: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nrFu2KKyZmxCAHYq/fyE1aIbF4fy/TeMjczCnvnCazg=;
+        b=LlD3lKpjxdlEoRVzkEJGI7FI7GaOdzA+XfRL2bQLgvlRmvhf3993IAKjjRefQs1otr
+         AqYO3og82nOSBP99kMJl1WzemXMfGrbK6/ON2Z6PsJ+WsZfrAi+3rVpHZgYgsVnFFwid
+         TlZ+8DUjdHgeA3A9yjI4KtOEgG+xKNzkcC6oC5Cr/QB1axMXnZtUhZbeZ5L7DMKKKyUM
+         OhXIUg1NoyH27eWurTyTNo648oWxJtZDjg1Fh8z3xHEoJ09pIFhxe4fyvjU9XlikRBhZ
+         y/OU0/lwQZaga0VFKqAZ7Vs3aalWpsgRJwCH0gDH0/4gmgCFk9EpbSyzb6/BDnB14kq5
+         AiSg==
+X-Gm-Message-State: APjAAAXvGJZ6rvAQRHFLIbAMeRHR2d/SPSWX5GasdYe8vD6fvUd9/gb9
+        FwPqJieprI+gs4penap+FpdH2Syflj9iAmk+CtdAN/Yo
+X-Google-Smtp-Source: APXvYqz5+hEEUCW548huA2G7W5d1Sh76hIwgHn+5VBIvXwkZ19HiKX5XJpdkni808XHuzA7Gfe6Lg1hPIOK7NBMkSWA=
+X-Received: by 2002:a02:a795:: with SMTP id e21mr12502166jaj.1.1583132269817;
+ Sun, 01 Mar 2020 22:57:49 -0800 (PST)
+MIME-Version: 1.0
+References: <20200228020212.16183-1-komachi.yoshiki@gmail.com> <CAEf4Bza9J3e=dfzDud6KY7_=4Qv77YqW2srfdxKg9ieiUCJgXw@mail.gmail.com>
+In-Reply-To: <CAEf4Bza9J3e=dfzDud6KY7_=4Qv77YqW2srfdxKg9ieiUCJgXw@mail.gmail.com>
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+Date:   Mon, 2 Mar 2020 15:57:39 +0900
+Message-ID: <CAA6waGKtG_fE3Q+Dig9K1L3D9FRErQmpoMtMbPzuzkyODYXV7A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: btf: Fix BTF verification of the enum size in struct/union
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As it says in rfc6458#section-9.2:
+2020=E5=B9=B42=E6=9C=8829=E6=97=A5(=E5=9C=9F) 9:23 Andrii Nakryiko <andrii.=
+nakryiko@gmail.com>:
+>
+> On Thu, Feb 27, 2020 at 6:07 PM Yoshiki Komachi
+> <komachi.yoshiki@gmail.com> wrote:
+> >
+> > btf_enum_check_member() checked if the size of "enum" as a struct
+> > member exceeded struct_size or not. Then, the function definitely
+> > compared it with the size of "int" now. Therefore, errors could occur
+> > when the size of the "enum" type was changed.
+> >
+> > Although the size of "enum" is 4-byte by default, users can change it
+> > as needed (e.g., the size of the following test variable is not 4-byte
+> > but 1-byte). It can be used as a struct member as below:
+> >
+> > enum test : char {
+>
+> you can't specify that in pure C, but this will work for C:
+>
+> struct {
+>     enum { X, Y, Z } __attribute__((packed)) e;
+> } tmp;
+>
+> Please add such a selftest, as part of fixing this bug. Thanks!
+>
+> Otherwise logic looks good.
 
-  The application uses the sctp_peeloff() call to branch off an
-  association into a separate socket.  (Note that the semantics are
-  somewhat changed from the traditional one-to-one style accept()
-  call.)  Note also that the new socket is a one-to-one style socket.
-  Thus, it will be confined to operations allowed for a one-to-one
-  style socket.
+Thank you for kind comments!
+I will add a selftest program, and submit the next version later.
 
-Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
-on which some operations are not allowed, like shutdown, as Jere
-reported.
+Best regards,
 
-This patch is to change it to return a one-to-one type socket instead.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Leppanen, Jere (Nokia - FI/Espoo) <jere.leppanen@nokia.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/socket.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 1b56fc4..2b55beb 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -88,8 +88,7 @@ static int sctp_send_asconf(struct sctp_association *asoc,
- static int sctp_do_bind(struct sock *, union sctp_addr *, int);
- static int sctp_autobind(struct sock *sk);
- static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
--			     struct sctp_association *assoc,
--			     enum sctp_socket_type type);
-+			     struct sctp_association *assoc);
- 
- static unsigned long sctp_memory_pressure;
- static atomic_long_t sctp_memory_allocated;
-@@ -4965,7 +4964,7 @@ static struct sock *sctp_accept(struct sock *sk, int flags, int *err, bool kern)
- 	/* Populate the fields of the newsk from the oldsk and migrate the
- 	 * asoc to the newsk.
- 	 */
--	error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
-+	error = sctp_sock_migrate(sk, newsk, asoc);
- 	if (error) {
- 		sk_common_release(newsk);
- 		newsk = NULL;
-@@ -5711,7 +5710,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
- 		return -EINVAL;
- 
- 	/* Create a new socket.  */
--	err = sock_create(sk->sk_family, SOCK_SEQPACKET, IPPROTO_SCTP, &sock);
-+	err = sock_create(sk->sk_family, SOCK_STREAM, IPPROTO_SCTP, &sock);
- 	if (err < 0)
- 		return err;
- 
-@@ -5727,8 +5726,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
- 	/* Populate the fields of the newsk from the oldsk and migrate the
- 	 * asoc to the newsk.
- 	 */
--	err = sctp_sock_migrate(sk, sock->sk, asoc,
--				SCTP_SOCKET_UDP_HIGH_BANDWIDTH);
-+	err = sctp_sock_migrate(sk, sock->sk, asoc);
- 	if (err) {
- 		sock_release(sock);
- 		sock = NULL;
-@@ -9453,8 +9451,7 @@ static inline void sctp_copy_descendant(struct sock *sk_to,
-  * and its messages to the newsk.
-  */
- static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
--			     struct sctp_association *assoc,
--			     enum sctp_socket_type type)
-+			     struct sctp_association *assoc)
- {
- 	struct sctp_sock *oldsp = sctp_sk(oldsk);
- 	struct sctp_sock *newsp = sctp_sk(newsk);
-@@ -9562,7 +9559,7 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
- 	 * original UDP-style socket or created with the accept() call on a
- 	 * TCP-style socket..
- 	 */
--	newsp->type = type;
-+	newsp->type = SCTP_SOCKET_TCP;
- 
- 	/* Mark the new socket "in-use" by the user so that any packets
- 	 * that may arrive on the association after we've moved it are
--- 
-2.1.0
-
+> >         X,
+> >         Y,
+> >         Z,
+> > };
+> >
+> > struct {
+> >         char a;
+> >         enum test b;
+> >         char c;
+> > } tmp;
+> >
+> > With the setup above, when I tried to load BTF, the error was given
+> > as below:
+> >
+> > ------------------------------------------------------------------
+> >
+> > [58] STRUCT (anon) size=3D3 vlen=3D3
+> >         a type_id=3D55 bits_offset=3D0
+> >         b type_id=3D59 bits_offset=3D8
+> >         c type_id=3D55 bits_offset=3D16
+> > [59] ENUM test size=3D1 vlen=3D3
+> >         X val=3D0
+> >         Y val=3D1
+> >         Z val=3D2
+> >
+> > [58] STRUCT (anon) size=3D3 vlen=3D3
+> >         b type_id=3D59 bits_offset=3D8 Member exceeds struct_size
+> >
+> > libbpf: Error loading .BTF into kernel: -22.
+> >
+> > ------------------------------------------------------------------
+> >
+> > The related issue was previously fixed by the commit 9eea98497951 ("bpf=
+:
+> > fix BTF verification of enums"). On the other hand, this patch fixes
+> > my explained issue by using the correct size of "enum" declared in
+> > BPF programs.
+> >
+> > Fixes: 179cde8cef7e ("bpf: btf: Check members of struct/union")
+> > Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+> > ---
+> >  kernel/bpf/btf.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 7871400..32ab922 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -2418,7 +2418,7 @@ static int btf_enum_check_member(struct btf_verif=
+ier_env *env,
+> >
+> >         struct_size =3D struct_type->size;
+> >         bytes_offset =3D BITS_ROUNDDOWN_BYTES(struct_bits_off);
+> > -       if (struct_size - bytes_offset < sizeof(int)) {
+> > +       if (struct_size - bytes_offset < member_type->size) {
+> >                 btf_verifier_log_member(env, struct_type, member,
+> >                                         "Member exceeds struct_size");
+> >                 return -EINVAL;
+> > --
+> > 1.8.3.1
+> >
