@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD59B1759E5
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 12:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AFFE1759E9
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 13:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbgCBL7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 06:59:17 -0500
-Received: from gateway23.websitewelcome.com ([192.185.49.177]:42314 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727228AbgCBL7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 06:59:16 -0500
+        id S1727769AbgCBMA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 07:00:59 -0500
+Received: from gateway21.websitewelcome.com ([192.185.45.38]:48764 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727228AbgCBMA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 07:00:59 -0500
 Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 4FD43AC38
-        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 05:59:13 -0600 (CST)
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id 25E57400E8738
+        for <netdev@vger.kernel.org>; Mon,  2 Mar 2020 06:00:58 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 8jj7jydA3Efyq8jj7j3DkM; Mon, 02 Mar 2020 05:59:13 -0600
+        id 8jknjygWNEfyq8jkoj3H4w; Mon, 02 Mar 2020 06:00:58 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,24 +24,27 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kzUqRBProYnJMl/U55hJEG0fvIDnfxPBZ5ML3y+DSkM=; b=eYGWa4noBm4mb5y8OEjY+SufaR
-        07Jf8aAq0TLuzMcMdPkT1DSYPUHKSA1CFiRfkhYy6QK/dKTVePx097lF+5XdhpjX6tnlT+lCiiu2C
-        cDVB72xS8EfwXX1+Kmw9g+F+DGXSwZGqjXZ0OTk2lGaCsIuqNkHVIfku7cbfIvUeaxZ+3sRaVJ+Ln
-        I5RdqywHznMQYwV7vcp1nkDqzL1EnCF6cmO8G2LH3zynVNWPW5ve4L3BAC8SBQE/wBw2X6d9TL1+y
-        V6kRuHZvLLS7eIZaoHL/tGEK8X5fOOYJSfx0/H2wZnAQYm1F7Yc/KYH6NEkq0Cq+Ps/7eH5eO+bxZ
-        2dtoezBQ==;
-Received: from [201.166.157.105] (port=42214 helo=embeddedor)
+        bh=GsVRQOnb9R+wqSrh14nCUTJamDpoQJdhIGejpnhlXaA=; b=tmiFV/pSqdqUxQvzZwfKRvcuQS
+        nrNndKakapvjXA0g0gKntJ6AhvL1DnrIFbwCsXPy8l/ryCB9TlAFLAV7Y0VW7B1NZyXdwYNLS8iXg
+        u1y6y+ZHIiWqVKuijfVp/svaWo1s1gXhwElBBfXD0LSBaF0ip4pA/kLD3s10PYe9ffCtSZ3o6zuTi
+        u4UezfLVleRxobvznz19V01GnExwJe6m6OZPvd4fpRoUkB7LEBO7a5G0MCcqMK6WxU4mdkdMD/Vz/
+        TpfgwLB2WL8n4nj8pBN5DeTT04e3m5I80ya8RkEc/eCGzFCZdxbXnNhX612LRN5AkUfmOKehs+QJg
+        6vzz+BiQ==;
+Received: from [201.166.157.55] (port=42220 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j8jj4-003q5x-W0; Mon, 02 Mar 2020 05:59:11 -0600
-Date:   Mon, 2 Mar 2020 06:02:09 -0600
+        id 1j8jkl-003r5x-Ct; Mon, 02 Mar 2020 06:00:56 -0600
+Date:   Mon, 2 Mar 2020 06:03:52 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Neil Horman <nhorman@tuxdriver.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] drop_monitor: Replace zero-length array with
+Subject: [PATCH][next] net: ip_fib: Replace zero-length array with
  flexible-array member
-Message-ID: <20200302120209.GA15699@embeddedor>
+Message-ID: <20200302120352.GA15843@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -52,15 +55,15 @@ X-AntiAbuse: Original Domain - vger.kernel.org
 X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
 X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
-X-Source-IP: 201.166.157.105
+X-Source-IP: 201.166.157.55
 X-Source-L: No
-X-Exim-ID: 1j8jj4-003q5x-W0
+X-Exim-ID: 1j8jkl-003r5x-Ct
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.157.105]:42214
+X-Source-Sender: (embeddedor) [201.166.157.55]:42220
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 10
+X-Email-Count: 5
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -98,28 +101,31 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- include/uapi/linux/net_dropmon.h | 4 ++--
+ include/net/ip_fib.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 66048cc5d7b3..67e31f329190 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -29,12 +29,12 @@ struct net_dm_config_entry {
- 
- struct net_dm_config_msg {
- 	__u32 entries;
--	struct net_dm_config_entry options[0];
-+	struct net_dm_config_entry options[];
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index 6a1ae49809de..dabe398bee4c 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -153,7 +153,7 @@ struct fib_info {
+ 	bool			nh_updated;
+ 	struct nexthop		*nh;
+ 	struct rcu_head		rcu;
+-	struct fib_nh		fib_nh[0];
++	struct fib_nh		fib_nh[];
  };
  
- struct net_dm_alert_msg {
- 	__u32 entries;
--	struct net_dm_drop_point points[0];
-+	struct net_dm_drop_point points[];
+ 
+@@ -250,7 +250,7 @@ struct fib_table {
+ 	int			tb_num_default;
+ 	struct rcu_head		rcu;
+ 	unsigned long 		*tb_data;
+-	unsigned long		__data[0];
++	unsigned long		__data[];
  };
  
- struct net_dm_user_msg {
+ struct fib_dump_filter {
 -- 
 2.25.0
 
