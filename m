@@ -2,87 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2487E176400
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:33:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19425176402
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 20:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbgCBTdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 14:33:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49104 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727234AbgCBTdX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 14:33:23 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C779621D56;
-        Mon,  2 Mar 2020 19:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583177602;
-        bh=8Z7VJonbUajpWFyhevM9l7sxdap1t3rDzCpXaKQOhvQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Lc75PEv96Izsso3iMj78DXToSEK7bBdDE627tdaA+m974OZSsOIxbs3nrzKLky7WI
-         vT2eq6tOMpG1GgU9JDztpZGT19QA8HwSXdggtkHbM13X5uKoq+k6S1H2uhABxatHsC
-         5prKMfbQDMhOXLVdlEKC8rQyWjCF1SIAEMRIi3Eg=
-Date:   Mon, 2 Mar 2020 11:33:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 03/12] flow_offload: check for basic action
- hw stats type
-Message-ID: <20200302113319.22fb0cb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200301090009.GT26061@nanopsycho>
-References: <20200228172505.14386-1-jiri@resnulli.us>
-        <20200228172505.14386-4-jiri@resnulli.us>
-        <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200229074004.GL26061@nanopsycho>
-        <20200229111848.53450ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200301090009.GT26061@nanopsycho>
+        id S1727487AbgCBTeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 14:34:15 -0500
+Received: from sonic308-20.consmr.mail.sg3.yahoo.com ([106.10.241.210]:41198
+        "EHLO sonic308-20.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727234AbgCBTeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 14:34:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.co.th; s=s2048; t=1583177650; bh=BrwQZanL+3cfs2fmVOVqrgvncAkf+Wn55k/6N6Nq9Vo=; h=Date:From:Reply-To:Subject:References:From:Subject; b=OoOVAguzSlCTfAxiFOydpp8ICAJUui9stVSE5agjdzjrF1kYzx0RQm1jC4WXLxpyyah4ibVRYStKtcDbRhIdE5NyflA1UvAnjHe79MGWHChlo7ltOOFMOJbPjbgUMUraign6Z5jxMWW1HNCbQ/ylyFmuvPD7JR+d/VIyNK/sJx/Uy9OJ2GiTAxoe9nGdcr52oT4KMDmREKFLVOuBD19NoOY6GulGZQcjXWL7fwN1USVNEwfZtTwK5e74ISM3FFilm4DKpHlQQ3CBjk3aOrWBPMisbZ8QKWaeqJX16rYC1mZR7AvkneZXzoNRXhV+wmoB5VhxACbb09A9EgbizKzt+g==
+X-YMail-OSG: eX4DdzYVM1lEbd3R7FkGM5Tf8LXBCphYnzjbQ623bNXsYKVoOZ66JAmwbvl5zzm
+ hgNeifDTWiftrNJKIZT3jkP4DwYQ8ucTOa0d0EGQ7PKkqmC0aDwOrOmsf_kavXOP_z218RpY5oi3
+ 0rxI6waamh5kJ03_ZZJhJISv3xR01yVgePzvpTL3x863HEQoeeP3Pb4_Doe_wy3W2HKCpkpcGQBQ
+ ZEHd_2VKRtTQURqa9qh1okRUH4sLUEOEOu7DCmeXD7xtgEnZIF6NQtmlnvAqk_xHx42MXwYB8MW_
+ 9BYhdr_DMvdJ3OLDdKsRDzQlWeT6HCo_eIKACbPdyPW3eb0XjYm3aSmvnEaX.fmgBh.JJsEO2PKu
+ 6Q0ecB0FSM9IcC0NV5hM_3I_ExwmaxKNRApq6M7f5AoEPS6qW08ij8csTLqsfpwjmDS2x49NqZzV
+ XTU7hbtPUAF5xryxqcpVfpvwDdGW3vtFaYZIMb1c5hU1myFSbiSboc2o5gIVvyWvk.8Y3pad.EmT
+ SFJhPFcakFkRLbzzwSshCf8x7radpBIEKVR85wu9b.HcU4CcC_lqpKUpy1g3zLOV82BiHILaMypP
+ Ehq8ZMphq4DkoGcM4OOVt4jmdzI1Hw1mUUleGN8.d2ToWHDI_FvWmqeir2Ki.6cG13m.yqODxrOJ
+ 1LX.cYvNKZrqXYczKumuVs4tH7ZvHt3FagDhNeFX9L1m24ZXatzkUOT1fLdXCcj8zFTYoQwStDIH
+ uLnZughSZDl1ozodSD_zni9q0arNCvEkZMqRO.vgwFJFtxIeVkqjS32C54yL7QBPaBtvb7Hg34oJ
+ fcLlFwXgJ7oNbu6rERYeGnTmknqWJsidJMxrz7Eo3.KO9jQfU6cVyxgqHjZHYei1ejxqn0ZSk4IX
+ SQaaTKjdG0BiXPCCW_CMCN06qEElcU2cVFKF8emait.w2l6lG5.VkDfHKUlMX.IRWetKj_ypskMp
+ Hqlt7a3y.9ZIToFdMyZ7Pccl3FlQcisklEXqx2SjVyB5qCKiiJOwdRYbsnvWoXiMcHRTNJsnCUyw
+ .5oGAPTXT7KTwY63PyHcY7isyWTMYJc8UuIbMVgjw_Y6.X3XCbi6pCmmpJjOXEDteOMet8UKhhjO
+ oxSV9MIRrKPJ7VZReO0AHQ9rAnlPs.5gpyDIb2Cr8M0a7HgeEtdd.ntCzggh7oOdjzDNaUo.9c4A
+ dHGV3k0Ck5z.jV5TB2fMfJ0u12KIB9wYtC.1pBgCI5EI1W7Poi1HroRl24cKzxeEUkv5uKFf4Qox
+ eRAQU7ZIDzZjLRFC30Mzz8xAX0HlyJNIEpP6l6iXL0Q.OlUhP0CNOX7pybSajeK5.csTDewQd
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.sg3.yahoo.com with HTTP; Mon, 2 Mar 2020 19:34:10 +0000
+Date:   Mon, 2 Mar 2020 19:34:05 +0000 (UTC)
+From:   Denis Aiden <wellbelt.truemail@yahoo.co.th>
+Reply-To: denisaiden42@gmail.com
+Message-ID: <1971730359.2653834.1583177645528@mail.yahoo.com>
+Subject: SPRICHST DU ENGLISCH?
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+References: <1971730359.2653834.1583177645528.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.15302 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 1 Mar 2020 10:00:09 +0100 Jiri Pirko wrote:
-> Sat, Feb 29, 2020 at 08:18:48PM CET, kuba@kernel.org wrote:
-> >On Sat, 29 Feb 2020 08:40:04 +0100 Jiri Pirko wrote:  
-> >> Fri, Feb 28, 2020 at 08:40:56PM CET, kuba@kernel.org wrote:  
-> >> >On Fri, 28 Feb 2020 18:24:56 +0100 Jiri Pirko wrote:    
-> >> >> @@ -299,6 +300,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
-> >> >>  		return -EINVAL;
-> >> >>  	}
-> >> >>  
-> >> >> +	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
-> >> >> +		return -EOPNOTSUPP;    
-> >> >
-> >> >Could we have this helper take one stat type? To let drivers pass the
-> >> >stat type they support?     
-> >> 
-> >> That would be always "any" as "any" is supported by all drivers.
-> >> And that is exactly what the helper checks..  
-> >
-> >I'd think most drivers implement some form of DELAYED today, 'cause for
-> >the number of flows things like OvS need that's the only practical one.
-> >I was thinking to let drivers pass DELAYED here.
-> >
-> >I agree that your patch would most likely pass ANY in almost all cases
-> >as you shouldn't be expected to know all the drivers, but at least the
-> >maintainers can easily just tweak the parameter.
-> >
-> >Does that make sense? Maybe I'm missing something.  
-> 
-> Well, I guess. mlx5 only supports "delayed". It would work for it.
-> How about having flow_action_basic_hw_stats_types_check() as is and
-> add flow_action_basic_hw_stats_types_check_ext() that would accept extra
-> arg with enum?
+Good day ,
 
-SGTM, perhaps with a more concise name? 
-Just flow_basic_hw_stats_check()?
+I am Denis Aiden, it would be great to know you, i have a very important and confidential matter that i want to discuss with you,
+reply me back for more discussion.
+Yours faithful
+Aiden.
