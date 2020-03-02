@@ -2,140 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93702175B7F
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:24:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BAC175B16
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 14:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727952AbgCBNYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 08:24:38 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:54998 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727361AbgCBNYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 08:24:38 -0500
-Received: from dalmore.blr.asicdesigners.com ([10.193.186.161])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 022DOYUR014145;
-        Mon, 2 Mar 2020 05:24:35 -0800
-From:   Vishal Kulkarni <vishal@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, dt@chelsio.com,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH net] cxgb4: fix checks for max queues to allocate
-Date:   Mon,  2 Mar 2020 10:54:13 +0530
-Message-Id: <1583126653-12859-1-git-send-email-vishal@chelsio.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1727865AbgCBNCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 08:02:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41250 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727644AbgCBNCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 08:02:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=FiLor1i8rXZoXEJEzNkZ/KpyLzC6P9f7qqRBo8GyGJA=; b=M4boMbZWwibGWaDa9Ay/YE+uzp
+        +FavjE7Y3btmzUCr8WYtI8x+aN1Z8phBn6zQ7lHkgG3TpDu2gpxWfd3NLUrk9mNI1XJaoW33RVU26
+        e2MF9T63w/jicFdTjjFJqWgKKVovfVmpElwvpb7EPJ/BbjF98dKBFqwkfuh8mhkwz+GI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1j8khn-0005Sl-V7; Mon, 02 Mar 2020 14:01:55 +0100
+Date:   Mon, 2 Mar 2020 14:01:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Geetha sowjanya <gakula@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH 3/7] octeontx2-pf: Support to enable/disable pause frames
+ via ethtool
+Message-ID: <20200302130155.GE31977@lunn.ch>
+References: <1583133568-5674-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1583133568-5674-4-git-send-email-sunil.kovvuri@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1583133568-5674-4-git-send-email-sunil.kovvuri@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hardware can support more than 8 queues currently limited by
-netif_get_num_default_rss_queues(). So, rework and fix checks for max
-number of queues to allocate. The checks should be based on how many are
-actually supported by hardware, OR the number of online cpus; whichever
-is lower.
+Hi Sunil
 
-Fixes: 5952dde72307 ("cxgb4: set maximal number of default RSS queues")
-Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>"
----
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 49 ++++++++++---------
- 1 file changed, 27 insertions(+), 22 deletions(-)
+> +static int otx2_set_pauseparam(struct net_device *netdev,
+> +			       struct ethtool_pauseparam *pause)
+> +{
+> +	struct otx2_nic *pfvf = netdev_priv(netdev);
+> +
+> +	if (pause->autoneg)
+> +		return -EOPNOTSUPP;
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 649842a8aa28..97f90edbc068 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -5381,12 +5381,11 @@ static inline bool is_x_10g_port(const struct link_config *lc)
- static int cfg_queues(struct adapter *adap)
- {
- 	u32 avail_qsets, avail_eth_qsets, avail_uld_qsets;
-+	u32 i, n10g = 0, qidx = 0, n1g = 0;
-+	u32 ncpus = num_online_cpus();
- 	u32 niqflint, neq, num_ulds;
- 	struct sge *s = &adap->sge;
--	u32 i, n10g = 0, qidx = 0;
--#ifndef CONFIG_CHELSIO_T4_DCB
--	int q10g = 0;
--#endif
-+	u32 q10g = 0, q1g;
- 
- 	/* Reduce memory usage in kdump environment, disable all offload. */
- 	if (is_kdump_kernel() || (is_uld(adap) && t4_uld_mem_alloc(adap))) {
-@@ -5424,44 +5423,50 @@ static int cfg_queues(struct adapter *adap)
- 		n10g += is_x_10g_port(&adap2pinfo(adap, i)->link_cfg);
- 
- 	avail_eth_qsets = min_t(u32, avail_qsets, MAX_ETH_QSETS);
-+
-+	/* We default to 1 queue per non-10G port and up to # of cores queues
-+	 * per 10G port.
-+	 */
-+	if (n10g)
-+		q10g = (avail_eth_qsets - (adap->params.nports - n10g)) / n10g;
-+
-+	n1g = adap->params.nports - n10g;
- #ifdef CONFIG_CHELSIO_T4_DCB
- 	/* For Data Center Bridging support we need to be able to support up
- 	 * to 8 Traffic Priorities; each of which will be assigned to its
- 	 * own TX Queue in order to prevent Head-Of-Line Blocking.
- 	 */
-+	q1g = 8;
- 	if (adap->params.nports * 8 > avail_eth_qsets) {
- 		dev_err(adap->pdev_dev, "DCB avail_eth_qsets=%d < %d!\n",
- 			avail_eth_qsets, adap->params.nports * 8);
- 		return -ENOMEM;
- 	}
- 
--	for_each_port(adap, i) {
--		struct port_info *pi = adap2pinfo(adap, i);
-+	if (adap->params.nports * ncpus < avail_eth_qsets)
-+		q10g = max(8U, ncpus);
-+	else
-+		q10g = max(8U, q10g);
- 
--		pi->first_qset = qidx;
--		pi->nqsets = is_kdump_kernel() ? 1 : 8;
--		qidx += pi->nqsets;
--	}
--#else /* !CONFIG_CHELSIO_T4_DCB */
--	/* We default to 1 queue per non-10G port and up to # of cores queues
--	 * per 10G port.
--	 */
--	if (n10g)
--		q10g = (avail_eth_qsets - (adap->params.nports - n10g)) / n10g;
--	if (q10g > netif_get_num_default_rss_queues())
--		q10g = netif_get_num_default_rss_queues();
-+	while ((q10g * n10g) > (avail_eth_qsets - n1g * q1g))
-+		q10g--;
- 
--	if (is_kdump_kernel())
-+#else /* !CONFIG_CHELSIO_T4_DCB */
-+	q1g = 1;
-+	q10g = min(q10g, ncpus);
-+#endif /* !CONFIG_CHELSIO_T4_DCB */
-+	if (is_kdump_kernel()) {
- 		q10g = 1;
-+		q1g = 1;
-+	}
- 
- 	for_each_port(adap, i) {
- 		struct port_info *pi = adap2pinfo(adap, i);
- 
- 		pi->first_qset = qidx;
--		pi->nqsets = is_x_10g_port(&pi->link_cfg) ? q10g : 1;
-+		pi->nqsets = is_x_10g_port(&pi->link_cfg) ? q10g : q1g;
- 		qidx += pi->nqsets;
- 	}
--#endif /* !CONFIG_CHELSIO_T4_DCB */
- 
- 	s->ethqsets = qidx;
- 	s->max_ethqsets = qidx;   /* MSI-X may lower it later */
-@@ -5473,7 +5478,7 @@ static int cfg_queues(struct adapter *adap)
- 		 * capped by the number of available cores.
- 		 */
- 		num_ulds = adap->num_uld + adap->num_ofld_uld;
--		i = min_t(u32, MAX_OFLD_QSETS, num_online_cpus());
-+		i = min_t(u32, MAX_OFLD_QSETS, ncpus);
- 		avail_uld_qsets = roundup(i, adap->params.nports);
- 		if (avail_qsets < num_ulds * adap->params.nports) {
- 			adap->params.offload = 0;
--- 
-2.21.0
+Nice to see somebody getting that bit correct.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
