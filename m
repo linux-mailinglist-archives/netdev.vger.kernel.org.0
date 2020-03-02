@@ -2,156 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A43E717542F
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 07:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 458AD17543E
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 08:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbgCBG5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 01:57:51 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39332 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgCBG5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 01:57:50 -0500
-Received: by mail-io1-f67.google.com with SMTP id h3so10319622ioj.6;
-        Sun, 01 Mar 2020 22:57:50 -0800 (PST)
+        id S1726390AbgCBHEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 02:04:32 -0500
+Received: from mail-pf1-f171.google.com ([209.85.210.171]:39269 "EHLO
+        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgCBHEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 02:04:31 -0500
+Received: by mail-pf1-f171.google.com with SMTP id l7so5109844pff.6
+        for <netdev@vger.kernel.org>; Sun, 01 Mar 2020 23:04:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nrFu2KKyZmxCAHYq/fyE1aIbF4fy/TeMjczCnvnCazg=;
-        b=YldOFDCehBVoWqYwHpoq4EsVquC+KOD4ScKdxAzbtLlwP+gy+k4/dY2jtVh8VjNlEE
-         Bk8BsJhPUIZ8Y3HPFSdzPiqLqtQPLKsPlmJXScfPT4k/dIR8KWV2eYTJgMK7XId4STn8
-         RsT8rm0m3xCGlfwrwjiWYqov43Qx3nSUX2B/Dp988zYm448u19AwKg99WyG/Uk0nxu2i
-         2b10BVGcp/y7CndtYd+VxYK3q2mBN1guPlR5qwxX0J6aEbJ/oZyDdSOOfm3GMCyzj+JX
-         9of2iU9BuMUjl+j4A4+ZtCxw9p2/fu4YVOoC2z96tSzQZOyNpQi/YjOeWjK4cpds8dTY
-         qGCg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R5/1GmsMDRuvHs8Eg5j1TKFca+X1oMnEPhFcLO24O9U=;
+        b=Tb8TiCEYbDpO95BnRwe4UuBaV0XYcxMv2Ehgm+Gt7SJ6XsysFXvQ1S2ZNyNVXhiAyR
+         yZxahi+RWghyoemPF2cy4NXypQf2zbtZ9t57oFUjT0fBpdt4eB2F0mQlOt/YiDaXwYvE
+         fI8lIjTffGo6vThX+f5FQzuqzhhELoauu+oYGeeAcZmKfew7bLPd5K1ay19xb4mSmBmd
+         MlmchOoJM7N1C3n1QcHMTZgpYTKP24c3MtjJ7LGrCPRrDfnGcj3pJF7AFXyJTOBpu+0s
+         SrDlqkbGUgG/mPeZiWi0r/zrIz+87S6u2ciwYi9+YJrsoXB2sLvfeWXjEs3noYYgWwGr
+         M2Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nrFu2KKyZmxCAHYq/fyE1aIbF4fy/TeMjczCnvnCazg=;
-        b=LlD3lKpjxdlEoRVzkEJGI7FI7GaOdzA+XfRL2bQLgvlRmvhf3993IAKjjRefQs1otr
-         AqYO3og82nOSBP99kMJl1WzemXMfGrbK6/ON2Z6PsJ+WsZfrAi+3rVpHZgYgsVnFFwid
-         TlZ+8DUjdHgeA3A9yjI4KtOEgG+xKNzkcC6oC5Cr/QB1axMXnZtUhZbeZ5L7DMKKKyUM
-         OhXIUg1NoyH27eWurTyTNo648oWxJtZDjg1Fh8z3xHEoJ09pIFhxe4fyvjU9XlikRBhZ
-         y/OU0/lwQZaga0VFKqAZ7Vs3aalWpsgRJwCH0gDH0/4gmgCFk9EpbSyzb6/BDnB14kq5
-         AiSg==
-X-Gm-Message-State: APjAAAXvGJZ6rvAQRHFLIbAMeRHR2d/SPSWX5GasdYe8vD6fvUd9/gb9
-        FwPqJieprI+gs4penap+FpdH2Syflj9iAmk+CtdAN/Yo
-X-Google-Smtp-Source: APXvYqz5+hEEUCW548huA2G7W5d1Sh76hIwgHn+5VBIvXwkZ19HiKX5XJpdkni808XHuzA7Gfe6Lg1hPIOK7NBMkSWA=
-X-Received: by 2002:a02:a795:: with SMTP id e21mr12502166jaj.1.1583132269817;
- Sun, 01 Mar 2020 22:57:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R5/1GmsMDRuvHs8Eg5j1TKFca+X1oMnEPhFcLO24O9U=;
+        b=BMzAbz9s73IZ5wg/hKDtoZq8H332noWYa3TCQ+CwLT1mCV2Mp+dbzPmwQezAkSur27
+         vWH/6fqj6KLYA91JhxI9fSsBA5Cdo9pPdXNjB9UD9LgCETGbDuN93rXwVZe/dzkCML2Q
+         4uQBYGa3lF2G73RNa5ucaD/lGVNaBAgbgupak9cQwe5XmPEe4ESsaQal68TkGSM3Y72v
+         UdemKUNqZp5z5kEZCvDVWTvVE2eL2ANrPeXk+vZO18pzAwgalvHvvp25FUSj6zOG96Bs
+         t9E2U5TkCVFY//HoC4Z7srsYTeXFvSzy2C1POYObXXVEV2qizYivS7RPym9Niohr4Zfw
+         Go8Q==
+X-Gm-Message-State: APjAAAWV8zMEQzLAM6E9bxNeeDshU36Al58MiDUye1xJFO4HvJmkAjzr
+        G67QNHXPiHe36dV79WhZIJeBEg==
+X-Google-Smtp-Source: APXvYqxKwsQQNvUjAEKUOsN0wYCClSgfFm5zZ4GfHEU52jXT2j+PYAYd9E1K/tNWo1PmZh6rJsHUJA==
+X-Received: by 2002:a65:43cb:: with SMTP id n11mr17535148pgp.65.1583132671006;
+        Sun, 01 Mar 2020 23:04:31 -0800 (PST)
+Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id b3sm19969551pft.73.2020.03.01.23.04.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Mar 2020 23:04:30 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 0/2] net: qrtr: Nameserver fixes
+Date:   Sun,  1 Mar 2020 23:03:03 -0800
+Message-Id: <20200302070305.612067-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20200228020212.16183-1-komachi.yoshiki@gmail.com> <CAEf4Bza9J3e=dfzDud6KY7_=4Qv77YqW2srfdxKg9ieiUCJgXw@mail.gmail.com>
-In-Reply-To: <CAEf4Bza9J3e=dfzDud6KY7_=4Qv77YqW2srfdxKg9ieiUCJgXw@mail.gmail.com>
-From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Date:   Mon, 2 Mar 2020 15:57:39 +0900
-Message-ID: <CAA6waGKtG_fE3Q+Dig9K1L3D9FRErQmpoMtMbPzuzkyODYXV7A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: btf: Fix BTF verification of the enum size in struct/union
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020=E5=B9=B42=E6=9C=8829=E6=97=A5(=E5=9C=9F) 9:23 Andrii Nakryiko <andrii.=
-nakryiko@gmail.com>:
->
-> On Thu, Feb 27, 2020 at 6:07 PM Yoshiki Komachi
-> <komachi.yoshiki@gmail.com> wrote:
-> >
-> > btf_enum_check_member() checked if the size of "enum" as a struct
-> > member exceeded struct_size or not. Then, the function definitely
-> > compared it with the size of "int" now. Therefore, errors could occur
-> > when the size of the "enum" type was changed.
-> >
-> > Although the size of "enum" is 4-byte by default, users can change it
-> > as needed (e.g., the size of the following test variable is not 4-byte
-> > but 1-byte). It can be used as a struct member as below:
-> >
-> > enum test : char {
->
-> you can't specify that in pure C, but this will work for C:
->
-> struct {
->     enum { X, Y, Z } __attribute__((packed)) e;
-> } tmp;
->
-> Please add such a selftest, as part of fixing this bug. Thanks!
->
-> Otherwise logic looks good.
+The need to respond to the HELLO message from the firmware was lost in the
+translation from the user space implementation of the nameserver. Fixing this
+also means we can remove the FIXME related to launching the ns.
 
-Thank you for kind comments!
-I will add a selftest program, and submit the next version later.
+Bjorn Andersson (2):
+  net: qrtr: Respond to HELLO message
+  net: qrtr: Fix FIXME related to qrtr_ns_init()
 
-Best regards,
+ net/qrtr/ns.c   | 56 +++++++++++++++++++++++++++----------------------
+ net/qrtr/qrtr.c | 10 +--------
+ net/qrtr/qrtr.h |  2 +-
+ 3 files changed, 33 insertions(+), 35 deletions(-)
 
-> >         X,
-> >         Y,
-> >         Z,
-> > };
-> >
-> > struct {
-> >         char a;
-> >         enum test b;
-> >         char c;
-> > } tmp;
-> >
-> > With the setup above, when I tried to load BTF, the error was given
-> > as below:
-> >
-> > ------------------------------------------------------------------
-> >
-> > [58] STRUCT (anon) size=3D3 vlen=3D3
-> >         a type_id=3D55 bits_offset=3D0
-> >         b type_id=3D59 bits_offset=3D8
-> >         c type_id=3D55 bits_offset=3D16
-> > [59] ENUM test size=3D1 vlen=3D3
-> >         X val=3D0
-> >         Y val=3D1
-> >         Z val=3D2
-> >
-> > [58] STRUCT (anon) size=3D3 vlen=3D3
-> >         b type_id=3D59 bits_offset=3D8 Member exceeds struct_size
-> >
-> > libbpf: Error loading .BTF into kernel: -22.
-> >
-> > ------------------------------------------------------------------
-> >
-> > The related issue was previously fixed by the commit 9eea98497951 ("bpf=
-:
-> > fix BTF verification of enums"). On the other hand, this patch fixes
-> > my explained issue by using the correct size of "enum" declared in
-> > BPF programs.
-> >
-> > Fixes: 179cde8cef7e ("bpf: btf: Check members of struct/union")
-> > Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
-> > ---
-> >  kernel/bpf/btf.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 7871400..32ab922 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -2418,7 +2418,7 @@ static int btf_enum_check_member(struct btf_verif=
-ier_env *env,
-> >
-> >         struct_size =3D struct_type->size;
-> >         bytes_offset =3D BITS_ROUNDDOWN_BYTES(struct_bits_off);
-> > -       if (struct_size - bytes_offset < sizeof(int)) {
-> > +       if (struct_size - bytes_offset < member_type->size) {
-> >                 btf_verifier_log_member(env, struct_type, member,
-> >                                         "Member exceeds struct_size");
-> >                 return -EINVAL;
-> > --
-> > 1.8.3.1
-> >
+-- 
+2.24.0
+
