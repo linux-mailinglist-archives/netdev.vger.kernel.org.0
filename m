@@ -2,98 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7101175E06
-	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:18:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 219A2175E08
+	for <lists+netdev@lfdr.de>; Mon,  2 Mar 2020 16:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbgCBPSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 10:18:54 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42554 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727335AbgCBPSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 10:18:53 -0500
-Received: by mail-pf1-f196.google.com with SMTP id f5so744379pfk.9
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 07:18:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Br6c2Y1AI7IGoOUT9S32pmgk6z94hhBAZwhijTHQ5mg=;
-        b=hDaRnIxNTbb9Ri4vNFvaaxq3dalQGloWpCS+epxtXpqVQP7nEyyfs6d2f6AmdJTYX+
-         wgPNs/UOB65yN4VkSUgz2Si4WLUn0+tk81o3hxMCw6NlbIbSKYA9cD19CWY+Wsdfr6S8
-         lojWskuDIVV3IyqGAu9QvT+HOIb1VhnGNEgl43jbPwHmvjC7jCOWdsZS/RDCcv1yTfZ6
-         KrDB/4QS+gBndivtS4u2otasdqm8Ur52fzSFnVi3/B/3s3u8C1HmT+pRY09/B+JgjOam
-         YJTKeI5FxxW8ZgGhzPjvQbtBY2dlV3eZZ8XnnUcTGIlu1QMfZAC59MLh+wsj7ozTeSNQ
-         FcKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Br6c2Y1AI7IGoOUT9S32pmgk6z94hhBAZwhijTHQ5mg=;
-        b=RcN5oD6N70/l4CFPM9bbxVJI9pbKWY5I3JWonkux4ieRmzwtM0Tgv56ExnitHCDQrh
-         l1NGVW+Ue1cs/vzeg+cbTszh3EPkAjpEUPb1bVWsgNPja3cOm/Vk1/PwqSwywFJ+QTEb
-         eM072OAQN4gL0igAwvpXC4IzuBr1+MvssZm7j1v/qbS2ZhQ0nkR767wfJqo4c6/ytJSZ
-         IOT5gSBOUWBS1vlHJSRfwO67pczKOxQlWJVdTU6Z4H2VfKAU2spemJddMfy8MgBmAGtL
-         gSGFASKCq0JrnD0fazpo2cDnR3HoKedv1KNdx4IbN1aMlFcCPdt4dJ3gEw3UAAtSdxnl
-         V83Q==
-X-Gm-Message-State: APjAAAW9i0LiONpbU713ZCrScbpMLvOXh+ae4f0Jpj+5NKNNqvLGsDri
-        hHjQOnqfyCcXUB0AqByfizTl0vO+
-X-Google-Smtp-Source: APXvYqxF8udT2WsdTax/oksWNV8bS7xpgMlNmg/jbGij0nTFd0NRu46x6NvUU0mAHtYBdLi2+RXk9g==
-X-Received: by 2002:a63:1e1d:: with SMTP id e29mr20278770pge.347.1583162331920;
-        Mon, 02 Mar 2020 07:18:51 -0800 (PST)
-Received: from localhost.localdomain ([103.89.235.106])
-        by smtp.gmail.com with ESMTPSA id s206sm21908529pfs.100.2020.03.02.07.18.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2020 07:18:51 -0800 (PST)
-From:   Leslie Monis <lesliemonis@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, tahiliani@nitk.edu.in, gautamramk@gmail.com
-Subject: [PATCH net-next 4/4] pie: realign comment
-Date:   Mon,  2 Mar 2020 20:48:31 +0530
-Message-Id: <20200302151831.2811-5-lesliemonis@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200302151831.2811-1-lesliemonis@gmail.com>
-References: <20200302151831.2811-1-lesliemonis@gmail.com>
+        id S1727399AbgCBPTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 10:19:38 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:30091 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726831AbgCBPTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 10:19:38 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-163-2vpWhavWNZS5IFghQn5wXA-1; Mon, 02 Mar 2020 15:19:30 +0000
+X-MC-Unique: 2vpWhavWNZS5IFghQn5wXA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 2 Mar 2020 15:19:29 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 2 Mar 2020 15:19:29 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Yadu Kishore' <kyk.segfault@gmail.com>,
+        David Miller <davem@davemloft.net>
+CC:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Topic: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Index: AQHV8G6boeAUqLyQLkCRyXn9e/JzBKg1V/WQ
+Date:   Mon, 2 Mar 2020 15:19:29 +0000
+Message-ID: <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+In-Reply-To: <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Realign a comment after the change introduced by the
-previous patch.
-
-Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
----
- include/net/pie.h | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/include/net/pie.h b/include/net/pie.h
-index 1c645b76a2ed..3fe2361e03b4 100644
---- a/include/net/pie.h
-+++ b/include/net/pie.h
-@@ -38,15 +38,15 @@ struct pie_params {
- 
- /**
-  * struct pie_vars - contains pie variables
-- * @qdelay:			current queue delay
-- * @qdelay_old:			queue delay in previous qdelay calculation
-- * @burst_time:			burst time allowance
-- * @dq_tstamp:			timestamp at which dq rate was last calculated
-- * @prob:			drop probability
-- * @accu_prob:			accumulated drop probability
-- * @dq_count:			number of bytes dequeued in a measurement cycle
-- * @avg_dq_rate:		calculated average dq rate
-- * @backlog_old:		queue backlog during previous qdelay calculation
-+ * @qdelay:		current queue delay
-+ * @qdelay_old:		queue delay in previous qdelay calculation
-+ * @burst_time:		burst time allowance
-+ * @dq_tstamp:		timestamp at which dq rate was last calculated
-+ * @prob:		drop probability
-+ * @accu_prob:		accumulated drop probability
-+ * @dq_count:		number of bytes dequeued in a measurement cycle
-+ * @avg_dq_rate:	calculated average dq rate
-+ * @backlog_old:	queue backlog during previous qdelay calculation
-  */
- struct pie_vars {
- 	psched_time_t qdelay;
--- 
-2.17.1
+RnJvbTogWWFkdSBLaXNob3JlDQo+IFNlbnQ6IDAyIE1hcmNoIDIwMjAgMDg6NDMNCj4gDQo+IE9u
+IE1vbiwgTWFyIDIsIDIwMjAgYXQgMTI6MjIgUE0gWWFkdSBLaXNob3JlIDxreWsuc2VnZmF1bHRA
+Z21haWwuY29tPiB3cm90ZToNCj4gPg0KPiA+ID4gPiBDYW4geW91IGNvbnRyYXN0IHRoaXMgYWdh
+aW5zdCBhIHJ1biB3aXRoIHlvdXIgY2hhbmdlcz8gVGhlIHRob3VnaHQgaXMNCj4gPiA+ID4gdGhh
+dCB0aGUgbWFqb3JpdHkgb2YgdGhpcyBjb3N0IGlzIGR1ZSB0byB0aGUgbWVtb3J5IGxvYWRzIGFu
+ZCBzdG9yZXMsIG5vdA0KPiA+ID4gPiB0aGUgYXJpdGhtZXRpYyBvcHMgdG8gY29tcHV0ZSB0aGUg
+Y2hlY2tzdW0uIFdoZW4gZW5hYmxpbmcgY2hlY2tzdW0NCj4gPiA+ID4gb2ZmbG9hZCwgdGhlIHNh
+bWUgc3RhbGxzIHdpbGwgb2NjdXIsIGJ1dCB3aWxsIHNpbXBseSBiZSBhdHRyaWJ1dGVkIHRvDQo+
+ID4gPiA+IG1lbWNweSBpbnN0ZWFkIG9mIHRvIGRvX2NzdW0uDQo+ID4NCj4gPiA+IEFncmVlZC4N
+Cj4gPg0KPiA+IEJlbG93IGlzIHRoZSBkYXRhIGZyb20gcGVyZiB3aXRoIGFuZCB3aXRob3V0IHRo
+ZSBwYXRjaCBmb3IgdGhlIHNhbWUNCj4gPiBUQ1AgVHggaXBlcmYgcnVuOiAobmV0d29yayBkcml2
+ZXIgaGFzIE5FVElGX0ZfSFdfQ1NVTSBlbmFibGVkKQ0KPiA+DQo+IEEgc21hbGwgY29ycmVjdGlv
+biB0byB0aGUgZGF0YSBJIHNlbnQgZWFybGllcjoNCj4gDQo+IFdpdGhvdXQgcGF0Y2ggOi0NCj4g
+ID09PT09PT09PT09PQ0KPiBbRnVuY3Rpb24gPSAlY3B1IGN5Y2xlc10NCj4gc2tiX21hY19nc29f
+c2VnbWVudCA9IDAuMDUNCj4gaW5ldF9nc29fc2VnbWVudCA9IDAuMjYNCj4gdGNwNF9nc29fc2Vn
+bWVudCA9IDAuMDUNCj4gdGNwX2dzb19zZWdtZW50ID0gMC4xNw0KPiBza2Jfc2VnbWVudCA9IDAu
+NTUNCj4gc2tiX2NvcHlfYW5kX2NzdW1fYml0cyA9IDAuNjANCj4gZG9fY3N1bSA9IDcuNDMNCj4g
+bWVtY3B5ID0gMy44MQ0KPiBfX2FsbG9jX3NrYiA9IDAuOTMNCj4gPT09PT09PT09PT09PT09PT09
+DQo+IFNVTSA9IDEzLjg1DQo+IA0KPiBXaXRoIHBhdGNoIDotDQo+ID09PT09PT09PT09PQ0KPiBb
+RnVuY3Rpb24gPSAlY3B1IGN5Y2xlc10NCj4gc2tiX21hY19nc29fc2VnbWVudCA9IDAuMDUNCj4g
+aW5ldF9nc29fc2VnbWVudCA9IDAuMzQNCj4gdGNwNF9nc29fc2VnbWVudCA9IDAuMDYNCj4gdGNw
+X2dzb19zZWdtZW50ID0gMC4yNg0KPiBza2Jfc2VnbWVudCA9IDAuNTUNCj4gKiogc2tiX2NvcHlf
+Yml0cyA9IDAuNjIgKiogIDwtLSBjb3JyZWN0ZWQNCj4gZG9fY3N1bSA9IDAuMDQNCj4gbWVtY3B5
+ID0gNC4yOQ0KPiBfX2FsbG9jX3NrYiA9IDAuNzMNCj4gPT09PT09PT09PT09PT09PT09DQo+ICoq
+IFNVTSA9IDYuOTQgKiogPC0tIGNvcnJlY3RlZA0KDQpJIHdhcyB3cml0aW5nIGEgcmVwbHkgYWJv
+dXQgaG93ICdob3JyaWQnIHRoZSBhc20gaW4gY3N1bV9wYXJ0aWFsX2NvcHlfZ2VuZXJpYyBpcy4N
+CihNeSBndWVzcyBpcyBubyBiZXR0ZXIgdGhhbiAzIGNsb2NrcyBmb3IgMTYgYnl0ZXMgLSBhbmQg
+YSAncmVwIG1vdnMnIGNvcHkNCmNvdWxkIGJlIGEgbG90IGZhc3Rlci4pDQpIb3dldmVyIHRoZSBi
+aWcgZGlmZmVyZW5jZSBpbiB0aGUgdGltZXMgZm9yIGRvX2NzdW0oKS4NCg0KVGhlIGZhc3Rlc3Qg
+bG9vcCBJIGNhbiBmaW5kIGZvciBhIG5vbi1jb3B5aW5nIGNoZWNrc3VtIGlzOg0KKyAgICAgICAv
+Kg0KKyAgICAgICAgKiBBbGlnbiB0aGUgYnl0ZSBjb3VudCB0byBhIG11bHRpcGxlIG9mIDE2IHRo
+ZW4NCisgICAgICAgICogYWRkIDY0IGJpdCB3b3JkcyB0byBhbHRlcm5hdGluZyByZWdpc3RlcnMu
+DQorICAgICAgICAqIEZpbmFsbHkgcmVkdWNlIHRvIDY0IGJpdHMuDQorICAgICAgICAqLw0KKyAg
+ICAgICBhc20oICAgICIgICAgICAgYnQgICAgJDQsICVbbGVuXVxuIg0KKyAgICAgICAgICAgICAg
+ICIgICAgICAgam5jICAgMTBmXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGQgICAoJVti
+dWZmXSwgJVtsZW5dKSwgJVtzdW1fMF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAg
+IDgoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMV1cbiINCisgICAgICAgICAgICAgICAiICAgICAg
+IGxlYSAgIDE2KCVbbGVuXSksICVbbGVuXVxuIg0KKyAgICAgICAgICAgICAgICIxMDogICAgamVj
+eHogMjBmXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGMgICAoJVtidWZmXSwgJVtsZW5d
+KSwgJVtzdW1fMF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDgoJVtidWZmXSwg
+JVtsZW5dKSwgJVtzdW1fMV1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGxlYSAgIDMyKCVb
+bGVuXSksICVbbGVuX3RtcF1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDE2KCVb
+YnVmZl0sICVbbGVuXSksICVbc3VtXzBdXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGMg
+ICAyNCglW2J1ZmZdLCAlW2xlbl0pLCAlW3N1bV8xXVxuIg0KKyAgICAgICAgICAgICAgICIgICAg
+ICAgbW92ICAgJVtsZW5fdG1wXSwgJVtsZW5dXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBq
+bXAgICAxMGJcbiINCisgICAgICAgICAgICAgICAiMjA6ICAgIGFkYyAgICVbc3VtXzBdLCAlW3N1
+bV1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgICVbc3VtXzFdLCAlW3N1bV1cbiIN
+CisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgICQwLCAlW3N1bV1cbiINCisgICAgICAgICAg
+IDogW3N1bV0gIismciIgKHN1bSksIFtzdW1fMF0gIismciIgKHN1bV8wKSwgW3N1bV8xXSAiKyZy
+IiAoc3VtXzEpLA0KKyAgICAgICAgICAgICAgIFtsZW5dICIrJmMiIChsZW4pLCBbbGVuX3RtcF0g
+Ij0mciIgKGxlbl90bXApDQorICAgICAgICAgICA6IFtidWZmXSAiciIgKGJ1ZmYpDQorICAgICAg
+ICAgICA6ICJtZW1vcnkiICk7DQoNCihJIG5lZWQgdG8gcmVzdWJtaXQgdGhhdCBwYXRjaCkNCg0K
+V2hpY2ggaXMgdHdpY2UgYXMgZmFzdCBhcyB0aGUgb25lIGluIGNzdW0tcGFydGlhbF82NC5jIGZv
+cg0KbW9zdCBjcHUgdHlwZXMgKGVzcGVjaWFsbHkgcHJlLUhhc3dlbGwgb25lcykuDQoNCklJUkMg
+dGhhdCBkb2VzIDcgYnl0ZXMvY2xvY2sgb24gbXkgaXZ5IGJyaWRnZSBhbmQNCm9uZSA4IGJ5dGVz
+L2Nsb2NrIG9uIEhhc3dlbGwuDQpOb3RoaW5nIHByaW9yIHRvIHNhbmR5IGJyaWRnZSBjYW4gYmVh
+dCBhZGRpbmcgMzJiaXQgd29yZHMNCnRvIGEgNjRiaXQgcmVnaXN0ZXIhDQpUaGUgZmFmZmluZyB3
+aXRoICdsZW5fdG1wJyBtYWRlIGEgbWFyZ2luYWwgZGlmZmVyZW5jZS4NCg0KWW91IGNhbid0IGdv
+IGZhc3RlciB0aGFuIDEgcmVhZC9jbG9jayB3aXRob3V0IHVzaW5nIGFkW29jXXguDQpUaGUgbG9v
+cCBhYm92ZSBkb2VzIHdvcmsgKGJvdGggY2FycnkgYW5kIG92ZXJmbG93IGFyZSBwcmVzZXJ2ZWQp
+DQpidXQgaXQgbmVlZHMgZnVydGhlciB1bnJvbGxpbmcgKGFuZCBtb3JlIGVkZ2UgY29kZSkgYW5k
+IG9ubHkNCnJ1bnMgb24gYSBmZXcgY3B1Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRy
+ZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1L
+MSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
