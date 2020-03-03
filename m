@@ -2,141 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3A8178377
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:56:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39FFC178384
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731458AbgCCT4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 14:56:11 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52128 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731420AbgCCT4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 14:56:11 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 023Ju6Qh016934
-        for <netdev@vger.kernel.org>; Tue, 3 Mar 2020 11:56:10 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=cw2duZ+922g/UCLQ0XOQV1XlDNxJBbO0wW10OnBcjXo=;
- b=SUBjKwjUwpiCT5B1sgyBPlraq0RhsrdvoqxMZGCKwc0SEn7q/sgdGoh8XwzocgjBrb+3
- TJG6kvRodHUieMAWDQYCwFFS6IZTAdcPfIKDLkveNK3j4Iq4aaGpbXBK2nNNyY+QhIzE
- 0qLsr/KJj/kYBU4o0C3+jzIfoVeklvfTbUY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yhs5g1snw-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 11:56:10 -0800
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 3 Mar 2020 11:56:07 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 7BFD262E3363; Tue,  3 Mar 2020 11:56:05 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <quentin@isovalent.com>, <kernel-team@fb.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <arnaldo.melo@gmail.com>,
-        <jolsa@kernel.org>, Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 3/3] bpftool: bash completion for "bpftool prog profile"
-Date:   Tue, 3 Mar 2020 11:55:55 -0800
-Message-ID: <20200303195555.1309028-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200303195555.1309028-1-songliubraving@fb.com>
-References: <20200303195555.1309028-1-songliubraving@fb.com>
-X-FB-Internal: Safe
+        id S1730874AbgCCT6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 14:58:52 -0500
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.24]:19005 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728002AbgCCT6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 14:58:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1583265527;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=8Hy1XQLrJGsksa411iFwtMtrZlW3bx5jx6/bcEnxtb4=;
+        b=sBcGbiT8AYYFcnVmC+hMtzuAg4bK/te2JNS9bVe4bYliNcrh+168VzQPkAN91UBosN
+        RVWlRdNceAileGqFjXzk3h9vkVOkqgrmSzpL/ilhxT3O22bMxz8xMRLw2RxE7HylMZxZ
+        qutdL/2TVvlXo/3a3rnjNKMJEWiEsl7nGJwzfl9IgYRVBR7BHPw+xDQtZ/tDPqqEt+iy
+        mHebCfHl/eMUBwpHGTYvdEvvG7J+rFlv1Uz7ewQGjcw18HK6msa+79UZITD1vk1Ujvwg
+        wl/4sF+CsXZYlmJlJgqoUIhW9hkejaMv1IyTql51DhYk2aiCm2bekiV5Bv67I1ZQvR8t
+        7Z5g==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVch5lU8W"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.1.177]
+        by smtp.strato.de (RZmta 46.2.0 DYNA|AUTH)
+        with ESMTPSA id e0a4ffw23JwYE3G
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 3 Mar 2020 20:58:34 +0100 (CET)
+Subject: Re: [PATCH net 06/16] can: add missing attribute validation for
+ termination
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+References: <20200303050526.4088735-1-kuba@kernel.org>
+ <20200303050526.4088735-7-kuba@kernel.org>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <c5842943-f11b-0d42-d03d-71930a7ecc3e@hartkopp.net>
+Date:   Tue, 3 Mar 2020 20:58:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-03_06:2020-03-03,2020-03-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- mlxlogscore=999 malwarescore=0 adultscore=0 suspectscore=0 phishscore=0
- mlxscore=0 lowpriorityscore=0 spamscore=0 priorityscore=1501
- impostorscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2001150001 definitions=main-2003030127
-X-FB-Internal: deliver
+In-Reply-To: <20200303050526.4088735-7-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bash completion for "bpftool prog profile" command.
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 45 ++++++++++++++++++++++-
- 1 file changed, 44 insertions(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index f2838a658339..e54f36c0c973 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -337,6 +337,7 @@ _bpftool()
- 
-             local PROG_TYPE='id pinned tag name'
-             local MAP_TYPE='id pinned name'
-+            local METRIC_TYPE='cycles instructions l1d_loads llc_misses'
-             case $command in
-                 show|list)
-                     [[ $prev != "$command" ]] && return 0
-@@ -498,6 +499,48 @@ _bpftool()
-                 tracelog)
-                     return 0
-                     ;;
-+                profile)
-+                    case $cword in
-+                        3)
-+                            COMPREPLY=( $( compgen -W "$PROG_TYPE" -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                        4)
-+			    case $prev in
-+                                id)
-+                                    _bpftool_get_prog_ids
-+                                    ;;
-+                                name)
-+                                    _bpftool_get_map_names
-+                                    ;;
-+                                pinned)
-+                                    _filedir
-+                                    ;;
-+			    esac
-+			    return 0
-+			    ;;
-+			5)
-+			    COMPREPLY=( $( compgen -W "$METRIC_TYPE duration" -- "$cur" ) )
-+			    return 0
-+			    ;;
-+                        6)
-+			    case $prev in
-+                                duration)
-+				    return 0
-+                                    ;;
-+                                *)
-+				    COMPREPLY=( $( compgen -W "$METRIC_TYPE" -- "$cur" ) )
-+				    return 0
-+                                    ;;
-+			    esac
-+			    return 0
-+			    ;;
-+                        *)
-+			    COMPREPLY=( $( compgen -W "$METRIC_TYPE" -- "$cur" ) )
-+			    return 0
-+			    ;;
-+		    esac
-+                    ;;
-                 run)
-                     if [[ ${#words[@]} -lt 5 ]]; then
-                         _filedir
-@@ -525,7 +568,7 @@ _bpftool()
-                 *)
-                     [[ $prev == $object ]] && \
-                         COMPREPLY=( $( compgen -W 'dump help pin attach detach \
--                            load loadall show list tracelog run' -- "$cur" ) )
-+                            load loadall show list tracelog run profile' -- "$cur" ) )
-                     ;;
-             esac
-             ;;
--- 
-2.17.1
+On 03/03/2020 06.05, Jakub Kicinski wrote:
+> Add missing attribute validation for IFLA_CAN_TERMINATION
+> to the netlink policy.
+> 
+> Fixes: 12a6075cabc0 ("can: dev: add CAN interface termination API")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: Wolfgang Grandegger <wg@grandegger.com>
+> CC: Marc Kleine-Budde <mkl@pengutronix.de>
+> CC: Oliver Hartkopp <socketcan@hartkopp.net>
+> CC: linux-can@vger.kernel.org
+> ---
+>   drivers/net/can/dev.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+> index 6ee06a49fb4c..68834a2853c9 100644
+> --- a/drivers/net/can/dev.c
+> +++ b/drivers/net/can/dev.c
+> @@ -883,6 +883,7 @@ static const struct nla_policy can_policy[IFLA_CAN_MAX + 1] = {
+>   				= { .len = sizeof(struct can_bittiming) },
+>   	[IFLA_CAN_DATA_BITTIMING_CONST]
+>   				= { .len = sizeof(struct can_bittiming_const) },
+> +	[IFLA_CAN_TERMINATION]	= { .type = NLA_U16 },
+>   };
+>   
+>   static int can_validate(struct nlattr *tb[], struct nlattr *data[],
 
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+
+Thanks Jakub for catching all these missing defs!
+
+Best regards,
+Oliver
