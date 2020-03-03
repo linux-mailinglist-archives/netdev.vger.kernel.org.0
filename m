@@ -2,115 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4DC177A8F
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B127B177A99
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:37:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730001AbgCCPgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:36:06 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:35695 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729588AbgCCPgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:36:06 -0500
-Received: by mail-qv1-f65.google.com with SMTP id u10so1865167qvi.2
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 07:36:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=digitalocean.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RZ3u1ymiEOZCYHkXaCjP+k9MxgIQsITaRkDqBuIXEG0=;
-        b=UJRBXMFmrs6G84YWmNg0gAlIiZRorMZytGmI17ZUYspEmc9tR11Sm7S5c5mFlQ3bw7
-         enKvmzFKafjDSkC7pAVk/dGyGJDtgLvSYM253kX9lAX6rLnSqa/oY+jdkGa+tMuWgRa2
-         XxxvvPpUOkK167vu/FGHzOUSMvF6abAGbjCOY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RZ3u1ymiEOZCYHkXaCjP+k9MxgIQsITaRkDqBuIXEG0=;
-        b=iSmTiO3vBHSqqhZHYebPcGTJ+MCc1oAPVT2O79CTOe+kI3rrJkHkOTYCQDjBTX8vpF
-         HJQMGW0Z0+19Ko57NpWfuoy6Quu37SsSGKSyKR7GWRvSIyu4S7d4xnEhg/M9F2HkpEss
-         XNVrV0lPa8swVu4oMCCTC/YhK2zzUMX9vOUuDH2Ug1Tf8EY4TKsDPtTu5VbjSentDxqh
-         G8Drk+Z2aDQtiQvnVcNxBN88gTxSLTBQh3jYEqNG54mrS7iuKANSIu8JBgC0v4Tvzfe3
-         4vYLbd4gscrX0cnQJcLo7I22GuJVOrZovgOMRogztFf/rSa2gjV9ODAVL3wgKyCkXq5/
-         /+4A==
-X-Gm-Message-State: ANhLgQ0gwRug4/idH94PIXShFqspHDOzQ5qrcF9+v6EbOURrWa1aavZQ
-        Mk1lNvWFDSVxtn4Tket15Silkg==
-X-Google-Smtp-Source: ADFU+vtECMzZQSduoM4LhGR+wzuaIt4tLJwnD/MPqnzRIPtWkZovWM6SCUSI65YGs3whLoj5AsoWNA==
-X-Received: by 2002:a0c:f6c8:: with SMTP id d8mr4624836qvo.234.1583249765211;
-        Tue, 03 Mar 2020 07:36:05 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:29f0:2f5d:cfa7:1ce8? ([2601:282:803:7700:29f0:2f5d:cfa7:1ce8])
-        by smtp.gmail.com with ESMTPSA id j18sm11969260qka.95.2020.03.03.07.36.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 07:36:04 -0800 (PST)
-Subject: Re: [PATCH RFC v4 bpf-next 08/11] tun: Support xdp in the Tx path for
- skb
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        toke@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-References: <20200227032013.12385-1-dsahern@kernel.org>
- <20200227032013.12385-9-dsahern@kernel.org> <20200303114619.1b5b52bc@carbon>
-From:   David Ahern <dahern@digitalocean.com>
-Message-ID: <cc03fcd1-5a12-283a-db90-cbf17658365a@digitalocean.com>
-Date:   Tue, 3 Mar 2020 08:36:01 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1730053AbgCCPgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:36:42 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:43451 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730046AbgCCPgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:36:42 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1j99b3-0000hX-Jg; Tue, 03 Mar 2020 16:36:37 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1j99b1-0000Xn-7U; Tue, 03 Mar 2020 16:36:35 +0100
+Date:   Tue, 3 Mar 2020 16:36:35 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
+        Quentin Schulz <quentin.schulz@bootlin.com>
+Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+Message-ID: <20200303153635.hiojz5hrj2hhlggt@pengutronix.de>
+References: <20200303073715.32301-1-o.rempel@pengutronix.de>
+ <20200303135936.GG31977@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20200303114619.1b5b52bc@carbon>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200303135936.GG31977@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 16:16:05 up 109 days,  6:34, 140 users,  load average: 0.32, 0.14,
+ 0.17
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/3/20 3:46 AM, Jesper Dangaard Brouer wrote:
-> On Wed, 26 Feb 2020 20:20:10 -0700
-> David Ahern <dsahern@kernel.org> wrote:
+On Tue, Mar 03, 2020 at 02:59:36PM +0100, Andrew Lunn wrote:
+> Hi Oleksij
 > 
->> +static u32 tun_do_xdp_tx_generic(struct tun_struct *tun,
->> +				 struct net_device *dev,
->> +				 struct sk_buff *skb)
->> +{
->> +	struct bpf_prog *xdp_prog;
->> +	u32 act = XDP_PASS;
->> +
->> +	xdp_prog = rcu_dereference(tun->xdp_egress_prog);
->> +	if (xdp_prog) {
->> +		struct xdp_txq_info txq = { .dev = dev };
->> +		struct xdp_buff xdp;
->> +
->> +		skb = tun_prepare_xdp_skb(skb);
->> +		if (!skb) {
->> +			act = XDP_DROP;
->> +			goto out;
->> +		}
->> +
->> +		xdp.txq = &txq;
->> +
->> +		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
->> +		switch (act) {
->> +		case XDP_TX:    /* for Tx path, XDP_TX == XDP_PASS */
->> +			act = XDP_PASS;
->> +			break;
->> +		case XDP_PASS:
->> +			break;
->> +		case XDP_REDIRECT:
->> +			/* fall through */
->> +		default:
->> +			bpf_warn_invalid_xdp_action(act);
->> +			/* fall through */
->> +		case XDP_ABORTED:
->> +			trace_xdp_exception(tun->dev, xdp_prog, act);
+> > TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
+> > PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
+> > configured in device tree by setting compatible =
+> > "ethernet-phy-id0180.dc81".
 > 
-> Hmm, don't we need to extend the trace_xdp_exception() to give users a
-> hint that this happened on the TX/egress path?
+> Why-o-why do silicon vendors make devices with invalid PHY IDs!?!?!
+> 
+> Did you try avoiding the compatible string. We know PHY 0 will probe
+> as normal. From its PHY ID we know it is a dual device. Could the
+> probe of PHY 0 register PHY 1?
+> 
+> No idea if it will work, but could nxp-tja11xx.c register is fixup for
+> PHY_ID_TJA1102. That fixup would do something like:
+> 
+> void tja1102_fixup(struct phy_device *phydev_phy0)
+> {
+>         struct mii_bus *bus = phydev_phy0->mdio.mii;
+>         struct phy_device *phydev_phy1;
+> 
+>         phydev_phy1 = phy_device_create(bus, phydev_phy0->addr + 1,
+>                                         PHY_ID_TJA1102, FALSE, NULL);
+> 	if (phydev_phy1)
+>                phy_device_register(phydev_phy1);
+> }
+> 
+> I think the issue here is, it will deadlock when scanning for fixup
+> for phydev_phy1. So this basic idea, but maybe hooked in somewhere
+> else?
+> 
+> Something like this might also help vsc8584 which is a quad PHY with
+> some shared registers?
 
-tracepoint has the program id, unsupported action and device. Seems like
-the program id is sufficient. I do need to update libbpf to account for
-the attach type.
+OK, thx! I'll take a look on it.
+Currently there is not solved issues with controlled power on/reset sequence
+of this chip. The reset and enable pins will affect both PHYs. So, may be vsc8584
+will answer my questions.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
