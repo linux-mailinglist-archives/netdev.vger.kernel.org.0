@@ -2,144 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C897177688
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C786F177697
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728494AbgCCNBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 08:01:01 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38968 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727961AbgCCNBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:01:01 -0500
-Received: by mail-lj1-f196.google.com with SMTP id f10so1567675ljn.6
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:01:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NKj+1Rf5TnGZp4SiLcelNGaJtNpD2JrLWM1tk/In9ck=;
-        b=jx1mKKrApcRXamn0UdmROfGB/dWjaSxTUv6iyGimgChB2LNGywfc217cKIVp8ywKB0
-         5AFhGnzfgGLxwjwKwQ5z2C+zKUW7FUnqWZ7M9GUvS2VLhIBz95aJVpVDlX4gr5rt6Jl2
-         uhCZdMUDn5WD6z+3sbZ39l67QTde69vqXP09FAuXwfCWfPzVtplTJjgCUH5BLVXmE3Qe
-         es3YU6cEE1TTCOgADetZuNWd7uC0DwwbRLe1A6RZTX25hMYSpWDKZcDtPqPvDYSKJhNi
-         mhomdgxZ541z06qXd4tS9oeGlCUjzy2f9jyanXnJ+Qfuwm5McojSZczPgwijviXEPVgX
-         8uoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NKj+1Rf5TnGZp4SiLcelNGaJtNpD2JrLWM1tk/In9ck=;
-        b=oMUv10V90dxPC08EeRxm0J9xiUn+9R9LZEMW8gVDdEqHQy/PZD9DUFVzM0LqC/zpP/
-         n95SpycFv3Ljm8Vo0rKCBM1T/B2jUjcwCC4qthXUqPPFBuatFZMIi0/I61TaDHBcqk1Y
-         +ha1oiX1W1vH1MlZAq4wF+nfKXH3qJ3eTUltCQ478Y6V5RxQIxJ4wY7be5fEvYcqi/by
-         MyQj7mfraAlZPI7kGBpyMZ2udcLDKJkz2ra4VnaYB/LLxtaBaoFHyt+HGyZN3lEp0l1V
-         53ZVxCSg9KdrPv+Wq6kGm0bGlqRkrdh9gmLdoS5p55ioLFnaT18C4o0pyreTso/cOU9A
-         kXKA==
-X-Gm-Message-State: ANhLgQ34qnPSg6ktLyCU9zywSCHik4kMVdGMjeZX4xEGXtbotNNwUTDO
-        1x+LaJcSi/wcVdUYG6+lzmTK/WB+iXYaCVJ7OLnL9g==
-X-Google-Smtp-Source: ADFU+vt6Xgq2BT1BgAbHQx9inuBc+XGlWT4URTEZQQUd8DrO3mUIikmr/9q5Su6eUhpueU4LIGXp9eMIsusx2RPh1T0=
-X-Received: by 2002:a05:651c:2c7:: with SMTP id f7mr2343804ljo.125.1583240459705;
- Tue, 03 Mar 2020 05:00:59 -0800 (PST)
+        id S1729212AbgCCNDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 08:03:03 -0500
+Received: from mail-vi1eur05on2062.outbound.protection.outlook.com ([40.107.21.62]:6065
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728496AbgCCNDB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 08:03:01 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RXHwMH2C9KLghzaq4vOEja5rxLMupyhkB0g/3AqhfDpzLv/cs5s+WEFQs0MvFL0a6xbHl7a2NLa7Q920rMYY+qcB4PCaSUefvwojDMAX7XLCXP9CbijhcfG6VzeACbU69qbGTCzo7Qgnv1nq4osPVQZ0NsclRnzpwztqLmGgBrGf2hYYbESOrwckIjPoauqfc0jx4YfDk44MRnBdhk5jh0eqem9xXTg3nzVU6sxImEz6j8/DXiFhyrQLfwoPiP3aX4Tvsy8g2cPsRUNtZQI0nFN8C7m8Hk+LQlIi0eJ7RhsSLfM5B1rxLosOyH8XDdSlIb64BzkkwjEf5UR2PwFSDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLw/LcfNQrwVjxS/WayjgZqktc02Z5Iu38MYhOCyuqs=;
+ b=PgJFbbl0xO3UK9HL9DrLrMpvh+32ppovWFC0iJPR5HHHd0/jcEdTyWw0ORM+/B0kz7xfC9XQNXbanAD1B32cpdAmLEMMGTSiWb78HQz44mv9Y+4zqZRBAc0xFuxJS1fQ4MJjKkfLr3nBMRVUO+sQ37gy3x0wL5mfNwQ69d8sQPieocyiC5wl1X4kglBXkShy8mzefCHGKp0XX74t3Q8YrwuE9MozL5joywAI9QnT4SyUshz0B7wwavr/bUqmS2mHUXWLhqyIME3MbOeNCTbvyqz1Ml7QhhY+TbWxEZ+3HRqKxeuDfa6fYrTSKaJhOuMQXsPimfc7VnZafVLsHC+4iA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLw/LcfNQrwVjxS/WayjgZqktc02Z5Iu38MYhOCyuqs=;
+ b=WGHAUD9Jk4pEc2g2W8IpGdoUjoXPdGD1FJIkF/ZAwyg9hf8IKxIYXiJogycE0orpl6ZsKf79Yu2es2xcQbHIF0e3KSfdgpefru2oMhdLkKY6TQcUHeenXzIv2JvK7rrhtaYlRIzsfcb053/kuug0UnnZ5g7yqJ9bgZ0+9JZebV8=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB6246.eurprd05.prod.outlook.com (20.179.2.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.18; Tue, 3 Mar 2020 13:02:55 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
+ 13:02:55 +0000
+Subject: Re: [PATCH net-next v3 1/3] net/sched: act_ct: Create nf flow table
+ per zone
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1583239973-3728-1-git-send-email-paulb@mellanox.com>
+ <1583239973-3728-2-git-send-email-paulb@mellanox.com>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <d6a9c501-fa05-0cba-11ff-2686a8724db8@mellanox.com>
+Date:   Tue, 3 Mar 2020 15:02:51 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+In-Reply-To: <1583239973-3728-2-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::39) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
 MIME-Version: 1.0
-References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <87eevf4hnq.fsf@nanos.tec.linutronix.de> <20200224224059.GC1508@skl-build> <87mu95ne3q.fsf@nanos.tec.linutronix.de>
-In-Reply-To: <87mu95ne3q.fsf@nanos.tec.linutronix.de>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 3 Mar 2020 14:00:48 +0100
-Message-ID: <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
-Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
- Driver with PHC interface changes to support additional H/W Features
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     "Christopher S. Hall" <christopher.s.hall@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        jacob.e.keller@intel.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sean V Kelley <sean.v.kelley@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.223.6.3] (193.47.165.251) by AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15 via Frontend Transport; Tue, 3 Mar 2020 13:02:54 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 89bb2fb9-2a0e-4bbc-658b-08d7bf7330af
+X-MS-TrafficTypeDiagnostic: AM6PR05MB6246:|AM6PR05MB6246:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB624657BC748CA4F83CFD0906CFE40@AM6PR05MB6246.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
+X-Forefront-PRVS: 03319F6FEF
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(189003)(199004)(8936002)(16526019)(66946007)(6486002)(6636002)(186003)(66556008)(66476007)(31686004)(26005)(110136005)(86362001)(5660300002)(36756003)(2616005)(81166006)(16576012)(2906002)(956004)(52116002)(81156014)(31696002)(8676002)(6666004)(53546011)(316002)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6246;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BD6csHpyDmakNn+Kvr4WBph/4mtCrgbDb5Q5YWucZZxWqlJ4ETmy9aAZegAIgSGphvZZP8wA54cEAX+DlClR2Vjkc9ypNE4D5viLZZCVL4KV476PAqbf+tXkufz+pl8i4WRx1lu/FR+9x/B/X7WkAzw0ol5nu/4Xu8cKMMfdrFekupB/5+ohKFck6SierZt3TiKaNBpI5YOIWVqsC0q40MmhBs6d2BPZRyqcnv6uLEjf6AoJn63/ujEhOzpBlLaG1WT1glRLwcCrWKxpDP1MKmtYM7WMPPgFc0XBI6nzbzE9mUa5qu49xgcXgBVZU6Vsa5LhWFUVeAczd2to3+5zR/rkH7yKnGRthCEgmR4mW66QkI5sHv5PjNC1yqD+ve7tjtIofHsZysUmOFLDyvkXL025Xxx4K5SbiBuqJFe29XRKGkovnWyzR7G5QvWdp9I8
+X-MS-Exchange-AntiSpam-MessageData: xzZgvj0urUL6ewdB/coj38f16Q5vyk/hjFq3ip5f+lc2LfolS4qo3avXnaI20eDKRelhiUi1SyV4Qok2Ts8ENwjL6iQ4pr98tQWq11qsQ57KZ8IQKbTF+CPbH4hAGkrxuIvrp4YeyHtNKuPjZdodJQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89bb2fb9-2a0e-4bbc-658b-08d7bf7330af
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2020 13:02:55.6559
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Dh5yBM53kbaKanfDoVejvA7FKlPxT69K10G6DyUQiKGhgB1FEg4aoi+VE65ZkI6d14XNR4z+HAkVFguMWX0bTQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6246
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 27, 2020 at 12:06 AM Thomas Gleixner <tglx@linutronix.de> wrote:
-> "Christopher S. Hall" <christopher.s.hall@intel.com> writes:
 
-> > Apart from clock import/export applications, timestamping single I/O
-> > events are potentially valuable for industrial control applications
-> > (e.g. motor position sensing vs. time). As time sync precision
-> > requirements for these applications are tightened, standard GPIO
-> > timing precision will not be good enough.
-
-If you are using (from userspace) the GPIO character device
-and open the events using e.g. tools/gpio/gpio-event-mon.c
-you get GPIO events to userspace.
-
-This uses a threaded interrupt with an top half (fastpath)
-that timestamps it as the IRQ comes in using
-ktime_get_ns(). It's as good as we can get it with just
-software and IRQs (I think).
-
-This uses a KFIFO to userspace, same approach as the IIO
-subsystem.
-
-> Anyway, the device we are talking about is a GPIO device with inputs and
-> outputs plus bells and whistles attached to it.
+On 3/3/2020 2:52 PM, Paul Blakey wrote:
+> Use the NF flow tables infrastructure for CT offload.
 >
-> On the input side this provides a timestamp taken by the hardware when
-> the input level changes, i.e. hardware based time stamping instead of
-> software based interrupt arrival timestamping. Looks like an obvious
-> extension to the GPIO subsystem.
+> Create a nf flow table per zone.
+>
+> Next patches will add FT entries to this table, and do
+> the software offload.
+>
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> ---
+> Changelog:
+>   v2->v3:
+>     Ditch re-locking to alloc, and use atomic allocation
+>   v1->v2:
+>     Use spin_lock_bh instead of spin_lock, and unlock for alloc (as it can sleep)
+>     Free ft on last tc act instance instead of last instance + last offloaded tuple,
+>     this removes cleanup cb and netfilter patches, and is simpler
+>     Removed accidental mlx5/core/en_tc.c change
+>     Removed reviewed by Jiri - patch changed
+>
+>  include/net/tc_act/tc_ct.h |   2 +
+>  net/sched/Kconfig          |   2 +-
+>  net/sched/act_ct.c         | 134 ++++++++++++++++++++++++++++++++++++++++++++-
+>  3 files changed, 136 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+> index a8b1564..cf3492e 100644
+> --- a/include/net/tc_act/tc_ct.h
+> +++ b/include/net/tc_act/tc_ct.h
+> @@ -25,6 +25,8 @@ struct tcf_ct_params {
+>  	u16 ct_action;
+>  
+>  	struct rcu_head rcu;
+> +
+> +	struct tcf_ct_flow_table *ct_ft;
+>  };
+>  
+>  struct tcf_ct {
+> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> index edde0e5..bfbefb7 100644
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -972,7 +972,7 @@ config NET_ACT_TUNNEL_KEY
+>  
+>  config NET_ACT_CT
+>  	tristate "connection tracking tc action"
+> -	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT
+> +	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT && NF_FLOW_TABLE
+>  	help
+>  	  Say Y here to allow sending the packets to conntrack module.
+>  
+> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> index f685c0d..d36417f 100644
+> --- a/net/sched/act_ct.c
+> +++ b/net/sched/act_ct.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/pkt_cls.h>
+>  #include <linux/ip.h>
+>  #include <linux/ipv6.h>
+> +#include <linux/rhashtable.h>
+>  #include <net/netlink.h>
+>  #include <net/pkt_sched.h>
+>  #include <net/pkt_cls.h>
+> @@ -24,6 +25,7 @@
+>  #include <uapi/linux/tc_act/tc_ct.h>
+>  #include <net/tc_act/tc_ct.h>
+>  
+> +#include <net/netfilter/nf_flow_table.h>
+>  #include <net/netfilter/nf_conntrack.h>
+>  #include <net/netfilter/nf_conntrack_core.h>
+>  #include <net/netfilter/nf_conntrack_zones.h>
+> @@ -31,6 +33,108 @@
+>  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+>  #include <uapi/linux/netfilter/nf_nat.h>
+>  
+> +static struct workqueue_struct *act_ct_wq;
+> +static struct rhashtable zones_ht;
+> +static DEFINE_SPINLOCK(zones_lock);
+> +
+> +struct tcf_ct_flow_table {
+> +	struct rhash_head node; /* In zones tables */
+> +
+> +	struct rcu_work rwork;
+> +	struct nf_flowtable nf_ft;
+> +	u16 zone;
+> +	u32 ref;
+> +
+> +	bool dying;
+> +};
+> +
+> +static const struct rhashtable_params zones_params = {
+> +	.head_offset = offsetof(struct tcf_ct_flow_table, node),
+> +	.key_offset = offsetof(struct tcf_ct_flow_table, zone),
+> +	.key_len = sizeof_field(struct tcf_ct_flow_table, zone),
+> +	.automatic_shrinking = true,
+> +};
+> +
+> +static struct nf_flowtable_type flowtable_ct = {
+> +	.owner		= THIS_MODULE,
+> +};
+> +
+> +static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft;
+> +	int err = -ENOMEM;
+> +
+> +	spin_lock_bh(&zones_lock);
+> +	ct_ft = rhashtable_lookup_fast(&zones_ht, &params->zone, zones_params);
+> +	if (ct_ft)
+> +		goto take_ref;
+> +
+> +	ct_ft = kzalloc(sizeof(*ct_ft), GFP_KERNEL);
 
-That looks like something I/we would want to support all the way
-to userspace so people can do their funny industrial stuff in some
-standard manner.
+Reverted it back wrong, should be atomic here.
 
-IIO has a config file in sysfs that lets them select the source of the
-timestamp like so (drivers/iio/industrialio-core.c):
+Sending v4, sorry
 
-s64 iio_get_time_ns(const struct iio_dev *indio_dev)
-{
-        struct timespec64 tp;
-
-        switch (iio_device_get_clock(indio_dev)) {
-        case CLOCK_REALTIME:
-                return ktime_get_real_ns();
-        case CLOCK_MONOTONIC:
-                return ktime_get_ns();
-        case CLOCK_MONOTONIC_RAW:
-                return ktime_get_raw_ns();
-        case CLOCK_REALTIME_COARSE:
-                return ktime_to_ns(ktime_get_coarse_real());
-        case CLOCK_MONOTONIC_COARSE:
-                ktime_get_coarse_ts64(&tp);
-                return timespec64_to_ns(&tp);
-        case CLOCK_BOOTTIME:
-                return ktime_get_boottime_ns();
-        case CLOCK_TAI:
-                return ktime_get_clocktai_ns();
-        default:
-                BUG();
-        }
-}
-
-After discussion with Arnd we concluded the only timestamp that
-makes sense is ktime_get_ns(). So in GPIO we just use that, all the
-userspace I can think of certainly prefers monotonic time.
-(If tglx does not agree with that I stand corrected to whatever
-he says, I suppose.)
-
-Anyway in GPIO we could also make it configurable for users who
-know what they are doing.
-
-HW timestamps would be something more elaborate and
-nice CLOCK_HW_SPECIFIC or so. Some of the IIO sensors also
-have that, we just don't expose it as of now.
-
-Yours,
-Linus Walleij
+> +	if (!ct_ft)
+> +		goto err_alloc;
+> +
+> +	ct_ft->zone = params->zone;
+> +	err = rhashtable_insert_fast(&zones_ht, &ct_ft->node, zones_params);
+> +	if (err)
+> +		goto err_insert;
+> +
+> +	ct_ft->nf_ft.type = &flowtable_ct;
+> +	err = nf_flow_table_init(&ct_ft->nf_ft);
+> +	if (err)
+> +		goto err_init;
+> +
+> +	__module_get(THIS_MODULE);
+> +take_ref:
+> +	params->ct_ft = ct_ft;
+> +	ct_ft->ref++;
+> +	spin_unlock_bh(&zones_lock);
+> +
+> +	return 0;
+> +
+> +err_init:
+> +	rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+> +err_insert:
+> +	kfree(ct_ft);
+> +err_alloc:
+> +	spin_unlock_bh(&zones_lock);
+> +	return err;
+> +}
+> +
+> +static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft;
+> +
+> +	ct_ft = container_of(to_rcu_work(work), struct tcf_ct_flow_table,
+> +			     rwork);
+> +	nf_flow_table_free(&ct_ft->nf_ft);
+> +	kfree(ct_ft);
+> +
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
+> +
+> +	spin_lock_bh(&zones_lock);
+> +	if (--params->ct_ft->ref == 0) {
+> +		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+> +		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
+> +		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
+> +	}
+> +	spin_unlock_bh(&zones_lock);
+> +}
+> +
+> +static int tcf_ct_flow_tables_init(void)
+> +{
+> +	return rhashtable_init(&zones_ht, &zones_params);
+> +}
+> +
+> +static void tcf_ct_flow_tables_uninit(void)
+> +{
+> +	rhashtable_destroy(&zones_ht);
+> +}
+> +
+>  static struct tc_action_ops act_ct_ops;
+>  static unsigned int ct_net_id;
+>  
+> @@ -207,6 +311,8 @@ static void tcf_ct_params_free(struct rcu_head *head)
+>  	struct tcf_ct_params *params = container_of(head,
+>  						    struct tcf_ct_params, rcu);
+>  
+> +	tcf_ct_flow_table_put(params);
+> +
+>  	if (params->tmpl)
+>  		nf_conntrack_put(&params->tmpl->ct_general);
+>  	kfree(params);
+> @@ -730,6 +836,10 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+>  	if (err)
+>  		goto cleanup;
+>  
+> +	err = tcf_ct_flow_table_get(params);
+> +	if (err)
+> +		goto cleanup;
+> +
+>  	spin_lock_bh(&c->tcf_lock);
+>  	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+>  	params = rcu_replace_pointer(c->params, params,
+> @@ -974,12 +1084,34 @@ static void __net_exit ct_exit_net(struct list_head *net_list)
+>  
+>  static int __init ct_init_module(void)
+>  {
+> -	return tcf_register_action(&act_ct_ops, &ct_net_ops);
+> +	int err;
+> +
+> +	act_ct_wq = alloc_ordered_workqueue("act_ct_workqueue", 0);
+> +	if (!act_ct_wq)
+> +		return -ENOMEM;
+> +
+> +	err = tcf_ct_flow_tables_init();
+> +	if (err)
+> +		goto err_tbl_init;
+> +
+> +	err = tcf_register_action(&act_ct_ops, &ct_net_ops);
+> +	if (err)
+> +		goto err_register;
+> +
+> +	return 0;
+> +
+> +err_tbl_init:
+> +	destroy_workqueue(act_ct_wq);
+> +err_register:
+> +	tcf_ct_flow_tables_uninit();
+> +	return err;
+>  }
+>  
+>  static void __exit ct_cleanup_module(void)
+>  {
+>  	tcf_unregister_action(&act_ct_ops, &ct_net_ops);
+> +	tcf_ct_flow_tables_uninit();
+> +	destroy_workqueue(act_ct_wq);
+>  }
+>  
+>  module_init(ct_init_module);
