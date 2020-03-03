@@ -2,104 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AEFC177871
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4FA177877
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:12:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727725AbgCCOKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 09:10:52 -0500
-Received: from mail-eopbgr30066.outbound.protection.outlook.com ([40.107.3.66]:51140
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726079AbgCCOKv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 09:10:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HD9M3r/TLdG2wjK7lhnJsw5DFdOABl5hyO/DyTnHAAeEYt10oJnqLMDKYYR4/uFWya8tLpld2g/gnr28PIwtoi+RD1lwKkdR6cdr6l+TvBjKlvERHArmlyNEXuY+73UC66/uhLpB25f0B9zVyjjdg0x289BlaGWgNbxAO8ErLnmF2NePzHo6DdLPf2lzp0om1fUXjOAM+zGjjI5KXTQNbRzOB/imIe/aljZR0FDzAP1zPUc+qHGhfw0HaG2PJndaTFScPy4HxRRLXw+0PsXXL0ucEe0YJIFXUktMZtdcJC42rtj0ogtuMjdabsJOyBFkBnfNM3OnOR+gjyQaxqUcZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bSlgJKLDeEYQf+oWE2tS9LdLyi15KuS4VOg59F4efxc=;
- b=L77qaoWgQoFYoav2lyxgsAOJV2pqrgiAwfSrT8qBDGJXYGYovPl3OyZ9gf64jk6QnQtbkb8qNBSvlMvKtB9cDFNzYJpgYFt3xVw5SIABD8ONbSNvlJ+Wo1zyuHwNf4DTmM3XZnzkJQHKDXpYGTzOSuAaCe3iwdeyqshF+/sxoRUZ8OhghJGHcZVZ5OV205cUu7PMXD4YaDGrbgFCjW2n/toJzjrADbkbeuvWIHLoVefYjWTmk+ztg32WllEbiAJc2i1SDZvODSoqzu8hVZqgQwUigVFpyFLXGQbvQxrRHHyqUMPiN8CnkrpnV031HI7xf1QjwR205YSsYzRjtiSlPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bSlgJKLDeEYQf+oWE2tS9LdLyi15KuS4VOg59F4efxc=;
- b=bH+/95PqP412vQA4fy3YFze2u9TpMZNw5FaJT5r/M//6QILEDnHDiajEBjdEwVHVnlJU/LlaD2XZHWTokMin6jozDKDd3tQGtujztbVKZpqTZkpbq+WI2RD7UJ3im85lNOfWNP4pI/ocOgJswjNQ67u9R/CSce/T10Mg8CAcdWc=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6147.eurprd05.prod.outlook.com (20.178.112.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2772.15; Tue, 3 Mar 2020 14:10:47 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b%7]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
- 14:10:47 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Parav Pandit <parav@mellanox.com>,
+        id S1728771AbgCCOLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 09:11:14 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:52585 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727369AbgCCOLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:11:14 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1j98GK-0007Kd-2l; Tue, 03 Mar 2020 15:11:08 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00] (unknown [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E74E14C57D7;
+        Tue,  3 Mar 2020 14:11:04 +0000 (UTC)
+Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Marek Vasut <marex@denx.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     Jiri Pirko <jiri@mellanox.com>, Moshe Shemesh <moshe@mellanox.com>,
-        Vladyslav Tarasiuk <vladyslavt@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: RE: [PATCH] IB/mlx5: Fix missing debugfs entries
-Thread-Topic: [PATCH] IB/mlx5: Fix missing debugfs entries
-Thread-Index: AQHV8WVHFBItap29JUeOqd2Am8bBcqg26CRA
-Date:   Tue, 3 Mar 2020 14:10:47 +0000
-Message-ID: <AM0PR05MB48666E6E18E435E4D947D475D1E40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20200303140834.7501-1-parav@mellanox.com>
- <20200303140834.7501-2-parav@mellanox.com>
-In-Reply-To: <20200303140834.7501-2-parav@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [2605:6000:ec82:1c00:5121:27a4:7e98:56ad]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f50ea9d2-1e09-419a-81be-08d7bf7cabdc
-x-ms-traffictypediagnostic: AM0PR05MB6147:|AM0PR05MB6147:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB614770D66A03D924AAF829A3D1E40@AM0PR05MB6147.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1247;
-x-forefront-prvs: 03319F6FEF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(376002)(366004)(396003)(199004)(189003)(7696005)(66556008)(316002)(66946007)(66476007)(2906002)(478600001)(64756008)(8676002)(81166006)(81156014)(53546011)(4326008)(66446008)(6506007)(110136005)(54906003)(76116006)(55016002)(9686003)(5660300002)(33656002)(71200400001)(86362001)(186003)(8936002)(52536014)(4744005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6147;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sNJ8jywMUrWHVbkjPE8NFidxqJZmLZ0EWhTHOI1aQbpihJGWHcr+WkvxS1duHT1y9L/MmzRHB8WrKYFjoUABEc3ggErbOqWWyOmpZAKdRMLzFxDNMtMzG/SOlMcnNL568EBgWN4AoPj5aYMaApTwsEGSRgb0rKZJ150WN8clcadFPpQL9OQjbeLiNYp5unjRAJ5ZX02WYbGfbeA8rVrO7CCqm17MCtakalxMcOeO+JhupskoenHNbKH3p2vT8q70luacG4hGFwrArbwXlJTp+h6xmpBxc5iSAyzi98UZceXr9OCRS99wf529SbOtGDqxYJ5ETDGOIwWLMKJuFB+l9brxIUAQW9LaC8/6lzeNJTRx1C5e0JRcm+Ss0AAO2CmU9SvMPCUvL1r2XtgZWCALJNC80YimwCb6kW4g0tAfVjG9u6AUoUC7ibGswxlYnDVW
-x-ms-exchange-antispam-messagedata: FWhAtAxFheyRy1kUeYJUApfzMK/OdTBl2a4r23lhlo5BOpcAriGPgfan5mhkN/idYUjl5+zE8Ulu+8eJ4HMlL99jU1DvS6vaK6AGp8evQOGrD+fauJ39N8ZQ/97iGmOr99qIcS737jl7DsWdGLehoqQi5SA/Wv3odQ4s88dRjA7LlG/MmAPWoRlQTZPYTb4TXrJBs/Nr/3nM/+VzxPXkYg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Christian Herber <christian.herber@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
+ <2228b5de-89e3-d61a-4af9-8d1a8a5eb311@pengutronix.de>
+ <20200303140912.GH31977@lunn.ch>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
+Message-ID: <1fb184b1-4304-fa39-cd04-0608ef996f50@pengutronix.de>
+Date:   Tue, 3 Mar 2020 15:11:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f50ea9d2-1e09-419a-81be-08d7bf7cabdc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2020 14:10:47.4870
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1yBnJG/p2rDevroFA0EpkF07w41Xw2oiAhs3n2ZKIS8Y1rQIXOlgZvs+BOxQTrKI7RuBWig7WbDVLJwwB3DZbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6147
+In-Reply-To: <20200303140912.GH31977@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/3/20 3:09 PM, Andrew Lunn wrote:
+>>> Hi Oleksij, Heiner, Marc,
+>>>
+>>> You could also refer the solution implemented here as part of a TJA110x driver:
+>>> https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/about/
+>>
+>> OK, thank you!
+>>
+>> Suddenly, the solution in this driver is not mainlainable. It may match on
+>> ther PHYs with PHYID == 0.
+>>
+>> See this part of the code:
+>> #define NXP_PHY_ID_TJA1102P1      (0x00000000U)
+>> ...
+>> 	, {
+>> 	.phy_id = NXP_PHY_ID_TJA1102P1,
+>> 	.name = "TJA1102_p1",
+>> 	.phy_id_mask = NXP_PHY_ID_MASK,
+> 
+> Noooo
+> 
+> You cannot assume NXP is the only silicon vendor to manufacture broken
+> silicon with a PHY ID of 0.
 
+ACK, we ruled that soultion out already :)
 
-> From: Parav Pandit <parav@mellanox.com>
-> Sent: Tuesday, March 3, 2020 8:09 AM
-> To: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
-> Cc: Parav Pandit <parav@mellanox.com>; Jiri Pirko <jiri@mellanox.com>;
-> Moshe Shemesh <moshe@mellanox.com>; Vladyslav Tarasiuk
-> <vladyslavt@mellanox.com>; Saeed Mahameed <saeedm@mellanox.com>;
-> leon@kernel.org
-> Subject: [PATCH] IB/mlx5: Fix missing debugfs entries
+We'll look into your and Marek's suggestions.
 
-Please ignore the noise of this unrelated patch.
+Marc
+
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
