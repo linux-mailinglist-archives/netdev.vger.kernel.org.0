@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF7E7177D9F
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6ABC177E1D
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730492AbgCCRgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:36:54 -0500
-Received: from mga17.intel.com ([192.55.52.151]:47673 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727993AbgCCRgx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 12:36:53 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 09:36:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,511,1574150400"; 
-   d="scan'208";a="229000291"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
-  by orsmga007.jf.intel.com with ESMTP; 03 Mar 2020 09:36:47 -0800
-Subject: Re: [PATCH v2 6/6] nfp: Use pci_get_dsn()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Miller <davem@davemloft.net>
-References: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
- <20200303022506.1792776-1-jacob.e.keller@intel.com>
- <20200303022506.1792776-7-jacob.e.keller@intel.com>
- <20200302194044.27eb9e5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <fe15eb21-76c8-643d-9561-d3d2e12670f8@intel.com>
-Date:   Tue, 3 Mar 2020 09:36:47 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200302194044.27eb9e5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1731203AbgCCRqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:46:42 -0500
+Received: from mail-pj1-f49.google.com ([209.85.216.49]:36622 "EHLO
+        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731194AbgCCRql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:46:41 -0500
+Received: by mail-pj1-f49.google.com with SMTP id d7so1668934pjw.1;
+        Tue, 03 Mar 2020 09:46:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=mKqq4Dq/2knBrrRTT38cYPAWcU0W4UDU4X0Ti778CSo=;
+        b=LLXCx6/g+eu02nImuPysD0/43a++xJb/qqXbnH4ltGkuV2/ZzXvqa7H882z7/aNlrM
+         WyVHZbFYtphK0s2/TTXqHCpKqqNxseOxXzG8Uwsz9ko9e5MA0aMFfUsx6+NPIlJejd8f
+         YO/R/i6DJewDIMg3HDerZxvcIvvuOSRjSZ8Ci6LTEagnjy1rQwKy4nI7EFIxJ2P5lrrW
+         v/pHX1BsSuuOWXlEAFYsrDUFA7I+UIe2hYdXI0mUE0HgAG/Y6KDHXhmPL5kfIK8MaQpz
+         LTl8cemWezqdm3Y1H8zlz8ZZ0Twscp4lmLbQl/+fUVwdG9o0OA6yJ9llAxSsaTRwRPh1
+         o1Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=mKqq4Dq/2knBrrRTT38cYPAWcU0W4UDU4X0Ti778CSo=;
+        b=oIFpVTXRZlEeIWnmtxpY5XQXdlU9QkPpJFXcWuFWa56RsjcscbhI9TJb+NClubnIRz
+         PNDruIIputelB/OSpjfLs2zVprnr4XZKKHweMAoKV2JPsZ+mF2/E1DPjlwdk8wfo09WK
+         sWNysp8i8a30ERqcPYjMxm7dFVJHZCQfFDUgnd1CqyuVcQnVm3PJY40KmA58t13zxgKv
+         69lA9swIUVBgnQaxXXikmt5wqC69Pb2Kb79gZSh8byMg1Fuy1WYB8WfDyYiC56LueQCf
+         1zXtNjVGM1BIhhmSsjENbCrOZ5rdnlJeTA7UOoEaw1PO7pE37phGg8Z2DkHEGKd1wfDF
+         LmeQ==
+X-Gm-Message-State: ANhLgQ2fhd1jFLysb+nYOsgImAS9jDBx2iuhXe3ktOTRjVybKUdNbUF4
+        8Wqej4xMTOYYNNvJDIBItRE=
+X-Google-Smtp-Source: ADFU+vuj5cAPzI/h7WwN96+5oACwm8tdimiwivsVAllhxKyj+8PS/l5KfCLJhtIec7TEAPX3/VtiNQ==
+X-Received: by 2002:a17:90a:be04:: with SMTP id a4mr5166108pjs.73.1583257600182;
+        Tue, 03 Mar 2020 09:46:40 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id d23sm25502795pfo.176.2020.03.03.09.46.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 09:46:39 -0800 (PST)
+Date:   Tue, 03 Mar 2020 09:46:33 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Message-ID: <5e5e97f9676a3_60e72b06ba14c5bcbd@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200228115344.17742-3-lmb@cloudflare.com>
+References: <20200228115344.17742-1-lmb@cloudflare.com>
+ <20200228115344.17742-3-lmb@cloudflare.com>
+Subject: RE: [PATCH bpf-next v2 2/9] bpf: tcp: guard declarations with
+ CONFIG_NET_SOCK_MSG
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/2/2020 7:40 PM, Jakub Kicinski wrote:
-> On Mon,  2 Mar 2020 18:25:05 -0800 Jacob Keller wrote:
->> Use the newly added pci_get_dsn() function for obtaining the 64-bit
->> Device Serial Number in the nfp6000_read_serial and
->> nfp_6000_get_interface functions.
->>
->> pci_get_dsn() reports the Device Serial number as a u64 value created by
->> combining two pci_read_config_dword functions. The lower 16 bits
->> represent the device interface value, and the next 48 bits represent the
->> serial value. Use put_unaligned_be32 and put_unaligned_be16 to convert
->> the serial value portion into a Big Endian formatted serial u8 array.
->>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> Cc: Jakub Kicinski <kuba@kernel.org>
+Lorenz Bauer wrote:
+> tcp_bpf.c is only included in the build if CONFIG_NET_SOCK_MSG is
+> selected. The declaration should therefore be guarded as such.
 > 
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> Thanks!
-> 
->> -	pci_read_config_dword(pdev, pos + 4, &reg);
->> -	put_unaligned_be16(reg >> 16, serial + 4);
->> -	pci_read_config_dword(pdev, pos + 8, &reg);
->> -	put_unaligned_be32(reg, serial);
->> +	put_unaligned_be32((u32)(dsn >> 32), serial);
->> +	put_unaligned_be16((u16)(dsn >> 16), serial + 4);
-> 
-> nit: the casts and extra brackets should be unnecessary, in case
->      you're respinning..
-> 
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-Ah, yea because the argument will get converted properly by the
-function. It's a bit of a habit since we use one of the -W warnings that
-warns about implicit conversions that use truncation. I can remove them
-if I need to respin.
+Seems OK, stream parser configs require sock msg now so that
+dependency chain is already covered.
 
-It looks like this got picked up by one of the kbuild bots but got
-applied without the main PCI patch that implemented pci_get_dsn.
-
-Thanks,
-Jake
+Acked-by: John Fastabend <john.fastabend@gmail.com>
