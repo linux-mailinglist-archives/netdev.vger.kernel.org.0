@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65CAD176C19
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1EE176C0E
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728754AbgCCCtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:49:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45492 "EHLO mail.kernel.org"
+        id S1728848AbgCCCtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:49:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728565AbgCCCtS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:49:18 -0500
+        id S1728782AbgCCCtX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:49:23 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39E2B246D8;
-        Tue,  3 Mar 2020 02:49:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F2062246D5;
+        Tue,  3 Mar 2020 02:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203758;
-        bh=fERsDUe64ag3rRBlFOK8qlkJoh2Bnqtp8Cox5nzveJc=;
+        s=default; t=1583203762;
+        bh=OfJcAaeI/nrPc7oVnN+bhGLA3fcflJ33ohKgSQKGv7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HQG/77j/ni+ZlfSRuKZqwm92rMiwaAgSPqvDqy5PpugR6eRn+rORaPDAgfnKr9Q07
-         1CqTyqOBLSd+N+WiiiNhr0JrVdai2zJArPjE5C8F8bHNlw6xE9sOmRF5PpdLtqE+zJ
-         3x07JMJkbgzes4HYpiLV91kUJedO8nili4+hJxh0=
+        b=v+ip1od6TI+ZfqEl0pnKQUrklWjmyhTQ0Y6NdmLNSpBIFAfEY83oCINZFffjT1GXp
+         fBsde/30bdGaQ+HgMCuJ0jc5Su9/nTJoG2ziDpcmbD6MpMBc/ZZhkMfoUcONplFqt9
+         N3Bmrwge1lXMdcCbgkHXoInNB5GI9WoUcgNCxt3E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 20/32] net: ks8851-ml: Fix 16-bit IO operation
-Date:   Mon,  2 Mar 2020 21:48:39 -0500
-Message-Id: <20200303024851.10054-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 24/32] net: mscc: fix in frame extraction
+Date:   Mon,  2 Mar 2020 21:48:43 -0500
+Message-Id: <20200303024851.10054-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024851.10054-1-sashal@kernel.org>
 References: <20200303024851.10054-1-sashal@kernel.org>
@@ -45,49 +44,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit 58292104832fef6cb4a89f736012c0e0724c3442 ]
+[ Upstream commit a81541041ceb55bcec9a8bb8ad3482263f0a205a ]
 
-The Micrel KSZ8851-16MLLI datasheet DS00002357B page 12 states that
-BE[3:0] signals are active high. This contradicts the measurements
-of the behavior of the actual chip, where these signals behave as
-active low. For example, to read the CIDER register, the bus must
-expose 0xc0c0 during the address phase, which means BE[3:0]=4'b1100.
+Each extracted frame on Ocelot has an IFH. The frame and IFH are extracted
+by reading chuncks of 4 bytes from a register.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Petr Stetiar <ynezz@true.cz>
-Cc: YueHaibing <yuehaibing@huawei.com>
+In case the IFH and frames were read corretly it would try to read the next
+frame. In case there are no more frames in the queue, it checks if there
+were any previous errors and in that case clear the queue. But this check
+will always succeed also when there are no errors. Because when extracting
+the IFH the error is checked against 4(number of bytes read) and then the
+error is set only if the extraction of the frame failed. So in a happy case
+where there are no errors the err variable is still 4. So it could be
+a case where after the check that there are no more frames in the queue, a
+frame will arrive in the queue but because the error is not reseted, it
+would try to flush the queue. So the frame will be lost.
+
+The fix consist in resetting the error after reading the IFH.
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/ks8851_mll.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_board.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/micrel/ks8851_mll.c b/drivers/net/ethernet/micrel/ks8851_mll.c
-index aff1619fb0e0e..9de59facec218 100644
---- a/drivers/net/ethernet/micrel/ks8851_mll.c
-+++ b/drivers/net/ethernet/micrel/ks8851_mll.c
-@@ -485,7 +485,7 @@ static int msg_enable;
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index 3cdf63e35b53b..4054cf9db8181 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -105,6 +105,14 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
+ 		if (err != 4)
+ 			break;
  
- static u16 ks_rdreg16(struct ks_net *ks, int offset)
- {
--	ks->cmd_reg_cache = (u16)offset | ((BE1 | BE0) << (offset & 0x02));
-+	ks->cmd_reg_cache = (u16)offset | ((BE3 | BE2) >> (offset & 0x02));
- 	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
- 	return ioread16(ks->hw_addr);
- }
-@@ -500,7 +500,7 @@ static u16 ks_rdreg16(struct ks_net *ks, int offset)
++		/* At this point the IFH was read correctly, so it is safe to
++		 * presume that there is no error. The err needs to be reset
++		 * otherwise a frame could come in CPU queue between the while
++		 * condition and the check for error later on. And in that case
++		 * the new frame is just removed and not processed.
++		 */
++		err = 0;
++
+ 		ocelot_parse_ifh(ifh, &info);
  
- static void ks_wrreg16(struct ks_net *ks, int offset, u16 value)
- {
--	ks->cmd_reg_cache = (u16)offset | ((BE1 | BE0) << (offset & 0x02));
-+	ks->cmd_reg_cache = (u16)offset | ((BE3 | BE2) >> (offset & 0x02));
- 	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
- 	iowrite16(value, ks->hw_addr);
- }
+ 		dev = ocelot->ports[info.port]->dev;
 -- 
 2.20.1
 
