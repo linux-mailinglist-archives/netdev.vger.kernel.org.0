@@ -2,102 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2D3A177A6D
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F71D177A73
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729872AbgCCP3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:29:42 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:45235 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728918AbgCCP3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:29:41 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1583249381; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=DGm1tyLTMS++kedpz+qyweZ6Iu5ZVMUBPPMKBo/asTk=;
- b=c9BFRZS0k4ZknSfvlgu20oHGUDYUWbMJ47BXC8HbCJE8C9jyrAXaO8SanLF3jceZH/hZysgJ
- 6vmIXDghLkwANibjHBYkZxk0nCy61zoHagihUSKVGiyvZDXSWidCNFlQ1vN0nlK4g9qZuohF
- 1EFWmjWHHY11try0BRAVDipWY/Q=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e5e77d6.7fae349aa0a0-smtp-out-n01;
- Tue, 03 Mar 2020 15:29:26 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4C552C4479C; Tue,  3 Mar 2020 15:29:25 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A491FC43383;
-        Tue,  3 Mar 2020 15:29:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A491FC43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729883AbgCCPaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:30:21 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:37380 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728330AbgCCPaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:30:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0AOalMujzfvOp/qBTNhEuZ9p7mv0TJBRJaYBnhdgVL8=; b=RMtEwPuH2+iWJTvoAX4mY/lFZ
+        9YDhKjgowtPy5FCyDZVxr3fG9EmZvKmeXhukYcsuJjB6nHC65Q6fb06rE1n0G1vK5bJd5RjQGn5vk
+        TRbFi8WR75wwgFRk7dIT9OVfF3rkz9aRZsRZqeKPITiU1Bv8Z4I2PuCZtidUIsA0ex9DtihIST5Xd
+        9I2bV+nYl3dNLt7vmM9G56UITFYsv7wvjJNUnMDCY2LocPmX07Mo+hFtbn8tzYnh0N8FnnN+YxFZe
+        qit5YNKnjIdM07bM1MgPx0DlqfcA0zxzY3A5h5ARkFXFfYX5Gmspebl0xUPeCUTZypMmegA1DQlho
+        hE+1Ku2Xg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:55738)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j99Us-0000Lj-R3; Tue, 03 Mar 2020 15:30:14 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j99Ur-00060a-FJ; Tue, 03 Mar 2020 15:30:13 +0000
+Date:   Tue, 3 Mar 2020 15:30:13 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: phy: marvell10g: add energy detect
+ power down tunable
+Message-ID: <20200303153013.GQ25745@shell.armlinux.org.uk>
+References: <20200303144259.GM25745@shell.armlinux.org.uk>
+ <E1j98mA-00057r-U8@rmk-PC.armlinux.org.uk>
+ <20200303150741.GC3179@kwain>
+ <20200303151232.GO25745@shell.armlinux.org.uk>
+ <20200303151958.GE3179@kwain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] iwlwifi: pcie: restore support for Killer Qu C0 NICs
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191224051639.6904-1-jan.steffens@gmail.com>
-References: <20191224051639.6904-1-jan.steffens@gmail.com>
-To:     "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200303152925.4C552C4479C@smtp.codeaurora.org>
-Date:   Tue,  3 Mar 2020 15:29:25 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200303151958.GE3179@kwain>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com> wrote:
-
-> Commit 809805a820c6 ("iwlwifi: pcie: move some cfg mangling from
-> trans_pcie_alloc to probe") refactored the cfg mangling. Unfortunately,
-> in this process the lines which picked the right cfg for Killer Qu C0
-> NICs after C0 detection were lost. These lines were added by commit
-> b9500577d361 ("iwlwifi: pcie: handle switching killer Qu B0 NICs to
-> C0").
+On Tue, Mar 03, 2020 at 04:19:58PM +0100, Antoine Tenart wrote:
+> On Tue, Mar 03, 2020 at 03:12:32PM +0000, Russell King - ARM Linux admin wrote:
+> > On Tue, Mar 03, 2020 at 04:07:41PM +0100, Antoine Tenart wrote:
+> > > On Tue, Mar 03, 2020 at 02:44:02PM +0000, Russell King wrote:
+> > > >  drivers/net/phy/marvell10g.c | 111 ++++++++++++++++++++++++++++++++++-
+> > > >  
+> > > > +static int mv3310_maybe_reset(struct phy_device *phydev, u32 unit, bool reset)
+> > > > +{
+> > > > +	int retries, val, err;
+> > > > +
+> > > > +	if (!reset)
+> > > > +		return 0;
+> > > 
+> > > You could also call mv3310_maybe_reset after testing the 'reset'
+> > > condition, that would make it easier to read the code.
+> > 
+> > I'm not too convinced:
+> > 
+> > diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+> > index ef1ed9415d9f..3daf73e61dff 100644
+> > --- a/drivers/net/phy/marvell10g.c
+> > +++ b/drivers/net/phy/marvell10g.c
+> > @@ -279,13 +279,10 @@ static int mv3310_power_up(struct phy_device *phydev)
+> >  				  MV_V2_PORT_CTRL_PWRDOWN);
+> >  }
+> >  
+> > -static int mv3310_maybe_reset(struct phy_device *phydev, u32 unit, bool reset)
+> > +static int mv3310_reset(struct phy_device *phydev, u32 unit)
+> >  {
+> >  	int retries, val, err;
+> >  
+> > -	if (!reset)
+> > -		return 0;
+> > -
+> >  	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1,
+> >  			     MDIO_CTRL1_RESET, MDIO_CTRL1_RESET);
+> >  	if (err < 0)
+> > @@ -684,10 +681,10 @@ static int mv3310_config_mdix(struct phy_device *phydev)
+> >  
+> >  	err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
+> >  				     MV_PCS_CSCR1_MDIX_MASK, val);
+> > -	if (err < 0)
+> > +	if (err <= 0)
+> >  		return err;
+> >  
+> > -	return mv3310_maybe_reset(phydev, MV_PCS_BASE_T, err > 0);
+> > +	return mv3310_reset(phydev, MV_PCS_BASE_T);
+> >  }
+> >  
+> >  static int mv3310_config_aneg(struct phy_device *phydev)
+> > 
+> > The change from:
+> > 
+> > 	if (err < 0)
+> > 
+> > to:
+> > 
+> > 	if (err <= 0)
+> > 
+> > could easily be mistaken as a bug, and someone may decide to try to
+> > "fix" that back to being the former instead.  The way I have the code
+> > makes the intention explicit.
 > 
-> I suspect this is more of the "merge damage" which commit 7cded5658329
-> ("iwlwifi: pcie: fix merge damage on making QnJ exclusive") talks about.
+> Using a single line to test both the error and the 'return 0'
+> conditions, yes, I agree. Another solution would be to do something of
+> the like:
 > 
-> Restore the missing lines so the driver loads the right firmware for
-> these NICs.
+> 	phy_modify_mmd_changed()
+> 	if (err < 0)
+> 		return err;
 > 
-> Fixes: 809805a820c6 ("iwlwifi: pcie: move some cfg mangling from trans_pcie_alloc to probe")
-> Signed-off-by: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+> 	if (err)
+> 		mv3310_reset();
+> 
+> 	return 0;
+> 
+> I find it more readable, but this kind of thing is also a matter of
+> personal taste.
 
-As Luca said, this fails to apply to wireless-drivers. Please rebase and
-resend as v2.
+Well, it either becomes:
 
-Recorded preimage for 'drivers/net/wireless/intel/iwlwifi/pcie/drv.c'
-error: Failed to merge in the changes.
-Applying: iwlwifi: pcie: restore support for Killer Qu C0 NICs
-Using index info to reconstruct a base tree...
-M	drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-Falling back to patching base and 3-way merge...
-Auto-merging drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-CONFLICT (content): Merge conflict in drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-Patch failed at 0001 iwlwifi: pcie: restore support for Killer Qu C0 NICs
-The copy of the patch that failed is found in: .git/rebase-apply/patch
+        err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
+                                     MV_PCS_CSCR1_MDIX_MASK, val);
+        if (err < 0)
+                return err;
 
-Patch set to Changes Requested.
+        if (err > 0)
+                return mv3310_reset(phydev, MV_PCS_BASE_T);
+
+        return 0;
+
+or:
+
+        err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
+                                     MV_PCS_CSCR1_MDIX_MASK, val);
+        if (err > 0)
+                err = mv3310_reset(phydev, MV_PCS_BASE_T);
+
+        return err;
+
+In the former case, we have two success-exit paths - one via a successful
+mv3310_reset() and one by dropping through to the final return statement.
+
+The latter case looks a bit better, at least to me.
 
 -- 
-https://patchwork.kernel.org/patch/11309095/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
