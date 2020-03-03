@@ -2,71 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65CBB177326
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 10:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 763C217732F
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 10:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbgCCJxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 04:53:22 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41197 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbgCCJxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 04:53:22 -0500
-Received: by mail-wr1-f67.google.com with SMTP id v4so3476406wrs.8
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 01:53:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pqBcDErKzkwtXUpEsQoyK+2L6qloiSPILUyInb9tEPY=;
-        b=kKdJTJJ/cKYUB9/yjjpGLVDu6M6OL/jjWZG66/8krjRER4a75MEICr64hjEz9Dv50e
-         HrLxPGolT5EGvBwCK24hNJCYiAOmZwzdzl0AGTWuyssZWOrWhcEl5oQP7FJmOnLXnPnm
-         RGEiNSfyfGts8C5Vt5zuaiHxzeLfH4wKofC2fOsfmwQazbWl07La6H2g8ya8Mv5qpbuZ
-         nbMVDPET7jt/uRwj9ygaOK6DgWEWAA1ocRWL+kJNDVJPEeK6fL4PAXo6bo+HovjTHHpV
-         92RLCWlLK4kSVyf6csqPAYlEJqTkxFyv/FLkDKstsfoaxxYIcrI/rtnOMh2KznWJswsu
-         ez+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pqBcDErKzkwtXUpEsQoyK+2L6qloiSPILUyInb9tEPY=;
-        b=D/77xEbyj6VhZwfpnzXE0lB2tzrCWFmWlIFecEVtLDEdw/i1E7fssVmiA32maHNr0J
-         8CTHzfTgXgkuRoW/kK0LKiVYwcduCbK0IVVMRs9wsXO91eugHk3IQcMDbLyyHApIo30P
-         AcmWEHmm71k7RB8mt7z1A9I+LxA0M7IAaw8C/zLwVsvRFkfKPBKkfaEt/vzcyFvM9DBx
-         0iRuZJhC6qvScGBv1sPFRsM/J+eY+1lI2nff6HuRxgRmB9WIqu2yDJs2YPPI/CsjN/ib
-         mE+7B7qOfoMbWAuqGpxspZBxF3iat7XA1xtPh4GmMqtibCS/5qs3TTp99nWrO2YU5GMB
-         xBPg==
-X-Gm-Message-State: ANhLgQ3qKao9XKRQkUZKxBrn/oaT88ErbzjdNtKxIlC/ueOi7898C4Y/
-        GqXUGaGLmzzTaSxlxSUCDb95Eg==
-X-Google-Smtp-Source: ADFU+vvWRUHecJpVf8BfBcxVvjbVpJmFkZTTC/XwiOHNIjjXZTE7yT6oRZ9c5beC9YzbsoMMT3E0kg==
-X-Received: by 2002:adf:fa50:: with SMTP id y16mr4588703wrr.79.1583229200572;
-        Tue, 03 Mar 2020 01:53:20 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id y10sm2852153wma.26.2020.03.03.01.53.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 01:53:20 -0800 (PST)
-Date:   Tue, 3 Mar 2020 10:53:19 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net 12/16] team: add missing attribute validation for
- array index
-Message-ID: <20200303095319.GE2178@nanopsycho>
-References: <20200303050526.4088735-1-kuba@kernel.org>
- <20200303050526.4088735-13-kuba@kernel.org>
+        id S1728120AbgCCJ4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 04:56:31 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:47124 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726694AbgCCJ4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 04:56:31 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-124-r196nmnXMPS1lIwO7vRUpQ-1; Tue, 03 Mar 2020 09:56:28 +0000
+X-MC-Unique: r196nmnXMPS1lIwO7vRUpQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 3 Mar 2020 09:56:27 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 3 Mar 2020 09:56:27 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Yadu Kishore' <kyk.segfault@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Topic: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Index: AQHV8G6boeAUqLyQLkCRyXn9e/JzBKg1V/WQgAE/qgCAAAaz0A==
+Date:   Tue, 3 Mar 2020 09:56:27 +0000
+Message-ID: <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com>
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+ <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
+ <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+In-Reply-To: <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200303050526.4088735-13-kuba@kernel.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 03, 2020 at 06:05:22AM CET, kuba@kernel.org wrote:
->Add missing attribute validation for TEAM_ATTR_OPTION_ARRAY_INDEX
->to the netlink policy.
->
->Fixes: b13033262d24 ("team: introduce array options")
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+RnJvbTogWWFkdSBLaXNob3JlDQo+IFNlbnQ6IDAzIE1hcmNoIDIwMjAgMDk6MTUNCi4uLg0KPiBU
+aGUgcGVyZiBkYXRhIEkgcHJlc2VudGVkIHdhcyBjb2xsZWN0ZWQgb24gYW4gYXJtNjQgcGxhdGZv
+cm0gKGhpa2V5OTYwKSB3aGVyZQ0KPiB0aGUgZG9fY3N1bSBpbXBsZW1lbnRhdGlvbiB0aGF0IGlz
+IGNhbGxlZCBpcyBub3QgaW4gYXNzZW1ibHkgYnV0IGluIEMNCj4gKGxpYi9jaGVja3N1bS5jKQ0K
+DQpJdCBpcyBhIGxvbmcgdGltZSBzaW5jZSBJJ3ZlIHdyaXR0ZW4gYW55IGFybSBhc3NlbWJsZXIs
+IGJ1dCBhbg0KYXNtIGNoZWNrc3VtIGxvb3Agb3VnaHQgdG8gYmUgZmFzdGVyIHRoYW4gYSBDIG9u
+ZSBiZWNhdXNlIHVzaW5nDQonYWRkIHdpdGggY2FycnknIG91Z2h0IHRvIGJlIGEgZ2Fpbi4NCihV
+bmxpa2UgbWlwcyBzdHlsZSBpbnN0cnVjdGlvbiBzZXRzIHdpdGhvdXQgYSBjYXJyeSBmbGFnLikN
+Cg0KSG93ZXZlciB3aGF0IGl0IG1vcmUgaW50ZXJlc3RpbmcgaXMgdGhhdCBkb19jc3VtKCkgaXMg
+YmVpbmcNCmNhbGxlZCBhdCBhbGwuDQpJdCBpbXBsaWVzIHRoYXQgYSBsYXJnZSBkYXRhIGJsb2Nr
+IGlzIGJlaW5nIGNoZWNrc3VtbWVkICdpbiBzaXR1Jw0Kd2hlcmVhcyB0aGUgZXhwZWN0YXRpb24g
+aXMgdGhhdCAnbGluZWFyaXNpbmcnIHRoZSBza2IgcmVxdWlyZXMNCmFsbCB0aGUgZGF0YSBiZSBj
+b3BpZWQgLSBzbyB0aGUgY2hlY2tzdW0gd291bGQgYmUgZG9uZSBkdXJpbmcgdGhlDQpjb3B5Lg0K
+DQpBZGRpdGlvbmFsbHkgdW5sZXNzIHRoZSBjb3B5IGxvb3AgaXMgJ2xvYWQgKyBzdG9yZScgYW5k
+DQonbG9hZCArIHN0b3JlICsgYWRjJyBjYW4gYmUgZXhlY3V0ZWQgaW4gdGhlIHNhbWUgbnVtYmVy
+IG9mDQpjbG9ja3MgKHdpdGhvdXQgZXhjZXNzaXZlIGxvb3AgdW5yb2xsaW5nKSB0aGVuIGRvaW5n
+IHRoZQ0KY2hlY2tzdW0gaW4gdGhlIGNvcHkgbG9vcCBpc24ndCAnZnJlZScuDQoNCkZvciB4ODYg
+KGluY2x1ZGluZyBvbGQgaW50ZWwgY3B1IHdoZXJlIGFkYyBpcyAyIGNsb2NrcykNCnRoZSAnY2hl
+Y2tzdW0gaW4gY29weScgaXNuJ3QgZnJlZS4NCg0KQ2xlYXJseSwgaWYgeW91IGhhdmUgdG8gZG8g
+YSBjb3B5IGFuZCBhIHNvZnR3YXJlIGNoZWNrc3VtDQppdCBpcyB2ZXJ5IGxpa2VseSB0aGF0IGRv
+aW5nIHRoZW0gdG9nZXRoZXIgaXMgZmFzdGVyLg0KKEFsdGhvdWdoIGEgZmFzdCAncmVwIG1vdnMn
+IGNvcHkgYW5kIGFuIGFkW2NvXXggKG9yIEFWWDI/KQ0KY2hlY2tzdW0gbWF5IGJlIGZhc3RlciBv
+biB2ZXJ5IHJlY2VudCBJbnRlbCBjcHUgZm9yIGxhcmdlDQplbm91Z2ggYnVmZmVycy4pDQoNCglE
+YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
+bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
+NzM4NiAoV2FsZXMpDQo=
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
