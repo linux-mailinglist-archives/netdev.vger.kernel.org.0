@@ -2,154 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EDEA177B89
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0467177BD1
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:24:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730182AbgCCQEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 11:04:30 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39194 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729382AbgCCQEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:04:30 -0500
-Received: by mail-ed1-f67.google.com with SMTP id m13so5015687edb.6
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 08:04:28 -0800 (PST)
+        id S1730195AbgCCQYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 11:24:23 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:34052 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729508AbgCCQYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:24:23 -0500
+Received: by mail-lf1-f68.google.com with SMTP id w27so3312002lfc.1;
+        Tue, 03 Mar 2020 08:24:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y+m6K//sgC/OF0mXOZtyhByG4QWfHV5eBgckRsLGNbY=;
-        b=BrMvvc1o+qTp2xzss31tPGUWvFBKJSelqbxQdEIilRP+ZVsfcBzNFzvqO9u+EdypID
-         Zr9Xt56GVvCTpICMoLjK+iHBtvpXu7j58oS8pqQ54uDX6ivB1sn5iVm5PoJbRo4c+Va3
-         yavQT/tVJ7Pq+DrG0pATxgQXRZLco1bFqOS+7GJKaBgBrgnw17jTS8ZPSLaKzTnV3cCP
-         AJ1x7qHbA/tL2Zq/r1dPNbKW+aBdXp0S89+IswJUSNYFYpGqeEqbnx99k6yadW8RVsIz
-         wKiTQob4fb1RNXpm3g5Evjt2IjTvFbvTkvNiANCPYdtEqNwJu896yzq66BNTc0oUKkhq
-         phew==
+         :cc:content-transfer-encoding;
+        bh=WiTToYDThx/+Ltsox5w4BtYSXdBzfbKsRlVlYc+/m7M=;
+        b=bIj/eDxD/rTmD1XBZZOPYPECcbHdQCYXd1olkRr3dMjsPJoJnPci5s6RgM+Zili+Uv
+         YIuMf3lSYIsnWiYc5+9PbEKBWHZ8k7aOFPxHgUN6PzJqv91yuRXYQvD9pMMmfBioWlKI
+         FIiI19hiZzgb/6v5flTePuSTk3q64x4G6krNkyGFJ101tt85GJD+QpRh0xdQL/RVvQTd
+         UWcsmH8RXljD+hr5T63uFMEYHDCys9/4TGVRE3o+RkuPBR5xZU+jDjVajbe/CpmChT5a
+         gp4Q80kmEDSx0P7FzfuuFnAAIRDv5HP9FexqzIf7ZIlqY8U76nB89LKvNKqpTgf1s15U
+         t4KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y+m6K//sgC/OF0mXOZtyhByG4QWfHV5eBgckRsLGNbY=;
-        b=oiY/QaiTDaBzmcVadMF8t43eQapnQ/WFGNamhEWYTpqy/DdrfXMvD5JznWg9bsq96V
-         avBUaa7xjV4DT7Duk4PQ5BkNz0JDKcyPRTi8o8w0QRG/wth8hNMTWxtK/qbN4IVZAQRo
-         oOfgYwtajT5+JcIpnUMafVRrqEdbqIEPEGVQg47zp61OAyjXpl2tSqDq4lIGUGpd/VMR
-         RHGkAsQKAWV8Z1Bpl7373K8nrLs/VfcUiIQb/Z9neYzW7fKkO3xZyBxE/SGW8C250N2k
-         W5T+o35sV386OScEF8O+8ARblvu9LRljMo4sMCtpLU5QUWgSFEkk1eMjPIahUxJsTmo1
-         ny+Q==
-X-Gm-Message-State: ANhLgQ0gpSkD8LnEw9w8fcpAdLnD5yb3rLm4fRWnnCBXvVfVa+8f4Mg+
-        Wj3t7w2DRhtRMD4bhSlvXu9kUs4bMP7MSzA2skucQQBU
-X-Google-Smtp-Source: ADFU+vtLEHOGpFkZ+CXjRK6Zf/EmGglTV/IW5npSWtOFPCTAvQUV7o3vl8iahJsirWI/00lIgG1RwbuzubkIj56YnaQ=
-X-Received: by 2002:aa7:c44e:: with SMTP id n14mr4720618edr.179.1583251467532;
- Tue, 03 Mar 2020 08:04:27 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WiTToYDThx/+Ltsox5w4BtYSXdBzfbKsRlVlYc+/m7M=;
+        b=GsgQpnxmZ/vT7Bw72zGsTJ3h6yXtY6tw06Viha7sPmo8Fu/tjWY9xdJCBFpKmxbM3D
+         hbeHPjkngTqJys2qEAftEiKkM39Q2JNPIzG/qHU9YLzSNfl+Yi1qORuhYx6bKXJOBwp2
+         YEFfKGqnfOMskY50AW3328hM6M/cf2MQ08oxdU2PXqq6w4AkfQKn22sbiDVJ1CIyOqKh
+         Gl+whV0E2SS6mkMs2byz1GTRDE7DWp4NwTU4mBa+A1IKclbOqKrzxz5ZPGOS89wl+pv9
+         LN0HcBKlTgKyKMGS4wc5njuQ4QCgPsc3DnoNVWg7FmA0gMQuFB1qJpkSCszgQ/GREvBj
+         FX2w==
+X-Gm-Message-State: ANhLgQ1QXWC3NhguYG45Goqn5kIRsEvRoPrlytODPPOFWsGRb8hCymjr
+        m0EbxiOmyTmCv7Dwm24JIlWclxpAdYggzvEfZotbjw==
+X-Google-Smtp-Source: ADFU+vsjEx587DMAprO7GRfLelYVi88KXOngFfaf6H6l7+h9pBZ2hPeTffBVAIFTTjVswMUtPMJk35v016rDl6b/C3w=
+X-Received: by 2002:a05:6512:304c:: with SMTP id b12mr2230358lfb.196.1583252659344;
+ Tue, 03 Mar 2020 08:24:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20200229145003.23751-1-olteanv@gmail.com> <20200229145003.23751-3-olteanv@gmail.com>
-In-Reply-To: <20200229145003.23751-3-olteanv@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 3 Mar 2020 18:04:16 +0200
-Message-ID: <CA+h21hryPYbSUqzEcmHeae5Rknc-TCmBimLjH-M8Fkiv0jqwGA@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 2/2] net: dsa: felix: Allow unknown unicast
- traffic towards the CPU port module
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+References: <158289973977.337029.3637846294079508848.stgit@toke.dk>
+ <20200228221519.GE51456@rdna-mbp> <87v9npu1cg.fsf@toke.dk>
+ <20200303010318.GB84713@rdna-mbp> <877e01sr6m.fsf@toke.dk>
+In-Reply-To: <877e01sr6m.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 3 Mar 2020 08:24:07 -0800
+Message-ID: <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs
+ on an interface
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrey Ignatov <rdna@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Takshak Chahande <ctakshak@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 Feb 2020 at 16:50, Vladimir Oltean <olteanv@gmail.com> wrote:
+On Tue, Mar 3, 2020 at 1:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> This is the reason why I think the 'link' between the main program and
+> the replacement program is in the "wrong direction". Instead I want to
+> introduce a new attachment API that can be used instead of
+> bpf_raw_tracepoint_open() - something like:
 >
-> Compared to other DSA switches, in the Ocelot cores, the RX filtering is
-> a much more important concern.
+> prog_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
+> func_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // replacement func
+> err =3D sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // does=
+ *not* return an fd
 >
-> Firstly, the primary use case for Ocelot is non-DSA, so there isn't any
-> secondary Ethernet MAC [the DSA master's one] to implicitly drop frames
-> having a DMAC we are not interested in.  So the switch driver itself
-> needs to install FDB entries towards the CPU port module (PGID_CPU) for
-> the MAC address of each switch port, in each VLAN installed on the port.
-> Every address that is not whitelisted is implicitly dropped. This is in
-> order to achieve a behavior similar to N standalone net devices.
->
-> Secondly, even in the secondary use case of DSA, such as illustrated by
-> Felix with the NPI port mode, that secondary Ethernet MAC is present,
-> but its RX filter is bypassed. This is because the DSA tags themselves
-> are placed before Ethernet, so the DMAC that the switch ports see is
-> not seen by the DSA master too (since it's shifter to the right).
->
-> So RX filtering is pretty important. A good RX filter won't bother the
-> CPU in case the switch port receives a frame that it's not interested
-> in, and there exists no other line of defense.
->
-> Ocelot is pretty strict when it comes to RX filtering: non-IP multicast
-> and broadcast traffic is allowed to go to the CPU port module, but
-> unknown unicast isn't. This means that traffic reception for any other
-> MAC addresses than the ones configured on each switch port net device
-> won't work. This includes use cases such as macvlan or bridging with a
-> non-Ocelot (so-called "foreign") interface. But this seems to be fine
-> for the scenarios that the Linux system embedded inside an Ocelot switch
-> is intended for - it is simply not interested in unknown unicast
-> traffic, as explained in Allan Nielsen's presentation [0].
->
-> On the other hand, the Felix DSA switch is integrated in more
-> general-purpose Linux systems, so it can't afford to drop that sort of
-> traffic in hardware, even if it will end up doing so later, in software.
->
-> Actually, unknown unicast means more for Felix than it does for Ocelot.
-> Felix doesn't attempt to perform the whitelisting of switch port MAC
-> addresses towards PGID_CPU at all, mainly because it is too complicated
-> to be feasible: while the MAC addresses are unique in Ocelot, by default
-> in DSA all ports are equal and inherited from the DSA master. This adds
-> into account the question of reference counting MAC addresses (delayed
-> ocelot_mact_forget), not to mention reference counting for the VLAN IDs
-> that those MAC addresses are installed in. This reference counting
-> should be done in the DSA core, and the fact that it wasn't needed so
-> far is due to the fact that the other DSA switches don't have the DSA
-> tag placed before Ethernet, so the DSA master is able to whitelist the
-> MAC addresses in hardware.
->
-> So this means that even regular traffic termination on a Felix switch
-> port happens through flooding (because neither Felix nor Ocelot learn
-> source MAC addresses from CPU-injected frames).
->
-> So far we've explained that whitelisting towards PGID_CPU:
-> - helps to reduce the likelihood of spamming the CPU with frames it
->   won't process very far anyway
-> - is implemented in the ocelot driver
-> - is sufficient for the ocelot use cases
-> - is not feasible in DSA
-> - breaks use cases in DSA, in the current status (whitelisting enabled
->   but no MAC address whitelisted)
->
-> So the proposed patch allows unknown unicast frames to be sent to the
-> CPU port module. This is done for the Felix DSA driver only, as Ocelot
-> seems to be happy without it.
->
-> [0]: https://www.youtube.com/watch?v=B1HhxEcU7Jg
->
-> Suggested-by: Allan W. Nielsen <allan.nielsen@microchip.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+> When using this, the kernel will flip the direction of the reference
+> between BPF programs, so it goes main_prog -> replacement_prog. And
+> instead of getting an fd back, this will make the replacement prog share
+> its lifecycle with the main program, so that when the main program is
+> released, so is the replacement (absent other references, of course).
+> There could be an explicit 'release' command as well, of course, and a
+> way to list all replacements on a program.
 
-I see this patch has "Needs Review / ACK" in patchwork.
-
-There is in fact a tag:
-
-Reviewed-by: Allan W. Nielsen <allan.nielsen@microchip.com>
-
-which I had forgotten to copy over from v2:
-https://www.spinics.net/lists/netdev/msg633098.html
-
-Hope there are no particular issues with this approach from DSA perspective.
-
-Thanks,
--Vladimir
+Nack to such api.
+We hit this opposite direction issue with xdp and tc in the past.
+Not going to repeat the same mistake again.
