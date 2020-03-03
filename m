@@ -2,184 +2,340 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A881779D2
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A21E81779E7
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729789AbgCCPB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:01:57 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:36944 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728332AbgCCPB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:01:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QqsKTXA0HShX4J4xcw7YhSYq9YfAGZtEKJeLUvG3Hdg=; b=knBT+K5sfVg4fJpDYo9BLkQvsq
-        RSTqTxva8/c/SSfHb14UX209izi9aDFglxu2UQBgu7VTZxxemXdQD1S5tB7t0irlzNEXVCpc5M/xO
-        PP66oh6Lyhwb2gp9KRsXtiyPLk7qGz+n/eFE8wVZoBP95nlaG24VlRMN813q+/SMIiwtb8XZ6D5zq
-        xEzhbVRWIP35QFHd/+TAtumgcDvySeQOUFBtoLbOMSvUzIgK+/v0LaCwh8fEyxLV3+vnq21VwMCd5
-        pWB/eV+LpSIAxgq28fJHyZZGnWGVrqXo/gXIfpJqzDXA4UJB+7/HMYv2wfNBSmaBDk6pwvmfeftFo
-        UQPV2Lbw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:42102 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j993K-0000Cm-Vo; Tue, 03 Mar 2020 15:01:47 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j993K-0005kp-87; Tue, 03 Mar 2020 15:01:46 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org
-Subject: [PATCH net v2] net: dsa: fix phylink_start()/phylink_stop() calls
+        id S1728953AbgCCPGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:06:51 -0500
+Received: from mail-db8eur05on2067.outbound.protection.outlook.com ([40.107.20.67]:28408
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728022AbgCCPGv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 10:06:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X9YVTytQOMV/DEeYV1N1gb8p6yyMcMSmUDfGreLNY49LmfoKGVdAm6feaQLipGi7kfY/PUbMfq9k3ILzud33hzozGqAEgC0apuXB76X6+aHTRvAniv/yzR9Q/QnfYDIL/Z/ZwIT1sRc/nW/hwMoJYi4iGRCjxxMoC+dq+PglPCp36l9tjUCDvDi7zjYh2vkHPlsB0pwdZUjmZ37zhBrLBiA8uMRNyQ/2SwtoYEgTdol0LyQl4sf/PTKH/Xz3KKcJquofLDstLn/xaqeCg4G4hMkGDDQ/D3Snu+2RkAJf8uDI/VU8Ltp9QX+AQe9PX/7w23+OV640GqU90V3hg/EQWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=neG+lBsb6gm728quM6ditkTlWTYhErpa2CHOFtu0Rp4=;
+ b=JHx4g8GJ6bPFcZ9fEpLzvAwYdm9rXPHUDEyQOQ+YxgoXngfc97eGynUPAy60C6o789978wuFixVYswl6b4sk6KcyHTp7qdvlo9LA1swJErMVgeZaFF8xUJuTX9WXB6mK7R33vHuZ+v4lsUHsUhGK4rugH+zrnqYGOxbHBSrLw0s01PmOVPT0miAdz41b1BVbAPc9x3ohwZG2uUSAh0Il5J5lzHP51YK3E/sbVrSvqm8uaL7ugu4Y6Rv3LlbEoNqfUIQYKXwOH7Nip40Dhj7bWVjBAyFk/YLTrkqqfy66zE2Jkr5GZdr2ZJEprXGq0O+CYMrMEgdLr0/Dkmh1md5xyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=neG+lBsb6gm728quM6ditkTlWTYhErpa2CHOFtu0Rp4=;
+ b=QXp+aQHUFpc25fu4EUNJ5TagWUZM2BPm4gnNDzN0mQg9tti9sDizBeLgGK0NmbZ7cL+T/0NjlQws0Zg+WDfr9L+KHjGNR1ZFIokMUe+hRDGNLO+ddawpI5gGeiECRwI+0b4TnNxODR6NpQEaEZuYG+uWJOOcRch//+65DIghAhA=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB6487.eurprd05.prod.outlook.com (20.179.18.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.14; Tue, 3 Mar 2020 15:06:43 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
+ 15:06:43 +0000
+Subject: Re: [PATCH net-next v5 3/3] net/sched: act_ct: Software offload of
+ established flows
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1583245281-25999-1-git-send-email-paulb@mellanox.com>
+ <1583245281-25999-4-git-send-email-paulb@mellanox.com>
+ <7844f674-e2f1-8744-92c9-10452fe977b7@cumulusnetworks.com>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <d63e7cb3-3890-eac2-b6b7-b967e5abac71@mellanox.com>
+Date:   Tue, 3 Mar 2020 17:06:37 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+In-Reply-To: <7844f674-e2f1-8744-92c9-10452fe977b7@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0029.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::42) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j993K-0005kp-87@rmk-PC.armlinux.org.uk>
-Date:   Tue, 03 Mar 2020 15:01:46 +0000
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.223.6.3] (193.47.165.251) by AM0PR06CA0029.eurprd06.prod.outlook.com (2603:10a6:208:ab::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15 via Frontend Transport; Tue, 3 Mar 2020 15:06:42 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5698f3fc-143c-4eee-848d-08d7bf847c19
+X-MS-TrafficTypeDiagnostic: AM6PR05MB6487:|AM6PR05MB6487:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB6487004B2937A80771728975CFE40@AM6PR05MB6487.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:298;
+X-Forefront-PRVS: 03319F6FEF
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(376002)(346002)(39860400002)(396003)(189003)(199004)(66556008)(66946007)(16576012)(66476007)(110136005)(2616005)(316002)(956004)(5660300002)(6636002)(2906002)(36756003)(8676002)(53546011)(8936002)(31686004)(6486002)(81166006)(478600001)(31696002)(26005)(186003)(6666004)(81156014)(86362001)(16526019)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6487;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EKKKEriXG4q7Jm7nE7S63T9zJLARMYFZa7cadTu8McI9iC3bZ3q5xCE/Fcha0Da6rrspKjv3UpfLwrcYEsLXxIHoK+knZC7MZdciaN+zexN/rgfsFrRb4eb7I4+BKz3DX1FFOX7yMalAA8fxP6LRrvrdKMllhc6di0AgV4lV3vuuRN7+PH63fKEcwvmss40/O96zr3pmHVVr/QoLlI2bMPlcN5JhCWBBWaWFYyIjPQKjOmzcU1PSUBNrhXwPQPu9JKpWifO2ozMeaN0llfhPqS1bat/ERi65FkpTXTvUBPEvLstSEH8BI70iFJHp+DZijNIFvvkYhkcagO7U3RQWSH5o7vCQTuYbForAHa2nzDdikw6OIKT2LZMGP77LRPNwjB/vjUJGUhCJNGgF4aRJvH7Nri2jjHMgOWbyaoHXK6EtnbL2kobCc9hNaQMz4ku8
+X-MS-Exchange-AntiSpam-MessageData: rs5ShPnqQYsyoWnY/t+LptQiMFfQq6Uc6sfgUrgBL1GBVPGPzCd+corH17ikqeT/fGMtW18j7qm7HQKCta0tzkHlJ3rqXZj+I3frjrYc2wPoUaC+dX3iThzdt0P4juCFKNZ4OIfKZPFJqexKiv0Wlw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5698f3fc-143c-4eee-848d-08d7bf847c19
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2020 15:06:43.6269
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T7oHo2jMPMVmPHbCs0lU8YJAvOxuYPjj0eKmYZmfQzqAs3RMrRJ3SUc8LAAz8Z11uHbE23rKLnXYe1uCZAHdcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6487
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Place phylink_start()/phylink_stop() inside dsa_port_enable() and
-dsa_port_disable(), which ensures that we call phylink_stop() before
-tearing down phylink - which is a documented requirement.  Failure
-to do so can cause use-after-free bugs.
 
-Fixes: 0e27921816ad ("net: dsa: Use PHYLINK for the CPU/DSA ports")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-v2: reorder phylink_start() / phylink_stop() as per Andrew's comment.
+On 3/3/2020 4:30 PM, Nikolay Aleksandrov wrote:
+> On 03/03/2020 16:21, Paul Blakey wrote:
+>> Offload nf conntrack processing by looking up the 5-tuple in the
+>> zone's flow table.
+>>
+>> The nf conntrack module will process the packets until a connection is
+>> in established state. Once in established state, the ct state pointer
+>> (nf_conn) will be restored on the skb from a successful ft lookup.
+>>
+>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+>> Acked-by: Jiri Pirko <jiri@mellanox.com>
+>> ---
+>> Changelog:
+>>   v4->v5:
+>>    Re-read ip/ip6 header after pulling as skb ptrs may change
+>>    Use pskb_network_may_pull instaed of pskb_may_pull
+>>   v1->v2:
+>>    Add !skip_add curly braces
+>>    Removed extra setting thoff again
+>>    Check tcp proto outside of tcf_ct_flow_table_check_tcp
+>>
+>>  net/sched/act_ct.c | 162 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 160 insertions(+), 2 deletions(-)
+>>
+> Hi Paul,
+> Thanks for making the changes, I have two more questions below, missed these changes
+> on my previous review, sorry about that.
+>
+>> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+>> index 2ab38431..5aff5e7 100644
+>> --- a/net/sched/act_ct.c
+>> +++ b/net/sched/act_ct.c
+>> @@ -186,6 +186,157 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
+>>  	tcf_ct_flow_table_add(ct_ft, ct, tcp);
+>>  }
+>>  
+>> +static bool
+>> +tcf_ct_flow_table_fill_tuple_ipv4(struct sk_buff *skb,
+>> +				  struct flow_offload_tuple *tuple)
+>> +{
+>> +	struct flow_ports *ports;
+>> +	unsigned int thoff;
+>> +	struct iphdr *iph;
+>> +
+>> +	if (!pskb_network_may_pull(skb, sizeof(*iph)))
+>> +		return false;
+>> +
+>> +	iph = ip_hdr(skb);
+>> +	thoff = iph->ihl * 4;
+>> +
+>> +	if (ip_is_fragment(iph) ||
+>> +	    unlikely(thoff != sizeof(struct iphdr)))
+>> +		return false;
+>> +
+>> +	if (iph->protocol != IPPROTO_TCP &&
+>> +	    iph->protocol != IPPROTO_UDP)
+>> +		return false;
+>> +
+>> +	if (iph->ttl <= 1)
+>> +		return false;
+>> +
+>> +	if (!pskb_network_may_pull(skb, thoff + sizeof(*ports)))
+>> +		return false;
+>> +
+>> +	iph = ip_hdr(skb);
+>> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
+>> +
+>> +	tuple->src_v4.s_addr = iph->saddr;
+>> +	tuple->dst_v4.s_addr = iph->daddr;
+>> +	tuple->src_port = ports->source;
+>> +	tuple->dst_port = ports->dest;
+>> +	tuple->l3proto = AF_INET;
+>> +	tuple->l4proto = iph->protocol;
+>> +
+>> +	return true;
+>> +}
+>> +
+>> +static bool
+>> +tcf_ct_flow_table_fill_tuple_ipv6(struct sk_buff *skb,
+>> +				  struct flow_offload_tuple *tuple)
+>> +{
+>> +	struct flow_ports *ports;
+>> +	struct ipv6hdr *ip6h;
+>> +	unsigned int thoff;
+>> +
+>> +	if (!pskb_network_may_pull(skb, sizeof(*ip6h)))
+>> +		return false;
+>> +
+>> +	ip6h = ipv6_hdr(skb);
+>> +
+>> +	if (ip6h->nexthdr != IPPROTO_TCP &&
+>> +	    ip6h->nexthdr != IPPROTO_UDP)
+>> +		return false;
+>> +
+>> +	if (ip6h->hop_limit <= 1)
+>> +		return false;
+>> +
+>> +	thoff = sizeof(*ip6h);
+>> +	if (!pskb_network_may_pull(skb, thoff + sizeof(*ports)))
+>> +		return false;
+>> +
+>> +	ip6h = ipv6_hdr(skb);
+>> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
+>> +
+>> +	tuple->src_v6 = ip6h->saddr;
+>> +	tuple->dst_v6 = ip6h->daddr;
+>> +	tuple->src_port = ports->source;
+>> +	tuple->dst_port = ports->dest;
+>> +	tuple->l3proto = AF_INET6;
+>> +	tuple->l4proto = ip6h->nexthdr;
+>> +
+>> +	return true;
+>> +}
+>> +
+>> +static bool tcf_ct_flow_table_check_tcp(struct flow_offload *flow,
+>> +					struct sk_buff *skb,
+>> +					unsigned int thoff)
+>> +{
+>> +	struct tcphdr *tcph;
+>> +
+>> +	if (!pskb_may_pull(skb, thoff + sizeof(*tcph)))
+> Sorry, I missed this spot in my previous review, but shouldn't this follow the
+> same logic for the pull ?
+Yes, will fix.
+>> +		return false;
+>> +
+>> +	tcph = (void *)(skb_network_header(skb) + thoff);
+>> +	if (unlikely(tcph->fin || tcph->rst)) {
+>> +		flow_offload_teardown(flow);
+>> +		return false;
+>> +	}
+>> +
+>> +	return true;
+>> +}
+>> +
+>> +static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
+>> +				     struct sk_buff *skb,
+>> +				     u8 family)
+>> +{
+>> +	struct nf_flowtable *nf_ft = &p->ct_ft->nf_ft;
+>> +	struct flow_offload_tuple_rhash *tuplehash;
+>> +	struct flow_offload_tuple tuple = {};
+>> +	enum ip_conntrack_info ctinfo;
+>> +	struct flow_offload *flow;
+>> +	struct nf_conn *ct;
+>> +	unsigned int thoff;
+>> +	int ip_proto;
+>> +	u8 dir;
+>> +
+>> +	/* Previously seen or loopback */
+>> +	ct = nf_ct_get(skb, &ctinfo);
+>> +	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
+>> +		return false;
+>> +
+>> +	switch (family) {
+>> +	case NFPROTO_IPV4:
+>> +		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple))
+>> +			return false;
+>> +		break;
+>> +	case NFPROTO_IPV6:
+>> +		if (!tcf_ct_flow_table_fill_tuple_ipv6(skb, &tuple))
+>> +			return false;
+>> +		break;
+>> +	default:
+>> +		return false;
+>> +	}
+>> +
+>> +	tuplehash = flow_offload_lookup(nf_ft, &tuple);
+>> +	if (!tuplehash)
+>> +		return false;
+>> +
+>> +	dir = tuplehash->tuple.dir;
+>> +	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
+>> +	ct = flow->ct;
+>> +
+>> +	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
+>> +						    IP_CT_ESTABLISHED_REPLY;
+>> +
+>> +	thoff = ip_hdr(skb)->ihl * 4;
+>> +	ip_proto = ip_hdr(skb)->protocol;
+> I'm a bit confused about this part, above you treat the skb based on the family
+> but down here it's always IPv4 ?
 
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 32 ++++++++++++++++++++++++++------
- net/dsa/slave.c    |  8 ++------
- 3 files changed, 30 insertions(+), 12 deletions(-)
+Right,Ill move the tcp check to inside filler funcs.
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 65ba1f0c195a..36bb934dc36e 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -117,7 +117,9 @@ static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
- /* port.c */
- int dsa_port_set_state(struct dsa_port *dp, u8 state,
- 		       struct switchdev_trans *trans);
-+int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy);
- int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy);
-+void dsa_port_disable_rt(struct dsa_port *dp);
- void dsa_port_disable(struct dsa_port *dp);
- int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br);
- void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br);
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index ae1bd6d3edcb..2c8f87117f2c 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -63,7 +63,7 @@ static void dsa_port_set_state_now(struct dsa_port *dp, u8 state)
- 		pr_err("DSA: failed to set STP state %u (%d)\n", state, err);
- }
- 
--int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy)
-+int dsa_port_enable_rt(struct dsa_port *dp, struct phy_device *phy)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	int port = dp->index;
-@@ -78,14 +78,31 @@ int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy)
- 	if (!dp->bridge_dev)
- 		dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
- 
-+	if (dp->pl)
-+		phylink_start(dp->pl);
-+
- 	return 0;
- }
- 
--void dsa_port_disable(struct dsa_port *dp)
-+int dsa_port_enable(struct dsa_port *dp, struct phy_device *phy)
-+{
-+	int err;
-+
-+	rtnl_lock();
-+	err = dsa_port_enable_rt(dp, phy);
-+	rtnl_unlock();
-+
-+	return err;
-+}
-+
-+void dsa_port_disable_rt(struct dsa_port *dp)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	int port = dp->index;
- 
-+	if (dp->pl)
-+		phylink_stop(dp->pl);
-+
- 	if (!dp->bridge_dev)
- 		dsa_port_set_state_now(dp, BR_STATE_DISABLED);
- 
-@@ -93,6 +110,13 @@ void dsa_port_disable(struct dsa_port *dp)
- 		ds->ops->port_disable(ds, port);
- }
- 
-+void dsa_port_disable(struct dsa_port *dp)
-+{
-+	rtnl_lock();
-+	dsa_port_disable_rt(dp);
-+	rtnl_unlock();
-+}
-+
- int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br)
- {
- 	struct dsa_notifier_bridge_info info = {
-@@ -621,10 +645,6 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
- 		goto err_phy_connect;
- 	}
- 
--	rtnl_lock();
--	phylink_start(dp->pl);
--	rtnl_unlock();
--
- 	return 0;
- 
- err_phy_connect:
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 54529543ce87..eb114531bef8 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -90,12 +90,10 @@ static int dsa_slave_open(struct net_device *dev)
- 			goto clear_allmulti;
- 	}
- 
--	err = dsa_port_enable(dp, dev->phydev);
-+	err = dsa_port_enable_rt(dp, dev->phydev);
- 	if (err)
- 		goto clear_promisc;
- 
--	phylink_start(dp->pl);
--
- 	return 0;
- 
- clear_promisc:
-@@ -119,9 +117,7 @@ static int dsa_slave_close(struct net_device *dev)
- 	cancel_work_sync(&dp->xmit_work);
- 	skb_queue_purge(&dp->xmit_queue);
- 
--	phylink_stop(dp->pl);
--
--	dsa_port_disable(dp);
-+	dsa_port_disable_rt(dp);
- 
- 	dev_mc_unsync(master, dev);
- 	dev_uc_unsync(master, dev);
--- 
-2.20.1
+Thanks!
 
+>
+>> +	if (ip_proto == IPPROTO_TCP &&
+>> +	    !tcf_ct_flow_table_check_tcp(flow, skb, thoff))
+>> +		return false;
+>> +
+>> +	nf_conntrack_get(&ct->ct_general);
+>> +	nf_ct_set(skb, ct, ctinfo);
+>> +
+>> +	return true;
+>> +}
+>> +
+>>  static int tcf_ct_flow_tables_init(void)
+>>  {
+>>  	return rhashtable_init(&zones_ht, &zones_params);
+>> @@ -554,6 +705,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>>  	struct nf_hook_state state;
+>>  	int nh_ofs, err, retval;
+>>  	struct tcf_ct_params *p;
+>> +	bool skip_add = false;
+>>  	struct nf_conn *ct;
+>>  	u8 family;
+>>  
+>> @@ -603,6 +755,11 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>>  	 */
+>>  	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
+>>  	if (!cached) {
+>> +		if (!commit && tcf_ct_flow_table_lookup(p, skb, family)) {
+>> +			skip_add = true;
+>> +			goto do_nat;
+>> +		}
+>> +
+>>  		/* Associate skb with specified zone. */
+>>  		if (tmpl) {
+>>  			ct = nf_ct_get(skb, &ctinfo);
+>> @@ -620,6 +777,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>>  			goto out_push;
+>>  	}
+>>  
+>> +do_nat:
+>>  	ct = nf_ct_get(skb, &ctinfo);
+>>  	if (!ct)
+>>  		goto out_push;
+>> @@ -637,10 +795,10 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+>>  		 * even if the connection is already confirmed.
+>>  		 */
+>>  		nf_conntrack_confirm(skb);
+>> +	} else if (!skip_add) {
+>> +		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+>>  	}
+>>  
+>> -	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+>> -
+>>  out_push:
+>>  	skb_push_rcsum(skb, nh_ofs);
+>>  
+>>
