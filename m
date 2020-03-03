@@ -2,105 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F11D61784A5
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:10:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CA11784B5
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732327AbgCCVKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 16:10:55 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:39188 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730925AbgCCVKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:10:54 -0500
-Received: by mail-yw1-f65.google.com with SMTP id x184so105648ywd.6
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 13:10:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jhw2/hBTqqb08+XbLqFc1lQG7+XacrKgacG+f+lhHlw=;
-        b=UuswdbwtGUq/KOpTGPSUcHmuRFxUeMPpUUcP4c3+mgsuAAZ1wqfnSivQRMp7zhqP2i
-         yvBWIw6bqMhNA/DPbB71aQ0wCjAsjDNSGE4vvK+62X9DlD438J/f+Nj2df/aPLkpKMfF
-         5ocn7OG+YEKPkfrWpPgr+GcwXyvyAQ/mWC5rmoLddKOt9BLvUI7SMHMb7Fw9CVC1Brwp
-         7oBlwlgyME+tIP2gNltFHprtxkzqmd46EM7RAj60QXtKXqz8qLiEzu7thzKr+f14dQCa
-         wqB5jjXoBB8PCTZRigPCyuFoqbQRvn1jgnb6lYeX9vn9ADIMgGrH9qfcDDR7AZ4WBOg6
-         zscQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jhw2/hBTqqb08+XbLqFc1lQG7+XacrKgacG+f+lhHlw=;
-        b=NHvcU4OiPq6Yy2wud5swcqNWnWXnKfe4W//D8FNg3ry10ppyVS4zqJHKaZ3pQkY8he
-         bJRDu6DhxzISVyJsWsCk0rpd9YgX7s4Hzd733NKmDdoly/VW3Fs37l9noRP7ha1FGIp3
-         rdF6+9xznCYgrfU/1VXu1XaLZdfXFcIBn7SlgnkeWGWlTEoJQh8im0sA7mZrvtIq+uwS
-         2721W8larr9gL37wTTGdV3rDDU2QV6YCHmrJw2z1qkNhuX0nLr2O/5Pa90iW40+FDdSu
-         QxoM57PTpJayUXlZAui/m2KNUj62awOT1gDXCGYBOzRtRGm0393TRt79F1+NnZ6KVw26
-         +txA==
-X-Gm-Message-State: ANhLgQ3V/BK+dmXSgtj8pYPY2Crcz8RI+i6QQLpLnbpGoDC8hEopzwCh
-        3BV9vD21sHU0xQh8QoLbmKc1/MgC
-X-Google-Smtp-Source: ADFU+vsahuJLpW0gZpVOra6yeOv8gQg/URQ2/J0e1qvdHKbm9kAAthXCwyVXrnuZU5WOFD03VDZtnQ==
-X-Received: by 2002:a5b:8c2:: with SMTP id w2mr5951145ybq.415.1583269853128;
-        Tue, 03 Mar 2020 13:10:53 -0800 (PST)
-Received: from mail-yw1-f52.google.com (mail-yw1-f52.google.com. [209.85.161.52])
-        by smtp.gmail.com with ESMTPSA id k195sm2521893ywk.104.2020.03.03.13.10.51
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 13:10:52 -0800 (PST)
-Received: by mail-yw1-f52.google.com with SMTP id a132so134908ywb.2
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 13:10:51 -0800 (PST)
-X-Received: by 2002:a0d:d68d:: with SMTP id y135mr2472118ywd.117.1583269851243;
- Tue, 03 Mar 2020 13:10:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20200228105435.75298-1-lrizzo@google.com> <20200228110043.2771fddb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+FuTSfd80pZroxtqZDsTeEz4FaronC=pdgjeaBBfYqqi5HiyQ@mail.gmail.com>
- <3c27d9c0-eb17-b20f-2d10-01f3bdf8c0d6@iogearbox.net> <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 3 Mar 2020 16:10:14 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeL_psqzpB6hxSh6f1HnO_SrpED=71Y3HcyDweG2Y3sdg@mail.gmail.com>
-Message-ID: <CA+FuTSeL_psqzpB6hxSh6f1HnO_SrpED=71Y3HcyDweG2Y3sdg@mail.gmail.com>
-Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb linearization
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Luigi Rizzo <lrizzo@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        David Miller <davem@davemloft.net>, hawk@kernel.org,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>
+        id S1732175AbgCCVOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 16:14:53 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31352 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732075AbgCCVOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:14:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583270091;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qtDniFW2GkzosDdRRH2ZqPL99vwbn7hiTmp+hXZSDCg=;
+        b=Y18giXIsynHWqKBk/ulhMSKON1QQBqWesZoRqmrQ/UZd5Rt6InlgQvcM88iOK25tYXH4rC
+        FN/ZXH55QQae+rgnPrkcO6kuQZNDpg6IFruKaxk5yHScyaF1kykeXjV8/qH8AbnrWPswPx
+        czf0b/xXKugBeOLmZMWlnZsyiuUn5JU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-191-nTzouVwKMT-uX8BtD29Qrg-1; Tue, 03 Mar 2020 16:14:49 -0500
+X-MC-Unique: nTzouVwKMT-uX8BtD29Qrg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB593800053;
+        Tue,  3 Mar 2020 21:14:47 +0000 (UTC)
+Received: from ovpn-117-38.ams2.redhat.com (ovpn-117-38.ams2.redhat.com [10.36.117.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D72960BE1;
+        Tue,  3 Mar 2020 21:14:46 +0000 (UTC)
+Message-ID: <f4302e543d88f1e46f29bec283435edd251be51b.camel@redhat.com>
+Subject: Re: [PATCH net] mptcp: always include dack if possible.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Paasch <cpaasch@apple.com>
+Date:   Tue, 03 Mar 2020 22:14:45 +0100
+In-Reply-To: <alpine.OSX.2.22.394.2003031056030.20523@mlee22-mobl.amr.corp.intel.com>
+References: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
+         <alpine.OSX.2.22.394.2003031056030.20523@mlee22-mobl.amr.corp.intel.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 3, 2020 at 3:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 3 Mar 2020 20:46:55 +0100 Daniel Borkmann wrote:
-> > Thus, when the data/data_end test fails in generic XDP, the user can
-> > call e.g. bpf_xdp_pull_data(xdp, 64) to make sure we pull in as much as
-> > is needed w/o full linearization and once done the data/data_end can be
-> > repeated to proceed. Native XDP will leave xdp->rxq->skb as NULL, but
-> > later we could perhaps reuse the same bpf_xdp_pull_data() helper for
-> > native with skb-less backing. Thoughts?
+On Tue, 2020-03-03 at 10:58 -0800, Mat Martineau wrote:
+> On Tue, 3 Mar 2020, Paolo Abeni wrote:
+> 
+> > Currently passive MPTCP socket can skip including the DACK
+> > option - if the peer sends data before accept() completes.
+> > 
+> > The above happens because the msk 'can_ack' flag is set
+> > only after the accept() call.
+> > 
+> > Such missing DACK option may cause - as per RFC spec -
+> > unwanted fallback to TCP.
+> > 
+> > This change addresses the issue using the key material
+> > available in the current subflow, if any, to create a suitable
+> > dack option when msk ack seq is not yet available.
+> > 
+> > Fixes: d22f4988ffec ("mptcp: process MP_CAPABLE data option")
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> > net/mptcp/options.c | 17 +++++++++++++++--
+> > 1 file changed, 15 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+> > index 45acd877bef3..9eb84115dc35 100644
+> > --- a/net/mptcp/options.c
+> > +++ b/net/mptcp/options.c
+> > @@ -334,6 +334,8 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+> > 	struct mptcp_sock *msk;
+> > 	unsigned int ack_size;
+> > 	bool ret = false;
+> > +	bool can_ack;
+> > +	u64 ack_seq;
+> > 	u8 tcp_fin;
+> > 
+> > 	if (skb) {
+> > @@ -360,9 +362,20 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+> > 		ret = true;
+> > 	}
+> > 
+> > +	/* passive sockets msk will set the 'can_ack' after accept(), even
+> > +	 * if the first subflow may have the already the remote key handy
+> > +	 */
+> > +	can_ack = true;
+> > 	opts->ext_copy.use_ack = 0;
+> > 	msk = mptcp_sk(subflow->conn);
+> > -	if (!msk || !READ_ONCE(msk->can_ack)) {
+> > +	if (likely(msk && READ_ONCE(msk->can_ack)))
+> > +		ack_seq = msk->ack_seq;
+> > +	else if (subflow->can_ack)
+> > +		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
+> 
+> The other code paths that set the initial sequence number all increment it 
+> before sending (to ack SYN+MP_CAPABLE). It looks like the spec allows the 
+> value calculated here, but we might as well be consistent about the 
+> initial value we send over the wire.
 
-Something akin to pskb_may_pull sounds like a great solution to me.
+Thanks for the feedback! Agreed. I'll send a v2 tomorrow.
 
-Another approach would be a new xdp_action XDP_NEED_LINEARIZED that
-causes the program to be restarted after linearization. But that is both
-more expensive and less elegant.
+Cheers,
 
-Instead of a sysctl or device option, is this an optimization that
-could be taken based on the program? Specifically, would XDP_FLAGS be
-a path to pass a SUPPORT_SG flag along with the program? I'm not
-entirely familiar with the XDP setup code, so this may be a totally
-off. But from a quick read it seems like generic_xdp_install could
-transfer such a flag to struct net_device.
+Paolo
 
-> I'm curious why we consider a xdpgeneric-only addition. Is attaching
-> a cls_bpf program noticeably slower than xdpgeneric?
-
-This just should not be xdp*generic* only, but allow us to use any XDP
-with large MTU sizes and without having to disable GRO. I'd still like a
-way to be able to drop or modify packets before GRO, or to signal that
-a type of packet should skip GRO.
