@@ -2,160 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B19D41783A3
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C691783A5
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731482AbgCCUFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 15:05:25 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42963 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728002AbgCCUFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:05:22 -0500
-Received: by mail-qk1-f196.google.com with SMTP id e11so3957332qkg.9;
-        Tue, 03 Mar 2020 12:05:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o30x3ibuWhJyxEBxWEXlcQWvqUNQ8HyrTeeqUA4s9C4=;
-        b=dZV9Fxybj9K97PLk4iq3WMESAiSuvx10OceemZjnDCrWv/JHidkvj/4Yb5SsH0Kf2u
-         RLevSqgZTaokQof70xhxKlF40ib2OYzm9HRbIGfLjwaejv5KKhQrN8zk2vjcQV91c/lb
-         +DVaSOKY5MHmSe0eaRVp9tZIb1lrAmZF1vdhMI2YS4dyrYdwBPVKnn7rlMyJUl0NiesP
-         l4JC1meke4p9kV41lzMZjLTOOztPMtGLrWGzkVePD4axjPVu06oXXZhzoqqAWNocBG+T
-         av+5P1i6p8CcmMpcvlpMIOmAItRuWn1rpfmSG5DaUmRmp0KbkqEqMNMzMqjfZfNc8OeB
-         2SNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o30x3ibuWhJyxEBxWEXlcQWvqUNQ8HyrTeeqUA4s9C4=;
-        b=p3HjwRl0YIPvgW/ExDPS/A2EExbGuIByzU+GRV/fgEAawl9/0KfIkJWUSAx5E+CGox
-         OanPna5q1y5FRCO5Gp79z1lSboOZg5BZx+5o7A/kzjuvIVt4dvvdT5FxUcyjat1S0eH0
-         YLmVcReeZhQedW4BENagYiBirAj0MZbFDgy/+mXN6jJ1jDwiPu1GCXSpe973rVHHYJt9
-         Ng87VjbeuB6V2i18IBxGufc0e6Go5bjxCH7dIK0+/DN2mAwjeF7sT2c6XQraoYFim6UU
-         m6zPBWUJO8Pzin2g+opwJQpsIb3pEW/wXbYlPxuY7HleQ4nxn5Vrb1jk7xJb4RKSuLM3
-         3b2g==
-X-Gm-Message-State: ANhLgQ3srNJg8qRMLQHru9qLwwoNjhhu3h5wOlFkf2UTJgw4ST61h1Tc
-        uZNtO/G9nizesXYTxjCSkbKjuXS5
-X-Google-Smtp-Source: ADFU+vvyE1DadL24wzSEVozqYsVL2w19XKV3xO7D+OsEvuBrZfXsAR3X2dihTmHt1bq9GtEXfrsnMQ==
-X-Received: by 2002:a37:5b81:: with SMTP id p123mr792107qkb.284.1583265921182;
-        Tue, 03 Mar 2020 12:05:21 -0800 (PST)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:37b5:dd03:b905:30ea])
-        by smtp.gmail.com with ESMTPSA id d7sm9846281qkg.62.2020.03.03.12.05.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 12:05:20 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH bpf-next 3/3] selftests/bpf: test new __sk_buff field gso_size
-Date:   Tue,  3 Mar 2020 15:05:03 -0500
-Message-Id: <20200303200503.226217-4-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-In-Reply-To: <20200303200503.226217-1-willemdebruijn.kernel@gmail.com>
-References: <20200303200503.226217-1-willemdebruijn.kernel@gmail.com>
+        id S1731508AbgCCUF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 15:05:26 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42446 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731448AbgCCUF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:05:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583265924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oqvnJpDgLYD/tNq6zGIo7bmstN4/76XEt5bzM7y0dlA=;
+        b=eZtmMwLLSnRbyUI0bWfzfE3z0Tmxj+yG5UBDwzZyPZg8MSnLzzpnmkLhNJQNERH31QyYrE
+        uj9YjqBoyICpFPd/1+3i5wVMXpTWroNvq/sLwIvCc6v2MRbLHrcaTR39gxQZV9tLNKD7z1
+        VYpnQX5BdHb4YNzxlPSHZEbrhKV+7wI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-81-CtyHItd5Obm2rWsnsQNnWg-1; Tue, 03 Mar 2020 15:05:20 -0500
+X-MC-Unique: CtyHItd5Obm2rWsnsQNnWg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7571F107ACC4;
+        Tue,  3 Mar 2020 20:05:18 +0000 (UTC)
+Received: from krava (ovpn-206-59.brq.redhat.com [10.40.206.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B8E581001B3F;
+        Tue,  3 Mar 2020 20:05:15 +0000 (UTC)
+Date:   Tue, 3 Mar 2020 21:05:13 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [RFC] libbpf,selftests: Question on btf_dump__emit_type_decl for
+ BTF_KIND_FUNC
+Message-ID: <20200303200513.GB74093@krava>
+References: <20200303140837.90056-1-jolsa@kernel.org>
+ <CAEf4BzY8_=wcL3N96eS-jcSPBL=ueMgQg+m=Fxiw+o0Tc7F23Q@mail.gmail.com>
+ <20200303173314.GA74093@krava>
+ <CAEf4BzYQYJJwLUNhDoKcdgKsMijf9R5vG-vbOBYA-nUAgNs1qA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYQYJJwLUNhDoKcdgKsMijf9R5vG-vbOBYA-nUAgNs1qA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Tue, Mar 03, 2020 at 10:00:02AM -0800, Andrii Nakryiko wrote:
+> On Tue, Mar 3, 2020 at 9:33 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Tue, Mar 03, 2020 at 09:09:38AM -0800, Andrii Nakryiko wrote:
+> > > On Tue, Mar 3, 2020 at 6:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > >
+> > > > hi,
+> > > > for bpftrace I'd like to print BTF functions (BTF_KIND_FUNC)
+> > > > declarations together with their names.
+> > > >
+> > > > I saw we have btf_dump__emit_type_decl and added BTF_KIND_FUNC,
+> > > > where it seemed to be missing, so it prints out something now
+> > > > (not sure it's the right fix though).
+> > > >
+> > > > Anyway, would you be ok with adding some flag/bool to struct
+> > > > btf_dump_emit_type_decl_opts, so I could get output like:
+> > > >
+> > > >   kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
+> > > >   kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
+> > > >
+> > > > ... to be able to the arguments and return type separated,
+> > > > so I could easily get to something like above?
+> > > >
+> > > > Current interface is just vfprintf callback and I'm not sure
+> > > > I can rely that it will allywas be called with same arguments,
+> > > > like having separated calls for parsed atoms like 'return type',
+> > > > '(', ')', '(', 'arg type', 'arg name', ...
+> > > >
+> > > > I'm open to any suggestion ;-)
+> > >
+> > > Hey Jiri!
+> > >
+> > > Can you please elaborate on the use case and problem you are trying to solve?
+> > >
+> > > I think we can (and probably even should) add such option and support
+> > > to dump functions, but whatever we do it should be a valid C syntax
+> > > and should be compilable.
+> > > Example above:
+> > >
+> > > kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
+> > >
+> > > Is this really the syntax you need to get? I think btf_dump, when
+> > > (optionally) emitting function declaration, will have to emit that
+> > > particular one as:
+> > >
+> > > size_t ksys_read(unsigned int fd, char buf, long unsigned int count);
+> > >
+> > > But I'd like to hear the use case before we add this. Thanks!
+> >
+> > the use case is just for the 'bpftrace -l' output, which displays
+> > the probe names that could be used.. for kernel BTF kernel functions
+> > it's 'kfunc:function(args)'
+> >
+> >         software:task-clock:
+> >         hardware:backend-stalls:
+> >         hardware:branch-instructions:
+> >         ...
+> >         tracepoint:kvmmmu:kvm_mmu_pagetable_walk
+> >         tracepoint:kvmmmu:kvm_mmu_paging_element
+> >         ...
+> >         kprobe:console_on_rootfs
+> >         kprobe:trace_initcall_start_cb
+> >         kprobe:run_init_process
+> >         kprobe:try_to_run_init_process
+> >         ...
+> >         kfunc:x86_reserve_hardware
+> >         kfunc:hw_perf_lbr_event_destroy
+> >         kfunc:x86_perf_event_update
+> >
+> > I dont want to print the return type as is in C, because it would
+> > mess up the whole output, hence the '= <return type>'
+> >
+> >         kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
+> >         kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
+> >
+> > also possible only in verbose mode ;-)
+> >
+> > the final shape of the format will be decided in a bpftrace review,
+> > but in any case I think I'll need some way to get these bits:
+> >   <args> <return type>
+> >
+> 
+> Ok, I think for your use case it's better for you to implement it
+> customly, I don't think this fits btf_dump() C output as is. But you
+> have all the right high-level APIs anyways. There is nothing irregular
+> about function declarations, thankfully. Pointers to functions are way
+> more involved, syntactically, which is already abstracted from you in
+> btf_dump__emit_type_decl(). Here's the code:
+> 
+> static int dump_funcs(const struct btf *btf, struct btf_dump *d)
+> {
+>         int err = 0, i, j, cnt = btf__get_nr_types(btf);
+>         const struct btf_type *t;
+>         const struct btf_param *p;
+>         const char *name;
+> 
+>         for (i = 1; i <= cnt; i++) {
+>                 t = btf__type_by_id(btf, i);
+>                 if (!btf_is_func(t))
+>                         continue;
+> 
+>                 name = btf__name_by_offset(btf, t->name_off);
+>                 t = btf__type_by_id(btf, t->type);
+>                 if (!btf_is_func_proto(t))
+>                         return -EINVAL;
+> 
+>                 printf("kfunc:%s(", name);
+>                 for (j = 0, p = btf_params(t); j < btf_vlen(t); j++, p++) {
+>                         err = btf_dump__emit_type_decl(d, p->type, NULL);
+>                         if (err)
+>                                 return err;
+>                 }
+>                 printf(") = ");
+> 
+>                 err = btf_dump__emit_type_decl(d, t->type, NULL);
+>                 if (err)
+>                         return err;
 
-Analogous to the gso_segs selftests introduced in commit d9ff286a0f59
-("bpf: allow BPF programs access skb_shared_info->gso_segs field").
+aaah right, we could move it one level down ;-) ok, that will do
 
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- .../selftests/bpf/prog_tests/skb_ctx.c        |  1 +
- .../selftests/bpf/progs/test_skb_ctx.c        |  2 +
- .../testing/selftests/bpf/verifier/ctx_skb.c  | 47 +++++++++++++++++++
- 3 files changed, 50 insertions(+)
+> 
+>                 printf(";\n");
+>         }
+>         return 0;
+> }
+> 
+> Beware, this will crash right now due to NULL field_name, but I'm
+> fixing that with a tiny patch in just a second.
+> 
+> Also beware, there are no argument names captures for func_protos...
+> 
+> So with the above (and btf_dump__emit_type_decl() fix for NULL
+> field_name), this will produce output:
+> 
+> kfunc:num_digits(int) = int;
+> kfunc:copy_from_user_nmi(void *const void *long unsigned int) = long
+> unsigned int;
+> kfunc:arch_wb_cache_pmem(void *size_t) = void;
+> kfunc:__clear_user(void *long unsigned int) = long unsigned int;
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-index c6d6b685a946..4538bd08203f 100644
---- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-+++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-@@ -14,6 +14,7 @@ void test_skb_ctx(void)
- 		.wire_len = 100,
- 		.gso_segs = 8,
- 		.mark = 9,
-+		.gso_size = 10,
- 	};
- 	struct bpf_prog_test_run_attr tattr = {
- 		.data_in = &pkt_v4,
-diff --git a/tools/testing/selftests/bpf/progs/test_skb_ctx.c b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
-index 202de3938494..b02ea589ce7e 100644
---- a/tools/testing/selftests/bpf/progs/test_skb_ctx.c
-+++ b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
-@@ -23,6 +23,8 @@ int process(struct __sk_buff *skb)
- 		return 1;
- 	if (skb->gso_segs != 8)
- 		return 1;
-+	if (skb->gso_size != 10)
-+		return 1;
- 
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/verifier/ctx_skb.c b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-index d438193804b2..2e16b8e268f2 100644
---- a/tools/testing/selftests/bpf/verifier/ctx_skb.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-@@ -1010,6 +1010,53 @@
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
- },
-+{
-+	"read gso_size from CGROUP_SKB",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+		    offsetof(struct __sk_buff, gso_size)),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
-+},
-+{
-+	"read gso_size from CGROUP_SKB",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1,
-+		    offsetof(struct __sk_buff, gso_size)),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
-+},
-+{
-+	"write gso_size from CGROUP_SKB",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+		    offsetof(struct __sk_buff, gso_size)),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = REJECT,
-+	.result_unpriv = REJECT,
-+	.errstr = "invalid bpf_context access off=176 size=4",
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
-+},
-+{
-+	"read gso_size from CLS",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+		    offsetof(struct __sk_buff, gso_size)),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+},
- {
- 	"check wire_len is not readable by sockets",
- 	.insns = {
--- 
-2.25.0.265.gbab2e86ba0-goog
+thanks, I'll use that
+
+jirka
 
