@@ -2,181 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CE1177677
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 13:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C897177688
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729118AbgCCM4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 07:56:02 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:60911 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727938AbgCCM4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 07:56:01 -0500
-Received: from soja.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:13da])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <o.rempel@pengutronix.de>)
-        id 1j975Z-0007Jo-W8; Tue, 03 Mar 2020 13:55:58 +0100
-Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
-To:     Christian Herber <christian.herber@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek Vasut <marex@denx.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>
-References: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-Message-ID: <2228b5de-89e3-d61a-4af9-8d1a8a5eb311@pengutronix.de>
-Date:   Tue, 3 Mar 2020 13:55:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1728494AbgCCNBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 08:01:01 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38968 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727961AbgCCNBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:01:01 -0500
+Received: by mail-lj1-f196.google.com with SMTP id f10so1567675ljn.6
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:01:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NKj+1Rf5TnGZp4SiLcelNGaJtNpD2JrLWM1tk/In9ck=;
+        b=jx1mKKrApcRXamn0UdmROfGB/dWjaSxTUv6iyGimgChB2LNGywfc217cKIVp8ywKB0
+         5AFhGnzfgGLxwjwKwQ5z2C+zKUW7FUnqWZ7M9GUvS2VLhIBz95aJVpVDlX4gr5rt6Jl2
+         uhCZdMUDn5WD6z+3sbZ39l67QTde69vqXP09FAuXwfCWfPzVtplTJjgCUH5BLVXmE3Qe
+         es3YU6cEE1TTCOgADetZuNWd7uC0DwwbRLe1A6RZTX25hMYSpWDKZcDtPqPvDYSKJhNi
+         mhomdgxZ541z06qXd4tS9oeGlCUjzy2f9jyanXnJ+Qfuwm5McojSZczPgwijviXEPVgX
+         8uoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NKj+1Rf5TnGZp4SiLcelNGaJtNpD2JrLWM1tk/In9ck=;
+        b=oMUv10V90dxPC08EeRxm0J9xiUn+9R9LZEMW8gVDdEqHQy/PZD9DUFVzM0LqC/zpP/
+         n95SpycFv3Ljm8Vo0rKCBM1T/B2jUjcwCC4qthXUqPPFBuatFZMIi0/I61TaDHBcqk1Y
+         +ha1oiX1W1vH1MlZAq4wF+nfKXH3qJ3eTUltCQ478Y6V5RxQIxJ4wY7be5fEvYcqi/by
+         MyQj7mfraAlZPI7kGBpyMZ2udcLDKJkz2ra4VnaYB/LLxtaBaoFHyt+HGyZN3lEp0l1V
+         53ZVxCSg9KdrPv+Wq6kGm0bGlqRkrdh9gmLdoS5p55ioLFnaT18C4o0pyreTso/cOU9A
+         kXKA==
+X-Gm-Message-State: ANhLgQ34qnPSg6ktLyCU9zywSCHik4kMVdGMjeZX4xEGXtbotNNwUTDO
+        1x+LaJcSi/wcVdUYG6+lzmTK/WB+iXYaCVJ7OLnL9g==
+X-Google-Smtp-Source: ADFU+vt6Xgq2BT1BgAbHQx9inuBc+XGlWT4URTEZQQUd8DrO3mUIikmr/9q5Su6eUhpueU4LIGXp9eMIsusx2RPh1T0=
+X-Received: by 2002:a05:651c:2c7:: with SMTP id f7mr2343804ljo.125.1583240459705;
+ Tue, 03 Mar 2020 05:00:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:13da
-X-SA-Exim-Mail-From: o.rempel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+ <87eevf4hnq.fsf@nanos.tec.linutronix.de> <20200224224059.GC1508@skl-build> <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 3 Mar 2020 14:00:48 +0100
+Message-ID: <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
+ Driver with PHC interface changes to support additional H/W Features
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     "Christopher S. Hall" <christopher.s.hall@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        jacob.e.keller@intel.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sean V Kelley <sean.v.kelley@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 27, 2020 at 12:06 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+> "Christopher S. Hall" <christopher.s.hall@intel.com> writes:
 
+> > Apart from clock import/export applications, timestamping single I/O
+> > events are potentially valuable for industrial control applications
+> > (e.g. motor position sensing vs. time). As time sync precision
+> > requirements for these applications are tightened, standard GPIO
+> > timing precision will not be good enough.
 
-On 03.03.20 13:42, Christian Herber wrote:
->> On 03.03.2020 08:37, Oleksij Rempel wrote:
->>> TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
->>> PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
->>> configured in device tree by setting compatible =
->>> "ethernet-phy-id0180.dc81".
->>>
->>> PHY 1 has less suported registers and functionality. For current driver
->>> it will affect only the HWMON support.
->>>
->>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->>> ---
->>> drivers/net/phy/nxp-tja11xx.c | 43 +++++++++++++++++++++++++++++++++++
->>> 1 file changed, 43 insertions(+)
->>>
->>> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
->>> index b705d0bd798b..52090cfaa54e 100644
->>> --- a/drivers/net/phy/nxp-tja11xx.c
->>> +++ b/drivers/net/phy/nxp-tja11xx.c
->>> @@ -15,6 +15,7 @@
->>> #define PHY_ID_MASK                  0xfffffff0
->>> #define PHY_ID_TJA1100                       0x0180dc40
->>> #define PHY_ID_TJA1101                       0x0180dd00
->>> +#define PHY_ID_TJA1102                       0x0180dc80
->>>
->>> #define MII_ECTRL                    17
->>> #define MII_ECTRL_LINK_CONTROL               BIT(15)
->>> @@ -190,6 +191,7 @@ static int tja11xx_config_init(struct phy_device *phydev)
->>>               return ret;
->>>       break;
->>> case PHY_ID_TJA1101:
->>> +     case PHY_ID_TJA1102:
->>>       ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
->>>       if (ret)
->>>               return ret;
->>> @@ -337,6 +339,31 @@ static int tja11xx_probe(struct phy_device *phydev)
->>> if (!priv)
->>>       return -ENOMEM;
->>>
->>> +     /* Use the phyid to distinguish between port 0 and port 1 of the
->>> +      * TJA1102. Port 0 has a proper phyid, while port 1 reads 0.
->>> +      */
->>> +     if ((phydev->phy_id & PHY_ID_MASK) == PHY_ID_TJA1102) {
->>> +             int ret;
->>> +             u32 id;
->>> +
->>> +             ret = phy_read(phydev, MII_PHYSID1);
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +
->>> +             id = ret;
->>> +             ret = phy_read(phydev, MII_PHYSID2);
->>> +             if (ret < 0)
->>> +                     return ret;
->>> +
->>> +             id |= ret << 16;
->>> +
->>> +             /* TJA1102 Port 1 has phyid 0 and doesn't support temperature
->>> +              * and undervoltage alarms.
->>> +              */
->>> +             if (id == 0)
->>> +                     return 0;
->>
->> I'm not sure I understand what you're doing here. The two ports of the chip
->> are separate PHY's on individual MDIO bus addresses?
->> Reading the PHY ID registers here seems to repeat what phylib did already
->> to populate phydev->phy_id. If port 1 has PHD ID 0 then the driver wouldn't
->> bind and tja11xx_probe() would never be called (see phy_bus_match)
->>
->>> +     }
->>> +
->>> priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
->>> if (!priv->hwmon_name)
->>>       return -ENOMEM;
->>> @@ -385,6 +412,21 @@ static struct phy_driver tja11xx_driver[] = {
->>>       .get_sset_count = tja11xx_get_sset_count,
->>>       .get_strings    = tja11xx_get_strings,
->>>       .get_stats      = tja11xx_get_stats,
->>> +     }, {
->>> +             PHY_ID_MATCH_MODEL(PHY_ID_TJA1102),
->>> +             .name           = "NXP TJA1102",
->>> +             .features       = PHY_BASIC_T1_FEATURES,
->>> +             .probe          = tja11xx_probe,
->>> +             .soft_reset     = tja11xx_soft_reset,
->>> +             .config_init    = tja11xx_config_init,
->>> +             .read_status    = tja11xx_read_status,
->>> +             .suspend        = genphy_suspend,
->>> +             .resume         = genphy_resume,
->>> +             .set_loopback   = genphy_loopback,
->>> +             /* Statistics */
->>> +             .get_sset_count = tja11xx_get_sset_count,
->>> +             .get_strings    = tja11xx_get_strings,
->>> +             .get_stats      = tja11xx_get_stats,
->>> }
->>> };
->>>
->>> @@ -393,6 +435,7 @@ module_phy_driver(tja11xx_driver);
->>> static struct mdio_device_id __maybe_unused tja11xx_tbl[] = {
->>> { PHY_ID_MATCH_MODEL(PHY_ID_TJA1100) },
->>> { PHY_ID_MATCH_MODEL(PHY_ID_TJA1101) },
->>> +     { PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
->>> { }
->>> };
-> 
-> Hi Oleksij, Heiner, Marc,
-> 
-> You could also refer the solution implemented here as part of a TJA110x driver:
-> https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/about/
+If you are using (from userspace) the GPIO character device
+and open the events using e.g. tools/gpio/gpio-event-mon.c
+you get GPIO events to userspace.
 
-OK, thank you!
+This uses a threaded interrupt with an top half (fastpath)
+that timestamps it as the IRQ comes in using
+ktime_get_ns(). It's as good as we can get it with just
+software and IRQs (I think).
 
-Suddenly, the solution in this driver is not mainlainable. It may match on ther PHYs with 
-PHYID == 0.
+This uses a KFIFO to userspace, same approach as the IIO
+subsystem.
 
-See this part of the code:
-#define NXP_PHY_ID_TJA1102P1      (0x00000000U)
-...
-	, {
-	.phy_id = NXP_PHY_ID_TJA1102P1,
-	.name = "TJA1102_p1",
-	.phy_id_mask = NXP_PHY_ID_MASK,
+> Anyway, the device we are talking about is a GPIO device with inputs and
+> outputs plus bells and whistles attached to it.
+>
+> On the input side this provides a timestamp taken by the hardware when
+> the input level changes, i.e. hardware based time stamping instead of
+> software based interrupt arrival timestamping. Looks like an obvious
+> extension to the GPIO subsystem.
 
+That looks like something I/we would want to support all the way
+to userspace so people can do their funny industrial stuff in some
+standard manner.
 
-Kind regards,
-Oleksij Rempel
+IIO has a config file in sysfs that lets them select the source of the
+timestamp like so (drivers/iio/industrialio-core.c):
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+{
+        struct timespec64 tp;
+
+        switch (iio_device_get_clock(indio_dev)) {
+        case CLOCK_REALTIME:
+                return ktime_get_real_ns();
+        case CLOCK_MONOTONIC:
+                return ktime_get_ns();
+        case CLOCK_MONOTONIC_RAW:
+                return ktime_get_raw_ns();
+        case CLOCK_REALTIME_COARSE:
+                return ktime_to_ns(ktime_get_coarse_real());
+        case CLOCK_MONOTONIC_COARSE:
+                ktime_get_coarse_ts64(&tp);
+                return timespec64_to_ns(&tp);
+        case CLOCK_BOOTTIME:
+                return ktime_get_boottime_ns();
+        case CLOCK_TAI:
+                return ktime_get_clocktai_ns();
+        default:
+                BUG();
+        }
+}
+
+After discussion with Arnd we concluded the only timestamp that
+makes sense is ktime_get_ns(). So in GPIO we just use that, all the
+userspace I can think of certainly prefers monotonic time.
+(If tglx does not agree with that I stand corrected to whatever
+he says, I suppose.)
+
+Anyway in GPIO we could also make it configurable for users who
+know what they are doing.
+
+HW timestamps would be something more elaborate and
+nice CLOCK_HW_SPECIFIC or so. Some of the IIO sensors also
+have that, we just don't expose it as of now.
+
+Yours,
+Linus Walleij
