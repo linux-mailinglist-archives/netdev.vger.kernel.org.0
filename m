@@ -2,71 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF2051781ED
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4220C178216
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733213AbgCCSH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:07:58 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39376 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732704AbgCCSH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:07:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=CM/FydandSdqRRSQ2f2rUi2w5meDDl9F8tbAdx8tbwU=; b=PX8Fkbc1iQWkcU+0EhHC3Pbse
-        tzo4BGqHjx+sQVZ1o8+ZXM1jmOesZknsqH6QDmNaprHJYDVDAi7h70OcfX5rLFlpN162/aRG315Lz
-        GF0Suuf6i6jGfZ1nnc94tUIAH0Ivi6RQrq/jKPtSmu/SbyNjEgmwx1AxG46Fok9+YAkHDK6xpE73p
-        vkMApws4X+uJ3zipOhRqp4cGwZh1HCKpapaZuTU1hjvGjV6xAVqkubYQ2Tu8r5Es0noifFsqe16Fs
-        2xUsw2Mce9BVpNn75/QKDR4B0E0NGBve6Y3cVDwwYsjmohbxHUtgrLU8r477uFjSFX5tQLUeEVAxQ
-        lUJpxz//Q==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:55786)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j9BxO-00015k-6Z; Tue, 03 Mar 2020 18:07:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j9BxL-00066Z-UJ; Tue, 03 Mar 2020 18:07:47 +0000
-Date:   Tue, 3 Mar 2020 18:07:47 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 0/3] marvell10g tunable and power saving support
-Message-ID: <20200303180747.GT25745@shell.armlinux.org.uk>
+        id S1732085AbgCCSM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:12:58 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51902 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731208AbgCCSM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:12:57 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 023IAcrx016850
+        for <netdev@vger.kernel.org>; Tue, 3 Mar 2020 10:12:55 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=x3ns7LX866GaJPokoQl7Qwx3KYe5wetFn4H1AsT3LYg=;
+ b=HV2o9U9Kmc3n9sJR/vJjKd4TX87lcY+qRXvSqbOXf0bASwbK5Ph286S6RTnhkAemBIAO
+ wHvd8g7OeA+bapIRjgd5jeN+CYBr1XyNq+QMNkuqSc7XL3GmS9T3CsaWsfdZyx219jIj
+ ED9V6nj6vDxXasBlj7ZnAwKKe1w7KRD4P2E= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yhscwh4h1-14
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 10:12:55 -0800
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 3 Mar 2020 10:08:07 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 681792EC29A2; Tue,  3 Mar 2020 10:08:03 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: fix handling of optional field_name in btf_dump__emit_type_decl
+Date:   Tue, 3 Mar 2020 10:08:00 -0800
+Message-ID: <20200303180800.3303471-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-03_06:2020-03-03,2020-03-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 mlxlogscore=686 clxscore=1015 impostorscore=0
+ spamscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0 phishscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003030122
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Internal functions, used by btf_dump__emit_type_decl(), assume field_name is
+never going to be NULL. Ensure it's always the case.
 
-This patch series adds support for:
-- mdix configuration (auto, mdi, mdix)
-- energy detect power down (edpd)
-- placing in edpd mode at probe
+Fixes: 9f81654eebe8 ("libbpf: Expose BTF-to-C type declaration emitting API")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/btf_dump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-for both the 88x3310 and 88x2110 PHYs.
-
-Antione, could you test this for the 88x2110 PHY please?
-
-v3: fix return code in get_tunable/set_tunable
-v2: fix comments from Antione.
-
- drivers/net/phy/marvell10g.c | 177 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 170 insertions(+), 7 deletions(-)
-
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index bd09ed1710f1..dc451e4de5ad 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -1030,7 +1030,7 @@ int btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
+ 	if (!OPTS_VALID(opts, btf_dump_emit_type_decl_opts))
+ 		return -EINVAL;
+ 
+-	fname = OPTS_GET(opts, field_name, NULL);
++	fname = OPTS_GET(opts, field_name, "");
+ 	lvl = OPTS_GET(opts, indent_level, 0);
+ 	btf_dump_emit_type_decl(d, id, fname, lvl);
+ 	return 0;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.17.1
+
