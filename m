@@ -2,110 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F8F9177D33
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:18:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBD6A177D57
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:24:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729875AbgCCRQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:16:55 -0500
-Received: from mail-qk1-f176.google.com ([209.85.222.176]:40560 "EHLO
-        mail-qk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728726AbgCCRQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:16:55 -0500
-Received: by mail-qk1-f176.google.com with SMTP id m2so4144197qka.7
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 09:16:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XWljNw2SBST46AldIQEIaiS35XiIpPpEVhzt0ZW808E=;
-        b=TE1aTETStaIYvGK/gYxcOri4uSGJF5tJvHXSjt6Pr+bVEVAdQ9kIeoUFWnQzbO1o/k
-         hFDPijLlyS6i9xN/MC4aoz+kPvbgakK7rP+NsuFBVfSv/CsgMTc5TAmrR7rLdaBGGoHX
-         tJZW1B0OucvAFkQh9Hyw4zX64f6VgGV7yVM7hoK6e6gEFxgKixS6ppj0vVSWV3Q0qm8n
-         N5kCsGaMDddCAfdYPrQmFXYletOpwKV5buU4dHOsDas+O1hiRW5t5UmgIS9JeH8U8l6C
-         I6Y3D8SSz0WvXTFzaweciQf4TgLyMW4lm7jbMXvFb9P+L+YmfEhDVA3nvwlBhDMKc3BT
-         BnJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XWljNw2SBST46AldIQEIaiS35XiIpPpEVhzt0ZW808E=;
-        b=Ij0BDbtrChQMz60BFEqcomDb8UuAgaFS0g7ewxTC2JbM/zhar8Bv0L6O30/Yor0yX9
-         no68kgHsapdcqCIauQaZbdoB/KdFTJS4HThqEosoYEZS5M8QhEvVaXp4Mlp4KvWnoPHF
-         uPjWoORlX5RMfau0uIzFkeK3J1KtSHMB7CuTYPcArh103DjgOjIS0WDQhlBJfocYddAu
-         72ckRvlbyaeAwNNmVqHGoZ9JAZYN7lo28JhCKz5CC97tW8y4/Q61pYt1qgC/E9D6Jyyb
-         l7p3tzTZiFHE3FpFGVaAz0j0CL5WUpc3HjI642d0MB8OP55ruslOj2ZB2p/SlxGyKlHk
-         RtxQ==
-X-Gm-Message-State: ANhLgQ06HhBXVJnzTeP9VcHBP/48vm+wTGzDQcmhO41trlTKcMf04b1+
-        vE2YfzmXv0rqeZm+pOJ0KC8=
-X-Google-Smtp-Source: ADFU+vv2Os1lkOr1NUBJH74TSd7j3eXnw1d3vIPORm+Swj21uBNgBEnKEWKtWbPVkrbO7EJ5dGznBg==
-X-Received: by 2002:a05:620a:8c8:: with SMTP id z8mr5338678qkz.205.1583255814553;
-        Tue, 03 Mar 2020 09:16:54 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:29f0:2f5d:cfa7:1ce8? ([2601:282:803:7700:29f0:2f5d:cfa7:1ce8])
-        by smtp.googlemail.com with ESMTPSA id n138sm12396170qkn.33.2020.03.03.09.16.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 09:16:53 -0800 (PST)
-Subject: Re: ip link vf info truncating with many VFs
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>, Thomas Graf <tgraf@suug.ch>
-References: <16b289f6-b025-5dd3-443d-92d4c167e79c@intel.com>
- <20200302151704.56fe3dd4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <ff51329f-9f01-53c7-8214-96542321400f@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <eba65074-375b-6536-6e29-9d4bb85a3cfd@gmail.com>
-Date:   Tue, 3 Mar 2020 10:16:52 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1730257AbgCCRYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:24:07 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54658 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729391AbgCCRYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:24:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583256246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=S6shh/oqQNCddZY8IeF5QnYe2NCeO8oFo9W1ZVPEXps=;
+        b=GhesgsiC0Ghj/xs3Sty4AXNiPsEUL1srl+vvYGn1CyxlMNgHfkk2H1v8dDac6A2W2v2iZi
+        xnXPdPqviSlzz+sDNZyva4kJwXqSuj8nGRTVUmYDHuRC+9KeD2h52OFTkYfMK0Ovgy8A+r
+        dskmCP3mMYf9BREAQHJfBsvOmSuzLPA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-161-4vKrL0NIPrybOAT7ntdmuA-1; Tue, 03 Mar 2020 12:24:00 -0500
+X-MC-Unique: 4vKrL0NIPrybOAT7ntdmuA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B976107ACC7;
+        Tue,  3 Mar 2020 17:23:59 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-117-38.ams2.redhat.com [10.36.117.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB73910013A1;
+        Tue,  3 Mar 2020 17:23:57 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: [PATCH net] mptcp: always include dack if possible.
+Date:   Tue,  3 Mar 2020 18:22:59 +0100
+Message-Id: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <ff51329f-9f01-53c7-8214-96542321400f@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/2/20 4:21 PM, Jacob Keller wrote:
-> On 3/2/2020 3:17 PM, Jakub Kicinski wrote:
->> On Fri, 28 Feb 2020 16:33:40 -0800 Jacob Keller wrote:
->>> Hi,
->>>
->>> I recently noticed an issue in the rtnetlink API for obtaining VF
->>> information.
->>>
->>> If a device creates 222 or more VF devices, the rtnl_fill_vf function
->>> will incorrectly label the size of the IFLA_VFINFO_LIST attribute. This
->>> occurs because rtnl_fill_vfinfo will have added more than 65k (maximum
->>> size of a single attribute since nla_len is a __u16).
->>>
->>> This causes the calculation in nla_nest_end to overflow and report a
->>> significantly shorter length value. Worse case, with 222 VFs, the "ip
->>> link show <device>" reports no VF info at all.
->>>
->>> For some reason, the nla_put calls do not trigger an EMSGSIZE error,
->>> because the skb itself is capable of holding the data.
->>>
->>> I think the right thing is probably to do some sort of
->>> overflow-protected calculation and print a warning... or find a way to
->>> fix nla_put to error with -EMSGSIZE if we would exceed the nested
->>> attribute size limit... I am not sure how to do that at a glance.
->>
->> Making nla_nest_end() return an error on overflow seems like 
->> the most reasonable way forward to me, FWIW. Simply compare
->> the result to U16_MAX, I don't think anything more clever is
->> needed.
->>
-> 
-> Sure, I alto think that's the right approach to fix this.
-> 
-> As long we calculate the value using something larger than a u16 first,
-> that should work.
-> 
+Currently passive MPTCP socket can skip including the DACK
+option - if the peer sends data before accept() completes.
 
-Another pandora's box.
+The above happens because the msk 'can_ack' flag is set
+only after the accept() call.
 
-Seems like there are a few other places that set nla_len that should be
-checked as well - like __nla_reserve and that bleeds into __nla_put.
+Such missing DACK option may cause - as per RFC spec -
+unwanted fallback to TCP.
+
+This change addresses the issue using the key material
+available in the current subflow, if any, to create a suitable
+dack option when msk ack seq is not yet available.
+
+Fixes: d22f4988ffec ("mptcp: process MP_CAPABLE data option")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/mptcp/options.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 45acd877bef3..9eb84115dc35 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -334,6 +334,8 @@ static bool mptcp_established_options_dss(struct sock=
+ *sk, struct sk_buff *skb,
+ 	struct mptcp_sock *msk;
+ 	unsigned int ack_size;
+ 	bool ret =3D false;
++	bool can_ack;
++	u64 ack_seq;
+ 	u8 tcp_fin;
+=20
+ 	if (skb) {
+@@ -360,9 +362,20 @@ static bool mptcp_established_options_dss(struct soc=
+k *sk, struct sk_buff *skb,
+ 		ret =3D true;
+ 	}
+=20
++	/* passive sockets msk will set the 'can_ack' after accept(), even
++	 * if the first subflow may have the already the remote key handy
++	 */
++	can_ack =3D true;
+ 	opts->ext_copy.use_ack =3D 0;
+ 	msk =3D mptcp_sk(subflow->conn);
+-	if (!msk || !READ_ONCE(msk->can_ack)) {
++	if (likely(msk && READ_ONCE(msk->can_ack)))
++		ack_seq =3D msk->ack_seq;
++	else if (subflow->can_ack)
++		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
++	else
++		can_ack =3D false;
++
++	if (unlikely(!can_ack)) {
+ 		*size =3D ALIGN(dss_size, 4);
+ 		return ret;
+ 	}
+@@ -375,7 +388,7 @@ static bool mptcp_established_options_dss(struct sock=
+ *sk, struct sk_buff *skb,
+=20
+ 	dss_size +=3D ack_size;
+=20
+-	opts->ext_copy.data_ack =3D msk->ack_seq;
++	opts->ext_copy.data_ack =3D ack_seq;
+ 	opts->ext_copy.ack64 =3D 1;
+ 	opts->ext_copy.use_ack =3D 1;
+=20
+--=20
+2.21.1
+
