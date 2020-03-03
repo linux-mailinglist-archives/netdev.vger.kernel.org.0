@@ -2,165 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F311176A44
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 02:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55136176A54
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbgCCB4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 20:56:31 -0500
-Received: from mga17.intel.com ([192.55.52.151]:44974 "EHLO mga17.intel.com"
+        id S1726979AbgCCCCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:02:03 -0500
+Received: from mga04.intel.com ([192.55.52.120]:22013 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726773AbgCCB4b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 20:56:31 -0500
+        id S1726773AbgCCCCD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:02:03 -0500
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 17:56:30 -0800
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 18:02:03 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,509,1574150400"; 
-   d="scan'208";a="233598677"
+   d="scan'208";a="274004683"
 Received: from wtczc53028gn.jf.intel.com (HELO skl-build) ([10.54.87.17])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 17:56:30 -0800
-Date:   Mon, 2 Mar 2020 17:56:15 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 02 Mar 2020 18:02:02 -0800
+Date:   Mon, 2 Mar 2020 18:01:48 -0800
 From:   "Christopher S. Hall" <christopher.s.hall@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
+To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hpa@zytor.com, mingo@redhat.com, x86@kernel.org,
-        jacob.e.keller@intel.com, richardcochran@gmail.com,
-        davem@davemloft.net, sean.v.kelley@intel.com,
-        linus.walleij@linaro.org
+        tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
+        x86@kernel.org, jacob.e.keller@intel.com, davem@davemloft.net,
+        sean.v.kelley@intel.com
 Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
  Driver with PHC interface changes to support additional H/W Features
-Message-ID: <20200303015615.GA15531@skl-build>
+Message-ID: <20200303020148.GB15531@skl-build>
 References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <87eevf4hnq.fsf@nanos.tec.linutronix.de>
- <20200224224059.GC1508@skl-build>
- <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+ <20200203040838.GA5851@localhost>
+ <20200225233707.GA32079@skl-build>
+ <20200226024707.GA10271@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <20200226024707.GA10271@localhost>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
+Hi Richard,
 
-Thank you for your suggestions.
+On Tue, Feb 25, 2020 at 06:47:07PM -0800, Richard Cochran wrote:
+> On Tue, Feb 25, 2020 at 03:37:07PM -0800, Christopher S. Hall wrote:
+> > On Sun, Feb 02, 2020 at 08:08:38PM -0800, Richard Cochran wrote:
+> > > The TGPIO input clock, the ART, is a free running counter, but you
+> > > want to support frequency adjustments.  Use a timecounter cyclecounter
+> > > pair.
+> > 
+> > I'm concerned about the complexity that the timecounter adds to
+> > the driver. Specifically, the complexity of dealing with any rate mismatches
+> > between the timecounter and the periodic output signal. The phase
+> > error between the output and timecounter needs to be zero.
+> 
+> If I understood correctly, the device's outputs are generated from a
+> non-adjustable counter.  So, no matter what, you will have the problem
+> of changing the pulse period in concert with the user changing the
+> desired frequency.
+> 
 
-On Thu, Feb 27, 2020 at 12:06:01AM +0100, Thomas Gleixner wrote:
-> Christopher,
+> > This leaves the PHC API behavior as it is currently and uses the frequency
+> > adjust API to adjust the output rate.
+> > 
+> > > Let the user dial a periodic output signal in the normal way.
+> > > 
+> > > Let the user change the frequency in the normal way, and during this
+> > > call, adjust the counter values accordingly.
+> > 
+> > Yes to both of the above.
 > 
-> "Christopher S. Hall" <christopher.s.hall@intel.com> writes:
-> > On Fri, Jan 31, 2020 at 07:14:49PM +0100, Thomas Gleixner wrote:
-> >> christopher.s.hall@intel.com writes:
-> >> >
-> >> > The TGPIO hardware doesn't implement interrupts. For TGPIO input, the
-> >> > output edge-timestamp API is re-used to implement a user-space polling
-> >> > interface. For periodic input (e.g. PPS) this is fairly efficient,
-> >> > requiring only a marginally faster poll rate than the input event
-> >> > frequency.
-> >> 
-> >> I really have a hard time to understand why this is implemented as part
-> >> of PTP while you talk about PPS at the same time.
-> >
-> > We primarily need support for periodic input and output uses cases.
-> > Apologies for omitting the periodic output use case from the cover
-> > letter. While TGPIO isn't associated with a PTP timestamp clock, the PHC
-> > pin/clock interface fits the usage otherwise.
+> So, why then do you need this?
 > 
-> Which usage? PTP like usage? I really have a hard time to make the
-> connection. PTP is as the name says a protocol to synchronize time
-> across a network.
+> +#define PTP_EVENT_COUNT_TSTAMP2 \
+> +       _IOWR(PTP_CLK_MAGIC, 19, struct ptp_event_count_tstamp)
 > 
-> What you're having is a GPIO which has some magic timestamp clock which
-> can be correlated back to ART/TSC, right?
+> If you can make the device work with the existing user space API,
+> 
+> 	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
+> 	while (1) {
+> 		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
+> 	}
+> 
+> that would be ideal.  But I will push back on anything like the
+> following.
+> 
+> 	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
+> 	while (1) {
+> 		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
+> 		ioctl(fd, PTP_EVENT_COUNT_TSTAMP, ...);
+> 	}
+> 
+> But maybe I misunderstood?
 
-Right.
+Thank you for the feedback, but Thomas wants to see this as
+an extension of GPIO. I'll work on an RFC patch for that instead.
 
-> > The customer requested usages are 1 kHz and 1 Hz for both input and
-> > output. Some higher level use cases are:
-> > - using a GPS PPS signal to sync the system clock
-> 
-> That makes at least some sense. See below.
-> 
-> > - auditing timesync precision for financial services, especially high
-> > 	frequency trading (e.g. MiFID).
-> 
-> A good reason to not support it at all. Aside of that I have no idea how
-> that auditing is supposed to work. Just throwing a few buzzwords around
-> is not giving much technical context.
-> 
-> > Apart from clock import/export applications, timestamping single I/O
-> > events are potentially valuable for industrial control applications
-> > (e.g. motor position sensing vs. time). As time sync precision
-> > requirements for these applications are tightened, standard GPIO
-> > timing precision will not be good enough.
-> 
-> Well, coming from that industry I really doubt that you can do anything
-> useful with it, but hey it's been 25 years since I stopped working on
-> motor and motion controllers :)
-> 
-> Anyway, the device we are talking about is a GPIO device with inputs and
-> outputs plus bells and whistels attached to it.
-> 
-> On the input side this provides a timestamp taken by the hardware when
-> the input level changes, i.e. hardware based time stamping instead of
-> software based interrupt arrival timestamping. Looks like an obvious
-> extension to the GPIO subsystem.
-> 
-> How that timestamp is processed/converted and what an application can
-> actually do with it is a secondary problem:
-> 
->   - PPS mode:
-> 
->     This can be implemented as an actual PPS driver which consumes the
->     GPIO, does timer based polling and feeds the timestamp into the PPS
->     subsystem. Might be not the most accurate solution, so I can see why
->     you want to use the PTP interface for it, which provides the raw
->     clocksource (ART/TSC) and the correlated monotonic/realtime
->     timestamps. But then again this wants to be a PTP driver consuming
->     the GPIO and the timestamp via timer based polling.
-> 
->   - GPIO sampling
->   
->     That's totally disconnected from PPS/PTP and just provides a
->     correlated clock monotonic timestamp to the application.
-> 
->     That covers your motor example :)
-> 
->   - Timesync validation:
-> 
->     -Enocluehowthatshouldworkatall
-> 
-> And of course you can use the GPIO input just as input without bells and
-> whistels :)
-> 
-> Now you have the output side which again is a GPIO in the first
-> place. But then it also has a secondary function which allows to create
-> a periodic output with a magic correlation to the ART and some way to
-> actually adjust the frequency. Neither of those two functions are in
-> anyway relatable to PTP AFAICT.
-> 
-> The periodic, programmable and adjustable output is pretty much a PWM of
-> some form and what you want to tell it is: Output a pulse at a given
-> frequency. Due to the fact that the input clock of that thing is ART you
-> can do the magic transformation from ART frequency to frequency adjusted
-> clock monotonic in order to tweak the parameters so they actually end up
-> generating your precise output frequency.  Tell the driver which
-> frequency you want and it retrieves the correlation information from the
-> kernel and uses it to achieve a precise output frequency. Doesn't sound
-> like rocket science and does not required new magic ioctls.
-
-This will have a few touch points in the kernel - PWM, GPIO, PPS. I'll
-work on an RFC patchset.
-
-> I might be missing something, but you surely can fill the blanks then.
-> 
 > Thanks,
-> 
->         tglx
+> Richard
 
 Thanks,
 Christopher
