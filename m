@@ -2,102 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B127B177A99
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:37:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB56177AA4
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730053AbgCCPgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:36:42 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:43451 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730046AbgCCPgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:36:42 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j99b3-0000hX-Jg; Tue, 03 Mar 2020 16:36:37 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j99b1-0000Xn-7U; Tue, 03 Mar 2020 16:36:35 +0100
-Date:   Tue, 3 Mar 2020 16:36:35 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
-Message-ID: <20200303153635.hiojz5hrj2hhlggt@pengutronix.de>
-References: <20200303073715.32301-1-o.rempel@pengutronix.de>
- <20200303135936.GG31977@lunn.ch>
+        id S1729481AbgCCPi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:38:26 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:36718 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727079AbgCCPi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:38:26 -0500
+Received: from localhost.localdomain (p200300E9D71B99212E8A91B208CF7941.dip0.t-ipconnect.de [IPv6:2003:e9:d71b:9921:2e8a:91b2:8cf:7941])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id C9297C32E0;
+        Tue,  3 Mar 2020 16:38:23 +0100 (CET)
+Subject: Re: [PATCH net 04/16] nl802154: add missing attribute validation
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>,
+        Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+        Sergey Lapin <slapin@ossfans.org>, linux-wpan@vger.kernel.org
+References: <20200303050526.4088735-1-kuba@kernel.org>
+ <20200303050526.4088735-5-kuba@kernel.org>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <20cfaa15-b4d2-9b2b-aa3f-198cef5765a2@datenfreihafen.org>
+Date:   Tue, 3 Mar 2020 16:38:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200303135936.GG31977@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 16:16:05 up 109 days,  6:34, 140 users,  load average: 0.32, 0.14,
- 0.17
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200303050526.4088735-5-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 02:59:36PM +0100, Andrew Lunn wrote:
-> Hi Oleksij
-> 
-> > TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
-> > PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
-> > configured in device tree by setting compatible =
-> > "ethernet-phy-id0180.dc81".
-> 
-> Why-o-why do silicon vendors make devices with invalid PHY IDs!?!?!
-> 
-> Did you try avoiding the compatible string. We know PHY 0 will probe
-> as normal. From its PHY ID we know it is a dual device. Could the
-> probe of PHY 0 register PHY 1?
-> 
-> No idea if it will work, but could nxp-tja11xx.c register is fixup for
-> PHY_ID_TJA1102. That fixup would do something like:
-> 
-> void tja1102_fixup(struct phy_device *phydev_phy0)
-> {
->         struct mii_bus *bus = phydev_phy0->mdio.mii;
->         struct phy_device *phydev_phy1;
-> 
->         phydev_phy1 = phy_device_create(bus, phydev_phy0->addr + 1,
->                                         PHY_ID_TJA1102, FALSE, NULL);
-> 	if (phydev_phy1)
->                phy_device_register(phydev_phy1);
-> }
-> 
-> I think the issue here is, it will deadlock when scanning for fixup
-> for phydev_phy1. So this basic idea, but maybe hooked in somewhere
-> else?
-> 
-> Something like this might also help vsc8584 which is a quad PHY with
-> some shared registers?
+Hello.
 
-OK, thx! I'll take a look on it.
-Currently there is not solved issues with controlled power on/reset sequence
-of this chip. The reset and enable pins will affect both PHYs. So, may be vsc8584
-will answer my questions.
+On 03.03.20 06:05, Jakub Kicinski wrote:
+> Add missing attribute validation for several u8 types.
+> 
+> Fixes: 2c21d11518b6 ("net: add NL802154 interface for configuration of 802.15.4 devices")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: Alexander Aring <alex.aring@gmail.com>
+> CC: Stefan Schmidt <stefan@datenfreihafen.org>
+> CC: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+> CC: Sergey Lapin <slapin@ossfans.org>
+> CC: linux-wpan@vger.kernel.org
+> ---
+>   net/ieee802154/nl_policy.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/ieee802154/nl_policy.c b/net/ieee802154/nl_policy.c
+> index 2c7a38d76a3a..824e7e84014c 100644
+> --- a/net/ieee802154/nl_policy.c
+> +++ b/net/ieee802154/nl_policy.c
+> @@ -21,6 +21,11 @@ const struct nla_policy ieee802154_policy[IEEE802154_ATTR_MAX + 1] = {
+>   	[IEEE802154_ATTR_HW_ADDR] = { .type = NLA_HW_ADDR, },
+>   	[IEEE802154_ATTR_PAN_ID] = { .type = NLA_U16, },
+>   	[IEEE802154_ATTR_CHANNEL] = { .type = NLA_U8, },
+> +	[IEEE802154_ATTR_BCN_ORD] = { .type = NLA_U8, },
+> +	[IEEE802154_ATTR_SF_ORD] = { .type = NLA_U8, },
+> +	[IEEE802154_ATTR_PAN_COORD] = { .type = NLA_U8, },
+> +	[IEEE802154_ATTR_BAT_EXT] = { .type = NLA_U8, },
+> +	[IEEE802154_ATTR_COORD_REALIGN] = { .type = NLA_U8, },
+>   	[IEEE802154_ATTR_PAGE] = { .type = NLA_U8, },
+>   	[IEEE802154_ATTR_COORD_SHORT_ADDR] = { .type = NLA_U16, },
+>   	[IEEE802154_ATTR_COORD_HW_ADDR] = { .type = NLA_HW_ADDR, },
+> 
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
+
+regards
+Stefan Schmidt
