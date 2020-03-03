@@ -2,113 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBBA177571
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 12:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C69C177573
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 12:47:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgCCLq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 06:46:28 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40907 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728997AbgCCLq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 06:46:28 -0500
-Received: by mail-wm1-f67.google.com with SMTP id e26so2497067wme.5
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 03:46:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=carX5VpQZmZNR92ZkzmN/ZXGs+EEpl2dynQkv22p/9E=;
-        b=y266v6izx6pdCz4govWw6abt2tsLvVLAezD16JN4jAYxfysHPhLxcXZOtpEVezzMrf
-         /0urW8GKqBYJV5j5MPum5i2NJoBNsPMi2z987FzxHNDXawc94+TTsHSGr2GuIwIDjpzH
-         BVVoBEf2+Y2csMtZ8K0M379LnDN2IheDz2C/XrVBoedcbWJE6uRoOTmQNOwxDZMi40Z2
-         iRx/VQGlxVTwCOSuDGGgKcYhNikT1nac0ekjdsMLe2ukh27+LkzD7ka0K8q1sRhBEMmz
-         59Y79w2u9DXnbO+zK4UPwsP8YYkZ5CEqiI4AQ4FsaH8pMzPoWWZfuMms9WgKkqcEOzRG
-         iwdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=carX5VpQZmZNR92ZkzmN/ZXGs+EEpl2dynQkv22p/9E=;
-        b=K1rm0T1XPQY8CnqRGiKkzYA0S0CKW/RawtJ6+Rh9Xm+Io1pwpkuwCJYzgPhj09ZTE+
-         GOBuRC0jF4NobbOqHULxq7m8bIgy8hRhEZ+RDvFkxUVcMemImKnrc+UrGtsnWQcoT4Xr
-         cvHPekCzwSanzIvN3EE/SpIiyk/LS68ejyysb3DHh5u+4MkTboF8SsOgmp3BKtlcFmJG
-         LTM0+UUkzztPJUc4GAm2ICgUPBmDiaU09scIEelJhzgyyya/xmlsyuAG97S9JwcKOADP
-         6ohk54mxzXmWVaLFEBTp+bKASaVO0hB2TFGBKN3hL8ZGzpj9vJ9BN0o7df8uix7uLZOQ
-         AUwg==
-X-Gm-Message-State: ANhLgQ1rSqrr22rkOiQ51SYB7bd8JV4wRKKOrm5hNSb3BrSeGGemshCb
-        4+e9dtDHXnkb+mJRWnZkPrupgQ==
-X-Google-Smtp-Source: ADFU+vvh70vz5xN6Fh4fDo+RQtivopt0Tol+VnLnBtULqcN8qw5y/gP66lId4kJno/QPBeyW8Ac68g==
-X-Received: by 2002:a05:600c:581:: with SMTP id o1mr1722712wmd.8.1583235985684;
-        Tue, 03 Mar 2020 03:46:25 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id g10sm34730513wrr.13.2020.03.03.03.46.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 03:46:24 -0800 (PST)
-Date:   Tue, 3 Mar 2020 12:46:24 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 03/12] flow_offload: check for basic action
- hw stats type
-Message-ID: <20200303114624.GG2178@nanopsycho>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-4-jiri@resnulli.us>
- <20200228114056.5bc06ad2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200229074004.GL26061@nanopsycho>
- <20200229111848.53450ff1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200301090009.GT26061@nanopsycho>
- <20200302113319.22fb0cb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729072AbgCCLrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 06:47:10 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:56141 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728997AbgCCLrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 06:47:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583236028;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PVd9uRgwe7r6+HDpr5fBcN5arlnsAdAGdb87yw0btPQ=;
+        b=ZWYjsOz1F3vpZYI7BqxiL3ce4TTNVclNgnMx81xI6ZLdJ005egO2TOcdMsCM4XWzUHtyGg
+        VsAr0yG1/Mnh5kweeqoituT253X5v8Y/39w4h4RAssi/TLquSsJ5ysmimmWGv6LiV3a8eP
+        ahxwgHT1H33kkj9npZvRE0iPXR92KGI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-446-daFeih9LNzOhHMLqMlY59A-1; Tue, 03 Mar 2020 06:47:04 -0500
+X-MC-Unique: daFeih9LNzOhHMLqMlY59A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9DB50107ACC4;
+        Tue,  3 Mar 2020 11:47:02 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-20.brq.redhat.com [10.40.200.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB53C5C1D6;
+        Tue,  3 Mar 2020 11:46:59 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 12C9030737E05;
+        Tue,  3 Mar 2020 12:46:58 +0100 (CET)
+Subject: [bpf-next PATCH] xdp: accept that XDP headroom isn't always equal
+ XDP_PACKET_HEADROOM
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, gamemann@gflclan.com,
+        lrizzo@google.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Date:   Tue, 03 Mar 2020 12:46:58 +0100
+Message-ID: <158323601793.2048441.8715862429080864020.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200302113319.22fb0cb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Mar 02, 2020 at 08:33:19PM CET, kuba@kernel.org wrote:
->On Sun, 1 Mar 2020 10:00:09 +0100 Jiri Pirko wrote:
->> Sat, Feb 29, 2020 at 08:18:48PM CET, kuba@kernel.org wrote:
->> >On Sat, 29 Feb 2020 08:40:04 +0100 Jiri Pirko wrote:  
->> >> Fri, Feb 28, 2020 at 08:40:56PM CET, kuba@kernel.org wrote:  
->> >> >On Fri, 28 Feb 2020 18:24:56 +0100 Jiri Pirko wrote:    
->> >> >> @@ -299,6 +300,9 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
->> >> >>  		return -EINVAL;
->> >> >>  	}
->> >> >>  
->> >> >> +	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
->> >> >> +		return -EOPNOTSUPP;    
->> >> >
->> >> >Could we have this helper take one stat type? To let drivers pass the
->> >> >stat type they support?     
->> >> 
->> >> That would be always "any" as "any" is supported by all drivers.
->> >> And that is exactly what the helper checks..  
->> >
->> >I'd think most drivers implement some form of DELAYED today, 'cause for
->> >the number of flows things like OvS need that's the only practical one.
->> >I was thinking to let drivers pass DELAYED here.
->> >
->> >I agree that your patch would most likely pass ANY in almost all cases
->> >as you shouldn't be expected to know all the drivers, but at least the
->> >maintainers can easily just tweak the parameter.
->> >
->> >Does that make sense? Maybe I'm missing something.  
->> 
->> Well, I guess. mlx5 only supports "delayed". It would work for it.
->> How about having flow_action_basic_hw_stats_types_check() as is and
->> add flow_action_basic_hw_stats_types_check_ext() that would accept extra
->> arg with enum?
->
->SGTM, perhaps with a more concise name? 
->Just flow_basic_hw_stats_check()?
+The Intel based drivers (ixgbe + i40e) have implemented XDP with
+headroom 192 bytes and not the recommended 256 bytes defined by
+XDP_PACKET_HEADROOM.  For generic-XDP, accept that this headroom
+is also a valid size.
 
-Will try :)
+Still for generic-XDP if headroom is less, still expand headroom to
+XDP_PACKET_HEADROOM as this is the default in most XDP drivers.
+
+Tested on ixgbe with xdp_rxq_info --skb-mode and --action XDP_DROP:
+- Before: 4,816,430 pps
+- After : 7,749,678 pps
+(Note that ixgbe in native mode XDP_DROP 14,704,539 pps)
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ include/uapi/linux/bpf.h |    1 +
+ net/core/dev.c           |    4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 906e9f2752db..14dc4f9fb3c8 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3312,6 +3312,7 @@ struct bpf_xdp_sock {
+ };
+ 
+ #define XDP_PACKET_HEADROOM 256
++#define XDP_PACKET_HEADROOM_MIN 192
+ 
+ /* User return codes for XDP prog type.
+  * A valid XDP program must return one of these defined values. All other
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 4770dde3448d..9c941cd38b13 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4518,11 +4518,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 		return XDP_PASS;
+ 
+ 	/* XDP packets must be linear and must have sufficient headroom
+-	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
++	 * of XDP_PACKET_HEADROOM_MIN bytes. This is the guarantee that also
+ 	 * native XDP provides, thus we need to do it here as well.
+ 	 */
+ 	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
+-	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
++	    skb_headroom(skb) < XDP_PACKET_HEADROOM_MIN) {
+ 		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+ 		int troom = skb->tail + skb->data_len - skb->end;
+ 
+
 
