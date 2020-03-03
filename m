@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5691778B5
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3A691778B7
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:22:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729153AbgCCOVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 09:21:31 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36017 "EHLO
+        id S1729254AbgCCOVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 09:21:35 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42697 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728113AbgCCOVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:21:30 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
+        with ESMTP id S1729126AbgCCOVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:21:35 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 3 Mar 2020 16:21:29 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 023ELSvJ004073;
-        Tue, 3 Mar 2020 16:21:28 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 023ELSvK004073;
+        Tue, 3 Mar 2020 16:21:29 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next v5 2/3] net/sched: act_ct: Offload established connections to flow table
-Date:   Tue,  3 Mar 2020 16:21:20 +0200
-Message-Id: <1583245281-25999-3-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next v5 3/3] net/sched: act_ct: Software offload of established flows
+Date:   Tue,  3 Mar 2020 16:21:21 +0200
+Message-Id: <1583245281-25999-4-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1583245281-25999-1-git-send-email-paulb@mellanox.com>
 References: <1583245281-25999-1-git-send-email-paulb@mellanox.com>
@@ -36,100 +36,228 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a ft entry when connections enter an established state and delete
-the connections when they leave the established state.
+Offload nf conntrack processing by looking up the 5-tuple in the
+zone's flow table.
 
-The flow table assumes ownership of the connection. In the following
-patch act_ct will lookup the ct state from the FT. In future patches,
-drivers will register for callbacks for ft add/del events and will be
-able to use the information to offload the connections.
-
-Note that connection aging is managed by the FT.
+The nf conntrack module will process the packets until a connection is
+in established state. Once in established state, the ct state pointer
+(nf_conn) will be restored on the skb from a successful ft lookup.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- net/sched/act_ct.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+Changelog:
+  v4->v5:
+   Re-read ip/ip6 header after pulling as skb ptrs may change
+   Use pskb_network_may_pull instaed of pskb_may_pull
+  v1->v2:
+   Add !skip_add curly braces
+   Removed extra setting thoff again
+   Check tcp proto outside of tcf_ct_flow_table_check_tcp
+
+ net/sched/act_ct.c | 162 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 160 insertions(+), 2 deletions(-)
 
 diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 3321087..2ab38431 100644
+index 2ab38431..5aff5e7 100644
 --- a/net/sched/act_ct.c
 +++ b/net/sched/act_ct.c
-@@ -125,6 +125,67 @@ static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
- 	spin_unlock_bh(&zones_lock);
+@@ -186,6 +186,157 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
+ 	tcf_ct_flow_table_add(ct_ft, ct, tcp);
  }
  
-+static void tcf_ct_flow_table_add(struct tcf_ct_flow_table *ct_ft,
-+				  struct nf_conn *ct,
-+				  bool tcp)
++static bool
++tcf_ct_flow_table_fill_tuple_ipv4(struct sk_buff *skb,
++				  struct flow_offload_tuple *tuple)
 +{
-+	struct flow_offload *entry;
-+	int err;
++	struct flow_ports *ports;
++	unsigned int thoff;
++	struct iphdr *iph;
 +
-+	if (test_and_set_bit(IPS_OFFLOAD_BIT, &ct->status))
-+		return;
++	if (!pskb_network_may_pull(skb, sizeof(*iph)))
++		return false;
 +
-+	entry = flow_offload_alloc(ct);
-+	if (!entry) {
-+		WARN_ON_ONCE(1);
-+		goto err_alloc;
-+	}
++	iph = ip_hdr(skb);
++	thoff = iph->ihl * 4;
 +
-+	if (tcp) {
-+		ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
-+		ct->proto.tcp.seen[1].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
-+	}
++	if (ip_is_fragment(iph) ||
++	    unlikely(thoff != sizeof(struct iphdr)))
++		return false;
 +
-+	err = flow_offload_add(&ct_ft->nf_ft, entry);
-+	if (err)
-+		goto err_add;
++	if (iph->protocol != IPPROTO_TCP &&
++	    iph->protocol != IPPROTO_UDP)
++		return false;
 +
-+	return;
++	if (iph->ttl <= 1)
++		return false;
 +
-+err_add:
-+	flow_offload_free(entry);
-+err_alloc:
-+	clear_bit(IPS_OFFLOAD_BIT, &ct->status);
++	if (!pskb_network_may_pull(skb, thoff + sizeof(*ports)))
++		return false;
++
++	iph = ip_hdr(skb);
++	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
++
++	tuple->src_v4.s_addr = iph->saddr;
++	tuple->dst_v4.s_addr = iph->daddr;
++	tuple->src_port = ports->source;
++	tuple->dst_port = ports->dest;
++	tuple->l3proto = AF_INET;
++	tuple->l4proto = iph->protocol;
++
++	return true;
 +}
 +
-+static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
-+					   struct nf_conn *ct,
-+					   enum ip_conntrack_info ctinfo)
++static bool
++tcf_ct_flow_table_fill_tuple_ipv6(struct sk_buff *skb,
++				  struct flow_offload_tuple *tuple)
 +{
-+	bool tcp = false;
++	struct flow_ports *ports;
++	struct ipv6hdr *ip6h;
++	unsigned int thoff;
 +
-+	if (ctinfo != IP_CT_ESTABLISHED && ctinfo != IP_CT_ESTABLISHED_REPLY)
-+		return;
++	if (!pskb_network_may_pull(skb, sizeof(*ip6h)))
++		return false;
 +
-+	switch (nf_ct_protonum(ct)) {
-+	case IPPROTO_TCP:
-+		tcp = true;
-+		if (ct->proto.tcp.state != TCP_CONNTRACK_ESTABLISHED)
-+			return;
-+		break;
-+	case IPPROTO_UDP:
-+		break;
-+	default:
-+		return;
++	ip6h = ipv6_hdr(skb);
++
++	if (ip6h->nexthdr != IPPROTO_TCP &&
++	    ip6h->nexthdr != IPPROTO_UDP)
++		return false;
++
++	if (ip6h->hop_limit <= 1)
++		return false;
++
++	thoff = sizeof(*ip6h);
++	if (!pskb_network_may_pull(skb, thoff + sizeof(*ports)))
++		return false;
++
++	ip6h = ipv6_hdr(skb);
++	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
++
++	tuple->src_v6 = ip6h->saddr;
++	tuple->dst_v6 = ip6h->daddr;
++	tuple->src_port = ports->source;
++	tuple->dst_port = ports->dest;
++	tuple->l3proto = AF_INET6;
++	tuple->l4proto = ip6h->nexthdr;
++
++	return true;
++}
++
++static bool tcf_ct_flow_table_check_tcp(struct flow_offload *flow,
++					struct sk_buff *skb,
++					unsigned int thoff)
++{
++	struct tcphdr *tcph;
++
++	if (!pskb_may_pull(skb, thoff + sizeof(*tcph)))
++		return false;
++
++	tcph = (void *)(skb_network_header(skb) + thoff);
++	if (unlikely(tcph->fin || tcph->rst)) {
++		flow_offload_teardown(flow);
++		return false;
 +	}
 +
-+	if (nf_ct_ext_exist(ct, NF_CT_EXT_HELPER) ||
-+	    ct->status & IPS_SEQ_ADJUST)
-+		return;
++	return true;
++}
 +
-+	tcf_ct_flow_table_add(ct_ft, ct, tcp);
++static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
++				     struct sk_buff *skb,
++				     u8 family)
++{
++	struct nf_flowtable *nf_ft = &p->ct_ft->nf_ft;
++	struct flow_offload_tuple_rhash *tuplehash;
++	struct flow_offload_tuple tuple = {};
++	enum ip_conntrack_info ctinfo;
++	struct flow_offload *flow;
++	struct nf_conn *ct;
++	unsigned int thoff;
++	int ip_proto;
++	u8 dir;
++
++	/* Previously seen or loopback */
++	ct = nf_ct_get(skb, &ctinfo);
++	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
++		return false;
++
++	switch (family) {
++	case NFPROTO_IPV4:
++		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple))
++			return false;
++		break;
++	case NFPROTO_IPV6:
++		if (!tcf_ct_flow_table_fill_tuple_ipv6(skb, &tuple))
++			return false;
++		break;
++	default:
++		return false;
++	}
++
++	tuplehash = flow_offload_lookup(nf_ft, &tuple);
++	if (!tuplehash)
++		return false;
++
++	dir = tuplehash->tuple.dir;
++	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
++	ct = flow->ct;
++
++	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
++						    IP_CT_ESTABLISHED_REPLY;
++
++	thoff = ip_hdr(skb)->ihl * 4;
++	ip_proto = ip_hdr(skb)->protocol;
++	if (ip_proto == IPPROTO_TCP &&
++	    !tcf_ct_flow_table_check_tcp(flow, skb, thoff))
++		return false;
++
++	nf_conntrack_get(&ct->ct_general);
++	nf_ct_set(skb, ct, ctinfo);
++
++	return true;
 +}
 +
  static int tcf_ct_flow_tables_init(void)
  {
  	return rhashtable_init(&zones_ht, &zones_params);
-@@ -578,6 +639,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 		nf_conntrack_confirm(skb);
+@@ -554,6 +705,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	struct nf_hook_state state;
+ 	int nh_ofs, err, retval;
+ 	struct tcf_ct_params *p;
++	bool skip_add = false;
+ 	struct nf_conn *ct;
+ 	u8 family;
+ 
+@@ -603,6 +755,11 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	 */
+ 	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
+ 	if (!cached) {
++		if (!commit && tcf_ct_flow_table_lookup(p, skb, family)) {
++			skip_add = true;
++			goto do_nat;
++		}
++
+ 		/* Associate skb with specified zone. */
+ 		if (tmpl) {
+ 			ct = nf_ct_get(skb, &ctinfo);
+@@ -620,6 +777,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 			goto out_push;
  	}
  
-+	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
-+
++do_nat:
+ 	ct = nf_ct_get(skb, &ctinfo);
+ 	if (!ct)
+ 		goto out_push;
+@@ -637,10 +795,10 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 		 * even if the connection is already confirmed.
+ 		 */
+ 		nf_conntrack_confirm(skb);
++	} else if (!skip_add) {
++		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+ 	}
+ 
+-	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
+-
  out_push:
  	skb_push_rcsum(skb, nh_ofs);
  
