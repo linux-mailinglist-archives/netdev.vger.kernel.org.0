@@ -2,119 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD6A177D57
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 935D2177D64
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730257AbgCCRYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:24:07 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54658 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729391AbgCCRYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:24:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583256246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=S6shh/oqQNCddZY8IeF5QnYe2NCeO8oFo9W1ZVPEXps=;
-        b=GhesgsiC0Ghj/xs3Sty4AXNiPsEUL1srl+vvYGn1CyxlMNgHfkk2H1v8dDac6A2W2v2iZi
-        xnXPdPqviSlzz+sDNZyva4kJwXqSuj8nGRTVUmYDHuRC+9KeD2h52OFTkYfMK0Ovgy8A+r
-        dskmCP3mMYf9BREAQHJfBsvOmSuzLPA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-161-4vKrL0NIPrybOAT7ntdmuA-1; Tue, 03 Mar 2020 12:24:00 -0500
-X-MC-Unique: 4vKrL0NIPrybOAT7ntdmuA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1730299AbgCCRZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:25:33 -0500
+Received: from correo.us.es ([193.147.175.20]:35874 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728242AbgCCRZc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 12:25:32 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 7F4766D004
+        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6EE5EDA3A9
+        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6D87EDA3A4; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 51199DA3C4;
+        Tue,  3 Mar 2020 18:25:12 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 03 Mar 2020 18:25:12 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B976107ACC7;
-        Tue,  3 Mar 2020 17:23:59 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-117-38.ams2.redhat.com [10.36.117.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EB73910013A1;
-        Tue,  3 Mar 2020 17:23:57 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Paasch <cpaasch@apple.com>
-Subject: [PATCH net] mptcp: always include dack if possible.
-Date:   Tue,  3 Mar 2020 18:22:59 +0100
-Message-Id: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 228AA426CCBA;
+        Tue,  3 Mar 2020 18:25:12 +0100 (CET)
+Date:   Tue, 3 Mar 2020 18:25:25 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200303172525.2p6jwa6u7qx5onji@salvia>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-2-jiri@resnulli.us>
+ <20200229192947.oaclokcpn4fjbhzr@salvia>
+ <20200301084443.GQ26061@nanopsycho>
+ <20200302132016.trhysqfkojgx2snt@salvia>
+ <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
+ <20200302192437.wtge3ze775thigzp@salvia>
+ <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200302214659.v4zm2whrv4qjz3pe@salvia>
+ <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently passive MPTCP socket can skip including the DACK
-option - if the peer sends data before accept() completes.
+On Mon, Mar 02, 2020 at 02:49:28PM -0800, Jakub Kicinski wrote:
+> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
+[...]
+> > The real question is: if you think this tc counter+action scheme can
+> > be used by netfilter, then please explain how.
+> 
+> In Jiri's latest patch set the counter type is per action, so just
+> "merge right" the counter info into the next action and the models 
+> are converted.
 
-The above happens because the msk 'can_ack' flag is set
-only after the accept() call.
+The input "merge right" approach might work.
 
-Such missing DACK option may cause - as per RFC spec -
-unwanted fallback to TCP.
+> If user is silly and has multiple counter actions in a row - the
+> pipe/no-op action comes into play (that isn't part of this set, 
+> as Jiri said).
 
-This change addresses the issue using the key material
-available in the current subflow, if any, to create a suitable
-dack option when msk ack seq is not yet available.
+Probably gact pipe action with counters can be mapped to the counter
+action that netfilter needs. Is this a valid use-case you consider for
+the tc hardware offload?
 
-Fixes: d22f4988ffec ("mptcp: process MP_CAPABLE data option")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/options.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+> Can you give us examples of what wouldn't work? Can you for instance
+> share the counter across rules?
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 45acd877bef3..9eb84115dc35 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -334,6 +334,8 @@ static bool mptcp_established_options_dss(struct sock=
- *sk, struct sk_buff *skb,
- 	struct mptcp_sock *msk;
- 	unsigned int ack_size;
- 	bool ret =3D false;
-+	bool can_ack;
-+	u64 ack_seq;
- 	u8 tcp_fin;
-=20
- 	if (skb) {
-@@ -360,9 +362,20 @@ static bool mptcp_established_options_dss(struct soc=
-k *sk, struct sk_buff *skb,
- 		ret =3D true;
- 	}
-=20
-+	/* passive sockets msk will set the 'can_ack' after accept(), even
-+	 * if the first subflow may have the already the remote key handy
-+	 */
-+	can_ack =3D true;
- 	opts->ext_copy.use_ack =3D 0;
- 	msk =3D mptcp_sk(subflow->conn);
--	if (!msk || !READ_ONCE(msk->can_ack)) {
-+	if (likely(msk && READ_ONCE(msk->can_ack)))
-+		ack_seq =3D msk->ack_seq;
-+	else if (subflow->can_ack)
-+		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
-+	else
-+		can_ack =3D false;
-+
-+	if (unlikely(!can_ack)) {
- 		*size =3D ALIGN(dss_size, 4);
- 		return ret;
- 	}
-@@ -375,7 +388,7 @@ static bool mptcp_established_options_dss(struct sock=
- *sk, struct sk_buff *skb,
-=20
- 	dss_size +=3D ack_size;
-=20
--	opts->ext_copy.data_ack =3D msk->ack_seq;
-+	opts->ext_copy.data_ack =3D ack_seq;
- 	opts->ext_copy.ack64 =3D 1;
- 	opts->ext_copy.use_ack =3D 1;
-=20
---=20
-2.21.1
+Yes, there might be counters that are shared accross rules, see
+nfacct. Two different rules might refer to the same counter, IIRC
+there is a way to do this in tc too.
 
+> Also neither proposal addresses the problem of reporting _different_
+> counter values at different stages in the pipeline, i.e. moving from
+> stats per flow to per action. But nobody seems to be willing to work 
+> on that.
+
+You mean, in case that different counter types are specified, eg. one
+action using delayed and another action using immediate?
+
+> AFAICT with Jiri's change we only need one check in the drivers to
+> convert from old scheme to new, with explicit action we need two
+> (additional one being ignoring the counter action). Not a big deal,
+> but 1 is less than 2 🤷‍♂️
+
+What changes are expected to retrieve counter stats?
+
+Will per-flow stats remain in place after this place?
+
+Thank you.
