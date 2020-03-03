@@ -2,349 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1206017766F
+	by mail.lfdr.de (Postfix) with ESMTP id CE344177671
 	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 13:53:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728975AbgCCMxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 07:53:33 -0500
-Received: from mail-vi1eur05on2083.outbound.protection.outlook.com ([40.107.21.83]:29504
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728963AbgCCMxd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 07:53:33 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xch7a3JcbI+D0jCECxavxhbyeWl1b5KuBQk4nFpP52HI8+MVwk3h432HMVHgPy8No70B/6iGP/qmucPVJSqXwxfppvPPnvy6RiRHp9AvAL+c7LMyDrafM2zTiu1hsYeGFiYwonNpM8Ft9K4tss6Tw7RjFQ/Nu1PQak3dQBSnMLYBDyGiQYtzHQT5eYmk+RyGKuihACH22yGTL9YB/FCW756X2b2eSdZUrcAHPIJZYmZpkXp7ILkOj3PS9kyzZL6Orz8LHyUxJPIUZUTFlCyu74ReEgsHrPy4y7sLhimyZwn+PVbGEPSG41I2jQG3dTJ9xxpqkc/WTLrHY4K/sIiVCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kPR2sdLR1AxfPRtAFaSqhK88HV2KccjxuQN0ipLD/q4=;
- b=m+YqUwu0WEbbG8NQknMjCagzzqrMG2Wty1wLjO3Dj0YSPs5UGkutUPJfZE9l5HJp4Y0aScfIESO/oa3RniGvT/Mg8NLmS4gYBCyVFCBR8/LUmBJ+X5TQkKaGE93edGsu7VUpOG8mOyaxeIcFBK2HDzs5iALVFl44maBREMI2/5vVdCXfLCzZL03bet2ZyCZ4DYYR17Sv1Fj+kByfPuNION+BqccpDR0OaNsgkPlTRjUDZp2lrdOlThO9UiAqBk+TdflNmcITPsrXDLTygeXQQCiMM51uTte0wLz96t0WYlsCjhG00GXgHeG5Z8rsqCD1UN9NcoUg3O5qz9n1BfvvJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kPR2sdLR1AxfPRtAFaSqhK88HV2KccjxuQN0ipLD/q4=;
- b=jex3DS2JY9xBGX6FMfoPt5yBVmJKdGH5sz1hB5fZjIEWVfBYR06qYRIwBCIMCaiPuda6YSpdFWsQpUVqanNm+LN0Qy2aB1K5IUGrS5dLkCQqppAXUhYy9bKZz52pFEobXxe/VLirBrAKuvGcZBU7PNRf7ZDKVBj37Tf0V/b5iLI=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
- AM6PR05MB5253.eurprd05.prod.outlook.com (20.177.191.222) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2772.19; Tue, 3 Mar 2020 12:53:27 +0000
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
- 12:53:27 +0000
-Subject: Re: [PATCH net-next v2 1/3] net/sched: act_ct: Create nf flow table
- per zone
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
+        id S1729010AbgCCMxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 07:53:46 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55955 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728963AbgCCMxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 07:53:45 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1j973K-0006kK-KL; Tue, 03 Mar 2020 13:53:38 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00] (unknown [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 6CA544C56F1;
+        Tue,  3 Mar 2020 12:53:36 +0000 (UTC)
+Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+To:     Christian Herber <christian.herber@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Marek Vasut <marex@denx.de>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1583067523-1960-1-git-send-email-paulb@mellanox.com>
- <1583067523-1960-2-git-send-email-paulb@mellanox.com>
- <20200301154701.GU26061@nanopsycho>
- <7d173492-0b70-4318-6ddf-cc4dd015f217@mellanox.com>
-Message-ID: <8abe56cd-511b-50ad-b3a0-c802203d327b@mellanox.com>
-Date:   Tue, 3 Mar 2020 14:53:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-In-Reply-To: <7d173492-0b70-4318-6ddf-cc4dd015f217@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: FRYP281CA0011.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::21)
- To AM6PR05MB5096.eurprd05.prod.outlook.com (2603:10a6:20b:11::14)
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        "David S. Miller" <davem@davemloft.net>
+References: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
+Message-ID: <9dc76ea7-e28c-b017-0da3-d419d97cc312@pengutronix.de>
+Date:   Tue, 3 Mar 2020 13:53:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.223.6.3] (193.47.165.251) by FRYP281CA0011.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.16 via Frontend Transport; Tue, 3 Mar 2020 12:53:25 +0000
-X-Originating-IP: [193.47.165.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5b305543-f6b3-486a-45d4-08d7bf71ddb6
-X-MS-TrafficTypeDiagnostic: AM6PR05MB5253:|AM6PR05MB5253:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR05MB5253FED4C3C24F92E8B8B3BECFE40@AM6PR05MB5253.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-Forefront-PRVS: 03319F6FEF
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(6486002)(6666004)(107886003)(4326008)(31696002)(498600001)(8936002)(31686004)(36756003)(81156014)(8676002)(2906002)(81166006)(52116002)(956004)(26005)(2616005)(16526019)(186003)(53546011)(86362001)(6916009)(16576012)(66946007)(54906003)(66556008)(66476007)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5253;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IFaU9NxHkuNYSBTi+E+A4w3R2PvJ4yHUSG74l6niVvXxZp6hV7iSd94J7o8x7ywuv1r/BjZjyUt3sZxbA7S/jIi9If8FWGIZa1uOvL7m55gGpw/LY75oTFoc3Bu902a4bq1C8GArVFSLRrMVvkV6ujPwILhgxq9Np0MtmhpTL86YjhfQxbCVMDKl90KWZjD4EEaVQk+34TqqOM7DQSq8hWELdarovZxJnJZZAD/Get7yGpV8QQXTe5NcGzY5vBiYyHrj+fsR+FMBIUqcISmKtXgrV5cXKGyf8FhJmC6Z5W9Igvp+h32G8uS2Uc40p3KIlDEv4XLVRckY7YeRFWYBpF3CTuUZje+ViKu5nz9n8CsisVjYANOJ+jlTW0ptR/9oILG5nVE44/xocxCRlz52k1AmuA8P4ZqIgBPvPhNQEq91vJTvNZwzbIhjsU72387q
-X-MS-Exchange-AntiSpam-MessageData: V2dtBYiqagg3icb/BZjqR0hRhcsAPEUuhh01TmA4OG14KeMyxqeq8+Y8bd3DNh+865c3snpyZ/JQKhv/gW/vCcJoiU59U/8Qaf++T3772g70mywPLl0Ck1L4uw1Ki/YRiBdn6C88XfZEQSGngswzFA==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b305543-f6b3-486a-45d4-08d7bf71ddb6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2020 12:53:27.0033
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0qYjo610UsYQA8MaTLPB/Vdi/WK9DatA0XU24yx+Tu3sR+wJFW7l0H8O4M0D+Xz+kLk8jhKyYhTTOTwJuFRvqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5253
+In-Reply-To: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/3/20 1:42 PM, Christian Herber wrote:
+> You could also refer the solution implemented here as part of a TJA110x driver:
+> https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/about/
 
-On 3/1/2020 6:11 PM, Paul Blakey wrote:
-> On 3/1/2020 5:47 PM, Jiri Pirko wrote:
->> Sun, Mar 01, 2020 at 01:58:41PM CET, paulb@mellanox.com wrote:
->>> Use the NF flow tables infrastructure for CT offload.
->>>
->>> Create a nf flow table per zone.
->>>
->>> Next patches will add FT entries to this table, and do
->>> the software offload.
->>>
->>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
->>> ---
->>> Changelog:
->>>  v1->v2:
->>>    Use spin_lock_bh instead of spin_lock, and unlock for alloc (as it can sleep)
->>>    Free ft on last tc act instance instead of last instance + last offloaded tuple,
->>>    this removes cleanup cb and netfilter patches, and is simpler
->>>    Removed accidental mlx5/core/en_tc.c change
->>>    Removed reviewed by Jiri - patch changed
->>>
->>> include/net/tc_act/tc_ct.h |   2 +
->>> net/sched/Kconfig          |   2 +-
->>> net/sched/act_ct.c         | 143 ++++++++++++++++++++++++++++++++++++++++++++-
->>> 3 files changed, 145 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
->>> index a8b1564..cf3492e 100644
->>> --- a/include/net/tc_act/tc_ct.h
->>> +++ b/include/net/tc_act/tc_ct.h
->>> @@ -25,6 +25,8 @@ struct tcf_ct_params {
->>> 	u16 ct_action;
->>>
->>> 	struct rcu_head rcu;
->>> +
->>> +	struct tcf_ct_flow_table *ct_ft;
->>> };
->>>
->>> struct tcf_ct {
->>> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
->>> index edde0e5..bfbefb7 100644
->>> --- a/net/sched/Kconfig
->>> +++ b/net/sched/Kconfig
->>> @@ -972,7 +972,7 @@ config NET_ACT_TUNNEL_KEY
->>>
->>> config NET_ACT_CT
->>> 	tristate "connection tracking tc action"
->>> -	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT
->>> +	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT && NF_FLOW_TABLE
->>> 	help
->>> 	  Say Y here to allow sending the packets to conntrack module.
->>>
->>> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
->>> index f685c0d..43dfdd1 100644
->>> --- a/net/sched/act_ct.c
->>> +++ b/net/sched/act_ct.c
->>> @@ -15,6 +15,7 @@
->>> #include <linux/pkt_cls.h>
->>> #include <linux/ip.h>
->>> #include <linux/ipv6.h>
->>> +#include <linux/rhashtable.h>
->>> #include <net/netlink.h>
->>> #include <net/pkt_sched.h>
->>> #include <net/pkt_cls.h>
->>> @@ -24,6 +25,7 @@
->>> #include <uapi/linux/tc_act/tc_ct.h>
->>> #include <net/tc_act/tc_ct.h>
->>>
->>> +#include <net/netfilter/nf_flow_table.h>
->>> #include <net/netfilter/nf_conntrack.h>
->>> #include <net/netfilter/nf_conntrack_core.h>
->>> #include <net/netfilter/nf_conntrack_zones.h>
->>> @@ -31,6 +33,117 @@
->>> #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
->>> #include <uapi/linux/netfilter/nf_nat.h>
->>>
->>> +static struct workqueue_struct *act_ct_wq;
->>> +static struct rhashtable zones_ht;
->>> +static DEFINE_SPINLOCK(zones_lock);
->>> +
->>> +struct tcf_ct_flow_table {
->>> +	struct rhash_head node; /* In zones tables */
->>> +
->>> +	struct rcu_work rwork;
->>> +	struct nf_flowtable nf_ft;
->>> +	u16 zone;
->>> +	u32 ref;
->>> +
->>> +	bool dying;
->>> +};
->>> +
->>> +static const struct rhashtable_params zones_params = {
->>> +	.head_offset = offsetof(struct tcf_ct_flow_table, node),
->>> +	.key_offset = offsetof(struct tcf_ct_flow_table, zone),
->>> +	.key_len = sizeof_field(struct tcf_ct_flow_table, zone),
->>> +	.automatic_shrinking = true,
->>> +};
->>> +
->>> +static struct nf_flowtable_type flowtable_ct = {
->>> +	.owner		= THIS_MODULE,
->>> +};
->>> +
->>> +static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
->>> +{
->>> +	struct tcf_ct_flow_table *ct_ft, *new_ct_ft;
->>> +	int err;
->>> +
->>> +	spin_lock_bh(&zones_lock);
->>> +	ct_ft = rhashtable_lookup_fast(&zones_ht, &params->zone, zones_params);
->>> +	if (ct_ft)
->>> +		goto take_ref;
->>> +
->>> +	spin_unlock_bh(&zones_lock);
->>> +	new_ct_ft = kzalloc(sizeof(*new_ct_ft), GFP_KERNEL);
->> Don't unlock-lock and just use GFP_ATOMIC.
-> Sure will do.
-Sent v3.
->>
->>> +	if (!new_ct_ft)
->>> +		return -ENOMEM;
->>> +
->>> +	new_ct_ft->zone = params->zone;
->>> +	spin_lock_bh(&zones_lock);
->>> +	ct_ft = rhashtable_lookup_get_insert_fast(&zones_ht, &new_ct_ft->node,
->>> +						  zones_params);
->>> +	if (IS_ERR(ct_ft)) {
->>> +		err = PTR_ERR(ct_ft);
->>> +		goto err_insert;
->>> +	} else if (ct_ft) {
->>> +		/* Already exists */
->>> +		kfree(new_ct_ft);
->>> +		goto take_ref;
->>> +	}
->>> +
->>> +	ct_ft = new_ct_ft;
->>> +	ct_ft->nf_ft.type = &flowtable_ct;
->>> +	err = nf_flow_table_init(&ct_ft->nf_ft);
->>> +	if (err)
->>> +		goto err_init;
->>> +
->>> +	__module_get(THIS_MODULE);
->>> +take_ref:
->>> +	params->ct_ft = ct_ft;
->>> +	ct_ft->ref++;
->>> +	spin_unlock_bh(&zones_lock);
->>> +
->>> +	return 0;
->>> +
->>> +err_init:
->>> +	rhashtable_remove_fast(&zones_ht, &new_ct_ft->node, zones_params);
->>> +err_insert:
->>> +	spin_unlock_bh(&zones_lock);
->>> +	kfree(new_ct_ft);
->>> +	return err;
->>> +}
->>> +
->>> +static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
->>> +{
->>> +	struct tcf_ct_flow_table *ct_ft;
->>> +
->>> +	ct_ft = container_of(to_rcu_work(work), struct tcf_ct_flow_table,
->>> +			     rwork);
->>> +	nf_flow_table_free(&ct_ft->nf_ft);
->>> +	kfree(ct_ft);
->>> +
->>> +	module_put(THIS_MODULE);
->>> +}
->>> +
->>> +static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
->>> +{
->>> +	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
->>> +
->>> +	spin_lock_bh(&zones_lock);
->>> +	if (--params->ct_ft->ref == 0) {
->>> +		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
->>> +		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
->>> +		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
->>> +	}
->>> +	spin_unlock_bh(&zones_lock);
->>> +}
->>> +
->>> +static int tcf_ct_flow_tables_init(void)
->>> +{
->>> +	return rhashtable_init(&zones_ht, &zones_params);
->>> +}
->>> +
->>> +static void tcf_ct_flow_tables_uninit(void)
->>> +{
->>> +	rhashtable_destroy(&zones_ht);
->>> +}
->>> +
->>> static struct tc_action_ops act_ct_ops;
->>> static unsigned int ct_net_id;
->>>
->>> @@ -207,6 +320,8 @@ static void tcf_ct_params_free(struct rcu_head *head)
->>> 	struct tcf_ct_params *params = container_of(head,
->>> 						    struct tcf_ct_params, rcu);
->>>
->>> +	tcf_ct_flow_table_put(params);
->>> +
->>> 	if (params->tmpl)
->>> 		nf_conntrack_put(&params->tmpl->ct_general);
->>> 	kfree(params);
->>> @@ -730,6 +845,10 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
->>> 	if (err)
->>> 		goto cleanup;
->>>
->>> +	err = tcf_ct_flow_table_get(params);
->>> +	if (err)
->>> +		goto cleanup;
->>> +
->>> 	spin_lock_bh(&c->tcf_lock);
->>> 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
->>> 	params = rcu_replace_pointer(c->params, params,
->>> @@ -974,12 +1093,34 @@ static void __net_exit ct_exit_net(struct list_head *net_list)
->>>
->>> static int __init ct_init_module(void)
->>> {
->>> -	return tcf_register_action(&act_ct_ops, &ct_net_ops);
->>> +	int err;
->>> +
->>> +	act_ct_wq = alloc_ordered_workqueue("act_ct_workqueue", 0);
->>> +	if (!act_ct_wq)
->>> +		return -ENOMEM;
->>> +
->>> +	err = tcf_ct_flow_tables_init();
->>> +	if (err)
->>> +		goto err_tbl_init;
->>> +
->>> +	err = tcf_register_action(&act_ct_ops, &ct_net_ops);
->>> +	if (err)
->>> +		goto err_register;
->>> +
->>> +	return 0;
->>> +
->>> +err_tbl_init:
->>> +	destroy_workqueue(act_ct_wq);
->>> +err_register:
->>> +	tcf_ct_flow_tables_uninit();
->>> +	return err;
->>> }
->>>
->>> static void __exit ct_cleanup_module(void)
->>> {
->>> 	tcf_unregister_action(&act_ct_ops, &ct_net_ops);
->>> +	tcf_ct_flow_tables_uninit();
->>> +	destroy_workqueue(act_ct_wq);
->>> }
->>>
->>> module_init(ct_init_module);
->>> -- 
->>> 1.8.3.1
->>>
+Do you mean this?
+https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/tree/tja110x.c#n26
+
+| /* load driver for TJA1102p1. It needs to be ensured,
+|  * that no other mdio device with phy id 0 is present
+|  */
+| #define CONFIG_TJA1102_FIX
+
+regards,
+Marc
+
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
