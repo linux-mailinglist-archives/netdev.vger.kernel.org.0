@@ -2,299 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A72BC1776B4
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EE91776E0
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728934AbgCCNKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 08:10:35 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:46607 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgCCNKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:10:35 -0500
-Received: by mail-lj1-f194.google.com with SMTP id h18so3391268ljl.13
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:10:33 -0800 (PST)
+        id S1728359AbgCCNUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 08:20:40 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46873 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727830AbgCCNUj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:20:39 -0500
+Received: by mail-wr1-f67.google.com with SMTP id j7so4228458wrp.13
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:20:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=E+Rq7Gjau3uq4UDQSNjA2EmldOMxS/kaZB2fA7+Nhdw=;
-        b=CuUfsqkpNyzwefDVXayJocT0zqUxlIrxhAvSu+kYmDXwuamJ0VwAd1oA2AoHa/uu9B
-         W00nfPDe20LglFkxqRA1ICBrHxvUKgEBYTyuKTyYs5+whIpzP6ffh7VFTyECjsDKOgkF
-         xVC+pgDKR4ZnTPCsIg74e7OkJ1sb9IuKyvxr4=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zAkJ9g9MWgla5/oaAyZ008B4za5DBSIc4NoU0huAHTM=;
+        b=rmsbUg4qXTMT+H6aZNtLYen3HXANnj5UanZaCaDtUIgBHFDbL8i2aKh89PYD1yX84I
+         O7P0y8AmQzlSkIroJjp+XbVehvZ2tWhRzdbZ1G7CIOFGr3GtiT/emzPwN2kL4VGqvGgp
+         Kt1dONVumdEGf5gEG0GNLmM6Gpqakh5isq+ht2v/ZUcH8Ct7NOSEc+0rJ7rC0+SyC2fT
+         n2ONUylYWJffe7CFgMqoH6c5c1M9oy2VoVRAuoEkjfWA6LgMWY5SpAV/2OdcDfWCwPmA
+         QLPfcXwMWaBzTSGzPmRSdpF9Jsw7S0zIbk8yNQnopaGzfKyouKoU/FtqwSKGFijSZb19
+         0NPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E+Rq7Gjau3uq4UDQSNjA2EmldOMxS/kaZB2fA7+Nhdw=;
-        b=tm0k8YGBY36IzrvXtx4QoQbgKPhams9i2DyuYFUEvXFD7Cj5dKSAGtTzuqxHcVvMcM
-         Ke+bEy5cPFlMLzhedJF4HunXbXTH7StewTUKN9r1lJeULtWhtpXwfvDB2GPc9XD6jVYR
-         7J9qHve1bWiXSw1vCbQfwpzQSpzO412ubTIjNJMHxNmbm6tQ69BAq9RncpwbkjSboCyV
-         BwU/Nv3oVHzN7OdVT9fBCvUWXd61EnxFS0SCWR93qadD5QnNi9zE36tHb7HxBbpMMGDd
-         5BnbWPcF+2h081Rb6VIQC1/HlxeUYhMXhelPeDc/LszKnf+J8gTX+dg5i+2o9pDO9gOQ
-         X2CA==
-X-Gm-Message-State: ANhLgQ1qSrjTLnJcEBWtK3ATpBEBK6iCa7SlpuuUizAfKt0pRLndySU0
-        CeJVP80ULYSEaNl/EkGI1ka7xQ==
-X-Google-Smtp-Source: ADFU+vviayf5aqzXvm0Dzx5+OLNyNljoKtmm8TvQiWUUL6BFnCcOJ2nsdDOtHYuvlFj4mSdH5Wt6Lw==
-X-Received: by 2002:a05:651c:414:: with SMTP id 20mr2271298lja.165.1583241032298;
-        Tue, 03 Mar 2020 05:10:32 -0800 (PST)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t1sm12581341lji.98.2020.03.03.05.10.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 05:10:31 -0800 (PST)
-Subject: Re: [PATCH net-next v3 3/3] net/sched: act_ct: Software offload of
- established flows
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1583239973-3728-1-git-send-email-paulb@mellanox.com>
- <1583239973-3728-4-git-send-email-paulb@mellanox.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <3f174fcb-0636-22d2-8d1c-e0e4981aab95@cumulusnetworks.com>
-Date:   Tue, 3 Mar 2020 15:10:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zAkJ9g9MWgla5/oaAyZ008B4za5DBSIc4NoU0huAHTM=;
+        b=hVuc5JKtSW554NHnkMyyEVluwDrRPBt8IZINhoNnRhyuBtY3QCeaH1Th45dU7awwy9
+         e3zkfxMCpIQRhBRHgFgJuLfi7CGJrnaciYxajS1HcfbMAbovwsjLuwBIXjloFnyXNuFX
+         GvW5jzrgrfbTNF8GOcQYEMiDX/Y1qzXGJOcXkhwY1YfUFoh6RF4y9ytNASQLxgBz7fC4
+         V0CgSY7t3V6MhpD8rWW6luNU3Y/4BaHn7TojAj0AabUKWKgq6ZIfJyo0gyCT8y5PIHzy
+         MeEUK6urdXDcuvACqhbBvF4eAuzcW+1GF7CCC+N/J9TUeEMzfH60Im78jBVq86LBmPBr
+         PqNA==
+X-Gm-Message-State: ANhLgQ1cQggPwqvnV7avqKAh+Y11k8wBl7R55T6nmeO1GLZP6EEsG8dW
+        7imSuz0MvBuW8hpHeHCV20fomZCPePU=
+X-Google-Smtp-Source: ADFU+vt8dOQw5iRTPN3OLWcfRJHvKTCIZnFF/wiKVzSMctmDcVmbz2Eb5bhjXCd2+q757ErgOCousw==
+X-Received: by 2002:adf:eccd:: with SMTP id s13mr5257054wro.278.1583241637724;
+        Tue, 03 Mar 2020 05:20:37 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id 4sm3660530wmg.22.2020.03.03.05.20.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 05:20:37 -0800 (PST)
+Date:   Tue, 3 Mar 2020 14:20:35 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
+        aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, pablo@netfilter.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 12/12] sched: act: allow user to specify type
+ of HW stats for a filter
+Message-ID: <20200303132035.GH2178@nanopsycho>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-13-jiri@resnulli.us>
+ <20200228115923.0e4c7baf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200229075209.GM26061@nanopsycho>
+ <20200229121452.5dd4963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200301085756.GS26061@nanopsycho>
+ <20200302113933.34fa6348@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <1583239973-3728-4-git-send-email-paulb@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200302113933.34fa6348@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/03/2020 14:52, Paul Blakey wrote:
-> Offload nf conntrack processing by looking up the 5-tuple in the
-> zone's flow table.
-> 
-> The nf conntrack module will process the packets until a connection is
-> in established state. Once in established state, the ct state pointer
-> (nf_conn) will be restored on the skb from a successful ft lookup.
-> 
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> ---
-> Changelog:
->   v1->v2:
->    Add !skip_add curly braces
->    Removed extra setting thoff again
->    Check tcp proto outside of tcf_ct_flow_table_check_tcp
-> 
->  net/sched/act_ct.c | 160 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 158 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 6ad0553..2017f8f 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -186,6 +186,155 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
->  	tcf_ct_flow_table_add(ct_ft, ct, tcp);
->  }
->  
-> +static bool
-> +tcf_ct_flow_table_fill_tuple_ipv4(struct sk_buff *skb,
-> +				  struct flow_offload_tuple *tuple)
-> +{
-> +	struct flow_ports *ports;
-> +	unsigned int thoff;
-> +	struct iphdr *iph;
-> +
-> +	if (!pskb_may_pull(skb, sizeof(*iph)))
-> +		return false;
-> +
-> +	iph = ip_hdr(skb);
-> +	thoff = iph->ihl * 4;
-> +
-> +	if (ip_is_fragment(iph) ||
-> +	    unlikely(thoff != sizeof(struct iphdr)))
-> +		return false;
-> +
-> +	if (iph->protocol != IPPROTO_TCP &&
-> +	    iph->protocol != IPPROTO_UDP)
-> +		return false;
-> +
-> +	if (iph->ttl <= 1)
-> +		return false;
-> +
-> +	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
-> +		return false;
-> +
+Mon, Mar 02, 2020 at 08:39:33PM CET, kuba@kernel.org wrote:
+>On Sun, 1 Mar 2020 09:57:56 +0100 Jiri Pirko wrote:
+>> >> >On request:
+>> >> > - no attr -> any stats allowed but some stats must be provided *
+>> >> > - 0       -> no stats requested / disabled
+>> >> > - 0x1     -> must be stat type0
+>> >> > - 0x6     -> stat type1 or stat type2 are both fine    
+>> >> 
+>> >> I was thinking about this of course. On the write side, this is ok
+>> >> however, this is very tricky on read side. See below.
+>> >>   
+>> >> >* no attr kinda doesn't work 'cause u32 offload has no stats and this
+>> >> >  is action-level now, not flower-level :S What about u32 and matchall?    
+>> >> 
+>> >> The fact that cls does not implement stats offloading is a lack of
+>> >> feature of the particular cls.  
+>> >
+>> >Yeah, I wonder how that squares with strict netlink parsing.
+>> >  
+>> >> >We can add a separate attribute with "active" stat types:
+>> >> > - no attr -> old kernel
+>> >> > - 0       -> no stats are provided / stats disabled
+>> >> > - 0x1     -> only stat type0 is used by drivers
+>> >> > - 0x6     -> at least one driver is using type1 and one type2    
+>> >> 
+>> >> There are 2 problems:
+>> >> 1) There is a mismatch between write and read. User might pass different
+>> >> value than it eventually gets from kernel. I guess this might be fine.  
+>> >
+>> >Separate attribute would work.
+>> >  
+>> >> 2) Much bigger problem is, that since the same action may be offloaded
+>> >> by multiple drivers, the read would have to provide an array of
+>> >> bitfields, each array item would represent one offloaded driver. That is
+>> >> why I decided for simple value instead of bitfield which is the same on
+>> >> write and read.  
+>> >
+>> >Why an array? The counter itself is added up from all the drivers.
+>> >If the value is a bitfield all drivers can just OR-in their type.  
+>> 
+>> Yeah, for uapi. Internally the array would be still needed. Also the
+>> driver would need to somehow "write-back" the value to the offload
+>> caller and someone (caller/tc) would have to use the array to track
+>> these bitfields for individual callbacks (probably idr of some sort).
+>> I don't know, is this excercise worth it?
+>
+>I was thinking of just doing this on HW stats dump. Drivers which don't
+>report stats by definition don't need to set any bit :)
+>
+>> Seems to me like we are overengineering this one a bit.
+>
+>That's possible, the reporting could be added later... I mostly wanted
+>to have the discussion.
 
-I think you should reload iph after the pskb_may_pull() call.
+Okay.
 
-> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
-> +
-> +	tuple->src_v4.s_addr = iph->saddr;
-> +	tuple->dst_v4.s_addr = iph->daddr;
-> +	tuple->src_port = ports->source;
-> +	tuple->dst_port = ports->dest;
-> +	tuple->l3proto = AF_INET;
-> +	tuple->l4proto = iph->protocol;
-> +
-> +	return true;
-> +}
-> +
-> +static bool
-> +tcf_ct_flow_table_fill_tuple_ipv6(struct sk_buff *skb,
-> +				  struct flow_offload_tuple *tuple)
-> +{
-> +	struct flow_ports *ports;
-> +	struct ipv6hdr *ip6h;
-> +	unsigned int thoff;
-> +
-> +	if (!pskb_may_pull(skb, sizeof(*ip6h)))
-> +		return false;
-> +
-> +	ip6h = ipv6_hdr(skb);
-> +
-> +	if (ip6h->nexthdr != IPPROTO_TCP &&
-> +	    ip6h->nexthdr != IPPROTO_UDP)
-> +		return false;
-> +
-> +	if (ip6h->hop_limit <= 1)
-> +		return false;
-> +
-> +	thoff = sizeof(*ip6h);
-> +	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
-> +		return false;
+>
+>> Also there would be no "any" it would be type0|type1|type2 the user
+>> would have to pass. If new type appears, the userspace would have to be
+>> updated to do "any" again :/ This is inconvenient.
+>
+>In my proposal above I was suggesting no attr to mean any. I think in
+>your current code ANY already doesn't include disabled so old user
+>space should not see any change.
 
-same here
+Odd, no attribute meaning "any". I think it is polite to fillup the
+attribute for dump if kernel supports the attribute. However, here, we
+would not fill it up in case of "any". That is quite odd.
 
-> +
-> +	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
-> +
-> +	tuple->src_v6 = ip6h->saddr;
-> +	tuple->dst_v6 = ip6h->daddr;
-> +	tuple->src_port = ports->source;
-> +	tuple->dst_port = ports->dest;
-> +	tuple->l3proto = AF_INET6;
-> +	tuple->l4proto = ip6h->nexthdr;
-> +
-> +	return true;
-> +}
-> +
-> +static bool tcf_ct_flow_table_check_tcp(struct flow_offload *flow,
-> +					struct sk_buff *skb,
-> +					unsigned int thoff)
-> +{
-> +	struct tcphdr *tcph;
-> +
-> +	if (!pskb_may_pull(skb, thoff + sizeof(*tcph)))
-> +		return false;
-> +
-> +	tcph = (void *)(skb_network_header(skb) + thoff);
-> +	if (unlikely(tcph->fin || tcph->rst)) {
-> +		flow_offload_teardown(flow);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
-> +				     struct sk_buff *skb,
-> +				     u8 family)
-> +{
-> +	struct nf_flowtable *nf_ft = &p->ct_ft->nf_ft;
-> +	struct flow_offload_tuple_rhash *tuplehash;
-> +	struct flow_offload_tuple tuple = {};
-> +	enum ip_conntrack_info ctinfo;
-> +	struct flow_offload *flow;
-> +	struct nf_conn *ct;
-> +	unsigned int thoff;
-> +	int ip_proto;
-> +	u8 dir;
-> +
-> +	/* Previously seen or loopback */
-> +	ct = nf_ct_get(skb, &ctinfo);
-> +	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
-> +		return false;
-> +
-> +	switch (family) {
-> +	case NFPROTO_IPV4:
-> +		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple))
-> +			return false;
-> +		break;
-> +	case NFPROTO_IPV6:
-> +		if (!tcf_ct_flow_table_fill_tuple_ipv6(skb, &tuple))
-> +			return false;
-> +		break;
-> +	default:
-> +		return false;
-> +	}
-> +
-> +	tuplehash = flow_offload_lookup(nf_ft, &tuple);
-> +	if (!tuplehash)
-> +		return false;
-> +
-> +	dir = tuplehash->tuple.dir;
-> +	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
-> +	ct = flow->ct;
-> +
-> +	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
-> +						    IP_CT_ESTABLISHED_REPLY;
-> +
-> +	thoff = ip_hdr(skb)->ihl * 4;
-> +	ip_proto = ip_hdr(skb)->protocol;
-> +	if (ip_proto == IPPROTO_TCP &&
-> +	    !tcf_ct_flow_table_check_tcp(flow, skb, thoff))
-> +		return false;
-> +
-> +	nf_conntrack_get(&ct->ct_general);
-> +	nf_ct_set(skb, ct, ctinfo);
-> +
-> +	return true;
-> +}
-> +
->  static int tcf_ct_flow_tables_init(void)
->  {
->  	return rhashtable_init(&zones_ht, &zones_params);
-> @@ -554,6 +703,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  	struct nf_hook_state state;
->  	int nh_ofs, err, retval;
->  	struct tcf_ct_params *p;
-> +	bool skip_add = false;
->  	struct nf_conn *ct;
->  	u8 family;
->  
-> @@ -603,6 +753,11 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  	 */
->  	cached = tcf_ct_skb_nfct_cached(net, skb, p->zone, force);
->  	if (!cached) {
-> +		if (!commit && tcf_ct_flow_table_lookup(p, skb, family)) {
-> +			skip_add = true;
-> +			goto do_nat;
-> +		}
-> +
->  		/* Associate skb with specified zone. */
->  		if (tmpl) {
->  			ct = nf_ct_get(skb, &ctinfo);
-> @@ -620,6 +775,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  			goto out_push;
->  	}
->  
-> +do_nat:
->  	ct = nf_ct_get(skb, &ctinfo);
->  	if (!ct)
->  		goto out_push;
-> @@ -637,10 +793,10 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
->  		 * even if the connection is already confirmed.
->  		 */
->  		nf_conntrack_confirm(skb);
-> +	} else if (!skip_add) {
-> +		tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
->  	}
->  
-> -	tcf_ct_flow_table_process_conn(p->ct_ft, ct, ctinfo);
-> -
->  out_push:
->  	skb_push_rcsum(skb, nh_ofs);
->  
-> 
-
+We can have a bit that would mean "any" though. What do you think?
