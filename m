@@ -2,119 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 935D2177D64
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B95177D88
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 18:33:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730299AbgCCRZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:25:33 -0500
-Received: from correo.us.es ([193.147.175.20]:35874 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728242AbgCCRZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 12:25:32 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7F4766D004
-        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6EE5EDA3A9
-        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6D87EDA3A4; Tue,  3 Mar 2020 18:25:15 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 51199DA3C4;
-        Tue,  3 Mar 2020 18:25:12 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 03 Mar 2020 18:25:12 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (barqueta.lsi.us.es [150.214.188.150])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730403AbgCCRd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:33:28 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:29203 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729404AbgCCRd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:33:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583256807;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t3VUKeKMtCwkPgBiUPQfBvitvta7PhFFKojqZLwQqW8=;
+        b=fBUL4OVArG7s6+HZub+qwgKizrFTCL81JOXG7R3Gll9WpRZnMES3SpZLW6KbjIr54MO6VF
+        evYpW04CwvYNzH2EOlNTojeyCSto4hdKwC6d60Tx8VuIr8kpRQwOSfyh9mBICxw9s1VBor
+        QGLbn6jz6VOSM/J6syIbWD341QH1lcU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-48-ceeY5CPdPUK73-ZoYSsq1Q-1; Tue, 03 Mar 2020 12:33:23 -0500
+X-MC-Unique: ceeY5CPdPUK73-ZoYSsq1Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 228AA426CCBA;
-        Tue,  3 Mar 2020 18:25:12 +0100 (CET)
-Date:   Tue, 3 Mar 2020 18:25:25 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@resnulli.us>,
-        netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200303172525.2p6jwa6u7qx5onji@salvia>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-2-jiri@resnulli.us>
- <20200229192947.oaclokcpn4fjbhzr@salvia>
- <20200301084443.GQ26061@nanopsycho>
- <20200302132016.trhysqfkojgx2snt@salvia>
- <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
- <20200302192437.wtge3ze775thigzp@salvia>
- <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200302214659.v4zm2whrv4qjz3pe@salvia>
- <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BCF7E107ACC4;
+        Tue,  3 Mar 2020 17:33:21 +0000 (UTC)
+Received: from krava (ovpn-206-59.brq.redhat.com [10.40.206.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 02F405D9C9;
+        Tue,  3 Mar 2020 17:33:17 +0000 (UTC)
+Date:   Tue, 3 Mar 2020 18:33:14 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [RFC] libbpf,selftests: Question on btf_dump__emit_type_decl for
+ BTF_KIND_FUNC
+Message-ID: <20200303173314.GA74093@krava>
+References: <20200303140837.90056-1-jolsa@kernel.org>
+ <CAEf4BzY8_=wcL3N96eS-jcSPBL=ueMgQg+m=Fxiw+o0Tc7F23Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <CAEf4BzY8_=wcL3N96eS-jcSPBL=ueMgQg+m=Fxiw+o0Tc7F23Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 02, 2020 at 02:49:28PM -0800, Jakub Kicinski wrote:
-> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
-[...]
-> > The real question is: if you think this tc counter+action scheme can
-> > be used by netfilter, then please explain how.
+On Tue, Mar 03, 2020 at 09:09:38AM -0800, Andrii Nakryiko wrote:
+> On Tue, Mar 3, 2020 at 6:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > hi,
+> > for bpftrace I'd like to print BTF functions (BTF_KIND_FUNC)
+> > declarations together with their names.
+> >
+> > I saw we have btf_dump__emit_type_decl and added BTF_KIND_FUNC,
+> > where it seemed to be missing, so it prints out something now
+> > (not sure it's the right fix though).
+> >
+> > Anyway, would you be ok with adding some flag/bool to struct
+> > btf_dump_emit_type_decl_opts, so I could get output like:
+> >
+> >   kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
+> >   kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
+> >
+> > ... to be able to the arguments and return type separated,
+> > so I could easily get to something like above?
+> >
+> > Current interface is just vfprintf callback and I'm not sure
+> > I can rely that it will allywas be called with same arguments,
+> > like having separated calls for parsed atoms like 'return type',
+> > '(', ')', '(', 'arg type', 'arg name', ...
+> >
+> > I'm open to any suggestion ;-)
 > 
-> In Jiri's latest patch set the counter type is per action, so just
-> "merge right" the counter info into the next action and the models 
-> are converted.
+> Hey Jiri!
+> 
+> Can you please elaborate on the use case and problem you are trying to solve?
+> 
+> I think we can (and probably even should) add such option and support
+> to dump functions, but whatever we do it should be a valid C syntax
+> and should be compilable.
+> Example above:
+> 
+> kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
+> 
+> Is this really the syntax you need to get? I think btf_dump, when
+> (optionally) emitting function declaration, will have to emit that
+> particular one as:
+> 
+> size_t ksys_read(unsigned int fd, char buf, long unsigned int count);
+> 
+> But I'd like to hear the use case before we add this. Thanks!
 
-The input "merge right" approach might work.
+the use case is just for the 'bpftrace -l' output, which displays
+the probe names that could be used.. for kernel BTF kernel functions
+it's 'kfunc:function(args)'
 
-> If user is silly and has multiple counter actions in a row - the
-> pipe/no-op action comes into play (that isn't part of this set, 
-> as Jiri said).
+	software:task-clock:
+	hardware:backend-stalls:
+	hardware:branch-instructions:
+	...
+	tracepoint:kvmmmu:kvm_mmu_pagetable_walk
+	tracepoint:kvmmmu:kvm_mmu_paging_element
+	...
+	kprobe:console_on_rootfs
+	kprobe:trace_initcall_start_cb
+	kprobe:run_init_process
+	kprobe:try_to_run_init_process
+	...
+	kfunc:x86_reserve_hardware
+	kfunc:hw_perf_lbr_event_destroy
+	kfunc:x86_perf_event_update
 
-Probably gact pipe action with counters can be mapped to the counter
-action that netfilter needs. Is this a valid use-case you consider for
-the tc hardware offload?
+I dont want to print the return type as is in C, because it would
+mess up the whole output, hence the '= <return type>'
 
-> Can you give us examples of what wouldn't work? Can you for instance
-> share the counter across rules?
+	kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
+	kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
 
-Yes, there might be counters that are shared accross rules, see
-nfacct. Two different rules might refer to the same counter, IIRC
-there is a way to do this in tc too.
+also possible only in verbose mode ;-)
 
-> Also neither proposal addresses the problem of reporting _different_
-> counter values at different stages in the pipeline, i.e. moving from
-> stats per flow to per action. But nobody seems to be willing to work 
-> on that.
+the final shape of the format will be decided in a bpftrace review,
+but in any case I think I'll need some way to get these bits:
+  <args> <return type>
 
-You mean, in case that different counter types are specified, eg. one
-action using delayed and another action using immediate?
 
-> AFAICT with Jiri's change we only need one check in the drivers to
-> convert from old scheme to new, with explicit action we need two
-> (additional one being ignoring the counter action). Not a big deal,
-> but 1 is less than 2 🤷‍♂️
+thanks,
+jirka
 
-What changes are expected to retrieve counter stats?
-
-Will per-flow stats remain in place after this place?
-
-Thank you.
