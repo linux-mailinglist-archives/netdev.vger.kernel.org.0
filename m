@@ -2,159 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 928CC177A7F
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:33:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4DC177A8F
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:36:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729857AbgCCPdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:33:47 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:36895 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729589AbgCCPdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:33:46 -0500
-X-Originating-IP: 90.89.41.158
-Received: from localhost (lfbn-tou-1-1473-158.w90-89.abo.wanadoo.fr [90.89.41.158])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 8EBB2FF815;
-        Tue,  3 Mar 2020 15:33:44 +0000 (UTC)
-Date:   Tue, 3 Mar 2020 16:33:43 +0100
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: phy: marvell10g: add energy detect
- power down tunable
-Message-ID: <20200303153343.GF3179@kwain>
-References: <20200303144259.GM25745@shell.armlinux.org.uk>
- <E1j98mA-00057r-U8@rmk-PC.armlinux.org.uk>
- <20200303150741.GC3179@kwain>
- <20200303151232.GO25745@shell.armlinux.org.uk>
- <20200303151958.GE3179@kwain>
- <20200303153013.GQ25745@shell.armlinux.org.uk>
+        id S1730001AbgCCPgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:36:06 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:35695 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729588AbgCCPgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:36:06 -0500
+Received: by mail-qv1-f65.google.com with SMTP id u10so1865167qvi.2
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 07:36:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RZ3u1ymiEOZCYHkXaCjP+k9MxgIQsITaRkDqBuIXEG0=;
+        b=UJRBXMFmrs6G84YWmNg0gAlIiZRorMZytGmI17ZUYspEmc9tR11Sm7S5c5mFlQ3bw7
+         enKvmzFKafjDSkC7pAVk/dGyGJDtgLvSYM253kX9lAX6rLnSqa/oY+jdkGa+tMuWgRa2
+         XxxvvPpUOkK167vu/FGHzOUSMvF6abAGbjCOY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RZ3u1ymiEOZCYHkXaCjP+k9MxgIQsITaRkDqBuIXEG0=;
+        b=iSmTiO3vBHSqqhZHYebPcGTJ+MCc1oAPVT2O79CTOe+kI3rrJkHkOTYCQDjBTX8vpF
+         HJQMGW0Z0+19Ko57NpWfuoy6Quu37SsSGKSyKR7GWRvSIyu4S7d4xnEhg/M9F2HkpEss
+         XNVrV0lPa8swVu4oMCCTC/YhK2zzUMX9vOUuDH2Ug1Tf8EY4TKsDPtTu5VbjSentDxqh
+         G8Drk+Z2aDQtiQvnVcNxBN88gTxSLTBQh3jYEqNG54mrS7iuKANSIu8JBgC0v4Tvzfe3
+         4vYLbd4gscrX0cnQJcLo7I22GuJVOrZovgOMRogztFf/rSa2gjV9ODAVL3wgKyCkXq5/
+         /+4A==
+X-Gm-Message-State: ANhLgQ0gwRug4/idH94PIXShFqspHDOzQ5qrcF9+v6EbOURrWa1aavZQ
+        Mk1lNvWFDSVxtn4Tket15Silkg==
+X-Google-Smtp-Source: ADFU+vtECMzZQSduoM4LhGR+wzuaIt4tLJwnD/MPqnzRIPtWkZovWM6SCUSI65YGs3whLoj5AsoWNA==
+X-Received: by 2002:a0c:f6c8:: with SMTP id d8mr4624836qvo.234.1583249765211;
+        Tue, 03 Mar 2020 07:36:05 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:29f0:2f5d:cfa7:1ce8? ([2601:282:803:7700:29f0:2f5d:cfa7:1ce8])
+        by smtp.gmail.com with ESMTPSA id j18sm11969260qka.95.2020.03.03.07.36.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Mar 2020 07:36:04 -0800 (PST)
+Subject: Re: [PATCH RFC v4 bpf-next 08/11] tun: Support xdp in the Tx path for
+ skb
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        toke@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com
+References: <20200227032013.12385-1-dsahern@kernel.org>
+ <20200227032013.12385-9-dsahern@kernel.org> <20200303114619.1b5b52bc@carbon>
+From:   David Ahern <dahern@digitalocean.com>
+Message-ID: <cc03fcd1-5a12-283a-db90-cbf17658365a@digitalocean.com>
+Date:   Tue, 3 Mar 2020 08:36:01 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200303153013.GQ25745@shell.armlinux.org.uk>
+In-Reply-To: <20200303114619.1b5b52bc@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 03:30:13PM +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Mar 03, 2020 at 04:19:58PM +0100, Antoine Tenart wrote:
-> > On Tue, Mar 03, 2020 at 03:12:32PM +0000, Russell King - ARM Linux admin wrote:
-> > > On Tue, Mar 03, 2020 at 04:07:41PM +0100, Antoine Tenart wrote:
-> > > > On Tue, Mar 03, 2020 at 02:44:02PM +0000, Russell King wrote:
-> > > > >  drivers/net/phy/marvell10g.c | 111 ++++++++++++++++++++++++++++++++++-
-> > > > >  
-> > > > > +static int mv3310_maybe_reset(struct phy_device *phydev, u32 unit, bool reset)
-> > > > > +{
-> > > > > +	int retries, val, err;
-> > > > > +
-> > > > > +	if (!reset)
-> > > > > +		return 0;
-> > > > 
-> > > > You could also call mv3310_maybe_reset after testing the 'reset'
-> > > > condition, that would make it easier to read the code.
-> > > 
-> > > I'm not too convinced:
-> > > 
-> > > diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-> > > index ef1ed9415d9f..3daf73e61dff 100644
-> > > --- a/drivers/net/phy/marvell10g.c
-> > > +++ b/drivers/net/phy/marvell10g.c
-> > > @@ -279,13 +279,10 @@ static int mv3310_power_up(struct phy_device *phydev)
-> > >  				  MV_V2_PORT_CTRL_PWRDOWN);
-> > >  }
-> > >  
-> > > -static int mv3310_maybe_reset(struct phy_device *phydev, u32 unit, bool reset)
-> > > +static int mv3310_reset(struct phy_device *phydev, u32 unit)
-> > >  {
-> > >  	int retries, val, err;
-> > >  
-> > > -	if (!reset)
-> > > -		return 0;
-> > > -
-> > >  	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1,
-> > >  			     MDIO_CTRL1_RESET, MDIO_CTRL1_RESET);
-> > >  	if (err < 0)
-> > > @@ -684,10 +681,10 @@ static int mv3310_config_mdix(struct phy_device *phydev)
-> > >  
-> > >  	err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
-> > >  				     MV_PCS_CSCR1_MDIX_MASK, val);
-> > > -	if (err < 0)
-> > > +	if (err <= 0)
-> > >  		return err;
-> > >  
-> > > -	return mv3310_maybe_reset(phydev, MV_PCS_BASE_T, err > 0);
-> > > +	return mv3310_reset(phydev, MV_PCS_BASE_T);
-> > >  }
-> > >  
-> > >  static int mv3310_config_aneg(struct phy_device *phydev)
-> > > 
-> > > The change from:
-> > > 
-> > > 	if (err < 0)
-> > > 
-> > > to:
-> > > 
-> > > 	if (err <= 0)
-> > > 
-> > > could easily be mistaken as a bug, and someone may decide to try to
-> > > "fix" that back to being the former instead.  The way I have the code
-> > > makes the intention explicit.
-> > 
-> > Using a single line to test both the error and the 'return 0'
-> > conditions, yes, I agree. Another solution would be to do something of
-> > the like:
-> > 
-> > 	phy_modify_mmd_changed()
-> > 	if (err < 0)
-> > 		return err;
-> > 
-> > 	if (err)
-> > 		mv3310_reset();
-> > 
-> > 	return 0;
-> > 
-> > I find it more readable, but this kind of thing is also a matter of
-> > personal taste.
+On 3/3/20 3:46 AM, Jesper Dangaard Brouer wrote:
+> On Wed, 26 Feb 2020 20:20:10 -0700
+> David Ahern <dsahern@kernel.org> wrote:
 > 
-> Well, it either becomes:
+>> +static u32 tun_do_xdp_tx_generic(struct tun_struct *tun,
+>> +				 struct net_device *dev,
+>> +				 struct sk_buff *skb)
+>> +{
+>> +	struct bpf_prog *xdp_prog;
+>> +	u32 act = XDP_PASS;
+>> +
+>> +	xdp_prog = rcu_dereference(tun->xdp_egress_prog);
+>> +	if (xdp_prog) {
+>> +		struct xdp_txq_info txq = { .dev = dev };
+>> +		struct xdp_buff xdp;
+>> +
+>> +		skb = tun_prepare_xdp_skb(skb);
+>> +		if (!skb) {
+>> +			act = XDP_DROP;
+>> +			goto out;
+>> +		}
+>> +
+>> +		xdp.txq = &txq;
+>> +
+>> +		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
+>> +		switch (act) {
+>> +		case XDP_TX:    /* for Tx path, XDP_TX == XDP_PASS */
+>> +			act = XDP_PASS;
+>> +			break;
+>> +		case XDP_PASS:
+>> +			break;
+>> +		case XDP_REDIRECT:
+>> +			/* fall through */
+>> +		default:
+>> +			bpf_warn_invalid_xdp_action(act);
+>> +			/* fall through */
+>> +		case XDP_ABORTED:
+>> +			trace_xdp_exception(tun->dev, xdp_prog, act);
 > 
->         err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
->                                      MV_PCS_CSCR1_MDIX_MASK, val);
->         if (err < 0)
->                 return err;
-> 
->         if (err > 0)
->                 return mv3310_reset(phydev, MV_PCS_BASE_T);
-> 
->         return 0;
-> 
-> or:
-> 
->         err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
->                                      MV_PCS_CSCR1_MDIX_MASK, val);
->         if (err > 0)
->                 err = mv3310_reset(phydev, MV_PCS_BASE_T);
-> 
->         return err;
-> 
-> In the former case, we have two success-exit paths - one via a successful
-> mv3310_reset() and one by dropping through to the final return statement.
-> 
-> The latter case looks a bit better, at least to me.
+> Hmm, don't we need to extend the trace_xdp_exception() to give users a
+> hint that this happened on the TX/egress path?
 
-I do agree, the latter looks good.
-
-Thanks,
-Antoine
-
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+tracepoint has the program id, unsupported action and device. Seems like
+the program id is sufficient. I do need to update libbpf to account for
+the attach type.
