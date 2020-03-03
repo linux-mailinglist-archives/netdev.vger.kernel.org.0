@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C04E4176980
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 01:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0ED9176975
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 01:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727350AbgCCAvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 19:51:01 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41755 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727085AbgCCAur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 19:50:47 -0500
-Received: by mail-pf1-f196.google.com with SMTP id j9so553366pfa.8
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 16:50:46 -0800 (PST)
+        id S1727291AbgCCAuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 19:50:50 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:32791 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726974AbgCCAut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 19:50:49 -0500
+Received: by mail-pg1-f194.google.com with SMTP id m5so683051pgg.0
+        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 16:50:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cs.washington.edu; s=goo201206;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=R4y1bjuDihHx2oTrIgnH3W8hlU6GthTh0USQXogLFnA=;
-        b=AfeBTOyASViNVGc5rgKB3KnjpIqe4pFbwu36CkULNwUFVGDxk25zJLdGqoSVKjup47
-         xFFy7KPqY3Rwxcce91SnNlR1s3r6GMM7ZGnF6WznrL3S81OKVoagMKdH5aZThFWFJJfK
-         T+GJynvNZMURfh0SKIljpRFGUyOCq6AG0dfAI=
+        bh=3qpNU4bvUiCHpvV7L6ZFkbr2aibmMm2XkgbkHKRq+RA=;
+        b=i097SGazMzapQTbCmTCM1ihtZ7VsNJyWAVTlS8VzybpMHYpv79RVK82V42IbyWrCUQ
+         /tWCyPUdhgc0fc4N6KisDXZdp4zqC1yrrqNBihRtGLThZoy2n9BA0gQ6HgaSxGxwYFCT
+         LSnKaekYmM6v7TZ8b+zNPpzMrf7wVn5V8ZWmc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=R4y1bjuDihHx2oTrIgnH3W8hlU6GthTh0USQXogLFnA=;
-        b=kk37OffyqCPsY2FBVsDJD2koAqjlbxtZ+FcrHynmkuEZvXaBgADJSuGfdR2trz4eEG
-         L5f+8qGXw5yowibJzpfZuIGhsJvHyp7grXxF4dQVGD+8gPdxZndMeMJD5jYdY3xWKByJ
-         /2GVXE3tpyYpj2Mg1savc4TN+VuMNRfV/vjIEkeqDfTPobdtX7K1Jlqoiq4IVCKeodAK
-         LmFL9MCTBw5TLC3SpFUu6TWyQ5yTeVsBhBxFnM4tIaK7CMiKnPc4v3Pk9MWAUu6TpxPF
-         zDn3TTvHl1CGlaPO9nsnuipzoZ1gCb9EvDqrWsEbbVUUFe4+oWX7+lD4Of7usTc1TP0D
-         wByA==
-X-Gm-Message-State: ANhLgQ2G1jqPfugBNj2MbxLK59ZmXmgPPIT28xTFu23nqQOh9YUASO+G
-        aZiAWG3Z46eWXe9TJ2QcSZhpew==
-X-Google-Smtp-Source: ADFU+vu4FJlF/yF0bGWMe5RPpUT1cUQoz8tMHkOM/dUGIBHYENG8NRhF2KH4gIKtOabdnMpPHDUJSw==
-X-Received: by 2002:a62:6c6:: with SMTP id 189mr1637105pfg.224.1583196646317;
-        Mon, 02 Mar 2020 16:50:46 -0800 (PST)
+        bh=3qpNU4bvUiCHpvV7L6ZFkbr2aibmMm2XkgbkHKRq+RA=;
+        b=P3xeKIRFMk6FaQHH6DZG/AswYaj3n5CqHXE9oH7q3vwogJHmDodRUxW6WffRZ4rcHl
+         VPw8ZrkrH4bgoR57eyLDlpfBGDqZ/2rSxjMOsnrxv3lfXgXzzmNygwlcu3HQut5PyJub
+         p6b2G1kc9EgMyhQJWfwbUKhKod3sQVBRq+BGRmFIjUgaaCCWBc67jH7/2hfftHd/orTZ
+         Gp+ROvxtipPv5YfwgDk7U51kzZgXn6EJxFRncgQl/RJ0s+ijxsGyzOZJBqOli7qGmd64
+         EoEMGt6G91WEwoQpuYAC9w3AnOoBmT8K+Dvy0UbQT9FIBPUcqowDwOzkYgQfdT+FF1jo
+         eMNQ==
+X-Gm-Message-State: ANhLgQ0dJcFFwCTirTk+QbjkJtsvEJ9PC55mu+aetTax/iZiq+g8nWep
+        KLcf6EoT2xTdYrJMeSv8rtIaFw==
+X-Google-Smtp-Source: ADFU+vsXNe4K0+HOCq044vz+4uavRlyW2t0lhW22ri/T6Yt6Dpe1MJwDY4NJT+/vEPOYLh45lbXXsQ==
+X-Received: by 2002:a63:c507:: with SMTP id f7mr1508127pgd.278.1583196648102;
+        Mon, 02 Mar 2020 16:50:48 -0800 (PST)
 Received: from ryzen.cs.washington.edu ([2607:4000:200:11:b5cd:49c6:f4f6:8295])
-        by smtp.gmail.com with ESMTPSA id c15sm357529pja.30.2020.03.02.16.50.45
+        by smtp.gmail.com with ESMTPSA id c15sm357529pja.30.2020.03.02.16.50.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2020 16:50:45 -0800 (PST)
+        Mon, 02 Mar 2020 16:50:47 -0800 (PST)
 From:   Luke Nelson <lukenels@cs.washington.edu>
 X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
 To:     bpf@vger.kernel.org
@@ -66,56 +66,54 @@ Cc:     Luke Nelson <luke.r.nels@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: [PATCH bpf-next v4 3/4] bpf, doc: add BPF JIT for RV32G to BPF documentation
-Date:   Mon,  2 Mar 2020 16:50:34 -0800
-Message-Id: <20200303005035.13814-4-luke.r.nels@gmail.com>
+Subject: [PATCH bpf-next v4 4/4] MAINTAINERS: Add entry for RV32G BPF JIT
+Date:   Mon,  2 Mar 2020 16:50:35 -0800
+Message-Id: <20200303005035.13814-5-luke.r.nels@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303005035.13814-1-luke.r.nels@gmail.com>
 References: <20200303005035.13814-1-luke.r.nels@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update filter.txt and admin-guide to mention the BPF JIT for RV32G.
-
-Co-developed-by: Xi Wang <xi.wang@gmail.com>
+Cc: Björn Töpel <bjorn.topel@gmail.com>
 Signed-off-by: Xi Wang <xi.wang@gmail.com>
 Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 ---
- Documentation/admin-guide/sysctl/net.rst | 3 ++-
- Documentation/networking/filter.txt      | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ MAINTAINERS | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index 287b98708a40..e043c9213388 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -67,7 +67,8 @@ two flavors of JITs, the newer eBPF JIT currently supported on:
-   - sparc64
-   - mips64
-   - s390x
--  - riscv
-+  - riscv64
-+  - riscv32
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8f27f40d22bb..fdd8b99f18db 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3213,11 +3213,20 @@ L:	bpf@vger.kernel.org
+ S:	Maintained
+ F:	arch/powerpc/net/
  
- And the older cBPF JIT supported on the following archs:
+-BPF JIT for RISC-V (RV64G)
++BPF JIT for 32-bit RISC-V (RV32G)
++M:	Luke Nelson <luke.r.nels@gmail.com>
++M:	Xi Wang <xi.wang@gmail.com>
++L:	bpf@vger.kernel.org
++S:	Maintained
++F:	arch/riscv/net/
++X:	arch/riscv/net/bpf_jit_comp.c
++
++BPF JIT for 64-bit RISC-V (RV64G)
+ M:	Björn Töpel <bjorn.topel@gmail.com>
+-L:	netdev@vger.kernel.org
++L:	bpf@vger.kernel.org
+ S:	Maintained
+ F:	arch/riscv/net/
++X:	arch/riscv/net/bpf_jit_comp32.c
  
-diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
-index c4a328f2d57a..2f0f8b17dade 100644
---- a/Documentation/networking/filter.txt
-+++ b/Documentation/networking/filter.txt
-@@ -606,7 +606,7 @@ before a conversion to the new layout is being done behind the scenes!
- 
- Currently, the classic BPF format is being used for JITing on most
- 32-bit architectures, whereas x86-64, aarch64, s390x, powerpc64,
--sparc64, arm32, riscv (RV64G) perform JIT compilation from eBPF
-+sparc64, arm32, riscv64, riscv32 perform JIT compilation from eBPF
- instruction set.
- 
- Some core changes of the new internal format:
+ BPF JIT for S390
+ M:	Ilya Leoshkevich <iii@linux.ibm.com>
 -- 
 2.20.1
 
