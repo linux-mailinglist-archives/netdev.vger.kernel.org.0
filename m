@@ -2,102 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7FA177372
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 11:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 415DF177413
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 11:24:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728144AbgCCKES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 05:04:18 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44878 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727121AbgCCKES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 05:04:18 -0500
-Received: by mail-ed1-f65.google.com with SMTP id g19so3520206eds.11;
-        Tue, 03 Mar 2020 02:04:16 -0800 (PST)
+        id S1728726AbgCCKYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 05:24:02 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42375 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728715AbgCCKYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 05:24:01 -0500
+Received: by mail-qt1-f193.google.com with SMTP id r6so2347253qtt.9
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 02:23:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=0AD4bpZ8c1wq7SQSp4vgpTJGHedOrSryx6E4q6XFYFk=;
-        b=SyoM0C84gbHJ5Jluoig5lRyl+cLIp3NOhJximlGPzAUZdfPngJd4IIUHv1YOPdTqXd
-         nhM3ABo8W1AIKxhv9fWas516GZIDJX98ZP5GgG+RTSEKPT86ulM/LnmcwUWoudG926M5
-         JHZXwumAM9oak9e4eI0uh6005tonqOlK7tRtvA1t9+nulplTSS+PtGhsCwltVVld8Jp2
-         MkorfG49ZzzxTs/gmTqwbWB0pJKtLzlqdDIdI/Qi0hhERWGDRXrKrUXf6ZzimJhtsaDI
-         HeHe3y4gIRXmPFzSDWx9/FNHXJt8uyIn67agWXubB4Ee8PcYuSz/f+xfb+k+3SnwOfhw
-         xZXg==
+        bh=JlrsZFMHRzLSRP94YgyMdj++refqgDDJR41lRfhOLQ8=;
+        b=nWYQCz7D3S8qB2Qr0zyokIt6/38qDm8J+APMU/1jmPqiKof4/A6Gpx77Asg3YL7CVM
+         hdV0qQkl43I9dF7Bi8WcowqW5JOMVqXyjWClMycCR6gC6G9/dp2JOEE5M1ypPgObf5id
+         ykU7LUAYPm167je8bFsJxaBdzM3LDefLBFPtjoCu9klB77KU3X+hsAOjvlOWKouur9e/
+         ZihGGXQPrR6FOVTGbQ+VIwYPAvw95H1W7xtMlY5vbjk0/ttXS6AUvEn3Brm8vCijhZ1z
+         4a8/9eVBZC/6VBnf0yE1+UTx9DHunwIeIv+m+2G6oznEAj1ji+e7vb5/U/faZxv4hCUG
+         RYRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0AD4bpZ8c1wq7SQSp4vgpTJGHedOrSryx6E4q6XFYFk=;
-        b=s7wfMCGJ46QVY4+kSOKqvQZxigyrNDQXh4WM+FHsdTAoD2o3hdwRQ0FAQwcI5oFrj9
-         F5Nob/S2YI8nsaZje4yJTsXduZpr8MPKQsZKX3DzhDj7NMTftrYyfVF1WpzSHGph9hpl
-         zlXRJQxEvrHkQC6ET/3hKa/gnJAr2jYS4NGYqeawjIrlCUHV206n1BVW+2HWkSN48Lxd
-         YE3Mg9kjeWUn1NXsweLN0oec85HocMXfUFB5UDBFClZME8ngfUu7xq1dW3RjGFJiE5GR
-         kxRzk65GqWpp1+0Uj8OWgUUWJzB3HLuiY24x9MJuIjZI73Hm88TVRr0Z2Q5oKhzrTEac
-         sEcg==
-X-Gm-Message-State: ANhLgQ3ixFHI/5Ybs/VYxJAl6rbaeXWKr6IDgIsocBsKZ0O7HaKsUAbQ
-        0L5Hu23IjvKnuSVweslG+xzT6YylIpgeRwV9oDosjA==
-X-Google-Smtp-Source: ADFU+vsLRLu5CHq+4KDeNc9afsPRrbpSLhURhzK+3Pwhm0HC+0bu+COR0T6jrEwJk36YWXYuiJcHtrPO3fI+aoD3OXU=
-X-Received: by 2002:aa7:d50b:: with SMTP id y11mr3185084edq.139.1583229855409;
- Tue, 03 Mar 2020 02:04:15 -0800 (PST)
+        bh=JlrsZFMHRzLSRP94YgyMdj++refqgDDJR41lRfhOLQ8=;
+        b=EqLieVHFz6NYorfXHhfgT1TjF1yA5makVNdElmg1102eUUxhVP+h/Bis2REIefY+u/
+         qq8Nm1FBX/ndzBAqGkqPjB3vs0d4d22izowp7D/fNQPNnGZOHUFt22TB8K8KeDqD8pgl
+         YroJskoMk0y7JEhOiZCP6YxLrxi81xBZ/sf33aMU5HAUovf6LF+BiMTe3+3rJyh5PEFn
+         iB5eZ9xBVg7gZFOkepnvv9ppRQly4JDxFpTnjlh+84q4OQEoLhsoyjYP3pCF2v5TGraS
+         rE889GkCRt78GCWExgm7ydNXW6qoEA+1f3ICNi8cy+fwCkTej31fh6B1+ZCcUsa8y5MN
+         o6hg==
+X-Gm-Message-State: ANhLgQ2xoipuNGCVPZ6IWvmOarvrUoqAzIJhAeRr5vtwzptKp3FxFbhA
+        i9xRV4soOo+kf6rt3wUobqdt1thJ3IaHzedMMu4=
+X-Google-Smtp-Source: ADFU+vuGesE+aBPn66WwHJyJzxPcy/eXtqwQxurt1PoKy8zU7lUdfwcPxTFyi4lT+j26Nsh6fIA85y/plhs3rcdrvMQ=
+X-Received: by 2002:ac8:674d:: with SMTP id n13mr3717491qtp.347.1583231039188;
+ Tue, 03 Mar 2020 02:23:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20200303074414.30693-1-o.rempel@pengutronix.de>
-In-Reply-To: <20200303074414.30693-1-o.rempel@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 3 Mar 2020 12:04:04 +0200
-Message-ID: <CA+h21hrkVr4-Bgop0bor9nkKDUm4dYdyuDWJ_jthjKpy98ZQ1A@mail.gmail.com>
-Subject: Re: [PATCH v1] net: dsa: sja1105: add 100baseT1_Full support
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
+References: <CAA85sZsO9EaS8fZJqx6=QJA+7epe88UE2zScqw-KHZYDRMjk5A@mail.gmail.com>
+ <32234f4c5b4adcaf2560098a01b1544d8d8d3c2c.camel@mellanox.com> <CAA85sZuoiWSfMt8H+pjN-Ly=f2wNwG5tPiFZzcc6-1F3fqcO9Q@mail.gmail.com>
+In-Reply-To: <CAA85sZuoiWSfMt8H+pjN-Ly=f2wNwG5tPiFZzcc6-1F3fqcO9Q@mail.gmail.com>
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Tue, 3 Mar 2020 11:23:48 +0100
+Message-ID: <CAA85sZv+6UGXoN-eHysfojK8JtvWnRiJ8xs_QZ6hM=SveQ5CpQ@mail.gmail.com>
+Subject: Re: [VXLAN] [MLX5] Lost traffic and issues
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 3 Mar 2020 at 09:44, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Mon, Mar 2, 2020 at 11:45 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
 >
-> Validate 100baseT1_Full to make this driver work with TJA1102 PHY.
+> On Mon, Mar 2, 2020 at 8:10 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
+
+[... 8< ...]
+
+> > What type of mlx5 configuration you have (Native PV virtualization ?
+> > SRIOV ? legacy mode or switchdev mode ? )
 >
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-
-I was expecting this patch sooner or later.
-
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
-
-I should take this opportunity and express the fact that it is strange
-for MAC drivers to have to sign off all possible copper and fiber
-media types in their .phylink_validate method. Sooner or later
-somebody is going to want to add 1000Base-T1 too. I don't think it is
-going to scale very well. Russell, with your plan to make MAC drivers
-just populate a bitmap of phy_modes (MII side), is it also going to
-get rid of media side validation?
-
->  drivers/net/dsa/sja1105/sja1105_main.c | 1 +
->  1 file changed, 1 insertion(+)
+> We have:
+> tap -> bridge -> ovs -> bond (one legged) -switch-fabric-> <other-end>
 >
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index 34544b1c30dc..7b5a80ba12bd 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -866,6 +866,7 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
->         phylink_set(mask, MII);
->         phylink_set(mask, 10baseT_Full);
->         phylink_set(mask, 100baseT_Full);
-> +       phylink_set(mask, 100baseT1_Full);
->         if (mii->xmii_mode[port] == XMII_MODE_RGMII)
->                 phylink_set(mask, 1000baseT_Full);
->
-> --
-> 2.25.0
->
+> So a pretty standard openstack setup
 
-Regards,
--Vladimir
+Oh, the L3 nodes are also MLX5s (50gbit) and they do report the lag map thing
+
+[   37.389366] mlx5_core 0000:04:00.0 ens1f0: S-tagged traffic will be
+dropped while C-tag vlan stripping is enabled
+[77126.178520] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[77131.485189] mlx5_core 0000:04:00.0 ens1f0: Link down
+[77337.033686] mlx5_core 0000:04:00.0 ens1f0: Link up
+[77344.338901] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[78098.028670] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[78103.479494] mlx5_core 0000:04:00.0 ens1f0: Link down
+[78310.028518] mlx5_core 0000:04:00.0 ens1f0: Link up
+[78317.797155] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[78504.893590] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[78511.277529] mlx5_core 0000:04:00.0 ens1f0: Link down
+[78714.526539] mlx5_core 0000:04:00.0 ens1f0: Link up
+[78720.422078] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[78720.838063] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[78727.226433] mlx5_core 0000:04:00.0 ens1f0: Link down
+[78929.575826] mlx5_core 0000:04:00.0 ens1f0: Link up
+[78935.422600] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[79330.519516] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[79330.831447] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[79336.073520] mlx5_core 0000:04:00.1 ens1f1: Link down
+[79336.279519] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[79541.272469] mlx5_core 0000:04:00.1 ens1f1: Link up
+[79546.664008] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[82107.461831] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[82113.859238] mlx5_core 0000:04:00.1 ens1f1: Link down
+[82320.458475] mlx5_core 0000:04:00.1 ens1f1: Link up
+[82327.774289] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[82490.950671] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[82497.307348] mlx5_core 0000:04:00.1 ens1f1: Link down
+[82705.956583] mlx5_core 0000:04:00.1 ens1f1: Link up
+[82714.055134] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[83100.804620] mlx5_core 0000:04:00.0 ens1f0: Link down
+[83100.860943] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[83319.953296] mlx5_core 0000:04:00.0 ens1f0: Link up
+[83327.984559] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[83924.600444] mlx5_core 0000:04:00.0 ens1f0: Link down
+[83924.656321] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[84312.648630] mlx5_core 0000:04:00.0 ens1f0: Link up
+[84319.571326] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[84946.495374] mlx5_core 0000:04:00.1 ens1f1: Link down
+[84946.588637] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[84946.692596] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[84949.188628] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[85363.543475] mlx5_core 0000:04:00.1 ens1f1: Link up
+[85371.093484] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+[624051.460733] mlx5_core 0000:04:00.0: modify lag map port 1:2 port 2:2
+[624053.644769] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:1
+[624053.674747] mlx5_core 0000:04:00.0: modify lag map port 1:1 port 2:2
+
+Sorry, it's been a long couple of weeks ;)
+
+> > The only change that i could think of is the lag multi-path support we
+> > added, Roi can you please take a look at this ?
+>
+> I'm also trying to get a setup working where i could try reverting changes
+> but so far we've only had this problem with mlx5_core...
+> Also the intermittent but reliable patterns are really weird...
+>
+> All traffic seems fine, except vxlan traffic :/
+>
+> (The problem is that the actual machines that has the issue is in production
+> with 8x V100 nvidia cards... Kinda hard to justify having them "offline" ;))
