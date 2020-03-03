@@ -2,89 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B258617702A
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 08:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E7E177031
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 08:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727531AbgCCHeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 02:34:07 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37152 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbgCCHeG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 02:34:06 -0500
-Received: by mail-pj1-f65.google.com with SMTP id o2so953129pjp.2
-        for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 23:34:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rWGkVzfNq4Riqmna6CVPp//6p5hLx/K1WoWmeuoIzOk=;
-        b=s9N+8RCoJ0Ci5zG0hQznqV2olBCwASJKVzIPVHIVzLrdUyZ2y/lnuudRdV4Ap/66Wv
-         Q9KUbIQ2HqRg6cnVf7fT+vHBXiJ466QYqzCyDcSpI5WZa1fmTztoE8F+2ZykPNiJ7elO
-         0nWbyW91DHs1d2vMqHjzKwR9bOV6KK91JIcwZhOCvogwJXx2aY8pyjnN4/TnN9MGBwfj
-         Xw1TvUEViQth7W2kMervXb/CeBhKETYyiK5KuhkQRz4fWgzctNOzJj0U4OmX0pAZsdDj
-         TLVvJRn3240L9e2md9hNVVtSIvvlBUpgHlGrJ2Xtu7+Turg6qZC2yqUVudN34JfnBu0c
-         XFAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rWGkVzfNq4Riqmna6CVPp//6p5hLx/K1WoWmeuoIzOk=;
-        b=XT5wRziKrAIPbE0CD0zDWbAvsOE+PxnU6cDTaJ6asULg67iaV8j8xw5p4+BSMFBTVn
-         +u8KX9JcXs99axu23E/itXEFl2k9Z82lX44bJuwqfAubTveE3+08KRarsDdYK70W52Nr
-         pCD3BdfrMFectWiA2FXy0wGmdnk3pr0NDHKXIJsuv2DUr06VjO3DG1Dtiq9GrKs4CJx+
-         wYnkftj8VfeKGrsI0+hx88jyFfbRDij5CwbF/Nl6oNS95n9FjqlUbj9Yhid6fvPFpss2
-         6ClM1nzPOZ/sODbZdu60bGiUR+mGztgFVo7sxyai4Mi1QBzy6zlQbnBqvd60JPy+pAam
-         n4tA==
-X-Gm-Message-State: ANhLgQ3nqt9lVYygwgD5XOXMuiLaBVlQeRdI+N9lYD/pFV4suLjMF5Dd
-        uGXDT30loc7y3W6Zf+xeKiKLxekL
-X-Google-Smtp-Source: ADFU+vtoRqa3BX5bYodcEOid7qGvZbgUoohHmMe7Jc4wN8idKDFOSHC0hfLSRDV+JQf9cTwIclq4ew==
-X-Received: by 2002:a17:90a:20cf:: with SMTP id f73mr2663839pjg.42.1583220844317;
-        Mon, 02 Mar 2020 23:34:04 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id q21sm24259495pff.105.2020.03.02.23.34.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Mar 2020 23:34:03 -0800 (PST)
-Subject: Re: [PATCH] ipv6: Use math to point per net sysctls into the
- appropriate struct net
-To:     Cambda Zhu <cambda@linux.alibaba.com>,
-        netdev <netdev@vger.kernel.org>
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <20200303065434.81842-1-cambda@linux.alibaba.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <50eaac61-2ae1-bd6e-bb07-d574f137e581@gmail.com>
-Date:   Mon, 2 Mar 2020 23:34:01 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727659AbgCCHhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 02:37:24 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41753 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725440AbgCCHhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 02:37:23 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1j927E-0001po-4W; Tue, 03 Mar 2020 08:37:20 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1j927B-0000TD-11; Tue, 03 Mar 2020 08:37:17 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>
+Subject: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+Date:   Tue,  3 Mar 2020 08:37:15 +0100
+Message-Id: <20200303073715.32301-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-In-Reply-To: <20200303065434.81842-1-cambda@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
+PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
+configured in device tree by setting compatible =
+"ethernet-phy-id0180.dc81".
 
+PHY 1 has less suported registers and functionality. For current driver
+it will affect only the HWMON support.
 
-On 3/2/20 10:54 PM, Cambda Zhu wrote:
-> The data pointers of ipv6 sysctl are set one by one which is hard to
-> maintain, especially with kconfig. This patch simplifies it by using
-> math to point the per net sysctls into the appropriate struct net,
-> just like what we did for ipv4.
-> 
-> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
-> ---
->  net/ipv6/sysctl_net_ipv6.c | 20 ++++----------------
->  1 file changed, 4 insertions(+), 16 deletions(-)
->
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/phy/nxp-tja11xx.c | 43 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Please add the intended tree (net-next in this case) for your next patches.
-
-Documentation/networking/netdev-FAQ.rst
+diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+index b705d0bd798b..52090cfaa54e 100644
+--- a/drivers/net/phy/nxp-tja11xx.c
++++ b/drivers/net/phy/nxp-tja11xx.c
+@@ -15,6 +15,7 @@
+ #define PHY_ID_MASK			0xfffffff0
+ #define PHY_ID_TJA1100			0x0180dc40
+ #define PHY_ID_TJA1101			0x0180dd00
++#define PHY_ID_TJA1102			0x0180dc80
+ 
+ #define MII_ECTRL			17
+ #define MII_ECTRL_LINK_CONTROL		BIT(15)
+@@ -190,6 +191,7 @@ static int tja11xx_config_init(struct phy_device *phydev)
+ 			return ret;
+ 		break;
+ 	case PHY_ID_TJA1101:
++	case PHY_ID_TJA1102:
+ 		ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
+ 		if (ret)
+ 			return ret;
+@@ -337,6 +339,31 @@ static int tja11xx_probe(struct phy_device *phydev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
++	/* Use the phyid to distinguish between port 0 and port 1 of the
++	 * TJA1102. Port 0 has a proper phyid, while port 1 reads 0.
++	 */
++	if ((phydev->phy_id & PHY_ID_MASK) == PHY_ID_TJA1102) {
++		int ret;
++		u32 id;
++
++		ret = phy_read(phydev, MII_PHYSID1);
++		if (ret < 0)
++			return ret;
++
++		id = ret;
++		ret = phy_read(phydev, MII_PHYSID2);
++		if (ret < 0)
++			return ret;
++
++		id |= ret << 16;
++
++		/* TJA1102 Port 1 has phyid 0 and doesn't support temperature
++		 * and undervoltage alarms.
++		 */
++		if (id == 0)
++			return 0;
++	}
++
+ 	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+ 	if (!priv->hwmon_name)
+ 		return -ENOMEM;
+@@ -385,6 +412,21 @@ static struct phy_driver tja11xx_driver[] = {
+ 		.get_sset_count = tja11xx_get_sset_count,
+ 		.get_strings	= tja11xx_get_strings,
+ 		.get_stats	= tja11xx_get_stats,
++	}, {
++		PHY_ID_MATCH_MODEL(PHY_ID_TJA1102),
++		.name		= "NXP TJA1102",
++		.features       = PHY_BASIC_T1_FEATURES,
++		.probe		= tja11xx_probe,
++		.soft_reset	= tja11xx_soft_reset,
++		.config_init	= tja11xx_config_init,
++		.read_status	= tja11xx_read_status,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.set_loopback   = genphy_loopback,
++		/* Statistics */
++		.get_sset_count = tja11xx_get_sset_count,
++		.get_strings	= tja11xx_get_strings,
++		.get_stats	= tja11xx_get_stats,
+ 	}
+ };
+ 
+@@ -393,6 +435,7 @@ module_phy_driver(tja11xx_driver);
+ static struct mdio_device_id __maybe_unused tja11xx_tbl[] = {
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1100) },
+ 	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1101) },
++	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
+ 	{ }
+ };
+ 
+-- 
+2.25.0
 
