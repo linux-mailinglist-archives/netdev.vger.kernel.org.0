@@ -2,96 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0995A177FDC
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 19:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86003177FEA
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 19:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732328AbgCCRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:53:17 -0500
-Received: from mga02.intel.com ([134.134.136.20]:30618 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731538AbgCCRxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 12:53:16 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 09:53:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,511,1574150400"; 
-   d="scan'208";a="229006617"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
-  by orsmga007.jf.intel.com with ESMTP; 03 Mar 2020 09:53:16 -0800
-Subject: Re: [RFC PATCH v2 04/22] ice: enable initial devlink support
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
-        lihong.yang@intel.com, kuba@kernel.org
-References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
- <20200214232223.3442651-5-jacob.e.keller@intel.com>
- <20200302163056.GB2168@nanopsycho>
- <12a9a9bb-12ca-7cfa-43f1-ade9d13b9651@intel.com>
- <20200303134704.GM2178@nanopsycho>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <23a42719-5bb2-4a11-c082-290205aff8c1@intel.com>
-Date:   Tue, 3 Mar 2020 09:53:16 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1732401AbgCCRxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:53:38 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:65153 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731683AbgCCRxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:53:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1583258017; x=1614794017;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=34azqmFeRaFzM4vO53SvciGSZLKjRCjz923ORM9sBr4=;
+  b=k9L5i4hOoGGofPts5jgFxXq95UDVig3VEouR8ta413nM0WKQuoT43LdP
+   R0uVVIeUE004nywK8LIjcQqqm/ta8JWMCD643poeXiobOYznoxYt3dYtt
+   loOOqcxnhc+9HlTCPcvBptnjEVhiQOBIDHWg/oxXkAywYVBj6eDxb2dyh
+   o=;
+IronPort-SDR: j+T/5jka0KWLwSKijd2DYIDqBjMHVH2vWoW4leXQDE1Kp4yfmScGdl89lzyO1AjKPbca5+E6eP
+ /faX/djAPGXA==
+X-IronPort-AV: E=Sophos;i="5.70,511,1574121600"; 
+   d="scan'208";a="30307745"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-22cc717f.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 03 Mar 2020 17:53:36 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-22cc717f.us-west-2.amazon.com (Postfix) with ESMTPS id D46C1A274A;
+        Tue,  3 Mar 2020 17:53:34 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 3 Mar 2020 17:53:34 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.8) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 3 Mar 2020 17:53:30 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <eric.dumazet@gmail.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <kuznet@ms2.inr.ac.ru>,
+        <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>,
+        <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v3 net-next 2/4] tcp: bind(addr, 0) remove the SO_REUSEADDR restriction when ephemeral ports are exhausted.
+Date:   Wed, 4 Mar 2020 02:53:25 +0900
+Message-ID: <20200303175325.36937-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <74eacd0e-5519-3e39-50f3-1add05983ba3@gmail.com>
+References: <74eacd0e-5519-3e39-50f3-1add05983ba3@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200303134704.GM2178@nanopsycho>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.8]
+X-ClientProxiedBy: EX13D03UWC004.ant.amazon.com (10.43.162.49) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/3/2020 5:47 AM, Jiri Pirko wrote:
-> Mon, Mar 02, 2020 at 08:29:44PM CET, jacob.e.keller@intel.com wrote:
->>
->>
->> On 3/2/2020 8:30 AM, Jiri Pirko wrote:
->>> Sat, Feb 15, 2020 at 12:22:03AM CET, jacob.e.keller@intel.com wrote:
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Sun, 1 Mar 2020 20:49:49 -0800
+> On 3/1/20 8:31 PM, Kuniyuki Iwashima wrote:
+>> From:   Eric Dumazet <eric.dumazet@gmail.com>
+>> Date:   Sun, 1 Mar 2020 19:42:25 -0800
+>>> On 2/29/20 3:35 AM, Kuniyuki Iwashima wrote:
+>>>> Commit aacd9289af8b82f5fb01bcdd53d0e3406d1333c7 ("tcp: bind() use stronger
+>>>> condition for bind_conflict") introduced a restriction to forbid to bind
+>>>> SO_REUSEADDR enabled sockets to the same (addr, port) tuple in order to
+>>>> assign ports dispersedly so that we can connect to the same remote host.
+>>>>
+>>>> The change results in accelerating port depletion so that we fail to bind
+>>>> sockets to the same local port even if we want to connect to the different
+>>>> remote hosts.
+>>>>
+>>>> You can reproduce this issue by following instructions below.
+>>>>   1. # sysctl -w net.ipv4.ip_local_port_range="32768 32768"
+>>>>   2. set SO_REUSEADDR to two sockets.
+>>>>   3. bind two sockets to (address, 0) and the latter fails.
+>>>>
+>>>> Therefore, when ephemeral ports are exhausted, bind(addr, 0) should
+>>>> fallback to the legacy behaviour to enable the SO_REUSEADDR option and make
+>>>> it possible to connect to different remote (addr, port) tuples.
+>>>>
+>>>> This patch allows us to bind SO_REUSEADDR enabled sockets to the same
+>>>> (addr, port) only when all ephemeral ports are exhausted.
+>>>>
+>>>> The only notable thing is that if all sockets bound to the same port have
+>>>> both SO_REUSEADDR and SO_REUSEPORT enabled, we can bind sockets to an
+>>>> ephemeral port and also do listen().
+>>>>
+>>>> Fixes: aacd9289af8b ("tcp: bind() use stronger condition for bind_conflict")
+>>>>
+>>>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 >>>
->>> [...]
+>>> I am unsure about this, since this could double the time taken by this
+>>> function, which is already very time consuming.
+>> 
+>> This patch doubles the time on choosing a port only when all ephemeral ports
+>> are exhausted, and this fallback behaviour can eventually decreases the time
+>> on waiting for ports to be released. We cannot know when the ports are
+>> released, so we may not be able to reuse ports without this patch. This
+>> patch gives more chace and raises the probability to succeed to bind().
+>> 
+>>> We added years ago IP_BIND_ADDRESS_NO_PORT socket option, so that the kernel
+>>> has more choices at connect() time (instead of bind()) time to choose a source port.
 >>>
->>>> +int ice_devlink_create_port(struct ice_pf *pf)
->>>> +{
->>>> +	struct devlink *devlink = priv_to_devlink(pf);
->>>> +	struct ice_vsi *vsi = ice_get_main_vsi(pf);
->>>> +	struct device *dev = ice_pf_to_dev(pf);
->>>> +	int err;
->>>> +
->>>> +	if (!vsi) {
->>>> +		dev_err(dev, "%s: unable to find main VSI\n", __func__);
->>>> +		return -EIO;
->>>> +	}
->>>> +
->>>> +	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
->>>> +			       pf->hw.pf_id, false, 0, NULL, 0);
->>>> +	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
->>>> +	if (err) {
->>>> +		dev_err(dev, "devlink_port_register failed: %d\n", err);
->>>> +		return err;
->>>> +	}
->>>
->>> You need to register_netdev here. Otherwise you'll get inconsistent udev
->>> naming.
->>>
->>
->> The netdev is registered in other portion of the code, and should
->> already be registered by the time we call ice_devlink_create_port. This
->> check is mostly here to prevent a NULL pointer if the VSI somehow
->> doesn't have a netdev associated with it.
+>>> This considerably lowers time taken to find an optimal source port, since
+>>> the kernel has full information (source address, destination address & port)
+>> 
+>> I also think this option is usefull, but it does not allow us to reuse
+>> ports that is reserved by bind(). This is because connect() can reuse ports
+>> only when their tb->fastresue and tb->fastreuseport is -1. So we still
+>> cannot fully utilize 4-tuples.
 > 
-> My point is, the correct order is:
-> devlink_register()
-> devlink_port_attrs_set()
-> devlink_port_register()
-> register_netdev()
-> devlink_port_type_eth_set()
+> The thing is : We do not want to allow active connections to use a source port
+> that is used for passive connections.
+
+When calling bind(addr, 0) without these patches, this problem does not
+occur. Certainly these patches could make it possible to do bind(addr, 0)
+and listen() on the port which is already reserved by connect(). However,
+whether these patches are applied or not, this problem can be occurred by
+calling bind with specifying the port.
+
+
+> Many supervisions use dump commands like "ss -t src :40000" to list all connections
+> for a 'server' listening on port 40000,
+> or use ethtool to direct all traffic for this port on a particular RSS queue.
 > 
+> Some firewall setups also would need to be changed, since suddenly the port could
+> be used by unrelated applications.
 
-Oh. Hmm. Ok, I'll need to move this around. Will fix.
+I think these are on promise that the server application specifies the port
+and we know which port is used in advance. Moreover the port nerver be used
+by unrelated application suddenly. When connect() and listen() share the
+port, listen() is always called after connect().
 
-Thanks,
-Jake
+
+I would like to think about two sockets (sk1 and sk2) in three cases.
+
+1st case: sk1 is in TCP_LISTEN.
+In this case, sk2 cannot get the port and my patches does not change the behaviour.
+
+2nd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 40000) for sk2.
+In this case, sk2 can get the port by specifying the port, so listen() of
+sk2 can share the port with connect() of sk1. This is because reuseport_ok
+is true, but my patches add changes only for when reuseport_ok is false.
+Therefore, whether my patches are applied or not, this problem can happen.
+
+3rd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 0) for sk2.
+In this case, sk2 come to be able to get the port with my patches if both
+sockets have SO_REUSEADDR enabled.
+So, listen() also can share the port with connect().
+
+However, I do not think this can be problem for two reasons:
+  - the same problem already can happen in 2nd case, and the possibility of
+    this case is lower than 2nd case because 3rd case is when the ports are exhausted.
+  - I am unsure that there is supervisions that monitor the server
+    applications which randomly select the ephemeral ports to listen on.
+
+Although this may be a stupid question, is there famous server software
+that do bind(addr, 0) and listen() ?
+
+
+Hence, I think these patches are safe.
+What would you think about this?
+
+But also I think this depends on use cases. So I would like to ask for another opinion.
+If we can enable/disable the fallback behaviour by sysctl or proc,
+it is more useful because some people can fully utilize 4-tuples.
+How would you think about this option?
