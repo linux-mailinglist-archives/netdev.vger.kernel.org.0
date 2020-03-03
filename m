@@ -2,84 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4220C178216
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BAAF178211
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732085AbgCCSM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:12:58 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51902 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731208AbgCCSM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:12:57 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 023IAcrx016850
-        for <netdev@vger.kernel.org>; Tue, 3 Mar 2020 10:12:55 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=x3ns7LX866GaJPokoQl7Qwx3KYe5wetFn4H1AsT3LYg=;
- b=HV2o9U9Kmc3n9sJR/vJjKd4TX87lcY+qRXvSqbOXf0bASwbK5Ph286S6RTnhkAemBIAO
- wHvd8g7OeA+bapIRjgd5jeN+CYBr1XyNq+QMNkuqSc7XL3GmS9T3CsaWsfdZyx219jIj
- ED9V6nj6vDxXasBlj7ZnAwKKe1w7KRD4P2E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yhscwh4h1-14
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 10:12:55 -0800
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 3 Mar 2020 10:08:07 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 681792EC29A2; Tue,  3 Mar 2020 10:08:03 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: fix handling of optional field_name in btf_dump__emit_type_decl
-Date:   Tue, 3 Mar 2020 10:08:00 -0800
-Message-ID: <20200303180800.3303471-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S2388286AbgCCSIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:08:43 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39396 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732803AbgCCSIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:08:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gSmcSrVvZ6EvOgTJ2reGeLbxzBIDALzRNL1B98xEHBE=; b=DFVaGH8VUbdmQSsIdLwdIQdIPB
+        6FgKCMhjfUJvvr5fuepraDVI3uCKmwiN1QSZCWhxs1ULv26P7OsOk5N7lAdscbcI9j2mVtZ8h3dKS
+        HpNAgSt0HGs9UGH28m9KSiah4u2VksE3G34kp8r4SpE9AQFkW0zJVg7v+mBiHHV0yd+tKTbu59ZeO
+        +loHcZrq4O+TI2HlxkKixBrOgppJ1UFIIUFkHbeeAgnhn8gybyzmJMkcMmtWzoY0gWRd/MAwvPQFQ
+        V08hVp1WkaQlVnGsjUpbemKsM+pZj0DmmaeA32Fto1qfK5n/BqHuesYBYyteXxeIDo5x9ra0ikBzk
+        XgrHFTEg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:34284 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j9By7-000167-H9; Tue, 03 Mar 2020 18:08:35 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j9By6-0003pB-UH; Tue, 03 Mar 2020 18:08:35 +0000
+In-Reply-To: <20200303180747.GT25745@shell.armlinux.org.uk>
+References: <20200303180747.GT25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v3 1/3] net: phy: marvell10g: add mdix control
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-03_06:2020-03-03,2020-03-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
- priorityscore=1501 mlxlogscore=686 clxscore=1015 impostorscore=0
- spamscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0 phishscore=0
- suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003030122
-X-FB-Internal: deliver
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1j9By6-0003pB-UH@rmk-PC.armlinux.org.uk>
+Date:   Tue, 03 Mar 2020 18:08:34 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Internal functions, used by btf_dump__emit_type_decl(), assume field_name is
-never going to be NULL. Ensure it's always the case.
+Add support for controlling the MDI-X state of the PHY.
 
-Fixes: 9f81654eebe8 ("libbpf: Expose BTF-to-C type declaration emitting API")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- tools/lib/bpf/btf_dump.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/marvell10g.c | 61 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 59 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index bd09ed1710f1..dc451e4de5ad 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1030,7 +1030,7 @@ int btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
- 	if (!OPTS_VALID(opts, btf_dump_emit_type_decl_opts))
- 		return -EINVAL;
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 9a4e12a2af07..9d4fed782b19 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -23,6 +23,7 @@
+  * link takes priority and the other port is completely locked out.
+  */
+ #include <linux/ctype.h>
++#include <linux/delay.h>
+ #include <linux/hwmon.h>
+ #include <linux/marvell_phy.h>
+ #include <linux/phy.h>
+@@ -39,6 +40,12 @@ enum {
+ 	MV_PCS_BASE_R		= 0x1000,
+ 	MV_PCS_1000BASEX	= 0x2000,
  
--	fname = OPTS_GET(opts, field_name, NULL);
-+	fname = OPTS_GET(opts, field_name, "");
- 	lvl = OPTS_GET(opts, indent_level, 0);
- 	btf_dump_emit_type_decl(d, id, fname, lvl);
++	MV_PCS_CSCR1		= 0x8000,
++	MV_PCS_CSCR1_MDIX_MASK	= 0x0060,
++	MV_PCS_CSCR1_MDIX_MDI	= 0x0000,
++	MV_PCS_CSCR1_MDIX_MDIX	= 0x0020,
++	MV_PCS_CSCR1_MDIX_AUTO	= 0x0060,
++
+ 	MV_PCS_CSSR1		= 0x8008,
+ 	MV_PCS_CSSR1_SPD1_MASK	= 0xc000,
+ 	MV_PCS_CSSR1_SPD1_SPD2	= 0xc000,
+@@ -216,6 +223,26 @@ static int mv3310_hwmon_probe(struct phy_device *phydev)
+ }
+ #endif
+ 
++static int mv3310_reset(struct phy_device *phydev, u32 unit)
++{
++	int retries, val, err;
++
++	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1,
++			     MDIO_CTRL1_RESET, MDIO_CTRL1_RESET);
++	if (err < 0)
++		return err;
++
++	retries = 20;
++	do {
++		msleep(5);
++		val = phy_read_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1);
++		if (val < 0)
++			return val;
++	} while (val & MDIO_CTRL1_RESET && --retries);
++
++	return val & MDIO_CTRL1_RESET ? -ETIMEDOUT : 0;
++}
++
+ static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
+ {
+ 	struct phy_device *phydev = upstream;
+@@ -316,6 +343,8 @@ static int mv3310_config_init(struct phy_device *phydev)
+ 	    phydev->interface != PHY_INTERFACE_MODE_10GBASER)
+ 		return -ENODEV;
+ 
++	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++
  	return 0;
+ }
+ 
+@@ -345,14 +374,42 @@ static int mv3310_get_features(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int mv3310_config_mdix(struct phy_device *phydev)
++{
++	u16 val;
++	int err;
++
++	switch (phydev->mdix_ctrl) {
++	case ETH_TP_MDI_AUTO:
++		val = MV_PCS_CSCR1_MDIX_AUTO;
++		break;
++	case ETH_TP_MDI_X:
++		val = MV_PCS_CSCR1_MDIX_MDIX;
++		break;
++	case ETH_TP_MDI:
++		val = MV_PCS_CSCR1_MDIX_MDI;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
++				     MV_PCS_CSCR1_MDIX_MASK, val);
++	if (err > 0)
++		err = mv3310_reset(phydev, MV_PCS_BASE_T);
++
++	return err;
++}
++
+ static int mv3310_config_aneg(struct phy_device *phydev)
+ {
+ 	bool changed = false;
+ 	u16 reg;
+ 	int ret;
+ 
+-	/* We don't support manual MDI control */
+-	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++	ret = mv3310_config_mdix(phydev);
++	if (ret < 0)
++		return ret;
+ 
+ 	if (phydev->autoneg == AUTONEG_DISABLE)
+ 		return genphy_c45_pma_setup_forced(phydev);
 -- 
-2.17.1
+2.20.1
 
