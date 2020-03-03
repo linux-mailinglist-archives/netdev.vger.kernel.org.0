@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD7E178493
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:07:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F11D61784A5
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732347AbgCCVHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 16:07:05 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:41110 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732336AbgCCVHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:07:05 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D011468006B;
-        Tue,  3 Mar 2020 21:07:01 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 Mar 2020
- 21:06:52 +0000
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <saeedm@mellanox.com>, <leon@kernel.org>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
-        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <mlxsw@mellanox.com>,
-        <netfilter-devel@vger.kernel.org>
-References: <20200228172505.14386-2-jiri@resnulli.us>
- <20200229192947.oaclokcpn4fjbhzr@salvia> <20200301084443.GQ26061@nanopsycho>
- <20200302132016.trhysqfkojgx2snt@salvia>
- <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
- <20200302192437.wtge3ze775thigzp@salvia>
- <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200302214659.v4zm2whrv4qjz3pe@salvia>
- <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
- <20200303202739.6nwq3ru2vf62j2ek@salvia>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <0452cffa-1054-418f-0a5d-8e15afd87969@solarflare.com>
-Date:   Tue, 3 Mar 2020 21:06:48 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1732327AbgCCVKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 16:10:55 -0500
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:39188 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730925AbgCCVKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:10:54 -0500
+Received: by mail-yw1-f65.google.com with SMTP id x184so105648ywd.6
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 13:10:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jhw2/hBTqqb08+XbLqFc1lQG7+XacrKgacG+f+lhHlw=;
+        b=UuswdbwtGUq/KOpTGPSUcHmuRFxUeMPpUUcP4c3+mgsuAAZ1wqfnSivQRMp7zhqP2i
+         yvBWIw6bqMhNA/DPbB71aQ0wCjAsjDNSGE4vvK+62X9DlD438J/f+Nj2df/aPLkpKMfF
+         5ocn7OG+YEKPkfrWpPgr+GcwXyvyAQ/mWC5rmoLddKOt9BLvUI7SMHMb7Fw9CVC1Brwp
+         7oBlwlgyME+tIP2gNltFHprtxkzqmd46EM7RAj60QXtKXqz8qLiEzu7thzKr+f14dQCa
+         wqB5jjXoBB8PCTZRigPCyuFoqbQRvn1jgnb6lYeX9vn9ADIMgGrH9qfcDDR7AZ4WBOg6
+         zscQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jhw2/hBTqqb08+XbLqFc1lQG7+XacrKgacG+f+lhHlw=;
+        b=NHvcU4OiPq6Yy2wud5swcqNWnWXnKfe4W//D8FNg3ry10ppyVS4zqJHKaZ3pQkY8he
+         bJRDu6DhxzISVyJsWsCk0rpd9YgX7s4Hzd733NKmDdoly/VW3Fs37l9noRP7ha1FGIp3
+         rdF6+9xznCYgrfU/1VXu1XaLZdfXFcIBn7SlgnkeWGWlTEoJQh8im0sA7mZrvtIq+uwS
+         2721W8larr9gL37wTTGdV3rDDU2QV6YCHmrJw2z1qkNhuX0nLr2O/5Pa90iW40+FDdSu
+         QxoM57PTpJayUXlZAui/m2KNUj62awOT1gDXCGYBOzRtRGm0393TRt79F1+NnZ6KVw26
+         +txA==
+X-Gm-Message-State: ANhLgQ3V/BK+dmXSgtj8pYPY2Crcz8RI+i6QQLpLnbpGoDC8hEopzwCh
+        3BV9vD21sHU0xQh8QoLbmKc1/MgC
+X-Google-Smtp-Source: ADFU+vsahuJLpW0gZpVOra6yeOv8gQg/URQ2/J0e1qvdHKbm9kAAthXCwyVXrnuZU5WOFD03VDZtnQ==
+X-Received: by 2002:a5b:8c2:: with SMTP id w2mr5951145ybq.415.1583269853128;
+        Tue, 03 Mar 2020 13:10:53 -0800 (PST)
+Received: from mail-yw1-f52.google.com (mail-yw1-f52.google.com. [209.85.161.52])
+        by smtp.gmail.com with ESMTPSA id k195sm2521893ywk.104.2020.03.03.13.10.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Mar 2020 13:10:52 -0800 (PST)
+Received: by mail-yw1-f52.google.com with SMTP id a132so134908ywb.2
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 13:10:51 -0800 (PST)
+X-Received: by 2002:a0d:d68d:: with SMTP id y135mr2472118ywd.117.1583269851243;
+ Tue, 03 Mar 2020 13:10:51 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200303202739.6nwq3ru2vf62j2ek@salvia>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25266.003
-X-TM-AS-Result: No-3.380100-8.000000-10
-X-TMASE-MatchedRID: eVEkOcJu0F4bF9xF7zzuNfZvT2zYoYOwC/ExpXrHizw/hcT28SJs8oEQ
-        k1c2BTxcoZjv0XwCLb2myB5m8hwFFbSi69HcXkHAelGHXZKLL2s5OMMyyCn/wdfzBtkSvJ4x7TP
-        +aufk0FiRKSoqryx7WDF8zadsvor+N2+T837spRTgzeXQR5e9DYx4V49TS24wWgyC8H9R1eGc/2
-        wcFt9opNUCyTFXDJXQr6YqKNQbbRklVaqTQ2WNXElbX5/aWn0XlhpPdwv1Z0ojRiu1AuxJTGmMO
-        g4NfcwtY9Y+hIZD5d35IJ21EQeYAwxCbiBA+b+8xVtvemNbkycIKj6WwO7KdWMunwKby/AXxytw
-        wT/CqKfGBd91xcMekWivLll7h+Hdv1l2Uvx6idpqHXONfTwSQsRB0bsfrpPInxMyeYT53RlHDNC
-        UBJ8bZuiwu/KrBDqd/zowpUXlRkb6jbNOQkcjF4VbhOvKPf0BYLV+5x8B8URHvVXSXSSIKIC162
-        r/MuKkVchOMekwJ2fUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.380100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25266.003
-X-MDID: 1583269623-PR-oWbbEMFN3
+References: <20200228105435.75298-1-lrizzo@google.com> <20200228110043.2771fddb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CA+FuTSfd80pZroxtqZDsTeEz4FaronC=pdgjeaBBfYqqi5HiyQ@mail.gmail.com>
+ <3c27d9c0-eb17-b20f-2d10-01f3bdf8c0d6@iogearbox.net> <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 3 Mar 2020 16:10:14 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSeL_psqzpB6hxSh6f1HnO_SrpED=71Y3HcyDweG2Y3sdg@mail.gmail.com>
+Message-ID: <CA+FuTSeL_psqzpB6hxSh6f1HnO_SrpED=71Y3HcyDweG2Y3sdg@mail.gmail.com>
+Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb linearization
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Luigi Rizzo <lrizzo@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        David Miller <davem@davemloft.net>, hawk@kernel.org,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/03/2020 20:27, Pablo Neira Ayuso wrote:
-> On Tue, Mar 03, 2020 at 06:55:54PM +0000, Edward Cree wrote:
->> On 02/03/2020 22:49, Jakub Kicinski wrote:
->>> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
->>>> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
->>>>> On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote:  
->>>>>> It looks to me that you want to restrict the API to tc for no good
->>>>>> _technical_ reason.  
->> The technical reason is that having two ways to do things where one would
->>  suffice means more code to be written, tested, debugged.  So if you want
->>  to add this you need to convince us that the existing way (a) doesn't
->>  meet your needs and (b) can't be extended to cover them.
-> One single unified way to express the hardware offload for _every_
-> supported frontend is the way to go. The flow_offload API provides a
-> framework to model all hardware offloads for each existing front-end.
+On Tue, Mar 3, 2020 at 3:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> I understand your motivation might be a specific front-end of your
-> choice, that's fair enough.
-I think we've misunderstood each other (90% my fault).
+> On Tue, 3 Mar 2020 20:46:55 +0100 Daniel Borkmann wrote:
+> > Thus, when the data/data_end test fails in generic XDP, the user can
+> > call e.g. bpf_xdp_pull_data(xdp, 64) to make sure we pull in as much as
+> > is needed w/o full linearization and once done the data/data_end can be
+> > repeated to proceed. Native XDP will leave xdp->rxq->skb as NULL, but
+> > later we could perhaps reuse the same bpf_xdp_pull_data() helper for
+> > native with skb-less backing. Thoughts?
 
-When you wrote "restrict the API to tc" I read that as "restrict growth of
- the API for flow offloading" (which I *do* want); I've now re-parsed and
- believe you meant it as "limit the API so that only tc may use it" (which
- is not my desire at all).
+Something akin to pskb_may_pull sounds like a great solution to me.
 
-Thus, when I spoke of "two ways to do things" I meant that _within_ the
- (unified) flow_offload API there should be a single approach to stats
- (the counters attached to actions), to which levels above and below it
- impedance-match as necessary (e.g. by merging netfilter count actions
- onto the following action as Jakub described), rather than bundling
- two interfaces (tc-style counters and separate counter actions) into
- one API (which would mean that drivers would all need to write code to
- handle both kinds, at no gain of expressiveness).
-I was *not* referring to tc and netfilter as the "two different ways", but
- I can see why you read it that way.
+Another approach would be a new xdp_action XDP_NEED_LINEARIZED that
+causes the program to be restarted after linearization. But that is both
+more expensive and less elegant.
 
-I hope that makes sense now.
--ed
+Instead of a sysctl or device option, is this an optimization that
+could be taken based on the program? Specifically, would XDP_FLAGS be
+a path to pass a SUPPORT_SG flag along with the program? I'm not
+entirely familiar with the XDP setup code, so this may be a totally
+off. But from a quick read it seems like generic_xdp_install could
+transfer such a flag to struct net_device.
+
+> I'm curious why we consider a xdpgeneric-only addition. Is attaching
+> a cls_bpf program noticeably slower than xdpgeneric?
+
+This just should not be xdp*generic* only, but allow us to use any XDP
+with large MTU sizes and without having to disable GRO. I'd still like a
+way to be able to drop or modify packets before GRO, or to signal that
+a type of packet should skip GRO.
