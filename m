@@ -2,122 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A76178240
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8A7178242
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730374AbgCCSQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:16:06 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:35642 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728356AbgCCSQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:16:06 -0500
-Received: by mail-pj1-f66.google.com with SMTP id s8so1711260pjq.0
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 10:16:05 -0800 (PST)
+        id S1730107AbgCCSRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:17:10 -0500
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:43554 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728955AbgCCSRK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:17:10 -0500
+Received: by mail-yw1-f67.google.com with SMTP id p69so4226158ywh.10
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 10:17:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ruArnbJCT8hQLQ9obT6z9WhWQuzOUk//DHi9CZRORvc=;
-        b=QO2HJvSwZJaX8uUsss5zt04eWnxN5aLLT9Hu5Oazg/2WsW35O9uiLOj12X3luBeNuN
-         APnFUirYvKkz7byZkeCNe6pQi0MuHcPgMOUm0MvBIhNqKk979ZQi0QzmQxE1jEqF5uFB
-         uAD5c/6F/VFX0dZ/JPGElouJf52jf0qGOhe2YaSlFoov1gGAiUK2opnMfPV0FpV7X13p
-         Bu9ah3OcejHiaU8whOABGSi8CuhY4u2Z8mlCLPue8JKO9RU6tlkBdX5MH6Qap/mFNw8d
-         TJupLL4b9r+H3jwhoWNCbRXBJdYyqAL9k6CI14kXNCxUfjvoOg2slk8FhqxNWuc2PVUw
-         Lang==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W7d2FkKiOSuxYiOBYuSdri+rDqfHaRowkWVRadHJ2nI=;
+        b=ldB4Koi9+5Mb6IuKZ7Duajjk4s9dQMM+g2OlLP4/a0M6w8ieYdZoeZxDbk8LMJbOv3
+         JvgLLvVjm4OkvsbURtLgqJ3Cmv5iOWQIiJqafLWiOoZ79rqeCWvmmZCE1JcjYkQLiKvF
+         Q8RieqXXLG7QBzwOnM+RbU74O6hGwkUbIKnHY3bpajuZwiwII4hQbF3O7L5IjZ0xwZ7V
+         S3ifuTzrT9H1ds7hgIDBm91BsTO3y0KVz7j0ODceZAxOHIcwzhLfP3xg5HHF6/kSHwE1
+         7M5p7uDECPx/L5FCEsS4L0d4HlnVoTXnhfWRo2WfMvyeAXz59vrxWRRlJ5D3O29JAHyP
+         /Zgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ruArnbJCT8hQLQ9obT6z9WhWQuzOUk//DHi9CZRORvc=;
-        b=hU9tbtWJ49LL6tNa+a/KsYCWQ72Hn9h5Ip3/Qg9K4bjm4oam9jl+np6hu26JbiW4AS
-         2i+luFx5q3Hm9fHa74te0dR9TjfZoaDGx3ZuRpeOe5757Dr5Vb9iqHdOx/5FSz3LG6Dz
-         KpanqqKeKQQ+v4YDnHYckEJUs5XK1oH1GjRQ2BqOYRjUHpdRbsMVnOS54Myb2GgRk0ma
-         R9ZQlOkLIEYksU18ixGod54L4Z9xGCtWp7Ai2k4haMd1c9+u4U76FswTMTP3f9oe8JoL
-         EbkN5RFY7r065aMtOw/IytbWw57BgDN5D0IGuKYu7/KqqJXkRE8xdH6KbJN2w9zSJ++o
-         o6IQ==
-X-Gm-Message-State: ANhLgQ2/1eXuHD6dFzMPaVV8+HPQrflScyCAXgw0aYprALU1JYIO1zw8
-        m2DsZeazAnPKSiXlFg2oo8xpZZCa
-X-Google-Smtp-Source: ADFU+vuSw7ovqGdcVfmN9X3nMGrrIDQXzH6rfnGRIKpIJGGzYTOrBwodzFOnk0cEZLXLilgCGSUs9Q==
-X-Received: by 2002:a17:902:7612:: with SMTP id k18mr1414394pll.247.1583259364989;
-        Tue, 03 Mar 2020 10:16:04 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::4:a0de])
-        by smtp.gmail.com with ESMTPSA id z3sm3401039pjr.46.2020.03.03.10.16.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 03 Mar 2020 10:16:04 -0800 (PST)
-Date:   Tue, 3 Mar 2020 10:16:01 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Ahern <dahern@digitalocean.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, mst@redhat.com,
-        toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH RFC v4 bpf-next 09/11] tun: Support xdp in the Tx path
- for xdp_frames
-Message-ID: <20200303181559.7xzzyvyy72od4tte@ast-mbp>
-References: <20200227032013.12385-1-dsahern@kernel.org>
- <20200227032013.12385-10-dsahern@kernel.org>
- <20200302183040.tgnrg6tkblrjwsqj@ast-mbp>
- <318c0a44-b540-1c7f-9667-c01da5a8ac73@digitalocean.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W7d2FkKiOSuxYiOBYuSdri+rDqfHaRowkWVRadHJ2nI=;
+        b=LgApY7lQQp3KgemZqg3+Si9wfPR2wbSHZNxoCzZgOUasRqL6uTq5uZr8cbSuWsqyxG
+         cVoDkBY0v1L5sitdZLXNzl9a/4NQQFz1N2LpT02qphsrUq4RCLRBFLKIujdcUaV4NoG4
+         DaRtM1jJEGVdbnn165wKGADyS22tf08Q2Fi1rPIDry/DiIGZm2ajUNnHBarjDJef0tf4
+         LlOna+4ccpT7zobAMicfMRmZ+nXMdhzrFNS57I9bhybOJ9VJc9HUFslt4Ku9R5GGqBUJ
+         UOGl/VI5HJDhRkv/ZbpM3LEiWOYYfoGW+FQNhC/qxBDvdCi/7qdtyrEwR0pZRa/rQtKB
+         L9KQ==
+X-Gm-Message-State: ANhLgQ0YHxzvs3Z1B7zL3Q9jXF0lsC2BW+PMjgaSOFidP5H4sgfJ+yvc
+        cWVk7IBDN3B0gy4Fcm7Cmaiqe2dAgebaiUp6D2XaiA==
+X-Google-Smtp-Source: ADFU+vvmkGtK3uRkRrWODfXEm8SX2wWgPo0kgi3UwJkEg2QLnXnJLTkHfzIFpyutY8IifxjJeURiFlUmRCuMNp0dYSs=
+X-Received: by 2002:a25:4f09:: with SMTP id d9mr5265832ybb.408.1583259428530;
+ Tue, 03 Mar 2020 10:17:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <318c0a44-b540-1c7f-9667-c01da5a8ac73@digitalocean.com>
-User-Agent: NeoMutt/20180223
+References: <74eacd0e-5519-3e39-50f3-1add05983ba3@gmail.com> <20200303175325.36937-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20200303175325.36937-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 3 Mar 2020 10:16:56 -0800
+Message-ID: <CANn89iJeTzzO_Z81yaWYg+8TAqWe75Y=A4u5aN6xMYMxQ1ME-w@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 2/4] tcp: bind(addr, 0) remove the
+ SO_REUSEADDR restriction when ephemeral ports are exhausted.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>, kuni1840@gmail.com,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        netdev <netdev@vger.kernel.org>, osa-contribution-log@amazon.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 02, 2020 at 09:27:08PM -0700, David Ahern wrote:
-> > 
-> > I'm worried that XDP_TX is a silent alias to XDP_PASS.
-> > What were the reasons to go with this approach?
-> 
-> As I stated in the cover letter:
-> 
-> "XDP_TX on Rx means send the packet out the device it arrived
-> on; given that, XDP_Tx for the Tx path is treated as equivalent to
-> XDP_PASS - ie., continue on the Tx path."
+On Tue, Mar 3, 2020 at 9:53 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> From:   Eric Dumazet <eric.dumazet@gmail.com>
+> Date:   Sun, 1 Mar 2020 20:49:49 -0800
+> > On 3/1/20 8:31 PM, Kuniyuki Iwashima wrote:
+> >> From:   Eric Dumazet <eric.dumazet@gmail.com>
+> >> Date:   Sun, 1 Mar 2020 19:42:25 -0800
+> >>> On 2/29/20 3:35 AM, Kuniyuki Iwashima wrote:
+> >>>> Commit aacd9289af8b82f5fb01bcdd53d0e3406d1333c7 ("tcp: bind() use stronger
+> >>>> condition for bind_conflict") introduced a restriction to forbid to bind
+> >>>> SO_REUSEADDR enabled sockets to the same (addr, port) tuple in order to
+> >>>> assign ports dispersedly so that we can connect to the same remote host.
+> >>>>
+> >>>> The change results in accelerating port depletion so that we fail to bind
+> >>>> sockets to the same local port even if we want to connect to the different
+> >>>> remote hosts.
+> >>>>
+> >>>> You can reproduce this issue by following instructions below.
+> >>>>   1. # sysctl -w net.ipv4.ip_local_port_range="32768 32768"
+> >>>>   2. set SO_REUSEADDR to two sockets.
+> >>>>   3. bind two sockets to (address, 0) and the latter fails.
+> >>>>
+> >>>> Therefore, when ephemeral ports are exhausted, bind(addr, 0) should
+> >>>> fallback to the legacy behaviour to enable the SO_REUSEADDR option and make
+> >>>> it possible to connect to different remote (addr, port) tuples.
+> >>>>
+> >>>> This patch allows us to bind SO_REUSEADDR enabled sockets to the same
+> >>>> (addr, port) only when all ephemeral ports are exhausted.
+> >>>>
+> >>>> The only notable thing is that if all sockets bound to the same port have
+> >>>> both SO_REUSEADDR and SO_REUSEPORT enabled, we can bind sockets to an
+> >>>> ephemeral port and also do listen().
+> >>>>
+> >>>> Fixes: aacd9289af8b ("tcp: bind() use stronger condition for bind_conflict")
+> >>>>
+> >>>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> >>>
+> >>> I am unsure about this, since this could double the time taken by this
+> >>> function, which is already very time consuming.
+> >>
+> >> This patch doubles the time on choosing a port only when all ephemeral ports
+> >> are exhausted, and this fallback behaviour can eventually decreases the time
+> >> on waiting for ports to be released. We cannot know when the ports are
+> >> released, so we may not be able to reuse ports without this patch. This
+> >> patch gives more chace and raises the probability to succeed to bind().
+> >>
+> >>> We added years ago IP_BIND_ADDRESS_NO_PORT socket option, so that the kernel
+> >>> has more choices at connect() time (instead of bind()) time to choose a source port.
+> >>>
+> >>> This considerably lowers time taken to find an optimal source port, since
+> >>> the kernel has full information (source address, destination address & port)
+> >>
+> >> I also think this option is usefull, but it does not allow us to reuse
+> >> ports that is reserved by bind(). This is because connect() can reuse ports
+> >> only when their tb->fastresue and tb->fastreuseport is -1. So we still
+> >> cannot fully utilize 4-tuples.
+> >
+> > The thing is : We do not want to allow active connections to use a source port
+> > that is used for passive connections.
+>
+> When calling bind(addr, 0) without these patches, this problem does not
+> occur. Certainly these patches could make it possible to do bind(addr, 0)
+> and listen() on the port which is already reserved by connect(). However,
+> whether these patches are applied or not, this problem can be occurred by
+> calling bind with specifying the port.
+>
+>
+> > Many supervisions use dump commands like "ss -t src :40000" to list all connections
+> > for a 'server' listening on port 40000,
+> > or use ethtool to direct all traffic for this port on a particular RSS queue.
+> >
+> > Some firewall setups also would need to be changed, since suddenly the port could
+> > be used by unrelated applications.
+>
+> I think these are on promise that the server application specifies the port
+> and we know which port is used in advance. Moreover the port nerver be used
+> by unrelated application suddenly. When connect() and listen() share the
+> port, listen() is always called after connect().
+>
+>
+> I would like to think about two sockets (sk1 and sk2) in three cases.
+>
+> 1st case: sk1 is in TCP_LISTEN.
+> In this case, sk2 cannot get the port and my patches does not change the behaviour.
 
-I saw that, but it states the behavior and doesn't answer my "why" question.
+Before being in TCP_LISTEN, it had to bind() on a sport.
 
-> > imo it's less error prone and extensible to warn on XDP_TX.
-> > Which will mean that both XDP_TX and XDP_REDICT are not supported for egress atm.
-> 
-> I personally don't care either way; I was going with the simplest
-> concept from a user perspective.
+Then _after_ reserving an exclusive sport, it can install whatever tc
+/ iptables rule to implement additional security.
 
-That's not a good sign when uapi is designed as "dont care either way".
+Before calling listen(), you do not want another socket being able to
+use the same sport.
 
-> > 
-> > Patches 8 and 9 cover tun only. I'd like to see egress hook to be implemented
-> > in at least one physical NIC. Pick any hw. Something that handles real frames.
-> > Adding this hook to virtual NIC is easy, but it doesn't demonstrate design
-> > trade-offs one would need to think through by adding egress hook to physical
-> > nic. That's why I think it's mandatory to have it as part of the patch set.
-> > 
-> > Patch 11 exposes egress to samples/bpf. It's nice, but without selftests it's
-> > no go. All new features must be exercised as part of selftests/bpf.
-> 
-> Patches that exercise the rtnetlink uapi are fairly easy to do on single
-> node; anything traffic related requires multiple nodes or namespace
-> level capabilities.  Unless I am missing something that is why all
-> current XDP tests ride on top of veth; veth changes are not part of this
-> set.
-> 
-> So to be clear you are saying that all new XDP features require patches
-> to a h/w nic, veth and whatever the author really cares about before new
-> features like this go in?
+There is no atomic bind()+listen()  or bind()+install_firewalling_rules+listen()
 
-I didn't say 'veth'. I really meant 'physical nic'.
-The patch set implies that XDP_EGRESS is a generic concept and applicable to
-physical and virtual netdevs. There is an implementation for tun. But reading
-between the lines I don't see that api was thought through on the physical nic.
-Hence I'm requesting to see the patches that implement it. When you'll try to
-add xdp_egress to a physical nic I suspect there will be challenges that will
-force changes to xdp_egress api and I want that to happen before uapi lands in
-the tree and becomes frozen.
+This is why after bind(), the kernel has to guarantee the chosen sport
+wont be used by other sockets.
+
+Breaking this rule has a lot of implications.
+
+>
+> 2nd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 40000) for sk2.
+> In this case, sk2 can get the port by specifying the port, so listen() of
+> sk2 can share the port with connect() of sk1. This is because reuseport_ok
+> is true, but my patches add changes only for when reuseport_ok is false.
+> Therefore, whether my patches are applied or not, this problem can happen.
+>
+> 3rd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 0) for sk2.
+> In this case, sk2 come to be able to get the port with my patches if both
+> sockets have SO_REUSEADDR enabled.
+> So, listen() also can share the port with connect().
+>
+> However, I do not think this can be problem for two reasons:
+>   - the same problem already can happen in 2nd case, and the possibility of
+>     this case is lower than 2nd case because 3rd case is when the ports are exhausted.
+>   - I am unsure that there is supervisions that monitor the server
+>     applications which randomly select the ephemeral ports to listen on.
+>
+> Although this may be a stupid question, is there famous server software
+> that do bind(addr, 0) and listen() ?
+
+I do not know, there are thousands of solutions using TCP, I can not
+make sure they won't break.
+It would take years to verify this.
+
+>
+>
+> Hence, I think these patches are safe.
+
+They are not.
