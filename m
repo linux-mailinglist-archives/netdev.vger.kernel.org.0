@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8BEE176C8A
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF87176B1A
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:48:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728390AbgCCCsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:48:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43956 "EHLO mail.kernel.org"
+        id S1728412AbgCCCs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:48:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44144 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728381AbgCCCsT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:48:19 -0500
+        id S1728397AbgCCCsY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:48:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E163824680;
-        Tue,  3 Mar 2020 02:48:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC24F246D6;
+        Tue,  3 Mar 2020 02:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203698;
-        bh=VwhYKLy1NhWaPZdxdXJS0pwQhJAtWfm9/KXs9tu/rec=;
+        s=default; t=1583203703;
+        bh=xqt4H5Ll6dhRS4CH7JG/NGQN2sDa4HiwBAcvJr7uI2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wyci/qHSKzipQnQZGEfbmeMyRN3UWYrB9dtTNc2CjeZAozWmMD3luEWHaDGn/XpWx
-         Rdj3MZKAHcwazUQDrBUMEIwtLMgHIs5V/01hypiZ3Dh6BHCNkY4l4ewBJ9ZA2KmpzB
-         gCVcf0UrubynrfoWwQbrLJrqg38QQd8J5rUGVrqU=
+        b=YAPLcXOw99TrMRdv4OtfIGcew+r3tO+GVt3VbhUyf5zAZisrmUdnah7Mrl2wPAr0G
+         Jz7ttAqTyD0C2ysezYAxEHBlfFb+L7HOfYB+6s2PnTqBES+Z2Cw9P0WP0rgB/q0Ceh
+         TAv6NhM6SwayIdHnmt9abP8PkasX0Yx3yU4vuNSA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Mathieu Malaterre <malat@debian.org>,
-        Andrew Lunn <andrew@lunn.ch>,
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 31/58] net: ethernet: dm9000: Handle -EPROBE_DEFER in dm9000_parse_dt()
-Date:   Mon,  2 Mar 2020 21:47:13 -0500
-Message-Id: <20200303024740.9511-31-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 35/58] net: mscc: fix in frame extraction
+Date:   Mon,  2 Mar 2020 21:47:17 -0500
+Message-Id: <20200303024740.9511-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024740.9511-1-sashal@kernel.org>
 References: <20200303024740.9511-1-sashal@kernel.org>
@@ -46,36 +44,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit 9a6a0dea16177ccaecc116f560232e63bec115f1 ]
+[ Upstream commit a81541041ceb55bcec9a8bb8ad3482263f0a205a ]
 
-The call to of_get_mac_address() can return -EPROBE_DEFER, for instance
-when the MAC address is read from a NVMEM driver that did not probe yet.
+Each extracted frame on Ocelot has an IFH. The frame and IFH are extracted
+by reading chuncks of 4 bytes from a register.
 
-Cc: H. Nikolaus Schaller <hns@goldelico.com>
-Cc: Mathieu Malaterre <malat@debian.org>
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+In case the IFH and frames were read corretly it would try to read the next
+frame. In case there are no more frames in the queue, it checks if there
+were any previous errors and in that case clear the queue. But this check
+will always succeed also when there are no errors. Because when extracting
+the IFH the error is checked against 4(number of bytes read) and then the
+error is set only if the extraction of the frame failed. So in a happy case
+where there are no errors the err variable is still 4. So it could be
+a case where after the check that there are no more frames in the queue, a
+frame will arrive in the queue but because the error is not reseted, it
+would try to flush the queue. So the frame will be lost.
+
+The fix consist in resetting the error after reading the IFH.
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/davicom/dm9000.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mscc/ocelot_board.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
-index cce90b5925d93..70060c51854fd 100644
---- a/drivers/net/ethernet/davicom/dm9000.c
-+++ b/drivers/net/ethernet/davicom/dm9000.c
-@@ -1405,6 +1405,8 @@ static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
- 	mac_addr = of_get_mac_address(np);
- 	if (!IS_ERR(mac_addr))
- 		ether_addr_copy(pdata->dev_addr, mac_addr);
-+	else if (PTR_ERR(mac_addr) == -EPROBE_DEFER)
-+		return ERR_CAST(mac_addr);
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index aac115136720f..3371562325013 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -112,6 +112,14 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
+ 		if (err != 4)
+ 			break;
  
- 	return pdata;
- }
++		/* At this point the IFH was read correctly, so it is safe to
++		 * presume that there is no error. The err needs to be reset
++		 * otherwise a frame could come in CPU queue between the while
++		 * condition and the check for error later on. And in that case
++		 * the new frame is just removed and not processed.
++		 */
++		err = 0;
++
+ 		ocelot_parse_ifh(ifh, &info);
+ 
+ 		dev = ocelot->ports[info.port]->dev;
 -- 
 2.20.1
 
