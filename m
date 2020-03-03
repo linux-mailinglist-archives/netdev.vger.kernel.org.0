@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53478177FC1
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 19:58:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0995A177FDC
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 19:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732214AbgCCRwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:52:44 -0500
-Received: from mail-pf1-f176.google.com ([209.85.210.176]:44886 "EHLO
-        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730142AbgCCRwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:52:43 -0500
-Received: by mail-pf1-f176.google.com with SMTP id y26so441250pfn.11;
-        Tue, 03 Mar 2020 09:52:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=MzE0w5ZgUnQDQhue+zqO2Bzi6fljQ8hIr+fH2PP/wGc=;
-        b=jILafzsqC/V0g5dtcuf/Xa3kbLY2FofgS0c1DikXbePcEH+wKUNX3/GqSm2OzpmW/3
-         yh2QzkFaYFMU7OEBQYl7X19vRhCln4h5DPpG9cTTfCz+1ZEhwieERjOhrVe7GXlxXqrd
-         wvUOGnnG8QknzsNp7nrwbr8Pvjf1G+AVEb4MnM8N0XGObTL9JpQZok1IrSofAu8P/gVI
-         U7TPp/D2OUa1X0z0GDNLgEsWb6N7JIW2m7bLWHGiQdMxc20fsiQEC6sd/3/i4kflzwyC
-         jdpH3JlhilGWNepAUWzpU7u2pl5N6aaflSBULT2bebA2rpvlA3WacmUnTm3Jt8tA2bco
-         vSww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=MzE0w5ZgUnQDQhue+zqO2Bzi6fljQ8hIr+fH2PP/wGc=;
-        b=HYazkNgY2h+spM5diuvG6qPQimeLIu8VMkruzeWzaMrJSbt2rESVbPdGfClh3Py2rf
-         ZqDCzk2zhXBrEdIRAjTir7iYJoEFyiXXUrcbV5Xuk9S2/tTCLg73e/nIynrvv59698K9
-         MErUb4tLf2d9B89fUCFMg3aLbybTm9IAdY1+eA8nmn1aDDBNRc887ywDiJN9za0x5VOO
-         Lp06BiCRkTFrGvg5PUE9DxtCRAMeAEU/CUjShdx2vwZLfa40gv1ulQzyGcK970tomlEN
-         T0Sdbtfqb5+FIdFWpykDmLLGyDgoq6Hxionhon8mvZSKs0AgPl0LJrtpkOh/tTSWCgSm
-         BF/w==
-X-Gm-Message-State: ANhLgQ3aJEa4792BjYeM1WHZxYCm3AYTlxJMTSeoeTbbIeunSqZvPR9v
-        8iED9egaFL7bi+nqmF7omqQ=
-X-Google-Smtp-Source: ADFU+vvVYIy44uw6ULK2C86UEzoSOMhwJqP9jcOslCjVbnNrE6OfgP2cPFR7+L2P1rMmLxfjkNLpiA==
-X-Received: by 2002:aa7:8b17:: with SMTP id f23mr5288473pfd.197.1583257962058;
-        Tue, 03 Mar 2020 09:52:42 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m20sm3315891pff.172.2020.03.03.09.52.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 09:52:41 -0800 (PST)
-Date:   Tue, 03 Mar 2020 09:52:34 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <5e5e996236c01_60e72b06ba14c5bccf@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200228115344.17742-4-lmb@cloudflare.com>
-References: <20200228115344.17742-1-lmb@cloudflare.com>
- <20200228115344.17742-4-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf-next v2 3/9] bpf: sockmap: move generic sockmap hooks
- from BPF TCP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1732328AbgCCRxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:53:17 -0500
+Received: from mga02.intel.com ([134.134.136.20]:30618 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731538AbgCCRxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 12:53:16 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 09:53:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,511,1574150400"; 
+   d="scan'208";a="229006617"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
+  by orsmga007.jf.intel.com with ESMTP; 03 Mar 2020 09:53:16 -0800
+Subject: Re: [RFC PATCH v2 04/22] ice: enable initial devlink support
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+ <20200214232223.3442651-5-jacob.e.keller@intel.com>
+ <20200302163056.GB2168@nanopsycho>
+ <12a9a9bb-12ca-7cfa-43f1-ade9d13b9651@intel.com>
+ <20200303134704.GM2178@nanopsycho>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <23a42719-5bb2-4a11-c082-290205aff8c1@intel.com>
+Date:   Tue, 3 Mar 2020 09:53:16 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <20200303134704.GM2178@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer wrote:
-> The close, unhash and clone handlers from TCP sockmap are actually generic,
-> and can be reused by UDP sockmap. Move the helpers into the sockmap code
-> base and expose them. This requires tcp_bpf_(re)init and tcp_bpf_clone to
-> be conditional on BPF_STREAM_PARSER.
+On 3/3/2020 5:47 AM, Jiri Pirko wrote:
+> Mon, Mar 02, 2020 at 08:29:44PM CET, jacob.e.keller@intel.com wrote:
+>>
+>>
+>> On 3/2/2020 8:30 AM, Jiri Pirko wrote:
+>>> Sat, Feb 15, 2020 at 12:22:03AM CET, jacob.e.keller@intel.com wrote:
+>>>
+>>> [...]
+>>>
+>>>> +int ice_devlink_create_port(struct ice_pf *pf)
+>>>> +{
+>>>> +	struct devlink *devlink = priv_to_devlink(pf);
+>>>> +	struct ice_vsi *vsi = ice_get_main_vsi(pf);
+>>>> +	struct device *dev = ice_pf_to_dev(pf);
+>>>> +	int err;
+>>>> +
+>>>> +	if (!vsi) {
+>>>> +		dev_err(dev, "%s: unable to find main VSI\n", __func__);
+>>>> +		return -EIO;
+>>>> +	}
+>>>> +
+>>>> +	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
+>>>> +			       pf->hw.pf_id, false, 0, NULL, 0);
+>>>> +	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
+>>>> +	if (err) {
+>>>> +		dev_err(dev, "devlink_port_register failed: %d\n", err);
+>>>> +		return err;
+>>>> +	}
+>>>
+>>> You need to register_netdev here. Otherwise you'll get inconsistent udev
+>>> naming.
+>>>
+>>
+>> The netdev is registered in other portion of the code, and should
+>> already be registered by the time we call ice_devlink_create_port. This
+>> check is mostly here to prevent a NULL pointer if the VSI somehow
+>> doesn't have a netdev associated with it.
 > 
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->  include/linux/bpf.h   |  4 ++-
->  include/linux/skmsg.h | 28 ----------------
->  include/net/tcp.h     | 15 +++++----
->  net/core/sock_map.c   | 77 +++++++++++++++++++++++++++++++++++++++++--
->  net/ipv4/tcp_bpf.c    | 59 ++++-----------------------------
->  5 files changed, 92 insertions(+), 91 deletions(-)
+> My point is, the correct order is:
+> devlink_register()
+> devlink_port_attrs_set()
+> devlink_port_register()
+> register_netdev()
+> devlink_port_type_eth_set()
+> 
 
-No changes just moving code around it seems.
+Oh. Hmm. Ok, I'll need to move this around. Will fix.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Thanks,
+Jake
