@@ -2,109 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE41177213
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 10:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4193177223
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 10:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727998AbgCCJLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 04:11:15 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40363 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727789AbgCCJLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 04:11:14 -0500
-Received: by mail-qk1-f194.google.com with SMTP id m2so2643559qka.7
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 01:11:13 -0800 (PST)
+        id S1728044AbgCCJPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 04:15:25 -0500
+Received: from mail-ua1-f67.google.com ([209.85.222.67]:35496 "EHLO
+        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727805AbgCCJPZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 04:15:25 -0500
+Received: by mail-ua1-f67.google.com with SMTP id y23so856216ual.2
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 01:15:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=zp5B66hwroB+O+qsn4WAg4Zqd4xo1ZX2ZLvZWkCZxhw=;
-        b=gy8Ky95QIh+BdOhQpqJFEDGhbpmnqndckIk9cWMHE3TB/InvTJkXFLdBaGtKi5CAHN
-         6qvIEstNkTrdWV9sBCbiYAAyM5eFGTSD1WfibfVJ/4Z8P9OeplWafkK8P4wBKpSCG4G5
-         8Upyi9bpZD5k7DqaWbHJ693R0FxHVVCsYabSQ6Q8AqFt2nsxJIamKmBfXub615aWdwvj
-         MlU2b50EZkRM94QW6bmWygRyhYlk/ai9KNy9OU5SJmId33FdCqoxphVpMhNdkDBBi6Rr
-         VV0rzbAVUP7OmjHu9ZySqRKJHzhbEIfgiWKquYRP6mr7TfU5MfO7Wi2bBrMinlAGo+QL
-         6p9g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LneAT+FmOx1Es58srzrFn5NXWCoaZSg9GZ1bHCf2Y68=;
+        b=dVfO7CkV6SqoYajMXh5yVSuj7JlukzOHi28q8fViXQ6B4SxXj+W+b8Om/hWvo7mc2v
+         DF+j6PfqZIi2li/TLo6uczR99yPOMhdyh+cOvLKVwjJvvOvnNMAaryH7IUeSOvrzX+tt
+         5FkndW3yP8E7CDjEpW2k+ehe31M0NDz4oP2IM+1aLygDQxPgWKjysighBP4WqrnQ2GWJ
+         aVUrnpaS4CpE2wq3XjKZ4CcZGnLfT0Xs+w/RX4uXBiZGZKOOUrplktcF8YWBMUdrJ6V0
+         ujitsCj2386gFDc04bJcz/WHwmKLAiJ43xuj/twO+vuOF3Kf2WODIs04Im/OxUWssFpN
+         37kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=zp5B66hwroB+O+qsn4WAg4Zqd4xo1ZX2ZLvZWkCZxhw=;
-        b=ouTLl1s8QQKHaF44cjm2vwMSY70o6i9LBirUXYiX65fWVByAOfiYWWPb6yFe6PlPXY
-         6wavKLMlaoi8fCZvA13ZBxrE16Ikouswdd3NVhP95EXOBmwSA3M1h/eN4c9mQOuL/s/w
-         x33jnTcZXBqIPxW1kZtpmElhHBxZwdYDPJYPDdr/cqoJIPfLS1yqkgAMheTTJ9gcXqt3
-         L1WMU95jqBRrEXI0+fRcyjRP1yzEvxNBjZorjuKSfD+7SW+t5LBhzB5VPQrJ5lV3npJk
-         HPZgok+PMGgSbZFmiyP2ysPpcg+c/gxVTpSti1aM8C+Cei30uMUdYcfyTy/vPGBprV06
-         594g==
-X-Gm-Message-State: ANhLgQ2nspeUxaj2pJTNMXYzMJxvpl42cY2ipGVXBpmHYcyZ1FoXAgR1
-        M4p2jpTJfCUndci3X0jg9dE=
-X-Google-Smtp-Source: ADFU+vuJ1PgnrjYpb/nWPTgFTzhgqBvbCQod2HJK79h9xGHOOFlp3j/H+n+d4erxZMLAs2f32IHR7g==
-X-Received: by 2002:ae9:c10c:: with SMTP id z12mr3055055qki.56.1583226672907;
-        Tue, 03 Mar 2020 01:11:12 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q3sm614841qtf.67.2020.03.03.01.11.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 01:11:12 -0800 (PST)
-Date:   Tue, 3 Mar 2020 17:11:05 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Jo-Philipp Wich <jo@mein.io>
-Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
- leak)
-Message-ID: <20200303091105.GW2159@dhcp-12-139.nay.redhat.com>
-References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
- <b9d30209-7cc2-4515-f58a-f0dfe92fa0b6@gmail.com>
- <20200303090035.GV2159@dhcp-12-139.nay.redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LneAT+FmOx1Es58srzrFn5NXWCoaZSg9GZ1bHCf2Y68=;
+        b=blMj1r9uAJUMV98yJosNMYEH98l5UT6sOsY+iseqoWvzl97R8HGl2fxxaYvJ6xQlY8
+         qiv+/lANw6WKDtIfPHJ5xW4G/DGndTQ9GpXmBOsZQP1r8uhnEHpTq0JYxFAftLuRWkOQ
+         ZfOWGPXWKRB91dc5FE0n9V7RpeHevgavkA9BWIbHqS5vP4PEu69f4ovU1AP2i+U+DH9K
+         t1+JuW6QlYz6t+qTM77RVl5BkkKWSljqUnU9Z7g2I1OTYiOfjQK90Es1inIgvZXBmUez
+         nZMOkyoc5Op4en3XcMyA0FFBKNUyg72h0wKcDjq7wKR1gj++Cd6RQ99u6oMgsZEu2Vp+
+         hR1g==
+X-Gm-Message-State: ANhLgQ1kYSNV2xhBcHQwCfRiG22NgolyLytHEy74BOzCpl2e2Y22pmQZ
+        RRFrIjv6/KQRWk7wOyMOuVpzjUbsQ8LIyuH+0WDAABfi
+X-Google-Smtp-Source: ADFU+vs2fA1iMfT5C/BG0ldGWe2b6eA6gjAegHE8VRGMdMnkCgh30WfTBtzVNv+m3F9/S3UKyDvYCjQOx+X63rJLoDo=
+X-Received: by 2002:ab0:24d2:: with SMTP id k18mr2310450uan.104.1583226923544;
+ Tue, 03 Mar 2020 01:15:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200303090035.GV2159@dhcp-12-139.nay.redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com> <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
+In-Reply-To: <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
+From:   Yadu Kishore <kyk.segfault@gmail.com>
+Date:   Tue, 3 Mar 2020 14:45:12 +0530
+Message-ID: <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+Subject: Re: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+To:     David Laight <David.Laight@aculab.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 05:00:35PM +0800, Hangbin Liu wrote:
-> On Tue, Mar 03, 2020 at 07:16:44AM +0100, Rafał Miłecki wrote:
-> > It appears that every interface up & down sequence results in adding a
-> > new ff02::2 entry to the idev->mc_tomb. Doing that over and over will
-> > obviously result in running out of memory at some point. That list isn't
-> > cleared until removing an interface.
-> 
-> Thanks Rafał, this info is very useful. When we set interface up, we will
-> call ipv6_add_dev() and add in6addr_linklocal_allrouters to the mcast list.
-> But we only remove it in ipv6_mc_destroy_dev(). This make the link down save
-> the list and link up add a new one.
-> 
-> Maybe we should remove the list in ipv6_mc_down(). like:
+Hi David,
 
-Or maybe we just remove the list in addrconf_ifdown(), as opposite of
-ipv6_add_dev(), which looks more clear.
+Thanks for the response.
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 164c71c54b5c..4369087b8b74 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3841,6 +3841,12 @@ static int addrconf_ifdown(struct net_device *dev, int how)
-                ipv6_ac_destroy_dev(idev);
-                ipv6_mc_destroy_dev(idev);
-        } else {
-+               ipv6_dev_mc_dec(dev, &in6addr_interfacelocal_allnodes);
-+               ipv6_dev_mc_dec(dev, &in6addr_linklocal_allnodes);
-+
-+               if (idev->cnf.forwarding && (dev->flags & IFF_MULTICAST))
-+                       ipv6_dev_mc_dec(dev, &in6addr_linklocal_allrouters);
-+
-                ipv6_mc_down(idev);
-        }
+> I was writing a reply about how 'horrid' the asm in csum_partial_copy_generic is.
+> (My guess is no better than 3 clocks for 16 bytes - and a 'rep movs' copy
+> could be a lot faster.)
+> However the big difference in the times for do_csum().
+>
+> The fastest loop I can find for a non-copying checksum is:
+> Which is twice as fast as the one in csum-partial_64.c for
+> most cpu types (especially pre-Haswell ones).
 
-Thanks
-Hangbin
+The perf data I presented was collected on an arm64 platform (hikey960) where
+the do_csum implementation that is called is not in assembly but in C
+(lib/checksum.c)
+
+Thanks,
+Yadu Kishore
+
+On Mon, Mar 2, 2020 at 8:49 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Yadu Kishore
+> > Sent: 02 March 2020 08:43
+> >
+> > On Mon, Mar 2, 2020 at 12:22 PM Yadu Kishore <kyk.segfault@gmail.com> wrote:
+> > >
+> > > > > Can you contrast this against a run with your changes? The thought is
+> > > > > that the majority of this cost is due to the memory loads and stores, not
+> > > > > the arithmetic ops to compute the checksum. When enabling checksum
+> > > > > offload, the same stalls will occur, but will simply be attributed to
+> > > > > memcpy instead of to do_csum.
+> > >
+> > > > Agreed.
+> > >
+> > > Below is the data from perf with and without the patch for the same
+> > > TCP Tx iperf run: (network driver has NETIF_F_HW_CSUM enabled)
+> > >
+> > A small correction to the data I sent earlier:
+> >
+> > Without patch :-
+> >  ============
+> > [Function = %cpu cycles]
+> > skb_mac_gso_segment = 0.05
+> > inet_gso_segment = 0.26
+> > tcp4_gso_segment = 0.05
+> > tcp_gso_segment = 0.17
+> > skb_segment = 0.55
+> > skb_copy_and_csum_bits = 0.60
+> > do_csum = 7.43
+> > memcpy = 3.81
+> > __alloc_skb = 0.93
+> > ==================
+> > SUM = 13.85
+> >
+> > With patch :-
+> > ============
+> > [Function = %cpu cycles]
+> > skb_mac_gso_segment = 0.05
+> > inet_gso_segment = 0.34
+> > tcp4_gso_segment = 0.06
+> > tcp_gso_segment = 0.26
+> > skb_segment = 0.55
+> > ** skb_copy_bits = 0.62 **  <-- corrected
+> > do_csum = 0.04
+> > memcpy = 4.29
+> > __alloc_skb = 0.73
+> > ==================
+> > ** SUM = 6.94 ** <-- corrected
+>
+> I was writing a reply about how 'horrid' the asm in csum_partial_copy_generic is.
+> (My guess is no better than 3 clocks for 16 bytes - and a 'rep movs' copy
+> could be a lot faster.)
+> However the big difference in the times for do_csum().
+>
+> The fastest loop I can find for a non-copying checksum is:
+> +       /*
+> +        * Align the byte count to a multiple of 16 then
+> +        * add 64 bit words to alternating registers.
+> +        * Finally reduce to 64 bits.
+> +        */
+> +       asm(    "       bt    $4, %[len]\n"
+> +               "       jnc   10f\n"
+> +               "       add   (%[buff], %[len]), %[sum_0]\n"
+> +               "       adc   8(%[buff], %[len]), %[sum_1]\n"
+> +               "       lea   16(%[len]), %[len]\n"
+> +               "10:    jecxz 20f\n"
+> +               "       adc   (%[buff], %[len]), %[sum_0]\n"
+> +               "       adc   8(%[buff], %[len]), %[sum_1]\n"
+> +               "       lea   32(%[len]), %[len_tmp]\n"
+> +               "       adc   16(%[buff], %[len]), %[sum_0]\n"
+> +               "       adc   24(%[buff], %[len]), %[sum_1]\n"
+> +               "       mov   %[len_tmp], %[len]\n"
+> +               "       jmp   10b\n"
+> +               "20:    adc   %[sum_0], %[sum]\n"
+> +               "       adc   %[sum_1], %[sum]\n"
+> +               "       adc   $0, %[sum]\n"
+> +           : [sum] "+&r" (sum), [sum_0] "+&r" (sum_0), [sum_1] "+&r" (sum_1),
+> +               [len] "+&c" (len), [len_tmp] "=&r" (len_tmp)
+> +           : [buff] "r" (buff)
+> +           : "memory" );
+>
+> (I need to resubmit that patch)
+>
+> Which is twice as fast as the one in csum-partial_64.c for
+> most cpu types (especially pre-Haswell ones).
+>
+> IIRC that does 7 bytes/clock on my ivy bridge and
+> one 8 bytes/clock on Haswell.
+> Nothing prior to sandy bridge can beat adding 32bit words
+> to a 64bit register!
+> The faffing with 'len_tmp' made a marginal difference.
+>
+> You can't go faster than 1 read/clock without using ad[oc]x.
+> The loop above does work (both carry and overflow are preserved)
+> but it needs further unrolling (and more edge code) and only
+> runs on a few cpu.
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
