@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99673177A59
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:25:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D3A177A6D
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:29:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729907AbgCCPYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:24:25 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:44776 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729898AbgCCPYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:24:25 -0500
-Received: from [5.158.153.55] (helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1j99Oy-0000QR-QO; Tue, 03 Mar 2020 16:24:08 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 432AF104098; Tue,  3 Mar 2020 16:24:03 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     "Christopher S. Hall" <christopher.s.hall@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        "maintainer\:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
-        jacob.e.keller@intel.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sean V Kelley <sean.v.kelley@intel.com>
-Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO Driver with PHC interface changes to support additional H/W Features
-In-Reply-To: <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com> <87eevf4hnq.fsf@nanos.tec.linutronix.de> <20200224224059.GC1508@skl-build> <87mu95ne3q.fsf@nanos.tec.linutronix.de> <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
-Date:   Tue, 03 Mar 2020 16:24:03 +0100
-Message-ID: <87wo81cvho.fsf@nanos.tec.linutronix.de>
+        id S1729872AbgCCP3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:29:42 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:45235 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728918AbgCCP3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:29:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1583249381; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=DGm1tyLTMS++kedpz+qyweZ6Iu5ZVMUBPPMKBo/asTk=;
+ b=c9BFRZS0k4ZknSfvlgu20oHGUDYUWbMJ47BXC8HbCJE8C9jyrAXaO8SanLF3jceZH/hZysgJ
+ 6vmIXDghLkwANibjHBYkZxk0nCy61zoHagihUSKVGiyvZDXSWidCNFlQ1vN0nlK4g9qZuohF
+ 1EFWmjWHHY11try0BRAVDipWY/Q=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e5e77d6.7fae349aa0a0-smtp-out-n01;
+ Tue, 03 Mar 2020 15:29:26 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4C552C4479C; Tue,  3 Mar 2020 15:29:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A491FC43383;
+        Tue,  3 Mar 2020 15:29:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A491FC43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] iwlwifi: pcie: restore support for Killer Qu C0 NICs
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191224051639.6904-1-jan.steffens@gmail.com>
+References: <20191224051639.6904-1-jan.steffens@gmail.com>
+To:     "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200303152925.4C552C4479C@smtp.codeaurora.org>
+Date:   Tue,  3 Mar 2020 15:29:25 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linus Walleij <linus.walleij@linaro.org> writes:
-> On Thu, Feb 27, 2020 at 12:06 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->> "Christopher S. Hall" <christopher.s.hall@intel.com> writes:
-> IIO has a config file in sysfs that lets them select the source of the
-> timestamp like so (drivers/iio/industrialio-core.c):
->
-> s64 iio_get_time_ns(const struct iio_dev *indio_dev)
-> {
->         struct timespec64 tp;
->
->         switch (iio_device_get_clock(indio_dev)) {
->         case CLOCK_REALTIME:
->                 return ktime_get_real_ns();
->         case CLOCK_MONOTONIC:
->                 return ktime_get_ns();
->         case CLOCK_MONOTONIC_RAW:
->                 return ktime_get_raw_ns();
->         case CLOCK_REALTIME_COARSE:
->                 return ktime_to_ns(ktime_get_coarse_real());
->         case CLOCK_MONOTONIC_COARSE:
->                 ktime_get_coarse_ts64(&tp);
->                 return timespec64_to_ns(&tp);
->         case CLOCK_BOOTTIME:
->                 return ktime_get_boottime_ns();
->         case CLOCK_TAI:
->                 return ktime_get_clocktai_ns();
->         default:
->                 BUG();
->         }
-> }
+"Jan Alexander Steffens (heftig)" <jan.steffens@gmail.com> wrote:
 
-That's a nice example of overengineering :)
+> Commit 809805a820c6 ("iwlwifi: pcie: move some cfg mangling from
+> trans_pcie_alloc to probe") refactored the cfg mangling. Unfortunately,
+> in this process the lines which picked the right cfg for Killer Qu C0
+> NICs after C0 detection were lost. These lines were added by commit
+> b9500577d361 ("iwlwifi: pcie: handle switching killer Qu B0 NICs to
+> C0").
+> 
+> I suspect this is more of the "merge damage" which commit 7cded5658329
+> ("iwlwifi: pcie: fix merge damage on making QnJ exclusive") talks about.
+> 
+> Restore the missing lines so the driver loads the right firmware for
+> these NICs.
+> 
+> Fixes: 809805a820c6 ("iwlwifi: pcie: move some cfg mangling from trans_pcie_alloc to probe")
+> Signed-off-by: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
 
-> After discussion with Arnd we concluded the only timestamp that
-> makes sense is ktime_get_ns(). So in GPIO we just use that, all the
-> userspace I can think of certainly prefers monotonic time.
-> (If tglx does not agree with that I stand corrected to whatever
-> he says, I suppose.)
+As Luca said, this fails to apply to wireless-drivers. Please rebase and
+resend as v2.
 
-In general, CLOCK_MONOTONIC is what makes most sense.
+Recorded preimage for 'drivers/net/wireless/intel/iwlwifi/pcie/drv.c'
+error: Failed to merge in the changes.
+Applying: iwlwifi: pcie: restore support for Killer Qu C0 NICs
+Using index info to reconstruct a base tree...
+M	drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+Falling back to patching base and 3-way merge...
+Auto-merging drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+CONFLICT (content): Merge conflict in drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+Patch failed at 0001 iwlwifi: pcie: restore support for Killer Qu C0 NICs
+The copy of the patch that failed is found in: .git/rebase-apply/patch
 
-The only other interesting clock which makes sense from an application
-POV is CLOCK_TAI which is becoming more popular in terms of network wide
-time coordination and TSN.
+Patch set to Changes Requested.
 
-CLOCK_REALTIME is a pain to deal with due to leap seconds, daylight
-savings etc.
+-- 
+https://patchwork.kernel.org/patch/11309095/
 
-> Anyway in GPIO we could also make it configurable for users who
-> know what they are doing.
->
-> HW timestamps would be something more elaborate and
-> nice CLOCK_HW_SPECIFIC or so. Some of the IIO sensors also
-> have that, we just don't expose it as of now.
-
-HW timestamps are just more accurate than the software timestamps which
-we have now and from a portability and interface POV they should just be
-converted converted / mapped to clock MONOTONIC or clock TAI. So your
-existing interface (maybe extended to TAI in the future) is just
-working, but more accurate.
-
-Exposing the HW timestamp itself based on some random and potentially
-unknown clock might still be useful for some specialized applications,
-but that want's to be through a distinct interface so there is no chance
-to confuse it with something generally useful.
-
-Thanks,
-
-        tglx
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
