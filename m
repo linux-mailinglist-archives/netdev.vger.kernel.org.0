@@ -2,106 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55136176A54
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:02:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5C9176AA4
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbgCCCCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:02:03 -0500
-Received: from mga04.intel.com ([192.55.52.120]:22013 "EHLO mga04.intel.com"
+        id S1727073AbgCCCZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:25:08 -0500
+Received: from mga14.intel.com ([192.55.52.115]:54186 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726773AbgCCCCD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:02:03 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1727018AbgCCCZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:25:08 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 18:02:03 -0800
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 18:25:07 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,509,1574150400"; 
-   d="scan'208";a="274004683"
-Received: from wtczc53028gn.jf.intel.com (HELO skl-build) ([10.54.87.17])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Mar 2020 18:02:02 -0800
-Date:   Mon, 2 Mar 2020 18:01:48 -0800
-From:   "Christopher S. Hall" <christopher.s.hall@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
-        x86@kernel.org, jacob.e.keller@intel.com, davem@davemloft.net,
-        sean.v.kelley@intel.com
-Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
- Driver with PHC interface changes to support additional H/W Features
-Message-ID: <20200303020148.GB15531@skl-build>
-References: <20191211214852.26317-1-christopher.s.hall@intel.com>
- <20200203040838.GA5851@localhost>
- <20200225233707.GA32079@skl-build>
- <20200226024707.GA10271@localhost>
+   d="scan'208";a="233605682"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
+  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 18:25:07 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH v2 0/6] PCI: Implement function to read Device Serial Number
+Date:   Mon,  2 Mar 2020 18:24:59 -0800
+Message-Id: <20200303022506.1792776-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
+In-Reply-To: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
+References: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200226024707.GA10271@localhost>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
+Several drivers read the Device Serial Number from the PCIe extended
+configuration space. Each of these drivers implements a similar approach to
+finding the position and then extracting the 8 bytes of data.
 
-On Tue, Feb 25, 2020 at 06:47:07PM -0800, Richard Cochran wrote:
-> On Tue, Feb 25, 2020 at 03:37:07PM -0800, Christopher S. Hall wrote:
-> > On Sun, Feb 02, 2020 at 08:08:38PM -0800, Richard Cochran wrote:
-> > > The TGPIO input clock, the ART, is a free running counter, but you
-> > > want to support frequency adjustments.  Use a timecounter cyclecounter
-> > > pair.
-> > 
-> > I'm concerned about the complexity that the timecounter adds to
-> > the driver. Specifically, the complexity of dealing with any rate mismatches
-> > between the timecounter and the periodic output signal. The phase
-> > error between the output and timecounter needs to be zero.
-> 
-> If I understood correctly, the device's outputs are generated from a
-> non-adjustable counter.  So, no matter what, you will have the problem
-> of changing the pulse period in concert with the user changing the
-> desired frequency.
-> 
+Implement a new helper function, pci_get_dsn, which can be used to extract
+this data into an 8 byte array.
 
-> > This leaves the PHC API behavior as it is currently and uses the frequency
-> > adjust API to adjust the output rate.
-> > 
-> > > Let the user dial a periodic output signal in the normal way.
-> > > 
-> > > Let the user change the frequency in the normal way, and during this
-> > > call, adjust the counter values accordingly.
-> > 
-> > Yes to both of the above.
-> 
-> So, why then do you need this?
-> 
-> +#define PTP_EVENT_COUNT_TSTAMP2 \
-> +       _IOWR(PTP_CLK_MAGIC, 19, struct ptp_event_count_tstamp)
-> 
-> If you can make the device work with the existing user space API,
-> 
-> 	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
-> 	while (1) {
-> 		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
-> 	}
-> 
-> that would be ideal.  But I will push back on anything like the
-> following.
-> 
-> 	ioctl(fd, PTP_PEROUT_REQUEST2, ...);
-> 	while (1) {
-> 		clock_adjtimex(FD_TO_CLOCKID(fd), ...);
-> 		ioctl(fd, PTP_EVENT_COUNT_TSTAMP, ...);
-> 	}
-> 
-> But maybe I misunderstood?
+Modify the bnxt_en, qedf, ice, ixgbe and nfp drivers to use this new
+function.
 
-Thank you for the feedback, but Thomas wants to see this as
-an extension of GPIO. I'll work on an RFC patch for that instead.
+The intent for this is to reduce duplicate code across the various drivers,
+and make it easier to write future code that wants to read the DSN. In
+particular the ice driver will be using the DSN as its serial number when
+implementing the DEVLINK_CMD_INFO_GET.
 
-> Thanks,
-> Richard
+The new implementation in v2 significantly simplifies some of the callers
+which just want to print the value out in MSB order. By returning things as
+a u64 in CPU Endian order, the "%016llX" printf format specifier can be used
+to correctly format the value.
 
-Thanks,
-Christopher
+Per patch changes since v1
+  PCI: Introduce pci_get_dsn
+  * Update commit message based on feedback from Bjorn Helgaas
+  * Modify the function to return a u64 (zero on no capability)
+  * This new implementation ensures that the first dword is the lower 32
+    bits and the second dword is the upper 32 bits.
+
+  bnxt_en: Use pci_get_dsn()
+  * Use the u64 return value from pci_get_dsn()
+  * Copy it into the dsn[] array by using put_unaligned_le64
+  * Fix a pre-existing typo in the netdev_info error message
+
+  scsi: qedf: Use pci_get_dsn()
+  * Use the u64 return value from pci_get_dsn()
+  * simplify the snprintf to use "%016llX"
+  * remove the unused 'i' variable
+
+  ice: Use pci_get_dsn()
+  * Use the u64 return value from pci_get_dsn()
+  * simplify the snprintf to use "%016llX"
+
+  ixgbe: Use pci_get_dsn()
+  * Use the u64 return value from pci_get_dsn()
+  * simplify the snprintf to use "%016llX"
+
+  nfp: Use pci_get_dsn()
+  * Added in v2
+
+Jacob Keller (6):
+  PCI: Introduce pci_get_dsn
+  bnxt_en: Use pci_get_dsn()
+  scsi: qedf: Use pci_get_dsn()
+  ice: Use pci_get_dsn()
+  ixgbe: Use pci_get_dsn()
+  nfp: Use pci_get_dsn()
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 14 +++-----
+ drivers/net/ethernet/intel/ice/ice_main.c     | 30 ++++++----------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 18 ++++------
+ .../netronome/nfp/nfpcore/nfp6000_pcie.c      | 24 +++++--------
+ drivers/pci/pci.c                             | 34 +++++++++++++++++++
+ drivers/scsi/qedf/qedf_main.c                 | 19 ++++-------
+ include/linux/pci.h                           |  5 +++
+ 7 files changed, 76 insertions(+), 68 deletions(-)
+
+-- 
+2.25.0.368.g28a2d05eebfb
