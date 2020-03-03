@@ -2,206 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C691783A5
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E03241783BD
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:12:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731508AbgCCUF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 15:05:26 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42446 "EHLO
+        id S1730263AbgCCUMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 15:12:48 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56686 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731448AbgCCUF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:05:26 -0500
+        with ESMTP id S1727862AbgCCUMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:12:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583265924;
+        s=mimecast20190719; t=1583266367;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oqvnJpDgLYD/tNq6zGIo7bmstN4/76XEt5bzM7y0dlA=;
-        b=eZtmMwLLSnRbyUI0bWfzfE3z0Tmxj+yG5UBDwzZyPZg8MSnLzzpnmkLhNJQNERH31QyYrE
-        uj9YjqBoyICpFPd/1+3i5wVMXpTWroNvq/sLwIvCc6v2MRbLHrcaTR39gxQZV9tLNKD7z1
-        VYpnQX5BdHb4YNzxlPSHZEbrhKV+7wI=
+        bh=dxWG2muo17acaB7/aJ4BP2oSXZTXhZFiLlw38h5RkZ8=;
+        b=FuBQP/NDNxxrjTbVoJICq0ZwN5oTN8Gkj2MKjQ/D7yNyIvs9nU12oEGXdr1vxM8Tt4+dDh
+        CjqxYwFcJyNNRGqzzlyww2MhsBTeyrCox4eFGjgCjzYdEs7Bn3CxuE1+GOkqBF+V2y1/9O
+        RmKeNAlgwZ1F2xi9IN099J8oVT9Kj14=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-81-CtyHItd5Obm2rWsnsQNnWg-1; Tue, 03 Mar 2020 15:05:20 -0500
-X-MC-Unique: CtyHItd5Obm2rWsnsQNnWg-1
+ us-mta-252-2a1tYo-UOva3sXf8guU5mA-1; Tue, 03 Mar 2020 15:12:43 -0500
+X-MC-Unique: 2a1tYo-UOva3sXf8guU5mA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7571F107ACC4;
-        Tue,  3 Mar 2020 20:05:18 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DA0161005512;
+        Tue,  3 Mar 2020 20:12:40 +0000 (UTC)
 Received: from krava (ovpn-206-59.brq.redhat.com [10.40.206.59])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B8E581001B3F;
-        Tue,  3 Mar 2020 20:05:15 +0000 (UTC)
-Date:   Tue, 3 Mar 2020 21:05:13 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2E3331001B3F;
+        Tue,  3 Mar 2020 20:12:37 +0000 (UTC)
+Date:   Tue, 3 Mar 2020 21:12:26 +0100
 From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
         Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [RFC] libbpf,selftests: Question on btf_dump__emit_type_decl for
- BTF_KIND_FUNC
-Message-ID: <20200303200513.GB74093@krava>
-References: <20200303140837.90056-1-jolsa@kernel.org>
- <CAEf4BzY8_=wcL3N96eS-jcSPBL=ueMgQg+m=Fxiw+o0Tc7F23Q@mail.gmail.com>
- <20200303173314.GA74093@krava>
- <CAEf4BzYQYJJwLUNhDoKcdgKsMijf9R5vG-vbOBYA-nUAgNs1qA@mail.gmail.com>
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Song Liu <song@kernel.org>
+Subject: Re: [PATCH 06/15] bpf: Add bpf_ksym_tree tree
+Message-ID: <20200303201226.GC74093@krava>
+References: <20200302143154.258569-1-jolsa@kernel.org>
+ <20200302143154.258569-7-jolsa@kernel.org>
+ <20200303180318.vblj7izq2miken6e@ast-mbp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYQYJJwLUNhDoKcdgKsMijf9R5vG-vbOBYA-nUAgNs1qA@mail.gmail.com>
+In-Reply-To: <20200303180318.vblj7izq2miken6e@ast-mbp>
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 10:00:02AM -0800, Andrii Nakryiko wrote:
-> On Tue, Mar 3, 2020 at 9:33 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Tue, Mar 03, 2020 at 09:09:38AM -0800, Andrii Nakryiko wrote:
-> > > On Tue, Mar 3, 2020 at 6:12 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > >
-> > > > hi,
-> > > > for bpftrace I'd like to print BTF functions (BTF_KIND_FUNC)
-> > > > declarations together with their names.
-> > > >
-> > > > I saw we have btf_dump__emit_type_decl and added BTF_KIND_FUNC,
-> > > > where it seemed to be missing, so it prints out something now
-> > > > (not sure it's the right fix though).
-> > > >
-> > > > Anyway, would you be ok with adding some flag/bool to struct
-> > > > btf_dump_emit_type_decl_opts, so I could get output like:
-> > > >
-> > > >   kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
-> > > >   kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
-> > > >
-> > > > ... to be able to the arguments and return type separated,
-> > > > so I could easily get to something like above?
-> > > >
-> > > > Current interface is just vfprintf callback and I'm not sure
-> > > > I can rely that it will allywas be called with same arguments,
-> > > > like having separated calls for parsed atoms like 'return type',
-> > > > '(', ')', '(', 'arg type', 'arg name', ...
-> > > >
-> > > > I'm open to any suggestion ;-)
-> > >
-> > > Hey Jiri!
-> > >
-> > > Can you please elaborate on the use case and problem you are trying to solve?
-> > >
-> > > I think we can (and probably even should) add such option and support
-> > > to dump functions, but whatever we do it should be a valid C syntax
-> > > and should be compilable.
-> > > Example above:
-> > >
-> > > kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
-> > >
-> > > Is this really the syntax you need to get? I think btf_dump, when
-> > > (optionally) emitting function declaration, will have to emit that
-> > > particular one as:
-> > >
-> > > size_t ksys_read(unsigned int fd, char buf, long unsigned int count);
-> > >
-> > > But I'd like to hear the use case before we add this. Thanks!
-> >
-> > the use case is just for the 'bpftrace -l' output, which displays
-> > the probe names that could be used.. for kernel BTF kernel functions
-> > it's 'kfunc:function(args)'
-> >
-> >         software:task-clock:
-> >         hardware:backend-stalls:
-> >         hardware:branch-instructions:
-> >         ...
-> >         tracepoint:kvmmmu:kvm_mmu_pagetable_walk
-> >         tracepoint:kvmmmu:kvm_mmu_paging_element
-> >         ...
-> >         kprobe:console_on_rootfs
-> >         kprobe:trace_initcall_start_cb
-> >         kprobe:run_init_process
-> >         kprobe:try_to_run_init_process
-> >         ...
-> >         kfunc:x86_reserve_hardware
-> >         kfunc:hw_perf_lbr_event_destroy
-> >         kfunc:x86_perf_event_update
-> >
-> > I dont want to print the return type as is in C, because it would
-> > mess up the whole output, hence the '= <return type>'
-> >
-> >         kfunc:ksys_readahead(int fd, long long int offset, long unsigned int count) = ssize_t
-> >         kfunc:ksys_read(unsigned int fd, char buf, long unsigned int count) = size_t
-> >
-> > also possible only in verbose mode ;-)
-> >
-> > the final shape of the format will be decided in a bpftrace review,
-> > but in any case I think I'll need some way to get these bits:
-> >   <args> <return type>
-> >
+On Tue, Mar 03, 2020 at 10:03:19AM -0800, Alexei Starovoitov wrote:
+> On Mon, Mar 02, 2020 at 03:31:45PM +0100, Jiri Olsa wrote:
+> > The bpf_tree is used both for kallsyms iterations and searching
+> > for exception tables of bpf programs, which is needed only for
+> > bpf programs.
+> > 
+> > Adding bpf_ksym_tree that will hold symbols for all bpf_prog
+> > bpf_trampoline and bpf_dispatcher objects and keeping bpf_tree
+> > only for bpf_prog objects to keep it fast.
 > 
-> Ok, I think for your use case it's better for you to implement it
-> customly, I don't think this fits btf_dump() C output as is. But you
-> have all the right high-level APIs anyways. There is nothing irregular
-> about function declarations, thankfully. Pointers to functions are way
-> more involved, syntactically, which is already abstracted from you in
-> btf_dump__emit_type_decl(). Here's the code:
+> ...
 > 
-> static int dump_funcs(const struct btf *btf, struct btf_dump *d)
-> {
->         int err = 0, i, j, cnt = btf__get_nr_types(btf);
->         const struct btf_type *t;
->         const struct btf_param *p;
->         const char *name;
+> >  static void bpf_prog_ksym_node_add(struct bpf_prog_aux *aux)
+> > @@ -616,6 +650,7 @@ static void bpf_prog_ksym_node_add(struct bpf_prog_aux *aux)
+> >  	WARN_ON_ONCE(!list_empty(&aux->ksym.lnode));
+> >  	list_add_tail_rcu(&aux->ksym.lnode, &bpf_kallsyms);
+> >  	latch_tree_insert(&aux->ksym_tnode, &bpf_tree, &bpf_tree_ops);
+> > +	latch_tree_insert(&aux->ksym.tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
+> >  }
+> >  
+> >  static void bpf_prog_ksym_node_del(struct bpf_prog_aux *aux)
+> > @@ -624,6 +659,7 @@ static void bpf_prog_ksym_node_del(struct bpf_prog_aux *aux)
+> >  		return;
+> >  
+> >  	latch_tree_erase(&aux->ksym_tnode, &bpf_tree, &bpf_tree_ops);
+> > +	latch_tree_erase(&aux->ksym.tnode, &bpf_ksym_tree, &bpf_ksym_tree_ops);
 > 
->         for (i = 1; i <= cnt; i++) {
->                 t = btf__type_by_id(btf, i);
->                 if (!btf_is_func(t))
->                         continue;
-> 
->                 name = btf__name_by_offset(btf, t->name_off);
->                 t = btf__type_by_id(btf, t->type);
->                 if (!btf_is_func_proto(t))
->                         return -EINVAL;
-> 
->                 printf("kfunc:%s(", name);
->                 for (j = 0, p = btf_params(t); j < btf_vlen(t); j++, p++) {
->                         err = btf_dump__emit_type_decl(d, p->type, NULL);
->                         if (err)
->                                 return err;
->                 }
->                 printf(") = ");
-> 
->                 err = btf_dump__emit_type_decl(d, t->type, NULL);
->                 if (err)
->                         return err;
+> I have to agree with Daniel here.
+> Having bpf prog in two latch trees is unnecessary.
+> Especially looking at the patch 7 that moves update to the other tree.
+> The whole thing becomes assymetrical and harder to follow.
+> Consider that walking extable is slow anyway. It's a page fault.
+> Having trampoline and dispatch in the same tree will not be measurable
+> on the speed of search_bpf_extables->bpf_prog_kallsyms_find.
+> So please consolidate.
 
-aaah right, we could move it one level down ;-) ok, that will do
+ok
 
 > 
->                 printf(";\n");
->         }
->         return 0;
-> }
-> 
-> Beware, this will crash right now due to NULL field_name, but I'm
-> fixing that with a tiny patch in just a second.
-> 
-> Also beware, there are no argument names captures for func_protos...
-> 
-> So with the above (and btf_dump__emit_type_decl() fix for NULL
-> field_name), this will produce output:
-> 
-> kfunc:num_digits(int) = int;
-> kfunc:copy_from_user_nmi(void *const void *long unsigned int) = long
-> unsigned int;
-> kfunc:arch_wb_cache_pmem(void *size_t) = void;
-> kfunc:__clear_user(void *long unsigned int) = long unsigned int;
+> Also I don't see a hunk that deletes tnode from 'struct bpf_image'.
+> These patches suppose to generalize it too, no?
 
-thanks, I'll use that
+__bpf_ksym_del function added in patch:
 
+    bpf: Separate kallsyms add/del functions
+
+> And at the end kernel_text_address() suppose to call
+> is_bpf_text_address() only, right?
+> Instead of is_bpf_text_address() || is_bpf_image_address() ?
+> That _will_ actually speed up backtrace collection.
+
+right, this one could have already used just the ksym tree
+
+will send new version.. meanwhile I was checking struct_ops,
+so will include kallsyms support them as well
+
+thanks,
 jirka
 
