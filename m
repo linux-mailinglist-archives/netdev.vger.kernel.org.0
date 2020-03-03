@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3747D176A9A
+	by mail.lfdr.de (Postfix) with ESMTP id AC179176A9B
 	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727131AbgCCCZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727186AbgCCCZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 2 Mar 2020 21:25:09 -0500
 Received: from mga14.intel.com ([192.55.52.115]:54186 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727075AbgCCCZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727018AbgCCCZI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 2 Mar 2020 21:25:08 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,19 +17,18 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 18:25:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,509,1574150400"; 
-   d="scan'208";a="233605689"
+   d="scan'208";a="233605692"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 18:25:07 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 18:25:08 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
         Bjorn Helgaas <bhelgaas@google.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: [PATCH v2 2/6] bnxt_en: Use pci_get_dsn()
-Date:   Mon,  2 Mar 2020 18:25:01 -0800
-Message-Id: <20200303022506.1792776-3-jacob.e.keller@intel.com>
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH v2 3/6] scsi: qedf: Use pci_get_dsn()
+Date:   Mon,  2 Mar 2020 18:25:02 -0800
+Message-Id: <20200303022506.1792776-4-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200303022506.1792776-1-jacob.e.keller@intel.com>
 References: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
@@ -44,62 +43,56 @@ X-Mailing-List: netdev@vger.kernel.org
 Replace the open-coded implementation for reading the PCIe DSN with
 pci_get_dsn().
 
-Use of put_unaligned_le64 should be correct. pci_get_dsn() will perform
-two pci_read_config_dword calls. The first dword will be placed in the
-first 32 bits of the u64, while the second dword will be placed in the
-upper 32 bits of the u64.
-
-On Little Endian systems, the least significant byte comes first, which
-will be the least significant byte of the first dword, followed by the
-least significant byte of the second dword. Since the _le32 variations
-do not perform byte swapping, we will correctly copy the dwords into the
-dsn[] array in the same order as before.
-
-On Big Endian systems, the most significant byte of the second dword
-will come first. put_unaligned_le64 will perform a CPU_TO_LE64, which
-will swap things correctly before copying. This should also end up with
-the correct bytes in the dsn[] array.
-
-While at it, fix a small typo in the netdev_info error message when the
-DSN cannot be read.
+The original code used a for-loop that looped over each of the 8 bytes
+and copied them into a temporary buffer. pci_get_dsn() uses two calls to
+pci_read_config_dword, and correctly bitwise ORs them into a u64. Thus,
+we can simplify the snprintf significantly using %016llX on a u64 value.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+The QLogic-Storage-Upstream@cavium.com appears to be a dud. I'm not sure who
+maintains this driver, and thus am not sure who to add to the Cc.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 597e6fd5bfea..49874079084d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11755,20 +11755,16 @@ static int bnxt_init_mac_addr(struct bnxt *bp)
- static int bnxt_pcie_dsn_get(struct bnxt *bp, u8 dsn[])
+ drivers/scsi/qedf/qedf_main.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index 604856e72cfb..5b19f5175c5c 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -1577,8 +1577,7 @@ static void qedf_setup_fdmi(struct qedf_ctx *qedf)
  {
- 	struct pci_dev *pdev = bp->pdev;
--	int pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_DSN);
--	u32 dw;
-+	u64 qword;
+ 	struct fc_lport *lport = qedf->lport;
+ 	struct fc_host_attrs *fc_host = shost_to_fc_host(lport->host);
+-	u8 buf[8];
+-	int i, pos;
++	u64 dsn;
  
--	if (!pos) {
--		netdev_info(bp->dev, "Unable do read adapter's DSN");
-+	qword = pci_get_dsn(pdev);
-+	if (!qword) {
-+		netdev_info(bp->dev, "Unable to read adapter's DSN");
- 		return -EOPNOTSUPP;
- 	}
+ 	/*
+ 	 * fdmi_enabled needs to be set for libfc to execute FDMI registration.
+@@ -1591,18 +1590,11 @@ static void qedf_setup_fdmi(struct qedf_ctx *qedf)
+ 	 */
  
--	/* DSN (two dw) is at an offset of 4 from the cap pos */
--	pos += 4;
--	pci_read_config_dword(pdev, pos, &dw);
--	put_unaligned_le32(dw, &dsn[0]);
--	pci_read_config_dword(pdev, pos + 4, &dw);
--	put_unaligned_le32(dw, &dsn[4]);
-+	put_unaligned_le64(qword, dsn);
-+
- 	bp->flags |= BNXT_FLAG_DSN_VALID;
- 	return 0;
- }
+ 	/* Get the PCI-e Device Serial Number Capability */
+-	pos = pci_find_ext_capability(qedf->pdev, PCI_EXT_CAP_ID_DSN);
+-	if (pos) {
+-		pos += 4;
+-		for (i = 0; i < 8; i++)
+-			pci_read_config_byte(qedf->pdev, pos + i, &buf[i]);
+-
++	dsn = pci_get_dsn(qedf->pdev);
++	if (dsn)
+ 		snprintf(fc_host->serial_number,
+-		    sizeof(fc_host->serial_number),
+-		    "%02X%02X%02X%02X%02X%02X%02X%02X",
+-		    buf[7], buf[6], buf[5], buf[4],
+-		    buf[3], buf[2], buf[1], buf[0]);
+-	} else
++		    sizeof(fc_host->serial_number), "%016llX", dsn);
++	else
+ 		snprintf(fc_host->serial_number,
+ 		    sizeof(fc_host->serial_number), "Unknown");
+ 
 -- 
 2.25.0.368.g28a2d05eebfb
 
