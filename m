@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CF9177BDC
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C71177BE3
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730349AbgCCQ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 11:27:42 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37490 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729598AbgCCQ1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:27:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583252861;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EXOES8R7lt1FaMV27O05pLr/5n+ZxyuO6JH2cTv43as=;
-        b=OivsSYB1T6+tqMK4ZajvwTUKKytjx54jZJ2+o/iuPcpIhGAUk5c2umdXrcoNWKXbtjwZRL
-        jnd5JZ8a5K0h9BdcTlQKVjxQ5AObul8w/+8s9n1kfmPrFzxW/SOkeXg54cvraofYrGk2sp
-        niFKm985Ajz0nLxOZiTm1xm3heUCtN8=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-392-4cypE74KNCGooFXx_jgMdg-1; Tue, 03 Mar 2020 11:27:37 -0500
-X-MC-Unique: 4cypE74KNCGooFXx_jgMdg-1
-Received: by mail-wr1-f69.google.com with SMTP id d7so1470594wrr.0
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 08:27:37 -0800 (PST)
+        id S1730383AbgCCQ16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 11:27:58 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:38067 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729598AbgCCQ16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:27:58 -0500
+Received: by mail-lj1-f195.google.com with SMTP id w1so4211939ljh.5;
+        Tue, 03 Mar 2020 08:27:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6NizXeEgQtj7OHhrUvzWf+RxeVKw/MJ7E7M98rZwZHs=;
+        b=TCvbfOWaHFL5PVcFhg/r11H9lRIUO8AsKlizzW42uIt5o25qkU+WaujtaCqOh5gJhp
+         UTHhGUEFxjI44knsQlP/JDv4oNDhuJeUiFsEZeT1rIzo2QL0uqXKzWk4657jgj1DYpqj
+         mHh+CjpUo39eMGoVtpcY0olZmbR0cejpAFQw8n1ydX/JP48bS2Vf403nVv2App1kXXMv
+         sgQTj6V17qgpaZ0HuooNtvs6fUgZIHu2BJuqmttKr6/r8zFzXC5je8JhyokvR2FPQicV
+         KwKBs6kwh+JUT+xrLOYjXTUsQ3spxvXJ0kSsuTDinUUMumFaOnw05gZwxFg7zawdl9H8
+         44nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=EXOES8R7lt1FaMV27O05pLr/5n+ZxyuO6JH2cTv43as=;
-        b=V5MED0G9gGwAMeukWJTqOl1p6GNFQHpJE3lYcUGHkVUbCARedQawSyTx52gCTeSv3o
-         DLAZUHiyiL3SNis7erybWDH0w/yLr1V0XaZoWpBF10mBrk+gUwuWCfey1/cDe2/hQ4TK
-         6gS1QCrcitDScbUSlV4BzuZ4jUgwk1pEEumK/IVSlIQo64Lgh09/Gu5thufwXEZ6Vsb6
-         4ib9/jCIAEJLFsVNXRfVZL3vitGIqm8NcJkVkfV7k+UejjxghBccufZEWJmQTt5VQVeG
-         S33urfxKKLm5RYfiKQc896ZmMxIQlICaEhi4Y1dEzBsTUrGWh1w+WDxeP9EDr+Twvqp2
-         5ZEA==
-X-Gm-Message-State: ANhLgQ2ylNqmFlLOF5WJni/xLn7ZOoa/YM5QYfHBaiTiFVOE6lqjEzGN
-        CSY4jno1jFarTlg6YluVYZG76vabX9AN/LqwVahIltEPGCndEvUKWVVWMLgcBeOZmCr+qxRk/Qa
-        FQU30cliJyVoGBGDb
-X-Received: by 2002:a1c:7c08:: with SMTP id x8mr4859155wmc.71.1583252856092;
-        Tue, 03 Mar 2020 08:27:36 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vvnvh2YnX6Vor6VsCTeF6I03GVmPgt9Mvj+GG8GAzUkK8YR/9BFT2Rg2tJKqt2/1ZUHVcEc7A==
-X-Received: by 2002:a1c:7c08:: with SMTP id x8mr4859137wmc.71.1583252855877;
-        Tue, 03 Mar 2020 08:27:35 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id b14sm24703675wrn.75.2020.03.03.08.27.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 08:27:34 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3B816180331; Tue,  3 Mar 2020 17:27:34 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrey Ignatov <rdna@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Takshak Chahande <ctakshak@fb.com>
-Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs on an interface
-In-Reply-To: <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
-References: <158289973977.337029.3637846294079508848.stgit@toke.dk> <20200228221519.GE51456@rdna-mbp> <87v9npu1cg.fsf@toke.dk> <20200303010318.GB84713@rdna-mbp> <877e01sr6m.fsf@toke.dk> <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 03 Mar 2020 17:27:34 +0100
-Message-ID: <871rq95rpl.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6NizXeEgQtj7OHhrUvzWf+RxeVKw/MJ7E7M98rZwZHs=;
+        b=OALELv/PFkSODB5pWb8dZWbLmS1kAeYitiB39rnv/DV0fTYEGvBCfZCf5jVqabNA59
+         aGNHGKJDJhRMaF0fKnM540o9QxMn1hYPH+IEiiPHp2qrH7NTTxW5OrybhB1FL63h1h8K
+         0vpR13M816kf7ZGjiv64g/Rr9ZG9Vd9XQFZrvnDW/ZtIDe9e6FdDO0CxNICNn2AU0Thp
+         KETW3gGIr+COgsjIuO7xx0D1EzAiptQjgQLS6ZoAxELtSaPMV0ULq4FBpc1TcHQzMvrP
+         GT5F6DjMpCUQTH34Irpm2DJBIsahRjNLtM9vdJ5jzL5ifTindRAXOctZD2HoTjcRje8F
+         +5Dg==
+X-Gm-Message-State: ANhLgQ0KVPs0cynkjryT9q4Y9+5Xf3g8kc2+wjnRN7GITYMU0olz0LBl
+        TFnGTg7CLqIgvC/KFYt6K91J9w42KyeR2r41PbXFOw==
+X-Google-Smtp-Source: ADFU+vtIuyG1I0sIW/QxxXIzpv7RjBRoe1+fMP6EsFfrW42qEGO8uAlBouyWB2w5F2eRgESa0j2fiXC4tbgKa1AszRo=
+X-Received: by 2002:a2e:b80b:: with SMTP id u11mr3005972ljo.143.1583252875902;
+ Tue, 03 Mar 2020 08:27:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20200302145348.559177-1-toke@redhat.com> <20200303010311.bg6hh4ah5thu5q2c@ast-mbp>
+ <87d09tsvu1.fsf@toke.dk>
+In-Reply-To: <87d09tsvu1.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 3 Mar 2020 08:27:44 -0800
+Message-ID: <CAADnVQKKBpSGZ3vQWy_Y5vLqJsyY3cCnwmeW9hU1Xu0L_9zqiQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: Declare bpf_log_buf variables as static
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Tue, Mar 3, 2020 at 1:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
->>
->> This is the reason why I think the 'link' between the main program and
->> the replacement program is in the "wrong direction". Instead I want to
->> introduce a new attachment API that can be used instead of
->> bpf_raw_tracepoint_open() - something like:
->>
->> prog_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
->> func_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // replacement func
->> err =3D sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // doe=
-s *not* return an fd
->>
->> When using this, the kernel will flip the direction of the reference
->> between BPF programs, so it goes main_prog -> replacement_prog. And
->> instead of getting an fd back, this will make the replacement prog share
->> its lifecycle with the main program, so that when the main program is
->> released, so is the replacement (absent other references, of course).
->> There could be an explicit 'release' command as well, of course, and a
->> way to list all replacements on a program.
+On Tue, Mar 3, 2020 at 12:10 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> Nack to such api.
-> We hit this opposite direction issue with xdp and tc in the past.
-> Not going to repeat the same mistake again.
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> > On Mon, Mar 02, 2020 at 03:53:48PM +0100, Toke H=C3=83=C2=B8iland-J=C3=
+=83=C2=B8rgensen wrote:
+> >> The cgroup selftests did not declare the bpf_log_buf variable as stati=
+c, leading
+> >> to a linker error with GCC 10 (which defaults to -fno-common). Fix thi=
+s by
+> >> adding the missing static declarations.
+> >>
+> >> Fixes: 257c88559f36 ("selftests/bpf: Convert test_cgroup_attach to pro=
+g_tests")
+> >> Signed-off-by: Toke H=C3=83=C2=B8iland-J=C3=83=C2=B8rgensen <toke@redh=
+at.com>
+> >
+> > Applied to bpf-next.
+> > It's hardly a fix. Fixes tag doesn't make it a fix in my mind.
+>
+> It fixes a compile error of selftests with GCC 10; how is that not a
+> fix? We found it while setting up a CI test compiling Linus' tree on
+> Fedora rawhide, so it does happen in the wild.
+>
+> > I really see no point rushing it into bpf->net->Linus's tree at this po=
+int.
+>
+> Well if you're not pushing any other fixes then OK, sure, no reason to
+> go through the whole process just for this. But if you end up pushing
+> another round of fixes anyway, please include this as well. If not, I
+> guess we can wait :)
 
-Care to elaborate? What mistake, and what was the issue?
-
--Toke
-
+CI stands for Continuous Integration =3D=3D development.
+stable tree is not for development.
+If you want to develop anything or accommodate the tree
+for external development you need to use development tree.
+Which is bpf-next.
