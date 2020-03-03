@@ -2,103 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6108A1775E7
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 13:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D1B17763A
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 13:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729283AbgCCM3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 07:29:38 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46799 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727901AbgCCM3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 07:29:38 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1j96fz-0003ex-67; Tue, 03 Mar 2020 13:29:31 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00] (unknown [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4607F4C56AA;
-        Tue,  3 Mar 2020 12:29:28 +0000 (UTC)
-Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
-To:     Marek Vasut <marex@denx.de>,
+        id S1728048AbgCCMmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 07:42:14 -0500
+Received: from mail-eopbgr140080.outbound.protection.outlook.com ([40.107.14.80]:35203
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727826AbgCCMmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 07:42:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dmCOOnDlMLRxdFOgiby21tMyUlUt0YhluW2ZjoI9RIXB2M7VTeS4tkPbqYhRIQ+JH80nbkt7gVJnIiGgjtmZ2IbBiFhJCjWjOEXfevGMz78ZQKjKM0z01CS0HXDm6GwMnO+bTpm6dvpEu8eAPphsxaUXOPkJh7JvqvWxaW6ZGItS7/722KRP6qAJV5ckTskpSFBQ5HhxgU6KuE861loQm1LsHcxXRskb68m+wqUipYvYCw9IK9Mc9Be1320HrTUpIXkaD7iWnaxKsZmSJd5i6L/UYHrflhWbsY62CXBPbraZ2OfYOBOZdYMw/wNgsFjbKlYC/rmakBilpgn/47oe6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4bk9MfbDo3TNh+lza+ASVDdD8ZjXNSbDlD0QBAwzWWk=;
+ b=nVMmryey8nFlLwrxN7lsIRuJ4OnqdqoBAfiDoWent5ZzadCVes5WHePVRajnO7gmksEXSxAZL/jdyoCdiLAMbHId7KhDE+qOobDZZqQjvwAMFhGX7c3/Hk573NwpZ+k1mb7nSxuH5focUbGOqV329QiiAwwZFF1kCSXO79kVjz4wBAbfCODOPQOgL/bAZa7lYgukggJbr0RO190xT6q5pQ2mlxk2SA+mBqK4zAMGLsYpc/x8MdOA6ji+5Shg1VwsrUaZ/2yVaF026vzS+i0OfQMAqEo74woutydIF6V01O1JW1kSbcANxlve8p9gJivpYDQ/HcM+0r69bboCenUuew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4bk9MfbDo3TNh+lza+ASVDdD8ZjXNSbDlD0QBAwzWWk=;
+ b=FoVRuRFZdhmidqpC6t9NwcUF0vPby6xzSs82Gdb5ZOP3ri7L/NbxqlpgFExrbDYLfCXbpX8s8VqmWSerhWH6NFly9W1vdtcnfVpCtgL7iIT2EkVqI+m1UTYc0/m6cPXEJcYAXomTvmTAhAYi1mhufYkcCmTJJknV00DVLG44nSk=
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (10.186.130.77) by
+ AM0PR04MB6643.eurprd04.prod.outlook.com (20.179.252.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.18; Tue, 3 Mar 2020 12:42:06 +0000
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::59c3:fa42:854b:aeb3]) by AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::59c3:fa42:854b:aeb3%6]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
+ 12:42:06 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, David Jander <david@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200303073715.32301-1-o.rempel@pengutronix.de>
- <0c95d6ac-b345-4218-ebad-683fbf1f4d60@denx.de>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <90d5c791-e0cf-ef3b-aad0-41285df98ba9@pengutronix.de>
-Date:   Tue, 3 Mar 2020 13:29:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>
+Subject: RE: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+Thread-Topic: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
+Thread-Index: AdXxWSNaD5VJgo+AS3aQClSReU4fbQ==
+Date:   Tue, 3 Mar 2020 12:42:06 +0000
+Message-ID: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=christian.herber@nxp.com; 
+x-originating-ip: [92.121.36.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 02d0c6f6-5076-4027-3792-08d7bf704825
+x-ms-traffictypediagnostic: AM0PR04MB6643:
+x-microsoft-antispam-prvs: <AM0PR04MB6643E72EC4B20EB260E5256086E40@AM0PR04MB6643.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 03319F6FEF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(346002)(376002)(136003)(39860400002)(199004)(189003)(9686003)(66946007)(7416002)(81166006)(52536014)(8676002)(2906002)(55016002)(66556008)(4326008)(66446008)(86362001)(81156014)(76116006)(66476007)(54906003)(7696005)(6506007)(53546011)(64756008)(478600001)(110136005)(8936002)(5660300002)(966005)(316002)(26005)(71200400001)(33656002)(186003)(44832011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB6643;H:AM0PR04MB7041.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EzhVW5LnsrQwB75T7luQT4JSaX3QXRRMNc21q34bQn3CUFm4Nc5FQhEvZuFdtgYS85fz4Fjw9Balty5B6rZKfN7FFje3aIze3tlVBTfCeEEpTjAKCRdCzvroViYaj40+WJ1zJLPmfsAfq8TUEo9GHj+1kazKQ4A56tG8jABvkb2VpVlE+q4MCzVr+5PVObx+P/Ui14okf3d15LY7joIXQZfKIRw3fsk0d8D7RKpD0lVFhUwCY7uIVqkqzuvKge/K4fmeqHOBtiKmX3V2eLp9F13vgKy/jH4+71gbuOazKZAss4PpE/llWrFnSm4rtijLsMlnKdtM8dzAOyisOYjebRLJ9o0Pi+c+XsVRQmIt2bwtkfjlE2CWYOazZzNS617O0hH3+UgQj7M0IBaguVjttwe9bnit3MwF5a8TtHDvrD2CR5kRr0x8f9hwmL3YUAnETEwXjvS2Dy1ohFCraJbObhh0BDZiUq185bReeyFZs2eSWvHDY/YJmZfuOHWhwO4rsx9LFZCXFmxY8l5p7IgARA==
+x-ms-exchange-antispam-messagedata: /BaMf0xVSwsAsHw6TwU9O9sE9R4VHRNHt2oyOS9H1iYxlFjpP7uUQbqbiBayq3L0kUY0PhPZzqXc77YEedUyEKC5EK7vUis60iYRzCmhZWmceoJb2sBnPznnsYsqw6QdUeorHHjgSmtrXKvdlfGCgA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <0c95d6ac-b345-4218-ebad-683fbf1f4d60@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02d0c6f6-5076-4027-3792-08d7bf704825
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2020 12:42:06.2979
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: W0j7t2ROP0pdwfvCeIBs5lHdvkigVFqEvmyw9lkSQh/QaO0OwhylUuxyG5KxoP4BRFUa7U13dge9pdqR+rPcj3fIw8OMpk6CJHpd7Jhi/cY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6643
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/3/20 1:18 PM, Marek Vasut wrote:
-> On 3/3/20 8:37 AM, Oleksij Rempel wrote:
+> On 03.03.2020 08:37, Oleksij Rempel wrote:
 >> TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
 >> PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
->> configured in device tree by setting compatible =
+>> configured in device tree by setting compatible =3D
 >> "ethernet-phy-id0180.dc81".
 >>
 >> PHY 1 has less suported registers and functionality. For current driver
 >> it will affect only the HWMON support.
-> 
-> Can't you do some magic with match_phy_device (like in
-> 8b95599c55ed24b36cf44a4720067cfe67edbcb4) to discern the second half of
-> the PHY ?
+>>
+>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+>> ---
+>> drivers/net/phy/nxp-tja11xx.c | 43 +++++++++++++++++++++++++++++++++++
+>> 1 file changed, 43 insertions(+)
+>>
+>> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx=
+.c
+>> index b705d0bd798b..52090cfaa54e 100644
+>> --- a/drivers/net/phy/nxp-tja11xx.c
+>> +++ b/drivers/net/phy/nxp-tja11xx.c
+>> @@ -15,6 +15,7 @@
+>> #define PHY_ID_MASK                  0xfffffff0
+>> #define PHY_ID_TJA1100                       0x0180dc40
+>> #define PHY_ID_TJA1101                       0x0180dd00
+>> +#define PHY_ID_TJA1102                       0x0180dc80
+>>
+>> #define MII_ECTRL                    17
+>> #define MII_ECTRL_LINK_CONTROL               BIT(15)
+>> @@ -190,6 +191,7 @@ static int tja11xx_config_init(struct phy_device *ph=
+ydev)
+>>              return ret;
+>>      break;
+>> case PHY_ID_TJA1101:
+>> +     case PHY_ID_TJA1102:
+>>      ret =3D phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
+>>      if (ret)
+>>              return ret;
+>> @@ -337,6 +339,31 @@ static int tja11xx_probe(struct phy_device *phydev)
+>> if (!priv)
+>>      return -ENOMEM;
+>>
+>> +     /* Use the phyid to distinguish between port 0 and port 1 of the
+>> +      * TJA1102. Port 0 has a proper phyid, while port 1 reads 0.
+>> +      */
+>> +     if ((phydev->phy_id & PHY_ID_MASK) =3D=3D PHY_ID_TJA1102) {
+>> +             int ret;
+>> +             u32 id;
+>> +
+>> +             ret =3D phy_read(phydev, MII_PHYSID1);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +
+>> +             id =3D ret;
+>> +             ret =3D phy_read(phydev, MII_PHYSID2);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +
+>> +             id |=3D ret << 16;
+>> +
+>> +             /* TJA1102 Port 1 has phyid 0 and doesn't support temperat=
+ure
+>> +              * and undervoltage alarms.
+>> +              */
+>> +             if (id =3D=3D 0)
+>> +                     return 0;
+>
+> I'm not sure I understand what you're doing here. The two ports of the ch=
+ip
+> are separate PHY's on individual MDIO bus addresses?
+> Reading the PHY ID registers here seems to repeat what phylib did already
+> to populate phydev->phy_id. If port 1 has PHD ID 0 then the driver wouldn=
+'t
+> bind and tja11xx_probe() would never be called (see phy_bus_match)
+>
+>> +     }
+>> +
+>> priv->hwmon_name =3D devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+>> if (!priv->hwmon_name)
+>>      return -ENOMEM;
+>> @@ -385,6 +412,21 @@ static struct phy_driver tja11xx_driver[] =3D {
+>>      .get_sset_count =3D tja11xx_get_sset_count,
+>>      .get_strings    =3D tja11xx_get_strings,
+>>      .get_stats      =3D tja11xx_get_stats,
+>> +     }, {
+>> +             PHY_ID_MATCH_MODEL(PHY_ID_TJA1102),
+>> +             .name           =3D "NXP TJA1102",
+>> +             .features       =3D PHY_BASIC_T1_FEATURES,
+>> +             .probe          =3D tja11xx_probe,
+>> +             .soft_reset     =3D tja11xx_soft_reset,
+>> +             .config_init    =3D tja11xx_config_init,
+>> +             .read_status    =3D tja11xx_read_status,
+>> +             .suspend        =3D genphy_suspend,
+>> +             .resume         =3D genphy_resume,
+>> +             .set_loopback   =3D genphy_loopback,
+>> +             /* Statistics */
+>> +             .get_sset_count =3D tja11xx_get_sset_count,
+>> +             .get_strings    =3D tja11xx_get_strings,
+>> +             .get_stats      =3D tja11xx_get_stats,
+>> }
+>> };
+>>
+>> @@ -393,6 +435,7 @@ module_phy_driver(tja11xx_driver);
+>> static struct mdio_device_id __maybe_unused tja11xx_tbl[] =3D {
+>> { PHY_ID_MATCH_MODEL(PHY_ID_TJA1100) },
+>> { PHY_ID_MATCH_MODEL(PHY_ID_TJA1101) },
+>> +     { PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
+>> { }
+>> };
 
-Great, that looks better.
+Hi Oleksij, Heiner, Marc,=20
 
-Marc
+You could also refer the solution implemented here as part of a TJA110x dri=
+ver:
+https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/about=
+/
 
--- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Regards, Christian
