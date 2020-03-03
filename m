@@ -2,61 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B908D178611
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 23:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D72178617
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 00:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728150AbgCCW7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 17:59:17 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:36990 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726766AbgCCW7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 17:59:17 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E1EC215A0FF4F;
-        Tue,  3 Mar 2020 14:59:16 -0800 (PST)
-Date:   Tue, 03 Mar 2020 14:59:16 -0800 (PST)
-Message-Id: <20200303.145916.1506066510928020193.davem@davemloft.net>
-To:     mkubecek@suse.cz
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] tun: fix ethtool_ops get_msglvl and set_msglvl
- handlers
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200303082252.81F7FE1F46@unicorn.suse.cz>
-References: <20200303082252.81F7FE1F46@unicorn.suse.cz>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727942AbgCCXBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 18:01:17 -0500
+Received: from www62.your-server.de ([213.133.104.62]:33506 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727604AbgCCXBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 18:01:17 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9GXK-00083x-ST; Wed, 04 Mar 2020 00:01:14 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9GXK-000MQg-J9; Wed, 04 Mar 2020 00:01:14 +0100
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
+ used from BPF program side to enums
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com, yhs@fb.com
+References: <20200303003233.3496043-1-andriin@fb.com>
+ <20200303003233.3496043-2-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net>
+Date:   Wed, 4 Mar 2020 00:01:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200303003233.3496043-2-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 14:59:17 -0800 (PST)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25740/Tue Mar  3 13:12:16 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
-Date: Tue,  3 Mar 2020 09:22:52 +0100 (CET)
-
-> The get_msglvl and setmsglvl handlers only work as expected if TUN_DEBUG
-> is defined (which required editing the source). Otherwise tun_get_msglvl()
-> returns -EOPNOTSUPP but as this handler is not supposed to return error
-> code, it is not recognized as one and passed to userspace as is, resulting
-> in bogus output of ethtool command. The set_msglvl handler ignores its
-> argument and does nothing if TUN_DEBUG is left undefined.
+On 3/3/20 1:32 AM, Andrii Nakryiko wrote:
+> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+> enum values. This preserves constants values and behavior in expressions, but
+> has added advantaged of being captured as part of DWARF and, subsequently, BTF
+> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+> for BPF applications, as it will not require BPF users to copy/paste various
+> flags and constants, which are frequently used with BPF helpers. Only those
+> constants that are used/useful from BPF program side are converted.
 > 
-> The way to return EOPNOTSUPP to userspace for both requests is not to
-> provide these ethtool_ops callbacks at all if TUN_DEBUG is left undefined.
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+
+Just thinking out loud, is there some way this could be resolved generically
+either from compiler side or via additional tooling where this ends up as BTF
+data and thus inside vmlinux.h as anon enum eventually? bpf.h is one single
+header and worst case libbpf could also ship a copy of it (?), but what about
+all the other things one would need to redefine e.g. for tracing? Small example
+that comes to mind are all these TASK_* defines in sched.h etc, and there's
+probably dozens of other similar stuff needed too depending on the particular
+case; would be nice to have some generic catch-all, hmm.
+
+> ---
+>   include/uapi/linux/bpf.h       | 175 ++++++++++++++++++++------------
+>   tools/include/uapi/linux/bpf.h | 177 ++++++++++++++++++++-------------
+>   2 files changed, 219 insertions(+), 133 deletions(-)
 > 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-
-I agree with your analysis.
-
-But this TUN_DEBUG thing stands outside of what we let drivers do.  Either
-this tracing is not so useful and can be deleted, or the tracing should
-be available unconditionally so that it can be turned on by the vast
-majority of users who do not edit the source.
-
-I suspect making the TUN_DEBUG code unconditional is that way to go here.
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 8e98ced0963b..3ce4e8759661 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -325,44 +325,46 @@ enum bpf_attach_type {
+>   #define BPF_PSEUDO_CALL		1
+>   
+>   /* flags for BPF_MAP_UPDATE_ELEM command */
+> -#define BPF_ANY		0 /* create new element or update existing */
+> -#define BPF_NOEXIST	1 /* create new element if it didn't exist */
+> -#define BPF_EXIST	2 /* update existing element */
+> -#define BPF_F_LOCK	4 /* spin_lock-ed map_lookup/map_update */
+> +enum {
+> +	BPF_ANY		= 0, /* create new element or update existing */
+> +	BPF_NOEXIST	= 1, /* create new element if it didn't exist */
+> +	BPF_EXIST	= 2, /* update existing element */
+> +	BPF_F_LOCK	= 4, /* spin_lock-ed map_lookup/map_update */
+> +};
+[...]
