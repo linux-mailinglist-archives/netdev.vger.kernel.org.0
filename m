@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AACEF176C9F
+	by mail.lfdr.de (Postfix) with ESMTP id 0FED1176C9D
 	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:58:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729058AbgCCC6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:58:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43766 "EHLO mail.kernel.org"
+        id S1729001AbgCCC5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:57:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727689AbgCCCsO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:48:14 -0500
+        id S1728358AbgCCCsP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:48:15 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB7FA24681;
-        Tue,  3 Mar 2020 02:48:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB2F124677;
+        Tue,  3 Mar 2020 02:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203693;
-        bh=YhrA7xkHQw0XMspjhA2C+YFueGikiNsf7iyLjn/x9W8=;
+        s=default; t=1583203694;
+        bh=Rk9wq54YArR8AwJkIfvtCrBBOr/4+oP9g+gu/tchcRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=npJYNF4dBDboJfBmbeRvaEQRDCGjqfDU4CrDkiT2Z53nWqGlgwVZrplCZMkFGFW0P
-         dv3FtRXFuB9+jD5MNASaQ3aykyjS6Ty3rHyj/GRLF9pveJz44mhNgqeOlNMf6GWozz
-         22W1hTE8h2H52sgS8iYC4xI75ZkdOcemzbJUkXV8=
+        b=F3I0RlomRz2KvIHJr7hsgc5xdI0zPL00Al3ZllQc9X63tkBu6NsU4XQXP2s3gcINS
+         jASopGNbPoDlr+ePCJ2P92+9WHf9U1BcCsvcGzURkQdT4pGVAtd7T+gPK/iTMBst1b
+         8diOOeY0PdJ9gXP+t47eyggvy7bjSrelAALORch4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
+Cc:     Marek Vasut <marex@denx.de>,
         "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 27/58] bonding: add missing netdev_update_lockdep_key()
-Date:   Mon,  2 Mar 2020 21:47:09 -0500
-Message-Id: <20200303024740.9511-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 28/58] net: ks8851-ml: Remove 8-bit bus accessors
+Date:   Mon,  2 Mar 2020 21:47:10 -0500
+Message-Id: <20200303024740.9511-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024740.9511-1-sashal@kernel.org>
 References: <20200303024740.9511-1-sashal@kernel.org>
@@ -43,155 +45,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 064ff66e2bef84f1153087612032b5b9eab005bd ]
+[ Upstream commit 69233bba6543a37755158ca3382765387b8078df ]
 
-After bond_release(), netdev_update_lockdep_key() should be called.
-But both ioctl path and attribute path don't call
-netdev_update_lockdep_key().
-This patch adds missing netdev_update_lockdep_key().
+This driver is mixing 8-bit and 16-bit bus accessors for reasons unknown,
+however the speculation is that this was some sort of attempt to support
+the 8-bit bus mode.
 
-Test commands:
-    ip link add bond0 type bond
-    ip link add bond1 type bond
-    ifenslave bond0 bond1
-    ifenslave -d bond0 bond1
-    ifenslave bond1 bond0
+As per the KS8851-16MLL documentation, all two registers accessed via the
+8-bit accessors are internally 16-bit registers, so reading them using
+16-bit accessors is fine. The KS_CCR read can be converted to 16-bit read
+outright, as it is already a concatenation of two 8-bit reads of that
+register. The KS_RXQCR accesses are 8-bit only, however writing the top
+8 bits of the register is OK as well, since the driver caches the entire
+16-bit register value anyway.
 
-Splat looks like:
-[   29.501182][ T1046] WARNING: possible circular locking dependency detected
-[   29.501945][ T1039] hardirqs last disabled at (1962): [<ffffffffac6c807f>] handle_mm_fault+0x13f/0x700
-[   29.503442][ T1046] 5.5.0+ #322 Not tainted
-[   29.503447][ T1046] ------------------------------------------------------
-[   29.504277][ T1039] softirqs last  enabled at (1180): [<ffffffffade00678>] __do_softirq+0x678/0x981
-[   29.505443][ T1046] ifenslave/1046 is trying to acquire lock:
-[   29.505886][ T1039] softirqs last disabled at (1169): [<ffffffffac19c18a>] irq_exit+0x17a/0x1a0
-[   29.509997][ T1046] ffff88805d5da280 (&dev->addr_list_lock_key#3){+...}, at: dev_mc_sync_multiple+0x95/0x120
-[   29.511243][ T1046]
-[   29.511243][ T1046] but task is already holding lock:
-[   29.512192][ T1046] ffff8880460f2280 (&dev->addr_list_lock_key#4){+...}, at: bond_enslave+0x4482/0x47b0 [bonding]
-[   29.514124][ T1046]
-[   29.514124][ T1046] which lock already depends on the new lock.
-[   29.514124][ T1046]
-[   29.517297][ T1046]
-[   29.517297][ T1046] the existing dependency chain (in reverse order) is:
-[   29.518231][ T1046]
-[   29.518231][ T1046] -> #1 (&dev->addr_list_lock_key#4){+...}:
-[   29.519076][ T1046]        _raw_spin_lock+0x30/0x70
-[   29.519588][ T1046]        dev_mc_sync_multiple+0x95/0x120
-[   29.520208][ T1046]        bond_enslave+0x448d/0x47b0 [bonding]
-[   29.520862][ T1046]        bond_option_slaves_set+0x1a3/0x370 [bonding]
-[   29.521640][ T1046]        __bond_opt_set+0x1ff/0xbb0 [bonding]
-[   29.522438][ T1046]        __bond_opt_set_notify+0x2b/0xf0 [bonding]
-[   29.523251][ T1046]        bond_opt_tryset_rtnl+0x92/0xf0 [bonding]
-[   29.524082][ T1046]        bonding_sysfs_store_option+0x8a/0xf0 [bonding]
-[   29.524959][ T1046]        kernfs_fop_write+0x276/0x410
-[   29.525620][ T1046]        vfs_write+0x197/0x4a0
-[   29.526218][ T1046]        ksys_write+0x141/0x1d0
-[   29.526818][ T1046]        do_syscall_64+0x99/0x4f0
-[   29.527430][ T1046]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   29.528265][ T1046]
-[   29.528265][ T1046] -> #0 (&dev->addr_list_lock_key#3){+...}:
-[   29.529272][ T1046]        __lock_acquire+0x2d8d/0x3de0
-[   29.529935][ T1046]        lock_acquire+0x164/0x3b0
-[   29.530638][ T1046]        _raw_spin_lock+0x30/0x70
-[   29.531187][ T1046]        dev_mc_sync_multiple+0x95/0x120
-[   29.531790][ T1046]        bond_enslave+0x448d/0x47b0 [bonding]
-[   29.532451][ T1046]        bond_option_slaves_set+0x1a3/0x370 [bonding]
-[   29.533163][ T1046]        __bond_opt_set+0x1ff/0xbb0 [bonding]
-[   29.533789][ T1046]        __bond_opt_set_notify+0x2b/0xf0 [bonding]
-[   29.534595][ T1046]        bond_opt_tryset_rtnl+0x92/0xf0 [bonding]
-[   29.535500][ T1046]        bonding_sysfs_store_option+0x8a/0xf0 [bonding]
-[   29.536379][ T1046]        kernfs_fop_write+0x276/0x410
-[   29.537057][ T1046]        vfs_write+0x197/0x4a0
-[   29.537640][ T1046]        ksys_write+0x141/0x1d0
-[   29.538251][ T1046]        do_syscall_64+0x99/0x4f0
-[   29.538870][ T1046]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   29.539659][ T1046]
-[   29.539659][ T1046] other info that might help us debug this:
-[   29.539659][ T1046]
-[   29.540953][ T1046]  Possible unsafe locking scenario:
-[   29.540953][ T1046]
-[   29.541883][ T1046]        CPU0                    CPU1
-[   29.542540][ T1046]        ----                    ----
-[   29.543209][ T1046]   lock(&dev->addr_list_lock_key#4);
-[   29.543880][ T1046]                                lock(&dev->addr_list_lock_key#3);
-[   29.544873][ T1046]                                lock(&dev->addr_list_lock_key#4);
-[   29.545863][ T1046]   lock(&dev->addr_list_lock_key#3);
-[   29.546525][ T1046]
-[   29.546525][ T1046]  *** DEADLOCK ***
-[   29.546525][ T1046]
-[   29.547542][ T1046] 5 locks held by ifenslave/1046:
-[   29.548196][ T1046]  #0: ffff88806044c478 (sb_writers#5){.+.+}, at: vfs_write+0x3bb/0x4a0
-[   29.549248][ T1046]  #1: ffff88805af00890 (&of->mutex){+.+.}, at: kernfs_fop_write+0x1cf/0x410
-[   29.550343][ T1046]  #2: ffff88805b8b54b0 (kn->count#157){.+.+}, at: kernfs_fop_write+0x1f2/0x410
-[   29.551575][ T1046]  #3: ffffffffaecf4cf0 (rtnl_mutex){+.+.}, at: bond_opt_tryset_rtnl+0x5f/0xf0 [bonding]
-[   29.552819][ T1046]  #4: ffff8880460f2280 (&dev->addr_list_lock_key#4){+...}, at: bond_enslave+0x4482/0x47b0 [bonding]
-[   29.554175][ T1046]
-[   29.554175][ T1046] stack backtrace:
-[   29.554907][ T1046] CPU: 0 PID: 1046 Comm: ifenslave Not tainted 5.5.0+ #322
-[   29.555854][ T1046] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[   29.557064][ T1046] Call Trace:
-[   29.557504][ T1046]  dump_stack+0x96/0xdb
-[   29.558054][ T1046]  check_noncircular+0x371/0x450
-[   29.558723][ T1046]  ? print_circular_bug.isra.35+0x310/0x310
-[   29.559486][ T1046]  ? hlock_class+0x130/0x130
-[   29.560100][ T1046]  ? __lock_acquire+0x2d8d/0x3de0
-[   29.560761][ T1046]  __lock_acquire+0x2d8d/0x3de0
-[   29.561366][ T1046]  ? register_lock_class+0x14d0/0x14d0
-[   29.562045][ T1046]  ? find_held_lock+0x39/0x1d0
-[   29.562641][ T1046]  lock_acquire+0x164/0x3b0
-[   29.563199][ T1046]  ? dev_mc_sync_multiple+0x95/0x120
-[   29.563872][ T1046]  _raw_spin_lock+0x30/0x70
-[   29.564464][ T1046]  ? dev_mc_sync_multiple+0x95/0x120
-[   29.565146][ T1046]  dev_mc_sync_multiple+0x95/0x120
-[   29.565793][ T1046]  bond_enslave+0x448d/0x47b0 [bonding]
-[   29.566487][ T1046]  ? bond_update_slave_arr+0x940/0x940 [bonding]
-[   29.567279][ T1046]  ? bstr_printf+0xc20/0xc20
-[   29.567857][ T1046]  ? stack_trace_consume_entry+0x160/0x160
-[   29.568614][ T1046]  ? deactivate_slab.isra.77+0x2c5/0x800
-[   29.569320][ T1046]  ? check_chain_key+0x236/0x5d0
-[   29.569939][ T1046]  ? sscanf+0x93/0xc0
-[   29.570442][ T1046]  ? vsscanf+0x1e20/0x1e20
-[   29.571003][ T1046]  bond_option_slaves_set+0x1a3/0x370 [bonding]
-[ ... ]
+Finally, the driver is not used by any hardware in the kernel right now.
+The only hardware available to me is one with 16-bit bus, so I have no
+way to test the 8-bit bus mode, however it is unlikely this ever really
+worked anyway. If the 8-bit bus mode is ever required, it can be easily
+added by adjusting the 16-bit accessors to do 2 consecutive accesses,
+which is how this should have been done from the beginning.
 
-Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Petr Stetiar <ynezz@true.cz>
+Cc: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c    | 2 ++
- drivers/net/bonding/bond_options.c | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/net/ethernet/micrel/ks8851_mll.c | 45 +++---------------------
+ 1 file changed, 5 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 7dcd709f4ac3d..f65e5bb35c28e 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3550,6 +3550,8 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
- 	case BOND_RELEASE_OLD:
- 	case SIOCBONDRELEASE:
- 		res = bond_release(bond_dev, slave_dev);
-+		if (!res)
-+			netdev_update_lockdep_key(slave_dev);
- 		break;
- 	case BOND_SETHWADDR_OLD:
- 	case SIOCBONDSETHWADDR:
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index ddb3916d3506b..215c109232893 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -1398,6 +1398,8 @@ static int bond_option_slaves_set(struct bonding *bond,
- 	case '-':
- 		slave_dbg(bond->dev, dev, "Releasing interface\n");
- 		ret = bond_release(bond->dev, dev);
-+		if (!ret)
-+			netdev_update_lockdep_key(dev);
- 		break;
+diff --git a/drivers/net/ethernet/micrel/ks8851_mll.c b/drivers/net/ethernet/micrel/ks8851_mll.c
+index a41a90c589db2..e2fb20154511e 100644
+--- a/drivers/net/ethernet/micrel/ks8851_mll.c
++++ b/drivers/net/ethernet/micrel/ks8851_mll.c
+@@ -156,24 +156,6 @@ static int msg_enable;
+  * chip is busy transferring packet data (RX/TX FIFO accesses).
+  */
  
- 	default:
+-/**
+- * ks_rdreg8 - read 8 bit register from device
+- * @ks	  : The chip information
+- * @offset: The register address
+- *
+- * Read a 8bit register from the chip, returning the result
+- */
+-static u8 ks_rdreg8(struct ks_net *ks, int offset)
+-{
+-	u16 data;
+-	u8 shift_bit = offset & 0x03;
+-	u8 shift_data = (offset & 1) << 3;
+-	ks->cmd_reg_cache = (u16) offset | (u16)(BE0 << shift_bit);
+-	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
+-	data  = ioread16(ks->hw_addr);
+-	return (u8)(data >> shift_data);
+-}
+-
+ /**
+  * ks_rdreg16 - read 16 bit register from device
+  * @ks	  : The chip information
+@@ -189,22 +171,6 @@ static u16 ks_rdreg16(struct ks_net *ks, int offset)
+ 	return ioread16(ks->hw_addr);
+ }
+ 
+-/**
+- * ks_wrreg8 - write 8bit register value to chip
+- * @ks: The chip information
+- * @offset: The register address
+- * @value: The value to write
+- *
+- */
+-static void ks_wrreg8(struct ks_net *ks, int offset, u8 value)
+-{
+-	u8  shift_bit = (offset & 0x03);
+-	u16 value_write = (u16)(value << ((offset & 1) << 3));
+-	ks->cmd_reg_cache = (u16)offset | (BE0 << shift_bit);
+-	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
+-	iowrite16(value_write, ks->hw_addr);
+-}
+-
+ /**
+  * ks_wrreg16 - write 16bit register value to chip
+  * @ks: The chip information
+@@ -324,8 +290,7 @@ static void ks_read_config(struct ks_net *ks)
+ 	u16 reg_data = 0;
+ 
+ 	/* Regardless of bus width, 8 bit read should always work.*/
+-	reg_data = ks_rdreg8(ks, KS_CCR) & 0x00FF;
+-	reg_data |= ks_rdreg8(ks, KS_CCR+1) << 8;
++	reg_data = ks_rdreg16(ks, KS_CCR);
+ 
+ 	/* addr/data bus are multiplexed */
+ 	ks->sharedbus = (reg_data & CCR_SHARED) == CCR_SHARED;
+@@ -429,7 +394,7 @@ static inline void ks_read_qmu(struct ks_net *ks, u16 *buf, u32 len)
+ 
+ 	/* 1. set sudo DMA mode */
+ 	ks_wrreg16(ks, KS_RXFDPR, RXFDPR_RXFPAI);
+-	ks_wrreg8(ks, KS_RXQCR, (ks->rc_rxqcr | RXQCR_SDA) & 0xff);
++	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr | RXQCR_SDA);
+ 
+ 	/* 2. read prepend data */
+ 	/**
+@@ -446,7 +411,7 @@ static inline void ks_read_qmu(struct ks_net *ks, u16 *buf, u32 len)
+ 	ks_inblk(ks, buf, ALIGN(len, 4));
+ 
+ 	/* 4. reset sudo DMA Mode */
+-	ks_wrreg8(ks, KS_RXQCR, ks->rc_rxqcr);
++	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr);
+ }
+ 
+ /**
+@@ -679,13 +644,13 @@ static void ks_write_qmu(struct ks_net *ks, u8 *pdata, u16 len)
+ 	ks->txh.txw[1] = cpu_to_le16(len);
+ 
+ 	/* 1. set sudo-DMA mode */
+-	ks_wrreg8(ks, KS_RXQCR, (ks->rc_rxqcr | RXQCR_SDA) & 0xff);
++	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr | RXQCR_SDA);
+ 	/* 2. write status/lenth info */
+ 	ks_outblk(ks, ks->txh.txw, 4);
+ 	/* 3. write pkt data */
+ 	ks_outblk(ks, (u16 *)pdata, ALIGN(len, 4));
+ 	/* 4. reset sudo-DMA mode */
+-	ks_wrreg8(ks, KS_RXQCR, ks->rc_rxqcr);
++	ks_wrreg16(ks, KS_RXQCR, ks->rc_rxqcr);
+ 	/* 5. Enqueue Tx(move the pkt from TX buffer into TXQ) */
+ 	ks_wrreg16(ks, KS_TXQCR, TXQCR_METFE);
+ 	/* 6. wait until TXQCR_METFE is auto-cleared */
 -- 
 2.20.1
 
