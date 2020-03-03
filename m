@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13BA2176D34
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 04:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 955F5176D2E
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 04:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728072AbgCCDB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 22:01:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41520 "EHLO mail.kernel.org"
+        id S1727822AbgCCDBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 22:01:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727728AbgCCCqw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:46:52 -0500
+        id S1727756AbgCCCqz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:46:55 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D8AC24681;
-        Tue,  3 Mar 2020 02:46:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CE262467B;
+        Tue,  3 Mar 2020 02:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203612;
-        bh=UNt/cP3q92jdQdpCC9/32s/ARZH/cVn4Qk99rO27Qj0=;
+        s=default; t=1583203614;
+        bh=Bw5L/N+y1E8YonaSDSIpIm8OIL8FvHcVgakmX9TxtIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BLjPIHarCfV9e9sssUl8Tb/DQ7EqbNEtN7GrHbJd/A/JvsffccPozRqz6fdt88vhr
-         LCnSMeZfNOFnStq8yvcFqFoP0NBTRNEE3fXlTGSJKLVAjr3Hkb/OP2rQx1UWCBCVaD
-         +FnqloDDk9DmYnacmktgzwpH2jPOFb4zOu/nK+xs=
+        b=hv1BlH57cDBKjdhyltbHn4ATKa/m8TAuqOHTvuojBMclal2iCsvoG8zO2cr9/TJ4Z
+         B25VYSRiVhGQDAJr5MXKFP0ITdXKqFPGAs6mBzXZiasxt+kwFkcZCsJCcM06oh+1co
+         +mscwKzwr2Ch++/Eydx5kDEsix/j81XrkezZSXxU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dmitry Bogdanov <dbogdanov@marvell.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 29/66] net: atlantic: fix out of range usage of active_vlans array
-Date:   Mon,  2 Mar 2020 21:45:38 -0500
-Message-Id: <20200303024615.8889-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 31/66] net: dsa: b53: Ensure the default VID is untagged
+Date:   Mon,  2 Mar 2020 21:45:40 -0500
+Message-Id: <20200303024615.8889-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024615.8889-1-sashal@kernel.org>
 References: <20200303024615.8889-1-sashal@kernel.org>
@@ -44,36 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dbogdanov@marvell.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 5a292c89a84d49b598f8978f154bdda48b1072c0 ]
+[ Upstream commit d965a5432d4c3e6b9c3d2bc1d4a800013bbf76f6 ]
 
-fix static checker warning:
- drivers/net/ethernet/aquantia/atlantic/aq_filters.c:166 aq_check_approve_fvlan()
- error: passing untrusted data to 'test_bit()'
+We need to ensure that the default VID is untagged otherwise the switch
+will be sending tagged frames and the results can be problematic. This
+is especially true with b53 switches that use VID 0 as their default
+VLAN since VID 0 has a special meaning.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 7975d2aff5af: ("net: aquantia: add support of rx-vlan-filter offload")
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+Fixes: fea83353177a ("net: dsa: b53: Fix default VLAN ID")
+Fixes: 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_filters.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/b53/b53_common.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-index 6102251bb909b..03ff92bc4a7fb 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-@@ -163,7 +163,7 @@ aq_check_approve_fvlan(struct aq_nic_s *aq_nic,
- 	}
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 6a1ff4d43e3a6..38b16efda4a9f 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1353,6 +1353,9 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
  
- 	if ((aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) &&
--	    (!test_bit(be16_to_cpu(fsp->h_ext.vlan_tci),
-+	    (!test_bit(be16_to_cpu(fsp->h_ext.vlan_tci) & VLAN_VID_MASK,
- 		       aq_nic->active_vlans))) {
- 		netdev_err(aq_nic->ndev,
- 			   "ethtool: unknown vlan-id specified");
+ 		b53_get_vlan_entry(dev, vid, vl);
+ 
++		if (vid == 0 && vid == b53_default_pvid(dev))
++			untagged = true;
++
+ 		vl->members |= BIT(port);
+ 		if (untagged && !dsa_is_cpu_port(ds, port))
+ 			vl->untag |= BIT(port);
 -- 
 2.20.1
 
