@@ -2,108 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA25177703
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A363177727
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:31:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729418AbgCCN3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 08:29:52 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35610 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727913AbgCCN3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:29:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=bHX1b2/1S5EkvQkNQ9zS/cLGZRGrR/qQ+LJlvoJKItU=; b=SzS5KFygidT4fdT2l+S426X6VR
-        yG7WR1V6n4zvLvjx08lYcfm0/rfT0af24O8meIy1dTPGA8JmObRGjpNQpOXmkVpVdRfRQhV1PTrf8
-        NS8NQjBx57VsinMkpkzMlEt5jXApz1R8X0+TcPz7FDxfFiNeskX0y8bs/Z9rMsHOv/znT8bRIF5zv
-        X6kVjWx4vOS/aUGhkkC+TkCA9GKOXosK25hPl4ok9F+PsNf7vONF8L3gNXnfEyQHzFm0qaGbwwr8b
-        ejAQPnFluj4ymWejQWnBxc5d3gk/YXLhvJuYplJNu78GtrVJ0GiemU/F9vGvQy/dnoONChk8Jq42b
-        teTiFtkg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:33522 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j97cF-0008DD-Ig; Tue, 03 Mar 2020 13:29:43 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j97cE-0004aW-Ur; Tue, 03 Mar 2020 13:29:42 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: [PATCH net-next] doc: sfp-phylink: correct code indentation
+        id S1729440AbgCCNbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 08:31:22 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40203 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbgCCNbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:31:22 -0500
+Received: by mail-wm1-f66.google.com with SMTP id e26so2834154wme.5
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:31:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Wt7FYb07f5q30xBpDa77cnx/gqt+CmvnMfF6o6ueJb0=;
+        b=ooJcWoRuIJjTSlHfhhuLEnq27TpRjQh3s14UKbctdhVZ3rEwq4IPvYIg5CZkL4/j4v
+         S+0SkVN0Smvp/DTx74o/rdEnF43PzXwKKiEz5e9i/HfNeJ92LfRxOyS2amzBDHaxvnqp
+         Ej8cJxu4YYL8IMl3lv7LZuWec6vbakeQg1Qex8uI8HmjOaoJt7nde0bYXfBvusrwor2B
+         lmkNqEN/fVfUtKth4R74TnFqxxmXHh2CTPdrxss2Sap8MJyaa0eVvOqAjfJG2JSPl6l/
+         xagBu8c5AF9CZvfRGE3eewXiZDMdzBCl++nZeAgsc+Jvdn3E2+ngBFWd1/jTL/IZd4S/
+         YPxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wt7FYb07f5q30xBpDa77cnx/gqt+CmvnMfF6o6ueJb0=;
+        b=MrLhBdpY7AhuFLfFM6ZsteiptUSa4Wl1HJTSPYKx/QPA2//dlgtwrVE43Smh/jiQCB
+         ZNbIVvbg8KDcxh8m1kXMbcs66Ji6YXDEPjAfUhMHWKDbQm7soTw/mDZUr8wSOMSn7Tn3
+         6cEkDP9VrUpaVeyt/u5NqZ5WyZ4yxAIS0kecJhe1GIetdNrDtQiIwGxJc7zpRS04uehT
+         xKPtm+1SMvYfJSXEyjkankdNhcIi22G1OmFtuLbaBGUg6ytTu6kim4zl1OQfcwjQvyzc
+         aO3NhoqkpQOx6uaEjQKdf1XCmDk3AovpxLxONMlEgFTQe1yDRDtkjXh1d0k1KrOo06Rc
+         l0og==
+X-Gm-Message-State: ANhLgQ0GbysBO2B/qwneJ39r3p1e+QI/ynhs7VQTxkfHK3mHw9y+qV2c
+        VaGrtRjwSeAp+60XyILeo6xbHw==
+X-Google-Smtp-Source: ADFU+vs/CqIQgBVZQR0ELATCr46+QaQEBGSRtv7JgX2UfQsjE2Fe+NwYz5h+WsxXWKCf+XfKKoftZA==
+X-Received: by 2002:a1c:ab07:: with SMTP id u7mr4141921wme.23.1583242281257;
+        Tue, 03 Mar 2020 05:31:21 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id f207sm4878424wme.9.2020.03.03.05.31.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 05:31:20 -0800 (PST)
+Date:   Tue, 3 Mar 2020 14:31:20 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] devlink: remove trigger command from devlink-region.rst
+Message-ID: <20200303133120.GJ2178@nanopsycho>
+References: <20200302222119.52140-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j97cE-0004aW-Ur@rmk-PC.armlinux.org.uk>
-Date:   Tue, 03 Mar 2020 13:29:42 +0000
+In-Reply-To: <20200302222119.52140-1-jacob.e.keller@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using vim to edit the phylink documentation reveals some mistakes due
-to the "invisible" pythonesque white space indentation that can't be
-seen with other editors. Fix it.
+Mon, Mar 02, 2020 at 11:21:19PM CET, jacob.e.keller@intel.com wrote:
+>The devlink trigger command does not exist. While rewriting the
+>documentation for devlink into the reStructuredText format,
+>documentation for the trigger command was accidentally merged in. This
+>occurred because the author was also working on a potential extension to
+>devlink regions which included this trigger command, and accidentally
+>squashed the documentation incorrectly.
+>
+>Further review eventually settled on using the previously unused "new"
+>command instead of creating a new trigger command.
+>
+>Fix this by removing mention of the trigger command from the
+>documentation.
+>
+>Fixes: 0b0f945f5458 ("devlink: add a file documenting devlink regions", 2020-01-10)
+>Noticed-by: Jiri Pirko <jiri@resnulli.us>
+>Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- Documentation/networking/sfp-phylink.rst | 32 ++++++++++++------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
-index 8d7af28cd835..5aec7c8857d0 100644
---- a/Documentation/networking/sfp-phylink.rst
-+++ b/Documentation/networking/sfp-phylink.rst
-@@ -138,27 +138,27 @@ this documentation.
- 
-    .. code-block:: c
- 
--    static int foo_ethtool_set_link_ksettings(struct net_device *dev,
--					     const struct ethtool_link_ksettings *cmd)
--    {
--	struct foo_priv *priv = netdev_priv(dev);
--
--	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
--    }
--
--    static int foo_ethtool_get_link_ksettings(struct net_device *dev,
--					     struct ethtool_link_ksettings *cmd)
--    {
--	struct foo_priv *priv = netdev_priv(dev);
-+	static int foo_ethtool_set_link_ksettings(struct net_device *dev,
-+						  const struct ethtool_link_ksettings *cmd)
-+	{
-+		struct foo_priv *priv = netdev_priv(dev);
-+	
-+		return phylink_ethtool_ksettings_set(priv->phylink, cmd);
-+	}
- 
--	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
--    }
-+	static int foo_ethtool_get_link_ksettings(struct net_device *dev,
-+						  struct ethtool_link_ksettings *cmd)
-+	{
-+		struct foo_priv *priv = netdev_priv(dev);
-+	
-+		return phylink_ethtool_ksettings_get(priv->phylink, cmd);
-+	}
- 
--7. Replace the call to:
-+7. Replace the call to::
- 
- 	phy_dev = of_phy_connect(dev, node, link_func, flags, phy_interface);
- 
--   and associated code with a call to:
-+   and associated code with a call to::
- 
- 	err = phylink_of_phy_connect(priv->phylink, node, flags);
- 
--- 
-2.20.1
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
