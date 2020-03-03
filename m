@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0467177BD1
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CF9177BDC
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730195AbgCCQYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 11:24:23 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34052 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729508AbgCCQYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:24:23 -0500
-Received: by mail-lf1-f68.google.com with SMTP id w27so3312002lfc.1;
-        Tue, 03 Mar 2020 08:24:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WiTToYDThx/+Ltsox5w4BtYSXdBzfbKsRlVlYc+/m7M=;
-        b=bIj/eDxD/rTmD1XBZZOPYPECcbHdQCYXd1olkRr3dMjsPJoJnPci5s6RgM+Zili+Uv
-         YIuMf3lSYIsnWiYc5+9PbEKBWHZ8k7aOFPxHgUN6PzJqv91yuRXYQvD9pMMmfBioWlKI
-         FIiI19hiZzgb/6v5flTePuSTk3q64x4G6krNkyGFJ101tt85GJD+QpRh0xdQL/RVvQTd
-         UWcsmH8RXljD+hr5T63uFMEYHDCys9/4TGVRE3o+RkuPBR5xZU+jDjVajbe/CpmChT5a
-         gp4Q80kmEDSx0P7FzfuuFnAAIRDv5HP9FexqzIf7ZIlqY8U76nB89LKvNKqpTgf1s15U
-         t4KQ==
+        id S1730349AbgCCQ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 11:27:42 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37490 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729598AbgCCQ1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:27:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583252861;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EXOES8R7lt1FaMV27O05pLr/5n+ZxyuO6JH2cTv43as=;
+        b=OivsSYB1T6+tqMK4ZajvwTUKKytjx54jZJ2+o/iuPcpIhGAUk5c2umdXrcoNWKXbtjwZRL
+        jnd5JZ8a5K0h9BdcTlQKVjxQ5AObul8w/+8s9n1kfmPrFzxW/SOkeXg54cvraofYrGk2sp
+        niFKm985Ajz0nLxOZiTm1xm3heUCtN8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-392-4cypE74KNCGooFXx_jgMdg-1; Tue, 03 Mar 2020 11:27:37 -0500
+X-MC-Unique: 4cypE74KNCGooFXx_jgMdg-1
+Received: by mail-wr1-f69.google.com with SMTP id d7so1470594wrr.0
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 08:27:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WiTToYDThx/+Ltsox5w4BtYSXdBzfbKsRlVlYc+/m7M=;
-        b=GsgQpnxmZ/vT7Bw72zGsTJ3h6yXtY6tw06Viha7sPmo8Fu/tjWY9xdJCBFpKmxbM3D
-         hbeHPjkngTqJys2qEAftEiKkM39Q2JNPIzG/qHU9YLzSNfl+Yi1qORuhYx6bKXJOBwp2
-         YEFfKGqnfOMskY50AW3328hM6M/cf2MQ08oxdU2PXqq6w4AkfQKn22sbiDVJ1CIyOqKh
-         Gl+whV0E2SS6mkMs2byz1GTRDE7DWp4NwTU4mBa+A1IKclbOqKrzxz5ZPGOS89wl+pv9
-         LN0HcBKlTgKyKMGS4wc5njuQ4QCgPsc3DnoNVWg7FmA0gMQuFB1qJpkSCszgQ/GREvBj
-         FX2w==
-X-Gm-Message-State: ANhLgQ1QXWC3NhguYG45Goqn5kIRsEvRoPrlytODPPOFWsGRb8hCymjr
-        m0EbxiOmyTmCv7Dwm24JIlWclxpAdYggzvEfZotbjw==
-X-Google-Smtp-Source: ADFU+vsjEx587DMAprO7GRfLelYVi88KXOngFfaf6H6l7+h9pBZ2hPeTffBVAIFTTjVswMUtPMJk35v016rDl6b/C3w=
-X-Received: by 2002:a05:6512:304c:: with SMTP id b12mr2230358lfb.196.1583252659344;
- Tue, 03 Mar 2020 08:24:19 -0800 (PST)
-MIME-Version: 1.0
-References: <158289973977.337029.3637846294079508848.stgit@toke.dk>
- <20200228221519.GE51456@rdna-mbp> <87v9npu1cg.fsf@toke.dk>
- <20200303010318.GB84713@rdna-mbp> <877e01sr6m.fsf@toke.dk>
-In-Reply-To: <877e01sr6m.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 3 Mar 2020 08:24:07 -0800
-Message-ID: <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
-Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs
- on an interface
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=EXOES8R7lt1FaMV27O05pLr/5n+ZxyuO6JH2cTv43as=;
+        b=V5MED0G9gGwAMeukWJTqOl1p6GNFQHpJE3lYcUGHkVUbCARedQawSyTx52gCTeSv3o
+         DLAZUHiyiL3SNis7erybWDH0w/yLr1V0XaZoWpBF10mBrk+gUwuWCfey1/cDe2/hQ4TK
+         6gS1QCrcitDScbUSlV4BzuZ4jUgwk1pEEumK/IVSlIQo64Lgh09/Gu5thufwXEZ6Vsb6
+         4ib9/jCIAEJLFsVNXRfVZL3vitGIqm8NcJkVkfV7k+UejjxghBccufZEWJmQTt5VQVeG
+         S33urfxKKLm5RYfiKQc896ZmMxIQlICaEhi4Y1dEzBsTUrGWh1w+WDxeP9EDr+Twvqp2
+         5ZEA==
+X-Gm-Message-State: ANhLgQ2ylNqmFlLOF5WJni/xLn7ZOoa/YM5QYfHBaiTiFVOE6lqjEzGN
+        CSY4jno1jFarTlg6YluVYZG76vabX9AN/LqwVahIltEPGCndEvUKWVVWMLgcBeOZmCr+qxRk/Qa
+        FQU30cliJyVoGBGDb
+X-Received: by 2002:a1c:7c08:: with SMTP id x8mr4859155wmc.71.1583252856092;
+        Tue, 03 Mar 2020 08:27:36 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vvnvh2YnX6Vor6VsCTeF6I03GVmPgt9Mvj+GG8GAzUkK8YR/9BFT2Rg2tJKqt2/1ZUHVcEc7A==
+X-Received: by 2002:a1c:7c08:: with SMTP id x8mr4859137wmc.71.1583252855877;
+        Tue, 03 Mar 2020 08:27:35 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b14sm24703675wrn.75.2020.03.03.08.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 08:27:34 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3B816180331; Tue,  3 Mar 2020 17:27:34 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Andrey Ignatov <rdna@fb.com>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -63,34 +66,48 @@ Cc:     Andrey Ignatov <rdna@fb.com>, Alexei Starovoitov <ast@kernel.org>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Network Development <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>, Takshak Chahande <ctakshak@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH RFC] Userspace library for handling multiple XDP programs on an interface
+In-Reply-To: <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
+References: <158289973977.337029.3637846294079508848.stgit@toke.dk> <20200228221519.GE51456@rdna-mbp> <87v9npu1cg.fsf@toke.dk> <20200303010318.GB84713@rdna-mbp> <877e01sr6m.fsf@toke.dk> <CAADnVQJM4M38hNRX16sFGMboXT8AwUpuSUrvH_B9bSiGEr8HzQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 03 Mar 2020 17:27:34 +0100
+Message-ID: <871rq95rpl.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 3, 2020 at 1:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> This is the reason why I think the 'link' between the main program and
-> the replacement program is in the "wrong direction". Instead I want to
-> introduce a new attachment API that can be used instead of
-> bpf_raw_tracepoint_open() - something like:
->
-> prog_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
-> func_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // replacement func
-> err =3D sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // does=
- *not* return an fd
->
-> When using this, the kernel will flip the direction of the reference
-> between BPF programs, so it goes main_prog -> replacement_prog. And
-> instead of getting an fd back, this will make the replacement prog share
-> its lifecycle with the main program, so that when the main program is
-> released, so is the replacement (absent other references, of course).
-> There could be an explicit 'release' command as well, of course, and a
-> way to list all replacements on a program.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Nack to such api.
-We hit this opposite direction issue with xdp and tc in the past.
-Not going to repeat the same mistake again.
+> On Tue, Mar 3, 2020 at 1:50 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> This is the reason why I think the 'link' between the main program and
+>> the replacement program is in the "wrong direction". Instead I want to
+>> introduce a new attachment API that can be used instead of
+>> bpf_raw_tracepoint_open() - something like:
+>>
+>> prog_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // dispatcher
+>> func_fd =3D sys_bpf(BPF_PROG_LOAD, ...); // replacement func
+>> err =3D sys_bpf(BPF_PROG_REPLACE_FUNC, prog_fd, btf_id, func_fd); // doe=
+s *not* return an fd
+>>
+>> When using this, the kernel will flip the direction of the reference
+>> between BPF programs, so it goes main_prog -> replacement_prog. And
+>> instead of getting an fd back, this will make the replacement prog share
+>> its lifecycle with the main program, so that when the main program is
+>> released, so is the replacement (absent other references, of course).
+>> There could be an explicit 'release' command as well, of course, and a
+>> way to list all replacements on a program.
+>
+> Nack to such api.
+> We hit this opposite direction issue with xdp and tc in the past.
+> Not going to repeat the same mistake again.
+
+Care to elaborate? What mistake, and what was the issue?
+
+-Toke
+
