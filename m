@@ -2,94 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B21F177A42
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77360177A52
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:23:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729847AbgCCPUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:20:24 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37250 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729026AbgCCPUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:20:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=rqs5n3XmRaCSly2EDMH5QvAtlRmv89IGC+Wzd5o0qbs=; b=nbHgWKIkv2Idzwy2Et9+uo8r5
-        hBVoCfFc5qneG0jrRoj6SRap0bI7PVh7DBfz/yHPW+73e/9KrYctdzDVbwSVQ+wjNUG6aO/ffFiod
-        UQ/J9JFQB8i+SN+JXWHQU2OoiTk0TG++cuUlUGNq8BIs7J01KfGl6+IOKIKkvzbCFXCFUM8vpoe4S
-        T/eu1VUviPns2fnKW05x9bjZ0zaxuWfpOPU7ODT3/O4MblD0MKK7DOZ6T2d2Bp73d7qTvlvdieKSL
-        slk74rDFOS1upoLRux0JoJcJwMKqth3Sh/oQP60/HhHjMTpq6qqG6B04egY5L7wEgpNh5O6VXqp6R
-        8ZB1TfUjQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:55736)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j99LF-0000Ic-Nd; Tue, 03 Mar 2020 15:20:17 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j99LE-00060I-U8; Tue, 03 Mar 2020 15:20:16 +0000
-Date:   Tue, 3 Mar 2020 15:20:16 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: phy: marvell10g: add mdix control
-Message-ID: <20200303152016.GP25745@shell.armlinux.org.uk>
-References: <20200303144259.GM25745@shell.armlinux.org.uk>
- <E1j98m5-00057k-Q6@rmk-PC.armlinux.org.uk>
- <20200303150958.GD3179@kwain>
+        id S1729872AbgCCPXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:23:21 -0500
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:41070 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbgCCPXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:23:21 -0500
+Received: by mail-pg1-f179.google.com with SMTP id b1so1676045pgm.8;
+        Tue, 03 Mar 2020 07:23:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4uMBpBOIqm/0ynEGtQaKGFxamPX39BjBfVI0h30VeRw=;
+        b=lkQFBtFY5SssVVeURD1b+Ig/VAaDBsj0Uon3Dc7y1oG1ZR44CH94pHe5BO2M905iPx
+         Yr5vf/kJ9rO+zv1cubjBfMmGjCzhvVyuDl3yBJLeXc0IEUHyHOY+XYCYolUX77AnT0Bz
+         QOTVu8meED63CJQsVjL4Lw2q7JRfLPlCn9NALSq7Tnxg1r7v2KSY6KXwdUaq3Von/e/w
+         zKukd0NWkRpWsCZt2+B0/zZYm//tAZX6kZRWK90xtGczsXK7vR9NAJHlRG12T4+le02B
+         u1DFFEvfrhng8x5L8D2sTHRKBbqDzkdY4NGd79kAgvs+7czuO/0VyW+HlHfCjYdEnYmP
+         7vwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4uMBpBOIqm/0ynEGtQaKGFxamPX39BjBfVI0h30VeRw=;
+        b=hA12Qm+DxxRTeVF8oIkS4/URwvfx1HU8Lcx6Nyg4bSqqP9HKw3LJ2TJub4MNWaKpgf
+         dMC/kq3EET3ING9hZ+Is5DOJIqG0fjc+bMXMzOVfB4KuylzVcTZfcFMKnyzx/JeHuf7Y
+         gnwyzOC/WFHmeGmcSnHn/i3QzJR6enblpFdmc5c10s9U9Iz6YHfj6SrLwrQenAi0+KPB
+         QnFpEJqCXrRGgAXUxWFcOV3GkPATGaqbqX7hB7Sc0Vn8RLsbEZ4+27KmdCgouWnDcQR4
+         RYa7bwQhUy4maU4D0zLMdWn0fF8mz33XkH2QxwdfgYb7sLYPvdZ+OWdEu3ELR4v6ql5Y
+         yiqg==
+X-Gm-Message-State: ANhLgQ0TnGrCw7zRPX5VCcy3p7YZmfZWDpvvIcpd8bQcPoGOlRx6HRO4
+        FR2evMah+0dcL9xSCRGfzI4=
+X-Google-Smtp-Source: ADFU+vuRN7jJ258kwfeGpP/dSM8ifMkULad01Zm3gSV1dVGJ1Jx7ViJeQWzznpvDUUpJFuukaYibnw==
+X-Received: by 2002:a63:3d48:: with SMTP id k69mr4368726pga.395.1583249000145;
+        Tue, 03 Mar 2020 07:23:20 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id h65sm2827515pfg.12.2020.03.03.07.23.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 07:23:19 -0800 (PST)
+Date:   Tue, 3 Mar 2020 07:23:17 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "Christopher S. Hall" <christopher.s.hall@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        jacob.e.keller@intel.com, "David S. Miller" <davem@davemloft.net>,
+        Sean V Kelley <sean.v.kelley@intel.com>
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time GPIO
+ Driver with PHC interface changes to support additional H/W Features
+Message-ID: <20200303152317.GA7971@localhost>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+ <87eevf4hnq.fsf@nanos.tec.linutronix.de>
+ <20200224224059.GC1508@skl-build>
+ <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+ <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200303150958.GD3179@kwain>
+In-Reply-To: <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 04:09:58PM +0100, Antoine Tenart wrote:
-> Hello Russell,
+On Tue, Mar 03, 2020 at 02:00:48PM +0100, Linus Walleij wrote:
 > 
-> On Tue, Mar 03, 2020 at 02:43:57PM +0000, Russell King wrote:
-> >  
-> > +static int mv3310_config_mdix(struct phy_device *phydev)
-> > +{
-> > +	u16 val;
-> > +	int err;
-> > +
-> > +	switch (phydev->mdix_ctrl) {
-> > +	case ETH_TP_MDI_AUTO:
-> > +		val = MV_PCS_CSCR1_MDIX_AUTO;
-> > +		break;
-> > +	case ETH_TP_MDI_X:
-> > +		val = MV_PCS_CSCR1_MDIX_MDIX;
-> > +		break;
-> > +	case ETH_TP_MDI:
-> > +		val = MV_PCS_CSCR1_MDIX_MDI;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	err = phy_modify_mmd_changed(phydev, MDIO_MMD_PCS, MV_PCS_CSCR1,
-> > +				     MV_PCS_CSCR1_MDIX_MASK, val);
-> > +	if (err < 0)
-> > +		return err;
-> > +
-> > +	return mv3310_maybe_reset(phydev, MV_PCS_BASE_T, err > 0);
-> 
-> This helper is only introduced in patch 2.
+> That looks like something I/we would want to support all the way
+> to userspace so people can do their funny industrial stuff in some
+> standard manner.
 
-Hmm, must have happened when I reordered the patches, and I hadn't
-noticed.  Thanks, v2 coming soon.
+...
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> HW timestamps would be something more elaborate and
+> nice CLOCK_HW_SPECIFIC or so. Some of the IIO sensors also
+> have that, we just don't expose it as of now.
+
+It is worth considering whether it makes sense to somehow unify gpio,
+iio, and the phc pin subsystems.  In my view, a big chunk of work
+would be to have something like the "clock tree" for gpios and clock
+lines.  This tree would describe the HW connectivity between (at
+least) MAC/PHY clocks and IOs, gpio controllers, audio/video codecs,
+and so on.
+
+Also, there is that comedi thing in staging.  If it has a chance ever
+to leave staging, then I think it would also benefit from integration
+into gpio/iio world.
+
+Thanks,
+Richard
+
+
