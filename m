@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79937176E5D
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 06:06:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8276176E58
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 06:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727447AbgCCFFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 00:05:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37806 "EHLO mail.kernel.org"
+        id S1727440AbgCCFFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 00:05:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37818 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727398AbgCCFFr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726181AbgCCFFr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 3 Mar 2020 00:05:47 -0500
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A1DB12465A;
-        Tue,  3 Mar 2020 05:05:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B5B524671;
+        Tue,  3 Mar 2020 05:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1583211947;
-        bh=P/sub7rpG5Bsm4iuXdnDdL07W9NG30VlmxKoBHIFjfk=;
+        bh=ujz8F5bs4zcS+pDthRaZ+JHV9uX8cGp65lZdXcmDRrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kFMCEPPTSOfklKhjbBdC9fH8+lhtbEZfEdE4E0Eqcuh9dgkiJU2c1XCfCiOiVJLsE
-         Ejxxn5HrHQp665ffLDCXIoVkT7sXyUhFpI4jwPthe2aXpdsw54PSV4k7I91UqNDTUR
-         R+JoNHn3zEEhg/gTbl/5Gd1gDbH1A71YLoGiw9FI=
+        b=EL4bUutnGehogOOjYQlhh9+idVPClqnZp8xlBLw6dECIAMCiJtlYbrWPe58uig2oH
+         OCOeb9O8XHLyRDTyIXslwo4E9mgTuPFMn68HVBFMcA+G7TKs74oD/6VBKsILnJbmpU
+         jwhMaT/3YzN0rXPjF0Aku7qTJ03e3L4EQi5fSops=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Johannes Berg <johannes.berg@intel.com>,
         Jiri Pirko <jiri@mellanox.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        Mark Greer <mgreer@animalcreek.com>
-Subject: [PATCH net 15/16] nfc: add missing attribute validation for deactivate target
-Date:   Mon,  2 Mar 2020 21:05:25 -0800
-Message-Id: <20200303050526.4088735-16-kuba@kernel.org>
+        Samuel Ortiz <sameo@linux.intel.com>
+Subject: [PATCH net 16/16] nfc: add missing attribute validation for vendor subcommand
+Date:   Mon,  2 Mar 2020 21:05:26 -0800
+Message-Id: <20200303050526.4088735-17-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200303050526.4088735-1-kuba@kernel.org>
 References: <20200303050526.4088735-1-kuba@kernel.org>
@@ -44,33 +42,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing attribute validation for NFC_ATTR_TARGET_INDEX
+Add missing attribute validation for vendor subcommand attributes
 to the netlink policy.
 
-Fixes: 4d63adfe12dd ("NFC: Add NFC_CMD_DEACTIVATE_TARGET support")
+Fixes: 9e58095f9660 ("NFC: netlink: Implement vendor command support")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
 CC: Johannes Berg <johannes.berg@intel.com>
 CC: Jiri Pirko <jiri@mellanox.com>
-CC: Michal Kubecek <mkubecek@suse.cz>
 CC: Samuel Ortiz <sameo@linux.intel.com>
-CC: Mark Greer <mgreer@animalcreek.com>
 ---
- net/nfc/netlink.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/nfc/netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 842407a48f96..e988ca486d66 100644
+index e988ca486d66..e894254c17d4 100644
 --- a/net/nfc/netlink.c
 +++ b/net/nfc/netlink.c
-@@ -32,6 +32,7 @@ static const struct nla_policy nfc_genl_policy[NFC_ATTR_MAX + 1] = {
- 	[NFC_ATTR_DEVICE_NAME] = { .type = NLA_STRING,
- 				.len = NFC_DEVICE_NAME_MAXSIZE },
- 	[NFC_ATTR_PROTOCOLS] = { .type = NLA_U32 },
-+	[NFC_ATTR_TARGET_INDEX] = { .type = NLA_U32 },
- 	[NFC_ATTR_COMM_MODE] = { .type = NLA_U8 },
- 	[NFC_ATTR_RF_MODE] = { .type = NLA_U8 },
- 	[NFC_ATTR_DEVICE_POWERED] = { .type = NLA_U8 },
+@@ -46,6 +46,8 @@ static const struct nla_policy nfc_genl_policy[NFC_ATTR_MAX + 1] = {
+ 				     .len = NFC_FIRMWARE_NAME_MAXSIZE },
+ 	[NFC_ATTR_SE_INDEX] = { .type = NLA_U32 },
+ 	[NFC_ATTR_SE_APDU] = { .type = NLA_BINARY },
++	[NFC_ATTR_VENDOR_ID] = { .type = NLA_U32 },
++	[NFC_ATTR_VENDOR_SUBCMD] = { .type = NLA_U32 },
+ 	[NFC_ATTR_VENDOR_DATA] = { .type = NLA_BINARY },
+ 
+ };
 -- 
 2.24.1
 
