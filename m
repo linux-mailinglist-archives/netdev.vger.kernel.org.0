@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67169176BFD
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:54:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 643A9176B60
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:50:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728398AbgCCCxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:53:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45912 "EHLO mail.kernel.org"
+        id S1728929AbgCCCtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:49:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728913AbgCCCti (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:49:38 -0500
+        id S1727824AbgCCCtr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:49:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCFCB246D9;
-        Tue,  3 Mar 2020 02:49:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 500A02468D;
+        Tue,  3 Mar 2020 02:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203777;
-        bh=jWDCjtYXgCN/oYeyT1eU+DWTqGu7bZ3vvAUPWIQIHwI=;
+        s=default; t=1583203787;
+        bh=9B8Qnr631MfRuBnxFI5I6OfrDDH6d19nhO8jBXeyet0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tswGIc7GzF4LTAeNfJXfDrYUUboIxNd5ipTjvK2/Ut7MgqmS1ekslfpEmUmKpR/rx
-         kugLccZRGdrhW9hFKv7iOWSRhYKI0OCd+uVTjXuIOlU8/8O0qRAtY5jeM+134wYnVO
-         HfcQ0Y414nTWVwN0qtBk+DPzhve6g4dGLj69wlqw=
+        b=vOFC01svzdwOwPN1AdUhwB5CIomimHpG8JpAyP9SLFoJKJNEGB69PwZQEc6Vaj4nJ
+         ccFxO8Edxo3LChRJXaZrzKE+awk/uUeyT5nQGaf1OR/8UQLrJUoujZnM1Rysig/1RN
+         b6+mYtcnq6TFR4kXrqLL8QLSuFXQXZdLN5IfCLjo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Benc <jbenc@redhat.com>,
-        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 03/22] selftests: fix too long argument
-Date:   Mon,  2 Mar 2020 21:49:14 -0500
-Message-Id: <20200303024933.10371-3-sashal@kernel.org>
+Cc:     Pavel Belous <pbelous@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/22] net: atlantic: fix potential error handling
+Date:   Mon,  2 Mar 2020 21:49:21 -0500
+Message-Id: <20200303024933.10371-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024933.10371-1-sashal@kernel.org>
 References: <20200303024933.10371-1-sashal@kernel.org>
@@ -46,73 +45,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Benc <jbenc@redhat.com>
+From: Pavel Belous <pbelous@marvell.com>
 
-[ Upstream commit c363eb48ada5cf732b3f489fab799fc881097842 ]
+[ Upstream commit 380ec5b9af7f0d57dbf6ac067fd9f33cff2fef71 ]
 
-With some shells, the command construed for install of bpf selftests becomes
-too large due to long list of files:
+Code inspection found that in case of mapping error we do return current
+'ret' value. But beside error, it is used to count number of descriptors
+allocated for the packet. In that case map_skb function could return '1'.
 
-make[1]: execvp: /bin/sh: Argument list too long
-make[1]: *** [../lib.mk:73: install] Error 127
+Changing it to return zero (number of mapped descriptors for skb)
 
-Currently, each of the file lists is replicated three times in the command:
-in the shell 'if' condition, in the 'echo' and in the 'rsync'. Reduce that
-by one instance by using make conditionals and separate the echo and rsync
-into two shell commands. (One would be inclined to just remove the '@' at
-the beginning of the rsync command and let 'make' echo it by itself;
-unfortunately, it appears that the '@' in the front of mkdir silences output
-also for the following commands.)
-
-Also, separate handling of each of the lists to its own shell command.
-
-The semantics of the makefile is unchanged before and after the patch. The
-ability of individual test directories to override INSTALL_RULE is retained.
-
-Reported-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Tested-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: 018423e90bee ("net: ethernet: aquantia: Add ring support code")
+Signed-off-by: Pavel Belous <pbelous@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/lib.mk | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index 5bef05d6ba393..c9be64dc681d2 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -54,17 +54,20 @@ else
- 	$(call RUN_TESTS, $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_PROGS))
- endif
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index a69f5f1ad32a8..7a900f76c9ac3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -519,8 +519,10 @@ static unsigned int aq_nic_map_skb(struct aq_nic_s *self,
+ 				     dx_buff->len,
+ 				     DMA_TO_DEVICE);
  
-+define INSTALL_SINGLE_RULE
-+	$(if $(INSTALL_LIST),@mkdir -p $(INSTALL_PATH))
-+	$(if $(INSTALL_LIST),@echo rsync -a $(INSTALL_LIST) $(INSTALL_PATH)/)
-+	$(if $(INSTALL_LIST),@rsync -a $(INSTALL_LIST) $(INSTALL_PATH)/)
-+endef
-+
- define INSTALL_RULE
--	@if [ "X$(TEST_PROGS)$(TEST_PROGS_EXTENDED)$(TEST_FILES)" != "X" ]; then					\
--		mkdir -p ${INSTALL_PATH};										\
--		echo "rsync -a $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(INSTALL_PATH)/";	\
--		rsync -a $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(INSTALL_PATH)/;		\
--	fi
--	@if [ "X$(TEST_GEN_PROGS)$(TEST_CUSTOM_PROGS)$(TEST_GEN_PROGS_EXTENDED)$(TEST_GEN_FILES)" != "X" ]; then					\
--		mkdir -p ${INSTALL_PATH};										\
--		echo "rsync -a $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(INSTALL_PATH)/";	\
--		rsync -a $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(INSTALL_PATH)/;		\
--	fi
-+	$(eval INSTALL_LIST = $(TEST_PROGS)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_PROGS_EXTENDED)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_FILES)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_GEN_PROGS)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_CUSTOM_PROGS)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_GEN_PROGS_EXTENDED)) $(INSTALL_SINGLE_RULE)
-+	$(eval INSTALL_LIST = $(TEST_GEN_FILES)) $(INSTALL_SINGLE_RULE)
- endef
+-	if (unlikely(dma_mapping_error(aq_nic_get_dev(self), dx_buff->pa)))
++	if (unlikely(dma_mapping_error(aq_nic_get_dev(self), dx_buff->pa))) {
++		ret = 0;
+ 		goto exit;
++	}
  
- install: all
+ 	first = dx_buff;
+ 	dx_buff->len_pkt = skb->len;
 -- 
 2.20.1
 
