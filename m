@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4FA177877
+	by mail.lfdr.de (Postfix) with ESMTP id A53B1177878
 	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:12:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728771AbgCCOLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 09:11:14 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52585 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727369AbgCCOLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:11:14 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1j98GK-0007Kd-2l; Tue, 03 Mar 2020 15:11:08 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00] (unknown [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E74E14C57D7;
-        Tue,  3 Mar 2020 14:11:04 +0000 (UTC)
-Subject: Re: [PATCH v1] net: phy: tja11xx: add TJA1102 support
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1727316AbgCCOLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 09:11:46 -0500
+Received: from mail-eopbgr50051.outbound.protection.outlook.com ([40.107.5.51]:51317
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725796AbgCCOLp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 09:11:45 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Uw5/RFSDXZVkXKfP/HjD6hknPrV3HQnL/YzGOrAYlgDvwthnN/eucvurUkPXzHBxjCpUyyNqKIapg16UlwmVyKkuIc7w8wO53uV4p36q6AyF3o6fBT8j4fSL3P5lyuYZASuuhI/ZvfSCZbwC5xxBB15BeafG689wPotHzR+39mzTG7vl5FG4d3FIeGqGL/IoBe3XqixbZg0tZGLPWJ37xrAlbf3F/vuqlFkW8ujsZPw0PsPqmD21jNjm7vdZvTz2GqTdRrPU/gN1mDFu7JPMsmVDHMT0RCAnNW9SdQLHmVvzAb7rqzi3oD229kdFxHTgwjVn3aQmYYpOmitS4TXnHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SzOQC/AhBhBdGJCn1o4dNSoL14amDqH1e7Rtq44sqxM=;
+ b=FHbvyXHMjXa+KVFRpNVn0mfvnc3NlcUjTcpKAKULbziqHpfXWu0Dga5tSTTs4BTIwp8tBAjZXX1gGdwIcYUHYFfp+64rRT/lb6zDQlwFK24KpaqJ5tZkZoVB0YRGLt2V0v7qfCLFkwe9alnuQNelku4cAEvsDKUuca6iETvIQ03qeTxr1fvAjHDaWTHJubfDKth9bbWaGV0i8bWnQ5Q4Atl4cRqYdOwPQg+JuiSnZOkY96hyQpQUGlTPsK00eWiqvkCyGOaPe2tmaGjfiMpTImfAwEBfThI9rJHcGn+tdPWJUjoBl1ZS/8okNL7K3K4hHxzr/e1hsVxd3OiciXJq9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SzOQC/AhBhBdGJCn1o4dNSoL14amDqH1e7Rtq44sqxM=;
+ b=mKphXsfHuFfOzwvEpc+YXrksH9goSgNVcx/jwahHTW4wtGX6dwKTIfA40BBwBns0l+POA+IAMCd37pDTmPkaZiHqRDJk/I0Pf1w7cugEkEEMtL25IO5AlCx9HHkm6+dlVd2fiov0NXFXpjmHP7I3OGI3Hl+kEEZepND8tl6iFPw=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6497.eurprd05.prod.outlook.com (20.179.34.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.14; Tue, 3 Mar 2020 14:11:43 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::8c4:e45b:ecdc:e02b]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::8c4:e45b:ecdc:e02b%7]) with mapi id 15.20.2772.019; Tue, 3 Mar 2020
+ 14:11:43 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Parav Pandit <parav@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Christian Herber <christian.herber@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <AM0PR04MB70412893CFD2F553107148FC86E40@AM0PR04MB7041.eurprd04.prod.outlook.com>
- <2228b5de-89e3-d61a-4af9-8d1a8a5eb311@pengutronix.de>
- <20200303140912.GH31977@lunn.ch>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <1fb184b1-4304-fa39-cd04-0608ef996f50@pengutronix.de>
-Date:   Tue, 3 Mar 2020 15:11:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     Jiri Pirko <jiri@mellanox.com>, Moshe Shemesh <moshe@mellanox.com>,
+        Vladyslav Tarasiuk <vladyslavt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        John Hurley <john.hurley@netronome.com>
+Subject: RE: [PATCH] net: sched: fix cleanup NULL pointer exception in
+ act_mirr
+Thread-Topic: [PATCH] net: sched: fix cleanup NULL pointer exception in
+ act_mirr
+Thread-Index: AQHV8WVLBDpBKxCHmUmjTswOWXhivag26Fuw
+Date:   Tue, 3 Mar 2020 14:11:43 +0000
+Message-ID: <AM0PR05MB48664275E46C3C84466A61B9D1E40@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20200303140834.7501-1-parav@mellanox.com>
+ <20200303140834.7501-3-parav@mellanox.com>
+In-Reply-To: <20200303140834.7501-3-parav@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:5121:27a4:7e98:56ad]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3d8d78cd-347c-45d3-d4f9-08d7bf7ccd09
+x-ms-traffictypediagnostic: AM0PR05MB6497:|AM0PR05MB6497:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB64978B96D850ABA08CA8AEC8D1E40@AM0PR05MB6497.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2733;
+x-forefront-prvs: 03319F6FEF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(199004)(189003)(66446008)(53546011)(6506007)(52536014)(64756008)(186003)(54906003)(71200400001)(8676002)(9686003)(66556008)(81166006)(66476007)(7696005)(76116006)(81156014)(66946007)(110136005)(2906002)(5660300002)(33656002)(4744005)(86362001)(55016002)(498600001)(4326008)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6497;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DvtEIdBs1aM4kPvZWHWkPdON871E7tsEbSVPccErf8tlTYNnBNpH17hilRkRHyM2xJZ01OIvxoyGpyOM41Whc1GXXR2dvXeaHIYaduBDBVazR6PeUvxuQq46YtsJsXPdg0TGGzCLGGiysgHiP1NbUSQ0g79+wTFNZDh5/tw9rpmscMVr4l8DgnuJTmf/7zqmOLcb/Z755kYYn9Smb908vILGJZRK3D9lyI8Jltg0ZS2WfkuK2XG0CJrLNvH+S04b3np7MWXUne1aO/w/COvaMxyjJtTV07m99SiApy8po/Mkaqz7kkcrX5etbaukgPwzTIWhOfP+lqWLqo7ZkVQUwk/u8WnjFy44SpfQwcurmJtTYiDTW/gs+0tldI1WHbligVdbc13sS97orZyXxKm3fs2CLTDLs24RqC9XK0sufx3/j8txCc0x2uwOxPsZToi+
+x-ms-exchange-antispam-messagedata: DpIIboOtGuiyFs+BujTDrFRo1D7wpizE/MT5jWX5f87JA/iy9xSWbsXk/6jvHr8nKN9DIbxvS8eJHboDo/3mfBGsQgghnfScA8nC2iZx5/HlLqI8yp0fpS28B6cpAwpmI65ddP+lMXYX1apoMJAo7EKuOsvWWKP9Rc28Y6BNFQaf1lqwb7TC2AEYB7ld4Jc3S6nlWQuWvC2t7Zv2GlkUPw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20200303140912.GH31977@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d8d78cd-347c-45d3-d4f9-08d7bf7ccd09
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2020 14:11:43.1688
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: InwaEvc90rxzdmJR4++uzGN/dasa1eMd4DvuJ6cfdQU1JSBaISgr534Nn7WZHAHDV9MQ3zPtXvD8IS5qllkzTA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6497
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/3/20 3:09 PM, Andrew Lunn wrote:
->>> Hi Oleksij, Heiner, Marc,
->>>
->>> You could also refer the solution implemented here as part of a TJA110x driver:
->>> https://source.codeaurora.org/external/autoivnsw/tja110x_linux_phydev/about/
->>
->> OK, thank you!
->>
->> Suddenly, the solution in this driver is not mainlainable. It may match on
->> ther PHYs with PHYID == 0.
->>
->> See this part of the code:
->> #define NXP_PHY_ID_TJA1102P1      (0x00000000U)
->> ...
->> 	, {
->> 	.phy_id = NXP_PHY_ID_TJA1102P1,
->> 	.name = "TJA1102_p1",
->> 	.phy_id_mask = NXP_PHY_ID_MASK,
-> 
-> Noooo
-> 
-> You cannot assume NXP is the only silicon vendor to manufacture broken
-> silicon with a PHY ID of 0.
 
-ACK, we ruled that soultion out already :)
 
-We'll look into your and Marek's suggestions.
+> From: Parav Pandit <parav@mellanox.com>
+> Sent: Tuesday, March 3, 2020 8:09 AM
+> To: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
+> Cc: Parav Pandit <parav@mellanox.com>; Jiri Pirko <jiri@mellanox.com>;
+> Moshe Shemesh <moshe@mellanox.com>; Vladyslav Tarasiuk
+> <vladyslavt@mellanox.com>; Saeed Mahameed <saeedm@mellanox.com>;
+> leon@kernel.org; John Hurley <john.hurley@netronome.com>
+> Subject: [PATCH] net: sched: fix cleanup NULL pointer exception in act_mi=
+rr
 
-Marc
-
--- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Please ignore the noise of this unrelated patch. Sent from wrong directory.
+Sorry for the noise.
