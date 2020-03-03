@@ -2,122 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0249178296
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F731782A2
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728591AbgCCSn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:43:57 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:35445 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbgCCSn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:43:57 -0500
-Received: by mail-pj1-f67.google.com with SMTP id s8so1746420pjq.0;
-        Tue, 03 Mar 2020 10:43:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=o2s52Qbl0PNhCadCB1otS0CYR1jnvtic2xAxRNSIjBg=;
-        b=X7BfWGriW03csmGwkOK/EPLk6X/O3ojb1VmDipegqUUkTSABR777OpYleaW0jD22HU
-         qxiGRSFjglAQ431Cd14AReuBcxWFR30+zjBalLrYGngIYzduhONovZl0Nqn5Ay0EjXkv
-         sP/K6/QpycEnh+pb3/8CxSAWn6o5YmhSTj6Qaxvhvb+o02L+K9Ref98WvvyV3Fhk+gbC
-         g3ClOdMOrFxes2NaPDabHuCpyjzFodjMEgRW1hcv1cL0scGpXz8bBuh186+uuWExz9+s
-         Qem0HV3eKL8nboh63KVAz8wh4NJ2+bvoD+B+iTQM9SYOHa5jD7lEVz5W0HhiGkdjOHPq
-         lU9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=o2s52Qbl0PNhCadCB1otS0CYR1jnvtic2xAxRNSIjBg=;
-        b=XOTIpCwTmObtmV15y01dRAvYdPTATXzuJEMa/GvKZI7Vj0A40kuMrlmXhud6X5fX9j
-         ef9VTFHo/4B8lYDeCK81VFokqsbEUbs4Dm82+6sZ5J5FgY99LcyAQ1bd3+ZoHyZscP5I
-         uPMLhteBDn5DyHmj7QkR1pxKZE48Hd/dMwI7ZzbXzf3wKnq0oQeb4qRZr5B5JkrXp7Fv
-         3C9mSMVkqaNWS45QUGFpbgVXakxMZr/SavVNT3RYWizJ+CBRNklEfMU/CcgJVb6Q+TIo
-         xXjZhwnOCdTGb1rtMKwnXdvn6siB9O7MgA6QfyFLPdpUn3WVAVGXiH2JmRFk3ONq+ASx
-         kLWA==
-X-Gm-Message-State: ANhLgQ0rmnctlQftXLYqvGYikMguuzeniyXoYomSxhj0lQ323NVjT7Mk
-        sWnQ+E3s2CwkMO+wx7ku0N0=
-X-Google-Smtp-Source: ADFU+vsUyny+fBfrVhpEUVaZmXQduHWlJv7RRyAiZAxZJOGHDQVtwsB8Qu47ECO7SbtnHHKWSGFjvQ==
-X-Received: by 2002:a17:90b:1904:: with SMTP id mp4mr5595251pjb.110.1583261034899;
-        Tue, 03 Mar 2020 10:43:54 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::4:a0de])
-        by smtp.gmail.com with ESMTPSA id 196sm25561435pfy.86.2020.03.03.10.43.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 03 Mar 2020 10:43:53 -0800 (PST)
-Date:   Tue, 3 Mar 2020 10:43:51 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, gamemann@gflclan.com, lrizzo@google.com,
-        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Subject: Re: [bpf-next PATCH] xdp: accept that XDP headroom isn't always
- equal XDP_PACKET_HEADROOM
-Message-ID: <20200303184350.66uzruobalf3y76f@ast-mbp>
-References: <158323601793.2048441.8715862429080864020.stgit@firesoul>
+        id S1729933AbgCCS4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:56:11 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:50336 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725796AbgCCS4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:56:11 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A9316B40073;
+        Tue,  3 Mar 2020 18:56:08 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 Mar 2020
+ 18:55:58 +0000
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <mlxsw@mellanox.com>,
+        <netfilter-devel@vger.kernel.org>
+References: <20200228172505.14386-1-jiri@resnulli.us>
+ <20200228172505.14386-2-jiri@resnulli.us>
+ <20200229192947.oaclokcpn4fjbhzr@salvia> <20200301084443.GQ26061@nanopsycho>
+ <20200302132016.trhysqfkojgx2snt@salvia>
+ <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
+ <20200302192437.wtge3ze775thigzp@salvia>
+ <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200302214659.v4zm2whrv4qjz3pe@salvia>
+ <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
+Date:   Tue, 3 Mar 2020 18:55:54 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <158323601793.2048441.8715862429080864020.stgit@firesoul>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25266.003
+X-TM-AS-Result: No-2.744600-8.000000-10
+X-TMASE-MatchedRID: eVEkOcJu0F7mLzc6AOD8DfHkpkyUphL9hhy6s2hQl4QTvdh6VFADyYEQ
+        k1c2BTxcoZjv0XwCLb2myB5m8hwFFbSi69HcXkHAelGHXZKLL2s5OMMyyCn/wY+l4fZNSHju0HC
+        C1wXiE/JjKQQkLPRfGSsJ3UZwlB55k9O+qsrqbkGb73wAA/f83YvkwJz527bYHDQcqEqNN+lMU/
+        WtoPEtPRFjIqInsEvXkUhQ/uawuoLfJt2GYIjmPKiUivh0j2Pv8vvksslXuLdICmt7k5mXsOgKp
+        c0co1LdldHSVwB28HQz6YO/uWL1UBN+JiqkEYnpvOAv94sAIMSm8MsuWwAf/XPW+p0zOs/DcVol
+        GMdkWBsNgbJdgH8J1n41niV9Kymzv1l2Uvx6idoWeMpVNhsMwMRB0bsfrpPInxMyeYT53Rk4Er4
+        2x9UbhyPJV3U4NJYzM4zAL+Exl8npRhzSIJy2HR7XxSfUMN/ogn6dxoL/waps8BRP+tW4I+nBuq
+        h6Ahfe8LyUw/+7GprUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.744600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25266.003
+X-MDID: 1583261770-8jR3ixQofMLp
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 12:46:58PM +0100, Jesper Dangaard Brouer wrote:
-> The Intel based drivers (ixgbe + i40e) have implemented XDP with
-> headroom 192 bytes and not the recommended 256 bytes defined by
-> XDP_PACKET_HEADROOM.  For generic-XDP, accept that this headroom
-> is also a valid size.
-> 
-> Still for generic-XDP if headroom is less, still expand headroom to
-> XDP_PACKET_HEADROOM as this is the default in most XDP drivers.
-> 
-> Tested on ixgbe with xdp_rxq_info --skb-mode and --action XDP_DROP:
-> - Before: 4,816,430 pps
-> - After : 7,749,678 pps
-> (Note that ixgbe in native mode XDP_DROP 14,704,539 pps)
-> 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  include/uapi/linux/bpf.h |    1 +
->  net/core/dev.c           |    4 ++--
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 906e9f2752db..14dc4f9fb3c8 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3312,6 +3312,7 @@ struct bpf_xdp_sock {
->  };
->  
->  #define XDP_PACKET_HEADROOM 256
-> +#define XDP_PACKET_HEADROOM_MIN 192
+On 02/03/2020 22:49, Jakub Kicinski wrote:
+> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
+>> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
+>>> On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote:  
+>>>> It looks to me that you want to restrict the API to tc for no good
+>>>> _technical_ reason.  
 
-why expose it in uapi?
+The technical reason is that having two ways to do things where one would
+ suffice means more code to be written, tested, debugged.  So if you want
+ to add this you need to convince us that the existing way (a) doesn't
+ meet your needs and (b) can't be extended to cover them.
 
->  /* User return codes for XDP prog type.
->   * A valid XDP program must return one of these defined values. All other
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 4770dde3448d..9c941cd38b13 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4518,11 +4518,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  		return XDP_PASS;
->  
->  	/* XDP packets must be linear and must have sufficient headroom
-> -	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
-> +	 * of XDP_PACKET_HEADROOM_MIN bytes. This is the guarantee that also
->  	 * native XDP provides, thus we need to do it here as well.
->  	 */
->  	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
-> -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
-> +	    skb_headroom(skb) < XDP_PACKET_HEADROOM_MIN) {
->  		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+> Also neither proposal addresses the problem of reporting _different_
+> counter values at different stages in the pipeline, i.e. moving from
+> stats per flow to per action. But nobody seems to be willing to work 
+> on that.
+For the record, I produced a patch series[1] to support that, but it
+ wasn't acceptable because none of the in-tree drivers implemented the
+ facility.  My hope is that we'll be upstreaming our new driver Real
+ Soon Now™, at which point I'll rebase and repost those changes.
+Alternatively if any other vendor wants to support it in their driver
+ they could use those patches as a base.
 
-this looks odd. It's comparing against 192, but doing math with 256.
-I guess that's ok, but needs a clear comment.
-How about just doing 'skb_headroom(skb) < 192' here.
-Or #define 192 right before this function with a comment about ixgbe?
+-ed
+
+[1]: http://patchwork.ozlabs.org/cover/1110071/ ("flow_offload: Re-add per-action statistics")
