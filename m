@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F87917784D
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 124A117784E
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 15:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729485AbgCCOIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 09:08:50 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41229 "EHLO
+        id S1729491AbgCCOIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 09:08:52 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34464 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729466AbgCCOIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:08:50 -0500
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 3 Mar 2020 16:08:46 +0200
+        with ESMTP id S1729478AbgCCOIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 09:08:51 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 3 Mar 2020 16:08:48 +0200
 Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.9.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 023E8fBj019613;
-        Tue, 3 Mar 2020 16:08:44 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 023E8fBk019613;
+        Tue, 3 Mar 2020 16:08:46 +0200
 From:   Parav Pandit <parav@mellanox.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     parav@mellanox.com, jiri@mellanox.com, moshe@mellanox.com,
-        vladyslavt@mellanox.com, saeedm@mellanox.com, leon@kernel.org
-Subject: [PATCH] IB/mlx5: Fix missing debugfs entries
-Date:   Tue,  3 Mar 2020 08:08:31 -0600
-Message-Id: <20200303140834.7501-2-parav@mellanox.com>
+        vladyslavt@mellanox.com, saeedm@mellanox.com, leon@kernel.org,
+        John Hurley <john.hurley@netronome.com>
+Subject: [PATCH] net: sched: fix cleanup NULL pointer exception in act_mirr
+Date:   Tue,  3 Mar 2020 08:08:32 -0600
+Message-Id: <20200303140834.7501-3-parav@mellanox.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20200303140834.7501-1-parav@mellanox.com>
 References: <20200303140834.7501-1-parav@mellanox.com>
@@ -33,34 +34,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cited commit missed to include congestion control related debugfs
-stage initialization.
-This resulted in missing debugfs entries for cc_params.
+From: John Hurley <john.hurley@netronome.com>
 
-Add them back.
+A new mirred action is created by the tcf_mirred_init function. This
+contains a list head struct which is inserted into a global list on
+successful creation of a new action. However, after a creation, it is
+still possible to error out and call the tcf_idr_release function. This,
+in turn, calls the act_mirr cleanup function via __tcf_idr_release and
+__tcf_action_put. This cleanup function tries to delete the list entry
+which is as yet uninitialised, leading to a NULL pointer exception.
 
-issue: 2084629
-Fixes: b5ca15ad7e61 ("IB/mlx5: Add proper representors support")
-Change-Id: I435f03f117d44107f032800442b0dc9e5a15fe06
-Signed-off-by: Parav Pandit <parav@mellanox.com>
+Fix this by initialising the list entry on creation of a new action.
+
+Bug report:
+
+BUG: unable to handle kernel NULL pointer dereference at 0000000000000008
+PGD 8000000840c73067 P4D 8000000840c73067 PUD 858dcc067 PMD 0
+Oops: 0002 [#1] SMP PTI
+CPU: 32 PID: 5636 Comm: handler194 Tainted: G           OE     5.0.0+ #186
+Hardware name: Dell Inc. PowerEdge R730/0599V5, BIOS 1.3.6 06/03/2015
+RIP: 0010:tcf_mirred_release+0x42/0xa7 [act_mirred]
+Code: f0 90 39 c0 e8 52 04 57 c8 48 c7 c7 b8 80 39 c0 e8 94 fa d4 c7 48 8b 93 d0 00 00 00 48 8b 83 d8 00 00 00 48 c7 c7 f0 90 39 c0 <48> 89 42 08 48 89 10 48 b8 00 01 00 00 00 00 ad de 48 89 83 d0 00
+RSP: 0018:ffffac4aa059f688 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffff9dcd1b214d00 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffff9dcd1fa165f8 RDI: ffffffffc03990f0
+RBP: ffff9dccf9c7af80 R08: 0000000000000a3b R09: 0000000000000000
+R10: ffff9dccfa11f420 R11: 0000000000000000 R12: 0000000000000001
+R13: ffff9dcd16b433c0 R14: ffff9dcd1b214d80 R15: 0000000000000000
+FS:  00007f441bfff700(0000) GS:ffff9dcd1fa00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000008 CR3: 0000000839e64004 CR4: 00000000001606e0
+Call Trace:
+tcf_action_cleanup+0x59/0xca
+__tcf_action_put+0x54/0x6b
+__tcf_idr_release.cold.33+0x9/0x12
+tcf_mirred_init.cold.20+0x22e/0x3b0 [act_mirred]
+tcf_action_init_1+0x3d0/0x4c0
+tcf_action_init+0x9c/0x130
+tcf_exts_validate+0xab/0xc0
+fl_change+0x1ca/0x982 [cls_flower]
+tc_new_tfilter+0x647/0x8d0
+? load_balance+0x14b/0x9e0
+rtnetlink_rcv_msg+0xe3/0x370
+? __switch_to_asm+0x40/0x70
+? __switch_to_asm+0x34/0x70
+? _cond_resched+0x15/0x30
+? __kmalloc_node_track_caller+0x1d4/0x2b0
+? rtnl_calcit.isra.31+0xf0/0xf0
+netlink_rcv_skb+0x49/0x110
+netlink_unicast+0x16f/0x210
+netlink_sendmsg+0x1df/0x390
+sock_sendmsg+0x36/0x40
+___sys_sendmsg+0x27b/0x2c0
+? futex_wake+0x80/0x140
+? do_futex+0x2b9/0xac0
+? ep_scan_ready_list.constprop.22+0x1f2/0x210
+? ep_poll+0x7a/0x430
+__sys_sendmsg+0x47/0x80
+do_syscall_64+0x55/0x100
+entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 4e232818bd32 ("net: sched: act_mirred: remove dependency on rtnl lock")
+Signed-off-by: John Hurley <john.hurley@netronome.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 ---
- drivers/infiniband/hw/mlx5/main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/sched/act_mirred.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index e4bcfa81b70a..e54661d3b37c 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -7077,6 +7077,9 @@ const struct mlx5_ib_profile raw_eth_profile = {
- 	STAGE_CREATE(MLX5_IB_STAGE_COUNTERS,
- 		     mlx5_ib_stage_counters_init,
- 		     mlx5_ib_stage_counters_cleanup),
-+	STAGE_CREATE(MLX5_IB_STAGE_CONG_DEBUGFS,
-+		     mlx5_ib_stage_cong_debugfs_init,
-+		     mlx5_ib_stage_cong_debugfs_cleanup),
- 	STAGE_CREATE(MLX5_IB_STAGE_UAR,
- 		     mlx5_ib_stage_uar_init,
- 		     mlx5_ib_stage_uar_cleanup),
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index cd712e4e8998..17cc6bd4c57c 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -159,12 +159,15 @@ static int tcf_mirred_init(struct net *net, struct nlattr *nla,
+ 		tcf_idr_release(*a, bind);
+ 		return -EEXIST;
+ 	}
++
++	m = to_mirred(*a);
++	if (ret == ACT_P_CREATED)
++		INIT_LIST_HEAD(&m->tcfm_list);
++
+ 	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
+ 	if (err < 0)
+ 		goto release_idr;
+ 
+-	m = to_mirred(*a);
+-
+ 	spin_lock_bh(&m->tcf_lock);
+ 
+ 	if (parm->ifindex) {
 -- 
 2.19.2
 
