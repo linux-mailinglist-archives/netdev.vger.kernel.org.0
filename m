@@ -2,83 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA107176B7F
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12CFF176D5C
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 04:03:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729245AbgCCCup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:50:45 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46814 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728721AbgCCCul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 21:50:41 -0500
-Received: by mail-pf1-f193.google.com with SMTP id o24so672099pfp.13;
-        Mon, 02 Mar 2020 18:50:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=emH6vShjtJL1e6QEvQuX+tCS838vKDP2QVpnnXyWpHo=;
-        b=c4v5DvD0yKY2nWhic0ttyzgqFGUst3S25+FIWYmn5lRc+HDiNv4iY9aANr8RFjlKGv
-         ZqVbENC1BXPXcQuVOGemBKNTaBApyT0V728mzsMpzi1Jv+ildn0QhRbPTDlwZigynZ9T
-         tgwcrloGRuunNslNSl0mOBxn1JnxQx0G+rcEafXCeZWg+GwvlhbH6Q84waEWOepmb6Q0
-         3JehhnGtqdcdLye1akOZ4h3yFEh/U/CnHqasOw/9M7ZNPJ7j5tGG7mkw3OK1wbQeaFBV
-         7rWM17OGy7RjADAj8ytLqzKwf/dXsIq2LSFcmT1K2zhcM0eW7TQVKBEjmVbkvF9MyyBY
-         Fxxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=emH6vShjtJL1e6QEvQuX+tCS838vKDP2QVpnnXyWpHo=;
-        b=Ytmx7z21VG5TjVazF2s/28qxt9PMA8MOPofku51dNhfSi05+nlk7D+QGspF8IY+Yl9
-         yT0DBmbjFtpLh1oHREkrO7Qzp2NvT8adMy81q0l7oo99xHfQT3AVUdcbURQnX92GWufu
-         YZ+E3rgSwcicaDgRcMO5nlvWbNiUBGvfb5eLg2aIzde5lgOXajwowzFjZ1b923HvtB3z
-         Ir+1EZxxpjjAqLVpbuE6WT2BDSPKcqpBUb5t1rfzK3ixzQ1d3OXo0fAKUVJ9PFy1lXZc
-         RixkRiwjsVaB8ixTjk/oQiQ2gLAJ4RvhoeqQoBbfTGtf5AB0J7qpjAHMeIZZ+UJSS+HC
-         hW7w==
-X-Gm-Message-State: ANhLgQ0XVnrlPJYW8rzOsyzgSkBd2JS6vPB2gyNzVAouXNMNAojkqutx
-        jrcD786DFmEB1nzFLqRN1HA=
-X-Google-Smtp-Source: ADFU+vuDDDxFvbu3znmlWDmZo6HG7XFrKGJ0xW4dPdBZDMbggXteE2GFN2Kz832EhOWt0mPbhYdcrQ==
-X-Received: by 2002:a62:7696:: with SMTP id r144mr1990522pfc.177.1583203840340;
-        Mon, 02 Mar 2020 18:50:40 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:500::7:1db6])
-        by smtp.gmail.com with ESMTPSA id e189sm17384137pfa.139.2020.03.02.18.50.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Mar 2020 18:50:39 -0800 (PST)
-Date:   Mon, 2 Mar 2020 18:50:37 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 1/3] bpf: introduce pinnable bpf_link abstraction
-Message-ID: <20200303025035.si6agnvywvcgxj3s@ast-mbp>
-References: <20200228223948.360936-1-andriin@fb.com>
- <20200228223948.360936-2-andriin@fb.com>
+        id S1727406AbgCCCqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:46:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727053AbgCCCqX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:46:23 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6B3EA2467B;
+        Tue,  3 Mar 2020 02:46:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583203582;
+        bh=IL3/wicU8vS8fr/u2xEEigJhcMcCof++SwVTStaXe0s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D1n1+3pNCKFLN4z5GnicxGFpN4E/EZFV/9OVRs4tXFDrUF44qOKdSp4RBggA620YD
+         j7JQ0xCiws513uEpbFA3DgSrvSViBP1y2y6ef9iKrRzHDBIDWV8jpSqZ/3Bf/6qECj
+         hzQQHUU9qyGk7bPYaeaEPXr0VNVhF8+BrszQjpRk=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jiri Benc <jbenc@redhat.com>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 05/66] selftests: fix too long argument
+Date:   Mon,  2 Mar 2020 21:45:14 -0500
+Message-Id: <20200303024615.8889-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200303024615.8889-1-sashal@kernel.org>
+References: <20200303024615.8889-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200228223948.360936-2-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 02:39:46PM -0800, Andrii Nakryiko wrote:
->  
-> +int bpf_link_new_fd(struct bpf_link *link)
-> +{
-> +	return anon_inode_getfd("bpf-link", &bpf_link_fops, link, O_CLOEXEC);
-> +}
-...
-> -	tr_fd = anon_inode_getfd("bpf-tracing-prog", &bpf_tracing_prog_fops,
-> -				 prog, O_CLOEXEC);
-> +	tr_fd = anon_inode_getfd("bpf-tracing-link", &bpf_link_fops,
-> +				 &link->link, O_CLOEXEC);
-...
-> -	tp_fd = anon_inode_getfd("bpf-raw-tracepoint", &bpf_raw_tp_fops, raw_tp,
-> -				 O_CLOEXEC);
-> +	tp_fd = anon_inode_getfd("bpf-raw-tp-link", &bpf_link_fops,
-> +				 &raw_tp->link, O_CLOEXEC);
+From: Jiri Benc <jbenc@redhat.com>
 
-I don't think different names are strong enough reason to open code it.
-I think bpf_link_new_fd() should be used in all cases.
+[ Upstream commit c363eb48ada5cf732b3f489fab799fc881097842 ]
+
+With some shells, the command construed for install of bpf selftests becomes
+too large due to long list of files:
+
+make[1]: execvp: /bin/sh: Argument list too long
+make[1]: *** [../lib.mk:73: install] Error 127
+
+Currently, each of the file lists is replicated three times in the command:
+in the shell 'if' condition, in the 'echo' and in the 'rsync'. Reduce that
+by one instance by using make conditionals and separate the echo and rsync
+into two shell commands. (One would be inclined to just remove the '@' at
+the beginning of the rsync command and let 'make' echo it by itself;
+unfortunately, it appears that the '@' in the front of mkdir silences output
+also for the following commands.)
+
+Also, separate handling of each of the lists to its own shell command.
+
+The semantics of the makefile is unchanged before and after the patch. The
+ability of individual test directories to override INSTALL_RULE is retained.
+
+Reported-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Tested-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/lib.mk | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+index 1c8a1963d03f8..3ed0134a764d4 100644
+--- a/tools/testing/selftests/lib.mk
++++ b/tools/testing/selftests/lib.mk
+@@ -83,17 +83,20 @@ else
+ 	$(call RUN_TESTS, $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_PROGS))
+ endif
+ 
++define INSTALL_SINGLE_RULE
++	$(if $(INSTALL_LIST),@mkdir -p $(INSTALL_PATH))
++	$(if $(INSTALL_LIST),@echo rsync -a $(INSTALL_LIST) $(INSTALL_PATH)/)
++	$(if $(INSTALL_LIST),@rsync -a $(INSTALL_LIST) $(INSTALL_PATH)/)
++endef
++
+ define INSTALL_RULE
+-	@if [ "X$(TEST_PROGS)$(TEST_PROGS_EXTENDED)$(TEST_FILES)" != "X" ]; then					\
+-		mkdir -p ${INSTALL_PATH};										\
+-		echo "rsync -a $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(INSTALL_PATH)/";	\
+-		rsync -a $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES) $(INSTALL_PATH)/;		\
+-	fi
+-	@if [ "X$(TEST_GEN_PROGS)$(TEST_CUSTOM_PROGS)$(TEST_GEN_PROGS_EXTENDED)$(TEST_GEN_FILES)" != "X" ]; then					\
+-		mkdir -p ${INSTALL_PATH};										\
+-		echo "rsync -a $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(INSTALL_PATH)/";	\
+-		rsync -a $(TEST_GEN_PROGS) $(TEST_CUSTOM_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(INSTALL_PATH)/;		\
+-	fi
++	$(eval INSTALL_LIST = $(TEST_PROGS)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_PROGS_EXTENDED)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_FILES)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_GEN_PROGS)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_CUSTOM_PROGS)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_GEN_PROGS_EXTENDED)) $(INSTALL_SINGLE_RULE)
++	$(eval INSTALL_LIST = $(TEST_GEN_FILES)) $(INSTALL_SINGLE_RULE)
+ endef
+ 
+ install: all
+-- 
+2.20.1
+
