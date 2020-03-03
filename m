@@ -2,81 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F51A1770E0
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 09:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6141770E3
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 09:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727690AbgCCIMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 03:12:13 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51675 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727552AbgCCIMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 03:12:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583223131;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BRq+Xpy5Ea2+CTWSH3HAl6Ym/30Z9q2zfGm1aeQYGVo=;
-        b=UDJAvztSlBkUZMCgZxuV2FaM5ReEdj2FGoX0i42cICPVxu7HJl3IPpqdtrhcz6ve42ZkUK
-        4zGAC0BcOp2h7mdjM6nWiXrKN0L9rw7DyjK6MYI7C7EMIyZVZ1ip9R0WdyfL9zld7CeU2T
-        Umw/Yakh367clvYuqN2YjSC4BEGXDHk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-321-SHhBB8GZNq6-jtS0R7L-pg-1; Tue, 03 Mar 2020 03:12:10 -0500
-X-MC-Unique: SHhBB8GZNq6-jtS0R7L-pg-1
-Received: by mail-wm1-f71.google.com with SMTP id b23so753573wmj.3
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 00:12:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=BRq+Xpy5Ea2+CTWSH3HAl6Ym/30Z9q2zfGm1aeQYGVo=;
-        b=jXcA/KMqoK82TPrkk10Jsj0HYTbliye4qX1kiwSDAvkvqx2MmmfRHVwa8oyLpE6aKb
-         vcKzqjL9mXkzojTQDfUsx9kpT44CJufwN0iiW7B1PaFn3IKnzR+gghe0cU1mZFCL88Uk
-         jR+yzn+OVtCb1FrgDCC8jj5Vo3e0/9xi3yihycUTwVRFNSur4TklXteM71jNZLCBL+cs
-         lQn+PDBpYqIiOYG/ELXE84HqZ2toB/+qYO27i6zOjJukqv8O1tEtw7u5Skt2uas5HdmX
-         klaYPaO7klM5JiuTbnnu0W4Uh9jbXTYxsm7NEm8d+uz3cyf97wBKQfuZUus8LcQdR0Fc
-         spZA==
-X-Gm-Message-State: ANhLgQ3Nd3kaWwP5S5SSMAcqECW6aXd+zyxcATj36dRaoxrjI/DyUpfY
-        sCooreHW5aeDfQKKoIJ6s0acJL6+CBkVFnvFpV5O1RxMLy4n0h4bVk5Ecws6AZuaN3ZIHmEqJNc
-        zmA6SxFBGMoytwPUY
-X-Received: by 2002:a1c:9816:: with SMTP id a22mr3265078wme.16.1583223129062;
-        Tue, 03 Mar 2020 00:12:09 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vv0LkO8J0l7GbYNi16fLvskKSOI02fFIeEOrajL9bUPCtZL8p9LwBczYLgYjj+MMpgy/cgGWA==
-X-Received: by 2002:a1c:9816:: with SMTP id a22mr3265059wme.16.1583223128908;
-        Tue, 03 Mar 2020 00:12:08 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id g7sm28284582wrm.72.2020.03.03.00.12.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 00:12:08 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9EE6E180362; Tue,  3 Mar 2020 09:12:07 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+        id S1727774AbgCCIMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 03:12:52 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52414 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727552AbgCCIMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 03:12:52 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j92fX-0000pi-6q; Tue, 03 Mar 2020 09:12:47 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j92fW-000MjX-Si; Tue, 03 Mar 2020 09:12:46 +0100
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
-In-Reply-To: <CAEf4BzbUpfKfB6raqwvTFPm_13Een7A9WUbQeSjdAtvcEU3nLA@mail.gmail.com>
-References: <20200228223948.360936-1-andriin@fb.com> <87mu8zt6a8.fsf@toke.dk> <CAEf4BzZGn9FcUdEOSR_ouqSNvzY2AdJA=8ffMV5mTmJQS-10VA@mail.gmail.com> <87imjms8cm.fsf@toke.dk> <CAEf4BzbUpfKfB6raqwvTFPm_13Een7A9WUbQeSjdAtvcEU3nLA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 03 Mar 2020 09:12:07 +0100
-Message-ID: <87a74xsvqg.fsf@toke.dk>
+References: <20200228223948.360936-1-andriin@fb.com> <87mu8zt6a8.fsf@toke.dk>
+ <CAEf4BzZGn9FcUdEOSR_ouqSNvzY2AdJA=8ffMV5mTmJQS-10VA@mail.gmail.com>
+ <87imjms8cm.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <094a8c0f-d781-d2a2-d4cd-721b20d75edd@iogearbox.net>
+Date:   Tue, 3 Mar 2020 09:12:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <87imjms8cm.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25739/Mon Mar  2 13:09:00 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/2/20 11:24 PM, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>> On Mon, Mar 2, 2020 at 2:12 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>> Andrii Nakryiko <andriin@fb.com> writes:
+>>>
+>>>> This patch series adds bpf_link abstraction, analogous to libbpf's already
+>>>> existing bpf_link abstraction. This formalizes and makes more uniform existing
+>>>> bpf_link-like BPF program link (attachment) types (raw tracepoint and tracing
+>>>> links), which are FD-based objects that are automatically detached when last
+>>>> file reference is closed. These types of BPF program links are switched to
+>>>> using bpf_link framework.
+>>>>
+>>>> FD-based bpf_link approach provides great safety guarantees, by ensuring there
+>>>> is not going to be an abandoned BPF program attached, if user process suddenly
+>>>> exits or forgets to clean up after itself. This is especially important in
+>>>> production environment and is what all the recent new BPF link types followed.
+>>>>
+>>>> One of the previously existing  inconveniences of FD-based approach, though,
+>>>> was the scenario in which user process wants to install BPF link and exit, but
+>>>> let attached BPF program run. Now, with bpf_link abstraction in place, it's
+>>>> easy to support pinning links in BPF FS, which is done as part of the same
+>>>> patch #1. This allows FD-based BPF program links to survive exit of a user
+>>>> process and original file descriptor being closed, by creating an file entry
+>>>> in BPF FS. This provides great safety by default, with simple way to opt out
+>>>> for cases where it's needed.
 
-> All the XDP chaining specific issues should probably discussed on your
-> original thread that includes Andrey as well.
-
-Yeah, sorry for hijacking your thread with my brain dump; I'll move it
-over to the other one :)
-
--Toke
-
+I can see the motivation for this abstraction in particular for tracing, but given
+the goal of bpf_link is to formalize and make the various program attachment types
+more uniform, how is this going to solve e.g. the tc/BPF case? There is no guarantee
+that while you create a link with the prog attached to cls_bpf that someone else is
+going to replace that qdisc underneath you, and hence you end up with the same case
+as if you would have only pinned the program itself (and not a link). So bpf_link
+then gives a wrong impression that something is still attached and active while it
+is not. What is the plan for these types?
