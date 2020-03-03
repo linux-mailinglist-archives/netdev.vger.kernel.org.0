@@ -2,101 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F731782A2
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4597F1782AA
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729933AbgCCS4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:56:11 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:50336 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725796AbgCCS4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:56:11 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A9316B40073;
-        Tue,  3 Mar 2020 18:56:08 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 Mar 2020
- 18:55:58 +0000
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
-        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <mlxsw@mellanox.com>,
-        <netfilter-devel@vger.kernel.org>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-2-jiri@resnulli.us>
- <20200229192947.oaclokcpn4fjbhzr@salvia> <20200301084443.GQ26061@nanopsycho>
- <20200302132016.trhysqfkojgx2snt@salvia>
- <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
- <20200302192437.wtge3ze775thigzp@salvia>
- <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200302214659.v4zm2whrv4qjz3pe@salvia>
- <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
-Date:   Tue, 3 Mar 2020 18:55:54 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730566AbgCCS6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:58:10 -0500
+Received: from mga07.intel.com ([134.134.136.100]:29601 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730111AbgCCS6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 13:58:09 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 10:58:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,511,1574150400"; 
+   d="scan'208";a="287080932"
+Received: from mlee22-mobl.amr.corp.intel.com ([10.251.30.98])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Mar 2020 10:58:08 -0800
+Date:   Tue, 3 Mar 2020 10:58:08 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@mlee22-mobl.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: Re: [PATCH net] mptcp: always include dack if possible.
+In-Reply-To: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.22.394.2003031056030.20523@mlee22-mobl.amr.corp.intel.com>
+References: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
+User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
 MIME-Version: 1.0
-In-Reply-To: <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25266.003
-X-TM-AS-Result: No-2.744600-8.000000-10
-X-TMASE-MatchedRID: eVEkOcJu0F7mLzc6AOD8DfHkpkyUphL9hhy6s2hQl4QTvdh6VFADyYEQ
-        k1c2BTxcoZjv0XwCLb2myB5m8hwFFbSi69HcXkHAelGHXZKLL2s5OMMyyCn/wY+l4fZNSHju0HC
-        C1wXiE/JjKQQkLPRfGSsJ3UZwlB55k9O+qsrqbkGb73wAA/f83YvkwJz527bYHDQcqEqNN+lMU/
-        WtoPEtPRFjIqInsEvXkUhQ/uawuoLfJt2GYIjmPKiUivh0j2Pv8vvksslXuLdICmt7k5mXsOgKp
-        c0co1LdldHSVwB28HQz6YO/uWL1UBN+JiqkEYnpvOAv94sAIMSm8MsuWwAf/XPW+p0zOs/DcVol
-        GMdkWBsNgbJdgH8J1n41niV9Kymzv1l2Uvx6idoWeMpVNhsMwMRB0bsfrpPInxMyeYT53Rk4Er4
-        2x9UbhyPJV3U4NJYzM4zAL+Exl8npRhzSIJy2HR7XxSfUMN/ogn6dxoL/waps8BRP+tW4I+nBuq
-        h6Ahfe8LyUw/+7GprUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.744600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25266.003
-X-MDID: 1583261770-8jR3ixQofMLp
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/03/2020 22:49, Jakub Kicinski wrote:
-> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
->> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
->>> On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote:  
->>>> It looks to me that you want to restrict the API to tc for no good
->>>> _technical_ reason.  
 
-The technical reason is that having two ways to do things where one would
- suffice means more code to be written, tested, debugged.  So if you want
- to add this you need to convince us that the existing way (a) doesn't
- meet your needs and (b) can't be extended to cover them.
+Paolo -
 
-> Also neither proposal addresses the problem of reporting _different_
-> counter values at different stages in the pipeline, i.e. moving from
-> stats per flow to per action. But nobody seems to be willing to work 
-> on that.
-For the record, I produced a patch series[1] to support that, but it
- wasn't acceptable because none of the in-tree drivers implemented the
- facility.  My hope is that we'll be upstreaming our new driver Real
- Soon Now™, at which point I'll rebase and repost those changes.
-Alternatively if any other vendor wants to support it in their driver
- they could use those patches as a base.
+On Tue, 3 Mar 2020, Paolo Abeni wrote:
 
--ed
+> Currently passive MPTCP socket can skip including the DACK
+> option - if the peer sends data before accept() completes.
+>
+> The above happens because the msk 'can_ack' flag is set
+> only after the accept() call.
+>
+> Such missing DACK option may cause - as per RFC spec -
+> unwanted fallback to TCP.
+>
+> This change addresses the issue using the key material
+> available in the current subflow, if any, to create a suitable
+> dack option when msk ack seq is not yet available.
+>
+> Fixes: d22f4988ffec ("mptcp: process MP_CAPABLE data option")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> net/mptcp/options.c | 17 +++++++++++++++--
+> 1 file changed, 15 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+> index 45acd877bef3..9eb84115dc35 100644
+> --- a/net/mptcp/options.c
+> +++ b/net/mptcp/options.c
+> @@ -334,6 +334,8 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+> 	struct mptcp_sock *msk;
+> 	unsigned int ack_size;
+> 	bool ret = false;
+> +	bool can_ack;
+> +	u64 ack_seq;
+> 	u8 tcp_fin;
+>
+> 	if (skb) {
+> @@ -360,9 +362,20 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+> 		ret = true;
+> 	}
+>
+> +	/* passive sockets msk will set the 'can_ack' after accept(), even
+> +	 * if the first subflow may have the already the remote key handy
+> +	 */
+> +	can_ack = true;
+> 	opts->ext_copy.use_ack = 0;
+> 	msk = mptcp_sk(subflow->conn);
+> -	if (!msk || !READ_ONCE(msk->can_ack)) {
+> +	if (likely(msk && READ_ONCE(msk->can_ack)))
+> +		ack_seq = msk->ack_seq;
+> +	else if (subflow->can_ack)
+> +		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
 
-[1]: http://patchwork.ozlabs.org/cover/1110071/ ("flow_offload: Re-add per-action statistics")
+The other code paths that set the initial sequence number all increment it 
+before sending (to ack SYN+MP_CAPABLE). It looks like the spec allows the 
+value calculated here, but we might as well be consistent about the 
+initial value we send over the wire.
+
+> +	else
+> +		can_ack = false;
+> +
+> +	if (unlikely(!can_ack)) {
+> 		*size = ALIGN(dss_size, 4);
+> 		return ret;
+> 	}
+> @@ -375,7 +388,7 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+>
+> 	dss_size += ack_size;
+>
+> -	opts->ext_copy.data_ack = msk->ack_seq;
+> +	opts->ext_copy.data_ack = ack_seq;
+> 	opts->ext_copy.ack64 = 1;
+> 	opts->ext_copy.use_ack = 1;
+>
+> -- 
+> 2.21.1
+>
+>
+
+--
+Mat Martineau
+Intel
