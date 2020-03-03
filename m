@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1EE176C0E
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:54:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCD0176BED
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:53:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728848AbgCCCtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:49:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45618 "EHLO mail.kernel.org"
+        id S1728888AbgCCCt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:49:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728782AbgCCCtX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:49:23 -0500
+        id S1728300AbgCCCt2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:49:28 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F2062246D5;
-        Tue,  3 Mar 2020 02:49:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 94B43246D9;
+        Tue,  3 Mar 2020 02:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203762;
-        bh=OfJcAaeI/nrPc7oVnN+bhGLA3fcflJ33ohKgSQKGv7s=;
+        s=default; t=1583203767;
+        bh=/OvgG2nfz29KAV+9BKomIZu5mQCBT/tB8LByXnZ0JvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v+ip1od6TI+ZfqEl0pnKQUrklWjmyhTQ0Y6NdmLNSpBIFAfEY83oCINZFffjT1GXp
-         fBsde/30bdGaQ+HgMCuJ0jc5Su9/nTJoG2ziDpcmbD6MpMBc/ZZhkMfoUcONplFqt9
-         N3Bmrwge1lXMdcCbgkHXoInNB5GI9WoUcgNCxt3E=
+        b=d6cbtSnijGSl1qvz0Jq5wxIlq6SaNyByiEAMcjYi3ZOyA1qVgm8roPHfnVfX3cu0e
+         uNqh5bAh2astwe8/HwTJhlWDxwY82R562yTr3LtLh0l6FKe3HrAUrxeHtPQEdNt9DV
+         aEpTNrHEDv7Ioj5GUHlX+WGDkq4fSYw9xu7VfeUo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+Cc:     Dmitry Osipenko <digetx@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 24/32] net: mscc: fix in frame extraction
-Date:   Mon,  2 Mar 2020 21:48:43 -0500
-Message-Id: <20200303024851.10054-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 28/32] nfc: pn544: Fix occasional HW initialization failure
+Date:   Mon,  2 Mar 2020 21:48:47 -0500
+Message-Id: <20200303024851.10054-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200303024851.10054-1-sashal@kernel.org>
 References: <20200303024851.10054-1-sashal@kernel.org>
@@ -44,53 +43,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-[ Upstream commit a81541041ceb55bcec9a8bb8ad3482263f0a205a ]
+[ Upstream commit c3331d2fe3fd4d5e321f2467d01f72de7edfb5d0 ]
 
-Each extracted frame on Ocelot has an IFH. The frame and IFH are extracted
-by reading chuncks of 4 bytes from a register.
+The PN544 driver checks the "enable" polarity during of driver's probe and
+it's doing that by turning ON and OFF NFC with different polarities until
+enabling succeeds. It takes some time for the hardware to power-down, and
+thus, to deassert the IRQ that is raised by turning ON the hardware.
+Since the delay after last power-down of the polarity-checking process is
+missed in the code, the interrupt may trigger immediately after installing
+the IRQ handler (right after the checking is done), which results in IRQ
+handler trying to touch the disabled HW and ends with marking NFC as
+'DEAD' during of the driver's probe:
 
-In case the IFH and frames were read corretly it would try to read the next
-frame. In case there are no more frames in the queue, it checks if there
-were any previous errors and in that case clear the queue. But this check
-will always succeed also when there are no errors. Because when extracting
-the IFH the error is checked against 4(number of bytes read) and then the
-error is set only if the extraction of the frame failed. So in a happy case
-where there are no errors the err variable is still 4. So it could be
-a case where after the check that there are no more frames in the queue, a
-frame will arrive in the queue but because the error is not reseted, it
-would try to flush the queue. So the frame will be lost.
+  pn544_hci_i2c 1-002a: NFC: nfc_en polarity : active high
+  pn544_hci_i2c 1-002a: NFC: invalid len byte
+  shdlc: llc_shdlc_recv_frame: NULL Frame -> link is dead
 
-The fix consist in resetting the error after reading the IFH.
+This patch fixes the occasional NFC initialization failure on Nexus 7
+device.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot_board.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/nfc/pn544/i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index 3cdf63e35b53b..4054cf9db8181 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -105,6 +105,14 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
- 		if (err != 4)
- 			break;
+diff --git a/drivers/nfc/pn544/i2c.c b/drivers/nfc/pn544/i2c.c
+index d0207f8e68b7c..dcef73eb41206 100644
+--- a/drivers/nfc/pn544/i2c.c
++++ b/drivers/nfc/pn544/i2c.c
+@@ -236,6 +236,7 @@ static void pn544_hci_i2c_platform_init(struct pn544_i2c_phy *phy)
  
-+		/* At this point the IFH was read correctly, so it is safe to
-+		 * presume that there is no error. The err needs to be reset
-+		 * otherwise a frame could come in CPU queue between the while
-+		 * condition and the check for error later on. And in that case
-+		 * the new frame is just removed and not processed.
-+		 */
-+		err = 0;
-+
- 		ocelot_parse_ifh(ifh, &info);
+ out:
+ 	gpiod_set_value_cansleep(phy->gpiod_en, !phy->en_polarity);
++	usleep_range(10000, 15000);
+ }
  
- 		dev = ocelot->ports[info.port]->dev;
+ static void pn544_hci_i2c_enable_mode(struct pn544_i2c_phy *phy, int run_mode)
 -- 
 2.20.1
 
