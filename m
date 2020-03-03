@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED25176DE7
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 05:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9046E176DE6
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 05:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727389AbgCCEQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 23:16:13 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37060 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727268AbgCCEQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 23:16:05 -0500
-Received: by mail-pg1-f193.google.com with SMTP id z12so894273pgl.4
+        id S1727381AbgCCEQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 23:16:11 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40769 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727073AbgCCEQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Mar 2020 23:16:06 -0500
+Received: by mail-pf1-f196.google.com with SMTP id l184so780203pfl.7
         for <netdev@vger.kernel.org>; Mon, 02 Mar 2020 20:16:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7Fanemj7lqCOtUtHai5n5mSddCSmoi8i8DsjH04odmA=;
-        b=eaRZ0JUdyUdP+oyaqzc4uTP5fJsbACR3hPGrhJY0K1HaFBB8MqqE1VoaHBFsulyyli
-         dcT0fr/n147qWWSjaGAOT1TkAAqQ7g1Ulv+oxOi4r7su0PXX9uVZTeK40tQO8ySNu7GT
-         d4ix1QArm8XhLm/f/eIL+FYnbg3W9pyB9O7n30td7zJaQsYPs+81jkVa8ILuL9Y+doHm
-         q6S5SzxTJ/VbEdBHKfqB9/yX3N4FtbBMBxf/zZBMTryK7O5+LY9Dt8bCxzEbNqnl9cPC
-         3+Vi4addpwrp46zHiQexlPp4qqqTV+aq704lCZCfGvzyKBlTP2My3RXIOfgDA3u784mJ
-         6veg==
+        bh=s5+2M55qCyjMNWRRfZa1qww5IAjEysQ2sF63nol+NPk=;
+        b=Jepfb/088kvGsck2bouaP+Mj2+rl5+Qk7/228uH/qhYMQE1b3vsCLNpqxDfbt4FHtZ
+         CTjZ48yd/K1I1WZ2V/X3pFjwi8nbjayfuJ/yG0F0TWn+xRX0bIaLM1OX12EeYbz4pD2U
+         J1lWMQt7Su34dy4v9McjkAiuWDGQYhA8QAx7w6+eevzpzzuHT3I+dzfjT6hagAmKRRyO
+         mg5DZv2DfsCMdXkxaWGzzbWxc4Ypp6+A9dldw+1Xo2s/7UxcTy3sP1SL8/+3E+WKseW5
+         +jmBWX4iPIGz/AGfMsJmkBqe3DuZ4cY1IyJnWOEcqru6KfXYTC4ZPQL51L7QCcy1K2Ec
+         lWyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7Fanemj7lqCOtUtHai5n5mSddCSmoi8i8DsjH04odmA=;
-        b=fzzM6KCv+Rh234UvrdigZXl/Ivd5kCKJKuPA7OeYqxXlzol58XOgjxR7/yzO33lffa
-         f0w1Qeotd+JyttTdZb3mWEKYhd1ILsg4t6ZCMJhwJrBtzEwA+YzDcfNezR0oT/uocq42
-         modHL47OckNgzTB8nEZhU1MsTQsT/fvbRuee+ltOp2HB5l5soFpGIUZ1Me5wSFgHTkOm
-         LxNXWAuYBQkFa8+/AZjAr6XnlYoZYnFYot2H4gHxbUaLZv5v5Nlgw+QZTe6g160Utm7D
-         YhUwHjO7wYk1n9lc+6hHdZaYQG7C8EGCpLYlHsInvDgJQCwX/LgnPJYlBmZ7688rHMZS
-         LXhQ==
-X-Gm-Message-State: ANhLgQ2ykvpCXW55tyNtqMt8sPtLJn/Vyn8TD55sKBEU1VCWQRM0Xvqp
-        gPbhNEvpvw2jupuceiRUgKtIcA==
-X-Google-Smtp-Source: ADFU+vvtLxx7oZQ2OlDOYnv48Z/xV/rpg5UkQ6+J7KfPikxlYitF8Xu2ymj2ub+/znZ8KvLrlvSDng==
-X-Received: by 2002:a62:64d5:: with SMTP id y204mr2395646pfb.90.1583208964589;
-        Mon, 02 Mar 2020 20:16:04 -0800 (PST)
+        bh=s5+2M55qCyjMNWRRfZa1qww5IAjEysQ2sF63nol+NPk=;
+        b=FEnf5xaZnhO56gtgoHhYjlz++PII1rYV2JpqNlZaS6qv/YJBYnxOkhxky2R8UANwEa
+         Bk52zEw7r8UpSI3plB1amlFlG+qURe7qB7rfWPgZXwrFpKuKESmN2QAhJqjOQgsyBn2p
+         298jnbqEsUeZF1dYFMtvNuUBFaQTsd/QgnvBozc3okBpJ0G/VX5PBjKCZOxRHYXy3VJi
+         P/TeYnrmojBRscRe9MsG1i+qalJTbsxmjvwNjSK88uJYvZoXjiIQTd/5ebpJwD3pO9bn
+         Pr0zG6DWkude6BjaZ3QBYNIvy+XaAXI7pm0tPbWGkj/W5XTXA8p7Z6LjhTomrZ/jd5ds
+         0Uvg==
+X-Gm-Message-State: ANhLgQ3tmIe5MuVci518Hf3pABe6mdBYO7yfnc+tf2/UNaKevrAt/aFZ
+        EP9d5H57EVI0I0Srbs14dnWptKLUP3c=
+X-Google-Smtp-Source: ADFU+vvFA0pulPXSCBsB+tOO0HGq+LVO1BY11VkygPMPPKHX20K2UrsoW1mBd4I5xGPfCO5wn+uyCQ==
+X-Received: by 2002:a62:cdc6:: with SMTP id o189mr2392167pfg.254.1583208965371;
+        Mon, 02 Mar 2020 20:16:05 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id t7sm396682pjy.1.2020.03.02.20.16.03
+        by smtp.gmail.com with ESMTPSA id t7sm396682pjy.1.2020.03.02.20.16.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Mon, 02 Mar 2020 20:16:04 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 5/8] ionic: support ethtool rxhash disable
-Date:   Mon,  2 Mar 2020 20:15:42 -0800
-Message-Id: <20200303041545.1611-6-snelson@pensando.io>
+Subject: [PATCH net-next 6/8] ionic: print pci bus lane info
+Date:   Mon,  2 Mar 2020 20:15:43 -0800
+Message-Id: <20200303041545.1611-7-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200303041545.1611-1-snelson@pensando.io>
 References: <20200303041545.1611-1-snelson@pensando.io>
@@ -57,61 +57,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can disable rxhashing by setting rss_types to 0.  The user
-can toggle this with "ethtool -K <ethX> rxhash off|on",
-which calls into the .ndo_set_features callback with the
-NETIF_F_RXHASH feature bit set or cleared.  This patch adds
-a check for that bit and updates the FW if necessary.
+Print the PCI bus lane information so people can keep an
+eye out for poor configurations that might not support
+the advertised speed.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index d1567e477b1f..4b953f9e9084 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1094,6 +1094,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
- 	u64 vlan_flags = IONIC_ETH_HW_VLAN_TX_TAG |
- 			 IONIC_ETH_HW_VLAN_RX_STRIP |
- 			 IONIC_ETH_HW_VLAN_RX_FILTER;
-+	u64 old_hw_features;
- 	int err;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 554bafac1147..59b0091146e6 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -248,6 +248,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	}
  
- 	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
-@@ -1101,9 +1102,13 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+ 	pci_set_master(pdev);
++	pcie_print_link_status(pdev);
+ 
+ 	err = ionic_map_bars(ionic);
  	if (err)
- 		return err;
- 
-+	old_hw_features = lif->hw_features;
- 	lif->hw_features = le64_to_cpu(ctx.cmd.lif_setattr.features &
- 				       ctx.comp.lif_setattr.features);
- 
-+	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
-+		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
-+
- 	if ((vlan_flags & features) &&
- 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
- 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
-@@ -1357,13 +1362,15 @@ int ionic_lif_rss_config(struct ionic_lif *lif, const u16 types,
- 		.cmd.lif_setattr = {
- 			.opcode = IONIC_CMD_LIF_SETATTR,
- 			.attr = IONIC_LIF_ATTR_RSS,
--			.rss.types = cpu_to_le16(types),
- 			.rss.addr = cpu_to_le64(lif->rss_ind_tbl_pa),
- 		},
- 	};
- 	unsigned int i, tbl_sz;
- 
--	lif->rss_types = types;
-+	if (lif->hw_features & IONIC_ETH_HW_RX_HASH) {
-+		lif->rss_types = types;
-+		ctx.cmd.lif_setattr.rss.types = cpu_to_le16(types);
-+	}
- 
- 	if (key)
- 		memcpy(lif->rss_hash_key, key, IONIC_RSS_HASH_KEY_SIZE);
 -- 
 2.17.1
 
