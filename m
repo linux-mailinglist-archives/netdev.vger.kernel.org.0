@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EF171783A1
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B19D41783A3
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731402AbgCCUFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 15:05:21 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46145 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728002AbgCCUFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:05:21 -0500
-Received: by mail-qk1-f194.google.com with SMTP id u124so4680767qkh.13;
-        Tue, 03 Mar 2020 12:05:20 -0800 (PST)
+        id S1731482AbgCCUFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 15:05:25 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:42963 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728002AbgCCUFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:05:22 -0500
+Received: by mail-qk1-f196.google.com with SMTP id e11so3957332qkg.9;
+        Tue, 03 Mar 2020 12:05:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BBmw/UX0VgIhrLNJLpPiyKyhv4geuqZ+eY7wOsUvtx4=;
-        b=oF1uBcGjIEzdTF6dkCqJ6UKbUUQLUSBAKq4QYr8JsXqT3wFhUi6/yRRYGi9bmI58ps
-         +6r5mYWiy46Pw6CcqPYlYt/CW51QTVg4VknaFE1mqmsmb0phz75wKLa/lsEBZJOtyU4g
-         A0elYX5SuzfYOOHSITlyxrlNcsxcBsFn+T4svFRZQHK5fLO3eJ1DH7f2tWCJDNGTY5I1
-         J1OVCZ5PH4JKc8q3pF4OE/vlnP1Z/TsTarRk4hyqBMoF6kuoXhwFcan2LU1Y5gFtG7lB
-         k/vLIL/1UCIcHFks1VdOoppsdkFq5GhpjTkY+3bbTV8/CB32n1ELgpYIGpoZFmRHhFy4
-         7A6g==
+        bh=o30x3ibuWhJyxEBxWEXlcQWvqUNQ8HyrTeeqUA4s9C4=;
+        b=dZV9Fxybj9K97PLk4iq3WMESAiSuvx10OceemZjnDCrWv/JHidkvj/4Yb5SsH0Kf2u
+         RLevSqgZTaokQof70xhxKlF40ib2OYzm9HRbIGfLjwaejv5KKhQrN8zk2vjcQV91c/lb
+         +DVaSOKY5MHmSe0eaRVp9tZIb1lrAmZF1vdhMI2YS4dyrYdwBPVKnn7rlMyJUl0NiesP
+         l4JC1meke4p9kV41lzMZjLTOOztPMtGLrWGzkVePD4axjPVu06oXXZhzoqqAWNocBG+T
+         av+5P1i6p8CcmMpcvlpMIOmAItRuWn1rpfmSG5DaUmRmp0KbkqEqMNMzMqjfZfNc8OeB
+         2SNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BBmw/UX0VgIhrLNJLpPiyKyhv4geuqZ+eY7wOsUvtx4=;
-        b=CUnP/CFz2pUWyiuTeb1CAXFrPQ36ExGE0DgVRqrWD66dlYU/ajPYN3BJIcfFr05TSK
-         D0zpclbve4GstMC9nxumL4tIBBsXuJjlPf5MpCZftwq39qS1JWMrYx5ekJqa4VlT6jUL
-         1o2wazq+9vbs/KMOIyn1yBtobl1Wn5EPp6fcGbQVtdyKi5ivjXgRei/r3Qa7mzlN/wqI
-         EZzo2K9tKhYl7M0vi6CF87niI5RgsCG8SM81J6nN1Ei0ptlm5pfsXzFYDsGjz0bzJIdr
-         ZV+ho7iJS7qrVLo6VqXeNl11xacfkNcU3m1tL4654Y0ZTpQHOh1PGr/EY3mc/l3PnlL6
-         EB+g==
-X-Gm-Message-State: ANhLgQ2FuLT78Mr9iJl1QVLBT/9hD5acf3wRB04SLUfiwjhPJofs0cE5
-        eYKHOE1xipI3eys6oVxMSaW9KNmn
-X-Google-Smtp-Source: ADFU+vsZjmqtRHaYEreD+iBY933i5X6oFoca9/amTEaSNN3ADNvYD7JRd2AeRD2vtSWW3RNKo522KA==
-X-Received: by 2002:a05:620a:21c9:: with SMTP id h9mr5775948qka.29.1583265920089;
-        Tue, 03 Mar 2020 12:05:20 -0800 (PST)
+        bh=o30x3ibuWhJyxEBxWEXlcQWvqUNQ8HyrTeeqUA4s9C4=;
+        b=p3HjwRl0YIPvgW/ExDPS/A2EExbGuIByzU+GRV/fgEAawl9/0KfIkJWUSAx5E+CGox
+         OanPna5q1y5FRCO5Gp79z1lSboOZg5BZx+5o7A/kzjuvIVt4dvvdT5FxUcyjat1S0eH0
+         YLmVcReeZhQedW4BENagYiBirAj0MZbFDgy/+mXN6jJ1jDwiPu1GCXSpe973rVHHYJt9
+         Ng87VjbeuB6V2i18IBxGufc0e6Go5bjxCH7dIK0+/DN2mAwjeF7sT2c6XQraoYFim6UU
+         m6zPBWUJO8Pzin2g+opwJQpsIb3pEW/wXbYlPxuY7HleQ4nxn5Vrb1jk7xJb4RKSuLM3
+         3b2g==
+X-Gm-Message-State: ANhLgQ3srNJg8qRMLQHru9qLwwoNjhhu3h5wOlFkf2UTJgw4ST61h1Tc
+        uZNtO/G9nizesXYTxjCSkbKjuXS5
+X-Google-Smtp-Source: ADFU+vvyE1DadL24wzSEVozqYsVL2w19XKV3xO7D+OsEvuBrZfXsAR3X2dihTmHt1bq9GtEXfrsnMQ==
+X-Received: by 2002:a37:5b81:: with SMTP id p123mr792107qkb.284.1583265921182;
+        Tue, 03 Mar 2020 12:05:21 -0800 (PST)
 Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:37b5:dd03:b905:30ea])
-        by smtp.gmail.com with ESMTPSA id d7sm9846281qkg.62.2020.03.03.12.05.18
+        by smtp.gmail.com with ESMTPSA id d7sm9846281qkg.62.2020.03.03.12.05.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 12:05:19 -0800 (PST)
+        Tue, 03 Mar 2020 12:05:20 -0800 (PST)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
         Willem de Bruijn <willemb@google.com>
-Subject: [PATCH bpf-next 2/3] bpf: Sync uapi bpf.h to tools/
-Date:   Tue,  3 Mar 2020 15:05:02 -0500
-Message-Id: <20200303200503.226217-3-willemdebruijn.kernel@gmail.com>
+Subject: [PATCH bpf-next 3/3] selftests/bpf: test new __sk_buff field gso_size
+Date:   Tue,  3 Mar 2020 15:05:03 -0500
+Message-Id: <20200303200503.226217-4-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
 In-Reply-To: <20200303200503.226217-1-willemdebruijn.kernel@gmail.com>
 References: <20200303200503.226217-1-willemdebruijn.kernel@gmail.com>
@@ -63,25 +63,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-sync tools/include/uapi/linux/bpf.h to match include/uapi/linux/bpf.h
+Analogous to the gso_segs selftests introduced in commit d9ff286a0f59
+("bpf: allow BPF programs access skb_shared_info->gso_segs field").
 
 Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- tools/include/uapi/linux/bpf.h | 1 +
- 1 file changed, 1 insertion(+)
+ .../selftests/bpf/prog_tests/skb_ctx.c        |  1 +
+ .../selftests/bpf/progs/test_skb_ctx.c        |  2 +
+ .../testing/selftests/bpf/verifier/ctx_skb.c  | 47 +++++++++++++++++++
+ 3 files changed, 50 insertions(+)
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 906e9f2752db..7c689f4552dd 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3176,6 +3176,7 @@ struct __sk_buff {
- 	__u32 wire_len;
- 	__u32 gso_segs;
- 	__bpf_md_ptr(struct bpf_sock *, sk);
-+	__u32 gso_size;
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index c6d6b685a946..4538bd08203f 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -14,6 +14,7 @@ void test_skb_ctx(void)
+ 		.wire_len = 100,
+ 		.gso_segs = 8,
+ 		.mark = 9,
++		.gso_size = 10,
+ 	};
+ 	struct bpf_prog_test_run_attr tattr = {
+ 		.data_in = &pkt_v4,
+diff --git a/tools/testing/selftests/bpf/progs/test_skb_ctx.c b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+index 202de3938494..b02ea589ce7e 100644
+--- a/tools/testing/selftests/bpf/progs/test_skb_ctx.c
++++ b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+@@ -23,6 +23,8 @@ int process(struct __sk_buff *skb)
+ 		return 1;
+ 	if (skb->gso_segs != 8)
+ 		return 1;
++	if (skb->gso_size != 10)
++		return 1;
  
- struct bpf_tunnel_key {
+ 	return 0;
+ }
+diff --git a/tools/testing/selftests/bpf/verifier/ctx_skb.c b/tools/testing/selftests/bpf/verifier/ctx_skb.c
+index d438193804b2..2e16b8e268f2 100644
+--- a/tools/testing/selftests/bpf/verifier/ctx_skb.c
++++ b/tools/testing/selftests/bpf/verifier/ctx_skb.c
+@@ -1010,6 +1010,53 @@
+ 	.result = ACCEPT,
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ },
++{
++	"read gso_size from CGROUP_SKB",
++	.insns = {
++	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
++		    offsetof(struct __sk_buff, gso_size)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"read gso_size from CGROUP_SKB",
++	.insns = {
++	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1,
++		    offsetof(struct __sk_buff, gso_size)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"write gso_size from CGROUP_SKB",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
++		    offsetof(struct __sk_buff, gso_size)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = REJECT,
++	.result_unpriv = REJECT,
++	.errstr = "invalid bpf_context access off=176 size=4",
++	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
++},
++{
++	"read gso_size from CLS",
++	.insns = {
++	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
++		    offsetof(struct __sk_buff, gso_size)),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.result = ACCEPT,
++	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
++},
+ {
+ 	"check wire_len is not readable by sockets",
+ 	.insns = {
 -- 
 2.25.0.265.gbab2e86ba0-goog
 
