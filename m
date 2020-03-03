@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C723117735E
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 11:02:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB7FA177372
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 11:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbgCCKCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 05:02:35 -0500
-Received: from mga04.intel.com ([192.55.52.120]:53097 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726694AbgCCKCe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 05:02:34 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 02:02:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,510,1574150400"; 
-   d="scan'208";a="412691972"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga005.jf.intel.com with ESMTP; 03 Mar 2020 02:02:27 -0800
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1j94Ng-006W6Q-A9; Tue, 03 Mar 2020 12:02:28 +0200
-Date:   Tue, 3 Mar 2020 12:02:28 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf@vger.kernel.org, Luke Nelson <luke.r.nels@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH bpf-next v4 4/4] MAINTAINERS: Add entry for RV32G BPF JIT
-Message-ID: <20200303100228.GJ1224808@smile.fi.intel.com>
-References: <20200303005035.13814-1-luke.r.nels@gmail.com>
- <20200303005035.13814-5-luke.r.nels@gmail.com>
+        id S1728144AbgCCKES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 05:04:18 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44878 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727121AbgCCKES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 05:04:18 -0500
+Received: by mail-ed1-f65.google.com with SMTP id g19so3520206eds.11;
+        Tue, 03 Mar 2020 02:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0AD4bpZ8c1wq7SQSp4vgpTJGHedOrSryx6E4q6XFYFk=;
+        b=SyoM0C84gbHJ5Jluoig5lRyl+cLIp3NOhJximlGPzAUZdfPngJd4IIUHv1YOPdTqXd
+         nhM3ABo8W1AIKxhv9fWas516GZIDJX98ZP5GgG+RTSEKPT86ulM/LnmcwUWoudG926M5
+         JHZXwumAM9oak9e4eI0uh6005tonqOlK7tRtvA1t9+nulplTSS+PtGhsCwltVVld8Jp2
+         MkorfG49ZzzxTs/gmTqwbWB0pJKtLzlqdDIdI/Qi0hhERWGDRXrKrUXf6ZzimJhtsaDI
+         HeHe3y4gIRXmPFzSDWx9/FNHXJt8uyIn67agWXubB4Ee8PcYuSz/f+xfb+k+3SnwOfhw
+         xZXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0AD4bpZ8c1wq7SQSp4vgpTJGHedOrSryx6E4q6XFYFk=;
+        b=s7wfMCGJ46QVY4+kSOKqvQZxigyrNDQXh4WM+FHsdTAoD2o3hdwRQ0FAQwcI5oFrj9
+         F5Nob/S2YI8nsaZje4yJTsXduZpr8MPKQsZKX3DzhDj7NMTftrYyfVF1WpzSHGph9hpl
+         zlXRJQxEvrHkQC6ET/3hKa/gnJAr2jYS4NGYqeawjIrlCUHV206n1BVW+2HWkSN48Lxd
+         YE3Mg9kjeWUn1NXsweLN0oec85HocMXfUFB5UDBFClZME8ngfUu7xq1dW3RjGFJiE5GR
+         kxRzk65GqWpp1+0Uj8OWgUUWJzB3HLuiY24x9MJuIjZI73Hm88TVRr0Z2Q5oKhzrTEac
+         sEcg==
+X-Gm-Message-State: ANhLgQ3ixFHI/5Ybs/VYxJAl6rbaeXWKr6IDgIsocBsKZ0O7HaKsUAbQ
+        0L5Hu23IjvKnuSVweslG+xzT6YylIpgeRwV9oDosjA==
+X-Google-Smtp-Source: ADFU+vsLRLu5CHq+4KDeNc9afsPRrbpSLhURhzK+3Pwhm0HC+0bu+COR0T6jrEwJk36YWXYuiJcHtrPO3fI+aoD3OXU=
+X-Received: by 2002:aa7:d50b:: with SMTP id y11mr3185084edq.139.1583229855409;
+ Tue, 03 Mar 2020 02:04:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200303005035.13814-5-luke.r.nels@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20200303074414.30693-1-o.rempel@pengutronix.de>
+In-Reply-To: <20200303074414.30693-1-o.rempel@pengutronix.de>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 3 Mar 2020 12:04:04 +0200
+Message-ID: <CA+h21hrkVr4-Bgop0bor9nkKDUm4dYdyuDWJ_jthjKpy98ZQ1A@mail.gmail.com>
+Subject: Re: [PATCH v1] net: dsa: sja1105: add 100baseT1_Full support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 02, 2020 at 04:50:35PM -0800, Luke Nelson wrote:
+On Tue, 3 Mar 2020 at 09:44, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>
+> Validate 100baseT1_Full to make this driver work with TJA1102 PHY.
+>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
-Commit message?
+I was expecting this patch sooner or later.
 
-> Cc: Björn Töpel <bjorn.topel@gmail.com>
-> Signed-off-by: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+Acked-by: Vladimir Oltean <olteanv@gmail.com>
 
-> @@ -3213,11 +3213,20 @@ L:	bpf@vger.kernel.org
->  S:	Maintained
->  F:	arch/powerpc/net/
->  
-> -BPF JIT for RISC-V (RV64G)
-> +BPF JIT for 32-bit RISC-V (RV32G)
-> +M:	Luke Nelson <luke.r.nels@gmail.com>
-> +M:	Xi Wang <xi.wang@gmail.com>
-> +L:	bpf@vger.kernel.org
-> +S:	Maintained
-> +F:	arch/riscv/net/
-> +X:	arch/riscv/net/bpf_jit_comp.c
-> +
-> +BPF JIT for 64-bit RISC-V (RV64G)
->  M:	Björn Töpel <bjorn.topel@gmail.com>
-> -L:	netdev@vger.kernel.org
-> +L:	bpf@vger.kernel.org
->  S:	Maintained
->  F:	arch/riscv/net/
-> +X:	arch/riscv/net/bpf_jit_comp32.c
+I should take this opportunity and express the fact that it is strange
+for MAC drivers to have to sign off all possible copper and fiber
+media types in their .phylink_validate method. Sooner or later
+somebody is going to want to add 1000Base-T1 too. I don't think it is
+going to scale very well. Russell, with your plan to make MAC drivers
+just populate a bitmap of phy_modes (MII side), is it also going to
+get rid of media side validation?
 
-Obviously this breaks an order. Please, fix.
-Hint: run parse-maintainers.pl after the change.
+>  drivers/net/dsa/sja1105/sja1105_main.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> index 34544b1c30dc..7b5a80ba12bd 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> @@ -866,6 +866,7 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+>         phylink_set(mask, MII);
+>         phylink_set(mask, 10baseT_Full);
+>         phylink_set(mask, 100baseT_Full);
+> +       phylink_set(mask, 100baseT1_Full);
+>         if (mii->xmii_mode[port] == XMII_MODE_RGMII)
+>                 phylink_set(mask, 1000baseT_Full);
+>
+> --
+> 2.25.0
+>
 
->  BPF JIT for S390
->  M:	Ilya Leoshkevich <iii@linux.ibm.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Regards,
+-Vladimir
