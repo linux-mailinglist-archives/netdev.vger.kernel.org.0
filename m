@@ -2,111 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C07011783F5
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBD4178406
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 21:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731571AbgCCU1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 15:27:45 -0500
-Received: from correo.us.es ([193.147.175.20]:57300 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729967AbgCCU1o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 15:27:44 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 86950DA394
-        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 21:27:28 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 78CDFDA7B2
-        for <netdev@vger.kernel.org>; Tue,  3 Mar 2020 21:27:28 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 606ACDA3B4; Tue,  3 Mar 2020 21:27:28 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2C579DA72F;
-        Tue,  3 Mar 2020 21:27:26 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 03 Mar 2020 21:27:26 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E2B5242EE38E;
-        Tue,  3 Mar 2020 21:27:25 +0100 (CET)
-Date:   Tue, 3 Mar 2020 21:27:39 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
-        netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200303202739.6nwq3ru2vf62j2ek@salvia>
-References: <20200228172505.14386-2-jiri@resnulli.us>
- <20200229192947.oaclokcpn4fjbhzr@salvia>
- <20200301084443.GQ26061@nanopsycho>
- <20200302132016.trhysqfkojgx2snt@salvia>
- <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
- <20200302192437.wtge3ze775thigzp@salvia>
- <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200302214659.v4zm2whrv4qjz3pe@salvia>
- <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
+        id S1730517AbgCCUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 15:30:47 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:34879 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731151AbgCCUaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 15:30:46 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 145so4847985qkl.2
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 12:30:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=123P9xQGjDkfvy5FsfzCO+UHa3rPS90oX4YiNtrqhWw=;
+        b=oMnlxAfaYeplW2vLS+DWelhhqH2WlAWDjWhlmOpKI/Duis+KxRNZz0/D21oxnIgULq
+         zgeFL7J09p5zRhZuEiKU0A44Iu5zo8t+DAT7bnK0R6jWCKxZu9EiFF2RPSzmDmGj4VrH
+         tf7m31BweTtKuVIIt2STCEMTZ0cceLF+cd7HOfySR6MP55Rp/mbHm7fZqGKtobukvEcU
+         ljoVaZjkKpl/W7a8I7QTI0PglgMnhhQyWFvFFnxXtVcWM7zeIZhJC8+X3vYRqswNkfOY
+         cu3Mfw6hiICbp67BUYQ7hRzo6QPjj/cdCqCUkIxbss5FMfZP/R8F0zE6KUY4z567HMKm
+         HPcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=123P9xQGjDkfvy5FsfzCO+UHa3rPS90oX4YiNtrqhWw=;
+        b=kUXNn8noaq13NL92VlT++cvJAowfdf5n1/PCmRFpXVynOTXLRVROh/zspGIWxUVxfk
+         TLiwVEBUHsfMU7wEFxVOlPJtrlvw1riJi0NeUvFxnp1/gmWoMM/14xgVZVFaGC5NO/mX
+         28B6peBGSwXGGRUP1u8qOJGDf95z2SoILqWgbTBJfjwNwmPTb0TZvp/lpJsBbkmM9YkN
+         7CkQjohMG9u/yS0QotDlRd/dCRY0lWXrPoOXRtcUSzgQnNY6Wi9390iTKUOi5lYbOBCi
+         U5lyoK2X1WLrr2Vgfij/MECrsXH2bVvFI4hpBYUijfpqHCnz6+lVtMuqh8/Ug4nr25ei
+         RfpA==
+X-Gm-Message-State: ANhLgQ3AaVHLqkcgN00rYwo5QLsnBsavKiKyoDHjU0uW4XvwLDDr0IPc
+        jw9FWjHmoeyuFX898L6KWFcvVw==
+X-Google-Smtp-Source: ADFU+vvHp3YJ4Y5ualAljJKts6XGmz1AJG7ZhH+LdzPqAcNANHKw/6O07c7kM42eTFtS7Agx619UJA==
+X-Received: by 2002:a37:67d3:: with SMTP id b202mr5746959qkc.496.1583267445778;
+        Tue, 03 Mar 2020 12:30:45 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id t29sm13453204qtt.20.2020.03.03.12.30.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 03 Mar 2020 12:30:45 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1j9EBg-0001xh-AJ; Tue, 03 Mar 2020 16:30:44 -0400
+Date:   Tue, 3 Mar 2020 16:30:44 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     syzbot <syzbot+46fe08363dbba223dec5@syzkaller.appspotmail.com>,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: general protection fault in kobject_get
+Message-ID: <20200303203044.GD31668@ziepe.ca>
+References: <000000000000c4b371059fd83a92@google.com>
+ <20200303072558.GF121803@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200303072558.GF121803@unreal>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 06:55:54PM +0000, Edward Cree wrote:
-> On 02/03/2020 22:49, Jakub Kicinski wrote:
-> > On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
-> >> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
-> >>> On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote:  
-> >>>> It looks to me that you want to restrict the API to tc for no good
-> >>>> _technical_ reason.  
+On Tue, Mar 03, 2020 at 09:25:58AM +0200, Leon Romanovsky wrote:
+> +RDMA
 > 
-> The technical reason is that having two ways to do things where one would
->  suffice means more code to be written, tested, debugged.  So if you want
->  to add this you need to convince us that the existing way (a) doesn't
->  meet your needs and (b) can't be extended to cover them.
+> On Sun, Mar 01, 2020 at 09:12:11PM -0800, syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following crash on:
+> >
+> > HEAD commit:    3b3e808c Merge tag 'mac80211-next-for-net-next-2020-02-24'..
+> > git tree:       net-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=15e20a2de00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6ec9623400ee72
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=46fe08363dbba223dec5
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >
+> > Unfortunately, I don't have any reproducer for this crash yet.
+> >
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+46fe08363dbba223dec5@syzkaller.appspotmail.com
 
-One single unified way to express the hardware offload for _every_
-supported frontend is the way to go. The flow_offload API provides a
-framework to model all hardware offloads for each existing front-end.
+Hum, most probably something like this.. Will send a proper
+patch. If it is this I am very surprised that it didn't get a
+reproducer, as the fault should be pretty easy to hit, no race required..
 
-I understand your motivation might be a specific front-end of your
-choice, that's fair enough.
-
-> > Also neither proposal addresses the problem of reporting _different_
-> > counter values at different stages in the pipeline, i.e. moving from
-> > stats per flow to per action. But nobody seems to be willing to work 
-> > on that.
-> For the record, I produced a patch series[1] to support that, but it
->  wasn't acceptable because none of the in-tree drivers implemented the
->  facility.  My hope is that we'll be upstreaming our new driver Real
->  Soon Now™, at which point I'll rebase and repost those changes.
-> Alternatively if any other vendor wants to support it in their driver
->  they could use those patches as a base.
-
-Great, I am very much looking forward to reviewing your upstream code.
-
-Just keep in my mind that whatever proposal you make must work for
-netfilter too.
-
-Thank you.
+diff --git a/drivers/infiniband/core/user_mad.c b/drivers/infiniband/core/user_mad.c
+index d1407fa378e832..e43ec710092a94 100644
+--- a/drivers/infiniband/core/user_mad.c
++++ b/drivers/infiniband/core/user_mad.c
+@@ -1129,17 +1129,30 @@ static const struct file_operations umad_sm_fops = {
+ 	.llseek	 = no_llseek,
+ };
+ 
++static struct ib_umad_port *get_port(struct ib_device *ibdev,
++				     struct ib_umad_device *umad_dev,
++				     unsigned int port)
++{
++	if (!umad_dev)
++		return ERR_PTR(-EOPNOTSUPP);
++	if (!rdma_is_port_valid(ibdev, port))
++		return ERR_PTR(-EINVAL);
++	if (!rdma_cap_ib_mad(ibdev, port))
++		return ERR_PTR(-EOPNOTSUPP);
++
++	return &umad_dev->ports[port - rdma_start_port(ibdev)];
++}
++
+ static int ib_umad_get_nl_info(struct ib_device *ibdev, void *client_data,
+ 			       struct ib_client_nl_info *res)
+ {
+-	struct ib_umad_device *umad_dev = client_data;
++	struct ib_umad_port *port = get_port(ibdev, client_data, res->port);
+ 
+-	if (!rdma_is_port_valid(ibdev, res->port))
+-		return -EINVAL;
++	if (IS_ERR(port))
++		return PTR_ERR(port);
+ 
+ 	res->abi = IB_USER_MAD_ABI_VERSION;
+-	res->cdev = &umad_dev->ports[res->port - rdma_start_port(ibdev)].dev;
+-
++	res->cdev = &port->dev;
+ 	return 0;
+ }
+ 
+@@ -1154,15 +1167,13 @@ MODULE_ALIAS_RDMA_CLIENT("umad");
+ static int ib_issm_get_nl_info(struct ib_device *ibdev, void *client_data,
+ 			       struct ib_client_nl_info *res)
+ {
+-	struct ib_umad_device *umad_dev =
+-		ib_get_client_data(ibdev, &umad_client);
++	struct ib_umad_port *port = get_port(ibdev, client_data, res->port);
+ 
+-	if (!rdma_is_port_valid(ibdev, res->port))
+-		return -EINVAL;
++	if (IS_ERR(port))
++		return PTR_ERR(port);
+ 
+ 	res->abi = IB_USER_MAD_ABI_VERSION;
+-	res->cdev = &umad_dev->ports[res->port - rdma_start_port(ibdev)].sm_dev;
+-
++	res->cdev = &port->sm_dev;
+ 	return 0;
+ }
+ 
