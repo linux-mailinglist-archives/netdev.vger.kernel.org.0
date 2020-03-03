@@ -2,84 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51831177B4B
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3AE177B56
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 17:00:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730205AbgCCP6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:58:34 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:37765 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729770AbgCCP6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:58:34 -0500
-Received: by mail-qk1-f196.google.com with SMTP id m9so3884997qke.4
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 07:58:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=T99u6OQqFuLCQpNf/NdOYpBGisq4CV9Su0pw9sLcqrE=;
-        b=WZUSU5IPOxc/4doIWQ/fwX2T/PGyFqg3Yd2VgD5bpqUkyNpG2nuZCCDXvnAA+kckgy
-         Vv5apyLaD1l+/B+x9sxUbGzI1kC+i9SR5NMeaXaKWW7jvU/z09RyurFmA59WKrkNBHHu
-         14zfA2VC4vcKVg6qDu2j+tT6kMmq416afkxbOGTqMnFrYZtcYA4cApYzUI1vUmEBfFi+
-         zr1ZT9NzLLtUUstlNmOSn9p3fhD/NEkBYkXKU0rl0FuTP1YDrzeFe2PLjOhZSH8JMgwT
-         2BizSwbZKh26rKhV01xsP8hDl/vxTNIGaGFtrc61qsn3jNFda2EosaZ3F5mmhSEyNy+a
-         NKhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=T99u6OQqFuLCQpNf/NdOYpBGisq4CV9Su0pw9sLcqrE=;
-        b=PUpXsNUcRIagCPq62Xd+zLZ8mrqI0ZE2C8kOFx5ERM1didw1OdWYCR5nm3bpoQoMy2
-         exSTgIQe75DGTl8aWDkZCsoFBFWouSFXoWDfEWj2PC43L9c05RBE7QNjDnDE7N7mjBr1
-         32lRO4ctiCLJg9rwPfx3XEI8i7kPHbyC8aYxY6LNo/r17e1tySVj6uSfnoYB5xxy95WI
-         QtXEq0p7J9nnoo3KD+ME+sR681DYtC1xDGGNkWVvrHHYhboLT6MMJOjYLPxRX67XNnPn
-         OBb4EE5GYdUUe0F0slgMlDQ36121WlfudVGqcMYo20E3OJ8bI63gQzPuVG93N5gy7iC5
-         6z4g==
-X-Gm-Message-State: ANhLgQ2tTx9rwzeWXrMKUl+gFOSvH2JGHi4vshX+URAKyu69WtX/GncJ
-        5zHIYivb6nrn12MsOWOsRk0=
-X-Google-Smtp-Source: ADFU+vsqtUaN57DsS8OUiqN1U7OriIAWaK2D0vXfHVbAszqdV3cwWGsRJJlUAEfSN9AbzaoL8btj1w==
-X-Received: by 2002:a37:e115:: with SMTP id c21mr4926949qkm.130.1583251113492;
-        Tue, 03 Mar 2020 07:58:33 -0800 (PST)
-Received: from ?IPv6:2601:282:803:7700:29f0:2f5d:cfa7:1ce8? ([2601:282:803:7700:29f0:2f5d:cfa7:1ce8])
-        by smtp.googlemail.com with ESMTPSA id f5sm10087266qka.43.2020.03.03.07.58.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 07:58:32 -0800 (PST)
-Subject: Re: [PATCH net 3/3] selftests/net/fib_tests: update addr_metric_test
- for peer route testing
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        David Miller <davem@davemloft.net>
-References: <20200303063736.4904-1-liuhangbin@gmail.com>
- <20200303063736.4904-4-liuhangbin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <40921d69-3882-c25b-043c-84328cf45f4c@gmail.com>
-Date:   Tue, 3 Mar 2020 08:58:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1729898AbgCCQAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 11:00:41 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:56840 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729449AbgCCQAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 11:00:41 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 023G0cEW086942;
+        Tue, 3 Mar 2020 10:00:38 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1583251238;
+        bh=HOj/EzId8wXlbX2yukSDaFJ94slyk8N2M7YFoG5EhpM=;
+        h=From:To:CC:Subject:Date;
+        b=UGiVRK6SSiuZQ+J3hCm6tehu+XxkvZMfoHQbjQpTzLe4NplPyRzJKmymsyV357jPg
+         QHV/U1UzH4ocVZ5+HEuZ/StoTOZlZ1HDKjKI2xp9CQxWXJU/bprWXIeKKyU5jkzNKV
+         N1E4PDh+uYfHS/bn6e+kqEDx7/DWijudcUpFzHU0=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 023G0b8L103985;
+        Tue, 3 Mar 2020 10:00:37 -0600
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 3 Mar
+ 2020 10:00:37 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 3 Mar 2020 10:00:37 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 023G0aFb126032;
+        Tue, 3 Mar 2020 10:00:37 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     Murali Karicheri <m-karicheri2@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Sekhar Nori <nsekhar@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [for-next PATCH v2 0/5] phy: ti: gmii-sel: add support for am654x/j721e soc
+Date:   Tue, 3 Mar 2020 18:00:24 +0200
+Message-ID: <20200303160029.345-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200303063736.4904-4-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/2/20 11:37 PM, Hangbin Liu wrote:
-> This patch update {ipv4, ipv6}_addr_metric_test with
-> 1. Set metric of address with peer route and see if the route added
-> correctly.
-> 2. Modify metric and peer address for peer route and see if the route
-> changed correctly.
-> 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  tools/testing/selftests/net/fib_tests.sh | 34 +++++++++++++++++++++---
->  1 file changed, 31 insertions(+), 3 deletions(-)
-> 
+Hi Kishon,
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+This series adds support for TI K3 AM654x/J721E SoCs in TI phy-gmii-sel PHY
+driver, which is required for future adding networking support.
 
+depends on:
+ [PATCH 0/2] phy: ti: gmii-sel: two fixes
+ https://lkml.org/lkml/2020/2/14/2510
+
+Changes in v2:
+ - fixed comments
+
+v1: https://lkml.org/lkml/2020/2/22/100
+
+Grygorii Strashko (5):
+  phy: ti: gmii-sel: simplify config dependencies between net drivers
+    and gmii phy
+  dt-bindings: phy: ti: gmii-sel: add support for am654x/j721e soc
+  phy: ti: gmii-sel: add support for am654x/j721e soc
+  arm64: dts: ti: k3-am65-mcu: add phy-gmii-sel node
+  arm64: dts: ti: k3-j721e-mcu: add scm node and phy-gmii-sel nodes
+
+ .../bindings/phy/ti-phy-gmii-sel.txt          |  1 +
+ arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi       |  6 ++++++
+ .../boot/dts/ti/k3-j721e-mcu-wakeup.dtsi      | 14 ++++++++++++++
+ drivers/net/ethernet/ti/Kconfig               |  1 +
+ drivers/phy/ti/Kconfig                        |  3 ---
+ drivers/phy/ti/phy-gmii-sel.c                 | 19 +++++++++++++++++++
+ 6 files changed, 41 insertions(+), 3 deletions(-)
+
+-- 
+2.17.1
 
