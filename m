@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D914176AA5
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:25:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3747D176A9A
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 03:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbgCCCZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Mar 2020 21:25:19 -0500
+        id S1727131AbgCCCZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Mar 2020 21:25:09 -0500
 Received: from mga14.intel.com ([192.55.52.115]:54186 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727041AbgCCCZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727075AbgCCCZI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 2 Mar 2020 21:25:08 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,7 +17,7 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Mar 2020 18:25:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,509,1574150400"; 
-   d="scan'208";a="233605686"
+   d="scan'208";a="233605689"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.244.172])
   by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 18:25:07 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -26,11 +26,10 @@ To:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Jacob Keller <jacob.e.keller@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Michael Chan <michael.chan@broadcom.com>
-Subject: [PATCH v2 1/6] PCI: Introduce pci_get_dsn
-Date:   Mon,  2 Mar 2020 18:25:00 -0800
-Message-Id: <20200303022506.1792776-2-jacob.e.keller@intel.com>
+Subject: [PATCH v2 2/6] bnxt_en: Use pci_get_dsn()
+Date:   Mon,  2 Mar 2020 18:25:01 -0800
+Message-Id: <20200303022506.1792776-3-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.368.g28a2d05eebfb
 In-Reply-To: <20200303022506.1792776-1-jacob.e.keller@intel.com>
 References: <CABhMZUXJ_Omt-+fwa4Oz-Ly=J+NM8+8Ryv-Ad1u_bgEpDRH7RQ@mail.gmail.com>
@@ -42,90 +41,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several device drivers read their Device Serial Number from the PCIe
-extended config space.
+Replace the open-coded implementation for reading the PCIe DSN with
+pci_get_dsn().
 
-Introduce a new helper function, pci_get_dsn(). This function reads the
-eight bytes of the DSN and returns them as a u64. If the capability does not
-exist for the device, the function returns 0.
+Use of put_unaligned_le64 should be correct. pci_get_dsn() will perform
+two pci_read_config_dword calls. The first dword will be placed in the
+first 32 bits of the u64, while the second dword will be placed in the
+upper 32 bits of the u64.
+
+On Little Endian systems, the least significant byte comes first, which
+will be the least significant byte of the first dword, followed by the
+least significant byte of the second dword. Since the _le32 variations
+do not perform byte swapping, we will correctly copy the dwords into the
+dsn[] array in the same order as before.
+
+On Big Endian systems, the most significant byte of the second dword
+will come first. put_unaligned_le64 will perform a CPU_TO_LE64, which
+will swap things correctly before copying. This should also end up with
+the correct bytes in the dsn[] array.
+
+While at it, fix a small typo in the netdev_info error message when the
+DSN cannot be read.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Cc: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/pci/pci.c   | 34 ++++++++++++++++++++++++++++++++++
- include/linux/pci.h |  5 +++++
- 2 files changed, 39 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index d828ca835a98..03f50e706c0d 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -557,6 +557,40 @@ int pci_find_ext_capability(struct pci_dev *dev, int cap)
- }
- EXPORT_SYMBOL_GPL(pci_find_ext_capability);
- 
-+/**
-+ * pci_get_dsn - Read and return the 8-byte Device Serial Number
-+ * @dev: PCI device to query
-+ *
-+ * Looks up the PCI_EXT_CAP_ID_DSN and reads the 8 bytes of the Device Serial
-+ * Number.
-+ *
-+ * Returns the DSN, or zero if the capability does not exist.
-+ */
-+u64 pci_get_dsn(struct pci_dev *dev)
-+{
-+	u32 dword;
-+	u64 dsn;
-+	int pos;
-+
-+	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DSN);
-+	if (!pos)
-+		return 0;
-+
-+	/*
-+	 * The Device Serial Number is two dwords offset 4 bytes from the
-+	 * capability position. The specification says that the first dword is
-+	 * the lower half, and the second dword is the upper half.
-+	 */
-+	pos += 4;
-+	pci_read_config_dword(dev, pos, &dword);
-+	dsn = (u64)dword;
-+	pci_read_config_dword(dev, pos + 4, &dword);
-+	dsn |= ((u64)dword) << 32;
-+
-+	return dsn;
-+}
-+EXPORT_SYMBOL_GPL(pci_get_dsn);
-+
- static int __pci_find_next_ht_cap(struct pci_dev *dev, int pos, int ht_cap)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 597e6fd5bfea..49874079084d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -11755,20 +11755,16 @@ static int bnxt_init_mac_addr(struct bnxt *bp)
+ static int bnxt_pcie_dsn_get(struct bnxt *bp, u8 dsn[])
  {
- 	int rc, ttl = PCI_FIND_CAP_TTL;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 3840a541a9de..d92cf2da1ae1 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1045,6 +1045,8 @@ int pci_find_ht_capability(struct pci_dev *dev, int ht_cap);
- int pci_find_next_ht_capability(struct pci_dev *dev, int pos, int ht_cap);
- struct pci_bus *pci_find_next_bus(const struct pci_bus *from);
+ 	struct pci_dev *pdev = bp->pdev;
+-	int pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_DSN);
+-	u32 dw;
++	u64 qword;
  
-+u64 pci_get_dsn(struct pci_dev *dev);
-+
- struct pci_dev *pci_get_device(unsigned int vendor, unsigned int device,
- 			       struct pci_dev *from);
- struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
-@@ -1699,6 +1701,9 @@ static inline int pci_find_next_capability(struct pci_dev *dev, u8 post,
- static inline int pci_find_ext_capability(struct pci_dev *dev, int cap)
- { return 0; }
+-	if (!pos) {
+-		netdev_info(bp->dev, "Unable do read adapter's DSN");
++	qword = pci_get_dsn(pdev);
++	if (!qword) {
++		netdev_info(bp->dev, "Unable to read adapter's DSN");
+ 		return -EOPNOTSUPP;
+ 	}
  
-+static inline u64 pci_get_dsn(struct pci_dev *dev)
-+{ return 0; }
+-	/* DSN (two dw) is at an offset of 4 from the cap pos */
+-	pos += 4;
+-	pci_read_config_dword(pdev, pos, &dw);
+-	put_unaligned_le32(dw, &dsn[0]);
+-	pci_read_config_dword(pdev, pos + 4, &dw);
+-	put_unaligned_le32(dw, &dsn[4]);
++	put_unaligned_le64(qword, dsn);
 +
- /* Power management related routines */
- static inline int pci_save_state(struct pci_dev *dev) { return 0; }
- static inline void pci_restore_state(struct pci_dev *dev) { }
+ 	bp->flags |= BNXT_FLAG_DSN_VALID;
+ 	return 0;
+ }
 -- 
 2.25.0.368.g28a2d05eebfb
 
