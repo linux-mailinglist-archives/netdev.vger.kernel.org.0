@@ -2,96 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A340517779C
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:45:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 310771777AE
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 14:49:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727880AbgCCNpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 08:45:09 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35810 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727576AbgCCNpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:45:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=0yup3mARE7euXRUrinjIYjaiwDrqny/kYWdlvrncAsM=; b=Ix1npxEPg/BN0E66WionUlpl8
-        Q18ezX5tE6P7m/7P/HHPmMZvqgsmXup3cAB30aHQToKLFr/i68zA0CT2w7bR6/O84vRlrK5Q1xHSc
-        0u6DH/xvf+nwKahGZe2l5TkLEs5RBQMhMEnte6XylwWjCg4LjhLShgD0ChfGliYGlDzWjCEKm2xVV
-        OPXethEeNJaKdpWvTSiI4vhvxU1ZEGskg4JMDxWuA7jO1+yT0rU2IK1f+HLmHYQRG4Q5JrEyLOCMI
-        Ycg0OqQ2xFq4QhBeS3LLBpRp+dape+V88KmRLCmfFhL0CeLmEnZy7HCV/55icBNaSvrEmXf4So7lg
-        LX+baEtPg==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48182)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j97qz-0008H7-2z; Tue, 03 Mar 2020 13:44:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j97qv-0005wH-1l; Tue, 03 Mar 2020 13:44:53 +0000
-Date:   Tue, 3 Mar 2020 13:44:53 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, mkl@pengutronix.de,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1] net: dsa: sja1105: add 100baseT1_Full support
-Message-ID: <20200303134452.GL25745@shell.armlinux.org.uk>
-References: <20200303074414.30693-1-o.rempel@pengutronix.de>
- <CA+h21hrkVr4-Bgop0bor9nkKDUm4dYdyuDWJ_jthjKpy98ZQ1A@mail.gmail.com>
+        id S1729001AbgCCNrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 08:47:08 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36278 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728877AbgCCNrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 08:47:07 -0500
+Received: by mail-wr1-f68.google.com with SMTP id j16so4439450wrt.3
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 05:47:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GyVfQXQxs/Su/34p+Wl1N+fO/vG2N412L7jLzkD0EWs=;
+        b=IC0s+WLWOSMLC7GoGbh3H95n8VF6eoP/AzlbWskMHCV/jdGsnE+b3+/Fdv/G64QpN+
+         E6f3W4axPk1WBwfUWAzsF/e8zkoQVaHF3w0mGw+ahVBM9tdTTizCldn4vXZmnDeeukNH
+         yrmtt8Xu7lS7FORskjIkHMda2PMkH1gLcHgCZBkOKXkavu8diiPVSyR1Ty1jQRX/Q1L4
+         2ykNOel+kGfzrY8T/b4d5ClgscMEBKA6dVD+eHrHGnvTng/hFirqTOTHRjxReIQQ2szz
+         dQSRvAJafGC9WqlDcVPDsIRUDu0HxgsJiwcG098W0hUCZRVuJ693OIzaNo3vB/YMYu9e
+         k7EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GyVfQXQxs/Su/34p+Wl1N+fO/vG2N412L7jLzkD0EWs=;
+        b=a6VhYqfWIufH4Yf6mKlHlD6RnAzf9fI6ovAyPhuySHy/t1EkUC9j8WGEwjXh7DYx+z
+         zXefYiFJbuf89rkggh8aG926LggVPxZjbBLabqXhgvN49yGeJx68oEYLr6QXFK1tgfE8
+         x5khVwllaUBBkna4ktrxlGSjIYIXms7AJ9Em8z9ys7XrWKRER1dlfvngEO7QuzvY6YW0
+         50/UCGXQz/wC510sVnpguWMyMYGZKa9RqcbvyjZh70Gat4/+G2PLFBx/Qk8CitbySKyL
+         S5TrfSbAK6AqMmL3uIYrYUE9q6Ev6t3KD3JiQzb4K9vRMM50htEnon1jjSZRwjwpgGzp
+         hdyw==
+X-Gm-Message-State: ANhLgQ1iugwJQeaMIsIukaol17Sty5iFSYmikpih0OmN7pw763fwfn2h
+        8OpxHAxFS88xcba1W+/zqS+lWQ==
+X-Google-Smtp-Source: ADFU+vud0krP2pZWiE4Su9aHRHqK+HCRNi6J9MdX5z+K+81PWn+TS/7I8a91/vQWcHRlI3tiH/IEAQ==
+X-Received: by 2002:a05:6000:10c8:: with SMTP id b8mr5357440wrx.287.1583243226018;
+        Tue, 03 Mar 2020 05:47:06 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id z11sm3997507wmd.47.2020.03.03.05.47.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 05:47:05 -0800 (PST)
+Date:   Tue, 3 Mar 2020 14:47:04 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org
+Subject: Re: [RFC PATCH v2 04/22] ice: enable initial devlink support
+Message-ID: <20200303134704.GM2178@nanopsycho>
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+ <20200214232223.3442651-5-jacob.e.keller@intel.com>
+ <20200302163056.GB2168@nanopsycho>
+ <12a9a9bb-12ca-7cfa-43f1-ade9d13b9651@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+h21hrkVr4-Bgop0bor9nkKDUm4dYdyuDWJ_jthjKpy98ZQ1A@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <12a9a9bb-12ca-7cfa-43f1-ade9d13b9651@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 12:04:04PM +0200, Vladimir Oltean wrote:
-> On Tue, 3 Mar 2020 at 09:44, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> >
-> > Validate 100baseT1_Full to make this driver work with TJA1102 PHY.
-> >
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> 
-> I was expecting this patch sooner or later.
-> 
-> Acked-by: Vladimir Oltean <olteanv@gmail.com>
-> 
-> I should take this opportunity and express the fact that it is strange
-> for MAC drivers to have to sign off all possible copper and fiber
-> media types in their .phylink_validate method. Sooner or later
-> somebody is going to want to add 1000Base-T1 too. I don't think it is
-> going to scale very well. Russell, with your plan to make MAC drivers
-> just populate a bitmap of phy_modes (MII side), is it also going to
-> get rid of media side validation?
+Mon, Mar 02, 2020 at 08:29:44PM CET, jacob.e.keller@intel.com wrote:
+>
+>
+>On 3/2/2020 8:30 AM, Jiri Pirko wrote:
+>> Sat, Feb 15, 2020 at 12:22:03AM CET, jacob.e.keller@intel.com wrote:
+>> 
+>> [...]
+>> 
+>>> +int ice_devlink_create_port(struct ice_pf *pf)
+>>> +{
+>>> +	struct devlink *devlink = priv_to_devlink(pf);
+>>> +	struct ice_vsi *vsi = ice_get_main_vsi(pf);
+>>> +	struct device *dev = ice_pf_to_dev(pf);
+>>> +	int err;
+>>> +
+>>> +	if (!vsi) {
+>>> +		dev_err(dev, "%s: unable to find main VSI\n", __func__);
+>>> +		return -EIO;
+>>> +	}
+>>> +
+>>> +	devlink_port_attrs_set(&pf->devlink_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
+>>> +			       pf->hw.pf_id, false, 0, NULL, 0);
+>>> +	err = devlink_port_register(devlink, &pf->devlink_port, pf->hw.pf_id);
+>>> +	if (err) {
+>>> +		dev_err(dev, "devlink_port_register failed: %d\n", err);
+>>> +		return err;
+>>> +	}
+>> 
+>> You need to register_netdev here. Otherwise you'll get inconsistent udev
+>> naming.
+>> 
+>
+>The netdev is registered in other portion of the code, and should
+>already be registered by the time we call ice_devlink_create_port. This
+>check is mostly here to prevent a NULL pointer if the VSI somehow
+>doesn't have a netdev associated with it.
 
-You're touching on a concern I've had for some time that the link modes
-mix together several different parameters: speed, duplex, and media.
+My point is, the correct order is:
+devlink_register()
+devlink_port_attrs_set()
+devlink_port_register()
+register_netdev()
+devlink_port_type_eth_set()
 
-What we actually want for a MAC is to know which speeds and duplexes
-they support for each interface mode, and then translate that to the
-ethtool link modes as appropriate.  That isn't a problem I've addressed
-yet, but something that could be addressed.
 
-I've just updated my net-queue with a bunch of stuff that's been
-sitting in other branches (some published, some not), which includes
-the PHY_INTERFACE_MODE bitmap changes - everything from and including
-"net: mvpp2: add port support helpers" concerns the bitmap stuff.
-
-At the moment, it has to support both the new bitmap solution and the
-legacy solution, but hopefully in time we can drop the legacy solution.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>
+>> 
+>>> +	if (vsi->netdev)
+>>> +		devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
+>>> +
+>>> +	return 0;
+>>> +}
+>> 
+>> 
+>> [...]
+>> 
