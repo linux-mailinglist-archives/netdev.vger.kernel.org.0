@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FF5177B48
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB735177B4A
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 16:58:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730127AbgCCP6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 10:58:14 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44195 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729770AbgCCP6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:58:14 -0500
-Received: by mail-qt1-f195.google.com with SMTP id j23so3139225qtr.11
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 07:58:13 -0800 (PST)
+        id S1730197AbgCCP60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 10:58:26 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38278 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729770AbgCCP6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 10:58:25 -0500
+Received: by mail-qt1-f194.google.com with SMTP id e20so3177657qto.5
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 07:58:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tbwMv4Xp4XqdEk9sc7xpkVwh+bKFmbVfoNyUEBVbagE=;
-        b=Det3bp2vvitZXfoRY7vgTjGeX8L3qrkMiGoGOU6KKN9uPbU74JME07VCxtxQVKy1Iu
-         /FZ8gDcOWfQBeg0Cze5uXXBlLNAi03CC1C27c7zgE9mOn9XmVBzQVOBv1AG2SD2CbQC7
-         Tpe4cu9b9yp0yvKLQVlgcHD+Hurf80A6c3k80GcYV7RxAU2hh3hJUVnxG6KKarCxQcFk
-         c9mrRrRuMuiFW2dNMmj7arDycp6YAWY16NG60FX/OuT7bstupjQyrM723AvzKdYnb2gE
-         ouFjsDTZxlvKD+Fc1S/BvjQ5wniDoLTNjuKyB0uEcTKuVPovmjzAYRiburbbJ+qlnN9o
-         nB/A==
+        bh=rn809vRisbHdQ7AlPMKIEuZX36wgQDO8L3EnKX0/q4c=;
+        b=HjOeBVDF1DMm/aChqdZwfmp2qfqnWIZlDfKNhEKeJNHjdxh6fMeJSsxJh64E6CNkq8
+         N4sTVgNUiRB0YqeM/OwvLHAjx4iiY/wl87YwqS2HYWLsS3QkooYUwzSQxPyHNqQjklH2
+         gx+YZy4VKqepJjiWjsflQxgoHJucZpWUQvg2hfOU+r87ip0fzo3FnfTejYtJvktr3wsn
+         e/3s8RBRO31fVwg0FER+IrYu4kwU6b7/cF3RFqoTUBZhpoZFij5KpnEQBcq5mcMVZptC
+         9VYtf66B3fBAhDpCaP5jq+XzLec2AL5OKIWkJqug00u5F1jz3rw/ZgjYP56GZVk9M3kd
+         dAQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=tbwMv4Xp4XqdEk9sc7xpkVwh+bKFmbVfoNyUEBVbagE=;
-        b=SCyK222JJDQDp/WdmRN8etO5IK+DALV8/Yfor8LKdY2AA6/UoKw7OiJYwcLTIkRgP5
-         KA47N8VD2pi9v+hpQPu3BX0/14sCPEn8EHdjwWleTIG9bunIcebZHymQzgDLHDI4hoZs
-         o66oZxQdJR4G27TpxIPIn6ENslkBvHhaGplj+Myn0nFph7s73Bujtoe6t3QL2hnMlgHt
-         +q78H4LxJxDi12mfHM4+ex0ZvjhzP65HuclXgtzmiKPrSgMebldVDT+3upDIy0nmMTZ2
-         hAQK4qiUpulKsFcfz6V+jWNcVp8zJzJGZj/QS6c8xhq0ePKKD2lCAX/GgGHUsZlcIbGR
-         5Xww==
-X-Gm-Message-State: ANhLgQ3QCoIfcwMsNThVB1gvtguVNAq4igOgUIvh8wBdG2dBpoQKdhD9
-        JS90vOtSTSlnm/s4OCZo/sI=
-X-Google-Smtp-Source: ADFU+vsz8wKFjagT0jnDD9QV3R45HtDSeeWv9sxUqf54kIT3rjSkEqO/ze6KXUV5Ic3q0hkI7qgiKA==
-X-Received: by 2002:aed:2667:: with SMTP id z94mr4769419qtc.96.1583251092847;
-        Tue, 03 Mar 2020 07:58:12 -0800 (PST)
+        bh=rn809vRisbHdQ7AlPMKIEuZX36wgQDO8L3EnKX0/q4c=;
+        b=cW1GB6+8WDXx6+Ns7TZj+zq8eQJLkBOvZ3nLCO5w2JZ5YYftqpEiFdXCrJzLSSUxQO
+         JAmITBIX1LGrsGyCFy2mh6ULJ8XIeXVjDbZr+VG/TP0kH1LHLqkJmpEUn52r5ZdwYFST
+         4zlnCDUo1XhqcLOKnghkz00wg032tOHqEdXl1HdTtWJFbub99k4PnvS5X7RkboZgS67h
+         Q0F7DcEX5CGtvfFbERsRaWd2FphrvOK2iZolMA6LxAL4+gYWN64Os7r9Zaj9Txm38eMS
+         NWyzgghsvv7AJo+JI2n4u0Cti7LYh13hAuw+VaQQH+KduYlpNCz6ztdTmSkULZlZGUt0
+         o+6Q==
+X-Gm-Message-State: ANhLgQ0VlGt6B63EEUuuz5LU0mPbLc7y7wZeIepOVkSag0z96BURKDBC
+        80+uA8Fz2brommRquF5sDNqusQ3D
+X-Google-Smtp-Source: ADFU+vtxT7jaaNgS5kEITzRon9LjRtpDjxjC9q49Ei7N/YJhS7hjtcTsgy2s0Ez3MfOY693L22HR+w==
+X-Received: by 2002:aed:2a75:: with SMTP id k50mr3360844qtf.168.1583251103446;
+        Tue, 03 Mar 2020 07:58:23 -0800 (PST)
 Received: from ?IPv6:2601:282:803:7700:29f0:2f5d:cfa7:1ce8? ([2601:282:803:7700:29f0:2f5d:cfa7:1ce8])
-        by smtp.googlemail.com with ESMTPSA id o4sm12066793qki.26.2020.03.03.07.58.11
+        by smtp.googlemail.com with ESMTPSA id 79sm12451979qkf.129.2020.03.03.07.58.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2020 07:58:12 -0800 (PST)
-Subject: Re: [PATCH net 1/3] net/ipv6: need update peer route when modify
- metric
+        Tue, 03 Mar 2020 07:58:22 -0800 (PST)
+Subject: Re: [PATCH net 2/3] net/ipv6: remove the old peer route if change it
+ to a new one
 To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
 Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
         David Miller <davem@davemloft.net>
 References: <20200303063736.4904-1-liuhangbin@gmail.com>
- <20200303063736.4904-2-liuhangbin@gmail.com>
+ <20200303063736.4904-3-liuhangbin@gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <33683c53-d188-de9b-5bf6-794b8eede898@gmail.com>
-Date:   Tue, 3 Mar 2020 08:58:09 -0700
+Message-ID: <1cb697e7-eefa-360d-9431-10ad95f2fd42@gmail.com>
+Date:   Tue, 3 Mar 2020 08:58:21 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200303063736.4904-2-liuhangbin@gmail.com>
+In-Reply-To: <20200303063736.4904-3-liuhangbin@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,29 +68,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 3/2/20 11:37 PM, Hangbin Liu wrote:
-> When we modify the route metric, the peer address's route need also
-> be updated. Before the fix:
+> When we modify the peer route and changed it to a new one, we should
+> remove the old route first. Before the fix:
 > 
-> + ip addr add dev dummy1 2001:db8::1 peer 2001:db8::2 metric 60
+> + ip addr add dev dummy1 2001:db8::1 peer 2001:db8::2
 > + ip -6 route show dev dummy1
-> 2001:db8::1 proto kernel metric 60 pref medium
-> 2001:db8::2 proto kernel metric 60 pref medium
-> + ip addr change dev dummy1 2001:db8::1 peer 2001:db8::2 metric 61
+> 2001:db8::1 proto kernel metric 256 pref medium
+> 2001:db8::2 proto kernel metric 256 pref medium
+> + ip addr change dev dummy1 2001:db8::1 peer 2001:db8::3
 > + ip -6 route show dev dummy1
-> 2001:db8::1 proto kernel metric 61 pref medium
-> 2001:db8::2 proto kernel metric 60 pref medium
+> 2001:db8::1 proto kernel metric 256 pref medium
+> 2001:db8::2 proto kernel metric 256 pref medium
 > 
 > After the fix:
-> + ip addr change dev dummy1 2001:db8::1 peer 2001:db8::2 metric 61
+> + ip addr change dev dummy1 2001:db8::1 peer 2001:db8::3
 > + ip -6 route show dev dummy1
-> 2001:db8::1 proto kernel metric 61 pref medium
-> 2001:db8::2 proto kernel metric 61 pref medium
+> 2001:db8::1 proto kernel metric 256 pref medium
+> 2001:db8::3 proto kernel metric 256 pref medium
 > 
-> Fixes: 8308f3ff1753 ("net/ipv6: Add support for specifying metric of connected routes")
+> This patch depend on the previous patch "net/ipv6: need update peer route
+> when modify metric" to update new peer route after delete old one.
+> 
 > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > ---
->  net/ipv6/addrconf.c | 20 ++++++++++++++++----
->  1 file changed, 16 insertions(+), 4 deletions(-)
+>  net/ipv6/addrconf.c | 21 +++++++++++++++++----
+>  1 file changed, 17 insertions(+), 4 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@gmail.com>
