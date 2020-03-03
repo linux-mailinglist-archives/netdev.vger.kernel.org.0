@@ -2,71 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45440178484
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD7E178493
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 22:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732262AbgCCVFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 16:05:08 -0500
-Received: from www62.your-server.de ([213.133.104.62]:39888 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729880AbgCCVFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:05:08 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j9Eim-00068r-G7; Tue, 03 Mar 2020 22:04:56 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1j9Eim-000Iju-3A; Tue, 03 Mar 2020 22:04:56 +0100
-Subject: Re: [PATCH v4] netdev attribute to control xdpgeneric skb
- linearization
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Luigi Rizzo <lrizzo@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Miller <davem@davemloft.net>, hawk@kernel.org,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>, ast@kernel.org,
-        bpf@vger.kernel.org
-References: <20200228105435.75298-1-lrizzo@google.com>
- <20200228110043.2771fddb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+FuTSfd80pZroxtqZDsTeEz4FaronC=pdgjeaBBfYqqi5HiyQ@mail.gmail.com>
- <3c27d9c0-eb17-b20f-2d10-01f3bdf8c0d6@iogearbox.net>
- <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <abe8f703-d239-2444-99a0-c94dd53f478a@iogearbox.net>
-Date:   Tue, 3 Mar 2020 22:04:55 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732347AbgCCVHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 16:07:05 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:41110 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732336AbgCCVHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 16:07:05 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D011468006B;
+        Tue,  3 Mar 2020 21:07:01 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 3 Mar 2020
+ 21:06:52 +0000
+Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
+ stats type
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
+        <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <mlxsw@mellanox.com>,
+        <netfilter-devel@vger.kernel.org>
+References: <20200228172505.14386-2-jiri@resnulli.us>
+ <20200229192947.oaclokcpn4fjbhzr@salvia> <20200301084443.GQ26061@nanopsycho>
+ <20200302132016.trhysqfkojgx2snt@salvia>
+ <1da092c0-3018-7107-78d3-4496098825a3@solarflare.com>
+ <20200302192437.wtge3ze775thigzp@salvia>
+ <20200302121852.50a4fccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200302214659.v4zm2whrv4qjz3pe@salvia>
+ <20200302144928.0aca19a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <9478af72-189f-740e-5a6d-608670e5b734@solarflare.com>
+ <20200303202739.6nwq3ru2vf62j2ek@salvia>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <0452cffa-1054-418f-0a5d-8e15afd87969@solarflare.com>
+Date:   Tue, 3 Mar 2020 21:06:48 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200303125020.2baef01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25740/Tue Mar  3 13:12:16 2020)
+In-Reply-To: <20200303202739.6nwq3ru2vf62j2ek@salvia>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25266.003
+X-TM-AS-Result: No-3.380100-8.000000-10
+X-TMASE-MatchedRID: eVEkOcJu0F4bF9xF7zzuNfZvT2zYoYOwC/ExpXrHizw/hcT28SJs8oEQ
+        k1c2BTxcoZjv0XwCLb2myB5m8hwFFbSi69HcXkHAelGHXZKLL2s5OMMyyCn/wdfzBtkSvJ4x7TP
+        +aufk0FiRKSoqryx7WDF8zadsvor+N2+T837spRTgzeXQR5e9DYx4V49TS24wWgyC8H9R1eGc/2
+        wcFt9opNUCyTFXDJXQr6YqKNQbbRklVaqTQ2WNXElbX5/aWn0XlhpPdwv1Z0ojRiu1AuxJTGmMO
+        g4NfcwtY9Y+hIZD5d35IJ21EQeYAwxCbiBA+b+8xVtvemNbkycIKj6WwO7KdWMunwKby/AXxytw
+        wT/CqKfGBd91xcMekWivLll7h+Hdv1l2Uvx6idpqHXONfTwSQsRB0bsfrpPInxMyeYT53RlHDNC
+        UBJ8bZuiwu/KrBDqd/zowpUXlRkb6jbNOQkcjF4VbhOvKPf0BYLV+5x8B8URHvVXSXSSIKIC162
+        r/MuKkVchOMekwJ2fUNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.380100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25266.003
+X-MDID: 1583269623-PR-oWbbEMFN3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/3/20 9:50 PM, Jakub Kicinski wrote:
-> On Tue, 3 Mar 2020 20:46:55 +0100 Daniel Borkmann wrote:
->> Thus, when the data/data_end test fails in generic XDP, the user can
->> call e.g. bpf_xdp_pull_data(xdp, 64) to make sure we pull in as much as
->> is needed w/o full linearization and once done the data/data_end can be
->> repeated to proceed. Native XDP will leave xdp->rxq->skb as NULL, but
->> later we could perhaps reuse the same bpf_xdp_pull_data() helper for
->> native with skb-less backing. Thoughts?
-> 
-> I'm curious why we consider a xdpgeneric-only addition. Is attaching
-> a cls_bpf program noticeably slower than xdpgeneric?
+On 03/03/2020 20:27, Pablo Neira Ayuso wrote:
+> On Tue, Mar 03, 2020 at 06:55:54PM +0000, Edward Cree wrote:
+>> On 02/03/2020 22:49, Jakub Kicinski wrote:
+>>> On Mon, 2 Mar 2020 22:46:59 +0100 Pablo Neira Ayuso wrote:
+>>>> On Mon, Mar 02, 2020 at 12:18:52PM -0800, Jakub Kicinski wrote:
+>>>>> On Mon, 2 Mar 2020 20:24:37 +0100 Pablo Neira Ayuso wrote:  
+>>>>>> It looks to me that you want to restrict the API to tc for no good
+>>>>>> _technical_ reason.  
+>> The technical reason is that having two ways to do things where one would
+>>  suffice means more code to be written, tested, debugged.  So if you want
+>>  to add this you need to convince us that the existing way (a) doesn't
+>>  meet your needs and (b) can't be extended to cover them.
+> One single unified way to express the hardware offload for _every_
+> supported frontend is the way to go. The flow_offload API provides a
+> framework to model all hardware offloads for each existing front-end.
+>
+> I understand your motivation might be a specific front-end of your
+> choice, that's fair enough.
+I think we've misunderstood each other (90% my fault).
 
-Yeah, agree, I'm curious about that part as well.
+When you wrote "restrict the API to tc" I read that as "restrict growth of
+ the API for flow offloading" (which I *do* want); I've now re-parsed and
+ believe you meant it as "limit the API so that only tc may use it" (which
+ is not my desire at all).
 
-Thanks,
-Daniel
+Thus, when I spoke of "two ways to do things" I meant that _within_ the
+ (unified) flow_offload API there should be a single approach to stats
+ (the counters attached to actions), to which levels above and below it
+ impedance-match as necessary (e.g. by merging netfilter count actions
+ onto the following action as Jakub described), rather than bundling
+ two interfaces (tc-style counters and separate counter actions) into
+ one API (which would mean that drivers would all need to write code to
+ handle both kinds, at no gain of expressiveness).
+I was *not* referring to tc and netfilter as the "two different ways", but
+ I can see why you read it that way.
+
+I hope that makes sense now.
+-ed
