@@ -2,170 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86003177FEA
+	by mail.lfdr.de (Postfix) with ESMTP id 14C8F177FE9
 	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 19:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732401AbgCCRxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 12:53:38 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:65153 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731683AbgCCRxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 12:53:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1583258017; x=1614794017;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=34azqmFeRaFzM4vO53SvciGSZLKjRCjz923ORM9sBr4=;
-  b=k9L5i4hOoGGofPts5jgFxXq95UDVig3VEouR8ta413nM0WKQuoT43LdP
-   R0uVVIeUE004nywK8LIjcQqqm/ta8JWMCD643poeXiobOYznoxYt3dYtt
-   loOOqcxnhc+9HlTCPcvBptnjEVhiQOBIDHWg/oxXkAywYVBj6eDxb2dyh
-   o=;
-IronPort-SDR: j+T/5jka0KWLwSKijd2DYIDqBjMHVH2vWoW4leXQDE1Kp4yfmScGdl89lzyO1AjKPbca5+E6eP
- /faX/djAPGXA==
-X-IronPort-AV: E=Sophos;i="5.70,511,1574121600"; 
-   d="scan'208";a="30307745"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-22cc717f.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 03 Mar 2020 17:53:36 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-22cc717f.us-west-2.amazon.com (Postfix) with ESMTPS id D46C1A274A;
+        id S1732397AbgCCRxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 12:53:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732391AbgCCRxf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 12:53:35 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D4AB206D5;
         Tue,  3 Mar 2020 17:53:34 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 3 Mar 2020 17:53:34 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.8) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 3 Mar 2020 17:53:30 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <eric.dumazet@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.co.jp>, <kuznet@ms2.inr.ac.ru>,
-        <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>,
-        <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH v3 net-next 2/4] tcp: bind(addr, 0) remove the SO_REUSEADDR restriction when ephemeral ports are exhausted.
-Date:   Wed, 4 Mar 2020 02:53:25 +0900
-Message-ID: <20200303175325.36937-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <74eacd0e-5519-3e39-50f3-1add05983ba3@gmail.com>
-References: <74eacd0e-5519-3e39-50f3-1add05983ba3@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583258014;
+        bh=EpRhqg1t2E2K0Or7CHeACcbTjwjBa3cBLkyGEK5sBw0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mPFoltkybB7GKFwqM7aa9nrG3QKhQCSTLz1AtKCRK3tvTsGitjsupuZowCR+UCHzu
+         xr8SteCXaHMu1JgG3D2dW0DzkZdiUi4J0oL1LqJy76cXFmyiy/Ezr7V6WcFMIBHH84
+         Is68busg2NQv+208JliSqp3StByr8QOR13CDKxdc=
+Date:   Tue, 3 Mar 2020 09:53:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kvalo@codeaurora.org
+Subject: Re: [PATCH wireless 0/3] nl80211: add missing attribute validation
+Message-ID: <20200303095332.138ce9b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e5d88e0dbca9cc445caa95cfe32edda52f6b193d.camel@sipsolutions.net>
+References: <20200303051058.4089398-1-kuba@kernel.org>
+        <e5d88e0dbca9cc445caa95cfe32edda52f6b193d.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.8]
-X-ClientProxiedBy: EX13D03UWC004.ant.amazon.com (10.43.162.49) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Sun, 1 Mar 2020 20:49:49 -0800
-> On 3/1/20 8:31 PM, Kuniyuki Iwashima wrote:
->> From:   Eric Dumazet <eric.dumazet@gmail.com>
->> Date:   Sun, 1 Mar 2020 19:42:25 -0800
->>> On 2/29/20 3:35 AM, Kuniyuki Iwashima wrote:
->>>> Commit aacd9289af8b82f5fb01bcdd53d0e3406d1333c7 ("tcp: bind() use stronger
->>>> condition for bind_conflict") introduced a restriction to forbid to bind
->>>> SO_REUSEADDR enabled sockets to the same (addr, port) tuple in order to
->>>> assign ports dispersedly so that we can connect to the same remote host.
->>>>
->>>> The change results in accelerating port depletion so that we fail to bind
->>>> sockets to the same local port even if we want to connect to the different
->>>> remote hosts.
->>>>
->>>> You can reproduce this issue by following instructions below.
->>>>   1. # sysctl -w net.ipv4.ip_local_port_range="32768 32768"
->>>>   2. set SO_REUSEADDR to two sockets.
->>>>   3. bind two sockets to (address, 0) and the latter fails.
->>>>
->>>> Therefore, when ephemeral ports are exhausted, bind(addr, 0) should
->>>> fallback to the legacy behaviour to enable the SO_REUSEADDR option and make
->>>> it possible to connect to different remote (addr, port) tuples.
->>>>
->>>> This patch allows us to bind SO_REUSEADDR enabled sockets to the same
->>>> (addr, port) only when all ephemeral ports are exhausted.
->>>>
->>>> The only notable thing is that if all sockets bound to the same port have
->>>> both SO_REUSEADDR and SO_REUSEPORT enabled, we can bind sockets to an
->>>> ephemeral port and also do listen().
->>>>
->>>> Fixes: aacd9289af8b ("tcp: bind() use stronger condition for bind_conflict")
->>>>
->>>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
->>>
->>> I am unsure about this, since this could double the time taken by this
->>> function, which is already very time consuming.
->> 
->> This patch doubles the time on choosing a port only when all ephemeral ports
->> are exhausted, and this fallback behaviour can eventually decreases the time
->> on waiting for ports to be released. We cannot know when the ports are
->> released, so we may not be able to reuse ports without this patch. This
->> patch gives more chace and raises the probability to succeed to bind().
->> 
->>> We added years ago IP_BIND_ADDRESS_NO_PORT socket option, so that the kernel
->>> has more choices at connect() time (instead of bind()) time to choose a source port.
->>>
->>> This considerably lowers time taken to find an optimal source port, since
->>> the kernel has full information (source address, destination address & port)
->> 
->> I also think this option is usefull, but it does not allow us to reuse
->> ports that is reserved by bind(). This is because connect() can reuse ports
->> only when their tb->fastresue and tb->fastreuseport is -1. So we still
->> cannot fully utilize 4-tuples.
+On Tue, 03 Mar 2020 08:29:46 +0100 Johannes Berg wrote:
+> Hi Jakub,
 > 
-> The thing is : We do not want to allow active connections to use a source port
-> that is used for passive connections.
-
-When calling bind(addr, 0) without these patches, this problem does not
-occur. Certainly these patches could make it possible to do bind(addr, 0)
-and listen() on the port which is already reserved by connect(). However,
-whether these patches are applied or not, this problem can be occurred by
-calling bind with specifying the port.
-
-
-> Many supervisions use dump commands like "ss -t src :40000" to list all connections
-> for a 'server' listening on port 40000,
-> or use ethtool to direct all traffic for this port on a particular RSS queue.
+> > Wireless seems to be missing a handful of netlink policy entries.  
 > 
-> Some firewall setups also would need to be changed, since suddenly the port could
-> be used by unrelated applications.
+> Yep, these look good to me.
+> 
+> Here's a
+> 
+> Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+> 
+> if you want to apply them directly? 
 
-I think these are on promise that the server application specifies the port
-and we know which port is used in advance. Moreover the port nerver be used
-by unrelated application suddenly. When connect() and listen() share the
-port, listen() is always called after connect().
+Up to Dave, I only put a maintainer hat to cover for Dave when he's
+away :)
 
+> I can take them, but you said later you might want to pick them into
+> stable, so maybe you have some more direct plan there?
 
-I would like to think about two sockets (sk1 and sk2) in three cases.
-
-1st case: sk1 is in TCP_LISTEN.
-In this case, sk2 cannot get the port and my patches does not change the behaviour.
-
-2nd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 40000) for sk2.
-In this case, sk2 can get the port by specifying the port, so listen() of
-sk2 can share the port with connect() of sk1. This is because reuseport_ok
-is true, but my patches add changes only for when reuseport_ok is false.
-Therefore, whether my patches are applied or not, this problem can happen.
-
-3rd case: sk1 is in TCP_ESTABLISHED and call bind(addr, 0) for sk2.
-In this case, sk2 come to be able to get the port with my patches if both
-sockets have SO_REUSEADDR enabled.
-So, listen() also can share the port with connect().
-
-However, I do not think this can be problem for two reasons:
-  - the same problem already can happen in 2nd case, and the possibility of
-    this case is lower than 2nd case because 3rd case is when the ports are exhausted.
-  - I am unsure that there is supervisions that monitor the server
-    applications which randomly select the ephemeral ports to listen on.
-
-Although this may be a stupid question, is there famous server software
-that do bind(addr, 0) and listen() ?
-
-
-Hence, I think these patches are safe.
-What would you think about this?
-
-But also I think this depends on use cases. So I would like to ask for another opinion.
-If we can enable/disable the fallback behaviour by sysctl or proc,
-it is more useful because some people can fully utilize 4-tuples.
-How would you think about this option?
+No real plan, but the autoselection bot will very likely pick those up
+even if we don't do anything, so given the very limited testing I was
+cautious with refactoring.
