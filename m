@@ -2,123 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4597F1782AA
-	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3506C1782AC
+	for <lists+netdev@lfdr.de>; Tue,  3 Mar 2020 20:03:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730566AbgCCS6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 13:58:10 -0500
-Received: from mga07.intel.com ([134.134.136.100]:29601 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730111AbgCCS6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Mar 2020 13:58:09 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Mar 2020 10:58:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,511,1574150400"; 
-   d="scan'208";a="287080932"
-Received: from mlee22-mobl.amr.corp.intel.com ([10.251.30.98])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Mar 2020 10:58:08 -0800
-Date:   Tue, 3 Mar 2020 10:58:08 -0800 (PST)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@mlee22-mobl.amr.corp.intel.com
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Paasch <cpaasch@apple.com>
-Subject: Re: [PATCH net] mptcp: always include dack if possible.
-In-Reply-To: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
-Message-ID: <alpine.OSX.2.22.394.2003031056030.20523@mlee22-mobl.amr.corp.intel.com>
-References: <8f78569a035c045fd1ad295dd8bf17dcfeca9c41.1583256003.git.pabeni@redhat.com>
-User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
+        id S1730580AbgCCS6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 13:58:45 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:60800 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729249AbgCCS6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 13:58:44 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1j9Ckc-00DUJb-FQ; Tue, 03 Mar 2020 19:58:42 +0100
+Message-ID: <62f6a04e5b1231e533572bfebcae791b1ad57bb7.camel@sipsolutions.net>
+Subject: Re: [PATCH wireless 0/3] nl80211: add missing attribute validation
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kvalo@codeaurora.org
+Date:   Tue, 03 Mar 2020 19:58:41 +0100
+In-Reply-To: <20200303095332.138ce9b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200303051058.4089398-1-kuba@kernel.org>
+         <e5d88e0dbca9cc445caa95cfe32edda52f6b193d.camel@sipsolutions.net>
+         <20200303095332.138ce9b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2020-03-03 at 09:53 -0800, Jakub Kicinski wrote:
+> On Tue, 03 Mar 2020 08:29:46 +0100 Johannes Berg wrote:
+> > Hi Jakub,
+> > 
+> > > Wireless seems to be missing a handful of netlink policy entries.  
+> > 
+> > Yep, these look good to me.
+> > 
+> > Here's a
+> > 
+> > Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+> > 
+> > if you want to apply them directly? 
+> 
+> Up to Dave, I only put a maintainer hat to cover for Dave when he's
+> away :)
 
-Paolo -
+Ah, ok; I'll just take them then, that's easier.
 
-On Tue, 3 Mar 2020, Paolo Abeni wrote:
+johannes
 
-> Currently passive MPTCP socket can skip including the DACK
-> option - if the peer sends data before accept() completes.
->
-> The above happens because the msk 'can_ack' flag is set
-> only after the accept() call.
->
-> Such missing DACK option may cause - as per RFC spec -
-> unwanted fallback to TCP.
->
-> This change addresses the issue using the key material
-> available in the current subflow, if any, to create a suitable
-> dack option when msk ack seq is not yet available.
->
-> Fixes: d22f4988ffec ("mptcp: process MP_CAPABLE data option")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net/mptcp/options.c | 17 +++++++++++++++--
-> 1 file changed, 15 insertions(+), 2 deletions(-)
->
-> diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-> index 45acd877bef3..9eb84115dc35 100644
-> --- a/net/mptcp/options.c
-> +++ b/net/mptcp/options.c
-> @@ -334,6 +334,8 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
-> 	struct mptcp_sock *msk;
-> 	unsigned int ack_size;
-> 	bool ret = false;
-> +	bool can_ack;
-> +	u64 ack_seq;
-> 	u8 tcp_fin;
->
-> 	if (skb) {
-> @@ -360,9 +362,20 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
-> 		ret = true;
-> 	}
->
-> +	/* passive sockets msk will set the 'can_ack' after accept(), even
-> +	 * if the first subflow may have the already the remote key handy
-> +	 */
-> +	can_ack = true;
-> 	opts->ext_copy.use_ack = 0;
-> 	msk = mptcp_sk(subflow->conn);
-> -	if (!msk || !READ_ONCE(msk->can_ack)) {
-> +	if (likely(msk && READ_ONCE(msk->can_ack)))
-> +		ack_seq = msk->ack_seq;
-> +	else if (subflow->can_ack)
-> +		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
-
-The other code paths that set the initial sequence number all increment it 
-before sending (to ack SYN+MP_CAPABLE). It looks like the spec allows the 
-value calculated here, but we might as well be consistent about the 
-initial value we send over the wire.
-
-> +	else
-> +		can_ack = false;
-> +
-> +	if (unlikely(!can_ack)) {
-> 		*size = ALIGN(dss_size, 4);
-> 		return ret;
-> 	}
-> @@ -375,7 +388,7 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
->
-> 	dss_size += ack_size;
->
-> -	opts->ext_copy.data_ack = msk->ack_seq;
-> +	opts->ext_copy.data_ack = ack_seq;
-> 	opts->ext_copy.ack64 = 1;
-> 	opts->ext_copy.use_ack = 1;
->
-> -- 
-> 2.21.1
->
->
-
---
-Mat Martineau
-Intel
