@@ -2,423 +2,465 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7F81799B3
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C44C71799B5
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:25:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388003AbgCDUZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:25:09 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33232 "EHLO mx2.suse.de"
+        id S2388094AbgCDUZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:25:15 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33282 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387969AbgCDUZJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:25:09 -0500
+        id S2387966AbgCDUZO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:25:14 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 7ADDDB199;
-        Wed,  4 Mar 2020 20:25:06 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 7B6AEAE9A;
+        Wed,  4 Mar 2020 20:25:11 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 242FFE037F; Wed,  4 Mar 2020 21:25:06 +0100 (CET)
-Message-Id: <531b909d779b6ec1942f56f7a17ef686c83d3917.1583347351.git.mkubecek@suse.cz>
+        id 2ACCAE037F; Wed,  4 Mar 2020 21:25:11 +0100 (CET)
+Message-Id: <a60ae93b9831ff95abc1969c54bdfeb71c24ee3a.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 06/25] netlink: introduce the netlink interface
+Subject: [PATCH ethtool v2 07/25] netlink: message buffer and composition
+ helpers
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:25:06 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:25:11 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Initial part of netlink interface based on genetlink and libmnl. The
-netlink interface is available in kernel since 5.6-rc1. This commit only
-adds the generic infrastructure but does not override any ethtool command
-so that there is no actual change in behaviour.
+Add data structure for flexible message buffer and helpers for safe message
+composition.
 
-Netlink handlers for ethtool commands are added as nlfunc members to args
-array in ethtool.c. A netlink handler is used if it is available (i.e.
-nlfunc is not null) and ethtool succeeds to initialize netlink socket.
-If netlink implementation exists for a command but the request is not
-supported by kernel (e.g. when new ethtool is used on older kernel), ioctl
-implementation is also used as fallback.
-
-Running configure with --disable-netlink completely disables the netlink
-interface.
+The nl_msg_buff structure is an abstraction for a message buffer used to
+compose an outgoing netlink message. When the message exceeds currently
+allocated length, buffer is reallocated. Only if the buffer size reaches
+MAX_MSG_SIZE (4 MB), an error is issued.
 
 v2:
-  - change type of nl_context::suppress_nlerr
-  - add nl_context::rtnl_socket
+  - add kerneldoc style comments
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am       | 18 +++++++++--
- configure.ac      | 14 ++++++++-
- ethtool.c         | 76 +++++++++++++++++++++++++++++++++++------------
- internal.h        | 12 ++++++++
- netlink/extapi.h  | 31 +++++++++++++++++++
- netlink/netlink.c | 36 ++++++++++++++++++++++
- netlink/netlink.h | 26 ++++++++++++++++
- 7 files changed, 191 insertions(+), 22 deletions(-)
- create mode 100644 netlink/extapi.h
- create mode 100644 netlink/netlink.c
- create mode 100644 netlink/netlink.h
+ Makefile.am       |   1 +
+ netlink/msgbuff.c | 255 ++++++++++++++++++++++++++++++++++++++++++++++
+ netlink/msgbuff.h | 117 +++++++++++++++++++++
+ netlink/netlink.h |   1 +
+ 4 files changed, 374 insertions(+)
+ create mode 100644 netlink/msgbuff.c
+ create mode 100644 netlink/msgbuff.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 05beb22be669..b510c3ec8a03 100644
+index b510c3ec8a03..81099a79a793 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -7,6 +7,8 @@ EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
- sbin_PROGRAMS = ethtool
- ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
- 		  uapi/linux/net_tstamp.h rxclass.c
-+ethtool_CFLAGS = $(AM_CFLAGS)
-+ethtool_LDADD = $(LDADD)
- if ETHTOOL_ENABLE_PRETTY_DUMP
+@@ -27,6 +27,7 @@ endif
+ if ETHTOOL_ENABLE_NETLINK
  ethtool_SOURCES += \
- 		  amd8111e.c de2104x.c dsa.c e100.c e1000.c et131x.c igb.c	\
-@@ -22,12 +24,24 @@ bashcompletiondir = $(BASH_COMPLETION_DIR)
- dist_bashcompletion_DATA = shell-completion/bash/ethtool
- endif
- 
-+if ETHTOOL_ENABLE_NETLINK
-+ethtool_SOURCES += \
-+		  netlink/netlink.c netlink/netlink.h netlink/extapi.h \
-+		  uapi/linux/ethtool_netlink.h \
-+		  uapi/linux/netlink.h uapi/linux/genetlink.h \
-+		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-+ethtool_CFLAGS += @MNL_CFLAGS@
-+ethtool_LDADD += @MNL_LIBS@
-+endif
-+
- TESTS = test-cmdline test-features
- check_PROGRAMS = test-cmdline test-features
- test_cmdline_SOURCES = test-cmdline.c test-common.c $(ethtool_SOURCES) 
--test_cmdline_CFLAGS = $(AM_FLAGS) -DTEST_ETHTOOL
-+test_cmdline_CFLAGS = $(ethtool_CFLAGS) -DTEST_ETHTOOL
-+test_cmdline_LDADD = $(ethtool_LDADD)
- test_features_SOURCES = test-features.c test-common.c $(ethtool_SOURCES) 
--test_features_CFLAGS = $(AM_FLAGS) -DTEST_ETHTOOL
-+test_features_CFLAGS = $(ethtool_CFLAGS) -DTEST_ETHTOOL
-+test_features_LDADD = $(ethtool_LDADD)
- 
- dist-hook:
- 	cp $(top_srcdir)/ethtool.spec $(distdir)
-diff --git a/configure.ac b/configure.ac
-index a5c1469f9b63..19e7fcb44fb5 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
- AC_INIT(ethtool, 5.4, netdev@vger.kernel.org)
- AC_PREREQ(2.52)
- AC_CONFIG_SRCDIR([ethtool.c])
--AM_INIT_AUTOMAKE([gnu])
-+AM_INIT_AUTOMAKE([gnu subdir-objects])
- AC_CONFIG_HEADERS([ethtool-config.h])
- 
- AM_MAINTAINER_MODE
-@@ -66,5 +66,17 @@ AC_SUBST([BASH_COMPLETION_DIR])
- AM_CONDITIONAL([ENABLE_BASH_COMPLETION],
- 	       [test "x$with_bash_completion_dir" != xno])
- 
-+AC_ARG_ENABLE(netlink,
-+	      [  --enable-netlink	  enable netlink interface (enabled by default)],
-+	      ,
-+	      enable_netlink=yes)
-+if test x$enable_netlink = xyes; then
-+    PKG_PROG_PKG_CONFIG
-+    PKG_CHECK_MODULES([MNL], [libmnl])
-+    AC_DEFINE(ETHTOOL_ENABLE_NETLINK, 1,
-+	      Define this to support netlink interface to talk to kernel.)
-+fi
-+AM_CONDITIONAL([ETHTOOL_ENABLE_NETLINK], [test x$enable_netlink = xyes])
-+
- AC_CONFIG_FILES([Makefile ethtool.spec ethtool.8])
- AC_OUTPUT
-diff --git a/ethtool.c b/ethtool.c
-index 3186a72644fd..5d1ef537f692 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -48,6 +48,8 @@
- #include <linux/sockios.h>
- #include <linux/netlink.h>
- 
-+#include "netlink/extapi.h"
-+
- #ifndef MAX_ADDR_LEN
- #define MAX_ADDR_LEN	32
- #endif
-@@ -5292,6 +5294,7 @@ struct option {
- 	const char	*opts;
- 	bool		no_dev;
- 	int		(*func)(struct cmd_context *);
-+	int		(*nlfunc)(struct cmd_context *);
- 	const char	*help;
- 	const char	*xhelp;
- };
-@@ -5856,11 +5859,36 @@ static int do_perqueue(struct cmd_context *ctx)
- 	return 0;
- }
- 
-+static int ioctl_init(struct cmd_context *ctx, bool no_dev)
-+{
-+	if (no_dev) {
-+		ctx->fd = -1;
-+		return 0;
-+	}
-+
-+	/* Setup our control structures. */
-+	memset(&ctx->ifr, 0, sizeof(ctx->ifr));
-+	strcpy(ctx->ifr.ifr_name, ctx->devname);
-+
-+	/* Open control socket. */
-+	ctx->fd = socket(AF_INET, SOCK_DGRAM, 0);
-+	if (ctx->fd < 0)
-+		ctx->fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_GENERIC);
-+	if (ctx->fd < 0) {
-+		perror("Cannot get control socket");
-+		return 70;
-+	}
-+
-+	return 0;
-+}
-+
- int main(int argc, char **argp)
- {
-+	int (*nlfunc)(struct cmd_context *) = NULL;
- 	int (*func)(struct cmd_context *);
--	struct cmd_context ctx;
-+	struct cmd_context ctx = {};
- 	bool no_dev;
-+	int ret;
- 	int k;
- 
- 	init_global_link_mode_masks();
-@@ -5869,7 +5897,6 @@ int main(int argc, char **argp)
- 	argp++;
- 	argc--;
- 
--	ctx.debug = 0;
- 	if (*argp && !strcmp(*argp, "--debug")) {
- 		char *eptr;
- 
-@@ -5895,6 +5922,7 @@ int main(int argc, char **argp)
- 		argp++;
- 		argc--;
- 		func = args[k].func;
-+		nlfunc = args[k].nlfunc;
- 		no_dev = args[k].no_dev;
- 		goto opt_found;
- 	}
-@@ -5904,33 +5932,43 @@ int main(int argc, char **argp)
- 	no_dev = false;
- 
- opt_found:
-+	if (nlfunc) {
-+		if (netlink_init(&ctx))
-+			nlfunc = NULL;		/* fallback to ioctl() */
-+	}
-+
- 	if (!no_dev) {
- 		ctx.devname = *argp++;
- 		argc--;
- 
--		if (ctx.devname == NULL)
--			exit_bad_args();
--		if (strlen(ctx.devname) >= IFNAMSIZ)
-+		/* netlink supports altnames, we will have to recheck against
-+		 * IFNAMSIZ later in case of fallback to ioctl
-+		 */
-+		if (!ctx.devname || strlen(ctx.devname) >= ALTIFNAMSIZ) {
-+			netlink_done(&ctx);
- 			exit_bad_args();
--
--		/* Setup our control structures. */
--		memset(&ctx.ifr, 0, sizeof(ctx.ifr));
--		strcpy(ctx.ifr.ifr_name, ctx.devname);
--
--		/* Open control socket. */
--		ctx.fd = socket(AF_INET, SOCK_DGRAM, 0);
--		if (ctx.fd < 0)
--			ctx.fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_GENERIC);
--		if (ctx.fd < 0) {
--			perror("Cannot get control socket");
--			return 70;
- 		}
--	} else {
--		ctx.fd = -1;
- 	}
- 
- 	ctx.argc = argc;
- 	ctx.argp = argp;
- 
-+	if (nlfunc) {
-+		ret = nlfunc(&ctx);
-+		netlink_done(&ctx);
-+		if ((ret != -EOPNOTSUPP) || !func)
-+			return (ret >= 0) ? ret : 1;
-+	}
-+
-+	if (ctx.devname && strlen(ctx.devname) >= IFNAMSIZ) {
-+		fprintf(stderr,
-+			"ethtool: device names longer than %u characters are only allowed with netlink\n",
-+			IFNAMSIZ - 1);
-+		exit_bad_args();
-+	}
-+	ret = ioctl_init(&ctx, no_dev);
-+	if (ret)
-+		return ret;
-+
- 	return func(&ctx);
- }
-diff --git a/internal.h b/internal.h
-index 9ec145f55dcb..72a04e638a13 100644
---- a/internal.h
-+++ b/internal.h
-@@ -25,6 +25,11 @@
- 
- #define maybe_unused __attribute__((__unused__))
- 
-+/* internal for netlink interface */
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+struct nl_context;
-+#endif
-+
- /* ethtool.h expects these to be defined by <linux/types.h> */
- #ifndef HAVE_BE_TYPES
- typedef uint16_t __be16;
-@@ -44,6 +49,10 @@ typedef int32_t s32;
- #define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
- #endif
- 
-+#ifndef ALTIFNAMSIZ
-+#define ALTIFNAMSIZ 128
-+#endif
-+
- #include <linux/ethtool.h>
- #include <linux/net_tstamp.h>
- 
-@@ -203,6 +212,9 @@ struct cmd_context {
- 	int argc;		/* number of arguments to the sub-command */
- 	char **argp;		/* arguments to the sub-command */
- 	unsigned long debug;	/* debugging mask */
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+	struct nl_context *nlctx;	/* netlink context (opaque) */
-+#endif
- };
- 
- #ifdef TEST_ETHTOOL
-diff --git a/netlink/extapi.h b/netlink/extapi.h
+ 		  netlink/netlink.c netlink/netlink.h netlink/extapi.h \
++		  netlink/msgbuff.c netlink/msgbuff.h \
+ 		  uapi/linux/ethtool_netlink.h \
+ 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
+ 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
+diff --git a/netlink/msgbuff.c b/netlink/msgbuff.c
 new file mode 100644
-index 000000000000..898dc6cfee71
+index 000000000000..74065709ef7d
 --- /dev/null
-+++ b/netlink/extapi.h
-@@ -0,0 +1,31 @@
++++ b/netlink/msgbuff.c
+@@ -0,0 +1,255 @@
 +/*
-+ * extapi.h - external interface of netlink code
++ * msgbuff.c - netlink message buffer
 + *
-+ * Declarations needed by non-netlink code (mostly ethtool.c).
++ * Data structures and code for flexible message buffer abstraction.
 + */
 +
-+#ifndef ETHTOOL_EXTAPI_H__
-+#define ETHTOOL_EXTAPI_H__
-+
-+struct cmd_context;
-+struct nl_context;
-+
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+
-+int netlink_init(struct cmd_context *ctx);
-+void netlink_done(struct cmd_context *ctx);
-+
-+#else /* ETHTOOL_ENABLE_NETLINK */
-+
-+static inline int netlink_init(struct cmd_context *ctx maybe_unused)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void netlink_done(struct cmd_context *ctx maybe_unused)
-+{
-+}
-+
-+#endif /* ETHTOOL_ENABLE_NETLINK */
-+
-+#endif /* ETHTOOL_EXTAPI_H__ */
-diff --git a/netlink/netlink.c b/netlink/netlink.c
-new file mode 100644
-index 000000000000..84e188119989
---- /dev/null
-+++ b/netlink/netlink.c
-@@ -0,0 +1,36 @@
-+/*
-+ * netlink.c - basic infrastructure for netlink code
-+ *
-+ * Heart of the netlink interface implementation.
-+ */
-+
++#include <string.h>
 +#include <errno.h>
++#include <stdlib.h>
++#include <stdint.h>
 +
 +#include "../internal.h"
 +#include "netlink.h"
-+#include "extapi.h"
++#include "msgbuff.h"
 +
-+/* initialization */
++#define MAX_MSG_SIZE (4 << 20)		/* 4 MB */
 +
-+int netlink_init(struct cmd_context *ctx)
++/**
++ * msgbuff_realloc() - reallocate buffer if needed
++ * @msgbuff:  message buffer
++ * @new_size: requested minimum size (add MNL_SOCKET_BUFFER_SIZE if zero)
++ *
++ * Make sure allocated buffer has size at least @new_size. If @new_size is
++ * shorter than current size, do nothing. If @new_size is 0, grow buffer by
++ * MNL_SOCKET_BUFFER_SIZE. Fail if new size would exceed MAX_MSG_SIZE.
++ *
++ * Return: 0 on success or negative error code
++ */
++int msgbuff_realloc(struct nl_msg_buff *msgbuff, unsigned int new_size)
 +{
-+	struct nl_context *nlctx;
++	unsigned int nlhdr_off, genlhdr_off, payload_off;
++	unsigned int old_size = msgbuff->size;
++	char *nbuff;
 +
-+	nlctx = calloc(1, sizeof(*nlctx));
-+	if (!nlctx)
++	nlhdr_off = (char *)msgbuff->nlhdr - msgbuff->buff;
++	genlhdr_off = (char *)msgbuff->genlhdr - msgbuff->buff;
++	payload_off = (char *)msgbuff->payload - msgbuff->buff;
++
++	if (!new_size)
++		new_size = old_size + MNL_SOCKET_BUFFER_SIZE;
++	if (new_size <= old_size)
++		return 0;
++	if (new_size > MAX_MSG_SIZE)
++		return -EMSGSIZE;
++	nbuff = realloc(msgbuff->buff, new_size);
++	if (!nbuff) {
++		msgbuff->buff = NULL;
++		msgbuff->size = 0;
++		msgbuff->left = 0;
 +		return -ENOMEM;
-+	nlctx->ctx = ctx;
-+
-+	ctx->nlctx = nlctx;
++	}
++	if (nbuff != msgbuff->buff) {
++		if (new_size > old_size)
++			memset(nbuff + old_size, '\0', new_size - old_size);
++		msgbuff->nlhdr = (struct nlmsghdr *)(nbuff + nlhdr_off);
++		msgbuff->genlhdr = (struct genlmsghdr *)(nbuff + genlhdr_off);
++		msgbuff->payload = nbuff + payload_off;
++		msgbuff->buff = nbuff;
++	}
++	msgbuff->size = new_size;
++	msgbuff->left += (new_size - old_size);
 +
 +	return 0;
 +}
 +
-+void netlink_done(struct cmd_context *ctx)
-+{
-+	if (!ctx->nlctx)
-+		return;
-+
-+	free(ctx->nlctx);
-+	ctx->nlctx = NULL;
-+}
-diff --git a/netlink/netlink.h b/netlink/netlink.h
-new file mode 100644
-index 000000000000..99636ac8d9c4
---- /dev/null
-+++ b/netlink/netlink.h
-@@ -0,0 +1,26 @@
-+/*
-+ * netlink.h - common interface for all netlink code
++/**
++ * msgbuff_append() - add contents of another message buffer
++ * @dest: target message buffer
++ * @src:  source message buffer
 + *
-+ * Declarations of data structures, global data and helpers for netlink code
++ * Append contents of @src at the end of @dest. Fail if target buffer cannot
++ * be reallocated to sufficient size.
++ *
++ * Return: 0 on success or negative error code.
++ */
++int msgbuff_append(struct nl_msg_buff *dest, struct nl_msg_buff *src)
++{
++	unsigned int src_len = mnl_nlmsg_get_payload_len(src->nlhdr);
++	unsigned int dest_len = MNL_ALIGN(msgbuff_len(dest));
++	int ret;
++
++	ret = msgbuff_realloc(dest, dest_len + src_len);
++	if (ret < 0)
++		return ret;
++	memcpy(mnl_nlmsg_get_payload_tail(dest->nlhdr), src->payload, src_len);
++	msgbuff_reset(dest, dest_len + src_len);
++
++	return 0;
++}
++
++/**
++ * ethnla_put - write a netlink attribute to message buffer
++ * @msgbuff: message buffer
++ * @type:    attribute type
++ * @len:     attribute payload length
++ * @data:    attribute payload
++ *
++ * Appends a netlink attribute with header to message buffer, reallocates
++ * if needed. This is mostly used via specific ethnla_put_* wrappers for
++ * basic data types.
++ *
++ * Return: false on success, true on error (reallocation failed)
++ */
++bool ethnla_put(struct nl_msg_buff *msgbuff, uint16_t type, size_t len,
++		const void *data)
++{
++	struct nlmsghdr *nlhdr = msgbuff->nlhdr;
++
++	while (!mnl_attr_put_check(nlhdr, msgbuff->left, type, len, data)) {
++		int ret = msgbuff_realloc(msgbuff, 0);
++
++		if (ret < 0)
++			return true;
++	}
++
++	return false;
++}
++
++/**
++ * ethnla_nest_start - start a nested attribute
++ * @msgbuff: message buffer
++ * @type:    nested attribute type (NLA_F_NESTED is added automatically)
++ *
++ * Return: pointer to the nest attribute or null of error
++ */
++struct nlattr *ethnla_nest_start(struct nl_msg_buff *msgbuff, uint16_t type)
++{
++	struct nlmsghdr *nlhdr = msgbuff->nlhdr;
++	struct nlattr *attr;
++
++	do {
++		attr = mnl_attr_nest_start_check(nlhdr, msgbuff->left, type);
++		if (attr)
++			return attr;
++	} while (msgbuff_realloc(msgbuff, 0) == 0);
++
++	return NULL;
++}
++
++/**
++ * ethnla_fill_header() - write standard ethtool request header to message
++ * @msgbuff: message buffer
++ * @type:    attribute type for header nest
++ * @devname: device name (NULL to omit)
++ * @flags:   request flags (omitted if 0)
++ *
++ * Return: pointer to the nest attribute or null of error
++ */
++bool ethnla_fill_header(struct nl_msg_buff *msgbuff, uint16_t type,
++			const char *devname, uint32_t flags)
++{
++	struct nlattr *nest;
++
++	nest = ethnla_nest_start(msgbuff, type);
++	if (!nest)
++		return true;
++
++	if ((devname &&
++	     ethnla_put_strz(msgbuff, ETHTOOL_A_HEADER_DEV_NAME, devname)) ||
++	    (flags &&
++	     ethnla_put_u32(msgbuff, ETHTOOL_A_HEADER_FLAGS, flags)))
++		goto err;
++
++	ethnla_nest_end(msgbuff, nest);
++	return false;
++
++err:
++	ethnla_nest_cancel(msgbuff, nest);
++	return true;
++}
++
++/**
++ * __msg_init() - init a genetlink message, fill netlink and genetlink header
++ * @msgbuff: message buffer
++ * @family:  genetlink family
++ * @cmd:     genetlink command (genlmsghdr::cmd)
++ * @flags:   netlink flags (nlmsghdr::nlmsg_flags)
++ * @version: genetlink family version (genlmsghdr::version)
++ *
++ * Initialize a new genetlink message, fill netlink and genetlink header and
++ * set pointers in struct nl_msg_buff.
++ *
++ * Return: 0 on success or negative error code.
++ */
++int __msg_init(struct nl_msg_buff *msgbuff, int family, int cmd,
++	       unsigned int flags, int version)
++{
++	struct nlmsghdr *nlhdr;
++	struct genlmsghdr *genlhdr;
++	int ret;
++
++	ret = msgbuff_realloc(msgbuff, MNL_SOCKET_BUFFER_SIZE);
++	if (ret < 0)
++		return ret;
++	memset(msgbuff->buff, '\0', NLMSG_HDRLEN + GENL_HDRLEN);
++
++	nlhdr = mnl_nlmsg_put_header(msgbuff->buff);
++	nlhdr->nlmsg_type = family;
++	nlhdr->nlmsg_flags = flags;
++	msgbuff->nlhdr = nlhdr;
++
++	genlhdr = mnl_nlmsg_put_extra_header(nlhdr, sizeof(*genlhdr));
++	genlhdr->cmd = cmd;
++	genlhdr->version = version;
++	msgbuff->genlhdr = genlhdr;
++
++	msgbuff->payload = mnl_nlmsg_get_payload_offset(nlhdr, GENL_HDRLEN);
++
++	return 0;
++}
++
++/**
++ * msg_init() - init an ethtool netlink message
++ * @msgbuff: message buffer
++ * @cmd:     genetlink command (genlmsghdr::cmd)
++ * @flags:   netlink flags (nlmsghdr::nlmsg_flags)
++ *
++ * Initialize a new ethtool netlink message, fill netlink and genetlink header
++ * and set pointers in struct nl_msg_buff.
++ *
++ * Return: 0 on success or negative error code.
++ */
++int msg_init(struct nl_context *nlctx, struct nl_msg_buff *msgbuff, int cmd,
++	     unsigned int flags)
++{
++	return __msg_init(msgbuff, nlctx->ethnl_fam, cmd, flags,
++			  ETHTOOL_GENL_VERSION);
++}
++
++/**
++ * msgbuff_init() - initialize a message buffer
++ * @msgbuff: message buffer
++ *
++ * Initialize a message buffer structure before first use. Buffer length is
++ * set to zero and the buffer is not allocated until the first call to
++ * msgbuff_reallocate().
++ */
++void msgbuff_init(struct nl_msg_buff *msgbuff)
++{
++	memset(msgbuff, '\0', sizeof(*msgbuff));
++}
++
++/**
++ * msg_done() - destroy a message buffer
++ * @msgbuff: message buffer
++ *
++ * Free the buffer and reset size and remaining size.
++ */
++void msgbuff_done(struct nl_msg_buff *msgbuff)
++{
++	free(msgbuff->buff);
++	msgbuff->buff = NULL;
++	msgbuff->size = 0;
++	msgbuff->left = 0;
++}
+diff --git a/netlink/msgbuff.h b/netlink/msgbuff.h
+new file mode 100644
+index 000000000000..24b99c5a28d7
+--- /dev/null
++++ b/netlink/msgbuff.h
+@@ -0,0 +1,117 @@
++/*
++ * msgbuff.h - netlink message buffer
++ *
++ * Declarations of netlink message buffer and related functions.
 + */
 +
-+#ifndef ETHTOOL_NETLINK_INT_H__
-+#define ETHTOOL_NETLINK_INT_H__
++#ifndef ETHTOOL_NETLINK_MSGBUFF_H__
++#define ETHTOOL_NETLINK_MSGBUFF_H__
 +
++#include <string.h>
 +#include <libmnl/libmnl.h>
 +#include <linux/netlink.h>
 +#include <linux/genetlink.h>
-+#include <linux/ethtool_netlink.h>
 +
-+#define WILDCARD_DEVNAME "*"
++struct nl_context;
 +
-+struct nl_context {
-+	struct cmd_context	*ctx;
-+	void			*cmd_private;
-+	const char		*devname;
-+	bool			is_dump;
-+	int			exit_code;
-+	unsigned int		suppress_nlerr;
++/**
++ * struct nl_msg_buff - message buffer abstraction
++ * @buff:    pointer to buffer
++ * @size:    total size of allocated buffer
++ * @left:    remaining length current message end to end of buffer
++ * @nlhdr:   pointer to netlink header of current message
++ * @genlhdr: pointer to genetlink header of current message
++ * @payload: pointer to message payload (after genetlink header)
++ */
++struct nl_msg_buff {
++	char			*buff;
++	unsigned int		size;
++	unsigned int		left;
++	struct nlmsghdr		*nlhdr;
++	struct genlmsghdr	*genlhdr;
++	void			*payload;
 +};
 +
-+#endif /* ETHTOOL_NETLINK_INT_H__ */
++void msgbuff_init(struct nl_msg_buff *msgbuff);
++void msgbuff_done(struct nl_msg_buff *msgbuff);
++int msgbuff_realloc(struct nl_msg_buff *msgbuff, unsigned int new_size);
++int msgbuff_append(struct nl_msg_buff *dest, struct nl_msg_buff *src);
++
++int __msg_init(struct nl_msg_buff *msgbuff, int family, int cmd,
++	       unsigned int flags, int version);
++int msg_init(struct nl_context *nlctx, struct nl_msg_buff *msgbuff, int cmd,
++	     unsigned int flags);
++
++bool ethnla_put(struct nl_msg_buff *msgbuff, uint16_t type, size_t len,
++		const void *data);
++struct nlattr *ethnla_nest_start(struct nl_msg_buff *msgbuff, uint16_t type);
++bool ethnla_fill_header(struct nl_msg_buff *msgbuff, uint16_t type,
++			const char *devname, uint32_t flags);
++
++/* length of current message */
++static inline unsigned int msgbuff_len(const struct nl_msg_buff *msgbuff)
++{
++	return msgbuff->nlhdr->nlmsg_len;
++}
++
++/* reset message length to position returned by msgbuff_len() */
++static inline void msgbuff_reset(const struct nl_msg_buff *msgbuff,
++				 unsigned int len)
++{
++	msgbuff->nlhdr->nlmsg_len = len;
++}
++
++/* put data wrappers */
++
++static inline void ethnla_nest_end(struct nl_msg_buff *msgbuff,
++				   struct nlattr *nest)
++{
++	mnl_attr_nest_end(msgbuff->nlhdr, nest);
++}
++
++static inline void ethnla_nest_cancel(struct nl_msg_buff *msgbuff,
++				      struct nlattr *nest)
++{
++	mnl_attr_nest_cancel(msgbuff->nlhdr, nest);
++}
++
++static inline bool ethnla_put_u32(struct nl_msg_buff *msgbuff, uint16_t type,
++				  uint32_t data)
++{
++	return ethnla_put(msgbuff, type, sizeof(uint32_t), &data);
++}
++
++static inline bool ethnla_put_u8(struct nl_msg_buff *msgbuff, uint16_t type,
++				 uint8_t data)
++{
++	return ethnla_put(msgbuff, type, sizeof(uint8_t), &data);
++}
++
++static inline bool ethnla_put_flag(struct nl_msg_buff *msgbuff, uint16_t type,
++				   bool val)
++{
++	if (val)
++		return ethnla_put(msgbuff, type, 0, &val);
++	else
++		return false;
++}
++
++static inline bool ethnla_put_bitfield32(struct nl_msg_buff *msgbuff,
++					 uint16_t type, uint32_t value,
++					 uint32_t selector)
++{
++	struct nla_bitfield32 val = {
++		.value		= value,
++		.selector	= selector,
++	};
++
++	return ethnla_put(msgbuff, type, sizeof(val), &val);
++}
++
++static inline bool ethnla_put_strz(struct nl_msg_buff *msgbuff, uint16_t type,
++				   const char *data)
++{
++	return ethnla_put(msgbuff, type, strlen(data) + 1, data);
++}
++
++#endif /* ETHTOOL_NETLINK_MSGBUFF_H__ */
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index 99636ac8d9c4..1eaeec30b7d2 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -21,6 +21,7 @@ struct nl_context {
+ 	bool			is_dump;
+ 	int			exit_code;
+ 	unsigned int		suppress_nlerr;
++	uint16_t		ethnl_fam;
+ };
+ 
+ #endif /* ETHTOOL_NETLINK_INT_H__ */
 -- 
 2.25.1
 
