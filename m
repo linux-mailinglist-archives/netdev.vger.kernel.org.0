@@ -2,97 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE2D178AFD
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 07:54:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9AF178B06
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 07:57:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387510AbgCDGyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 01:54:55 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:40561 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728278AbgCDGyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 01:54:52 -0500
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j9NvW-00051C-N9; Wed, 04 Mar 2020 07:54:42 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1j9NvT-0006Up-0n; Wed, 04 Mar 2020 07:54:39 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v1] ARM: dts: imx6dl-riotboard: properly define rgmii PHY
-Date:   Wed,  4 Mar 2020 07:54:36 +0100
-Message-Id: <20200304065436.24917-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.25.1
+        id S1728467AbgCDG5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 01:57:41 -0500
+Received: from mx2.suse.de ([195.135.220.15]:52102 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728273AbgCDG5l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 01:57:41 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 331A1B265;
+        Wed,  4 Mar 2020 06:57:38 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 5650CE037F; Wed,  4 Mar 2020 07:57:38 +0100 (CET)
+Date:   Wed, 4 Mar 2020 07:57:38 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] tun: fix ethtool_ops get_msglvl and set_msglvl
+ handlers
+Message-ID: <20200304065738.GG4264@unicorn.suse.cz>
+References: <20200303082252.81F7FE1F46@unicorn.suse.cz>
+ <20200303.145916.1506066510928020193.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200303.145916.1506066510928020193.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Atheros AR8035 PHY can be autodetected but can't use interrupt
-support provided on this board. Define MDIO bus and the PHY node to make
-it work properly.
+On Tue, Mar 03, 2020 at 02:59:16PM -0800, David Miller wrote:
+> From: Michal Kubecek <mkubecek@suse.cz>
+> Date: Tue,  3 Mar 2020 09:22:52 +0100 (CET)
+> 
+> > The get_msglvl and setmsglvl handlers only work as expected if TUN_DEBUG
+> > is defined (which required editing the source). Otherwise tun_get_msglvl()
+> > returns -EOPNOTSUPP but as this handler is not supposed to return error
+> > code, it is not recognized as one and passed to userspace as is, resulting
+> > in bogus output of ethtool command. The set_msglvl handler ignores its
+> > argument and does nothing if TUN_DEBUG is left undefined.
+> > 
+> > The way to return EOPNOTSUPP to userspace for both requests is not to
+> > provide these ethtool_ops callbacks at all if TUN_DEBUG is left undefined.
+> > 
+> > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> 
+> I agree with your analysis.
+> 
+> But this TUN_DEBUG thing stands outside of what we let drivers do.  Either
+> this tracing is not so useful and can be deleted, or the tracing should
+> be available unconditionally so that it can be turned on by the vast
+> majority of users who do not edit the source.
+> 
+> I suspect making the TUN_DEBUG code unconditional is that way to go here.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- arch/arm/boot/dts/imx6dl-riotboard.dts | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+I started to think in this direction too and ended up with
 
-diff --git a/arch/arm/boot/dts/imx6dl-riotboard.dts b/arch/arm/boot/dts/imx6dl-riotboard.dts
-index 829654e1835a..17c637b66387 100644
---- a/arch/arm/boot/dts/imx6dl-riotboard.dts
-+++ b/arch/arm/boot/dts/imx6dl-riotboard.dts
-@@ -89,11 +89,27 @@ &fec {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii-id";
--	phy-reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
-+	phy-handle = <&rgmii_phy>;
- 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
- 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
- 	fsl,err006687-workaround-present;
- 	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		/* Atheros AR8035 PHY */
-+		rgmii_phy: ethernet-phy@4 {
-+			reg = <4>;
-+
-+			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
-+
-+			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
-+			reset-assert-us = <10000>;
-+			reset-deassert-us = <1000>;
-+		};
-+	};
- };
- 
- &gpio1 {
--- 
-2.25.1
+  - DBG1() macro checks a variable which is never set; it's also used
+    only in one place which doesn't seem to differ from others where
+    tun_debug() is used
+  - many tun_debug() calls can be dropped as they only inform about
+    entering a function and sometimes show some if its arguments; we
+    have ftrace and kprobes for that
+  - the rest should be rewritten to netif_info()
+  - the two tun_debug() in packet processing path could use netif_dbg()
+    to avoid overhead when not turned on
 
+...which is where I stopped and went with the quick fix instead.
+
+On the other hand, there is no rush, the issue seems to exist since
+before git. And unlike some other drivers doing strange things for
+debugging, tun is widely used so it deserves a cleanup.
+
+I'll send a patch (or patches) with proper cleanup for net-next.
+
+Michal
