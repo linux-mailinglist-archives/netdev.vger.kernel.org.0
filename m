@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD7017978F
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:09:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E68A817979A
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:11:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729471AbgCDSI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 13:08:58 -0500
-Received: from mga11.intel.com ([192.55.52.93]:57799 "EHLO mga11.intel.com"
+        id S2388260AbgCDSLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:11:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725795AbgCDSI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 13:08:58 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 10:08:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,514,1574150400"; 
-   d="asc'?scan'208";a="439215936"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga005.fm.intel.com with ESMTP; 04 Mar 2020 10:08:57 -0800
-Message-ID: <679f633864d4c3d2fe4a871aa5f289c8f1126516.camel@intel.com>
-Subject: Re: [PATCH net-next v2 11/12] e1000e: reject unsupported coalescing
- params
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     mkubecek@suse.cz, thomas.lendacky@amd.com, benve@cisco.com,
+        id S1727137AbgCDSLO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 13:11:14 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CCB5E2166E;
+        Wed,  4 Mar 2020 18:11:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583345473;
+        bh=6pWCVbY+j1fGPLiJpPHKz0tzuXWz6It1jY3rbn74lsc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U0ZhNnWar5QE38R5v22MqL5VF9pOHTXeaSvqS3S89g45AcMZzJeD9t9HbOYxO7ItS
+         PL74B6DoQ++QhRFyOpHzcMcEopPXd1AVLV4EWU+Puiw+GFwIlBug0yGevxdX8xWrKp
+         k+zP5MVVuKb1oe/gcn0Mr1lVRGWaAO6Rz1dsru1g=
+Date:   Wed, 4 Mar 2020 10:11:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        davem@davemloft.net, thomas.lendacky@amd.com, benve@cisco.com,
         _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
         alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
         yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jacob.e.keller@intel.com, alexander.h.duyck@linux.intel.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        netdev@vger.kernel.org
-Date:   Wed, 04 Mar 2020 10:08:57 -0800
-In-Reply-To: <20200304043354.716290-12-kuba@kernel.org>
-References: <20200304043354.716290-1-kuba@kernel.org>
-         <20200304043354.716290-12-kuba@kernel.org>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-K8+cTYJ4tqgXWdX5KCWF"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
+        saeedm@mellanox.com, leon@kernel.org
+Subject: Re: [PATCH net-next 01/12] ethtool: add infrastructure for
+ centralized checking of coalescing parameters
+Message-ID: <20200304101110.1272454d@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200304152249.GD3553@lunn.ch>
+References: <20200304035501.628139-1-kuba@kernel.org>
+        <20200304035501.628139-2-kuba@kernel.org>
+        <20200304145439.GC3553@lunn.ch>
+        <20200304151958.GI4264@unicorn.suse.cz>
+        <20200304152249.GD3553@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 4 Mar 2020 16:22:49 +0100 Andrew Lunn wrote:
+> On Wed, Mar 04, 2020 at 04:19:58PM +0100, Michal Kubecek wrote:
+> > On Wed, Mar 04, 2020 at 03:54:39PM +0100, Andrew Lunn wrote:  
+> > > On Tue, Mar 03, 2020 at 07:54:50PM -0800, Jakub Kicinski wrote:  
+> > > > @@ -2336,6 +2394,11 @@ ethtool_set_per_queue_coalesce(struct net_device *dev,
+> > > >  			goto roll_back;
+> > > >  		}
+> > > >  
+> > > > +		if (!ethtool_set_coalesce_supported(dev, &coalesce)) {
+> > > > +			ret = -EINVAL;
+> > > > +			goto roll_back;
+> > > > +		}  
+> > > 
+> > > Hi Jakub
+> > > 
+> > > EOPNOTSUPP?   
+> > 
+> > Out of the 11 drivers patched in the rest of the series, 4 used
+> > EOPNOTSUPP, 3 EINVAL and 4 just ignored unsupported parameters so there
+> > doesn't seem to be a clear consensus. Personally I find EOPNOTSUPP more
+> > appropriate but it's quite common that drivers return EINVAL for
+> > parameters they don't understand or support.  
+> 
+> Hi Michel
+> 
+> Yes, as i looked through the later patches, it became clear there is
+> no consensus. I personally prefer EOPNOTSUPP, but don't care too much.
 
---=-K8+cTYJ4tqgXWdX5KCWF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Yeah, looking through the entire tree the tally seems to be:
 
-On Tue, 2020-03-03 at 20:33 -0800, Jakub Kicinski wrote:
-> Set ethtool_ops->coalesce_types to let the core reject
-> unsupported coalescing parameters.
->=20
-> This driver did not previously reject unsupported parameters.
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+EOPNOTSUPP  9
+EINVAL      7
+ENOTSUPP    2
 
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
-> ---
->  drivers/net/ethernet/intel/e1000e/ethtool.c | 1 +
->  1 file changed, 1 insertion(+)
-
-
---=-K8+cTYJ4tqgXWdX5KCWF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl5f7rkACgkQ5W/vlVpL
-7c48BRAAnfSygfIfSVCw9mgg3kc/qyEsFxgzptVBvFYiDm80EKfreRpceo9ORK2V
-V/nbywRpzRVXXeSjyVIawT7Uirq3Thd68Kbq6Iw1Nse2xRtsqyzTZMwZioi7h3ZI
-D5iXH8nPkTyGFhOliw+k+tHHse9xXZ4/eo5mf9P9oBsPmmsvV1OX7ByDVPr1OJ1c
-upLnsQUaK/Vsx3uoswWPCAHz+mIeqrenkTMF5nSpXq9015vcxkgGQbGUFO2CcAkV
-kMSA6zQ31HO3bqx5qwwjfUyYWGLTRVBSovbGjgYp9P9vm6pTgo3SU8qNJdlRVp3v
-EdawuT4EjU+XjwSPOGTn7Ix+Ma+jfbGJYRG9rUvzT1EzlFqabxGNy2hL6Wo1ilUT
-qQ9RmScALBPFBqXouYPcvkJoLDWNomL6wbflKzSrctihpCX+5m/0jsjSBWk1GO6v
-qvIqYh1pJZzacgEQ7vhscQhGovJvyitJqW8GIJaFrBTPjz4v/0my0CxBgkd8uuDK
-FUUTe+y6AqfCKsVsmDoLjYsFoa1MROH/ZwZbkmrbuCokzFCScCRP3eYz2mL7CaMy
-YG3mi7fFvvKC8gFf67vRvmiltzr295myP5InXbehAaFtHu8LGrsN11c9I2G328hq
-X5LrDmmngdNm56pKKnYEgh15Je0L/acjYpppzaaLoT2bOzC7g1s=
-=tngV
------END PGP SIGNATURE-----
-
---=-K8+cTYJ4tqgXWdX5KCWF--
-
+I think EINVAL is traditionally the black box "can't do" for the stack.
+But also - no strong feelings, I can switch to EOPNOTSUPP in v3.
