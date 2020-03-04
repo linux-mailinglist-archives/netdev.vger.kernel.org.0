@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAA0178C6A
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 09:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B81D1178CA0
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 09:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728389AbgCDIP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 03:15:29 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33966 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726957AbgCDIP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 03:15:29 -0500
-Received: by mail-wr1-f65.google.com with SMTP id z15so1200910wrl.1
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 00:15:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zsh6gtDbe5grknv3VRLhITB0vU82A8UlZTRlI1tilDQ=;
-        b=Biq2o3B7LlDIKgfnSnbrJilPUKQeEPYJTGlZ6bl5f4gPX1avlJ4mroUHZ29tFmy2Bq
-         HjE90FaOCJVE9b/C8HYz+VTPHOkf86Th4WIaSOa+IfRaO3pmUsQOuS8E59rB10lk1VG0
-         FYmeAd2HWgcmpOwA9Y5KfdNiYSSyFAYRT4Q7mB0juo/w/FWK7OD9ZNMMcWbEIkZoflpN
-         bEfdhXoKy/eP0YblIeq7hBM6ObpQanbBpvgqt1yP0ykJFf9e49YCTrBPAloQq0MlPWWf
-         SPRACdXf+H0FOgPH1BiP0nqGWr6j7imcc2ldj8+5ALsG2pjAhaSOUbSYevB3eZX83xmC
-         luSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zsh6gtDbe5grknv3VRLhITB0vU82A8UlZTRlI1tilDQ=;
-        b=Y7TbC7gXw0uLD+XLKMXvUTZjJSFgZLaTtH7dqntGp+wYnStO+LApX6NMX7/qHswXJ1
-         mPslmF2NKfNnbqvgQADDO5HKNy9trvIFtrS6GrmrQcYuhSfqTs7BAUkvmceZ1MHJsz+H
-         WHyvTUKyyJctNqTHi6IsqQabOPWX8EZdnTiNfsmZuibTo4URAw7QJh+eiOwGd4/RC7Fc
-         qIHmgrrKdyt3zXgGgUFppSfkCIlHfMQRpNhWy++rbabMLk/yi0WGQsU8+SnY+rt9yFOi
-         FBDmd0K9Kp++5G7TV/YZU0ssLWtwWiV0T7UesYdOAePjn/wNBMtK8h9Lm8LtREns11jy
-         6NOw==
-X-Gm-Message-State: ANhLgQ2SlhH5OjuEMm5qB270V6ip2buUSEsDsb1XN3QZlM/jwilNLF5I
-        j+QqZ0I/uiZAmMTv9UgB43tFpg==
-X-Google-Smtp-Source: ADFU+vvMZSuZQI+b8u/gJ1KnAh+1A0JzQOAv2cW3IhX2lESpKk754Woqr8bgDAXDTri5+U/nZGvLhQ==
-X-Received: by 2002:a5d:414d:: with SMTP id c13mr2967349wrq.40.1583309726751;
-        Wed, 04 Mar 2020 00:15:26 -0800 (PST)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id b82sm2955012wmb.16.2020.03.04.00.15.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2020 00:15:26 -0800 (PST)
-Date:   Wed, 4 Mar 2020 09:15:25 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 12/12] sched: act: allow user to specify type
- of HW stats for a filter
-Message-ID: <20200304081525.GA2130@nanopsycho>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-13-jiri@resnulli.us>
- <20200228115923.0e4c7baf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200229075209.GM26061@nanopsycho>
- <20200229121452.5dd4963b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200301085756.GS26061@nanopsycho>
- <20200302113933.34fa6348@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200303132035.GH2178@nanopsycho>
- <20200303114825.66b7445e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728539AbgCDIjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 03:39:22 -0500
+Received: from mail-db8eur05on2071.outbound.protection.outlook.com ([40.107.20.71]:6017
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727026AbgCDIjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 03:39:22 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gwiIsKye012xbwgSNkhNaB0HFo72lXBHk1rZrMUutGaOusd+xnBiW3hSRBB76OJ8syeGW3YwMwG852HCF6FnNjn7LZ93JkS6AT6WHUhKCve4/Cw5zTe140TzsfbiuYakG0fQbr8yPUbZvOUduc4qRlxsAZ0WJe4e5ptZSOzyuPTk/x0Jkg3t5MgiemTEh9KewZgMMhKSiIsPaLhpj5Dj7JeHuUHdgDEDf+O5NMMX3cz+bG5jFDcqPFY42NUIsBnM4pFEpoacfe5XJm+LpVwBxjK0AZ+ALUjx1vPZy79P2cX53w6A2pg+2x7C1meWmxP6RRd1yTOR+zPAHPx0RaLjeQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LsqVOBlylxFzhBAeR/UePvJ8A83vDrevQHxykVVELUQ=;
+ b=GH2TXW8btkJp3ZG0yHw1b/sf2rofYPpzaWMKqvZoCcxLvSjEDOwRUriqS0GRUl19Jl2bqArRsduj1NXlGtdyPvhLZQkykS/YDM8kvzOCD4g+fl/LyMCNK5b9sc+YjxJ0h8PuXZSrSlRm90BcEpiAzDvT6tokTUObsTVL3IiCY95mi2TKimizuwnPH/Z6/H24IBMqxX8ztV3IogbIF3W9BvzvEu2KDhFkCQwoZKEgv7qTYd1/cI7CQK8oGHvpRyDqMZxO/V3r7eXxvvzBJKcnDW+PdC2lapXG7VZfq1qFKLEtYtY2ZLlZhOaV3nmNjugUOcFDoYlY6oJEtpigdJbEog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LsqVOBlylxFzhBAeR/UePvJ8A83vDrevQHxykVVELUQ=;
+ b=Yat/smJ+Iq389tMDEbLGz/GwyQTXa7IT8eyBemCz1qrLDzbw7BOuqMUNkRqn06w5CG4Xom+2TyMIKO9ixyoArSNk36s8mIhHYnfl2Sc7VsR4wAZ/U6vDvJP+HNk6P9uHm2afTmY9YB+XNnsMJ6W1N1jN8o7W3e/+xE6VhXDHlVY=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB5128.eurprd05.prod.outlook.com (20.177.190.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2772.15; Wed, 4 Mar 2020 08:39:17 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::41cb:73bc:b2d3:79b4%7]) with mapi id 15.20.2772.019; Wed, 4 Mar 2020
+ 08:39:17 +0000
+Subject: Re: [PATCH net-next v5 0/3] act_ct: Software offload of conntrack_in
+To:     David Miller <davem@davemloft.net>
+Cc:     saeedm@mellanox.com, ozsh@mellanox.com,
+        jakub.kicinski@netronome.com, vladbu@mellanox.com,
+        netdev@vger.kernel.org, jiri@mellanox.com, roid@mellanox.com
+References: <1583245281-25999-1-git-send-email-paulb@mellanox.com>
+ <20200303.154403.2134473467599378075.davem@davemloft.net>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <1e2b3430-b5c5-c4a7-3a88-eeeda47230c8@mellanox.com>
+Date:   Wed, 4 Mar 2020 10:38:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
+In-Reply-To: <20200303.154403.2134473467599378075.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR02CA0098.eurprd02.prod.outlook.com
+ (2603:10a6:208:154::39) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200303114825.66b7445e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.223.6.3] (193.47.165.251) by AM0PR02CA0098.eurprd02.prod.outlook.com (2603:10a6:208:154::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15 via Frontend Transport; Wed, 4 Mar 2020 08:39:16 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f57108d9-7c3a-4cb7-831c-08d7c017869f
+X-MS-TrafficTypeDiagnostic: AM6PR05MB5128:|AM6PR05MB5128:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB5128D68466061B7D6D497569CFE50@AM6PR05MB5128.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Forefront-PRVS: 0332AACBC3
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(346002)(39860400002)(396003)(376002)(189003)(199004)(31696002)(4744005)(6666004)(36756003)(5660300002)(86362001)(31686004)(4326008)(6916009)(316002)(107886003)(81156014)(2616005)(81166006)(2906002)(16576012)(26005)(956004)(8936002)(8676002)(53546011)(66556008)(66946007)(52116002)(186003)(478600001)(16526019)(6486002)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5128;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kYwAmoLmEccyJpMD3T6p1SCflKEddrMC5c3bhkxkZow3IkUPbbkHkKGlCHbHCrBEexc/66rLJFf6O7/sn9OXS/mvVfVkqMdkdnyyiahSq7ufstBBZL1BsCaAFxRCG5yXuHSrcUxCA9yokVU+zzcVPODlTxBa4/VQZh9I7fKymp65vNm7WRa3ubG+sonn7WbbM1UlGLQyu0dcHV9FSk1mFvDHe0Rj2BaKjjeZwhX9jvHj5G+Ic5/dsNM6zsLVWNp2sybweDNmj8TW2+kH6VCfEipSFDTddg+KnotBb2HJPhz2+LgoeakEVuBW6L1sLchfz7UiC+i7W5Dmftvl8syeDHPkO8CdtCormKA4vF5gCYf220jpttHzG6YSaPZKwzF5EnHOFh+sCSGBEzrbdAE9FFqcHkySUxBDAYVs0jvIrFREyurMZcXlkAPu/pfFzNsp
+X-MS-Exchange-AntiSpam-MessageData: bhyWHIzl9lKfOcssBqonmwxaouF+fy0vdKcIarr9dNLilbYQ6mD/g/BHFAzvqTbHWcDMwjrvS1sw15552h2xrw2HNMDkVBylFrTm97ncPy3iizY/xjyV2G4R2GKXN9E5nURo6bhDRCTq/3vZdlQcaA==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f57108d9-7c3a-4cb7-831c-08d7c017869f
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2020 08:39:17.3724
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: K73GUN71FZ5s+iuC4RbEFwZcqoBMvV29CyNRtiHL2G5pN5+4fnf36ftubY8k3YTfzC9Fp+D6vKVd/pCqAKXGlQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5128
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 03, 2020 at 08:48:25PM CET, kuba@kernel.org wrote:
->On Tue, 3 Mar 2020 14:20:35 +0100 Jiri Pirko wrote:
->> >> Also there would be no "any" it would be type0|type1|type2 the user
->> >> would have to pass. If new type appears, the userspace would have to be
->> >> updated to do "any" again :/ This is inconvenient.  
->> >
->> >In my proposal above I was suggesting no attr to mean any. I think in
->> >your current code ANY already doesn't include disabled so old user
->> >space should not see any change.  
->> 
->> Odd, no attribute meaning "any".
->
->OTOH it does match up with old kernel behavior quite nicely, today
->there is no attribute and it means "any".
->
->> I think it is polite to fillup the attribute for dump if kernel
->> supports the attribute. However, here, we would not fill it up in
->> case of "any". That is quite odd.
->
->I see, it does seem nice to report the attribute, but again, won't 
->the user space which wants to run on older kernels have to treat
->no attr as "any"?
 
-Okay.
+On 3/4/2020 1:44 AM, David Miller wrote:
+> Ugh, so I see that I applied v4 and even this v5 is going to have some
+> follow-up changes.
+>
+> I can revert v4 from net-next, or let you just build fixup patches
+> against the current tree.
+>
+> Let me know how you want me to resolve this, sorry.
 
->
->> We can have a bit that would mean "any" though. What do you think?
->
->It'd be a dead bit for the "stat types used" attribute, but I don't
->mind it if you prefer to go this way.
+Hi, I'll rather submit a fixup with the diff.
+
+Thanks.
+
