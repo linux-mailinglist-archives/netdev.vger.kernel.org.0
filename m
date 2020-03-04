@@ -2,111 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA54179867
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C68E0179871
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:56:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730173AbgCDSvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 13:51:05 -0500
-Received: from mga09.intel.com ([134.134.136.24]:13652 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729600AbgCDSvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 13:51:04 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 10:50:57 -0800
-X-IronPort-AV: E=Sophos;i="5.70,514,1574150400"; 
-   d="scan'208";a="240551018"
-Received: from ahduyck-desk1.jf.intel.com ([10.7.198.76])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 10:50:57 -0800
-Message-ID: <443c085ff3bcc06ad15c34f44f0407a0861dadeb.camel@linux.intel.com>
-Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
- centralized checking of coalescing parameters
-From:   Alexander Duyck <alexander.h.duyck@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, davem@davemloft.net,
-        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
-        pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        netdev@vger.kernel.org
-Date:   Wed, 04 Mar 2020 10:50:57 -0800
-In-Reply-To: <20200304102705.192d3b0a@kicinski-fedora-PC1C0HJN>
-References: <20200304043354.716290-1-kuba@kernel.org>
-         <20200304043354.716290-2-kuba@kernel.org>
-         <20200304075926.GH4264@unicorn.suse.cz>
-         <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
-         <45b3c493c3ce4aa79f882a8170f3420d348bb61e.camel@linux.intel.com>
-         <20200304102705.192d3b0a@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730068AbgCDS4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:56:13 -0500
+Received: from mail-pl1-f179.google.com ([209.85.214.179]:44925 "EHLO
+        mail-pl1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726561AbgCDS4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 13:56:12 -0500
+Received: by mail-pl1-f179.google.com with SMTP id d9so1405993plo.11
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 10:56:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=kS4IUmCRm2jVOf0zGM0RXaG0aMwF3x0hQ2mtRwEQYFA=;
+        b=Cd+tlC9A4F41XJwnI/1qXqVYQS1HITt6gp667TdYBnII0gGFqp3TAbLOrEWCCxs/BG
+         aeLyHuDC7K35S3beYvwNmLJq88rj+OKh5K4nsUMUzXDl5+sJisl3F/po8Qh/3fNlQRaY
+         XKecj3kquPJodPUcdcmpL/37muvXvzWLQlxTSxRuaPKB4QjPbGkFhr9ducTdqtMNEar9
+         +SMrBN05aOUXx036q+vLqj1MYv1ItG4PttUOhfetAg2jJuofytZQSEq9zt7x8ny7Lty1
+         qRk/StwH2gFBdgdpr5yuamK92+Rr5pAJNYu5zEETemhhCRHoLaCXn645a5wqQk8sVKsc
+         EsZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kS4IUmCRm2jVOf0zGM0RXaG0aMwF3x0hQ2mtRwEQYFA=;
+        b=NHDfy/aoozw9+VKOSBdiYZNbMA2S7oWAmSVaHG79gsO8ICb4h8NGOC7UgTlotbgoaU
+         JY5REQiWhKVQdxwdrEksUuIUB9tNIfFCjGBGsJlsDpkr8I28tI/I0QJYyDZgK7v50SuG
+         EFeSzPvfyFPxF3pCtd0/ygKvZYKhRITp8D+uake8hZTDjTNEPn8BJJCHyS6DRR/IU2ls
+         qSnZodBufIkP+kgeXeH5A8XCcO3n88nt5iHh3DqytXZqeD4VxZqJDs+S4FbzshxPUtcs
+         9DCs7mnO/nI6humNT7g1w08dSMm8ptZdxXoBH1YiyCZfRLrhKnhar2CHexJfK8YTLC4l
+         3wSg==
+X-Gm-Message-State: ANhLgQ2B3lXkmD7XB4Vkq5PuP38ALnw2p+xySM//R+jFLR9zFoBMFe6X
+        muYzrcSNWAOoiN/Ia1royjPiPLYs
+X-Google-Smtp-Source: ADFU+vs20ZCrkvzcgzQrCJNqXt1sPzT44NeHh6SrU9AdUFmiE3Z8clwLq7+NidGKrmsprXKoT57ySA==
+X-Received: by 2002:a17:902:b210:: with SMTP id t16mr4106874plr.65.1583348169705;
+        Wed, 04 Mar 2020 10:56:09 -0800 (PST)
+Received: from localhost.localdomain ([103.89.235.106])
+        by smtp.gmail.com with ESMTPSA id h12sm12720021pfk.124.2020.03.04.10.56.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Mar 2020 10:56:08 -0800 (PST)
+From:   Leslie Monis <lesliemonis@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, tahiliani@nitk.edu.in, gautamramk@gmail.com
+Subject: [PATCH net-next v2 0/4] pie: minor improvements
+Date:   Thu,  5 Mar 2020 00:25:58 +0530
+Message-Id: <20200304185602.2540-1-lesliemonis@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-03-04 at 10:27 -0800, Jakub Kicinski wrote:
-> On Wed, 04 Mar 2020 10:12:30 -0800 Alexander Duyck wrote:
-> > On Wed, 2020-03-04 at 10:00 -0800, Jakub Kicinski wrote:
-> > > On Wed, 4 Mar 2020 08:59:26 +0100 Michal Kubecek wrote:  
-> > > > Just an idea: perhaps we could use the fact that struct ethtool_coalesce
-> > > > is de facto an array so that this block could be replaced by a loop like
-> > > > 
-> > > > 	u32 supported_types = dev->ethtool_ops->coalesce_types;
-> > > > 	const u32 *values = &coalesce->rx_coalesce_usecs;
-> > > > 
-> > > > 	for (i = 0; i < __ETHTOOL_COALESCE_COUNT; i++)
-> > > > 		if (values[i] && !(supported_types & BIT(i)))
-> > > > 			return false;
-> > > > 
-> > > > and to be sure, BUILD_BUG_ON() or static_assert() check that the offset
-> > > > of ->rate_sample_interval matches ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL.  
-> > > 
-> > > I kind of prefer the greppability over the saved 40 lines :(
-> > > But I'm happy to change if we get more votes for the more concise
-> > > version. Or perhaps the Intel version with the warnings printed.  
-> > 
-> > I agree that it would make more sense to replace the types with an enum
-> > definition, and then use the enum to define bits to be used by the
-> > drivers.
-> 
-> The only use for the enum would then be to automate the bit assignment?
-> Sounds like we would save some lines for the code and added some for
-> the definition. Maybe I'm missing the advantage the enum brings 🤔
+This patch series includes the following minor changes with
+respect to the PIE/FQ-PIE qdiscs:
 
-Well if you wanted to you could probably also update ethtool_coalesce to
-support a unioned __u32 array if you wanted to be more explicit about it. 
+ - Patch 1 removes some ambiguity by using the term "backlog"
+           instead of "qlen" when referring to the queue length
+           in bytes.
+ - Patch 2 removes redundant type casting on two expressions.
+ - Patch 3 removes the pie_vars->accu_prob_overflows variable
+           without affecting the precision in calculations and
+           makes the size of the pie_vars structure exactly 64
+           bytes.
+ - Patch 4 realigns a comment affected by a change in patch 3.
 
-I just figured that by making in an enum it becomes less error prone since
-you can't accidentally leave a gap or end up renumbering things
-unintentionally. Combine that with some logic to take care of the bit
-shifting and it wouldn't differ much from how we handle the netdev feature
-flags and the like.
+Changes from v1 to v2:
+ - Kept 8 as the argument to prandom_bytes() instead of changing it
+   to 7 as suggested by David Miller.
 
-> > > > > +	return !dev->ethtool_ops->coalesce_types ||
-> > > > > +		(dev->ethtool_ops->coalesce_types & used_types) == used_types;
-> > > > > +}    
-> > > > 
-> > > > I suggest to move the check for !dev->ethtool_ops->coalesce_types to the
-> > > > beginning of the function so that we avoid calculating the bitmap if we
-> > > > are not going to check it anyway.  
-> > > 
-> > > Good point!  
-> > 
-> > So one thing I just wanted to point out. The used_types won't necessarily
-> > be correct because it is only actually checking for non-zero types. There
-> > are some of these values where a zero is a valid input and the driver will
-> > accept it, such as rx_coalesce_usecs for ixgbe. As such we might want to
-> > rename the value to nonzero_types instead of used_types.
-> 
-> Okay, I'll rename. I was also wondering if it should be "params" not
-> "types". Initially I was hoping there are categories of coalescing that
-> drivers implement, each with set of params. But it seems each vendor is
-> just picking fields they like. I think I'll do s/types/params/ as well.
+Leslie Monis (4):
+  pie: use term backlog instead of qlen
+  pie: remove unnecessary type casting
+  pie: remove pie_vars->accu_prob_overflows
+  pie: realign comment
 
-Makes sense to me.
+ include/net/pie.h      | 31 +++++++++++++---------------
+ net/sched/sch_fq_pie.c |  1 -
+ net/sched/sch_pie.c    | 47 +++++++++++++++++-------------------------
+ 3 files changed, 33 insertions(+), 46 deletions(-)
+
+-- 
+2.17.1
 
