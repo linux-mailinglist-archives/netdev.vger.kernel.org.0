@@ -2,137 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F773179BE0
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 23:42:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 010D8179BE7
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 23:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388410AbgCDWmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 17:42:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47932 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387931AbgCDWmH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 17:42:07 -0500
-Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 29E4520716;
-        Wed,  4 Mar 2020 22:42:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583361726;
-        bh=vVWl42UrJyKCwvpt0XSfsWqhyM0OXuQwUc19JT3Tmsw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=1p3GOti0Ihtjw+1D7hdmI7sib3LPSqh5A8XcqGhUAP0fxQHB4eJ2GK6pwVHVYai1W
-         IHRJGSX9o33kBY+JTRdtZXGm41DwDdBjkV3TARqb+2usum7Dec9VmPhjQupu2hB6JA
-         bSvOrvLo2Mt1NTL9g6Cqt251K5HKr8yYWICe3Kc4=
-Date:   Wed, 4 Mar 2020 16:42:04 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 1/6] PCI: Introduce pci_get_dsn
-Message-ID: <20200304224204.GA33207@google.com>
+        id S2388436AbgCDWml (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 17:42:41 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41670 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388505AbgCDWml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 17:42:41 -0500
+Received: by mail-pf1-f195.google.com with SMTP id z65so1213858pfz.8
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 14:42:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=odK5+dhUnBqo/+13PepNr/CkWlUjNgQ8JDVfrKhakIk=;
+        b=isdY1aSXFghm/7DcPvO2xsBI6RsGzX4b5UMukog5rXaPNNa7gW8dJ13PYJNrekz4Tc
+         dH4RUdCfN25tOEOdXai1KnSscbdIv6B+XYH1HTrplPOXWVVZ5MkyAkwJesiA2LZ15dDh
+         +pBQqERRnjfEMP/stih8i95gBD6GNbY6FH3dI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=odK5+dhUnBqo/+13PepNr/CkWlUjNgQ8JDVfrKhakIk=;
+        b=a6l4lm3j5buj7HEnEPDeVKVLpF42gqxEYXhC2RLwkm58uWeNdlGEIKmZmq5/AXMxaT
+         ouJ7updZS/V8tk7Vq4rbrFige7FcohJKq1sbc+GH5rHsWOIqA1cEi0pVSNl5l346FwhW
+         NsUIrsnRoQynk9XSaFauWvYO39cU2PvTp43aSBSMvvGCgVY6lKsoBbkP5Jj8eQtXs89r
+         AdzqX0cT9cuju9DonUbvPtZcvbVF5gowqMPcEWcbn+ml4xJ58pmSaE9wbJI0GGByiSTn
+         XhfoYAj5sGyB/J4AZbAsl8AC0qnQKqC44KS28Oxi3OgDBvPqoyE1C0IuTQfmQOk2slcW
+         Oqlg==
+X-Gm-Message-State: ANhLgQ3NwexEs2F6VbvslmclNn+Wztr558bsNYmUgx0saZm+jDPmCB7a
+        5XIic2tNJcjVOzL9AERUS05roA==
+X-Google-Smtp-Source: ADFU+vuKmczxGP4mpY9UFRgyIrH5RPg53yiVBl1Tz6nWTwaU/eXHWFgTXsBhMOZfJPQKyh0YI4ZA9w==
+X-Received: by 2002:aa7:8695:: with SMTP id d21mr5208658pfo.199.1583361760528;
+        Wed, 04 Mar 2020 14:42:40 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id w81sm15677072pff.22.2020.03.04.14.42.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Mar 2020 14:42:39 -0800 (PST)
+Date:   Wed, 4 Mar 2020 14:42:38 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        daniel@iogearbox.net, kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, mpe@ellerman.id.au,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 2/4] selftests: Fix seccomp to support relocatable build
+ (O=objdir)
+Message-ID: <202003041442.A46000C@keescook>
+References: <cover.1583358715.git.skhan@linuxfoundation.org>
+ <11967e5f164f0cd717921bd382ff9c13ef740146.1583358715.git.skhan@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200303022506.1792776-2-jacob.e.keller@intel.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <11967e5f164f0cd717921bd382ff9c13ef740146.1583358715.git.skhan@linuxfoundation.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 02, 2020 at 06:25:00PM -0800, Jacob Keller wrote:
-> Several device drivers read their Device Serial Number from the PCIe
-> extended config space.
+On Wed, Mar 04, 2020 at 03:13:33PM -0700, Shuah Khan wrote:
+> Fix seccomp relocatable builds. This is a simple fix to use the
+> right lib.mk variable TEST_GEN_PROGS for objects to leverage
+> lib.mk common framework for relocatable builds.
 > 
-> Introduce a new helper function, pci_get_dsn(). This function reads the
-> eight bytes of the DSN and returns them as a u64. If the capability does not
-> exist for the device, the function returns 0.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Cc: Michael Chan <michael.chan@broadcom.com>
-
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
-Looks good, thanks!  Feel free to merge this via the net tree.
-
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 > ---
->  drivers/pci/pci.c   | 34 ++++++++++++++++++++++++++++++++++
->  include/linux/pci.h |  5 +++++
->  2 files changed, 39 insertions(+)
+>  tools/testing/selftests/seccomp/Makefile | 16 +++-------------
+>  1 file changed, 3 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index d828ca835a98..03f50e706c0d 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -557,6 +557,40 @@ int pci_find_ext_capability(struct pci_dev *dev, int cap)
->  }
->  EXPORT_SYMBOL_GPL(pci_find_ext_capability);
+> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+> index 1760b3e39730..a8a9717fc1be 100644
+> --- a/tools/testing/selftests/seccomp/Makefile
+> +++ b/tools/testing/selftests/seccomp/Makefile
+> @@ -1,17 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -all:
+> -
+> -include ../lib.mk
+> -
+> -.PHONY: all clean
+> -
+> -BINARIES := seccomp_bpf seccomp_benchmark
+>  CFLAGS += -Wl,-no-as-needed -Wall
+> +LDFLAGS += -lpthread
 >  
-> +/**
-> + * pci_get_dsn - Read and return the 8-byte Device Serial Number
-> + * @dev: PCI device to query
-> + *
-> + * Looks up the PCI_EXT_CAP_ID_DSN and reads the 8 bytes of the Device Serial
-> + * Number.
-> + *
-> + * Returns the DSN, or zero if the capability does not exist.
-> + */
-> +u64 pci_get_dsn(struct pci_dev *dev)
-> +{
-> +	u32 dword;
-> +	u64 dsn;
-> +	int pos;
-> +
-> +	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DSN);
-> +	if (!pos)
-> +		return 0;
-> +
-> +	/*
-> +	 * The Device Serial Number is two dwords offset 4 bytes from the
-> +	 * capability position. The specification says that the first dword is
-> +	 * the lower half, and the second dword is the upper half.
-> +	 */
-> +	pos += 4;
-> +	pci_read_config_dword(dev, pos, &dword);
-> +	dsn = (u64)dword;
-> +	pci_read_config_dword(dev, pos + 4, &dword);
-> +	dsn |= ((u64)dword) << 32;
-> +
-> +	return dsn;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_get_dsn);
-> +
->  static int __pci_find_next_ht_cap(struct pci_dev *dev, int pos, int ht_cap)
->  {
->  	int rc, ttl = PCI_FIND_CAP_TTL;
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 3840a541a9de..d92cf2da1ae1 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1045,6 +1045,8 @@ int pci_find_ht_capability(struct pci_dev *dev, int ht_cap);
->  int pci_find_next_ht_capability(struct pci_dev *dev, int pos, int ht_cap);
->  struct pci_bus *pci_find_next_bus(const struct pci_bus *from);
+> -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+
+How is the ../kselftest_harness.h dependency detected in the resulting
+build rules?
+
+Otherwise, looks good.
+
+-Kees
+
+> -	$(CC) $(CFLAGS) $(LDFLAGS) $< -lpthread -o $@
+> -
+> -TEST_PROGS += $(BINARIES)
+> -EXTRA_CLEAN := $(BINARIES)
+> +TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
 >  
-> +u64 pci_get_dsn(struct pci_dev *dev);
-> +
->  struct pci_dev *pci_get_device(unsigned int vendor, unsigned int device,
->  			       struct pci_dev *from);
->  struct pci_dev *pci_get_subsys(unsigned int vendor, unsigned int device,
-> @@ -1699,6 +1701,9 @@ static inline int pci_find_next_capability(struct pci_dev *dev, u8 post,
->  static inline int pci_find_ext_capability(struct pci_dev *dev, int cap)
->  { return 0; }
->  
-> +static inline u64 pci_get_dsn(struct pci_dev *dev)
-> +{ return 0; }
-> +
->  /* Power management related routines */
->  static inline int pci_save_state(struct pci_dev *dev) { return 0; }
->  static inline void pci_restore_state(struct pci_dev *dev) { }
+> -all: $(BINARIES)
+> +include ../lib.mk
 > -- 
-> 2.25.0.368.g28a2d05eebfb
+> 2.20.1
 > 
+
+-- 
+Kees Cook
