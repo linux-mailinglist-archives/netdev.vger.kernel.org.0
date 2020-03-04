@@ -2,49 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F23C51787ED
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 03:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21254178844
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 03:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387469AbgCDCBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 21:01:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38308 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387452AbgCDCBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 21:01:53 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5F87615ADAAFF;
-        Tue,  3 Mar 2020 18:01:52 -0800 (PST)
-Date:   Tue, 03 Mar 2020 18:01:51 -0800 (PST)
-Message-Id: <20200303.180151.1173371841870109441.davem@davemloft.net>
-To:     hauke@hauke-m.de
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Subject: Re: [PATCH] phylink: Improve error message when validate failed
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200301235502.17872-1-hauke@hauke-m.de>
-References: <20200301235502.17872-1-hauke@hauke-m.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 18:01:52 -0800 (PST)
+        id S2387469AbgCDC0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 21:26:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56688 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387397AbgCDC0f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 21:26:35 -0500
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6704820842;
+        Wed,  4 Mar 2020 02:26:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583288794;
+        bh=BsWeZ17pmIx7nJvpD5RcxoLF7ggfhrZMuVvO9BuLjlQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=S7pQ6MOPzOtXjxw3x0cMerIKCwm29JZnIy0s0/0Na55hUj9z/FVMobZvh87w/LGpi
+         CieA+ItngB+5txg1I/K1ATcXpefrd8BEd9heeKTDJqeTV6OwJ1y97EkkCKDhBHTRQf
+         7lmuK12rSJ8PaT/iB1SGaIR9it38Bhcey/bG3x/c=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] gianfar: remove unnecessary zeroing coalesce settings
+Date:   Tue,  3 Mar 2020 18:26:12 -0800
+Message-Id: <20200304022612.602957-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hauke Mehrtens <hauke@hauke-m.de>
-Date: Mon,  2 Mar 2020 00:55:02 +0100
+Core already zeroes out the struct ethtool_coalesce structure,
+drivers don't have to set every field to 0 individually.
 
-> This should improve the error message when the PHY validate in the MAC
-> driver failed. I ran into this problem multiple times that I put wrong
-> interface values into the device tree and was searching why it is
-> failing with -22 (-EINVAL). This should make it easier to spot the
-> problem.
-> 
-> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ .../net/ethernet/freescale/gianfar_ethtool.c  | 29 -------------------
+ 1 file changed, 29 deletions(-)
 
-Applied, thank you.
+diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+index 3c8e4e2efc07..5fc8bc5e25c5 100644
+--- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
++++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+@@ -276,35 +276,6 @@ static int gfar_gcoalesce(struct net_device *dev,
+ 	cvals->tx_coalesce_usecs = gfar_ticks2usecs(priv, txtime);
+ 	cvals->tx_max_coalesced_frames = txcount;
+ 
+-	cvals->use_adaptive_rx_coalesce = 0;
+-	cvals->use_adaptive_tx_coalesce = 0;
+-
+-	cvals->pkt_rate_low = 0;
+-	cvals->rx_coalesce_usecs_low = 0;
+-	cvals->rx_max_coalesced_frames_low = 0;
+-	cvals->tx_coalesce_usecs_low = 0;
+-	cvals->tx_max_coalesced_frames_low = 0;
+-
+-	/* When the packet rate is below pkt_rate_high but above
+-	 * pkt_rate_low (both measured in packets per second) the
+-	 * normal {rx,tx}_* coalescing parameters are used.
+-	 */
+-
+-	/* When the packet rate is (measured in packets per second)
+-	 * is above pkt_rate_high, the {rx,tx}_*_high parameters are
+-	 * used.
+-	 */
+-	cvals->pkt_rate_high = 0;
+-	cvals->rx_coalesce_usecs_high = 0;
+-	cvals->rx_max_coalesced_frames_high = 0;
+-	cvals->tx_coalesce_usecs_high = 0;
+-	cvals->tx_max_coalesced_frames_high = 0;
+-
+-	/* How often to do adaptive coalescing packet rate sampling,
+-	 * measured in seconds.  Must not be zero.
+-	 */
+-	cvals->rate_sample_interval = 0;
+-
+ 	return 0;
+ }
+ 
+-- 
+2.24.1
+
