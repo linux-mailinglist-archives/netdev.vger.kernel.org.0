@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B48ED1787A8
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 02:41:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFFBC1787AA
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 02:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387411AbgCDBjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 20:39:31 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38148 "EHLO
+        id S2387460AbgCDBjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 20:39:39 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38158 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728319AbgCDBjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 20:39:31 -0500
+        with ESMTP id S1728346AbgCDBjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 20:39:39 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8600015AD7CDC;
-        Tue,  3 Mar 2020 17:39:30 -0800 (PST)
-Date:   Tue, 03 Mar 2020 17:39:30 -0800 (PST)
-Message-Id: <20200303.173930.1152268453805874583.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9780B15AD7CF4;
+        Tue,  3 Mar 2020 17:39:38 -0800 (PST)
+Date:   Tue, 03 Mar 2020 17:39:38 -0800 (PST)
+Message-Id: <20200303.173938.1374933873178568420.davem@davemloft.net>
 To:     gustavo@embeddedor.com
-Cc:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] liquidio: Replace zero-length array with
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: mlxfw: Replace zero-length array with
  flexible-array member
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200302205847.GA18593@embeddedor>
-References: <20200302205847.GA18593@embeddedor>
+In-Reply-To: <20200302210437.GA30285@embeddedor>
+References: <20200302210437.GA30285@embeddedor>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 17:39:30 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 17:39:38 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Date: Mon, 2 Mar 2020 14:58:47 -0600
+Date: Mon, 2 Mar 2020 15:04:37 -0600
 
 > The current codebase makes use of the zero-length array language
 > extension to the C90 standard, but the preferred mechanism to declare
