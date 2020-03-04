@@ -2,67 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0007178712
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A3D17870B
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbgCDAfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 19:35:03 -0500
-Received: from walmailout01.yourhostingaccount.com ([65.254.253.166]:42867
-        "EHLO walmailout01.yourhostingaccount.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727725AbgCDAfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:35:03 -0500
-X-Greylist: delayed 1814 seconds by postgrey-1.27 at vger.kernel.org; Tue, 03 Mar 2020 19:35:02 EST
-Received: from mailscan11.yourhostingaccount.com ([10.1.15.11] helo=walmailscan11.yourhostingaccount.com)
-        by walmailout01.yourhostingaccount.com with esmtp (Exim)
-        id 1j9HWn-0003Xw-I1; Tue, 03 Mar 2020 19:04:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=gmail.com;
-         s=dkim; h=Sender:Content-Transfer-Encoding:Content-Type:MIME-Version:
-        Reply-To:From:Subject:Date:Message-ID:To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=DHrvzK3FbRKjB2R+af+wdZ76H4
-        kgpPBFKC6YWaLrEzI16ZRt5DX9DOE80sOpq+N43vgPCTvjQB3l/BHIwOovFG8Fu9B/q76cgnD7obT
-        sBbjQJS+DPr06ZmZMN73zNuJns3kOBp7IlcR6MDepUcNdVIvRPmrBI7aZaDCijnze/xHJVnjYCD2F
-        v23gk+yZLofB6+S6Qkzd008gA9uDU+KIseHKeYBs9v5nlO1O6aWqhlRvBGfZbnc4k8dc5FUkSjM+O
-        Y8YAjTBF5mbthE3e5OTe8WKNBBlwWUv/2xZC2Wi3dnJQJSH9wQFzZ6tXtEIXPaI32Tyv9P/lNkm38
-        S8zzNzOw==;
-Received: from [10.114.3.31] (helo=walimpout11)
-        by walmailscan11.yourhostingaccount.com with esmtp (Exim)
-        id 1j9HWn-0004nH-FF; Tue, 03 Mar 2020 19:04:45 -0500
-Received: from walwebmail04.yourhostingaccount.com ([10.1.16.4])
-        by walimpout11 with 
-        id A04i2200105FYhm0104lZ2; Tue, 03 Mar 2020 19:04:45 -0500
-X-Authority-Analysis: v=2.2 cv=cKKQihWN c=1 sm=1 tr=0
- a=YjmNDDI+0hkeRrrZ2pZTjw==:117 a=Osa5sBIyHKdXETJeBJVB3g==:17
- a=9cW_t1CCXrUA:10 a=jR-r3FO1uioA:10 a=8nJEP1OIZ-IA:10 a=x7bEGLp0ZPQA:10
- a=ZKAUjeuh08YA:10 a=SS2py6AdgQ4A:10 a=tclcd6dtLQvEqt9_mmAA:9
- a=wPNLvfGTeEIA:10 a=aOQmkusZXmwLL3XI3Ryd:22
-Received: from [127.0.0.1] (helo=email.powweb.com)
-        by walwebmail04.yourhostingaccount.com with esmtp (Exim)
-        id 1j9HWj-0003Je-QH; Tue, 03 Mar 2020 19:04:41 -0500
-Received: from 176.113.72.84
-        (SquirrelMail authenticated user enggpmc@precimeasure.com)
-        by email.powweb.com with HTTP;
-        Tue, 3 Mar 2020 19:04:41 -0500
-Message-ID: <d0e3bfcddfa2596313b5959dfe698cba.squirrel@email.powweb.com>
-Date:   Tue, 3 Mar 2020 19:04:41 -0500
-Subject: Urgent!!! I am still waiting for your response. did you get my 
- previous email ?
-From:   "Patrick Edem" <patrickedemchamberss@gmail.com>
-Reply-To: patrickedemchamberss@gmail.com
-User-Agent: SquirrelMail/1.4.19
+        id S1727903AbgCDAbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 19:31:53 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40498 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727429AbgCDAbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:31:53 -0500
+Received: by mail-lf1-f66.google.com with SMTP id p5so4355562lfc.7;
+        Tue, 03 Mar 2020 16:31:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0535QGjciwSzjRFczO8hMlo3JpfPidZ1FORuAyueRYY=;
+        b=Pdxgwp2q8OaHvBozqu4AbhMdVXPLkLhWYzqxroyWFYmwUIYQcgZzOyP1+TXB0oxqGO
+         Sux2ChcPrb7y8Ys71fi4OuTIynL4EwNbYS98em9pvH9+dpjLrMQQ7CArXxt2FabMjyve
+         KDO25Gf7c2Tk/MApcFTcPuRTjRRXkHn5ZZPxEhVPvTN7h28RGfd1c9wExlYcXUP6j0yC
+         Tle4IoHI3BOTd8QoqLXae7pnOFPx317lca7b9eVvx2a0TG0oP4ybTLFcoptsIlmzdNq8
+         U0ovUOrxgIIBOmbKsq/m+5b6fz1QEJSaFkOGFz1MH3aQmXkKUl9Yvo/1DWVgqcWuPtbN
+         NtlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0535QGjciwSzjRFczO8hMlo3JpfPidZ1FORuAyueRYY=;
+        b=f7oTpEM1TjZ40boOczaIOrUKCbVCJ9vq2TWduuSBE3NB/FNe2HM7jRnCXfnRJ62dmv
+         fzl9LpUsdXhpGAJs/xgDz2Mdj3mK8a/59FM1enia1RHC+bJOUTZlYKJ7XuDYZqo8/lB5
+         6AFxtjNZeSJVkXyCbIvxZr9m3JQR3HFQfQ2f9vCsV53cXncFg8JwNUysMh/csFBYzpru
+         Ngo8XBn8g/JqHhQBOc1SZHOXNbCJxkAc6kWPOxB5+WJWTBMPNb3Ebtv+LMRy6jiPjp9X
+         0A14I9vyME2SgwMzx070JgmuQsO8uxV39d1Gt26L0xrOGfgm07GtRgbVwXNnkwe88gXe
+         1OAA==
+X-Gm-Message-State: ANhLgQ1u6lJGEAF9kJ7WsSoAvQS4Z/LWfNE3Uhq+V13fUlMVPFysZkll
+        gYIlikM3FJjug5MiltDx3LdawV9pVhz9QZffbGYQog==
+X-Google-Smtp-Source: ADFU+vs9VE5TLCPK+qRWVrvaL2BnKsZ59PC3uMzG6DbCGWVhNAMhkXsyVdnc/of2HgQpAyOzG7Ncy6Pt/r4Ft/Oruoo=
+X-Received: by 2002:ac2:5df9:: with SMTP id z25mr315643lfq.8.1583281911470;
+ Tue, 03 Mar 2020 16:31:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-X-Priority: 3 (Normal)
-Importance: Normal
-X-EN-AuthUser: enggpmc@precimeasure.com
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200303200503.226217-1-willemdebruijn.kernel@gmail.com> <CAGdtWsSd8sDoxTfW_Jcwc9u4sfHECKMzxt_GNjMTkWCbvKBr0A@mail.gmail.com>
+In-Reply-To: <CAGdtWsSd8sDoxTfW_Jcwc9u4sfHECKMzxt_GNjMTkWCbvKBr0A@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 3 Mar 2020 16:31:39 -0800
+Message-ID: <CAADnVQ+zbBuM1TYQ93CaGA3nKqVCS0ESKuo8M5NrXEQPPOEWvg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] add gso_size to __sk_buff
+To:     Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 3, 2020 at 2:56 PM Petar Penkov <ppenkov.kernel@gmail.com> wrote:
+>
+> For the series: Acked-by: Petar Penkov <ppenkov@google.com>
 
+please don't top post.
 
+> On Tue, Mar 3, 2020 at 1:46 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > See first patch for details.
+> >
+> > Patch split across three parts { kernel feature, uapi header, tools }
+> > following the custom for such __sk_buff changes.
+
+Applied. Thanks
