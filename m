@@ -2,128 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E0C2179178
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDEDF179195
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:42:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729267AbgCDNga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 08:36:30 -0500
-Received: from mx2.suse.de ([195.135.220.15]:59154 "EHLO mx2.suse.de"
+        id S1729467AbgCDNmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 08:42:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728451AbgCDNga (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 08:36:30 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 5287DACB1;
-        Wed,  4 Mar 2020 13:36:28 +0000 (UTC)
-Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     netdev@vger.kernel.org,
-        "ilias.apalodimas" <ilias.apalodimas@linaro.org>,
-        wei.liu@kernel.org, paul@xen.org
-References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
- <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
- <CAOJe8K28BZCW7JDejKgDELR2WPfBgvj-0aJJXX9uCRnryGY+xg@mail.gmail.com>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <c5cd0349-69b3-41e9-7fb1-d7909e659717@suse.com>
-Date:   Wed, 4 Mar 2020 14:36:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1725795AbgCDNmB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 08:42:01 -0500
+Received: from localhost (173-25-83-245.client.mchsi.com [173.25.83.245])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3588F2146E;
+        Wed,  4 Mar 2020 13:42:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583329320;
+        bh=f1Y2hYI2F6EVeEKTqa2xdZCYpPUDDIjI7ki27j/xyVg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=1az3IsPQVMk+8zuLHZ/l1wDKs2ypB/IzAiW56V8dWq6RBbuUXQsM4d+hOHub8wy7A
+         SjIo1r4Vlz6ayqA5fIcg6dKb4Hv5Dc0OGz5bxbz7Iiihrwzcf6+7hvX8gDiQUDeIS0
+         zpZ/iWnEu7bcNB+r5KT8aISHkWHDytxxb+VBwYZM=
+Date:   Wed, 4 Mar 2020 07:41:59 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Clemens Ladisch <clemens@ladisch.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v4 04/10] PCI: Add constant PCI_STATUS_ERROR_BITS
+Message-ID: <20200304134159.GA193414@google.com>
 MIME-Version: 1.0
-In-Reply-To: <CAOJe8K28BZCW7JDejKgDELR2WPfBgvj-0aJJXX9uCRnryGY+xg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <175dca23-c3b1-e297-ef35-4100f1c96879@gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.03.20 14:10, Denis Kirjanov wrote:
-> On 3/2/20, Jürgen Groß <jgross@suse.com> wrote:
->> On 02.03.20 15:21, Denis Kirjanov wrote:
->>> the patch adds a basic xdo logic to the netfront driver
->>>
->>> XDP redirect is not supported yet
->>>
->>> v2:
->>> - avoid data copying while passing to XDP
->>> - tell xen-natback that we need the headroom space
->>
->> Please add the patch history below the "---" delimiter
->>
->>>
->>> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
->>> ---
->>>    drivers/net/xen-netback/common.h |   1 +
->>>    drivers/net/xen-netback/rx.c     |   9 ++-
->>>    drivers/net/xen-netback/xenbus.c |  21 ++++++
->>>    drivers/net/xen-netfront.c       | 157
->>> +++++++++++++++++++++++++++++++++++++++
->>>    4 files changed, 186 insertions(+), 2 deletions(-)
->>
->> You are modifying xen-netback sources. Please Cc the maintainers.
->>
-
-...
-
->>>
->>> +	}
->>> +
->>> +	return 0;
->>> +
->>> +abort_transaction:
->>> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
->>> +	xenbus_transaction_end(xbt, 1);
->>> +out:
->>> +	return err;
->>> +}
->>> +
->>> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->>> +			struct netlink_ext_ack *extack)
->>> +{
->>> +	struct netfront_info *np = netdev_priv(dev);
->>> +	struct bpf_prog *old_prog;
->>> +	unsigned int i, err;
->>> +
->>> +	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
->>> +	if (!old_prog && !prog)
->>> +		return 0;
->>> +
->>> +	if (prog)
->>> +		bpf_prog_add(prog, dev->real_num_tx_queues);
->>> +
->>> +	for (i = 0; i < dev->real_num_tx_queues; ++i)
->>> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
->>> +
->>> +	if (old_prog)
->>> +		for (i = 0; i < dev->real_num_tx_queues; ++i)
->>> +			bpf_prog_put(old_prog);
->>> +
->>> +	err = talk_to_netback_xdp(np, old_prog ? NETBACK_XDP_HEADROOM_DISABLE:
->>> +				  NETBACK_XDP_HEADROOM_ENABLE);
->>> +	if (err)
->>> +		return err;
->>> +
->>> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
->>
->> What is happening in case the backend doesn't support XDP?
-> Here we just ask xen-backend to make a headroom, that's it.
-> It's better to send xen-backend changes in a separate patch.
-
-Okay, but what do you do if the backend doesn't support XDP (e.g. in
-case its an older kernel)? How do you know it is supporting XDP?
-
+On Sat, Feb 29, 2020 at 11:23:44PM +0100, Heiner Kallweit wrote:
+> This collection of PCI error bits is used in more than one driver,
+> so move it to the PCI core.
 > 
->>
->> Is it really a good idea to communicate xdp_set via a frontend state
->> change? This will be rather slow. OTOH I have no idea how often this
->> might happen.
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+> ---
+> v4:
+> - move new constant to include/linux/pci.h
+> - improve commit description
+> ---
+>  drivers/net/ethernet/marvell/skge.h | 7 -------
+>  drivers/net/ethernet/marvell/sky2.h | 7 -------
+>  include/linux/pci.h                 | 7 +++++++
+>  3 files changed, 7 insertions(+), 14 deletions(-)
 > 
-> I don't think that it's going to switch often and more likely it's a one shot
-> action.
-
-What do you do in case of a live migration? You need to tell the backend
-about XDP again.
-
-
-Juergen
+> diff --git a/drivers/net/ethernet/marvell/skge.h b/drivers/net/ethernet/marvell/skge.h
+> index e76c03c87..e149bdfe1 100644
+> --- a/drivers/net/ethernet/marvell/skge.h
+> +++ b/drivers/net/ethernet/marvell/skge.h
+> @@ -15,13 +15,6 @@
+>  #define  PCI_VPD_ROM_SZ	7L<<14	/* VPD ROM size 0=256, 1=512, ... */
+>  #define  PCI_REV_DESC	1<<2	/* Reverse Descriptor bytes */
+>  
+> -#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
+> -			       PCI_STATUS_SIG_SYSTEM_ERROR | \
+> -			       PCI_STATUS_REC_MASTER_ABORT | \
+> -			       PCI_STATUS_REC_TARGET_ABORT | \
+> -			       PCI_STATUS_SIG_TARGET_ABORT | \
+> -			       PCI_STATUS_PARITY)
+> -
+>  enum csr_regs {
+>  	B0_RAP	= 0x0000,
+>  	B0_CTST	= 0x0004,
+> diff --git a/drivers/net/ethernet/marvell/sky2.h b/drivers/net/ethernet/marvell/sky2.h
+> index aee87f838..851d8ed34 100644
+> --- a/drivers/net/ethernet/marvell/sky2.h
+> +++ b/drivers/net/ethernet/marvell/sky2.h
+> @@ -252,13 +252,6 @@ enum {
+>  };
+>  
+>  
+> -#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY | \
+> -			       PCI_STATUS_SIG_SYSTEM_ERROR | \
+> -			       PCI_STATUS_REC_MASTER_ABORT | \
+> -			       PCI_STATUS_REC_TARGET_ABORT | \
+> -			       PCI_STATUS_SIG_TARGET_ABORT | \
+> -			       PCI_STATUS_PARITY)
+> -
+>  enum csr_regs {
+>  	B0_RAP		= 0x0000,
+>  	B0_CTST		= 0x0004,
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 3840a541a..101d71e0a 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -42,6 +42,13 @@
+>  
+>  #include <linux/pci_ids.h>
+>  
+> +#define PCI_STATUS_ERROR_BITS (PCI_STATUS_DETECTED_PARITY  | \
+> +			       PCI_STATUS_SIG_SYSTEM_ERROR | \
+> +			       PCI_STATUS_REC_MASTER_ABORT | \
+> +			       PCI_STATUS_REC_TARGET_ABORT | \
+> +			       PCI_STATUS_SIG_TARGET_ABORT | \
+> +			       PCI_STATUS_PARITY)
+> +
+>  /*
+>   * The PCI interface treats multi-function devices as independent
+>   * devices.  The slot/function address of each device is encoded
+> -- 
+> 2.25.1
+> 
+> 
