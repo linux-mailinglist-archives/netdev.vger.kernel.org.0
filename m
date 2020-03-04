@@ -2,199 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C52B91799C2
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 498F41799C3
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388358AbgCDU0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:26:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33846 "EHLO mx2.suse.de"
+        id S2388364AbgCDU0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:26:19 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33874 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388327AbgCDU0N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:26:13 -0500
+        id S2388327AbgCDU0T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:26:19 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id CFA8AB2A6;
-        Wed,  4 Mar 2020 20:26:11 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id D16EFB2AB;
+        Wed,  4 Mar 2020 20:26:16 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 7A279E037F; Wed,  4 Mar 2020 21:26:11 +0100 (CET)
-Message-Id: <a9779a257bdc037a76d506fb4fc1957cf3c998ad.1583347351.git.mkubecek@suse.cz>
+        id 80CCEE037F; Wed,  4 Mar 2020 21:26:16 +0100 (CET)
+Message-Id: <bf47a7c0c4c824199ffb6c2abb8e39633adb8b1d.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 19/25] netlink: support tests with netlink enabled
+Subject: [PATCH ethtool v2 20/25] netlink: add handler for permaddr (-P)
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:26:11 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:26:16 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As there is no netlink implementation of features (-k / -K) yet, we only
-need to take care of test-cmdline. With this patch, the full test suite
-succeeds with both --enable-netlink and --disable-netlink.
+Implement "ethtool -P <dev>" subcommand. This retrieves and displays
+information traditionally provided by ETHTOOL_GPERMADDR ioctl request.
 
-There are two differences between results with netlink enabled and
-disabled:
+Permanent hardware address is provided by rtnetlink RTM_GETLINK request
+so that basic support for rtnetlink (which is not based on genetlink)
+requests is also added.
 
-1. The netlink interface allows network device names up to 127 characters
-(ALTIFNAMSIZ - 1). While alternative names can be used to identify a device
-with ioctl, fixed structure does not allow passing names longer than 15
-characters (IFNAMSIZ - 1).
+The IFLA_PERM_ADDRESS attribute in RTM_NEWLINK message is not set if the
+device driver did not set its permanent hardware address which is hard to
+distinguish from ethtool running on top of an older kernel not supporting
+the attribute. As IFLA_PERM_ADDRESS attribute was added to kernel shortly
+before the initial portion of ethtool netlink interface, we let ethtool
+initialize ethtool netlink even if it is not needed so that we can fall
+back to ioctl on older kernels and assume that absence of IFLA_PERM_ADDRESS
+means the permanent address is not set. This would be only wrong on some
+distribution kernel which would backport ethtool netlink interface but not
+IFLA_PERM_ADDRESS which is unlikely.
 
-2. Failure with deprecated 'xcvr' parameter for -s / --change is done in
-slightly different way so that netlink code will have it interpreted as
-a parser failure while ioctl code as (fake) request failure. Another
-difference is that no kernel with ethtool netlink support can possibly
-allow changing transceiver using ethtool request.
-
-The command line tests affected by these differences have expected return
-code depending on ETHTOOL_ENABLE_NETLINK.
+Permanent address is immutable (or not mutable using standard interfaces)
+so that there is no related notification message.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- netlink/netlink.c |  7 +++++++
- netlink/nlsock.c  |  2 ++
- test-cmdline.c    | 29 ++++++++++++++++++++++++++---
- test-features.c   | 11 +++++++++++
- 4 files changed, 46 insertions(+), 3 deletions(-)
+ Makefile.am        |   1 +
+ ethtool.c          |   1 +
+ netlink/extapi.h   |   2 +
+ netlink/netlink.h  |   8 ++++
+ netlink/permaddr.c | 114 +++++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 126 insertions(+)
+ create mode 100644 netlink/permaddr.c
 
-diff --git a/netlink/netlink.c b/netlink/netlink.c
-index 60f7912181df..39f406387233 100644
---- a/netlink/netlink.c
-+++ b/netlink/netlink.c
-@@ -143,6 +143,12 @@ static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
- 	return MNL_CB_OK;
+diff --git a/Makefile.am b/Makefile.am
+index 2df64cc4cc52..38268932a955 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -31,6 +31,7 @@ ethtool_SOURCES += \
+ 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
+ 		  netlink/monitor.c netlink/bitset.c netlink/bitset.h \
+ 		  netlink/settings.c netlink/parser.c netlink/parser.h \
++		  netlink/permaddr.c \
+ 		  uapi/linux/ethtool_netlink.h \
+ 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
+ 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
+diff --git a/ethtool.c b/ethtool.c
+index baa6458bb486..1b4e08b6e60f 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5372,6 +5372,7 @@ static const struct option args[] = {
+ 	{
+ 		.opts	= "-P|--show-permaddr",
+ 		.func	= do_permaddr,
++		.nlfunc	= nl_permaddr,
+ 		.help	= "Show permanent hardware address"
+ 	},
+ 	{
+diff --git a/netlink/extapi.h b/netlink/extapi.h
+index 612002e8228b..d5b3cd92d4ab 100644
+--- a/netlink/extapi.h
++++ b/netlink/extapi.h
+@@ -17,6 +17,7 @@ void netlink_done(struct cmd_context *ctx);
+ 
+ int nl_gset(struct cmd_context *ctx);
+ int nl_sset(struct cmd_context *ctx);
++int nl_permaddr(struct cmd_context *ctx);
+ int nl_monitor(struct cmd_context *ctx);
+ 
+ void nl_monitor_usage(void);
+@@ -38,6 +39,7 @@ static inline void nl_monitor_usage(void)
+ 
+ #define nl_gset			NULL
+ #define nl_sset			NULL
++#define nl_permaddr		NULL
+ 
+ #endif /* ETHTOOL_ENABLE_NETLINK */
+ 
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index 3ab5f2329e2f..db078d28fabb 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -27,6 +27,7 @@ struct nl_context {
+ 	uint32_t		ethnl_mongrp;
+ 	struct nl_socket	*ethnl_socket;
+ 	struct nl_socket	*ethnl2_socket;
++	struct nl_socket	*rtnl_socket;
+ 	bool			is_monitor;
+ 	uint32_t		filter_cmds[CMDMASK_WORDS];
+ 	const char		*filter_devname;
+@@ -76,4 +77,11 @@ static inline int netlink_init_ethnl2_socket(struct nl_context *nlctx)
+ 	return nlsock_init(nlctx, &nlctx->ethnl2_socket, NETLINK_GENERIC);
  }
  
-+#ifdef TEST_ETHTOOL
-+static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
++static inline int netlink_init_rtnl_socket(struct nl_context *nlctx)
 +{
++	if (nlctx->rtnl_socket)
++		return 0;
++	return nlsock_init(nlctx, &nlctx->rtnl_socket, NETLINK_ROUTE);
++}
++
+ #endif /* ETHTOOL_NETLINK_INT_H__ */
+diff --git a/netlink/permaddr.c b/netlink/permaddr.c
+new file mode 100644
+index 000000000000..006eac6c0094
+--- /dev/null
++++ b/netlink/permaddr.c
+@@ -0,0 +1,114 @@
++/*
++ * permaddr.c - netlink implementation of permanent address request
++ *
++ * Implementation of "ethtool -P <dev>"
++ */
++
++#include <errno.h>
++#include <string.h>
++#include <stdio.h>
++#include <linux/rtnetlink.h>
++#include <linux/if_link.h>
++
++#include "../internal.h"
++#include "../common.h"
++#include "netlink.h"
++
++/* PERMADDR_GET */
++
++static int permaddr_prep_request(struct nl_socket *nlsk)
++{
++	unsigned int nlm_flags = NLM_F_REQUEST | NLM_F_ACK;
++	struct nl_context *nlctx = nlsk->nlctx;
++	const char *devname = nlctx->ctx->devname;
++	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
++	struct ifinfomsg *ifinfo;
++	struct nlmsghdr *nlhdr;
++	int ret;
++
++	if (devname && !strcmp(devname, WILDCARD_DEVNAME)) {
++		devname = NULL;
++		nlm_flags |= NLM_F_DUMP;
++	}
++	nlctx->is_dump = !devname;
++
++        ret = msgbuff_realloc(msgbuff, MNL_SOCKET_BUFFER_SIZE);
++        if (ret < 0)
++                return ret;
++        memset(msgbuff->buff, '\0', NLMSG_HDRLEN + sizeof(*ifinfo));
++
++	nlhdr = mnl_nlmsg_put_header(msgbuff->buff);
++	nlhdr->nlmsg_type = RTM_GETLINK;
++	nlhdr->nlmsg_flags = nlm_flags;
++	msgbuff->nlhdr = nlhdr;
++	ifinfo = mnl_nlmsg_put_extra_header(nlhdr, sizeof(*ifinfo));
++
++	if (devname) {
++		uint16_t type = IFLA_IFNAME;
++
++		if (strlen(devname) >= IFNAMSIZ)
++			type = IFLA_ALT_IFNAME;
++		if (ethnla_put_strz(msgbuff, type, devname))
++			return -EMSGSIZE;
++	}
++	if (ethnla_put_u32(msgbuff, IFLA_EXT_MASK, RTEXT_FILTER_SKIP_STATS))
++		return -EMSGSIZE;
++
 +	return 0;
 +}
-+#else
- static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
- {
- 	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
-@@ -165,6 +171,7 @@ out:
- 	nlsk->nlctx->suppress_nlerr = 0;
- 	return ret;
- }
-+#endif
- 
- int netlink_init(struct cmd_context *ctx)
- {
-diff --git a/netlink/nlsock.c b/netlink/nlsock.c
-index d5fa668f508d..4366c52ce390 100644
---- a/netlink/nlsock.c
-+++ b/netlink/nlsock.c
-@@ -261,6 +261,7 @@ int nlsock_prep_get_request(struct nl_socket *nlsk, unsigned int nlcmd,
- 	return 0;
- }
- 
-+#ifndef TEST_ETHTOOL
- /**
-  * nlsock_sendmsg() - send a netlink message to kernel
-  * @nlsk:    netlink socket
-@@ -277,6 +278,7 @@ ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
- 	debug_msg(nlsk, msgbuff->buff, nlhdr->nlmsg_len, true);
- 	return mnl_socket_sendto(nlsk->sk, nlhdr, nlhdr->nlmsg_len);
- }
-+#endif
- 
- /**
-  * nlsock_send_get_request() - send request and process reply
-diff --git a/test-cmdline.c b/test-cmdline.c
-index b76e2c3e640b..a6c0bd1efc2d 100644
---- a/test-cmdline.c
-+++ b/test-cmdline.c
-@@ -12,6 +12,12 @@
- #define TEST_NO_WRAPPERS
- #include "internal.h"
- 
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+#define IS_NL 1
-+#else
-+#define IS_NL 0
-+#endif
 +
- static struct test_case {
- 	int rc;
- 	const char *args;
-@@ -19,7 +25,10 @@ static struct test_case {
- 	{ 1, "" },
- 	{ 0, "devname" },
- 	{ 0, "15_char_devname" },
--	{ 1, "16_char_devname!" },
-+	/* netlink interface allows names up to 127 characters */
-+	{ !IS_NL, "16_char_devname!" },
-+	{ !IS_NL, "127_char_devname0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde" },
-+	{ 1, "128_char_devname0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
- 	/* Argument parsing for -s is specialised */
- 	{ 0, "-s devname" },
- 	{ 0, "--change devname speed 100 duplex half mdix auto" },
-@@ -55,7 +64,8 @@ static struct test_case {
- 	{ 0, "-s devname phyad 1" },
- 	{ 1, "--change devname phyad foo" },
- 	{ 1, "-s devname phyad" },
--	{ 0, "--change devname xcvr external" },
-+	/* Deprecated 'xcvr' detected by netlink parser */
-+	{ IS_NL, "--change devname xcvr external" },
- 	{ 1, "-s devname xcvr foo" },
- 	{ 1, "--change devname xcvr" },
- 	{ 0, "-s devname wol p" },
-@@ -69,7 +79,9 @@ static struct test_case {
- 	{ 0, "-s devname msglvl hw on rx_status off" },
- 	{ 1, "--change devname msglvl hw foo" },
- 	{ 1, "-s devname msglvl hw" },
--	{ 0, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 xcvr external wol p sopass 01:23:45:67:89:ab msglvl 1" },
-+	{ 0, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 wol p sopass 01:23:45:67:89:ab msglvl 1" },
-+	/* Deprecated 'xcvr' detected by netlink parser */
-+	{ IS_NL, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 xcvr external wol p sopass 01:23:45:67:89:ab msglvl 1" },
- 	{ 1, "-s devname foo" },
- 	{ 1, "-s" },
- 	{ 0, "-a devname" },
-@@ -294,6 +306,17 @@ int send_ioctl(struct cmd_context *ctx, void *cmd)
- 	test_exit(0);
- }
- 
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+struct nl_socket;
-+struct nl_msg_buff;
-+
-+ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
++int permaddr_reply_cb(const struct nlmsghdr *nlhdr, void *data)
 +{
-+	/* If we get this far then parsing succeeded */
-+	test_exit(0);
++	const struct nlattr *tb[__IFLA_MAX] = {};
++	DECLARE_ATTR_TB_INFO(tb);
++	struct nl_context *nlctx = data;
++	const uint8_t *permaddr;
++	unsigned int i;
++	int ret;
++
++	if (nlhdr->nlmsg_type != RTM_NEWLINK)
++		goto err;
++	ret = mnl_attr_parse(nlhdr, sizeof(struct ifinfomsg), attr_cb,
++			     &tb_info);
++	if (ret < 0 || !tb[IFLA_IFNAME])
++		goto err;
++	nlctx->devname = mnl_attr_get_str(tb[IFLA_IFNAME]);
++	if (!dev_ok(nlctx))
++		goto err;
++
++	if (!tb[IFLA_PERM_ADDRESS]) {
++		if (!nlctx->is_dump)
++			printf("Permanent address: not set\n");
++		return MNL_CB_OK;
++	}
++
++	if (nlctx->is_dump)
++		printf("Permanent address of %s:", nlctx->devname);
++	else
++		printf("Permanent address:");
++	permaddr = mnl_attr_get_payload(tb[IFLA_PERM_ADDRESS]);
++	for (i = 0; i < mnl_attr_get_payload_len(tb[IFLA_PERM_ADDRESS]); i++)
++		printf("%c%02x", i ? ':' : ' ', permaddr[i]);
++	putchar('\n');
++	return MNL_CB_OK;
++
++err:
++	if (nlctx->is_dump || nlctx->is_monitor)
++		return MNL_CB_OK;
++	nlctx->exit_code = 2;
++	return MNL_CB_ERROR;
 +}
-+#endif
 +
- int main(void)
- {
- 	struct test_case *tc;
-diff --git a/test-features.c b/test-features.c
-index 6ebb364803a2..b9f80f073d1f 100644
---- a/test-features.c
-+++ b/test-features.c
-@@ -511,6 +511,17 @@ int send_ioctl(struct cmd_context *ctx, void *cmd)
- 	return rc;
- }
- 
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+struct nl_socket;
-+struct nl_msg_buff;
-+
-+ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
++int nl_permaddr(struct cmd_context *ctx)
 +{
-+	/* Should not be called with test-features */
-+	exit(1);
-+}
-+#endif
++	struct nl_context *nlctx = ctx->nlctx;
++	int ret;
 +
- int main(void)
- {
- 	const struct test_case *tc;
++	ret = netlink_init_rtnl_socket(nlctx);
++	if (ret < 0)
++		return ret;
++	ret = permaddr_prep_request(nlctx->rtnl_socket);
++	if (ret < 0)
++		return ret;
++	return nlsock_send_get_request(nlctx->rtnl_socket, permaddr_reply_cb);
++}
 -- 
 2.25.1
 
