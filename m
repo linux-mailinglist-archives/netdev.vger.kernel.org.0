@@ -2,460 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75B0E1799BA
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A143D1799BB
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729749AbgCDUZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:25:40 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33566 "EHLO mx2.suse.de"
+        id S1729836AbgCDUZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:25:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33618 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728482AbgCDUZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:25:39 -0500
+        id S1728482AbgCDUZp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:25:45 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 9E4F2AE99;
-        Wed,  4 Mar 2020 20:25:36 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A39F7AD41;
+        Wed,  4 Mar 2020 20:25:41 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 4CAFEE037F; Wed,  4 Mar 2020 21:25:36 +0100 (CET)
-Message-Id: <64325650e41b075ec5cb285b58cb447e7e00df4d.1583347351.git.mkubecek@suse.cz>
+        id 53101E037F; Wed,  4 Mar 2020 21:25:41 +0100 (CET)
+Message-Id: <48a31badbefa340dad67752177a4057c6acb745c.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 12/25] move shared code into a common file
+Subject: [PATCH ethtool v2 13/25] netlink: add bitset helpers
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:25:36 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:25:41 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move code which is going to be shared between ioctl and netlink
-implementation into a common file common.c and declarations into header
-file common.h.
+Add basic functions for work with arbitrary length bitsets used in ethtool
+netlink interface.
+
+The most important function is walk_bitset() which iterates through bits of
+a bitset (passed as pointer to the nest attribute) and calls provided
+callback for each bit.
+
+v2:
+  - add bitset_is_compact() helper
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am |   2 +-
- common.c    | 145 +++++++++++++++++++++++++++++++++++++++++++++++++
- common.h    |  26 +++++++++
- ethtool.c   | 151 +++-------------------------------------------------
- 4 files changed, 179 insertions(+), 145 deletions(-)
- create mode 100644 common.c
- create mode 100644 common.h
+ Makefile.am      |   2 +-
+ netlink/bitset.c | 218 +++++++++++++++++++++++++++++++++++++++++++++++
+ netlink/bitset.h |  26 ++++++
+ 3 files changed, 245 insertions(+), 1 deletion(-)
+ create mode 100644 netlink/bitset.c
+ create mode 100644 netlink/bitset.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 0aa88ead27d5..90723a49b591 100644
+index 90723a49b591..2553cf727a36 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -6,7 +6,7 @@ EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
- 
- sbin_PROGRAMS = ethtool
- ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
--		  uapi/linux/net_tstamp.h rxclass.c
-+		  uapi/linux/net_tstamp.h rxclass.c common.c common.h
- ethtool_CFLAGS = $(AM_CFLAGS)
- ethtool_LDADD = $(LDADD)
- if ETHTOOL_ENABLE_PRETTY_DUMP
-diff --git a/common.c b/common.c
+@@ -29,7 +29,7 @@ ethtool_SOURCES += \
+ 		  netlink/netlink.c netlink/netlink.h netlink/extapi.h \
+ 		  netlink/msgbuff.c netlink/msgbuff.h netlink/nlsock.c \
+ 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
+-		  netlink/monitor.c \
++		  netlink/monitor.c netlink/bitset.c netlink/bitset.h \
+ 		  uapi/linux/ethtool_netlink.h \
+ 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
+ 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
+diff --git a/netlink/bitset.c b/netlink/bitset.c
 new file mode 100644
-index 000000000000..f9c41a32d3a3
+index 000000000000..ed109ec1d2c0
 --- /dev/null
-+++ b/common.c
-@@ -0,0 +1,145 @@
++++ b/netlink/bitset.c
+@@ -0,0 +1,218 @@
 +/*
-+ * common.h - common code header
++ * bitset.h - netlink bitset helpers
 + *
-+ * Data and functions shared by ioctl and netlink implementation.
++ * Functions for easier handling of ethtool netlink bitset attributes.
 + */
 +
-+#include "internal.h"
-+#include "common.h"
++#include <stdio.h>
++#include <errno.h>
 +
-+#ifndef HAVE_NETIF_MSG
-+enum {
-+	NETIF_MSG_DRV		= 0x0001,
-+	NETIF_MSG_PROBE		= 0x0002,
-+	NETIF_MSG_LINK		= 0x0004,
-+	NETIF_MSG_TIMER		= 0x0008,
-+	NETIF_MSG_IFDOWN	= 0x0010,
-+	NETIF_MSG_IFUP		= 0x0020,
-+	NETIF_MSG_RX_ERR	= 0x0040,
-+	NETIF_MSG_TX_ERR	= 0x0080,
-+	NETIF_MSG_TX_QUEUED	= 0x0100,
-+	NETIF_MSG_INTR		= 0x0200,
-+	NETIF_MSG_TX_DONE	= 0x0400,
-+	NETIF_MSG_RX_STATUS	= 0x0800,
-+	NETIF_MSG_PKTDATA	= 0x1000,
-+	NETIF_MSG_HW		= 0x2000,
-+	NETIF_MSG_WOL		= 0x4000,
-+};
-+#endif
++#include "../common.h"
++#include "netlink.h"
++#include "bitset.h"
 +
-+const struct flag_info flags_msglvl[] = {
-+	{ "drv",	NETIF_MSG_DRV },
-+	{ "probe",	NETIF_MSG_PROBE },
-+	{ "link",	NETIF_MSG_LINK },
-+	{ "timer",	NETIF_MSG_TIMER },
-+	{ "ifdown",	NETIF_MSG_IFDOWN },
-+	{ "ifup",	NETIF_MSG_IFUP },
-+	{ "rx_err",	NETIF_MSG_RX_ERR },
-+	{ "tx_err",	NETIF_MSG_TX_ERR },
-+	{ "tx_queued",	NETIF_MSG_TX_QUEUED },
-+	{ "intr",	NETIF_MSG_INTR },
-+	{ "tx_done",	NETIF_MSG_TX_DONE },
-+	{ "rx_status",	NETIF_MSG_RX_STATUS },
-+	{ "pktdata",	NETIF_MSG_PKTDATA },
-+	{ "hw",		NETIF_MSG_HW },
-+	{ "wol",	NETIF_MSG_WOL },
-+	{}
-+};
-+const unsigned int n_flags_msglvl = ARRAY_SIZE(flags_msglvl) - 1;
-+
-+void print_flags(const struct flag_info *info, unsigned int n_info, u32 value)
++uint32_t bitset_get_count(const struct nlattr *bitset, int *retptr)
 +{
-+	const char *sep = "";
++	const struct nlattr *attr;
 +
-+	while (n_info) {
-+		if (value & info->value) {
-+			printf("%s%s", sep, info->name);
-+			sep = " ";
-+			value &= ~info->value;
-+		}
-+		++info;
-+		--n_info;
++	mnl_attr_for_each_nested(attr, bitset) {
++		if (mnl_attr_get_type(attr) != ETHTOOL_A_BITSET_SIZE)
++			continue;
++		*retptr = 0;
++		return mnl_attr_get_u32(attr);
 +	}
 +
-+	/* Print any unrecognised flags in hex */
-+	if (value)
-+		printf("%s%#x", sep, value);
++	*retptr = -EFAULT;
++	return 0;
 +}
 +
-+static char *unparse_wolopts(int wolopts)
++bool bitset_is_compact(const struct nlattr *bitset)
 +{
-+	static char buf[16];
-+	char *p = buf;
++	const struct nlattr *attr;
 +
-+	memset(buf, 0, sizeof(buf));
-+
-+	if (wolopts) {
-+		if (wolopts & WAKE_PHY)
-+			*p++ = 'p';
-+		if (wolopts & WAKE_UCAST)
-+			*p++ = 'u';
-+		if (wolopts & WAKE_MCAST)
-+			*p++ = 'm';
-+		if (wolopts & WAKE_BCAST)
-+			*p++ = 'b';
-+		if (wolopts & WAKE_ARP)
-+			*p++ = 'a';
-+		if (wolopts & WAKE_MAGIC)
-+			*p++ = 'g';
-+		if (wolopts & WAKE_MAGICSECURE)
-+			*p++ = 's';
-+		if (wolopts & WAKE_FILTER)
-+			*p++ = 'f';
-+	} else {
-+		*p = 'd';
++	mnl_attr_for_each_nested(attr, bitset) {
++		switch(mnl_attr_get_type(attr)) {
++		case ETHTOOL_A_BITSET_BITS:
++			return 0;
++		case ETHTOOL_A_BITSET_VALUE:
++		case ETHTOOL_A_BITSET_MASK:
++			return 1;
++		}
 +	}
 +
-+	return buf;
++	return false;
 +}
 +
-+int dump_wol(struct ethtool_wolinfo *wol)
++bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
++		    int *retptr)
 +{
-+	fprintf(stdout, "	Supports Wake-on: %s\n",
-+		unparse_wolopts(wol->supported));
-+	fprintf(stdout, "	Wake-on: %s\n",
-+		unparse_wolopts(wol->wolopts));
-+	if (wol->supported & WAKE_MAGICSECURE) {
-+		int i;
-+		int delim = 0;
++	const struct nlattr *bitset_tb[ETHTOOL_A_BITSET_MAX + 1] = {};
++	DECLARE_ATTR_TB_INFO(bitset_tb);
++	const struct nlattr *bits;
++	const struct nlattr *bit;
++	int ret;
 +
-+		fprintf(stdout, "        SecureOn password: ");
-+		for (i = 0; i < SOPASS_MAX; i++) {
-+			fprintf(stdout, "%s%02x", delim ? ":" : "",
-+				wol->sopass[i]);
-+			delim = 1;
-+		}
-+		fprintf(stdout, "\n");
++	*retptr = 0;
++	ret = mnl_attr_parse_nested(bitset, attr_cb, &bitset_tb_info);
++	if (ret < 0)
++		goto err;
++
++	bits = mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
++		      bitset_tb[ETHTOOL_A_BITSET_VALUE];
++	if (bits) {
++		const uint32_t *bitmap =
++			(const uint32_t *)mnl_attr_get_payload(bits);
++
++		if (idx >= 8 * mnl_attr_get_payload_len(bits))
++			return false;
++		return bitmap[idx / 32] & (1U << (idx % 32));
++	}
++
++	bits = bitset_tb[ETHTOOL_A_BITSET_BITS];
++	if (!bits)
++		goto err;
++	mnl_attr_for_each_nested(bit, bits) {
++		const struct nlattr *tb[ETHTOOL_A_BITSET_BIT_MAX + 1] = {};
++		DECLARE_ATTR_TB_INFO(tb);
++		unsigned int my_idx;
++
++		if (mnl_attr_get_type(bit) != ETHTOOL_A_BITSET_BITS_BIT)
++			continue;
++		ret = mnl_attr_parse_nested(bit, attr_cb, &tb_info);
++		if (ret < 0)
++			goto err;
++		ret = -EFAULT;
++		if (!tb[ETHTOOL_A_BITSET_BIT_INDEX])
++			goto err;
++
++		my_idx = mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
++		if (my_idx == idx)
++			return mask || tb[ETHTOOL_A_BITSET_BIT_VALUE];
++	}
++
++	return false;
++err:
++	fprintf(stderr, "malformed netlink message (bitset)\n");
++	*retptr = ret;
++	return false;
++}
++
++bool bitset_is_empty(const struct nlattr *bitset, bool mask, int *retptr)
++{
++	const struct nlattr *bitset_tb[ETHTOOL_A_BITSET_MAX + 1] = {};
++	DECLARE_ATTR_TB_INFO(bitset_tb);
++	const struct nlattr *bits;
++	const struct nlattr *bit;
++	int ret;
++
++	*retptr = 0;
++	ret = mnl_attr_parse_nested(bitset, attr_cb, &bitset_tb_info);
++	if (ret < 0)
++		goto err;
++
++	bits = mask ? bitset_tb[ETHTOOL_A_BITSET_MASK] :
++		      bitset_tb[ETHTOOL_A_BITSET_VALUE];
++	if (bits) {
++		const uint32_t *bitmap =
++			(const uint32_t *)mnl_attr_get_payload(bits);
++		unsigned int n = mnl_attr_get_payload_len(bits);
++		unsigned int i;
++
++		ret = -EFAULT;
++		if (n % 4)
++			goto err;
++		for (i = 0; i < n / 4; i++)
++			if (bitmap[i])
++				return false;
++		return true;
++	}
++
++	bits = bitset_tb[ETHTOOL_A_BITSET_BITS];
++	if (!bits)
++		goto err;
++	mnl_attr_for_each_nested(bit, bits) {
++		const struct nlattr *tb[ETHTOOL_A_BITSET_BIT_MAX + 1] = {};
++		DECLARE_ATTR_TB_INFO(tb);
++
++		if (mnl_attr_get_type(bit) != ETHTOOL_A_BITSET_BITS_BIT)
++			continue;
++		if (mask || bitset_tb[ETHTOOL_A_BITSET_NOMASK])
++			return false;
++
++		ret = mnl_attr_parse_nested(bit, attr_cb, &tb_info);
++		if (ret < 0)
++			goto err;
++		if (tb[ETHTOOL_A_BITSET_BIT_VALUE])
++			return false;
++	}
++
++	return true;
++err:
++	fprintf(stderr, "malformed netlink message (bitset)\n");
++	*retptr = ret;
++	return true;
++}
++
++int walk_bitset(const struct nlattr *bitset, const struct stringset *labels,
++		bitset_walk_callback cb, void *data)
++{
++	const struct nlattr *bitset_tb[ETHTOOL_A_BITSET_MAX + 1] = {};
++	DECLARE_ATTR_TB_INFO(bitset_tb);
++	const struct nlattr *bits;
++	const struct nlattr *bit;
++	bool is_list;
++	int ret;
++
++	ret = mnl_attr_parse_nested(bitset, attr_cb, &bitset_tb_info);
++	if (ret < 0)
++		return ret;
++	is_list = bitset_tb[ETHTOOL_A_BITSET_NOMASK];
++
++	bits = bitset_tb[ETHTOOL_A_BITSET_VALUE];
++	if (bits) {
++		const struct nlattr *mask = bitset_tb[ETHTOOL_A_BITSET_MASK];
++		unsigned int count, nwords, idx;
++		uint32_t *val_bm;
++		uint32_t *mask_bm;
++
++		if (!bitset_tb[ETHTOOL_A_BITSET_SIZE])
++			return -EFAULT;
++		count = mnl_attr_get_u32(bitset_tb[ETHTOOL_A_BITSET_SIZE]);
++		nwords = (count + 31) / 32;
++		if ((mnl_attr_get_payload_len(bits) / 4 < nwords) ||
++		    (mask && mnl_attr_get_payload_len(mask) / 4 < nwords))
++			return -EFAULT;
++
++		val_bm = mnl_attr_get_payload(bits);
++		mask_bm = mask ? mnl_attr_get_payload(mask) : NULL;
++		for (idx = 0; idx < count; idx++)
++			if (!mask_bm || (mask_bm[idx / 32] & (1 << (idx % 32))))
++				cb(idx, get_string(labels, idx),
++				   val_bm[idx / 32] & (1 << (idx % 32)), data);
++		return 0;
++	}
++
++	bits = bitset_tb[ETHTOOL_A_BITSET_BITS];
++	if (!bits)
++		return -EFAULT;
++	mnl_attr_for_each_nested(bit, bits) {
++		const struct nlattr *tb[ETHTOOL_A_BITSET_BIT_MAX + 1] = {};
++		DECLARE_ATTR_TB_INFO(tb);
++		const char *name;
++		unsigned int idx;
++
++		if (mnl_attr_get_type(bit) != ETHTOOL_A_BITSET_BITS_BIT)
++			continue;
++
++		ret = mnl_attr_parse_nested(bit, attr_cb, &tb_info);
++		if (ret < 0 || !tb[ETHTOOL_A_BITSET_BIT_INDEX] ||
++		    !tb[ETHTOOL_A_BITSET_BIT_NAME])
++			return -EFAULT;
++
++		idx = mnl_attr_get_u32(tb[ETHTOOL_A_BITSET_BIT_INDEX]);
++		name = mnl_attr_get_str(tb[ETHTOOL_A_BITSET_BIT_NAME]);
++		cb(idx, name, is_list || tb[ETHTOOL_A_BITSET_BIT_VALUE], data);
 +	}
 +
 +	return 0;
 +}
-+
-+void dump_mdix(u8 mdix, u8 mdix_ctrl)
-+{
-+	fprintf(stdout, "	MDI-X: ");
-+	if (mdix_ctrl == ETH_TP_MDI) {
-+		fprintf(stdout, "off (forced)\n");
-+	} else if (mdix_ctrl == ETH_TP_MDI_X) {
-+		fprintf(stdout, "on (forced)\n");
-+	} else {
-+		switch (mdix) {
-+		case ETH_TP_MDI:
-+			fprintf(stdout, "off");
-+			break;
-+		case ETH_TP_MDI_X:
-+			fprintf(stdout, "on");
-+			break;
-+		default:
-+			fprintf(stdout, "Unknown");
-+			break;
-+		}
-+		if (mdix_ctrl == ETH_TP_MDI_AUTO)
-+			fprintf(stdout, " (auto)");
-+		fprintf(stdout, "\n");
-+	}
-+}
-diff --git a/common.h b/common.h
+diff --git a/netlink/bitset.h b/netlink/bitset.h
 new file mode 100644
-index 000000000000..3a680114a7c2
+index 000000000000..4b587d2c8a04
 --- /dev/null
-+++ b/common.h
++++ b/netlink/bitset.h
 @@ -0,0 +1,26 @@
 +/*
-+ * common.h - common code header
++ * bitset.h - netlink bitset helpers
 + *
-+ * Declarations for data and functions shared by ioctl and netlink code.
++ * Declarations of helpers for handling ethtool netlink bitsets.
 + */
 +
-+#ifndef ETHTOOL_COMMON_H__
-+#define ETHTOOL_COMMON_H__
++#ifndef ETHTOOL_NETLINK_BITSET_H__
++#define ETHTOOL_NETLINK_BITSET_H__
 +
-+#include "internal.h"
++#include <libmnl/libmnl.h>
++#include <linux/netlink.h>
++#include <linux/genetlink.h>
++#include <linux/ethtool_netlink.h>
++#include "strset.h"
 +
-+#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
++typedef void (*bitset_walk_callback)(unsigned int, const char *, bool, void *);
 +
-+struct flag_info {
-+	const char *name;
-+	u32 value;
-+};
++uint32_t bitset_get_count(const struct nlattr *bitset, int *retptr);
++bool bitset_get_bit(const struct nlattr *bitset, bool mask, unsigned int idx,
++		    int *retptr);
++bool bitset_is_compact(const struct nlattr *bitset);
++bool bitset_is_empty(const struct nlattr *bitset, bool mask, int *retptr);
++int walk_bitset(const struct nlattr *bitset, const struct stringset *labels,
++		bitset_walk_callback cb, void *data);
 +
-+extern const struct flag_info flags_msglvl[];
-+extern const unsigned int n_flags_msglvl;
-+
-+void print_flags(const struct flag_info *info, unsigned int n_info, u32 value);
-+int dump_wol(struct ethtool_wolinfo *wol);
-+void dump_mdix(u8 mdix, u8 mdix_ctrl);
-+
-+#endif /* ETHTOOL_COMMON_H__ */
-diff --git a/ethtool.c b/ethtool.c
-index 97eaa58a3090..c2b7cc8c0502 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -48,32 +48,13 @@
- #include <linux/sockios.h>
- #include <linux/netlink.h>
- 
-+#include "common.h"
- #include "netlink/extapi.h"
- 
- #ifndef MAX_ADDR_LEN
- #define MAX_ADDR_LEN	32
- #endif
- 
--#ifndef HAVE_NETIF_MSG
--enum {
--	NETIF_MSG_DRV		= 0x0001,
--	NETIF_MSG_PROBE		= 0x0002,
--	NETIF_MSG_LINK		= 0x0004,
--	NETIF_MSG_TIMER		= 0x0008,
--	NETIF_MSG_IFDOWN	= 0x0010,
--	NETIF_MSG_IFUP		= 0x0020,
--	NETIF_MSG_RX_ERR	= 0x0040,
--	NETIF_MSG_TX_ERR	= 0x0080,
--	NETIF_MSG_TX_QUEUED	= 0x0100,
--	NETIF_MSG_INTR		= 0x0200,
--	NETIF_MSG_TX_DONE	= 0x0400,
--	NETIF_MSG_RX_STATUS	= 0x0800,
--	NETIF_MSG_PKTDATA	= 0x1000,
--	NETIF_MSG_HW		= 0x2000,
--	NETIF_MSG_WOL		= 0x4000,
--};
--#endif
--
- #ifndef NETLINK_GENERIC
- #define NETLINK_GENERIC	16
- #endif
-@@ -121,29 +102,6 @@ struct cmdline_info {
- 	void *seen_val;
- };
- 
--struct flag_info {
--	const char *name;
--	u32 value;
--};
--
--static const struct flag_info flags_msglvl[] = {
--	{ "drv",	NETIF_MSG_DRV },
--	{ "probe",	NETIF_MSG_PROBE },
--	{ "link",	NETIF_MSG_LINK },
--	{ "timer",	NETIF_MSG_TIMER },
--	{ "ifdown",	NETIF_MSG_IFDOWN },
--	{ "ifup",	NETIF_MSG_IFUP },
--	{ "rx_err",	NETIF_MSG_RX_ERR },
--	{ "tx_err",	NETIF_MSG_TX_ERR },
--	{ "tx_queued",	NETIF_MSG_TX_QUEUED },
--	{ "intr",	NETIF_MSG_INTR },
--	{ "tx_done",	NETIF_MSG_TX_DONE },
--	{ "rx_status",	NETIF_MSG_RX_STATUS },
--	{ "pktdata",	NETIF_MSG_PKTDATA },
--	{ "hw",		NETIF_MSG_HW },
--	{ "wol",	NETIF_MSG_WOL },
--};
--
- struct off_flag_def {
- 	const char *short_name;
- 	const char *long_name;
-@@ -426,26 +384,6 @@ static void flag_to_cmdline_info(const char *name, u32 value,
- 	cli->seen_val = mask;
- }
- 
--static void
--print_flags(const struct flag_info *info, unsigned int n_info, u32 value)
--{
--	const char *sep = "";
--
--	while (n_info) {
--		if (value & info->value) {
--			printf("%s%s", sep, info->name);
--			sep = " ";
--			value &= ~info->value;
--		}
--		++info;
--		--n_info;
--	}
--
--	/* Print any unrecognised flags in hex */
--	if (value)
--		printf("%s%#x", sep, value);
--}
--
- static int rxflow_str_to_type(const char *str)
- {
- 	int flow_type = 0;
-@@ -904,31 +842,9 @@ dump_link_usettings(const struct ethtool_link_usettings *link_usettings)
- 		(link_usettings->base.autoneg == AUTONEG_DISABLE) ?
- 		"off" : "on");
- 
--	if (link_usettings->base.port == PORT_TP) {
--		fprintf(stdout, "	MDI-X: ");
--		if (link_usettings->base.eth_tp_mdix_ctrl == ETH_TP_MDI) {
--			fprintf(stdout, "off (forced)\n");
--		} else if (link_usettings->base.eth_tp_mdix_ctrl
--			   == ETH_TP_MDI_X) {
--			fprintf(stdout, "on (forced)\n");
--		} else {
--			switch (link_usettings->base.eth_tp_mdix) {
--			case ETH_TP_MDI:
--				fprintf(stdout, "off");
--				break;
--			case ETH_TP_MDI_X:
--				fprintf(stdout, "on");
--				break;
--			default:
--				fprintf(stdout, "Unknown");
--				break;
--			}
--			if (link_usettings->base.eth_tp_mdix_ctrl
--			    == ETH_TP_MDI_AUTO)
--				fprintf(stdout, " (auto)");
--			fprintf(stdout, "\n");
--		}
--	}
-+	if (link_usettings->base.port == PORT_TP)
-+		dump_mdix(link_usettings->base.eth_tp_mdix,
-+			  link_usettings->base.eth_tp_mdix_ctrl);
- 
- 	return 0;
- }
-@@ -1000,58 +916,6 @@ static int parse_wolopts(char *optstr, u32 *data)
- 	return 0;
- }
- 
--static char *unparse_wolopts(int wolopts)
--{
--	static char buf[16];
--	char *p = buf;
--
--	memset(buf, 0, sizeof(buf));
--
--	if (wolopts) {
--		if (wolopts & WAKE_PHY)
--			*p++ = 'p';
--		if (wolopts & WAKE_UCAST)
--			*p++ = 'u';
--		if (wolopts & WAKE_MCAST)
--			*p++ = 'm';
--		if (wolopts & WAKE_BCAST)
--			*p++ = 'b';
--		if (wolopts & WAKE_ARP)
--			*p++ = 'a';
--		if (wolopts & WAKE_MAGIC)
--			*p++ = 'g';
--		if (wolopts & WAKE_MAGICSECURE)
--			*p++ = 's';
--		if (wolopts & WAKE_FILTER)
--			*p++ = 'f';
--	} else {
--		*p = 'd';
--	}
--
--	return buf;
--}
--
--static int dump_wol(struct ethtool_wolinfo *wol)
--{
--	fprintf(stdout, "	Supports Wake-on: %s\n",
--		unparse_wolopts(wol->supported));
--	fprintf(stdout, "	Wake-on: %s\n",
--		unparse_wolopts(wol->wolopts));
--	if (wol->supported & WAKE_MAGICSECURE) {
--		int i;
--		int delim = 0;
--
--		fprintf(stdout, "        SecureOn password: ");
--		for (i = 0; i < SOPASS_MAX; i++) {
--			fprintf(stdout, "%s%02x", delim?":":"", wol->sopass[i]);
--			delim = 1;
--		}
--		fprintf(stdout, "\n");
--	}
--
--	return 0;
--}
--
- static int parse_rxfhashopts(char *optstr, u32 *data)
- {
- 	*data = 0;
-@@ -2839,8 +2703,7 @@ static int do_gset(struct cmd_context *ctx)
- 		fprintf(stdout, "	Current message level: 0x%08x (%d)\n"
- 			"			       ",
- 			edata.data, edata.data);
--		print_flags(flags_msglvl, ARRAY_SIZE(flags_msglvl),
--			    edata.data);
-+		print_flags(flags_msglvl, n_flags_msglvl, edata.data);
- 		fprintf(stdout, "\n");
- 		allfail = 0;
- 	} else if (errno != EOPNOTSUPP) {
-@@ -2886,13 +2749,13 @@ static int do_sset(struct cmd_context *ctx)
- 	int msglvl_changed = 0;
- 	u32 msglvl_wanted = 0;
- 	u32 msglvl_mask = 0;
--	struct cmdline_info cmdline_msglvl[ARRAY_SIZE(flags_msglvl)];
-+	struct cmdline_info cmdline_msglvl[n_flags_msglvl];
- 	int argc = ctx->argc;
- 	char **argp = ctx->argp;
- 	int i;
- 	int err = 0;
- 
--	for (i = 0; i < ARRAY_SIZE(flags_msglvl); i++)
-+	for (i = 0; i < n_flags_msglvl; i++)
- 		flag_to_cmdline_info(flags_msglvl[i].name,
- 				     flags_msglvl[i].value,
- 				     &msglvl_wanted, &msglvl_mask,
++#endif /* ETHTOOL_NETLINK_BITSET_H__ */
 -- 
 2.25.1
 
