@@ -2,188 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A723D179670
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 18:13:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 387FF17967E
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 18:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729906AbgCDRN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 12:13:26 -0500
-Received: from mail-eopbgr30129.outbound.protection.outlook.com ([40.107.3.129]:14275
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        id S1729613AbgCDRPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 12:15:38 -0500
+Received: from mail-db8eur05on2076.outbound.protection.outlook.com ([40.107.20.76]:41048
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726748AbgCDRN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 12:13:26 -0500
+        id S1727023AbgCDRPi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 12:15:38 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jat8PJqtVvo7Oyrp4OWGTIU1hYU8sXy/qnmhdQdTsAlr13+5CtwWRTycj5JiMD3+e2+F3NcwTcA/TgOU2cN8W938rB+I07jwNhQVm1l9JLFQ3Y4ft4PSb3J1V4QiC+Ii7bgMUsT7n+79+/+L2OUOEhiXd9st0zQdO1r3t/sqMsPRtGmxb4zOw54oaklJxjijjlrsArFgWyQTl4tpFnbPJr4EeWgdpZgL6oK0aCg9Q8ToKli5hgOqoPE46B3vJq7ph23+vTzLFIqSxzF86Oc5zD+FiCpJ1HLIyt6v1GOMPEdVjoXXdOSLM+QQOrhp304nI36irGsxvky3nzvQiCFhtg==
+ b=lmDVJPIwHntLCfHyJyJiOi5DKNHX4iQkvpnV1z/NOW/j164bRWSulKSxaCtardKpe9oXHEGU/kuPyScr+loejS/Rmw4TljUd43Vu5I+fw0J5kMXSJNV+inWY9fFjR0Z40ySTxDgc6on+HRFcjEitWFwjuFcZl/KBb9DNmqgEKYw+Bqbm5W4SJL2LIpefwjkjaebKl+5CaidszJ5yHOjOjvr5JEO1+sxoLlDaK3X3ajhOqnM2RUNtCaMJthtc/2k8/L20Bj6q1TGgct7ZLA1ec2JPvVe1m9ZqdhBFVIU/0ev+lxzzXTZN6SFWTi3XLk5SE+wJl/iZmOa4tkAT/bufCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnDqXbB677En8ue+4aVadLX8cTTgKy4dlBlAJqNN49E=;
- b=X1qUlCIefIsI9+4ctPQ/gzTxc5hsPqtju4Pe78WwuKRghTC6wKcRdiDVH1ebkq2dgaiBVEtXaoY8On/FmbBSc00DXDc5rBqM9kpo/tHhu+H6ylM92JsC85R7Yswj/FMVt/iDqG9Rbo6EzxDV5hGg+IAcJ0fFRh6GJtqv9Pfwj6dgyFZOUKyT2EssYKj9Mt+ddmSLtvvneHLP2df9Yw8DAgqZYbTiPP45vCz1wK8CKq1QFYAJCGd51bmmTCazQsYdUEfcyvfiupH3Ixpydu0dGD/59+Ki6hYP2YtMY/2RXPYhqt/Yfb5H6j9Udmg5ljZpE8EdHJswzVn7k9l6oUgPsQ==
+ bh=OwLZDO/aXExuAgZskPPZeVvaxOY5Bv1DCgYA7+8LWyg=;
+ b=Ymu43+EP40vu21CHoQOUOY50y6jgnyvLd44hPk65TKedkytIOnmQdX6D4jcoS9t6afEus7YS50K9TXNyudC6sEBqfv1oGupHDi2vmZLIh9w5Ny6eCf6Ul8AzDVMRy3Pfw2AHoN1iXEhcNdRM5Y/qS94k1ig4Ke3XmzOtd+bfsMtiQ6n5Z/DnUTRWmiv9Gfe6fZzxTAHNP8ViQIYJpk7hO8ocDLGf6YL7NBQlgmp8MGpSZuJTCzGQwXS3cbWIgGXq6cL1OWJAPStvOPCalUjiEjIDojt7xXJGCSUOjEnsE+tyoWq7Yic0Tth3Gi3iwqxQz0uRz6sShGiSOEWKuw+82Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnDqXbB677En8ue+4aVadLX8cTTgKy4dlBlAJqNN49E=;
- b=ZKjPPf5GQg0e6hhxmMM+QgC4vwECfumM1yVsSYSqLYJv6WObsXHfKMiFaKVHezDPyY4GJmAke0d83oMDK/ICg+NtSOoY3Z4vqpwEKysPj+OZN8ULd63EknijY2OoYg6o5wFiHIkxRVe2fRoPQi6OT55LdEbKca/bYutDDTTpyEs=
+ bh=OwLZDO/aXExuAgZskPPZeVvaxOY5Bv1DCgYA7+8LWyg=;
+ b=pByIBX5crxaVz8oyG5m+dr0gnOxi3By4Sw0H8QX4N7+Ug5cRRbqGFTq0OgO73NHa73b648K1Dix6xNRkr6Kn2NMNvmxWm0aDtDX2n/Fp+49+rN3TFkpl0sgWs7xRQXOv7z7KzoT+CFxy92rePEu9gPM3qnYTeBYn3fRe8lUPWC0=
 Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=jere.leppanen@nokia.com; 
-Received: from HE1PR0702MB3610.eurprd07.prod.outlook.com (10.167.124.27) by
- HE1PR0702MB3531.eurprd07.prod.outlook.com (10.167.35.160) with Microsoft SMTP
+ smtp.mailfrom=borisp@mellanox.com; 
+Received: from AM7PR05MB7092.eurprd05.prod.outlook.com (20.181.27.19) by
+ AM7PR05MB6727.eurprd05.prod.outlook.com (10.186.168.142) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.5; Wed, 4 Mar 2020 17:13:22 +0000
-Received: from HE1PR0702MB3610.eurprd07.prod.outlook.com
- ([fe80::fd31:53d3:1e20:be4a]) by HE1PR0702MB3610.eurprd07.prod.outlook.com
- ([fe80::fd31:53d3:1e20:be4a%7]) with mapi id 15.20.2793.011; Wed, 4 Mar 2020
- 17:13:22 +0000
-Date:   Wed, 4 Mar 2020 19:13:14 +0200 (EET)
-From:   Jere Leppanen <jere.leppanen@nokia.com>
-X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
-To:     Xin Long <lucien.xin@gmail.com>
-cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "michael.tuexen@lurchi.franken.de" <michael.tuexen@lurchi.franken.de>
-Subject: Re: [PATCH net] sctp: return a one-to-one type socket when doing
- peeloff
-In-Reply-To: <CADvbK_ewk7mGNr6T4smWeQ0TcW3q4yabKZwGX3dK=XcH7gv=KQ@mail.gmail.com>
-Message-ID: <alpine.LFD.2.21.2003041349400.19073@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net>
-References: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com> <HE1PR0702MB3610BB291019DD7F51DBC906ECE40@HE1PR0702MB3610.eurprd07.prod.outlook.com> <CADvbK_ewk7mGNr6T4smWeQ0TcW3q4yabKZwGX3dK=XcH7gv=KQ@mail.gmail.com>
-Content-Type: text/plain; format=flowed; charset=US-ASCII
-X-ClientProxiedBy: AM4P190CA0013.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::23) To HE1PR0702MB3610.eurprd07.prod.outlook.com
- (2603:10a6:7:7f::27)
+ 15.20.2772.15; Wed, 4 Mar 2020 17:15:30 +0000
+Received: from AM7PR05MB7092.eurprd05.prod.outlook.com
+ ([fe80::9025:8313:4e65:3a05]) by AM7PR05MB7092.eurprd05.prod.outlook.com
+ ([fe80::9025:8313:4e65:3a05%7]) with mapi id 15.20.2772.019; Wed, 4 Mar 2020
+ 17:15:30 +0000
+Subject: Re: [PATCH net-next v3 1/6] cxgb4/chcr : Register to tls add and del
+ callback
+To:     rohit maheshwari <rohitm@chelsio.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, herbert@gondor.apana.org.au
+Cc:     secdev@chelsio.com, varun@chelsio.com, kuba@kernel.org
+References: <20200229012426.30981-1-rohitm@chelsio.com>
+ <20200229012426.30981-2-rohitm@chelsio.com>
+ <57eb8055-a4ad-1afd-b4f4-07bbeaa2b6f6@mellanox.com>
+ <97ae4b0b-6ffb-9864-493b-159f581f7809@chelsio.com>
+From:   Boris Pismenny <borisp@mellanox.com>
+Message-ID: <49ddd44b-b3b7-7e2e-cc18-4158b51aa861@mellanox.com>
+Date:   Wed, 4 Mar 2020 19:15:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+In-Reply-To: <97ae4b0b-6ffb-9864-493b-159f581f7809@chelsio.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: ZRAP278CA0007.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:10::17) To AM7PR05MB7092.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1ac::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net (131.228.2.10) by AM4P190CA0013.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.16 via Frontend Transport; Wed, 4 Mar 2020 17:13:21 +0000
-X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
-X-Originating-IP: [131.228.2.10]
+Received: from [192.168.1.14] (213.57.108.28) by ZRAP278CA0007.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.11 via Frontend Transport; Wed, 4 Mar 2020 17:15:29 +0000
+X-Originating-IP: [213.57.108.28]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5cb7bce6-ba30-4ee2-567a-08d7c05f579c
-X-MS-TrafficTypeDiagnostic: HE1PR0702MB3531:
-X-Microsoft-Antispam-PRVS: <HE1PR0702MB353174D3674BFADBFB173CBCECE50@HE1PR0702MB3531.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: 2a1652a5-6356-479f-24a5-08d7c05fa406
+X-MS-TrafficTypeDiagnostic: AM7PR05MB6727:
+X-Microsoft-Antispam-PRVS: <AM7PR05MB67274735C1279325837FCCC9B0E50@AM7PR05MB6727.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-Forefront-PRVS: 0332AACBC3
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(199004)(189003)(16526019)(66476007)(54906003)(6916009)(4326008)(66556008)(5660300002)(316002)(81156014)(53546011)(86362001)(186003)(6506007)(8676002)(81166006)(66946007)(26005)(6666004)(44832011)(956004)(55016002)(9686003)(2906002)(8936002)(7696005)(52116002)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:HE1PR0702MB3531;H:HE1PR0702MB3610.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: nokia.com does not designate
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(346002)(366004)(136003)(39860400002)(189003)(199004)(2616005)(66476007)(6666004)(66556008)(8936002)(8676002)(81156014)(81166006)(36756003)(66946007)(956004)(26005)(16526019)(86362001)(186003)(31696002)(316002)(16576012)(5660300002)(53546011)(4326008)(478600001)(52116002)(6486002)(31686004)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM7PR05MB6727;H:AM7PR05MB7092.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ftle18DIN3CniwyYG0rEXPp37dkWjRYgjIQMSRWSQPGrQpkGn3Kk5tEN5scniVvT040B9yB+vMBZ8pOgMKJqIXpijQIhXWJnJX4O4dszSmWtUP/XSZ/vTJynyWwwzy/Ods1f9piJ4O6XgXTraDDo7cwOt/B1/9Qhesg4e0CzrReEnjeWvK4LJ+DN6i3jW3pr9/cftHHykvOLNE1DeXdC9zqz/cnevsHbjUrF2Slp/yXV01B8E4BSq4ZkfWzloswUO8fyA891jlDqtcncnBJQKZWd7KWTrvprY4/pk7yworvuBkWMA9S+U5YOPf1GeqnXaear5xH6XjOLHXcR+nMUwBNrjotFS3mc/Oiml8HllCKsZW9MjA1qzCKpSD2Qi/g7kvmTeixuOKckqlV+luXy3vIlt/1r7y7+myqo/kRhxDcA1TpaK6OEAy+3mtAKT5nn6Q1vtjSsAowgmCSD2st9DD+Hy3PPf11uc2o+P5m/18MoPgz+uWZiJuzYlZ5mIUmGjBen6Y8X2f86/ekLaaBSyw==
-X-MS-Exchange-AntiSpam-MessageData: kW1AkEsRwQabHzqo+tB8iLYT1U7jvyy3Me5akco/ObAlvfHm2994wQKAoqXUVFv6Kx3kjLpphfudGAbNpaYvEo7lJGeCDREsi2OQxV3R706oZ/bZyBCTIkv4qMhcUEIOGPdprQ6SCZCJX2ZPGiteEw==
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5cb7bce6-ba30-4ee2-567a-08d7c05f579c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2020 17:13:22.2742
+X-Microsoft-Antispam-Message-Info: 9ghSKQQbMDJkd1rg3YAtmUVPANkorrkjPoRORv48bJBHQdJdNxrUrQqIBT4RJW1ZxmmxOS+9oc+hl0tu8+CiFrDKQT82M7/JSPh6CQd/vgqxoxt2TZX+wzkfEEgL5v4NlPWlq2FXiKngpztiSxI8z0eSCgGwYk3mzALh7r6GitdNO9FxWp/2vEFDQb25dGl/H1XinZYmB/Okt/SI/jq5+nr60HD5SB8lCe3hCLOLqniGXnRQD6fqXsekDtq0R2sGT/OuK3cCODFodN5eLB2G7Q/yZs9EFuRJI746upiJUp7bTw6zxpMraSv0cntMm3jtLdabw0otyZ7bZO6LR5Qfjf9qdhGNTahfiJR0FNdUIfSXRvZavvdwor2c8ARZ/lkbX5xIsf5G97wBf2cHciqoSLMHYqlNAfi2ggoMe/kIAZe/ueORUK0jm78THioXNQ72
+X-MS-Exchange-AntiSpam-MessageData: cAoFgLP/KaGooz9FTRScJAX4clqEk4m3GtqbgMdZVwsmQRY2YRCXTup/RWECaRW9f1lXey/3wZN9lai4Hg68Tm4i6o/h5aqQaFB4k0QhRD4aR9JGC65SMybcAF6BdeuJYk4L0ugIVw2jkUW/cPQQmQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a1652a5-6356-479f-24a5-08d7c05fa406
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2020 17:15:30.4478
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /LxNDIT4EsedDaZHi3DCbK2sfPVSxJp2r+WQ0ubkFuRamlh37PEsf2xqWJZrYpO/HocQSROJ307WQCKqO+XIzQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0702MB3531
+X-MS-Exchange-CrossTenant-UserPrincipalName: WoDkwqjTlwKRc9206ObtGFqfO8OVB8bd6L6WBM5WYmei9ksWpgzTXrPldo44YAHYU4c4mfbJsYOzr2d3gLVVSw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6727
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Mar 2020, Xin Long wrote:
 
-> On Wed, Mar 4, 2020 at 2:38 AM Leppanen, Jere (Nokia - FI/Espoo)
-> <jere.leppanen@nokia.com> wrote:
+
+On 04/03/2020 17:49, rohit maheshwari wrote:
+> Hi Boris,
+> 
+> On 01/03/20 2:06 PM, Boris Pismenny wrote:
+>> Hi Rohit,
 >>
->> On Mon, 2 Mar 2020, Xin Long wrote:
->>
->>> As it says in rfc6458#section-9.2:
+>> On 2/29/2020 3:24 AM, Rohit Maheshwari wrote:
+>>> A new macro is defined to enable ktls tx offload support on Chelsio
+>>> T6 adapter. And if this macro is enabled, cxgb4 will send mailbox to
+>>> enable or disable ktls settings on HW.
+>>> In chcr, enabled tx offload flag in netdev and registered tls_dev_add
+>>> and tls_dev_del.
 >>>
->>>   The application uses the sctp_peeloff() call to branch off an
->>>   association into a separate socket.  (Note that the semantics are
->>>   somewhat changed from the traditional one-to-one style accept()
->>>   call.)  Note also that the new socket is a one-to-one style socket.
->>>   Thus, it will be confined to operations allowed for a one-to-one
->>>   style socket.
+>>> v1->v2:
+>>> - mark tcb state to close in tls_dev_del.
+>>> - u_ctx is now picked from adapter structure.
+>>> - clear atid in case of failure.
+>>> - corrected ULP_CRYPTO_KTLS_INLINE value.
 >>>
->>> Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
->>> on which some operations are not allowed, like shutdown, as Jere
->>> reported.
+>>> v2->v3:
+>>> - add empty line after variable declaration.
+>>> - local variable declaration in reverse christmas tree ordering.
 >>>
->>> This patch is to change it to return a one-to-one type socket instead.
+>>> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+>>> ---
+>> ...
+>>> +
+>>> +/*
+>>> + * chcr_ktls_dev_add:  call back for tls_dev_add.
+>>> + * Create a tcb entry for TP. Also add l2t entry for the connection.
+>>> And
+>>> + * generate keys & save those keys locally.
+>>> + * @netdev - net device.
+>>> + * @tls_cts - tls context.
+>>> + * @direction - TX/RX crypto direction
+>>> + * return: SUCCESS/FAILURE.
+>>> + */
+>>> +static int chcr_ktls_dev_add(struct net_device *netdev, struct sock
+>>> *sk,
+>>> +                 enum tls_offload_ctx_dir direction,
+>>> +                 struct tls_crypto_info *crypto_info,
+>>> +                 u32 start_offload_tcp_sn)
+>>> +{
+>>> +    struct tls_context *tls_ctx = tls_get_ctx(sk);
+>>> +    struct chcr_ktls_ofld_ctx_tx *tx_ctx;
+>>> +    struct chcr_ktls_info *tx_info;
+>>> +    struct dst_entry *dst;
+>>> +    struct adapter *adap;
+>>> +    struct port_info *pi;
+>>> +    struct neighbour *n;
+>>> +    u8 daaddr[16];
+>>> +    int ret = -1;
+>>> +
+>>> +    tx_ctx = chcr_get_ktls_tx_context(tls_ctx);
+>>> +
+>>> +    pi = netdev_priv(netdev);
+>>> +    adap = pi->adapter;
+>>> +    if (direction == TLS_OFFLOAD_CTX_DIR_RX) {
+>>> +        pr_err("not expecting for RX direction\n");
+>>> +        ret = -EINVAL;
+>>> +        goto out;
+>>> +    }
+>>> +    if (tx_ctx->chcr_info) {
+>>> +        ret = -EINVAL;
+>>> +        goto out;
+>>> +    }
+>>> +
+>>> +    tx_info = kvzalloc(sizeof(*tx_info), GFP_KERNEL);
+>>> +    if (!tx_info) {
+>>> +        ret = -ENOMEM;
+>>> +        goto out;
+>>> +    }
+>>> +
+>>> +    spin_lock_init(&tx_info->lock);
+>>> +
+>>> +    /* clear connection state */
+>>> +    spin_lock(&tx_info->lock);
+>>> +    tx_info->connection_state = KTLS_CONN_CLOSED;
+>>> +    spin_unlock(&tx_info->lock);
+>>> +
+>>> +    tx_info->sk = sk;
+>>> +    /* initialize tid and atid to -1, 0 is a also a valid id. */
+>>> +    tx_info->tid = -1;
+>>> +    tx_info->atid = -1;
+>>> +
+>>> +    tx_info->adap = adap;
+>>> +    tx_info->netdev = netdev;
+>>> +    tx_info->tx_chan = pi->tx_chan;
+>>> +    tx_info->smt_idx = pi->smt_idx;
+>>> +    tx_info->port_id = pi->port_id;
+>>> +
+>>> +    tx_info->rx_qid = chcr_get_first_rx_qid(adap);
+>>> +    if (unlikely(tx_info->rx_qid < 0))
+>>> +        goto out2;
+>>> +
+>>> +    tx_info->prev_seq = start_offload_tcp_sn;
+>>> +    tx_info->tcp_start_seq_number = start_offload_tcp_sn;
+>>> +
+>>> +    /* get peer ip */
+>>> +    if (sk->sk_family == AF_INET ||
+>>> +        (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
+>>> +         ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
+>>> +        memcpy(daaddr, &sk->sk_daddr, 4);
+>>> +    } else {
+>>> +        goto out2;
+>>> +    }
+>>> +
+>>> +    /* get the l2t index */
+>>> +    dst = sk_dst_get(sk);
+>>> +    if (!dst) {
+>>> +        pr_err("DST entry not found\n");
+>>> +        goto out2;
+>>> +    }
+>>> +    n = dst_neigh_lookup(dst, daaddr);
+>>> +    if (!n || !n->dev) {
+>>> +        pr_err("neighbour not found\n");
+>>> +        dst_release(dst);
+>>> +        goto out2;
+>>> +    }
+>>> +    tx_info->l2te  = cxgb4_l2t_get(adap->l2t, n, n->dev, 0);
+>> I see that you make an effort to obtain the the L2 tunnel, but did you
+>> test it? I would expect that offload would fail for such a connection
+>> as the KTLS code would not find the lower device with the offload
+>> capability..
 >>
->> Thanks for looking into this. I like the patch, and it fixes my simple
->> test case.
->>
->> But with this patch, peeled-off sockets are created by copying from a
->> one-to-many socket to a one-to-one socket. Are you sure that that's
->> not going to cause any problems? Is it possible that there was a
->> reason why peeloff wasn't implemented this way in the first place?
-> I'm not sure, it's been there since very beginning, and I couldn't find
-> any changelog about it.
->
-> I guess it was trying to differentiate peeled-off socket from TCP style
-> sockets.
+>> If this doesn't work, better remove it, until the stack supports such
+>> functionality. Then, you wouldn't need to retrospectively obtain these
+>> parameters. Instead, you could just implement the proper flow by
+>> working with the L2 tunnel.
+> This is not l2 tunnel related. This is L2 table index used by HW to decide,
+> based on destination MAC, which physical port to be used to send a
+> packet out.
 
-Well, that's probably the reason for UDP_HIGH_BANDWIDTH style. And maybe 
-there is legitimate need for that differentiation in some cases, but I 
-think inventing a special socket style is not the best way to handle it.
+Do you have a single netdev which represents two ports in some sort of bond?
+Otherwise, why not just take the port from the netdev (e.g.
+netdev-per-port).
+Surely, there is no need to perform a neigh lookup to achieve this.
 
-But actually I meant why is a peeled-off socket created as SOCK_SEQPACKET 
-instead of SOCK_STREAM. It could be to avoid copying from SOCK_SEQPACKET 
-to SOCK_STREAM, but why would we need to avoid that?
-
-Mark Butler commented in 2006 
-(https://sourceforge.net/p/lksctp/mailman/message/10122693/):
-
-     In short, SOCK_SEQPACKET could/should be replaced with SOCK_STREAM
-     right there, but there might be a minor dependency or two that would
-     need to be fixed.
-
->
->>
->> With this patch there's no way to create UDP_HIGH_BANDWIDTH style
->> sockets anymore, so the remaining references should probably be
->> cleaned up:
->>
->> ./net/sctp/socket.c:1886:       if (!sctp_style(sk, UDP_HIGH_BANDWIDTH) && msg->msg_name) {
->> ./net/sctp/socket.c:8522:       if (sctp_style(sk, UDP_HIGH_BANDWIDTH))
->> ./include/net/sctp/structs.h:144:       SCTP_SOCKET_UDP_HIGH_BANDWIDTH,
->>
->> This patch disables those checks. The first one ignores a destination
->> address given to sendmsg() with a peeled-off socket - I don't know
->> why. The second one prevents listen() on a peeled-off socket.
-> My understanding is:
-> UDP_HIGH_BANDWIDTH is another kind of one-to-one socket, like TCP style.
-> it can get asoc by its socket when sending msg, doesn't need daddr.
-
-But on that association, the peer may have multiple addresses. The RFC 
-says (https://tools.ietf.org/html/rfc6458#section-4.1.8):
-
-     When sending, the msg_name field [...] is used to indicate a preferred
-     peer address if the sender wishes to discourage the stack from sending
-     the message to the primary address of the receiver.
-
->
-> Now I thinking to fix your issue in sctp_shutdown():
->
-> @@ -5163,7 +5163,7 @@ static void sctp_shutdown(struct sock *sk, int how)
->        struct net *net = sock_net(sk);
->        struct sctp_endpoint *ep;
->
-> -       if (!sctp_style(sk, TCP))
-> +       if (sctp_style(sk, UDP))
->                return;
->
-> in this way, we actually think:
-> one-to-many socket: UDP style socket
-> one-to-one socket includes: UDP_HIGH_BANDWIDTH and TCP style sockets.
->
-
-That would probably fix shutdown(), but there are other problems as well. 
-sctp_style() is called in nearly a hundred different places, I wonder if 
-anyone systematically went through all of them back when 
-UDP_HIGH_BANDWIDTH was added.
-
-I think getting rid of UDP_HIGH_BANDWIDTH altogether is a much cleaner 
-solution. That's what your patch does, which is why I like it. But such a 
-change could easily break something.
