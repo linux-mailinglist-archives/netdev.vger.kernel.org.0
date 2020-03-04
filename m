@@ -2,847 +2,559 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60FA51799BE
+	by mail.lfdr.de (Postfix) with ESMTP id CCA591799BF
 	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388339AbgCDU0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:26:00 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33752 "EHLO mx2.suse.de"
+        id S2388343AbgCDU0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:26:05 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33782 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388327AbgCDU0A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:26:00 -0500
+        id S2388327AbgCDU0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:26:05 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id BB14DAF82;
-        Wed,  4 Mar 2020 20:25:56 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id BFBA9B2A4;
+        Wed,  4 Mar 2020 20:26:01 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 668D7E037F; Wed,  4 Mar 2020 21:25:56 +0100 (CET)
-Message-Id: <2594bd8a5276bfa7ee77505cc2f68d2cbdeadfba.1583347351.git.mkubecek@suse.cz>
+        id 6D2E1E037F; Wed,  4 Mar 2020 21:26:01 +0100 (CET)
+Message-Id: <85121f2a8fc0a04c2109936d48c926c465054b00.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 16/25] netlink: add basic command line parsing
- helpers
+Subject: [PATCH ethtool v2 17/25] netlink: add bitset command line parser
+ handlers
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:25:56 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:26:01 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Existing command line parser functions from the ioctl interface are often
-too closely tied to the ioctl data structures and would not be easily
-adapted to generating netlink messages. Introduce a new parser framework
-which assigns parser handlers to parameters and provide basic handlers for
-most common parameter types:
+Add three more command line parser handlers for different representation of
+bitsets:
 
-  - flag represented by presence of a parameter
-  - u8 bool represented by name followed by "on" or "off"
-  - string represented by string argument
-  - u32 represented by numeric argument
-  - u8 represented by numeric argument
-  - u32 represented by symbolic name (lookup table)
-  - u8 represented by symbolic name (lookup table)
-  - binary blob represented by MAC-like syntax
+  - series of "name on|off" pairs for bitset with mask
+  - series of names for bitsets without mask (lists)
+  - string consisting of characters representing bits (e.g. WoL modes);
+    extended syntax "([+-][a-z])+" is supported for bitsets with mask
 
-Main parser entry point is nl_parse() function; it gets an array of with
-entries assigning parser handlers and optional data to command line
-parameters and generates corresponding netlink attributes or fills raw
-data.
-
-Optionally, attributes can be divided into multiple netlink messages or
-multiple nested attributes.
+Numeric syntax %u[/%u] is also supported.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am       |   2 +-
- netlink/netlink.h |   4 +
- netlink/parser.c  | 615 ++++++++++++++++++++++++++++++++++++++++++++++
- netlink/parser.h  | 123 ++++++++++
- 4 files changed, 743 insertions(+), 1 deletion(-)
- create mode 100644 netlink/parser.c
- create mode 100644 netlink/parser.h
+ netlink/parser.c | 443 +++++++++++++++++++++++++++++++++++++++++++++++
+ netlink/parser.h |  21 +++
+ 2 files changed, 464 insertions(+)
 
-diff --git a/Makefile.am b/Makefile.am
-index 77003f27a3a8..2df64cc4cc52 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -30,7 +30,7 @@ ethtool_SOURCES += \
- 		  netlink/msgbuff.c netlink/msgbuff.h netlink/nlsock.c \
- 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
- 		  netlink/monitor.c netlink/bitset.c netlink/bitset.h \
--		  netlink/settings.c \
-+		  netlink/settings.c netlink/parser.c netlink/parser.h \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/netlink/netlink.h b/netlink/netlink.h
-index 730f8e1b3fe9..3ab5f2329e2f 100644
---- a/netlink/netlink.h
-+++ b/netlink/netlink.h
-@@ -31,6 +31,10 @@ struct nl_context {
- 	uint32_t		filter_cmds[CMDMASK_WORDS];
- 	const char		*filter_devname;
- 	bool			no_banner;
-+	const char		*cmd;
-+	const char		*param;
-+	char			**argp;
-+	int			argc;
- };
- 
- struct attr_tb_info {
 diff --git a/netlink/parser.c b/netlink/parser.c
-new file mode 100644
-index 000000000000..0e2190eed0b4
---- /dev/null
+index 0e2190eed0b4..40eb4a5c0b26 100644
+--- a/netlink/parser.c
 +++ b/netlink/parser.c
-@@ -0,0 +1,615 @@
-+/*
-+ * parser.c - netlink command line parser
-+ *
-+ * Implementation of command line parser used by netlink code.
+@@ -43,6 +43,12 @@ static void parser_err_invalid_value(struct nl_context *nlctx, const char *val)
+ 		nlctx->cmd, val, nlctx->param);
+ }
+ 
++static void parser_err_invalid_flag(struct nl_context *nlctx, const char *flag)
++{
++	fprintf(stderr, "ethtool (%s): flag '%s' for parameter '%s' is not followed by 'on' or 'off'\n",
++		nlctx->cmd, flag, nlctx->param);
++}
++
+ static bool __prefix_0x(const char *p)
+ {
+ 	return p[0] == '0' && (p[1] == 'x' || p[1] == 'X');
+@@ -282,6 +288,35 @@ int nl_parse_lookup_u8(struct nl_context *nlctx, uint16_t type,
+ 	return (type && ethnla_put_u8(msgbuff, type, val)) ? -EMSGSIZE : 0;
+ }
+ 
++/* number of significant bits */
++static unsigned int __nsb(uint32_t x)
++{
++	unsigned int ret = 0;
++
++	if (x & 0xffff0000U) {
++		x >>= 16;
++		ret += 16;
++	}
++	if (x & 0xff00U) {
++		x >>= 8;
++		ret += 8;
++	}
++	if (x & 0xf0U) {
++		x >>= 4;
++		ret += 4;
++	}
++	if (x & 0xcU) {
++		x >>= 2;
++		ret += 2;
++	}
++	if (x & 0x2U) {
++		x >>= 1;
++		ret += 1;
++	}
++
++	return ret + x;
++}
++
+ static bool __is_hex(char c)
+ {
+ 	if (isdigit(c))
+@@ -405,6 +440,414 @@ int nl_parse_error(struct nl_context *nlctx, uint16_t type, const void *data,
+ 	return parser_data->ret_val;
+ }
+ 
++/* bitset parser handlers */
++
++/* Return true if a bitset argument should be parsed as numeric, i.e.
++ * (a) it starts with '0x'
++ * (b) it consists only of hex digits and at most one slash which can be
++ *     optionally followed by "0x"; if no_mask is true, slash is not allowed
 + */
-+
-+#include <string.h>
-+#include <stdlib.h>
-+#include <errno.h>
-+#include <ctype.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "parser.h"
-+
-+static void parser_err_unknown_param(struct nl_context *nlctx)
++static bool is_numeric_bitset(const char *arg, bool no_mask)
 +{
-+	fprintf(stderr, "ethtool (%s): unknown parameter '%s'\n", nlctx->cmd,
-+		nlctx->param);
-+}
++	const char *p = arg;
++	bool has_slash = false;
 +
-+static void parser_err_dup_param(struct nl_context *nlctx)
-+{
-+	fprintf(stderr, "ethtool (%s): duplicate parameter '%s'\n", nlctx->cmd,
-+		nlctx->param);
-+}
-+
-+static void parser_err_min_argc(struct nl_context *nlctx, unsigned int min_argc)
-+{
-+	if (min_argc == 1)
-+		fprintf(stderr, "ethtool (%s): no value for parameter '%s'\n",
-+			nlctx->cmd, nlctx->param);
-+	else
-+		fprintf(stderr,
-+			"ethtool (%s): parameter '%s' requires %u words\n",
-+			nlctx->cmd, nlctx->param, min_argc);
-+}
-+
-+static void parser_err_invalid_value(struct nl_context *nlctx, const char *val)
-+{
-+	fprintf(stderr, "ethtool (%s): invalid value '%s' for parameter '%s'\n",
-+		nlctx->cmd, val, nlctx->param);
-+}
-+
-+static bool __prefix_0x(const char *p)
-+{
-+	return p[0] == '0' && (p[1] == 'x' || p[1] == 'X');
-+}
-+
-+static int __parse_u32(const char *arg, uint32_t *result, uint32_t min,
-+		       uint32_t max, int base)
-+{
-+	unsigned long long val;
-+	char *endptr;
-+
-+	if (!arg || !arg[0])
-+		return -EINVAL;
-+	val = strtoul(arg, &endptr, base);
-+	if (*endptr || val < min || val > max)
-+		return -EINVAL;
-+
-+	*result = (uint32_t)val;
-+	return 0;
-+}
-+
-+static int parse_u32d(const char *arg, uint32_t *result)
-+{
-+	return __parse_u32(arg, result, 0, 0xffffffff, 10);
-+}
-+
-+static int parse_x32(const char *arg, uint32_t *result)
-+{
-+	return __parse_u32(arg, result, 0, 0xffffffff, 16);
-+}
-+
-+int parse_u32(const char *arg, uint32_t *result)
-+{
 +	if (!arg)
-+		return -EINVAL;
++		return false;
 +	if (__prefix_0x(arg))
-+		return parse_x32(arg + 2, result);
-+	else
-+		return parse_u32d(arg, result);
-+}
-+
-+static int parse_u8(const char *arg, uint8_t *result)
-+{
-+	uint32_t val;
-+	int ret = parse_u32(arg, &val);
-+
-+	if (ret < 0)
-+		return ret;
-+	if (val > UINT8_MAX)
-+		return -EINVAL;
-+
-+	*result = (uint8_t)val;
-+	return 0;
-+}
-+
-+static int lookup_u32(const char *arg, uint32_t *result,
-+		      const struct lookup_entry_u32 *tbl)
-+{
-+	if (!arg)
-+		return -EINVAL;
-+	while (tbl->arg) {
-+		if (!strcmp(tbl->arg, arg)) {
-+			*result = tbl->val;
-+			return 0;
-+		}
-+		tbl++;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int lookup_u8(const char *arg, uint8_t *result,
-+		     const struct lookup_entry_u8 *tbl)
-+{
-+	if (!arg)
-+		return -EINVAL;
-+	while (tbl->arg) {
-+		if (!strcmp(tbl->arg, arg)) {
-+			*result = tbl->val;
-+			return 0;
-+		}
-+		tbl++;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+/* Parser handler for a flag. Expects a name (with no additional argument),
-+ * generates NLA_FLAG or sets a bool (if the name was present).
-+ */
-+int nl_parse_flag(struct nl_context *nlctx, uint16_t type, const void *data,
-+		  struct nl_msg_buff *msgbuff, void *dest)
-+{
-+	if (dest)
-+		*(bool *)dest = true;
-+	return (type && ethnla_put_flag(msgbuff, type, true)) ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for null terminated string. Expects a string argument,
-+ * generates NLA_NUL_STRING or fills const char *
-+ */
-+int nl_parse_string(struct nl_context *nlctx, uint16_t type, const void *data,
-+		    struct nl_msg_buff *msgbuff, void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+
-+	if (dest)
-+		*(const char **)dest = arg;
-+	return (type && ethnla_put_strz(msgbuff, type, arg)) ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for unsigned 32-bit integer. Expects a numeric argument
-+ * (may use 0x prefix), generates NLA_U32 or fills an uint32_t.
-+ */
-+int nl_parse_direct_u32(struct nl_context *nlctx, uint16_t type,
-+			const void *data, struct nl_msg_buff *msgbuff,
-+			void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+	uint32_t val;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+	ret = parse_u32(arg, &val);
-+	if (ret < 0) {
-+		parser_err_invalid_value(nlctx, arg);
-+		return ret;
-+	}
-+
-+	if (dest)
-+		*(uint32_t *)dest = val;
-+	return (type && ethnla_put_u32(msgbuff, type, val)) ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for unsigned 32-bit integer. Expects a numeric argument
-+ * (may use 0x prefix), generates NLA_U32 or fills an uint32_t.
-+ */
-+int nl_parse_direct_u8(struct nl_context *nlctx, uint16_t type,
-+		       const void *data, struct nl_msg_buff *msgbuff,
-+		       void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+	uint8_t val;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+	ret = parse_u8(arg, &val);
-+	if (ret < 0) {
-+		parser_err_invalid_value(nlctx, arg);
-+		return ret;
-+	}
-+
-+	if (dest)
-+		*(uint8_t *)dest = val;
-+	return (type && ethnla_put_u8(msgbuff, type, val)) ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for (tri-state) bool. Expects "name on|off", generates
-+ * NLA_U8 which is 1 for "on" and 0 for "off".
-+ */
-+int nl_parse_u8bool(struct nl_context *nlctx, uint16_t type, const void *data,
-+		    struct nl_msg_buff *msgbuff, void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+	if (!strcmp(arg, "on")) {
-+		if (dest)
-+			*(uint8_t *)dest = 1;
-+		ret = type ? ethnla_put_u8(msgbuff, type, 1) : 0;
-+	} else if (!strcmp(arg, "off")) {
-+		if (dest)
-+			*(uint8_t *)dest = 0;
-+		ret = type ? ethnla_put_u8(msgbuff, type, 0) : 0;
-+	} else {
-+		parser_err_invalid_value(nlctx, arg);
-+		return -EINVAL;
-+	}
-+
-+	return ret ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for 32-bit lookup value. Expects a string argument, looks it
-+ * up in a table, generates NLA_U32 or fills uint32_t variable. The @data
-+ * parameter is a null terminated array of struct lookup_entry_u32.
-+ */
-+int nl_parse_lookup_u32(struct nl_context *nlctx, uint16_t type,
-+			const void *data, struct nl_msg_buff *msgbuff,
-+			void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+	uint32_t val;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+	ret = lookup_u32(arg, &val, data);
-+	if (ret < 0) {
-+		parser_err_invalid_value(nlctx, arg);
-+		return ret;
-+	}
-+
-+	if (dest)
-+		*(uint32_t *)dest = val;
-+	return (type && ethnla_put_u32(msgbuff, type, val)) ? -EMSGSIZE : 0;
-+}
-+
-+/* Parser handler for 8-bit lookup value. Expects a string argument, looks it
-+ * up in a table, generates NLA_U8 or fills uint8_t variable. The @data
-+ * parameter is a null terminated array of struct lookup_entry_u8.
-+ */
-+int nl_parse_lookup_u8(struct nl_context *nlctx, uint16_t type,
-+		       const void *data, struct nl_msg_buff *msgbuff,
-+		       void *dest)
-+{
-+	const char *arg = *nlctx->argp;
-+	uint8_t val;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+	ret = lookup_u8(arg, &val, data);
-+	if (ret < 0) {
-+		parser_err_invalid_value(nlctx, arg);
-+		return ret;
-+	}
-+
-+	if (dest)
-+		*(uint8_t *)dest = val;
-+	return (type && ethnla_put_u8(msgbuff, type, val)) ? -EMSGSIZE : 0;
-+}
-+
-+static bool __is_hex(char c)
-+{
-+	if (isdigit(c))
 +		return true;
-+	else
-+		return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-+}
-+
-+static unsigned int __hex_val(char c)
-+{
-+	if (c >= '0' && c <= '9')
-+		return c - '0';
-+	if (c >= 'a' && c <= 'f')
-+		return c - 'a' + 0xa;
-+	if (c >= 'A' && c <= 'F')
-+		return c - 'A' + 0xa;
-+	return 0;
-+}
-+
-+static bool __bytestr_delim(const char *p, char delim)
-+{
-+	return !*p || (delim ? (*p == delim) : !__is_hex(*p));
-+}
-+
-+/* Parser handler for generic byte string in MAC-like format. Expects string
-+ * argument in the "[[:xdigit:]]{2}(:[[:xdigit:]]{2})*" format, generates
-+ * NLA_BINARY or fills a struct byte_str_value (if @dest is not null and the
-+ * handler succeeds, caller is responsible for freeing the value). The @data
-+ * parameter points to struct byte_str_parser_data.
-+ */
-+int nl_parse_byte_str(struct nl_context *nlctx, uint16_t type, const void *data,
-+		      struct nl_msg_buff *msgbuff, void *dest)
-+{
-+	const struct byte_str_parser_data *pdata = data;
-+	struct byte_str_value *dest_value = dest;
-+	const char *arg = *nlctx->argp;
-+	uint8_t *val = NULL;
-+	unsigned int len, i;
-+	const char *p;
-+	int ret;
-+
-+	nlctx->argp++;
-+	nlctx->argc--;
-+
-+	len = 0;
-+	p = arg;
-+	if (!*p)
-+		goto err;
-+	while (true) {
-+		len++;
-+		if (!__bytestr_delim(p, pdata->delim))
++	while (*p) {
++		if (*p == '/') {
++			if (has_slash || no_mask)
++				return false;
++			has_slash = true;
 +			p++;
-+		if (!__bytestr_delim(p, pdata->delim))
-+			p++;
-+		if (!__bytestr_delim(p, pdata->delim))
-+			goto err;
-+		if (!*p)
-+			break;
-+		p++;
-+		if (*p && __bytestr_delim(p, pdata->delim))
-+			goto err;
-+	}
-+	if (len < pdata->min_len || (pdata->max_len && len > pdata->max_len))
-+		goto err;
-+	val = malloc(len);
-+	if (!val)
-+		return -ENOMEM;
-+
-+	p = arg;
-+	for (i = 0; i < len; i++) {
-+		uint8_t byte = 0;
-+
++			if (__prefix_0x(p))
++				p += 2;
++			continue;
++		}
 +		if (!__is_hex(*p))
-+			goto err;
-+		while (__is_hex(*p))
-+			byte = 16 * byte + __hex_val(*p++);
-+		if (!__bytestr_delim(p, pdata->delim))
-+			goto err;
-+		val[i] = byte;
-+		if (*p)
-+			p++;
++			return false;
++		p++;
 +	}
-+	ret = type ? ethnla_put(msgbuff, type, len, val) : 0;
-+	if (dest) {
-+		dest_value->len = len;
-+		dest_value->data = val;
-+	} else {
-+		free(val);
-+	}
-+	return ret;
-+
-+err:
-+	free(val);
-+	fprintf(stderr, "ethtool (%s): invalid value '%s' of parameter '%s'\n",
-+		nlctx->cmd, arg, nlctx->param);
-+	return -EINVAL;
++	return true;
 +}
 +
-+/* Parser handler for parameters recognized for backward compatibility but
-+ * supposed to fail without passing to kernel. Does not generate any netlink
-+ * attributes of fill any variable. The @data parameter points to struct
-+ * error_parser_params (error message, return value and number of extra
-+ * arguments to skip).
++#define __MAX_U32_DIGITS 10
++
++/* Parse hex string (without leading "0x") into a bitmap consisting of 32-bit
++ * words. Caller must make sure arg is at least len characters long and dst has
++ * place for at least (len + 7) / 8 32-bit words. If force_hex is false, allow
++ * also base 10 unsigned 32-bit value.
++ *
++ * Returns number of significant bits in the bitmap on success and negative
++ * value on error.
 + */
-+int nl_parse_error(struct nl_context *nlctx, uint16_t type, const void *data,
-+		   struct nl_msg_buff *msgbuff, void *dest)
++static int __parse_num_string(const char *arg, unsigned int len, uint32_t *dst,
++			      bool force_hex)
 +{
-+	const struct error_parser_data *parser_data = data;
-+	unsigned int skip = parser_data->extra_args;
++	char buff[__MAX_U32_DIGITS + 1] = {};
++	unsigned int nbits = 0;
++	const char *p = arg;
 +
-+	fprintf(stderr, "ethtool (%s): ", nlctx->cmd);
-+	fprintf(stderr, parser_data->err_msg, nlctx->param);
-+	if (nlctx->argc < skip) {
-+		fprintf(stderr, "ethtool (%s): too few arguments for parameter '%s' (expected %u)\n",
-+			nlctx->cmd, nlctx->param, skip);
-+	} else {
-+		nlctx->argp += skip;
-+		nlctx->argc -= skip;
++	if (!len)
++		return -EINVAL;
++	if (!force_hex && len <= __MAX_U32_DIGITS) {
++		strncpy(buff, arg, len);
++		if (!buff[__MAX_U32_DIGITS]) {
++			u32 val;
++			int ret;
++
++			ret = parse_u32d(buff, &val);
++			if (!ret) {
++				*dst = val;
++				return __nsb(val);
++			}
++		}
 +	}
 +
-+	return parser_data->ret_val;
-+}
++	dst += (len - 1) / 8;
++	while (len > 0) {
++		unsigned int chunk = (len % 8) ?: 8;
++		unsigned long val;
++		char *endp;
 +
-+/* parser implementation */
++		memcpy(buff, p, chunk);
++		buff[chunk] = '\0';
++		val = strtoul(buff, &endp, 16);
++		if (*endp)
++			return -EINVAL;
++		*dst-- = (uint32_t)val;
++		if (nbits)
++			nbits += 4 * chunk;
++		else
++			nbits = __nsb(val);
 +
-+static const struct param_parser *find_parser(const struct param_parser *params,
-+					      const char *arg)
-+{
-+	const struct param_parser *parser;
-+
-+	for (parser = params; parser->arg; parser++)
-+		if (!strcmp(arg, parser->arg))
-+			return parser;
-+	return NULL;
-+}
-+
-+static bool __parser_bit(const uint64_t *map, unsigned int idx)
-+{
-+	return map[idx / 64] & (1 << (idx % 64));
-+}
-+
-+static void __parser_set(uint64_t *map, unsigned int idx)
-+{
-+	map[idx / 64] |= (1 << (idx % 64));
-+}
-+
-+struct tmp_buff {
-+	struct nl_msg_buff	msgbuff;
-+	unsigned int		id;
-+	unsigned int		orig_len;
-+	struct tmp_buff		*next;
-+};
-+
-+static struct tmp_buff *tmp_buff_find(struct tmp_buff *head, unsigned int id)
-+{
-+	struct tmp_buff *buff;
-+
-+	for (buff = head; buff; buff = buff->next)
-+		if (buff->id == id)
-+			break;
-+
-+	return buff;
-+}
-+
-+static struct tmp_buff *tmp_buff_find_or_create(struct tmp_buff **phead,
-+						unsigned int id)
-+{
-+	struct tmp_buff **pbuff;
-+	struct tmp_buff *new_buff;
-+
-+	for (pbuff = phead; *pbuff; pbuff = &(*pbuff)->next)
-+		if ((*pbuff)->id == id)
-+			return *pbuff;
-+
-+	new_buff = malloc(sizeof(*new_buff));
-+	if (!new_buff)
-+		return NULL;
-+	new_buff->id = id;
-+	msgbuff_init(&new_buff->msgbuff);
-+	new_buff->next = NULL;
-+	*pbuff = new_buff;
-+
-+	return new_buff;
-+}
-+
-+static void tmp_buff_destroy(struct tmp_buff *head)
-+{
-+	struct tmp_buff *buff = head;
-+	struct tmp_buff *next;
-+
-+	while (buff) {
-+		next = buff->next;
-+		msgbuff_done(&buff->msgbuff);
-+		free(buff);
-+		buff = next;
++		p += chunk;
++		len -= chunk;
 +	}
++	return nbits;
 +}
 +
-+/* Main entry point of parser implementation.
-+ * @nlctx: netlink context
-+ * @params:      array of struct param_parser describing expected arguments
-+ *               and their handlers; the array must be terminated by null
-+ *               element {}
-+ * @dest:        optional destination to copy parsed data to (at
-+ *               param_parser::offset)
-+ * @group_style: defines if identifiers in .group represent separate messages,
-+ *               nested attributes or are not allowed
++/* Parse bitset provided as a base 16 numeric value (@no_mask is true) or pair
++ * of base 16 numeric values  separated by '/' (@no_mask is false). The "0x"
++ * prefix is optional. Generates bitset nested attribute in compact form.
 + */
-+int nl_parser(struct nl_context *nlctx, const struct param_parser *params,
-+	      void *dest, enum parser_group_style group_style)
++static int parse_numeric_bitset(struct nl_context *nlctx, uint16_t type,
++				bool no_mask, bool force_hex,
++				struct nl_msg_buff *msgbuff)
 +{
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	const struct param_parser *parser;
-+	struct tmp_buff *buffs = NULL;
-+	struct tmp_buff *buff;
-+	unsigned int n_params;
-+	uint64_t *params_seen;
-+	int ret;
++	unsigned int nwords, len1, len2;
++	const char *arg = *nlctx->argp;
++	bool force_hex1 = force_hex;
++	bool force_hex2 = force_hex;
++	uint32_t *value = NULL;
++	uint32_t *mask = NULL;
++	struct nlattr *nest;
++	const char *maskptr;
++	int ret = 0;
++	int nbits;
 +
-+	n_params = 0;
-+	for (parser = params; parser->arg; parser++) {
-+		struct nl_msg_buff *msgbuff;
-+		struct nlattr *nest;
-+
-+		n_params++;
-+		if (group_style == PARSER_GROUP_NONE || !parser->group)
-+			continue;
-+		ret = -ENOMEM;
-+		buff = tmp_buff_find_or_create(&buffs, parser->group);
-+		if (!buff)
-+			goto out_free_buffs;
-+		msgbuff = &buff->msgbuff;
-+
-+		switch (group_style) {
-+		case PARSER_GROUP_NEST:
-+			ret = -EMSGSIZE;
-+			nest = ethnla_nest_start(&buff->msgbuff, parser->group);
-+			if (!nest)
-+				goto out_free_buffs;
-+			break;
-+		case PARSER_GROUP_MSG:
-+			ret = msg_init(nlctx, msgbuff, parser->group,
-+				       NLM_F_REQUEST | NLM_F_ACK);
-+			if (ret < 0)
-+				goto out_free_buffs;
-+			if (ethnla_fill_header(msgbuff,
-+					       ETHTOOL_A_LINKINFO_HEADER,
-+					       nlctx->devname, 0))
-+				goto out_free_buffs;
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		buff->orig_len = msgbuff_len(msgbuff);
-+	}
-+	ret = -ENOMEM;
-+	params_seen = calloc(DIV_ROUND_UP(n_params, 64), sizeof(uint64_t));
-+	if (!params_seen)
-+		goto out_free_buffs;
-+
-+	while (nlctx->argc > 0) {
-+		struct nl_msg_buff *msgbuff;
-+		void *param_dest;
-+
-+		nlctx->param = *nlctx->argp;
-+		ret = -EINVAL;
-+		parser = find_parser(params, nlctx->param);
-+		if (!parser) {
-+			parser_err_unknown_param(nlctx);
-+			goto out_free;
-+		}
-+
-+		/* check duplicates and minimum number of arguments */
-+		if (__parser_bit(params_seen, parser - params)) {
-+			parser_err_dup_param(nlctx);
-+			goto out_free;
-+		}
-+		nlctx->argc--;
-+		nlctx->argp++;
-+		if (nlctx->argc < parser->min_argc) {
-+			parser_err_min_argc(nlctx, parser->min_argc);
-+			goto out_free;
-+		}
-+		__parser_set(params_seen, parser - params);
-+
-+		buff = NULL;
-+		if (parser->group)
-+			buff = tmp_buff_find(buffs, parser->group);
-+		msgbuff = buff ? &buff->msgbuff : &nlsk->msgbuff;
-+
-+		param_dest = dest ? (dest + parser->dest_offset) : NULL;
-+		ret = parser->handler(nlctx, parser->type, parser->handler_data,
-+				      msgbuff, param_dest);
-+		if (ret < 0)
-+			goto out_free;
++	if (__prefix_0x(arg)) {
++		force_hex1 = true;
++		arg += 2;
 +	}
 +
-+	for (buff = buffs; buff; buff = buff->next) {
-+		struct nl_msg_buff *msgbuff = &buff->msgbuff;
-+
-+		if (group_style == PARSER_GROUP_NONE ||
-+		    msgbuff_len(msgbuff) == buff->orig_len)
-+			continue;
-+		switch (group_style) {
-+		case PARSER_GROUP_NEST:
-+			ethnla_nest_end(msgbuff, msgbuff->payload);
-+			ret = msgbuff_append(&nlsk->msgbuff, msgbuff);
-+			if (ret < 0)
-+				goto out_free;
-+			break;
-+		case PARSER_GROUP_MSG:
-+			ret = nlsock_sendmsg(nlsk, msgbuff);
-+			if (ret < 0)
-+				goto out_free;
-+			ret = nlsock_process_reply(nlsk, nomsg_reply_cb, NULL);
-+			if (ret < 0)
-+				goto out_free;
-+			break;
-+		default:
-+			break;
-+		}
++	maskptr = strchr(arg, '/');
++	if (maskptr && no_mask) {
++		parser_err_invalid_value(nlctx, arg);
++		return -EINVAL;
 +	}
++	len1 = maskptr ? (maskptr - arg) : strlen(arg);
++	nwords = DIV_ROUND_UP(len1, 8);
++	nbits = 0;
++
++	if (maskptr) {
++		maskptr++;
++		if (__prefix_0x(maskptr)) {
++			maskptr += 2;
++			force_hex2 = true;
++		}
++		len2 = strlen(maskptr);
++		if (len2 > len1)
++			nwords = DIV_ROUND_UP(len2, 8);
++		mask = calloc(nwords, sizeof(uint32_t));
++		if (!mask)
++			return -ENOMEM;
++		ret = __parse_num_string(maskptr, strlen(maskptr), mask,
++					 force_hex2);
++		if (ret < 0) {
++			parser_err_invalid_value(nlctx, arg);
++			goto out_free;
++		}
++		nbits = ret;
++	}
++
++	value = calloc(nwords, sizeof(uint32_t));
++	if (!value)
++		return -ENOMEM;
++	ret = __parse_num_string(arg, len1, value, force_hex1);
++	if (ret < 0) {
++		parser_err_invalid_value(nlctx, arg);
++		goto out_free;
++	}
++	nbits = (nbits < ret) ? ret : nbits;
++	nwords = (nbits + 31) / 32;
 +
 +	ret = 0;
++	if (!type)
++		goto out_free;
++	ret = -EMSGSIZE;
++	nest = ethnla_nest_start(msgbuff, type);
++	if (!nest)
++	       goto out_free;
++	if (ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_NOMASK, !mask) ||
++	    ethnla_put_u32(msgbuff, ETHTOOL_A_BITSET_SIZE, nbits) ||
++	    ethnla_put(msgbuff, ETHTOOL_A_BITSET_VALUE,
++		       nwords * sizeof(uint32_t), value) ||
++	    (mask &&
++	     ethnla_put(msgbuff, ETHTOOL_A_BITSET_MASK,
++			nwords * sizeof(uint32_t), mask)))
++		goto out_free;
++	ethnla_nest_end(msgbuff, nest);
++	ret = 0;
++
 +out_free:
-+	free(params_seen);
-+out_free_buffs:
-+	tmp_buff_destroy(buffs);
++	free(value);
++	free(mask);
++	nlctx->argp++;
++	nlctx->argc--;
 +	return ret;
 +}
++
++/* Parse bitset provided as series of "name on|off" pairs (@no_mask is false)
++ * or names (@no_mask is true). Generates bitset nested attribute in verbose
++ * form with names from command line.
++ */
++static int parse_name_bitset(struct nl_context *nlctx, uint16_t type,
++			     bool no_mask, struct nl_msg_buff *msgbuff)
++{
++	struct nlattr *bitset_attr;
++	struct nlattr *bits_attr;
++	struct nlattr *bit_attr;
++	int ret;
++
++	bitset_attr = ethnla_nest_start(msgbuff, type);
++	if (!bitset_attr)
++		return -EMSGSIZE;
++	ret = -EMSGSIZE;
++	if (no_mask && ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_NOMASK, true))
++		goto err;
++	bits_attr = ethnla_nest_start(msgbuff, ETHTOOL_A_BITSET_BITS);
++	if (!bits_attr)
++		goto err;
++
++	while (nlctx->argc > 0) {
++		bool bit_val = true;
++
++		if (!strcmp(*nlctx->argp, "--")) {
++			nlctx->argp++;
++			nlctx->argc--;
++			break;
++		}
++		ret = -EINVAL;
++		if (!no_mask) {
++			if (nlctx->argc < 2 ||
++			    (strcmp(nlctx->argp[1], "on") &&
++			     strcmp(nlctx->argp[1], "off"))) {
++				parser_err_invalid_flag(nlctx, *nlctx->argp);
++				goto err;
++			}
++			bit_val = !strcmp(nlctx->argp[1], "on");
++		}
++
++		ret = -EMSGSIZE;
++		bit_attr = ethnla_nest_start(msgbuff,
++					     ETHTOOL_A_BITSET_BITS_BIT);
++		if (!bit_attr)
++			goto err;
++		if (ethnla_put_strz(msgbuff, ETHTOOL_A_BITSET_BIT_NAME,
++				    nlctx->argp[0]))
++			goto err;
++		if (!no_mask &&
++		    ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_BIT_VALUE,
++				    bit_val))
++			goto err;
++		ethnla_nest_end(msgbuff, bit_attr);
++
++		nlctx->argp += (no_mask ? 1 : 2);
++		nlctx->argc -= (no_mask ? 1 : 2);
++	}
++
++	ethnla_nest_end(msgbuff, bits_attr);
++	ethnla_nest_end(msgbuff, bitset_attr);
++	return 0;
++err:
++	ethnla_nest_cancel(msgbuff, bitset_attr);
++	return ret;
++}
++
++static bool is_char_bitset(const char *arg,
++			   const struct char_bitset_parser_data *data)
++{
++	bool mask = (arg[0] == '+' || arg[0] == '-');
++	unsigned int i;
++	const char *p;
++
++	for (p = arg; *p; p++) {
++		if (*p == data->reset_char)
++			continue;
++		if (mask && (*p == '+' || *p == '-'))
++			continue;
++		for (i = 0; i < data->nbits; i++)
++			if (*p == data->bit_chars[i])
++				goto found;
++		return false;
++found:
++		;
++	}
++
++	return true;
++}
++
++/* Parse bitset provided as a string consisting of characters corresponding to
++ * bit indices. The "reset character" resets the no-mask bitset to empty. If
++ * the first character is '+' or '-', generated bitset has mask and '+' and
++ * '-' switch between enabling and disabling the following bits (i.e. their
++ * value being true/false). In such case, "reset character" is not allowed.
++ */
++static int parse_char_bitset(struct nl_context *nlctx, uint16_t type,
++			     const struct char_bitset_parser_data *data,
++			     struct nl_msg_buff *msgbuff)
++{
++	const char *arg = *nlctx->argp;
++	struct nlattr *bitset_attr;
++	struct nlattr *saved_pos;
++	struct nlattr *bits_attr;
++	struct nlattr *bit_attr;
++	unsigned int idx;
++	bool val = true;
++	const char *p;
++	bool no_mask;
++	int ret;
++
++	no_mask = data->no_mask || !(arg[0] == '+' || arg[0] == '-');
++	bitset_attr = ethnla_nest_start(msgbuff, type);
++	if (!bitset_attr)
++		return -EMSGSIZE;
++	ret = -EMSGSIZE;
++	if (no_mask && ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_NOMASK, true))
++		goto err;
++	bits_attr = ethnla_nest_start(msgbuff, ETHTOOL_A_BITSET_BITS);
++	if (!bits_attr)
++		goto err;
++	saved_pos = mnl_nlmsg_get_payload_tail(msgbuff->nlhdr);
++
++	for (p = arg; *p; p++) {
++		if (*p == '+' || *p == '-') {
++			if (no_mask) {
++				parser_err_invalid_value(nlctx, arg);
++				ret = -EINVAL;
++				goto err;
++			}
++			val = (*p == '+');
++			continue;
++		}
++		if (*p == data->reset_char) {
++			if (no_mask) {
++				mnl_attr_nest_cancel(msgbuff->nlhdr, saved_pos);
++				continue;
++			}
++			fprintf(stderr, "ethtool (%s): invalid char '%c' in '%s' for parameter '%s'\n",
++				nlctx->cmd, *p, arg, nlctx->param);
++			ret = -EINVAL;
++			goto err;
++		}
++
++		for (idx = 0; idx < data->nbits; idx++) {
++			if (data->bit_chars[idx] == *p)
++				break;
++		}
++		if (idx >= data->nbits) {
++			fprintf(stderr, "ethtool (%s): invalid char '%c' in '%s' for parameter '%s'\n",
++				nlctx->cmd, *p, arg, nlctx->param);
++			ret = -EINVAL;
++			goto err;
++		}
++		bit_attr = ethnla_nest_start(msgbuff,
++					     ETHTOOL_A_BITSET_BITS_BIT);
++		if (!bit_attr)
++			goto err;
++		if (ethnla_put_u32(msgbuff, ETHTOOL_A_BITSET_BIT_INDEX, idx))
++			goto err;
++		if (!no_mask &&
++		    ethnla_put_flag(msgbuff, ETHTOOL_A_BITSET_BIT_VALUE, val))
++			goto err;
++		ethnla_nest_end(msgbuff, bit_attr);
++	}
++
++	ethnla_nest_end(msgbuff, bits_attr);
++	ethnla_nest_end(msgbuff, bitset_attr);
++	nlctx->argp++;
++	nlctx->argc--;
++	return 0;
++err:
++	ethnla_nest_cancel(msgbuff, bitset_attr);
++	return ret;
++}
++
++/* Parser handler for bitset. Expects either a numeric value (base 16 or 10
++ * (unless force_hex is set)), optionally followed by '/' and another numeric
++ * value (mask, unless no_mask is set), or a series of "name on|off" pairs
++ * (no_mask not set) or names (no_mask set). In the latter case, names are
++ * passed on as they are and kernel performs their interpretation and
++ * validation. The @data parameter points to struct bitset_parser_data.
++ * Generates only a bitset nested attribute. Fails if @type is zero or @dest
++ * is not null.
++ */
++int nl_parse_bitset(struct nl_context *nlctx, uint16_t type, const void *data,
++		    struct nl_msg_buff *msgbuff, void *dest)
++{
++	const struct bitset_parser_data *parser_data = data;
++
++	if (!type || dest) {
++		fprintf(stderr, "ethtool (%s): internal error parsing '%s'\n",
++			nlctx->cmd, nlctx->param);
++		return -EFAULT;
++	}
++	if (is_numeric_bitset(*nlctx->argp, false))
++		return parse_numeric_bitset(nlctx, type, parser_data->no_mask,
++					    parser_data->force_hex, msgbuff);
++	else
++		return parse_name_bitset(nlctx, type, parser_data->no_mask,
++					 msgbuff);
++}
++
++/* Parser handler for bitset. Expects either a numeric value (base 10 or 16),
++ * optionally followed by '/' and another numeric value (mask, unless no_mask
++ * is set), or a string consisting of characters corresponding to bit indices.
++ * The @data parameter points to struct char_bitset_parser_data. Generates
++ * biset nested attribute. Fails if type is zero or if @dest is not null.
++ */
++int nl_parse_char_bitset(struct nl_context *nlctx, uint16_t type,
++			 const void *data, struct nl_msg_buff *msgbuff,
++			 void *dest)
++{
++	const struct char_bitset_parser_data *parser_data = data;
++
++	if (!type || dest) {
++		fprintf(stderr, "ethtool (%s): internal error parsing '%s'\n",
++			nlctx->cmd, nlctx->param);
++		return -EFAULT;
++	}
++	if (is_char_bitset(*nlctx->argp, data) ||
++	    !is_numeric_bitset(*nlctx->argp, false))
++		return parse_char_bitset(nlctx, type, parser_data, msgbuff);
++	else
++		return parse_numeric_bitset(nlctx, type, parser_data->no_mask,
++					    false, msgbuff);
++}
++
+ /* parser implementation */
+ 
+ static const struct param_parser *find_parser(const struct param_parser *params,
 diff --git a/netlink/parser.h b/netlink/parser.h
-new file mode 100644
-index 000000000000..b5e8cd418b50
---- /dev/null
+index b5e8cd418b50..3cc26d21916c 100644
+--- a/netlink/parser.h
 +++ b/netlink/parser.h
-@@ -0,0 +1,123 @@
-+/*
-+ * parser.h - netlink command line parser
-+ *
-+ * Interface for command line parser used by netlink code.
-+ */
-+
-+#ifndef ETHTOOL_NETLINK_PARSER_H__
-+#define ETHTOOL_NETLINK_PARSER_H__
-+
-+#include <stddef.h>
-+
-+#include "netlink.h"
-+
-+/* Some commands need to generate multiple netlink messages or multiple nested
-+ * attributes from one set of command line parameters. Argument @group_style
-+ * of nl_parser() takes one of three values:
-+ *
-+ * PARSER_GROUP_NONE - no grouping, flat series of attributes (default)
-+ * PARSER_GROUP_NEST - one nest for each @group value (@group is nest type)
-+ * PARSER_GROUP_MSG  - one message for each @group value (@group is command)
-+ */
-+enum parser_group_style {
-+	PARSER_GROUP_NONE = 0,
-+	PARSER_GROUP_NEST,
-+	PARSER_GROUP_MSG,
+@@ -79,6 +79,20 @@ struct error_parser_data {
+ 	unsigned int	extra_args;
+ };
+ 
++/* used by nl_parse_bitset() */
++struct bitset_parser_data {
++	bool		force_hex;
++	bool		no_mask;
 +};
 +
-+typedef int (*param_parser_cb_t)(struct nl_context *, uint16_t, const void *,
-+				 struct nl_msg_buff *, void *);
-+
-+struct param_parser {
-+	/* command line parameter handled by this entry */
-+	const char		*arg;
-+	/* group id (see enum parser_group_style above) */
-+	unsigned int		group;
-+	/* netlink attribute type */
-+	uint16_t		type;		/* netlink attribute type */
-+	/* function called to parse parameter and its value */
-+	param_parser_cb_t	handler;
-+	/* pointer passed as @data argument of the handler */
-+	const void		*handler_data;
-+	/* minimum number of extra arguments after this parameter */
-+	unsigned int		min_argc;
-+	/* if @dest is passed to nl_parser(), offset to store value */
-+	unsigned int		dest_offset;
++/* used by nl_parse_char_bitset() */
++struct char_bitset_parser_data {
++	const char	*bit_chars;
++	unsigned int	nbits;
++	char		reset_char;
++	bool		no_mask;
 +};
 +
-+/* data structures used for handler data */
-+
-+/* used by nl_parse_lookup_u32() */
-+struct lookup_entry_u32 {
-+	const char	*arg;
-+	uint32_t	val;
-+};
-+
-+/* used by nl_parse_lookup_u8() */
-+struct lookup_entry_u8 {
-+	const char	*arg;
-+	uint8_t		val;
-+};
-+
-+/* used by nl_parse_byte_str() */
-+struct byte_str_parser_data {
-+	unsigned int	min_len;
-+	unsigned int	max_len;
-+	char		delim;
-+};
-+
-+/* used for value stored by nl_parse_byte_str() */
-+struct byte_str_value {
-+	unsigned int	len;
-+	u8		*data;
-+};
-+
-+/* used by nl_parse_error() */
-+struct error_parser_data {
-+	const char	*err_msg;
-+	int		ret_val;
-+	unsigned int	extra_args;
-+};
-+
-+int parse_u32(const char *arg, uint32_t *result);
-+
-+/* parser handlers to use as param_parser::handler */
-+
-+/* NLA_FLAG represented by on | off */
-+int nl_parse_flag(struct nl_context *nlctx, uint16_t type, const void *data,
-+		  struct nl_msg_buff *msgbuff, void *dest);
-+/* NLA_NUL_STRING represented by a string argument */
-+int nl_parse_string(struct nl_context *nlctx, uint16_t type, const void *data,
+ int parse_u32(const char *arg, uint32_t *result);
+ 
+ /* parser handlers to use as param_parser::handler */
+@@ -115,6 +129,13 @@ int nl_parse_error(struct nl_context *nlctx, uint16_t type, const void *data,
+ int nl_parse_byte_str(struct nl_context *nlctx, uint16_t type,
+ 		      const void *data, struct nl_msg_buff *msgbuff,
+ 		      void *dest);
++/* bitset represented by %x[/%x] or name on|off ... [--] */
++int nl_parse_bitset(struct nl_context *nlctx, uint16_t type, const void *data,
 +		    struct nl_msg_buff *msgbuff, void *dest);
-+/* NLA_U32 represented as numeric argument */
-+int nl_parse_direct_u32(struct nl_context *nlctx, uint16_t type,
-+			const void *data, struct nl_msg_buff *msgbuff,
-+			void *dest);
-+/* NLA_U8 represented as numeric argument */
-+int nl_parse_direct_u8(struct nl_context *nlctx, uint16_t type,
-+		       const void *data, struct nl_msg_buff *msgbuff,
-+		       void *dest);
-+/* NLA_U8 represented as on | off */
-+int nl_parse_u8bool(struct nl_context *nlctx, uint16_t type, const void *data,
-+		    struct nl_msg_buff *msgbuff, void *dest);
-+/* NLA_U32 represented by a string argument (lookup table) */
-+int nl_parse_lookup_u32(struct nl_context *nlctx, uint16_t type,
-+			const void *data, struct nl_msg_buff *msgbuff,
-+			void *dest);
-+/* NLA_U8 represented by a string argument (lookup table) */
-+int nl_parse_lookup_u8(struct nl_context *nlctx, uint16_t type,
-+		       const void *data, struct nl_msg_buff *msgbuff,
-+		       void *dest);
-+/* always fail (for deprecated parameters) */
-+int nl_parse_error(struct nl_context *nlctx, uint16_t type, const void *data,
-+		   struct nl_msg_buff *msgbuff, void *dest);
-+/* NLA_BINARY represented by %x:%x:...%x (e.g. a MAC address) */
-+int nl_parse_byte_str(struct nl_context *nlctx, uint16_t type,
-+		      const void *data, struct nl_msg_buff *msgbuff,
-+		      void *dest);
-+
-+/* main entry point called to parse the command line */
-+int nl_parser(struct nl_context *nlctx, const struct param_parser *params,
-+	      void *dest, enum parser_group_style group_style);
-+
-+#endif /* ETHTOOL_NETLINK_PARSER_H__ */
++/* bitset represented by %u[/%u] or string (characters for bits) */
++int nl_parse_char_bitset(struct nl_context *nlctx, uint16_t type,
++			 const void *data, struct nl_msg_buff *msgbuff,
++			 void *dest);
+ 
+ /* main entry point called to parse the command line */
+ int nl_parser(struct nl_context *nlctx, const struct param_parser *params,
 -- 
 2.25.1
 
