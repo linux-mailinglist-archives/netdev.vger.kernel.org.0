@@ -2,68 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8B6179807
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:36:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1D2179834
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730164AbgCDSgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 13:36:46 -0500
-Received: from mx2.suse.de ([195.135.220.15]:46512 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729675AbgCDSgq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 13:36:46 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 5FE6CAC79;
-        Wed,  4 Mar 2020 18:36:44 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 078D3E037F; Wed,  4 Mar 2020 19:36:44 +0100 (CET)
-Date:   Wed, 4 Mar 2020 19:36:44 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, thomas.lendacky@amd.com, benve@cisco.com,
-        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
-        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
- centralized checking of coalescing parameters
-Message-ID: <20200304183643.GK4264@unicorn.suse.cz>
-References: <20200304043354.716290-1-kuba@kernel.org>
- <20200304043354.716290-2-kuba@kernel.org>
- <20200304075926.GH4264@unicorn.suse.cz>
- <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
+        id S1730065AbgCDSns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:43:48 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18540 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727137AbgCDSns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 13:43:48 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 024ITiHP022424
+        for <netdev@vger.kernel.org>; Wed, 4 Mar 2020 10:43:47 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=rXVNnDc2b0N43zIsSnrY4qwJop2dhCpuxuYn7MyhGnU=;
+ b=oRYDK1KgO032Utky49pXKwPd5SuFt+Pyl8W1jZMgwWC17AWeA/62eztzqxR0UcnETK/q
+ 5JohBZxSAMf9I7sbWMg6YFRJBcV8IGzJJzytpigOpf0T28u7CzVJPNR6sbyIAbyvyW4T
+ GpJyzfq4WAhp6wYlhXsDwQdxWdUWP0NIh3I= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yhbxwtyr7-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 10:43:47 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 10:43:45 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 8BAAA2EC2D4D; Wed,  4 Mar 2020 10:43:41 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: support out-of-tree vmlinux builds for VMLINUX_BTF
+Date:   Wed, 4 Mar 2020 10:43:36 -0800
+Message-ID: <20200304184336.165766-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-04_07:2020-03-04,2020-03-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ mlxscore=0 lowpriorityscore=0 spamscore=0 phishscore=0 adultscore=0
+ mlxlogscore=862 bulkscore=0 malwarescore=0 suspectscore=8 clxscore=1015
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003040125
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 10:00:50AM -0800, Jakub Kicinski wrote:
-> On Wed, 4 Mar 2020 08:59:26 +0100 Michal Kubecek wrote:
-> > Just an idea: perhaps we could use the fact that struct ethtool_coalesce
-> > is de facto an array so that this block could be replaced by a loop like
-> > 
-> > 	u32 supported_types = dev->ethtool_ops->coalesce_types;
-> > 	const u32 *values = &coalesce->rx_coalesce_usecs;
-> > 
-> > 	for (i = 0; i < __ETHTOOL_COALESCE_COUNT; i++)
-> > 		if (values[i] && !(supported_types & BIT(i)))
-> > 			return false;
-> > 
-> > and to be sure, BUILD_BUG_ON() or static_assert() check that the offset
-> > of ->rate_sample_interval matches ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL.
-> 
-> I kind of prefer the greppability over the saved 40 lines :(
-> But I'm happy to change if we get more votes for the more concise
-> version. Or perhaps the Intel version with the warnings printed.
+Add detection of out-of-tree built vmlinux image for the purpose of
+VMLINUX_BTF detection. According to Documentation/kbuild/kbuild.rst, O takes
+precedence over KBUILD_OUTPUT.
 
-No problem, it was just an idea, I can see that each approach has its
-advantages.
+Also ensure ~/path/to/build/dir also works by relying on wildcard's resolution
+first, but then applying $(abspath) at the end to also handle
+O=../../whatever cases.
 
-Michal
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/Makefile | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 2d7f5df33f04..ee4ad34adb4a 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -129,10 +129,13 @@ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
+ 	$(call msg,CC,,$@)
+ 	$(CC) -c $(CFLAGS) -o $@ $<
+ 
+-VMLINUX_BTF_PATHS := $(abspath ../../../../vmlinux)			\
+-			       /sys/kernel/btf/vmlinux			\
+-			       /boot/vmlinux-$(shell uname -r)
+-VMLINUX_BTF:= $(firstword $(wildcard $(VMLINUX_BTF_PATHS)))
++VMLINUX_BTF_PATHS := $(if $(O),$(O)/vmlinux)				\
++		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
++		     ../../../../vmlinux				\
++		     /sys/kernel/btf/vmlinux				\
++		     /boot/vmlinux-$(shell uname -r)
++VMLINUX_BTF:= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
++
+ $(OUTPUT)/runqslower: $(BPFOBJ)
+ 	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	\
+ 		    OUTPUT=$(SCRATCH_DIR)/ VMLINUX_BTF=$(VMLINUX_BTF)   \
+-- 
+2.17.1
+
