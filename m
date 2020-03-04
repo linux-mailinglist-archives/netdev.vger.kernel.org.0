@@ -2,170 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA1F178BB5
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 08:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF8B178BEE
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 08:50:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728614AbgCDHrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 02:47:51 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60426 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727734AbgCDHrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 02:47:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583308070;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/CNQZZzyik21Diixp1qqCgf0jKvTlEtpje08c+vEKWQ=;
-        b=h42TPpkiI559RwVAds8w0PLQA0eV2JUNiZd/taiuxu9ta7kZDKeCRenZSmNs+7LRpOxtDM
-        WEdIPoqs7exfC2LfCMmzYxF0FIg9ovTpgMUC7sEMOp/Hsi/tUQrt7BBA9mrXbAi16NJln8
-        J5BslQX1FapA1OhH7cQ9AYd75P+Mn5I=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-3-F5rBqYcVPlO8Rhw0gio64w-1; Wed, 04 Mar 2020 02:47:48 -0500
-X-MC-Unique: F5rBqYcVPlO8Rhw0gio64w-1
-Received: by mail-wr1-f71.google.com with SMTP id p5so487984wrj.17
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 23:47:48 -0800 (PST)
+        id S1728640AbgCDHui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 02:50:38 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36267 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728539AbgCDHui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 02:50:38 -0500
+Received: by mail-pf1-f193.google.com with SMTP id i13so550964pfe.3
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 23:50:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FE0Ixc8KNXtxV3AJi0NrIhjLcJ5PN1SKiqUXieUAH+k=;
+        b=mAoQjiAj2xMs70WpzaXbeW7LLMm+P5vfAu06ipyVx4dCmIXXlseknx/XeAscunbmJF
+         I0n4ZhZrecLymQdl4wBxDgTRc0t73+vuSltAltkiOVXnZTNKN6B0y7pt98P3RfNkTEcR
+         HrHBqv1nQ8FmEpSubeGlIuEngyYfx2OLuEK8emCYDuFjHrX9hXlr/i60j2MtM3f6hwuN
+         PeFi3qezrzyiD9qkI2pBTjZP20uh2DALV8iSMu69P6LJiWjC3RNr5+QTaDMTZJB2/mQT
+         Jzv/9D4CNyWKjw82QpjhSTTbBn2lTdDNuFHsXGpwEUv81/CvvtnMHPxFkBZ7vLMdxZ91
+         tZ+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=/CNQZZzyik21Diixp1qqCgf0jKvTlEtpje08c+vEKWQ=;
-        b=Qsm4aeTYOHBYLXFHrdOVhKqTCmnvGaxeAFloNXdrz36YWWHGg9Xn93Vd1X57IvwcoC
-         co2wwP/8bxswoz3PxqZhbqN29apqK/c5dOBvS/Cdr1WnFW4DD0m8C/uGFcRGSN4vsrz8
-         kR7T+B8D+39sfi+UbB1z38nQiVJfkrLtwTbVyXC8kC+vWduQdB4uXErXRhSqX8prd5j3
-         9iO3oy7P+frYMaMVlprQPC3IJzb5vAqKdklWI+AVBR0R/P2eILRsrY3aNI9OAWJ4Aq7g
-         2jD9OA2Bee3cqgCPUT0q296i7hDmGOC4Zg4qcUHGGwG8grhD68UF2iW9Bc5ld3Z4qPSb
-         irRg==
-X-Gm-Message-State: ANhLgQ1qIlaZXHWx/NEYRoaHRvcRy0IXlQvZzq3EakOLsQuTiTkjaMvR
-        BEewKupYwhoL2K1snAynVyzc7F7+L+kuYNHnTA3e3C8Udrt9WVKmcUOVhndOUNolyd+aTWugmwb
-        2pm/+iQFxd55F0pso
-X-Received: by 2002:a05:600c:1007:: with SMTP id c7mr2212568wmc.158.1583308067596;
-        Tue, 03 Mar 2020 23:47:47 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vuxU3J/8GEHOtYrPLsHOPMS9Uy4+5QcLgF3egV/k6stCpO/5eqRUVPxu5jc32EEXRLJyCov8g==
-X-Received: by 2002:a05:600c:1007:: with SMTP id c7mr2212546wmc.158.1583308067352;
-        Tue, 03 Mar 2020 23:47:47 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i8sm33085502wrq.10.2020.03.03.23.47.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FE0Ixc8KNXtxV3AJi0NrIhjLcJ5PN1SKiqUXieUAH+k=;
+        b=h+trDGYqnbVIwRF9+g96UyJ2CO0hAKfWcPlC1XKeepCSvuAdC7nxH/qm0alrd/Q7uR
+         rI7ikYdF3sZatkGRmoNloS+wwCl437BldvxVlaz2EL9BNBODbY6CaYzQXQ7pA8aTNpLf
+         L57sC6vhytbVpV+eZzOsTz3zbNEn5TxEkLVD6CiModpF0YF156j2xCdSrtxsXNcYGDYA
+         S0eLqzvvntkGKtfgAaCilj+J4REyFgv8jeUwjFp4GV+R8Z8eopSTd4rvKrnP79xp+TIm
+         a2UKiKwyuhF5iOLalSTmRG0VJLQNqhG9T79bCG0/EgEzP5X63QQG2P0fkYg+PueId5HS
+         jYZw==
+X-Gm-Message-State: ANhLgQ2zPajOF3gPugT3w6SUK1FpNckD/nIqwqxehXi3i/cTTE3UKI9O
+        BM0nKNlcCLIxs2DNF3n0SVc=
+X-Google-Smtp-Source: ADFU+vvDbrIhygitp2q/hctYYN9le2unR2/Wq+DCnkXR7KIUxrzAV81nrf8MRJ8QBgq7Ek7AATAjqQ==
+X-Received: by 2002:a63:24c6:: with SMTP id k189mr1419934pgk.436.1583308235962;
+        Tue, 03 Mar 2020 23:50:35 -0800 (PST)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id c18sm26404055pgw.17.2020.03.03.23.50.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2020 23:47:46 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0A842180331; Wed,  4 Mar 2020 08:47:45 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
-In-Reply-To: <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
-References: <CAEf4BzZGn9FcUdEOSR_ouqSNvzY2AdJA=8ffMV5mTmJQS-10VA@mail.gmail.com> <87imjms8cm.fsf@toke.dk> <094a8c0f-d781-d2a2-d4cd-721b20d75edd@iogearbox.net> <e9a4351a-4cf9-120a-1ae1-94a707a6217f@fb.com> <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net> <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com> <87pndt4268.fsf@toke.dk> <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net> <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk> <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 04 Mar 2020 08:47:44 +0100
-Message-ID: <87h7z44l3z.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Tue, 03 Mar 2020 23:50:34 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, subashab@codeaurora.org,
+        stranche@codeaurora.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net-next 0/3] net: rmnet: several code cleanup for rmnet module
+Date:   Wed,  4 Mar 2020 07:50:26 +0000
+Message-Id: <20200304075026.23184-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+This patchset is to cleanup rmnet module code.
 
-> On Tue, Mar 03, 2020 at 11:27:13PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Alexei Starovoitov <ast@fb.com> writes:
->> >
->> > Legacy api for tc, xdp, cgroup will not be able to override FD-based
->> > link. For TC it's easy. cls-bpf allows multi-prog, so netlink
->> > adding/removing progs will not be able to touch progs that are
->> > attached via FD-based link.
->> > Same thing for cgroups. FD-based link will be similar to 'multi' mode.
->> > The owner of the link has a guarantee that their program will
->> > stay attached to cgroup.
->> > XDP is also easy. Since it has only one prog. Attaching FD-based link
->> > will prevent netlink from overriding it.
->>=20
->> So what happens if the device goes away?
->
-> I'm not sure yet whether it's cleaner to make netdev, qdisc, cgroup to be=
- held
-> by the link or use notifier approach. There are pros and cons to both.
->
->> > This way the rootlet prog installed by libxdp (let's find a better name
->> > for it) will stay attached.
->>=20
->> Dispatcher prog?
->
-> would be great, but 'bpf_dispatcher' name is already used in the kernel.
-> I guess we can still call the library libdispatcher and dispatcher prog?
-> Alternatives:
-> libchainer and chainer prog
-> libaggregator and aggregator prog?
-> libpolicer kinda fits too, but could be misleading.
+1. The first patch is to add module alias
+rmnet module can not be loaded automatically because there is no
+alias name.
 
-Of those, I like 'dispatcher' best.
+2. The second patch is to add extack error message code.
+When rmnet netlink command fails, it doesn't print any error message.
+So, users couldn't know the exact reason.
+In order to tell the exact reason to the user, the extack error message
+is used in this patch.
 
-> libxdp is very confusing. It's not xdp specific.
+3. The third patch is to use GFP_KERNEL instead of GFP_ATOMIC.
+In the sleepable context, GFP_KERNEL can be used.
+So, in this patch, GFP_KERNEL is used instead of GFP_ATOMIC.
 
-Presumably the parts that are generally useful will just end up in
-libbpf (eventually)?
+Taehee Yoo (3):
+  net: rmnet: add missing module alias
+  net: rmnet: print error message when command fails
+  net: rmnet: use GFP_KERNEL instead of GFP_ATOMIC
 
->> > libxdp can choose to pin it in some libxdp specific location, so other
->> > libxdp-enabled applications can find it in the same location, detach,
->> > replace, modify, but random app that wants to hack an xdp prog won't
->> > be able to mess with it.
->>=20
->> What if that "random app" comes first, and keeps holding on to the link
->> fd? Then the admin essentially has to start killing processes until they
->> find the one that has the device locked, no?
->
-> Of course not. We have to provide an api to make it easy to discover
-> what process holds that link and where it's pinned.
-> But if we go with notifier approach none of it is an issue.
-> Whether target obj is held or notifier is used everything I said before s=
-till
-> stands. "random app" that uses netlink after libdispatcher got its link F=
-D will
-> not be able to mess with carefully orchestrated setup done by
-> libdispatcher.
+ .../ethernet/qualcomm/rmnet/rmnet_config.c    | 36 ++++++++++++-------
+ .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   | 11 +++---
+ .../net/ethernet/qualcomm/rmnet/rmnet_vnd.h   |  3 +-
+ 3 files changed, 32 insertions(+), 18 deletions(-)
 
-Protecting things against random modification is fine. What I want to
-avoid is XDP/tc programs locking the device so an admin needs to perform
-extra steps if it is in use when (e.g.) shutting down a device. XDP
-should be something any application can use as acceleration, and if it
-becomes known as "that annoying thing that locks my netdev", then that
-is not going to happen.
-
-> Also either approach will guarantee that infamous message:
-> "unregister_netdevice: waiting for %s to become free. Usage count"
-> users will never see.
->
->> And what about the case where the link fd is pinned on a bpffs that is
->> no longer available? I.e., if a netdevice with an XDP program moves
->> namespaces and no longer has access to the original bpffs, that XDP
->> program would essentially become immutable?
->
-> 'immutable' will not be possible.
-> I'm not clear to me how bpffs is going to disappear. What do you mean
-> exactly?
-
-# stat /sys/fs/bpf | grep Device
-Device: 1fh/31d	Inode: 1013963     Links: 2
-# mkdir /sys/fs/bpf/test; ls /sys/fs/bpf
-test
-# ip netns add test
-# ip netns exec test stat /sys/fs/bpf/test
-stat: cannot stat '/sys/fs/bpf/test': No such file or directory
-# ip netns exec test stat /sys/fs/bpf | grep Device
-Device: 3fh/63d	Inode: 12242       Links: 2
-
-It's a different bpffs instance inside the netns, so it won't have
-access to anything pinned in the outer one...
-
--Toke
+-- 
+2.17.1
 
