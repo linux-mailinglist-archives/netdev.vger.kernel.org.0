@@ -2,74 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9362178A82
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 07:17:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3E7178AC8
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 07:45:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725839AbgCDGRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 01:17:08 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34373 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725795AbgCDGRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 01:17:08 -0500
-Received: by mail-qt1-f196.google.com with SMTP id 59so571855qtb.1
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 22:17:07 -0800 (PST)
+        id S1725971AbgCDGpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 01:45:13 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46762 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgCDGpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 01:45:13 -0500
+Received: by mail-qt1-f195.google.com with SMTP id x21so529121qto.13
+        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 22:45:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=caIQwupTESKvTNasK1Y0ElTvzw6QteeHAZwa6qEn9eg=;
-        b=LT+4DUqdelw5hwzct80xw781KFz9fUpdWv03qmbfIaRDPf5gCeOi0SlMgy4fcOCrjS
-         Z7BMAmBsgGxXB1/PvPH4jXxfXRUEeOiQG/j/glpE9LxVGMlLlmkbBLX712HzhNZrwaws
-         foMJ+4eteUXzTuO4PBUVN+2ty+nidAxz7w50g=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=9OA9xPXvl39NvBtEJKFog/ZMktpcV46LJR8DPKaeTbw=;
+        b=quB341FSHfwRspYpO4ntPoXWjOlBFuzlR6r2QRRmujy2Hme1IfNuf6Qn0Lj9EHZQH9
+         AQB8K5iHFVhuTP+y2m8AUlwLoDUjmIcgP8CFo9yGh2I0/NPFG3fBYqCApotGrnvyZYc6
+         Lf5r17wBD+k8KokLOQuEZRmYQCviffZY01TH9URfZERFhWxd/xVPl4t9775FvIiZ+5ex
+         taVdhUFm5u2wiP7Et0vVExt8pMcqug6IA3LW9Q5eDcFY7RUnixWpxuOb+kVRDEKncDDW
+         /WDND/Nk6gLW+xh00qN5zTWf8Q0DN4DzEKkUfEZxaeJIUeSrjVyTSWj0ABvDA5wEg53p
+         w5oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=caIQwupTESKvTNasK1Y0ElTvzw6QteeHAZwa6qEn9eg=;
-        b=WuGpaD3sk5B3jrAxIyg5yjR/g4zF6oKLgKlzR42CxV9TG9UZPQeoFXXM4dPYGDDyym
-         ioDjUPwLf2/rZ6r5PGf3i9TZysMRReuB4PgB2VTgw4RWaRrQVTDWOawomNlka4y7k+x/
-         bgLZsnlhFa5+ykzBNPuVmHRS3UyYUdIUma2Oe4/PDyrZhk0lOv3mwaMIT1p43ddSF9vv
-         z+kse44Nkq6mfzF7bSCAvQhigNr804wBdUT8r2zUBCKmtKbfZIn0AL0TeYAk6rG2BHZw
-         dfmo4tT6tdOheptEhUHd2Cml5Se6qcfWCS8dCRwDRFv/VWM+UPl0uoZjnoZ8r1UTEuUl
-         CjQA==
-X-Gm-Message-State: ANhLgQ1YM71cwqvImKnHkXqLmLNHzQUemdP09cvhmuMe8Omqf0+4h+eq
-        Q20K8XoEo6uQrcYS6ur2io2Hl2P1UPhb187y5GTmYQ==
-X-Google-Smtp-Source: ADFU+vsvgPcLZ8H45epX3ThPt9B9AcNYov9iQV7Gw0i8/UGVhLzNyCl8C8LPF4L/BgQM6mWn8aY327MvRtdA32kh9NY=
-X-Received: by 2002:aed:2331:: with SMTP id h46mr1121896qtc.148.1583302627287;
- Tue, 03 Mar 2020 22:17:07 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=9OA9xPXvl39NvBtEJKFog/ZMktpcV46LJR8DPKaeTbw=;
+        b=aVaN5eNN3L4MXaPBPonkx1U5IvDAlZZ9AgAupLzveG1fBFaC4xjjQDFEQhYKy0aibt
+         TEJU6XZhkWGhRq8UgC9VbH/XyB+VYW00/W9I7zmqpWdOigTSYqD5g0Cd7K+UEUSzulh1
+         vUcGficxF4TkDKnU4/Nz9kbMKM1dRsI1wInpoHenRPps5vxRiaiZKhOYpp64dkDs3XZM
+         33/t9oU4n6CYDPu1ycm3wfHirINiQhYKPwOEUjaJOD/g1DLUIGc4mMUrbG3coftX+18v
+         gocorekENN6P/kJWbDWY4xMsLab+M8MX8BCmNEkRBdPy7imhrALrMIT0gB6q90TCln8V
+         XOUg==
+X-Gm-Message-State: ANhLgQ2YELn6oN67FxyzWXSpNfRMk5iF80/OO6vHOd94LgyjVE6QNfxp
+        J+0EGCrLG2roYT6JWVywPylMjnVpM9Q=
+X-Google-Smtp-Source: ADFU+vvCuAfdI+9/PYri6KgWhGn9N/VzDdXmZQawPwYc+9X00jZ2rcaapS8/egCWFJopjIrrX8a6Xg==
+X-Received: by 2002:ac8:4993:: with SMTP id f19mr1137749qtq.305.1583304312278;
+        Tue, 03 Mar 2020 22:45:12 -0800 (PST)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f12sm5172299qkm.13.2020.03.03.22.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2020 22:45:11 -0800 (PST)
+Date:   Wed, 4 Mar 2020 14:45:04 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Jo-Philipp Wich <jo@mein.io>
+Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
+ leak)
+Message-ID: <20200304064504.GY2159@dhcp-12-139.nay.redhat.com>
+References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
+ <b9d30209-7cc2-4515-f58a-f0dfe92fa0b6@gmail.com>
+ <20200303090035.GV2159@dhcp-12-139.nay.redhat.com>
+ <20200303091105.GW2159@dhcp-12-139.nay.redhat.com>
+ <bed8542b-3dc0-50e0-4607-59bd2aed25dd@gmail.com>
 MIME-Version: 1.0
-References: <20200304043354.716290-1-kuba@kernel.org> <20200304043354.716290-10-kuba@kernel.org>
-In-Reply-To: <20200304043354.716290-10-kuba@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 3 Mar 2020 22:16:56 -0800
-Message-ID: <CACKFLi=gjgqS5YTqrWSsKD1r7jK=6KvZPqV2ExzdwrXOYUr3GA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 09/12] bnxt: reject unsupported coalescing params
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, mkubecek@suse.cz,
-        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
-        pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        alexander.h.duyck@linux.intel.com,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bed8542b-3dc0-50e0-4607-59bd2aed25dd@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 3, 2020 at 8:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Set ethtool_ops->coalesce_types to let the core reject
-> unsupported coalescing parameters.
->
-> This driver did not previously reject unsupported parameters.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Tue, Mar 03, 2020 at 10:23:12AM +0100, Rafał Miłecki wrote:
+> On 03.03.2020 10:11, Hangbin Liu wrote:
+> > On Tue, Mar 03, 2020 at 05:00:35PM +0800, Hangbin Liu wrote:
+> > > On Tue, Mar 03, 2020 at 07:16:44AM +0100, Rafał Miłecki wrote:
+> > > > It appears that every interface up & down sequence results in adding a
+> > > > new ff02::2 entry to the idev->mc_tomb. Doing that over and over will
+> > > > obviously result in running out of memory at some point. That list isn't
+> > > > cleared until removing an interface.
+> > > 
+> > > Thanks Rafał, this info is very useful. When we set interface up, we will
+> > > call ipv6_add_dev() and add in6addr_linklocal_allrouters to the mcast list.
+> > > But we only remove it in ipv6_mc_destroy_dev(). This make the link down save
+> > > the list and link up add a new one.
+> > > 
+> > > Maybe we should remove the list in ipv6_mc_down(). like:
+> > 
+> > Or maybe we just remove the list in addrconf_ifdown(), as opposite of
+> > ipv6_add_dev(), which looks more clear.
+> > 
+> > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> > index 164c71c54b5c..4369087b8b74 100644
+> > --- a/net/ipv6/addrconf.c
+> > +++ b/net/ipv6/addrconf.c
+> > @@ -3841,6 +3841,12 @@ static int addrconf_ifdown(struct net_device *dev, int how)
+> >                  ipv6_ac_destroy_dev(idev);
+> >                  ipv6_mc_destroy_dev(idev);
+> >          } else {
+> > +               ipv6_dev_mc_dec(dev, &in6addr_interfacelocal_allnodes);
+> > +               ipv6_dev_mc_dec(dev, &in6addr_linklocal_allnodes);
+> > +
+> > +               if (idev->cnf.forwarding && (dev->flags & IFF_MULTICAST))
+> > +                       ipv6_dev_mc_dec(dev, &in6addr_linklocal_allrouters);
+> > +
+> >                  ipv6_mc_down(idev);
+> >          }
+> 
+> FWIW I can confirm it fixes the problem for me!
+> 
+> Only one ff02::2 entry is present when removing interface:
+> 
+> [  105.686503] [ipv6_mc_destroy_dev] idev->dev->name:mon-phy0
+> [  105.692056] [ipv6_mc_down] idev->dev->name:mon-phy0
+> [  105.696957] [ipv6_mc_destroy_dev -> __mld_clear_delrec] kfree(pmc:c64fd880) ff02::2
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Hi Rafał,
 
-Thanks.
+When review the code, I got confused. On the latest net code, we only
+add the allrouter address to multicast list in function
+1) ipv6_add_dev(), which only called when there is no idev. But link down and
+   up would not re-create idev.
+2) dev_forward_change(), which only be called during forward change, this
+   function will handle add/remove allrouter address correctly.
+
+So I still don't know how you could added the ff02::2 on same dev multi times.
+Does just do `ip link set $dev down; ip link set $dev up` reproduce your
+problem? Or did I miss something?
+
+Thanks
+Hangbin
