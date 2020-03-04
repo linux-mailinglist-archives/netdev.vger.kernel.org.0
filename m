@@ -2,72 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF299179742
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 18:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0010179761
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730103AbgCDRx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 12:53:58 -0500
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2509 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729749AbgCDRx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 12:53:57 -0500
-Received: from lhreml702-cah.china.huawei.com (unknown [172.18.7.106])
-        by Forcepoint Email with ESMTP id 17E83EE211FE9E141AC5;
-        Wed,  4 Mar 2020 17:53:55 +0000 (GMT)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- lhreml702-cah.china.huawei.com (10.201.108.43) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 4 Mar 2020 17:53:54 +0000
-Received: from [127.0.0.1] (10.202.226.45) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 4 Mar 2020
- 17:53:54 +0000
-From:   John Garry <john.garry@huawei.com>
-Subject: kmemleak report in tcp_metrics_init()->genl_register_family()
-To:     <edumazet@google.com>, "David S . Miller" <davem@davemloft.net>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <786c9926-e92c-32d5-6a1f-b6352a077d5f@huawei.com>
-Date:   Wed, 4 Mar 2020 17:53:53 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S2388146AbgCDSAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:00:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39538 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727656AbgCDSAx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 13:00:53 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D118124654;
+        Wed,  4 Mar 2020 18:00:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583344852;
+        bh=x0DTec6l/KCwAWoLLYoYuIcqS4JUXvomTN5zS9ORLks=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o0qyK/Z94yl98KWmW7kQVjs3gQivluOXSt2Ih2VCbP8LwwdBakKsmfrP7FwKe7kyB
+         JZp0zjMWr7OjElpsimumiJbUtBWuL/zeV8Poj/o8w5TcXN2vTGBkOjz5PODc7MSZJF
+         cKcSMuDpCJub1FkzEdS+AMyiI2qhKAZ6gMRfY2q8=
+Date:   Wed, 4 Mar 2020 10:00:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     davem@davemloft.net, thomas.lendacky@amd.com, benve@cisco.com,
+        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
+        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
+ centralized checking of coalescing parameters
+Message-ID: <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200304075926.GH4264@unicorn.suse.cz>
+References: <20200304043354.716290-1-kuba@kernel.org>
+        <20200304043354.716290-2-kuba@kernel.org>
+        <20200304075926.GH4264@unicorn.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.45]
-X-ClientProxiedBy: lhreml725-chm.china.huawei.com (10.201.108.76) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi guys,
+On Wed, 4 Mar 2020 08:59:26 +0100 Michal Kubecek wrote:
+> Just an idea: perhaps we could use the fact that struct ethtool_coalesce
+> is de facto an array so that this block could be replaced by a loop like
+> 
+> 	u32 supported_types = dev->ethtool_ops->coalesce_types;
+> 	const u32 *values = &coalesce->rx_coalesce_usecs;
+> 
+> 	for (i = 0; i < __ETHTOOL_COALESCE_COUNT; i++)
+> 		if (values[i] && !(supported_types & BIT(i)))
+> 			return false;
+> 
+> and to be sure, BUILD_BUG_ON() or static_assert() check that the offset
+> of ->rate_sample_interval matches ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL.
 
-On 5.6-rc4, I get this report of a memory leak after booting:
+I kind of prefer the greppability over the saved 40 lines :(
+But I'm happy to change if we get more votes for the more concise
+version. Or perhaps the Intel version with the warnings printed.
 
-root@(none)$ more /sys/kernel/debug/kmemleak
-unreferenced object 0xffff2027d1838300 (size 128):
-   comm "swapper/0", pid 1, jiffies 4294894708 (age 155.112s)
-   hex dump (first 32 bytes):
-     80 82 83 d1 27 20 ff ff 00 00 00 00 00 00 00 00  ....' ..........
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<(____ptrval____)>] __kmalloc+0x1c8/0x2d0
-     [<(____ptrval____)>] genl_register_family+0x300/0x6a8
-     [<(____ptrval____)>] tcp_metrics_init+0x30/0x48
-     [<(____ptrval____)>] tcp_init+0x270/0x29c
-     [<(____ptrval____)>] inet_init+0x178/0x264
-     [<(____ptrval____)>] do_one_initcall+0x5c/0x1b0
-     [<(____ptrval____)>] kernel_init_freeable+0x1f8/0x260
-     [<(____ptrval____)>] kernel_init+0x10/0x108
-     [<(____ptrval____)>] ret_from_fork+0x10/0x18
+> > +	return !dev->ethtool_ops->coalesce_types ||
+> > +		(dev->ethtool_ops->coalesce_types & used_types) == used_types;
+> > +}  
+> 
+> I suggest to move the check for !dev->ethtool_ops->coalesce_types to the
+> beginning of the function so that we avoid calculating the bitmap if we
+> are not going to check it anyway.
 
-
-.config is here https://pastebin.com/RbvNz825, dmesg 
-https://pastebin.com/ABW4S1Qw
-
-Cheers,
-John
+Good point!
