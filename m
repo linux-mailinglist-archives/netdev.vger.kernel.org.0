@@ -2,70 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE62179507
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 17:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5792B1795D6
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 17:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388295AbgCDQYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 11:24:24 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42336 "EHLO mx2.suse.de"
+        id S1727835AbgCDQ7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 11:59:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388254AbgCDQYW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 11:24:22 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 51662ADB3;
-        Wed,  4 Mar 2020 16:24:20 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 04235E037F; Wed,  4 Mar 2020 17:24:19 +0100 (CET)
-Message-Id: <4c410fbb93c84d801c267be68799101036715ecb.1583337972.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1583337972.git.mkubecek@suse.cz>
-References: <cover.1583337972.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 5/5] tun: drop TUN_DEBUG and tun_debug()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Date:   Wed,  4 Mar 2020 17:24:20 +0100 (CET)
+        id S1726561AbgCDQ7H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 11:59:07 -0500
+Received: from localhost (173-25-83-245.client.mchsi.com [173.25.83.245])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 600C921D56;
+        Wed,  4 Mar 2020 16:59:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583341146;
+        bh=FQJSk9E9cGV2olbAq15IXg0ngbl4HxcZVCftTjJCUfY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=2Zr9+YkuiQdVRJO0bZKlDvnpapkcJZFRtX9xUaJMXM5KPRxd3LP586Og89lfK0nag
+         Y30aIlJgJd3hhq46DRh7mi7mSly3xSJ0C3/8elWdxa/ClPJ4YpCYE4l/kQHsij+QyA
+         ijNVi4YJUhxK5oQdpc1Pj7MpJuuri/cKNVv31U7s=
+Date:   Wed, 4 Mar 2020 10:59:04 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, mlindner@marvell.com,
+        stephen@networkplumber.org, clemens@ladisch.de, perex@perex.cz,
+        tiwai@suse.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v4 00/10] PCI: Add and use constant PCI_STATUS_ERROR_BITS
+ and helper pci_status_get_and_clear_errors
+Message-ID: <20200304165904.GA231103@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200303.185937.1365050844508788930.davem@davemloft.net>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TUN_DEBUG and tun_debug() are no longer used anywhere, drop them.
+On Tue, Mar 03, 2020 at 06:59:37PM -0800, David Miller wrote:
+> 
+> Bjorn, please review and let me know if it is OK to merge this via the
+> networking tree.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- drivers/net/tun.c | 17 -----------------
- 1 file changed, 17 deletions(-)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 42110aba0014..4689e4c62e21 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -75,23 +75,6 @@
- static void tun_default_link_ksettings(struct net_device *dev,
- 				       struct ethtool_link_ksettings *cmd);
- 
--/* Uncomment to enable debugging */
--/* #define TUN_DEBUG 1 */
--
--#ifdef TUN_DEBUG
--#define tun_debug(level, tun, fmt, args...)			\
--do {								\
--	if (tun->msg_enable)					\
--		netdev_printk(level, tun->dev, fmt, ##args);	\
--} while (0)
--#else
--#define tun_debug(level, tun, fmt, args...)			\
--do {								\
--	if (0)							\
--		netdev_printk(level, tun->dev, fmt, ##args);	\
--} while (0)
--#endif
--
- #define TUN_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
- 
- /* TUN device flags */
--- 
-2.25.1
-
+I acked the relevant patches and you're welcome to merge it via
+networking.  Thanks!
