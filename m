@@ -2,109 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D5B51799AF
+	by mail.lfdr.de (Postfix) with ESMTP id B931C1799B0
 	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:24:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729198AbgCDUYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:24:43 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33110 "EHLO mx2.suse.de"
+        id S1729348AbgCDUYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:24:49 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33140 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728482AbgCDUYn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:24:43 -0500
+        id S1728482AbgCDUYt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:24:49 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 5586AAF01;
-        Wed,  4 Mar 2020 20:24:41 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 5C5CCAD41;
+        Wed,  4 Mar 2020 20:24:46 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 02E90E037F; Wed,  4 Mar 2020 21:24:40 +0100 (CET)
-Message-Id: <23ae41de7dd8663380d522e0fa2a75bf6b8724af.1583347351.git.mkubecek@suse.cz>
+        id 0A14DE037F; Wed,  4 Mar 2020 21:24:46 +0100 (CET)
+Message-Id: <a0ad19a363ee0be54663a62867d1c1178d07a7f1.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 01/25] move UAPI header copies to a separate
- directory
+Subject: [PATCH ethtool v2 02/25] update UAPI header copies
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:24:40 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:24:46 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The upcoming netlink series is going to add more local copies of kernel
-UAPI header files and some of them are going to include others. Keeping
-them in the main directory under modified name would require modifying
-those includes as well which would be impractical.
-
-Create a subdirectory uapi and move the UAPI headers there to allow
-including them in the usual way.
+Update to v5.6-rc1.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am                                  | 10 +++++-----
- internal.h                                   |  4 ++--
- ethtool-copy.h => uapi/linux/ethtool.h       |  0
- net_tstamp-copy.h => uapi/linux/net_tstamp.h |  0
- 4 files changed, 7 insertions(+), 7 deletions(-)
- rename ethtool-copy.h => uapi/linux/ethtool.h (100%)
- rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (100%)
+ uapi/linux/ethtool.h    | 17 +++++++++++++++++
+ uapi/linux/net_tstamp.h | 27 +++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-diff --git a/Makefile.am b/Makefile.am
-index 3af4d4c2b5da..05beb22be669 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -1,12 +1,12 @@
--AM_CFLAGS = -Wall
-+AM_CFLAGS = -I./uapi -Wall
- LDADD = -lm
+diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
+index 9afd2e6c5eea..16198061d723 100644
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -591,6 +591,9 @@ struct ethtool_pauseparam {
+  * @ETH_SS_RSS_HASH_FUNCS: RSS hush function names
+  * @ETH_SS_PHY_STATS: Statistic names, for use with %ETHTOOL_GPHYSTATS
+  * @ETH_SS_PHY_TUNABLES: PHY tunable names
++ * @ETH_SS_LINK_MODES: link mode names
++ * @ETH_SS_MSG_CLASSES: debug message class names
++ * @ETH_SS_WOL_MODES: wake-on-lan modes
+  */
+ enum ethtool_stringset {
+ 	ETH_SS_TEST		= 0,
+@@ -602,6 +605,12 @@ enum ethtool_stringset {
+ 	ETH_SS_TUNABLES,
+ 	ETH_SS_PHY_STATS,
+ 	ETH_SS_PHY_TUNABLES,
++	ETH_SS_LINK_MODES,
++	ETH_SS_MSG_CLASSES,
++	ETH_SS_WOL_MODES,
++
++	/* add new constants above here */
++	ETH_SS_COUNT
+ };
  
- man_MANS = ethtool.8
- EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
+ /**
+@@ -1505,6 +1514,11 @@ enum ethtool_link_mode_bit_indices {
+ 	ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT	 = 66,
+ 	ETHTOOL_LINK_MODE_100baseT1_Full_BIT		 = 67,
+ 	ETHTOOL_LINK_MODE_1000baseT1_Full_BIT		 = 68,
++	ETHTOOL_LINK_MODE_400000baseKR8_Full_BIT	 = 69,
++	ETHTOOL_LINK_MODE_400000baseSR8_Full_BIT	 = 70,
++	ETHTOOL_LINK_MODE_400000baseLR8_ER8_FR8_Full_BIT = 71,
++	ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT	 = 72,
++	ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT	 = 73,
  
- sbin_PROGRAMS = ethtool
--ethtool_SOURCES = ethtool.c ethtool-copy.h internal.h net_tstamp-copy.h \
--		  rxclass.c
-+ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
-+		  uapi/linux/net_tstamp.h rxclass.c
- if ETHTOOL_ENABLE_PRETTY_DUMP
- ethtool_SOURCES += \
- 		  amd8111e.c de2104x.c dsa.c e100.c e1000.c et131x.c igb.c	\
-@@ -25,9 +25,9 @@ endif
- TESTS = test-cmdline test-features
- check_PROGRAMS = test-cmdline test-features
- test_cmdline_SOURCES = test-cmdline.c test-common.c $(ethtool_SOURCES) 
--test_cmdline_CFLAGS = -DTEST_ETHTOOL
-+test_cmdline_CFLAGS = $(AM_FLAGS) -DTEST_ETHTOOL
- test_features_SOURCES = test-features.c test-common.c $(ethtool_SOURCES) 
--test_features_CFLAGS = -DTEST_ETHTOOL
-+test_features_CFLAGS = $(AM_FLAGS) -DTEST_ETHTOOL
+ 	/* must be last entry */
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS
+@@ -1616,6 +1630,7 @@ enum ethtool_link_mode_bit_indices {
+ #define SPEED_56000		56000
+ #define SPEED_100000		100000
+ #define SPEED_200000		200000
++#define SPEED_400000		400000
  
- dist-hook:
- 	cp $(top_srcdir)/ethtool.spec $(distdir)
-diff --git a/internal.h b/internal.h
-index ff52c6e7660c..527245633338 100644
---- a/internal.h
-+++ b/internal.h
-@@ -44,8 +44,8 @@ typedef int32_t s32;
- #define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
- #endif
+ #define SPEED_UNKNOWN		-1
  
--#include "ethtool-copy.h"
--#include "net_tstamp-copy.h"
-+#include <linux/ethtool.h>
-+#include <linux/net_tstamp.h>
+@@ -1680,6 +1695,8 @@ static __inline__ int ethtool_validate_duplex(__u8 duplex)
+ #define WAKE_MAGICSECURE	(1 << 6) /* only meaningful if WAKE_MAGIC */
+ #define WAKE_FILTER		(1 << 7)
  
- #if __BYTE_ORDER == __BIG_ENDIAN
- static inline u16 cpu_to_be16(u16 value)
-diff --git a/ethtool-copy.h b/uapi/linux/ethtool.h
-similarity index 100%
-rename from ethtool-copy.h
-rename to uapi/linux/ethtool.h
-diff --git a/net_tstamp-copy.h b/uapi/linux/net_tstamp.h
-similarity index 100%
-rename from net_tstamp-copy.h
-rename to uapi/linux/net_tstamp.h
++#define WOL_MODE_COUNT		8
++
+ /* L2-L4 network traffic flow types */
+ #define	TCP_V4_FLOW	0x01	/* hash or spec (tcp_ip4_spec) */
+ #define	UDP_V4_FLOW	0x02	/* hash or spec (udp_ip4_spec) */
+diff --git a/uapi/linux/net_tstamp.h b/uapi/linux/net_tstamp.h
+index 3d421d912193..f96e650d0af9 100644
+--- a/uapi/linux/net_tstamp.h
++++ b/uapi/linux/net_tstamp.h
+@@ -1,3 +1,4 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ /*
+  * Userspace API for hardware time stamping of network packets
+  *
+@@ -89,6 +90,14 @@ enum hwtstamp_tx_types {
+ 	 * queue.
+ 	 */
+ 	HWTSTAMP_TX_ONESTEP_SYNC,
++
++	/*
++	 * Same as HWTSTAMP_TX_ONESTEP_SYNC, but also enables time
++	 * stamp insertion directly into PDelay_Resp packets. In this
++	 * case, neither transmitted Sync nor PDelay_Resp packets will
++	 * receive a time stamp via the socket error queue.
++	 */
++	HWTSTAMP_TX_ONESTEP_P2P,
+ };
+ 
+ /* possible values for hwtstamp_config->rx_filter */
+@@ -140,4 +149,22 @@ struct scm_ts_pktinfo {
+ 	__u32 reserved[2];
+ };
+ 
++/*
++ * SO_TXTIME gets a struct sock_txtime with flags being an integer bit
++ * field comprised of these values.
++ */
++enum txtime_flags {
++	SOF_TXTIME_DEADLINE_MODE = (1 << 0),
++	SOF_TXTIME_REPORT_ERRORS = (1 << 1),
++
++	SOF_TXTIME_FLAGS_LAST = SOF_TXTIME_REPORT_ERRORS,
++	SOF_TXTIME_FLAGS_MASK = (SOF_TXTIME_FLAGS_LAST - 1) |
++				 SOF_TXTIME_FLAGS_LAST
++};
++
++struct sock_txtime {
++	__kernel_clockid_t	clockid;/* reference clockid */
++	__u32			flags;	/* as defined by enum txtime_flags */
++};
++
+ #endif /* _NET_TIMESTAMPING_H */
 -- 
 2.25.1
 
