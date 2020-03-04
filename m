@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C004517937B
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E931793B1
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388064AbgCDPfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 10:35:06 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:34020 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388024AbgCDPfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 10:35:05 -0500
-Received: by mail-qk1-f193.google.com with SMTP id f3so2007830qkh.1;
-        Wed, 04 Mar 2020 07:35:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c4RuF7jp06Gdp9+c9iYskCOTXb6vXMZn80rDacpfYvA=;
-        b=nYfm1EWfWF3B3Cl2NTdBNc6KwOTd3NqyvdqdbP1UtzWsetwd25N3fgCGmwOgXoFH8e
-         sg2DMNr5Rrd5iZzD6kqyoC+QLoAJMggnQQx9zbDWeohjgr++N6WUtJYQSKla5ceUoOUA
-         Skh42L/yaoo8RAxVJOzjjYlvoi1SkAowVwj/lII2QK1T0YtFR3FXbQUoXRlibq86m8MI
-         d4sEi0sCh23sKXXn288akG5A04JmoY4GdYsLk19PZxV0Mdq7pqQshbAzJU8Jc9ql6myP
-         WebJ/DlCJm0mCUDZ2YXeKsbRAXom0pH8XBo/hITIzTAQDyEgigX5Ii6mxsAHxgohkBx0
-         PZgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c4RuF7jp06Gdp9+c9iYskCOTXb6vXMZn80rDacpfYvA=;
-        b=IPbkncYZDBswWFwi1Z3WWqUIKxhTPqjBgJNiqUxS1rHTmjL9qJKcXgHPTRBAXJq4tZ
-         uj3IV09HpJItTDCdvhglibk0FsiNRgbiZg7lkhuvhJ0f9ntdKOvIhFC2r4SfU0jL4Eu0
-         /suexAbnbPL8GNqwAg/EaD/l8K3APrG9P9dIjPU//8JxIb7Q7GZ/4n1t3+X7fAvDxHhB
-         iud02FguPDRld1E0t+V3NlJiGW3Vb+642fi6ZB6zs9g05CoznXjgLNAh1T8cjeGIgBOu
-         /hYptHiGPlZAWd79ZjKrBz6tQXnEJu/alGiyGPdVfYk7/hE1dJcTUK9Dv/4/loFK45X0
-         WDgQ==
-X-Gm-Message-State: ANhLgQ3pz8a6Mtr/E+Dcw6gnUwpmz2n6Lt1FnDIAWRn1QUQzU/NyI+eY
-        T0w9D+rXhcWhEoaH4uK3RGZH5kokMA7sQVyxrKs=
-X-Google-Smtp-Source: ADFU+vsfF6f/QsPVQD8JAsdWPqh3ED1MmSoB4yziYJP4/R5Jfvnw4k+GhEKPA4TN+IN9dV7x3kvVqt9lKpc1mbGJULA=
-X-Received: by 2002:a05:620a:99d:: with SMTP id x29mr3476120qkx.39.1583336104782;
- Wed, 04 Mar 2020 07:35:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20200303003233.3496043-1-andriin@fb.com> <47bbaa27-a112-b4a5-6251-d8aad31937a5@iogearbox.net>
-In-Reply-To: <47bbaa27-a112-b4a5-6251-d8aad31937a5@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 4 Mar 2020 07:34:53 -0800
-Message-ID: <CAEf4BzZjboTyWE9LjdnRu+5ja2WqtHZRgEtMJc4w8B0F_wY-kw@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 0/3] Convert BPF UAPI constants into enum values
-To:     Daniel Borkmann <daniel@iogearbox.net>
+        id S1729536AbgCDPiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 10:38:08 -0500
+Received: from www62.your-server.de ([213.133.104.62]:41454 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbgCDPiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 10:38:08 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9W5y-0007cP-BH; Wed, 04 Mar 2020 16:38:02 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9W5y-0002AM-0p; Wed, 04 Mar 2020 16:38:02 +0100
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: switch BPF UAPI #define constants
+ used from BPF program side to enums
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+References: <20200303003233.3496043-1-andriin@fb.com>
+ <20200303003233.3496043-2-andriin@fb.com>
+ <fb80ddac-d104-d0b7-8bed-694d20b62d61@iogearbox.net>
+ <CAEf4BzZWXRX_TrFSPb=ORcfun8B+GdGOAF6C29B-3xB=NaJO7A@mail.gmail.com>
+ <87blpc4g14.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <945cf1c4-78bb-8d3c-10e3-273d100ce41c@iogearbox.net>
+Date:   Wed, 4 Mar 2020 16:38:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <87blpc4g14.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25741/Wed Mar  4 15:15:26 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 4, 2020 at 7:21 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 3/3/20 1:32 AM, Andrii Nakryiko wrote:
-> > Convert BPF-related UAPI constants, currently defined as #define macro, into
-> > anonymous enums. This has no difference in terms of usage of such constants in
-> > C code (they are still could be used in all the compile-time contexts that
-> > `#define`s can), but they are recorded as part of DWARF type info, and
-> > subsequently get recorded as part of kernel's BTF type info. This allows those
-> > constants to be emitted as part of vmlinux.h auto-generated header file and be
-> > used from BPF programs. Which is especially convenient for all kinds of BPF
-> > helper flags and makes CO-RE BPF programs nicer to write.
-> >
-> > libbpf's btf_dump logic currently assumes enum values are signed 32-bit
-> > values, but that doesn't match a typical case, so switch it to emit unsigned
-> > values. Once BTF encoding of BTF_KIND_ENUM is extended to capture signedness
-> > properly, this will be made more flexible.
-> >
-> > As an immediate validation of the approach, runqslower's copy of
-> > BPF_F_CURRENT_CPU #define is dropped in favor of its enum variant from
-> > vmlinux.h.
-> >
-> > v2->v3:
-> > - convert only constants usable from BPF programs (BPF helper flags, map
-> >    create flags, etc) (Alexei);
-> >
-> > v1->v2:
-> > - fix up btf_dump test to use max 32-bit unsigned value instead of negative one.
-> >
-> >
-> > Andrii Nakryiko (3):
-> >    bpf: switch BPF UAPI #define constants used from BPF program side to
-> >      enums
-> >    libbpf: assume unsigned values for BTF_KIND_ENUM
-> >    tools/runqslower: drop copy/pasted BPF_F_CURRENT_CPU definiton
-> >
-> >   include/uapi/linux/bpf.h                      | 175 ++++++++++-------
-> >   tools/bpf/runqslower/runqslower.bpf.c         |   3 -
-> >   tools/include/uapi/linux/bpf.h                | 177 +++++++++++-------
-> >   tools/lib/bpf/btf_dump.c                      |   8 +-
-> >   .../bpf/progs/btf_dump_test_case_syntax.c     |   2 +-
-> >   5 files changed, 224 insertions(+), 141 deletions(-)
-> >
->
-> Applied, thanks!
+On 3/4/20 10:37 AM, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>> On Tue, Mar 3, 2020 at 3:01 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>>
+>>> On 3/3/20 1:32 AM, Andrii Nakryiko wrote:
+>>>> Switch BPF UAPI constants, previously defined as #define macro, to anonymous
+>>>> enum values. This preserves constants values and behavior in expressions, but
+>>>> has added advantaged of being captured as part of DWARF and, subsequently, BTF
+>>>> type info. Which, in turn, greatly improves usefulness of generated vmlinux.h
+>>>> for BPF applications, as it will not require BPF users to copy/paste various
+>>>> flags and constants, which are frequently used with BPF helpers. Only those
+>>>> constants that are used/useful from BPF program side are converted.
+>>>>
+>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>>>
+>>> Just thinking out loud, is there some way this could be resolved generically
+>>> either from compiler side or via additional tooling where this ends up as BTF
+>>> data and thus inside vmlinux.h as anon enum eventually? bpf.h is one single
+>>> header and worst case libbpf could also ship a copy of it (?), but what about
+>>> all the other things one would need to redefine e.g. for tracing? Small example
+>>> that comes to mind are all these TASK_* defines in sched.h etc, and there's
+>>> probably dozens of other similar stuff needed too depending on the particular
+>>> case; would be nice to have some generic catch-all, hmm.
+>>
+>> Enum convertion seems to be the simplest and cleanest way,
+>> unfortunately (as far as I know). DWARF has some extensions capturing
+>> #defines, but values are strings (and need to be parsed, which is pain
+>> already for "1 << 1ULL"), and it's some obscure extension, not a
+>> standard thing. I agree would be nice not to have and change all UAPI
+>> headers for this, but I'm not aware of the solution like that.
+> 
+> Since this is a UAPI header, are we sure that no userspace programs are
+> using these defines in #ifdefs or something like that?
 
-Great, thanks! This is a huge usability boost for BPF programs relying
-on vmlinux.h!
+Hm, yes, anyone doing #ifdefs on them would get build issues. Simple example:
+
+enum {
+         FOO = 42,
+//#define FOO   FOO
+};
+
+#ifndef FOO
+# warning "bar"
+#endif
+
+int main(int argc, char **argv)
+{
+         return FOO;
+}
+
+$ gcc -Wall -O2 foo.c
+foo.c:7:3: warning: #warning "bar" [-Wcpp]
+     7 | # warning "bar"
+       |   ^~~~~~~
+
+Commenting #define FOO FOO back in fixes it as we discussed in v2:
+
+$ gcc -Wall -O2 foo.c
+$
+
+There's also a flag_enum attribute, but with the experiments I tried yesterday
+night I couldn't get a warning to trigger for anonymous enums at least, so that
+part should be ok.
+
+I was about to push the series out, but agree that there may be a risk for #ifndefs
+in the BPF C code. If we want to be on safe side, #define FOO FOO would be needed.
+
+Thanks,
+Daniel
