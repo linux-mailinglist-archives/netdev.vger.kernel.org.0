@@ -2,148 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76039179228
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 15:18:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A04D5179240
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 15:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729175AbgCDOSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 09:18:48 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37150 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbgCDOSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 09:18:48 -0500
-Received: by mail-wm1-f66.google.com with SMTP id a141so2050368wme.2
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 06:18:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=KAdy1Ce/bSm14uNtW0+72Oio7Hbe4nf1Z0kXSntMnNM=;
-        b=vGI1rC6lPatO6K/fIDDa82Hqp+fuYCbhd+cAtazYmI4htMHDQw7KyzLnI5Ans5q/cQ
-         i4nNC6ADBZENzKh6XHsXpKL4TfjQF38RWFJDCvrrMD5lYwzYvppGx1KUuL2f5Vgq3J4Y
-         vEngfnjc04Q2//YI1Lr8F+VHjmX+ud0D43PvDVEX07Nn/kXLRtPSi0H24NpfYZzv7UTp
-         jKGjneCbLj7qYMjFfrWA6leRD0SSodXfX6pyO4HN7y9WTsHPacggLE8Ds+/+uK3S6m/Z
-         0IDdgJYP8yjpRR/shYd0pdmb317awuPZz9LvAmOLZPuMopvL6sCmb4yBIkOg4JxXN/2z
-         q/oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=KAdy1Ce/bSm14uNtW0+72Oio7Hbe4nf1Z0kXSntMnNM=;
-        b=Vs0yzoFNPmv2pfWj2cjSmPzP/LYnrsnn3ey4gmQ40N1ENHHmKWOoT9vVOEJ2tGzL2D
-         /i6hQvc/1yHFbcLe+XujefpYIn0eNAujM8vrb053bS3qsI+qobSQuXerWWYqbCC/pRcQ
-         4ORW2j8rVPoFlwakeSGkDm21Qu4S+asNXgg8Y9ldnPALB+OX/kMyDe4d4vfc6cQiIjYM
-         RndXyecum1shauuQwSfBVgWHJZwR8o8bKX38yTP+VD+nri+BtRqIZCYWq0JfAyDuR8Qg
-         Q2SMriT1RMwjIJw/O319aApnuP0iaOgZoa3Gbx7hj2B+3OJyLi4akBzB1JBpRJ2iebB1
-         q+ig==
-X-Gm-Message-State: ANhLgQ2AsNOcaP3ltjfQMn3ci38ZJVwfCZVFD8qGW2s1kKlRAvPYNpRa
-        XeI+HSKA992V2ub+wPu6wlWNgQ==
-X-Google-Smtp-Source: ADFU+vt1wHhDP026qaT7wxptoBhhsER/odh+/QzKrA1rr0MLl5u/7sZKHVaVbtPmndjfb08eJIBIJg==
-X-Received: by 2002:a7b:c318:: with SMTP id k24mr4129381wmj.54.1583331526699;
-        Wed, 04 Mar 2020 06:18:46 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id l4sm4712706wmf.38.2020.03.04.06.18.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2020 06:18:41 -0800 (PST)
-Date:   Wed, 4 Mar 2020 15:18:39 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
-        vishal@chelsio.com, jeffrey.t.kirsher@intel.com,
-        idosch@mellanox.com, aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 01/12] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200304141839.GD4558@nanopsycho>
-References: <20200228172505.14386-1-jiri@resnulli.us>
- <20200228172505.14386-2-jiri@resnulli.us>
- <ef1dd85e-dea3-6568-62c9-b363c8cac72b@solarflare.com>
+        id S1729580AbgCDOZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 09:25:00 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:58626 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729398AbgCDOY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 09:24:59 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 024ENxsI196239;
+        Wed, 4 Mar 2020 14:24:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=mdNJZT+R9Wl9X6lUKY7ywTdeuLRuZU8N2jiMQrlzeP8=;
+ b=ezKYPp5szdcAOu6oxch/fG/KAGQxXGRY7Nk7jl/d6rRavjmlcJEtMYFn2LtppQXRJEZ5
+ 3214kYn7a2/2XUZQbGerzTUFhUJAcWTJdgI4XV20D+fA59in3SCU1a6JjkafEMiFMOOi
+ vyPppsM4av6DrddFZhFOKasxEKsqSxpjPK6CBqd+viDSJN0z36KiahdcWmOQOwdjmGon
+ f1bd7+rFQ0yMD1tzFB97nlVzfJl/2TKdrODD7SM2+Lamq7N3Wt3ei4TioGqELRRgck+O
+ T1g1DQ0ppjMXqt5g0zZ9bdERu9JyWcJ7Ul4cx1k6k9n4dPkm+p3PqlnRPFeksIBAEg2j MQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2yffcupn1s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 Mar 2020 14:24:45 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 024EDDjn170735;
+        Wed, 4 Mar 2020 14:24:45 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2yg1h0y896-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 04 Mar 2020 14:24:44 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 024EOeEB008114;
+        Wed, 4 Mar 2020 14:24:40 GMT
+Received: from kili.mountain (/41.210.146.162)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 04 Mar 2020 06:24:40 -0800
+Date:   Wed, 4 Mar 2020 17:24:31 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Christophe Ricard <christophe.ricard@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Allison Randal <allison@lohutok.net>, netdev@vger.kernel.org,
+        Suren Baghdasaryan <surenb@google.com>,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] net: nfc: fix bounds checking bugs on "pipe"
+Message-ID: <20200304142429.2734khtbfyyoxmwc@kili.mountain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ef1dd85e-dea3-6568-62c9-b363c8cac72b@solarflare.com>
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9549 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ suspectscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003040109
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9549 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxscore=0 bulkscore=0
+ adultscore=0 suspectscore=0 spamscore=0 malwarescore=0 impostorscore=0
+ priorityscore=1501 mlxlogscore=999 lowpriorityscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2003040109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 03, 2020 at 08:13:23PM CET, ecree@solarflare.com wrote:
->On 28/02/2020 17:24, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->>
->> Initially, pass "ANY" (struct is zeroed) to the drivers as that is the
->> current implicit value coming down to flow_offload. Add a bool
->> indicating that entries have mixed HW stats type.
->>
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->> v1->v2:
->> - moved to actions
->> - add mixed bool
->> ---
->>  include/net/flow_offload.h | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> index 4e864c34a1b0..eee1cbc5db3c 100644
->> --- a/include/net/flow_offload.h
->> +++ b/include/net/flow_offload.h
->> @@ -154,6 +154,10 @@ enum flow_action_mangle_base {
->>  	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
->>  };
->>  
->> +enum flow_action_hw_stats_type {
->> +	FLOW_ACTION_HW_STATS_TYPE_ANY,
->> +};
->> +
->>  typedef void (*action_destr)(void *priv);
->>  
->>  struct flow_action_cookie {
->> @@ -168,6 +172,7 @@ void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
->>  
->>  struct flow_action_entry {
->>  	enum flow_action_id		id;
->> +	enum flow_action_hw_stats_type	hw_stats_type;
->>  	action_destr			destructor;
->>  	void				*destructor_priv;
->>  	union {
->> @@ -228,6 +233,7 @@ struct flow_action_entry {
->>  };
->>  
->>  struct flow_action {
->> +	bool				mixed_hw_stats_types;
->Some sort of comment in the commit message the effect that this will
-> be set in patch #12 would be nice (and would have saved me some
-> reviewing time looking for it ;)
->Strictly speaking this violates SPOT; I know a helper to calculate
-> this 'at runtime' in the driver would have to loop over actions,
-> but it's control-plane so performance doesn't matter :grin:
+This is similar to commit 674d9de02aa7 ("NFC: Fix possible memory
+corruption when handling SHDLC I-Frame commands") and commit d7ee81ad09f0
+("NFC: nci: Add some bounds checking in nci_hci_cmd_received()") which
+added range checks on "pipe".
 
-That is what I wanted to avoid.
+The "pipe" variable comes skb->data[0] in nfc_hci_msg_rx_work().
+It's in the 0-255 range.  We're using it as the array index into the
+hdev->pipes[] array which has NFC_HCI_MAX_PIPES (128) members.
 
+Fixes: 118278f20aa8 ("NFC: hci: Add pipes table to reference them with a tuple {gate, host}")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ net/nfc/hci/core.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
->I'd suggest something like adding an internal-use-only MIXED value to
-> the enum, and then having a helper
-> enum flow_action_hw_state_type flow_action_single_stats_type(struct flow_action *action);
-> which could return FLOW_ACTION_HW_STATS_TYPE_MIXED or else whichever
-> type all the actions have (except that the 'different' check might
-> be further complicated to ignore DISABLED, since most
-> flow_action_entries will be for TC actions with no .update_stats()
-> which thus don't want stats and can use DISABLED to express that).
->That then avoids having to rely on the first entry having the stats
-> type (so flow_action_first_entry_get() goes away).
+diff --git a/net/nfc/hci/core.c b/net/nfc/hci/core.c
+index 6f1b096e601c..43811b5219b5 100644
+--- a/net/nfc/hci/core.c
++++ b/net/nfc/hci/core.c
+@@ -181,13 +181,20 @@ void nfc_hci_resp_received(struct nfc_hci_dev *hdev, u8 result,
+ void nfc_hci_cmd_received(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
+ 			  struct sk_buff *skb)
+ {
+-	u8 gate = hdev->pipes[pipe].gate;
+ 	u8 status = NFC_HCI_ANY_OK;
+ 	struct hci_create_pipe_resp *create_info;
+ 	struct hci_delete_pipe_noti *delete_info;
+ 	struct hci_all_pipe_cleared_noti *cleared_info;
++	u8 gate;
+ 
+-	pr_debug("from gate %x pipe %x cmd %x\n", gate, pipe, cmd);
++	pr_debug("from pipe %x cmd %x\n", pipe, cmd);
++
++	if (pipe >= NFC_HCI_MAX_PIPES) {
++		status = NFC_HCI_ANY_E_NOK;
++		goto exit;
++	}
++
++	gate = hdev->pipes[pipe].gate;
+ 
+ 	switch (cmd) {
+ 	case NFC_HCI_ADM_NOTIFY_PIPE_CREATED:
+@@ -375,8 +382,14 @@ void nfc_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe, u8 event,
+ 			    struct sk_buff *skb)
+ {
+ 	int r = 0;
+-	u8 gate = hdev->pipes[pipe].gate;
++	u8 gate;
++
++	if (pipe >= NFC_HCI_MAX_PIPES) {
++		pr_err("Discarded event %x to invalid pipe %x\n", event, pipe);
++		goto exit;
++	}
+ 
++	gate = hdev->pipes[pipe].gate;
+ 	if (gate == NFC_HCI_INVALID_GATE) {
+ 		pr_err("Discarded event %x to unopened pipe %x\n", event, pipe);
+ 		goto exit;
+-- 
+2.11.0
 
-No problem. I can call a helper that would go over the entries from
-driver. As you say, it is a slow path.
-
-Will do.
-
-
->
->-ed
->>  	unsigned int			num_entries;
->>  	struct flow_action_entry 	entries[0];
->>  };
