@@ -2,92 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1659A178710
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 147FA17871F
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728312AbgCDAev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 19:34:51 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:43794 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727725AbgCDAev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:34:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=WG3iPdftyaxe4JF5JBknRpB8gUrE1SSRMPAlrPJsmAw=; b=WtNevm5+K2WjRRR67Ed0jVpB6
-        2oJaPGiNNJmApUlAltjHdWr9W/NretAGPe9Z6tevcgzgRk9L2yAT0tUbHxpOwAaek/kj+oBUg2DMe
-        JyaA7k+NBSgfftFwLQGsOsS2Q0MpVXffr86yMK07g1Ig/U+ImfanNGrozJLMbwFJNcU9jmwFCB4h1
-        sgd7H/znFf3SbrihoxKv1/LajzEzRX9qYpazbzDB//g1fE+iCmm7cKKvnfIVCV/itV6RmsQF5gvP6
-        iGrgNxkcuKyFcnpfeGomwtjYtDu/0/koB1HvTX+Y3fBfsYWqE17Z1P80Tv0ZMyRI5HNBe9zsAQ1Eq
-        lXxz6ZIWA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60064)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j9Hzo-00039p-FC; Wed, 04 Mar 2020 00:34:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j9Hzm-0006Mf-W2; Wed, 04 Mar 2020 00:34:43 +0000
-Date:   Wed, 4 Mar 2020 00:34:42 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, corbet@lwn.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next] doc: sfp-phylink: correct code indentation
-Message-ID: <20200304003442.GW25745@shell.armlinux.org.uk>
-References: <E1j97cE-0004aW-Ur@rmk-PC.armlinux.org.uk>
- <20200303.153546.1011655145785464830.davem@davemloft.net>
+        id S1728183AbgCDAms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 19:42:48 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40580 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727864AbgCDAms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:42:48 -0500
+Received: by mail-lf1-f66.google.com with SMTP id p5so7835lfc.7;
+        Tue, 03 Mar 2020 16:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p37AmYrcEaUmAdk2JpsrGtIIoJlVrnXD9L/48H7szRQ=;
+        b=rhbFu6Aclm0dQJ92oSOFQLPq7/dTdxEpt0sMgzqSe4xHQ/CmfgsqnMXoEBTVpHu/aF
+         HH8hqfEMAxKG+lxOOb0n07YcA48JqKK7SXZns78kwLwgHXxhSsX3RQT7JPTsRHrj83nN
+         XaLcx+sHXGE52KILWPJTIg+s7iffAAv97w4T9uxtom2FRzfDjyjScnPImrTRpNm9p2DZ
+         0RIsbPvdOdM+spCra89MM8ZSvvWhCjcZQq4iipsNPrGivdoOXBClrDZpGQvX+EWy/Qb3
+         E0PB8l8RflVu6sIRr2NBc9OCD9iywFcmI3Rzu9qX3RHW0U9bymKOBwtVZGBLrSwiz+qY
+         Ckrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p37AmYrcEaUmAdk2JpsrGtIIoJlVrnXD9L/48H7szRQ=;
+        b=Ct+CxxE45N1n3xOPxbKeWALxVS4XhU7a+XfQYd6i5JFplOYBE1AK/CyXxbiO9DQ71y
+         DIfj6KLA0fxTYgB4assEO3zgg8vPtDaNGo4ma3KrKSeS3nWpbt/+TDYZ67Dm1mMW3khC
+         XL41QPXw/nu1cLFyi+kj7xI5Mruqi0iIDSUBfyuptkDHuU2qti4CpJVlnPQWFrXNEIcA
+         fQ4AobSFejxwhRZKUZVOV1rIAod0EEDrpFKkI8p+u6OxHTHo3vG0EDEUqlw2X+PL27oH
+         mxgQPDVLyIH+VhkSYwxQbDMd7ufaLusfswXSWDE8R/KpZtvoi8d9jqkAAKVuqyPl5Gtd
+         EUWQ==
+X-Gm-Message-State: ANhLgQ1+qjxsH6/6PYW9G258kL9SJeG89Li+vFiRCiGolf7eyBkcGUDi
+        Dq2tdb/tkhungGXZbttT1bRQFPwZz41Tp12X8sk=
+X-Google-Smtp-Source: ADFU+vszYebjffzDoRvj8YIgxx4Mxn0KStNsIcZieqEjUkcHOzOvZVal+MB4yaGEZ0NhXxyGmdyT1FCEzQgnlq6SHXI=
+X-Received: by 2002:ac2:5df9:: with SMTP id z25mr334928lfq.8.1583282566156;
+ Tue, 03 Mar 2020 16:42:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200303.153546.1011655145785464830.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200303180800.3303471-1-andriin@fb.com>
+In-Reply-To: <20200303180800.3303471-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 3 Mar 2020 16:42:34 -0800
+Message-ID: <CAADnVQ+6xhGRj=SRPXTx9XoNHaJ4Uut0DCQ4=wLa7G8b9j4_ow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix handling of optional field_name in btf_dump__emit_type_decl
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 03, 2020 at 03:35:46PM -0800, David Miller wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
-> Date: Tue, 03 Mar 2020 13:29:42 +0000
-> 
-> > Using vim to edit the phylink documentation reveals some mistakes due
-> > to the "invisible" pythonesque white space indentation that can't be
-> > seen with other editors. Fix it.
-> > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> I applied this, but you do know that GIT is going to warn about the
-> trailing whitespace to me:
-> 
-> .git/rebase-apply/patch:29: trailing whitespace.
-> 	
-> .git/rebase-apply/patch:39: trailing whitespace.
-> 	
-> warning: 2 lines add whitespace errors.
-> 
-> Do the empty lines really need that leading TAB?
+On Tue, Mar 3, 2020 at 10:13 AM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Internal functions, used by btf_dump__emit_type_decl(), assume field_name is
+> never going to be NULL. Ensure it's always the case.
+>
+> Fixes: 9f81654eebe8 ("libbpf: Expose BTF-to-C type declaration emitting API")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-If vim's syntax colouring is correct, then it does need the tab for
-the code sequence to be recognised as a block of code.
-
-As kerneldoc is based on python, and white-space indentation defining
-a block of code is a very (annoying) pythonesque thing, it seems that
-vim's probably correct.  But... unless someone knows how the .rst
-format really works...
-
-It could be that vim's syntax colouring for .rst files is broken.
-I was hoping that the documentation people would've spoken up about
-that though, as I explicitly stated in the commit message that the
-patch was based on vim's behaviour.
-
-Not having the tabs causes vim to reverse-bold a lot of the file,
-making it basically uneditable without sunglasses.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Applied. Thanks
