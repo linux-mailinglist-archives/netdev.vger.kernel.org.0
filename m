@@ -2,67 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2A617935F
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C004517937B
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729725AbgCDP2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 10:28:53 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45576 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726650AbgCDP2x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 10:28:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=x30yDmZgR88IH5jCGtl6A2Rh5dtdI+huFbLm4TgEaJY=; b=Rcxv8wkfn7VxLvNqIF7RivlY6m
-        9iROJ3LadRfR1i1aqzdf6I1IWz1KyOBpZwBpBUiOztcoNz6ICm2rEBz74hGAhSl21z6+F9oZDsR3V
-        ZOxVbcFfd5J9oqZyU809qj6hXjtB1I16vWhaKRv03oO11wqc39aRDS0hhkUKs6N3CNnw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j9Vx3-0006dJ-5O; Wed, 04 Mar 2020 16:28:49 +0100
-Date:   Wed, 4 Mar 2020 16:28:49 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Hau <hau@realtek.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Jason Yen <jason.yen@canonical.com>
-Subject: Re: SFP+ support for 8168fp/8117
-Message-ID: <20200304152849.GE3553@lunn.ch>
-References: <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
- <c148fefc-fd56-26a8-9f9b-fbefbaf25050@gmail.com>
- <02F7CBDE-B877-481C-A5AF-2F4CBF830A2C@canonical.com>
- <80E9C881-91C8-4F29-B9CE-652F9EE0B018@canonical.com>
- <995bddbc4f9d48cbb3a289a7e9799f15@realtek.com>
- <12EA7285-06D7-44D3-B033-4F52A06123CC@canonical.com>
- <cae39cfbb5174c8884328887cdfb5a89@realtek.com>
- <9AAC75D4-B04F-49CD-BBB9-11AE3382E4D8@canonical.com>
- <5A21808E-C9DA-44BF-952B-4A5077B52E9B@canonical.com>
- <e10eef58d8fc4b67ac2a73784bf86381@realtek.com>
+        id S2388064AbgCDPfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 10:35:06 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34020 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388024AbgCDPfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 10:35:05 -0500
+Received: by mail-qk1-f193.google.com with SMTP id f3so2007830qkh.1;
+        Wed, 04 Mar 2020 07:35:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c4RuF7jp06Gdp9+c9iYskCOTXb6vXMZn80rDacpfYvA=;
+        b=nYfm1EWfWF3B3Cl2NTdBNc6KwOTd3NqyvdqdbP1UtzWsetwd25N3fgCGmwOgXoFH8e
+         sg2DMNr5Rrd5iZzD6kqyoC+QLoAJMggnQQx9zbDWeohjgr++N6WUtJYQSKla5ceUoOUA
+         Skh42L/yaoo8RAxVJOzjjYlvoi1SkAowVwj/lII2QK1T0YtFR3FXbQUoXRlibq86m8MI
+         d4sEi0sCh23sKXXn288akG5A04JmoY4GdYsLk19PZxV0Mdq7pqQshbAzJU8Jc9ql6myP
+         WebJ/DlCJm0mCUDZ2YXeKsbRAXom0pH8XBo/hITIzTAQDyEgigX5Ii6mxsAHxgohkBx0
+         PZgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c4RuF7jp06Gdp9+c9iYskCOTXb6vXMZn80rDacpfYvA=;
+        b=IPbkncYZDBswWFwi1Z3WWqUIKxhTPqjBgJNiqUxS1rHTmjL9qJKcXgHPTRBAXJq4tZ
+         uj3IV09HpJItTDCdvhglibk0FsiNRgbiZg7lkhuvhJ0f9ntdKOvIhFC2r4SfU0jL4Eu0
+         /suexAbnbPL8GNqwAg/EaD/l8K3APrG9P9dIjPU//8JxIb7Q7GZ/4n1t3+X7fAvDxHhB
+         iud02FguPDRld1E0t+V3NlJiGW3Vb+642fi6ZB6zs9g05CoznXjgLNAh1T8cjeGIgBOu
+         /hYptHiGPlZAWd79ZjKrBz6tQXnEJu/alGiyGPdVfYk7/hE1dJcTUK9Dv/4/loFK45X0
+         WDgQ==
+X-Gm-Message-State: ANhLgQ3pz8a6Mtr/E+Dcw6gnUwpmz2n6Lt1FnDIAWRn1QUQzU/NyI+eY
+        T0w9D+rXhcWhEoaH4uK3RGZH5kokMA7sQVyxrKs=
+X-Google-Smtp-Source: ADFU+vsfF6f/QsPVQD8JAsdWPqh3ED1MmSoB4yziYJP4/R5Jfvnw4k+GhEKPA4TN+IN9dV7x3kvVqt9lKpc1mbGJULA=
+X-Received: by 2002:a05:620a:99d:: with SMTP id x29mr3476120qkx.39.1583336104782;
+ Wed, 04 Mar 2020 07:35:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e10eef58d8fc4b67ac2a73784bf86381@realtek.com>
+References: <20200303003233.3496043-1-andriin@fb.com> <47bbaa27-a112-b4a5-6251-d8aad31937a5@iogearbox.net>
+In-Reply-To: <47bbaa27-a112-b4a5-6251-d8aad31937a5@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 4 Mar 2020 07:34:53 -0800
+Message-ID: <CAEf4BzZjboTyWE9LjdnRu+5ja2WqtHZRgEtMJc4w8B0F_wY-kw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/3] Convert BPF UAPI constants into enum values
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Kai-Heng,
-> 
-> For adding SFP+ support for rtl8168fp, 
-> 1.Some power saving features must be disabled, like APDLS/EEE/EEEPLUS...
-> 2.PHY capability must be set to auto-negation.
-> 
-> I am kind of busy this week. I will try to add support for this chip into upstream next week.
+On Wed, Mar 4, 2020 at 7:21 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 3/3/20 1:32 AM, Andrii Nakryiko wrote:
+> > Convert BPF-related UAPI constants, currently defined as #define macro, into
+> > anonymous enums. This has no difference in terms of usage of such constants in
+> > C code (they are still could be used in all the compile-time contexts that
+> > `#define`s can), but they are recorded as part of DWARF type info, and
+> > subsequently get recorded as part of kernel's BTF type info. This allows those
+> > constants to be emitted as part of vmlinux.h auto-generated header file and be
+> > used from BPF programs. Which is especially convenient for all kinds of BPF
+> > helper flags and makes CO-RE BPF programs nicer to write.
+> >
+> > libbpf's btf_dump logic currently assumes enum values are signed 32-bit
+> > values, but that doesn't match a typical case, so switch it to emit unsigned
+> > values. Once BTF encoding of BTF_KIND_ENUM is extended to capture signedness
+> > properly, this will be made more flexible.
+> >
+> > As an immediate validation of the approach, runqslower's copy of
+> > BPF_F_CURRENT_CPU #define is dropped in favor of its enum variant from
+> > vmlinux.h.
+> >
+> > v2->v3:
+> > - convert only constants usable from BPF programs (BPF helper flags, map
+> >    create flags, etc) (Alexei);
+> >
+> > v1->v2:
+> > - fix up btf_dump test to use max 32-bit unsigned value instead of negative one.
+> >
+> >
+> > Andrii Nakryiko (3):
+> >    bpf: switch BPF UAPI #define constants used from BPF program side to
+> >      enums
+> >    libbpf: assume unsigned values for BTF_KIND_ENUM
+> >    tools/runqslower: drop copy/pasted BPF_F_CURRENT_CPU definiton
+> >
+> >   include/uapi/linux/bpf.h                      | 175 ++++++++++-------
+> >   tools/bpf/runqslower/runqslower.bpf.c         |   3 -
+> >   tools/include/uapi/linux/bpf.h                | 177 +++++++++++-------
+> >   tools/lib/bpf/btf_dump.c                      |   8 +-
+> >   .../bpf/progs/btf_dump_test_case_syntax.c     |   2 +-
+> >   5 files changed, 224 insertions(+), 141 deletions(-)
+> >
+>
+> Applied, thanks!
 
-Is it possible to access the I2C bus? The GPIO lines from the SFP
-socket like LOS, TX Disable?
-
-Thanks
-	Andrew
+Great, thanks! This is a huge usability boost for BPF programs relying
+on vmlinux.h!
