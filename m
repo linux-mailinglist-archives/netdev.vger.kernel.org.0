@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B16A71789D4
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 06:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D9F1789ED
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 06:17:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725977AbgCDFII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 00:08:08 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:39585 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725774AbgCDFII (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 00:08:08 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48XMMp0NZTz9sSG;
-        Wed,  4 Mar 2020 16:08:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1583298486;
-        bh=2AGvzSo4s7yhovCwuUDqMjs/grp1mZuL0AMqAnlZklM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=GLpcWwZfIAXZpPi4bzUvT3dJeKXxNG6lhocAyBNQR0KsJvnu9etxsVgkmlNj5snfh
-         b59YfRvkChaT9d5/GApcB9L3EKT8Up9vpOQYESo64DBNbG5ex7EXKfyhuW3u+shUbm
-         wKcxpIad65+xIjY1aPEo6JtWmwXoVFlBe+Wq+v6KGiqvCEPzL1ikPtd2xITiz1OMli
-         qyOKRDmuJEMJXg1hKcU2c5Q4grxNWVUDUzNiOWjU5z1/+AUhLuqiK04g0t6J/sUFvu
-         Gt0RvOznEYwOQe/kUHdwKxBKijVaAuE2YyIM5MkuIncP0i6hz7vAd3MkffeaDjiqZJ
-         l/lxUnpzun4gA==
-Date:   Wed, 4 Mar 2020 16:08:04 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20200304160804.6daf438c@canb.auug.org.au>
+        id S1725892AbgCDFRP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Mar 2020 00:17:15 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:43985 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgCDFRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 00:17:15 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 0245GcJ7015193, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 0245GcJ7015193
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 4 Mar 2020 13:16:38 +0800
+Received: from RTEXMB03.realtek.com.tw (172.21.6.96) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 13:16:38 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 13:16:37 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
+ RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
+ 15.01.1779.005; Wed, 4 Mar 2020 13:16:37 +0800
+From:   Tony Chuang <yhchuang@realtek.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+CC:     "Mancini, Jason" <Jason.Mancini@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: RE: v5.5-rc1 and beyond insta-kills some Comcast wifi routers
+Thread-Topic: v5.5-rc1 and beyond insta-kills some Comcast wifi routers
+Thread-Index: AQHV8eKYmDBcKgCqq0WSUKvXILk0y6g34qhg
+Date:   Wed, 4 Mar 2020 05:16:37 +0000
+Message-ID: <4bd036de86c94545af3e5d92f0920ac2@realtek.com>
+References: <DM6PR12MB4331FD3C4EF86E6AF2B3EBC7E5E50@DM6PR12MB4331.namprd12.prod.outlook.com>
+        <4e2a1fc1-4c14-733d-74e2-750ef1f81bf6@infradead.org>
+ <87h7z4r9p5.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87h7z4r9p5.fsf@kamboji.qca.qualcomm.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.68.175]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/L_ubD/qdKwECXxCSoVa4ke3";
- protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/L_ubD/qdKwECXxCSoVa4ke3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Kalle Valo <kvalo@codeaurora.org> writes:
+> 
+> Randy Dunlap <rdunlap@infradead.org> writes:
+> 
+> > [add netdev mailing list + 2 patch signers]
+> 
+> Adding also linux-wireless. It's always best to send questions about any
+> wireless issues to linux-wireless
+> 
+> > On 3/3/20 7:34 PM, Mancini, Jason wrote:
+> >> [I can't seem to access the linux-net ml per kernel.org faq, apology
+> >> in advance.]
+> >>
+> >> This change, which I think first appeared for v5.5-rc1, basically
+> >> within seconds, knocks out our [apparently buggy] Comcast wifi for
+> >> about 2-3 minutes.  Is there a boot option (or similar) where I can
+> >> achieve prior kernel behavior?  Otherwise I am stuck on kernel 5.4
+> >> (or Win10) it seems, or forever compiling custom kernels for my
+> >> choice of distribution [as I don't have physical access to the router
+> >> in question.]
+> >> Thanks!
+> >> Jason
+> >>
+> >> ================
+> >>
+> >> 127eef1d46f80056fe9f18406c6eab38778d8a06 is the first bad commit
+> >> commit 127eef1d46f80056fe9f18406c6eab38778d8a06
+> >> Author: Yan-Hsuan Chuang <yhchuang@realtek.com>
+> >> Date:   Wed Oct 2 14:35:23 2019 +0800
+> 
+> Can you try if this fixes it:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.gi
+> t/commit/?id=74c3d72cc13401f9eb3e3c712855e9f8f2d2682b
+> 
 
-Hi all,
+Kalle is providing the right possible patch to fix it.
 
-In commit
+The first bad commit you found, that causes this issue, introduced TX-AMSDU.
+But we found that enabling TX-AMSDU on 2.4G band is not working while
+connecting to some APs. So, you can try if the patch provided by Kalle works.
+(I hope so). Otherwise, you can enable the kernel log debug mask by:
+echo 0xffffffff > /sys/module/rtw88/parameters/debug_mask.
+And collect the log to see if there's anything wrong.
 
-  707518348ae7 ("devlink: remove trigger command from devlink-region.rst")
-
-Fixes tag
-
-  Fixes: 0b0f945f5458 ("devlink: add a file documenting devlink regions", 2=
-020-01-10)
-
-has these problem(s):
-
-  - Subject does not match target commit subject
-    Just use
-	git log -1 --format=3D'Fixes: %h ("%s")'
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/L_ubD/qdKwECXxCSoVa4ke3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5fN7QACgkQAVBC80lX
-0GwMlgf8Dygoxwl0X0rv2dDXN+aY/CishuG1osiVecepQPFnpu1+O9Bk4ufJPw6T
-YVE9sdKtg2Ia6//b5MABqCRQvaZHdZmTeen53IUqiUQriin0//6QZCknAPfvBiMy
-cCcIFiTIvq6Xf61fRDVAyhavsw3ysEZ+hIyHO72sD1Ye0uHEExy6SFBSwk0ObVxw
-mODqt8UTDDxlmC4eje9Mg2qig8Vht/PxxRgBoXPQrBZhluUUS1X/8zh0ML2mIsWZ
-uKkiWEs37pjy+clK4yFS9tx9UTIQkwGetsQ8ozMyz8e5qjJd70/V60HpabOpb+r4
-YKybPO//2oKbfVruJBRiPpDX3ikbEA==
-=zCxu
------END PGP SIGNATURE-----
-
---Sig_/L_ubD/qdKwECXxCSoVa4ke3--
+Yen-Hsuan
