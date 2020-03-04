@@ -2,70 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 147FA17871F
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08AF4178756
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 02:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbgCDAms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 19:42:48 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40580 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727864AbgCDAms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:42:48 -0500
-Received: by mail-lf1-f66.google.com with SMTP id p5so7835lfc.7;
-        Tue, 03 Mar 2020 16:42:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p37AmYrcEaUmAdk2JpsrGtIIoJlVrnXD9L/48H7szRQ=;
-        b=rhbFu6Aclm0dQJ92oSOFQLPq7/dTdxEpt0sMgzqSe4xHQ/CmfgsqnMXoEBTVpHu/aF
-         HH8hqfEMAxKG+lxOOb0n07YcA48JqKK7SXZns78kwLwgHXxhSsX3RQT7JPTsRHrj83nN
-         XaLcx+sHXGE52KILWPJTIg+s7iffAAv97w4T9uxtom2FRzfDjyjScnPImrTRpNm9p2DZ
-         0RIsbPvdOdM+spCra89MM8ZSvvWhCjcZQq4iipsNPrGivdoOXBClrDZpGQvX+EWy/Qb3
-         E0PB8l8RflVu6sIRr2NBc9OCD9iywFcmI3Rzu9qX3RHW0U9bymKOBwtVZGBLrSwiz+qY
-         Ckrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p37AmYrcEaUmAdk2JpsrGtIIoJlVrnXD9L/48H7szRQ=;
-        b=Ct+CxxE45N1n3xOPxbKeWALxVS4XhU7a+XfQYd6i5JFplOYBE1AK/CyXxbiO9DQ71y
-         DIfj6KLA0fxTYgB4assEO3zgg8vPtDaNGo4ma3KrKSeS3nWpbt/+TDYZ67Dm1mMW3khC
-         XL41QPXw/nu1cLFyi+kj7xI5Mruqi0iIDSUBfyuptkDHuU2qti4CpJVlnPQWFrXNEIcA
-         fQ4AobSFejxwhRZKUZVOV1rIAod0EEDrpFKkI8p+u6OxHTHo3vG0EDEUqlw2X+PL27oH
-         mxgQPDVLyIH+VhkSYwxQbDMd7ufaLusfswXSWDE8R/KpZtvoi8d9jqkAAKVuqyPl5Gtd
-         EUWQ==
-X-Gm-Message-State: ANhLgQ1+qjxsH6/6PYW9G258kL9SJeG89Li+vFiRCiGolf7eyBkcGUDi
-        Dq2tdb/tkhungGXZbttT1bRQFPwZz41Tp12X8sk=
-X-Google-Smtp-Source: ADFU+vszYebjffzDoRvj8YIgxx4Mxn0KStNsIcZieqEjUkcHOzOvZVal+MB4yaGEZ0NhXxyGmdyT1FCEzQgnlq6SHXI=
-X-Received: by 2002:ac2:5df9:: with SMTP id z25mr334928lfq.8.1583282566156;
- Tue, 03 Mar 2020 16:42:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20200303180800.3303471-1-andriin@fb.com>
-In-Reply-To: <20200303180800.3303471-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 3 Mar 2020 16:42:34 -0800
-Message-ID: <CAADnVQ+6xhGRj=SRPXTx9XoNHaJ4Uut0DCQ4=wLa7G8b9j4_ow@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix handling of optional field_name in btf_dump__emit_type_decl
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2387398AbgCDBB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 20:01:58 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:37804 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727725AbgCDBB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 20:01:58 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C742C15AD1959;
+        Tue,  3 Mar 2020 17:01:57 -0800 (PST)
+Date:   Tue, 03 Mar 2020 17:01:57 -0800 (PST)
+Message-Id: <20200303.170157.1654569852060975852.davem@davemloft.net>
+To:     mathew.j.martineau@linux.intel.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] mptcp: Improve DATA_FIN transmission
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200228234741.57086-1-mathew.j.martineau@linux.intel.com>
+References: <20200228234741.57086-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 17:01:57 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 3, 2020 at 10:13 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Internal functions, used by btf_dump__emit_type_decl(), assume field_name is
-> never going to be NULL. Ensure it's always the case.
->
-> Fixes: 9f81654eebe8 ("libbpf: Expose BTF-to-C type declaration emitting API")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+From: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Date: Fri, 28 Feb 2020 15:47:38 -0800
 
-Applied. Thanks
+> MPTCP's DATA_FIN flag is sent in a DSS option when closing the
+> MPTCP-level connection. This patch series prepares for correct DATA_FIN
+> handling across multiple subflows (where individual subflows may
+> disconnect without closing the entire MPTCP connection) by changing the
+> way the MPTCP-level socket requests a DATA_FIN on a subflow and
+> propagates the necessary data for the TCP option.
+
+Series applied, thanks Mat.
