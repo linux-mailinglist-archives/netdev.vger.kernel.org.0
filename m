@@ -2,111 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8B6179503
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 17:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F85179506
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 17:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388230AbgCDQYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 11:24:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42266 "EHLO mx2.suse.de"
+        id S2388273AbgCDQYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 11:24:18 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42312 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729906AbgCDQYM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 11:24:12 -0500
+        id S2388254AbgCDQYR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 11:24:17 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 491F7B4C4;
-        Wed,  4 Mar 2020 16:24:10 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 54129B4C4;
+        Wed,  4 Mar 2020 16:24:15 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id EB08DE037F; Wed,  4 Mar 2020 17:24:09 +0100 (CET)
-Message-Id: <7096f67e03509800c4e7011a93f4911c5cba5a67.1583337972.git.mkubecek@suse.cz>
+        id F19C3E037F; Wed,  4 Mar 2020 17:24:14 +0100 (CET)
+Message-Id: <fd9f73a61a1c70d20d254d32eae0d8cf33888f20.1583337972.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583337972.git.mkubecek@suse.cz>
 References: <cover.1583337972.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 3/5] tun: drop useless debugging statements
+Subject: [PATCH net-next 4/5] tun: replace tun_debug() by netif_info()
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org
-Date:   Wed,  4 Mar 2020 17:24:09 +0100 (CET)
+Date:   Wed,  4 Mar 2020 17:24:14 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of the tun_debug() statements only inform us about entering
-a function which can be easily achieved with ftrace or kprobe. As
-tun_debug() is no-op unless TUN_DEBUG is set which requires editing the
-source and recompiling, setting up ftrace or kprobe is easier. Drop these
-debug statements.
-
-Also drop the tun_debug() statement informing about SIOCSIFHWADDR ioctl.
-We can monitor these through rtnetlink and it makes little sense to log
-address changes through ioctl but not changes through rtnetlink. Moreover,
-this tun_debug() is called even if the actual address change fails which
-makes it even less useful.
+The tun driver uses custom macro tun_debug() which is only available if
+TUN_DEBUG is set. Replace it by standard netif_ifinfo(). For that purpose,
+rename tun_struct::debug to msg_enable and make it u32 and always present.
+Finally, make tun_get_msglevel(), tun_set_msglevel() and TUNSETDEBUG ioctl
+independent of TUN_DEBUG.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- drivers/net/tun.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/net/tun.c | 60 +++++++++++++++++++++--------------------------
+ 1 file changed, 27 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 59290ef07497..15ae2050ab5b 100644
+index 15ae2050ab5b..42110aba0014 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -473,8 +473,6 @@ static void tun_flow_cleanup(struct timer_list *t)
- 	unsigned long count = 0;
- 	int i;
+@@ -81,7 +81,7 @@ static void tun_default_link_ksettings(struct net_device *dev,
+ #ifdef TUN_DEBUG
+ #define tun_debug(level, tun, fmt, args...)			\
+ do {								\
+-	if (tun->debug)						\
++	if (tun->msg_enable)					\
+ 		netdev_printk(level, tun->dev, fmt, ##args);	\
+ } while (0)
+ #else
+@@ -213,9 +213,7 @@ struct tun_struct {
+ 	struct sock_fprog	fprog;
+ 	/* protected by rtnl lock */
+ 	bool			filter_attached;
+-#ifdef TUN_DEBUG
+-	int debug;
+-#endif
++	u32			msg_enable;
+ 	spinlock_t lock;
+ 	struct hlist_head flows[TUN_NUM_FLOW_ENTRIES];
+ 	struct timer_list flow_gc_timer;
+@@ -411,8 +409,9 @@ static struct tun_flow_entry *tun_flow_create(struct tun_struct *tun,
+ 	struct tun_flow_entry *e = kmalloc(sizeof(*e), GFP_ATOMIC);
  
--	tun_debug(KERN_INFO, tun, "tun_flow_cleanup\n");
--
- 	spin_lock(&tun->lock);
- 	for (i = 0; i < TUN_NUM_FLOW_ENTRIES; i++) {
- 		struct tun_flow_entry *e;
-@@ -1420,8 +1418,6 @@ static __poll_t tun_chr_poll(struct file *file, poll_table *wait)
+ 	if (e) {
+-		tun_debug(KERN_INFO, tun, "create flow: hash %u index %u\n",
+-			  rxhash, queue_index);
++		netif_info(tun, tx_queued, tun->dev,
++			   "create flow: hash %u index %u\n",
++			   rxhash, queue_index);
+ 		e->updated = jiffies;
+ 		e->rxhash = rxhash;
+ 		e->rps_rxhash = 0;
+@@ -426,8 +425,8 @@ static struct tun_flow_entry *tun_flow_create(struct tun_struct *tun,
  
- 	sk = tfile->socket.sk;
- 
--	tun_debug(KERN_INFO, tun, "tun_chr_poll\n");
--
- 	poll_wait(file, sk_sleep(sk), wait);
- 
- 	if (!ptr_ring_empty(&tfile->tx_ring))
-@@ -2192,8 +2188,6 @@ static ssize_t tun_do_read(struct tun_struct *tun, struct tun_file *tfile,
- 	ssize_t ret;
- 	int err;
- 
--	tun_debug(KERN_INFO, tun, "tun_do_read\n");
--
- 	if (!iov_iter_count(to)) {
- 		tun_ptr_free(ptr);
- 		return 0;
-@@ -2838,8 +2832,6 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 
- 	netif_carrier_on(tun->dev);
- 
--	tun_debug(KERN_INFO, tun, "tun_set_iff\n");
--
- 	/* Make sure persistent devices do not get stuck in
- 	 * xoff state.
- 	 */
-@@ -2870,8 +2862,6 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 
- static void tun_get_iff(struct tun_struct *tun, struct ifreq *ifr)
+ static void tun_flow_delete(struct tun_struct *tun, struct tun_flow_entry *e)
  {
--	tun_debug(KERN_INFO, tun, "tun_get_iff\n");
--
- 	strcpy(ifr->ifr_name, tun->dev->name);
+-	tun_debug(KERN_INFO, tun, "delete flow: hash %u index %u\n",
+-		  e->rxhash, e->queue_index);
++	netif_info(tun, tx_queued, tun->dev, "delete flow: hash %u index %u\n",
++		   e->rxhash, e->queue_index);
+ 	hlist_del_rcu(&e->hash_link);
+ 	kfree_rcu(e, rcu);
+ 	--tun->flow_count;
+@@ -1061,7 +1060,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (!rcu_dereference(tun->steering_prog))
+ 		tun_automq_xmit(tun, skb);
  
- 	ifr->ifr_flags = tun_flags(tun);
-@@ -3206,9 +3196,6 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+-	tun_debug(KERN_INFO, tun, "tun_net_xmit %d\n", skb->len);
++	netif_info(tun, tx_queued, tun->dev, "%s %d\n", __func__, skb->len);
  
- 	case SIOCSIFHWADDR:
- 		/* Set hw address */
--		tun_debug(KERN_DEBUG, tun, "set hw address: %pM\n",
--			  ifr.ifr_hwaddr.sa_data);
--
- 		ret = dev_set_mac_address(tun->dev, &ifr.ifr_hwaddr, NULL);
+ 	/* Drop if the filter does not like it.
+ 	 * This is a noop if the filter is disabled.
+@@ -3085,7 +3084,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 	if (!tun)
+ 		goto unlock;
+ 
+-	tun_debug(KERN_INFO, tun, "tun_chr_ioctl cmd %u\n", cmd);
++	netif_info(tun, drv, tun->dev, "tun_chr_ioctl cmd %u\n", cmd);
+ 
+ 	net = dev_net(tun->dev);
+ 	ret = 0;
+@@ -3106,8 +3105,8 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 		/* Disable/Enable checksum */
+ 
+ 		/* [unimplemented] */
+-		tun_debug(KERN_INFO, tun, "ignored: set checksum %s\n",
+-			  arg ? "disabled" : "enabled");
++		netif_info(tun, drv, tun->dev, "ignored: set checksum %s\n",
++			   arg ? "disabled" : "enabled");
  		break;
  
+ 	case TUNSETPERSIST:
+@@ -3125,8 +3124,8 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 			do_notify = true;
+ 		}
+ 
+-		tun_debug(KERN_INFO, tun, "persist %s\n",
+-			  arg ? "enabled" : "disabled");
++		netif_info(tun, drv, tun->dev, "persist %s\n",
++			   arg ? "enabled" : "disabled");
+ 		break;
+ 
+ 	case TUNSETOWNER:
+@@ -3138,8 +3137,8 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 		}
+ 		tun->owner = owner;
+ 		do_notify = true;
+-		tun_debug(KERN_INFO, tun, "owner set to %u\n",
+-			  from_kuid(&init_user_ns, tun->owner));
++		netif_info(tun, drv, tun->dev, "owner set to %u\n",
++			   from_kuid(&init_user_ns, tun->owner));
+ 		break;
+ 
+ 	case TUNSETGROUP:
+@@ -3151,29 +3150,28 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 		}
+ 		tun->group = group;
+ 		do_notify = true;
+-		tun_debug(KERN_INFO, tun, "group set to %u\n",
+-			  from_kgid(&init_user_ns, tun->group));
++		netif_info(tun, drv, tun->dev, "group set to %u\n",
++			   from_kgid(&init_user_ns, tun->group));
+ 		break;
+ 
+ 	case TUNSETLINK:
+ 		/* Only allow setting the type when the interface is down */
+ 		if (tun->dev->flags & IFF_UP) {
+-			tun_debug(KERN_INFO, tun,
+-				  "Linktype set failed because interface is up\n");
++			netif_info(tun, drv, tun->dev,
++				   "Linktype set failed because interface is up\n");
+ 			ret = -EBUSY;
+ 		} else {
+ 			tun->dev->type = (int) arg;
+-			tun_debug(KERN_INFO, tun, "linktype set to %d\n",
+-				  tun->dev->type);
++			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
++				   tun->dev->type);
+ 			ret = 0;
+ 		}
+ 		break;
+ 
+-#ifdef TUN_DEBUG
+ 	case TUNSETDEBUG:
+-		tun->debug = arg;
++		tun->msg_enable = (u32)arg;
+ 		break;
+-#endif
++
+ 	case TUNSETOFFLOAD:
+ 		ret = set_offload(tun, arg);
+ 		break;
+@@ -3529,20 +3527,16 @@ static void tun_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
+ 
+ static u32 tun_get_msglevel(struct net_device *dev)
+ {
+-#ifdef TUN_DEBUG
+ 	struct tun_struct *tun = netdev_priv(dev);
+-	return tun->debug;
+-#else
+-	return -EOPNOTSUPP;
+-#endif
++
++	return tun->msg_enable;
+ }
+ 
+ static void tun_set_msglevel(struct net_device *dev, u32 value)
+ {
+-#ifdef TUN_DEBUG
+ 	struct tun_struct *tun = netdev_priv(dev);
+-	tun->debug = value;
+-#endif
++
++	tun->msg_enable = value;
+ }
+ 
+ static int tun_get_coalesce(struct net_device *dev,
 -- 
 2.25.1
 
