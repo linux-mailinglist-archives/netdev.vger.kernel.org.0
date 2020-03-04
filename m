@@ -2,131 +2,384 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E86C81790CA
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:05:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5C961790FC
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388070AbgCDNFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 08:05:13 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:36772 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387805AbgCDNFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 08:05:13 -0500
-Received: by mail-il1-f198.google.com with SMTP id v14so1359113ilq.3
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 05:05:13 -0800 (PST)
+        id S2388059AbgCDNLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 08:11:02 -0500
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:37270 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729118AbgCDNLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 08:11:01 -0500
+Received: by mail-ua1-f68.google.com with SMTP id h32so637295uah.4
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 05:10:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4o06Nky5IXuXetMAo9uV9+wImSlDf00z+cA2PQsHm6g=;
+        b=BdrJOljlj7qmd5f3CS6+fWksjB3gMPV8uhDNgMaIE6jAhLieWwv0Y3WtYGqJ/2Ncql
+         ujLM4I+aIztSQkROAm33IlVPAWwhJXuxT1p/yfq6V4GonDb2og3rorB+kUxjb612D9ts
+         /XMkjOUYm6YPxYEGbrhtA0Ia93GIjJfML5gLprdUNTEtrMXI8NFBI7vXZi4KU01Qi+ij
+         Cehl1YqhDYqcVCgV8DaV4NQFTZvHgOg8MbYjKziw75f3VWzxzs1r85dDCvlRVqle0950
+         9y5apAbxbCZHuxViFR5WoFLChrsJQuvzaSll3nn3E/pQT7as73UqiA1zlXrTU6QEEBYw
+         u1mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Czz7rgum7/L7+4HMs+7TnQ38o1eJc5E8CEn7vJGv6Vs=;
-        b=dDjO6IdlD7ODx/WW6e0yutM6/J6RgF+kxhuuRflZhdGNtFHH9JEcIFtsO9mmrKKLVl
-         liXbWsPREnhqF6jh1KquRmMVL4s4ISYlMio7eUvz0QtZfsEoCRPaQvxEaA80IYOgtPCf
-         XrCjmD08f29MrUswImoigi02nXR/R5w7kHX7Hizr1ebqgqDT3Skry5Grm+/BgNXyrW2+
-         bVitYGHDrKJXpUp6NTjr+gzDpmkbdzGzYjC95kZsZcp3iYopql+wXzLVXBOkeKXkXXOW
-         VWDZVY3+1DvlqK6aczz6TDos49v9UM94KeTrewnwGRDruseedgUuIedIJIbXoUrYCsN7
-         g9Kw==
-X-Gm-Message-State: ANhLgQ3rXvJ6G1Fil5mJA5zBVsW+h98NDs56bBwBr/dYDzPvl9L8GNKY
-        4ydglWqBsFceLvSuwB8Od0P4zahH02EufKdhPQFhxPhEeK2N
-X-Google-Smtp-Source: ADFU+vu1NPRP/5ciJYIv3k8/c9GsV9hKRSP0DJON+1fkuNyPCMjgPXFsBOyeaDit6IfVKBAWiEJQKV6eXl7BsEl3Lw5EHGlgE7WI
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4o06Nky5IXuXetMAo9uV9+wImSlDf00z+cA2PQsHm6g=;
+        b=iI1bKmQMJeb4c4LCG1GjTpB2+3qOBMp6gSt7Stb22/a9JtflejdcKd1t6UQmYaEfuU
+         /kP2Frbwg7DbC8j8shPg7E8YQLpqjgOs46ufPMhOZv+ggdY/CqThCbjROkHSh61WM0Kn
+         k4QQTR4rDlQKm5x/Ndoca8i3zdSVLY+32Uz0A5UVbmpW0H1wHIgR5VnUf2c1TrLp9PSw
+         nXzyLiZ0jbaAIwcCPrk2loT73ljHsLYvZbNKsmuOUeXVboV1H/totM8DHcvhhhUSOgNj
+         3jSgAFxiyHG+E515zFEtBF6EFXwJOokeChZN52lIJ3WhakybyIZB911ePVwt+KX4wD0q
+         Q3xA==
+X-Gm-Message-State: ANhLgQ1KwENsxplzIvYwZBCATuH0krzvX3oB5upvvsmEbh70RfYXpSIO
+        c+v5FRuOsXhE3J0Ig8W1mQj5+UpwsiKpi2Xy7Q3qLg==
+X-Google-Smtp-Source: ADFU+vvFR03V/JgEf4kLxZgXUZMXi7RWn6++Ih+wP8Z2Ve/ECPd8dS0Yzmzp9kTK/TggvVr9x81o5uXQZjdrvioHQLA=
+X-Received: by 2002:a9f:2596:: with SMTP id 22mr1324597uaf.135.1583327459050;
+ Wed, 04 Mar 2020 05:10:59 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:90d0:: with SMTP id c16mr2663415jag.22.1583327112844;
- Wed, 04 Mar 2020 05:05:12 -0800 (PST)
-Date:   Wed, 04 Mar 2020 05:05:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001fdbd605a00712b1@google.com>
-Subject: WARNING: locking bug in finish_lock_switch
-From:   syzbot <syzbot+91e3de3393c461e632ee@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+Received: by 2002:a9f:3b21:0:0:0:0:0 with HTTP; Wed, 4 Mar 2020 05:10:58 -0800 (PST)
+X-Originating-IP: [5.35.35.59]
+In-Reply-To: <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
+References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org> <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Wed, 4 Mar 2020 16:10:58 +0300
+Message-ID: <CAOJe8K28BZCW7JDejKgDELR2WPfBgvj-0aJJXX9uCRnryGY+xg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Cc:     netdev@vger.kernel.org,
+        "ilias.apalodimas" <ilias.apalodimas@linaro.org>,
+        wei.liu@kernel.org, paul@xen.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 3/2/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 02.03.20 15:21, Denis Kirjanov wrote:
+>> the patch adds a basic xdo logic to the netfront driver
+>>
+>> XDP redirect is not supported yet
+>>
+>> v2:
+>> - avoid data copying while passing to XDP
+>> - tell xen-natback that we need the headroom space
+>
+> Please add the patch history below the "---" delimiter
+>
+>>
+>> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+>> ---
+>>   drivers/net/xen-netback/common.h |   1 +
+>>   drivers/net/xen-netback/rx.c     |   9 ++-
+>>   drivers/net/xen-netback/xenbus.c |  21 ++++++
+>>   drivers/net/xen-netfront.c       | 157
+>> +++++++++++++++++++++++++++++++++++++++
+>>   4 files changed, 186 insertions(+), 2 deletions(-)
+>
+> You are modifying xen-netback sources. Please Cc the maintainers.
+>
+>>
+>> diff --git a/drivers/net/xen-netback/common.h
+>> b/drivers/net/xen-netback/common.h
+>> index 05847eb..0750c6f 100644
+>> --- a/drivers/net/xen-netback/common.h
+>> +++ b/drivers/net/xen-netback/common.h
+>> @@ -280,6 +280,7 @@ struct xenvif {
+>>   	u8 ip_csum:1;
+>>   	u8 ipv6_csum:1;
+>>   	u8 multicast_control:1;
+>> +	u8 xdp_enabled:1;
+>>
+>>   	/* Is this interface disabled? True when backend discovers
+>>   	 * frontend is rogue.
+>> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
+>> index ef58870..a110a59 100644
+>> --- a/drivers/net/xen-netback/rx.c
+>> +++ b/drivers/net/xen-netback/rx.c
+>> @@ -33,6 +33,11 @@
+>>   #include <xen/xen.h>
+>>   #include <xen/events.h>
+>>
+>> +static inline int xenvif_rx_xdp_offset(struct xenvif *vif)
+>> +{
+>> +	return (vif->xdp_enabled ? XDP_PACKET_HEADROOM : 0);
+>> +}
+>> +
+>>   static bool xenvif_rx_ring_slots_available(struct xenvif_queue *queue)
+>>   {
+>>   	RING_IDX prod, cons;
+>> @@ -356,7 +361,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue
+>> *queue,
+>>   				struct xen_netif_rx_request *req,
+>>   				struct xen_netif_rx_response *rsp)
+>>   {
+>> -	unsigned int offset =3D 0;
+>> +	unsigned int offset =3D xenvif_rx_xdp_offset(queue->vif);
+>>   	unsigned int flags;
+>>
+>>   	do {
+>> @@ -389,7 +394,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue
+>> *queue,
+>>   			flags |=3D XEN_NETRXF_extra_info;
+>>   	}
+>>
+>> -	rsp->offset =3D 0;
+>> +	rsp->offset =3D xenvif_rx_xdp_offset(queue->vif);
+>>   	rsp->flags =3D flags;
+>>   	rsp->id =3D req->id;
+>>   	rsp->status =3D (s16)offset;
+>> diff --git a/drivers/net/xen-netback/xenbus.c
+>> b/drivers/net/xen-netback/xenbus.c
+>> index 286054b..81a6023 100644
+>> --- a/drivers/net/xen-netback/xenbus.c
+>> +++ b/drivers/net/xen-netback/xenbus.c
+>> @@ -393,6 +393,20 @@ static void set_backend_state(struct backend_info
+>> *be,
+>>   	}
+>>   }
+>>
+>> +static void read_xenbus_fronetend_xdp(struct backend_info *be,
+>> +				      struct xenbus_device *dev)
+>
+> Typo: s/fronetend/frontend/
+>
+>> +{
+>> +	struct xenvif *vif =3D be->vif;
+>> +	unsigned int val;
+>> +	int err;
+>> +
+>> +	err =3D xenbus_scanf(XBT_NIL, dev->otherend,
+>> +			   "feature-xdp", "%u", &val);
+>> +	if (err < 0)
+>> +		return;
+>> +	vif->xdp_enabled =3D val;
+>> +}
+>> +
+>>   /**
+>>    * Callback received when the frontend's state changes.
+>>    */
+>> @@ -417,6 +431,11 @@ static void frontend_changed(struct xenbus_device
+>> *dev,
+>>   		set_backend_state(be, XenbusStateConnected);
+>>   		break;
+>>
+>> +	case XenbusStateReconfiguring:
+>> +		read_xenbus_fronetend_xdp(be, dev);
+>> +		xenbus_switch_state(dev, XenbusStateReconfigured);
+>> +		break;
+>> +
+> Where is the reaction to the backend being set to "Reconfigured"?
+>
+>>   	case XenbusStateClosing:
+>>   		set_backend_state(be, XenbusStateClosing);
+>>   		break;
+>> @@ -935,6 +954,8 @@ static int read_xenbus_vif_flags(struct backend_info
+>> *be)
+>>
+>>   	vif->gso_mask =3D 0;
+>>
+>> +	vif->xdp_enabled =3D 0;
+>> +
+>>   	if (xenbus_read_unsigned(dev->otherend, "feature-gso-tcpv4", 0))
+>>   		vif->gso_mask |=3D GSO_BIT(TCPV4);
+>>
+>> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+>> index 482c6c8..db8a280 100644
+>> --- a/drivers/net/xen-netfront.c
+>> +++ b/drivers/net/xen-netfront.c
+>> @@ -44,6 +44,8 @@
+>>   #include <linux/mm.h>
+>>   #include <linux/slab.h>
+>>   #include <net/ip.h>
+>> +#include <linux/bpf.h>
+>> +#include <linux/bpf_trace.h>
+>>
+>>   #include <xen/xen.h>
+>>   #include <xen/xenbus.h>
+>> @@ -102,6 +104,8 @@ struct netfront_queue {
+>>   	char name[QUEUE_NAME_SIZE]; /* DEVNAME-qN */
+>>   	struct netfront_info *info;
+>>
+>> +	struct bpf_prog __rcu *xdp_prog;
+>> +
+>>   	struct napi_struct napi;
+>>
+>>   	/* Split event channels support, tx_* =3D=3D rx_* when using
+>> @@ -778,6 +782,40 @@ static int xennet_get_extras(struct netfront_queue
+>> *queue,
+>>   	return err;
+>>   }
+>>
+>> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
+>> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
+>> +		   struct xdp_buff *xdp)
+>> +{
+>> +	u32 len =3D rx->status;
+>> +	u32 act =3D XDP_PASS;
+>> +
+>> +	xdp->data_hard_start =3D page_address(pdata);
+>> +	xdp->data =3D xdp->data_hard_start + XDP_PACKET_HEADROOM;
+>> +	xdp_set_data_meta_invalid(xdp);
+>> +	xdp->data_end =3D xdp->data + len;
+>> +	xdp->handle =3D 0;
+>> +
+>> +	act =3D bpf_prog_run_xdp(prog, xdp);
+>> +	switch (act) {
+>> +	case XDP_PASS:
+>> +	case XDP_TX:
+>> +	case XDP_DROP:
+>> +		break;
+>> +
+>> +	case XDP_ABORTED:
+>> +		trace_xdp_exception(queue->info->netdev, prog, act);
+>> +		break;
+>> +
+>> +	default:
+>> +		bpf_warn_invalid_xdp_action(act);
+>> +	}
+>> +
+>> +	if (act !=3D XDP_PASS && act !=3D XDP_TX)
+>> +		xdp->data_hard_start =3D NULL;
+>> +
+>> +	return act;
+>> +}
+>> +
+>>   static int xennet_get_responses(struct netfront_queue *queue,
+>>   				struct netfront_rx_info *rinfo, RING_IDX rp,
+>>   				struct sk_buff_head *list)
+>> @@ -792,6 +830,9 @@ static int xennet_get_responses(struct netfront_queu=
+e
+>> *queue,
+>>   	int slots =3D 1;
+>>   	int err =3D 0;
+>>   	unsigned long ret;
+>> +	struct bpf_prog *xdp_prog;
+>> +	struct xdp_buff xdp;
+>> +	u32 verdict;
+>>
+>>   	if (rx->flags & XEN_NETRXF_extra_info) {
+>>   		err =3D xennet_get_extras(queue, extras, rp);
+>> @@ -827,6 +868,22 @@ static int xennet_get_responses(struct netfront_que=
+ue
+>> *queue,
+>>
+>>   		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+>>
+>> +		rcu_read_lock();
+>> +		xdp_prog =3D rcu_dereference(queue->xdp_prog);
+>> +		if (xdp_prog) {
+>> +			/* currently only a single page contains data */
+>> +			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags !=3D 1);
+>> +			verdict =3D xennet_run_xdp(queue,
+>> +				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
+>> +				       rx, xdp_prog, &xdp);
+>> +
+>> +			if (verdict !=3D XDP_PASS && verdict !=3D XDP_TX) {
+>> +				err =3D -EINVAL;
+>> +				goto next;
+>> +			}
+>> +
+>> +		}
+>> +		rcu_read_unlock();
+>>   		__skb_queue_tail(list, skb);
+>>
+>>   next:
+>> @@ -1261,6 +1318,105 @@ static void xennet_poll_controller(struct
+>> net_device *dev)
+>>   }
+>>   #endif
+>>
+>> +#define NETBACK_XDP_HEADROOM_DISABLE	0
+>> +#define NETBACK_XDP_HEADROOM_ENABLE	1
+>> +
+>> +static int talk_to_netback_xdp(struct netfront_info *np, int xdp)
+>> +{
+>> +	struct xenbus_transaction xbt;
+>> +	const char *message;
+>> +	int err;
+>> +
+>> +again:
+>> +	err =3D xenbus_transaction_start(&xbt);
+>> +	if (err) {
+>> +		xenbus_dev_fatal(np->xbdev, err, "starting transaction");
+>> +		goto out;
+>> +	}
+>> +
+>> +	err =3D xenbus_printf(xbt, np->xbdev->nodename, "feature-xdp", "%d",
+>> xdp);
+>> +	if (err) {
+>> +		message =3D "writing feature-xdp";
+>> +		goto abort_transaction;
+>> +	}
+>> +
+>> +	err =3D xenbus_transaction_end(xbt, 0);
+>> +	if (err) {
+>> +		if (err =3D=3D -EAGAIN)
+>> +			goto again;
+>
+> Writing a single node to Xenstore doesn't need a transaction.
+>
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +abort_transaction:
+>> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
+>> +	xenbus_transaction_end(xbt, 1);
+>> +out:
+>> +	return err;
+>> +}
+>> +
+>> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog=
+,
+>> +			struct netlink_ext_ack *extack)
+>> +{
+>> +	struct netfront_info *np =3D netdev_priv(dev);
+>> +	struct bpf_prog *old_prog;
+>> +	unsigned int i, err;
+>> +
+>> +	old_prog =3D rtnl_dereference(np->queues[0].xdp_prog);
+>> +	if (!old_prog && !prog)
+>> +		return 0;
+>> +
+>> +	if (prog)
+>> +		bpf_prog_add(prog, dev->real_num_tx_queues);
+>> +
+>> +	for (i =3D 0; i < dev->real_num_tx_queues; ++i)
+>> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
+>> +
+>> +	if (old_prog)
+>> +		for (i =3D 0; i < dev->real_num_tx_queues; ++i)
+>> +			bpf_prog_put(old_prog);
+>> +
+>> +	err =3D talk_to_netback_xdp(np, old_prog ? NETBACK_XDP_HEADROOM_DISABL=
+E:
+>> +				  NETBACK_XDP_HEADROOM_ENABLE);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
+>
+> What is happening in case the backend doesn't support XDP?
+Here we just ask xen-backend to make a headroom, that's it.
+It's better to send xen-backend changes in a separate patch.
 
-syzbot found the following crash on:
+>
+> Is it really a good idea to communicate xdp_set via a frontend state
+> change? This will be rather slow. OTOH I have no idea how often this
+> might happen.
 
-HEAD commit:    f8788d86 Linux 5.6-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15cc8331e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5d2e033af114153f
-dashboard link: https://syzkaller.appspot.com/bug?extid=91e3de3393c461e632ee
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=158b72c3e00000
+I don't think that it's going to switch often and more likely it's a one sh=
+ot
+action.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+91e3de3393c461e632ee@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(1)
-WARNING: CPU: 1 PID: 10050 at kernel/locking/lockdep.c:167 hlock_class kernel/locking/lockdep.c:167 [inline]
-WARNING: CPU: 1 PID: 10050 at kernel/locking/lockdep.c:167 __lock_acquire+0x18b8/0x1bc0 kernel/locking/lockdep.c:3950
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 10050 Comm: syz-executor.0 Not tainted 5.6.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1fb/0x318 lib/dump_stack.c:118
- panic+0x264/0x7a9 kernel/panic.c:221
- __warn+0x209/0x210 kernel/panic.c:582
- report_bug+0x1b6/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:174 [inline]
- do_error_trap+0xcf/0x1c0 arch/x86/kernel/traps.c:267
- do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:hlock_class kernel/locking/lockdep.c:167 [inline]
-RIP: 0010:__lock_acquire+0x18b8/0x1bc0 kernel/locking/lockdep.c:3950
-Code: 08 00 0f 85 f5 f0 ff ff 45 31 f6 48 c7 c7 bd aa e3 88 48 c7 c6 76 6b e8 88 31 c0 e8 72 e8 ec ff 48 bf 00 00 00 00 00 fc ff df <0f> 0b e9 a4 f2 ff ff 45 31 f6 e9 92 f2 ff ff 48 c7 c1 c4 ea 69 89
-RSP: 0018:ffffc900052a77b0 EFLAGS: 00010046
-RAX: 6d156fc8d8732800 RBX: 00000000000008fb RCX: ffff88808d76c240
-RDX: 0000000040000000 RSI: 0000000000000001 RDI: dffffc0000000000
-RBP: ffffc900052a7910 R08: ffffffff817cb4ba R09: fffffbfff125af8f
-R10: fffffbfff125af8f R11: 0000000000000000 R12: 3476ca37373763a9
-R13: ffff88808d76cad0 R14: 0000000000000000 R15: ffff88808d76c240
- lock_acquire+0x154/0x250 kernel/locking/lockdep.c:4484
- finish_lock_switch+0x25/0x40 kernel/sched/core.c:3118
- finish_task_switch+0x24f/0x550 kernel/sched/core.c:3219
- context_switch kernel/sched/core.c:3383 [inline]
- __schedule+0x887/0xcd0 kernel/sched/core.c:4080
- preempt_schedule_irq+0xca/0x150 kernel/sched/core.c:4337
- retint_kernel+0x1b/0x2b
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:752 [inline]
-RIP: 0010:lock_acquire+0x1ae/0x250 kernel/locking/lockdep.c:4487
-Code: c1 e8 03 42 80 3c 30 00 74 0c 48 c7 c7 10 d3 2a 89 e8 56 67 58 00 48 83 3d 6e 07 cf 07 00 0f 84 9c 00 00 00 48 8b 7d c0 57 9d <0f> 1f 44 00 00 48 83 c4 30 5b 41 5c 41 5d 41 5e 41 5f 5d c3 44 89
-RSP: 0018:ffffc900052a7ba8 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-RAX: 1ffffffff1255a62 RBX: 0000000000000000 RCX: ffffffff815cb150
-RDX: dffffc0000000000 RSI: 0000000000000004 RDI: 0000000000000282
-RBP: ffffc900052a7c00 R08: dffffc0000000000 R09: fffffbfff1384111
-R10: fffffbfff1384111 R11: 0000000000000000 R12: 0000000000000001
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff8880a3fd1928
- flush_workqueue+0x10a/0x1820 kernel/workqueue.c:2775
- hci_dev_open+0x21d/0x2e0 net/bluetooth/hci_core.c:1626
- hci_sock_bind+0x1620/0x1b10 net/bluetooth/hci_sock.c:1200
- __sys_bind+0x2bd/0x3a0 net/socket.c:1662
- __do_sys_bind net/socket.c:1673 [inline]
- __se_sys_bind net/socket.c:1671 [inline]
- __x64_sys_bind+0x7a/0x90 net/socket.c:1671
- do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c449
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f46d8bebc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 00007f46d8bec6d4 RCX: 000000000045c449
-RDX: 0000000000000006 RSI: 00000000200007c0 RDI: 0000000000000005
-RBP: 000000000076c060 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 000000000000002c R14: 00000000004c28c9 R15: 000000000076c06c
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>
+>
+> Juergen
+>
