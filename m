@@ -2,91 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2078117877D
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 02:11:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9538417878B
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 02:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387411AbgCDBL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 20:11:28 -0500
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:44896 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387398AbgCDBL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 20:11:28 -0500
-Received: by mail-vs1-f66.google.com with SMTP id u24so78590vso.11
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 17:11:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/aM4CAj9ICNj/ibOV8Q5gAx6qK4daZIIhsp+e6ZLm3w=;
-        b=kGkj+eD7XNvA4VRXbiZINghavk64lXRg36IYCaEPYB5lHbC+S23xZVzZgXiHq48aTW
-         SVfcN8gpucy2z5tHE0hzvp8errYj2bDs6LjZygn7Fmg+4Vgshtadse216kk+2DwSn/j1
-         r0vOnbX7RRiozbIXM4OsoP52wwuu1GtGPB8jc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/aM4CAj9ICNj/ibOV8Q5gAx6qK4daZIIhsp+e6ZLm3w=;
-        b=dBuTjYUoucoTk4LM+DmYqHvZUTAdqSJpv7FMk2PkYQ5/a/IjxaSdJwp4Hu7J3fvYEz
-         UMF65fUeJQlK2LoRQbuGE9uleyG8BEkQJyBaj9631uW3epib+RB6zvX3Rc+6IidIXNsI
-         NR9LfpqRwxInZpnyaatDqnL89dpsV05ibumD0T1T+FGlTHY5R7EOlUfaNFTKZOtCNx9b
-         hXGjnFn0uobqO/IJK24Pm7QeHoyTKFVjqzovhKPuQ7KhRRtJ5OTVWi6CgWflDTsicSsu
-         l14s9ic5vHMUzlRbM3Oxr0M+GA0GVNZ7HMiUt6qlkmV8OCXutF1OsP+RmaoKb8jgxvyB
-         +01A==
-X-Gm-Message-State: ANhLgQ0bTFLgFnfBRFuKm+1Srfvd0b2ajMSkX4ax1q0SjCFS7Kaitc+1
-        arVis5YaIOMtE4gxRy0ZY2t8hSvwBnolvjaKFuf8lQ==
-X-Google-Smtp-Source: ADFU+vvVp81NKQ1iE/DA5zgNfLUZ2yCcBL+wpFPmDmdHGVvQiXoT8bvAPLcMGC/mbouJUTz5y5TxIFEgPkvWF/jpaBg=
-X-Received: by 2002:a67:fc8c:: with SMTP id x12mr394289vsp.96.1583284285590;
- Tue, 03 Mar 2020 17:11:25 -0800 (PST)
+        id S2387408AbgCDBZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 20:25:41 -0500
+Received: from correo.us.es ([193.147.175.20]:54352 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728032AbgCDBZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 20:25:41 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6D8C16D4EB
+        for <netdev@vger.kernel.org>; Wed,  4 Mar 2020 02:25:25 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5A83CDA3A4
+        for <netdev@vger.kernel.org>; Wed,  4 Mar 2020 02:25:25 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4FB82DA390; Wed,  4 Mar 2020 02:25:25 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 71110DA3C3;
+        Wed,  4 Mar 2020 02:25:23 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 04 Mar 2020 02:25:23 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 5493D4251480;
+        Wed,  4 Mar 2020 02:25:23 +0100 (CET)
+Date:   Wed, 4 Mar 2020 02:25:37 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org,
+        syzbot+a2ff6fa45162a5ed4dd3@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: nf_tables: free flowtable hooks on hook
+ register error
+Message-ID: <20200304012537.rkz2u3dipbeoz6fx@salvia>
+References: <20200302205850.29365-1-fw@strlen.de>
 MIME-Version: 1.0
-References: <20200225000036.156250-1-abhishekpandit@chromium.org>
- <20200224160019.RFC.v3.1.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
- <CANFp7mUehaCSR2W3mXpq2s80YLJVfO2U8D_N+sRzJ2pMZQw1UA@mail.gmail.com> <3532949B-483D-4087-A94B-E9567878EC3E@holtmann.org>
-In-Reply-To: <3532949B-483D-4087-A94B-E9567878EC3E@holtmann.org>
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Date:   Tue, 3 Mar 2020 17:11:14 -0800
-Message-ID: <CANFp7mXEiAYEYNxcuo62uxEaZmotzEG=kygvmQi3Kk-QnctvjA@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 1/5] Bluetooth: Add mgmt op set_wake_capable
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Alain Michaud <alainm@chromium.org>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200302205850.29365-1-fw@strlen.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+On Mon, Mar 02, 2020 at 09:58:50PM +0100, Florian Westphal wrote:
+> If hook registration fails, the hooks allocated via nft_netdev_hook_alloc
+> need to be freed.
+> 
+> We can't change the goto label to 'goto 5' -- while it does fix the memleak
+> it does cause a warning splat from the netfilter core (the hooks were not
+> registered).
 
-Yes, I've sent up a v4. While enabling and testing these changes, I
-found a bug (which I had originally implemented but missed during
-various merges) where powered down and powering down adapters weren't
-working.
-
-I've ran the most recent series through a set of automated tests (on
-4.19, 4.14, 4.4 and 3.18 kernels) and they are all passing now.
-
-Thanks
-Abhishek
-
-On Mon, Mar 2, 2020 at 2:17 PM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Abhishek,
->
-> > I seem to have forgotten to update the series changes here. In series
-> > 3, I added a wakeable property to le_conn_param so that the wakeable
-> > list is only used for BR/EDR as requested in the previous revision.
->
-> are you sending a v4?
->
-> Regards
->
-> Marcel
->
+Applied, thanks.
