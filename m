@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34CA5178E24
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 11:14:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6B2178E26
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 11:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387926AbgCDKN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 05:13:59 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:35973 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387906AbgCDKN6 (ORCPT
+        id S2387931AbgCDKOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 05:14:00 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45826 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387919AbgCDKN6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 05:13:58 -0500
-Received: by mail-lf1-f66.google.com with SMTP id s1so1026730lfd.3
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 02:13:55 -0800 (PST)
+Received: by mail-lf1-f67.google.com with SMTP id b13so998398lfb.12
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 02:13:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=olVifyTMleE2iedo0uCkocgafSknigkP2OP2Ek8xo9Y=;
-        b=iPqLt7CUHivuNV8QujDV0W6QulaQWe6wT9uZYQ5ZKRMJDmO8MQGos3/IzH+Krr8TzL
-         V1nEmvK5FFV62gRr6+sRztw3JaEsNXJHEpcLHkOLZPkC877v4r1Qx/J/EsqMr2kDeaIJ
-         7RQpEjKYkaijGth3oAl+LoIx5x2nAxyaiWqE0=
+        bh=Z3OAcsZlcP+NciTRj+t3SsmpQSQQtm0Lkv+kkDVIb/c=;
+        b=QBGvANBcTboDyQvlqk5xAbmS2KzrtV6BTiwK71q4XUpWXwE1bfWarPhPDBTiqfwPcn
+         C9sCR2yMGyrkd2NvpVjfdc6grf1XZL3euVQn8TofoAox9wmx7C1Iw/1WL+3kW11B18o1
+         0xMsbz5bjS77Ohvgxar7hze/56KWA0lR1mwDM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=olVifyTMleE2iedo0uCkocgafSknigkP2OP2Ek8xo9Y=;
-        b=VMc26G/RgFQoJv0wE0LaIHUkOE4GEFw10PhMllqbxilGY0MlAqDbYrnJKHMckyal6X
-         dVrsF1938fcEk2OHlWORqja/lS8A/D9UjNT98YrLdLPVa4lYugaA2/qwJB1StoCFuHzn
-         fR/61UFi4CkLaifowtgGA+QDdJ/ZwjuQ2jb0FjUOo6p8WwPC4n9m6wNSh9dSBs9A3C4L
-         4oq+EcYwi0t+5t4ffTaxkSREZmYzfflkYfR57FCYWly0DO71GfCWd1wYsU3L/pP2DWGt
-         R1QcZ23c9UCoiK9+XNqSkVqEq5a4F0xMnu93OKwrIL2N9yE1S4b/OuS5Hb84whGk/wpq
-         uZdQ==
-X-Gm-Message-State: ANhLgQ3etyWKd8/A5podZ43oSHuO9w7b0Mc5vkxQjZsGA6Dp/XXQar9i
-        LNZhWyjrerN7MqFQkCwQWAzgHQ==
-X-Google-Smtp-Source: ADFU+vsuEdVRpVHa3R4OMO85FbKQo1R+1kABMKY1D8/UloF2u7KmlAOlqXrDgoY2Yx6iLysg/Te0XQ==
-X-Received: by 2002:ac2:5dd3:: with SMTP id x19mr940358lfq.168.1583316835115;
-        Wed, 04 Mar 2020 02:13:55 -0800 (PST)
+        bh=Z3OAcsZlcP+NciTRj+t3SsmpQSQQtm0Lkv+kkDVIb/c=;
+        b=Ff3YCtMjcpwv5dlNwPt85VBvfXVtVsLlGMDJT/VZoqkFwb7f8zo3O3Tt6GHl3DCUsh
+         Fj7TytmJvytZtXm/stwEmf7vYO/Ns30+IFGshtQ2RG9zEYKiP1zHEI7ndtcqLgxx3din
+         SK1li0UM+rwKbc8AYTDbrzXPeqAXkQvSM7iP3UXE7a+3/RylViKvN4/0R345d0UbpNuC
+         joZFr1+XfIrRkH+HotWMydMw6uqJKCVj8WyqHHrHxXotBC5Vnzln3cjgGek3Rp4p93JO
+         lVyMeVpCHFGy9/M+zXysPP+er06EG82JoGz4nxK8p775M4HZHaWID9u9inEjxLeOEcwQ
+         D0zQ==
+X-Gm-Message-State: ANhLgQ3XfGrRrknNH2lrUKeoZR0XpgU+1X6F+ieLK4XAGUdJQU5LeCAB
+        lmFcrMNXT3yfqmBckDdOebtnzQ==
+X-Google-Smtp-Source: ADFU+vuGcQpyUDCTfLOhZF/mUlERtCIb0YfcfvThHGkxb86ViN2qqBvRvEpxDLUcWd7emrwxoWmvIA==
+X-Received: by 2002:ac2:532f:: with SMTP id f15mr1550329lfh.3.1583316836695;
+        Wed, 04 Mar 2020 02:13:56 -0800 (PST)
 Received: from localhost.localdomain ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id l7sm341777lfk.65.2020.03.04.02.13.53
+        by smtp.gmail.com with ESMTPSA id l7sm341777lfk.65.2020.03.04.02.13.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2020 02:13:54 -0800 (PST)
+        Wed, 04 Mar 2020 02:13:55 -0800 (PST)
 From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     john.fastabend@gmail.com, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+To:     john.fastabend@gmail.com, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 11/12] selftests: bpf: enable UDP sockmap reuseport tests
-Date:   Wed,  4 Mar 2020 11:13:16 +0100
-Message-Id: <20200304101318.5225-12-lmb@cloudflare.com>
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 12/12] bpf, doc: update maintainers for L7 BPF
+Date:   Wed,  4 Mar 2020 11:13:17 +0100
+Message-Id: <20200304101318.5225-13-lmb@cloudflare.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200304101318.5225-1-lmb@cloudflare.com>
 References: <20200304101318.5225-1-lmb@cloudflare.com>
@@ -61,31 +60,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the guard that disables UDP tests now that sockmap
-has support for them.
+Add Jakub and myself as maintainers for sockmap related code.
 
 Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 ---
- tools/testing/selftests/bpf/prog_tests/select_reuseport.c | 6 ------
- 1 file changed, 6 deletions(-)
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-index a1dd13b34d4b..821b4146b7b6 100644
---- a/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/select_reuseport.c
-@@ -805,12 +805,6 @@ static void test_config(int sotype, sa_family_t family, bool inany)
- 	char s[MAX_TEST_NAME];
- 	const struct test *t;
- 
--	/* SOCKMAP/SOCKHASH don't support UDP yet */
--	if (sotype == SOCK_DGRAM &&
--	    (inner_map_type == BPF_MAP_TYPE_SOCKMAP ||
--	     inner_map_type == BPF_MAP_TYPE_SOCKHASH))
--		return;
--
- 	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
- 		if (t->need_sotype && t->need_sotype != sotype)
- 			continue; /* test not compatible with socket type */
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b2fae56dca9f..0b570b3b46d1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9352,6 +9352,8 @@ F:	include/net/l3mdev.h
+ L7 BPF FRAMEWORK
+ M:	John Fastabend <john.fastabend@gmail.com>
+ M:	Daniel Borkmann <daniel@iogearbox.net>
++M:	Jakub Sitnicki <jakub@cloudflare.com>
++M:	Lorenz Bauer <lmb@cloudflare.com>
+ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Maintained
 -- 
 2.20.1
 
