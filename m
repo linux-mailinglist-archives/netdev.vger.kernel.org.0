@@ -2,168 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23BF8179AB9
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 22:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7592179AC0
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 22:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729175AbgCDVPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 16:15:55 -0500
-Received: from mga01.intel.com ([192.55.52.88]:51695 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbgCDVPz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 16:15:55 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 13:15:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,515,1574150400"; 
-   d="scan'208";a="244065689"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
-  by orsmga006.jf.intel.com with ESMTP; 04 Mar 2020 13:15:54 -0800
-Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
- centralized checking of coalescing parameters
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     mkubecek@suse.cz, thomas.lendacky@amd.com, benve@cisco.com,
-        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, alexander.h.duyck@linux.intel.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        netdev@vger.kernel.org
-References: <20200304043354.716290-1-kuba@kernel.org>
- <20200304043354.716290-2-kuba@kernel.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <94d5f79b-2a8b-8ec8-8bf3-f765b25069e1@intel.com>
-Date:   Wed, 4 Mar 2020 13:15:54 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200304043354.716290-2-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
+        id S2388360AbgCDVQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 16:16:52 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11666 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387762AbgCDVQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 16:16:52 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 024LGAgx017226;
+        Wed, 4 Mar 2020 13:16:35 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=wyJePQd1a38tfBYIXZBUFl2J8ZivrZ6unXFzsaQb4ek=;
+ b=YM2dTBRCQbc5g7HkZAPAFxd58pel+2U2Jdf0RxAr+bzRduvS8tnZIVAAhqB7GiGiuzN8
+ L+hwTAyogF0xjIS+xY0FfjmFq+IyfCnr4X/L4A36VY20xVVPaDTxZmZdux3nUJCReboh
+ 6yIE1Ue6DiuJEFermRFBtjfRvL9O/pwxktw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yjggj17ny-19
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 04 Mar 2020 13:16:35 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 13:16:34 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bz8+faN9RQWkBPHAyRGOMK3NFZ1074+QNT8Z6gvcyREJLFzMaGzCzvl3sI79B4WODghoERtkKTVDg42oq0sdXZYCyWeGlSve+uIaIEp1kAHyi8LbKGFLIKm4JpPnEdveZi5keQE5auCp9TLrxuevz5VCyO1ueh3XL3j/bijyoXHzLgbv8Xk1V/zeRXvRwsD8LulZjSo38UXviHPRLhnKw/IT1JguQemcHCuISY5xmIFpFRvagkZ7riRO1ka53TVmfdD/5BzaRlvtdRMgyTwINH1SydxmlAPy4WYUq8+K3/IqsiSOUC0ODfhKhlD0V7XjfpjX2KRyuLRiBwPNw+58pQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wyJePQd1a38tfBYIXZBUFl2J8ZivrZ6unXFzsaQb4ek=;
+ b=FEqYVfItdjwoIbfml4yODbUg/7xSX4ESEDg9E5OGPvVIqlmfhjZn+VJqq6glBrHqj21fGo7MdALPlm+Xp/ilucysH87hSoYflR3HQzCqJNzVSqs6TWPJaF/jelQMfcb3sxh3ZyWc7GNHi5SQCxHrcctSVfEEtca6Zs83lgZuAxOWKPDq8fHjirc9spwI7ulcjou6R1D9YqKzGa4sCjWD98nlxjLMlup6Tn5ElUTfO68yRK/OibNU9a7cg8sUBbeOTEsQ2cMfzQUW0Rt3sDKh54XHPpXnEeWHPnG/iPlSSGeGBgV1VOLu+AOQ8KGXwLScNNtcpTuBEyxhTGt91R2WCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wyJePQd1a38tfBYIXZBUFl2J8ZivrZ6unXFzsaQb4ek=;
+ b=VwTz/MefHUD2RCrW3aczHENNFvUzZvgoPtxY3B8mn7TDAHPRB/CKaSt3HBTCzAp1CmwsaXxi369woPi4dtG/s00lt0BQb6ExDD9fOlDS+ck3nl+bEmbXXPQpj14WqKaoOqICLrQm0ym0oJjTu5MsNXFHmFIJEwAo/ZJRRRQGjYU=
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com (2603:10b6:303:49::11)
+ by MW3PR15MB3913.namprd15.prod.outlook.com (2603:10b6:303:42::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14; Wed, 4 Mar
+ 2020 21:16:29 +0000
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5]) by MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5%5]) with mapi id 15.20.2772.019; Wed, 4 Mar 2020
+ 21:16:29 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Jiri Olsa <jolsa@redhat.com>
+CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "quentin@isovalent.com" <quentin@isovalent.com>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "arnaldo.melo@gmail.com" <arnaldo.melo@gmail.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>
+Subject: Re: [PATCH v4 bpf-next 0/4] bpftool: introduce prog profile
+Thread-Topic: [PATCH v4 bpf-next 0/4] bpftool: introduce prog profile
+Thread-Index: AQHV8k/ID7Brhxz/CkyCD9Xa6Igk7Kg4y9qAgAAaOACAAAmkAA==
+Date:   Wed, 4 Mar 2020 21:16:29 +0000
+Message-ID: <C7C4E8E1-9176-48DC-8089-D4AEDE86E720@fb.com>
+References: <20200304180710.2677695-1-songliubraving@fb.com>
+ <20200304190807.GA168640@krava> <20200304204158.GD168640@krava>
+In-Reply-To: <20200304204158.GD168640@krava>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.60.0.2.5)
+x-originating-ip: [2620:10d:c090:400::5:4f8d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8780b42a-7fa8-4ac7-6885-08d7c0814e91
+x-ms-traffictypediagnostic: MW3PR15MB3913:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR15MB391331421A5D8804329DA4B4B3E50@MW3PR15MB3913.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0332AACBC3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(346002)(39860400002)(366004)(376002)(199004)(189003)(66556008)(66476007)(66446008)(64756008)(6512007)(6486002)(478600001)(66946007)(2906002)(76116006)(81166006)(86362001)(4326008)(8676002)(186003)(81156014)(8936002)(53546011)(6506007)(54906003)(6916009)(36756003)(2616005)(33656002)(71200400001)(966005)(316002)(5660300002);DIR:OUT;SFP:1102;SCL:1;SRVR:MW3PR15MB3913;H:MW3PR15MB3882.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: j2P00e+RyChf+UAAFPrFkoenIFh1dIbcMqI/CrMmHj3gRdSp6x/l458SBeFfUWFNhqDBalK9zeclNcDntILRjzfIbNQ/cbOH/1y7oceaLrqngtJtyopxCVtmUfHxnmr3QE2EprtrpT9A3G+JWvaaZO/iGtauLk9rTO0DfATUraOTvFVc4IP0JU+pXw4y4TUTOjyNdvEb0rFLoe49IvSDhUvEjLcO6ij6bl3rSUXyx7F+I335YPvz9E3ZPfU9BvUXw++kqHkXCHmSpQ+vKndvHcvsEp31KZ5+R120SlwzAx2JYW8l32JpHNI+lGIdTpdJtAld33a4OSptr91Z8MJ6awb0fG+MJ5fwjgm0Y65wbnDEOVRrzj5vhAqCqPD0l/bzSpof7cy4bqgdV2bKotRjzNQ+1ehEdP8sUTBkBhcejJqGoDlH4xT+uwCtyKD2nosJMan+iYESCwG6Orbuqb6CQfcUbrYtmOemkPZ32aSrRptyqbiQglPJ2EET3+A2Pf8oz6E5MSZsmgqQS2n4LfamGg==
+x-ms-exchange-antispam-messagedata: qpWcJlubwluPFELpiMG1XGDRr4VYq//Dte8Kpix7xdH30ni10KHM0UZGUL8FdwN8bXldtxlM14fIYDXL5VGTPX1p9JTJGB2sr0Wtq2/Lwb4L7vHUcQ+GP2A9ZrZXgGSxIbZcRUdplPUPdo3iixvZtfyTVQxseoRgUdlXzebL8SNajb8mOiZQqhnURt4eMe+V
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <058663A5107C874494CF6147D98907FF@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8780b42a-7fa8-4ac7-6885-08d7c0814e91
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2020 21:16:29.6257
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9jA5Pjdf2qs2cbNo4eSNTpWPWnDB4ynFzpTycQo5hifb2ZKFivBA43FRZXUrpng2O5VLznbyb0psc3xdhvGjEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3913
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-04_08:2020-03-04,2020-03-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 phishscore=0
+ impostorscore=0 adultscore=0 spamscore=0 suspectscore=0 clxscore=1015
+ bulkscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003040136
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/3/2020 8:33 PM, Jakub Kicinski wrote:
-> Linux supports 22 different interrupt coalescing parameters.
-> No driver implements them all. Some drivers just ignore the
-> ones they don't support, while others have to carry a long
-> list of checks to reject unsupported settings.
-> > To simplify the drivers add the ability to specify inside
-> ethtool_ops which parameters are supported and let the core
-> reject attempts to set any other one.
-> 
-
-Nice!
-
-Seems straight forward to me.
-
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-
-> This commit makes the mechanism an opt-in, only drivers which
-> set ethtool_opts->coalesce_types to a non-zero value will have
-> the checks enforced.
-> 
-
-Makes sense. We can enforce it in the future.
-
-> The same mask is used for global and per queue settings.
-> 
-
-Seems reasonable to me. It is unlikely that per-queue and global
-settings would ever be different.
-
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/linux/ethtool.h | 45 +++++++++++++++++++++++++++--
->  net/ethtool/ioctl.c     | 63 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 105 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-> index 23373978cb3c..3c7328f02ba3 100644
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -177,8 +177,44 @@ void ethtool_convert_legacy_u32_to_link_mode(unsigned long *dst,
->  bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
->  				     const unsigned long *src);
->  
-> +#define ETHTOOL_COALESCE_RX_USECS		BIT(0)
-> +#define ETHTOOL_COALESCE_RX_MAX_FRAMES		BIT(1)
-> +#define ETHTOOL_COALESCE_RX_USECS_IRQ		BIT(2)
-> +#define ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ	BIT(3)
-> +#define ETHTOOL_COALESCE_TX_USECS		BIT(4)
-> +#define ETHTOOL_COALESCE_TX_MAX_FRAMES		BIT(5)
-> +#define ETHTOOL_COALESCE_TX_USECS_IRQ		BIT(6)
-> +#define ETHTOOL_COALESCE_TX_MAX_FRAMES_IRQ	BIT(7)
-> +#define ETHTOOL_COALESCE_STATS_BLOCK_USECS	BIT(8)
-> +#define ETHTOOL_COALESCE_USE_ADAPTIVE_RX	BIT(9)
-> +#define ETHTOOL_COALESCE_USE_ADAPTIVE_TX	BIT(10)
-> +#define ETHTOOL_COALESCE_PKT_RATE_LOW		BIT(11)
-> +#define ETHTOOL_COALESCE_RX_USECS_LOW		BIT(12)
-> +#define ETHTOOL_COALESCE_RX_MAX_FRAMES_LOW	BIT(13)
-> +#define ETHTOOL_COALESCE_TX_USECS_LOW		BIT(14)
-> +#define ETHTOOL_COALESCE_TX_MAX_FRAMES_LOW	BIT(15)
-> +#define ETHTOOL_COALESCE_PKT_RATE_HIGH		BIT(16)
-> +#define ETHTOOL_COALESCE_RX_USECS_HIGH		BIT(17)
-> +#define ETHTOOL_COALESCE_RX_MAX_FRAMES_HIGH	BIT(18)
-> +#define ETHTOOL_COALESCE_TX_USECS_HIGH		BIT(19)
-> +#define ETHTOOL_COALESCE_TX_MAX_FRAMES_HIGH	BIT(20)
-> +#define ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL	BIT(21)
-> +
-> +#define ETHTOOL_COALESCE_USECS						\
-> +	(ETHTOOL_COALESCE_RX_USECS | ETHTOOL_COALESCE_TX_USECS)
-> +#define ETHTOOL_COALESCE_MAX_FRAMES					\
-> +	(ETHTOOL_COALESCE_RX_MAX_FRAMES | ETHTOOL_COALESCE_TX_MAX_FRAMES)
-> +#define ETHTOOL_COALESCE_USECS_IRQ					\
-> +	(ETHTOOL_COALESCE_RX_USECS_IRQ | ETHTOOL_COALESCE_TX_USECS_IRQ)
-> +#define ETHTOOL_COALESCE_MAX_FRAMES_IRQ		\
-> +	(ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ |	\
-> +	 ETHTOOL_COALESCE_TX_MAX_FRAMES_IRQ)
-> +#define ETHTOOL_COALESCE_USE_ADAPTIVE					\
-> +	(ETHTOOL_COALESCE_USE_ADAPTIVE_RX | ETHTOOL_COALESCE_USE_ADAPTIVE_TX)
-> +
->  /**
->   * struct ethtool_ops - optional netdev operations
-> + * @coalesce_types: supported types of interrupt coalescing.
->   * @get_drvinfo: Report driver/device information.  Should only set the
->   *	@driver, @version, @fw_version and @bus_info fields.  If not
->   *	implemented, the @driver and @bus_info fields will be filled in
-> @@ -207,8 +243,9 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
->   *	or zero.
->   * @get_coalesce: Get interrupt coalescing parameters.  Returns a negative
->   *	error code or zero.
-> - * @set_coalesce: Set interrupt coalescing parameters.  Returns a negative
-> - *	error code or zero.
-> + * @set_coalesce: Set interrupt coalescing parameters.  Supported coalescing
-> + *	types should be set in @coalesce_types.
-> + *	Returns a negative error code or zero.
->   * @get_ringparam: Report ring sizes
->   * @set_ringparam: Set ring sizes.  Returns a negative error code or zero.
->   * @get_pauseparam: Report pause parameters
-> @@ -292,7 +329,8 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
->   * @set_per_queue_coalesce: Set interrupt coalescing parameters per queue.
->   *	It must check that the given queue number is valid. If neither a RX nor
->   *	a TX queue has this number, return -EINVAL. If only a RX queue or a TX
-> - *	queue has this number, ignore the inapplicable fields.
-> + *	queue has this number, ignore the inapplicable fields. Supported
-> + *	coalescing types should be set in @coalesce_types.
->   *	Returns a negative error code or zero.
->   * @get_link_ksettings: Get various device settings including Ethernet link
->   *	settings. The %cmd and %link_mode_masks_nwords fields should be
-> @@ -323,6 +361,7 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
->   * of the generic netdev features interface.
->   */
->  struct ethtool_ops {
-> +	u32	coalesce_types;
-
-It feels weird to me to put this data in ops, but I can't think of a
-better place.
-
-Thanks,
-Jake
+DQoNCj4gT24gTWFyIDQsIDIwMjAsIGF0IDEyOjQxIFBNLCBKaXJpIE9sc2EgPGpvbHNhQHJlZGhh
+dC5jb20+IHdyb3RlOg0KPiANCj4gT24gV2VkLCBNYXIgMDQsIDIwMjAgYXQgMDg6MDg6MDdQTSAr
+MDEwMCwgSmlyaSBPbHNhIHdyb3RlOg0KPj4gT24gV2VkLCBNYXIgMDQsIDIwMjAgYXQgMTA6MDc6
+MDZBTSAtMDgwMCwgU29uZyBMaXUgd3JvdGU6DQo+Pj4gVGhpcyBzZXQgaW50cm9kdWNlcyBicGZ0
+b29sIHByb2cgcHJvZmlsZSBjb21tYW5kLCB3aGljaCB1c2VzIGhhcmR3YXJlDQo+Pj4gY291bnRl
+cnMgdG8gcHJvZmlsZSBCUEYgcHJvZ3JhbXMuDQo+Pj4gDQo+Pj4gVGhpcyBjb21tYW5kIGF0dGFj
+aGVzIGZlbnRyeS9mZXhpdCBwcm9ncmFtcyB0byBhIHRhcmdldCBwcm9ncmFtLiBUaGVzZSB0d28N
+Cj4+PiBwcm9ncmFtcyByZWFkIGhhcmR3YXJlIGNvdW50ZXJzIGJlZm9yZSBhbmQgYWZ0ZXIgdGhl
+IHRhcmdldCBwcm9ncmFtIGFuZA0KPj4+IGNhbGN1bGF0ZSB0aGUgZGlmZmVyZW5jZS4NCj4+PiAN
+Cj4+PiBDaGFuZ2VzIHYzID0+IHY0Og0KPj4+IDEuIFNpbXBsaWZ5IGVyciBoYW5kbGluZyBpbiBw
+cm9maWxlX29wZW5fcGVyZl9ldmVudHMoKSAoUXVlbnRpbik7DQo+Pj4gMi4gUmVtb3ZlIHJlZHVu
+ZGFudCBwX2VycigpIChRdWVudGluKTsNCj4+PiAzLiBSZXBsYWNlIHRhYiB3aXRoIHNwYWNlIGlu
+IGJhc2gtY29tcGxldGlvbjsgKFF1ZW50aW4pOw0KPj4+IDQuIEZpeCB0eXBvIF9icGZ0b29sX2dl
+dF9tYXBfbmFtZXMgPT4gX2JwZnRvb2xfZ2V0X3Byb2dfbmFtZXMgKFF1ZW50aW4pLg0KPj4gDQo+
+PiBodW0sIEknbSBnZXR0aW5nOg0KPj4gDQo+PiAJW2pvbHNhQGRlbGwtcjQ0MC0wMSBicGZ0b29s
+XSQgcHdkDQo+PiAJL2hvbWUvam9sc2EvbGludXgtcGVyZi90b29scy9icGYvYnBmdG9vbA0KPj4g
+CVtqb2xzYUBkZWxsLXI0NDAtMDEgYnBmdG9vbF0kIG1ha2UNCj4+IAkuLi4NCj4+IAltYWtlWzFd
+OiBMZWF2aW5nIGRpcmVjdG9yeSAnL2hvbWUvam9sc2EvbGludXgtcGVyZi90b29scy9saWIvYnBm
+Jw0KPj4gCSAgTElOSyAgICAgX2JwZnRvb2wNCj4+IAltYWtlOiAqKiogTm8gcnVsZSB0byBtYWtl
+IHRhcmdldCAnc2tlbGV0b24vcHJvZmlsZXIuYnBmLmMnLCBuZWVkZWQgYnkgJ3NrZWxldG9uL3By
+b2ZpbGVyLmJwZi5vJy4gIFN0b3AuDQo+IA0KPiBvaywgSSBoYWQgdG8gYXBwbHkgeW91ciBwYXRj
+aGVzIGJ5IGhhbmQsIGJlY2F1c2UgJ2dpdCBhbScgcmVmdXNlZCB0bw0KPiBkdWUgdG8gZnV6ei4u
+IHNvIHNvbWUgb2YgeW91IG5ldyBmaWxlcyBkaWQgbm90IG1ha2UgaXQgdG8gbXkgdHJlZSA7LSkN
+Cj4gDQo+IGFueXdheSBJIGhpdCBhbm90aGVyIGVycm9yIG5vdzoNCj4gDQo+IAkgIENDICAgICAg
+IHByb2cubw0KPiAJSW4gZmlsZSBpbmNsdWRlZCBmcm9tIHByb2cuYzoxNTUzOg0KPiAJcHJvZmls
+ZXIuc2tlbC5oOiBJbiBmdW5jdGlvbiDigJhwcm9maWxlcl9icGZfX2NyZWF0ZV9za2VsZXRvbuKA
+mToNCj4gCXByb2ZpbGVyLnNrZWwuaDoxMzY6MzU6IGVycm9yOiDigJhzdHJ1Y3QgcHJvZmlsZXJf
+YnBm4oCZIGhhcyBubyBtZW1iZXIgbmFtZWQg4oCYcm9kYXRh4oCZDQo+IAkgIDEzNiB8ICBzLT5t
+YXBzWzRdLm1tYXBlZCA9ICh2b2lkICoqKSZvYmotPnJvZGF0YTsNCj4gCSAgICAgIHwgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+DQo+IAlwcm9nLmM6IEluIGZ1bmN0aW9uIOKA
+mHByb2ZpbGVfcmVhZF92YWx1ZXPigJk6DQo+IAlwcm9nLmM6MTY1MDoyOTogZXJyb3I6IOKAmHN0
+cnVjdCBwcm9maWxlcl9icGbigJkgaGFzIG5vIG1lbWJlciBuYW1lZCDigJhyb2RhdGHigJkNCj4g
+CSAxNjUwIHwgIF9fdTMyIG0sIGNwdSwgbnVtX2NwdSA9IG9iai0+cm9kYXRhLT5udW1fY3B1Ow0K
+PiANCj4gSSdsbCB0cnkgdG8gZmlndXJlIGl0IG91dC4uIG1pZ2h0IGJlIGVycm9yIG9uIG15IGVu
+ZA0KPiANCj4gZG8geW91IGhhdmUgZ2l0IHJlcG8gd2l0aCB0aGVzZSBjaGFuZ2VzPw0KDQpJIHB1
+c2hlZCBpdCB0byANCg0KaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5l
+bC9naXQvc29uZy9saW51eC5naXQvdHJlZS8/aD1icGYtcGVyLXByb2ctc3RhdHMNCg0KVGhhbmtz
+LA0KU29uZw0KDQo=
