@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C1B21798C0
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 20:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 642681798E3
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 20:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbgCDTQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 14:16:55 -0500
-Received: from mga09.intel.com ([134.134.136.24]:17264 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbgCDTQy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 14:16:54 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 11:16:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,514,1574150400"; 
-   d="asc'?scan'208";a="387258262"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 04 Mar 2020 11:16:53 -0800
-Message-ID: <6ae80c13890cb71f6e079393173b08c5b4bd9917.camel@intel.com>
-Subject: Re: [PATCH net 0/1] e1000e: Stop tx/rx setup spinning for upwards
- of 300us.
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        Network Development <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "'bruce.w.allan@intel.com'" <bruce.w.allan@intel.com>,
-        "'jeffrey.e.pieper@intel.com'" <jeffrey.e.pieper@intel.com>
-Date:   Wed, 04 Mar 2020 11:16:53 -0800
-In-Reply-To: <20200304111008.2c85f386@kicinski-fedora-PC1C0HJN>
-References: <9e23756531794a5e8b3d7aa6e0a6e8b6@AcuMS.aculab.com>
-         <32fd09495d86bb2800def5b19e782a6a91a74ed9.camel@intel.com>
-         <20200304111008.2c85f386@kicinski-fedora-PC1C0HJN>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-wq+fY5fqMTH9QTFXP/PF"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+        id S1728278AbgCDTVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 14:21:55 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20144 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726440AbgCDTVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 14:21:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583349713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2PN1s2TsuVWBsmIwRsKS2L9myyWVgvomrEpgA01wuzQ=;
+        b=WOWwIj20WuvrcaJsHgxLq6UlkUUdINqJU01DPKG67hJClfoKVvaDRPcw2l9QgY1NfD4gX5
+        gFAncsn4is2eBPCgKjf07APYWmcw3xBKw6ofnZQqMc7dzU+6sLes43bDsqOmx8UnGwbLxP
+        YZdtl5yHw9RqLolRk4WygdsH1Qzwqm0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-148-ETRf-LaQMy22UY9oNdh72Q-1; Wed, 04 Mar 2020 14:21:52 -0500
+X-MC-Unique: ETRf-LaQMy22UY9oNdh72Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CC3DC107ACC7;
+        Wed,  4 Mar 2020 19:21:50 +0000 (UTC)
+Received: from krava (ovpn-205-10.brq.redhat.com [10.40.205.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6DA4D60BF3;
+        Wed,  4 Mar 2020 19:21:48 +0000 (UTC)
+Date:   Wed, 4 Mar 2020 20:21:11 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, quentin@isovalent.com,
+        kernel-team@fb.com, ast@kernel.org, daniel@iogearbox.net,
+        arnaldo.melo@gmail.com, jolsa@kernel.org
+Subject: Re: [PATCH v4 bpf-next 1/4] bpftool: introduce "prog profile" command
+Message-ID: <20200304192111.GB168640@krava>
+References: <20200304180710.2677695-1-songliubraving@fb.com>
+ <20200304180710.2677695-2-songliubraving@fb.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200304180710.2677695-2-songliubraving@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 04, 2020 at 10:07:07AM -0800, Song Liu wrote:
+> With fentry/fexit programs, it is possible to profile BPF program with
+> hardware counters. Introduce bpftool "prog profile", which measures key
+> metrics of a BPF program.
+> 
+> bpftool prog profile command creates per-cpu perf events. Then it attaches
+> fentry/fexit programs to the target BPF program. The fentry program saves
+> perf event value to a map. The fexit program reads the perf event again,
+> and calculates the difference, which is the instructions/cycles used by
+> the target program.
+> 
+> Example input and output:
+> 
+>   ./bpftool prog profile id 337 duration 3 cycles instructions llc_misses
+> 
+>         4228 run_cnt
+>      3403698 cycles                                              (84.08%)
+>      3525294 instructions   #  1.04 insn per cycle               (84.05%)
+>           13 llc_misses     #  3.69 LLC misses per million isns  (83.50%)
 
---=-wq+fY5fqMTH9QTFXP/PF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+FYI I'm in the middle of moving perf's 'events parsing' interface to libperf,
+which takes event name/s on input and returns list of perf_event_attr objects
 
-On Wed, 2020-03-04 at 11:10 -0800, Jakub Kicinski wrote:
-> On Wed, 04 Mar 2020 10:02:08 -0800 Jeff Kirsher wrote:
-> > Adding the intel-wired-lan@lists.osuosl.org mailing list, so that
-> > the
-> > developers you want feedback from will actually see your
-> > patches/questions/comments.
->=20
-> Is that list still moderated? I was going to CC it yesterday but=20
-> I don't want to subject people who respond to moderation messages..
+  parse_events("cycles") -> ready to use 'struct perf_event_attr'
 
-Yes, this is still moderated, helps keep the crap email out of peoples
-inbox.
+You can use any event that's listed in 'perf list' command, which includes
+also all vendor (Intel/Arm/ppc..) events. It might be useful extension for
+this command.
 
---=-wq+fY5fqMTH9QTFXP/PF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl5f/qUACgkQ5W/vlVpL
-7c4/2A/9Hh2qTBx4p0PDED97hNsz7hNuhJMjIkQqTCViICTxSsw4O6NTpLwOWcOD
-KqsxJZACSMsFdGZsJAmitg/ungAFpnC/hBHIArbI4XCqnf3tVJqgvfuI/klwrNe4
-JSArked3Ifw31ICONW8uaNJs4C3OVD5VQR8h/FDE+HP1kJHo5jeIzDEOlKtONhum
-NEhLLxYCc2ZOEKnxa21ryZSQrMcZgVlKAOgIebcQxZ2tnISxHIsYl6Ka5MNuDxDZ
-ERyvzEGNMjGz0DzZKgIcKvxGJ/FA6iiXW/cFOkUzlN1qqBktiftA+rW1lQGAMmWi
-qWaKXyaPFJ9QmJdHWPbcRUBAkTRvytrC+HKnwevSdRpPLt/1WoROWPRhzn8oK8lR
-YQMw+tg+pSpXMBspEvm36OkDh3Rw/y0VN45KspkGbJCVae/EIRUmkdz2aSZCanEB
-pmSEr4y8sij3k3kDluo1WSxxnRmiSuxRVb4F9rA//w4BlKAbj5wy9FeuW3gOoKBt
-TvAnHjXXhfu9cjZgUvCkNGLwRr5GkXIbl2fk+WnjkHB7p09o9DrkUcD0/pRf4gDH
-7F5aDzJKozzGBEhYHniKZVoK+IRfzMr75b7p3KGBtvuwu2q9zTJnuzQI1jnm6e3V
-eHPNYZgn8bdvzbbDmVnL1mn0ULjWpy/ky2Oj+hnFjqjPURDa2Gk=
-=VEjK
------END PGP SIGNATURE-----
-
---=-wq+fY5fqMTH9QTFXP/PF--
+jirka
 
