@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D23B017870D
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1659A178710
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728204AbgCDAdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 19:33:05 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:35515 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728032AbgCDAdF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:33:05 -0500
-Received: by mail-qk1-f195.google.com with SMTP id 145so5439489qkl.2
-        for <netdev@vger.kernel.org>; Tue, 03 Mar 2020 16:33:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KRbga26KKt4GxB0REX9xqELCJZu3/nGpKZ9taqW3uuE=;
-        b=o1XhDG4CLRS1QpCBaTd6MFdXVP2P0bZosxTncpGA0t6T3Vpk1DzjQ0ReWrc6mwGp0A
-         o45NyGMO92UOsS2KVsHqSbQxk5LjPpOnXNKF+oSmbwWSN9R05XDkeFWiipuOZKaBaoRL
-         GXn9YDKRlBaeGqVfaATsttEZyv6LhGtRraT0nEDsWhT25Yb+S6bOJ8r6gfVVQnDH0qdG
-         lvcY+r3dZct2EiY0CR2zU7DeOfl1eycDdSdRrtbB8Gz1tIhciyfYqlAQ7DlyzG/kw+PL
-         tU/JYlYcRhd1JW1IaG+MVc/U7xd+mpS/sSGSjiKsbgi++TLEt3gT0yKvpEvC6TcKCauI
-         Egig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KRbga26KKt4GxB0REX9xqELCJZu3/nGpKZ9taqW3uuE=;
-        b=UGfjXPIaSEEx0g2r4J1n5khqxrlpR3qqRMhsPahyNp14maciIEmf30+Rld4nU8ktgh
-         m7c059K9M4cAAQDwZUACmKZ0CmASJuz4iguMjPN5McuuxGBBtu3XxKt3JfHJWIIYr5EQ
-         uW8tR6wDdqNVJDZkzVUNzTxKLbwhiylRwHtlf8RoSjfDnJuN8hGPtp9odXcLQzhmccAX
-         RSqJOAut8dJd9vVJMTb4jU9LR51+/zM5QmQH6yoZXzSQkhBn1wy3Sfc3X/9w3k4RQ1Z4
-         jdhed/8cibgNbGW4ry6aNObG44SqXRtiRQE7KQSiXpx97qQCEmNd6rnqkDOmvITQOE3T
-         3wwg==
-X-Gm-Message-State: ANhLgQ0aDQkSksJ4eov7GE6H0/L47wgvTI9u2/3hqY6E7eJS0XveFdnP
-        0ZpiQUhHECkOxzccu836PBO3Eg==
-X-Google-Smtp-Source: ADFU+vttyqHEsC1g4p3gCx+UNgq7rSItKx35kOg3UpNk5WebKAv1n8jhydANGEnSIe/oskm/FagWzA==
-X-Received: by 2002:a05:620a:1210:: with SMTP id u16mr604413qkj.493.1583281984135;
-        Tue, 03 Mar 2020 16:33:04 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id n19sm5400021qkk.88.2020.03.03.16.33.03
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 03 Mar 2020 16:33:03 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j9HyB-0004Bk-3J; Tue, 03 Mar 2020 20:33:03 -0400
-Date:   Tue, 3 Mar 2020 20:33:03 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/2] Packet pacing DEVX API
-Message-ID: <20200304003303.GA16047@ziepe.ca>
-References: <20200219190518.200912-1-leon@kernel.org>
+        id S1728312AbgCDAev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 19:34:51 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:43794 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727725AbgCDAev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:34:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=WG3iPdftyaxe4JF5JBknRpB8gUrE1SSRMPAlrPJsmAw=; b=WtNevm5+K2WjRRR67Ed0jVpB6
+        2oJaPGiNNJmApUlAltjHdWr9W/NretAGPe9Z6tevcgzgRk9L2yAT0tUbHxpOwAaek/kj+oBUg2DMe
+        JyaA7k+NBSgfftFwLQGsOsS2Q0MpVXffr86yMK07g1Ig/U+ImfanNGrozJLMbwFJNcU9jmwFCB4h1
+        sgd7H/znFf3SbrihoxKv1/LajzEzRX9qYpazbzDB//g1fE+iCmm7cKKvnfIVCV/itV6RmsQF5gvP6
+        iGrgNxkcuKyFcnpfeGomwtjYtDu/0/koB1HvTX+Y3fBfsYWqE17Z1P80Tv0ZMyRI5HNBe9zsAQ1Eq
+        lXxz6ZIWA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60064)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1j9Hzo-00039p-FC; Wed, 04 Mar 2020 00:34:44 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1j9Hzm-0006Mf-W2; Wed, 04 Mar 2020 00:34:43 +0000
+Date:   Wed, 4 Mar 2020 00:34:42 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, corbet@lwn.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] doc: sfp-phylink: correct code indentation
+Message-ID: <20200304003442.GW25745@shell.armlinux.org.uk>
+References: <E1j97cE-0004aW-Ur@rmk-PC.armlinux.org.uk>
+ <20200303.153546.1011655145785464830.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200219190518.200912-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200303.153546.1011655145785464830.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 09:05:16PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
+On Tue, Mar 03, 2020 at 03:35:46PM -0800, David Miller wrote:
+> From: Russell King <rmk+kernel@armlinux.org.uk>
+> Date: Tue, 03 Mar 2020 13:29:42 +0000
 > 
-> Hi,
+> > Using vim to edit the phylink documentation reveals some mistakes due
+> > to the "invisible" pythonesque white space indentation that can't be
+> > seen with other editors. Fix it.
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > 
-> This series from Yishai extends packet pacing to work over DEVX
-> interface. In first patch, he refactors the mlx5_core internal
-> logic. In second patch, the RDMA APIs are added.
+> I applied this, but you do know that GIT is going to warn about the
+> trailing whitespace to me:
 > 
-> Thanks
+> .git/rebase-apply/patch:29: trailing whitespace.
+> 	
+> .git/rebase-apply/patch:39: trailing whitespace.
+> 	
+> warning: 2 lines add whitespace errors.
 > 
-> Yishai Hadas (2):
->   net/mlx5: Expose raw packet pacing APIs
->   IB/mlx5: Introduce UAPIs to manage packet pacing
+> Do the empty lines really need that leading TAB?
 
-It looks Ok, can you apply this to the shared branch?
+If vim's syntax colouring is correct, then it does need the tab for
+the code sequence to be recognised as a block of code.
 
-Thanks,
-Jason
+As kerneldoc is based on python, and white-space indentation defining
+a block of code is a very (annoying) pythonesque thing, it seems that
+vim's probably correct.  But... unless someone knows how the .rst
+format really works...
+
+It could be that vim's syntax colouring for .rst files is broken.
+I was hoping that the documentation people would've spoken up about
+that though, as I explicitly stated in the commit message that the
+patch was based on vim's behaviour.
+
+Not having the tabs causes vim to reverse-bold a lot of the file,
+making it basically uneditable without sunglasses.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
