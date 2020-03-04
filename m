@@ -2,58 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDE2178945
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 04:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B883178953
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 04:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbgCDDy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 22:54:56 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:47988 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725773AbgCDDyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 22:54:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Type:MIME-Version:Message-ID:
-        Subject:To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=GC+lj6eenbd2TSJy0cX2Wg1Q0bAHWKP08Cg3HzsZgQk=; b=YO2oevSXeDr0WM3M+AQA3KkkLM
-        c6r7LBqrAUZq00VODMib8P8ep3GEmynmZopHTPtTKWgrE1pFjQq6x8Dkcfrka9MlrBJnqfhiKCwzg
-        lEq8VKpN3lW9HoT5AOzq1TL+nrNAwaW2ohgR7Jm1hSJO2+8eWFMwIkS+WLjtHvliqhIaEQn/PLUfe
-        HRzW/s8dXZV0PjO5fbEqzHrb0SPuZDeOdTRYkgUMc1thgAYcgDA658mtQL/lJd/oHyimGPDG7EYIq
-        cpPTrh2o8Vpt+B5BkUD7d0NAJUvARGA3jcyth2wjm1sqbQ7hnmAfAm4VytfW3jzpAFFbnevadTbaH
-        shQ1PVKw==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1j9L7X-0001mY-Gm; Wed, 04 Mar 2020 03:54:55 +0000
-Date:   Tue, 3 Mar 2020 19:54:55 -0800
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org
-Subject: [PATCH] ibmveth: Remove unused page_offset macro
-Message-ID: <20200304035455.GA29971@bombadil.infradead.org>
+        id S1728247AbgCDD4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 22:56:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727390AbgCDD4D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Mar 2020 22:56:03 -0500
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B392E2166E;
+        Wed,  4 Mar 2020 03:56:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583294163;
+        bh=mbvL/GVdKaVZBmyv3hwIpJzHKZ2NQWrGuiaxj3tJWqE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kuC66U2q3/vhj1VSgZRccoKE6hqYyo8K1to7zu5MeGM0O1X5YNq7SnKj8CRFh+66G
+         PayGNtx3bx5ZIM870bMDncPopZkP7Wmi+rDkAYmeKGNef6Sk5ka86l2tajB0xg7rKL
+         Vx05ddi2wUWwYZcKVjOPsJ6XRMcG0rEN2Aff2jvQ=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     mkubecek@suse.cz, thomas.lendacky@amd.com, benve@cisco.com,
+        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
+        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 07/12] hisilicon: let core reject the unsupported coalescing parameters
+Date:   Tue,  3 Mar 2020 19:54:56 -0800
+Message-Id: <20200304035501.628139-8-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200304035501.628139-1-kuba@kernel.org>
+References: <20200304035501.628139-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+Set ethtool_ops->coalesce_types to let the core reject
+unsupported coalescing parameters.
 
-We already have a function called page_offset(), and this macro
-is unused, so just delete it.
+This driver correctly rejects all unsupported parameters.
+As a side effect of these changes the error code for
+unsupported params changes from EOPNOTSUPP to EINVAL.
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index 84121aab7ff1..4cad94ac9bc9 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -978,8 +978,6 @@ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index d9718b87279d..74d1a5778c3e 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -811,20 +811,6 @@ static int hip04_set_coalesce(struct net_device *netdev,
+ {
+ 	struct hip04_priv *priv = netdev_priv(netdev);
+ 
+-	/* Check not supported parameters  */
+-	if ((ec->rx_max_coalesced_frames) || (ec->rx_coalesce_usecs_irq) ||
+-	    (ec->rx_max_coalesced_frames_irq) || (ec->tx_coalesce_usecs_irq) ||
+-	    (ec->use_adaptive_rx_coalesce) || (ec->use_adaptive_tx_coalesce) ||
+-	    (ec->pkt_rate_low) || (ec->rx_coalesce_usecs_low) ||
+-	    (ec->rx_max_coalesced_frames_low) || (ec->tx_coalesce_usecs_high) ||
+-	    (ec->tx_max_coalesced_frames_low) || (ec->pkt_rate_high) ||
+-	    (ec->tx_coalesce_usecs_low) || (ec->rx_coalesce_usecs_high) ||
+-	    (ec->rx_max_coalesced_frames_high) || (ec->rx_coalesce_usecs) ||
+-	    (ec->tx_max_coalesced_frames_irq) ||
+-	    (ec->stats_block_coalesce_usecs) ||
+-	    (ec->tx_max_coalesced_frames_high) || (ec->rate_sample_interval))
+-		return -EOPNOTSUPP;
+-
+ 	if ((ec->tx_coalesce_usecs > HIP04_MAX_TX_COALESCE_USECS ||
+ 	     ec->tx_coalesce_usecs < HIP04_MIN_TX_COALESCE_USECS) ||
+ 	    (ec->tx_max_coalesced_frames > HIP04_MAX_TX_COALESCE_FRAMES ||
+@@ -845,6 +831,8 @@ static void hip04_get_drvinfo(struct net_device *netdev,
  }
  
--#define page_offset(v) ((unsigned long)(v) & ((1 << 12) - 1))
--
- static int ibmveth_send(struct ibmveth_adapter *adapter,
- 			union ibmveth_buf_desc *descs, unsigned long mss)
- {
+ static const struct ethtool_ops hip04_ethtool_ops = {
++	.coalesce_types		= ETHTOOL_COALESCE_TX_USECS |
++				  ETHTOOL_COALESCE_TX_MAX_FRAMES,
+ 	.get_coalesce		= hip04_get_coalesce,
+ 	.set_coalesce		= hip04_set_coalesce,
+ 	.get_drvinfo		= hip04_get_drvinfo,
+-- 
+2.24.1
 
