@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B41471786CC
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465631786D2
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 01:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbgCDACI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 19:02:08 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:37502 "EHLO
+        id S1728081AbgCDAGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 19:06:16 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:37528 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727274AbgCDACI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:02:08 -0500
+        with ESMTP id S1727604AbgCDAGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Mar 2020 19:06:16 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3FAAA15AAFC75;
-        Tue,  3 Mar 2020 16:02:07 -0800 (PST)
-Date:   Tue, 03 Mar 2020 16:02:06 -0800 (PST)
-Message-Id: <20200303.160206.1467881674346759532.davem@davemloft.net>
-To:     David.Laight@ACULAB.COM
-Cc:     netdev@vger.kernel.org, bruce.w.allan@intel.com,
-        jeffrey.e.pieper@intel.com, jeffrey.t.kirsher@intel.com
-Subject: Re: [PATCH net 1/1] e1000e: Stop tx/rx setup spinning for upwards
- of 300us.
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2C8A515AB0D1B;
+        Tue,  3 Mar 2020 16:06:15 -0800 (PST)
+Date:   Tue, 03 Mar 2020 16:06:14 -0800 (PST)
+Message-Id: <20200303.160614.1176351857930966618.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     rmk+kernel@armlinux.org.uk, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, antoine.tenart@bootlin.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/3] net: phy: marvell10g: add mdix control
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <6ef1e257642743a786c8ddd39645bba3@AcuMS.aculab.com>
-References: <6ef1e257642743a786c8ddd39645bba3@AcuMS.aculab.com>
+In-Reply-To: <20200303195352.GC1092@lunn.ch>
+References: <20200303180747.GT25745@shell.armlinux.org.uk>
+        <E1j9By6-0003pB-UH@rmk-PC.armlinux.org.uk>
+        <20200303195352.GC1092@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 16:02:07 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Mar 2020 16:06:15 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Laight <David.Laight@ACULAB.COM>
-Date: Tue, 3 Mar 2020 17:06:03 +0000
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Tue, 3 Mar 2020 20:53:52 +0100
 
-> Reduce the delay between checks for the ME being idle from 50us
-> to uus.
-     ^^^
+> It would be nice to have Antoine test this before it get merged, but:
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I think you mean '5us' here.
-
-I'll let the Intel folks review and integrate this as it's a
-non-trivial change honestly.
+Ok, I'll give Antoine a chance to test it out.
