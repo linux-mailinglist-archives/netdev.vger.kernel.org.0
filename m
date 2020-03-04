@@ -2,69 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8278717932D
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:20:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B144179330
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729646AbgCDPUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 10:20:08 -0500
-Received: from mx2.suse.de ([195.135.220.15]:55728 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727930AbgCDPUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 10:20:07 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 79E97ABCF;
-        Wed,  4 Mar 2020 15:20:01 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 7AA04E037F; Wed,  4 Mar 2020 16:19:58 +0100 (CET)
-Date:   Wed, 4 Mar 2020 16:19:58 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        davem@davemloft.net, thomas.lendacky@amd.com, benve@cisco.com,
-        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
-        saeedm@mellanox.com, leon@kernel.org
-Subject: Re: [PATCH net-next 01/12] ethtool: add infrastructure for
- centralized checking of coalescing parameters
-Message-ID: <20200304151958.GI4264@unicorn.suse.cz>
-References: <20200304035501.628139-1-kuba@kernel.org>
- <20200304035501.628139-2-kuba@kernel.org>
- <20200304145439.GC3553@lunn.ch>
+        id S1729002AbgCDPVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 10:21:36 -0500
+Received: from www62.your-server.de ([213.133.104.62]:37718 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727024AbgCDPVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 10:21:36 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9Vq1-0006ZB-Sb; Wed, 04 Mar 2020 16:21:34 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1j9Vq1-000ReH-JH; Wed, 04 Mar 2020 16:21:33 +0100
+Subject: Re: [PATCH v3 bpf-next 0/3] Convert BPF UAPI constants into enum
+ values
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20200303003233.3496043-1-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <47bbaa27-a112-b4a5-6251-d8aad31937a5@iogearbox.net>
+Date:   Wed, 4 Mar 2020 16:21:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200304145439.GC3553@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200303003233.3496043-1-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25741/Wed Mar  4 15:15:26 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 03:54:39PM +0100, Andrew Lunn wrote:
-> On Tue, Mar 03, 2020 at 07:54:50PM -0800, Jakub Kicinski wrote:
-> > @@ -2336,6 +2394,11 @@ ethtool_set_per_queue_coalesce(struct net_device *dev,
-> >  			goto roll_back;
-> >  		}
-> >  
-> > +		if (!ethtool_set_coalesce_supported(dev, &coalesce)) {
-> > +			ret = -EINVAL;
-> > +			goto roll_back;
-> > +		}
+On 3/3/20 1:32 AM, Andrii Nakryiko wrote:
+> Convert BPF-related UAPI constants, currently defined as #define macro, into
+> anonymous enums. This has no difference in terms of usage of such constants in
+> C code (they are still could be used in all the compile-time contexts that
+> `#define`s can), but they are recorded as part of DWARF type info, and
+> subsequently get recorded as part of kernel's BTF type info. This allows those
+> constants to be emitted as part of vmlinux.h auto-generated header file and be
+> used from BPF programs. Which is especially convenient for all kinds of BPF
+> helper flags and makes CO-RE BPF programs nicer to write.
 > 
-> Hi Jakub
+> libbpf's btf_dump logic currently assumes enum values are signed 32-bit
+> values, but that doesn't match a typical case, so switch it to emit unsigned
+> values. Once BTF encoding of BTF_KIND_ENUM is extended to capture signedness
+> properly, this will be made more flexible.
 > 
-> EOPNOTSUPP? 
+> As an immediate validation of the approach, runqslower's copy of
+> BPF_F_CURRENT_CPU #define is dropped in favor of its enum variant from
+> vmlinux.h.
+> 
+> v2->v3:
+> - convert only constants usable from BPF programs (BPF helper flags, map
+>    create flags, etc) (Alexei);
+> 
+> v1->v2:
+> - fix up btf_dump test to use max 32-bit unsigned value instead of negative one.
+> 
+> 
+> Andrii Nakryiko (3):
+>    bpf: switch BPF UAPI #define constants used from BPF program side to
+>      enums
+>    libbpf: assume unsigned values for BTF_KIND_ENUM
+>    tools/runqslower: drop copy/pasted BPF_F_CURRENT_CPU definiton
+> 
+>   include/uapi/linux/bpf.h                      | 175 ++++++++++-------
+>   tools/bpf/runqslower/runqslower.bpf.c         |   3 -
+>   tools/include/uapi/linux/bpf.h                | 177 +++++++++++-------
+>   tools/lib/bpf/btf_dump.c                      |   8 +-
+>   .../bpf/progs/btf_dump_test_case_syntax.c     |   2 +-
+>   5 files changed, 224 insertions(+), 141 deletions(-)
+> 
 
-Out of the 11 drivers patched in the rest of the series, 4 used
-EOPNOTSUPP, 3 EINVAL and 4 just ignored unsupported parameters so there
-doesn't seem to be a clear consensus. Personally I find EOPNOTSUPP more
-appropriate but it's quite common that drivers return EINVAL for
-parameters they don't understand or support.
-
-BtW, there is a v2 later.
-
-Michal
+Applied, thanks!
