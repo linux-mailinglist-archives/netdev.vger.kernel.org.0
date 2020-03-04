@@ -2,68 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC1D179A61
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43069179A64
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729675AbgCDUra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:47:30 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:31802 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728539AbgCDUra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:47:30 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1583354850; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=GmllqlvU42cNoTyZPOXdp/yXFftS5cRjA+OkQHPvzXo=;
- b=Bn5xJui+Nj8dUEuPGhJfTU0BWT7jqRQGIlQzJ/rvkTM9kbO40uEJv84v0STGbLRqw0XWl7XT
- KuwAK3660jEPeoKkqjSooKeG9SrEomL9IG57NBgSjfoZ+0X4lm09uvEJcufKsNjrpueoVndO
- 2Hy5SIx2giE0ifK5FY0bUH0oq2Q=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e6013d9.7f983555b998-smtp-out-n01;
- Wed, 04 Mar 2020 20:47:21 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 19AC3C4479F; Wed,  4 Mar 2020 20:47:21 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S2387469AbgCDUtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:49:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41354 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728482AbgCDUtU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:49:20 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9567DC4479C;
-        Wed,  4 Mar 2020 20:47:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A65A9207FD;
+        Wed,  4 Mar 2020 20:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583354959;
+        bh=g6jmeMLYsKWmDrxS+WXXbBjRl3Lw3BSlyyvzWzF3eNM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JVh8bJWwld8SB44MgE20h9i8xC6o6LJq6IQ52j4JuQgt7w2B1MRpjN36Vbrac3/hi
+         soiMjWmDoAGMGg1usOYMKcGd8IWCIP1+UkkfL54CYskZYcd93BLAPBqUn8YO9RMdEy
+         uztmt2A8FOGoEHzqBEFLGWdh22Vk/RyrblH+WinI=
+Date:   Wed, 4 Mar 2020 12:49:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leslie Monis <lesliemonis@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, tahiliani@nitk.edu.in,
+        gautamramk@gmail.com
+Subject: Re: [PATCH net-next v2 0/4] pie: minor improvements
+Message-ID: <20200304124917.0fbba371@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200304185602.2540-1-lesliemonis@gmail.com>
+References: <20200304185602.2540-1-lesliemonis@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 04 Mar 2020 13:47:19 -0700
-From:   subashab@codeaurora.org
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, stranche@codeaurora.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: rmnet: print error message when command
- fails
-In-Reply-To: <20200304075102.23430-1-ap420073@gmail.com>
-References: <20200304075102.23430-1-ap420073@gmail.com>
-Message-ID: <fe5c0e55af0e80ae11e93ef6be0fb3bf@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	if (rmnet_is_real_dev_registered(slave_dev)) {
-> +		NL_SET_ERR_MSG_MOD(extack,
-> +				   "dev is already attached another rmnet dev");
+On Thu,  5 Mar 2020 00:25:58 +0530 Leslie Monis wrote:
+> This patch series includes the following minor changes with
+> respect to the PIE/FQ-PIE qdiscs:
 > 
-Hi Taehee
+>  - Patch 1 removes some ambiguity by using the term "backlog"
+>            instead of "qlen" when referring to the queue length
+>            in bytes.
+>  - Patch 2 removes redundant type casting on two expressions.
+>  - Patch 3 removes the pie_vars->accu_prob_overflows variable
+>            without affecting the precision in calculations and
+>            makes the size of the pie_vars structure exactly 64
+>            bytes.
+>  - Patch 4 realigns a comment affected by a change in patch 3.
+> 
+> Changes from v1 to v2:
+>  - Kept 8 as the argument to prandom_bytes() instead of changing it
+>    to 7 as suggested by David Miller.
 
-Can you make this change as well-
-"slave cannot be another rmnet dev"
+I was wondering if patch 3 changes make user-visible changes but it
+seems those should be only slight accuracy adjustments, so LGTM. FWIW:
 
-
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
