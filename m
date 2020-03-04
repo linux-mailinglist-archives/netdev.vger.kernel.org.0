@@ -2,97 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E1D2179834
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:43:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA54179867
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:51:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730065AbgCDSns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 13:43:48 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18540 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727137AbgCDSns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 13:43:48 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 024ITiHP022424
-        for <netdev@vger.kernel.org>; Wed, 4 Mar 2020 10:43:47 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=rXVNnDc2b0N43zIsSnrY4qwJop2dhCpuxuYn7MyhGnU=;
- b=oRYDK1KgO032Utky49pXKwPd5SuFt+Pyl8W1jZMgwWC17AWeA/62eztzqxR0UcnETK/q
- 5JohBZxSAMf9I7sbWMg6YFRJBcV8IGzJJzytpigOpf0T28u7CzVJPNR6sbyIAbyvyW4T
- GpJyzfq4WAhp6wYlhXsDwQdxWdUWP0NIh3I= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yhbxwtyr7-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 10:43:47 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 4 Mar 2020 10:43:45 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 8BAAA2EC2D4D; Wed,  4 Mar 2020 10:43:41 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: support out-of-tree vmlinux builds for VMLINUX_BTF
-Date:   Wed, 4 Mar 2020 10:43:36 -0800
-Message-ID: <20200304184336.165766-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1730173AbgCDSvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:51:05 -0500
+Received: from mga09.intel.com ([134.134.136.24]:13652 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729600AbgCDSvE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 13:51:04 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 10:50:57 -0800
+X-IronPort-AV: E=Sophos;i="5.70,514,1574150400"; 
+   d="scan'208";a="240551018"
+Received: from ahduyck-desk1.jf.intel.com ([10.7.198.76])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Mar 2020 10:50:57 -0800
+Message-ID: <443c085ff3bcc06ad15c34f44f0407a0861dadeb.camel@linux.intel.com>
+Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
+ centralized checking of coalescing parameters
+From:   Alexander Duyck <alexander.h.duyck@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, davem@davemloft.net,
+        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
+        pkaustub@cisco.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
+        netdev@vger.kernel.org
+Date:   Wed, 04 Mar 2020 10:50:57 -0800
+In-Reply-To: <20200304102705.192d3b0a@kicinski-fedora-PC1C0HJN>
+References: <20200304043354.716290-1-kuba@kernel.org>
+         <20200304043354.716290-2-kuba@kernel.org>
+         <20200304075926.GH4264@unicorn.suse.cz>
+         <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
+         <45b3c493c3ce4aa79f882a8170f3420d348bb61e.camel@linux.intel.com>
+         <20200304102705.192d3b0a@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-04_07:2020-03-04,2020-03-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- mlxscore=0 lowpriorityscore=0 spamscore=0 phishscore=0 adultscore=0
- mlxlogscore=862 bulkscore=0 malwarescore=0 suspectscore=8 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003040125
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add detection of out-of-tree built vmlinux image for the purpose of
-VMLINUX_BTF detection. According to Documentation/kbuild/kbuild.rst, O takes
-precedence over KBUILD_OUTPUT.
+On Wed, 2020-03-04 at 10:27 -0800, Jakub Kicinski wrote:
+> On Wed, 04 Mar 2020 10:12:30 -0800 Alexander Duyck wrote:
+> > On Wed, 2020-03-04 at 10:00 -0800, Jakub Kicinski wrote:
+> > > On Wed, 4 Mar 2020 08:59:26 +0100 Michal Kubecek wrote:  
+> > > > Just an idea: perhaps we could use the fact that struct ethtool_coalesce
+> > > > is de facto an array so that this block could be replaced by a loop like
+> > > > 
+> > > > 	u32 supported_types = dev->ethtool_ops->coalesce_types;
+> > > > 	const u32 *values = &coalesce->rx_coalesce_usecs;
+> > > > 
+> > > > 	for (i = 0; i < __ETHTOOL_COALESCE_COUNT; i++)
+> > > > 		if (values[i] && !(supported_types & BIT(i)))
+> > > > 			return false;
+> > > > 
+> > > > and to be sure, BUILD_BUG_ON() or static_assert() check that the offset
+> > > > of ->rate_sample_interval matches ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL.  
+> > > 
+> > > I kind of prefer the greppability over the saved 40 lines :(
+> > > But I'm happy to change if we get more votes for the more concise
+> > > version. Or perhaps the Intel version with the warnings printed.  
+> > 
+> > I agree that it would make more sense to replace the types with an enum
+> > definition, and then use the enum to define bits to be used by the
+> > drivers.
+> 
+> The only use for the enum would then be to automate the bit assignment?
+> Sounds like we would save some lines for the code and added some for
+> the definition. Maybe I'm missing the advantage the enum brings 🤔
 
-Also ensure ~/path/to/build/dir also works by relying on wildcard's resolution
-first, but then applying $(abspath) at the end to also handle
-O=../../whatever cases.
+Well if you wanted to you could probably also update ethtool_coalesce to
+support a unioned __u32 array if you wanted to be more explicit about it. 
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+I just figured that by making in an enum it becomes less error prone since
+you can't accidentally leave a gap or end up renumbering things
+unintentionally. Combine that with some logic to take care of the bit
+shifting and it wouldn't differ much from how we handle the netdev feature
+flags and the like.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 2d7f5df33f04..ee4ad34adb4a 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -129,10 +129,13 @@ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
- 	$(call msg,CC,,$@)
- 	$(CC) -c $(CFLAGS) -o $@ $<
- 
--VMLINUX_BTF_PATHS := $(abspath ../../../../vmlinux)			\
--			       /sys/kernel/btf/vmlinux			\
--			       /boot/vmlinux-$(shell uname -r)
--VMLINUX_BTF:= $(firstword $(wildcard $(VMLINUX_BTF_PATHS)))
-+VMLINUX_BTF_PATHS := $(if $(O),$(O)/vmlinux)				\
-+		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
-+		     ../../../../vmlinux				\
-+		     /sys/kernel/btf/vmlinux				\
-+		     /boot/vmlinux-$(shell uname -r)
-+VMLINUX_BTF:= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
-+
- $(OUTPUT)/runqslower: $(BPFOBJ)
- 	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	\
- 		    OUTPUT=$(SCRATCH_DIR)/ VMLINUX_BTF=$(VMLINUX_BTF)   \
--- 
-2.17.1
+> > > > > +	return !dev->ethtool_ops->coalesce_types ||
+> > > > > +		(dev->ethtool_ops->coalesce_types & used_types) == used_types;
+> > > > > +}    
+> > > > 
+> > > > I suggest to move the check for !dev->ethtool_ops->coalesce_types to the
+> > > > beginning of the function so that we avoid calculating the bitmap if we
+> > > > are not going to check it anyway.  
+> > > 
+> > > Good point!  
+> > 
+> > So one thing I just wanted to point out. The used_types won't necessarily
+> > be correct because it is only actually checking for non-zero types. There
+> > are some of these values where a zero is a valid input and the driver will
+> > accept it, such as rx_coalesce_usecs for ixgbe. As such we might want to
+> > rename the value to nonzero_types instead of used_types.
+> 
+> Okay, I'll rename. I was also wondering if it should be "params" not
+> "types". Initially I was hoping there are categories of coalescing that
+> drivers implement, each with set of params. But it seems each vendor is
+> just picking fields they like. I think I'll do s/types/params/ as well.
+
+Makes sense to me.
 
