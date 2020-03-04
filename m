@@ -2,90 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3B91797C9
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618811797D8
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 19:27:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730078AbgCDSYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 13:24:13 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:40762 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbgCDSYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 13:24:13 -0500
-Received: by mail-qk1-f193.google.com with SMTP id m2so2613779qka.7
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 10:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7uGKfMEoQma2YTmYindpAJZ+6Dd9e8pZRREodN0XilM=;
-        b=Mia0eqxiqiZ+f66hq7l6dJh58ejISZYPQsbp5h2zfh7vp/vvIx56r1xShga41jPdFM
-         e087spTKJZixh1I+cmplDpNzi7uP35TRbI1WyoV55iFHQD4y3aa6Uo2Qu0p2vZwEm2oU
-         BRwcjvdDuzGLgSRxdxHfjKtJb+I2IfhjPZsOtLFRERV44TCfb8vgRINjDujDhZCBL1Mq
-         8YVUWjbZl7bQOQtQy8+7vDn0tuTUhfGryD1aZ7KDHPo2Aenypv0LbCQ5WMge9hDq26G5
-         nheK73Rsky6AO2srjk5QIAx2fj2tGoYcKvDjnWOBiJIX4MtqPoKvSOkAsok1NVDRiJdf
-         Y6Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7uGKfMEoQma2YTmYindpAJZ+6Dd9e8pZRREodN0XilM=;
-        b=Iwnk7PWSAfo5Y6pYw0y7qfzAq2hPGTGTlPc7jS9evVbxLG0njBmFBtUW+YJ2G03IQP
-         +Wg/P4EmSTQD+o9gabZZAX+7xLPjj32UASDv6pdRoOBe7XyXVn307J23ZhRt6QyhmBI6
-         EeeX9xZnf56k977MPN2SSTEzpwQWaYnxfrVnqXSj3ZZcprmj/p9wBjVFpMgsGpKbXMtZ
-         4dXeeSO8hSAiW1482q9vDPvczsDXCw6h5VsOozI1EoTt49Ojb0+klX7HmZA6dZNE/U76
-         k9aQx+wQp05JK+KORnRTHgUonbYcZ2SC8ZfEy3leKXskyhoNtSMzAp1vtIspXFRhqUp0
-         jpFg==
-X-Gm-Message-State: ANhLgQ0jo4ZOzA3dNL+IUzYd1+QQFyV1cHj0Q4pFUguRbwavoO+tP5At
-        R7umbhtM+rOHWeBNORBQIH7awA==
-X-Google-Smtp-Source: ADFU+vtRodrQGutbTEE2PU9HNmEC1IZAyA11ZBYfVhgiKLz7nf/pB721n80U6tbbZtje9FYX/xbyrw==
-X-Received: by 2002:a05:620a:2012:: with SMTP id c18mr3760545qka.242.1583346252226;
-        Wed, 04 Mar 2020 10:24:12 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id 133sm14361291qkh.109.2020.03.04.10.24.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 04 Mar 2020 10:24:11 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1j9Ygl-0000KJ-CH; Wed, 04 Mar 2020 14:24:11 -0400
-Date:   Wed, 4 Mar 2020 14:24:11 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Bernard Metzler <bmt@zurich.ibm.com>
-Cc:     chuck.lever@oracle.com, dledford@redhat.com, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, parav@mellanox.com,
-        syzkaller-bugs@googlegroups.com, willy@infradead.org
-Subject: Re: [PATCH for-rc] RDMA/siw: Fix passive connection establishment
-Message-ID: <20200304182411.GA1201@ziepe.ca>
-References: <20200228173534.26815-1-bmt@zurich.ibm.com>
+        id S1730095AbgCDS1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 13:27:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726748AbgCDS1J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 13:27:09 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 38E2E21775;
+        Wed,  4 Mar 2020 18:27:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583346428;
+        bh=Q2id61DMuYuvh7JXreQCqLBb0f43InezHiFkD8TMoAY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dbBqxkucS5Dk0e0sG8GdYhDSnpW2e5jvb9zkWwuOXEepLHUOMPJBw8Eu3A27SSMXG
+         FSLa8Wv0OEoqf7Sb4+7XROSlmnVPbGYxYhkPoYSwM/u8mmm1b8oWp/ci3XlG06nzpR
+         EvUsdDGxOaXxXh7TQQEgCWTUBtZdJm3ObOXQBWN0=
+Date:   Wed, 4 Mar 2020 10:27:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, davem@davemloft.net,
+        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
+        pkaustub@cisco.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 01/12] ethtool: add infrastructure for
+ centralized checking of coalescing parameters
+Message-ID: <20200304102705.192d3b0a@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <45b3c493c3ce4aa79f882a8170f3420d348bb61e.camel@linux.intel.com>
+References: <20200304043354.716290-1-kuba@kernel.org>
+        <20200304043354.716290-2-kuba@kernel.org>
+        <20200304075926.GH4264@unicorn.suse.cz>
+        <20200304100050.14a95c36@kicinski-fedora-PC1C0HJN>
+        <45b3c493c3ce4aa79f882a8170f3420d348bb61e.camel@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200228173534.26815-1-bmt@zurich.ibm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 06:35:34PM +0100, Bernard Metzler wrote:
-> Holding the rtnl_lock while iterating a devices interface
-> address list potentially causes deadlocks with the
-> cma_netdev_callback. While this was implemented to
-> limit the scope of a wildcard listen to addresses
-> of the current device only, a better solution limits
-> the scope of the socket to the device. This completely
-> avoiding locking, and also results in significant code
-> simplification.
-> 
-> Reported-by: syzbot+55de90ab5f44172b0c90@syzkaller.appspotmail.com
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: Bernard Metzler <bmt@zurich.ibm.com>
-> ---
->  drivers/infiniband/sw/siw/siw_cm.c | 137 +++++++----------------------
->  1 file changed, 31 insertions(+), 106 deletions(-)
+On Wed, 04 Mar 2020 10:12:30 -0800 Alexander Duyck wrote:
+> On Wed, 2020-03-04 at 10:00 -0800, Jakub Kicinski wrote:
+> > On Wed, 4 Mar 2020 08:59:26 +0100 Michal Kubecek wrote: =20
+> > > Just an idea: perhaps we could use the fact that struct ethtool_coale=
+sce
+> > > is de facto an array so that this block could be replaced by a loop l=
+ike
+> > >=20
+> > > 	u32 supported_types =3D dev->ethtool_ops->coalesce_types;
+> > > 	const u32 *values =3D &coalesce->rx_coalesce_usecs;
+> > >=20
+> > > 	for (i =3D 0; i < __ETHTOOL_COALESCE_COUNT; i++)
+> > > 		if (values[i] && !(supported_types & BIT(i)))
+> > > 			return false;
+> > >=20
+> > > and to be sure, BUILD_BUG_ON() or static_assert() check that the offs=
+et
+> > > of ->rate_sample_interval matches ETHTOOL_COALESCE_RATE_SAMPLE_INTERV=
+AL. =20
+> >=20
+> > I kind of prefer the greppability over the saved 40 lines :(
+> > But I'm happy to change if we get more votes for the more concise
+> > version. Or perhaps the Intel version with the warnings printed. =20
+>=20
+> I agree that it would make more sense to replace the types with an enum
+> definition, and then use the enum to define bits to be used by the
+> drivers.
 
-Applied to for-next, the possibility of hitting the locking inversion
-found by syzkaller is really remote as you'd have to run siw on top of
-bond and then do horrible things to the bond.
+The only use for the enum would then be to automate the bit assignment?
+Sounds like we would save some lines for the code and added some for
+the definition. Maybe I'm missing the advantage the enum brings =F0=9F=A4=94
 
-Jason
+> > > > +	return !dev->ethtool_ops->coalesce_types ||
+> > > > +		(dev->ethtool_ops->coalesce_types & used_types) =3D=3D used_type=
+s;
+> > > > +}   =20
+> > >=20
+> > > I suggest to move the check for !dev->ethtool_ops->coalesce_types to =
+the
+> > > beginning of the function so that we avoid calculating the bitmap if =
+we
+> > > are not going to check it anyway. =20
+> >=20
+> > Good point! =20
+>=20
+> So one thing I just wanted to point out. The used_types won't necessarily
+> be correct because it is only actually checking for non-zero types. There
+> are some of these values where a zero is a valid input and the driver will
+> accept it, such as rx_coalesce_usecs for ixgbe. As such we might want to
+> rename the value to nonzero_types instead of used_types.
+
+Okay, I'll rename. I was also wondering if it should be "params" not
+"types". Initially I was hoping there are categories of coalescing that
+drivers implement, each with set of params. But it seems each vendor is
+just picking fields they like. I think I'll do s/types/params/ as well.
