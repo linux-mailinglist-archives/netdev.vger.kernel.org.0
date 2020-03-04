@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5D6178A53
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 06:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F420A178A74
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 06:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgCDFoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 00:44:37 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:44960 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgCDFoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 00:44:37 -0500
-Received: by mail-qt1-f193.google.com with SMTP id h16so497821qtr.11;
-        Tue, 03 Mar 2020 21:44:36 -0800 (PST)
+        id S1726860AbgCDF7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 00:59:30 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38808 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbgCDF7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 00:59:30 -0500
+Received: by mail-qk1-f195.google.com with SMTP id j7so258477qkd.5;
+        Tue, 03 Mar 2020 21:59:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=xxd5vo5QurLpt9L4qMgvVJGSW6Osjywwb4CYHY+R/FQ=;
-        b=BMACOv8P0xReQkbncNGFSPzZ3rQdGF2v1ChmfuqjrARLtnn8UOV7/lwxSr51C0/AmE
-         sRQUcJCtLZWFNIEEIDlZYM+qp0LD+vQYHon7Ctcl30PZGHjpEiEWbTsEXKqbEpjFWLkS
-         L7EKmlS9Kh+Kgjzt2nJ4MS+h6dc2FNAnAawxrG58L6F+DELKIxz5r7beLE3cyhLmdsMW
-         ApKWVieoR7chO1lSQu/mfH6ZciWQmaLqqWmh+KTYYw7xUy8+GcI2m1jPwh8jaURIKISp
-         bKpBO6ex9JVX6yxUvfbUtPgaWzD7wbKoQSzot9J9ytGJ0S7VBX1cYohBKpvPZrYCJeS4
-         Nvaw==
+        bh=1lsTGiKn6oHoT5mTkEzaNQeGDmYRHT45EUorz4TmpOc=;
+        b=P+GFoCJAoKq3kAujQuBLX4vLpvGiToWarwyt3I7yMT0ETN7SZRei0g4q4AEM8fpOCK
+         vof7NPoTFevjAaCDDf/SbV27a2geaTAmtKyojHhp4lYyDScNLf91yCnvp+3ImOQHEqYX
+         RiIswSOTBHbTfmt+F89PSOXpZ+FGMDvCdwYMfWXCc25xkge9SqweZstLIYKfXEvfDgRn
+         Wu/ouC4ASS4qkL3jX6YMT5JE5AEfVUW8BDNdjIWBAaefsUp6iSJfYrhQoJV1A1XfVw+a
+         s2vctFbM/kZly5xFmfvV2sdYjgHZ2PBrxaCfSplrsUBGAJ0h7LhSWPAUxgp74GTevSTl
+         u6KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xxd5vo5QurLpt9L4qMgvVJGSW6Osjywwb4CYHY+R/FQ=;
-        b=JIStuwm3r++Tb7RbNDAm4XO0rTxRM645HCAGsoscbWEJ7PWuyy82qpqgQ73q/gZvqi
-         0G6hJ9LAsfhaXMSaw0WINoPiR/JbQVrXypMj7n8ZCfXwlBTsfenSBGORe12ocC6kSBOI
-         19cJQx3Ac/7gRGOR7kwbhFjYxXQFL8Pgwgp06Gmh57sGbMvzLrJSmbErfF0A/BlgHdrD
-         2+b6wi3FlLFUXkbgQCJNN1AvCijU9+fSsu95gQ1T2zlUnBCboJzSmQ5BcgIqZJXofpvn
-         tZeFqfxucgVhab1UFZfh4xLCTH7uuf+i3CHzWiNvp30na/8LG7sHtbtyrfLegaKWXiE2
-         nZOg==
-X-Gm-Message-State: ANhLgQ09X40+lUViWWv0KaQS7R7IaVUYwKVbFRoD/A5khaSxejmiPxxn
-        X7yhtx2F/nV0BovFRASp5wV2IbiQ+i18SG3iVnA=
-X-Google-Smtp-Source: ADFU+vuuhdqZ2hCGsDWcuSl7ClmlWIERn+UP536E/3crNluJT8VOzWB/pNm3rv2JaT9L3trW6Z0lljEuI1NFAvscL9Q=
-X-Received: by 2002:aed:39c9:: with SMTP id m67mr1008871qte.107.1583300675522;
- Tue, 03 Mar 2020 21:44:35 -0800 (PST)
+        bh=1lsTGiKn6oHoT5mTkEzaNQeGDmYRHT45EUorz4TmpOc=;
+        b=KBrM+ubgPHVbIuIqkJHwxPq4bRXwra9K3KONXJZOPEV69KWXpdtk28al6BvmlcJYka
+         sC0nKdy5ffWUJbjqxyugC03OyJo4DCYfxscvrSaZBam7YoW8netiuT4uPKGWTT8pz6fF
+         ek0NMWOXQYWliJ2mmv0ezw/dQJHm/EQWDuVm4kBEtax+lv6MfjyM0HKOXZWS/KbloTHn
+         NEretaif/6dD/htJVwv+G6X0i240pZleO1kKMfbP5pViuRXwUXlRNTrN5K2/c7cqyry8
+         0+Ftt8b891T30cA3KYHJ4xJT04dNWtJAI9+ZsZhzDHZQn80laGmMxG3VZxCxl32gL0ou
+         ERtA==
+X-Gm-Message-State: ANhLgQ2oc6aqEmbPyyzb4bIW1pWh1ccK/dTHJLk5hxGcq3UMvZg+OCHZ
+        kEoRXIBKVvPNgee1xaeglZk5RCcr8j1Bwj6lug8=
+X-Google-Smtp-Source: ADFU+vvzFwXZwkUfPFvyenDYfCpLXs8aBxMU7CBoL9eL5+OpXsJ8GkHHPAIqTbsH0wSim2TF+aHnCH5ySY3UVRmJk2M=
+X-Received: by 2002:a05:620a:a0d:: with SMTP id i13mr1467376qka.333.1583301568862;
+ Tue, 03 Mar 2020 21:59:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20200303005035.13814-1-luke.r.nels@gmail.com> <20200303005035.13814-2-luke.r.nels@gmail.com>
- <CAJ+HfNhSj9ycgh8Y44b_ZruW1A=+W_53fXnCDc488WXSESJ3dw@mail.gmail.com> <CADasFoC5EEXdq43waj9pQDb9HtpG2bWE2yMVySBZ4rpopYbROQ@mail.gmail.com>
-In-Reply-To: <CADasFoC5EEXdq43waj9pQDb9HtpG2bWE2yMVySBZ4rpopYbROQ@mail.gmail.com>
+References: <20200303005035.13814-1-luke.r.nels@gmail.com> <20200303005035.13814-3-luke.r.nels@gmail.com>
+ <CAJ+HfNjgwVnxnyCTk5j+JCpxz+zmeEBYbj=_SueR750aAuoz=A@mail.gmail.com> <CADasFoBODSbgHHXU+iA-32=oKNs6n0Ff_UDU3063uiyGjx1xXg@mail.gmail.com>
+In-Reply-To: <CADasFoBODSbgHHXU+iA-32=oKNs6n0Ff_UDU3063uiyGjx1xXg@mail.gmail.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 4 Mar 2020 06:44:24 +0100
-Message-ID: <CAJ+HfNgHyX_zMh7Wm00twwY75YLftZ8GFMw3rx5k+yiLH8p0eg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 1/4] riscv, bpf: move common riscv JIT code to header
+Date:   Wed, 4 Mar 2020 06:59:17 +0100
+Message-ID: <CAJ+HfNhOp_Rbcqer0K=mZ8h+uswYSv4hSa3wCTdjjxH26HUTCw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/4] riscv, bpf: add RV32G eBPF JIT
 To:     Luke Nelson <lukenels@cs.washington.edu>
 Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -76,76 +76,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Mar 2020 at 03:31, Luke Nelson <lukenels@cs.washington.edu> wrote=
+On Wed, 4 Mar 2020 at 03:32, Luke Nelson <lukenels@cs.washington.edu> wrote=
 :
 >
-> Hi Bj=C3=B6rn,
+[...]
 >
-> Thanks for the comments! Inlined responses below:
->
-> On Mon, Mar 2, 2020 at 11:50 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.=
-com> wrote:
+> > > +    case BPF_LSH:
+> > > +        if (imm >=3D 32) {
+> > > +            emit(rv_slli(hi(rd), lo(rd), imm - 32), ctx);
+> > > +            emit(rv_addi(lo(rd), RV_REG_ZERO, 0), ctx);
+> > > +        } else if (imm =3D=3D 0) {
+> > > +            /* nop */
 > >
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +/*
-> > > + * Common functionality for RV32 and RV64 BPF JIT compilers
-> > > + *
-> > > + * Copyright (c) 2019 Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-> > > + * Copyright (c) 2020 Luke Nelson <luke.r.nels@gmail.com>
-> > > + * Copyright (c) 2020 Xi Wang <xi.wang@gmail.com>
+> > Can we get rid of this, and just do if/else if?
+>
+> imm =3D=3D 0 has been a tricky case for 32-bit JITs; see 6fa632e719ee
+> ("bpf, x32: Fix bug with ALU64 {LSH, RSH, ARSH} BPF_K shift by 0").
+> We wanted to make the imm =3D=3D 0 case explicit and help future readers
+> see that this case is handled correctly here.
+>
+> We could do the following if we really wanted to get rid of the
+> check:
+>
+> if (imm >=3D 32) {
+> ...
+> } else if (imm !=3D 0) {
+> ...
+> }
+> /* Do nothing for imm =3D=3D 0. */
+>
+> Though it's unclear if this is easier to read.
+>
+
+Thanks for clearing that up. *I* prefer the latter, but that's really
+up to you! Keep the current one, if you prefer that! :-)
+
+> > > +    case BPF_ARSH:
+> > > +        if (is_12b_int(imm)) {
+> > > +            emit(rv_srai(lo(rd), lo(rd), imm), ctx);
+> > > +        } else {
+> > > +            emit_imm(RV_REG_T0, imm, ctx);
+> > > +            emit(rv_sra(lo(rd), lo(rd), RV_REG_T0), ctx);
+> > > +        }
+> > > +        break;
 > >
-> > I'm no lawyer, so this is more of a question; You've pulled out code
-> > into a header, and renamed two functions. Does that warrant copyright
-> > line additions? Should my line be removed?
->
-> This header also includes new code for emitting instructions required
-> for the RV32 JIT (e.g., sltu) and some additional pseudoinstructions
-> (e.g., bgtu and similar). I'm also no lawyer, so I don't know either
-> if this rises to the level of adding copyright lines. I'm happy to
-> do the following in v5 if it looks better:
->
-> + * Copyright (c) 2019 Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-> + *
-> + * Modified by ...
->
-
-Ah, my mistake! Feel free to keep the Copyright. I was honestly just
-curious what the correct way (if any) was. So; Keep your copyright!
-Sorry for the noise!
-
-> > > +#if __riscv_xlen =3D=3D 64
+> > Again nit; I like "early exit" code if possible. Instead of:
 > >
-> > Please remove this. If the inlined functions are not used, they're not
-> > part of the binary. This adds complexity to the code, and without it
-> > we can catch build errors early on!
+> > if (bleh) {
+> >    foo();
+> > } else {
+> >    bar();
+> > }
+> >
+> > do:
+> >
+> > if (bleh) {
+> >    foo()
+> >    return/break;
+> > }
+> > bar();
+> >
+> > I find the latter easier to read -- but really a nit, and a matter of
+> > style. There are number of places where that could be applied in the
+> > file.
 >
-> I agree in general we should avoid #if. The reason for using it
-> here is to cause build errors if the RV32 JIT ever tries to emit
-> an RV64-only instruction by mistake. Otherwise, what is now a build
-> error would be delayed to an illegal instruction trap when the JITed
-> code is executed, which is much harder to find and diagnose.
+> I like "early exit" code, too, and agree that it's easier to read
+> in general, especially when handling error conditions.
 >
-> We could use separate files, bpf_jit_32.h and bpf_jit_64.h (the
-> latter will include the former), if we want to avoid #if. Though
-> this adds another form of complexity.
->
-> So the options here are 1) using no #if, with the risk of hiding
-> subtle bugs in the RV32 JIT; 2) using #if as is; and 3) using
-> separate headers. What do you think?
+> But here we wanted to make it explicit that both branches are
+> emitting equivalent instruction sequences (under different paths).
+> Structured control flow seems a better fit for this particular
+> context.
 >
 
-Ok, that is a valid concern. We could go the route of compile-time checking=
-:
+Ok!
 
-if (__riscv_xlen !=3D 64)
-    bad_usage();
+> > At this point of the series, let's introduce the shared code .c-file
+> > containing implementation for bpf_int_jit_compile() (with build_body
+> > part of that)and bpf_jit_needs_zext(). That will make it easier to
+> > catch bugs in both JITs and to avoid code duplication! Also, when
+> > adding the stronger invariant suggested by Palmer [1], we only need to
+> > do it in one place.
+> >
+> > The pull out refactoring can be a separate commit.
+>
+> I think the idea of deduplicating bpf_int_jit_compile is good and
+> will lead to more maintainable JITs. How does the following proposal
+> for v5 sound?
+>
+> In patch 1 of this series:
+>
+> - Factor structs and common helpers to bpf_jit.h (just like v4).
+>
+> - Factor out bpf_int_jit_compile(), bpf_jit_needs_zext(), and
+> build_body() to a new file bpf_jit_core.c and tweak the code as in v4.
+>
+> - Rename emit_insn() and build_{prologue,epilogue}() to bpf_jit_emit_insn=
+()
+> and bpf_jit_build_{prologue,epilogue}, since these functions are
+> now extern rather than static.
+>
+> - Rename bpf_jit_comp.c to bpf_jit_comp64.c to be more explicit
+> about its contents (as the next patch will add bpf_jit_comp32.c).
+>
+> Then patch 2 can reuse the new header and won't need to define its
+> own bpf_int_jit_compile() etc.
+>
 
-That's overkill in this case. Keep the #if.
+I like that, but keep the first patch as a refactoring patch only, and
+then in a *new* patch 2 you add the rv32 specific code (sltu and
+pseudo instructions + the xlen preprocessor check + copyright-things
+;-)).  Patch 3 will be the old patch 2. Wdyt?
 
-
-Cheers,
+Thanks for working on this!
 Bj=C3=B6rn
-
 
 > Thanks!
 >
