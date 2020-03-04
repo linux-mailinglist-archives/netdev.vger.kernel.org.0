@@ -2,129 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5075E179999
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:11:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5031799AD
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387996AbgCDULv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:11:51 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38495 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728278AbgCDULu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:11:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583352709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JkoOmo/uioqA9PwDxWS+txa/xYjNxgEGpUJZ05OzMY4=;
-        b=K6KX5X+vYBhC14BIHKg7DroedXZhCjE7Xb9op0gyy09dwoAuXFhwdAQfHe+FGL9teXAfbt
-        4Du5AKf9DBp8IYS4zrvroE/qSM8Y9P/S/BmYzSB1501M5s3j5ma5B+ibrYvAEdlusEV77P
-        PaRlpvZ4y8MfiJhaIcOIg2eD4k5rON8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-402-wmTToPnyO0-fSYKc5-gz2w-1; Wed, 04 Mar 2020 15:11:46 -0500
-X-MC-Unique: wmTToPnyO0-fSYKc5-gz2w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EFB2C8017DF;
-        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD00F27061;
-        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 7AA728446C;
-        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
-Date:   Wed, 4 Mar 2020 15:11:44 -0500 (EST)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Andrea Righi <andrea.righi@canonical.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20200304175350.GB267906@xps-13>
-References: <20200304175350.GB267906@xps-13>
-Subject: Re: [PATCH] ptp: free ptp clock properly
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.40.204.205, 10.4.195.7]
-Thread-Topic: free ptp clock properly
-Thread-Index: PDXsSbboxZFT/a99TucbY86w37w5+g==
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S1728955AbgCDUYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:24:41 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33084 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728482AbgCDUYl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:24:41 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 3621CAE99;
+        Wed,  4 Mar 2020 20:24:38 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id F1B6BE037F; Wed,  4 Mar 2020 21:24:35 +0100 (CET)
+Message-Id: <cover.1583347351.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ethtool v2 00/25] initial netlink interface implementation for
+ 5.6 release
+To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Date:   Wed,  4 Mar 2020 21:24:35 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Andrea, all,
+This series adds initial support for ethtool netlink interface provided by
+kernel since 5.6-rc1. The traditional ioctl interface is still supported
+for compatibility with older kernels. The netlink interface and message
+formats are documented in Documentation/networking/ethtool-netlink.rst file
+in kernel source tree.
 
------ Original Message -----
-> From: "Andrea Righi" <andrea.righi@canonical.com>
-> Subject: [PATCH] ptp: free ptp clock properly
-> 
-> There is a bug in ptp_clock_unregister() where ptp_clock_release() can
-> free up resources needed by posix_clock_unregister() to properly destroy
-> a related sysfs device.
-> 
-> Fix this by calling posix_clock_unregister() in ptp_clock_release().
+Netlink interface is preferred but ethtool falls back to ioctl if netlink
+interface is not available (i.e. the "ethtool" genetlink family is not
+registered). It also falls back if a particular command is not implemented
+in netlink (kernel returns -EOPNOTSUPP). This allows new ethtool versions
+to work with older kernel versions while support for ethool commands is
+added in steps.
 
-Honestly, this does not seem right. The calls at PTP clock release are:
+The series aims to touch existing ioctl code as little as possible in the
+first phase to minimize the risk of introducing regressions. It is also
+possible to build ethtool without netlink support if --disable-netlink is
+passed to configure script. The most visible changes to existing code are
 
-ptp_clock_unregister() -> posix_clock_unregister() -> cdev_device_del() ->
--> ... bla ... -> ptp_clock_release()
+  - UAPI header copies are moved to uapi/ under original names
+  - some variables and functions which are going to be shared with netlink
+    code are moved from ethtool.c to common.c and common.h
+  - args[] array in ethtool.c was rewritten to use named initializers
 
-So, it looks like with this patch both posix_clock_unregister() and
-ptp_clock_release() are not called at all. And it looks like the "fix" is
-not removing PTP clock's cdev, i.e. leaking it and related sysfs resources.
+Except for changes to main(), all netlink specific code is in a separate
+directory netlink/ and is divided into multiple files.
 
-I would guess that a kernel in question (5.3.0-40-generic) has the commit
-a33121e5487b but does not have the commit 75718584cb3c, which should be
-exactly fixing a docking station disconnect crash. Could you please,
-check this?
+Changes in v2:
+- add support for permanent hardware addres ("ethtool -P", patch 20)
+- add support for pretty printing of netlink messages (patches 21-25)
+- make output of "ethtool <dev>" closer to ioctl implementation
+- two more kernel uapi header copies (patch 5)
+- support for rtnetlink socket and requests (needed for "ethtool -P")
+- some kerneldoc style comments
 
-Why? We have 2 crash call traces. 1) the launchpad bug 2) the email which
-led to the commit 75718584cb3c creation (see Link:).
+Michal Kubecek (25):
+  move UAPI header copies to a separate directory
+  update UAPI header copies
+  add --debug option to control debugging messages
+  use named initializers in command line option list
+  netlink: add netlink related UAPI header files
+  netlink: introduce the netlink interface
+  netlink: message buffer and composition helpers
+  netlink: netlink socket wrapper and helpers
+  netlink: initialize ethtool netlink socket
+  netlink: add support for string sets
+  netlink: add notification monitor
+  move shared code into a common file
+  netlink: add bitset helpers
+  netlink: partial netlink handler for gset (no option)
+  netlink: support getting wake-on-lan and debugging settings
+  netlink: add basic command line parsing helpers
+  netlink: add bitset command line parser handlers
+  netlink: add netlink handler for sset (-s)
+  netlink: support tests with netlink enabled
+  netlink: add handler for permaddr (-P)
+  netlink: support for pretty printing netlink messages
+  netlink: message format description for ethtool netlink
+  netlink: message format descriptions for genetlink control
+  netlink: message format descriptions for rtnetlink
+  netlink: use pretty printing for ethtool netlink messages
 
-Aaaaand they are identical starting from device_release_driver_internal()
-and almost to the top.
+ Makefile.am                                  |   31 +-
+ common.c                                     |  145 +++
+ common.h                                     |   26 +
+ configure.ac                                 |   14 +-
+ ethtool.8.in                                 |   48 +-
+ ethtool.c                                    |  819 ++++++++------
+ internal.h                                   |   31 +-
+ netlink/bitset.c                             |  218 ++++
+ netlink/bitset.h                             |   26 +
+ netlink/desc-ethtool.c                       |  139 +++
+ netlink/desc-genlctrl.c                      |   56 +
+ netlink/desc-rtnl.c                          |   96 ++
+ netlink/extapi.h                             |   46 +
+ netlink/monitor.c                            |  229 ++++
+ netlink/msgbuff.c                            |  255 +++++
+ netlink/msgbuff.h                            |  117 ++
+ netlink/netlink.c                            |  216 ++++
+ netlink/netlink.h                            |   87 ++
+ netlink/nlsock.c                             |  405 +++++++
+ netlink/nlsock.h                             |   45 +
+ netlink/parser.c                             | 1058 ++++++++++++++++++
+ netlink/parser.h                             |  144 +++
+ netlink/permaddr.c                           |  114 ++
+ netlink/prettymsg.c                          |  237 ++++
+ netlink/prettymsg.h                          |  118 ++
+ netlink/settings.c                           |  955 ++++++++++++++++
+ netlink/strset.c                             |  297 +++++
+ netlink/strset.h                             |   25 +
+ test-cmdline.c                               |   29 +-
+ test-features.c                              |   11 +
+ ethtool-copy.h => uapi/linux/ethtool.h       |   17 +
+ uapi/linux/ethtool_netlink.h                 |  237 ++++
+ uapi/linux/genetlink.h                       |   89 ++
+ uapi/linux/if_link.h                         | 1051 +++++++++++++++++
+ net_tstamp-copy.h => uapi/linux/net_tstamp.h |   27 +
+ uapi/linux/netlink.h                         |  248 ++++
+ uapi/linux/rtnetlink.h                       |  777 +++++++++++++
+ 37 files changed, 8102 insertions(+), 381 deletions(-)
+ create mode 100644 common.c
+ create mode 100644 common.h
+ create mode 100644 netlink/bitset.c
+ create mode 100644 netlink/bitset.h
+ create mode 100644 netlink/desc-ethtool.c
+ create mode 100644 netlink/desc-genlctrl.c
+ create mode 100644 netlink/desc-rtnl.c
+ create mode 100644 netlink/extapi.h
+ create mode 100644 netlink/monitor.c
+ create mode 100644 netlink/msgbuff.c
+ create mode 100644 netlink/msgbuff.h
+ create mode 100644 netlink/netlink.c
+ create mode 100644 netlink/netlink.h
+ create mode 100644 netlink/nlsock.c
+ create mode 100644 netlink/nlsock.h
+ create mode 100644 netlink/parser.c
+ create mode 100644 netlink/parser.h
+ create mode 100644 netlink/permaddr.c
+ create mode 100644 netlink/prettymsg.c
+ create mode 100644 netlink/prettymsg.h
+ create mode 100644 netlink/settings.c
+ create mode 100644 netlink/strset.c
+ create mode 100644 netlink/strset.h
+ rename ethtool-copy.h => uapi/linux/ethtool.h (99%)
+ create mode 100644 uapi/linux/ethtool_netlink.h
+ create mode 100644 uapi/linux/genetlink.h
+ create mode 100644 uapi/linux/if_link.h
+ rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (84%)
+ create mode 100644 uapi/linux/netlink.h
+ create mode 100644 uapi/linux/rtnetlink.h
 
-> See also:
-> commit 75718584cb3c ("ptp: free ptp device pin descriptors properly").
-> 
-> BugLink: https://bugs.launchpad.net/bugs/1864754
-> Fixes: a33121e5487b ("ptp: fix the race between the release of ptp_clock and
-> cdev")
-> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-> ---
->  drivers/ptp/ptp_clock.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-> index ac1f2bf9e888..12951023d0c6 100644
-> --- a/drivers/ptp/ptp_clock.c
-> +++ b/drivers/ptp/ptp_clock.c
-> @@ -171,6 +171,7 @@ static void ptp_clock_release(struct device *dev)
->  	struct ptp_clock *ptp = container_of(dev, struct ptp_clock, dev);
->  
->  	ptp_cleanup_pin_groups(ptp);
-> +	posix_clock_unregister(&ptp->clock);
->  	mutex_destroy(&ptp->tsevq_mux);
->  	mutex_destroy(&ptp->pincfg_mux);
->  	ida_simple_remove(&ptp_clocks_map, ptp->index);
-> @@ -303,8 +304,6 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
->  	if (ptp->pps_source)
->  		pps_unregister_source(ptp->pps_source);
->  
-> -	posix_clock_unregister(&ptp->clock);
-> -
->  	return 0;
->  }
->  EXPORT_SYMBOL(ptp_clock_unregister);
-> --
-> 2.25.0
-
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+-- 
+2.25.1
 
