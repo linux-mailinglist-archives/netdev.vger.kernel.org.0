@@ -2,241 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEA21799CB
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188FD1799CC
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388417AbgCDU0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:26:40 -0500
-Received: from mx2.suse.de ([195.135.220.15]:34006 "EHLO mx2.suse.de"
+        id S2388422AbgCDU0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:26:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:34054 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387926AbgCDU0j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 15:26:39 -0500
+        id S2387926AbgCDU0o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 15:26:44 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id EAB68B199;
-        Wed,  4 Mar 2020 20:26:36 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id F12EAB240;
+        Wed,  4 Mar 2020 20:26:41 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 9AE1CE037F; Wed,  4 Mar 2020 21:26:36 +0100 (CET)
-Message-Id: <e2a30158cd80c4a99061f98df20c0d8cb4f9b863.1583347351.git.mkubecek@suse.cz>
+        id A1B5DE037F; Wed,  4 Mar 2020 21:26:41 +0100 (CET)
+Message-Id: <5d787f17d58fb66c671a90d2cfc8f47eaaf730e8.1583347351.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
 References: <cover.1583347351.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v2 24/25] netlink: message format descriptions for
- rtnetlink
+Subject: [PATCH ethtool v2 25/25] netlink: use pretty printing for ethtool
+ netlink messages
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Wed,  4 Mar 2020 21:26:36 +0100 (CET)
+Date:   Wed,  4 Mar 2020 21:26:41 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add description of rtnetlink message formats to be used for pretty printing
-infrastructure and helper function to pretty print rtnetlink messages.
+Introduce new debugging flag DEBUG_NL_PRETTY_MSG (0x10) which has two
+effects:
 
-As rtnetlink is quite complex and only RTM_GETLINK and RTM_NEWLINK messages
-are interesting for ethtool at the moment, this commit provides only names
-of a limited subset of rtnetlink messages and names and formats of top
-level attributes used in RTM_{NEW,DEL,GET,SET}LINK messages.
+  - show request messages embedded in extack error messages in human
+    readable form; if failing attribute offset is provided, highlight the
+    attribute
+  - if DEBUG_NL_MSGS is also set, show structure of all outgoing and
+    incoming ethtool netlink messages in addition to their summary
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am         |  1 +
- netlink/desc-rtnl.c | 96 +++++++++++++++++++++++++++++++++++++++++++++
- netlink/prettymsg.c | 44 +++++++++++++++++++++
- netlink/prettymsg.h |  6 +++
- 4 files changed, 147 insertions(+)
- create mode 100644 netlink/desc-rtnl.c
+ internal.h       |  1 +
+ netlink/nlsock.c | 71 +++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 56 insertions(+), 16 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 74143b727c4f..2fd79eb8c79a 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -33,6 +33,7 @@ ethtool_SOURCES += \
- 		  netlink/settings.c netlink/parser.c netlink/parser.h \
- 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
-+		  netlink/desc-rtnl.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/netlink/desc-rtnl.c b/netlink/desc-rtnl.c
-new file mode 100644
-index 000000000000..e15e6f0f0d2e
---- /dev/null
-+++ b/netlink/desc-rtnl.c
-@@ -0,0 +1,96 @@
-+/*
-+ * desc-rtnl.c - rtnetlink message descriptions
-+ *
-+ * Descriptions of rtnetlink messages and attributes for pretty print.
-+ */
-+
-+#include <linux/rtnetlink.h>
-+
-+#include "../internal.h"
+diff --git a/internal.h b/internal.h
+index a518bfa99380..edb07bddd073 100644
+--- a/internal.h
++++ b/internal.h
+@@ -122,6 +122,7 @@ enum {
+ 	DEBUG_NL_MSGS,		/* incoming/outgoing netlink messages */
+ 	DEBUG_NL_DUMP_SND,	/* dump outgoing netlink messages */
+ 	DEBUG_NL_DUMP_RCV,	/* dump incoming netlink messages */
++	DEBUG_NL_PRETTY_MSG,	/* pretty print of messages and errors */
+ };
+ 
+ static inline bool debug_on(unsigned long debug, unsigned int bit)
+diff --git a/netlink/nlsock.c b/netlink/nlsock.c
+index 4366c52ce390..22abb68b6646 100644
+--- a/netlink/nlsock.c
++++ b/netlink/nlsock.c
+@@ -10,6 +10,7 @@
+ #include "../internal.h"
+ #include "nlsock.h"
+ #include "netlink.h"
 +#include "prettymsg.h"
-+
-+static const struct pretty_nla_desc __link_desc[] = {
-+	NLATTR_DESC_INVALID(IFLA_UNSPEC),
-+	NLATTR_DESC_BINARY(IFLA_ADDRESS),
-+	NLATTR_DESC_BINARY(IFLA_BROADCAST),
-+	NLATTR_DESC_STRING(IFLA_IFNAME),
-+	NLATTR_DESC_U32(IFLA_MTU),
-+	NLATTR_DESC_U32(IFLA_LINK),
-+	NLATTR_DESC_STRING(IFLA_QDISC),
-+	NLATTR_DESC_BINARY(IFLA_STATS),
-+	NLATTR_DESC_INVALID(IFLA_COST),
-+	NLATTR_DESC_INVALID(IFLA_PRIORITY),
-+	NLATTR_DESC_U32(IFLA_MASTER),
-+	NLATTR_DESC_BINARY(IFLA_WIRELESS),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_PROTINFO),
-+	NLATTR_DESC_U32(IFLA_TXQLEN),
-+	NLATTR_DESC_BINARY(IFLA_MAP),
-+	NLATTR_DESC_U32(IFLA_WEIGHT),
-+	NLATTR_DESC_U8(IFLA_OPERSTATE),
-+	NLATTR_DESC_U8(IFLA_LINKMODE),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_LINKINFO),
-+	NLATTR_DESC_U32(IFLA_NET_NS_PID),
-+	NLATTR_DESC_STRING(IFLA_IFALIAS),
-+	NLATTR_DESC_U32(IFLA_NUM_VF),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_VFINFO_LIST),
-+	NLATTR_DESC_BINARY(IFLA_STATS64),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_VF_PORTS),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_PORT_SELF),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_AF_SPEC),
-+	NLATTR_DESC_U32(IFLA_GROUP),
-+	NLATTR_DESC_U32(IFLA_NET_NS_FD),
-+	NLATTR_DESC_U32(IFLA_EXT_MASK),
-+	NLATTR_DESC_U32(IFLA_PROMISCUITY),
-+	NLATTR_DESC_U32(IFLA_NUM_TX_QUEUES),
-+	NLATTR_DESC_U32(IFLA_NUM_RX_QUEUES),
-+	NLATTR_DESC_U8(IFLA_CARRIER),
-+	NLATTR_DESC_BINARY(IFLA_PHYS_PORT_ID),
-+	NLATTR_DESC_U32(IFLA_CARRIER_CHANGES),
-+	NLATTR_DESC_BINARY(IFLA_PHYS_SWITCH_ID),
-+	NLATTR_DESC_S32(IFLA_LINK_NETNSID),
-+	NLATTR_DESC_STRING(IFLA_PHYS_PORT_NAME),
-+	NLATTR_DESC_U8(IFLA_PROTO_DOWN),
-+	NLATTR_DESC_U32(IFLA_GSO_MAX_SEGS),
-+	NLATTR_DESC_U32(IFLA_GSO_MAX_SIZE),
-+	NLATTR_DESC_BINARY(IFLA_PAD),
-+	NLATTR_DESC_U32(IFLA_XDP),
-+	NLATTR_DESC_U32(IFLA_EVENT),
-+	NLATTR_DESC_S32(IFLA_NEW_NETNSID),
-+	NLATTR_DESC_S32(IFLA_IF_NETNSID),
-+	NLATTR_DESC_U32(IFLA_CARRIER_UP_COUNT),
-+	NLATTR_DESC_U32(IFLA_CARRIER_DOWN_COUNT),
-+	NLATTR_DESC_S32(IFLA_NEW_IFINDEX),
-+	NLATTR_DESC_U32(IFLA_MIN_MTU),
-+	NLATTR_DESC_U32(IFLA_MAX_MTU),
-+	NLATTR_DESC_NESTED_NODESC(IFLA_PROP_LIST),
-+	NLATTR_DESC_STRING(IFLA_ALT_IFNAME),
-+	NLATTR_DESC_BINARY(IFLA_PERM_ADDRESS),
-+};
-+
-+const struct pretty_nlmsg_desc rtnl_msg_desc[] = {
-+	NLMSG_DESC(RTM_NEWLINK, link),
-+	NLMSG_DESC(RTM_DELLINK, link),
-+	NLMSG_DESC(RTM_GETLINK, link),
-+	NLMSG_DESC(RTM_SETLINK, link),
-+};
-+
-+const unsigned int rtnl_msg_n_desc = ARRAY_SIZE(rtnl_msg_desc);
-+
-+#define RTNL_MSGHDR_LEN(_name, _struct) \
-+	[((RTM_ ## _name) - RTM_BASE) / 4] = sizeof(struct _struct)
-+#define RTNL_MSGHDR_NOLEN(_name) \
-+	[((RTM_ ## _name) - RTM_BASE) / 4] = USHRT_MAX
-+
-+const unsigned short rtnl_msghdr_lengths[] = {
-+	RTNL_MSGHDR_LEN(NEWLINK, ifinfomsg),
-+	RTNL_MSGHDR_LEN(NEWADDR, ifaddrmsg),
-+	RTNL_MSGHDR_LEN(NEWROUTE, rtmsg),
-+	RTNL_MSGHDR_LEN(NEWNEIGH, ndmsg),
-+	RTNL_MSGHDR_LEN(NEWRULE, rtmsg),
-+	RTNL_MSGHDR_LEN(NEWQDISC, tcmsg),
-+	RTNL_MSGHDR_LEN(NEWTCLASS, tcmsg),
-+	RTNL_MSGHDR_LEN(NEWTFILTER, tcmsg),
-+	RTNL_MSGHDR_LEN(NEWACTION, tcamsg),
-+};
-+
-+const unsigned int rtnl_msghdr_n_len = ARRAY_SIZE(rtnl_msghdr_lengths);
-diff --git a/netlink/prettymsg.c b/netlink/prettymsg.c
-index 74fe6f2db7ed..9e62bebe615e 100644
---- a/netlink/prettymsg.c
-+++ b/netlink/prettymsg.c
-@@ -191,3 +191,47 @@ int pretty_print_genlmsg(const struct nlmsghdr *nlhdr,
- 				  msg_desc ? msg_desc->attrs : NULL,
- 				  msg_desc ? msg_desc->n_attrs : 0, err_offset);
+ 
+ #define NLSOCK_RECV_BUFFSIZE 65536
+ 
+@@ -43,10 +44,12 @@ static void ctrl_msg_summary(const struct nlmsghdr *nlhdr)
  }
-+
-+static void rtm_link_summary(const struct ifinfomsg *ifinfo)
-+{
-+	if (ifinfo->ifi_family)
-+		printf(" family=%u", ifinfo->ifi_family);
-+	if (ifinfo->ifi_type)
-+		printf(" type=0x%04x", ifinfo->ifi_type);
-+	if (ifinfo->ifi_index)
-+		printf(" ifindex=%d", ifinfo->ifi_index);
-+	if (ifinfo->ifi_flags)
-+		printf(" flags=0x%x", ifinfo->ifi_flags);
-+	if (ifinfo->ifi_flags)
-+		printf(" change=0x%x", ifinfo->ifi_change);
-+}
-+
-+int pretty_print_rtnlmsg(const struct nlmsghdr *nlhdr, unsigned int err_offset)
-+{
-+	const unsigned int idx = (nlhdr->nlmsg_type - RTM_BASE) / 4;
-+	const struct pretty_nlmsg_desc *msg_desc = NULL;
-+	unsigned int hdrlen = USHRT_MAX;
-+
-+	if (nlhdr->nlmsg_type < rtnl_msg_n_desc)
-+		msg_desc = &rtnl_msg_desc[nlhdr->nlmsg_type];
-+	if (idx < rtnl_msghdr_n_len)
-+		hdrlen = rtnl_msghdr_lengths[idx];
-+	if (hdrlen < USHRT_MAX && mnl_nlmsg_get_payload_len(nlhdr) < hdrlen) {
-+		fprintf(stderr, "ethtool: message too short (%u bytes)\n",
-+			nlhdr->nlmsg_len);
-+		return -EINVAL;
+ 
+ static void genl_msg_summary(const struct nlmsghdr *nlhdr, int ethnl_fam,
+-			     bool outgoing)
++			     bool outgoing, bool pretty)
+ {
+ 	if (nlhdr->nlmsg_type == ethnl_fam) {
++		const struct pretty_nlmsg_desc *msg_desc;
+ 		const struct genlmsghdr *ghdr;
++		unsigned int n_desc;
+ 
+ 		printf(" ethool");
+ 		if (nlhdr->nlmsg_len < NLMSG_HDRLEN + GENL_HDRLEN) {
+@@ -55,27 +58,46 @@ static void genl_msg_summary(const struct nlmsghdr *nlhdr, int ethnl_fam,
+ 		}
+ 		ghdr = mnl_nlmsg_get_payload(nlhdr);
+ 
+-		printf(" cmd %u", ghdr->cmd);
++		msg_desc = outgoing ? ethnl_umsg_desc : ethnl_kmsg_desc;
++		n_desc = outgoing ? ethnl_umsg_n_desc : ethnl_kmsg_n_desc;
++		if (ghdr->cmd < n_desc && msg_desc[ghdr->cmd].name)
++			printf(" %s", msg_desc[ghdr->cmd].name);
++		else
++			printf(" cmd %u", ghdr->cmd);
+ 		fputc('\n', stdout);
+ 
++		if (pretty)
++			pretty_print_genlmsg(nlhdr, msg_desc, n_desc, 0);
+ 		return;
+ 	}
+ 
+-	if (nlhdr->nlmsg_type == GENL_ID_CTRL)
++	if (nlhdr->nlmsg_type == GENL_ID_CTRL) {
+ 		printf(" genl-ctrl\n");
+-	else
++		if (pretty)
++			pretty_print_genlmsg(nlhdr, genlctrl_msg_desc,
++					     genlctrl_msg_n_desc, 0);
++	} else {
+ 		fputc('\n', stdout);
++		if (pretty)
++			pretty_print_genlmsg(nlhdr, NULL, 0, 0);
 +	}
-+	if (msg_desc && msg_desc->name)
-+		printf("    %s", msg_desc->name);
+ }
+ 
+-static void rtnl_msg_summary(const struct nlmsghdr *nlhdr)
++static void rtnl_msg_summary(const struct nlmsghdr *nlhdr, bool pretty)
+ {
+ 	unsigned int type = nlhdr->nlmsg_type;
+ 
+-	printf(" type %u\n", type);
++	if (type < rtnl_msg_n_desc && rtnl_msg_desc[type].name)
++		printf(" %s\n", rtnl_msg_desc[type].name);
 +	else
-+		printf("    [%u]", nlhdr->nlmsg_type);
-+	if (idx == (RTM_NEWLINK - RTM_BASE) / 4)
-+		rtm_link_summary(mnl_nlmsg_get_payload(nlhdr));
-+	putchar('\n');
-+	if (hdrlen == USHRT_MAX)
-+		return 0;
++		printf(" type %u\n", type);
 +
-+	return pretty_print_nlmsg(nlhdr, hdrlen,
-+				  msg_desc ? msg_desc->attrs : NULL,
-+				  msg_desc ? msg_desc->n_attrs : 0, err_offset);
-+}
-diff --git a/netlink/prettymsg.h b/netlink/prettymsg.h
-index 50d0bbf43665..b5e5f735ac8a 100644
---- a/netlink/prettymsg.h
-+++ b/netlink/prettymsg.h
-@@ -98,6 +98,7 @@ struct pretty_nlmsg_desc {
- int pretty_print_genlmsg(const struct nlmsghdr *nlhdr,
- 			 const struct pretty_nlmsg_desc *desc,
- 			 unsigned int ndesc, unsigned int err_offset);
-+int pretty_print_rtnlmsg(const struct nlmsghdr *nlhdr, unsigned int err_offset);
++	if (pretty)
++		pretty_print_rtnlmsg(nlhdr, 0);
+ }
  
- /* message descriptions */
+ static void debug_msg_summary(const struct nlmsghdr *nlhdr, int ethnl_fam,
+-			      int nl_fam, bool outgoing)
++			      int nl_fam, bool outgoing, bool pretty)
+ {
+ 	printf("    msg length %u", nlhdr->nlmsg_len);
  
-@@ -109,4 +110,9 @@ extern const unsigned int ethnl_kmsg_n_desc;
- extern const struct pretty_nlmsg_desc genlctrl_msg_desc[];
- extern const unsigned int genlctrl_msg_n_desc;
+@@ -86,10 +108,10 @@ static void debug_msg_summary(const struct nlmsghdr *nlhdr, int ethnl_fam,
  
-+extern const struct pretty_nlmsg_desc rtnl_msg_desc[];
-+extern const unsigned int rtnl_msg_n_desc;
-+extern const unsigned short rtnl_msghdr_lengths[];
-+extern const unsigned int rtnl_msghdr_n_len;
+ 	switch(nl_fam) {
+ 	case NETLINK_GENERIC:
+-		genl_msg_summary(nlhdr, ethnl_fam, outgoing);
++		genl_msg_summary(nlhdr, ethnl_fam, outgoing, pretty);
+ 		break;
+ 	case NETLINK_ROUTE:
+-		rtnl_msg_summary(nlhdr);
++		rtnl_msg_summary(nlhdr, pretty);
+ 		break;
+ 	default:
+ 		fputc('\n', stdout);
+@@ -103,13 +125,14 @@ static void debug_msg(struct nl_socket *nlsk, const void *msg, unsigned int len,
+ 	const char *dirlabel = outgoing ? "sending" : "received";
+ 	uint32_t debug = nlsk->nlctx->ctx->debug;
+ 	const struct nlmsghdr *nlhdr = msg;
+-	bool summary, dump;
++	bool summary, dump, pretty;
+ 	const char *nl_fam_label;
+ 	int left = len;
+ 
+ 	summary = debug_on(debug, DEBUG_NL_MSGS);
+ 	dump = debug_on(debug,
+ 			outgoing ? DEBUG_NL_DUMP_SND : DEBUG_NL_DUMP_RCV);
++	pretty = debug_on(debug, DEBUG_NL_PRETTY_MSG);
+ 	if (!summary && !dump)
+ 		return;
+ 	switch(nlsk->nl_fam) {
+@@ -128,7 +151,7 @@ static void debug_msg(struct nl_socket *nlsk, const void *msg, unsigned int len,
+ 	while (nlhdr && left > 0 && mnl_nlmsg_ok(nlhdr, left)) {
+ 		if (summary)
+ 			debug_msg_summary(nlhdr, nlsk->nlctx->ethnl_fam,
+-					  nlsk->nl_fam, outgoing);
++					  nlsk->nl_fam, outgoing, pretty);
+ 		if (dump)
+ 			mnl_nlmsg_fprintf(stdout, nlhdr, nlhdr->nlmsg_len,
+ 					  GENL_HDRLEN);
+@@ -146,7 +169,7 @@ static void debug_msg(struct nl_socket *nlsk, const void *msg, unsigned int len,
+  * Return: error code extracted from the message
+  */
+ static int nlsock_process_ack(struct nlmsghdr *nlhdr, ssize_t len,
+-			      unsigned int suppress_nlerr)
++			      unsigned int suppress_nlerr, bool pretty)
+ {
+ 	const struct nlattr *tb[NLMSGERR_ATTR_MAX + 1] = {};
+ 	DECLARE_ATTR_TB_INFO(tb);
+@@ -174,12 +197,23 @@ static int nlsock_process_ack(struct nlmsghdr *nlhdr, ssize_t len,
+ 
+ 		fprintf(stderr, "netlink %s: %s",
+ 			nlerr->error ? "error" : "warning", msg);
+-		if (tb[NLMSGERR_ATTR_OFFS])
++		if (!pretty && tb[NLMSGERR_ATTR_OFFS])
+ 			fprintf(stderr, " (offset %u)",
+ 				mnl_attr_get_u32(tb[NLMSGERR_ATTR_OFFS]));
+ 		fputc('\n', stderr);
+ 	}
+ 
++	if (nlerr->error && pretty) {
++		unsigned int err_offset = 0;
 +
- #endif /* ETHTOOL_NETLINK_PRETTYMSG_H__ */
++		if (tb[NLMSGERR_ATTR_OFFS])
++			err_offset = mnl_attr_get_u32(tb[NLMSGERR_ATTR_OFFS]);
++		fprintf(stderr, "offending message%s:\n",
++			err_offset ? " and attribute" : "");
++		pretty_print_genlmsg(&nlerr->msg, ethnl_umsg_desc,
++				     ethnl_umsg_n_desc, err_offset);
++	}
++
+ out:
+ 	if (nlerr->error) {
+ 		errno = -nlerr->error;
+@@ -223,9 +257,14 @@ int nlsock_process_reply(struct nl_socket *nlsk, mnl_cb_t reply_cb, void *data)
+ 			return -EFAULT;
+ 
+ 		nlhdr = (struct nlmsghdr *)buff;
+-		if (nlhdr->nlmsg_type == NLMSG_ERROR)
+-			return nlsock_process_ack(nlhdr, len,
+-						  nlsk->nlctx->suppress_nlerr);
++		if (nlhdr->nlmsg_type == NLMSG_ERROR) {
++			bool silent = nlsk->nlctx->suppress_nlerr;
++			bool pretty;
++
++			pretty = debug_on(nlsk->nlctx->ctx->debug,
++					  DEBUG_NL_PRETTY_MSG);
++			return nlsock_process_ack(nlhdr, len, silent, pretty);
++		}
+ 
+ 		msgbuff->nlhdr = nlhdr;
+ 		msgbuff->genlhdr = mnl_nlmsg_get_payload(nlhdr);
 -- 
 2.25.1
 
