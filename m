@@ -2,79 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DF16179339
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B415A179348
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 16:25:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgCDPWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 10:22:55 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45530 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725765AbgCDPWy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 10:22:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=UyMvM79iauhceuVsf/7VOzkdJuDf7faxM5TW5vHpExc=; b=G9Qr+PqdcR110pPlf+TBBU31rc
-        le+1MxE1TO/nfqB8NvG3oNdqxrKyWfs0Dng+R4UG5KZqyBJs4BzPZVBfB+uvrxpYcPiudGrlShGRY
-        1D9gPESL/DfMU2xGTuT6GgILCf4wfKRpmPYpkhs5UAvXAB3S7sslrSBV50jV+rspFLAw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1j9VrF-0006Zn-Aw; Wed, 04 Mar 2020 16:22:49 +0100
-Date:   Wed, 4 Mar 2020 16:22:49 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        davem@davemloft.net, thomas.lendacky@amd.com, benve@cisco.com,
-        _govind@gmx.com, pkaustub@cisco.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, snelson@pensando.io,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
-        saeedm@mellanox.com, leon@kernel.org
-Subject: Re: [PATCH net-next 01/12] ethtool: add infrastructure for
- centralized checking of coalescing parameters
-Message-ID: <20200304152249.GD3553@lunn.ch>
-References: <20200304035501.628139-1-kuba@kernel.org>
- <20200304035501.628139-2-kuba@kernel.org>
- <20200304145439.GC3553@lunn.ch>
- <20200304151958.GI4264@unicorn.suse.cz>
+        id S1729665AbgCDPZH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Mar 2020 10:25:07 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:50050 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbgCDPZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 10:25:07 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 024FOnXA032127, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 024FOnXA032127
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 4 Mar 2020 23:24:49 +0800
+Received: from RTEXMB03.realtek.com.tw (172.21.6.96) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 23:24:48 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 4 Mar 2020 23:24:48 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
+ RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
+ 15.01.1779.005; Wed, 4 Mar 2020 23:24:48 +0800
+From:   Hau <hau@realtek.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Jason Yen <jason.yen@canonical.com>
+Subject: RE: SFP+ support for 8168fp/8117
+Thread-Topic: SFP+ support for 8168fp/8117
+Thread-Index: AQHVwTo87C9FPgb4q0K7N9j/9Mzg+6fW+ByAgAAXwwCAAE15gIAAfZ0AgECGEQCAAkeigIAECCeAgAQrRCCADDcng4AJ2WCQ
+Date:   Wed, 4 Mar 2020 15:24:48 +0000
+Message-ID: <e10eef58d8fc4b67ac2a73784bf86381@realtek.com>
+References: <2D8F5FFE-3EC3-480B-9D15-23CACE5556DF@canonical.com>
+ <20200102152143.GB1397@lunn.ch>
+ <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
+ <c148fefc-fd56-26a8-9f9b-fbefbaf25050@gmail.com>
+ <02F7CBDE-B877-481C-A5AF-2F4CBF830A2C@canonical.com>
+ <80E9C881-91C8-4F29-B9CE-652F9EE0B018@canonical.com>
+ <995bddbc4f9d48cbb3a289a7e9799f15@realtek.com>
+ <12EA7285-06D7-44D3-B033-4F52A06123CC@canonical.com>
+ <cae39cfbb5174c8884328887cdfb5a89@realtek.com>
+ <9AAC75D4-B04F-49CD-BBB9-11AE3382E4D8@canonical.com>
+ <5A21808E-C9DA-44BF-952B-4A5077B52E9B@canonical.com>
+In-Reply-To: <5A21808E-C9DA-44BF-952B-4A5077B52E9B@canonical.com>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.157]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200304151958.GI4264@unicorn.suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 04:19:58PM +0100, Michal Kubecek wrote:
-> On Wed, Mar 04, 2020 at 03:54:39PM +0100, Andrew Lunn wrote:
-> > On Tue, Mar 03, 2020 at 07:54:50PM -0800, Jakub Kicinski wrote:
-> > > @@ -2336,6 +2394,11 @@ ethtool_set_per_queue_coalesce(struct net_device *dev,
-> > >  			goto roll_back;
-> > >  		}
-> > >  
-> > > +		if (!ethtool_set_coalesce_supported(dev, &coalesce)) {
-> > > +			ret = -EINVAL;
-> > > +			goto roll_back;
-> > > +		}
-> > 
-> > Hi Jakub
-> > 
-> > EOPNOTSUPP? 
+> Hi Hau,
 > 
-> Out of the 11 drivers patched in the rest of the series, 4 used
-> EOPNOTSUPP, 3 EINVAL and 4 just ignored unsupported parameters so there
-> doesn't seem to be a clear consensus. Personally I find EOPNOTSUPP more
-> appropriate but it's quite common that drivers return EINVAL for
-> parameters they don't understand or support.
+> > On Feb 19, 2020, at 22:48, Kai-Heng Feng <kai.heng.feng@canonical.com>
+> wrote:
+> >
+> > Hi Hau,
+> >
+> >> On Feb 19, 2020, at 22:22, Hau <hau@realtek.com> wrote:
+> >
+> > [snipped]
+> >
+> >>
+> >> Hi Kai-Heng,
+> >>
+> >> Attached file is r8168 that I have add SFP+ support for rtl8168fp. If
+> possible, please give it a try.
+> >
+> > I've already tested r8168 and it does support SFP+.
+> >
+> > What we are discussing here is to support this chip properly in mainline
+> kernel.
+> >
+> > This is what we've discussed so far:
+> > https://lore.kernel.org/lkml/2D8F5FFE-3EC3-480B-9D15-
+> 23CACE5556DF@canonical.com/
+> 
+> Is there anything you can share so we can support this chip properly in
+> upstream?
+> 
 
-Hi Michel
+Hi Kai-Heng,
 
-Yes, as i looked through the later patches, it became clear there is
-no consensus. I personally prefer EOPNOTSUPP, but don't care too much.
+For adding SFP+ support for rtl8168fp, 
+1.Some power saving features must be disabled, like APDLS/EEE/EEEPLUS...
+2.PHY capability must be set to auto-negation.
 
-   Andrew
+I am kind of busy this week. I will try to add support for this chip into upstream next week.
+
+Thanks,
+Hau
+
+> ------Please consider the environment before printing this e-mail.
