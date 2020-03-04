@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A58C17899E
+	by mail.lfdr.de (Postfix) with ESMTP id 7FC4117899F
 	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 05:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728263AbgCDEec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Mar 2020 23:34:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42316 "EHLO mail.kernel.org"
+        id S1728301AbgCDEee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Mar 2020 23:34:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726860AbgCDEeb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728244AbgCDEeb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 3 Mar 2020 23:34:31 -0500
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DED4722522;
-        Wed,  4 Mar 2020 04:34:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CF42A21D56;
+        Wed,  4 Mar 2020 04:34:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583296470;
-        bh=ufkxPWFu96OBTRqbD6kMma2pWkaOjcQjvt2t56RdD+0=;
+        s=default; t=1583296471;
+        bh=QDwtGFpQfQitghIBGjsuMeKJJeRccgqT/Hts1VHjBAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SVwVocOoBNn0+166pMd4K7NxKhMBis5GQFyGYuJcAtPV2akx8iKSLj/oRodSPSYMQ
-         qSrmzE4Y1gKNv1ccRKNjFd67UJd3xrWb4aMvaFmWgj7my3keneDM+6F6eUs05CpmkE
-         xuyI/QGsdNC4t1L1ZHsqTZwhOgnybdZboTB4BY90=
+        b=se8c4Xl0jKh7FHB0z33G5CViGHws0eJQzhg0Bi6OT0rC270pW3pwZvWvFN9tD3ADQ
+         6oLJ3k8PSWSBf4g43s5KTdnVJ3KjzO/b4B81zbUc7CNPPaF+IjcGBJ4TtxQjMS4/2H
+         UwZ2PHoqnpu44s9K2QNAp0OcsZNMLKEFou2gkyec=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     mkubecek@suse.cz, thomas.lendacky@amd.com, benve@cisco.com,
@@ -33,9 +33,9 @@ Cc:     mkubecek@suse.cz, thomas.lendacky@amd.com, benve@cisco.com,
         alexander.h.duyck@linux.intel.com, michael.chan@broadcom.com,
         saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 05/12] nfp: let core reject the unsupported coalescing parameters
-Date:   Tue,  3 Mar 2020 20:33:47 -0800
-Message-Id: <20200304043354.716290-6-kuba@kernel.org>
+Subject: [PATCH net-next v2 06/12] ionic: let core reject the unsupported coalescing parameters
+Date:   Tue,  3 Mar 2020 20:33:48 -0800
+Message-Id: <20200304043354.716290-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200304043354.716290-1-kuba@kernel.org>
 References: <20200304043354.716290-1-kuba@kernel.org>
@@ -50,54 +50,55 @@ Set ethtool_ops->coalesce_types to let the core reject
 unsupported coalescing parameters.
 
 This driver correctly rejects all unsupported parameters.
-As a side effect of these changes the error code for
-unsupported params changes from EOPNOTSUPP to EINVAL.
+No functional changes.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 22 ++-----------------
- 1 file changed, 2 insertions(+), 20 deletions(-)
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 23 +------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index d648e32c0520..71354ff2fe7d 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -1343,26 +1343,6 @@ static int nfp_net_set_coalesce(struct net_device *netdev,
- 	struct nfp_net *nn = netdev_priv(netdev);
- 	unsigned int factor;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index f778fff034f5..83ea35715533 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -412,28 +412,6 @@ static int ionic_set_coalesce(struct net_device *netdev,
+ 	unsigned int i;
+ 	u32 coal;
  
--	if (ec->rx_coalesce_usecs_irq ||
--	    ec->rx_max_coalesced_frames_irq ||
--	    ec->tx_coalesce_usecs_irq ||
--	    ec->tx_max_coalesced_frames_irq ||
--	    ec->stats_block_coalesce_usecs ||
--	    ec->use_adaptive_rx_coalesce ||
--	    ec->use_adaptive_tx_coalesce ||
--	    ec->pkt_rate_low ||
--	    ec->rx_coalesce_usecs_low ||
--	    ec->rx_max_coalesced_frames_low ||
--	    ec->tx_coalesce_usecs_low ||
--	    ec->tx_max_coalesced_frames_low ||
--	    ec->pkt_rate_high ||
--	    ec->rx_coalesce_usecs_high ||
--	    ec->rx_max_coalesced_frames_high ||
--	    ec->tx_coalesce_usecs_high ||
--	    ec->tx_max_coalesced_frames_high ||
--	    ec->rate_sample_interval)
--		return -EOPNOTSUPP;
+-	if (coalesce->rx_max_coalesced_frames ||
+-	    coalesce->rx_coalesce_usecs_irq ||
+-	    coalesce->rx_max_coalesced_frames_irq ||
+-	    coalesce->tx_max_coalesced_frames ||
+-	    coalesce->tx_coalesce_usecs_irq ||
+-	    coalesce->tx_max_coalesced_frames_irq ||
+-	    coalesce->stats_block_coalesce_usecs ||
+-	    coalesce->use_adaptive_rx_coalesce ||
+-	    coalesce->use_adaptive_tx_coalesce ||
+-	    coalesce->pkt_rate_low ||
+-	    coalesce->rx_coalesce_usecs_low ||
+-	    coalesce->rx_max_coalesced_frames_low ||
+-	    coalesce->tx_coalesce_usecs_low ||
+-	    coalesce->tx_max_coalesced_frames_low ||
+-	    coalesce->pkt_rate_high ||
+-	    coalesce->rx_coalesce_usecs_high ||
+-	    coalesce->rx_max_coalesced_frames_high ||
+-	    coalesce->tx_coalesce_usecs_high ||
+-	    coalesce->tx_max_coalesced_frames_high ||
+-	    coalesce->rate_sample_interval)
+-		return -EINVAL;
 -
- 	/* Compute factor used to convert coalesce '_usecs' parameters to
- 	 * ME timestamp ticks.  There are 16 ME clock cycles for each timestamp
- 	 * count.
-@@ -1476,6 +1456,8 @@ static int nfp_net_set_channels(struct net_device *netdev,
+ 	ident = &lif->ionic->ident;
+ 	if (ident->dev.intr_coal_div == 0) {
+ 		netdev_warn(netdev, "bad HW value in dev.intr_coal_div = %d\n",
+@@ -784,6 +762,7 @@ static int ionic_nway_reset(struct net_device *netdev)
  }
  
- static const struct ethtool_ops nfp_net_ethtool_ops = {
-+	.coalesce_types = ETHTOOL_COALESCE_USECS |
-+			  ETHTOOL_COALESCE_MAX_FRAMES,
- 	.get_drvinfo		= nfp_net_get_drvinfo,
- 	.get_link		= ethtool_op_get_link,
- 	.get_ringparam		= nfp_net_get_ringparam,
+ static const struct ethtool_ops ionic_ethtool_ops = {
++	.coalesce_types = ETHTOOL_COALESCE_USECS,
+ 	.get_drvinfo		= ionic_get_drvinfo,
+ 	.get_regs_len		= ionic_get_regs_len,
+ 	.get_regs		= ionic_get_regs,
 -- 
 2.24.1
 
