@@ -2,105 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA701790C5
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D361A1790C4
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 14:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729348AbgCDNC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 08:02:58 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:31489 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729267AbgCDNC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 08:02:58 -0500
-X-Greylist: delayed 504 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Mar 2020 08:02:54 EST
-Received: from [192.168.1.6] (unknown [101.86.128.44])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 1912040F71;
-        Wed,  4 Mar 2020 20:54:26 +0800 (CST)
-Subject: Re: [PATCH nf-next v5 0/4] netfilter: flowtable: add indr-block
- offload
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <1582521775-25176-1-git-send-email-wenxu@ucloud.cn>
- <20200303215300.qzo4ankxq5ktaba4@salvia>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <83bfbc34-6a3e-1f31-4546-1511c5dcddf5@ucloud.cn>
-Date:   Wed, 4 Mar 2020 20:54:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1729307AbgCDNCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 08:02:54 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:37011 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729175AbgCDNCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 08:02:54 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 61E3D23059;
+        Wed,  4 Mar 2020 14:02:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1583326971;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aFxZcCm568v6by3tfUeSQbeoR0eQO0FZk1P28xwCl4c=;
+        b=L/rOEPBMW2w1DomjbFuB2bS924aOvyCcfd3qxrMqw65k+40SP+uo8W7QsMXZax7ClPjCN1
+        Kgv5AjbMKRfisjn9N6nLHFVZ+bu2rWMt0F0pqF01Jy7LjJupYJkc6jEnOguGa0uqjdJWZq
+        0MAMzrQN/kU8vLw8sCSE7QlaAI55VzI=
 MIME-Version: 1.0
-In-Reply-To: <20200303215300.qzo4ankxq5ktaba4@salvia>
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEhJS0tLSkhNSExOT0hZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MQg6SQw*GDg3QyE2I005PioK
-        IRkwCh1VSlVKTkNISElNT01NSU1MVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLSlVD
-        TVVKSUNVT09ZV1kIAVlBSE5ISTcG
-X-HM-Tid: 0a70a59c90942086kuqy1912040f71
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 04 Mar 2020 14:02:47 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: avoid clearing PHY interrupts twice in irq
+ handler
+In-Reply-To: <c2928823-da08-0321-6917-1481aab79e09@gmail.com>
+References: <2f468a46-e966-761c-8466-51601d8f11a3@gmail.com>
+ <a0b161ebd332c9ea26bb62ccf73d1862@walle.cc>
+ <a33c33d6-621a-4139-0e81-eb0d0fd0e095@gmail.com>
+ <c2928823-da08-0321-6917-1481aab79e09@gmail.com>
+Message-ID: <fbf0a7739f5c8442c1d2b0aa9aba086d@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: +
+X-Spam-Level: *
+X-Rspamd-Server: web
+X-Spam-Status: No, score=1.40
+X-Spam-Score: 1.40
+X-Rspamd-Queue-Id: 61E3D23059
+X-Spamd-Result: default: False [1.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         RCPT_COUNT_FIVE(0.00)[6];
+         DKIM_SIGNED(0.00)[];
+         NEURAL_HAM(-0.00)[-0.288];
+         FREEMAIL_TO(0.00)[gmail.com];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,vger.kernel.org];
+         MID_RHS_MATCH_FROM(0.00)[];
+         SUSPICIOUS_RECIPS(1.50)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Am 2020-03-04 13:13, schrieb Heiner Kallweit:
+> On 02.03.2020 00:20, Heiner Kallweit wrote:
+>> On 01.03.2020 23:52, Michael Walle wrote:
+>>> Am 2020-03-01 21:36, schrieb Heiner Kallweit:
+>>>> On all PHY drivers that implement did_interrupt() reading the 
+>>>> interrupt
+>>>> status bits clears them. This means we may loose an interrupt that
+>>>> is triggered between calling did_interrupt() and 
+>>>> phy_clear_interrupt().
+>>>> As part of the fix make it a requirement that did_interrupt() clears
+>>>> the interrupt.
+>>> 
+>>> Looks good. But how would you use did_interrupt() and 
+>>> handle_interrupt()
+>>> together? I guess you can't. At least not if handle_interrupt() has
+>>> to read the pending bits again. So you'd have to handle custom
+>>> interrupts in did_interrupt(). Any idea how to solve that?
+>>> 
+>>> [I know, this is only about fixing the lost interrupts.]
+>>> 
+>> Right, this one is meant for stable to fix the issue with the 
+>> potentially
+>> lost interrupts. Based on it I will submit a patch for net-next that
+>> tackles the issue that did_interrupt() has to read (and therefore 
+>> clear)
+>> irq status bits and therefore makes them unusable for 
+>> handle_interrupt().
+>> The basic idea is that did_interrupt() is called only if 
+>> handle_interrupt()
+>> isn't implemented. handle_interrupt() has to include the did_interrupt
+>> functionality. It can read the irq status once and store it in a 
+>> variable
+>> for later use.
+>> 
+> In case you wait for this patch to base further own work on it:
+> I'm waiting for next merge of net into net-next, because my patch will
+> apply cleanly only after that. This merge should happen in the next 
+> days.
 
-ÔÚ 2020/3/4 5:53, Pablo Neira Ayuso Ð´µÀ:
-> Hi,
->
-> On Mon, Feb 24, 2020 at 01:22:51PM +0800, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> This patch provide tunnel offload based on route lwtunnel. 
->> The first two patches support indr callback setup
->> Then add tunnel match and action offload.
->>
->> This version modify the second patch: make the dev can bind with different 
->> flowtable and check the NF_FLOWTABLE_HW_OFFLOAD flags in 
->> nf_flow_table_indr_block_cb_cmd. 
-> I found some time to look at this indirect block infrastructure that
-> you have added to net/core/flow_offload.c
->
-> This is _complex_ code, I don't understand why it is so complex.
-> Frontend calls walks into the driver through callback, then, it gets
-> back to the front-end code again through another callback to come
-> back... this is hard to follow.
->
-> Then, we still have problem with the existing approach that you
-> propose, since there is 1:N mapping between the indirect block and the
-> net_device.
+Ok, thanks for the information. I have enough other things to do ;)
 
-The indirect block infrastructure is designed by the driver guys. The callbacks
-
-is used for building and finishing relationship between the tunnel device and
-
-the hardware devices. Such as the tunnel device come in and go away and the hardware
-
-device come in and go away. The relationship between the tunnel device and the
-
-hardware devices is so subtle.
-
-> Probably not a requirement in your case, but the same net_device might
-> be used in several flowtables. Your patch is flawed there and I don't
-> see an easy way to fix this.
-
-The same tunnel device can only be added to one offloaded flowtables. The tunnel device
-
-can build the relationship with the hardware devices one time in the dirver. This is protected
-
-by flow_block_cb_is_busy and xxx_indr_block_cb_priv in driver.
-
-
->
-> I know there is no way to use ->ndo_setup_tc for tunnel devices, but
-> you could have just make it work making it look consistent to the
-> ->ndo_setup_tc logic.
-
-I think the difficulty is how to find the hardware device for tunnel device to set the rule
-
-to the hardware.
-
->
-> I'm inclined to apply this patch though, in the hope that this all can
-> be revisited later to get it in line with the ->ndo_setup_tc approach.
-> However, probably I'm hoping for too much.
->
-> Thank you.
->
+-michael
