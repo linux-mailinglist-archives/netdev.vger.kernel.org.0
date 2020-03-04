@@ -2,75 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D55C179972
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:02:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5075E179999
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729675AbgCDUCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:02:45 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:39875 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729348AbgCDUCp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:02:45 -0500
-Received: by mail-lf1-f66.google.com with SMTP id n30so2556623lfh.6;
-        Wed, 04 Mar 2020 12:02:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0++ND2QOO8ryntJ6kV2i7bFQ/MLLMaAr8V/FDQd9ZNE=;
-        b=Q0JkuMyvk2i2EJtm9+V9H3KSA2tIRKa6MsHiEozbQU9VIduA/JbfIA89U/zvuTPxRU
-         f1y3NqIrV3Xsfd+WJzzzJ8Sl856hJtljrc7aLYre7D8yF7056Iun3qnL17o4Kd19aQjZ
-         8MEJ+GVB/GuiJ0c8C/1gA5QwBYwhws4S4eIkBFILrw1Ma2m3B4oqNbGLVkxhG7Fb4iMx
-         Unqq1KRXEHBR+Xh7nqB3PnfmTfmOHVVGaRp2a8T6dv6IJzKc5xsiEq36pWYZrYZ0ZNmI
-         GdEx783ltWAGPdpCw4vi1EvS97YTiyEfR4ytiF6BuVX6YAOlQhDdX1z03z8FIbaeGNVt
-         8vfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0++ND2QOO8ryntJ6kV2i7bFQ/MLLMaAr8V/FDQd9ZNE=;
-        b=Plz7GlWcwxOzT6jKfVXQhEYye1xkC0QUdqLOpwebzckU2DzsEVNjeRIJORMNCOfU3y
-         R/bSbTVDtffPWxRZvxjcj8wv80XIPqQnB7UzUldPOhV2fZDHKq5Y1fVKMvjI3qjaB+r1
-         088lm6GQa3zNlw8foUsdj2Joiigm7+QuB5atyAtm9q5JLvsEBAsCWa5MsTtatIm8YdmG
-         ydhMnJ4CuT2e5CKYKjeAxTnM9D2rm976B9+dL5qbHimuilKhgtYpsCbbZ33hq7lwirxp
-         mBJeUQqNfoAkdXK9GKdnPqi8272oXC/EIONU61gt2EtWupDncX+f24C7fEzNeTyNRa6h
-         0riw==
-X-Gm-Message-State: ANhLgQ1Yo9RbQg9AZzxntOAgQjssfoOH5bxe+9L4IawIuuuQgU8hA45p
-        aKt8eBsp8X3E2NHMeQ1iYF/N9YtUnVhG0oBhYttvkw==
-X-Google-Smtp-Source: ADFU+vs50JL8TetTjaRbrMZJRNANdv0Eo+Zw0Sh+1rgX2MPVqtlMoPd7rpfNwy+CMLqGADpMgGIGmpsb9n7WiN8uEvg=
-X-Received: by 2002:ac2:442e:: with SMTP id w14mr2848835lfl.119.1583352162786;
- Wed, 04 Mar 2020 12:02:42 -0800 (PST)
+        id S2387996AbgCDULv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:11:51 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38495 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728278AbgCDULu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:11:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583352709;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JkoOmo/uioqA9PwDxWS+txa/xYjNxgEGpUJZ05OzMY4=;
+        b=K6KX5X+vYBhC14BIHKg7DroedXZhCjE7Xb9op0gyy09dwoAuXFhwdAQfHe+FGL9teXAfbt
+        4Du5AKf9DBp8IYS4zrvroE/qSM8Y9P/S/BmYzSB1501M5s3j5ma5B+ibrYvAEdlusEV77P
+        PaRlpvZ4y8MfiJhaIcOIg2eD4k5rON8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-402-wmTToPnyO0-fSYKc5-gz2w-1; Wed, 04 Mar 2020 15:11:46 -0500
+X-MC-Unique: wmTToPnyO0-fSYKc5-gz2w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EFB2C8017DF;
+        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD00F27061;
+        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 7AA728446C;
+        Wed,  4 Mar 2020 20:11:44 +0000 (UTC)
+Date:   Wed, 4 Mar 2020 15:11:44 -0500 (EST)
+From:   Vladis Dronov <vdronov@redhat.com>
+To:     Andrea Righi <andrea.righi@canonical.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-ID: <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20200304175350.GB267906@xps-13>
+References: <20200304175350.GB267906@xps-13>
+Subject: Re: [PATCH] ptp: free ptp clock properly
 MIME-Version: 1.0
-References: <20200304184336.165766-1-andriin@fb.com>
-In-Reply-To: <20200304184336.165766-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 4 Mar 2020 12:02:30 -0800
-Message-ID: <CAADnVQJucGSPyJJmH2wJ_B96cWHVmRqkXK0vRwqhkpNz2NTY7g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: support out-of-tree vmlinux
- builds for VMLINUX_BTF
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.40.204.205, 10.4.195.7]
+Thread-Topic: free ptp clock properly
+Thread-Index: PDXsSbboxZFT/a99TucbY86w37w5+g==
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 4, 2020 at 10:43 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Add detection of out-of-tree built vmlinux image for the purpose of
-> VMLINUX_BTF detection. According to Documentation/kbuild/kbuild.rst, O takes
-> precedence over KBUILD_OUTPUT.
->
-> Also ensure ~/path/to/build/dir also works by relying on wildcard's resolution
-> first, but then applying $(abspath) at the end to also handle
-> O=../../whatever cases.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hello, Andrea, all,
 
-Applied. Thanks for fixing a build.
+----- Original Message -----
+> From: "Andrea Righi" <andrea.righi@canonical.com>
+> Subject: [PATCH] ptp: free ptp clock properly
+> 
+> There is a bug in ptp_clock_unregister() where ptp_clock_release() can
+> free up resources needed by posix_clock_unregister() to properly destroy
+> a related sysfs device.
+> 
+> Fix this by calling posix_clock_unregister() in ptp_clock_release().
+
+Honestly, this does not seem right. The calls at PTP clock release are:
+
+ptp_clock_unregister() -> posix_clock_unregister() -> cdev_device_del() ->
+-> ... bla ... -> ptp_clock_release()
+
+So, it looks like with this patch both posix_clock_unregister() and
+ptp_clock_release() are not called at all. And it looks like the "fix" is
+not removing PTP clock's cdev, i.e. leaking it and related sysfs resources.
+
+I would guess that a kernel in question (5.3.0-40-generic) has the commit
+a33121e5487b but does not have the commit 75718584cb3c, which should be
+exactly fixing a docking station disconnect crash. Could you please,
+check this?
+
+Why? We have 2 crash call traces. 1) the launchpad bug 2) the email which
+led to the commit 75718584cb3c creation (see Link:).
+
+Aaaaand they are identical starting from device_release_driver_internal()
+and almost to the top.
+
+> See also:
+> commit 75718584cb3c ("ptp: free ptp device pin descriptors properly").
+> 
+> BugLink: https://bugs.launchpad.net/bugs/1864754
+> Fixes: a33121e5487b ("ptp: fix the race between the release of ptp_clock and
+> cdev")
+> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+> ---
+>  drivers/ptp/ptp_clock.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+> index ac1f2bf9e888..12951023d0c6 100644
+> --- a/drivers/ptp/ptp_clock.c
+> +++ b/drivers/ptp/ptp_clock.c
+> @@ -171,6 +171,7 @@ static void ptp_clock_release(struct device *dev)
+>  	struct ptp_clock *ptp = container_of(dev, struct ptp_clock, dev);
+>  
+>  	ptp_cleanup_pin_groups(ptp);
+> +	posix_clock_unregister(&ptp->clock);
+>  	mutex_destroy(&ptp->tsevq_mux);
+>  	mutex_destroy(&ptp->pincfg_mux);
+>  	ida_simple_remove(&ptp_clocks_map, ptp->index);
+> @@ -303,8 +304,6 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
+>  	if (ptp->pps_source)
+>  		pps_unregister_source(ptp->pps_source);
+>  
+> -	posix_clock_unregister(&ptp->clock);
+> -
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(ptp_clock_unregister);
+> --
+> 2.25.0
+
+Best regards,
+Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+
