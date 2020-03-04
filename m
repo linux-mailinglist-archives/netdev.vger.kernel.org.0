@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CF0179A55
-	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:42:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B15179A57
+	for <lists+netdev@lfdr.de>; Wed,  4 Mar 2020 21:42:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388295AbgCDUmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 15:42:52 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:32781 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388230AbgCDUmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:42:52 -0500
-Received: by mail-qk1-f194.google.com with SMTP id p62so3087974qkb.0;
-        Wed, 04 Mar 2020 12:42:51 -0800 (PST)
+        id S1728539AbgCDUmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 15:42:54 -0500
+Received: from mail-qk1-f178.google.com ([209.85.222.178]:33655 "EHLO
+        mail-qk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388230AbgCDUmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 15:42:54 -0500
+Received: by mail-qk1-f178.google.com with SMTP id p62so3088086qkb.0;
+        Wed, 04 Mar 2020 12:42:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=e/XdTuBcTBU3OvToQ1oQMV0HPKeoQN+MyXw643ySz0k=;
-        b=FiZibzMfIRDuqgCQakpTGLqbBB/RQUgEqftKDmi+bcDocykrJM5nt6zSVD6Eqay0Fm
-         DtKZBQRFkzbW+qPaFgKMvdYZJV5i+8ytUr+J4Itd689y6BFrR1pzNZarrujIGy1SxZp9
-         Su5yKP/7wnrszG3rWWgKHvQphaRCCggTLFsAr3NTxm+DgGjCi+xdeFOX+QIIOCNj8qDJ
-         4Tw+C5UaPnyoCxAakNdrL3D5CL58hi6nk/sE04nDfd8b58mUsMFM2hGxxfYFcySwC949
-         6jL3eBMN/LCFKGk4qCSF9PPUoggLCX+RTeSOL+eRqcyzNWDPQygdMoFXNAcQizwMJKow
-         VZ6A==
+        bh=HQgb+cG4NkJXbnS+nj0Rdtq6SmKME6zMCxCGCB6CvAY=;
+        b=gvnIrR+Fo17aHtz6sgCzGEJbMkWl5bKEWAXpa1xKU1XXDrOGm/OiMIAlxolImZQftc
+         E+Kw/OzRo9FRlKmldQwpVpfzkxuRnPemQRkGmjOVd9GNjWsD5rOl1GvDKysjqJm/aMC7
+         +tnfEGGvkRdYq32n/dpA5Uh6HWwa07X+kjW6Pdvl2psSX+tMjKHUA4o/xysLTv/9T3+w
+         HEGsgUQJjvzZQmCkKyo7qrihNo4ewsTR78MxR4b8ONU5+BZND+pC1DbA0kUlXMVwMIBm
+         cFbsFg+ev14fbtTheuryBCRx3fN2ZvSbypr2HpU85kxKCkrjGFtLJEggJa0KZvy/0P2Z
+         CSzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=e/XdTuBcTBU3OvToQ1oQMV0HPKeoQN+MyXw643ySz0k=;
-        b=lg9uBGGdfwxjYKSRNllrkZ4TyURhUfxDvB9zaP2QYwK6dZ0yEf1QBhRI+zX0LHlaKv
-         QF0uh9XEN4NW3r5OY2DiAMyEqUnzB+e5A9qB5XX91yBOoLqgZDi586yS53W+rULHfbEe
-         SAk3wLacJxAPWJvGtZFVKjbEb91pfn630Mky27hg69ZChmRrxr4QXmmC/WQZ0om02pvT
-         9JOYrRN6naNDwHykfvHQNS8j/xKH7kWwuUzUrpMFON2d71d2LBmpzFM8hm53qWtsAkJr
-         LOf3cnyQRhbVJJxlSvuiXYat3bwkV2vfRp78Dscrg4lotwQfX1HgppaJwAxeRlfXOa+U
-         mZzw==
-X-Gm-Message-State: ANhLgQ0FosHLvbDHWWWM01bGScTzawTbt3LrY24WFKsy7+DvcPla0Q9F
-        ei9Mcb8oba5xpyPuMjWjyEHci2/8Knc=
-X-Google-Smtp-Source: ADFU+vuKJEhGVBIbrJpnm87uxdEcoKf2bAgUVqk9ljM6gNr7F44CUEKvn9YotQEyvV8vGC8fy6NBIA==
-X-Received: by 2002:ae9:efc8:: with SMTP id d191mr1632872qkg.1.1583354570629;
-        Wed, 04 Mar 2020 12:42:50 -0800 (PST)
+        bh=HQgb+cG4NkJXbnS+nj0Rdtq6SmKME6zMCxCGCB6CvAY=;
+        b=XwGWMqbV3Pz7YVaWf1ov1GvGwIRfxHFhTEc48u4mz+2SpbjW/oL/vQnJZZ6opheMWn
+         iVlhWN/5v9AYKE/YgdICmMWTKT7jXi0Fj0FdgBrnEM2nv+HmyoUHew9vpHEjeAzKSWMX
+         uC5Mc8tdNSdOAhucVbDK4NHBHCjIBAlVmrExLu99cKr1T0mRZuzkIpm4hhLuCys23r6C
+         iFyvYM4F1/6UVUhDfbtLFQ0vIzgNvoK7w6rnuvO0GEonUMzTxHYaWvmzkIk8X3dA3FGf
+         Sg1YectW4itoSqdruyibf5+vrKGZSBgN1IGGvHcOrrX1WJGwwhAmc+oKsWrPxV6/nZC6
+         DIMg==
+X-Gm-Message-State: ANhLgQ3ma/Rb+bn/3Tw5KEAo6hqxy2/muvPbc2ZtKvRiEZa6mWHLWWqM
+        gRuFvDY1A81IYKPZW2pdKltGRzqqqnA=
+X-Google-Smtp-Source: ADFU+vvf4fC5BLknlP1Of1MfY9/b3dGqUj1faYZIH7gpgJjiE18Y7hA4ncnSsZrPTd7aPIOxUlDS6A==
+X-Received: by 2002:a05:620a:228f:: with SMTP id o15mr344854qkh.197.1583354572768;
+        Wed, 04 Mar 2020 12:42:52 -0800 (PST)
 Received: from localhost.localdomain (pc-184-104-160-190.cm.vtr.net. [190.160.104.184])
-        by smtp.googlemail.com with ESMTPSA id 82sm1750232qko.91.2020.03.04.12.42.48
+        by smtp.googlemail.com with ESMTPSA id 82sm1750232qko.91.2020.03.04.12.42.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2020 12:42:50 -0800 (PST)
+        Wed, 04 Mar 2020 12:42:52 -0800 (PST)
 From:   Carlos Neira <cneirabustos@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
         bpf@vger.kernel.org, cneirabustos@gmail.com
-Subject: [PATCH v17 2/3] bpf: added new helper bpf_get_ns_current_pid_tgid
-Date:   Wed,  4 Mar 2020 17:41:56 -0300
-Message-Id: <20200304204157.58695-3-cneirabustos@gmail.com>
+Subject: [PATCH v17 3/3] tools/testing/selftests/bpf: Add self-tests for new helper bpf_get_ns_current_pid_tgid.
+Date:   Wed,  4 Mar 2020 17:41:57 -0300
+Message-Id: <20200304204157.58695-4-cneirabustos@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200304204157.58695-1-cneirabustos@gmail.com>
 References: <20200304204157.58695-1-cneirabustos@gmail.com>
@@ -61,220 +61,335 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New bpf helper bpf_get_ns_current_pid_tgid,
-This helper will return pid and tgid from current task
-which namespace matches dev_t and inode number provided,
-this will allows us to instrument a process inside a container.
+Self tests added for new helper bpf_get_ns_current_pid_tgid
 
 Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-
-Acked-by: Yonghong Song <yhs@fb.com>
-
 ---
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       | 20 ++++++++++++++-
- kernel/bpf/core.c              |  1 +
- kernel/bpf/helpers.c           | 45 ++++++++++++++++++++++++++++++++++
- kernel/trace/bpf_trace.c       |  2 ++
- scripts/bpf_helpers_doc.py     |  1 +
- tools/include/uapi/linux/bpf.h | 20 ++++++++++++++-
- 7 files changed, 88 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../bpf/prog_tests/ns_current_pid_tgid.c      |  88 ++++++++++
+ .../bpf/progs/test_ns_current_pid_tgid.c      |  37 ++++
+ .../bpf/test_current_pid_tgid_new_ns.c        | 159 ++++++++++++++++++
+ 4 files changed, 286 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+ create mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index f13c78c6f29d..8d6380394388 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1472,6 +1472,7 @@ extern const struct bpf_func_proto bpf_strtol_proto;
- extern const struct bpf_func_proto bpf_strtoul_proto;
- extern const struct bpf_func_proto bpf_tcp_sock_proto;
- extern const struct bpf_func_proto bpf_jiffies64_proto;
-+extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 2d7f5df33f04..ea77239095a1 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -32,7 +32,8 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+ 	test_cgroup_storage \
+ 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
+-	test_progs-no_alu32
++	test_progs-no_alu32 \
++	test_current_pid_tgid_new_ns
  
- /* Shared helpers among cBPF and eBPF. */
- void bpf_user_rnd_init_once(void);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index d6b33ea27bcc..f3ad826fa3bd 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2913,6 +2913,19 @@ union bpf_attr {
-  *		of sizeof(struct perf_branch_entry).
-  *
-  *		**-ENOENT** if architecture does not support branch records.
-+ *
-+ * int bpf_get_ns_current_pid_tgid(u64 dev, u64 ino, struct bpf_pidns_info *nsdata, u32 size)
-+ *	Description
-+ *		Returns 0 on success, values for *pid* and *tgid* as seen from the current
-+ *		*namespace* will be returned in *nsdata*.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *		**-EINVAL** if dev and inum supplied don't match dev_t and inode number
-+ *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
-+ *
-+ *		**-ENOENT** if pidns does not exists for the current task.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3034,7 +3047,8 @@ union bpf_attr {
- 	FN(tcp_send_ack),		\
- 	FN(send_signal_thread),		\
- 	FN(jiffies64),			\
--	FN(read_branch_records),
-+	FN(read_branch_records),	\
-+	FN(get_ns_current_pid_tgid),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-@@ -3828,4 +3842,8 @@ struct bpf_sockopt {
- 	__s32	retval;
- };
- 
-+struct bpf_pidns_info {
-+	__u32 pid;
-+	__u32 tgid;
+ # Also test bpf-gcc, if present
+ ifneq ($(BPF_GCC),)
+diff --git a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
+new file mode 100644
+index 000000000000..542240e16564
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
+@@ -0,0 +1,88 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
++#include <test_progs.h>
++#include <sys/stat.h>
++#include <sys/types.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++
++struct bss {
++	__u64 dev;
++	__u64 ino;
++	__u64 pid_tgid;
++	__u64 user_pid_tgid;
 +};
- #endif /* _UAPI__LINUX_BPF_H__ */
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 973a20d49749..0f9ca46e1978 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2149,6 +2149,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
- const struct bpf_func_proto bpf_get_current_comm_proto __weak;
- const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
- const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-+const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
- 
- const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
- {
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index d8b7b110a1c5..01878db15eaf 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -12,6 +12,8 @@
- #include <linux/filter.h>
- #include <linux/ctype.h>
- #include <linux/jiffies.h>
-+#include <linux/pid_namespace.h>
-+#include <linux/proc_ns.h>
- 
- #include "../../lib/kstrtox.h"
- 
-@@ -499,3 +501,46 @@ const struct bpf_func_proto bpf_strtoul_proto = {
- 	.arg4_type	= ARG_PTR_TO_LONG,
- };
- #endif
 +
-+BPF_CALL_4(bpf_get_ns_current_pid_tgid, u64, dev, u64, ino,
-+	   struct bpf_pidns_info *, nsdata, u32, size)
++void test_ns_current_pid_tgid(void)
 +{
-+	struct task_struct *task = current;
-+	struct pid_namespace *pidns;
-+	int err = -EINVAL;
++	const char *probe_name = "raw_tracepoint/sys_enter";
++	const char *file = "test_ns_current_pid_tgid.o";
++	int err, key = 0, duration = 0;
++	struct bpf_link *link = NULL;
++	struct bpf_program *prog;
++	struct bpf_map *bss_map;
++	struct bpf_object *obj;
++	struct bss bss;
++	struct stat st;
++	__u64 id;
 +
-+	if (unlikely(size != sizeof(struct bpf_pidns_info)))
-+		goto clear;
++	obj = bpf_object__open_file(file, NULL);
++	if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
++		return;
 +
-+	if (unlikely((u64)(dev_t)dev != dev))
-+		goto clear;
++	err = bpf_object__load(obj);
++	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
++		goto cleanup;
 +
-+	if (unlikely(!task))
-+		goto clear;
++	bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
++	if (CHECK(!bss_map, "find_bss_map", "failed\n"))
++		goto cleanup;
 +
-+	pidns = task_active_pid_ns(task);
-+	if (unlikely(!pidns)) {
-+		err = -ENOENT;
-+		goto clear;
++	prog = bpf_object__find_program_by_title(obj, probe_name);
++	if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
++		  probe_name))
++		goto cleanup;
++
++	memset(&bss, 0, sizeof(bss));
++	pid_t tid = syscall(SYS_gettid);
++	pid_t pid = getpid();
++
++	id = (__u64) tid << 32 | pid;
++	bss.user_pid_tgid = id;
++
++	if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
++		perror("Failed to stat /proc/self/ns/pid");
++		goto cleanup;
 +	}
 +
-+	if (!ns_match(&pidns->ns, (dev_t)dev, ino))
-+		goto clear;
++	bss.dev = st.st_dev;
++	bss.ino = st.st_ino;
 +
-+	nsdata->pid = task_pid_nr_ns(task, pidns);
-+	nsdata->tgid = task_tgid_nr_ns(task, pidns);
++	err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
++	if (CHECK(err, "setting_bss", "failed to set bss : %d\n", err))
++		goto cleanup;
++
++	link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
++	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
++		  PTR_ERR(link))) {
++		link = NULL;
++		goto cleanup;
++	}
++
++	/* trigger some syscalls */
++	usleep(1);
++
++	err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
++	if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
++		goto cleanup;
++
++	if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
++		  "User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
++		goto cleanup;
++cleanup:
++	if (!link) {
++		bpf_link__destroy(link);
++		link = NULL;
++	}
++	bpf_object__close(obj);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+new file mode 100644
+index 000000000000..1dca70a6de2f
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Carlos Neira cneirabustos@gmail.com */
++
++#include <linux/bpf.h>
++#include <stdint.h>
++#include <bpf/bpf_helpers.h>
++
++static volatile struct {
++	__u64 dev;
++	__u64 ino;
++	__u64 pid_tgid;
++	__u64 user_pid_tgid;
++} res;
++
++SEC("raw_tracepoint/sys_enter")
++int trace(void *ctx)
++{
++	__u64  ns_pid_tgid, expected_pid;
++	struct bpf_pidns_info nsdata;
++	__u32 key = 0;
++
++	if (bpf_get_ns_current_pid_tgid(res.dev, res.ino, &nsdata,
++		   sizeof(struct bpf_pidns_info)))
++		return 0;
++
++	ns_pid_tgid = (__u64)nsdata.tgid << 32 | nsdata.pid;
++	expected_pid = res.user_pid_tgid;
++
++	if (expected_pid != ns_pid_tgid)
++		return 0;
++
++	res.pid_tgid = ns_pid_tgid;
++
 +	return 0;
-+clear:
-+	memset((void *)nsdata, 0, (size_t) size);
-+	return err;
 +}
 +
-+const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto = {
-+	.func		= bpf_get_ns_current_pid_tgid,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_ANYTHING,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type      = ARG_PTR_TO_UNINIT_MEM,
-+	.arg4_type      = ARG_CONST_SIZE,
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c b/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+new file mode 100644
+index 000000000000..16e94effa5f5
+--- /dev/null
++++ b/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+@@ -0,0 +1,159 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
++#define _GNU_SOURCE
++#include <sys/stat.h>
++#include <sys/types.h>
++#include <unistd.h>
++#include <sys/syscall.h>
++#include <sched.h>
++#include <sys/wait.h>
++#include <sys/mount.h>
++#include "test_progs.h"
++
++#define CHECK_NEWNS(condition, tag, format...) ({		\
++	int __ret = !!(condition);			\
++	if (__ret) {					\
++		printf("%s:FAIL:%s ", __func__, tag);	\
++		printf(format);				\
++	} else {					\
++		printf("%s:PASS:%s\n", __func__, tag);	\
++	}						\
++	__ret;						\
++})
++
++struct bss {
++	__u64 dev;
++	__u64 ino;
++	__u64 pid_tgid;
++	__u64 user_pid_tgid;
 +};
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 07764c761073..d7985629a3b1 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -843,6 +843,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_send_signal_thread_proto;
- 	case BPF_FUNC_perf_event_read_value:
- 		return &bpf_perf_event_read_value_proto;
-+	case BPF_FUNC_get_ns_current_pid_tgid:
-+		return &bpf_get_ns_current_pid_tgid_proto;
- 	default:
- 		return NULL;
- 	}
-diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-index cebed6fb5bbb..c1e2b5410faa 100755
---- a/scripts/bpf_helpers_doc.py
-+++ b/scripts/bpf_helpers_doc.py
-@@ -435,6 +435,7 @@ class PrinterHelpers(Printer):
-             'struct bpf_fib_lookup',
-             'struct bpf_perf_event_data',
-             'struct bpf_perf_event_value',
-+            'struct bpf_pidns_info',
-             'struct bpf_sock',
-             'struct bpf_sock_addr',
-             'struct bpf_sock_ops',
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index d6b33ea27bcc..f3ad826fa3bd 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2913,6 +2913,19 @@ union bpf_attr {
-  *		of sizeof(struct perf_branch_entry).
-  *
-  *		**-ENOENT** if architecture does not support branch records.
-+ *
-+ * int bpf_get_ns_current_pid_tgid(u64 dev, u64 ino, struct bpf_pidns_info *nsdata, u32 size)
-+ *	Description
-+ *		Returns 0 on success, values for *pid* and *tgid* as seen from the current
-+ *		*namespace* will be returned in *nsdata*.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *		**-EINVAL** if dev and inum supplied don't match dev_t and inode number
-+ *              with nsfs of current task, or if dev conversion to dev_t lost high bits.
-+ *
-+ *		**-ENOENT** if pidns does not exists for the current task.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3034,7 +3047,8 @@ union bpf_attr {
- 	FN(tcp_send_ack),		\
- 	FN(send_signal_thread),		\
- 	FN(jiffies64),			\
--	FN(read_branch_records),
-+	FN(read_branch_records),	\
-+	FN(get_ns_current_pid_tgid),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-@@ -3828,4 +3842,8 @@ struct bpf_sockopt {
- 	__s32	retval;
- };
- 
-+struct bpf_pidns_info {
-+	__u32 pid;
-+	__u32 tgid;
-+};
- #endif /* _UAPI__LINUX_BPF_H__ */
++
++int main(int argc, char **argv)
++{
++	pid_t pid;
++	int exit_code = 1;
++	struct stat st;
++
++	printf("Testing bpf_get_ns_current_pid_tgid helper in new ns\n"); 
++
++	if (stat("/proc/self/ns/pid", &st)) {
++		perror("stat failed on /proc/self/ns/pid ns\n");
++		printf("%s:FAILED\n", argv[0]);
++		return exit_code;
++	}
++
++	if (CHECK_NEWNS(unshare(CLONE_NEWPID | CLONE_NEWNS),
++			"unshare CLONE_NEWPID | CLONE_NEWNS", "error errno=%d\n", errno))
++		return exit_code;
++
++	pid = fork();
++	if (pid == -1) {
++		perror("Fork() failed\n");
++		printf("%s:FAILED\n", argv[0]);
++		return exit_code;
++	}
++
++	if (pid > 0) {
++		int status;
++
++		usleep(5);
++		waitpid(pid, &status, 0);
++		return 0;
++	} else {
++
++		pid = fork();
++		if (pid == -1) {
++			perror("Fork() failed\n");
++			printf("%s:FAILED\n", argv[0]);
++			return exit_code;
++		}
++
++		if (pid > 0) {
++			int status;
++			waitpid(pid, &status, 0);
++			return 0;
++		} else {
++			if (CHECK_NEWNS(mount("none", "/proc", NULL, MS_PRIVATE|MS_REC, NULL),
++				"Unmounting proc", "Cannot umount proc! errno=%d\n", errno))
++				return exit_code;
++
++			if (CHECK_NEWNS(mount("proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, NULL),
++				"Mounting proc", "Cannot mount proc! errno=%d\n", errno))
++				return exit_code;
++
++			const char *probe_name = "raw_tracepoint/sys_enter";
++			const char *file = "test_ns_current_pid_tgid.o";
++			struct bpf_link *link = NULL;
++			struct bpf_program *prog;
++			struct bpf_map *bss_map;
++			struct bpf_object *obj;
++			int exit_code = 1;
++			int err, key = 0;
++			struct bss bss;
++			struct stat st;
++			__u64 id;
++
++			obj = bpf_object__open_file(file, NULL);
++			if (CHECK_NEWNS(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
++				return exit_code;
++
++			err = bpf_object__load(obj);
++			if (CHECK_NEWNS(err, "obj_load", "err %d errno %d\n", err, errno))
++				goto cleanup;
++
++			bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
++			if (CHECK_NEWNS(!bss_map, "find_bss_map", "failed\n"))
++				goto cleanup;
++
++			prog = bpf_object__find_program_by_title(obj, probe_name);
++			if (CHECK_NEWNS(!prog, "find_prog", "prog '%s' not found\n",
++						probe_name))
++				goto cleanup;
++
++			memset(&bss, 0, sizeof(bss));
++			pid_t tid = syscall(SYS_gettid);
++			pid_t pid = getpid();
++
++			id = (__u64) tid << 32 | pid;
++			bss.user_pid_tgid = id;
++
++			if (CHECK_NEWNS(stat("/proc/self/ns/pid", &st),
++				"stat new ns", "Failed to stat /proc/self/ns/pid errno=%d\n", errno))
++				goto cleanup;
++
++			bss.dev = st.st_dev;
++			bss.ino = st.st_ino;
++
++			err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
++			if (CHECK_NEWNS(err, "setting_bss", "failed to set bss : %d\n", err))
++				goto cleanup;
++
++			link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
++			if (CHECK_NEWNS(IS_ERR(link), "attach_raw_tp", "err %ld\n",
++						PTR_ERR(link))) {
++				link = NULL;
++				goto cleanup;
++			}
++
++			/* trigger some syscalls */
++			usleep(1);
++
++			err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
++			if (CHECK_NEWNS(err, "set_bss", "failed to get bss : %d\n", err))
++				goto cleanup;
++
++			if (CHECK_NEWNS(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
++						"User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
++				goto cleanup;
++
++			exit_code = 0;
++			printf("%s:PASS\n", argv[0]);
++cleanup:
++			if (!link) {
++				bpf_link__destroy(link);
++				link = NULL;
++			}
++			bpf_object__close(obj);
++		}
++	}
++}
 -- 
 2.20.1
 
