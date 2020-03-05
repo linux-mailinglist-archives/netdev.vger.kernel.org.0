@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7220B179F02
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2357179F04
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:16:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725948AbgCEFQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 00:16:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56550 "EHLO mail.kernel.org"
+        id S1726020AbgCEFQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 00:16:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725861AbgCEFQc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 00:16:32 -0500
+        id S1725861AbgCEFQd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 00:16:33 -0500
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA54A21741;
-        Thu,  5 Mar 2020 05:16:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0C7821775;
+        Thu,  5 Mar 2020 05:16:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583385391;
-        bh=snxvktXuR+YKTcnwSxtyssyQmUO1azSV+b8fsr4Y2SY=;
+        s=default; t=1583385392;
+        bh=6Qb/kRUK8ywucTS1ki6DufM2ZTU+d6rd2pLGISzKFvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j1B8/LoVm2N3U2pjxLJxah19KnJDfk/LtEkvuC5isjO2JL4Vu9duZPkhVKmseaTBI
-         kjyskJJr7SljWF2R/R3+NE3oRtokOX5Ot2TPbYA9TzeEc9Zpj7FlAp5IFza6Y+Ms0T
-         t9Z52/0dP8tspb5/Z3AYUO6CXh+b1+4ETfNouhrU=
+        b=tC6xlVd3iA+pJkIDaT/p20VyRAY06d3tGZKzksooMD7jb7hsVQtMC4RK9ZHNj5Rv/
+         KDWTqH8ozMXQLjbVvae1XR/h4WNcPOXghnILFtwX7StFkD8bwHYYtv5m3MauvvnmtF
+         sB9wDdzB67WeBGmHKYTEUtiImL3voX84BGkCQamI=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     andrew@lunn.ch, ecree@solarflare.com, mkubecek@suse.cz,
@@ -33,9 +33,9 @@ Cc:     andrew@lunn.ch, ecree@solarflare.com, mkubecek@suse.cz,
         jacob.e.keller@intel.com, alexander.h.duyck@linux.intel.com,
         michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
         netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 02/12] xgbe: let core reject the unsupported coalescing parameters
-Date:   Wed,  4 Mar 2020 21:15:32 -0800
-Message-Id: <20200305051542.991898-3-kuba@kernel.org>
+Subject: [PATCH net-next v3 03/12] enic: let core reject the unsupported coalescing parameters
+Date:   Wed,  4 Mar 2020 21:15:33 -0800
+Message-Id: <20200305051542.991898-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200305051542.991898-1-kuba@kernel.org>
 References: <20200305051542.991898-1-kuba@kernel.org>
@@ -50,59 +50,56 @@ Set ethtool_ops->supported_coalesce_params to let
 the core reject unsupported coalescing parameters.
 
 This driver correctly rejects all unsupported parameters.
-We are only losing the error print.
+The error code changes from EINVAL to EOPNOTSUPP.
 
 v3: adjust commit message for new error code and member name
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c | 26 ++------------------
- 1 file changed, 2 insertions(+), 24 deletions(-)
+ .../net/ethernet/cisco/enic/enic_ethtool.c    | 23 ++++---------------
+ 1 file changed, 4 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-index b23c8ee24ee3..61f39a0e04f9 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-@@ -450,30 +450,6 @@ static int xgbe_set_coalesce(struct net_device *netdev,
- 	unsigned int rx_frames, rx_riwt, rx_usecs;
- 	unsigned int tx_frames;
+diff --git a/drivers/net/ethernet/cisco/enic/enic_ethtool.c b/drivers/net/ethernet/cisco/enic/enic_ethtool.c
+index 84ff0e6ec33e..4d8e0aa447fb 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_ethtool.c
++++ b/drivers/net/ethernet/cisco/enic/enic_ethtool.c
+@@ -323,25 +323,6 @@ static int enic_coalesce_valid(struct enic *enic,
+ 	u32 rx_coalesce_usecs_low = min_t(u32, coalesce_usecs_max,
+ 					  ec->rx_coalesce_usecs_low);
  
--	/* Check for not supported parameters  */
--	if ((ec->rx_coalesce_usecs_irq) ||
--	    (ec->rx_max_coalesced_frames_irq) ||
--	    (ec->tx_coalesce_usecs) ||
--	    (ec->tx_coalesce_usecs_irq) ||
--	    (ec->tx_max_coalesced_frames_irq) ||
--	    (ec->stats_block_coalesce_usecs) ||
--	    (ec->use_adaptive_rx_coalesce) ||
--	    (ec->use_adaptive_tx_coalesce) ||
--	    (ec->pkt_rate_low) ||
--	    (ec->rx_coalesce_usecs_low) ||
--	    (ec->rx_max_coalesced_frames_low) ||
--	    (ec->tx_coalesce_usecs_low) ||
--	    (ec->tx_max_coalesced_frames_low) ||
--	    (ec->pkt_rate_high) ||
--	    (ec->rx_coalesce_usecs_high) ||
--	    (ec->rx_max_coalesced_frames_high) ||
--	    (ec->tx_coalesce_usecs_high) ||
--	    (ec->tx_max_coalesced_frames_high) ||
--	    (ec->rate_sample_interval)) {
--		netdev_err(netdev, "unsupported coalescing parameter\n");
--		return -EOPNOTSUPP;
--	}
+-	if (ec->rx_max_coalesced_frames		||
+-	    ec->rx_coalesce_usecs_irq		||
+-	    ec->rx_max_coalesced_frames_irq	||
+-	    ec->tx_max_coalesced_frames		||
+-	    ec->tx_coalesce_usecs_irq		||
+-	    ec->tx_max_coalesced_frames_irq	||
+-	    ec->stats_block_coalesce_usecs	||
+-	    ec->use_adaptive_tx_coalesce	||
+-	    ec->pkt_rate_low			||
+-	    ec->rx_max_coalesced_frames_low	||
+-	    ec->tx_coalesce_usecs_low		||
+-	    ec->tx_max_coalesced_frames_low	||
+-	    ec->pkt_rate_high			||
+-	    ec->rx_max_coalesced_frames_high	||
+-	    ec->tx_coalesce_usecs_high		||
+-	    ec->tx_max_coalesced_frames_high	||
+-	    ec->rate_sample_interval)
+-		return -EINVAL;
 -
- 	rx_riwt = hw_if->usec_to_riwt(pdata, ec->rx_coalesce_usecs);
- 	rx_usecs = ec->rx_coalesce_usecs;
- 	rx_frames = ec->rx_max_coalesced_frames;
-@@ -837,6 +813,8 @@ static int xgbe_set_channels(struct net_device *netdev,
+ 	if ((vnic_dev_get_intr_mode(enic->vdev) != VNIC_DEV_INTR_MODE_MSIX) &&
+ 	    ec->tx_coalesce_usecs)
+ 		return -EINVAL;
+@@ -635,6 +616,10 @@ static int enic_get_ts_info(struct net_device *netdev,
  }
  
- static const struct ethtool_ops xgbe_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES,
- 	.get_drvinfo = xgbe_get_drvinfo,
- 	.get_msglevel = xgbe_get_msglevel,
- 	.set_msglevel = xgbe_set_msglevel,
+ static const struct ethtool_ops enic_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX |
++				     ETHTOOL_COALESCE_RX_USECS_LOW |
++				     ETHTOOL_COALESCE_RX_USECS_HIGH,
+ 	.get_drvinfo = enic_get_drvinfo,
+ 	.get_msglevel = enic_get_msglevel,
+ 	.set_msglevel = enic_set_msglevel,
 -- 
 2.24.1
 
