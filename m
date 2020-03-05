@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC7E17A8ED
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:35:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB6817A8E3
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbgCEPey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 10:34:54 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39076 "EHLO
+        id S1726775AbgCEPej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 10:34:39 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48314 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726898AbgCEPem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:42 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
+        with ESMTP id S1726142AbgCEPei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:38 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 5 Mar 2020 17:34:35 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsT010824;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsU010824;
         Thu, 5 Mar 2020 17:34:35 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next ct-offload 05/13] net/sched: act_ct: Enable hardware offload of flow table entires
-Date:   Thu,  5 Mar 2020 17:34:20 +0200
-Message-Id: <1583422468-8456-6-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next ct-offload 06/13] net/mlx5: E-Switch, Introduce global tables
+Date:   Thu,  5 Mar 2020 17:34:21 +0200
+Message-Id: <1583422468-8456-7-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
 References: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
@@ -36,95 +36,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pass the zone's flow table instance on the flow action to the drivers.
-Thus, allowing drivers to register FT add/del/stats callbacks.
+Currently, flow tables are automatically connected according to their
+<chain,prio,level> tuple.
 
-Finally, enable hardware offload on the flow table instance.
+Introduce global tables which are flow tables that are detached from the
+eswitch chains processing, and will be connected by explicitly referencing
+them from multiple chains.
+
+Add this new table type, and allow connecting them by refenece.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 ---
- include/net/flow_offload.h |  1 +
- include/net/tc_act/tc_ct.h | 10 ++++++++++
- net/sched/act_ct.c         |  2 ++
- net/sched/cls_api.c        |  1 +
- 4 files changed, 14 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  2 ++
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 23 ++++++++++++-----
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   | 30 ++++++++++++++++++++++
+ .../mellanox/mlx5/core/eswitch_offloads_chains.h   |  6 +++++
+ 4 files changed, 55 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 9670f15..2ec2db1 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -197,6 +197,7 @@ struct flow_action_entry {
- 		struct {				/* FLOW_ACTION_CT */
- 			int action;
- 			u16 zone;
-+			struct nf_flowtable *flow_table;
- 		} ct;
- 		struct {
- 			unsigned long cookie;
-diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
-index 735da59..79654bc 100644
---- a/include/net/tc_act/tc_ct.h
-+++ b/include/net/tc_act/tc_ct.h
-@@ -27,6 +27,7 @@ struct tcf_ct_params {
- 	struct rcu_head rcu;
- 
- 	struct tcf_ct_flow_table *ct_ft;
-+	struct nf_flowtable *nf_ft;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index e7dd2ca..3f644c2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -409,6 +409,8 @@ struct mlx5_esw_flow_attr {
+ 	u16	prio;
+ 	u32	dest_chain;
+ 	u32	flags;
++	struct mlx5_flow_table *fdb;
++	struct mlx5_flow_table *dest_ft;
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
  };
  
- struct tcf_ct {
-@@ -50,9 +51,18 @@ static inline int tcf_ct_action(const struct tc_action *a)
- 	return to_ct_params(a)->ct_action;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index e4bd53e..a867d7f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -149,7 +149,12 @@ struct mlx5_flow_handle *
+ 	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST) {
+ 		struct mlx5_flow_table *ft;
+ 
+-		if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) {
++		if (attr->dest_ft) {
++			flow_act.flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
++			dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
++			dest[i].ft = attr->dest_ft;
++			i++;
++		} else if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) {
+ 			flow_act.flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+ 			dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+ 			dest[i].ft = mlx5_esw_chains_get_tc_end_ft(esw);
+@@ -202,8 +207,11 @@ struct mlx5_flow_handle *
+ 	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
+ 		flow_act.modify_hdr = attr->modify_hdr;
+ 
+-	fdb = mlx5_esw_chains_get_table(esw, attr->chain, attr->prio,
+-					!!split);
++	if (attr->chain || attr->prio)
++		fdb = mlx5_esw_chains_get_table(esw, attr->chain, attr->prio,
++						!!split);
++	else
++		fdb = attr->fdb;
+ 	if (IS_ERR(fdb)) {
+ 		rule = ERR_CAST(fdb);
+ 		goto err_esw_get;
+@@ -222,7 +230,9 @@ struct mlx5_flow_handle *
+ 	return rule;
+ 
+ err_add_rule:
+-	mlx5_esw_chains_put_table(esw, attr->chain, attr->prio, !!split);
++	if (attr->chain || attr->prio)
++		mlx5_esw_chains_put_table(esw, attr->chain, attr->prio,
++					  !!split);
+ err_esw_get:
+ 	if (!(attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) && attr->dest_chain)
+ 		mlx5_esw_chains_put_table(esw, attr->dest_chain, 1, 0);
+@@ -316,8 +326,9 @@ struct mlx5_flow_handle *
+ 		mlx5_esw_chains_put_table(esw, attr->chain, attr->prio, 1);
+ 		mlx5_esw_chains_put_table(esw, attr->chain, attr->prio, 0);
+ 	} else {
+-		mlx5_esw_chains_put_table(esw, attr->chain, attr->prio,
+-					  !!split);
++		if (attr->chain || attr->prio)
++			mlx5_esw_chains_put_table(esw, attr->chain,
++						  attr->prio, !!split);
+ 		if (attr->dest_chain)
+ 			mlx5_esw_chains_put_table(esw, attr->dest_chain, 1, 0);
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+index b139a97..bba0cec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+@@ -716,6 +716,36 @@ struct mlx5_flow_table *
+ 	return tc_end_fdb(esw);
  }
  
-+static inline struct nf_flowtable *tcf_ct_ft(const struct tc_action *a)
++struct mlx5_flow_table *
++mlx5_esw_chains_create_global_table(struct mlx5_eswitch *esw)
 +{
-+	return to_ct_params(a)->nf_ft;
++	int chain, prio, level, err;
++
++	if (!fdb_ignore_flow_level_supported(esw)) {
++		err = -EOPNOTSUPP;
++
++		esw_warn(esw->dev,
++			 "Couldn't create global flow table, ignore_flow_level not supported.");
++		goto err_ignore;
++	}
++
++	chain = mlx5_esw_chains_get_chain_range(esw),
++	prio = mlx5_esw_chains_get_prio_range(esw);
++	level = mlx5_esw_chains_get_level_range(esw);
++
++	return mlx5_esw_chains_create_fdb_table(esw, chain, prio, level);
++
++err_ignore:
++	return ERR_PTR(err);
 +}
 +
- #else
- static inline uint16_t tcf_ct_zone(const struct tc_action *a) { return 0; }
- static inline int tcf_ct_action(const struct tc_action *a) { return 0; }
-+static inline struct nf_flowtable *tcf_ct_ft(const struct tc_action *a)
++void
++mlx5_esw_chains_destroy_global_table(struct mlx5_eswitch *esw,
++				     struct mlx5_flow_table *ft)
 +{
-+	return NULL;
++	mlx5_esw_chains_destroy_fdb_table(esw, ft);
 +}
- #endif /* CONFIG_NF_CONNTRACK */
++
+ static int
+ mlx5_esw_chains_init(struct mlx5_eswitch *esw)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
+index da45e49..01cbdf8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
+@@ -23,6 +23,12 @@ struct mlx5_flow_table *
+ struct mlx5_flow_table *
+ mlx5_esw_chains_get_tc_end_ft(struct mlx5_eswitch *esw);
  
- #if IS_ENABLED(CONFIG_NET_ACT_CT)
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 102be90..fca0970 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -276,6 +276,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
- 		goto err_insert;
++struct mlx5_flow_table *
++mlx5_esw_chains_create_global_table(struct mlx5_eswitch *esw);
++void
++mlx5_esw_chains_destroy_global_table(struct mlx5_eswitch *esw,
++				     struct mlx5_flow_table *ft);
++
+ int mlx5_esw_chains_create(struct mlx5_eswitch *esw);
+ void mlx5_esw_chains_destroy(struct mlx5_eswitch *esw);
  
- 	ct_ft->nf_ft.type = &flowtable_ct;
-+	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD;
- 	err = nf_flow_table_init(&ct_ft->nf_ft);
- 	if (err)
- 		goto err_init;
-@@ -283,6 +284,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
- 	__module_get(THIS_MODULE);
- take_ref:
- 	params->ct_ft = ct_ft;
-+	params->nf_ft = &ct_ft->nf_ft;
- 	ct_ft->ref++;
- 	spin_unlock_bh(&zones_lock);
- 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index e604ebe..67221fc 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3600,6 +3600,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 			entry->id = FLOW_ACTION_CT;
- 			entry->ct.action = tcf_ct_action(act);
- 			entry->ct.zone = tcf_ct_zone(act);
-+			entry->ct.flow_table = tcf_ct_ft(act);
- 		} else if (is_tcf_mpls(act)) {
- 			switch (tcf_mpls_action(act)) {
- 			case TCA_MPLS_ACT_PUSH:
 -- 
 1.8.3.1
 
