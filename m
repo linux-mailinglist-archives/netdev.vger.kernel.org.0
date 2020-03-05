@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF0717A54B
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:31:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 928AC17A54F
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:32:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbgCEMbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 07:31:05 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52177 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726020AbgCEMbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:31:04 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1j9peZ-00046z-4A; Thu, 05 Mar 2020 13:31:03 +0100
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1j9peY-0003S6-Hp; Thu, 05 Mar 2020 13:31:02 +0100
-Date:   Thu, 5 Mar 2020 13:31:02 +0100
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] fsl/fman: Use random MAC address when none is given
-Message-ID: <20200305123102.GS3335@pengutronix.de>
-References: <20200305115330.17433-1-s.hauer@pengutronix.de>
- <DB8PR04MB6985D1FDADE301F4A6C795E3ECE20@DB8PR04MB6985.eurprd04.prod.outlook.com>
+        id S1726129AbgCEMcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 07:32:09 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:55647 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbgCEMcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:32:08 -0500
+Received: by mail-wm1-f65.google.com with SMTP id 6so6110537wmi.5
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 04:32:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=XvqoB3YpTGvwS70Yx+o81kC3OP5qwjPAewaCKlcb6hw=;
+        b=T3wLGGd4TFmeHvgA1nuM53qFrkJDFyrA1MdY080q3OYGZwSp7Epdjm3D5fCR+9sPzD
+         HhKNAmSmWIPWUNohY4rbT/AA4u0fbwHRWxKxdmyiyrqUG5YrupzM39MM6xn/YBtRLH5M
+         ZwdLlQoMOkVNKw5IAWUk9hRmklUu9PR2XatJg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=XvqoB3YpTGvwS70Yx+o81kC3OP5qwjPAewaCKlcb6hw=;
+        b=raD6KX5CtqARa1AvkiswY6LxGgLalMKkPq+cIv1JpjrtS6KLAJpEw1Ksfp7kttnYuu
+         EUdmDpEeRuC6MhpF/CV+GuxILfibiXJMZ16XJ25ZOzw8HnlXLAodLY99j8FAlg3ImuPl
+         5uLcfaAybS7bEcAqe2fm5sqpWHGfxSzDfQh3CR2dKB/sK7YO0RLLg7t8IdU4c1wK2t6x
+         rUxN6tG8dofpm6rC4zS7yBQgJAE1N6K6ZuExwE7F4DJ95JVhEDiCPxq7XqsTk5TRN1t0
+         6F4HOkFLMgavxF+nYaDFpfRsSa/Es0IX6U/tyOX0oowJcl84wYgnOGCnYng5uM71p6FP
+         NYRg==
+X-Gm-Message-State: ANhLgQ13be5nRulI+TJuFXYbcyFnjmwFRq9N5sAKWnw7fiiO/+qIGN48
+        ovASr5s2xyZ4hmpLOnTM+KEJoA==
+X-Google-Smtp-Source: ADFU+vs0s6JDpJz9Ahed3MeuIOLTRos26RvIX28l24f5TQaaBz1cvByfsJgGNQ/pkbU0F2hDoISdNg==
+X-Received: by 2002:a1c:8041:: with SMTP id b62mr9174507wmd.76.1583411525674;
+        Thu, 05 Mar 2020 04:32:05 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id b186sm9273626wmb.40.2020.03.05.04.32.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 04:32:05 -0800 (PST)
+References: <20200304101318.5225-1-lmb@cloudflare.com> <20200304101318.5225-6-lmb@cloudflare.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     john.fastabend@gmail.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 05/12] bpf: sockmap: move generic sockmap hooks from BPF TCP
+In-reply-to: <20200304101318.5225-6-lmb@cloudflare.com>
+Date:   Thu, 05 Mar 2020 13:32:04 +0100
+Message-ID: <87blpbyocb.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6985D1FDADE301F4A6C795E3ECE20@DB8PR04MB6985.eurprd04.prod.outlook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 13:03:22 up 14 days, 19:33, 48 users,  load average: 0.30, 0.29,
- 0.18
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 05, 2020 at 11:57:37AM +0000, Madalin Bucur wrote:
-> > -----Original Message-----
-> > From: Sascha Hauer <s.hauer@pengutronix.de>
-> > Sent: Thursday, March 5, 2020 1:54 PM
-> > To: netdev@vger.kernel.org
-> > Cc: Madalin Bucur <madalin.bucur@nxp.com>; Sascha Hauer
-> > <s.hauer@pengutronix.de>
-> > Subject: [PATCH] fsl/fman: Use random MAC address when none is given
-> > 
-> > There's no need to fail probing when no MAC address is given in the
-> > device tree, just use a random MAC address.
-> > 
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c   | 13 +++++++++++--
-> >  drivers/net/ethernet/freescale/fman/fman_memac.c |  4 ----
-> >  drivers/net/ethernet/freescale/fman/mac.c        | 10 ++--------
-> >  3 files changed, 13 insertions(+), 14 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > index fd93d542f497..18a7235af7c2 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > @@ -233,8 +233,17 @@ static int dpaa_netdev_init(struct net_device
-> > *net_dev,
-> >  	net_dev->features |= net_dev->hw_features;
-> >  	net_dev->vlan_features = net_dev->features;
-> > 
-> > -	memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
-> > -	memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
-> > +	if (is_valid_ether_addr(mac_addr)) {
-> > +		dev_info(dev, "FMan MAC address: %pM\n", mac_addr);
-> > +		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
-> > +		memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
-> > +	} else {
-> > +		eth_hw_addr_random(net_dev);
-> > +		dev_info(dev, "Using random MAC address: %pM\n",
-> > +			 net_dev->dev_addr);
-> > +	}
-> > +
-> > +	dev_info(dev, "FMan perm MAC address: %pM\n", net_dev->perm_addr);
-> 
-> Do you need both prints when using a random MAC address? Otherwise, it's ok.
+On Wed, Mar 04, 2020 at 11:13 AM CET, Lorenz Bauer wrote:
+> The init, close and unhash handlers from TCP sockmap are generic,
+> and can be reused by UDP sockmap. Move the helpers into the sockmap code
+> base and expose them. This requires tcp_bpf_get_proto and tcp_bpf_clone to
+> be conditional on BPF_STREAM_PARSER.
+>
+> The moved functions are unmodified, except that sk_psock_unlink is
+> renamed to sock_map_unlink to better match its behaviour.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-Erm, no, I accidently committed it. Will remove.
+To spell out the tcp_bpf_get_proto() and tcp_bpf_clone() dependency on
+CONFIG_BPF_STREAM_PARSER - both of these functions access tcp_bpf_prots,
+which now hold pointers to sock_map_{unhash,close}. And
+sock_map_{unhash,close} get built when CONFIG_BPF_STREAM_PARSER is
+enabled.
 
-Sascha
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+[...]
