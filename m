@@ -2,132 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E037917A060
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 08:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA3E17A066
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 08:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726269AbgCEHHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 02:07:04 -0500
-Received: from mail-bn8nam12on2065.outbound.protection.outlook.com ([40.107.237.65]:6059
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725877AbgCEHHE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 02:07:04 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OvEEeguQK8Z+8VUGdT769sGnr1+Ba6/If1alXPGvgTjkcAxZNkNwrV//AJGiuENc2rHJigdEijQbvo8pdCokxmMKwEzTRqPCigvrPsikXhAvQmMF4QYPe2g1mGBqmmcT6BpNBV+qtTv814d4viRgkGhe6TMLoHJqTy5EPnJNJHGMDKixRfMqalqnIDCqH0LYkUxucZ/G4mZ+mUP+TXUjB/XQLnS9s0TJTC467BQR8WTr5UfJvPh2e6BMOJXTN1ymttyKHZwvbBMYlgltO0YVMLTuNGF6duwB7fnwRwzqD8Vdc+HjgZyC7cPfVSOL+RezY2DkISbc3cf9IvowZnxl5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p91bTofGqjLPFIff0yanPg5p7fSvw+Ak+aofAZHpFoM=;
- b=DVuZl8tvcd7NHLCfHPbVscia56/D+ZCZiW5+f82epqVPfXtYlKYnbAeMt48FS/bGtx7ClscCC7YEfCK9HbLocrYanB+Cg1JJXYJjOxV2gSMJQcwBv5GXplHsIjU5yy+8DMYkFxHMAIvkDtyK+UbPd7WGDFfNqWcCrVZeAoih6U1uqSQxV0WRUWV8nGdKlxn3ek4ds+iBt0NJeVYeJfW+OUOFKVWsOxSl+Cy67sN/BuCZv32Ru7hA1YpgfKR0nerhcMxBUl4laOJ60BqbDyHyS53knZ9HIuPT0qd9xblxB6L3d2k5SGRCdjNLMGrz00au8WKsUJev8zlen+wYxxqKyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=permerror action=none header.from=amd.com; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p91bTofGqjLPFIff0yanPg5p7fSvw+Ak+aofAZHpFoM=;
- b=hOJsO3Ce3rmg0W6KpAqX+0Pegg8Ww+0jpinc0N1c8y1lwTTPmQjFcANbMoTvULRh+8gGeyPUZSMJQQvzUBAdhessOgw+xXee0hhgP/rWTCXSBqPT89kNvWmdgBAqSBFn0JWCAT8uWAwIX7ujEVdwOMHAaKyWY+//DQxmiWHbB10=
-Received: from DM3PR12CA0131.namprd12.prod.outlook.com (2603:10b6:0:51::27) by
- MN2PR12MB4335.namprd12.prod.outlook.com (2603:10b6:208:1d4::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15; Thu, 5 Mar
- 2020 07:07:01 +0000
-Received: from DM6NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:51:cafe::35) by DM3PR12CA0131.outlook.office365.com
- (2603:10b6:0:51::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.11 via Frontend
- Transport; Thu, 5 Mar 2020 07:07:01 +0000
-Authentication-Results: spf=none (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=permerror action=none
- header.from=amd.com;
-Received-SPF: None (protection.outlook.com: amd.com does not designate
- permitted sender hosts)
-Received: from SATLEXMB01.amd.com (165.204.84.17) by
- DM6NAM11FT062.mail.protection.outlook.com (10.13.173.40) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.2793.11 via Frontend Transport; Thu, 5 Mar 2020 07:07:00 +0000
-Received: from [10.217.80.179] (10.180.168.240) by SATLEXMB01.amd.com
- (10.181.40.142) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 5 Mar 2020
- 01:06:59 -0600
-Subject: Re: v5.5-rc1 and beyond insta-kills some Comcast wifi routers
-To:     Tony Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-References: <DM6PR12MB4331FD3C4EF86E6AF2B3EBC7E5E50@DM6PR12MB4331.namprd12.prod.outlook.com>
- <4e2a1fc1-4c14-733d-74e2-750ef1f81bf6@infradead.org>
- <87h7z4r9p5.fsf@kamboji.qca.qualcomm.com>
- <4bd036de86c94545af3e5d92f0920ac2@realtek.com>
- <DM6PR12MB433132A38F2AA6A5946B75CBE5E50@DM6PR12MB4331.namprd12.prod.outlook.com>
- <c185b1f27e4a4b66941b50697dba006c@realtek.com>
-From:   Jason Mancini <Jason.Mancini@amd.com>
-Message-ID: <ed6e071d-00c0-fb4d-4bbe-1f3668a0c140@amd.com>
-Date:   Wed, 4 Mar 2020 23:06:58 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        id S1725963AbgCEHJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 02:09:29 -0500
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:17365 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725877AbgCEHJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 02:09:28 -0500
+Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa4.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa4.microchip.iphmx.com; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: wEXL+dIDuMVObvrimLl4TzKNRkFt46yiD+yKBoA32XQ5mmtYOerMBstmO6jwIHrQTxBO+AbSGm
+ WOLm3bEmSc/c1x20b9x/HurJLOibl6VBm0a1Hm7i++dIVW/DQ34qstUYW3j2s7zMoJJXU8Jctt
+ PWzGCs80bL6mCVNe5yFZgf1UcW1ygvNgFrq3z1UbgdCjFQYT55PXQgfqZhJLYuHz9BkkPblDBw
+ Qbok8tK0g7gwZkwbLIIetByV3sKI36jPgoHWjXOoLxeRBFoumwIra6CezDZwqkzJTjp6UCY9/p
+ GZw=
+X-IronPort-AV: E=Sophos;i="5.70,517,1574146800"; 
+   d="scan'208";a="66192661"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Mar 2020 00:09:28 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 5 Mar 2020 00:09:27 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 5 Mar 2020 00:09:27 -0700
+Date:   Thu, 5 Mar 2020 08:09:26 +0100
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <davem@davemloft.net>, <horatiu.vultur@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <joergen.andreasen@microchip.com>, <claudiu.manoil@nxp.com>,
+        <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <alexandru.marginean@nxp.com>, <xiaoliang.yang_1@nxp.com>,
+        <yangbo.lu@nxp.com>, <po.liu@nxp.com>, <jiri@mellanox.com>,
+        <idosch@idosch.org>, <kuba@kernel.org>
+Subject: Re: [PATCH v2 net-next 05/10] net: mscc: ocelot: spell out full
+ "ocelot" name instead of "oc"
+Message-ID: <20200305070926.ztwgwsilejsqglet@lx-anielsen.microsemi.net>
+References: <20200229143114.10656-1-olteanv@gmail.com>
+ <20200229143114.10656-6-olteanv@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c185b1f27e4a4b66941b50697dba006c@realtek.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB01.amd.com (10.181.40.142) To SATLEXMB01.amd.com
- (10.181.40.142)
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:165.204.84.17;IPV:;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(136003)(376002)(428003)(199004)(189003)(70206006)(478600001)(2906002)(426003)(70586007)(8676002)(31686004)(81166006)(31696002)(2616005)(53546011)(110136005)(54906003)(336012)(316002)(81156014)(4326008)(16576012)(5660300002)(26005)(16526019)(66574012)(36756003)(8936002)(356004)(186003)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB4335;H:SATLEXMB01.amd.com;FPR:;SPF:None;LANG:en;PTR:InfoDomainNonexistent;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1e8b58b4-9fee-4f90-b252-08d7c0d3cd34
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4335:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4335C2185558DB38CF1B8F21E5E20@MN2PR12MB4335.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-Forefront-PRVS: 03333C607F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: biigbgUVKPaf67Vp5smU0u+9hn1yWkhDiUL27uko2WCr7o6eNsc62Z7QW/cKFHQ35mJeyOYH3vrhpcHSIcm3VgX5YEkB1Sbu35veF3MRK+i8MsRgNZVWvRf42BlBHdNuq2JhgqiTKdkjCLyLL89FBMv6ngnKigZtPsfHM9lGATCLbK+knz1U8SMi4BwGWijO2VBGSXceVs39xwLPkvQBgZrW7i3zpVfEeXhqN1S7yxF74+s1/sEjn+j1G9/3MnVY5kNbi4JqyLc8MOuSC8m58Yd5ATbM3U954hF80Ee6Q+TByV8F5OeFaVJI+ofIMUNnK+CsmaaYv89pGdXwaQ839ShRun5/Ek+GvG/Rdze3btnOF7HfIaUHn0bFFrkfeF4gyhWI5mFX6kE4+cZgW59OyNACztNCO/eL0m9jrIk7mU4aDqzg20bKDaKRlYLk+I03
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2020 07:07:00.8790
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e8b58b4-9fee-4f90-b252-08d7c0d3cd34
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB01.amd.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4335
+Content-Disposition: inline
+In-Reply-To: <20200229143114.10656-6-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/20 2:41 AM, Tony Chuang wrote:
-> Unfortunately, no, there's no flag to turn off this.
-> But, from your experiments, if you applied that patch,
-> ("rtw88: disable TX-AMSDU on 2.4G band") connect to AP on 2.4G, and still crash
-> the Comcast AP, then it looks like it's not TX-AMSDU to be blamed.
+On 29.02.2020 16:31, Vladimir Oltean wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 >
-> Assume the return value you mentioned is max_rc_amsdu_len, if you always
-> return 1, it will just disable all of the AMSDU process.
-> You can try it, and to see if sending AMSDU will crash the router or not.
+>From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
-> Yen-Hsuan
+>This is a cosmetic patch that makes the name of the driver private
+>variable be used uniformly in ocelot_ace.c as in the rest of the driver.
+>
+>Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>---
+>Changes in v2:
+>Patch is new.
+>
+> drivers/net/ethernet/mscc/ocelot_ace.c | 45 ++++++++++++++------------
+> 1 file changed, 24 insertions(+), 21 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
+>index 375c7c6aa7d5..ec86d29d8be4 100644
+>--- a/drivers/net/ethernet/mscc/ocelot_ace.c
+>+++ b/drivers/net/ethernet/mscc/ocelot_ace.c
+>@@ -93,12 +93,12 @@ struct vcap_data {
+>        u32 tg_mask; /* Current type-group mask */
+> };
+>
+>-static u32 vcap_s2_read_update_ctrl(struct ocelot *oc)
+>+static u32 vcap_s2_read_update_ctrl(struct ocelot *ocelot)
+> {
+>-       return ocelot_read(oc, S2_CORE_UPDATE_CTRL);
+>+       return ocelot_read(ocelot, S2_CORE_UPDATE_CTRL);
+> }
+>
+>-static void vcap_cmd(struct ocelot *oc, u16 ix, int cmd, int sel)
+>+static void vcap_cmd(struct ocelot *ocelot, u16 ix, int cmd, int sel)
+> {
+>        u32 value = (S2_CORE_UPDATE_CTRL_UPDATE_CMD(cmd) |
+>                     S2_CORE_UPDATE_CTRL_UPDATE_ADDR(ix) |
+>@@ -116,42 +116,42 @@ static void vcap_cmd(struct ocelot *oc, u16 ix, int cmd, int sel)
+>        if (!(sel & VCAP_SEL_COUNTER))
+>                value |= S2_CORE_UPDATE_CTRL_UPDATE_CNT_DIS;
+>
+>-       ocelot_write(oc, value, S2_CORE_UPDATE_CTRL);
+>-       readx_poll_timeout(vcap_s2_read_update_ctrl, oc, value,
+>+       ocelot_write(ocelot, value, S2_CORE_UPDATE_CTRL);
+>+       readx_poll_timeout(vcap_s2_read_update_ctrl, ocelot, value,
+>                                (value & S2_CORE_UPDATE_CTRL_UPDATE_SHOT) == 0,
+>                                10, 100000);
+> }
+>
+> /* Convert from 0-based row to VCAP entry row and run command */
+>-static void vcap_row_cmd(struct ocelot *oc, u32 row, int cmd, int sel)
+>+static void vcap_row_cmd(struct ocelot *ocelot, u32 row, int cmd, int sel)
+> {
+>-       vcap_cmd(oc, vcap_is2.entry_count - row - 1, cmd, sel);
+>+       vcap_cmd(ocelot, vcap_is2.entry_count - row - 1, cmd, sel);
+> }
+>
+>-static void vcap_entry2cache(struct ocelot *oc, struct vcap_data *data)
+>+static void vcap_entry2cache(struct ocelot *ocelot, struct vcap_data *data)
+> {
+>        u32 i;
+>
+>        for (i = 0; i < vcap_is2.entry_words; i++) {
+>-               ocelot_write_rix(oc, data->entry[i], S2_CACHE_ENTRY_DAT, i);
+>-               ocelot_write_rix(oc, ~data->mask[i], S2_CACHE_MASK_DAT, i);
+>+               ocelot_write_rix(ocelot, data->entry[i], S2_CACHE_ENTRY_DAT, i);
+>+               ocelot_write_rix(ocelot, ~data->mask[i], S2_CACHE_MASK_DAT, i);
+>        }
+>-       ocelot_write(oc, data->tg, S2_CACHE_TG_DAT);
+>+       ocelot_write(ocelot, data->tg, S2_CACHE_TG_DAT);
+> }
+>
+>-static void vcap_cache2entry(struct ocelot *oc, struct vcap_data *data)
+>+static void vcap_cache2entry(struct ocelot *ocelot, struct vcap_data *data)
+> {
+>        u32 i;
+>
+>        for (i = 0; i < vcap_is2.entry_words; i++) {
+>-               data->entry[i] = ocelot_read_rix(oc, S2_CACHE_ENTRY_DAT, i);
+>+               data->entry[i] = ocelot_read_rix(ocelot, S2_CACHE_ENTRY_DAT, i);
+>                // Invert mask
+>-               data->mask[i] = ~ocelot_read_rix(oc, S2_CACHE_MASK_DAT, i);
+>+               data->mask[i] = ~ocelot_read_rix(ocelot, S2_CACHE_MASK_DAT, i);
+>        }
+>-       data->tg = ocelot_read(oc, S2_CACHE_TG_DAT);
+>+       data->tg = ocelot_read(ocelot, S2_CACHE_TG_DAT);
+> }
+>
+>-static void vcap_action2cache(struct ocelot *oc, struct vcap_data *data)
+>+static void vcap_action2cache(struct ocelot *ocelot, struct vcap_data *data)
+> {
+>        u32 i, width, mask;
+>
+>@@ -163,21 +163,24 @@ static void vcap_action2cache(struct ocelot *oc, struct vcap_data *data)
+>        }
+>
+>        for (i = 0; i < vcap_is2.action_words; i++)
+>-               ocelot_write_rix(oc, data->action[i], S2_CACHE_ACTION_DAT, i);
+>+               ocelot_write_rix(ocelot, data->action[i],
+>+                                S2_CACHE_ACTION_DAT, i);
+>
+>        for (i = 0; i < vcap_is2.counter_words; i++)
+>-               ocelot_write_rix(oc, data->counter[i], S2_CACHE_CNT_DAT, i);
+>+               ocelot_write_rix(ocelot, data->counter[i],
+>+                                S2_CACHE_CNT_DAT, i);
+> }
+>
+>-static void vcap_cache2action(struct ocelot *oc, struct vcap_data *data)
+>+static void vcap_cache2action(struct ocelot *ocelot, struct vcap_data *data)
+> {
+>        u32 i, width;
+>
+>        for (i = 0; i < vcap_is2.action_words; i++)
+>-               data->action[i] = ocelot_read_rix(oc, S2_CACHE_ACTION_DAT, i);
+>+               data->action[i] = ocelot_read_rix(ocelot, S2_CACHE_ACTION_DAT,
+>+                                                 i);
+>
+>        for (i = 0; i < vcap_is2.counter_words; i++)
+>-               data->counter[i] = ocelot_read_rix(oc, S2_CACHE_CNT_DAT, i);
+>+               data->counter[i] = ocelot_read_rix(ocelot, S2_CACHE_CNT_DAT, i);
+>
+>        /* Extract action type */
+>        width = vcap_is2.action_type_width;
+>--
+>2.17.1
 
-(Specifically, this Comcast router is "Arris TG1682G" firmware 10.1.27B.SIP.PC20.CT hardware version 9.0)
 
-I re-tested tonight, here are the results, from *unpatched* kernels:
-
-(1) 2.4G only w/5G disabled via router control panel: kernel 5.5/5.6 seemingly doesn't upset router.
-(2) 5G only w/2.4G disabled via router control panel: kernel 5.5/5.6 definitely kill router wifi.
-(3) 5G only w/2.4G disabled via router control panel: plus get_max_amsdu_len forced to return 1: kernel 5.6-rc4 seemingly doesn't upset router.
-
-As you can see, the suggested patch isn't going to help result (2), and apparently isn't needed for (1).  And this router's 5G seems
-allergic to amsdu per (3), so somehow amsdu is involved it seems.
-
-Well, I'll just work around it with (3) custom kernels, or (1) leave the router in 2.4G mode.  But be aware that apparently there's at least
-one common buggy wifi router that's going to puke on 5G + amsdu.
-
-Jason
-
+Reviewed-by: Allan W. Nielsen <allan.nielsen@microchip.com>
