@@ -2,80 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A2717AA6B
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:22:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3547317AA74
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:24:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgCEQWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 11:22:46 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53003 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbgCEQWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:22:46 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so7032659wmc.2
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 08:22:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cEvgQVZavtTsnR3H4wayPtk/nZQ+Zm47QLXTHSzN7fo=;
-        b=GcAAzWY1RcrrmwdnC52Rlub3aR8//mgYvQ9FmOS++fuNEZoR8Rlkaj/Z1BRuuybFA0
-         uMHBNEOfUefPRil4g2NixlSsSkl8in3cEnm9Mc1ocdM/8SFn2GNnB/QfmtaelLsczEt0
-         XY/4MAu0ZTNZZCjzbYc0+4sWwqTPwaWT2A2xE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cEvgQVZavtTsnR3H4wayPtk/nZQ+Zm47QLXTHSzN7fo=;
-        b=ag8pjvEVw6m3bGEuh+7O+ujE0Y1GiJHZVa3GiATwmV/+6UJGH8HO3OecbGSmkPDGde
-         L09cRiywGnKCgDbIDdKP2qr6ffy1WInQ4Nf9sWxKg7iNOgcVKYqNMaWcsge4oS2AsGNF
-         yPZG8fULp6iEHxKja2ex6w5u4Y+e9vQnRdhMnMPznhSGcrHQxwT6n9jAPUR5WGgpCuTI
-         tpOjgGCqTf99UhBspokaYDBtZkraLdoE2j8u0tCtLbdJfS6I6TG/W70WIvU0InjOtFq4
-         U/szKbnoed8raBx4yYnIC4K1/8D1QTaTqfjVrwt496AR901J0MOvJNG8GOc+r7MAUDxg
-         PWyA==
-X-Gm-Message-State: ANhLgQ1qPI1sSFZlaFX7WG3kAcUWRwMaBfxHwRQFTwPOFh4OMEOAXWPu
-        VIvWcLZC6vmH8yq6ee6A6Fm1o8fpGvXk5QgM7ri8IBK/vDE=
-X-Google-Smtp-Source: ADFU+vvBj+1xJThqxd5rF87Tunq26QxaCiqKxwYjHudkZ0a9XD8NqOyNXEkTlJ26vyLocVjmpuu2PlqvdYuTfnFNgbU=
-X-Received: by 2002:a1c:2504:: with SMTP id l4mr10601800wml.72.1583425364775;
- Thu, 05 Mar 2020 08:22:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20200305175528.5b3ccc09@canb.auug.org.au> <715919f5-e256-fbd1-44ff-8934bda78a71@infradead.org>
- <CAADnVQ+TYiVu+Ksstj4LmYa=+UPwbv-dv-tscRaKn_0FcpstBg@mail.gmail.com>
-In-Reply-To: <CAADnVQ+TYiVu+Ksstj4LmYa=+UPwbv-dv-tscRaKn_0FcpstBg@mail.gmail.com>
-From:   KP Singh <kpsingh@chromium.org>
-Date:   Thu, 5 Mar 2020 17:22:34 +0100
-Message-ID: <CACYkzJ4ks6VgxeGpJApvqJdx6Q-8PZwk-r=q4ySWsDBDy1jp+g@mail.gmail.com>
-Subject: Re: linux-next: Tree for Mar 5 (bpf_trace)
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        id S1726162AbgCEQYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 11:24:08 -0500
+Received: from mga11.intel.com ([192.55.52.93]:38638 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725989AbgCEQYI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 11:24:08 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 08:24:08 -0800
+X-IronPort-AV: E=Sophos;i="5.70,518,1574150400"; 
+   d="scan'208";a="234463743"
+Received: from ahduyck-desk1.jf.intel.com ([10.7.198.76])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 08:24:07 -0800
+Message-ID: <c935cb595ad8a036a277a279e9ba34c9f194a491.camel@linux.intel.com>
+Subject: Re: [PATCH net-next v3 01/12] ethtool: add infrastructure for
+ centralized checking of coalescing parameters
+From:   Alexander Duyck <alexander.h.duyck@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     andrew@lunn.ch, ecree@solarflare.com, mkubecek@suse.cz,
+        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, snelson@pensando.io, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, michael.chan@broadcom.com,
+        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org
+Date:   Thu, 05 Mar 2020 08:24:07 -0800
+In-Reply-To: <20200305051542.991898-2-kuba@kernel.org>
+References: <20200305051542.991898-1-kuba@kernel.org>
+         <20200305051542.991898-2-kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 5, 2020 at 5:18 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Mar 5, 2020 at 8:13 AM Randy Dunlap <rdunlap@infradead.org> wrote:
-> >
-> > On 3/4/20 10:55 PM, Stephen Rothwell wrote:
-> > > Hi all,
-> > >
-> > > Changes since 20200304:
-> > >
-> >
-> > on i386:
-> >
-> > ld: kernel/trace/bpf_trace.o:(.rodata+0x38): undefined reference to `bpf_prog_test_run_tracing'
->
-> KP,
-> Please take a look.
+On Wed, 2020-03-04 at 21:15 -0800, Jakub Kicinski wrote:
+> Linux supports 22 different interrupt coalescing parameters.
+> No driver implements them all. Some drivers just ignore the
+> ones they don't support, while others have to carry a long
+> list of checks to reject unsupported settings.
+> 
+> To simplify the drivers add the ability to specify inside
+> ethtool_ops which parameters are supported and let the core
+> reject attempts to set any other one.
+> 
+> This commit makes the mechanism an opt-in, only drivers which
+> set ethtool_opts->coalesce_types to a non-zero value will have
+> the checks enforced.
+> 
+> The same mask is used for global and per queue settings.
+> 
+> v3: - move the (temporary) check if driver defines types
+>       earlier (Michal)
+>     - rename used_types -> nonzero_params, and
+>       coalesce_types -> supported_coalesce_params (Alex)
+>     - use EOPNOTSUPP instead of EINVAL (Andrew, Michal)
+> 
+> Leaving the long series of ifs for now, it seems nice to
+> be able to grep for the field and flag names. This will
+> probably have to be revisited once netlink support lands.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> ---
 
-Sure. Taking a look.
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-- KP
