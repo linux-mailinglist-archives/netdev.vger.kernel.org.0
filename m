@@ -2,85 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E446D17A239
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 10:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7511717A273
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 10:48:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgCEJ1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 04:27:03 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37318 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgCEJ1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 04:27:03 -0500
-Received: by mail-wr1-f67.google.com with SMTP id 6so641127wre.4
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 01:27:00 -0800 (PST)
+        id S1726170AbgCEJr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 04:47:58 -0500
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:39092 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgCEJr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 04:47:57 -0500
+Received: by mail-vs1-f68.google.com with SMTP id a19so3136048vsp.6
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 01:47:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0Y81tTR3k49ACsxD1FuuI8PfOBlyeM8Jpf41fM0oR/E=;
-        b=uIkNOh/q/mtkBCivWPgpYh4qDbZ/xKbBfd3ljkq3Bs4r/rMWWTwpD//i8U39PVeQfR
-         RWi1cK1E0gW6UPOACMZAlQKjgHkXy3gHOSg41PW9tu5iJfYNx+k7lbBPphLSEERawgeL
-         xGQEWg2Dp3O2X5hN93suT1Jo27qDKj85guDLuytbfSQ5rgkYaf44P+fnALhGjozowu1o
-         ZPYbB0x+5CW5l9hafbuFW9zMJY+IK7YByW9LgCHuJCdaA0lGvXlWcNwBw644hU4qCF9B
-         KFputO3OPBXypxcK1dK1LjZun7CS1gvHaT/pxcVxfupeRFH1XWsZmp4TsQBksXnGeqj0
-         G2Yg==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=E+rHjRTI+X5hZj+5FAflDmqzbGlpDyoukXhDePpwkw8=;
+        b=cUJlys4XlBzO23FhTHTCunNEwaxvXaoM6hZrnCjsZoSgiF4iuBjB6xdJnI8PoeKRAk
+         5mPv1nPisvzLqeef42ALCHn5CQsTKWQIWCBKmBdLh5Sxhrdp4IgGElo72Q9+x2mEmlbb
+         VPjBOPxZhqYCN6uHJR6jvoK/UjaZXIfq7kqff7CUm+WgstTJatoQE23VlwQYuf6IAWOE
+         X/EQ6ifB4QmCoxexcvvxK7xoHGZOguZ/+U9XwN2Lo/PPca1heIKIoBVJ+ThVwhkN3Wtd
+         Q2ce0p3T2vUaXweRNmLeImpJz3HQmwJuep3AnOHATLK2ZuyILqCBm5uuD74qj+YbCDtl
+         mzAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0Y81tTR3k49ACsxD1FuuI8PfOBlyeM8Jpf41fM0oR/E=;
-        b=B82UUS0P2hkbBVJ9D8eCV+IhQvIfyFHPbiMOIoWsO61pXKK/JpxNAaIeenB9VbTYdF
-         BqWcN4kTGTXtt7neSPDz4wykW6EspLiKPkFYFBANcPQR9M15ApTROxXNcOi1IebldYm4
-         1rArONxHioQoegL1F0WdTnlIZ3Km4QSV2OdOR5aH+v97TV7f2+xc/2yYmGNa0mawRBTL
-         OLU5QYENKwtmmpz0aOI/xl8HiWGo3fEAl9sVMIfPgYJBsGv2njG56EyChGDAbVlPHpKx
-         b4cUevk7Bf8brv/33INrIkt5gwWM1AYphdd1QxxCtd5xguhkeVL21zsNE/+Q9oqAT9FX
-         bncw==
-X-Gm-Message-State: ANhLgQ32O4mlaVx5EJIJ7P8KINkI3x79BBUeyufHeQtqUtqhhTck0wDD
-        RfkuAkbs05QgwNXifXVALJHgNA==
-X-Google-Smtp-Source: ADFU+vtXCKwfypnXO5VGhcRC6l0WjRULjVi5reDQd+sQD39zr9/jy6Y2uHKpp2OLxqklb/OmiQAGlA==
-X-Received: by 2002:a5d:658c:: with SMTP id q12mr9704232wru.57.1583400419462;
-        Thu, 05 Mar 2020 01:26:59 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id e7sm24084980wrt.70.2020.03.05.01.26.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 01:26:59 -0800 (PST)
-Date:   Thu, 5 Mar 2020 10:26:58 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, petrm@mellanox.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 4/5] mlxsw: spectrum_qdisc: Support offloading
- of FIFO Qdisc
-Message-ID: <20200305092658.GD2190@nanopsycho>
-References: <20200305071644.117264-1-idosch@idosch.org>
- <20200305071644.117264-5-idosch@idosch.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=E+rHjRTI+X5hZj+5FAflDmqzbGlpDyoukXhDePpwkw8=;
+        b=c64GpCgIjCJ6nbZ+56S+Rye++LcyVm393d5ThPRpdSv5OwPQCTdnHU80+wwdtbdPA4
+         s7ddP0npOpkKmGSBw+Z3TeIN44aH72JwSh+pZ/CF24J1FxySekmW7d1HxCiyuudy25Ch
+         osDuAtfNLA/a+aZXuYETufNlGIhMb/FtO6wk3W7Ks0+cByR8Sd95Cvr86nyICbahOxHK
+         /VceuRHXS69uKKOVz+L3w9PVLfFD9HovOnDk0nRSjEwO0+dJcZWfRIMbEMnUE2FYX4Mi
+         mMSBA0M1hmOoqeo/j4hai7akyvA2VIZ3SlMz8iWlVKlu3SuxNgdx2rPChzUPkpc9hk/A
+         Oe3A==
+X-Gm-Message-State: ANhLgQ0vH5Or4XKElbU588E+hfO1LKnzAQ/Es6NQSlouTYuXPLlmRXVE
+        wdpKl3MfMuMvgFOoo79SXc0++64hMGjEaDXc9jlnvA==
+X-Google-Smtp-Source: ADFU+vv2z10ptPoVhyQbguI9+euhHsrM3YUOyqf2EvcelJ/BT2wzn2zpyy3Emqt1W3Bfwc1x3q55j/JnJL/RhFIFgsw=
+X-Received: by 2002:a67:df97:: with SMTP id x23mr4695241vsk.160.1583401676527;
+ Thu, 05 Mar 2020 01:47:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200305071644.117264-5-idosch@idosch.org>
+Received: by 2002:a9f:3b21:0:0:0:0:0 with HTTP; Thu, 5 Mar 2020 01:47:55 -0800 (PST)
+X-Originating-IP: [5.35.35.59]
+In-Reply-To: <c5cd0349-69b3-41e9-7fb1-d7909e659717@suse.com>
+References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+ <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com> <CAOJe8K28BZCW7JDejKgDELR2WPfBgvj-0aJJXX9uCRnryGY+xg@mail.gmail.com>
+ <c5cd0349-69b3-41e9-7fb1-d7909e659717@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Thu, 5 Mar 2020 12:47:55 +0300
+Message-ID: <CAOJe8K0HuKyAi5YJwsWMcAJEp-Vkhbgvvg=RRcZZ8V6uqGzczw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Cc:     netdev@vger.kernel.org,
+        "ilias.apalodimas" <ilias.apalodimas@linaro.org>,
+        wei.liu@kernel.org, paul@xen.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 05, 2020 at 08:16:43AM CET, idosch@idosch.org wrote:
->From: Petr Machata <petrm@mellanox.com>
+On 3/4/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 04.03.20 14:10, Denis Kirjanov wrote:
+>> On 3/2/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>> On 02.03.20 15:21, Denis Kirjanov wrote:
+>>>> the patch adds a basic xdo logic to the netfront driver
+>>>>
+>>>> XDP redirect is not supported yet
+>>>>
+>>>> v2:
+>>>> - avoid data copying while passing to XDP
+>>>> - tell xen-natback that we need the headroom space
+>>>
+>>> Please add the patch history below the "---" delimiter
+>>>
+>>>>
+>>>> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+>>>> ---
+>>>>    drivers/net/xen-netback/common.h |   1 +
+>>>>    drivers/net/xen-netback/rx.c     |   9 ++-
+>>>>    drivers/net/xen-netback/xenbus.c |  21 ++++++
+>>>>    drivers/net/xen-netfront.c       | 157
+>>>> +++++++++++++++++++++++++++++++++++++++
+>>>>    4 files changed, 186 insertions(+), 2 deletions(-)
+>>>
+>>> You are modifying xen-netback sources. Please Cc the maintainers.
+>>>
 >
->There are two peculiarities about offloading FIFO:
+> ...
 >
->- sometimes the qdisc has an unspecified handle (it is "invisible")
->- it may be created before the qdisc that it will be a child of
+>>>>
+>>>> +	}
+>>>> +
+>>>> +	return 0;
+>>>> +
+>>>> +abort_transaction:
+>>>> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
+>>>> +	xenbus_transaction_end(xbt, 1);
+>>>> +out:
+>>>> +	return err;
+>>>> +}
+>>>> +
+>>>> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog
+>>>> *prog,
+>>>> +			struct netlink_ext_ack *extack)
+>>>> +{
+>>>> +	struct netfront_info *np =3D netdev_priv(dev);
+>>>> +	struct bpf_prog *old_prog;
+>>>> +	unsigned int i, err;
+>>>> +
+>>>> +	old_prog =3D rtnl_dereference(np->queues[0].xdp_prog);
+>>>> +	if (!old_prog && !prog)
+>>>> +		return 0;
+>>>> +
+>>>> +	if (prog)
+>>>> +		bpf_prog_add(prog, dev->real_num_tx_queues);
+>>>> +
+>>>> +	for (i =3D 0; i < dev->real_num_tx_queues; ++i)
+>>>> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
+>>>> +
+>>>> +	if (old_prog)
+>>>> +		for (i =3D 0; i < dev->real_num_tx_queues; ++i)
+>>>> +			bpf_prog_put(old_prog);
+>>>> +
+>>>> +	err =3D talk_to_netback_xdp(np, old_prog ?
+>>>> NETBACK_XDP_HEADROOM_DISABLE:
+>>>> +				  NETBACK_XDP_HEADROOM_ENABLE);
+>>>> +	if (err)
+>>>> +		return err;
+>>>> +
+>>>> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
+>>>
+>>> What is happening in case the backend doesn't support XDP?
+>> Here we just ask xen-backend to make a headroom, that's it.
+>> It's better to send xen-backend changes in a separate patch.
 >
->These features make the offload a bit more tricky. The approach chosen in
->this patch is to make note of all the FIFOs that needed to be rejected
->because their parents were not known. Later when the parent is created,
->they are offloaded
->
->FIFO is only offloaded for its counters, queue length is ignored.
->
->Signed-off-by: Petr Machata <petrm@mellanox.com>
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Okay, but what do you do if the backend doesn't support XDP (e.g. in
+> case its an older kernel)? How do you know it is supporting XDP?
+We can check a xenbus reply to xenbus state change.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+>
+>>
+>>>
+>>> Is it really a good idea to communicate xdp_set via a frontend state
+>>> change? This will be rather slow. OTOH I have no idea how often this
+>>> might happen.
+>>
+>> I don't think that it's going to switch often and more likely it's a one
+>> shot
+>> action.
+>
+> What do you do in case of a live migration? You need to tell the backend
+> about XDP again.
+
+Yep I haven't thought about that. Thanks for pointing out.
+
+>
+>
+> Juergen
+>
