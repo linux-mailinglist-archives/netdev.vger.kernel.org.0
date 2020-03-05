@@ -2,51 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB74117AF9E
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:17:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D879217AFC1
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbgCEURo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 15:17:44 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56276 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgCEURo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 15:17:44 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 66C9A15BE96F9;
-        Thu,  5 Mar 2020 12:17:42 -0800 (PST)
-Date:   Thu, 05 Mar 2020 12:17:41 -0800 (PST)
-Message-Id: <20200305.121741.1417349052761969854.davem@davemloft.net>
-To:     kuba@kernel.org
-Cc:     andrew@lunn.ch, ecree@solarflare.com, mkubecek@suse.cz,
-        thomas.lendacky@amd.com, benve@cisco.com, _govind@gmx.com,
-        peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, snelson@pensando.io, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, alexander.h.duyck@linux.intel.com,
-        michael.chan@broadcom.com, saeedm@mellanox.com, leon@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/12] ethtool: consolidate parameter
- checking for irq coalescing
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200305051542.991898-1-kuba@kernel.org>
-References: <20200305051542.991898-1-kuba@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 05 Mar 2020 12:17:43 -0800 (PST)
+        id S1726251AbgCEUdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 15:33:01 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58336 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726111AbgCEUdB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 15:33:01 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id A8739AE24;
+        Thu,  5 Mar 2020 20:32:59 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 0E18FE037F; Thu,  5 Mar 2020 21:32:59 +0100 (CET)
+Date:   Thu, 5 Mar 2020 21:32:59 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     "John W. Linville" <linville@tuxdriver.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH ethtool v2 00/25] initial netlink interface
+ implementation for 5.6 release
+Message-ID: <20200305203259.GD28693@unicorn.suse.cz>
+References: <cover.1583347351.git.mkubecek@suse.cz>
+ <20200305192416.GA23804@tuxdriver.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200305192416.GA23804@tuxdriver.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Wed,  4 Mar 2020 21:15:30 -0800
+On Thu, Mar 05, 2020 at 02:24:16PM -0500, John W. Linville wrote:
+> 
+> Just a quick check -- executing "./autogen.sh ; ./configure ; make
+> distcheck" fails with the attached log output.
+[...]
+> make[2]: Entering directory '/home/linville/git/ethtool/ethtool-5.4/_build/sub'
+> gcc -DHAVE_CONFIG_H -I. -I../..    -I./uapi -Wall  -g -O2 -MT ethtool-ethtool.o -MD -MP -MF .deps/ethtool-ethtool.Tpo -c -o ethtool-ethtool.o `test -f 'ethtool.c' || echo '../../'`ethtool.c
 
-> This set aims to simplify and unify the unsupported irq
-> coalescing parameter handling.
+I can see what is going on: this runs in subdirectory and correctly adds
+"-I../.." but not "-I../../uapi". I'm afraid I'll have to dive into
+automake documentation to see how to make it adjust that path as well.
 
-Series applied, thanks Jakub.
+> ../../ethtool.c: In function ‘do_get_phy_tunable’:
+> ../../ethtool.c:4773:16: error: ‘ETHTOOL_PHY_EDPD’ undeclared (first use in this function); did you mean ‘ETHTOOL_PHYS_ID’?
+>  4773 |   cont.ds.id = ETHTOOL_PHY_EDPD;
+>       |                ^~~~~~~~~~~~~~~~
+>       |                ETHTOOL_PHYS_ID
+
+This is a result of the missing include path above: instead of
+up-to-date uapi/linux/ethtool.h, older system file from /usr/include is
+used so that new additions are missing. I have many more errors like
+this and when I tried to rename /usr/include/linux/ethtool.h, the build
+failed with
+
+  ../../internal.h:56:10: fatal error: linux/ethtool.h: No such file or directory
+
+I'll try to find what is the right way to add an include directory,
+adding "-I./uapi" to AM_CFLAGS did the trick for regular build but
+clearly isn't sufficient for other targets.
+
+Michal
