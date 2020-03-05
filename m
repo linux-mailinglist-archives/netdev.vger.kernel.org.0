@@ -2,70 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E64CF17B163
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 23:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D85B17B17D
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 23:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726269AbgCEWZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 17:25:27 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36059 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726128AbgCEWZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 17:25:27 -0500
-Received: by mail-pg1-f194.google.com with SMTP id d9so107136pgu.3;
-        Thu, 05 Mar 2020 14:25:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uLTHblL9WJrI4bK/g8rOhHMekmLiYgOywSz4cT5UQRU=;
-        b=s/DlhYrVQWhR3pqeK3ZpXSz3uX/GosdxK/lVBFc7VlPQ2epM5dZ/cwUkedOqiwRWo7
-         KP2rNHKDcYAVxQggqvUs34/RI6i+DIGz0nJ4Ohr8F2fHeg/mj+KdT9hY1+Q4YqrL5n7P
-         yze0MIoYRvJSyyJj+8jXcNxCm4dvrk1dhx3mKWCTHlaGA/WKfbsJiXFmI2+McjIfUu51
-         5wzmRU7z8UEl4oAinIhU4CxPby+6Jc3RLbmjBian7vqkTKl7bY1tmk7uob6dyOLlRNa2
-         4aj3oFA2xUKUGSEKBCJnVG6YefDT8kJg1LjNWBJ809gdthKxIcG9VVvJEY7YrzrixDM9
-         SGJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uLTHblL9WJrI4bK/g8rOhHMekmLiYgOywSz4cT5UQRU=;
-        b=Mky4OmMeXAtjWs2oJE91VKigNDFva0tKhv8RmdphnDBGSmP4lvKEySXprikLMv6F0m
-         k2CAkyhnu9oHsZ1CpTYDTDU+hRtyD6Ha3ZkyXcj9/36iH8s1kVs22vGBMTy7r1ZAvV7k
-         jFLmp/gEwbrGFqQq/lcW3l3bq4XyjY7n1HEBGc+BOypf/FwXWO6jN64IYTDAFJyqm71j
-         41NG26WTWV32bdzpI03/b8Wlo7Ysw/qmw25B8fgTDio6WuYJR/eLeWeQACFIu3c2gxiv
-         Ul8jKDcFzLt2WtvpqInbeqZTn0ki9UWLpzHgeB4ZLiSp4UvHmoKNuLC1Tf60OUzzChqy
-         zrBw==
-X-Gm-Message-State: ANhLgQ1D7NEbN3T1o5ADg3RxDATiU3vBPgqT6sUF5M7811Xtw3RCtE7M
-        sQJ5yQBu7HCOKGCci4heqgo=
-X-Google-Smtp-Source: ADFU+vsLYW/QY/Jc2QvP+uFFKosot/16oSqLQ7d3NCNrvoGrr36EcFXRIZ4wPH54NL0WKzSDNrT4zA==
-X-Received: by 2002:a63:c00a:: with SMTP id h10mr296608pgg.31.1583447126218;
-        Thu, 05 Mar 2020 14:25:26 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:f0e7])
-        by smtp.gmail.com with ESMTPSA id d22sm7505334pja.14.2020.03.05.14.25.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Mar 2020 14:25:25 -0800 (PST)
-Date:   Thu, 5 Mar 2020 14:25:23 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, kernel-team@fb.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf 0/2] bpf: A few struct_ops fixes
-Message-ID: <20200305222521.tscksbsxwuui6d7a@ast-mbp>
-References: <20200305013437.534961-1-kafai@fb.com>
+        id S1726184AbgCEWdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 17:33:18 -0500
+Received: from mga03.intel.com ([134.134.136.65]:62814 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726080AbgCEWdS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 17:33:18 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 14:33:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,519,1574150400"; 
+   d="scan'208";a="413681067"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
+  by orsmga005.jf.intel.com with ESMTP; 05 Mar 2020 14:33:17 -0800
+Subject: Re: [RFC PATCH v2 14/22] devlink: implement DEVLINK_CMD_REGION_NEW
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
+        lihong.yang@intel.com, kuba@kernel.org
+References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
+ <20200214232223.3442651-15-jacob.e.keller@intel.com>
+ <20200302174106.GC2168@nanopsycho>
+ <6f0023d0-a151-87f0-db3a-df01b7e6c045@intel.com>
+ <20200303093043.GB2178@nanopsycho>
+ <861a914b-1e3c-fdb6-a452-96a0b5a5c2c0@intel.com>
+ <20200304115818.GA4558@nanopsycho>
+ <7bd8a09e-0e6f-afd3-f6a1-3a52d93d2720@intel.com>
+ <20200305064103.GA7305@nanopsycho.orion>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <3c593821-2123-9756-fc53-7c61fece015a@intel.com>
+Date:   Thu, 5 Mar 2020 14:33:17 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200305013437.534961-1-kafai@fb.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20200305064103.GA7305@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 05:34:37PM -0800, Martin KaFai Lau wrote:
-> This set addresses a few struct_ops issues.
-> Please see individual patch for details.
 
-Applied to bpf tree without this cover letter, since it's too terse.
+
+On 3/4/2020 10:41 PM, Jiri Pirko wrote:
+> Wed, Mar 04, 2020 at 06:43:02PM CET, jacob.e.keller@intel.com wrote:
+>>
+>>
+>> On 3/4/2020 3:58 AM, Jiri Pirko wrote:
+>>> Tue, Mar 03, 2020 at 06:51:37PM CET, jacob.e.keller@intel.com wrote:
+>>>>
+>>>> Hm. The flow here was about supporting both with and without snapshot
+>>>> IDs. That will be gone in the next revision and should make the code clear.
+>>>>
+>>>> The IDs are stored in the IDR with either a NULL, or a pointer to a
+>>>> refcount of the number of snapshots currently using them.
+>>>>
+>>>> On devlink_region_snapshot_create, the id must have been allocated by
+>>>> the devlink_region_snapshot_id_get ahead of time by the driver.
+>>>>
+>>>> When devlink_region_snapshot_id_get is called, a NULL is inserted into
+>>>> the IDR at a suitable ID number (i.e. one that does not yet have a
+>>>> refcount).
+>>>>
+>>>> On devlink_region_snapshot_new, the callback for the new command, the ID
+>>>> must be specified by userspace.
+>>>>
+>>>> Both cases, the ID is confirmed to not be in use for that region by
+>>>> looping over all snapshots and checking to see if one can be found that
+>>>> has the ID.
+>>>>
+>>>> In __devlink_region_snapshot_create, the IDR is checked to see if it is
+>>>> already used. If so, the refcount is incremented. If there is no
+>>>> refcount (i.e. the IDR returns NULL), a new refcount is created, set to
+>>>> 1, and inserted.
+>>>>
+>>>> The basic idea is the refcount is "how many snapshots are actually using
+>>>> this ID". Use of devlink_region_snapshot_id_get can "pre-allocate" an ID
+>>>> value so that future calls to devlink_region_id_get won't re-use the
+>>>> same ID number even if no snapshot with that ID has yet been created.
+>>>>
+>>>> The refcount isn't actually incremented until the snapshot is created
+>>>> with that ID.
+>>>>
+>>>> Userspace never uses devlink_region_snapshot_id_get now, since it always
+>>>> requires an ID to be chosen.
+>>>>
+>>>> On snapshot delete, the id refcount is reduced, and when it hits zero
+>>>> the ID is released from the IDR. This way, IDs can be re-used as long as
+>>>> no remaining snapshots on any region point to them.
+>>>>
+>>>> This system enables userspace to simply treat snapshot ids as unique to
+>>>> each region, and to provide their own values on the command line. It
+>>>> also preserves the behavior that devlink_region_snapshot_id_get will
+>>>> never select an ID that is used by any region on that devlink, so that
+>>>> the id can be safely used for multiple snapshots triggered at the same time.
+>>>>
+>>>> This will hopefully be more clear in the next revision.
+>>>
+>>> Okay, I see. The code is a bit harder to follow.
+>>>
+>>
+>> I'm open to suggestions for better alternatives, or ways to improve code
+>> legibility.
+>>
+>> I want to preserve the following properties:
+>>
+>> * devlink_region_snapshot_id_get must choose IDs globally for the whole
+>> devlink, so that the ID can safely be re-used across multiple regions.
+>>
+>> * IDs must be reusable once all snapshots associated with the IDs have
+>> been removed
+>>
+>> * the new DEVLINK_CMD_REGION_NEW must allow userspace to select IDs
+>>
+>> * selecting IDs via DEVLINK_CMD_REGION_NEW should not really require the
+>> user to check more than the current interested snapshot
+>>
+>> * userspace should be able to re-use the same ID across multiple regions
+>> just like devlink_region_snapshot_id_get and driver triggered snapshots
+> 
+> Nope. I believe this is not desired. The point of having the same id for
+> the multiple regions is that the driver can obtain multiple region
+> snapshots during single FW event. For user, that it not the case.
+> For user, it would be 2 separate snapshots in 2 separate times. They
+> should not have the same ID.
+> 
+
+So users would have to pick an ID that's unique across all regions. Ok.
+
+I think we still need a reference count of how many snapshots are using
+an ID (so that it can be released once all region snapshots using that
+ID are destroyed).
+
+We basically add this complexity even in cases where regions are totally
+independent and never taken together.
+
+One alternative would be to instead create some sort of grouping system,
+but that has even more complication.
+
+Ok. So I think we still need to track IDs using something like the IDR
+with a reference count or similar structure.
+
+Using only an IDA doesn't give us the ability to release previously used
+IDs. Because on snapshot delete it has no idea whether another region
+used that ID, so it can't remove it.
+
+Maybe something like IDR with a refcount.. but we'd really like
+something that can exist for some time with a refcount of zero. That's
+what I basically used the NULL trick for in this version.
+
+We can first check if the IDR has the ID when responding to
+DEVLINK_CMD_REGION_NEW, and bail if so. That would enforce that users
+must specify IDs which are unused by any region on the device.
+
+Thanks,
+Jake
