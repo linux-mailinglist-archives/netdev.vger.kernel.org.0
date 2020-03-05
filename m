@@ -2,115 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA80179CC6
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B7A179CD4
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388484AbgCEAYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 19:24:05 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39108 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388407AbgCEAYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 19:24:05 -0500
-Received: by mail-pl1-f193.google.com with SMTP id j20so1413036pll.6
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 16:24:04 -0800 (PST)
+        id S2388580AbgCEA3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 19:29:19 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:40046 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388476AbgCEA3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 19:29:19 -0500
+Received: by mail-il1-f196.google.com with SMTP id g6so3489289ilc.7
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 16:29:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
+        d=linuxfoundation.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=jM+dxWT2By9fogMP6Nyu2wPsp7hyky7qMkBcc2E+Y7M=;
-        b=3PflFeor4xeV0DKPa32OkIWGUeuE0LNf75Bx4a6OgMPQychT/+1d8LcjDR/dAQehjU
-         JCVO4RZvLabxXlGYf02W3bTUfgd0yDJyhMySkVLpco/TdCicTsPG2ab4OabkIjUbdQo0
-         IVK1UfBlFvv/iDmAC6s1ucIHnsp2y2LBarBCedmPhUC9072F0/Xi/ONIpj0Dy3m1FZMW
-         5HHZxkDm7VWQ5/jcIgcS/C9XV62Zii7+QsB+QA31TkN7GI5MrFytKg+kLOLpg5mGiTRS
-         pQd8TNtGSDmPnyi1XQINVGmp+A6XDgUGGEQTALMjvqtVHQosFm3g+oRkvFYuGCCNme7U
-         6QBw==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DMuXBI4n6VFH3vcmCnA8kWV3eDknxjUy9BFc+h/MzKY=;
+        b=BzVBYccsXnBXQL8L4nriLT4wgNKsO/qjfzqlAJN1M5w8pTENcT4OLw0Esd5zBKM4Ws
+         l08LyYnuwPv6FKWz7kZMosKXMI5dnF1gmkRPzi5UCbCLEbsb6s6ThdBHDyArCXk8HVZ7
+         miNbYmMMN1oklJ9Lg93WhI0agt1FOPlhhvsq0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=jM+dxWT2By9fogMP6Nyu2wPsp7hyky7qMkBcc2E+Y7M=;
-        b=N11t054dCLA/YUsFgY6e3uzXsDmQKS6YD8msoin1ZaKUSUHRTe1i40A3qCNa3Ks/A8
-         s3cA3cD3Dz6hiUE0SuWOF0ImDGxBlMRaGYSqW0sdvJn08+gjyQJlX8BbAlokQHJkJh5y
-         t9eGucI0GTi/Gy3kdYB4dd57zWd0VaF1hgbOpH+n4xh9V128ALw63OyO2kU4ez1CwrKf
-         wXj3GJEWJJ5q22K/VdROePnDN4CD1cBiAV3hzV5Pw/6u3T/6CmlGNsNF2Ok6LAkAm0Wp
-         2F7dFwDp3XZxVoQ41UCHXh+wIKJ15I9tM9mKOgW0n/tz3lDXl3pyj7/rpY5vgtfsnQHG
-         KHBA==
-X-Gm-Message-State: ANhLgQ2XlgrqA5MQUMhQddpnBo+pQLh3kRZcOPFCuxA478MAJmakOta0
-        FE48Si9aAWNy4Ood2q5YxLbkxqHIHsY=
-X-Google-Smtp-Source: ADFU+vt00Uwz0FV5rnxbJt2NP8KluYY/iq0C+9EMJplEmXoY0K7ZR45BbAfkafa9sqKuRWQAZAlj3A==
-X-Received: by 2002:a17:90a:246a:: with SMTP id h97mr5515182pje.9.1583367843593;
-        Wed, 04 Mar 2020 16:24:03 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id x18sm18014349pfo.148.2020.03.04.16.24.02
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DMuXBI4n6VFH3vcmCnA8kWV3eDknxjUy9BFc+h/MzKY=;
+        b=jgIZeWrwSQx1xBrJzpqcrpm51OqiS1wJ+couauH6KUVIm1+df+EZYWI98jKAV96+xt
+         7ZHsBE+bUwMKpqUwGYH6zo6giafV/FVqjPlqFyruq0XJ/EodB12btQKRMw40xEJ7UGdi
+         ytw6C//et5IRQlqlu/F3yk2eosemsNd9YDhqZbSEMr8EWg//wGgRMmN+OQtQObjvp/5G
+         Io/b5Q/DABxh9op/5q81/sezNXoD+JS2fqcjQsWndKeBGMJh2bGsYNxE1yEZDFsbgjZ+
+         n4gB5aDDF8naR5Uvd5WuEsN66I1GNj2CjJ4RBgkOhx/9xo/40ylNhwIDOZ0M4314wm3w
+         75iA==
+X-Gm-Message-State: ANhLgQ0OinPZy3Rk/797E6whMc1hEra2ejnkTUrPc4tmWU//1oHxTiN4
+        sa6/B4TNLobplbuEn1M+IWahvw==
+X-Google-Smtp-Source: ADFU+vsj6BlimOUY1cjq4xUk/QovllsyeGkV1HNUuBRFKOYD/q6CBKOvI+ohh2SeR6TANE6+s96y1Q==
+X-Received: by 2002:a92:914a:: with SMTP id t71mr4854237ild.108.1583368158380;
+        Wed, 04 Mar 2020 16:29:18 -0800 (PST)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id i16sm9674080ils.41.2020.03.04.16.29.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Mar 2020 16:24:03 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 5/8] ionic: support ethtool rxhash disable
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-References: <20200304042013.51970-1-snelson@pensando.io>
- <20200304042013.51970-6-snelson@pensando.io>
- <20200304115902.011ff647@kicinski-fedora-PC1C0HJN>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <39446ac7-9ce1-1c81-427b-a9821145fd1d@pensando.io>
-Date:   Wed, 4 Mar 2020 16:24:01 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        Wed, 04 Mar 2020 16:29:17 -0800 (PST)
+Subject: Re: [PATCH 2/4] selftests: Fix seccomp to support relocatable build
+ (O=objdir)
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Kees Cook <keescook@chromium.org>
+Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        daniel@iogearbox.net, kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <cover.1583358715.git.skhan@linuxfoundation.org>
+ <11967e5f164f0cd717921bd382ff9c13ef740146.1583358715.git.skhan@linuxfoundation.org>
+ <202003041442.A46000C@keescook>
+ <11ffe43f-f777-7881-623d-c93196a44cb6@linuxfoundation.org>
+ <87eeu7r6qf.fsf@mpe.ellerman.id.au>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <da1b2591-bb19-9dc7-ed5f-cc2481c24f87@linuxfoundation.org>
+Date:   Wed, 4 Mar 2020 17:29:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200304115902.011ff647@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <87eeu7r6qf.fsf@mpe.ellerman.id.au>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/20 11:59 AM, Jakub Kicinski wrote:
-> On Tue,  3 Mar 2020 20:20:10 -0800 Shannon Nelson wrote:
->> We can disable rxhashing by setting rss_types to 0.  The user
->> can toggle this with "ethtool -K <ethX> rxhash off|on",
->> which calls into the .ndo_set_features callback with the
->> NETIF_F_RXHASH feature bit set or cleared.  This patch adds
->> a check for that bit and updates the FW if necessary.
+On 3/4/20 5:22 PM, Michael Ellerman wrote:
+> Shuah Khan <skhan@linuxfoundation.org> writes:
+>> On 3/4/20 3:42 PM, Kees Cook wrote:
+>>> On Wed, Mar 04, 2020 at 03:13:33PM -0700, Shuah Khan wrote:
+>>>> Fix seccomp relocatable builds. This is a simple fix to use the
+>>>> right lib.mk variable TEST_GEN_PROGS for objects to leverage
+>>>> lib.mk common framework for relocatable builds.
+>>>>
+>>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>>>> ---
+>>>>    tools/testing/selftests/seccomp/Makefile | 16 +++-------------
+>>>>    1 file changed, 3 insertions(+), 13 deletions(-)
+>>>>
+>>>> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+>>>> index 1760b3e39730..a8a9717fc1be 100644
+>>>> --- a/tools/testing/selftests/seccomp/Makefile
+>>>> +++ b/tools/testing/selftests/seccomp/Makefile
+>>>> @@ -1,17 +1,7 @@
+>>>>    # SPDX-License-Identifier: GPL-2.0
+>>>> -all:
+>>>> -
+>>>> -include ../lib.mk
+>>>> -
+>>>> -.PHONY: all clean
+>>>> -
+>>>> -BINARIES := seccomp_bpf seccomp_benchmark
+>>>>    CFLAGS += -Wl,-no-as-needed -Wall
+>>>> +LDFLAGS += -lpthread
+>>>>    
+>>>> -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+>>>
+>>> How is the ../kselftest_harness.h dependency detected in the resulting
+>>> build rules?
+>>>
+>>> Otherwise, looks good.
 >>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
->>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 11 +++++++++--
->>   1 file changed, 9 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> index d1567e477b1f..4b953f9e9084 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> @@ -1094,6 +1094,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
->>   	u64 vlan_flags = IONIC_ETH_HW_VLAN_TX_TAG |
->>   			 IONIC_ETH_HW_VLAN_RX_STRIP |
->>   			 IONIC_ETH_HW_VLAN_RX_FILTER;
->> +	u64 old_hw_features;
->>   	int err;
->>   
->>   	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
->> @@ -1101,9 +1102,13 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
->>   	if (err)
->>   		return err;
->>   
->> +	old_hw_features = lif->hw_features;
->>   	lif->hw_features = le64_to_cpu(ctx.cmd.lif_setattr.features &
->>   				       ctx.comp.lif_setattr.features);
->>   
->> +	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
->> +		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
-> Is this change coming from the HW or from ethtool? AFAIK hw_features
-> are what's supported, features is what's enabled..
+>> Didn't see any problems. I will look into adding the dependency.
+> 
+> Before:
+> 
+>    $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+>    make --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+>            ARCH=powerpc -C ../../.. headers_install
+>      INSTALL /home/michael/build/adhoc/kselftest/usr/include
+>    gcc -Wl,-no-as-needed -Wall  seccomp_bpf.c -lpthread -o seccomp_bpf
+>    gcc -Wl,-no-as-needed -Wall    seccomp_benchmark.c   -o seccomp_benchmark
+>    
+>    $ touch tools/testing/selftests/kselftest_harness.h
+>    
+>    $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+>    make --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+>            ARCH=powerpc -C ../../.. headers_install
+>      INSTALL /home/michael/build/adhoc/kselftest/usr/include
+>    gcc -Wl,-no-as-needed -Wall  seccomp_bpf.c -lpthread -o seccomp_bpf
+>    $
+> 
+> Note that touching the header causes it to rebuild seccomp_bpf.
+> 
+> With this patch applied:
+> 
+>    $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+>    make -s --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+>            ARCH=powerpc -C ../../.. headers_install
+>    gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_bpf.c  -o /home/michael/build/adhoc/kselftest/seccomp/seccomp_bpf
+>    gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_benchmark.c  -o /home/michael/build/adhoc/kselftest/seccomp/seccomp_benchmark
+>    
+>    $ touch tools/testing/selftests/kselftest_harness.h
+>    
+>    $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+>    make -s --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+>            ARCH=powerpc -C ../../.. headers_install
+>    make[1]: Nothing to be done for 'all'.
+>    $
+> 
+> 
 
-This is looking at the feature bits coming in from ndo_set_features - if 
-the RX_HASH bit has been turned off in the incoming features bitmask, 
-then I need to disable the hw hashing.
+Thanks. I realized I overlooked header dependency case.
 
-I believe the confusion is between lif->hw_features, describing what is 
-currently enabled in the hw, versus the netdev->hw_features, that is 
-what we've told the the stack we have available.
+> So yeah it still needs:
+> 
+> seccomp_bpf: ../kselftest_harness.h
+> 
+> 
+Yes v2 coming up. It also has to handle OUTPUT relocation.
 
-sln
-
+thanks,
+-- Shuah
