@@ -2,747 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD2017AFCA
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC6517AFD5
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgCEUeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 15:34:22 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34789 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbgCEUeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 15:34:19 -0500
-Received: by mail-lf1-f67.google.com with SMTP id w27so46192lfc.1
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 12:34:13 -0800 (PST)
+        id S1726111AbgCEUiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 15:38:00 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:60059 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726080AbgCEUiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 15:38:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=hackerdom.ru; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tS5/7rQpNZ2JQaOpL0567wi5kxkSpUqZD63UJD3ctTQ=;
-        b=RZ0S29AtEr/SxTWGOs41dV65wg6VW4woo613lDfHQKlMyvuB116Hk7oRBOqXo2opA9
-         0nkjMAb+CHjo/jubAX5VNjVcPjsBTJV66Iy4RI8wnMBLUhk0vdJbD/XdtiawnWJp2tX4
-         +B5jO4D8OW+Wb4dlMlqDeFbvVYzuZKxHmkrfo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tS5/7rQpNZ2JQaOpL0567wi5kxkSpUqZD63UJD3ctTQ=;
-        b=T1agZftBHvW8R88Ec0Vhpt+Q3eD2pgOyztiOVIZ5qjdhgsph1CReBMjrhsZes4zumb
-         jd1mFRXHxHGGBOvgoR/n0V2tBc/xAvobk0vP+C4v3FNvDXa5hshH0fg6hbU5/i6qosE8
-         RG+iWTkfDSQXUgLWXS6rKPtMK+pBz37Dkwm5JNad0gAumji7W+1X29xFJ1I5YK0moTVC
-         a2tPMDF6tAsLyc/dKkPUAcjDeS16+6OYNquoPzipFIDYFRSWIH3SG6C3YTLn4GrqnKNI
-         HtHaDGjWVz0WYqEJRT/E/CFmwqIEBVJ/PoNf+SboWzsIKGDBF9M97n8L60qTV+MHOzqW
-         l+gg==
-X-Gm-Message-State: ANhLgQ0kYInRT3LRyJebFWVH3P0D60/NTXn9vm7KlWpv6VtyYz0HriXv
-        QpiqBfNXVtCiiseM6UdV3sw2YrPCxC20xg==
-X-Google-Smtp-Source: ADFU+vtOhmdPPv3wGpNn0X96AVRNLLFobjyeUole0RlBJ3jrPvO5hbdqwzGSdk+uu579AOHlhyV/dQ==
-X-Received: by 2002:a05:6512:31d5:: with SMTP id j21mr214278lfe.23.1583440452511;
-        Thu, 05 Mar 2020 12:34:12 -0800 (PST)
-Received: from localhost.localdomain ([31.173.103.79])
-        by smtp.googlemail.com with ESMTPSA id z8sm3334055ljk.94.2020.03.05.12.34.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 12:34:11 -0800 (PST)
-From:   Alexander Bersenev <bay@hackerdom.ru>
-Cc:     bay@hackerdom.ru, Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Enrico Weigelt <info@metux.net>,
-        Allison Randal <allison@lohutok.net>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] cdc_ncm: Implement the 32-bit version of NCM Transfer Block
-Date:   Fri,  6 Mar 2020 01:33:16 +0500
-Message-Id: <20200305203318.8980-1-bay@hackerdom.ru>
-X-Mailer: git-send-email 2.25.1
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1583440679; x=1614976679;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version:subject;
+  bh=oxYd6ah9OjaIQ7LD4IQisvG6s8lIKLCWNzBgVZxMRzY=;
+  b=rp8zaA0VxC6eClYT0pF2Q0gn4uSws0eGHUNA9TgZvW1FaumECyyW4j0Q
+   ZtVGuMELkaLJd9YR+asXzq1cFk/2lO0OzIfLGJDNSbLisZQtSPumSOGIn
+   +9tSf2OJ/7Mgu+EsAS0nIYJBCmXIEYO0aRRVBLGQHianfUD9uYFsHStBU
+   8=;
+IronPort-SDR: IrJA6gzkA2NMffrK/X+I+iTgyo+tEmOL9izuSts3o50fkMQxoNHOaEUVEtycvSWNbY1pY0ZPb9
+ 5i15LllLXzWQ==
+X-IronPort-AV: E=Sophos;i="5.70,519,1574121600"; 
+   d="scan'208";a="19805340"
+Thread-Topic: [RESEND PATCH V1 net-next] net: ena: fix broken interface between ENA driver
+ and FW
+Subject: Re: [RESEND PATCH V1 net-next] net: ena: fix broken interface between ENA
+ driver and FW
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 05 Mar 2020 20:37:46 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id 0A4A0A1E80;
+        Thu,  5 Mar 2020 20:37:44 +0000 (UTC)
+Received: from EX13D28EUB004.ant.amazon.com (10.43.166.176) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Thu, 5 Mar 2020 20:37:44 +0000
+Received: from EX13D10EUB001.ant.amazon.com (10.43.166.211) by
+ EX13D28EUB004.ant.amazon.com (10.43.166.176) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 5 Mar 2020 20:37:43 +0000
+Received: from EX13D10EUB001.ant.amazon.com ([10.43.166.211]) by
+ EX13D10EUB001.ant.amazon.com ([10.43.166.211]) with mapi id 15.00.1497.006;
+ Thu, 5 Mar 2020 20:37:43 +0000
+From:   "Machulsky, Zorik" <zorik@amazon.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>
+CC:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+Thread-Index: AQHV7IwHTleIAn29A0CjjPWG/SVzNqgueR+AgAVOa4CABlQQgIAAUHeA//+QkAA=
+Date:   Thu, 5 Mar 2020 20:37:43 +0000
+Message-ID: <F07A24C7-930D-4F59-92BD-405B74F01707@amazon.com>
+References: <1582711415-4442-1-git-send-email-akiyano@amazon.com>
+ <20200226.204809.102099518712120120.davem@davemloft.net>
+ <20200301135007.GS12414@unreal>
+ <37c7130a38ab46cda8a0f7a3e07e7fa3@EX13D22EUA004.ant.amazon.com>
+ <20200305191633.GI184088@unreal>
+In-Reply-To: <20200305191633.GI184088@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.206]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6136A51C3FBC2648ADD621D1EBE50E77@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NCM specification defines two formats of transfer blocks: with 16-bit
-fields (NTB-16) and with 32-bit fields (NTB-32). Currently only NTB-16 is
-implemented.
-
-This patch adds the support of NTB-32. The motivation behind this is that
-some devices such as E5785 or E5885 from the current generation of Huawei
-LTE routers do not support NTB-16. The previous generations of Huawei
-devices are also use NTB-32 by default.
-
-Also this patch enables NTB-32 by default for Huawei devices.
-
-During the 2019 ValdikSS made five attempts to contact Huawei to add the
-NTB-16 support to their router firmware, but they were unsuccessful.
-
-Signed-off-by: Alexander Bersenev <bay@hackerdom.ru>
----
- drivers/net/usb/cdc_ncm.c        | 411 ++++++++++++++++++++++++-------
- drivers/net/usb/huawei_cdc_ncm.c |   8 +-
- include/linux/usb/cdc_ncm.h      |  15 +-
- 3 files changed, 340 insertions(+), 94 deletions(-)
-
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index c2c82e6391b4..5569077bd5b8 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -175,7 +175,11 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev, u32 new_tx)
- 	u32 val, max, min;
- 
- 	/* clamp new_tx to sane values */
--	min = ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct usb_cdc_ncm_nth16);
-+	if (ctx->is_ndp16)
-+		min = ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct usb_cdc_ncm_nth16);
-+	else
-+		min = ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct usb_cdc_ncm_nth32);
-+
- 	max = min_t(u32, CDC_NCM_NTB_MAX_SIZE_TX, le32_to_cpu(ctx->ncm_parm.dwNtbOutMaxSize));
- 
- 	/* some devices set dwNtbOutMaxSize too low for the above default */
-@@ -307,10 +311,17 @@ static ssize_t ndp_to_end_store(struct device *d,  struct device_attribute *attr
- 	if (enable == (ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END))
- 		return len;
- 
--	if (enable && !ctx->delayed_ndp16) {
--		ctx->delayed_ndp16 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
--		if (!ctx->delayed_ndp16)
--			return -ENOMEM;
-+	if (enable) {
-+		if (ctx->is_ndp16 && !ctx->delayed_ndp16) {
-+			ctx->delayed_ndp16 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
-+			if (!ctx->delayed_ndp16)
-+				return -ENOMEM;
-+		}
-+		if (!ctx->is_ndp16 && !ctx->delayed_ndp32) {
-+			ctx->delayed_ndp32 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
-+			if (!ctx->delayed_ndp32)
-+				return -ENOMEM;
-+		}
- 	}
- 
- 	/* flush pending data before changing flag */
-@@ -512,6 +523,9 @@ static int cdc_ncm_init(struct usbnet *dev)
- 			dev_err(&dev->intf->dev, "SET_CRC_MODE failed\n");
- 	}
- 
-+	/* use ndp16 by default */
-+	ctx->is_ndp16 = 1;
-+
- 	/* set NTB format, if both formats are supported.
- 	 *
- 	 * "The host shall only send this command while the NCM Data
-@@ -519,14 +533,27 @@ static int cdc_ncm_init(struct usbnet *dev)
- 	 */
- 	if (le16_to_cpu(ctx->ncm_parm.bmNtbFormatsSupported) &
- 						USB_CDC_NCM_NTB32_SUPPORTED) {
--		dev_dbg(&dev->intf->dev, "Setting NTB format to 16-bit\n");
--		err = usbnet_write_cmd(dev, USB_CDC_SET_NTB_FORMAT,
--				       USB_TYPE_CLASS | USB_DIR_OUT
--				       | USB_RECIP_INTERFACE,
--				       USB_CDC_NCM_NTB16_FORMAT,
--				       iface_no, NULL, 0);
--		if (err < 0)
-+		if (ctx->drvflags & CDC_NCM_FLAG_PREFER_NTB32) {
-+			ctx->is_ndp16 = 0;
-+			dev_dbg(&dev->intf->dev, "Setting NTB format to 32-bit\n");
-+			err = usbnet_write_cmd(dev, USB_CDC_SET_NTB_FORMAT,
-+					       USB_TYPE_CLASS | USB_DIR_OUT
-+					       | USB_RECIP_INTERFACE,
-+					       USB_CDC_NCM_NTB32_FORMAT,
-+					       iface_no, NULL, 0);
-+		} else {
-+			ctx->is_ndp16 = 1;
-+			dev_dbg(&dev->intf->dev, "Setting NTB format to 16-bit\n");
-+			err = usbnet_write_cmd(dev, USB_CDC_SET_NTB_FORMAT,
-+					       USB_TYPE_CLASS | USB_DIR_OUT
-+					       | USB_RECIP_INTERFACE,
-+					       USB_CDC_NCM_NTB16_FORMAT,
-+					       iface_no, NULL, 0);
-+		}
-+		if (err < 0) {
-+			ctx->is_ndp16 = 1;
- 			dev_err(&dev->intf->dev, "SET_NTB_FORMAT failed\n");
-+		}
- 	}
- 
- 	/* set initial device values */
-@@ -549,7 +576,10 @@ static int cdc_ncm_init(struct usbnet *dev)
- 		ctx->tx_max_datagrams = CDC_NCM_DPT_DATAGRAMS_MAX;
- 
- 	/* set up maximum NDP size */
--	ctx->max_ndp_size = sizeof(struct usb_cdc_ncm_ndp16) + (ctx->tx_max_datagrams + 1) * sizeof(struct usb_cdc_ncm_dpe16);
-+	if (ctx->is_ndp16)
-+		ctx->max_ndp_size = sizeof(struct usb_cdc_ncm_ndp16) + (ctx->tx_max_datagrams + 1) * sizeof(struct usb_cdc_ncm_dpe16);
-+	else
-+		ctx->max_ndp_size = sizeof(struct usb_cdc_ncm_ndp32) + (ctx->tx_max_datagrams + 1) * sizeof(struct usb_cdc_ncm_dpe32);
- 
- 	/* initial coalescing timer interval */
- 	ctx->timer_interval = CDC_NCM_TIMER_INTERVAL_USEC * NSEC_PER_USEC;
-@@ -734,7 +764,10 @@ static void cdc_ncm_free(struct cdc_ncm_ctx *ctx)
- 		ctx->tx_curr_skb = NULL;
- 	}
- 
--	kfree(ctx->delayed_ndp16);
-+	if (ctx->is_ndp16)
-+		kfree(ctx->delayed_ndp16);
-+	else
-+		kfree(ctx->delayed_ndp32);
- 
- 	kfree(ctx);
- }
-@@ -772,10 +805,8 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct usb_interface *intf, u8 data_
- 	u8 *buf;
- 	int len;
- 	int temp;
--	int err;
- 	u8 iface_no;
- 	struct usb_cdc_parsed_header hdr;
--	__le16 curr_ntb_format;
- 
- 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
- 	if (!ctx)
-@@ -879,32 +910,6 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct usb_interface *intf, u8 data_
- 		goto error2;
- 	}
- 
--	/*
--	 * Some Huawei devices have been observed to come out of reset in NDP32 mode.
--	 * Let's check if this is the case, and set the device to NDP16 mode again if
--	 * needed.
--	*/
--	if (ctx->drvflags & CDC_NCM_FLAG_RESET_NTB16) {
--		err = usbnet_read_cmd(dev, USB_CDC_GET_NTB_FORMAT,
--				      USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
--				      0, iface_no, &curr_ntb_format, 2);
--		if (err < 0) {
--			goto error2;
--		}
--
--		if (curr_ntb_format == cpu_to_le16(USB_CDC_NCM_NTB32_FORMAT)) {
--			dev_info(&intf->dev, "resetting NTB format to 16-bit");
--			err = usbnet_write_cmd(dev, USB_CDC_SET_NTB_FORMAT,
--					       USB_TYPE_CLASS | USB_DIR_OUT
--					       | USB_RECIP_INTERFACE,
--					       USB_CDC_NCM_NTB16_FORMAT,
--					       iface_no, NULL, 0);
--
--			if (err < 0)
--				goto error2;
--		}
--	}
--
- 	cdc_ncm_find_endpoints(dev, ctx->data);
- 	cdc_ncm_find_endpoints(dev, ctx->control);
- 	if (!dev->in || !dev->out || !dev->status) {
-@@ -929,9 +934,15 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct usb_interface *intf, u8 data_
- 
- 	/* Allocate the delayed NDP if needed. */
- 	if (ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END) {
--		ctx->delayed_ndp16 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
--		if (!ctx->delayed_ndp16)
--			goto error2;
-+		if (ctx->is_ndp16) {
-+			ctx->delayed_ndp16 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
-+			if (!ctx->delayed_ndp16)
-+				goto error2;
-+		} else {
-+			ctx->delayed_ndp32 = kzalloc(ctx->max_ndp_size, GFP_KERNEL);
-+			if (!ctx->delayed_ndp32)
-+				goto error2;
-+		}
- 		dev_info(&intf->dev, "NDP will be placed at end of frame for this device.");
- 	}
- 
-@@ -1055,7 +1066,7 @@ static void cdc_ncm_align_tail(struct sk_buff *skb, size_t modulus, size_t remai
- /* return a pointer to a valid struct usb_cdc_ncm_ndp16 of type sign, possibly
-  * allocating a new one within skb
-  */
--static struct usb_cdc_ncm_ndp16 *cdc_ncm_ndp(struct cdc_ncm_ctx *ctx, struct sk_buff *skb, __le32 sign, size_t reserve)
-+static struct usb_cdc_ncm_ndp16 *cdc_ncm_ndp16(struct cdc_ncm_ctx *ctx, struct sk_buff *skb, __le32 sign, size_t reserve)
- {
- 	struct usb_cdc_ncm_ndp16 *ndp16 = NULL;
- 	struct usb_cdc_ncm_nth16 *nth16 = (void *)skb->data;
-@@ -1110,12 +1121,73 @@ static struct usb_cdc_ncm_ndp16 *cdc_ncm_ndp(struct cdc_ncm_ctx *ctx, struct sk_
- 	return ndp16;
- }
- 
-+static struct usb_cdc_ncm_ndp32 *cdc_ncm_ndp32(struct cdc_ncm_ctx *ctx, struct sk_buff *skb, __le32 sign, size_t reserve)
-+{
-+	struct usb_cdc_ncm_ndp32 *ndp32 = NULL;
-+	struct usb_cdc_ncm_nth32 *nth32 = (void *)skb->data;
-+	size_t ndpoffset = le32_to_cpu(nth32->dwNdpIndex);
-+
-+	/* If NDP should be moved to the end of the NCM package, we can't follow the
-+	 * NTH32 header as we would normally do. NDP isn't written to the SKB yet, and
-+	 * the wNdpIndex field in the header is actually not consistent with reality. It will be later.
-+	 */
-+	if (ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END) {
-+		if (ctx->delayed_ndp32->dwSignature == sign)
-+			return ctx->delayed_ndp32;
-+
-+		/* We can only push a single NDP to the end. Return
-+		 * NULL to send what we've already got and queue this
-+		 * skb for later.
-+		 */
-+		else if (ctx->delayed_ndp32->dwSignature)
-+			return NULL;
-+	}
-+
-+	/* follow the chain of NDPs, looking for a match */
-+	while (ndpoffset) {
-+		ndp32 = (struct usb_cdc_ncm_ndp32 *)(skb->data + ndpoffset);
-+		if  (ndp32->dwSignature == sign)
-+			return ndp32;
-+		ndpoffset = le32_to_cpu(ndp32->dwNextNdpIndex);
-+	}
-+
-+	/* align new NDP */
-+	if (!(ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END))
-+		cdc_ncm_align_tail(skb, ctx->tx_ndp_modulus, 0, ctx->tx_curr_size);
-+
-+	/* verify that there is room for the NDP and the datagram (reserve) */
-+	if ((ctx->tx_curr_size - skb->len - reserve) < ctx->max_ndp_size)
-+		return NULL;
-+
-+	/* link to it */
-+	if (ndp32)
-+		ndp32->dwNextNdpIndex = cpu_to_le32(skb->len);
-+	else
-+		nth32->dwNdpIndex = cpu_to_le32(skb->len);
-+
-+	/* push a new empty NDP */
-+	if (!(ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END))
-+		ndp32 = skb_put_zero(skb, ctx->max_ndp_size);
-+	else
-+		ndp32 = ctx->delayed_ndp32;
-+
-+	ndp32->dwSignature = sign;
-+	ndp32->wLength = cpu_to_le32(sizeof(struct usb_cdc_ncm_ndp32) + sizeof(struct usb_cdc_ncm_dpe32));
-+	return ndp32;
-+}
-+
- struct sk_buff *
- cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- {
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
--	struct usb_cdc_ncm_nth16 *nth16;
--	struct usb_cdc_ncm_ndp16 *ndp16;
-+	union {
-+		struct usb_cdc_ncm_nth16 *nth16;
-+		struct usb_cdc_ncm_nth32 *nth32;
-+	} nth;
-+	union {
-+		struct usb_cdc_ncm_ndp16 *ndp16;
-+		struct usb_cdc_ncm_ndp32 *ndp32;
-+	} ndp;
- 	struct sk_buff *skb_out;
- 	u16 n = 0, index, ndplen;
- 	u8 ready2send = 0;
-@@ -1179,11 +1251,19 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 			}
- 			ctx->tx_low_mem_val--;
- 		}
--		/* fill out the initial 16-bit NTB header */
--		nth16 = skb_put_zero(skb_out, sizeof(struct usb_cdc_ncm_nth16));
--		nth16->dwSignature = cpu_to_le32(USB_CDC_NCM_NTH16_SIGN);
--		nth16->wHeaderLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
--		nth16->wSequence = cpu_to_le16(ctx->tx_seq++);
-+		if (ctx->is_ndp16) {
-+			/* fill out the initial 16-bit NTB header */
-+			nth.nth16 = skb_put_zero(skb_out, sizeof(struct usb_cdc_ncm_nth16));
-+			nth.nth16->dwSignature = cpu_to_le32(USB_CDC_NCM_NTH16_SIGN);
-+			nth.nth16->wHeaderLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
-+			nth.nth16->wSequence = cpu_to_le16(ctx->tx_seq++);
-+		} else {
-+			/* fill out the initial 32-bit NTB header */
-+			nth.nth32 = skb_put_zero(skb_out, sizeof(struct usb_cdc_ncm_nth32));
-+			nth.nth32->dwSignature = cpu_to_le32(USB_CDC_NCM_NTH32_SIGN);
-+			nth.nth32->wHeaderLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth32));
-+			nth.nth32->wSequence = cpu_to_le16(ctx->tx_seq++);
-+		}
- 
- 		/* count total number of frames in this NTB */
- 		ctx->tx_curr_frame_num = 0;
-@@ -1205,13 +1285,17 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 		}
- 
- 		/* get the appropriate NDP for this skb */
--		ndp16 = cdc_ncm_ndp(ctx, skb_out, sign, skb->len + ctx->tx_modulus + ctx->tx_remainder);
-+		if (ctx->is_ndp16)
-+			ndp.ndp16 = cdc_ncm_ndp16(ctx, skb_out, sign, skb->len + ctx->tx_modulus + ctx->tx_remainder);
-+		else
-+			ndp.ndp32 = cdc_ncm_ndp32(ctx, skb_out, sign, skb->len + ctx->tx_modulus + ctx->tx_remainder);
- 
- 		/* align beginning of next frame */
- 		cdc_ncm_align_tail(skb_out,  ctx->tx_modulus, ctx->tx_remainder, ctx->tx_curr_size);
- 
- 		/* check if we had enough room left for both NDP and frame */
--		if (!ndp16 || skb_out->len + skb->len + delayed_ndp_size > ctx->tx_curr_size) {
-+		if ((ctx->is_ndp16 && !ndp.ndp16) || (!ctx->is_ndp16 && !ndp.ndp32) ||
-+		    skb_out->len + skb->len + delayed_ndp_size > ctx->tx_curr_size) {
- 			if (n == 0) {
- 				/* won't fit, MTU problem? */
- 				dev_kfree_skb_any(skb);
-@@ -1233,13 +1317,22 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 		}
- 
- 		/* calculate frame number withing this NDP */
--		ndplen = le16_to_cpu(ndp16->wLength);
--		index = (ndplen - sizeof(struct usb_cdc_ncm_ndp16)) / sizeof(struct usb_cdc_ncm_dpe16) - 1;
-+		if (ctx->is_ndp16) {
-+			ndplen = le16_to_cpu(ndp.ndp16->wLength);
-+			index = (ndplen - sizeof(struct usb_cdc_ncm_ndp16)) / sizeof(struct usb_cdc_ncm_dpe16) - 1;
-+
-+			/* OK, add this skb */
-+			ndp.ndp16->dpe16[index].wDatagramLength = cpu_to_le16(skb->len);
-+			ndp.ndp16->dpe16[index].wDatagramIndex = cpu_to_le16(skb_out->len);
-+			ndp.ndp16->wLength = cpu_to_le16(ndplen + sizeof(struct usb_cdc_ncm_dpe16));
-+		} else {
-+			ndplen = le16_to_cpu(ndp.ndp32->wLength);
-+			index = (ndplen - sizeof(struct usb_cdc_ncm_ndp32)) / sizeof(struct usb_cdc_ncm_dpe32) - 1;
- 
--		/* OK, add this skb */
--		ndp16->dpe16[index].wDatagramLength = cpu_to_le16(skb->len);
--		ndp16->dpe16[index].wDatagramIndex = cpu_to_le16(skb_out->len);
--		ndp16->wLength = cpu_to_le16(ndplen + sizeof(struct usb_cdc_ncm_dpe16));
-+			ndp.ndp32->dpe32[index].dwDatagramLength = cpu_to_le32(skb->len);
-+			ndp.ndp32->dpe32[index].dwDatagramIndex = cpu_to_le32(skb_out->len);
-+			ndp.ndp32->wLength = cpu_to_le16(ndplen + sizeof(struct usb_cdc_ncm_dpe32));
-+		}
- 		skb_put_data(skb_out, skb->data, skb->len);
- 		ctx->tx_curr_frame_payload += skb->len;	/* count real tx payload data */
- 		dev_kfree_skb_any(skb);
-@@ -1286,13 +1379,22 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 
- 	/* If requested, put NDP at end of frame. */
- 	if (ctx->drvflags & CDC_NCM_FLAG_NDP_TO_END) {
--		nth16 = (struct usb_cdc_ncm_nth16 *)skb_out->data;
--		cdc_ncm_align_tail(skb_out, ctx->tx_ndp_modulus, 0, ctx->tx_curr_size - ctx->max_ndp_size);
--		nth16->wNdpIndex = cpu_to_le16(skb_out->len);
--		skb_put_data(skb_out, ctx->delayed_ndp16, ctx->max_ndp_size);
-+		if (ctx->is_ndp16) {
-+			nth.nth16 = (struct usb_cdc_ncm_nth16 *)skb_out->data;
-+			cdc_ncm_align_tail(skb_out, ctx->tx_ndp_modulus, 0, ctx->tx_curr_size - ctx->max_ndp_size);
-+			nth.nth16->wNdpIndex = cpu_to_le16(skb_out->len);
-+			skb_put_data(skb_out, ctx->delayed_ndp16, ctx->max_ndp_size);
-+
-+			/* Zero out delayed NDP - signature checking will naturally fail. */
-+			ndp.ndp16 = memset(ctx->delayed_ndp16, 0, ctx->max_ndp_size);
-+		} else {
-+			nth.nth32 = (struct usb_cdc_ncm_nth32 *)skb_out->data;
-+			cdc_ncm_align_tail(skb_out, ctx->tx_ndp_modulus, 0, ctx->tx_curr_size - ctx->max_ndp_size);
-+			nth.nth32->dwNdpIndex = cpu_to_le32(skb_out->len);
-+			skb_put_data(skb_out, ctx->delayed_ndp32, ctx->max_ndp_size);
- 
--		/* Zero out delayed NDP - signature checking will naturally fail. */
--		ndp16 = memset(ctx->delayed_ndp16, 0, ctx->max_ndp_size);
-+			ndp.ndp32 = memset(ctx->delayed_ndp32, 0, ctx->max_ndp_size);
-+		}
- 	}
- 
- 	/* If collected data size is less or equal ctx->min_tx_pkt
-@@ -1314,8 +1416,13 @@ cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign)
- 	}
- 
- 	/* set final frame length */
--	nth16 = (struct usb_cdc_ncm_nth16 *)skb_out->data;
--	nth16->wBlockLength = cpu_to_le16(skb_out->len);
-+	if (ctx->is_ndp16) {
-+		nth.nth16 = (struct usb_cdc_ncm_nth16 *)skb_out->data;
-+		nth.nth16->wBlockLength = cpu_to_le16(skb_out->len);
-+	} else {
-+		nth.nth32 = (struct usb_cdc_ncm_nth32 *)skb_out->data;
-+		nth.nth32->dwBlockLength = cpu_to_le32(skb_out->len);
-+	}
- 
- 	/* return skb */
- 	ctx->tx_curr_skb = NULL;
-@@ -1398,7 +1505,12 @@ cdc_ncm_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- 		goto error;
- 
- 	spin_lock_bh(&ctx->mtx);
--	skb_out = cdc_ncm_fill_tx_frame(dev, skb, cpu_to_le32(USB_CDC_NCM_NDP16_NOCRC_SIGN));
-+
-+	if (ctx->is_ndp16)
-+		skb_out = cdc_ncm_fill_tx_frame(dev, skb, cpu_to_le32(USB_CDC_NCM_NDP16_NOCRC_SIGN));
-+	else
-+		skb_out = cdc_ncm_fill_tx_frame(dev, skb, cpu_to_le32(USB_CDC_NCM_NDP32_NOCRC_SIGN));
-+
- 	spin_unlock_bh(&ctx->mtx);
- 	return skb_out;
- 
-@@ -1459,6 +1571,54 @@ int cdc_ncm_rx_verify_nth16(struct cdc_ncm_ctx *ctx, struct sk_buff *skb_in)
- }
- EXPORT_SYMBOL_GPL(cdc_ncm_rx_verify_nth16);
- 
-+int cdc_ncm_rx_verify_nth32(struct cdc_ncm_ctx *ctx, struct sk_buff *skb_in)
-+{
-+	struct usbnet *dev = netdev_priv(skb_in->dev);
-+	struct usb_cdc_ncm_nth32 *nth32;
-+	int len;
-+	int ret = -EINVAL;
-+
-+	if (ctx == NULL)
-+		goto error;
-+
-+	if (skb_in->len < (sizeof(struct usb_cdc_ncm_nth32) +
-+					sizeof(struct usb_cdc_ncm_ndp32))) {
-+		netif_dbg(dev, rx_err, dev->net, "frame too short\n");
-+		goto error;
-+	}
-+
-+	nth32 = (struct usb_cdc_ncm_nth32 *)skb_in->data;
-+
-+	if (nth32->dwSignature != cpu_to_le32(USB_CDC_NCM_NTH32_SIGN)) {
-+		netif_dbg(dev, rx_err, dev->net,
-+			  "invalid NTH32 signature <%#010x>\n",
-+			  le32_to_cpu(nth32->dwSignature));
-+		goto error;
-+	}
-+
-+	len = le32_to_cpu(nth32->dwBlockLength);
-+	if (len > ctx->rx_max) {
-+		netif_dbg(dev, rx_err, dev->net,
-+			  "unsupported NTB block length %u/%u\n", len,
-+			  ctx->rx_max);
-+		goto error;
-+	}
-+
-+	if ((ctx->rx_seq + 1) != le16_to_cpu(nth32->wSequence) &&
-+	    (ctx->rx_seq || le16_to_cpu(nth32->wSequence)) &&
-+	    !((ctx->rx_seq == 0xffff) && !le16_to_cpu(nth32->wSequence))) {
-+		netif_dbg(dev, rx_err, dev->net,
-+			  "sequence number glitch prev=%d curr=%d\n",
-+			  ctx->rx_seq, le16_to_cpu(nth32->wSequence));
-+	}
-+	ctx->rx_seq = le16_to_cpu(nth32->wSequence);
-+
-+	ret = le32_to_cpu(nth32->dwNdpIndex);
-+error:
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(cdc_ncm_rx_verify_nth32);
-+
- /* verify NDP header and return number of datagrams, or negative error */
- int cdc_ncm_rx_verify_ndp16(struct sk_buff *skb_in, int ndpoffset)
- {
-@@ -1495,6 +1655,42 @@ int cdc_ncm_rx_verify_ndp16(struct sk_buff *skb_in, int ndpoffset)
- }
- EXPORT_SYMBOL_GPL(cdc_ncm_rx_verify_ndp16);
- 
-+/* verify NDP header and return number of datagrams, or negative error */
-+int cdc_ncm_rx_verify_ndp32(struct sk_buff *skb_in, int ndpoffset)
-+{
-+	struct usbnet *dev = netdev_priv(skb_in->dev);
-+	struct usb_cdc_ncm_ndp32 *ndp32;
-+	int ret = -EINVAL;
-+
-+	if ((ndpoffset + sizeof(struct usb_cdc_ncm_ndp32)) > skb_in->len) {
-+		netif_dbg(dev, rx_err, dev->net, "invalid NDP offset  <%u>\n",
-+			  ndpoffset);
-+		goto error;
-+	}
-+	ndp32 = (struct usb_cdc_ncm_ndp32 *)(skb_in->data + ndpoffset);
-+
-+	if (le16_to_cpu(ndp32->wLength) < USB_CDC_NCM_NDP32_LENGTH_MIN) {
-+		netif_dbg(dev, rx_err, dev->net, "invalid DPT32 length <%u>\n",
-+			  le16_to_cpu(ndp32->wLength));
-+		goto error;
-+	}
-+
-+	ret = ((le16_to_cpu(ndp32->wLength) -
-+					sizeof(struct usb_cdc_ncm_ndp32)) /
-+					sizeof(struct usb_cdc_ncm_dpe32));
-+	ret--; /* we process NDP entries except for the last one */
-+
-+	if ((sizeof(struct usb_cdc_ncm_ndp32) +
-+	     ret * (sizeof(struct usb_cdc_ncm_dpe32))) > skb_in->len) {
-+		netif_dbg(dev, rx_err, dev->net, "Invalid nframes = %d\n", ret);
-+		ret = -EINVAL;
-+	}
-+
-+error:
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(cdc_ncm_rx_verify_ndp32);
-+
- int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- {
- 	struct sk_buff *skb;
-@@ -1503,34 +1699,66 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- 	int nframes;
- 	int x;
- 	int offset;
--	struct usb_cdc_ncm_ndp16 *ndp16;
--	struct usb_cdc_ncm_dpe16 *dpe16;
-+	union {
-+		struct usb_cdc_ncm_ndp16 *ndp16;
-+		struct usb_cdc_ncm_ndp32 *ndp32;
-+	} ndp;
-+	union {
-+		struct usb_cdc_ncm_dpe16 *dpe16;
-+		struct usb_cdc_ncm_dpe32 *dpe32;
-+	} dpe;
-+
- 	int ndpoffset;
- 	int loopcount = 50; /* arbitrary max preventing infinite loop */
- 	u32 payload = 0;
- 
--	ndpoffset = cdc_ncm_rx_verify_nth16(ctx, skb_in);
-+	if (ctx->is_ndp16)
-+		ndpoffset = cdc_ncm_rx_verify_nth16(ctx, skb_in);
-+	else
-+		ndpoffset = cdc_ncm_rx_verify_nth32(ctx, skb_in);
-+
- 	if (ndpoffset < 0)
- 		goto error;
- 
- next_ndp:
--	nframes = cdc_ncm_rx_verify_ndp16(skb_in, ndpoffset);
--	if (nframes < 0)
--		goto error;
-+	if (ctx->is_ndp16) {
-+		nframes = cdc_ncm_rx_verify_ndp16(skb_in, ndpoffset);
-+		if (nframes < 0)
-+			goto error;
- 
--	ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb_in->data + ndpoffset);
-+		ndp.ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb_in->data + ndpoffset);
- 
--	if (ndp16->dwSignature != cpu_to_le32(USB_CDC_NCM_NDP16_NOCRC_SIGN)) {
--		netif_dbg(dev, rx_err, dev->net,
--			  "invalid DPT16 signature <%#010x>\n",
--			  le32_to_cpu(ndp16->dwSignature));
--		goto err_ndp;
-+		if (ndp.ndp16->dwSignature != cpu_to_le32(USB_CDC_NCM_NDP16_NOCRC_SIGN)) {
-+			netif_dbg(dev, rx_err, dev->net,
-+				  "invalid DPT16 signature <%#010x>\n",
-+				  le32_to_cpu(ndp.ndp16->dwSignature));
-+			goto err_ndp;
-+		}
-+		dpe.dpe16 = ndp.ndp16->dpe16;
-+	} else {
-+		nframes = cdc_ncm_rx_verify_ndp32(skb_in, ndpoffset);
-+		if (nframes < 0)
-+			goto error;
-+
-+		ndp.ndp32 = (struct usb_cdc_ncm_ndp32 *)(skb_in->data + ndpoffset);
-+
-+		if (ndp.ndp32->dwSignature != cpu_to_le32(USB_CDC_NCM_NDP32_NOCRC_SIGN)) {
-+			netif_dbg(dev, rx_err, dev->net,
-+				  "invalid DPT32 signature <%#010x>\n",
-+				  le32_to_cpu(ndp.ndp32->dwSignature));
-+			goto err_ndp;
-+		}
-+		dpe.dpe32 = ndp.ndp32->dpe32;
- 	}
--	dpe16 = ndp16->dpe16;
- 
--	for (x = 0; x < nframes; x++, dpe16++) {
--		offset = le16_to_cpu(dpe16->wDatagramIndex);
--		len = le16_to_cpu(dpe16->wDatagramLength);
-+	for (x = 0; x < nframes; x++) {
-+		if (ctx->is_ndp16) {
-+			offset = le16_to_cpu(dpe.dpe16->wDatagramIndex);
-+			len = le16_to_cpu(dpe.dpe16->wDatagramLength);
-+		} else {
-+			offset = le32_to_cpu(dpe.dpe32->dwDatagramIndex);
-+			len = le32_to_cpu(dpe.dpe32->dwDatagramLength);
-+		}
- 
- 		/*
- 		 * CDC NCM ch. 3.7
-@@ -1561,10 +1789,19 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- 			usbnet_skb_return(dev, skb);
- 			payload += len;	/* count payload bytes in this NTB */
- 		}
-+
-+		if (ctx->is_ndp16)
-+			dpe.dpe16++;
-+		else
-+			dpe.dpe32++;
- 	}
- err_ndp:
- 	/* are there more NDPs to process? */
--	ndpoffset = le16_to_cpu(ndp16->wNextNdpIndex);
-+	if (ctx->is_ndp16)
-+		ndpoffset = le16_to_cpu(ndp.ndp16->wNextNdpIndex);
-+	else
-+		ndpoffset = le32_to_cpu(ndp.ndp32->dwNextNdpIndex);
-+
- 	if (ndpoffset && loopcount--)
- 		goto next_ndp;
- 
-diff --git a/drivers/net/usb/huawei_cdc_ncm.c b/drivers/net/usb/huawei_cdc_ncm.c
-index e15a472c6a54..099d84827004 100644
---- a/drivers/net/usb/huawei_cdc_ncm.c
-+++ b/drivers/net/usb/huawei_cdc_ncm.c
-@@ -77,11 +77,11 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
- 	 */
- 	drvflags |= CDC_NCM_FLAG_NDP_TO_END;
- 
--	/* Additionally, it has been reported that some Huawei E3372H devices, with
--	 * firmware version 21.318.01.00.541, come out of reset in NTB32 format mode, hence
--	 * needing to be set to the NTB16 one again.
-+	/* For many Huawei devices the NTB32 mode is the default and the best mode
-+	 * they work with. Huawei E5785 and E5885 devices refuse to work in NTB16 mode at all.
- 	 */
--	drvflags |= CDC_NCM_FLAG_RESET_NTB16;
-+	drvflags |= CDC_NCM_FLAG_PREFER_NTB32;
-+
- 	ret = cdc_ncm_bind_common(usbnet_dev, intf, 1, drvflags);
- 	if (ret)
- 		goto err;
-diff --git a/include/linux/usb/cdc_ncm.h b/include/linux/usb/cdc_ncm.h
-index 1646c06989df..0ce4377545f8 100644
---- a/include/linux/usb/cdc_ncm.h
-+++ b/include/linux/usb/cdc_ncm.h
-@@ -46,9 +46,12 @@
- #define CDC_NCM_DATA_ALTSETTING_NCM		1
- #define CDC_NCM_DATA_ALTSETTING_MBIM		2
- 
--/* CDC NCM subclass 3.2.1 */
-+/* CDC NCM subclass 3.3.1 */
- #define USB_CDC_NCM_NDP16_LENGTH_MIN		0x10
- 
-+/* CDC NCM subclass 3.3.2 */
-+#define USB_CDC_NCM_NDP32_LENGTH_MIN		0x20
-+
- /* Maximum NTB length */
- #define	CDC_NCM_NTB_MAX_SIZE_TX			32768	/* bytes */
- #define	CDC_NCM_NTB_MAX_SIZE_RX			32768	/* bytes */
-@@ -84,7 +87,7 @@
- /* Driver flags */
- #define CDC_NCM_FLAG_NDP_TO_END			0x02	/* NDP is placed at end of frame */
- #define CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE	0x04	/* Avoid altsetting toggle during init */
--#define CDC_NCM_FLAG_RESET_NTB16 0x08	/* set NDP16 one more time after altsetting switch */
-+#define CDC_NCM_FLAG_PREFER_NTB32 0x08	/* prefer NDP32 over NDP16 */
- 
- #define cdc_ncm_comm_intf_is_mbim(x)  ((x)->desc.bInterfaceSubClass == USB_CDC_SUBCLASS_MBIM && \
- 				       (x)->desc.bInterfaceProtocol == USB_CDC_PROTO_NONE)
-@@ -113,7 +116,11 @@ struct cdc_ncm_ctx {
- 
- 	u32 timer_interval;
- 	u32 max_ndp_size;
--	struct usb_cdc_ncm_ndp16 *delayed_ndp16;
-+	u8 is_ndp16;
-+	union {
-+		struct usb_cdc_ncm_ndp16 *delayed_ndp16;
-+		struct usb_cdc_ncm_ndp32 *delayed_ndp32;
-+	};
- 
- 	u32 tx_timer_pending;
- 	u32 tx_curr_frame_num;
-@@ -150,6 +157,8 @@ void cdc_ncm_unbind(struct usbnet *dev, struct usb_interface *intf);
- struct sk_buff *cdc_ncm_fill_tx_frame(struct usbnet *dev, struct sk_buff *skb, __le32 sign);
- int cdc_ncm_rx_verify_nth16(struct cdc_ncm_ctx *ctx, struct sk_buff *skb_in);
- int cdc_ncm_rx_verify_ndp16(struct sk_buff *skb_in, int ndpoffset);
-+int cdc_ncm_rx_verify_nth32(struct cdc_ncm_ctx *ctx, struct sk_buff *skb_in);
-+int cdc_ncm_rx_verify_ndp32(struct sk_buff *skb_in, int ndpoffset);
- struct sk_buff *
- cdc_ncm_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags);
- int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in);
--- 
-2.25.1
-
+DQoNCu+7v09uIDMvNS8yMCwgMTE6MTcgQU0sICJMZW9uIFJvbWFub3Zza3kiIDxsZW9uQGtlcm5l
+bC5vcmc+IHdyb3RlOg0KDQogICAgDQogICAgT24gVGh1LCBNYXIgMDUsIDIwMjAgYXQgMDI6Mjg6
+MzNQTSArMDAwMCwgS2l5YW5vdnNraSwgQXJ0aHVyIHdyb3RlOg0KICAgID4gPiAtLS0tLU9yaWdp
+bmFsIE1lc3NhZ2UtLS0tLQ0KICAgID4gPiBGcm9tOiBMZW9uIFJvbWFub3Zza3kgPGxlb25Aa2Vy
+bmVsLm9yZz4NCiAgICA+ID4gU2VudDogU3VuZGF5LCBNYXJjaCAxLCAyMDIwIDM6NTAgUE0NCiAg
+ICA+ID4gVG86IERhdmlkIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4NCiAgICA+ID4gQ2M6
+IEtpeWFub3Zza2ksIEFydGh1ciA8YWtpeWFub0BhbWF6b24uY29tPjsgbmV0ZGV2QHZnZXIua2Vy
+bmVsLm9yZzsNCiAgICA+ID4gV29vZGhvdXNlLCBEYXZpZCA8ZHdtd0BhbWF6b24uY28udWs+OyBN
+YWNodWxza3ksIFpvcmlrDQogICAgPiA+IDx6b3Jpa0BhbWF6b24uY29tPjsgTWF0dXNoZXZza3ks
+IEFsZXhhbmRlciA8bWF0dWFAYW1hem9uLmNvbT47DQogICAgPiA+IEJzaGFyYSwgU2FlZWQgPHNh
+ZWVkYkBhbWF6b24uY29tPjsgV2lsc29uLCBNYXR0IDxtc3dAYW1hem9uLmNvbT47DQogICAgPiA+
+IExpZ3VvcmksIEFudGhvbnkgPGFsaWd1b3JpQGFtYXpvbi5jb20+OyBCc2hhcmEsIE5hZmVhDQog
+ICAgPiA+IDxuYWZlYUBhbWF6b24uY29tPjsgVHphbGlrLCBHdXkgPGd0emFsaWtAYW1hem9uLmNv
+bT47IEJlbGdhemFsLCBOZXRhbmVsDQogICAgPiA+IDxuZXRhbmVsQGFtYXpvbi5jb20+OyBTYWlk
+aSwgQWxpIDxhbGlzYWlkaUBhbWF6b24uY29tPjsgSGVycmVuc2NobWlkdCwNCiAgICA+ID4gQmVu
+amFtaW4gPGJlbmhAYW1hem9uLmNvbT47IERhZ2FuLCBOb2FtIDxuZGFnYW5AYW1hem9uLmNvbT47
+DQogICAgPiA+IEFncm9za2luLCBTaGF5IDxzaGF5YWdyQGFtYXpvbi5jb20+OyBKdWJyYW4sIFNh
+bWloDQogICAgPiA+IDxzYW1lZWhqQGFtYXpvbi5jb20+DQogICAgPiA+IFN1YmplY3Q6IFJlOiBb
+UkVTRU5EIFBBVENIIFYxIG5ldC1uZXh0XSBuZXQ6IGVuYTogZml4IGJyb2tlbiBpbnRlcmZhY2Ug
+YmV0d2Vlbg0KICAgID4gPiBFTkEgZHJpdmVyIGFuZCBGVw0KICAgID4gPg0KICAgID4gPiBPbiBX
+ZWQsIEZlYiAyNiwgMjAyMCBhdCAwODo0ODowOVBNIC0wODAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6
+DQogICAgPiA+ID4gRnJvbTogPGFraXlhbm9AYW1hem9uLmNvbT4NCiAgICA+ID4gPiBEYXRlOiBX
+ZWQsIDI2IEZlYiAyMDIwIDEyOjAzOjM1ICswMjAwDQogICAgPiA+ID4NCiAgICA+ID4gPiA+IEZy
+b206IEFydGh1ciBLaXlhbm92c2tpIDxha2l5YW5vQGFtYXpvbi5jb20+DQogICAgPiA+ID4gPg0K
+ICAgID4gPiA+ID4gSW4gdGhpcyBjb21taXQgd2UgcmV2ZXJ0IHRoZSBwYXJ0IG9mIGNvbW1pdCAx
+YTYzNDQzYWZkNzANCiAgICA+ID4gPiA+ICgibmV0L2FtYXpvbjogRW5zdXJlIHRoYXQgZHJpdmVy
+IHZlcnNpb24gaXMgYWxpZ25lZCB0byB0aGUgbGludXgNCiAgICA+ID4gPiA+IGtlcm5lbCIpLCB3
+aGljaCBicmVha3MgdGhlIGludGVyZmFjZSBiZXR3ZWVuIHRoZSBFTkEgZHJpdmVyIGFuZCBGVy4N
+CiAgICA+ID4gPiA+DQogICAgPiA+ID4gPiBXZSBhbHNvIHJlcGxhY2UgdGhlIHVzZSBvZiBEUklW
+RVJfVkVSU0lPTiB3aXRoIERSSVZFUl9HRU5FUkFUSU9ODQogICAgPiA+ID4gPiB3aGVuIHdlIGJy
+aW5nIGJhY2sgdGhlIGRlbGV0ZWQgY29uc3RhbnRzIHRoYXQgYXJlIHVzZWQgaW4gaW50ZXJmYWNl
+DQogICAgPiA+ID4gPiB3aXRoIEVOQSBkZXZpY2UgRlcuDQogICAgPiA+ID4gPg0KICAgID4gPiA+
+ID4gVGhpcyBjb21taXQgZG9lcyBub3QgY2hhbmdlIHRoZSBkcml2ZXIgdmVyc2lvbiByZXBvcnRl
+ZCB0byB0aGUgdXNlcg0KICAgID4gPiA+ID4gdmlhIGV0aHRvb2wsIHdoaWNoIHJlbWFpbnMgdGhl
+IGtlcm5lbCB2ZXJzaW9uLg0KICAgID4gPiA+ID4NCiAgICA+ID4gPiA+IEZpeGVzOiAxYTYzNDQz
+YWZkNzAgKCJuZXQvYW1hem9uOiBFbnN1cmUgdGhhdCBkcml2ZXIgdmVyc2lvbiBpcw0KICAgID4g
+PiA+ID4gYWxpZ25lZCB0byB0aGUgbGludXgga2VybmVsIikNCiAgICA+ID4gPiA+IFNpZ25lZC1v
+ZmYtYnk6IEFydGh1ciBLaXlhbm92c2tpIDxha2l5YW5vQGFtYXpvbi5jb20+DQogICAgPiA+ID4N
+CiAgICA+ID4gPiBBcHBsaWVkLg0KICAgID4gPg0KICAgID4gPiBEYXZlLA0KICAgID4gPg0KICAg
+ID4gPiBJIHNlZSB0aGF0IEknbSBsYXRlIGhlcmUgYW5kIG15IGVtYWlsIHNvdW5kcyBsaWtlIG9s
+ZCBtYW4gZ3J1bWJsaW5nLCBidXQgSSBhc2tlZA0KICAgID4gPiBmcm9tIHRob3NlIGd1eXMgdG8g
+dXBkYXRlIHRoZWlyIGNvbW1pdCB3aXRoIHJlcXVlc3QgdG8gcHV0IHRoZSBmb2xsb3dpbmcgbGlu
+ZToNCiAgICA+ID4gIi8qIERPIE5PVCBDSEFOR0UgRFJWX01PRFVMRV9HRU5fKiB2YWx1ZXMgaW4g
+aW4tdHJlZSBjb2RlICovIg0KICAgID4gPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9uZXRkZXYv
+MjAyMDAyMjQxNjI2NDkuR0E0NTI2QHVucmVhbC8NCiAgICA+ID4NCiAgICA+ID4gSSBhbHNvIGFz
+a2VkIGhvdyB0aG9zZSB2ZXJzaW9ucyBhcmUgdHJhbnNmZXJyZWQgdG8gRlcgYW5kIHVzZWQgdGhl
+cmUsIGJ1dCB3YXMNCiAgICA+ID4gaWdub3JlZC4NCiAgICA+ID4gaHR0cHM6Ly9sb3JlLmtlcm5l
+bC5vcmcvbmV0ZGV2LzIwMjAwMjI0MDk0MTE2LkdENDIyNzA0QHVucmVhbC8NCiAgICA+ID4NCiAg
+ICA+ID4gQlRXLCBJdCBpcyBhbHNvIHVuY2xlYXIgd2h5IEkgd2Fzbid0IENDZWQgaW4gdGhpcyBw
+YXRjaC4NCiAgICA+ID4NCiAgICA+ID4gVGhhbmtzDQogICAgPg0KICAgID4gTGVvbiwNCiAgICA+
+ICBTb3JyeSBmb3Igbm90IHJlc3BvbmRpbmcgZWFybGllciB0byB5b3VyIGlucXVpcmllcywgdGhl
+eSBhcmUgZXhhY3RseSB0b3VjaGluZyB0aGUNCiAgICA+ICBwb2ludHMgdGhhdCB3ZSB3b3VsZCBs
+aWtlIHRvIGRpc2N1c3MuDQogICAgPiAgVXAgdW50aWwgbm93LCB3ZSBpbiBBV1MsIGhhdmUgYmVl
+biBtb25pdG9yaW5nIHRoZSBkcml2ZXJzIGluIHRoZSBkYXRhY2VudGVyIHVzaW5nIHRoZQ0KICAg
+ID4gIGRyaXZlciB2ZXJzaW9uLCBhbmQgYWN0aXZlbHkgc3VnZ2VzdGluZyBkcml2ZXIgdXBkYXRl
+cyB0byBvdXIgY3VzdG9tZXJzDQogICAgPiAgd2hlbmV2ZXIgYSBjcml0aWNhbCBidWcgd2FzIGZp
+eGVkLCBvciBhIG5ldyBpbXBvcnRhbnQgZmVhdHVyZSB3YXMgYWRkZWQuDQogICAgPiAgUmVtb3Zp
+bmcgdGhlIGRyaXZlciB2ZXJzaW9uIGFuZCBub3QgYWxsb3dpbmcgdG8gbWFpbnRhaW4gb3VyIG93
+biBpbnRlcm5hbA0KICAgID4gIHZlcnNpb24gbmVnYXRpdmVseSBpbXBhY3RzIG91ciBlZmZvcnQg
+dG8gZ2l2ZSBvdXIgY3VzdG9tZXJzIHRoZSBiZXN0IHBvc3NpYmxlIGNsb3VkDQogICAgPiAgZXhw
+ZXJpZW5jZS4gV2UgdGhlcmVmb3JlIHByZWZlciB0byBtYWludGFpbiB1c2luZyBvdXIgaW50ZXJu
+YWwgZHJpdmVyIHZlcnNpb24uDQogICAgPg0KICAgID4gIEFyZSB0aGVyZSBhbnkgb3RoZXIgcmVj
+b21tZW5kZWQgd2F5cyB0byBhY2hpZXZlIG91ciBnb2FsIHdpdGhvdXQgYSBkcml2ZXINCiAgICA+
+ICB2ZXJzaW9uPw0KICAgIA0KICAgIE9mIGNvdXJzZSwgZHJpdmVycyBhcmUgc3VwcG9zZWQgdG8g
+YmVoYXZlIGxpa2UgYW55IG90aGVyIHVzZXIgdmlzaWJsZSBBUEkuDQogICAgVGhleSBuZWVkIHRv
+IGVuc3VyZSBiYWNrd2FyZCBjb21wYXRpYmlsaXR5LCBzbyBuZXcgY29kZSB3aWxsIHdvcmsgd2l0
+aA0KICAgIG9sZCBIVy9GVy4gVGhpcyBpcyBub3JtYWxseSBkb25lIGJ5IGNhcGFiaWxpdHkgbWFz
+a3MsIHNlZSBob3cgaXQgaXMgZG9uZQ0KICAgIGluIE1lbGxhbm94IGRyaXZlcnMgYW5kIEkgdGhp
+bmsgaW4gSW50ZWwgdG9vLg0KICAgIA0KICAgIFNvIHlvdXIgdXBkYXRlIHBvbGljeSBiYXNlZCBv
+biBkcml2ZXIgdmVyc2lvbiBzdHJpbmcgaXMgbm9uc2Vuc2UgYW5kDQogICAgYnJva2VuIGJ5IGRl
+c2lnbi4NCiAgICANCiAgICBPcmlnaW5hbCB0aHJlYWQgd2l0aCBMaW51cyBpcyBoZXJlIFsxXS4N
+CiAgICANCiAgICBbMV0gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcva3N1bW1pdC1kaXNjdXNzL0NB
+KzU1YUZ4OUE9NWNjMFFaN0N5U0M0RjJLN2VZYUVmemtkWUVjOUphTmdDY1YyNT1yZ0BtYWlsLmdt
+YWlsLmNvbS8NCiAgICANCiAgICBUaGFua3MgDQoNCldlIGRvIHN1cHBvcnQgZmVhdHVyZXMgY2Fw
+YWJpbGl0eSBtYXNrIGFzIHdlbGwgYXMgdmVyc2lvbmluZyBwZXIgZmVhdHVyZS4gDQpIb3dldmVy
+LCB3aGVuZXZlciB0aGVyZSBhcmUga25vd24gaXNzdWVzIGluIGEgY2VydGFpbiB2ZXJzaW9uIG9m
+IHRoZSAgZHJpdmVyDQp0aGF0IGNhbiBiZSB3b3JrZWQgYXJvdW5kIGJ5IHRoZSBkZXZpY2UsIHdl
+IG5lZWQgdGhlIGRldmljZSB0byBiZSBhd2FyZSBvZiB0aGUgDQpkcml2ZXIgdmVyc2lvbi4gQW5v
+dGhlciBwdXJwb3NlIGlzIG9wZXJhdGlvbmFsIC0ga25vd2luZyBkcml2ZXIgdmVyc2lvbiBoZWxw
+cyB1cyANCnJlcHJvZHVjZSBjdXN0b21lciBpc3N1ZXMgYW5kIGRlYnVnIHRoZW0sIGFzIHdlbGwg
+YXMgc3VnZ2VzdCBvdXIgY3VzdG9tZXJzDQp0byB1cGdyYWRlIHRoZWlyIGRyaXZlcnMsIGFzIEFy
+dGh1ciBtZW50aW9uZWQgYWJvdmUuDQpUaGFua3MNCg0KICAgIA0KICAgID4NCiAgICA+ICBUaGFu
+a3MhDQogICAgPg0KICAgIA0KDQo=
