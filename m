@@ -2,126 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A105E17ADE8
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 19:13:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3792017AE07
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 19:25:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726131AbgCESNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 13:13:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726036AbgCESNp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 13:13:45 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 72AD3208C3;
-        Thu,  5 Mar 2020 18:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583432024;
-        bh=MmGDQGgUx19Dykruo0Cq7gbv2FwEMbYDwZcR4vu6+Os=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Vz1BUssI0NEhzosLWpEr+RiciXDS6RcTrXWqtOuq2RPYzTY5rymONNq9lI4RGNtQM
-         qto0N2RD1cqfHfq11AylBRGbbdSC8LYtVCbmTlkuFXiujZ0jWnnYeyEM65z0ndIGxM
-         DzNHwvojzKghXagVnyIxRSnc0IgUCPnxWI6rUcBA=
-Date:   Thu, 5 Mar 2020 10:13:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
- abstraction
-Message-ID: <20200305101342.01427a2a@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <87tv332hak.fsf@toke.dk>
-References: <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net>
-        <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com>
-        <87pndt4268.fsf@toke.dk>
-        <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
-        <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com>
-        <87k1413whq.fsf@toke.dk>
-        <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
-        <20200304114000.56888dac@kicinski-fedora-PC1C0HJN>
-        <20200304204506.wli3enu5w25b35h7@ast-mbp>
-        <20200304132439.6abadbe3@kicinski-fedora-PC1C0HJN>
-        <20200305010706.dk7zedpyj5pb5jcv@ast-mbp>
-        <20200305001620.204c292e@cakuba.hsd1.ca.comcast.net>
-        <87tv332hak.fsf@toke.dk>
+        id S1726092AbgCESZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 13:25:28 -0500
+Received: from gateway31.websitewelcome.com ([192.185.143.40]:45623 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726036AbgCESZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 13:25:28 -0500
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 1F3BD33794
+        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 12:25:27 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 9vBWj4qhvAGTX9vBXjCfBI; Thu, 05 Mar 2020 12:25:27 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=a5iVU75uWZ6vyAD02p5FM4/7Wejch4hFSQ3BEuRPCL0=; b=asNxu+HzH/Tl9y/sONdA1gcjS9
+        6qsxIAw3OGsWUgpkPz8hx0ZUTi4C5KhRDQwItmIM3bzwcqgnnML+iVoL2k4KaIDtwJaONg3PPDIrJ
+        cgAluWZH+ZkV5y/ZryS/qpNUjUrN3qP9LmURsdzqNAKbWeaiZfG/anD5KGlNLxISUJH/6QdXDl7BU
+        qwcSWPLYuiW7mOvyO8EMufVte8tuUM1ytHWWI1mqV0ATVAY7qIQS3lHnrWHTNgCloANzaSnIIavp2
+        ZdMnheKB/hGN1B84MXQIIr9xr0iuf5SDgFWB2K82tJgzrGOyDY2mI53E5uUkPQMO8HsuAI4fRTW5F
+        iltcq5BA==;
+Received: from [201.166.169.220] (port=26027 helo=[192.168.43.132])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j9vBV-003PHS-MP; Thu, 05 Mar 2020 12:25:26 -0600
+To:     Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>
+Cc:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200305111216.GA24982@embeddedor>
+ <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
+ <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
+ <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
+ flexible-array member
+Message-ID: <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
+Date:   Thu, 5 Mar 2020 12:28:27 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 201.166.169.220
+X-Source-L: No
+X-Exim-ID: 1j9vBV-003PHS-MP
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.43.132]) [201.166.169.220]:26027
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 7
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 05 Mar 2020 12:05:23 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> > On Wed, 4 Mar 2020 17:07:08 -0800, Alexei Starovoitov wrote: =20
-> >> > Maybe also the thief should not have CAP_ADMIN in the first place?
-> >> > And ask a daemon to perform its actions..   =20
-> >>=20
-> >> a daemon idea keeps coming back in circles.
-> >> With FD-based kprobe/uprobe/tracepoint/fexit/fentry that problem is go=
-ne,
-> >> but xdp, tc, cgroup still don't have the owner concept.
-> >> Some people argued that these three need three separate daemons.
-> >> Especially since cgroups are mainly managed by systemd plus container
-> >> manager it's quite different from networking (xdp, tc) where something
-> >> like 'networkd' might makes sense.
-> >> But if you take this line of thought all the ways systemd should be th=
-at
-> >> single daemon to coordinate attaching to xdp, tc, cgroup because
-> >> in many cases cgroup and tc progs have to coordinate the work. =20
-> >
-> > The feature creep could happen, but Toke's proposal has a fairly simple
-> > feature set, which should be easy to cover by a stand alone daemon.
-> >
-> > Toke, I saw that in the library discussion there was no mention of=20
-> > a daemon, what makes a daemon solution unsuitable? =20
->=20
-> Quoting from the last discussion[0]:
->=20
-> > - Introducing a new, separate code base that we'll have to write, suppo=
-rt
-> >   and manage updates to.
-> >
-> > - Add a new dependency to using XDP (now you not only need the kernel
-> >   and libraries, you'll also need the daemon).
-> >
-> > - Have to duplicate or wrap functionality currently found in the kernel;
-> >   at least:
-> >  =20
-> >     - Keeping track of which XDP programs are loaded and attached to
-> >       each interface (as well as the "new state" of their attachment
-> >       order).
-> >
-> >     - Some kind of interface with the verifier; if an app does
-> >       xdpd_rpc_load(prog), how is the verifier result going to get back
-> >       to the caller?
-> >
-> > - Have to deal with state synchronisation issues (how does xdpd handle
-> >   kernel state changing from underneath it?).
-> >=20
-> > While these are issues that are (probably) all solvable, I think the
-> > cost of solving them is far higher than putting the support into the
-> > kernel. Which is why I think kernel support is the best solution :) =20
->=20
-> The context was slightly different, since this was before we had
-> freplace support in the kernel. But apart from the point about the
-> verifier, I think the arguments still stand. In fact, now that we have
-> that, we don't even need userspace linking, so basically a daemon's only
-> task would be to arbitrate access to the XDP hook? In my book,
-> arbitrating access to resources is what the kernel is all about...
+Hi,
 
-You said that like the library doesn't arbitrate access and manage
-resources.. It does exactly the same work the daemon would do.
+On 3/5/20 10:10, Kalle Valo wrote:
+> Joe Perches <joe@perches.com> writes:
+> 
+>> On Thu, 2020-03-05 at 16:50 +0200, Kalle Valo wrote:
+>>> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+>> []
+>>>>  drivers/net/wireless/zydas/zd1211rw/zd_usb.h | 8 ++++----
+>>>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>>
+>>> "zd1211rw: " is enough, no need to have the filename in the title.
+> 
+>>> But I asked this already in an earlier patch, who prefers this format?
+>>> It already got opposition so I'm not sure what to do.
+>>
+>> I think it doesn't matter.
+>>
+>> Trivial inconsistencies in patch subject and word choice
+>> don't have much overall impact.
+> 
+> I wrote in a confusing way, my question above was about the actual patch
+> and not the the title. For example, Jes didn't like this style change:
+> 
+> https://patchwork.kernel.org/patch/11402315/
+> 
 
-Your prog chaining in the kernel proposal, now that would be a kernel
-mechanism, but that's not what we're discussing here.
+It doesn't seem that that comment adds a lot to the conversation. The only
+thing that it says is literally "fix the compiler". By the way, more than
+a hundred patches have already been applied to linux-next[1] and he seems
+to be the only person that has commented such a thing. Qemu guys are adopting
+this format, too[2][3].
 
-Daemon just trades off the complexity of making calls for the complexity
-of the system and serializing/de-serializing the state.
+On the other hand, the changelog text explains the reasons why we are
+implementing this change all across the kernel tree. :)
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=grep&q=flexible-array
+[2] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00019.html
+[3] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00020.html
+
+Thanks
+--
+Gustavo
+
