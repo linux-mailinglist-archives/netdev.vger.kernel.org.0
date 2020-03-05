@@ -2,357 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D2617AEE3
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 20:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB7C17AEF9
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 20:30:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgCETVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 14:21:53 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:41277 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgCETVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 14:21:53 -0500
-Received: by mail-ot1-f68.google.com with SMTP id v19so6864407ote.8
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 11:21:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sage.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B232Xfl8pPUXhEXTSFr9l2F0YfxzCUYT6YQTqFiZ9d4=;
-        b=Dy5ky1HLo+rC4+F3wFsg6eB2LrdhsnMs/ZBoEAVqYoZCqllz4gI4+lb++qA6MDCPj+
-         NKxQ9MEog5lGquTKwVMQcNr1quwsdBq1aVWQzJl5h+z9yFPGvrzUOjbGIyJ/GyPV/MDJ
-         RNpHWKTNtEDjdyJkasua5HJ/I9adVIVAWVD+VRFXTIpcxEH9fpdb44pgLV+tvVVn4Pxg
-         JgJqPlCis398/OSqKlUVBJFWTenHtigpoMytpFFtFObIwRwNyrMglQ9B3XQepAB8zjOX
-         nKjHHwFM4kf5ggXnS89VXQJo6UFbPl94b7tuM4LlAu6HFyki2AD3HTbHdjmms6ziofWI
-         9qUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B232Xfl8pPUXhEXTSFr9l2F0YfxzCUYT6YQTqFiZ9d4=;
-        b=lPaHE8nSBhC6r455uw5x670sAVbv+u+Cf9+WAJT3VtEJWRN5k+WEw8VJEI9FHKsKpT
-         XlxC+Se06lQou40aBC9UqMioXlVzWFtf28SdOlHZgIB1uym7L7tFVcbwL+loFzVk2DC+
-         TZpCgsxQ5gAIVQrnGkk+syj040RHQoGgx8DTLIegrG/t3/71v24VpFhEV1YsTtWbzPNy
-         t+FwLhlBzbSsfG0+PInWGf5N3n/i78qBPMSCHtYn9Yb1VIe7xvCAGk7CtocVPmdzJ5iO
-         vhn74/KAsTWJItCiH2gUt0ZAyIVYnjEBXkMykG0zYYaoUgj9C0Xu0I2Gp8T5fXkk9VQZ
-         t5Sg==
-X-Gm-Message-State: ANhLgQ0CdoDfeuTuVZ36EYVdKM13zloIm+J5wLHZHHjL67BiOf/m/f+N
-        tp/0zkcl+xutmt0FxsYtj/j+LA==
-X-Google-Smtp-Source: ADFU+vuEVfjFLGoyGPZRpvnh1SMZVlmsqYP+GdVm72kHUi2zVXdwSRXgCLbHOEKdf6ZRlncegOgzaQ==
-X-Received: by 2002:a9d:443:: with SMTP id 61mr7246120otc.357.1583436112243;
-        Thu, 05 Mar 2020 11:21:52 -0800 (PST)
-Received: from tower.attlocal.net ([2600:1700:4a30:fd70::24])
-        by smtp.googlemail.com with ESMTPSA id p65sm10281689oif.47.2020.03.05.11.21.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 11:21:51 -0800 (PST)
-From:   Eric Sage <eric@sage.org>
-To:     bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com, yhs@fb.com,
-        andriin@fb.com, jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, Eric Sage <eric@sage.org>
-Subject: [PATCH] [bpf] Make bpf program autoloading optional
-Date:   Thu,  5 Mar 2020 11:21:46 -0800
-Message-Id: <20200305192146.589093-1-eric@sage.org>
-X-Mailer: git-send-email 2.24.1
+        id S1725991AbgCETaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 14:30:30 -0500
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:56176 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgCETaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 14:30:30 -0500
+Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
+        (envelope-from <linville@tuxdriver.com>)
+        id 1j9wCK-0001rr-Vx; Thu, 05 Mar 2020 14:30:21 -0500
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by localhost.localdomain (8.15.2/8.14.6) with ESMTP id 025JOM0O004604;
+        Thu, 5 Mar 2020 14:24:23 -0500
+Received: (from linville@localhost)
+        by localhost.localdomain (8.15.2/8.15.2/Submit) id 025JOGV1004603;
+        Thu, 5 Mar 2020 14:24:16 -0500
+Date:   Thu, 5 Mar 2020 14:24:16 -0500
+From:   "John W. Linville" <linville@tuxdriver.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH ethtool v2 00/25] initial netlink interface
+ implementation for 5.6 release
+Message-ID: <20200305192416.GA23804@tuxdriver.com>
+References: <cover.1583347351.git.mkubecek@suse.cz>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="uAKRQypu60I7Lcqm"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1583347351.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds bpf_program__set_autoload which can be used to disable loading
-a bpf_prog when loading the bpf_object that contains it after the
-bpf_object has been opened. This behavior affect calling load directly
-and loading through BPF skel. A single flag is added to bpf_prog
-to make this work.
 
-Signed-off-by: Eric Sage <eric@sage.org>
----
- tools/lib/bpf/libbpf.c                        |   9 +
- tools/lib/bpf/libbpf.h                        |   2 +
- tools/lib/bpf/libbpf.map                      |   5 +
- tools/testing/selftests/bpf/Makefile          |   2 +-
- .../selftests/bpf/progs/test_autoload_kern.c  |  24 +++
- tools/testing/selftests/bpf/test_autoload.c   | 158 ++++++++++++++++++
- 6 files changed, 199 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_autoload_kern.c
- create mode 100644 tools/testing/selftests/bpf/test_autoload.c
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 514b1a524abb..fe156ca10d16 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -222,6 +222,7 @@ struct bpf_program {
- 	bpf_program_prep_t preprocessor;
- 
- 	struct bpf_object *obj;
-+	bool autoload;
- 	void *priv;
- 	bpf_program_clear_priv_t clear_priv;
- 
-@@ -499,6 +500,7 @@ bpf_program__init(void *data, size_t size, char *section_name, int idx,
- 	prog->instances.fds = NULL;
- 	prog->instances.nr = -1;
- 	prog->type = BPF_PROG_TYPE_UNSPEC;
-+	prog->autoload = true;
- 
- 	return 0;
- errout:
-@@ -4933,6 +4935,11 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	return ret;
- }
- 
-+void bpf_program__set_autoload(struct bpf_program *prog, bool autoload)
-+{
-+	prog->autoload = autoload;
-+}
-+
- static int libbpf_find_attach_btf_id(struct bpf_program *prog);
- 
- int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
-@@ -5030,6 +5037,8 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
- 	int err;
- 
- 	for (i = 0; i < obj->nr_programs; i++) {
-+		if (!obj->programs[i].autoload)
-+			continue;
- 		if (bpf_program__is_function_storage(&obj->programs[i], obj))
- 			continue;
- 		obj->programs[i].log_level |= log_level;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 3fe12c9d1f92..e5f30f70bac1 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -204,6 +204,8 @@ LIBBPF_API const char *bpf_program__title(const struct bpf_program *prog,
- /* returns program size in bytes */
- LIBBPF_API size_t bpf_program__size(const struct bpf_program *prog);
- 
-+LIBBPF_API void bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-+
- LIBBPF_API int bpf_program__load(struct bpf_program *prog, char *license,
- 				 __u32 kern_version);
- LIBBPF_API int bpf_program__fd(const struct bpf_program *prog);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index b035122142bb..1d7572806981 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -235,3 +235,8 @@ LIBBPF_0.0.7 {
- 		btf__align_of;
- 		libbpf_find_kernel_btf;
- } LIBBPF_0.0.6;
-+
-+LIBBPF_0.0.8 {
-+  global:
-+    bpf_program__set_autoload;
-+} LIBBPF_0.0.7;
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 257a1aaaa37d..1ee62911992d 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -29,7 +29,7 @@ LDLIBS += -lcap -lelf -lz -lrt -lpthread
- # Order correspond to 'make run_tests' order
- TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test_progs \
- 	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
--	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
-+	test_sock test_btf test_sockmap test_autoload get_cgroup_id_user test_socket_cookie \
- 	test_cgroup_storage \
- 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
- 	test_progs-no_alu32
-diff --git a/tools/testing/selftests/bpf/progs/test_autoload_kern.c b/tools/testing/selftests/bpf/progs/test_autoload_kern.c
-new file mode 100644
-index 000000000000..e4cfe9b90606
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_autoload_kern.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("xdp_prog_0")
-+int prog_0(struct xdp_md *xdp)
-+{
-+	return XDP_PASS;
-+}
-+
-+SEC("xdp_prog_1")
-+int prog_1(struct xdp_md *xdp)
-+{
-+	return XDP_PASS;
-+}
-+
-+SEC("xdp_prog_2")
-+int prog_2(struct xdp_md *xdp)
-+{
-+	return XDP_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_autoload.c b/tools/testing/selftests/bpf/test_autoload.c
-new file mode 100644
-index 000000000000..3294c167bbfd
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_autoload.c
-@@ -0,0 +1,158 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <errno.h>
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <sys/resource.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "test_autoload_kern.skel.h"
-+
-+#define AUTOLOAD_KERN "test_autoload_kern.o"
-+#define TEST_NO_AUTOLOAD_PROG "prog_2"
-+
-+int print_libbpf_log(enum libbpf_print_level lvl, const char *fmt, va_list args)
-+{
-+	return 0;
-+}
-+
-+int test_libbpf(void)
-+{
-+	struct bpf_object *obj;
-+	struct bpf_program *unloaded_prog, *prog;
-+	struct bpf_prog_info *info;
-+	__u32 info_len;
-+	int prog_fd;
-+
-+	obj = bpf_object__open(AUTOLOAD_KERN);
-+	if (obj == NULL) {
-+		fprintf(stderr, "failed to load %s\n", AUTOLOAD_KERN);
-+		return -1;
-+	}
-+
-+	unloaded_prog =
-+		bpf_object__find_program_by_name(obj, TEST_NO_AUTOLOAD_PROG);
-+	if (unloaded_prog == NULL) {
-+		fprintf(stderr, "failed to find test xdp prog %s\n",
-+			TEST_NO_AUTOLOAD_PROG);
-+		goto fail;
-+	}
-+
-+	bpf_program__set_autoload(unloaded_prog, false);
-+
-+	bpf_object__load(obj);
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		prog_fd = bpf_program__fd(prog);
-+
-+		if (unloaded_prog == prog) {
-+			if (-prog_fd != EINVAL) {
-+				fprintf(stderr,
-+					"non-autoloaded prog should not be loaded\n");
-+				goto fail;
-+			}
-+			continue;
-+		}
-+
-+		info_len = sizeof(struct bpf_prog_info);
-+		info = calloc(1, info_len);
-+
-+		if (bpf_obj_get_info_by_fd(prog_fd, info, &info_len) < 0) {
-+			fprintf(stderr, "could not get bpf prog info\n");
-+			goto fail;
-+		}
-+
-+		if (info->id == 0) {
-+			fprintf(stderr, "expected valid prog id\n");
-+			goto fail;
-+		}
-+	}
-+
-+	bpf_object__close(obj);
-+	return 0;
-+fail:
-+	bpf_object__close(obj);
-+	return -1;
-+}
-+
-+int test_skel(void)
-+{
-+	struct test_autoload_kern *kern;
-+	struct bpf_object *obj;
-+	struct bpf_program *unloaded_prog, *prog;
-+	struct bpf_prog_info *info;
-+	__u32 info_len;
-+	int prog_fd;
-+
-+	kern = test_autoload_kern__open();
-+	if (kern == NULL) {
-+		fprintf(stderr, "failed to autoload skel\n");
-+		return -1;
-+	}
-+
-+	obj = kern->obj;
-+
-+	unloaded_prog =
-+		bpf_object__find_program_by_name(obj, TEST_NO_AUTOLOAD_PROG);
-+	if (unloaded_prog == NULL) {
-+		fprintf(stderr, "failed to find test xdp prog %s\n",
-+			TEST_NO_AUTOLOAD_PROG);
-+		goto fail;
-+	}
-+
-+	bpf_program__set_autoload(unloaded_prog, false);
-+
-+	bpf_object__load(obj);
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		prog_fd = bpf_program__fd(prog);
-+
-+		if (unloaded_prog == prog) {
-+			if (-prog_fd != EINVAL) {
-+				fprintf(stderr,
-+					"non-autoloaded prog should not be loaded\n");
-+				goto fail;
-+			}
-+			continue;
-+		}
-+
-+		info_len = sizeof(struct bpf_prog_info);
-+		info = calloc(1, info_len);
-+
-+		if (bpf_obj_get_info_by_fd(prog_fd, info, &info_len) < 0) {
-+			fprintf(stderr, "could not get bpf prog info\n");
-+			goto fail;
-+		}
-+
-+		if (info->id == 0) {
-+			fprintf(stderr, "expected valid prog id\n");
-+			goto fail;
-+		}
-+	}
-+
-+	test_autoload_kern__destroy(kern);
-+	return 0;
-+fail:
-+	test_autoload_kern__destroy(kern);
-+	return -1;
-+}
-+
-+int main(void)
-+{
-+	struct rlimit r = { RLIM_INFINITY, RLIM_INFINITY };
-+
-+	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
-+		perror("setrlimit(RLIMIT_MEMLOCK)");
-+		return EXIT_FAILURE;
-+	}
-+
-+	libbpf_set_print(print_libbpf_log);
-+
-+	if (test_libbpf() < 0)
-+		return EXIT_FAILURE;
-+
-+	if (test_skel() < 0)
-+		return EXIT_FAILURE;
-+}
+On Wed, Mar 04, 2020 at 09:24:35PM +0100, Michal Kubecek wrote:
+> This series adds initial support for ethtool netlink interface provided by
+> kernel since 5.6-rc1. The traditional ioctl interface is still supported
+> for compatibility with older kernels. The netlink interface and message
+> formats are documented in Documentation/networking/ethtool-netlink.rst file
+> in kernel source tree.
+> 
+> Netlink interface is preferred but ethtool falls back to ioctl if netlink
+> interface is not available (i.e. the "ethtool" genetlink family is not
+> registered). It also falls back if a particular command is not implemented
+> in netlink (kernel returns -EOPNOTSUPP). This allows new ethtool versions
+> to work with older kernel versions while support for ethool commands is
+> added in steps.
+> 
+> The series aims to touch existing ioctl code as little as possible in the
+> first phase to minimize the risk of introducing regressions. It is also
+> possible to build ethtool without netlink support if --disable-netlink is
+> passed to configure script. The most visible changes to existing code are
+> 
+>   - UAPI header copies are moved to uapi/ under original names
+>   - some variables and functions which are going to be shared with netlink
+>     code are moved from ethtool.c to common.c and common.h
+>   - args[] array in ethtool.c was rewritten to use named initializers
+> 
+> Except for changes to main(), all netlink specific code is in a separate
+> directory netlink/ and is divided into multiple files.
+> 
+> Changes in v2:
+> - add support for permanent hardware addres ("ethtool -P", patch 20)
+> - add support for pretty printing of netlink messages (patches 21-25)
+> - make output of "ethtool <dev>" closer to ioctl implementation
+> - two more kernel uapi header copies (patch 5)
+> - support for rtnetlink socket and requests (needed for "ethtool -P")
+> - some kerneldoc style comments
+> 
+> Michal Kubecek (25):
+>   move UAPI header copies to a separate directory
+>   update UAPI header copies
+>   add --debug option to control debugging messages
+>   use named initializers in command line option list
+>   netlink: add netlink related UAPI header files
+>   netlink: introduce the netlink interface
+>   netlink: message buffer and composition helpers
+>   netlink: netlink socket wrapper and helpers
+>   netlink: initialize ethtool netlink socket
+>   netlink: add support for string sets
+>   netlink: add notification monitor
+>   move shared code into a common file
+>   netlink: add bitset helpers
+>   netlink: partial netlink handler for gset (no option)
+>   netlink: support getting wake-on-lan and debugging settings
+>   netlink: add basic command line parsing helpers
+>   netlink: add bitset command line parser handlers
+>   netlink: add netlink handler for sset (-s)
+>   netlink: support tests with netlink enabled
+>   netlink: add handler for permaddr (-P)
+>   netlink: support for pretty printing netlink messages
+>   netlink: message format description for ethtool netlink
+>   netlink: message format descriptions for genetlink control
+>   netlink: message format descriptions for rtnetlink
+>   netlink: use pretty printing for ethtool netlink messages
+> 
+>  Makefile.am                                  |   31 +-
+>  common.c                                     |  145 +++
+>  common.h                                     |   26 +
+>  configure.ac                                 |   14 +-
+>  ethtool.8.in                                 |   48 +-
+>  ethtool.c                                    |  819 ++++++++------
+>  internal.h                                   |   31 +-
+>  netlink/bitset.c                             |  218 ++++
+>  netlink/bitset.h                             |   26 +
+>  netlink/desc-ethtool.c                       |  139 +++
+>  netlink/desc-genlctrl.c                      |   56 +
+>  netlink/desc-rtnl.c                          |   96 ++
+>  netlink/extapi.h                             |   46 +
+>  netlink/monitor.c                            |  229 ++++
+>  netlink/msgbuff.c                            |  255 +++++
+>  netlink/msgbuff.h                            |  117 ++
+>  netlink/netlink.c                            |  216 ++++
+>  netlink/netlink.h                            |   87 ++
+>  netlink/nlsock.c                             |  405 +++++++
+>  netlink/nlsock.h                             |   45 +
+>  netlink/parser.c                             | 1058 ++++++++++++++++++
+>  netlink/parser.h                             |  144 +++
+>  netlink/permaddr.c                           |  114 ++
+>  netlink/prettymsg.c                          |  237 ++++
+>  netlink/prettymsg.h                          |  118 ++
+>  netlink/settings.c                           |  955 ++++++++++++++++
+>  netlink/strset.c                             |  297 +++++
+>  netlink/strset.h                             |   25 +
+>  test-cmdline.c                               |   29 +-
+>  test-features.c                              |   11 +
+>  ethtool-copy.h => uapi/linux/ethtool.h       |   17 +
+>  uapi/linux/ethtool_netlink.h                 |  237 ++++
+>  uapi/linux/genetlink.h                       |   89 ++
+>  uapi/linux/if_link.h                         | 1051 +++++++++++++++++
+>  net_tstamp-copy.h => uapi/linux/net_tstamp.h |   27 +
+>  uapi/linux/netlink.h                         |  248 ++++
+>  uapi/linux/rtnetlink.h                       |  777 +++++++++++++
+>  37 files changed, 8102 insertions(+), 381 deletions(-)
+>  create mode 100644 common.c
+>  create mode 100644 common.h
+>  create mode 100644 netlink/bitset.c
+>  create mode 100644 netlink/bitset.h
+>  create mode 100644 netlink/desc-ethtool.c
+>  create mode 100644 netlink/desc-genlctrl.c
+>  create mode 100644 netlink/desc-rtnl.c
+>  create mode 100644 netlink/extapi.h
+>  create mode 100644 netlink/monitor.c
+>  create mode 100644 netlink/msgbuff.c
+>  create mode 100644 netlink/msgbuff.h
+>  create mode 100644 netlink/netlink.c
+>  create mode 100644 netlink/netlink.h
+>  create mode 100644 netlink/nlsock.c
+>  create mode 100644 netlink/nlsock.h
+>  create mode 100644 netlink/parser.c
+>  create mode 100644 netlink/parser.h
+>  create mode 100644 netlink/permaddr.c
+>  create mode 100644 netlink/prettymsg.c
+>  create mode 100644 netlink/prettymsg.h
+>  create mode 100644 netlink/settings.c
+>  create mode 100644 netlink/strset.c
+>  create mode 100644 netlink/strset.h
+>  rename ethtool-copy.h => uapi/linux/ethtool.h (99%)
+>  create mode 100644 uapi/linux/ethtool_netlink.h
+>  create mode 100644 uapi/linux/genetlink.h
+>  create mode 100644 uapi/linux/if_link.h
+>  rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (84%)
+>  create mode 100644 uapi/linux/netlink.h
+>  create mode 100644 uapi/linux/rtnetlink.h
+> 
+> -- 
+> 2.25.1
+
+Just a quick check -- executing "./autogen.sh ; ./configure ; make
+distcheck" fails with the attached log output.
+
+John
 -- 
-2.24.1
+John W. Linville		Someday the world will need a hero, and you
+linville@tuxdriver.com			might be all we have.  Be ready.
 
+--uAKRQypu60I7Lcqm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment; filename="make-distcheck.log"
+Content-Transfer-Encoding: 8bit
+
+make  dist-gzip am__post_remove_distdir='@:'
+make[1]: Entering directory '/home/linville/git/ethtool'
+make  distdir-am
+make[2]: Entering directory '/home/linville/git/ethtool'
+if test -d "ethtool-5.4"; then find "ethtool-5.4" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -rf "ethtool-5.4" || { sleep 5 && rm -rf "ethtool-5.4"; }; else :; fi
+test -d "ethtool-5.4" || mkdir "ethtool-5.4"
+make  \
+  top_distdir="ethtool-5.4" distdir="ethtool-5.4" \
+  dist-hook
+make[3]: Entering directory '/home/linville/git/ethtool'
+cp ./ethtool.spec ethtool-5.4
+make[3]: Leaving directory '/home/linville/git/ethtool'
+test -n "" \
+|| find "ethtool-5.4" -type d ! -perm -755 \
+	-exec chmod u+rwx,go+rx {} \; -o \
+  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -444 -exec /bin/sh /home/linville/git/ethtool/install-sh -c -m a+r {} {} \; \
+|| chmod -R a+r "ethtool-5.4"
+make[2]: Leaving directory '/home/linville/git/ethtool'
+tardir=ethtool-5.4 && ${TAR-tar} chof - "$tardir" | eval GZIP= gzip --best -c >ethtool-5.4.tar.gz
+make[1]: Leaving directory '/home/linville/git/ethtool'
+if test -d "ethtool-5.4"; then find "ethtool-5.4" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -rf "ethtool-5.4" || { sleep 5 && rm -rf "ethtool-5.4"; }; else :; fi
+case 'ethtool-5.4.tar.gz' in \
+*.tar.gz*) \
+  eval GZIP= gzip --best -dc ethtool-5.4.tar.gz | ${TAR-tar} xf - ;;\
+*.tar.bz2*) \
+  bzip2 -dc ethtool-5.4.tar.bz2 | ${TAR-tar} xf - ;;\
+*.tar.lz*) \
+  lzip -dc ethtool-5.4.tar.lz | ${TAR-tar} xf - ;;\
+*.tar.xz*) \
+  xz -dc ethtool-5.4.tar.xz | ${TAR-tar} xf - ;;\
+*.tar.Z*) \
+  uncompress -c ethtool-5.4.tar.Z | ${TAR-tar} xf - ;;\
+*.shar.gz*) \
+  eval GZIP= gzip --best -dc ethtool-5.4.shar.gz | unshar ;;\
+*.zip*) \
+  unzip ethtool-5.4.zip ;;\
+esac
+chmod -R a-w ethtool-5.4
+chmod u+w ethtool-5.4
+mkdir ethtool-5.4/_build ethtool-5.4/_build/sub ethtool-5.4/_inst
+chmod a-w ethtool-5.4
+test -d ethtool-5.4/_build || exit 0; \
+dc_install_base=`CDPATH="${ZSH_VERSION+.}:" && cd ethtool-5.4/_inst && pwd | sed -e 's,^[^:\\/]:[\\/],/,'` \
+  && dc_destdir="${TMPDIR-/tmp}/am-dc-$$/" \
+  && am__cwd=`pwd` \
+  && CDPATH="${ZSH_VERSION+.}:" && cd ethtool-5.4/_build/sub \
+  && ../../configure \
+     \
+     \
+    --srcdir=../.. --prefix="$dc_install_base" \
+  && make  \
+  && make  dvi \
+  && make  check \
+  && make  install \
+  && make  installcheck \
+  && make  uninstall \
+  && make  distuninstallcheck_dir="$dc_install_base" \
+        distuninstallcheck \
+  && chmod -R a-w "$dc_install_base" \
+  && ({ \
+       (cd ../.. && umask 077 && mkdir "$dc_destdir") \
+       && make  DESTDIR="$dc_destdir" install \
+       && make  DESTDIR="$dc_destdir" uninstall \
+       && make  DESTDIR="$dc_destdir" \
+            distuninstallcheck_dir="$dc_destdir" distuninstallcheck; \
+      } || { rm -rf "$dc_destdir"; exit 1; }) \
+  && rm -rf "$dc_destdir" \
+  && make  dist \
+  && rm -rf ethtool-5.4.tar.gz \
+  && make  distcleancheck \
+  && cd "$am__cwd" \
+  || exit 1
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether to enable maintainer-specific portions of Makefiles... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking whether gcc understands -c and -o together... yes
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of gcc... gcc3
+checking how to run the C preprocessor... gcc -E
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking whether gcc needs -traditional... no
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking whether <linux/types.h> defines big-endian types... yes
+checking for ANSI C header files... yes
+checking for socket... yes
+checking for strtol... yes
+checking for bash-completion directory... ${prefix}/share/bash-completion/completions
+checking for pkg-config... (cached) /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for MNL... yes
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating ethtool.spec
+config.status: creating ethtool.8
+config.status: creating ethtool-config.h
+config.status: executing depfiles commands
+make[1]: Entering directory '/home/linville/git/ethtool/ethtool-5.4/_build/sub'
+make  all-am
+make[2]: Entering directory '/home/linville/git/ethtool/ethtool-5.4/_build/sub'
+gcc -DHAVE_CONFIG_H -I. -I../..    -I./uapi -Wall  -g -O2 -MT ethtool-ethtool.o -MD -MP -MF .deps/ethtool-ethtool.Tpo -c -o ethtool-ethtool.o `test -f 'ethtool.c' || echo '../../'`ethtool.c
+../../ethtool.c: In function ‘do_get_phy_tunable’:
+../../ethtool.c:4773:16: error: ‘ETHTOOL_PHY_EDPD’ undeclared (first use in this function); did you mean ‘ETHTOOL_PHYS_ID’?
+ 4773 |   cont.ds.id = ETHTOOL_PHY_EDPD;
+      |                ^~~~~~~~~~~~~~~~
+      |                ETHTOOL_PHYS_ID
+../../ethtool.c:4773:16: note: each undeclared identifier is reported only once for each function it appears in
+../../ethtool.c:4781:21: error: ‘ETHTOOL_PHY_EDPD_DISABLE’ undeclared (first use in this function); did you mean ‘ETHTOOL_PHY_STUNABLE’?
+ 4781 |   if (cont.msecs == ETHTOOL_PHY_EDPD_DISABLE)
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                     ETHTOOL_PHY_STUNABLE
+../../ethtool.c:4783:26: error: ‘ETHTOOL_PHY_EDPD_NO_TX’ undeclared (first use in this function)
+ 4783 |   else if (cont.msecs == ETHTOOL_PHY_EDPD_NO_TX)
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+../../ethtool.c: In function ‘do_set_phy_tunable’:
+../../ethtool.c:4962:25: error: ‘ETHTOOL_PHY_EDPD_DFLT_TX_MSECS’ undeclared (first use in this function)
+ 4962 |  u16 edpd_tx_interval = ETHTOOL_PHY_EDPD_DFLT_TX_MSECS;
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ethtool.c:5003:23: error: ‘ETHTOOL_PHY_EDPD_DISABLE’ undeclared (first use in this function); did you mean ‘ETHTOOL_PHY_STUNABLE’?
+ 5003 |    edpd_tx_interval = ETHTOOL_PHY_EDPD_DISABLE;
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                       ETHTOOL_PHY_STUNABLE
+../../ethtool.c:5005:23: error: ‘ETHTOOL_PHY_EDPD_NO_TX’ undeclared (first use in this function)
+ 5005 |    edpd_tx_interval = ETHTOOL_PHY_EDPD_NO_TX;
+      |                       ^~~~~~~~~~~~~~~~~~~~~~
+../../ethtool.c:5053:17: error: ‘ETHTOOL_PHY_EDPD’ undeclared (first use in this function); did you mean ‘ETHTOOL_PHYS_ID’?
+ 5053 |   cont.fld.id = ETHTOOL_PHY_EDPD;
+      |                 ^~~~~~~~~~~~~~~~
+      |                 ETHTOOL_PHYS_ID
+make[2]: *** [Makefile:1255: ethtool-ethtool.o] Error 1
+make[2]: Leaving directory '/home/linville/git/ethtool/ethtool-5.4/_build/sub'
+make[1]: *** [Makefile:881: all] Error 2
+make[1]: Leaving directory '/home/linville/git/ethtool/ethtool-5.4/_build/sub'
+make: *** [Makefile:3670: distcheck] Error 1
+
+--uAKRQypu60I7Lcqm--
