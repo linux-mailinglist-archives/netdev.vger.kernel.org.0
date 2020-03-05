@@ -2,122 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1779617B014
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AC8317B03B
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 22:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgCEUzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 15:55:35 -0500
-Received: from mail-pj1-f74.google.com ([209.85.216.74]:54245 "EHLO
-        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbgCEUzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 15:55:35 -0500
-Received: by mail-pj1-f74.google.com with SMTP id z20so3439346pjn.3
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 12:55:34 -0800 (PST)
+        id S1726142AbgCEVDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 16:03:50 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39838 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbgCEVDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 16:03:49 -0500
+Received: by mail-pl1-f194.google.com with SMTP id j20so2752738pll.6
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 13:03:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=mljG1c45tyBHCNvH//AiEZZTlDTTk3P0kV7UDMwCvTs=;
-        b=DiLLZ921cvStv9VpgT9chw1u+67yb+Jf1wZHKgKeRrtR6Vd+VVjzBFoE3075eabKkB
-         vL9Q1THdoudDtlzUB2SlXnPecVbbuAg124mgQ8cq9H95q1YMiqQXbrNKd7dT2fAnUn3n
-         dPRVeotMzxE6Byy9sl8GMe1jbOn5REl2Dx/4Jw3dbu3R5Z0VldYTbblzUPZ/nq/hvU5m
-         UW41Z7wBfxhTTlXQkI1TtX3zZrz8D1ZvUtgjIr8/MH5OdVN/TMfeA6uQ38HLwN+syvBs
-         NSC1Z9sBv8MySgOXqKr3+c5YO5Dh9yruYybkpx5dtHt7G3kaEndhLvrvjxgKLh+C3qkQ
-         DSTA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eH7ynw3jBFgcNBV3X9mskIeEm5wcw4wRTDtmVE20pDs=;
+        b=djy9heWz023puFrACD1wI6KQG0yKFXZpDHZSekTyN76vxF0xcF8UCxEBt+4vFibHoM
+         38uq7eL2xdr6wE3G9/j335BgFPVM15WN2Jz/d9TxIIfBdNioQ2trswh3UgTzEZwgRTOy
+         8/a7+1Giiuds4lrWGIL8k+vtzT3YMir+2PdsMsE2+VtcSu9EYGfYSL6GlFhBA+1GyOg9
+         evLUPZGi85Wx7u/gdzPJYA0DTkoG9st4M1SSre8/uaRMs/iQqk9wu5X95HjXahIkek6H
+         AoLMRxZtQDr8QZ5MSuXWeqlAiJulT2a/DQGQKxeXAKTGpgWpK/7ebt02mOcZaxxOQhQD
+         AtPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=mljG1c45tyBHCNvH//AiEZZTlDTTk3P0kV7UDMwCvTs=;
-        b=DEgsKOgsr3yESCmX441fTZsC+gP/KI+OJPsDsUNbixFcGPqlPP66T4y2ukDDIkZMth
-         VbliAtVmEI38nZLPl1WJM3LimVRoU34dUGfKHYPFyKXDaWxgoD0aUPJZ1RufFl1Kze4N
-         MOoW7MCdel5FaAWp52qPyDiMMqarYCdHdkDpcdcuhYhfH9Li+lUbF83qhQAN5XHJwzq1
-         4LNfWqBrfldATwYL2hg+S4mR/YR4Gh2z6+TZy/hdoiYbRX4CtnEYgN4erA/+akPf8NHX
-         anDwKagAaPrh4p383DVYo0t9swb5o2AZ/L5tfOD8xugJOQnj8xm9F38E6bml1BoOyjA1
-         h/DQ==
-X-Gm-Message-State: ANhLgQ04Hw15HeXyIMQ1ZPI55SwJ7d5GEwrAP22pVNToAqlXYKwmgFeY
-        1S3DNHApVRtJoI/18hWIGTzU1XbW/oQlVA==
-X-Google-Smtp-Source: ADFU+vtVGz7DVOErF5e2OURgUg2ecxIgD7Eb6KdrmeesDbmcr0yLA+SUXXXVg19kGdyFzvBxzDpSLTmT/w31sA==
-X-Received: by 2002:a63:74b:: with SMTP id 72mr19359pgh.320.1583441733885;
- Thu, 05 Mar 2020 12:55:33 -0800 (PST)
-Date:   Thu,  5 Mar 2020 12:55:25 -0800
-Message-Id: <20200305205525.245058-1-shakeelb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.0.265.gbab2e86ba0-goog
-Subject: [PATCH v3] net: memcg: late association of sock to memcg
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Eric Dumazet <edumazet@google.com>, Roman Gushchin <guro@fb.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shakeel Butt <shakeelb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eH7ynw3jBFgcNBV3X9mskIeEm5wcw4wRTDtmVE20pDs=;
+        b=TaFyKDh1N/TGwYGTSGryQSUrA2TPc19JY9W4FisXjSj0SI/cxg5FNWQqTFwOHCI3KZ
+         9CJ7H/qyxhyq6DaFxTG3dAJGXH4ZPkc3rUKqXOioe2i9entGVfYWzmSxnk2VFgLnriq2
+         KAdBrwhxEOdcHkWfvRn9h0o1CBDz2P0XvjFhwV9VhPbOc7sT+hOR9h7aLnl3dIp6U5NQ
+         A6JeaMUtPhG8Y7ipJ7YfhqedG1KQ31cEWyMpShfWExdlOLIP21+7i8Aq+QEXGc2OM+ZW
+         BTEFBFxs47ciRs5NK+89G/dJvP3uc0RIYjVniXSrEgH20TXUTAeQfPZw/6saXicuZFTC
+         Gg6Q==
+X-Gm-Message-State: ANhLgQ3qwPmqhmkLedY+YRdgWjlMKqlyX1geCqdp6b2beTN2a7lC0oXQ
+        gfdh5wPoDNkiokfRZRHwAtY=
+X-Google-Smtp-Source: ADFU+vtdDJ0TILR5p8kZbFBX1Vo6ewSYOkDiWNtKjF+7otkBgvSJb5D2NOlKhG0wYBVbU2/bPqMmaQ==
+X-Received: by 2002:a17:902:6b03:: with SMTP id o3mr9753297plk.331.1583442228481;
+        Thu, 05 Mar 2020 13:03:48 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id b10sm6970055pjo.32.2020.03.05.13.03.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Mar 2020 13:03:47 -0800 (PST)
+Subject: Re: [PATCH net] ipvlan: do not add hardware address of master to its
+ unicast filter list
+To:     Jiri Wiesner <jwiesner@suse.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Andreas Taschner <Andreas.Taschner@suse.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+References: <20200305193101.GA16264@incl>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <36cdfab2-aa29-fa21-2f46-bf9d744ee6db@gmail.com>
+Date:   Thu, 5 Mar 2020 13:03:46 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200305193101.GA16264@incl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a TCP socket is allocated in IRQ context or cloned from unassociated
-(i.e. not associated to a memcg) in IRQ context then it will remain
-unassociated for its whole life. Almost half of the TCPs created on the
-system are created in IRQ context, so, memory used by such sockets will
-not be accounted by the memcg.
 
-This issue is more widespread in cgroup v1 where network memory
-accounting is opt-in but it can happen in cgroup v2 if the source socket
-for the cloning was created in root memcg.
 
-To fix the issue, just do the late association of the unassociated
-sockets at accept() time in the process context and then force charge
-the memory buffer already reserved by the socket.
+On 3/5/20 11:31 AM, Jiri Wiesner wrote:
+> There is a problem when ipvlan slaves are created on a master device that
+> is a vmxnet3 device (ipvlan in VMware guests). The vmxnet3 driver does not
+> support unicast address filtering. When an ipvlan device is brought up in
+> ipvlan_open(), the ipvlan driver calls dev_uc_add() to add the hardware
+> address of the vmxnet3 master device to the unicast address list of the
+> master device, phy_dev->uc. This inevitably leads to the vmxnet3 master
+> device being forced into promiscuous mode by __dev_set_rx_mode().
+> 
+> Promiscuous mode is switched on the master despite the fact that there is
+> still only one hardware address that the master device should use for
+> filtering in order for the ipvlan device to be able to receive packets.
+> The comment above struct net_device describes the uc_promisc member as a
+> "counter, that indicates, that promiscuous mode has been enabled due to
+> the need to listen to additional unicast addresses in a device that does
+> not implement ndo_set_rx_mode()". Moreover, the design of ipvlan
+> guarantees that only the hardware address of a master device,
+> phy_dev->dev_addr, will be used to transmit and receive all packets from
+> its ipvlan slaves. Thus, the unicast address list of the master device
+> should not be modified by ipvlan_open() and ipvlan_stop() in order to make
+> ipvlan a workable option on masters that do not support unicast address
+> filtering.
+> 
+> Fixes: 2ad7bf3638411 ("ipvlan: Initial check-in of the IPVLAN driver")
+> Reported-by: Per Sundstrom <per.sundstrom@redqube.se>
+> Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
+> ---
+>  drivers/net/ipvlan/ipvlan_main.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+> index a70662261a5a..f23214003d42 100644
+> --- a/drivers/net/ipvlan/ipvlan_main.c
+> +++ b/drivers/net/ipvlan/ipvlan_main.c
+> @@ -178,7 +178,7 @@ static int ipvlan_open(struct net_device *dev)
+>  		ipvlan_ht_addr_add(ipvlan, addr);
+>  	rcu_read_unlock();
+>  
+> -	return dev_uc_add(phy_dev, phy_dev->dev_addr);
+> +	return 0;
+>  }
+>  
+>  static int ipvlan_stop(struct net_device *dev)
+> @@ -190,8 +190,6 @@ static int ipvlan_stop(struct net_device *dev)
+>  	dev_uc_unsync(phy_dev, dev);
+>  	dev_mc_unsync(phy_dev, dev);
+>  
+> -	dev_uc_del(phy_dev, phy_dev->dev_addr);
+> -
+>  	rcu_read_lock();
+>  	list_for_each_entry_rcu(addr, &ipvlan->addrs, anode)
+>  		ipvlan_ht_addr_del(addr);
+> 
 
-Signed-off-by: Shakeel Butt <shakeelb@google.com>
----
-Changes since v2:
-- Additional check for charging.
-- Release the sock after charging.
+This makes perfect sense, not sure why we left these calls in ipvlan
+submission.
 
-Changes since v1:
-- added sk->sk_rmem_alloc to initial charging.
-- added synchronization to get memory usage and set sk_memcg race-free.
+Thanks for the patch !
 
- net/ipv4/inet_connection_sock.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index a4db79b1b643..5face55cf818 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -482,6 +482,26 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
- 		}
- 		spin_unlock_bh(&queue->fastopenq.lock);
- 	}
-+
-+	if (mem_cgroup_sockets_enabled && !newsk->sk_memcg) {
-+		int amt;
-+
-+		/* atomically get the memory usage, set and charge the
-+		 * sk->sk_memcg.
-+		 */
-+		lock_sock(newsk);
-+
-+		/* The sk has not been accepted yet, no need to look at
-+		 * sk->sk_wmem_queued.
-+		 */
-+		amt = sk_mem_pages(newsk->sk_forward_alloc +
-+				   atomic_read(&sk->sk_rmem_alloc));
-+		mem_cgroup_sk_alloc(newsk);
-+		if (newsk->sk_memcg && amt)
-+			mem_cgroup_charge_skmem(newsk->sk_memcg, amt);
-+
-+		release_sock(newsk);
-+	}
- out:
- 	release_sock(sk);
- 	if (req)
--- 
-2.25.0.265.gbab2e86ba0-goog
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
