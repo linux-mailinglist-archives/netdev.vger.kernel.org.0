@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E1A17AA94
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D756E17AAA9
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:39:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726129AbgCEQew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 11:34:52 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40569 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbgCEQev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:34:51 -0500
-Received: by mail-pl1-f195.google.com with SMTP id y1so2850989plp.7;
-        Thu, 05 Mar 2020 08:34:50 -0800 (PST)
+        id S1726007AbgCEQjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 11:39:13 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44325 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgCEQjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:39:13 -0500
+Received: by mail-pg1-f196.google.com with SMTP id n24so2006532pgk.11;
+        Thu, 05 Mar 2020 08:39:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=p5aLNwUw+FNGm42RWS6uF6z2Sx/qlH7XeO3ky3AE0eI=;
-        b=FAsdcu6SOg4KOpwPmOEqIpeF7EVNcDWFfPSncopT25uF4HfJ9432PaU4j0zejKZtyK
-         7p5s9LjNcCjRnXRUWVnN5+17JFtS83U8+zcaYWBmYR/cyf1Dv2anKmAawuJPtnlYQ6Xm
-         nCjQ+Vb0KV0OqEVMeNCZbQb3TwyfQln8DkwrmgVWjVUNcmJimGE4+ozNOpjxhOREdprF
-         o+e6v8+IKlLBXegaRxhoXKU3RjIiDoFEg0RqSZTGdOuma0yWste5Iv4+h2a9XrWmOMF6
-         mDgfUuRZyZel567XLl2Zqpk11PlMf3KVcDZDzPIaWp3bdJrH12ITThM8sKD1siClGEYk
-         PcTw==
+         :content-disposition:in-reply-to:user-agent;
+        bh=PVSSbj49rQeRflw0glDQaTl2zgODmwsGuVhAn/Ys+D8=;
+        b=c94+qd9lORVT/vk/D6dK2UA8JWFsaO6m5uoVhIXnn1Fs2o/i+HmR9eTPlYelQj6PlG
+         zHGUGv5m3ij1tDqSvPPN/wKia5mvgyWIRWaJ9DVdxnkHk6qEPUl/vgHWow7/RCMootgz
+         v/I5asHntWpHbzLOvKcfsdTEsiWAIpZwjaHZSFSBp7IAwKEL+q4+rgyUrc+Xf9DhfI4t
+         d9kNDRehKpYZd6YynLGCEK3sgoQ3D3qsDum0h+hQAF4sFvap6kfTc7lZ3V8/iiwgNOwV
+         QH4/cgwq4jKXMW1KCLMBXmm27wMAnQQOm0HAq+Zr5IRzksORPkdUNB/WZz/0nE1OsksC
+         LhJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=p5aLNwUw+FNGm42RWS6uF6z2Sx/qlH7XeO3ky3AE0eI=;
-        b=uAPHAVIx2ScEk0ZQ6Jhjh+94kR3ruYb4mtGG1mOuEbIuGL2CX3iVi+rCM12vNA2U8n
-         1vC8tiGI9AOo7aItYA/CHi7ERxrDinQbu3QIhLN6mahdPxkBLl9TFongfLZeXP3Ee4J4
-         PCjnVnIEdkmNKn9lnXcKP8GKYv6cmaY08OwtRj9cWgPD/5kMxqS3PAPXhQKcLXk0K8Aq
-         sA0kLvAD+sZ7W69jSbu1/n+XvDe+ds06MFr9O4BvS7ubPaLfbthqBGiG6ByrR04Iy2w7
-         8kVuCiZL5GKaRILJRNXpygMqVvLyH91YdHD5uxYKUT7D3pve8OJKAz/LUhnx39RcpJeO
-         00CQ==
-X-Gm-Message-State: ANhLgQ32XYBlDpvKPYFXqacWsobJq3SEyqfdttNxhobrm+q13AZPqP11
-        bg3KkTlB2pRbqcGNW8BWd8w=
-X-Google-Smtp-Source: ADFU+vsxhAtGdcoxXV3EKeB42lPJrag8o7YBOP+PV6kHin0SPAbUHjdxTCE4bjBBCE+yVRrSus3KFg==
-X-Received: by 2002:a17:902:be08:: with SMTP id r8mr8646912pls.321.1583426090172;
-        Thu, 05 Mar 2020 08:34:50 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PVSSbj49rQeRflw0glDQaTl2zgODmwsGuVhAn/Ys+D8=;
+        b=d0YuAKBysebsCDUQMeAZ6X2rtbemBlKMswPnWma8hf3UtcGYi6KNO26C0MifZ1eniQ
+         nujKsPXUvR5Ve4hAetT3vd6YBqf0IguY71ZZzdWX0GTrPDnkZVcyJzMjq/2EJdc14jhS
+         IfiEuSvO8VniqqiEtXLURBxwC7YgiopRfAxR5iN0DiaWGpb/LAZawZ2DLyVT9xRvfNru
+         SqX7cSdK1vGnBdaggVyn7aVsCvD72roHjV6qiLZo61VzXDf3qFsJWU+fICA1Aew7EGJS
+         j8+p1zStzpql2NoqsNVxBYAfolsG/39semRzygoldUAAq28kL0+pyt3y5kSyckxKQSXp
+         uXUw==
+X-Gm-Message-State: ANhLgQ2OrhKmx1I+s7IerXyqEHzXzzgZ02ueATITL7ZuYYyJa6Rw55O5
+        NbBxgEAwY4X8CC27XHJVn+4=
+X-Google-Smtp-Source: ADFU+vvFqdpZiTf1BxdMQYkLGo8VtHkVR1cBvYos+j+KBd55GuZmdEPPWe3h1VXGrg+lKHZ6lUOq3A==
+X-Received: by 2002:a65:6843:: with SMTP id q3mr8556528pgt.269.1583426350452;
+        Thu, 05 Mar 2020 08:39:10 -0800 (PST)
 Received: from ast-mbp ([2620:10d:c090:400::5:f0e7])
-        by smtp.gmail.com with ESMTPSA id u12sm32804089pgr.3.2020.03.05.08.34.48
+        by smtp.gmail.com with ESMTPSA id jx10sm6809619pjb.33.2020.03.05.08.39.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Mar 2020 08:34:49 -0800 (PST)
-Date:   Thu, 5 Mar 2020 08:34:46 -0800
+        Thu, 05 Mar 2020 08:39:09 -0800 (PST)
+Date:   Thu, 5 Mar 2020 08:39:07 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
@@ -57,90 +56,62 @@ Cc:     Alexei Starovoitov <ast@fb.com>,
         Kernel Team <kernel-team@fb.com>
 Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
  abstraction
-Message-ID: <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
-References: <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net>
- <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com>
- <87pndt4268.fsf@toke.dk>
+Message-ID: <20200305163905.mumvxqmdotavd6t7@ast-mbp>
+References: <87pndt4268.fsf@toke.dk>
  <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
  <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com>
  <87k1413whq.fsf@toke.dk>
  <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
- <87h7z44l3z.fsf@toke.dk>
- <20200304154757.3tydkiteg3vekyth@ast-mbp>
- <874kv33x60.fsf@toke.dk>
+ <20200304114000.56888dac@kicinski-fedora-PC1C0HJN>
+ <20200304204506.wli3enu5w25b35h7@ast-mbp>
+ <20200304132439.6abadbe3@kicinski-fedora-PC1C0HJN>
+ <20200305010706.dk7zedpyj5pb5jcv@ast-mbp>
+ <20200305001620.204c292e@cakuba.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874kv33x60.fsf@toke.dk>
+In-Reply-To: <20200305001620.204c292e@cakuba.hsd1.ca.comcast.net>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Thu, Mar 05, 2020 at 12:16:20AM -0800, Jakub Kicinski wrote:
+> > 
+> > bpf program is an object. That object has an owner or multiple owners.
+> > A user process that holds a pointer to that object is a shared owner.
+> > FD is such pointer. FD == std::shared_ptr<bpf_prog>.
+> > Holding that pointer guarantees that <bpf_prog> will not disappear,
+> > but it says nothing that the program will keep running.
+> > For [ku]probe,tp,fentry,fexit there was always <bpf_link> in the kernel.
+> > It wasn't that formal in the past until most recent Andrii's patches,
+> > but the concept existed for long time. FD == std::shared_ptr<bpf_link>
+> > connects a kernel object with <bpf_prog>. When that kernel objects emits
+> > an event the <bpf_link> guarantees that <bpf_prog> will be executed.
 > 
-> > On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
-> >> >
-> >> >> And what about the case where the link fd is pinned on a bpffs that is
-> >> >> no longer available? I.e., if a netdevice with an XDP program moves
-> >> >> namespaces and no longer has access to the original bpffs, that XDP
-> >> >> program would essentially become immutable?
-> >> >
-> >> > 'immutable' will not be possible.
-> >> > I'm not clear to me how bpffs is going to disappear. What do you mean
-> >> > exactly?
-> >> 
-> >> # stat /sys/fs/bpf | grep Device
-> >> Device: 1fh/31d	Inode: 1013963     Links: 2
-> >> # mkdir /sys/fs/bpf/test; ls /sys/fs/bpf
-> >> test
-> >> # ip netns add test
-> >> # ip netns exec test stat /sys/fs/bpf/test
-> >> stat: cannot stat '/sys/fs/bpf/test': No such file or directory
-> >> # ip netns exec test stat /sys/fs/bpf | grep Device
-> >> Device: 3fh/63d	Inode: 12242       Links: 2
-> >> 
-> >> It's a different bpffs instance inside the netns, so it won't have
-> >> access to anything pinned in the outer one...
-> >
-> > Toke, please get your facts straight.
-> >
-> >> # stat /sys/fs/bpf | grep Device
-> >> Device: 1fh/31d	Inode: 1013963     Links: 2
-> >
-> > Inode != 1 means that this is not bpffs.
-> > I guess this is still sysfs.
-> 
-> Yes, my bad; I was confused because I was misremembering when 'ip'
-> mounts a new bpffs: I thought it was on every ns change, but it's only
-> when loading a BPF program, and I was in a hurry so I didn't check
-> properly; sorry about that.
-> 
-> Anyway, what I was trying to express:
-> 
-> > Still that doesn't mean that pinned link is 'immutable'.
-> 
-> I don't mean 'immutable' in the sense that it cannot be removed ever.
-> Just that we may end up in a situation where an application can see a
-> netdev with an XDP program attached, has the right privileges to modify
-> it, but can't because it can't find the pinned bpf_link. Right? Or am I
-> misunderstanding your proposal?
-> 
-> Amending my example from before, this could happen by:
-> 
-> 1. Someone attaches a program to eth0, and pins the bpf_link to
->    /sys/fs/bpf/myprog
-> 
-> 2. eth0 is moved to a different namespace which mounts a new sysfs at
->    /sys
-> 
-> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
->    xdp-loader can't get access to the original bpf_link; but the XDP
->    program is still attached to eth0.
+> I see so the link is sort of [owner -> prog -> target].
 
-The key to decide is whether moving netdev across netns should be allowed
-when xdp attached. I think it should be denied. Even when legacy xdp
-program is attached, since it will confuse user space managing part.
+No. Link has two pieces: kernel object and program. It connects the two.
+
+> > For cgroups we don't have such concept. We thought that three attach modes we
+> > introduced (default, allow-override, allow-multi) will cover all use cases. But
+> > in practice turned out that it only works when there is a central daemon for
+> > _all_ cgroup-bpf progs in the system otherwise different processes step on each
+> > other. More so there has to be a central diff-review human authority otherwise
+> > teams step on each other. That's sort-of works within one org, but doesn't
+> > scale.
+> > 
+> > To avoid making systemd a central place to coordinate attaching xdp, tc, cgroup
+> > progs the kernel has to provide a mechanism for an application to connect a
+> > kernel object with a prog and hold the ownership of that link so that no other
+> > process in the system can break that connection. 
+> 
+> To me for XDP the promise that nothing breaks the connection cannot be
+> made without a daemon, because without the daemon the link has to be
+> available somewhere/pinned to make changes to, and therefore is no
+> longer safe.
+
+This is not true. Nothing requires pinning.
+Again. FD == shared_ptr. Two applications can share that link and
+coordinate the changes to dispatcher prog without a daemon and without pinning.
