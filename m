@@ -2,169 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65AEF179EA8
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 05:38:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7B8179EB3
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 05:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725946AbgCEEiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 23:38:08 -0500
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:34149 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbgCEEiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 23:38:07 -0500
-Received: by mail-vs1-f65.google.com with SMTP id y204so2754066vsy.1
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 20:38:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wT7fX3XNpFUklA+4ubZ3A31ow/x3fc9U86BQ8duNKxk=;
-        b=mPnvGwwIyc8PT9pu6q66/Xy/ag6QPMQHDyXJlCIiDTmTeYgipFoyhF1mRpzK0vT54c
-         j7mVmd5I9pjGiM0Kgj4rIDhSIJ1vCE35gVKV5R9sD0dqxRnUnN479aGCHq4R0Ys/6QyJ
-         AjH5TUwEl45CjFaDUVfjZT20unJjwtiCN9dz0pvaeKRUn0xPvQnxO9qHz9fhctfmKFvL
-         ZfwXszJ3SCcT1z4FjJe6cdD3M1AQQoMtZmRVjvEPMhLufWXFeZsodXlZecriYJomGOdO
-         AyBlIXzJbV3MTnDG0/ULrakFCgJdCH61wd8ssnq08gHeSwTXFPy86ENlrDxluvER3aZk
-         eAZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wT7fX3XNpFUklA+4ubZ3A31ow/x3fc9U86BQ8duNKxk=;
-        b=QzFGM4wxtZ7q7XdoR356RBwEo0uidqtwyKlLi2cbLsnJ0Lb04aY9dG9P1bZUWap0rc
-         Ct64pprOpil5+FxewYJY7JVDbV3QRVIIFqW/4yU7KwiRb/XBRRxmC51vfqmFsYxh707S
-         hjJgT0MIF653PNEkEsAFWu+T/gDjctFWMz3kgGslPf0SoD7/bIcc0OnESg5ERYcOCSR4
-         3b4CJ0EPoXeLqq37uF9Ilo/vwXMPDD7JYZPGT7tYcFGG9v4LDq0sjVZ+stAZw2057z0P
-         uO5u4bvfXLMHtRoRy4O9H8n3tR2PL0/4zosyopH9PsI+S2mhk/n4pOsfd2sMBEgkyFNS
-         ydag==
-X-Gm-Message-State: ANhLgQ3YadUWXhzExLaVgpmEbKkrgRPtfUz6JEWzVE+9PQoeQhLuBRfz
-        FIeHMlk79gwFGyHN858VsaAJE+dpfwnw93c+WPHiKw==
-X-Google-Smtp-Source: ADFU+vtpr6/USWdDlF9OiCn6kxzaHvl/3Ges+ziOkGWGK22NIqrfWwtyXIjIUamxEVSJsteoPkHUpPj7fNkprubJfjE=
-X-Received: by 2002:a67:ea84:: with SMTP id f4mr4016914vso.218.1583383085993;
- Wed, 04 Mar 2020 20:38:05 -0800 (PST)
+        id S1725953AbgCEErd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 23:47:33 -0500
+Received: from mail-dm6nam12on2049.outbound.protection.outlook.com ([40.107.243.49]:6036
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725852AbgCEErc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 23:47:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GgrP+posPI+OpI6YxoQlj7RDWdVPbbSaJyNVbkKfs3RFp6jXNrEUoTwDJS6IqHcbAaTgEYo5ekdvVXEMN4Okxz48thFiHUhgfAW/PnBztiyaeWKFw5scnsRPolZxcN201eu8vZgBs/XkB9cHqx8rQwOtntOLHbIenwBF0HUzJWm+EtkZW9Ygaz0fOcorj5K9jJCqPyh6+9UkWLvoPngmzZ0GmrVlmbzYdnSzCPh9hzVE0OTWeUGUNoT2NywihEFilkR/0kqucKqb4MoXzJds5S1nnSyD0qjTZsbDaQiBni/JfgRwiQG/regRnjzR6PfGOI7Yr0cKhd/ZKmDPXBBkjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p2zTdGeolJ8wlOEGU31tl39xvfHxGJ3pxbvQaBeOmo0=;
+ b=QkdHFbxfKDO0IFwXlW7jWYWbAy6eT4AL6mF1nVehAJ2Ix1ooWdM5SIbjGsGPVhVakRfqrx8SSU1quLao734tOOunVS6GIySjanNQV/PP0giZD6i8+rSn0/Q/zer58VreGm4uWLhYoCKtRNKtFMtOGxWwCLNHZR2zfIFXEAe+hUVGrUV5kBFTqOxXqyvb7RH3y3kL68xDkhbMPWDDtliSAT45FX1RqmpAUuJBLgbpfoRBrlL5fLf7CF6W8Ov5lfkYuR+vnFLEpv6TTPZ9EAHbpKexknfxJ5lndNN0bG/6ibyXipPWT7YaEcPz0iuj9ovHTPajyLljON9Dt7oWeDzhZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p2zTdGeolJ8wlOEGU31tl39xvfHxGJ3pxbvQaBeOmo0=;
+ b=YJgXceowAyhxGGF+HSuaxr0vZiHrniloWBA9NxTVnzfVNMvh3c8sIPaRHsmedgvb1LZZAUXXOLcGHGHKQ3dM/yrDICOVGH8kzqLH3ZGM0FngimOsQmz624Nn/UC5K/W+9Mpy2nkpkn8WnQta8blK2iR57ZzWe9kRl1FW46CJBwg=
+Received: from SN6PR05MB5326.namprd05.prod.outlook.com (2603:10b6:805:b9::27)
+ by SN6PR05MB4992.namprd05.prod.outlook.com (2603:10b6:805:df::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.9; Thu, 5 Mar
+ 2020 04:47:29 +0000
+Received: from SN6PR05MB5326.namprd05.prod.outlook.com
+ ([fe80::8482:b122:870c:eec6]) by SN6PR05MB5326.namprd05.prod.outlook.com
+ ([fe80::8482:b122:870c:eec6%5]) with mapi id 15.20.2793.011; Thu, 5 Mar 2020
+ 04:47:29 +0000
+Received: from sc2-cpbu2-b0737.eng.vmware.com (66.170.99.1) by DB6PR1001CA0022.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:4:b7::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.16 via Frontend Transport; Thu, 5 Mar 2020 04:47:25 +0000
+From:   Vivek Thampi <vithampi@vmware.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Pv-drivers <Pv-drivers@vmware.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Thomas Hellstrom <thellstrom@vmware.com>,
+        "jgross@suse.com" <jgross@suse.com>
+Subject: Re: [PATCH RESEND] ptp: add VMware virtual PTP clock driver
+Thread-Topic: [PATCH RESEND] ptp: add VMware virtual PTP clock driver
+Thread-Index: AQHV7fh9sGmTv3Q/nkCcjzOFcD8fwKg5BbgAgABwnYA=
+Date:   Thu, 5 Mar 2020 04:47:28 +0000
+Message-ID: <20200305044713.GA173879@sc2-cpbu2-b0737.eng.vmware.com>
+References: <20200228053230.GA457139@sc2-cpbu2-b0737.eng.vmware.com>
+ <20200304.140410.731261448085906331.davem@davemloft.net>
+In-Reply-To: <20200304.140410.731261448085906331.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [66.170.99.1]
+x-clientproxiedby: DB6PR1001CA0022.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:4:b7::32) To SN6PR05MB5326.namprd05.prod.outlook.com
+ (2603:10b6:805:b9::27)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vithampi@vmware.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 968b98a2-6bdf-478a-758e-08d7c0c04eb6
+x-ms-traffictypediagnostic: SN6PR05MB4992:|SN6PR05MB4992:
+x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR05MB4992271151650FE414581012B9E20@SN6PR05MB4992.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 03333C607F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(346002)(376002)(199004)(189003)(7696005)(55016002)(66476007)(1076003)(66446008)(64756008)(52116002)(8676002)(66946007)(66556008)(5660300002)(26005)(316002)(478600001)(16526019)(54906003)(33656002)(71200400001)(186003)(956004)(6916009)(2906002)(86362001)(4326008)(81166006)(81156014)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR05MB4992;H:SN6PR05MB5326.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: vmware.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y06snQYR8TAAYGVjlaxyxi8N0S3mrJm66x93S8kqbGP1Sr9QFr6+Gw3irazbV2emA1ZfYgTDAmEwCM6RB67jR4Ts7xeNl9+CnayzdbRSrCrIsOvz6VjUN8wCmqv6THf7FGHHUWmcIuA5KE9NG9vLGTADRcYVUrVoPlSH20ecvaTb71CwaYc3QmrPx7pHodhTqR99/X91u/W3GvJnnTkb5kO3TKont1RvF+v5o9PcoO8e8wIgKrURNQ6yhwqSAAIbMz8g6FfkvKqyV+iZ4rbw6ymvXatf4YUQ3JUTafVMwPV8kwJWxGZuHetrMDdJO3OX6EI4ClL2gFyod8aWr/HzqL44X2KA/aalIozRXL6YNr99j9hcRMZ4lWGUAiBkBZffsx/JsznKAIItO5kAhfgOO5KiU+ck9Mig3BJmx+HfYkL1WHqLIVwDM6z8VrGP2jwo
+x-ms-exchange-antispam-messagedata: 6bJxoQttOsJGHSAHMcz37ZcEaBgwNLS53BxM/tBD1Js25QopnvtiYaQkqIJpmo+UWn5UaKqIYtPpWXcEYjOnKcEfG3eakd/9Q2nU7nfAq6W5b+TKZrFApbluQCdDdjjDLOy0zyb6+ilaIoJxjBTn0w==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C0CC8BFB48469A448048072E8EA83764@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20200304233856.257891-1-shakeelb@google.com> <CANn89i+TiiLKsE7k4TyRqr03uNPW=UpkvpXL1LVWvTmhE_AUpA@mail.gmail.com>
- <CALvZod7MSXGsV6nDngWS+mS-5tfu0ww3aJyXQ8GV2hRkEEcYDg@mail.gmail.com>
-In-Reply-To: <CALvZod7MSXGsV6nDngWS+mS-5tfu0ww3aJyXQ8GV2hRkEEcYDg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 4 Mar 2020 20:37:53 -0800
-Message-ID: <CANn89iJF3vSNG=uw5=-Knu48dKpceqXyYLm8z6d7aDoxaGDgTw@mail.gmail.com>
-Subject: Re: [PATCH v2] net: memcg: late association of sock to memcg
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Roman Gushchin <guro@fb.com>, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 968b98a2-6bdf-478a-758e-08d7c0c04eb6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Mar 2020 04:47:28.7876
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xhm8nGB6qxeCvwwg8TB8v5CWVT6nWfn/KtYZoRCAETpUXttDHZqTZ8SEfC9zAANDN9Iz22czZVgfXGmAcZX07A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB4992
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 4, 2020 at 6:19 PM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Wed, Mar 4, 2020 at 5:36 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Wed, Mar 4, 2020 at 3:39 PM Shakeel Butt <shakeelb@google.com> wrote:
-> > >
-> > > If a TCP socket is allocated in IRQ context or cloned from unassociated
-> > > (i.e. not associated to a memcg) in IRQ context then it will remain
-> > > unassociated for its whole life. Almost half of the TCPs created on the
-> > > system are created in IRQ context, so, memory used by such sockets will
-> > > not be accounted by the memcg.
-> > >
-> > > This issue is more widespread in cgroup v1 where network memory
-> > > accounting is opt-in but it can happen in cgroup v2 if the source socket
-> > > for the cloning was created in root memcg.
-> > >
-> > > To fix the issue, just do the late association of the unassociated
-> > > sockets at accept() time in the process context and then force charge
-> > > the memory buffer already reserved by the socket.
-> > >
-> > > Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> > > ---
-> > > Changes since v1:
-> > > - added sk->sk_rmem_alloc to initial charging.
-> > > - added synchronization to get memory usage and set sk_memcg race-free.
-> > >
-> > >  net/ipv4/inet_connection_sock.c | 19 +++++++++++++++++++
-> > >  1 file changed, 19 insertions(+)
-> > >
-> > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > index a4db79b1b643..7bcd657cd45e 100644
-> > > --- a/net/ipv4/inet_connection_sock.c
-> > > +++ b/net/ipv4/inet_connection_sock.c
-> > > @@ -482,6 +482,25 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
-> > >                 }
-> > >                 spin_unlock_bh(&queue->fastopenq.lock);
-> > >         }
-> > > +
-> > > +       if (mem_cgroup_sockets_enabled && !newsk->sk_memcg) {
-> > > +               int amt;
-> > > +
-> > > +               /* atomically get the memory usage and set sk->sk_memcg. */
-> > > +               lock_sock(newsk);
-> > > +
-> > > +               /* The sk has not been accepted yet, no need to look at
-> > > +                * sk->sk_wmem_queued.
-> > > +                */
-> > > +               amt = sk_mem_pages(newsk->sk_forward_alloc +
-> > > +                                  atomic_read(&sk->sk_rmem_alloc));
-> > > +               mem_cgroup_sk_alloc(newsk);
-> > > +
-> > > +               release_sock(newsk);
-> > > +
-> > > +               if (newsk->sk_memcg)
-> >
-> > Most sockets in accept queue should have amt == 0, so maybe avoid
-> > calling this thing only when amt == 0 ?
-> >
->
-> Thanks, will do in the next version. BTW I have tested with adding
-> mdelay() here and running iperf3 and I did see non-zero amt.
->
-> > Also  I would release_sock(newsk) after this, otherwise incoming
-> > packets could mess with newsk->sk_forward_alloc
-> >
->
-> I think that is fine. Once sk->sk_memcg is set then
-> mem_cgroup_charge_skmem() will be called for new incoming packets.
-> Here we just need to call mem_cgroup_charge_skmem() with amt before
-> sk->sk_memcg was set.
+Thanks for taking a look, David.
 
+On Wed, Mar 04, 2020 at 02:04:10PM -0800, David Miller wrote:
+> From: Vivek Thampi <vithampi@vmware.com>
+> Date: Fri, 28 Feb 2020 05:32:46 +0000
+>=20
+> > Add a PTP clock driver called ptp_vmw, for guests running on VMware ESX=
+i
+> > hypervisor. The driver attaches to a VMware virtual device called
+> > "precision clock" that provides a mechanism for querying host system ti=
+me.
+> > Similar to existing virtual PTP clock drivers (e.g. ptp_kvm), ptp_vmw
+> > utilizes the kernel's PTP hardware clock API to implement a clock devic=
+e
+> > that can be used as a reference in Chrony for synchronizing guest time =
+with
+> > host.
+> >=20
+> > The driver is only applicable to x86 guests running in VMware virtual
+> > machines with precision clock virtual device present. It uses a VMware
+> > specific hypercall mechanism to read time from the device.
+> >=20
+> > Reviewed-by: Thomas Hellstrom <thellstrom@vmware.com>
+> > Signed-off-by: Vivek Thampi <vithampi@vmware.com>
+> > ---
+> >  Based on feedback, resending patch to include a broader audience.
+>=20
+> If it's just providing a read of an accurate timesource, I think it's kin=
+da
+> pointless to provide a full PTP driver for it.
 
-Unfortunately, as soon as release_sock(newsk) is done, incoming
-packets can be fed to the socket,
-and completely change memory usage of the socket.
+The point of a PTP driver for this timesource is to provide an interface
+that can be consumed by Chrony (and possibly other applications) as a
+reference clock for time sync. This is admittedly a very basic first
+step providing just PTP_SYS_OFFSET functionality (which gets us to <1us
+VM-host time sync). Down the line, I also intend to introduce
+cross-timestamping for more precise offsets.
 
-For example, the whole queue might have been zapped, or collapsed, if
-we receive a RST packet,
-or if memory pressure asks us to prune the out of order queue.
+Using the PHC infrastructure seems like a good fit for this, but please
+let me know if I'm missing something or misinterpreting your comment.
 
-So you might charge something, then never uncharge it, since at
-close() time the socket will have zero bytes to uncharge.
-
-
-
->
-> > if (amt && newsk->sk_memcg)
-> >       mem_cgroup_charge_skmem(newsk->sk_memcg, amt);
-> > release_sock(newsk);
-> >
-> > Also, I wonder if     mem_cgroup_charge_skmem() has been used at all
-> > these last four years
-> > on arches with PAGE_SIZE != 4096
-> >
-> > ( SK_MEM_QUANTUM is not anymore PAGE_SIZE, but 4096)
-> >
->
-> Oh so sk_mem_pages() does not really give the number of pages. Yeah
-> this needs a fix for non-4906 page size architectures. Though I can
-> understand why this has not been caught yet. Network memory accounting
-> is opt-in in cgroup v1 and most of the users still use v1. In cgroup
-> v2, it is enabled and there is no way to opt-out. Facebook is a
-> well-known v2 user and it seems like they don't have non-4096 page
-> size arch systems.
+Thanks.
