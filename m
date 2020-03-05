@@ -2,142 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B18C317A78E
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:35:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD19C17A7F1
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:39:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbgCEOfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 09:35:44 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20036 "EHLO
+        id S1726867AbgCEOjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 09:39:52 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40038 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725990AbgCEOfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 09:35:43 -0500
+        with ESMTP id S1725944AbgCEOjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 09:39:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583418941;
+        s=mimecast20190719; t=1583419191;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Tves5v0+rGKM6v1Y/AU4Uiwb4uE27U7fh/WSNa6f2Is=;
-        b=JRVjDaWlqU6dLoVB6oNxdGMywEwb682wLYU3/bXBfFX5bTvNsDvEYFVjI7glNuEELn8KPD
-        3hedFGBmj+igKjsACJNMegoErGvEPdzK99/pghGYE5d6FJFLp+NyRFzFS+NekOZ5dbqNeE
-        RT952bFlu1WG/8zZu08j9c232vGtWhc=
+        bh=939ubS6/Mea4GeLT83aqVqtxGhj3OLFtb6w5myvHrnQ=;
+        b=P9BrOgBpU4WM/DakR7mLyT5cMATbQdKtVzh4jYROEG5vlq+NiOtVI1xcLF1STN84hRxYF3
+        vuen4LTuifXtvvMvIuqiY2+WPbXMyTqWWWi009GyhvIl+Qeg6GhPksPoic88VYOWTtBM7v
+        vgWSd53cxY+i0PC0Q9CCpuD+vP/+zt8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-326-fnNvNrsQOvyq1_j7ZWyPKg-1; Thu, 05 Mar 2020 09:35:39 -0500
-X-MC-Unique: fnNvNrsQOvyq1_j7ZWyPKg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-443-QKvHbWmKN32hWozKMqjuXQ-1; Thu, 05 Mar 2020 09:39:49 -0500
+X-MC-Unique: QKvHbWmKN32hWozKMqjuXQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 482C5800D4E;
-        Thu,  5 Mar 2020 14:35:37 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3EC651062682;
+        Thu,  5 Mar 2020 14:39:48 +0000 (UTC)
 Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D8AD1001902;
-        Thu,  5 Mar 2020 14:35:29 +0000 (UTC)
-Date:   Thu, 5 Mar 2020 15:35:27 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19E9884D90;
+        Thu,  5 Mar 2020 14:39:43 +0000 (UTC)
+Date:   Thu, 5 Mar 2020 15:39:41 +0100
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, jgross@suse.com,
-        ilias.apalodimas@linaro.org
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     brouer@redhat.com, Denis Kirjanov <kirjanov@gmail.com>,
+        Denis Kirjanov <kda@linux-powerpc.org>, netdev@vger.kernel.org,
+        jgross@suse.com
 Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
-Message-ID: <20200305153515.4ce0ecf4@carbon>
-In-Reply-To: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+Message-ID: <20200305153929.186819a8@carbon>
+In-Reply-To: <20200305133114.GA574299@apalos.home>
 References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+        <20200305130404.GA574021@apalos.home>
+        <CAHj3AVndOjLsOkjC1h5WOb+NaswHaggC3MTaRq-r7mA6rGcCZw@mail.gmail.com>
+        <20200305133114.GA574299@apalos.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  2 Mar 2020 17:21:14 +0300
-Denis Kirjanov <kda@linux-powerpc.org> wrote:
+On Thu, 5 Mar 2020 15:31:14 +0200
+Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
 
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index 482c6c8..db8a280 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-[...]
-> @@ -778,6 +782,40 @@ static int xennet_get_extras(struct netfront_queue *queue,
->  	return err;
->  }
->  
-> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
-> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
-> +		   struct xdp_buff *xdp)
-> +{
-> +	u32 len = rx->status;
-> +	u32 act = XDP_PASS;
-> +
-> +	xdp->data_hard_start = page_address(pdata);
-> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-> +	xdp_set_data_meta_invalid(xdp);
-> +	xdp->data_end = xdp->data + len;
-> +	xdp->handle = 0;
-> +
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +	switch (act) {
-> +	case XDP_PASS:
-> +	case XDP_TX:
-> +	case XDP_DROP:
-> +		break;
-> +
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(queue->info->netdev, prog, act);
-> +		break;
-> +
-> +	default:
-> +		bpf_warn_invalid_xdp_action(act);
-> +	}
-> +
-> +	if (act != XDP_PASS && act != XDP_TX)
-> +		xdp->data_hard_start = NULL;
-> +
-> +	return act;
-> +}
-> +
->  static int xennet_get_responses(struct netfront_queue *queue,
->  				struct netfront_rx_info *rinfo, RING_IDX rp,
->  				struct sk_buff_head *list)
-> @@ -792,6 +830,9 @@ static int xennet_get_responses(struct netfront_queue *queue,
->  	int slots = 1;
->  	int err = 0;
->  	unsigned long ret;
-> +	struct bpf_prog *xdp_prog;
-> +	struct xdp_buff xdp;
-> +	u32 verdict;
->  
->  	if (rx->flags & XEN_NETRXF_extra_info) {
->  		err = xennet_get_extras(queue, extras, rp);
-> @@ -827,6 +868,22 @@ static int xennet_get_responses(struct netfront_queue *queue,
->  
->  		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
->  
-> +		rcu_read_lock();
-> +		xdp_prog = rcu_dereference(queue->xdp_prog);
-> +		if (xdp_prog) {
-> +			/* currently only a single page contains data */
-> +			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags != 1);
-> +			verdict = xennet_run_xdp(queue,
-> +				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
+> On Thu, Mar 05, 2020 at 04:23:31PM +0300, Denis Kirjanov wrote:
+> > On 3/5/20, Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:  
+> > > Hi Denis,
+> > >
+> > > There's a bunch of things still missing from my remarks on V1.
+> > > XDP is not supposed to allocate and free pages constantly as that's one of
+> > > the things that's making it fast.  
+> > 
+> > Hi Ilias,
+> > 
+> > I've removed the copying to an allocated page so there is no page
+> > allocation/free logic added.
+> >   
+> 
+> Yea that has been removed. I am not familiar with the driver though, so i'll
+> give you an example. 
+> Let's say the BPF program says the packet must be dropped. What will happen to
+> the page with the packet payload?
+> Ideally on XDP we want that page recycled back into the device descriptors, so
+> the driver won't have to allocate and map a fresh page.
 
-This looks really weird, skb_shinfo(skb)->frags[0], you already have an
-SKB and you are sending fragment-0 to the xennet_run_xdp() function.
+I agree.  The main point with XDP is that we can do something
+faster-than the normal network stack.  Especially in case of XDP_DROP,
+we do driver specific recycling tricks, to avoid any allocations and
+reinsert the RX-frame in RX-ring, and avoid overhead of SKB allocations.
 
-XDP meant to run before an SKB is allocated...
+Looking closer at your patch it seem you run XDP after the SKB alloc?!?
 
-> +				       rx, xdp_prog, &xdp);
-> +
-> +			if (verdict != XDP_PASS && verdict != XDP_TX) {
-> +				err = -EINVAL;
-> +				goto next;
-> +			}
-> +
-> +		}
-> +		rcu_read_unlock();
->  		__skb_queue_tail(list, skb);
+> >   
+> > >
+> > > You are also missing proper support for XDP_REDIRECT, ndo_xdp_xmit. We
+> > > usually require the whole functionality to merge the driver.  
 
+I agree, we have unfortunately seen drivers not getting completed if we
+don't require full-XDP feature set.
+
+> > 
+> > I wanted to minimize changes and send follow-up patches
+> >   
+> 
+> Adding XDP_REDIRECT is pretty trivial and the ndo_xdp_xmit should be very
+> similar to XDP_TX. So assuming you'll fix XDP_TX adding the .ndo one will be
+> relatively small amount of code.
+
+You can have a patchset with more patches, if you prefer splitting this
+up in multiple patches.
 
 -- 
 Best regards,
