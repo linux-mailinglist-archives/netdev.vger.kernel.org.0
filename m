@@ -2,94 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13DC5179D56
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 02:32:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B2C179D62
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 02:36:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725810AbgCEBca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 20:32:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35486 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725773AbgCEBc3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 20:32:29 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC15A20866;
-        Thu,  5 Mar 2020 01:32:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583371949;
-        bh=L98vC4kcXdjJbzOr2xCXnMAY1gyy3OHrovcLL2fx1Tw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BMydMQsWOxrHKMNP52gQbMwltPhQcwDyb37VmXsBh+aXrBeCdvRLja6fOfwVoys8F
-         1Z2RwG0aVo5w5twnCE8uCgxMVVf/6ccBM4xQJpJQoG18UztomiOlsw4tFTglNbAC7B
-         gWLCdr6ADFnWyzuP+2YdBShjx4kr7yvSN9c9MO9c=
-Date:   Wed, 4 Mar 2020 17:32:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 5/8] ionic: support ethtool rxhash disable
-Message-ID: <20200304173227.6e95d1a4@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <39446ac7-9ce1-1c81-427b-a9821145fd1d@pensando.io>
-References: <20200304042013.51970-1-snelson@pensando.io>
-        <20200304042013.51970-6-snelson@pensando.io>
-        <20200304115902.011ff647@kicinski-fedora-PC1C0HJN>
-        <39446ac7-9ce1-1c81-427b-a9821145fd1d@pensando.io>
+        id S1726209AbgCEBen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 20:34:43 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18094 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726083AbgCEBem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 20:34:42 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0251Y6tw009270
+        for <netdev@vger.kernel.org>; Wed, 4 Mar 2020 17:34:41 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=rMqHvAVvVCxmhWbyIbItg4rlY6eKi1SaBYJeBRGvhFM=;
+ b=OmAVEeuROtkcww2mw65KwGRdCfnvmp5T7kPwS/WIXG9GPWYV/Wd0MlUPHao1FeVWUp+I
+ AVKEj0Sc9HPxSUWf0Sw2miVoBlPQLTkrY3uc7CGu41/z/Wde7zqchvldISon0d1gxFsa
+ absiOa+SLWYQvMe1l+VNAM2WgbhQ0xtt+DA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yht6495f7-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 17:34:41 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Wed, 4 Mar 2020 17:34:40 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id CE79429425EB; Wed,  4 Mar 2020 17:34:37 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf 0/2] bpf: A few struct_ops fixes
+Date:   Wed, 4 Mar 2020 17:34:37 -0800
+Message-ID: <20200305013437.534961-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-04_10:2020-03-04,2020-03-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ bulkscore=0 clxscore=1015 malwarescore=0 phishscore=0 adultscore=0
+ mlxscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=432 spamscore=0
+ suspectscore=13 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003050006
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Mar 2020 16:24:01 -0800 Shannon Nelson wrote:
-> On 3/4/20 11:59 AM, Jakub Kicinski wrote:
-> > On Tue,  3 Mar 2020 20:20:10 -0800 Shannon Nelson wrote:  
-> >> We can disable rxhashing by setting rss_types to 0.  The user
-> >> can toggle this with "ethtool -K <ethX> rxhash off|on",
-> >> which calls into the .ndo_set_features callback with the
-> >> NETIF_F_RXHASH feature bit set or cleared.  This patch adds
-> >> a check for that bit and updates the FW if necessary.
-> >>
-> >> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-> >> ---
-> >>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 11 +++++++++--
-> >>   1 file changed, 9 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> >> index d1567e477b1f..4b953f9e9084 100644
-> >> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> >> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> >> @@ -1094,6 +1094,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
-> >>   	u64 vlan_flags = IONIC_ETH_HW_VLAN_TX_TAG |
-> >>   			 IONIC_ETH_HW_VLAN_RX_STRIP |
-> >>   			 IONIC_ETH_HW_VLAN_RX_FILTER;
-> >> +	u64 old_hw_features;
-> >>   	int err;
-> >>   
-> >>   	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
-> >> @@ -1101,9 +1102,13 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
-> >>   	if (err)
-> >>   		return err;
-> >>   
-> >> +	old_hw_features = lif->hw_features;
-> >>   	lif->hw_features = le64_to_cpu(ctx.cmd.lif_setattr.features &
-> >>   				       ctx.comp.lif_setattr.features);
-> >>   
-> >> +	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
-> >> +		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);  
-> >
-> > Is this change coming from the HW or from ethtool? AFAIK hw_features
-> > are what's supported, features is what's enabled..  
-> 
-> This is looking at the feature bits coming in from ndo_set_features - if 
-> the RX_HASH bit has been turned off in the incoming features bitmask, 
-> then I need to disable the hw hashing.
-> 
-> I believe the confusion is between lif->hw_features, describing what is 
-> currently enabled in the hw, versus the netdev->hw_features, that is 
-> what we've told the the stack we have available.
+This set addresses a few struct_ops issues.
+Please see individual patch for details.
 
-Ah, you're very right. So the problem is that the current handling only
-sends the general IONIC_LIF_ATTR_FEATURES request, but the device also
-needs an extra IONIC_LIF_ATTR_RSS to disable RSS? Got it.
+Martin KaFai Lau (2):
+  bpf: Return better error value in delete_elem for struct_ops map
+  bpf: Do not allow map_freeze in struct_ops map
+
+ kernel/bpf/bpf_struct_ops.c | 14 +++++++++++---
+ kernel/bpf/syscall.c        |  5 +++++
+ 2 files changed, 16 insertions(+), 3 deletions(-)
+
+-- 
+2.17.1
+
