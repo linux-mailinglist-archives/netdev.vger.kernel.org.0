@@ -2,154 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C57E217A134
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 09:25:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C053A17A236
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 10:26:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbgCEIZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 03:25:30 -0500
-Received: from edrik.securmail.fr ([45.91.125.3]:33153 "EHLO
-        edrik.securmail.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgCEIZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 03:25:30 -0500
-X-Greylist: delayed 431 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Mar 2020 03:25:28 EST
-Received: by edrik.securmail.fr (Postfix, from userid 58)
-        id 20849B0E66; Thu,  5 Mar 2020 09:18:16 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583396296;
-        bh=ZCoRjkbY/nJFs7Cu4ea12hODt+OY0auh0uf54mkNaXo=;
-        h=Date:From:To:Subject;
-        b=r3WyDhWZFcOk780+Ivev5U/IoIgM2P395qP//JSbT/vs87B35MQ5OBd/eepJud15j
-         e9JfxhjHEMWbTVZ2gRYNyH8qhI0xEEv62obZ4yTKG7vFiBuO9qc2c65DgQqyCPhwcX
-         91OvOFpw5o9wECsXSSiW6cE1A4TZ3IdQzHkBLlIg=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on edrik.securmail.fr
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.7 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,TRACKER_ID autolearn=no
-        autolearn_force=no version=3.4.2
-Received: from mew.swordarmor.fr (mew.swordarmor.fr [IPv6:2a00:5884:102:1::4])
-        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: alarig@swordarmor.fr)
-        by edrik.securmail.fr (Postfix) with ESMTPSA id 0F75AB0E50
-        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 09:17:52 +0100 (CET)
-Authentication-Results: edrik.securmail.fr/0F75AB0E50; dmarc=none (p=none dis=none) header.from=swordarmor.fr
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583396272;
-        bh=ZCoRjkbY/nJFs7Cu4ea12hODt+OY0auh0uf54mkNaXo=;
-        h=Date:From:To:Subject;
-        b=vXnYdQ5Kgk04ikuBS8k0gA45Av4c+RDKz7tpq/TSkAghqnGmdP2NmBpeh1z2IjcW4
-         pa/HS/VrFwMwclGSArR7Oi+uBQBWxddVVxCW9kv8/Ej5aN4SF0K28axh6DPHq1zfb1
-         lPD431c26hoFwWrBdNgNcLmzMJkSNMuLHM4neuiw=
-Date:   Thu, 5 Mar 2020 09:17:47 +0100
-From:   Alarig Le Lay <alarig@swordarmor.fr>
-To:     netdev@vger.kernel.org
-Subject: IPv6 regression introduced by commit
- 3b6761d18bc11f2af2a6fc494e9026d39593f22c
-Message-ID: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
+        id S1726101AbgCEJ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 04:26:28 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44173 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725877AbgCEJ02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 04:26:28 -0500
+Received: by mail-wr1-f65.google.com with SMTP id n7so6039408wrt.11
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 01:26:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rkhBjpoz2S/kiNqlYODOBI6TNefjZEQYY8k2EwKQ9Ic=;
+        b=Akirx4eaJe4E+H50+xfVbUSaTyhZIa4n8ia+u62GMALYs0FJ85ZKDZPHeR0Ze/25g9
+         warikoW5m7I2OgjrdBGrGDRbBelPIXNq8swHQb7PXFR8Cccgu2S82pFWpYF+xBz7/8QS
+         84e6pZrIkvZiZFWcCWbmw4F+z222wwQ1QafCmY3higkT+QAJdJDhZAhn/57YLV53R8HJ
+         KO+YuirBmFk6952Pvs5x/xEsAWlycA5j4lAvEW82NSwIhulk/sE94zDfL3bhaTTCalwl
+         WsF3XiAbWtKIWS803Q3GHFQRMGnRBX9rWltF2JdPlzr9zy6isv+9KA+nnEsIGVPW7nSr
+         2Jlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rkhBjpoz2S/kiNqlYODOBI6TNefjZEQYY8k2EwKQ9Ic=;
+        b=N/oG+NkTc/Mp2whbhRG9kVujkcoKnBh5TYDw5CJIeYCEajcJIfUybWbB6BzxKe15zc
+         Fz56u1gZJSnTtkA/fV0/FQjPADV/30Kjr2jnbzl//dFi/jC37Va4S+yk+cRsg29Ix8TX
+         c0WEVPwqmBOsr2uuPDOM3+lNMImUF+WR1AjUf6PhpnGF2c/3FbKUeyPEYj4XREqbTdbl
+         aZky2aoWkzROghZ7vhNYv2apq4C0dOMlHnoQkgbjWMauRj+8RLFSNZxWc2bcEb7skznK
+         W00TEgARj1R7aQMARYNONO8AXiUPQkooJ34ViUWFikgGnxWhgBCzouyqn/yhiKcUtUXu
+         4rFQ==
+X-Gm-Message-State: ANhLgQ25oohr7OjgGzZdXBv21px2qibVbTtM6Eoun+ORGqx38+e5/3GM
+        k2zAr8BQ/mm2txvr/5QShyRPaw==
+X-Google-Smtp-Source: ADFU+vvHgcIqztJd+EazsB6H6ndfBy2oBAAjiVnUfP+d4rh0fKxe3RtgMcgomx78i5TLmpYNrtzjgA==
+X-Received: by 2002:adf:fdc2:: with SMTP id i2mr9617484wrs.166.1583400385046;
+        Thu, 05 Mar 2020 01:26:25 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id j205sm8355540wma.42.2020.03.05.01.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 01:26:24 -0800 (PST)
+Date:   Thu, 5 Mar 2020 10:26:22 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@mellanox.com, petrm@mellanox.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 2/5] mlxsw: spectrum_qdisc: Introduce struct
+ mlxsw_sp_qdisc_state
+Message-ID: <20200305092622.GB2190@nanopsycho>
+References: <20200305071644.117264-1-idosch@idosch.org>
+ <20200305071644.117264-3-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200305071644.117264-3-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Thu, Mar 05, 2020 at 08:16:41AM CET, idosch@idosch.org wrote:
+>From: Petr Machata <petrm@mellanox.com>
+>
+>In order to have a tidy structure where to put information related to Qdisc
+>offloads, introduce a new structure. Move there the two existing pieces of
+>data: root_qdisc and tclass_qdiscs. Embed them directly, because there's no
+>reason to go through pointer anymore. Convert users, update init/fini
+>functions.
+>
+>Signed-off-by: Petr Machata <petrm@mellanox.com>
+>Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-On the bird users ML, we discussed a bug we’re facing when having a
-full table: from time to time all the IPv6 traffic is dropped (and all
-neighbors are invalidated), after a while it comes back again, then wait
-a few minutes and it’s dropped again, and so on.
-
-Basil Fillan determined that it comes from the commit
-3b6761d18bc11f2af2a6fc494e9026d39593f22c.
-
-Here are the complete archives about it:
-
-https://bird.network.cz/pipermail/bird-users/2019-June/013509.html
-https://bird.network.cz/pipermail/bird-users/2019-November/013992.html
-https://bird.network.cz/pipermail/bird-users/2019-December/014011.html
-https://bird.network.cz/pipermail/bird-users/2020-February/014269.html
-
-Regards,
-Alarig Le Lay
-
------ Forwarded message from Basil Fillan <jack@basilfillan.uk> -----
-
-From: Basil Fillan <jack@basilfillan.uk>
-To: bird-users@network.cz
-Date: Wed, 26 Feb 2020 22:54:57 +0000
-Subject: Re: IPv6 BGP & kernel 4.19
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-
-Hi,
-
-We've also experienced this after upgrading a few routers to Debian Buster.
-With a kernel bisect we found that a bug was introduced in the following
-commit:
-
-3b6761d18bc11f2af2a6fc494e9026d39593f22c
-
-This bug was still present in master as of a few weeks ago.
-
-It appears entries are added to the IPv6 route cache which aren't visible from
-"ip -6 route show cache", but are causing the route cache garbage collection
-system to trigger extremely often (every packet?) once it exceeds the value of
-net.ipv6.route.max_size. Our original symptom was extreme forwarding jitter
-caused within the ip6_dst_gc function (identified by some spelunking with
-systemtap & perf) worsening as the size of the cache increased. This was due
-to our max_size sysctl inadvertently being set to 1 million. Reducing this
-value to the default 4096 broke IPv6 forwarding entirely on our test system
-under affected kernels. Our documentation had this sysctl marked as the
-maximum number of IPv6 routes, so it looks like the use changed at some point.
-
-We've rolled our routers back to kernel 4.9 (with the sysctl set to 4096) for
-now, which fixed our immediate issue.
-
-You can reproduce this by adding more than 4096 (default value of the sysctl)
-routes to the kernel and running "ip route get" for each of them. Once the
-route cache is filled, the error "RTNETLINK answers: Network is unreachable"
-will be received for each subsequent "ip route get" incantation, and v6
-connectivity will be interrupted.
-
-Thanks,
-
-Basil
-
-
-On 26/02/2020 20:38, Clément Guivy wrote:
-> Hi, did anyone find a solution or workaround regarding this issue?
-> Considering a router use case.
-> I have looked at rt6_stats, total route count is around 78k (full view),
-> and around 4100 entries in the cache at the moment on my first router
-> (forwarding a few Mb/s) and around 2500 entries on my second router
-> (forwarding less than 1 Mb/s).
-> I have reread the entire thread. At first, Alarig's research seemed to
-> lead to a neighbor management problem, my understanding is that route
-> cache is something else entirely - or is it related somehow?
-> 
-> 
-> On 03/12/2019 19:29, Alarig Le Lay wrote:
-> > We agree then, and I act as a router on all those machines.
-> > 
-> > Le 3 décembre 2019 19:27:11 GMT+01:00, Vincent Bernat
-> > <vincent@bernat.ch> a écrit :
-> > 
-> >     This is the result of PMTUd. But when you are a router, you don't
-> >     need to do that, so it's mostly a problem for end hosts.
-> > 
-> >     On December 3, 2019 7:05:49 PM GMT+01:00, Alarig Le Lay
-> >     <alarig@swordarmor.fr> wrote:
-> > 
-> >         On 03/12/2019 14:16, Vincent Bernat wrote:
-> > 
-> >             The information needs to be stored somewhere.
-> > 
-> > 
-> >         Why has it to be stored? It’s not really my problem if someone
-> > else has
-> >         a non-stantard MTU and can’t do TCP-MSS or PMTUd.
-
------ End forwarded message -----
+Acked-by: Jiri Pirko <jiri@mellanox.com>
