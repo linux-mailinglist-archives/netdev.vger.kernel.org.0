@@ -2,123 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E536B17B22A
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:18:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A2B17B230
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbgCEXSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 18:18:13 -0500
-Received: from mail-am6eur05on2074.outbound.protection.outlook.com ([40.107.22.74]:62017
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726650AbgCEXSM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 18:18:12 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OeoUpvdFpG4FRRnmHn76Ra4KDK7GS8wMQJkQkMntiRZXwmYtz7sTGdvlr20tzNqSzhGOKePWT69/Wc+gYT9gFF0Lk7kyRVMsqsXAiA5q/AsBv5pfRWVoOM1qP8AgUoCY4cxm0+KJ3KU9JLTsY2wiIuz+wJ3fm6xYhEIDfFNqXZHj6HENOYBcUmbHMlHocukmQpXirtL8f16f9jUVmaS4eIhMYS7Uadu+RHAWOZk3gLErYptwr80PBhLezmRhFBsjs0D6lW1Qsqcmz/hJ7oCmoRHhjlE0Mov7VZ944yqu1Ow68gjEgsUyl/vFH9zuF8wY8Dr18R+t5Y/PzVgXGQ8RrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r5aoJcwjehoZXvPPEy42xPuKtM9V/TQQoJWSGOK63vc=;
- b=hXvdRXHaLjOkMv2KAknvMUYUpRJXTXTa5sNZlvTXZV6vk/F2kbyO+qUMDhCadeEdvCprPr1Gn3AxCk1MDUk/C25297MBGjSKH3xvv0p9zQNakC5tiao3u4sYKGqLVFUQRKy4EGBVmMRM86JTHTPANOAuQnFM8uVhvmlR4kldfDiEI2i3+suhShbRgD4kjjNXHRMoc8hyW45imYtziQ5/BenSCB7wN+zf/vc22eo0BIpw2n/KpYf4N3rKwz57/RDjnaOkPH4b3gD+IdfPgYDp6oNry9UmGaEydmohbJcSeYCFKui0WmD8oH1taajij5XA3LkF6UQKgbdgg3l+N1N94A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r5aoJcwjehoZXvPPEy42xPuKtM9V/TQQoJWSGOK63vc=;
- b=Gkgva3AKSLpuYf7eNIhSq7LgPAcKPf04SDGm87ukQVvyF25xDL48sWyXYmhQ3hMrPxkRUe1eg2YB50ttqjMjsfMheTjL50I7OrfknlcpBmXpwB1k3i93NJbO7STpa4WGygHCLhrNqCACp6ZQp/Ii/0OTEYfENSZjKTw++L5kVJ4=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4189.eurprd05.prod.outlook.com (52.133.14.156) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.15; Thu, 5 Mar 2020 23:18:04 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2772.019; Thu, 5 Mar 2020
- 23:18:04 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Eli Cohen <eli@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Raed Salem <raeds@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 5/5] net/mlx5: Clear LAG notifier pointer after unregister
-Date:   Thu,  5 Mar 2020 15:17:39 -0800
-Message-Id: <20200305231739.227618-6-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200305231739.227618-1-saeedm@mellanox.com>
-References: <20200305231739.227618-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR06CA0042.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::19) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1726234AbgCEXWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 18:22:09 -0500
+Received: from ozlabs.org ([203.11.71.1]:43211 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726128AbgCEXWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 18:22:09 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48YRbd5SFrz9sNg;
+        Fri,  6 Mar 2020 10:22:05 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1583450526;
+        bh=PvR3xvSSafUOmuGnnxb06iTcgtURZdFSYRFughwx4Jc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=psMUlKTkLtxWgoN1IA50NGPWdGS3hB3HdMRoe5FDUpSOS1fIY6HWjZYAyHKKzxF3D
+         9NRhvJfHINFTJlf/SEKKty3sKJso2RH/4AMJez+pTVPVImvYfGyhM5YSyz8famnEvr
+         obKpExYXgAU0g+ek1XBiV2G8bTZ2+BgByr/cqdOD9Qy03CYWfR2c9/9m40GVsUpy+4
+         G4DuKxrduayZUIizWVcBReAfCIj4MaMf+v0ehJqTivyZRB3FXxbDAVqDQqXh7kOdtD
+         CSd8iwgoQ159AM0f1MOW29lgknQmmrVG4ayd2iMxg+hAo1r5LtulZwr0GCbpc4BGqW
+         xh62PJw55My3Q==
+Date:   Fri, 6 Mar 2020 10:21:58 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        PowerPC <linuxppc-dev@lists.ozlabs.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sourabh Jain <sourabhjain@linux.ibm.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: linux-next: manual merge of the net-next tree with the powerpc tree
+Message-ID: <20200306102158.0b88e0a0@canb.auug.org.au>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (209.116.155.178) by BYAPR06CA0042.namprd06.prod.outlook.com (2603:10b6:a03:14b::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.14 via Frontend Transport; Thu, 5 Mar 2020 23:18:02 +0000
-X-Mailer: git-send-email 2.24.1
-X-Originating-IP: [209.116.155.178]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 28c76f60-7701-43f1-3aa4-08d7c15b74d2
-X-MS-TrafficTypeDiagnostic: VI1PR05MB4189:|VI1PR05MB4189:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB41895793CE89FDF9F9B5126ABEE20@VI1PR05MB4189.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:765;
-X-Forefront-PRVS: 03333C607F
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(189003)(199004)(2906002)(81166006)(6506007)(5660300002)(6512007)(4326008)(81156014)(6486002)(52116002)(8676002)(54906003)(36756003)(8936002)(66556008)(66476007)(66946007)(2616005)(316002)(1076003)(86362001)(6666004)(956004)(186003)(6916009)(26005)(16526019)(478600001)(107886003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4189;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TbfdU+YHSiS49b6Tqqrn1WPe3ieH5h6vLHjmNlU9G7HTOJBn9hkielkrWNi0x/4gf/9XzGmhDCACLjG9LTtQc5OckTunYgCA4+qvuexVbv5X3SqG0sPOfR8c6a0W/I455d5iF2wzuveQuuEm9D7ccbrySWuXnZFxuU0mDnpdr1fwgxXrHPHOgfc2Kev86iJ/WOEac6XNosmZx053sfhbHALBIKhJT0yX9/K/B6+KwVsce9PHPLIuFzNptZHJ4yvYi5n4wW/0qJMNIAB4J9ZuAwq/W0uQjy+Qg0xRdiaIJW3ObKGA0xhU07qpNZZHEuV1LBZ63xalY07LkOUnGiw9KX1lOmNr8JuQ1jR1eij0cy2ZMrLBI+yMBiViwRgYAyzsS5oRzULZjqd7/iqpO9p9O2kfCMY4/sO6vZuD45ivLkzlYlAEzY22UUsir1thv0haw8gEjGXlbQ+7aA+W3dF2niYLeCt6dXO3hnQNqP748CysA+3yFuiDxt3TPhpXVxoyRKW0gHKll1MoMeia8nuO2Giqea6zyQ0e5rL7/w+eQ9k=
-X-MS-Exchange-AntiSpam-MessageData: ALwAZRg5OiSTiPfWBpSPmVys5+9wL6NzuQFJiGv5gfAZyYo4NFV6XDhbLdqUkzPd/2GfB1L/WZ6NEqjB70shXVl53IuK5ORN1hbUbpAbhycJax7P4HCGwwMOtk63kjWnwHagrHFIpRcq7hx49onELQ==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28c76f60-7701-43f1-3aa4-08d7c15b74d2
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2020 23:18:04.5701
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y7AhkbtruyDWkA1V8lLIV/RWHLi2plrQ+4jZNf0YSTfu4sd8Bs5t8iTkWtz5xeiQ1O0ctgOJKkrTa4buUX5hGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4189
+Content-Type: multipart/signed; boundary="Sig_/MiD=6dX41diOlbdUFdeLJ7D";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <eli@mellanox.com>
+--Sig_/MiD=6dX41diOlbdUFdeLJ7D
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-After returning from unregister_netdevice_notifier_dev_net(), set the
-notifier_call field to NULL so successive call to mlx5_lag_add() will
-function as expected.
+Hi all,
 
-Fixes: 7907f23adc18 ("net/mlx5: Implement RoCE LAG feature")
-Signed-off-by: Eli Cohen <eli@mellanox.com>
-Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Raed Salem <raeds@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Today's linux-next merge of the net-next tree got a conflict in:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 8e19f6ab8393..93052b07c76c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -615,8 +615,10 @@ void mlx5_lag_remove(struct mlx5_core_dev *dev)
- 			break;
- 
- 	if (i == MLX5_MAX_PORTS) {
--		if (ldev->nb.notifier_call)
-+		if (ldev->nb.notifier_call) {
- 			unregister_netdevice_notifier_net(&init_net, &ldev->nb);
-+			ldev->nb.notifier_call = NULL;
-+		}
- 		mlx5_lag_mp_cleanup(ldev);
- 		cancel_delayed_work_sync(&ldev->bond_work);
- 		mlx5_lag_dev_free(ldev);
--- 
-2.24.1
+  fs/sysfs/group.c
 
+between commit:
+
+  9255782f7061 ("sysfs: Wrap __compat_only_sysfs_link_entry_to_kobj functio=
+n to change the symlink name")
+
+from the powerpc tree and commit:
+
+  303a42769c4c ("sysfs: add sysfs_group{s}_change_owner()")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc fs/sysfs/group.c
+index 1e2a096057bc,5afe0e7ff7cd..000000000000
+--- a/fs/sysfs/group.c
++++ b/fs/sysfs/group.c
+@@@ -478,4 -457,118 +479,118 @@@ int compat_only_sysfs_link_entry_to_kob
+  	kernfs_put(target);
+  	return PTR_ERR_OR_ZERO(link);
+  }
+ -EXPORT_SYMBOL_GPL(__compat_only_sysfs_link_entry_to_kobj);
+ +EXPORT_SYMBOL_GPL(compat_only_sysfs_link_entry_to_kobj);
++=20
++ static int sysfs_group_attrs_change_owner(struct kernfs_node *grp_kn,
++ 					  const struct attribute_group *grp,
++ 					  struct iattr *newattrs)
++ {
++ 	struct kernfs_node *kn;
++ 	int error;
++=20
++ 	if (grp->attrs) {
++ 		struct attribute *const *attr;
++=20
++ 		for (attr =3D grp->attrs; *attr; attr++) {
++ 			kn =3D kernfs_find_and_get(grp_kn, (*attr)->name);
++ 			if (!kn)
++ 				return -ENOENT;
++=20
++ 			error =3D kernfs_setattr(kn, newattrs);
++ 			kernfs_put(kn);
++ 			if (error)
++ 				return error;
++ 		}
++ 	}
++=20
++ 	if (grp->bin_attrs) {
++ 		struct bin_attribute *const *bin_attr;
++=20
++ 		for (bin_attr =3D grp->bin_attrs; *bin_attr; bin_attr++) {
++ 			kn =3D kernfs_find_and_get(grp_kn, (*bin_attr)->attr.name);
++ 			if (!kn)
++ 				return -ENOENT;
++=20
++ 			error =3D kernfs_setattr(kn, newattrs);
++ 			kernfs_put(kn);
++ 			if (error)
++ 				return error;
++ 		}
++ 	}
++=20
++ 	return 0;
++ }
++=20
++ /**
++  * sysfs_group_change_owner - change owner of an attribute group.
++  * @kobj:	The kobject containing the group.
++  * @grp:	The attribute group.
++  * @kuid:	new owner's kuid
++  * @kgid:	new owner's kgid
++  *
++  * Returns 0 on success or error code on failure.
++  */
++ int sysfs_group_change_owner(struct kobject *kobj,
++ 			     const struct attribute_group *grp, kuid_t kuid,
++ 			     kgid_t kgid)
++ {
++ 	struct kernfs_node *grp_kn;
++ 	int error;
++ 	struct iattr newattrs =3D {
++ 		.ia_valid =3D ATTR_UID | ATTR_GID,
++ 		.ia_uid =3D kuid,
++ 		.ia_gid =3D kgid,
++ 	};
++=20
++ 	if (!kobj->state_in_sysfs)
++ 		return -EINVAL;
++=20
++ 	if (grp->name) {
++ 		grp_kn =3D kernfs_find_and_get(kobj->sd, grp->name);
++ 	} else {
++ 		kernfs_get(kobj->sd);
++ 		grp_kn =3D kobj->sd;
++ 	}
++ 	if (!grp_kn)
++ 		return -ENOENT;
++=20
++ 	error =3D kernfs_setattr(grp_kn, &newattrs);
++ 	if (!error)
++ 		error =3D sysfs_group_attrs_change_owner(grp_kn, grp, &newattrs);
++=20
++ 	kernfs_put(grp_kn);
++=20
++ 	return error;
++ }
++ EXPORT_SYMBOL_GPL(sysfs_group_change_owner);
++=20
++ /**
++  * sysfs_groups_change_owner - change owner of a set of attribute groups.
++  * @kobj:	The kobject containing the groups.
++  * @groups:	The attribute groups.
++  * @kuid:	new owner's kuid
++  * @kgid:	new owner's kgid
++  *
++  * Returns 0 on success or error code on failure.
++  */
++ int sysfs_groups_change_owner(struct kobject *kobj,
++ 			      const struct attribute_group **groups,
++ 			      kuid_t kuid, kgid_t kgid)
++ {
++ 	int error =3D 0, i;
++=20
++ 	if (!kobj->state_in_sysfs)
++ 		return -EINVAL;
++=20
++ 	if (!groups)
++ 		return 0;
++=20
++ 	for (i =3D 0; groups[i]; i++) {
++ 		error =3D sysfs_group_change_owner(kobj, groups[i], kuid, kgid);
++ 		if (error)
++ 			break;
++ 	}
++=20
++ 	return error;
++ }
++ EXPORT_SYMBOL_GPL(sysfs_groups_change_owner);
+
+--Sig_/MiD=6dX41diOlbdUFdeLJ7D
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5hiZYACgkQAVBC80lX
+0GwNjgf+NR8vXKVJAOj4wfPbS7Z86o+CKOI/QhegsGe9hQhSVkfAPt2iQ44y3B4c
+8zSfBQW5uYRwXALv7eiFKnIBw1rFg66smu7svvbEIFE/siwIMqGZJW0gOpVwIAF7
+qgO7qyQJlRa7G3+vZsA8VDA/1ti+juHCJHikLmzHRZOB6hF2QQTGLodXuD0ReJHQ
+D0seqE0uNkN5DO/5KifBic8SHGRMAv0P28MC2SH8Si/YmF4CwN4E9gp9fKsQ4vo5
+dBpZvDO345/zQO7p31mIV/exmvQZ68ttELulIYglGLY2d3c245eBf432lqT9EIIk
+SlGc8Nxd/I8v17zpel/hCzWN1KrnxQ==
+=ApLk
+-----END PGP SIGNATURE-----
+
+--Sig_/MiD=6dX41diOlbdUFdeLJ7D--
