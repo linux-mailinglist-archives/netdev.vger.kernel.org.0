@@ -2,119 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2075817A398
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE4F17A393
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbgCELDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 06:03:42 -0500
-Received: from gateway31.websitewelcome.com ([192.185.144.96]:49579 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726048AbgCELDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:03:41 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id AEEB535D4
-        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 05:03:40 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 9oI0ju8TjAGTX9oI0j2158; Thu, 05 Mar 2020 05:03:40 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=AKyS/FSSKOcktqfRdmBIG2IkRBKAyZrf6dcf3eo+zjY=; b=bKp6mtkgJEuAkukD00EYIF48Rx
-        mieJyYDNSDAzAP/A0l8ZE+HjCkLGj6fWmKc82C9MN4jy57+ZwR1xOv3g5mMPO3889iBE29//9yUPh
-        lMwDbqkjN6BCDRaM/wwyx8rAt4J/KVXxmbB6tMXwMEhP1045AS7mbpTK8V3+wX56qPc16ADsLC9pE
-        tldiSA36SXYx8bR86PYzY7YNzWfMPdhFaC+ERz8MULe9lRebA9teFSqnW/YVGlzPU662zhau5UF3H
-        VttR5po0oLB7MBbeCrbmsylIviT0SpAWXrvMRk5TriWzKqNFmS2zmMjmWZ9RTvdoj2DlE50YuU5av
-        bB3KkAFg==;
-Received: from [201.166.169.220] (port=7940 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j9oHy-003n2K-UE; Thu, 05 Mar 2020 05:03:39 -0600
-Date:   Thu, 5 Mar 2020 05:06:44 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: tulip: Replace zero-length array with
- flexible-array member
-Message-ID: <20200305110644.GA8604@embeddedor>
+        id S1727306AbgCELCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 06:02:15 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:37070 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgCELCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:02:15 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 025B2CHG070950;
+        Thu, 5 Mar 2020 05:02:12 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1583406132;
+        bh=Xf1sRmkJiwnY8rrWe4eV5yH+UcPKjlexHlXHcZvFUcA=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=KbmLfbIYtekCXup3DzahcPLAG6PjYGXDRJQqtLSPGx3/XRkROU6Vyw6xXsVWxs4lp
+         IHDLzIQvPsIKqkDhP5tMJNuNqoWVZg0+uoG3CYrSEvDml6Ns8yDx3SUEv7L4xE8mou
+         qymDTlEym8/Y9U/t/gFQG0EN4iWTAm4JlZDbXN2I=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 025B2C90041167
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 5 Mar 2020 05:02:12 -0600
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 5 Mar
+ 2020 05:02:11 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Thu, 5 Mar 2020 05:02:11 -0600
+Received: from [10.24.69.159] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 025B28qQ080091;
+        Thu, 5 Mar 2020 05:02:09 -0600
+Subject: Re: [for-next PATCH v2 1/5] phy: ti: gmii-sel: simplify config
+ dependencies between net drivers and gmii phy
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Sekhar Nori <nsekhar@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20200303160029.345-1-grygorii.strashko@ti.com>
+ <20200303160029.345-2-grygorii.strashko@ti.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <a6dc55bb-090f-d1de-90c7-247197d3748e@ti.com>
+Date:   Thu, 5 Mar 2020 16:36:44 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.166.169.220
-X-Source-L: No
-X-Exim-ID: 1j9oHy-003n2K-UE
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [201.166.169.220]:7940
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 2
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+In-Reply-To: <20200303160029.345-2-grygorii.strashko@ti.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+Hi Dave,
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+On 03/03/20 9:30 pm, Grygorii Strashko wrote:
+> The phy-gmii-sel can be only auto selected in Kconfig and now the pretty
+> complex Kconfig dependencies are defined for phy-gmii-sel driver, which
+> also need to be updated every time phy-gmii-sel is re-used for any new
+> networking driver.
+> 
+> Simplify Kconfig definition for phy-gmii-sel PHY driver - drop all
+> dependencies and from networking drivers and rely on using 'imply
+> PHY_TI_GMII_SEL' in Kconfig definitions for networking drivers instead.
+> 
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>  drivers/net/ethernet/ti/Kconfig | 1 +
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+I can pick this in my tree. Can you give your Acked-by since there is a
+small change in drivers/net?
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/ethernet/dec/tulip/tulip.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/dec/tulip/tulip.h b/drivers/net/ethernet/dec/tulip/tulip.h
-index b458140aeaef..815907259048 100644
---- a/drivers/net/ethernet/dec/tulip/tulip.h
-+++ b/drivers/net/ethernet/dec/tulip/tulip.h
-@@ -381,7 +381,7 @@ struct mediatable {
- 	unsigned has_reset:6;
- 	u32 csr15dir;
- 	u32 csr15val;		/* 21143 NWay setting. */
--	struct medialeaf mleaf[0];
-+	struct medialeaf mleaf[];
- };
- 
- 
--- 
-2.25.0
-
+Thanks
+Kishon
+>  drivers/phy/ti/Kconfig          | 3 ---
+>  2 files changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+> index bf98e0fa7d8b..8a6ca16eee3b 100644
+> --- a/drivers/net/ethernet/ti/Kconfig
+> +++ b/drivers/net/ethernet/ti/Kconfig
+> @@ -53,6 +53,7 @@ config TI_CPSW
+>  	select MFD_SYSCON
+>  	select PAGE_POOL
+>  	select REGMAP
+> +	imply PHY_TI_GMII_SEL
+>  	---help---
+>  	  This driver supports TI's CPSW Ethernet Switch.
+>  
+> diff --git a/drivers/phy/ti/Kconfig b/drivers/phy/ti/Kconfig
+> index 6dbe9d0b9ff3..15a3bcf32308 100644
+> --- a/drivers/phy/ti/Kconfig
+> +++ b/drivers/phy/ti/Kconfig
+> @@ -106,11 +106,8 @@ config TWL4030_USB
+>  
+>  config PHY_TI_GMII_SEL
+>  	tristate
+> -	default y if TI_CPSW=y || TI_CPSW_SWITCHDEV=y
+> -	depends on TI_CPSW || TI_CPSW_SWITCHDEV || COMPILE_TEST
+>  	select GENERIC_PHY
+>  	select REGMAP
+> -	default m
+>  	help
+>  	  This driver supports configuring of the TI CPSW Port mode depending on
+>  	  the Ethernet PHY connected to the CPSW Port.
+> 
