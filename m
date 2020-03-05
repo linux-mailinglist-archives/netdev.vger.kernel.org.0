@@ -2,63 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC96017A8C0
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 751F617A8E4
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbgCEPVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 10:21:42 -0500
-Received: from smtprelay0254.hostedemail.com ([216.40.44.254]:48150 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726243AbgCEPVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:21:42 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id EEE36100E7B45;
-        Thu,  5 Mar 2020 15:21:40 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3350:3622:3865:3867:3868:3870:3871:3872:4321:5007:10004:10400:10848:11232:11658:11914:12043:12297:12663:12740:12760:12895:13069:13255:13311:13357:13439:14181:14659:14721:21080:21627:21740:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: love54_65c8d50a17e50
-X-Filterd-Recvd-Size: 1591
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf15.hostedemail.com (Postfix) with ESMTPA;
-        Thu,  5 Mar 2020 15:21:39 +0000 (UTC)
-Message-ID: <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
-Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
- flexible-array member
-From:   Joe Perches <joe@perches.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 05 Mar 2020 07:20:04 -0800
-In-Reply-To: <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
-References: <20200305111216.GA24982@embeddedor>
-         <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726947AbgCEPem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 10:34:42 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48313 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726131AbgCEPej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:39 -0500
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 5 Mar 2020 17:34:34 +0200
+Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsO010824;
+        Thu, 5 Mar 2020 17:34:34 +0200
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: [PATCH net-next ct-offload 00/13] Introduce connection tracking offload
+Date:   Thu,  5 Mar 2020 17:34:15 +0200
+Message-Id: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-03-05 at 16:50 +0200, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
-[]
-> >  drivers/net/wireless/zydas/zd1211rw/zd_usb.h | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> "zd1211rw: " is enough, no need to have the filename in the title.
-> 
-> But I asked this already in an earlier patch, who prefers this format?
-> It already got opposition so I'm not sure what to do.
+Background
+----------
 
-I think it doesn't matter.
+The connection tracking action provides the ability to associate connection state to a packet.
+The connection state may be used for stateful packet processing such as stateful firewalls
+and NAT operations.
 
-Trivial inconsistencies in patch subject and word choice
-don't have much overall impact.
+Connection tracking in TC SW
+----------------------------
 
+The CT state may be matched only after the CT action is performed.
+As such, CT use cases are commonly implemented using multiple chains.
+Consider the following TC filters, as an example:
+1. tc filter add dev ens1f0_0 ingress prio 1 chain 0 proto ip flower \
+    src_mac 24:8a:07:a5:28:01 ct_state -trk \
+    action ct \
+    pipe action goto chain 2
+       
+2. tc filter add dev ens1f0_0 ingress prio 1 chain 2 proto ip flower \
+    ct_state +trk+new \
+    action ct commit \
+    pipe action tunnel_key set \
+        src_ip 0.0.0.0 \
+        dst_ip 7.7.7.8 \
+        id 98 \
+        dst_port 4789 \
+    action mirred egress redirect dev vxlan0
+       
+3. tc filter add dev ens1f0_0 ingress prio 1 chain 2 proto ip flower \
+    ct_state +trk+est \
+    action tunnel_key set \
+        src_ip 0.0.0.0 \
+        dst_ip 7.7.7.8 \
+        id 98 \
+        dst_port 4789 \
+    action mirred egress redirect dev vxlan0
+       
+Filter #1 (chain 0) decides, after initial packet classification, to send the packet to the
+connection tracking module (ct action).
+Once the ct_state is initialized by the CT action the packet processing continues on chain 2.
+
+Chain 2 classifies the packet based on the ct_state.
+Filter #2 matches on the +trk+new CT state while filter #3 matches on the +trk+est ct_state.
+
+MLX5 Connection tracking HW offload - MLX5 driver patches
+------------------------------
+
+The MLX5 hardware model aligns with the software model by realizing a multi-table
+architecture. In SW the TC CT action sets the CT state on the skb. Similarly,
+HW sets the CT state on a HW register. Driver gets this CT state while offloading
+a tuple with a new ct_metadata action that provides it.
+
+Matches on ct_state are translated to HW register matches.
+    
+TC filter with CT action broken to two rules, a pre_ct rule, and a post_ct rule.
+pre_ct rule:
+   Inserted on the corrosponding tc chain table, matches on original tc match, with
+   actions: any pre ct actions, set fte_id, set zone, and goto the ct table.
+   The fte_id is a register mapping uniquely identifying this filter.
+post_ct_rule:
+   Inserted in a post_ct table, matches on the fte_id register mapping, with
+   actions: counter + any post ct actions (this is usally 'goto chain X')
+
+post_ct table is a table that all the tuples inserted to the ct table goto, so
+if there is a tuple hit, packet will continue from ct table to post_ct table,
+after being marked with the CT state (mark/label..)
+
+This design ensures that the rule's actions and counters will be executed only after a CT hit.
+HW misses will continue processing in SW from the last chain ID that was processed in hardware.
+
+The following illustrates the HW model:
+
++-------------------+      +--------------------+    +--------------+
++ pre_ct (tc chain) +----->+ CT (nat or no nat) +--->+ post_ct      +----->
++ original match    +   |  + tuple + zone match + |  + fte_id match +  |
++-------------------+   |  +--------------------+ |  +--------------+  |
+                        v                         v                    v
+                     set chain miss mapping    set mark             original
+                     set fte_id                set label            filter
+                     set zone                  set established      actions
+                     set tunnel_id             do nat (if needed)
+                     do decap
+
+To fill CT table, driver registers a CB for flow offload events, for each new
+flow table that is passed to it from offloading ct actions. Once a flow offload
+event is triggered on this CB, offload this flow to the hardware CT table.
+
+Established events offload
+--------------------------
+
+Currently, act_ct maintains an FT instance per ct zone. Flow table entries
+are created, per ct connection, when connections enter an established
+state and deleted otherwise. Once an entry is created, the FT assumes
+ownership of the entries, and manages their aging. FT is used for software
+offload of conntrack. FT entries associate 5-tuples with an action list.
+
+The act_ct changes in this patchset:
+Populate the action list with a (new) ct_metadata action, providing the
+connection's ct state (zone,mark and label), and mangle actions if NAT
+is configured.
+
+Pass the action's flow table instance as ct action entry parameter,
+so  when the action is offloaded, the driver may register a callback on
+it's block to receive FT flow offload add/del/stats events.
+
+
+Netilter changes
+--------------------------
+The netfilter changes export the relevant bits, and add the relevant CBs
+to support the above.
+
+Paul Blakey (13):
+  netfilter: flowtable: Add API for registering to flow table events
+  net/sched: act_ct: Instantiate flow table entry actions
+  net/sched: act_ct: Support restoring conntrack info on skbs
+  net/sched: act_ct: Support refreshing the flow table entries
+  net/sched: act_ct: Enable hardware offload of flow table entires
+  net/mlx5: E-Switch, Introduce global tables
+  net/mlx5: E-Switch, Add support for offloading rules with no in_port
+  net/mlx5: E-Switch, Support getting chain mapping
+  flow_offload: Add flow_match_ct to get rule ct match
+  net/mlx5e: CT: Introduce connection tracking
+  net/mlx5e: CT: Offload established flows
+  net/mlx5e: CT: Handle misses after executing CT action
+  net/mlx5e: CT: Support clear action
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   10 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 1333 ++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |  171 +++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |    3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  121 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |    9 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |    5 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   26 +-
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   43 +
+ .../mellanox/mlx5/core/eswitch_offloads_chains.h   |   13 +
+ include/net/flow_offload.h                         |   14 +
+ include/net/netfilter/nf_flow_table.h              |   32 +
+ include/net/tc_act/tc_ct.h                         |   17 +
+ net/core/flow_offload.c                            |    7 +
+ net/netfilter/nf_flow_table_core.c                 |   60 +
+ net/netfilter/nf_flow_table_ip.c                   |   15 +-
+ net/netfilter/nf_flow_table_offload.c              |   27 +-
+ net/sched/act_ct.c                                 |  210 +++
+ net/sched/cls_api.c                                |    1 +
+ 20 files changed, 2058 insertions(+), 60 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+
+-- 
+1.8.3.1
 
