@@ -2,88 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FAB179E67
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 04:47:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95251179E76
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 05:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbgCEDrh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Mar 2020 22:47:37 -0500
-Received: from ln-static-139-0-11-50.link.net.id ([139.0.11.50]:34096 "EHLO
-        mail.bankbhi.co.id" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgCEDrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 22:47:37 -0500
-X-Greylist: delayed 14394 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Mar 2020 22:47:36 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bankbhi.co.id (Postfix) with ESMTP id A164F40A34B;
-        Thu,  5 Mar 2020 05:34:38 +0700 (WIT)
-X-Virus-Scanned: amavisd-new at bankbhi.co.id
-Received: from mail.bankbhi.co.id ([127.0.0.1])
-        by localhost (mail.bankbhi.co.id [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ArDBfmgWySY6; Thu,  5 Mar 2020 05:34:38 +0700 (WIT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bankbhi.co.id (Postfix) with ESMTP id D4E9B40C7E4;
-        Thu,  5 Mar 2020 05:21:20 +0700 (WIT)
-X-Amavis-Modified: Mail body modified (using disclaimer) - mail.bankbhi.co.id
-X-Virus-Scanned: amavisd-new at bankbhi.co.id
-Received: from mail.bankbhi.co.id ([127.0.0.1])
-        by localhost (mail.bankbhi.co.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ACYf25qPMgQl; Thu,  5 Mar 2020 05:21:20 +0700 (WIT)
-Received: from mail.bankbhi.co.id (mail.bankbhi.co.id [10.1.1.47])
-        by mail.bankbhi.co.id (Postfix) with ESMTP id DE0EE409A78;
-        Thu,  5 Mar 2020 05:11:01 +0700 (WIT)
-Date:   Thu, 5 Mar 2020 05:11:01 +0700 (WIT)
-From:   DIRECTION ACF CANADA <indra@bankbhi.co.id>
-Reply-To: DIRECTION ACF CANADA <directionacf@gmail.com>
-Message-ID: <1810441736.172317.1583359861852.JavaMail.root@bankbhi.co.id>
-Subject: Programme de Recrutement ACF 2020!!!
+        id S1725948AbgCEECo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 23:02:44 -0500
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:41218 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725877AbgCEECo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 23:02:44 -0500
+Received: by mail-qv1-f68.google.com with SMTP id s15so1846294qvn.8
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 20:02:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=mCxSGFTr8Ldp6bwtnqbh/4BvF/P0vB3ouOrErgIiV84=;
+        b=u/9Uo2veonQcRj20ZbJa7H241PKfKCQEou4/AOmuHW5bL+Chz9wRYKUEVi/hr+IIFa
+         IEiW4/RrA9TBW0H2fkAUZ/IlBCPbkp1PX7/MNa3cG+fS37t6Vegts37wJriOl9wU9KAY
+         OUOW28Br2tQiD69nR4G7k1C90W34HM9O9rUlXKv/IcMj7pQG63kemjEsJ090mIOP/X+0
+         fC8GCu4u0/nkF4VXP6muYfT6aPSHGdthPhKT6T9osrmUEmlRH7/WoxJXiyaIlfbP5qHx
+         JeOuDzaX4NUnveH5MFPgQrJzyka673Zw2IqVgg4dpZRjvDOjdpirwUJmvduiWWlJoJA7
+         P83A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=mCxSGFTr8Ldp6bwtnqbh/4BvF/P0vB3ouOrErgIiV84=;
+        b=sw6Inl5QjfUnNT86NwRbB3R0ynscfYluHO02Dtgg5BsczBO+n9kksBA7Iji1SVat/O
+         M5At/uPOtyHfOR1bM/kLPuK4836IxNEEnKS6OS3Qrn5X4hWptLAtmGvYi0zv+FHyIB8T
+         EszUdB4yuDJYs8zdlD/Xxp/nRCDuimy5VS17iOu1AOb1dskFF5X9UcpLvP49lLZIyWAt
+         H8FWdjJbkrY3qiwMxy1VswJxWv/AYHhO+edi7TeRNeKa/6p0aqQVOIda3s0xV2Z+Wi6e
+         11V2gayi1IvDSVjvPQaZ0OUbNmXa8fuepS2lDsIxNRyHTJvdc0fA+JTIpPcw8fdlATAq
+         ZaEw==
+X-Gm-Message-State: ANhLgQ0CVedhX/3nBRJ/CEnPb2sindQX+wNRTc1R0uf5xwSSaqhwF5BL
+        zHcmwRDcs1TyXu6qr+gMQhSk4F59Ils=
+X-Google-Smtp-Source: ADFU+vua3bhX+leSsu/El0qJFk1npwPwKKuIDxv6u7ny/qZVbNySEzydwqU1ALqmgWwtDgcbu/z6Hg==
+X-Received: by 2002:a0c:f647:: with SMTP id s7mr4927133qvm.4.1583380962818;
+        Wed, 04 Mar 2020 20:02:42 -0800 (PST)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y62sm14942098qka.19.2020.03.04.20.02.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Mar 2020 20:02:42 -0800 (PST)
+Date:   Thu, 5 Mar 2020 12:02:35 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Jo-Philipp Wich <jo@mein.io>
+Subject: Re: Regression: net/ipv6/mld running system out of memory (not a
+ leak)
+Message-ID: <20200305040234.GA2159@dhcp-12-139.nay.redhat.com>
+References: <CACna6rwD_tnYagOPs2i=1jOJhnzS5ueiQSpMf23TdTycFtwOYQ@mail.gmail.com>
+ <b9d30209-7cc2-4515-f58a-f0dfe92fa0b6@gmail.com>
+ <20200303090035.GV2159@dhcp-12-139.nay.redhat.com>
+ <20200303091105.GW2159@dhcp-12-139.nay.redhat.com>
+ <bed8542b-3dc0-50e0-4607-59bd2aed25dd@gmail.com>
+ <20200304064504.GY2159@dhcp-12-139.nay.redhat.com>
+ <d34a35e0-2dbe-fab8-5cf8-5c80cb5ec645@gmail.com>
+ <20200304090710.GZ2159@dhcp-12-139.nay.redhat.com>
+ <b424f456-364d-d6f1-36cc-5b6fccd13b97@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [197.234.221.102]
-X-Mailer: Zimbra 8.0.2_GA_5569 (zclient/8.0.2_GA_5569)
-Thread-Topic: Programme de Recrutement ACF 2020!!!
-Thread-Index: 69p0BY9rXufJH0fYTDzSTBdP/zMV+g==
-To:     unlisted-recipients:; (no To-header on input)
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b424f456-364d-d6f1-36cc-5b6fccd13b97@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ACTION CONTRE LA FAIM CANADA / ACF CANADA-USA.
-Siège Social: 304 Rue Saint Antoine E, Montreal, QC H2Y 1A3, Canada.
-ÉMAIL: directionacf@gmail.com
-RECRUTEMENT  internationales ACF États-Unis-CANADA 2019
-***********************************************************
-ACTION CONTRE LA FAIM (ACF USA-CANADA) est une organisation international reconnue d'utilité publique fondée en 1994.
-il met en œuvre des programmes de transferts monétaires depuis les années 1990.
-Vous êtes libre, vous avez des diplômes, vous voulez vous installez au
-États-Unis ou CANADA, pour servir l’humanité, voila une possibilité.
-Dans le cadre de son programme de travail édition 2020, le Corps commun d’
-inspection (C.C.I)"ACF USA-CANADA" a effectué un examen de recrutement du
-personnel dans les organismes du système des Nations Unies. Ce thème
-avait été proposé par le Secrétariat de l’ONU et approuvé par plusieurs
-autres organisations participantes. Ainsi pour la promotion de l'emploi
-et l'insertion professionnelle des jeunes diplômés pour atteindre les
-objectifs du PNUD, "ACF USA-CANADA" lance un programme d'avis de recrutement de
-personnels de toutes catégories confondus de part le monde entier sans
-distinction de race, de nationalité et ni de sexe.
-            Pièces à fournir:
-- Un CURRICULUM VITAE (CV)
-- Une Lettre de motivation
-- Une Photo d'identité
-- les copies des diplômes
-- les attestations de travail ou les certificats des services rendus
-              ACF CANADA-USA
-DISCLAIMER
-_____________________________________________________________________
+On Wed, Mar 04, 2020 at 11:07:36AM +0100, Rafał Miłecki wrote:
+> BINGO.
+> 
+> Summary:
+> Every "ifconfig $dev down" results in:
+> ipv6_mc_down() → igmp6_group_dropped() → igmp6_leave_group() → mld_add_delrec()
+> & allocating & adding "struct ifmcaddr6" (ff02::2) to the idev->mc_tomb.
 
-This email (including all attachments) is intended solely for the named recipients. You should only read, transmit, 
-distribute or act in reliance on this email, or communicate all or any part of its content, if you are the intended recipient 
-and are authorised by the sender to do so.
+Yes, when link down, we store the pmc info in idev->mc_tomb via
+mld_add_delrec(), but later when link up, we didn't create new pmc,
+but just copy the pmc info in idev->mc_tomb to current idev via
+mld_del_delrec() and free the tomb pmc.
 
-This email is confidential and may be subject to legal or other professional privilege. Any confidentiality or privilege 
-is not waived or lost because this email has been sent to you by mistake. This email may also include personal information 
-which is subject to requirements of the Privacy Act 1988 (Cth).
+> Should I still try it given my above debugging results?
 
-If you have received this email in error, please let us know by reply email, delete it from your system and destroy any copies.
-You should be aware that emails may contain computer viruses or other defects and may not be successfully replicated 
-on other systems. Neither PT. Bank Harda Internasional nor the sender of this email gives any warranties in relation to these matters.
+In the new patch, I removed the "ff02::2" address in ipv6_mc_down()
+and re-added it in ipv6_mc_up(). I would appreciate if you could help
+try it and see if we really did wrong in mld_add_delrec().
+
+Thanks
+Hangbin
