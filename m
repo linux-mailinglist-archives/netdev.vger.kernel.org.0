@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A42B17A37E
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 11:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A513F17A385
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 11:58:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbgCEKze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 05:55:34 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:49278 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgCEKze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 05:55:34 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 025AtT2Z010220;
-        Thu, 5 Mar 2020 04:55:29 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1583405729;
-        bh=UMh1opH6tmYxUIx/AyWNlJuD6bLG+NyY4/gGWFJ85Nk=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=FsxuKIay7I+ZBVLkyPl3LpD5Y6p6SDnF7fgG7qfZn9e/Qs3/UODQ+ema+spkam3Dm
-         oC4R744c+dIqSRHYZnxu5jf01hUAn0nfY6BHAbjA6S5zx166YKmyg2ooK905vnVZDD
-         j0PrP1WJl3Du/jaaMLEghlYQ0SpRkTBwFXWdVH04=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 025AtTDL030404
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 5 Mar 2020 04:55:29 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 5 Mar
- 2020 04:55:29 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Thu, 5 Mar 2020 04:55:29 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 025AtQuu006736;
-        Thu, 5 Mar 2020 04:55:27 -0600
-Subject: Re: [for-next PATCH v2 0/5] phy: ti: gmii-sel: add support for
- am654x/j721e soc
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        David Miller <davem@davemloft.net>
-CC:     <m-karicheri2@ti.com>, <t-kristo@ti.com>, <nsekhar@ti.com>,
-        <robh+dt@kernel.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200303160029.345-1-grygorii.strashko@ti.com>
- <20200304.143951.1102411401290807167.davem@davemloft.net>
- <71a6fea9-65c1-3a3c-a35b-9432208b3ee5@ti.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <7c5395a6-56cb-1d2a-0243-99a6b0fed2a7@ti.com>
-Date:   Thu, 5 Mar 2020 12:55:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727198AbgCEK6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 05:58:08 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:38031 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726048AbgCEK6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 05:58:07 -0500
+Received: from mail-wm1-f72.google.com ([209.85.128.72])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <andrea.righi@canonical.com>)
+        id 1j9oCb-0003eb-3a
+        for netdev@vger.kernel.org; Thu, 05 Mar 2020 10:58:05 +0000
+Received: by mail-wm1-f72.google.com with SMTP id w3so1425667wmg.4
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 02:58:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=udGZa6zUTBnjvV9RDovAxlAbvCOTgp2vn9poHckj0LU=;
+        b=PKkQecrCa8D4wlOs9njVE8+REztyXTZnc9pNbWU6w3jINsUUbFr2uILLFHck+pOyKq
+         gG7lQYfqm2KgwiDSUzw+TqUWCS7tetCAQS9tLTDQr/OpWCcCX5QpPw37pS0ql5vYb3AN
+         majW8MLDDkNmWAljUVsujxifszA+zSPgVAJVmozi3yH/oVlf0tMPr87LCOFp8l1IWBXV
+         8Bi/ltGRfMJ22ylfIvI7nK1XcInWS1Wnyz7CQD6mYQpP2/TUKECxHJ7fk7Hiz14GbC7x
+         o62HxREcWOKn6g2fjegKIre0IOooO6LuFVLj1BbFNXfQsmY34k6gx1W2trtDiNN25vqH
+         ndrw==
+X-Gm-Message-State: ANhLgQ1Qd5qVsoc6nPL3B/S5/QTBHQ1Bo3ruT2oiceuCYSCFMokIEFF8
+        h2ymJ/qShaDHAKBnnb4hlo+Rbo9Ee6Jp6RJSPNCdyMGDf07llRYrMdY7bynOKbLYQqT2uZMYfn3
+        bMtSK0NfEYhquQ6aC/qkLqLwE5JXsdLbbqw==
+X-Received: by 2002:a5d:4389:: with SMTP id i9mr8893032wrq.90.1583405884725;
+        Thu, 05 Mar 2020 02:58:04 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vv4iMXGTqqE+qve6h7wkGy0rppGrS96fNmwqzfIXN3ymTQ0oUkPnpqY9TxcelI6qvl2thhWSQ==
+X-Received: by 2002:a5d:4389:: with SMTP id i9mr8893000wrq.90.1583405884377;
+        Thu, 05 Mar 2020 02:58:04 -0800 (PST)
+Received: from localhost (host96-127-dynamic.32-79-r.retail.telecomitalia.it. [79.32.127.96])
+        by smtp.gmail.com with ESMTPSA id w17sm12798445wrm.92.2020.03.05.02.58.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 02:58:03 -0800 (PST)
+Date:   Thu, 5 Mar 2020 11:58:02 +0100
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     Vladis Dronov <vdronov@redhat.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: free ptp clock properly
+Message-ID: <20200305105802.GD267906@xps-13>
+References: <20200304175350.GB267906@xps-13>
+ <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
+ <20200305073653.GC267906@xps-13>
+ <1136615517.13281010.1583405254370.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <71a6fea9-65c1-3a3c-a35b-9432208b3ee5@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1136615517.13281010.1583405254370.JavaMail.zimbra@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 05/03/2020 07:17, Kishon Vijay Abraham I wrote:
-> Hi,
+On Thu, Mar 05, 2020 at 05:47:34AM -0500, Vladis Dronov wrote:
+> Hello, Andrea, all,
 > 
-> On 05/03/20 4:09 am, David Miller wrote:
->> From: Grygorii Strashko <grygorii.strashko@ti.com>
->> Date: Tue, 3 Mar 2020 18:00:24 +0200
->>
->>> Hi Kishon,
->>>
->>> This series adds support for TI K3 AM654x/J721E SoCs in TI phy-gmii-sel PHY
->>> driver, which is required for future adding networking support.
->>>
->>> depends on:
->>>   [PATCH 0/2] phy: ti: gmii-sel: two fixes
->>>   https://lkml.org/lkml/2020/2/14/2510
->>>
->>> Changes in v2:
->>>   - fixed comments
->>>
->>> v1: https://lkml.org/lkml/2020/2/22/100
->>
->> This is mostly DT updates and not much networking code changes, will some other
->> tree take this?
+> > > I would guess that a kernel in question (5.3.0-40-generic) has the commit
+> > > a33121e5487b but does not have the commit 75718584cb3c, which should be
+> > > exactly fixing a docking station disconnect crash. Could you please,
+> > > check this?
+> > 
+> > Unfortunately the kernel in question already has 75718584cb3c:
+> > https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/bionic/commit/?h=hwe&id=c71b774732f997ef38ed7bd62e73891a01f2bbfe
+> > 
+> > It looks like there's something else that can free up too early the
+> > resources required by posix_clock_unregister() to destroy the related
+> > sysfs files.
+> > 
+> > Maybe what we really need to call from ptp_clock_release() is
+> > pps_unregister_source()? Something like this:
 > 
-> I can take the phy related changes. Grygorii, can you split the dt
-> patches into a separate series?
+> Err... I believe, "Maybe" is not a good enough reason to accept a kernel patch.
+> Probably, there should be something supporting this statement.
 
-sure. Could pls, pick up 1-3 and I'll resend 4-5.
-Or you want me re-send once again?
+Indeed. :) I've asked the original bug reporter to repeat the test with
+this patch. Let's see if we can still reproduce the failure...
 
--- 
-Best regards,
-grygorii
+Thanks,
+-Andrea
