@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8241217AC63
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DFE17AC54
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbgCERT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:19:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41508 "EHLO mail.kernel.org"
+        id S1727911AbgCERPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:15:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727899AbgCERO7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 12:14:59 -0500
+        id S1727902AbgCERPA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:15:00 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06B192146E;
-        Thu,  5 Mar 2020 17:14:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3977121744;
+        Thu,  5 Mar 2020 17:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583428498;
-        bh=LijBeT8ghRz4OhfDqJrmVw3kAoNl4ItiK+qJNyWxjHs=;
+        s=default; t=1583428500;
+        bh=apxNGTTawxO88AhaRt5S23Z7rTLns5Lk95jgyvF3/SA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wv3bw6XzrC/lntlHndNfDM/OrYZGsQ8xBVY/x6UhKQbDOaXMGzN/76xZb89LAoGqk
-         j6F+bI9dcR90IB28CVGE0/UZTA6y7NGgBGgPNGx/PRXCakTzgTnaVn1An8aD6mhGpB
-         QbOO/M4sA4bhtDZxMpEgxMLP/SalYgKLo0CsPl8k=
+        b=CoZOH9iOeGrfO+vDOpcrnzac+irrY91dazaVwZriKToLGNwtlgUi3DDUWiMnFSbQD
+         Tfl9c25LxVyTRVCOkQBMx3g1by2Q7nL570oWIpqwKaG+Kq4ZuI75/Bc2wpDxuwcIO8
+         KM0OIfun/IBvIVsibjBjFowDy/nTBbj9aVhBcj0E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 30/58] mac80211: rx: avoid RCU list traversal under mutex
-Date:   Thu,  5 Mar 2020 12:13:51 -0500
-Message-Id: <20200305171420.29595-30-sashal@kernel.org>
+Cc:     Esben Haabendal <esben@geanix.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 31/58] net: ll_temac: Fix race condition causing TX hang
+Date:   Thu,  5 Mar 2020 12:13:52 -0500
+Message-Id: <20200305171420.29595-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200305171420.29595-1-sashal@kernel.org>
 References: <20200305171420.29595-1-sashal@kernel.org>
@@ -44,37 +44,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+From: Esben Haabendal <esben@geanix.com>
 
-[ Upstream commit 253216ffb2a002a682c6f68bd3adff5b98b71de8 ]
+[ Upstream commit 84823ff80f7403752b59e00bb198724100dc611c ]
 
-local->sta_mtx is held in __ieee80211_check_fast_rx_iface().
-No need to use list_for_each_entry_rcu() as it also requires
-a cond argument to avoid false lockdep warnings when not used in
-RCU read-side section (with CONFIG_PROVE_RCU_LIST).
-Therefore use list_for_each_entry();
+It is possible that the interrupt handler fires and frees up space in
+the TX ring in between checking for sufficient TX ring space and
+stopping the TX queue in temac_start_xmit. If this happens, the
+queue wake from the interrupt handler will occur before the queue is
+stopped, causing a lost wakeup and the adapter's transmit hanging.
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Link: https://lore.kernel.org/r/20200223143302.15390-1-madhuparnabhowmik10@gmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+To avoid this, after stopping the queue, check again whether there is
+sufficient space in the TX ring. If so, wake up the queue again.
+
+This is a port of the similar fix in axienet driver,
+commit 7de44285c1f6 ("net: axienet: Fix race condition causing TX hang").
+
+Fixes: 23ecc4bde21f ("net: ll_temac: fix checksum offload logic")
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 0e05ff0376726..0ba98ad9bc854 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -4114,7 +4114,7 @@ void __ieee80211_check_fast_rx_iface(struct ieee80211_sub_if_data *sdata)
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 21c1b4322ea78..fd578568b3bff 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -788,6 +788,9 @@ static void temac_start_xmit_done(struct net_device *ndev)
+ 		stat = be32_to_cpu(cur_p->app0);
+ 	}
  
- 	lockdep_assert_held(&local->sta_mtx);
++	/* Matches barrier in temac_start_xmit */
++	smp_mb();
++
+ 	netif_wake_queue(ndev);
+ }
  
--	list_for_each_entry_rcu(sta, &local->sta_list, list) {
-+	list_for_each_entry(sta, &local->sta_list, list) {
- 		if (sdata != sta->sdata &&
- 		    (!sta->sdata->bss || sta->sdata->bss != sdata->bss))
- 			continue;
+@@ -830,9 +833,19 @@ temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+ 	if (temac_check_tx_bd_space(lp, num_frag + 1)) {
+-		if (!netif_queue_stopped(ndev))
+-			netif_stop_queue(ndev);
+-		return NETDEV_TX_BUSY;
++		if (netif_queue_stopped(ndev))
++			return NETDEV_TX_BUSY;
++
++		netif_stop_queue(ndev);
++
++		/* Matches barrier in temac_start_xmit_done */
++		smp_mb();
++
++		/* Space might have just been freed - check again */
++		if (temac_check_tx_bd_space(lp, num_frag))
++			return NETDEV_TX_BUSY;
++
++		netif_wake_queue(ndev);
+ 	}
+ 
+ 	cur_p->app0 = 0;
 -- 
 2.20.1
 
