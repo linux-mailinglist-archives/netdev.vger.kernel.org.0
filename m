@@ -2,153 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E8317A581
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:44:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CCF017A5B9
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbgCEMnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 07:43:12 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40036 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbgCEMnM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:43:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0ByaeURdveybTpS3QkBmzqigwKpT/KhBk9VYepIopw8=; b=ONXKbh8cZrrVVVOTXMd46HSvBl
-        GEo+IbsWy8X96/QNMHL/lHrn9acdpHd0Hdm70kVUk16H2OYtqLH+MZO1ScEjPPhVjPtGfedNi+KEd
-        E5/1zrWOAHcUISNn/MCGVdh2uzquOhQfiTiAsLUwqNfqmZar5cIeDi/MjqnxXSq550qyZ/hsaYWsS
-        Cqz3CJVTlhPPyQuOj+axvPRt/LnM9nab97I1KMOnqACHYJo6ZAODLYhP0PclR4NUf5EzCr7YQHj/f
-        onBSFgWw+oDXH6nHg/S5FSeJDPrzPD3IjqPbXrSyN98J+IU6F/HCNvFDHmvC7cdZZ4nGxCjo45yu+
-        EEmMEdEA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58768 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j9pq2-0006SF-9W; Thu, 05 Mar 2020 12:42:54 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1j9pq0-00072r-5H; Thu, 05 Mar 2020 12:42:52 +0000
-In-Reply-To: <20200305124139.GB25745@shell.armlinux.org.uk>
-References: <20200305124139.GB25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 10/10] net: dsa: mv88e6xxx: use PHY_DETECT in
- mac_link_up/mac_link_down
+        id S1726143AbgCEMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 07:54:03 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40388 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726079AbgCEMyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:54:03 -0500
+Received: by mail-wm1-f65.google.com with SMTP id e26so5611110wme.5
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 04:54:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=UithumxeWzYgScx9rLpMyD2GJqEdo81auVSNbfn9oiY=;
+        b=f6PmxY+OolwFWG6Qlwyz2Vw3Fx3A+kmQsoP2kyPGcXtEWvliRhBV5iONwsB4PRtoHu
+         HvtCtJiLV+XvTInlE90TtwWIowBizogvXcRXTobxU9eLqYTvBiNAsfyp4qIXeCRp7xR0
+         LGoYy8e9/mmZW1JFe/3FVRueKfq8NbiHwb5Qg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=UithumxeWzYgScx9rLpMyD2GJqEdo81auVSNbfn9oiY=;
+        b=jQrp42goCZClx3cV1VaAITek2ErDnTb6t66XVTzGdlL5NDL3umWKU+30yKdRLt7I/d
+         aVHy/jOQ7A/eA9l3INkiEGVAJ9IDfqvUolgnbub+2pW2tQHlURr03EiaFprcwy0D4/Jn
+         Q0M1HIcDQYUUILEDmy41AdvhER4RZDJ1Nd2TDfPRa7Gr5Rm4iQa2wcbRDTc4oiZwy7sM
+         5jm39NzxY3OD/1FpBaN/cOv6aFNoteZ58sIh36c0z5s0XYu1BOUptXiKgUwAHYHCWsH7
+         8+1KjAvLE9webwpePqFQODimbJzEANBMhHjnZXgDZp2nOWYuZeYtz6UI1vbdlqLE3RUx
+         0Kow==
+X-Gm-Message-State: ANhLgQ2Py7nwJ0ksbYWRgXjdjJGgwPzU0Y7lXaGPNDu31VHi7aV2mnZ6
+        1E5BG60crh2a7yBpBc2VD7SJrg==
+X-Google-Smtp-Source: ADFU+vtVxwix/QuB6JjhX0awb1vybd4BvpFB+lIY68z69hOr/TCDPZBDyFJM31X5dKcZBJjdP0iwtw==
+X-Received: by 2002:a1c:7c08:: with SMTP id x8mr9227427wmc.71.1583412841132;
+        Thu, 05 Mar 2020 04:54:01 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id i18sm41145017wrv.30.2020.03.05.04.54.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 04:54:00 -0800 (PST)
+References: <20200304101318.5225-1-lmb@cloudflare.com> <20200304101318.5225-10-lmb@cloudflare.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     john.fastabend@gmail.com, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team@cloudflare.com, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 09/12] selftests: bpf: don't listen() on UDP sockets
+In-reply-to: <20200304101318.5225-10-lmb@cloudflare.com>
+Date:   Thu, 05 Mar 2020 13:53:59 +0100
+Message-ID: <878skfynbs.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1j9pq0-00072r-5H@rmk-PC.armlinux.org.uk>
-Date:   Thu, 05 Mar 2020 12:42:52 +0000
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the status of the PHY_DETECT bit to determine whether we need to
-force the MAC settings in mac_link_up() and mac_link_down().
+On Wed, Mar 04, 2020 at 11:13 AM CET, Lorenz Bauer wrote:
+> Most tests for TCP sockmap can be adapted to UDP sockmap if the
+> listen call is skipped. Rename listen_loopback, etc. to socket_loopback
+> and skip listen() for SOCK_DGRAM.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 53 +++++++++++++++++---------------
- 1 file changed, 29 insertions(+), 24 deletions(-)
+FWIW, Go has net.ListenUDP so I don't think it would be very confusing
+to leave the helper name as is.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index bdde20059c81..441865c27c28 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -464,6 +464,22 @@ static int mv88e6xxx_phy_is_internal(struct dsa_switch *ds, int port)
- 	return port < chip->info->num_internal_phys;
- }
- 
-+static int mv88e6xxx_port_ppu_updates(struct mv88e6xxx_chip *chip, int port)
-+{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
-+	if (err) {
-+		dev_err(chip->dev,
-+			"p%d: %s: failed to read port status\n",
-+			port, __func__);
-+		return err;
-+	}
-+
-+	return !!(reg & MV88E6XXX_PORT_STS_PHY_DETECT);
-+}
-+
- static int mv88e6xxx_serdes_pcs_get_state(struct dsa_switch *ds, int port,
- 					  struct phylink_link_state *state)
- {
-@@ -692,20 +708,14 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
- 
- 	ops = chip->info->ops;
- 
--	/* Internal PHYs propagate their configuration directly to the MAC.
--	 * External PHYs depend on whether the PPU is enabled for this port.
--	 * FIXME: we should be using the PPU enable state here. What about
--	 * an automedia port?
--	 */
--	if (!mv88e6xxx_phy_is_internal(ds, port) && ops->port_set_link) {
--		mv88e6xxx_reg_lock(chip);
-+	mv88e6xxx_reg_lock(chip);
-+	if (!mv88e6xxx_port_ppu_updates(chip, port) && ops->port_set_link)
- 		err = ops->port_set_link(chip, port, LINK_FORCED_DOWN);
--		mv88e6xxx_reg_unlock(chip);
-+	mv88e6xxx_reg_unlock(chip);
- 
--		if (err)
--			dev_err(chip->dev,
--				"p%d: failed to force MAC link down\n", port);
--	}
-+	if (err)
-+		dev_err(chip->dev,
-+			"p%d: failed to force MAC link down\n", port);
- }
- 
- static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
-@@ -720,13 +730,8 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
- 
- 	ops = chip->info->ops;
- 
--	/* Internal PHYs propagate their configuration directly to the MAC.
--	 * External PHYs depend on whether the PPU is enabled for this port.
--	 * FIXME: we should be using the PPU enable state here. What about
--	 * an automedia port?
--	 */
--	if (!mv88e6xxx_phy_is_internal(ds, port)) {
--		mv88e6xxx_reg_lock(chip);
-+	mv88e6xxx_reg_lock(chip);
-+	if (!mv88e6xxx_port_ppu_updates(chip, port)) {
- 		/* FIXME: for an automedia port, should we force the link
- 		 * down here - what if the link comes up due to "other" media
- 		 * while we're bringing the port up, how is the exclusivity
-@@ -747,13 +752,13 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
- 
- 		if (ops->port_set_link)
- 			err = ops->port_set_link(chip, port, LINK_FORCED_UP);
-+	}
- error:
--		mv88e6xxx_reg_unlock(chip);
-+	mv88e6xxx_reg_unlock(chip);
- 
--		if (err && err != -EOPNOTSUPP)
--			dev_err(ds->dev,
--				"p%d: failed to configure MAC link up\n", port);
--	}
-+	if (err && err != -EOPNOTSUPP)
-+		dev_err(ds->dev,
-+			"p%d: failed to configure MAC link up\n", port);
- }
- 
- static int mv88e6xxx_stats_snapshot(struct mv88e6xxx_chip *chip, int port)
--- 
-2.20.1
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 
+[...]
