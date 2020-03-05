@@ -2,90 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A513F17A385
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 11:58:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D52317A3A8
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:06:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbgCEK6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 05:58:08 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:38031 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726048AbgCEK6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 05:58:07 -0500
-Received: from mail-wm1-f72.google.com ([209.85.128.72])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <andrea.righi@canonical.com>)
-        id 1j9oCb-0003eb-3a
-        for netdev@vger.kernel.org; Thu, 05 Mar 2020 10:58:05 +0000
-Received: by mail-wm1-f72.google.com with SMTP id w3so1425667wmg.4
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 02:58:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=udGZa6zUTBnjvV9RDovAxlAbvCOTgp2vn9poHckj0LU=;
-        b=PKkQecrCa8D4wlOs9njVE8+REztyXTZnc9pNbWU6w3jINsUUbFr2uILLFHck+pOyKq
-         gG7lQYfqm2KgwiDSUzw+TqUWCS7tetCAQS9tLTDQr/OpWCcCX5QpPw37pS0ql5vYb3AN
-         majW8MLDDkNmWAljUVsujxifszA+zSPgVAJVmozi3yH/oVlf0tMPr87LCOFp8l1IWBXV
-         8Bi/ltGRfMJ22ylfIvI7nK1XcInWS1Wnyz7CQD6mYQpP2/TUKECxHJ7fk7Hiz14GbC7x
-         o62HxREcWOKn6g2fjegKIre0IOooO6LuFVLj1BbFNXfQsmY34k6gx1W2trtDiNN25vqH
-         ndrw==
-X-Gm-Message-State: ANhLgQ1Qd5qVsoc6nPL3B/S5/QTBHQ1Bo3ruT2oiceuCYSCFMokIEFF8
-        h2ymJ/qShaDHAKBnnb4hlo+Rbo9Ee6Jp6RJSPNCdyMGDf07llRYrMdY7bynOKbLYQqT2uZMYfn3
-        bMtSK0NfEYhquQ6aC/qkLqLwE5JXsdLbbqw==
-X-Received: by 2002:a5d:4389:: with SMTP id i9mr8893032wrq.90.1583405884725;
-        Thu, 05 Mar 2020 02:58:04 -0800 (PST)
-X-Google-Smtp-Source: ADFU+vv4iMXGTqqE+qve6h7wkGy0rppGrS96fNmwqzfIXN3ymTQ0oUkPnpqY9TxcelI6qvl2thhWSQ==
-X-Received: by 2002:a5d:4389:: with SMTP id i9mr8893000wrq.90.1583405884377;
-        Thu, 05 Mar 2020 02:58:04 -0800 (PST)
-Received: from localhost (host96-127-dynamic.32-79-r.retail.telecomitalia.it. [79.32.127.96])
-        by smtp.gmail.com with ESMTPSA id w17sm12798445wrm.92.2020.03.05.02.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 02:58:03 -0800 (PST)
-Date:   Thu, 5 Mar 2020 11:58:02 +0100
-From:   Andrea Righi <andrea.righi@canonical.com>
-To:     Vladis Dronov <vdronov@redhat.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ptp: free ptp clock properly
-Message-ID: <20200305105802.GD267906@xps-13>
-References: <20200304175350.GB267906@xps-13>
- <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
- <20200305073653.GC267906@xps-13>
- <1136615517.13281010.1583405254370.JavaMail.zimbra@redhat.com>
+        id S1725912AbgCELGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 06:06:51 -0500
+Received: from ulan.pagasa.dost.gov.ph ([202.90.128.205]:45338 "EHLO
+        mailgw.pagasa.dost.gov.ph" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725953AbgCELGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:06:51 -0500
+X-Greylist: delayed 1224 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Mar 2020 06:06:50 EST
+Received: from webmail.pagasa.dost.int ([10.10.11.8])
+        by mailgw.pagasa.dost.gov.ph  with ESMTP id 025Aig2M006237-025Aig2O006237
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 5 Mar 2020 18:44:42 +0800
+Received: from localhost (localhost [127.0.0.1])
+        by webmail.pagasa.dost.int (Postfix) with ESMTP id 8128A2981670;
+        Thu,  5 Mar 2020 18:35:17 +0800 (PST)
+Received: from webmail.pagasa.dost.int ([127.0.0.1])
+        by localhost (webmail.pagasa.dost.int [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 0MOUjDXd6_Qm; Thu,  5 Mar 2020 18:35:17 +0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by webmail.pagasa.dost.int (Postfix) with ESMTP id 78682298172F;
+        Thu,  5 Mar 2020 18:35:16 +0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 webmail.pagasa.dost.int 78682298172F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pagasa.dost.gov.ph;
+        s=96B9A03E-48B0-11EA-A7E8-92F42F537CE2; t=1583404516;
+        bh=RC75T5p3JPNk7JUNB+lH0UfaFQO1Ac584gPL3SIL6h8=;
+        h=Date:From:Message-ID:MIME-Version;
+        b=QluOTNSzd9MxZ3z5lXtzgy3ErulKQfaKIVDpIg0OtI5bKQHL8j3sEaWb/Pt9ws9mZ
+         zTNyFJS78Fhk6rNB6CuPPDu1dQbe7H5qYUEx5S4ZV2DiOOEdf/PlbuJRihnRJ7is85
+         MxV5E6fUqirQYY0a3trUXQtGDi5BT8f+TBx8xPXc=
+X-Virus-Scanned: amavisd-new at pagasa.dost.int
+Received: from webmail.pagasa.dost.int ([127.0.0.1])
+        by localhost (webmail.pagasa.dost.int [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 03X5Z3ZNVI5Y; Thu,  5 Mar 2020 18:35:16 +0800 (PST)
+Received: from webmail.pagasa.dost.int (webmail.pagasa.dost.int [10.11.1.8])
+        by webmail.pagasa.dost.int (Postfix) with ESMTP id 848F42981681;
+        Thu,  5 Mar 2020 18:35:14 +0800 (PST)
+Date:   Thu, 5 Mar 2020 18:35:14 +0800 (PST)
+From:   "Juanito S. Galang" <juanito.galang@pagasa.dost.gov.ph>
+Message-ID: <1203625487.3574237.1583404514499.JavaMail.zimbra@pagasa.dost.gov.ph>
+Subject: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1136615517.13281010.1583405254370.JavaMail.zimbra@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Zimbra 8.8.15_GA_3899 (ZimbraWebClient - GC79 (Win)/8.8.15_GA_3895)
+Thread-Index: g8SfOi3PEuHY16jbfKrElO9m558F3g==
+Thread-Topic: 
+X-FEAS-DKIM: Valid
+Authentication-Results: mailgw.pagasa.dost.gov.ph;
+        dkim=pass header.i=@pagasa.dost.gov.ph
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 05, 2020 at 05:47:34AM -0500, Vladis Dronov wrote:
-> Hello, Andrea, all,
-> 
-> > > I would guess that a kernel in question (5.3.0-40-generic) has the commit
-> > > a33121e5487b but does not have the commit 75718584cb3c, which should be
-> > > exactly fixing a docking station disconnect crash. Could you please,
-> > > check this?
-> > 
-> > Unfortunately the kernel in question already has 75718584cb3c:
-> > https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/bionic/commit/?h=hwe&id=c71b774732f997ef38ed7bd62e73891a01f2bbfe
-> > 
-> > It looks like there's something else that can free up too early the
-> > resources required by posix_clock_unregister() to destroy the related
-> > sysfs files.
-> > 
-> > Maybe what we really need to call from ptp_clock_release() is
-> > pps_unregister_source()? Something like this:
-> 
-> Err... I believe, "Maybe" is not a good enough reason to accept a kernel patch.
-> Probably, there should be something supporting this statement.
 
-Indeed. :) I've asked the original bug reporter to repeat the test with
-this patch. Let's see if we can still reproduce the failure...
 
-Thanks,
--Andrea
+Herzlichen Gl=C3=BCckwunsch Lieber Beg=C3=BCnstigter,Sie erhalten diese E-M=
+ail von der Robert Bailey Foundation. Ich bin ein pensionierter Regierungsa=
+ngestellter aus Harlem und ein Gewinner des Powerball Lottery Jackpot im We=
+rt von 343,8 Millionen US-Dollar. Ich bin der gr=C3=B6=C3=9Fte Jackpot-Gewi=
+nner in der Geschichte der New Yorker Lotterie im US-Bundesstaat Amerika. I=
+ch habe diese Lotterie am 27. Oktober 2018 gewonnen und m=C3=B6chte Sie dar=
+=C3=BCber informieren, dass Google in Zusammenarbeit mit Microsoft Ihre "E-=
+Mail-Adresse" auf meine Bitte, einen Spendenbetrag von 3.000.000,00 Million=
+en Euro zu erhalten, =C3=BCbermittelt hat. Ich spende diese 3 Millionen Eur=
+o an Sie, um den Wohlt=C3=A4tigkeitsheimen und armen Menschen in Ihrer Geme=
+inde zu helfen, damit wir die Welt f=C3=BCr alle verbessern k=C3=B6nnen.Wei=
+tere Informationen finden Sie auf der folgenden Website, damit Sie nicht sk=
+eptisch sind
+Diese Spende von 3 Mio. EUR.https://nypost.com/2018/11/14/meet-the-winner-o=
+f-the-biggest-lottery-jackpot-in-new-york-history/Sie k=C3=B6nnen auch mein=
+ YouTube f=C3=BCr mehr Best=C3=A4tigung aufpassen:
+https://www.youtube.com/watch?v=3DH5vT18Ysavc
+Bitte beachten Sie, dass alle Antworten an (robertdonation7@gmail.com=C2=A0=
+ ) gesendet werden, damit wir das k=C3=B6nnen
+Fahren Sie fort, um das gespendete Geld an Sie zu =C3=BCberweisen.E-Mail: r=
+obertdonation7@gmail.comFreundliche Gr=C3=BC=C3=9Fe,
+Robert Bailey
+* * * * * * * * * * * * * * * *
+Powerball Jackpot Gewinner
