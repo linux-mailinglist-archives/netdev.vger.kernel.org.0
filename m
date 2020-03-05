@@ -2,122 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BEAB17B253
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:42:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D78017B255
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbgCEXmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 18:42:36 -0500
-Received: from www62.your-server.de ([213.133.104.62]:34216 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbgCEXmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 18:42:36 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jA08N-000530-4M; Fri, 06 Mar 2020 00:42:31 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jA08M-000FUs-R2; Fri, 06 Mar 2020 00:42:30 +0100
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
- abstraction
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-References: <87pndt4268.fsf@toke.dk>
- <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
- <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk>
- <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk>
- <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk>
- <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
- <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net>
- <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net>
-Date:   Fri, 6 Mar 2020 00:42:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726263AbgCEXoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 18:44:21 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42413 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726128AbgCEXoV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 18:44:21 -0500
+Received: by mail-pl1-f194.google.com with SMTP id u3so61192plr.9
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 15:44:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cs.washington.edu; s=goo201206;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aODloWMH+16G+jblYOYaP3wMYDm9EtGNGFqttSX2s+c=;
+        b=DLRMzf7h4mpOskip4ouIPR0SHCDuIPqH5OncwsmFJzBEKqHKjlJmeE2yLIz5+a+nez
+         z1CihklS33zvnR8+UsqoMQpolFyiH/grjxX2KwacBuA4ve8c3cTN43i+meX3/mUdfZur
+         JwZ9Gpo/sdNhdNq4WzQ70/nSHFX2JJGGQ2oeM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aODloWMH+16G+jblYOYaP3wMYDm9EtGNGFqttSX2s+c=;
+        b=t2uWPnWSzw/9AD5HLJqdzLVx8Hc5Qq0oheifse07xtrYeKUIS4xeaev5AIlGpQWMnL
+         +OomxaofyvyljoafMWPGioLMIFiRmE0Z5O2Z/h+e3pcWFgsV8x4Ta+nuoNMYAmCjkNw4
+         V5pV8zuoEflTXMhGQRmirApRXNALuKeMuD1dBPDQh9Xu46/0c2UmIR0MHQnc3pJJj4w3
+         FYato6Ukw/JsBWuYAgke0WallS9qHHvVaR++x730a7bq8igC8rClZBYyn4nKAkc3pV0V
+         lvg8rYv7AB1O795yZj4ZuXQXyz8foFFKd2TyD07NK3ATRKpFfgtGCPAaxIWrcQjN5sb5
+         Xb5A==
+X-Gm-Message-State: ANhLgQ02hDYD0pSySNlvdBrfSmRt348QsAgO2Jrpl1HviS/ARNETlnh0
+        DhOsDxYQEzIY8AeynYiusPT5Dg==
+X-Google-Smtp-Source: ADFU+vso9fE7zT/rV4B3bXR5NWkoobXDHEh3h6d5W3kgqFGDXSuUEjPGN9nvGO5Gfot1rEhID2VWzQ==
+X-Received: by 2002:a17:902:bc88:: with SMTP id bb8mr224807plb.274.1583451859886;
+        Thu, 05 Mar 2020 15:44:19 -0800 (PST)
+Received: from ryzen.cs.washington.edu ([2607:4000:200:11:60e4:c000:39d0:c5af])
+        by smtp.gmail.com with ESMTPSA id s123sm30103856pfs.21.2020.03.05.15.44.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 15:44:19 -0800 (PST)
+From:   Luke Nelson <lukenels@cs.washington.edu>
+X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        Wang YanQing <udknight@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Jiong Wang <jiong.wang@netronome.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf 1/2] bpf, x32: fix bug with JMP32 JSET BPF_X checking upper bits
+Date:   Thu,  5 Mar 2020 15:44:12 -0800
+Message-Id: <20200305234416.31597-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25742/Thu Mar  5 15:10:18 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/20 11:50 PM, Alexei Starovoitov wrote:
-> On Thu, Mar 05, 2020 at 11:34:18PM +0100, Daniel Borkmann wrote:
->> On 3/5/20 5:34 PM, Alexei Starovoitov wrote:
->>> On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
->>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>>>> On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
->> [...]
->>>> Anyway, what I was trying to express:
->>>>
->>>>> Still that doesn't mean that pinned link is 'immutable'.
->>>>
->>>> I don't mean 'immutable' in the sense that it cannot be removed ever.
->>>> Just that we may end up in a situation where an application can see a
->>>> netdev with an XDP program attached, has the right privileges to modify
->>>> it, but can't because it can't find the pinned bpf_link. Right? Or am I
->>>> misunderstanding your proposal?
->>>>
->>>> Amending my example from before, this could happen by:
->>>>
->>>> 1. Someone attaches a program to eth0, and pins the bpf_link to
->>>>      /sys/fs/bpf/myprog
->>>>
->>>> 2. eth0 is moved to a different namespace which mounts a new sysfs at
->>>>      /sys
->>>>
->>>> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
->>>>      xdp-loader can't get access to the original bpf_link; but the XDP
->>>>      program is still attached to eth0.
->>>
->>> The key to decide is whether moving netdev across netns should be allowed
->>> when xdp attached. I think it should be denied. Even when legacy xdp
->>> program is attached, since it will confuse user space managing part.
->>
->> There are perfectly valid use cases where this is done already today (minus
->> bpf_link), for example, consider an orchestrator that is setting up the BPF
->> program on the device, moving to the newly created application pod during
->> the CNI call in k8s, such that the new pod does not have the /sys/fs/bpf/
->> mount instance and if unprivileged cannot remove the BPF prog from the dev
->> either. We do something like this in case of ipvlan, meaning, we attach a
->> rootlet prog that calls into single slot of a tail call map, move it to the
->> application pod, and only out of Cilium's own pod and it's pod-local bpf fs
->> instance we manage the pinned tail call map to update the main programs in
->> that single slot w/o having to switch any netns later on.
-> 
-> Right. You mentioned this use case before, but I managed to forget about it.
-> Totally makes sense for prog to stay attached to netdev when it's moved.
-> I think pod manager would also prefer that pod is not able to replace
-> xdp prog from inside the container. It sounds to me that steps 1,2,3 above
-> is exactly the desired behavior. Otherwise what stops some application
-> that started in a pod to override it?
+The current x32 BPF JIT is incorrect for JMP32 JSET BPF_X when the upper
+32 bits of operand registers are non-zero in certain situations.
 
-Generally, yes, and it shouldn't need to care nor see what is happening in
-/sys/fs/bpf/ from the orchestrator at least (or could potentially have its
-own private mount under /sys/fs/bpf/ or elsewhere). Ideally, the behavior
-should be that orchestrator does all the setup out of its own namespace,
-then moves everything over to the newly created target namespace and e.g.
-only if the pod has the capable(cap_sys_admin) permissions, it could mess
-around with anything attached there, or via similar model as done in [0]
-when there is a master device. Last time I looked, there is a down/up cycle
-on the dev upon netns migration and it flushes e.g. attached qdiscs afaik, so
-there are limitations that still need to be addressed. Not sure atm if same
-is happening to XDP right now. In this regards veth devices are a bit nicer
-to work with since everything can be attached on hostns ingress w/o needing
-to worry on the peer dev in the pod's netns.
+The problem is in the following code:
 
-   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7cc9f7003a969d359f608ebb701d42cafe75b84a
+  case BPF_JMP | BPF_JSET | BPF_X:
+  case BPF_JMP32 | BPF_JSET | BPF_X:
+  ...
+
+  /* and dreg_lo,sreg_lo */
+  EMIT2(0x23, add_2reg(0xC0, sreg_lo, dreg_lo));
+  /* and dreg_hi,sreg_hi */
+  EMIT2(0x23, add_2reg(0xC0, sreg_hi, dreg_hi));
+  /* or dreg_lo,dreg_hi */
+  EMIT2(0x09, add_2reg(0xC0, dreg_lo, dreg_hi));
+
+This code checks the upper bits of the operand registers regardless if
+the BPF instruction is BPF_JMP32 or BPF_JMP64. Registers dreg_hi and
+dreg_lo are not loaded from the stack for BPF_JMP32, however, they can
+still be polluted with values from previous instructions.
+
+The following BPF program demonstrates the bug. The jset64 instruction
+loads the temporary registers and performs the jump, since ((u64)r7 &
+(u64)r8) is non-zero. The jset32 should _not_ be taken, as the lower
+32 bits are all zero, however, the current JIT will take the branch due
+the pollution of temporary registers from the earlier jset64.
+
+  mov64    r0, 0
+  ld64     r7, 0x8000000000000000
+  ld64     r8, 0x8000000000000000
+  jset64   r7, r8, 1
+  exit
+  jset32   r7, r8, 1
+  mov64    r0, 2
+  exit
+
+The expected return value of this program is 2; under the buggy x32 JIT
+it returns 0. The fix is to skip using the upper 32 bits for jset32 and
+compare the upper 32 bits for jset64 only.
+
+All tests in test_bpf.ko and selftests/bpf/test_verifier continue to
+pass with this change.
+
+We found this bug using our automated verification tool, Serval.
+
+Fixes: 69f827eb6e14 ("x32: bpf: implement jitting of JMP32")
+Co-developed-by: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+---
+ arch/x86/net/bpf_jit_comp32.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp32.c b/arch/x86/net/bpf_jit_comp32.c
+index 393d251798c0..4d2a7a764602 100644
+--- a/arch/x86/net/bpf_jit_comp32.c
++++ b/arch/x86/net/bpf_jit_comp32.c
+@@ -2039,10 +2039,12 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+ 			}
+ 			/* and dreg_lo,sreg_lo */
+ 			EMIT2(0x23, add_2reg(0xC0, sreg_lo, dreg_lo));
+-			/* and dreg_hi,sreg_hi */
+-			EMIT2(0x23, add_2reg(0xC0, sreg_hi, dreg_hi));
+-			/* or dreg_lo,dreg_hi */
+-			EMIT2(0x09, add_2reg(0xC0, dreg_lo, dreg_hi));
++			if (is_jmp64) {
++				/* and dreg_hi,sreg_hi */
++				EMIT2(0x23, add_2reg(0xC0, sreg_hi, dreg_hi));
++				/* or dreg_lo,dreg_hi */
++				EMIT2(0x09, add_2reg(0xC0, dreg_lo, dreg_hi));
++			}
+ 			goto emit_cond_jmp;
+ 		}
+ 		case BPF_JMP | BPF_JSET | BPF_K:
+-- 
+2.20.1
+
