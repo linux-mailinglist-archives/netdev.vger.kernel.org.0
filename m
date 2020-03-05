@@ -2,85 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93083179C97
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:05:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DA0179CC4
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388527AbgCEAFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 19:05:24 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33640 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388425AbgCEAFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 19:05:24 -0500
-Received: by mail-pf1-f196.google.com with SMTP id n7so1844924pfn.0
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 16:05:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=ovze5HfNXTKcSnyKmCH8v6ewSvuCSjQBDWK2ldmHyO8=;
-        b=l8vcb162DxPzSEDixfB4hqSrkyIX+04H9SHk8arXvCQJxA2QoNSXt4+P2ZMz2/8R6B
-         yGvq6kI0Ca6yW4reK02Y5MO2NFZ/9SFciuTIWnngAHB2+eez/c5P0UYt3bkNXNAUZTMN
-         YVQ2tnHYwbP9hV7f28MCNWcPXHrsML8MgUeYYAB0ShPBstaOh7H0S/2aKm5lQnb+Xawm
-         Bf3aCsNFRCYSpRR7laGMOuPvg5fEU+jROucBaGMUQv0FgdoFf7uXHsObnKCGuiaWjOel
-         wMpTq0oqj7nvZHj16fPM+iVvZxyjimWPTdxeXnLf13aZzG/awzEARXT9wLvKko1dOPwv
-         9T1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ovze5HfNXTKcSnyKmCH8v6ewSvuCSjQBDWK2ldmHyO8=;
-        b=eaLwQa+lmWThUVFfcAfXedJNVze+LdbMJsmt7XRz3B1fF9+YOrA+y44XVQylF7I1Gf
-         ZFF2NEJ4SCE0lRdm9aEFcqyJFTcaGUlk5xEGouoZg5EK3YAFQm5/RCz0dzDLlBBJZflR
-         ujVIZ6lqUQpwDaaJAtriBYtWHCRlaHHwN8hh+b3O+gn7dEqvfWw1A682znfonPW8wCQJ
-         f/WEaaILuTBCmgN45T4ieiGnUE/jp3BdB+aXXUirzcTA9qatT7qlPSqNvIsRWHf0xiqC
-         cXjcVUotJN21bTK/o62Sp7KptXtNznSgkNsP1I68mxfNRV8TbBDOQFdFmDR+1bnIqHba
-         ZZVA==
-X-Gm-Message-State: ANhLgQ2EIfp3Rn2Mhg1DQBscOQt1BwwzDtKk+Jd/iGeh/mzxmWNkhP6k
-        JKVyWoB2dU25BhDPhjUuh4pvGgAUItI=
-X-Google-Smtp-Source: ADFU+vuTrDKOuyRlyKEvtoMUsE2uScjM8GBu8WZcgX70b1DxEWaXsOio4KDkafcfuFNqLoNIndKknQ==
-X-Received: by 2002:a62:fb07:: with SMTP id x7mr5451628pfm.125.1583366723167;
-        Wed, 04 Mar 2020 16:05:23 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id d12sm7116469pfq.87.2020.03.04.16.05.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Mar 2020 16:05:22 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 2/8] ionic: remove pragma packed
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-References: <20200304042013.51970-1-snelson@pensando.io>
- <20200304042013.51970-3-snelson@pensando.io>
- <20200304115420.2824655b@kicinski-fedora-PC1C0HJN>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <a684ff03-9e17-52da-1ff3-aa06b27f4281@pensando.io>
-Date:   Wed, 4 Mar 2020 16:05:21 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S2388573AbgCEAWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 19:22:05 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:44415 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388407AbgCEAWF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Mar 2020 19:22:05 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48XrzF0lkwz9sNg;
+        Thu,  5 Mar 2020 11:22:01 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1583367722;
+        bh=qi76xv8ccVXEeoat1qNh1dA4+AkLuJNPY3Guxujis9g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=IqJJGxF7mEDiG9F4/XeoviM4ueCPiP7CtWoxAa29XXiFicndrCXpEAK+5cMuP9PF9
+         7AW/uSFcGG4T86lqfht0KwGeAilXiA5eIGnVP9pxRdkMlMwAphI+vo8sZKy5GkZVz7
+         mB51fcaBDZ6KgM7Yp3AieXNxJjRvh7JH0SODhE9HxVrsYRnqfWp8w7n5knxl8WwGje
+         JwFxtpyOqe4pMqlYoKlkxb84G9LpwOvnKbN3u6T6TntpdL2pGnuiVKavRLF+UOn3eY
+         lMtduIhdWwYFeyCO+I9ddq4SJsz52s8I7rtET6+39Tr0sWEqF6JiQ+8iapAamP54et
+         ZKoWFt6y592Zw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        daniel@iogearbox.net, kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH 2/4] selftests: Fix seccomp to support relocatable build (O=objdir)
+In-Reply-To: <11ffe43f-f777-7881-623d-c93196a44cb6@linuxfoundation.org>
+References: <cover.1583358715.git.skhan@linuxfoundation.org> <11967e5f164f0cd717921bd382ff9c13ef740146.1583358715.git.skhan@linuxfoundation.org> <202003041442.A46000C@keescook> <11ffe43f-f777-7881-623d-c93196a44cb6@linuxfoundation.org>
+Date:   Thu, 05 Mar 2020 11:22:00 +1100
+Message-ID: <87eeu7r6qf.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-In-Reply-To: <20200304115420.2824655b@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/20 11:54 AM, Jakub Kicinski wrote:
-> On Tue,  3 Mar 2020 20:20:07 -0800 Shannon Nelson wrote:
->> Replace the misguided "#pragma packed" with tags on each
->> struct/union definition that actually needs it.  This is safer
->> and more efficient on the various compilers and architectures.
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-> Ah, I think I missed this pragma in original review :S
+Shuah Khan <skhan@linuxfoundation.org> writes:
+> On 3/4/20 3:42 PM, Kees Cook wrote:
+>> On Wed, Mar 04, 2020 at 03:13:33PM -0700, Shuah Khan wrote:
+>>> Fix seccomp relocatable builds. This is a simple fix to use the
+>>> right lib.mk variable TEST_GEN_PROGS for objects to leverage
+>>> lib.mk common framework for relocatable builds.
+>>>
+>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>>> ---
+>>>   tools/testing/selftests/seccomp/Makefile | 16 +++-------------
+>>>   1 file changed, 3 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+>>> index 1760b3e39730..a8a9717fc1be 100644
+>>> --- a/tools/testing/selftests/seccomp/Makefile
+>>> +++ b/tools/testing/selftests/seccomp/Makefile
+>>> @@ -1,17 +1,7 @@
+>>>   # SPDX-License-Identifier: GPL-2.0
+>>> -all:
+>>> -
+>>> -include ../lib.mk
+>>> -
+>>> -.PHONY: all clean
+>>> -
+>>> -BINARIES := seccomp_bpf seccomp_benchmark
+>>>   CFLAGS += -Wl,-no-as-needed -Wall
+>>> +LDFLAGS += -lpthread
+>>>   
+>>> -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+>> 
+>> How is the ../kselftest_harness.h dependency detected in the resulting
+>> build rules?
+>> 
+>> Otherwise, looks good.
 >
-> nit: I think __packed is preferred
+> Didn't see any problems. I will look into adding the dependency.
 
-I was hoping to keep with the __attribute__((packed)) format, as I found 
-in other kernel headers, as this file is shared in places that don't 
-understand the __packed shorthand.  However, with Dave's added urging, 
-I'll fix that in v3.
+Before:
 
-sln
+  $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+  make --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+          ARCH=powerpc -C ../../.. headers_install
+    INSTALL /home/michael/build/adhoc/kselftest/usr/include
+  gcc -Wl,-no-as-needed -Wall  seccomp_bpf.c -lpthread -o seccomp_bpf
+  gcc -Wl,-no-as-needed -Wall    seccomp_benchmark.c   -o seccomp_benchmark
+  
+  $ touch tools/testing/selftests/kselftest_harness.h
+  
+  $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+  make --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+          ARCH=powerpc -C ../../.. headers_install
+    INSTALL /home/michael/build/adhoc/kselftest/usr/include
+  gcc -Wl,-no-as-needed -Wall  seccomp_bpf.c -lpthread -o seccomp_bpf
+  $
 
+Note that touching the header causes it to rebuild seccomp_bpf.
+
+With this patch applied:
+
+  $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+  make -s --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+          ARCH=powerpc -C ../../.. headers_install
+  gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_bpf.c  -o /home/michael/build/adhoc/kselftest/seccomp/seccomp_bpf
+  gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_benchmark.c  -o /home/michael/build/adhoc/kselftest/seccomp/seccomp_benchmark
+  
+  $ touch tools/testing/selftests/kselftest_harness.h
+  
+  $ make --no-print-directory -C tools/testing/selftests/ TARGETS=seccomp
+  make -s --no-builtin-rules INSTALL_HDR_PATH=$BUILD/usr \
+          ARCH=powerpc -C ../../.. headers_install
+  make[1]: Nothing to be done for 'all'.
+  $
+
+
+So yeah it still needs:
+
+seccomp_bpf: ../kselftest_harness.h
+
+
+cheers
