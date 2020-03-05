@@ -2,74 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 565D717A56E
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:42:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2139417A56F
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbgCEMl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 07:41:57 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39916 "EHLO
+        id S1726142AbgCEMmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 07:42:13 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39930 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbgCEMl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:41:57 -0500
+        with ESMTP id S1725993AbgCEMmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:42:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=YnYsjuIYSSEnkC+fTrjqyxoFCDXvJlC27BpNge5Iv0s=; b=hilxUGbLMHCtyN0YCuFXGnCoX
-        apMav/j6NOyJigSqjKMc5ahlSwyqocMM0wQGNV2Y4AGwNw+JdXTEw29QTyFcp4NTripImChzeQbB1
-        jcsC9bRDg7UmJChCfV4zfE/F/4jRT8wTTUMjwuyM7Zw8aBxd02V7oyEtKrLeBBSlOwL6sgH8/ayNV
-        4uOnKBvXp8kIhtFVeiMPW7vb+CXVjl3voX0nqFDFwsCAB0j7PfOAbWwKcPymw87vzwZqSANHuHETz
-        i4gZDnwdwHg1S1qfYeTwRR0/tiWlxz5t/TlbILVkuwQ+HcCg7mQiLTiqP14uc6QN7SzDc79kNaIYz
-        tQ9yzrKlQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48980)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oD4RdXMjENC2iaiU1dWg4bSv1ayAAhXvLaAZ52LSrxA=; b=XZnBPIWIH/bohgAGJBwQHMBGfT
+        Op7QGYfGvMRqhuADYiwLCkgm8iL5QvpkFukXjFYYvQg29+HhmXTwvm7OSxwW75uDUw1xm+Rv6SWPF
+        f1uEtnHqvxbEojikNe1BcX31qNqpDO15BRp9upGskBBWbvSPoaKMQFFYw6PtYeCCLBan8J4zGzk36
+        gZ+6OFv6qN8XiB2jVZhk8hd40q2MATS+macvNUOqFPE5yKA/JR4URCUjNkW7bRKYvzHSeT7kK2szN
+        oZvOZ1hDqjGjVneeWKT/zfFPbgk2srD1my7/VDFOYqEU9RVTLLkKpGwxFkJs+lt/j2jth5m8pWFou
+        uXAZp+9g==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58750 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1j9pos-0006QT-K3; Thu, 05 Mar 2020 12:41:42 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1j9pop-0007vO-HH; Thu, 05 Mar 2020 12:41:39 +0000
-Date:   Thu, 5 Mar 2020 12:41:39 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j9ppG-0006Qn-QR; Thu, 05 Mar 2020 12:42:06 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1j9ppG-00071m-2E; Thu, 05 Mar 2020 12:42:06 +0000
+In-Reply-To: <20200305124139.GB25745@shell.armlinux.org.uk>
+References: <20200305124139.GB25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 0/10] net: dsa: improve serdes integration
-Message-ID: <20200305124139.GB25745@shell.armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 01/10] net: mii: convert mii_lpa_to_ethtool_lpa_x()
+ to linkmode variant
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1j9ppG-00071m-2E@rmk-PC.armlinux.org.uk>
+Date:   Thu, 05 Mar 2020 12:42:06 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn mentioned that the Serdes PCS found in Marvell DSA switches
-does not automatically update the switch MACs with the link parameters.
-Currently, the DSA code implements a work-around for this.
+Add a LPA to linkmode decoder for 1000BASE-X protocols; this decoder
+only provides the modify semantics similar to other such decoders.
+This replaces the unused mii_lpa_to_ethtool_lpa_x() helper.
 
-This series improves the Serdes integration, making use of the recent
-phylink changes to support split MAC/PCS setups.  One noticable
-improvement for userspace is that ethtool can now report the link
-partner's advertisement.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ include/linux/mii.h | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
- drivers/net/dsa/mv88e6xxx/chip.c   | 437 +++++++++++++++++++++----------------
- drivers/net/dsa/mv88e6xxx/chip.h   |  35 +--
- drivers/net/dsa/mv88e6xxx/port.c   | 285 +++++-------------------
- drivers/net/dsa/mv88e6xxx/port.h   |  29 ++-
- drivers/net/dsa/mv88e6xxx/serdes.c | 375 +++++++++++++++++++++++++------
- drivers/net/dsa/mv88e6xxx/serdes.h |  34 ++-
- include/linux/mii.h                |  57 +++--
- net/dsa/port.c                     |   7 +-
- 8 files changed, 706 insertions(+), 553 deletions(-)
-
+diff --git a/include/linux/mii.h b/include/linux/mii.h
+index 18c6208f56fc..309de4a3e6e7 100644
+--- a/include/linux/mii.h
++++ b/include/linux/mii.h
+@@ -354,24 +354,6 @@ static inline u32 mii_adv_to_ethtool_adv_x(u32 adv)
+ 	return result;
+ }
+ 
+-/**
+- * mii_lpa_to_ethtool_lpa_x
+- * @adv: value of the MII_LPA register
+- *
+- * A small helper function that translates MII_LPA
+- * bits, when in 1000Base-X mode, to ethtool
+- * LP advertisement settings.
+- */
+-static inline u32 mii_lpa_to_ethtool_lpa_x(u32 lpa)
+-{
+-	u32 result = 0;
+-
+-	if (lpa & LPA_LPACK)
+-		result |= ADVERTISED_Autoneg;
+-
+-	return result | mii_adv_to_ethtool_adv_x(lpa);
+-}
+-
+ /**
+  * mii_lpa_mod_linkmode_adv_sgmii
+  * @lp_advertising: pointer to destination link mode.
+@@ -535,6 +517,25 @@ static inline u32 linkmode_adv_to_lcl_adv_t(unsigned long *advertising)
+ 	return lcl_adv;
+ }
+ 
++/**
++ * mii_lpa_mod_linkmode_x - decode the link partner's config_reg to linkmodes
++ * @linkmodes: link modes array
++ * @lpa: config_reg word from link partner
++ * @fd_bit: link mode for 1000XFULL bit
++ */
++static inline void mii_lpa_mod_linkmode_x(unsigned long *linkmodes, u16 lpa,
++					 int fd_bit)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, linkmodes,
++			 lpa & LPA_LPACK);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE_ASYM);
++	linkmode_mod_bit(fd_bit, linkmodes,
++			 lpa & LPA_1000XFULL);
++}
++
+ /**
+  * mii_advertise_flowctrl - get flow control advertisement flags
+  * @cap: Flow control capabilities (FLOW_CTRL_RX, FLOW_CTRL_TX or both)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
