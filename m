@@ -2,39 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DAE17AC18
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D276B17ABA5
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728087AbgCERPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:15:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42298 "EHLO mail.kernel.org"
+        id S1728119AbgCERPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:15:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728089AbgCERPa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 12:15:30 -0500
+        id S1728107AbgCERPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:15:32 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A73A922B48;
-        Thu,  5 Mar 2020 17:15:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62B2F2146E;
+        Thu,  5 Mar 2020 17:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583428529;
-        bh=DS4d0xy1Khr+6R+77xJv4V21rN4lNRAPhTHaX8q9uow=;
+        s=default; t=1583428532;
+        bh=hM7fyA5DA5hZEW3ARzBK5410/eV42ZPwygmb1d01Q2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SonVuiPqHi6TPGgU5WF4XC7DTeXUsdjbugBcsVkJD0psx5bkHdONNsrqPwbZvJGa7
-         +2Y9Xh8yp+/b2i2ocJEHHTAoxKk4mTG3C/Kvz/HKEI2urXaRbKOJx641iOASJDa2wN
-         2oRZ6zH0GtkIxFoIA+Rn+DeAkTAJBp0kZhkyEhpE=
+        b=Bc2PKl1I5ucZgP90EfKORlEQgzOzWVOeJSqjMQEI+YMnzyhPbMmgwjNIqM/Qw4gQP
+         JF2hwKjhKwQHUPVMZcQ1f6WqTykzrM4LsSHC3Z8DnkJQjhLwZZIMVimdb1txOTGPHZ
+         dSf5pbw4mKcbwvHTzn1TgWcvAmHWb0c+zvK6klsI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 10/31] cfg80211: check reg_rule for NULL in handle_channel_custom()
-Date:   Thu,  5 Mar 2020 12:14:54 -0500
-Message-Id: <20200305171516.30028-10-sashal@kernel.org>
+Cc:     =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+        syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 12/31] vhost: Check docket sk_family instead of call getname
+Date:   Thu,  5 Mar 2020 12:14:56 -0500
+Message-Id: <20200305171516.30028-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200305171516.30028-1-sashal@kernel.org>
 References: <20200305171516.30028-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,35 +47,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Eugenio Pérez <eperezma@redhat.com>
 
-[ Upstream commit a7ee7d44b57c9ae174088e53a668852b7f4f452d ]
+[ Upstream commit 42d84c8490f9f0931786f1623191fcab397c3d64 ]
 
-We may end up with a NULL reg_rule after the loop in
-handle_channel_custom() if the bandwidth didn't fit,
-check if this is the case and bail out if so.
+Doing so, we save one call to get data we already have in the struct.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20200221104449.3b558a50201c.I4ad3725c4dacaefd2d18d3cc65ba6d18acd5dbfe@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Also, since there is no guarantee that getname use sockaddr_ll
+parameter beyond its size, we add a little bit of security here.
+It should do not do beyond MAX_ADDR_LEN, but syzbot found that
+ax25_getname writes more (72 bytes, the size of full_sockaddr_ax25,
+versus 20 + 32 bytes of sockaddr_ll + MAX_ADDR_LEN in syzbot repro).
+
+Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
+Reported-by: syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com
+Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/reg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vhost/net.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 018c60be153a7..32f575857e415 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -2269,7 +2269,7 @@ static void handle_channel_custom(struct wiphy *wiphy,
- 			break;
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 124356dc39e14..88c8c158ec25c 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -1187,10 +1187,6 @@ static int vhost_net_release(struct inode *inode, struct file *f)
+ 
+ static struct socket *get_raw_socket(int fd)
+ {
+-	struct {
+-		struct sockaddr_ll sa;
+-		char  buf[MAX_ADDR_LEN];
+-	} uaddr;
+ 	int r;
+ 	struct socket *sock = sockfd_lookup(fd, &r);
+ 
+@@ -1203,11 +1199,7 @@ static struct socket *get_raw_socket(int fd)
+ 		goto err;
  	}
  
--	if (IS_ERR(reg_rule)) {
-+	if (IS_ERR_OR_NULL(reg_rule)) {
- 		pr_debug("Disabling freq %d MHz as custom regd has no rule that fits it\n",
- 			 chan->center_freq);
- 		if (wiphy->regulatory_flags & REGULATORY_WIPHY_SELF_MANAGED) {
+-	r = sock->ops->getname(sock, (struct sockaddr *)&uaddr.sa, 0);
+-	if (r < 0)
+-		goto err;
+-
+-	if (uaddr.sa.sll_family != AF_PACKET) {
++	if (sock->sk->sk_family != AF_PACKET) {
+ 		r = -EPFNOSUPPORT;
+ 		goto err;
+ 	}
 -- 
 2.20.1
 
