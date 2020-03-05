@@ -2,88 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5FE17AA7B
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E1A17AA94
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbgCEQZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 11:25:50 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:37443 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbgCEQZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:25:49 -0500
-Received: by mail-pj1-f67.google.com with SMTP id o2so2731590pjp.2
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 08:25:49 -0800 (PST)
+        id S1726129AbgCEQew (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 11:34:52 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40569 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725963AbgCEQev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:34:51 -0500
+Received: by mail-pl1-f195.google.com with SMTP id y1so2850989plp.7;
+        Thu, 05 Mar 2020 08:34:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=vl3DHB/+PTRzi82UZ8uro1UKCDK3H0ggLxaSahF9x+g=;
-        b=UuV0qXtn8mJczjLcYfjOPIuEjveJlZpU+jd/6N5VKhdLVATPY+60oBbQTkE7zfozzz
-         KSA4QSxlS6AzpXShHWfoNEwDt8FInIC4nB2hUqAaaLtVwiZ3L05Wb56EcasBaGqa8IZM
-         p2fCerfHMBuu+9s4tB/3rQGnrXX9VUTMJaYegXlpNdZ2WA+s6wxshA5Oi9HyQGXAuYvT
-         tcxWaPd7C14qyyF6vJCaAO+d7YjVhQQACIwljX72BigHYCSGfHF/4Xq6GL+7yH8Fz31X
-         +p6TMqhMtB6d1su3dGe34axNVlBDrtKQ6SA17JisOQcT63uxukc3PEzKxwkAEgFGDjiV
-         m0Cg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=p5aLNwUw+FNGm42RWS6uF6z2Sx/qlH7XeO3ky3AE0eI=;
+        b=FAsdcu6SOg4KOpwPmOEqIpeF7EVNcDWFfPSncopT25uF4HfJ9432PaU4j0zejKZtyK
+         7p5s9LjNcCjRnXRUWVnN5+17JFtS83U8+zcaYWBmYR/cyf1Dv2anKmAawuJPtnlYQ6Xm
+         nCjQ+Vb0KV0OqEVMeNCZbQb3TwyfQln8DkwrmgVWjVUNcmJimGE4+ozNOpjxhOREdprF
+         o+e6v8+IKlLBXegaRxhoXKU3RjIiDoFEg0RqSZTGdOuma0yWste5Iv4+h2a9XrWmOMF6
+         mDgfUuRZyZel567XLl2Zqpk11PlMf3KVcDZDzPIaWp3bdJrH12ITThM8sKD1siClGEYk
+         PcTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vl3DHB/+PTRzi82UZ8uro1UKCDK3H0ggLxaSahF9x+g=;
-        b=bSdPV4FJfIFX3WeRjGEN/SZnD0hMBZ52UDN9gWHKqNJElNepq3Tga0YpxO0N9n/ECn
-         lbypMqoGBswjHA5Lnzse3yBOR//7iGb3A+/WyTGKE/1TIyvyqsMib86aRYunrn9x7TZa
-         vThv8CukVVHO7CsEMrFAGyblPpCC7pz/iIdihYAHv7TVlZwjh6tpj3+442jrLjBdD+HA
-         engy/WXs2OJjk8zU6WpVlLikAKd+OC9zI4mZDuSWdFSrH4RdN7N5oYBE16Wd/gDOUlSL
-         jXZbnBmZ9AIX6A7L7xGIk1KRkUV0N9m07/0MutoKMJA2HmYkmgrywQJZyWt+NqXvIQzV
-         5pRg==
-X-Gm-Message-State: ANhLgQ2cG3n+WiqCQwCUKgmJGUFKquoiNVIZpoD+WPNRWPXMfTY7OC9S
-        M/jS14o7EgTyHEUKp676kJueIAKX
-X-Google-Smtp-Source: ADFU+vsq39v+vkgfA+VdeP01yeaHHthf+f+Z5KAe6BbbWXrG/LLuOWdjTu3Xinsva7Kb0CCSxLqMvw==
-X-Received: by 2002:a17:902:b210:: with SMTP id t16mr8612920plr.65.1583425548100;
-        Thu, 05 Mar 2020 08:25:48 -0800 (PST)
-Received: from localhost.localdomain ([103.89.235.106])
-        by smtp.gmail.com with ESMTPSA id p21sm32475604pfn.103.2020.03.05.08.25.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 08:25:47 -0800 (PST)
-From:   Leslie Monis <lesliemonis@gmail.com>
-To:     Linux NetDev <netdev@vger.kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
-        Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH iproute2-next] tc: pie: change maximum integer value of tc_pie_xstats->prob
-Date:   Thu,  5 Mar 2020 21:55:40 +0530
-Message-Id: <20200305162540.4363-1-lesliemonis@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=p5aLNwUw+FNGm42RWS6uF6z2Sx/qlH7XeO3ky3AE0eI=;
+        b=uAPHAVIx2ScEk0ZQ6Jhjh+94kR3ruYb4mtGG1mOuEbIuGL2CX3iVi+rCM12vNA2U8n
+         1vC8tiGI9AOo7aItYA/CHi7ERxrDinQbu3QIhLN6mahdPxkBLl9TFongfLZeXP3Ee4J4
+         PCjnVnIEdkmNKn9lnXcKP8GKYv6cmaY08OwtRj9cWgPD/5kMxqS3PAPXhQKcLXk0K8Aq
+         sA0kLvAD+sZ7W69jSbu1/n+XvDe+ds06MFr9O4BvS7ubPaLfbthqBGiG6ByrR04Iy2w7
+         8kVuCiZL5GKaRILJRNXpygMqVvLyH91YdHD5uxYKUT7D3pve8OJKAz/LUhnx39RcpJeO
+         00CQ==
+X-Gm-Message-State: ANhLgQ32XYBlDpvKPYFXqacWsobJq3SEyqfdttNxhobrm+q13AZPqP11
+        bg3KkTlB2pRbqcGNW8BWd8w=
+X-Google-Smtp-Source: ADFU+vsxhAtGdcoxXV3EKeB42lPJrag8o7YBOP+PV6kHin0SPAbUHjdxTCE4bjBBCE+yVRrSus3KFg==
+X-Received: by 2002:a17:902:be08:: with SMTP id r8mr8646912pls.321.1583426090172;
+        Thu, 05 Mar 2020 08:34:50 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:f0e7])
+        by smtp.gmail.com with ESMTPSA id u12sm32804089pgr.3.2020.03.05.08.34.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 05 Mar 2020 08:34:49 -0800 (PST)
+Date:   Thu, 5 Mar 2020 08:34:46 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+Message-ID: <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
+References: <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net>
+ <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com>
+ <87pndt4268.fsf@toke.dk>
+ <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
+ <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com>
+ <87k1413whq.fsf@toke.dk>
+ <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
+ <87h7z44l3z.fsf@toke.dk>
+ <20200304154757.3tydkiteg3vekyth@ast-mbp>
+ <874kv33x60.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <874kv33x60.fsf@toke.dk>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel commit 105e808c1da2 ("pie: remove pie_vars->accu_prob_overflows"),
-changes the maximum value of tc_pie_xstats->prob from (2^64 - 1) to
-(2^56 - 1).
+On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> 
+> > On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
+> >> >
+> >> >> And what about the case where the link fd is pinned on a bpffs that is
+> >> >> no longer available? I.e., if a netdevice with an XDP program moves
+> >> >> namespaces and no longer has access to the original bpffs, that XDP
+> >> >> program would essentially become immutable?
+> >> >
+> >> > 'immutable' will not be possible.
+> >> > I'm not clear to me how bpffs is going to disappear. What do you mean
+> >> > exactly?
+> >> 
+> >> # stat /sys/fs/bpf | grep Device
+> >> Device: 1fh/31d	Inode: 1013963     Links: 2
+> >> # mkdir /sys/fs/bpf/test; ls /sys/fs/bpf
+> >> test
+> >> # ip netns add test
+> >> # ip netns exec test stat /sys/fs/bpf/test
+> >> stat: cannot stat '/sys/fs/bpf/test': No such file or directory
+> >> # ip netns exec test stat /sys/fs/bpf | grep Device
+> >> Device: 3fh/63d	Inode: 12242       Links: 2
+> >> 
+> >> It's a different bpffs instance inside the netns, so it won't have
+> >> access to anything pinned in the outer one...
+> >
+> > Toke, please get your facts straight.
+> >
+> >> # stat /sys/fs/bpf | grep Device
+> >> Device: 1fh/31d	Inode: 1013963     Links: 2
+> >
+> > Inode != 1 means that this is not bpffs.
+> > I guess this is still sysfs.
+> 
+> Yes, my bad; I was confused because I was misremembering when 'ip'
+> mounts a new bpffs: I thought it was on every ns change, but it's only
+> when loading a BPF program, and I was in a hurry so I didn't check
+> properly; sorry about that.
+> 
+> Anyway, what I was trying to express:
+> 
+> > Still that doesn't mean that pinned link is 'immutable'.
+> 
+> I don't mean 'immutable' in the sense that it cannot be removed ever.
+> Just that we may end up in a situation where an application can see a
+> netdev with an XDP program attached, has the right privileges to modify
+> it, but can't because it can't find the pinned bpf_link. Right? Or am I
+> misunderstanding your proposal?
+> 
+> Amending my example from before, this could happen by:
+> 
+> 1. Someone attaches a program to eth0, and pins the bpf_link to
+>    /sys/fs/bpf/myprog
+> 
+> 2. eth0 is moved to a different namespace which mounts a new sysfs at
+>    /sys
+> 
+> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
+>    xdp-loader can't get access to the original bpf_link; but the XDP
+>    program is still attached to eth0.
 
-Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
-Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
-Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
----
- tc/q_pie.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tc/q_pie.c b/tc/q_pie.c
-index 709a78b4..e6939652 100644
---- a/tc/q_pie.c
-+++ b/tc/q_pie.c
-@@ -223,9 +223,9 @@ static int pie_print_xstats(struct qdisc_util *qu, FILE *f,
- 
- 	st = RTA_DATA(xstats);
- 
--	/* prob is returned as a fracion of maximum integer value */
-+	/* prob is returned as a fracion of (2^56 - 1) */
- 	print_float(PRINT_ANY, "prob", "  prob %lg",
--		    (double)st->prob / (double)UINT64_MAX);
-+		    (double)st->prob / (double)(UINT64_MAX >> 8));
- 	print_uint(PRINT_JSON, "delay", NULL, st->delay);
- 	print_string(PRINT_FP, NULL, " delay %s", sprint_time(st->delay, b1));
- 
--- 
-2.17.1
-
+The key to decide is whether moving netdev across netns should be allowed
+when xdp attached. I think it should be denied. Even when legacy xdp
+program is attached, since it will confuse user space managing part.
