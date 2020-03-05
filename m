@@ -2,135 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC8D179F1C
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE7B179F5B
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbgCEFXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 00:23:37 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:51616 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgCEFXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 00:23:36 -0500
-Received: by mail-pj1-f68.google.com with SMTP id l8so1973197pjy.1
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 21:23:36 -0800 (PST)
+        id S1725912AbgCEFko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 00:40:44 -0500
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:45554 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbgCEFko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 00:40:44 -0500
+Received: by mail-qv1-f68.google.com with SMTP id r8so1911337qvs.12;
+        Wed, 04 Mar 2020 21:40:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=RtIYhhu7vszHkRer90QnW0fSQoRZY8VL5n9Nyh6LaXc=;
-        b=bzY35VHjsxqzKzo6AJYy3FQVxOLMUCw1rJP9Y46h4kaHKTJyB6REW/C2z20Sdq/2nU
-         4fFPpzcACKhJARLRLt8IiOFIFQyHd/QRwwBD5Ud95tZlMVvI+gAF9PL7kpwhkMEY1XXN
-         2Tn6JH1FaembMaBZtbKzRirq0KT9lU3zwXwNnpVERZDboSujYtfN5ZK6nJQmpO+bRtwM
-         EAEW1KfZAJP8M0zhYRiap3Er3i3fxd9cBd6/MNdwHpuDRZJq68ea/A3eQUSXqRjZSyfy
-         rwcLirti/+S9FZOrE0dm8syWr8FBodqjh+o8UxVBHKl/VAbuLXnNdsDBfehoZgR242bG
-         Z/BQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=THBYMEY1yGfalLtbzYiKSYkmAX5Lj+jvZpr5bKLPTp0=;
+        b=EZZv6hqD7ymuE6lbhHNuFocVxoT/8FJaP+Xdqv6NKFkH2BKU/X52VI7p/f0086Cvex
+         A1xR+vIZOTlfJFozjl7vvRT12YHemz/A6ZbTZe9FB5ikmBiBbxI9W/q4qBGKIMHmWz9n
+         tPAQnLeUfE67fU17daLSM8SxDrAaIJBF5vsbTbLMf87QcxItNe9GtxLwZFUBT1Ov/yDQ
+         p4VkR/YCQzHiq7P42dX/faOLX8Rg3fb8D1jgQZ1QWXDM8BrfdVVCRui5QMvSAD9jyQCb
+         xe9VDdDqfkk8qtrS/XaXQajELx7JA1AomSuxIJrZv+L+cYhrzmFyUyP3gmWH5B2Y8mko
+         qbRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=RtIYhhu7vszHkRer90QnW0fSQoRZY8VL5n9Nyh6LaXc=;
-        b=Va2/iJkZonT1UrpKnhWyDaf0XY9HtCixhvEDsTCZaHp+A7LPmpqAsw4EvTfb8Fumeg
-         IU+6i247yGYyv7JmMXEBpHZwx9x5h9/1qUDENye0nhPStfqde4O2AQ91U/pHv/JYq5f/
-         FzAEbpy4/BQd07HEtTtfB5WEg9UObMtIyOELx4I5awNp4J+3nvFiZ7ZqIP1K+WJ/wiUE
-         9qbm+fhppo2Ana/i4SoF4ph7heFFty+oWGkyF1D0ZlCCktQnMzcwScr7wRNvdAd/WpNM
-         oodkPvEKYo+EVm3Ov2wovdmuwMayKR7Xhj6S5mu6bPFKqeW7EoOGxW95Wc5AtW5CoLiT
-         QlkA==
-X-Gm-Message-State: ANhLgQ3qJD99VfGs3QiHMMsSWAvwiqh/Pur8X51Yakguni0XbTGGWo4h
-        e8foX+iQQz/JaF4ZqcUAjaGYjGYnH7I=
-X-Google-Smtp-Source: ADFU+vsIk7Byz2afXRc3YSO/A/G9/suB8o965LpXXq68a0j99OQflpT2gvDj7Wo6J7fttGirMNnrhw==
-X-Received: by 2002:a17:902:6ac2:: with SMTP id i2mr6241326plt.221.1583385815549;
-        Wed, 04 Mar 2020 21:23:35 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id h2sm29337759pgv.40.2020.03.04.21.23.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Mar 2020 21:23:35 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>,
-        Leon Romanovsky <leonro@mellanox.com>
-Subject: [PATCH v3 net-next 8/8] ionic: drop ethtool driver version
-Date:   Wed,  4 Mar 2020 21:23:19 -0800
-Message-Id: <20200305052319.14682-9-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200305052319.14682-1-snelson@pensando.io>
-References: <20200305052319.14682-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=THBYMEY1yGfalLtbzYiKSYkmAX5Lj+jvZpr5bKLPTp0=;
+        b=Bqr6jnkWOuh93IqQwI8pmzyIyvbhjMFazHdJLt3U9uAZNGmuouklLQlWG/XQXg8o8X
+         17J76YM5cJy5J3T5cbvdd4ai957f1zEvh4++K6SEgmloplgvPyvHDwQwZRp54U3+Aw1C
+         WFeLR0Cr9DWsE5Y6EEUo4QrvXkrdz40VbuteKk4yDW50CPQ9GEhsKs2KSGyQf9eiN2EM
+         2MuWZJFWLcDT/Ga7BrPhuubxlLaGW8q7Gd8w+FIz3cNFXqtwYEBx5pMinW4mIJCVsX4i
+         XkwSy8Ga6bJ5J+7SYH9Ew+u3AUIEgY4PKu/yMUiw+09/1uJzVjLxDl+KUMrx7jvljeAf
+         U4QA==
+X-Gm-Message-State: ANhLgQ1Eoo6mHb3Vd/iH/tWEJx0gvGDx5lNYxPPz8I6Wxvd+o+BjXL1b
+        CpXixewA8xf7oV11COcp3bNo8P3HcwTdyyH30CM=
+X-Google-Smtp-Source: ADFU+vtfOIyH1BW9riEZRACvPgvUTdUP01Lk72U0ekfmC8baXSmHIuWMubjgSVFDnAmUEs9i1uAgEiXwdE9VRISclzc=
+X-Received: by 2002:ad4:4f87:: with SMTP id em7mr4923418qvb.97.1583386840011;
+ Wed, 04 Mar 2020 21:40:40 -0800 (PST)
+MIME-Version: 1.0
+References: <20200305050207.4159-1-luke.r.nels@gmail.com>
+In-Reply-To: <20200305050207.4159-1-luke.r.nels@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 5 Mar 2020 06:40:28 +0100
+Message-ID: <CAJ+HfNjrUxVqpBgC-WLHbZX7_7Gd-Lk7ghrmASTmaNySuXVUfg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 0/4] eBPF JIT for RV32G
+To:     Luke Nelson <lukenels@cs.washington.edu>
+Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Xi Wang <xi.wang@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the default kernel version in ethtool drv_info output
-and drop the module version.
+On Thu, 5 Mar 2020 at 06:02, Luke Nelson <lukenels@cs.washington.edu> wrote=
+:
+>
+> This series adds an eBPF JIT for 32-bit RISC-V (RV32G) to the kernel,
+> adapted from the RV64 JIT and the 32-bit ARM JIT.
+>
 
-Cc: Leon Romanovsky <leonro@mellanox.com>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic.h         | 1 -
- drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 1 -
- drivers/net/ethernet/pensando/ionic/ionic_main.c    | 6 ++----
- 3 files changed, 2 insertions(+), 6 deletions(-)
+Nice work! Thanks for hanging in there!
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-index c8ff33da243a..1c720759fd80 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-@@ -12,7 +12,6 @@ struct ionic_lif;
- 
- #define IONIC_DRV_NAME		"ionic"
- #define IONIC_DRV_DESCRIPTION	"Pensando Ethernet NIC Driver"
--#define IONIC_DRV_VERSION	"0.20.0-k"
- 
- #define PCI_VENDOR_ID_PENSANDO			0x1dd8
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index acd53e27d1ec..bea9b78e0189 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -86,7 +86,6 @@ static void ionic_get_drvinfo(struct net_device *netdev,
- 	struct ionic *ionic = lif->ionic;
- 
- 	strlcpy(drvinfo->driver, IONIC_DRV_NAME, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, IONIC_DRV_VERSION, sizeof(drvinfo->version));
- 	strlcpy(drvinfo->fw_version, ionic->idev.dev_info.fw_version,
- 		sizeof(drvinfo->fw_version));
- 	strlcpy(drvinfo->bus_info, ionic_bus_info(ionic),
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a8e3fb73b465..e4a76e66f542 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -6,6 +6,7 @@
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/utsname.h>
-+#include <linux/vermagic.h>
- 
- #include "ionic.h"
- #include "ionic_bus.h"
-@@ -15,7 +16,6 @@
- MODULE_DESCRIPTION(IONIC_DRV_DESCRIPTION);
- MODULE_AUTHOR("Pensando Systems, Inc");
- MODULE_LICENSE("GPL");
--MODULE_VERSION(IONIC_DRV_VERSION);
- 
- static const char *ionic_error_to_str(enum ionic_status_code code)
- {
-@@ -414,7 +414,7 @@ int ionic_identify(struct ionic *ionic)
- 	memset(ident, 0, sizeof(*ident));
- 
- 	ident->drv.os_type = cpu_to_le32(IONIC_OS_TYPE_LINUX);
--	strncpy(ident->drv.driver_ver_str, IONIC_DRV_VERSION,
-+	strncpy(ident->drv.driver_ver_str, UTS_RELEASE,
- 		sizeof(ident->drv.driver_ver_str) - 1);
- 
- 	mutex_lock(&ionic->dev_cmd_lock);
-@@ -558,8 +558,6 @@ int ionic_port_reset(struct ionic *ionic)
- 
- static int __init ionic_init_module(void)
- {
--	pr_info("%s %s, ver %s\n",
--		IONIC_DRV_NAME, IONIC_DRV_DESCRIPTION, IONIC_DRV_VERSION);
- 	ionic_debugfs_create();
- 	return ionic_bus_register_driver();
- }
--- 
-2.17.1
-
+For the series,
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
