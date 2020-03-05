@@ -2,102 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A79417A73A
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:18:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0EE17A76A
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbgCEOSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 09:18:25 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:24255 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726129AbgCEOSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 09:18:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583417903;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CPLmPvg60dNkSrGFyR2iOQ9xr45oDSwNV1d+ed5BBwk=;
-        b=IEMPGc/aXLzKsNd3Jw9YEKGl+0z89bDbDJ+yAcTdexBNI3dfzlYU75oJsJ5H0KMyBd78v3
-        1/edI6mlHItX31ekn1DVxaPycCeN9XPpk8xwb5Ejlrq6XzurH8YjrsN6EpBIjh5NvvEe68
-        m35Ku+BcOfqA+4ubcp7zgM57GgZfmHA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-23-OFZimnJ_M5WbkqOvcMCSPQ-1; Thu, 05 Mar 2020 09:18:22 -0500
-X-MC-Unique: OFZimnJ_M5WbkqOvcMCSPQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB3BE19067E1;
-        Thu,  5 Mar 2020 14:18:19 +0000 (UTC)
-Received: from krava (unknown [10.43.17.74])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BBE9E28980;
-        Thu,  5 Mar 2020 14:18:14 +0000 (UTC)
-Date:   Thu, 5 Mar 2020 15:18:12 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Kartseva <hex@fb.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "md@linux.it" <md@linux.it>, Cestmir Kalina <ckalina@redhat.com>
-Subject: Re: libbpf distro packaging
-Message-ID: <20200305141812.GH168640@krava>
-References: <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
- <20190828071237.GA31023@krava>
- <20190930111305.GE602@krava>
- <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com>
- <20191008073958.GA10009@krava>
- <AAB8D5C3-807A-4EE3-B57C-C7D53F7E057D@fb.com>
- <20191016100145.GA15580@krava>
- <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com>
- <20191220135811.GF17348@krava>
- <c1b6a5b1-bbc8-2186-edcf-4c4780c6f836@fb.com>
+        id S1726271AbgCEO3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 09:29:12 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:25848 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725880AbgCEO3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 09:29:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1583418551; x=1614954551;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=h3rUPDGzMA38aEW95vO6qYZkreMqrEqH16spjYa9gDk=;
+  b=tlTU9gYCUj+5zB9ZpDENM+FtrfFNn4u7jWCt4lf1Wfffkr51RUqSaccJ
+   aHNxIkVtL8TjFwq7msZcWk8ntPjPzsLY38UqlBibFaOf81lc+yGPfQSM6
+   CYRPKOs9+Ctd/Hbd3ZIcGToIW4N5xqvPAm+n0tEPYUdUcLw2fjZaMNadW
+   Y=;
+IronPort-SDR: 2gK8bSGiIiATd2McMUXYBzGY2JDBLvaj70p7u1MxI1wsfj6R2wymXojKu5ndgh7GDaNTPn8B7/
+ Qgie1Qw+vt5g==
+X-IronPort-AV: E=Sophos;i="5.70,518,1574121600"; 
+   d="scan'208";a="29448283"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 05 Mar 2020 14:29:09 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id 7FB701A80AD;
+        Thu,  5 Mar 2020 14:29:08 +0000 (UTC)
+Received: from EX13D06EUA003.ant.amazon.com (10.43.165.206) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Thu, 5 Mar 2020 14:29:08 +0000
+Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
+ EX13D06EUA003.ant.amazon.com (10.43.165.206) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 5 Mar 2020 14:29:07 +0000
+Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
+ EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1367.000;
+ Thu, 5 Mar 2020 14:29:07 +0000
+From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+Subject: RE: [RESEND PATCH V1 net-next] net: ena: fix broken interface between
+ ENA driver and FW
+Thread-Topic: [RESEND PATCH V1 net-next] net: ena: fix broken interface
+ between ENA driver and FW
+Thread-Index: AQHV7IwHKl+97IhQuEmcElMR/H8Ee6gueR+AgAVOa4CABlNp4A==
+Date:   Thu, 5 Mar 2020 14:28:33 +0000
+Deferred-Delivery: Thu, 5 Mar 2020 14:28:24 +0000
+Message-ID: <37c7130a38ab46cda8a0f7a3e07e7fa3@EX13D22EUA004.ant.amazon.com>
+References: <1582711415-4442-1-git-send-email-akiyano@amazon.com>
+ <20200226.204809.102099518712120120.davem@davemloft.net>
+ <20200301135007.GS12414@unreal>
+In-Reply-To: <20200301135007.GS12414@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.164.41]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c1b6a5b1-bbc8-2186-edcf-4c4780c6f836@fb.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 04:22:35PM -0800, Julia Kartseva wrote:
-> 
-> 
-> On 12/20/19 5:58 AM, Jiri Olsa wrote:
-> > On Thu, Dec 19, 2019 at 09:37:23PM +0000, Julia Kartseva wrote:
-> >> Hi Jiri,
-> >>
-> >> 1. v. 0.0.6 is out [1], could you please package it?
-> >> 2. we might need a small spec update due to zlib is made an explicit
-> >> dependency in [2]. zlib should be listed in BuildRequires: section of the
-> >> spec so it's consistent with libbpf.pc
-> > 
-> > sure, it's ok for rawhide, in fedora 31/30 we still don't have
-> > latest headers packaged
-> > 
-> >> 3. Do you plan to address the bug report [3] for CentOS? Namely rebuilding
-> >> Fedora's RPM and publishing to EPEL repo?
-> > 
-> > I did not get any answers on who would do that internally,
-> > so I'm afreaid I'll have to do it, but let me ask again first ;-)
+> -----Original Message-----
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Sunday, March 1, 2020 3:50 PM
+> To: David Miller <davem@davemloft.net>
+> Cc: Kiyanovski, Arthur <akiyano@amazon.com>; netdev@vger.kernel.org;
+> Woodhouse, David <dwmw@amazon.co.uk>; Machulsky, Zorik
+> <zorik@amazon.com>; Matushevsky, Alexander <matua@amazon.com>;
+> Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>;
+> Liguori, Anthony <aliguori@amazon.com>; Bshara, Nafea
+> <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal, Netanel
+> <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>; Herrenschmidt,
+> Benjamin <benh@amazon.com>; Dagan, Noam <ndagan@amazon.com>;
+> Agroskin, Shay <shayagr@amazon.com>; Jubran, Samih
+> <sameehj@amazon.com>
+> Subject: Re: [RESEND PATCH V1 net-next] net: ena: fix broken interface be=
+tween
+> ENA driver and FW
+>=20
+> On Wed, Feb 26, 2020 at 08:48:09PM -0800, David Miller wrote:
+> > From: <akiyano@amazon.com>
+> > Date: Wed, 26 Feb 2020 12:03:35 +0200
 > >
-> 
-> Bump :)
-> Jiri, any volunteers for Fedora EPEL 7|8 packaging?
-> systemd folks would appreciate it.
-> Thanks!
+> > > From: Arthur Kiyanovski <akiyano@amazon.com>
+> > >
+> > > In this commit we revert the part of commit 1a63443afd70
+> > > ("net/amazon: Ensure that driver version is aligned to the linux
+> > > kernel"), which breaks the interface between the ENA driver and FW.
+> > >
+> > > We also replace the use of DRIVER_VERSION with DRIVER_GENERATION
+> > > when we bring back the deleted constants that are used in interface
+> > > with ENA device FW.
+> > >
+> > > This commit does not change the driver version reported to the user
+> > > via ethtool, which remains the kernel version.
+> > >
+> > > Fixes: 1a63443afd70 ("net/amazon: Ensure that driver version is
+> > > aligned to the linux kernel")
+> > > Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+> >
+> > Applied.
+>=20
+> Dave,
+>=20
+> I see that I'm late here and my email sounds like old man grumbling, but =
+I asked
+> from those guys to update their commit with request to put the following =
+line:
+> "/* DO NOT CHANGE DRV_MODULE_GEN_* values in in-tree code */"
+> https://lore.kernel.org/netdev/20200224162649.GA4526@unreal/
+>=20
+> I also asked how those versions are transferred to FW and used there, but=
+ was
+> ignored.
+> https://lore.kernel.org/netdev/20200224094116.GD422704@unreal/
+>=20
+> BTW, It is also unclear why I wasn't CCed in this patch.
+>=20
+> Thanks
 
-hi,
-yep.. we've got Cestmir as 'volunteer' for that (cc-ed) ;-) I can see
-there's already epel8 branch for libbpf created.. but not sure what's
-the actual rpm status
+Leon,
+ Sorry for not responding earlier to your inquiries, they are exactly touch=
+ing the
+ points that we would like to discuss.
+ Up until now, we in AWS, have been monitoring the drivers in the datacente=
+r using the
+ driver version, and actively suggesting driver updates to our customers
+ whenever a critical bug was fixed, or a new important feature was added.
+ Removing the driver version and not allowing to maintain our own internal
+ version negatively impacts our effort to give our customers the best possi=
+ble cloud
+ experience. We therefore prefer to maintain using our internal driver vers=
+ion.
 
-jirka
+ Are there any other recommended ways to achieve our goal without a driver
+ version?
+=20
+ Thanks!
 
