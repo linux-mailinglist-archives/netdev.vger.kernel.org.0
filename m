@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D276B17ABA5
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACAF817AC15
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728119AbgCERPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:15:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42368 "EHLO mail.kernel.org"
+        id S1728189AbgCERSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:18:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728107AbgCERPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 12:15:32 -0500
+        id S1727464AbgCERPe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:15:34 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62B2F2146E;
-        Thu,  5 Mar 2020 17:15:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D434020848;
+        Thu,  5 Mar 2020 17:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583428532;
-        bh=hM7fyA5DA5hZEW3ARzBK5410/eV42ZPwygmb1d01Q2M=;
+        s=default; t=1583428533;
+        bh=Jt8PxoO7mbTjigz+KYrm7fVdfbG4LT68qh/IK2pRN3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bc2PKl1I5ucZgP90EfKORlEQgzOzWVOeJSqjMQEI+YMnzyhPbMmgwjNIqM/Qw4gQP
-         JF2hwKjhKwQHUPVMZcQ1f6WqTykzrM4LsSHC3Z8DnkJQjhLwZZIMVimdb1txOTGPHZ
-         dSf5pbw4mKcbwvHTzn1TgWcvAmHWb0c+zvK6klsI=
+        b=eLp40y3jrMKjb6Wq1kG8/FAjGVYqPMhRf4cAYmnzWcNEblXIWL4e6nRK2jepbHF/O
+         gKZ7TevDkIcfXOcGvCtq0eNfSG8yPoY/vQX9Xqt5ZKlqBXApjYRDKJgrnylUHpnK9x
+         TYDnWfBw6S9h7DDaJZsehckuPGlrXvg1tvsFB9wc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
-        syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com,
-        "Michael S . Tsirkin" <mst@redhat.com>,
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/31] vhost: Check docket sk_family instead of call getname
-Date:   Thu,  5 Mar 2020 12:14:56 -0500
-Message-Id: <20200305171516.30028-12-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/31] net: usb: qmi_wwan: restore mtu min/max values after raw_ip switch
+Date:   Thu,  5 Mar 2020 12:14:57 -0500
+Message-Id: <20200305171516.30028-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200305171516.30028-1-sashal@kernel.org>
 References: <20200305171516.30028-1-sashal@kernel.org>
@@ -47,55 +46,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eugenio Pérez <eperezma@redhat.com>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-[ Upstream commit 42d84c8490f9f0931786f1623191fcab397c3d64 ]
+[ Upstream commit eae7172f8141eb98e64e6e81acc9e9d5b2add127 ]
 
-Doing so, we save one call to get data we already have in the struct.
+usbnet creates network interfaces with min_mtu = 0 and
+max_mtu = ETH_MAX_MTU.
 
-Also, since there is no guarantee that getname use sockaddr_ll
-parameter beyond its size, we add a little bit of security here.
-It should do not do beyond MAX_ADDR_LEN, but syzbot found that
-ax25_getname writes more (72 bytes, the size of full_sockaddr_ax25,
-versus 20 + 32 bytes of sockaddr_ll + MAX_ADDR_LEN in syzbot repro).
+These values are not modified by qmi_wwan when the network interface
+is created initially, allowing, for example, to set mtu greater than 1500.
 
-Fixes: 3a4d5c94e9593 ("vhost_net: a kernel-level virtio server")
-Reported-by: syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+When a raw_ip switch is done (raw_ip set to 'Y', then set to 'N') the mtu
+values for the network interface are set through ether_setup, with
+min_mtu = ETH_MIN_MTU and max_mtu = ETH_DATA_LEN, not allowing anymore to
+set mtu greater than 1500 (error: mtu greater than device maximum).
+
+The patch restores the original min/max mtu values set by usbnet after a
+raw_ip switch.
+
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/net.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/net/usb/qmi_wwan.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 124356dc39e14..88c8c158ec25c 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -1187,10 +1187,6 @@ static int vhost_net_release(struct inode *inode, struct file *f)
- 
- static struct socket *get_raw_socket(int fd)
- {
--	struct {
--		struct sockaddr_ll sa;
--		char  buf[MAX_ADDR_LEN];
--	} uaddr;
- 	int r;
- 	struct socket *sock = sockfd_lookup(fd, &r);
- 
-@@ -1203,11 +1199,7 @@ static struct socket *get_raw_socket(int fd)
- 		goto err;
- 	}
- 
--	r = sock->ops->getname(sock, (struct sockaddr *)&uaddr.sa, 0);
--	if (r < 0)
--		goto err;
--
--	if (uaddr.sa.sll_family != AF_PACKET) {
-+	if (sock->sk->sk_family != AF_PACKET) {
- 		r = -EPFNOSUPPORT;
- 		goto err;
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 13c8788e3b6b2..5e6acd36b35f9 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -275,6 +275,9 @@ static void qmi_wwan_netdev_setup(struct net_device *net)
+ 		netdev_dbg(net, "mode: raw IP\n");
+ 	} else if (!net->header_ops) { /* don't bother if already set */
+ 		ether_setup(net);
++		/* Restoring min/max mtu values set originally by usbnet */
++		net->min_mtu = 0;
++		net->max_mtu = ETH_MAX_MTU;
+ 		clear_bit(EVENT_NO_IP_ALIGN, &dev->flags);
+ 		netdev_dbg(net, "mode: Ethernet\n");
  	}
 -- 
 2.20.1
