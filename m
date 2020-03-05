@@ -2,230 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9D617A553
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:33:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1228217A556
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726020AbgCEMdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 07:33:21 -0500
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:52808 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725912AbgCEMdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:33:21 -0500
-Received: from mxbackcorp1j.mail.yandex.net (mxbackcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::162])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id ECB732E14F1;
-        Thu,  5 Mar 2020 15:33:16 +0300 (MSK)
-Received: from sas1-9998cec34266.qloud-c.yandex.net (sas1-9998cec34266.qloud-c.yandex.net [2a02:6b8:c14:3a0e:0:640:9998:cec3])
-        by mxbackcorp1j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id xk85bu7IQH-XGJmwi3t;
-        Thu, 05 Mar 2020 15:33:16 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1583411596; bh=Wg/Jc9VYYscMJJDmNA87qoan8ux9b8e0VMqhRlX6g0I=;
-        h=Message-ID:Subject:To:From:Date:Cc;
-        b=B5U5JjSzwwxGmffixRFAS6zSJu57uPu13heeaI4fCzoEM2eHz+MdxwrzJL9NxBePF
-         2CB1PEKuqhcI7UfLN21AHMxNcuWrk3AO6prwzJX6Xp7tJtXWoFdphAjNiIDkIgtYKD
-         lvXYcZmxuwkTb6RKxB8BSHHZOqVlnc/P7YANRQ60=
-Authentication-Results: mxbackcorp1j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-red.dhcp.yndx.net (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:dd96:4e43:5407:4249])
-        by sas1-9998cec34266.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id Gp4sEeNVOO-XGWaK4UP;
-        Thu, 05 Mar 2020 15:33:16 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Thu, 5 Mar 2020 15:33:12 +0300
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     khlebnikov@yandex-team.ru
-Subject: [PATCH net] inet_diag: return classid for all socket types
-Message-ID: <20200305123312.GA77699@yandex-team.ru>
+        id S1726037AbgCEMea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 07:34:30 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36903 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgCEMea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:34:30 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9pht-0004EO-31; Thu, 05 Mar 2020 13:34:29 +0100
+Received: from sha by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9phs-0001hq-LE; Thu, 05 Mar 2020 13:34:28 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2] fsl/fman: Use random MAC address when none is given
+Date:   Thu,  5 Mar 2020 13:34:14 +0100
+Message-Id: <20200305123414.5010-1-s.hauer@pengutronix.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 1ec17dbd90f8 ("inet_diag: fix reporting cgroup classid and
-fallback to priority") croup classid reporting was fixed. But this works
-only for TCP sockets because for other socket types icsk parameter can
-be NULL and classid code path is skipped. This change moves classid
-handling to inet_diag_msg_attrs_fill() function.
+There's no need to fail probing when no MAC address is given in the
+device tree, just use a random MAC address.
 
-Also inet_diag_msg_attrs_size() helper was added and addends in
-nlmsg_new() were reordered to save order from inet_sk_diag_fill().
-
-Fixes: 1ec17dbd90f8 ("inet_diag: fix reporting cgroup classid and fallback to priority")
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- include/linux/inet_diag.h | 18 ++++++++++++------
- net/ipv4/inet_diag.c      | 44 ++++++++++++++++++++------------------------
- net/ipv4/raw_diag.c       |  5 +++--
- net/ipv4/udp_diag.c       |  5 +++--
- net/sctp/diag.c           |  8 ++------
- 5 files changed, 40 insertions(+), 40 deletions(-)
 
-diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index 39faaaf..c91cf2d 100644
---- a/include/linux/inet_diag.h
-+++ b/include/linux/inet_diag.h
-@@ -2,15 +2,10 @@
- #ifndef _INET_DIAG_H_
- #define _INET_DIAG_H_ 1
+Changes since v1:
+- Remove printing of permanent MAC address
+
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c   | 11 +++++++++--
+ drivers/net/ethernet/freescale/fman/fman_memac.c |  4 ----
+ drivers/net/ethernet/freescale/fman/mac.c        | 10 ++--------
+ 3 files changed, 11 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index fd93d542f497..fc117eab788d 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -233,8 +233,15 @@ static int dpaa_netdev_init(struct net_device *net_dev,
+ 	net_dev->features |= net_dev->hw_features;
+ 	net_dev->vlan_features = net_dev->features;
  
-+#include <net/netlink.h>
- #include <uapi/linux/inet_diag.h>
- 
--struct net;
--struct sock;
- struct inet_hashinfo;
--struct nlattr;
--struct nlmsghdr;
--struct sk_buff;
--struct netlink_callback;
- 
- struct inet_diag_handler {
- 	void		(*dump)(struct sk_buff *skb,
-@@ -62,6 +57,17 @@ int inet_diag_bc_sk(const struct nlattr *_bc, struct sock *sk);
- 
- void inet_diag_msg_common_fill(struct inet_diag_msg *r, struct sock *sk);
- 
-+static inline size_t inet_diag_msg_attrs_size(void)
-+{
-+	return	  nla_total_size(1)  /* INET_DIAG_SHUTDOWN */
-+		+ nla_total_size(1)  /* INET_DIAG_TOS */
-+#if IS_ENABLED(CONFIG_IPV6)
-+		+ nla_total_size(1)  /* INET_DIAG_TCLASS */
-+		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
-+#endif
-+		+ nla_total_size(4)  /* INET_DIAG_MARK */
-+		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
-+}
- int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			     struct inet_diag_msg *r, int ext,
- 			     struct user_namespace *user_ns, bool net_admin);
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index f11e997..8c83775 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -100,13 +100,9 @@ static size_t inet_sk_attr_size(struct sock *sk,
- 		aux = handler->idiag_get_aux_size(sk, net_admin);
- 
- 	return	  nla_total_size(sizeof(struct tcp_info))
--		+ nla_total_size(1) /* INET_DIAG_SHUTDOWN */
--		+ nla_total_size(1) /* INET_DIAG_TOS */
--		+ nla_total_size(1) /* INET_DIAG_TCLASS */
--		+ nla_total_size(4) /* INET_DIAG_MARK */
--		+ nla_total_size(4) /* INET_DIAG_CLASS_ID */
--		+ nla_total_size(sizeof(struct inet_diag_meminfo))
- 		+ nla_total_size(sizeof(struct inet_diag_msg))
-+		+ inet_diag_msg_attrs_size()
-+		+ nla_total_size(sizeof(struct inet_diag_meminfo))
- 		+ nla_total_size(SK_MEMINFO_VARS * sizeof(u32))
- 		+ nla_total_size(TCP_CA_NAME_MAX)
- 		+ nla_total_size(sizeof(struct tcpvegas_info))
-@@ -147,6 +143,24 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 	if (net_admin && nla_put_u32(skb, INET_DIAG_MARK, sk->sk_mark))
- 		goto errout;
- 
-+	if (ext & (1 << (INET_DIAG_CLASS_ID - 1)) ||
-+	    ext & (1 << (INET_DIAG_TCLASS - 1))) {
-+		u32 classid = 0;
-+
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+		classid = sock_cgroup_classid(&sk->sk_cgrp_data);
-+#endif
-+		/* Fallback to socket priority if class id isn't set.
-+		 * Classful qdiscs use it as direct reference to class.
-+		 * For cgroup2 classid is always zero.
-+		 */
-+		if (!classid)
-+			classid = sk->sk_priority;
-+
-+		if (nla_put_u32(skb, INET_DIAG_CLASS_ID, classid))
-+			goto errout;
+-	memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
+-	memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
++	if (is_valid_ether_addr(mac_addr)) {
++		dev_info(dev, "FMan MAC address: %pM\n", mac_addr);
++		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
++		memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
++	} else {
++		eth_hw_addr_random(net_dev);
++		dev_info(dev, "Using random MAC address: %pM\n",
++			 net_dev->dev_addr);
 +	}
-+
- 	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
- 	r->idiag_inode = sock_i_ino(sk);
  
-@@ -284,24 +298,6 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 			goto errout;
- 	}
+ 	net_dev->ethtool_ops = &dpaa_ethtool_ops;
  
--	if (ext & (1 << (INET_DIAG_CLASS_ID - 1)) ||
--	    ext & (1 << (INET_DIAG_TCLASS - 1))) {
--		u32 classid = 0;
--
--#ifdef CONFIG_SOCK_CGROUP_DATA
--		classid = sock_cgroup_classid(&sk->sk_cgrp_data);
--#endif
--		/* Fallback to socket priority if class id isn't set.
--		 * Classful qdiscs use it as direct reference to class.
--		 * For cgroup2 classid is always zero.
--		 */
--		if (!classid)
--			classid = sk->sk_priority;
--
--		if (nla_put_u32(skb, INET_DIAG_CLASS_ID, classid))
--			goto errout;
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index e1901874c19f..9e2372688405 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -596,10 +596,6 @@ static void setup_sgmii_internal_phy_base_x(struct fman_mac *memac)
+ 
+ static int check_init_parameters(struct fman_mac *memac)
+ {
+-	if (memac->addr == 0) {
+-		pr_err("Ethernet MAC must have a valid MAC address\n");
+-		return -EINVAL;
 -	}
+ 	if (!memac->exception_cb) {
+ 		pr_err("Uninitialized exception handler\n");
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 55f2122c3217..9de76bc4ebde 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -724,12 +724,8 @@ static int mac_probe(struct platform_device *_of_dev)
+ 
+ 	/* Get the MAC address */
+ 	mac_addr = of_get_mac_address(mac_node);
+-	if (IS_ERR(mac_addr)) {
+-		dev_err(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
+-		err = -EINVAL;
+-		goto _return_of_get_parent;
+-	}
+-	ether_addr_copy(mac_dev->addr, mac_addr);
++	if (!IS_ERR(mac_addr))
++		ether_addr_copy(mac_dev->addr, mac_addr);
+ 
+ 	/* Get the port handles */
+ 	nph = of_count_phandle_with_args(mac_node, "fsl,fman-ports", NULL);
+@@ -855,8 +851,6 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	if (err < 0)
+ 		dev_err(dev, "fman_set_mac_active_pause() = %d\n", err);
+ 
+-	dev_info(dev, "FMan MAC address: %pM\n", mac_dev->addr);
 -
- out:
- 	nlmsg_end(skb, nlh);
- 	return 0;
-diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
-index e35736b..a93e7d1 100644
---- a/net/ipv4/raw_diag.c
-+++ b/net/ipv4/raw_diag.c
-@@ -100,8 +100,9 @@ static int raw_diag_dump_one(struct sk_buff *in_skb,
- 	if (IS_ERR(sk))
- 		return PTR_ERR(sk);
- 
--	rep = nlmsg_new(sizeof(struct inet_diag_msg) +
--			sizeof(struct inet_diag_meminfo) + 64,
-+	rep = nlmsg_new(nla_total_size(sizeof(struct inet_diag_msg)) +
-+			inet_diag_msg_attrs_size() +
-+			nla_total_size(sizeof(struct inet_diag_meminfo)) + 64,
- 			GFP_KERNEL);
- 	if (!rep) {
- 		sock_put(sk);
-diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
-index 910555a..dccd2286 100644
---- a/net/ipv4/udp_diag.c
-+++ b/net/ipv4/udp_diag.c
-@@ -64,8 +64,9 @@ static int udp_dump_one(struct udp_table *tbl, struct sk_buff *in_skb,
- 		goto out;
- 
- 	err = -ENOMEM;
--	rep = nlmsg_new(sizeof(struct inet_diag_msg) +
--			sizeof(struct inet_diag_meminfo) + 64,
-+	rep = nlmsg_new(nla_total_size(sizeof(struct inet_diag_msg)) +
-+			inet_diag_msg_attrs_size() +
-+			nla_total_size(sizeof(struct inet_diag_meminfo)) + 64,
- 			GFP_KERNEL);
- 	if (!rep)
- 		goto out;
-diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index 8a15146..1069d7a 100644
---- a/net/sctp/diag.c
-+++ b/net/sctp/diag.c
-@@ -237,15 +237,11 @@ static size_t inet_assoc_attr_size(struct sctp_association *asoc)
- 		addrcnt++;
- 
- 	return	  nla_total_size(sizeof(struct sctp_info))
--		+ nla_total_size(1) /* INET_DIAG_SHUTDOWN */
--		+ nla_total_size(1) /* INET_DIAG_TOS */
--		+ nla_total_size(1) /* INET_DIAG_TCLASS */
--		+ nla_total_size(4) /* INET_DIAG_MARK */
--		+ nla_total_size(4) /* INET_DIAG_CLASS_ID */
- 		+ nla_total_size(addrlen * asoc->peer.transport_count)
- 		+ nla_total_size(addrlen * addrcnt)
--		+ nla_total_size(sizeof(struct inet_diag_meminfo))
- 		+ nla_total_size(sizeof(struct inet_diag_msg))
-+		+ inet_diag_msg_attrs_size()
-+		+ nla_total_size(sizeof(struct inet_diag_meminfo))
- 		+ 64;
- }
- 
+ 	priv->eth_dev = dpaa_eth_add_device(fman_id, mac_dev);
+ 	if (IS_ERR(priv->eth_dev)) {
+ 		dev_err(dev, "failed to add Ethernet platform device for MAC %d\n",
 -- 
-2.7.4
+2.25.1
 
