@@ -2,137 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C709017AD39
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:27:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CE917AD4E
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:31:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbgCER1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:27:54 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45654 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbgCER1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 12:27:54 -0500
-Received: by mail-pl1-f194.google.com with SMTP id b22so2901727pls.12;
-        Thu, 05 Mar 2020 09:27:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=D8D3vmEglvdfYXRsW6jSW3qpPxZDOdsUg5idUKVuC7o=;
-        b=F4LsRk2zho1RJv9AKx7r9afMFsEHDgLrY3hp1pA7KZs8WS/twZqxG31SOkO938WRsX
-         J1frGVG74kEYsPauOfRMFD61D1YbxkIkXGOuotRHalOnhJ7bEWtHQzutj7xnKLcPxvO2
-         sszt/aLqeAJB+sAV1oLIfNG7TsjpZpL4xhcn55MQEEnLRKYOHoUUSxBEcnYwXXXlV3+x
-         TH1Bz9A640nHAumSF9tSSC3vDLXZwkDeSAlX9IkgNnSyF17o3uzfqHemmbQZ3B6jL2BA
-         LegcjQ8HrEQXcJ5eigsF+QZnoo3IpEWWNvyNAjEZu1pzt6QOCZC1LCQ1rTaWBSCS4B97
-         dtiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=D8D3vmEglvdfYXRsW6jSW3qpPxZDOdsUg5idUKVuC7o=;
-        b=aTydOKrOW/YZU2bKSBfj6cJqQ3BzLjKSxM5oGfPx/lHT4ASrTUuQtQcpCxE9wbYPP3
-         KHX07NPAUpR7pW9LreV0jnWwO0b5NoQY9q3ilbj8+yIpikKpsZYHn+VlP7xMM7hdeXJa
-         Lx6h9inGRsFtL2649XzAWN4JyKF9+V10aB/liVDlp6a5qNLn9VQ0jTxVRD62HlaWU9CK
-         o76/sHGi1UKsx55TlKDhzQ49TVX6NUxVi4ptYtx9yDMHMngv5Rvi5W1mSsmSB9HhEcMc
-         LVQ4vFpSxfZmsCjXyaraqA5Dys04NqaqdoYiX0y0HRXABI4PVJY0ujkFAc7xBdDm1k/5
-         5OlQ==
-X-Gm-Message-State: ANhLgQ3F2R2cLY/yIwjTUrUk4yEJUbQ04Ez7+rrnhklzWt2OyXBV2kCU
-        A16vmmCL8A6b6+errDQ/Qhg=
-X-Google-Smtp-Source: ADFU+vt+S07xVrBqhIWDK4dFYJ9Q7VSPhbqvrKQ6iybbRiDw53iVQHI+fILUL+jxuuBkXD+foKwbUg==
-X-Received: by 2002:a17:902:b903:: with SMTP id bf3mr5814213plb.144.1583429271404;
-        Thu, 05 Mar 2020 09:27:51 -0800 (PST)
-Received: from [10.67.50.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h6sm16831034pfg.88.2020.03.05.09.27.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Mar 2020 09:27:50 -0800 (PST)
-Subject: Re: [PATCH] ethernet:broadcom:bcm63xx_enet:remove redundant variable
- definitions
-To:     tangbin <tangbin@cmss.chinamobile.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20200305122259.6104-1-tangbin@cmss.chinamobile.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <a419c6e1-47e8-64a0-4d58-9b2d8186f8bf@gmail.com>
-Date:   Thu, 5 Mar 2020 09:27:49 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726982AbgCERbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:31:33 -0500
+Received: from mail-db8eur05on2116.outbound.protection.outlook.com ([40.107.20.116]:37728
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725938AbgCERbc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:31:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oEAsDRzDBCaJDTWun1df07fNR3tCkJwKLkFQ1AcWKZVT4F6SSKw8cfCOC81JB3d7QYuXfkBCdgsKb/XuvpLxnugajYLu/jVJMfdl2HEeOdTjAgjJ7hP+uX+JV3AdNknbwFMKqnEmU6obk4kyhw3Me4nFfSc4AFrpsXr3RgwfO0jJA2UHXAcKJailiu8hgzmYZGQUYQtqezOExAnIrVHas7BxEQZgE95eCAtFgAf5CMH+Yd9rWkhZ/i+MYhyCqebuAnYFpLXHrcnJXsm7L0pK4I3Ul0OKRkd1E5KATEVU7Uf1ynJ/t56qSC/84TCBixdtclj7n+gEmHbKZnKibJKStg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZcnuRSLZAT5T6HxBN2rS/xagJeaJKDRhAW1PIbqwOtA=;
+ b=fkktNH0rlrWpOofOJS3QGTiQ4A1JmoEcLtAUX89POhv8ixfNosBwIX7hJp8rK+oiLIRptCqMGJx8oVQeX/R0VxodNdOP2+3hyx9EwL2uw5E1bdg8MayK9fP1ecQNTLn2Ernu5suzAf6ddS10BWMZOZ3p6NxsHA3Icr0lsIhu/6fEki7jzuQw/ArBKTvFBCKBZbnsObUAy0eYzkJLjJIp+uzvDdqb52rYKl9KoVVcPSpO8MS+iyFDJYEgu0r51BjsDA2DW8chW8q5TMalUAzOmQH2UdZuEBxEbw/Kk9Rj9GR63zvP5dQeKyK9TvJAQe+vgzxdYUp0ST89tqdTSlKvyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZcnuRSLZAT5T6HxBN2rS/xagJeaJKDRhAW1PIbqwOtA=;
+ b=w3l3bUtFlpvqfm6167W9aOeFk6i0bN2AbrEHfVKQUkVOBNqBUsGI8SfegmItYCxHP5sbmBFWPbddmxcqWTIwwS72V6vL/MVnTX33zJWAZGRbL7Jfbu7sYreEdDZRYeddd5s1+k5JvLehyz25wVSY529i6bIwQhOw+8y1uF+GS3I=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=jere.leppanen@nokia.com; 
+Received: from HE1PR0702MB3610.eurprd07.prod.outlook.com (10.167.124.27) by
+ HE1PR0702MB3577.eurprd07.prod.outlook.com (10.167.124.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2814.6; Thu, 5 Mar 2020 17:31:25 +0000
+Received: from HE1PR0702MB3610.eurprd07.prod.outlook.com
+ ([fe80::fd31:53d3:1e20:be4a]) by HE1PR0702MB3610.eurprd07.prod.outlook.com
+ ([fe80::fd31:53d3:1e20:be4a%7]) with mapi id 15.20.2793.013; Thu, 5 Mar 2020
+ 17:31:25 +0000
+Date:   Thu, 5 Mar 2020 19:31:23 +0200 (EET)
+From:   Jere Leppanen <jere.leppanen@nokia.com>
+X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
+To:     David Laight <David.Laight@ACULAB.COM>
+cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "michael.tuexen@lurchi.franken.de" <michael.tuexen@lurchi.franken.de>
+Subject: RE: [PATCH net] sctp: return a one-to-one type socket when doing
+ peeloff
+In-Reply-To: <8831b4dc929148f28cca658a4d7a11d9@AcuMS.aculab.com>
+Message-ID: <alpine.LFD.2.21.2003051736080.24727@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net>
+References: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com> <HE1PR0702MB3610BB291019DD7F51DBC906ECE40@HE1PR0702MB3610.eurprd07.prod.outlook.com> <CADvbK_ewk7mGNr6T4smWeQ0TcW3q4yabKZwGX3dK=XcH7gv=KQ@mail.gmail.com>
+ <alpine.LFD.2.21.2003041349400.19073@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net> <8831b4dc929148f28cca658a4d7a11d9@AcuMS.aculab.com>
+Content-Type: text/plain; charset=US-ASCII
+X-ClientProxiedBy: AM4P190CA0022.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:200:56::32) To HE1PR0702MB3610.eurprd07.prod.outlook.com
+ (2603:10a6:7:7f::27)
 MIME-Version: 1.0
-In-Reply-To: <20200305122259.6104-1-tangbin@cmss.chinamobile.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net (131.228.2.10) by AM4P190CA0022.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15 via Frontend Transport; Thu, 5 Mar 2020 17:31:23 +0000
+X-X-Sender: jeleppan@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net
+X-Originating-IP: [131.228.2.10]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3ac1ce31-9408-4658-aa0c-08d7c12b0738
+X-MS-TrafficTypeDiagnostic: HE1PR0702MB3577:
+X-Microsoft-Antispam-PRVS: <HE1PR0702MB3577E9845E0A264FC9DAA10BECE20@HE1PR0702MB3577.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03333C607F
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(396003)(39860400002)(346002)(366004)(136003)(189003)(199004)(16526019)(55016002)(186003)(26005)(66946007)(66476007)(66556008)(8936002)(8676002)(44832011)(9686003)(81166006)(81156014)(86362001)(5660300002)(478600001)(2906002)(956004)(53546011)(6916009)(7696005)(52116002)(54906003)(316002)(4326008)(6506007);DIR:OUT;SFP:1102;SCL:1;SRVR:HE1PR0702MB3577;H:HE1PR0702MB3610.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: nokia.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: t/Ao8RlhYgyBGFZGax5pCsG9r2RyWj2nTkdZlpEneaYSJPUIVg2KwWwP1oqVzjry/PJdemkuQJhMHdf/n7I8rFrUU1m8hA4KyJ6WupidrJZcdIFC5OTNZOb3LgbsWaoi4Wks5OgEjqVfzDd5ofJXlFa7P8pe5fM/nrr40Mq1BfuyLiW1vCIEqEZMa9ZfyuPN75fPeCDmGTCSVgYG2zSm+dmIRnmI6WeFQC8vSBxNXGiVcgEMm/VDqBHFVM6avweHGPI3J3u27yMlZp9D4WBQhWefdFyAwJ6EDz5M80vO45r9YhHNX20ZNnKU7Y5Se9eBX55czwzDATl/shNXeNkZ+bcSJEiyAQZQBKTby90CHnAgSLXSWfc04tQsoT9R+pbU1fWW08gWQaUvrpiQYo5exbpAu2tz5wPMASXId6Q2qfS8ghKCXvAMhlAlf2jqLw8O
+X-MS-Exchange-AntiSpam-MessageData: +bHCMyG+x3e3cQ2mWDn2seBL/nyyas0Ap1VphEmtEbiiGRcNPIu2GFX0fLL1oG+XfABMy7IlsbArumljAMAZ/i7ByL7Es6pHuCK6llCp9BJ1sFnoG0bwTpTZk63WVIPwkfXv8OUty/+PCCGD91hmBA==
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ac1ce31-9408-4658-aa0c-08d7c12b0738
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2020 17:31:24.9070
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: asA5FV+mTog/rN4vT6pYSdYXQ87s7GrUNteWlryOgKtF8U6BQDOKrBaa0yXHzelY/fJi6uSEn5C88yw2F8CZ5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0702MB3577
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/20 4:22 AM, tangbin wrote:
-> in this function,‘ret’ is always assigned,so this's definition
-> 'ret = 0' make no sense.
+On Thu, 5 Mar 2020, David Laight wrote:
+
+> From: Jere Leppanen
+> > Sent: 04 March 2020 17:13
+> > On Wed, 4 Mar 2020, Xin Long wrote:
+> > 
+> > > On Wed, Mar 4, 2020 at 2:38 AM Leppanen, Jere (Nokia - FI/Espoo)
+> > > <jere.leppanen@nokia.com> wrote:
+> > >>
+> > >> On Mon, 2 Mar 2020, Xin Long wrote:
+> > >>
+> > >>> As it says in rfc6458#section-9.2:
+> > >>>
+> > >>>   The application uses the sctp_peeloff() call to branch off an
+> > >>>   association into a separate socket.  (Note that the semantics are
+> > >>>   somewhat changed from the traditional one-to-one style accept()
+> > >>>   call.)  Note also that the new socket is a one-to-one style socket.
+> > >>>   Thus, it will be confined to operations allowed for a one-to-one
+> > >>>   style socket.
+> > >>>
+> > >>> Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
+> > >>> on which some operations are not allowed, like shutdown, as Jere
+> > >>> reported.
+> > >>>
+> > >>> This patch is to change it to return a one-to-one type socket instead.
+> > >>
+> > >> Thanks for looking into this. I like the patch, and it fixes my simple
+> > >> test case.
+> > >>
+> > >> But with this patch, peeled-off sockets are created by copying from a
+> > >> one-to-many socket to a one-to-one socket. Are you sure that that's
+> > >> not going to cause any problems? Is it possible that there was a
+> > >> reason why peeloff wasn't implemented this way in the first place?
+> > > I'm not sure, it's been there since very beginning, and I couldn't find
+> > > any changelog about it.
+> > >
+> > > I guess it was trying to differentiate peeled-off socket from TCP style
+> > > sockets.
+> > 
+> > Well, that's probably the reason for UDP_HIGH_BANDWIDTH style. And maybe
+> > there is legitimate need for that differentiation in some cases, but I
+> > think inventing a special socket style is not the best way to handle it.
+> > 
+> > But actually I meant why is a peeled-off socket created as SOCK_SEQPACKET
+> > instead of SOCK_STREAM. It could be to avoid copying from SOCK_SEQPACKET
+> > to SOCK_STREAM, but why would we need to avoid that?
 > 
-> Signed-off-by: tangbin <tangbin@cmss.chinamobile.com>
+> Because you don't want all the acks and retransmissions??
 
-This looks fine, but your subject should be:
+I don't follow. The socket type and style have virtually no effect on the 
+protocol side of things, I think.
 
-bcm63xx_enet: Remove redundant variable definitions
-
-to matchthe majority of commit subjects done to that file. With that:
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+> 
