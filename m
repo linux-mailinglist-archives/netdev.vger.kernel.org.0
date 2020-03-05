@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C35B017ACDE
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81FFC17ACE6
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727331AbgCERNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:13:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39338 "EHLO mail.kernel.org"
+        id S1727637AbgCERXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:23:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39374 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727273AbgCERNn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 12:13:43 -0500
+        id S1727334AbgCERNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:13:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE87A20870;
-        Thu,  5 Mar 2020 17:13:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03C6A20848;
+        Thu,  5 Mar 2020 17:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583428422;
-        bh=idOIMTE6Zyt3F86aW3sP2PcOyQAZyqAKYQdsQE9Lt9w=;
+        s=default; t=1583428423;
+        bh=iUS63HzURkdNWPqhwTnoxFpkn4beUpwEPN/ZA6lYULI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8Tp3upoFmuRv1ugDhkgiZW2F8u/saKXPTQeJTfnVOOF7Vm6IVRMJhsUwJoc/XeP2
-         E1xa9BaACFu65GHOvdN1/gmdgKZQMv6EFMbI3GDSPuN2lJRNYO/dyXQj3jhgIJtL9+
-         UJSvW2PjD21U52otrJ0p37sfrEKIz2/dsY9Kg5Xc=
+        b=bVVvzVkI+bY7aS7EThPnnuiZbE2w95Q44iH0Nr4JdO96Qf1m1UyhI4OaI+KBL2KP6
+         7GHqPHgzKxK1kiosVlQUPBuRPKX/90XKLn4bSFGmYlXJY1Ui4HKivwKOtAMxDvG48V
+         9ACmg+/6eJtV7iiXzEbUFD2n6KayPcPO3Rxdx5xw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 24/67] nl80211: fix potential leak in AP start
-Date:   Thu,  5 Mar 2020 12:12:25 -0500
-Message-Id: <20200305171309.29118-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 25/67] cfg80211: check reg_rule for NULL in handle_channel_custom()
+Date:   Thu,  5 Mar 2020 12:12:26 -0500
+Message-Id: <20200305171309.29118-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200305171309.29118-1-sashal@kernel.org>
 References: <20200305171309.29118-1-sashal@kernel.org>
@@ -45,42 +45,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 9951ebfcdf2b97dbb28a5d930458424341e61aa2 ]
+[ Upstream commit a7ee7d44b57c9ae174088e53a668852b7f4f452d ]
 
-If nl80211_parse_he_obss_pd() fails, we leak the previously
-allocated ACL memory. Free it in this case.
+We may end up with a NULL reg_rule after the loop in
+handle_channel_custom() if the bandwidth didn't fit,
+check if this is the case and bail out if so.
 
-Fixes: 796e90f42b7e ("cfg80211: add support for parsing OBBS_PD attributes")
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20200221104142.835aba4cdd14.I1923b55ba9989c57e13978f91f40bfdc45e60cbd@changeid
+Link: https://lore.kernel.org/r/20200221104449.3b558a50201c.I4ad3725c4dacaefd2d18d3cc65ba6d18acd5dbfe@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/wireless/reg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 1e97ac5435b23..6032f1cce9416 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -4799,8 +4799,7 @@ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
- 		err = nl80211_parse_he_obss_pd(
- 					info->attrs[NL80211_ATTR_HE_OBSS_PD],
- 					&params.he_obss_pd);
--		if (err)
--			return err;
-+		goto out;
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index fff9a74891fc4..1a8218f1bbe07 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -2276,7 +2276,7 @@ static void handle_channel_custom(struct wiphy *wiphy,
+ 			break;
  	}
  
- 	nl80211_calculate_ap_params(&params);
-@@ -4822,6 +4821,7 @@ static int nl80211_start_ap(struct sk_buff *skb, struct genl_info *info)
- 	}
- 	wdev_unlock(wdev);
- 
-+out:
- 	kfree(params.acl);
- 
- 	return err;
+-	if (IS_ERR(reg_rule)) {
++	if (IS_ERR_OR_NULL(reg_rule)) {
+ 		pr_debug("Disabling freq %d MHz as custom regd has no rule that fits it\n",
+ 			 chan->center_freq);
+ 		if (wiphy->regulatory_flags & REGULATORY_WIPHY_SELF_MANAGED) {
 -- 
 2.20.1
 
