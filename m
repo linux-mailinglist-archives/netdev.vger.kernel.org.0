@@ -2,76 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C19EA17AD68
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4DA17AD75
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbgCERi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:38:57 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39868 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbgCERi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 12:38:57 -0500
-Received: by mail-lj1-f196.google.com with SMTP id f10so7023066ljn.6;
-        Thu, 05 Mar 2020 09:38:54 -0800 (PST)
+        id S1726128AbgCERmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:42:19 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36389 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgCERmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 12:42:18 -0500
+Received: by mail-pf1-f194.google.com with SMTP id i13so3110331pfe.3
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 09:42:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AjhdRYjDPFMTb22nPTZry4E/4CciJROpmnc6zv5X8Vg=;
-        b=QjmpFRwS72p2y1jT2grAaixO/Fj7ExldbHvxqFnHIKGSN7mp6yvTg0LTjqIIv4VkKO
-         +WeHfN069Od8rFuh/KQVN97gl+DSe7axo04atuXl9f3nNPKdqwsDBqrUMpoT2V8i02oJ
-         MjGAgwBStoHwVRPFDWUhNYSUsc2fxLk30NSWpX8qyhTNw3DJKe/NsN+H0MngerHmysdz
-         gc9BtobLIwkInmSNYyuVRObjuP6pEt2iY/14lT0IiZobgAqfvVHTaqrTnVTU9woZ7WFD
-         XL29FtnZZ4By9EgqLR3pNX2T1zSNcbFPYE2VNu88hLdnvbnWXVujtgYn+zf5tih+K5nJ
-         hOyQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WO9CL2c1w4olgPjEPwS6Ra/FLfu00HcXGcMtO9zfexo=;
+        b=PIZuvBOBbK3Zt8CK4II7StLN9lnSky75gasV00eDluG4GZVnGAqsV8rtG2DADakRIV
+         QwSayYbgDZLPql+x0FSzCZf58gV1W67fETimxIpXAEO0CASpdr9y1wzHwq8v9Rt81cES
+         7eaM4UY2J/43MX9y2LuYLagFwi6m425NaHOEg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AjhdRYjDPFMTb22nPTZry4E/4CciJROpmnc6zv5X8Vg=;
-        b=Jhg03ol3zo4hbt5US8iK0uzRlCfkKwsW1IAnEWT0i/vr42AqXODx4+q1Y4/sUTQg4Q
-         pVouh4L444sCv20uBWafL2bnOmVb+XnXOxgAK8bY03300HqI1zvlQpiChtqKzRl5cKBG
-         ty6PAYcyI97+tCENqdAuUYJwYZKGNV23F19Hl7v8UVFPQhZMyr36WuN7/NmTka85Ukyr
-         JpXIGGP4Hjw+kmQGzqACfK/2tju0WOHgQCK1DYDO7mBy1OoaWLciHLDOq77fGK+jI2Qo
-         rzkvAneHFMf7uPDvA/R5CUgpIOyWJoBaXjEOTd4knxHV4QMVvuzMmnOZyl5o+7VZ9U0X
-         UhkQ==
-X-Gm-Message-State: ANhLgQ0EgScrLtixEzC3APjZm87hSr/9ruFKFN79VfY66tZvpqapqhwS
-        DmcqC1Q52ntHYAyurFbJ8bxJuwhuhqc3dYDKp3U=
-X-Google-Smtp-Source: ADFU+vtXBGwHlMSdbyhPktHbkhplsEt4jfLLEKNjPpDTwBv5BGuitJHDawiTWbUYw94VLKGibffNlVaOONDOSHX362Y=
-X-Received: by 2002:a2e:760f:: with SMTP id r15mr6128149ljc.234.1583429933466;
- Thu, 05 Mar 2020 09:38:53 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WO9CL2c1w4olgPjEPwS6Ra/FLfu00HcXGcMtO9zfexo=;
+        b=YjGAaCVea/ttoqHUI/RgubDOGMcIfLpJPEcrV0nDuygjpH2J9qNA0xw0tpDIN5XDMT
+         OUF1f1Jzxlk4LjvZGTUc6mhPM2nlJXkztRrox42wa3+wyhjbU8HCf+nBNMYd99/G3zn+
+         7h5uC9QWBWTjMr1YWRcbOhsYplm50q/aUBWo/ito1tvoaOB6PVL9PKMEyu0vdCu2/wh/
+         BB4zQHWmPlGiv128KUNvsjo/PREvaWzjCUJHm5ruE+rzKQmv51A9ic6Pv7L6oas1kq2s
+         ZxQNiAAMijUgz4d6gIcv6Ke6j2U+qoH0NyTkowvoNtSxbef9pwq0qiLvMn8OMyMCQLjI
+         F0Ig==
+X-Gm-Message-State: ANhLgQ0qzxAZIfmU5bkO7gdtGmhFAEj3HMXLFn/2QgsyXSA8VnWvyuQk
+        skwS3oqggOk1Xx0zSBvWoaViNQ==
+X-Google-Smtp-Source: ADFU+vtufGH9z7DYE4GsADQLUgiWusxt/h6jaf64E8QlBevYNQbgpzzrcR6B/vZM0EejVK/cGcN8Bw==
+X-Received: by 2002:a63:4a58:: with SMTP id j24mr8860917pgl.166.1583430135757;
+        Thu, 05 Mar 2020 09:42:15 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id cq15sm6975221pjb.31.2020.03.05.09.42.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2020 09:42:14 -0800 (PST)
+Date:   Thu, 5 Mar 2020 09:42:13 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        daniel@iogearbox.net, kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, mpe@ellerman.id.au,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] selftests: Fix seccomp to support relocatable
+ build (O=objdir)
+Message-ID: <202003050937.BA14B70DEB@keescook>
+References: <20200305003627.31900-1-skhan@linuxfoundation.org>
+ <202003041815.B8C73DEC@keescook>
+ <f4cf1527-4565-9f08-a8a2-9f51022eac63@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20200305175528.5b3ccc09@canb.auug.org.au> <715919f5-e256-fbd1-44ff-8934bda78a71@infradead.org>
- <CAADnVQ+TYiVu+Ksstj4LmYa=+UPwbv-dv-tscRaKn_0FcpstBg@mail.gmail.com>
- <CACYkzJ4ks6VgxeGpJApvqJdx6Q-8PZwk-r=q4ySWsDBDy1jp+g@mail.gmail.com> <CACYkzJ5_8yQV2JPHFz_ZE0vYdASmrAes3Boy_sjbicX6LuiORw@mail.gmail.com>
-In-Reply-To: <CACYkzJ5_8yQV2JPHFz_ZE0vYdASmrAes3Boy_sjbicX6LuiORw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 5 Mar 2020 09:38:42 -0800
-Message-ID: <CAADnVQ+K4Vc2_=tB7COFFBy3uswike-TERoSF=1=GdnWFDUutQ@mail.gmail.com>
-Subject: Re: linux-next: Tree for Mar 5 (bpf_trace)
-To:     KP Singh <kpsingh@chromium.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f4cf1527-4565-9f08-a8a2-9f51022eac63@linuxfoundation.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 5, 2020 at 9:32 AM KP Singh <kpsingh@chromium.org> wrote:
->
-> This fails as we added bpf_test_run_tracing in net/bpf/test_run.c
-> which gets built only CONFIG_NET is enabled. Which, this particular
-> config, disables.
->
-> Alexei, if it's okay with you. I can send a patch that separates the
-> tracing test code into kernel/bpf/test_run_trace.c which depends
-> only on CONFIG_BPF_SYSCALL.
+On Thu, Mar 05, 2020 at 09:41:34AM -0700, Shuah Khan wrote:
+> On 3/4/20 7:20 PM, Kees Cook wrote:
+> > Instead of the TEST_CUSTOM_PROGS+all dance, you can just add an explicit
+> > dependency, with the final seccomp/Makefile looking like this:
+> > 
+> > 
+> > # SPDX-License-Identifier: GPL-2.0
+> > CFLAGS += -Wl,-no-as-needed -Wall
+> > LDFLAGS += -lpthread
+> > 
+> > TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+> > 
+> 
+> TEST_CUSTOM_PROGS is for differentiating test programs that
+> can't use lib.mk generic rules. It is appropriate to use
+> for seccomp_bpf
 
-In such situation we typically add __weak dummy call.
-May be split will work too.
-or move tracing_prog_ops to kernel/bpf/core.c ?
+I don't follow? This suggested Makefile works for me (i.e. it can use
+the lib.mk generic rules since CFLAGS and LDFLAGS can be customized
+first, and it just adds an additional dependency).
+
+> > include ../lib.mk
+> > 
+> > # Additional dependencies
+> > $(OUTPUT)/seccomp_bpf: ../kselftest_harness.h
+
+BTW, I see a lot of other targets that use kselftest_harness.h appear to
+be missing this Makefile dependency, but that's a different problem. :)
+
+> > (Though this fails in the same way as above when run from the top-level
+> > directory.)
+> > 
+> 
+> I didn't see this because I have been the same directory I used
+> for relocated cross-build kernel. :(
+> 
+> Thanks for testing this. I know the problem here. all is a dependency
+> for install step and $(OUTPUT) is referencing the objdir before it
+> gets created. It is a Makefile/lib.mk problem to fix.
+> 
+> I will do a separate patch for this. This will show up in any test
+> that is using $(OUTPUT) to relocate objects mainly the ones that
+> require custom build rule like seeccomp.
+
+Okay, cool. It looked to me like it lost track of the top level source
+directory (i.e. "make: entering $output" ... "can't find
+../other/files")
+
+Anyway, I look forward to the next version and I'll get it tested. :)
+Thanks for fixing this! I really like having a top-level "make" command
+that can extract a single selftest; that's very handy!
+
+-- 
+Kees Cook
