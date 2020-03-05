@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CBCF17A2FA
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 11:18:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A2D17A330
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 11:33:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbgCEKSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 05:18:00 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:47073 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726378AbgCEKSA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 05:18:00 -0500
-Received: by mail-qk1-f195.google.com with SMTP id u124so4690229qkh.13
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 02:17:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=zdxUWMWXTEs/zs0LJh1bxLoOHpDg1k5nkLimqXptzik=;
-        b=ct4hnogO+mjn06TGmTiYRZGab7VknWgUZlhPmqjiKijlDi5lQEaIF4fE2wGfulOYgU
-         zp7T3uPy8cdrvS9lh2V/fxXp5EKP32oNG4K5ytbpJeiHcBfhfS4JkJjjHVhmHtzC2Lf9
-         pLv7hli8QJllVrrfbdlmlZElLRhV2kMSsjg4MduJVFmFCQXBQ0gRdk2xM/G0DeWL47UU
-         lALTYBqJJIXAwUA/4Oai3RInksDu4JQQJ8Llnb6FqldFr29W39I/TfMSQJGw9bFasQCP
-         lYIoOnG5i8I3PoxZYqNcwxDLEI5GEjwcMUntVD8/Meqj6FmVHg8X1e2UH8Qw7VuCp5P1
-         t0Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=zdxUWMWXTEs/zs0LJh1bxLoOHpDg1k5nkLimqXptzik=;
-        b=MAvKL09McgyYsdGhip8RNR7cjHkDq/AFvbkjJOgbwB0CMW2e90k55kqoCknNwkTuQC
-         T+G59UlHXahj559+P7b67M9GgvWOEOaoB+5ugewo2z6DqWL1G6GfTZWqWC+XZnR5Q2Sk
-         aYpELFaiP+7Uc718vCEfoPJmULOjnLi4ZYjcGTn6w+a9n9GILVTwau/O4r07Osss8uYr
-         iJfpOL76ScGgB4mZEFR+YDLjp7sG3mg5xpFfrM92YZ7W+bR7rwtJ01mbpet84KWao7jB
-         +zJZyp2Of4C9Q28h+4iAzpaLAh16qA9tb5JVv6KsSjJyVC2AEMqYbJLZObF6p0kUgety
-         HJ8w==
-X-Gm-Message-State: ANhLgQ2Dx7tUq7LvaDGeGUWBOhlNUqJavje2PLkzpFudiZeDxoHWzXCa
-        s1cBuIFlnufG7gPxIMumHx8qJEQri4Yb9r5uS8o=
-X-Google-Smtp-Source: ADFU+vt1oNn2p+bVl9dteChz0nXs/Q+4vnY36RCSEealFIdHIV+EdxMOE44YVx5jwyuuGUAz4C7TynXmaA9s92hF728=
-X-Received: by 2002:a37:664d:: with SMTP id a74mr6742362qkc.256.1583403479316;
- Thu, 05 Mar 2020 02:17:59 -0800 (PST)
+        id S1726990AbgCEKdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 05:33:52 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39172 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725897AbgCEKdv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 05:33:51 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 1613BB1A0;
+        Thu,  5 Mar 2020 10:33:49 +0000 (UTC)
+Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
+To:     Denis Kirjanov <kda@linux-powerpc.org>
+Cc:     netdev@vger.kernel.org,
+        "ilias.apalodimas" <ilias.apalodimas@linaro.org>,
+        wei.liu@kernel.org, paul@xen.org
+References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org>
+ <f8aa7d34-582e-84de-bf33-9551b31b7470@suse.com>
+ <CAOJe8K28BZCW7JDejKgDELR2WPfBgvj-0aJJXX9uCRnryGY+xg@mail.gmail.com>
+ <c5cd0349-69b3-41e9-7fb1-d7909e659717@suse.com>
+ <CAOJe8K0HuKyAi5YJwsWMcAJEp-Vkhbgvvg=RRcZZ8V6uqGzczw@mail.gmail.com>
+From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Message-ID: <b8c15b45-df1e-6f77-a36b-beacec7e70b6@suse.com>
+Date:   Thu, 5 Mar 2020 11:33:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Received: by 2002:a0c:b497:0:0:0:0:0 with HTTP; Thu, 5 Mar 2020 02:17:58 -0800 (PST)
-Reply-To: ayishagddafio@mail.ru
-From:   AISHA GADDAFI <aisha20110016@gmail.com>
-Date:   Thu, 5 Mar 2020 02:17:58 -0800
-Message-ID: <CAESqvJqoWZr1sBawbFnN02L+CL_4_DNZnE3HqoreqU9tKqd0SA@mail.gmail.com>
-Subject: Lieber Freund (Assalamu Alaikum),?
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAOJe8K0HuKyAi5YJwsWMcAJEp-Vkhbgvvg=RRcZZ8V6uqGzczw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Lieber Freund (Assalamu Alaikum),
+On 05.03.20 10:47, Denis Kirjanov wrote:
+> On 3/4/20, Jürgen Groß <jgross@suse.com> wrote:
+>> On 04.03.20 14:10, Denis Kirjanov wrote:
+>>> On 3/2/20, Jürgen Groß <jgross@suse.com> wrote:
+>>>> On 02.03.20 15:21, Denis Kirjanov wrote:
+>>>>> the patch adds a basic xdo logic to the netfront driver
+>>>>>
+>>>>> XDP redirect is not supported yet
+>>>>>
+>>>>> v2:
+>>>>> - avoid data copying while passing to XDP
+>>>>> - tell xen-natback that we need the headroom space
+>>>>
+>>>> Please add the patch history below the "---" delimiter
+>>>>
+>>>>>
+>>>>> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+>>>>> ---
+>>>>>     drivers/net/xen-netback/common.h |   1 +
+>>>>>     drivers/net/xen-netback/rx.c     |   9 ++-
+>>>>>     drivers/net/xen-netback/xenbus.c |  21 ++++++
+>>>>>     drivers/net/xen-netfront.c       | 157
+>>>>> +++++++++++++++++++++++++++++++++++++++
+>>>>>     4 files changed, 186 insertions(+), 2 deletions(-)
+>>>>
+>>>> You are modifying xen-netback sources. Please Cc the maintainers.
+>>>>
+>>
+>> ...
+>>
+>>>>>
+>>>>> +	}
+>>>>> +
+>>>>> +	return 0;
+>>>>> +
+>>>>> +abort_transaction:
+>>>>> +	xenbus_dev_fatal(np->xbdev, err, "%s", message);
+>>>>> +	xenbus_transaction_end(xbt, 1);
+>>>>> +out:
+>>>>> +	return err;
+>>>>> +}
+>>>>> +
+>>>>> +static int xennet_xdp_set(struct net_device *dev, struct bpf_prog
+>>>>> *prog,
+>>>>> +			struct netlink_ext_ack *extack)
+>>>>> +{
+>>>>> +	struct netfront_info *np = netdev_priv(dev);
+>>>>> +	struct bpf_prog *old_prog;
+>>>>> +	unsigned int i, err;
+>>>>> +
+>>>>> +	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
+>>>>> +	if (!old_prog && !prog)
+>>>>> +		return 0;
+>>>>> +
+>>>>> +	if (prog)
+>>>>> +		bpf_prog_add(prog, dev->real_num_tx_queues);
+>>>>> +
+>>>>> +	for (i = 0; i < dev->real_num_tx_queues; ++i)
+>>>>> +		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
+>>>>> +
+>>>>> +	if (old_prog)
+>>>>> +		for (i = 0; i < dev->real_num_tx_queues; ++i)
+>>>>> +			bpf_prog_put(old_prog);
+>>>>> +
+>>>>> +	err = talk_to_netback_xdp(np, old_prog ?
+>>>>> NETBACK_XDP_HEADROOM_DISABLE:
+>>>>> +				  NETBACK_XDP_HEADROOM_ENABLE);
+>>>>> +	if (err)
+>>>>> +		return err;
+>>>>> +
+>>>>> +	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
+>>>>
+>>>> What is happening in case the backend doesn't support XDP?
+>>> Here we just ask xen-backend to make a headroom, that's it.
+>>> It's better to send xen-backend changes in a separate patch.
+>>
+>> Okay, but what do you do if the backend doesn't support XDP (e.g. in
+>> case its an older kernel)? How do you know it is supporting XDP?
+> We can check a xenbus reply to xenbus state change.
 
-Ich bin vor einer privaten Suche auf Ihren E-Mail-Kontakt gesto=C3=9Fen
-Ihre Hilfe. Mein Name ist Aisha Al-Qaddafi, eine alleinerziehende
-Mutter und eine Witwe
-mit drei Kindern. Ich bin die einzige leibliche Tochter des Sp=C3=A4tlibysc=
-hen
-Pr=C3=A4sident (verstorbener Oberst Muammar Gaddafi).
+Using the frontend state for that purpose is rather dangerous.
 
-Ich habe Investmentfonds im Wert von siebenundzwanzig Millionen
-f=C3=BCnfhunderttausend
-United State Dollar ($ 27.500.000.00) und ich brauche eine
-vertrauensw=C3=BCrdige Investition
-Manager / Partner aufgrund meines aktuellen Fl=C3=BCchtlingsstatus bin ich =
-jedoch
-M=C3=B6glicherweise interessieren Sie sich f=C3=BCr die Unterst=C3=BCtzung =
-von
-Investitionsprojekten in Ihrem Land
-Von dort aus k=C3=B6nnen wir in naher Zukunft Gesch=C3=A4ftsbeziehungen auf=
-bauen.
+In case the backend doesn't support the "Reconfiguring" state you might
+end up with a broken network.
 
-Ich bin bereit, mit Ihnen =C3=BCber das Verh=C3=A4ltnis zwischen Investitio=
-n und
-Unternehmensgewinn zu verhandeln
-Basis f=C3=BCr die zuk=C3=BCnftige Investition Gewinne zu erzielen.
+I'd rather let the backend advertise the support via a "feature-xdp"
+node in Xenstore and do the activation via another node.
 
-Wenn Sie bereit sind, dieses Projekt in meinem Namen zu bearbeiten,
-antworten Sie bitte dringend
-Damit ich Ihnen mehr Informationen =C3=BCber die Investmentfonds geben kann=
-.
 
-Ihre dringende Antwort wird gesch=C3=A4tzt. schreibe mir an diese email adr=
-esse (
-ayishagddafio@mail.ru ) zur weiteren Diskussion.
-
-Freundliche Gr=C3=BC=C3=9Fe
-Frau Aisha Al-Qaddafi
+Juergen
