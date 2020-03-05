@@ -2,157 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 358E8179CC7
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA80179CC6
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 01:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388518AbgCEAYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 19:24:11 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6228 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388407AbgCEAYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 19:24:10 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0250KK4U004218;
-        Wed, 4 Mar 2020 16:22:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=JSj1r+OjxqNJNP+bxemy/qzHF2QlUUvlPwJzI/wSNic=;
- b=TJ4fz7g7G8QbI8D0DyvdxHhB/fAlQy2Xo3ecvVu8syEUcr320gvY+B185iZryRoBV5NT
- PgGkJQmilU1jIGb0ZlhuX6vhdtR+AsMHzzQguZ5aB4hj2QpfoSj4QmgB6Nx0O+RkIB9i
- yiu0osZjpxjnfmj2TbInKqI+bgB6KjauxlA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yj2gj5u2e-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 04 Mar 2020 16:22:54 -0800
-Received: from snc-exhub101.TheFacebook.com (2620:10d:c085:11d::5) by
- ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 4 Mar 2020 16:22:49 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 4 Mar 2020 16:22:38 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T3T8VH39cywZN935a9+MAU+lJL8RSVyZqVOlVkZK7dmM3noT3+bJOL+th0v+mAjnhNqNkvFtlKtoLqwMYtb1fY28eIH2R4Rlwc0qpd9ZN9q0R+HOh6IxvEDVeiD5F1bcIQ/VadQjXUPk9lCxdSJ1+kDADO23qWBceslEiT7cndxmLcNrWrEy3mTaSeodOsfQtISIi0z03vdp845lizlvNkkJh5+yzDgbE2AM1NBFovopSQ9zI4gzRiYRMerXJzdSrNiacx171BfQLrX2bHqLRzZfmDLoBb1RHk5U0CqISVSZkb5TK+yNzEtVKAEaI9XUEKT/ksjLisVdeh7HrwfG2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JSj1r+OjxqNJNP+bxemy/qzHF2QlUUvlPwJzI/wSNic=;
- b=Dhtq0ySH6mGdfGiaLZpEVBAiRwMCcMCDmvPJfHteUKqbW9BDJNdZt2cI5GHFilPQE4texuVfkOTO8mURxqAzzT+qPloeNVN93uekq7SeN8U2rBDvI95rj5nFvz/+QnD7RNTgoF4QgPhgv5f+/nhixWYn17C8UdMdjutozDh57sdObON3i8EdIGrOTVUzH9yEkGOodo+aRCT7oEr1CmmL1scNUEtvUOwx12/8+laxAzlDEMDLks9+tomqt36zp7040Iay2c94L9DIAaFukFHGiEb/BT90ptNcLmldcdz4QEbBK5afIOjupwLvhSIskTrQs/hSzrNt6REup9IjbBZsZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JSj1r+OjxqNJNP+bxemy/qzHF2QlUUvlPwJzI/wSNic=;
- b=VffvBTvZHcPu5GhZr2SaQgRJ+8dbNdtNY0XSwW4x2kzSgekayqhuBRixrl/gN1G3X6B4vviH6kbOjTqlwQsULtXsbfR4iOOK75K2VtRFFZrFC90d0qVmY5NU696szFJcOAi0hxnzRqEPRhw6y9R/JXxfZaCB80WP9QXr4H8b08k=
-Received: from MW2PR1501MB2059.namprd15.prod.outlook.com (2603:10b6:302:e::24)
- by MW2PR1501MB2140.namprd15.prod.outlook.com (2603:10b6:302:3::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.15; Thu, 5 Mar
- 2020 00:22:37 +0000
-Received: from MW2PR1501MB2059.namprd15.prod.outlook.com
- ([fe80::25db:776d:5e82:7962]) by MW2PR1501MB2059.namprd15.prod.outlook.com
- ([fe80::25db:776d:5e82:7962%3]) with mapi id 15.20.2772.019; Thu, 5 Mar 2020
- 00:22:37 +0000
-Subject: Re: libbpf distro packaging
-To:     Jiri Olsa <jolsa@redhat.com>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "md@linux.it" <md@linux.it>
-References: <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
- <20190826064235.GA17554@krava> <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
- <20190828071237.GA31023@krava> <20190930111305.GE602@krava>
- <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com> <20191008073958.GA10009@krava>
- <AAB8D5C3-807A-4EE3-B57C-C7D53F7E057D@fb.com> <20191016100145.GA15580@krava>
- <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com> <20191220135811.GF17348@krava>
-From:   Julia Kartseva <hex@fb.com>
-Message-ID: <c1b6a5b1-bbc8-2186-edcf-4c4780c6f836@fb.com>
-Date:   Wed, 4 Mar 2020 16:22:35 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+        id S2388484AbgCEAYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 19:24:05 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39108 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388407AbgCEAYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 19:24:05 -0500
+Received: by mail-pl1-f193.google.com with SMTP id j20so1413036pll.6
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 16:24:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=jM+dxWT2By9fogMP6Nyu2wPsp7hyky7qMkBcc2E+Y7M=;
+        b=3PflFeor4xeV0DKPa32OkIWGUeuE0LNf75Bx4a6OgMPQychT/+1d8LcjDR/dAQehjU
+         JCVO4RZvLabxXlGYf02W3bTUfgd0yDJyhMySkVLpco/TdCicTsPG2ab4OabkIjUbdQo0
+         IVK1UfBlFvv/iDmAC6s1ucIHnsp2y2LBarBCedmPhUC9072F0/Xi/ONIpj0Dy3m1FZMW
+         5HHZxkDm7VWQ5/jcIgcS/C9XV62Zii7+QsB+QA31TkN7GI5MrFytKg+kLOLpg5mGiTRS
+         pQd8TNtGSDmPnyi1XQINVGmp+A6XDgUGGEQTALMjvqtVHQosFm3g+oRkvFYuGCCNme7U
+         6QBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=jM+dxWT2By9fogMP6Nyu2wPsp7hyky7qMkBcc2E+Y7M=;
+        b=N11t054dCLA/YUsFgY6e3uzXsDmQKS6YD8msoin1ZaKUSUHRTe1i40A3qCNa3Ks/A8
+         s3cA3cD3Dz6hiUE0SuWOF0ImDGxBlMRaGYSqW0sdvJn08+gjyQJlX8BbAlokQHJkJh5y
+         t9eGucI0GTi/Gy3kdYB4dd57zWd0VaF1hgbOpH+n4xh9V128ALw63OyO2kU4ez1CwrKf
+         wXj3GJEWJJ5q22K/VdROePnDN4CD1cBiAV3hzV5Pw/6u3T/6CmlGNsNF2Ok6LAkAm0Wp
+         2F7dFwDp3XZxVoQ41UCHXh+wIKJ15I9tM9mKOgW0n/tz3lDXl3pyj7/rpY5vgtfsnQHG
+         KHBA==
+X-Gm-Message-State: ANhLgQ2XlgrqA5MQUMhQddpnBo+pQLh3kRZcOPFCuxA478MAJmakOta0
+        FE48Si9aAWNy4Ood2q5YxLbkxqHIHsY=
+X-Google-Smtp-Source: ADFU+vt00Uwz0FV5rnxbJt2NP8KluYY/iq0C+9EMJplEmXoY0K7ZR45BbAfkafa9sqKuRWQAZAlj3A==
+X-Received: by 2002:a17:90a:246a:: with SMTP id h97mr5515182pje.9.1583367843593;
+        Wed, 04 Mar 2020 16:24:03 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id x18sm18014349pfo.148.2020.03.04.16.24.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Mar 2020 16:24:03 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 5/8] ionic: support ethtool rxhash disable
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+References: <20200304042013.51970-1-snelson@pensando.io>
+ <20200304042013.51970-6-snelson@pensando.io>
+ <20200304115902.011ff647@kicinski-fedora-PC1C0HJN>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <39446ac7-9ce1-1c81-427b-a9821145fd1d@pensando.io>
+Date:   Wed, 4 Mar 2020 16:24:01 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.5.0
-In-Reply-To: <20191220135811.GF17348@krava>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR12CA0047.namprd12.prod.outlook.com
- (2603:10b6:301:2::33) To MW2PR1501MB2059.namprd15.prod.outlook.com
- (2603:10b6:302:e::24)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c082:1055:817:11ed:82a6:c24a] (2620:10d:c090:500::6:2507) by MWHPR12CA0047.namprd12.prod.outlook.com (2603:10b6:301:2::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.18 via Frontend Transport; Thu, 5 Mar 2020 00:22:36 +0000
-X-Originating-IP: [2620:10d:c090:500::6:2507]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fad7300b-cf10-48df-ea18-08d7c09b4f0f
-X-MS-TrafficTypeDiagnostic: MW2PR1501MB2140:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MW2PR1501MB2140BDC84EEFE8D27A8F8FD2C4E20@MW2PR1501MB2140.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 03333C607F
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(39860400002)(376002)(136003)(396003)(346002)(366004)(199004)(189003)(53546011)(54906003)(31696002)(86362001)(4326008)(316002)(8676002)(8936002)(81156014)(6916009)(36756003)(81166006)(7116003)(52116002)(66946007)(16526019)(6486002)(5660300002)(66476007)(66556008)(3480700007)(478600001)(31686004)(2906002)(4744005)(2616005)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR1501MB2140;H:MW2PR1501MB2059.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zleC5EIEsgYWYL4kcGkSKzQR2pXFPd30VC3omsEfZPmvnqGntDCsaFtxKZ2a0UROM7LamyEgEtNnexFeSEUTA0ixLQCmJBHlUrEvWbFVqZN6d0/pkQPzjr5b+gcuQir6xiuOda6x3QeA/Yibsp4ddQuZDZfuSohox/s7dRU+5a8L0VU/f8LmF5rfHOlAVjDh7VkHYeslqGfF7ZlAUadamvYIIxyCp+Lqs45ZQPjTjg7lhJpBL1lfiCVaLbC44RlKH03Z1fZvCbbaxgCk/ZPu0/3CVJrXgNCSx27i+DvAw9FIIZz8Z2hSuqnxAPn6BGCe32fsu0I/1I2TjDn8vHONj7gZKs42I+7ZBsBRZJMKBmgi7aNLaPmruvf+Fl87f+JbEOdKl/gRfnfwM6p2SyVvMH1y9CUvqpE/ckACkih2gNM0rIxh0h1pavlHEUomq2ee
-X-MS-Exchange-AntiSpam-MessageData: AJOKaEMW/rzrGlCNNffxGixdqH7a4w1VYuupUEdDn+lzeW/Pd0KxLwY+dIt5BmMIFfGqx5C3ukcna5BB4yBXjWvTfQXDtoibMzFT3XlF1BzjfCeDdUCJvMyujcpoq1NrGT8IG69u+V8LNK2YAbPaOt7KYQbpz3VmaxIYTUS+Iet82+oyjgIMxpzGSr1nQVKL
-X-MS-Exchange-CrossTenant-Network-Message-Id: fad7300b-cf10-48df-ea18-08d7c09b4f0f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2020 00:22:37.8129
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sCs+CP20JWMLUnRAQ85fVeNEXot4jxNox/FTwP1ykklsqYtBM4nPMHohHIV5AAJI
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR1501MB2140
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-04_10:2020-03-04,2020-03-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- impostorscore=0 suspectscore=0 priorityscore=1501 lowpriorityscore=0
- adultscore=0 bulkscore=0 phishscore=0 spamscore=0 clxscore=1011 mlxscore=0
- mlxlogscore=866 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003050000
-X-FB-Internal: deliver
+In-Reply-To: <20200304115902.011ff647@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/20/19 5:58 AM, Jiri Olsa wrote:
-> On Thu, Dec 19, 2019 at 09:37:23PM +0000, Julia Kartseva wrote:
->> Hi Jiri,
+On 3/4/20 11:59 AM, Jakub Kicinski wrote:
+> On Tue,  3 Mar 2020 20:20:10 -0800 Shannon Nelson wrote:
+>> We can disable rxhashing by setting rss_types to 0.  The user
+>> can toggle this with "ethtool -K <ethX> rxhash off|on",
+>> which calls into the .ndo_set_features callback with the
+>> NETIF_F_RXHASH feature bit set or cleared.  This patch adds
+>> a check for that bit and updates the FW if necessary.
 >>
->> 1. v. 0.0.6 is out [1], could you please package it?
->> 2. we might need a small spec update due to zlib is made an explicit
->> dependency in [2]. zlib should be listed in BuildRequires: section of the
->> spec so it's consistent with libbpf.pc
-> 
-> sure, it's ok for rawhide, in fedora 31/30 we still don't have
-> latest headers packaged
-> 
->> 3. Do you plan to address the bug report [3] for CentOS? Namely rebuilding
->> Fedora's RPM and publishing to EPEL repo?
-> 
-> I did not get any answers on who would do that internally,
-> so I'm afreaid I'll have to do it, but let me ask again first ;-)
->
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> ---
+>>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> index d1567e477b1f..4b953f9e9084 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> @@ -1094,6 +1094,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+>>   	u64 vlan_flags = IONIC_ETH_HW_VLAN_TX_TAG |
+>>   			 IONIC_ETH_HW_VLAN_RX_STRIP |
+>>   			 IONIC_ETH_HW_VLAN_RX_FILTER;
+>> +	u64 old_hw_features;
+>>   	int err;
+>>   
+>>   	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
+>> @@ -1101,9 +1102,13 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
+>>   	if (err)
+>>   		return err;
+>>   
+>> +	old_hw_features = lif->hw_features;
+>>   	lif->hw_features = le64_to_cpu(ctx.cmd.lif_setattr.features &
+>>   				       ctx.comp.lif_setattr.features);
+>>   
+>> +	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
+>> +		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
+> Is this change coming from the HW or from ethtool? AFAIK hw_features
+> are what's supported, features is what's enabled..
 
-Bump :)
-Jiri, any volunteers for Fedora EPEL 7|8 packaging?
-systemd folks would appreciate it.
-Thanks!
+This is looking at the feature bits coming in from ndo_set_features - if 
+the RX_HASH bit has been turned off in the incoming features bitmask, 
+then I need to disable the hw hashing.
 
-> jirka
-> 
+I believe the confusion is between lif->hw_features, describing what is 
+currently enabled in the hw, versus the netdev->hw_features, that is 
+what we've told the the stack we have available.
+
+sln
+
