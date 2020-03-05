@@ -2,170 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8DD17A076
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 08:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1857817A097
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 08:39:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbgCEHUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 02:20:16 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:41368 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgCEHUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 02:20:16 -0500
-Received: by mail-pl1-f193.google.com with SMTP id t14so2235842plr.8
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 23:20:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=rKuIrZZDnjnUkGiYaaBfXr29ckvwXKiAAxlWpKQznm0=;
-        b=uPvS7C/NyjoTMY7wd2dAoQ7yVlHfnTs4JQO0yuENz5DSQtepvz4RliZbeYRGHrwasV
-         nUlzPuCcYyfxm06d1qjKmRe+uHCLZKwqYbX89KZo9R0FCyWsx+FAalBCAQjf45nboXUA
-         Ojr/QrSULbLBCjM4pyNjKovfGTds+ZMiuMkgTagP2N/8fRKZOpHxBw4Ewj2Ralakx1gx
-         H5A1g0PM2h69ocEl6Jt3dRw8rUo7KFOe/D57R/L8b/T8hZcklvRFk4VHKwMiHSnm1i3w
-         awafVRHZkvEy0DPWMpFfHAWryThQRElwe+9ZDiMXIB6EGA6yD6FvDPPMA6VQcuRRUJ5/
-         I74Q==
+        id S1725946AbgCEHjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 02:39:18 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:32887 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbgCEHjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 02:39:18 -0500
+Received: from mail-wr1-f69.google.com ([209.85.221.69])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <andrea.righi@canonical.com>)
+        id 1j9l3w-0004nm-0e
+        for netdev@vger.kernel.org; Thu, 05 Mar 2020 07:36:56 +0000
+Received: by mail-wr1-f69.google.com with SMTP id z16so1947148wrm.15
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 23:36:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=rKuIrZZDnjnUkGiYaaBfXr29ckvwXKiAAxlWpKQznm0=;
-        b=HgjXp5a7SfOVLvLgW5o+5ES0JimWKHCiUTnHd/AWih8UHifXJLB2cai7yuKtPpITSh
-         D1Rq6BbkbKKPh61R1xY5MmfUC/LJ9mohfMveZIizjQ/aUc90p/YKgRHiq7mYtlZSHGs8
-         KJ6Dpchwf8cB7uexCho7bbpQLQbGLKL1bJUnzTxeZOLb099oTaq3eqqo8Qh1kmln9T2h
-         l03umM8hBlWZBCVKiz5XLnHlybUa7SztSDpSKqUCPTR/tZmrkDAOi3up6oKO1sVghPsl
-         LT4TnPR6zi2JcBuiIZqHhXNxnRBwzouSxLtZtNyEqQeziKj3eh7GzMtojDfOXVciJ54C
-         +/Cg==
-X-Gm-Message-State: ANhLgQ2z+imFaQUa8CftZFTo8AJwnQ4jPwV9Ajl2A9tsBOStOMLcOCTy
-        eSIOJjPC15medsZmJXiCnX6M5Wf4jCI=
-X-Google-Smtp-Source: ADFU+vvCnW2Ixs86qRkP3kKFlf5RtqLuPspaajF3ofyA1Z1embKPegjLEe3xGUuFZ8lZWcUha0sgJQ==
-X-Received: by 2002:a17:90a:bf83:: with SMTP id d3mr7246378pjs.77.1583392813721;
-        Wed, 04 Mar 2020 23:20:13 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id d1sm22941906pfc.3.2020.03.04.23.20.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Mar 2020 23:20:13 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 8/8] ionic: drop ethtool driver version
-To:     Leon Romanovsky <leonro@mellanox.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200305052319.14682-1-snelson@pensando.io>
- <20200305052319.14682-9-snelson@pensando.io> <20200305061039.GP121803@unreal>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <32978b18-d607-9655-bbfa-7d1ec5c4d054@pensando.io>
-Date:   Wed, 4 Mar 2020 23:20:11 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9CtJGdUYHnqq8YEJwS2KCkXmlOvHXAh2xw0RAmgI+qI=;
+        b=jW1wtZYjRW25MJ4j7w4OV9Qix+gEKFke6cmdkvmsyhDQuz7rrFrY3ywKf0xdhnUqu6
+         zaXnXFA76aurkD5VcivB8mz2n/3nRk/Z5/7l7EnpJLuWYxjsH6VYVxDjP0DCSQtWq9XI
+         4bHu3f12WDjtJDMbU/Pb1+/epcL6ElMpfXvWnbkLavzmsk/nckLjI6kEU4p1PXSnrrtj
+         T8rERglUU/HjHDU9+6QXB6TdfAx9+gqD5uckVV/HZtqbGgKtYEAKXlW2VyYMaURIvcaG
+         2l0foD9C0xZ+yB3Y2RgbwRYD9p3KStwPBQjvqqD/4vljhIPMU+q+EMTOD+UcDDOpZoV5
+         BtMw==
+X-Gm-Message-State: ANhLgQ072NMSynJT/XlJURFOotC2hrDX6OAY0nr/YxKLOZdNhBE4X6Nz
+        TkxL2s0Yq2T+8NRQiyEYQcmTyaO4m1DAgXD7L/l77l8plHIU0pUrDElo8snE+/RhgnS3oQg/9Fk
+        ASITrbMAb21eGUvQ+3Uolcvq5gi6/qVxG7Q==
+X-Received: by 2002:adf:f7c1:: with SMTP id a1mr8559538wrq.299.1583393815467;
+        Wed, 04 Mar 2020 23:36:55 -0800 (PST)
+X-Google-Smtp-Source: ADFU+vs+cCHLCvfbTBArpsEG//QQD/rfqrcaua3+QIrsXxad2+Z6Ca4YiR4vehAh1+uayLJcx2rLBg==
+X-Received: by 2002:adf:f7c1:: with SMTP id a1mr8559502wrq.299.1583393815072;
+        Wed, 04 Mar 2020 23:36:55 -0800 (PST)
+Received: from localhost (host96-127-dynamic.32-79-r.retail.telecomitalia.it. [79.32.127.96])
+        by smtp.gmail.com with ESMTPSA id q12sm45991919wrg.71.2020.03.04.23.36.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Mar 2020 23:36:54 -0800 (PST)
+Date:   Thu, 5 Mar 2020 08:36:53 +0100
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     Vladis Dronov <vdronov@redhat.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: free ptp clock properly
+Message-ID: <20200305073653.GC267906@xps-13>
+References: <20200304175350.GB267906@xps-13>
+ <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200305061039.GP121803@unreal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1830360600.13123996.1583352704368.JavaMail.zimbra@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/20 10:10 PM, Leon Romanovsky wrote:
-> On Wed, Mar 04, 2020 at 09:23:19PM -0800, Shannon Nelson wrote:
->> Use the default kernel version in ethtool drv_info output
->> and drop the module version.
->>
->> Cc: Leon Romanovsky <leonro@mellanox.com>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
->>   drivers/net/ethernet/pensando/ionic/ionic.h         | 1 -
->>   drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 1 -
->>   drivers/net/ethernet/pensando/ionic/ionic_main.c    | 6 ++----
->>   3 files changed, 2 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
->> index c8ff33da243a..1c720759fd80 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic.h
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
->> @@ -12,7 +12,6 @@ struct ionic_lif;
->>
->>   #define IONIC_DRV_NAME		"ionic"
->>   #define IONIC_DRV_DESCRIPTION	"Pensando Ethernet NIC Driver"
->> -#define IONIC_DRV_VERSION	"0.20.0-k"
->>
->>   #define PCI_VENDOR_ID_PENSANDO			0x1dd8
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> index acd53e27d1ec..bea9b78e0189 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> @@ -86,7 +86,6 @@ static void ionic_get_drvinfo(struct net_device *netdev,
->>   	struct ionic *ionic = lif->ionic;
->>
->>   	strlcpy(drvinfo->driver, IONIC_DRV_NAME, sizeof(drvinfo->driver));
->> -	strlcpy(drvinfo->version, IONIC_DRV_VERSION, sizeof(drvinfo->version));
->>   	strlcpy(drvinfo->fw_version, ionic->idev.dev_info.fw_version,
->>   		sizeof(drvinfo->fw_version));
->>   	strlcpy(drvinfo->bus_info, ionic_bus_info(ionic),
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> index a8e3fb73b465..e4a76e66f542 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
->> @@ -6,6 +6,7 @@
->>   #include <linux/module.h>
->>   #include <linux/netdevice.h>
->>   #include <linux/utsname.h>
->> +#include <linux/vermagic.h>
->>
->>   #include "ionic.h"
->>   #include "ionic_bus.h"
->> @@ -15,7 +16,6 @@
->>   MODULE_DESCRIPTION(IONIC_DRV_DESCRIPTION);
->>   MODULE_AUTHOR("Pensando Systems, Inc");
->>   MODULE_LICENSE("GPL");
->> -MODULE_VERSION(IONIC_DRV_VERSION);
->>
->>   static const char *ionic_error_to_str(enum ionic_status_code code)
->>   {
->> @@ -414,7 +414,7 @@ int ionic_identify(struct ionic *ionic)
->>   	memset(ident, 0, sizeof(*ident));
->>
->>   	ident->drv.os_type = cpu_to_le32(IONIC_OS_TYPE_LINUX);
->> -	strncpy(ident->drv.driver_ver_str, IONIC_DRV_VERSION,
->> +	strncpy(ident->drv.driver_ver_str, UTS_RELEASE,
->>   		sizeof(ident->drv.driver_ver_str) - 1);
-> i see that you responded to my question about usage of this string [1]
-> and I can't say anything about netdev policy on that, but in other
-> subsystems, the idea that driver has duplicated debug functionalities
-> to the general kernel code is not welcomed.
->
-> [1] https://lore.kernel.org/netdev/e0cbc84c-7860-abf2-a622-4035be1479dc@pensando.io
+On Wed, Mar 04, 2020 at 03:11:44PM -0500, Vladis Dronov wrote:
+> Hello, Andrea, all,
+> 
+> ----- Original Message -----
+> > From: "Andrea Righi" <andrea.righi@canonical.com>
+> > Subject: [PATCH] ptp: free ptp clock properly
+> > 
+> > There is a bug in ptp_clock_unregister() where ptp_clock_release() can
+> > free up resources needed by posix_clock_unregister() to properly destroy
+> > a related sysfs device.
+> > 
+> > Fix this by calling posix_clock_unregister() in ptp_clock_release().
+> 
+> Honestly, this does not seem right. The calls at PTP clock release are:
+> 
+> ptp_clock_unregister() -> posix_clock_unregister() -> cdev_device_del() ->
+> -> ... bla ... -> ptp_clock_release()
+> 
+> So, it looks like with this patch both posix_clock_unregister() and
+> ptp_clock_release() are not called at all. And it looks like the "fix" is
+> not removing PTP clock's cdev, i.e. leaking it and related sysfs resources.
 
-This DSC (Distributed Services Card) is more than a simple NIC, and in 
-several use cases is intended to be managed centrally and installed in 
-hosts that can be handed out to customers as bare-metal machines to 
-which the datacenter personnel cannot access.  The device can be 
-accessed through a separate management network port, similar to an ilom 
-or cimc other similar host management gizmo. Getting a little 
-information about the driver into the card's logfiles allows for a 
-little better debugging context from the management side without having 
-access to the host.
+That's absolutely right, thanks for the clarification!
 
-Yes, we want to keep functionality duplication to a minimum, but I think 
-this is a different case.  We also want to keep customer information 
-leakage to a minimum, which is why we were using only the individual 
-driver version info before it was replaced with the kernel version.  I'd 
-like to keep at least some bit of driver context information available 
-to those on the management side of this PCI device.
+With my "fix" we don't see the the kernel oops anymore, but we're
+leaking resources, so definitely not a valid fix.
 
-sln
+> 
+> I would guess that a kernel in question (5.3.0-40-generic) has the commit
+> a33121e5487b but does not have the commit 75718584cb3c, which should be
+> exactly fixing a docking station disconnect crash. Could you please,
+> check this?
 
->>   	mutex_lock(&ionic->dev_cmd_lock);
->> @@ -558,8 +558,6 @@ int ionic_port_reset(struct ionic *ionic)
->>
->>   static int __init ionic_init_module(void)
->>   {
->> -	pr_info("%s %s, ver %s\n",
->> -		IONIC_DRV_NAME, IONIC_DRV_DESCRIPTION, IONIC_DRV_VERSION);
->>   	ionic_debugfs_create();
->>   	return ionic_bus_register_driver();
->>   }
->> --
->> 2.17.1
->>
+Unfortunately the kernel in question already has 75718584cb3c:
+https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/bionic/commit/?h=hwe&id=c71b774732f997ef38ed7bd62e73891a01f2bbfe
 
+It looks like there's something else that can free up too early the
+resources required by posix_clock_unregister() to destroy the related
+sysfs files.
+
+Maybe what we really need to call from ptp_clock_release() is
+pps_unregister_source()? Something like this:
+
+From: Andrea Righi <andrea.righi@canonical.com>
+Subject: [PATCH] ptp: free ptp clock properly
+
+There is a bug in ptp_clock_unregister() where ptp_clock_release() can
+free up resources needed by posix_clock_unregister() to properly destroy
+a related sysfs device.
+
+Fix this by calling pps_unregister_source() in ptp_clock_release().
+
+See also:
+commit 75718584cb3c ("ptp: free ptp device pin descriptors properly").
+
+BugLink: https://bugs.launchpad.net/bugs/1864754
+Fixes: a33121e5487b ("ptp: fix the race between the release of ptp_clock and cdev")
+Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+---
+ drivers/ptp/ptp_clock.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index ac1f2bf9e888..468286ef61ad 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -170,6 +170,9 @@ static void ptp_clock_release(struct device *dev)
+ {
+ 	struct ptp_clock *ptp = container_of(dev, struct ptp_clock, dev);
+ 
++	/* Release the clock's resources. */
++	if (ptp->pps_source)
++		pps_unregister_source(ptp->pps_source);
+ 	ptp_cleanup_pin_groups(ptp);
+ 	mutex_destroy(&ptp->tsevq_mux);
+ 	mutex_destroy(&ptp->pincfg_mux);
+@@ -298,11 +301,6 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
+ 		kthread_cancel_delayed_work_sync(&ptp->aux_work);
+ 		kthread_destroy_worker(ptp->kworker);
+ 	}
+-
+-	/* Release the clock's resources. */
+-	if (ptp->pps_source)
+-		pps_unregister_source(ptp->pps_source);
+-
+ 	posix_clock_unregister(&ptp->clock);
+ 
+ 	return 0;
+-- 
+2.25.0
