@@ -2,188 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE0517A44B
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7405117A45D
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:39:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbgCELcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 06:32:11 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:59601 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgCELcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:32:11 -0500
-Received: from [10.193.187.27] (donald.blr.asicdesigners.com [10.193.187.27])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 025BVk5W016117;
-        Thu, 5 Mar 2020 03:31:47 -0800
-Subject: Re: [PATCH net-next v3 1/6] cxgb4/chcr : Register to tls add and del
- callback
-To:     Boris Pismenny <borisp@mellanox.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, herbert@gondor.apana.org.au
-Cc:     secdev@chelsio.com, varun@chelsio.com, kuba@kernel.org
-References: <20200229012426.30981-1-rohitm@chelsio.com>
- <20200229012426.30981-2-rohitm@chelsio.com>
- <57eb8055-a4ad-1afd-b4f4-07bbeaa2b6f6@mellanox.com>
- <97ae4b0b-6ffb-9864-493b-159f581f7809@chelsio.com>
- <49ddd44b-b3b7-7e2e-cc18-4158b51aa861@mellanox.com>
-From:   rohit maheshwari <rohitm@chelsio.com>
-Message-ID: <87188b6b-d79f-b71f-76e7-03984769e4ee@chelsio.com>
-Date:   Thu, 5 Mar 2020 17:01:46 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S1727112AbgCELiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 06:38:55 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:34302 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725816AbgCELiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:38:55 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 22ECFB00066;
+        Thu,  5 Mar 2020 11:38:53 +0000 (UTC)
+Received: from [10.17.20.221] (10.17.20.221) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 5 Mar 2020
+ 11:38:48 +0000
+From:   Tom Zhao <tzhao@solarflare.com>
+Subject: [PATCH] sfc: complete the next packet when we receive a timestamp
+To:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>
+Message-ID: <b8de726f-d7f7-09f3-115a-96aac3cd4d40@solarflare.com>
+Date:   Thu, 5 Mar 2020 11:38:45 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <49ddd44b-b3b7-7e2e-cc18-4158b51aa861@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.221]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25270.003
+X-TM-AS-Result: No-6.063600-8.000000-10
+X-TMASE-MatchedRID: vFHe2GnEhBgqYYRg3clvBqo2fOuRT7aab1d/zpzApVqk3COeFIImbVOb
+        R+eKTMWbnbBGF6l7a+27hw59i5efeNvRJLD/GixsddPPQcdMrYUA+JHhu0IR5lNtD3nNFtZWE4L
+        eIK6WkgrxdUjf0kJGdKN80BVgAlECv5DRh1Wa7JacVWc2a+/ju0tc8DbogbSE31GU/N5W5BAsCQ
+        vYylvKZQ9TQMwVAjQIn4mHfGmnxWYykLs5bfkgx/SG/+sPtZVka01mhnn7t6QELMPQNzyJS391v
+        oLn76c1sIBS46yyb+COumRY2i9AcnbI+PVdeqUpCfEIlU0KzNjqobkz1A0A7VIxScKXZnK0TQFf
+        M0Uvf4yQAE+AoG3/Sml3bXr8XG4B7k0KvrVDNPAWGaCgD30Ogiv2BWU4g3/q7L2+zGEubN7fXaF
+        V6FjN5aNabD91Jzyk6VS/gXvOej6SsyjfsjrH/mpjhlm7EiBX3FYvKmZiVnOKhXiFxrK6/aLoSL
+        E/BAxZZ8LOwVGHbhs7pJ/8NT/FvG5u+NE9AtLecgDoZhYtavbyCvICuK46cp8TZJWHqTM8MFddv
+        +pLbreXzfAEylwN55GTpe1iiCJqb5ic6rRyh48LbigRnpKlKWxlRJiH4397PWDASTO5Q/SbS3Hx
+        9Xqk0M/PfTJlLqgP+Ll1G/hCWba/o109Z5iwJw==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.063600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25270.003
+X-MDID: 1583408333-cB9JS--0b-5Y
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Boris,
+We now ignore the "completion" event when using tx queue timestamping,
+and only pay attention to the two (high and low) timestamp events. The
+NIC will send a pair of timestamp events for every packet transmitted.
+The current firmware may merge the completion events, and it is possible
+that future versions may reorder the completion and timestamp events.
+As such the completion event is not useful.
 
-On 04/03/20 10:45 PM, Boris Pismenny wrote:
->
-> On 04/03/2020 17:49, rohit maheshwari wrote:
->> Hi Boris,
->>
->> On 01/03/20 2:06 PM, Boris Pismenny wrote:
->>> Hi Rohit,
->>>
->>> On 2/29/2020 3:24 AM, Rohit Maheshwari wrote:
->>>> A new macro is defined to enable ktls tx offload support on Chelsio
->>>> T6 adapter. And if this macro is enabled, cxgb4 will send mailbox to
->>>> enable or disable ktls settings on HW.
->>>> In chcr, enabled tx offload flag in netdev and registered tls_dev_add
->>>> and tls_dev_del.
->>>>
->>>> v1->v2:
->>>> - mark tcb state to close in tls_dev_del.
->>>> - u_ctx is now picked from adapter structure.
->>>> - clear atid in case of failure.
->>>> - corrected ULP_CRYPTO_KTLS_INLINE value.
->>>>
->>>> v2->v3:
->>>> - add empty line after variable declaration.
->>>> - local variable declaration in reverse christmas tree ordering.
->>>>
->>>> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
->>>> ---
->>> ...
->>>> +
->>>> +/*
->>>> + * chcr_ktls_dev_add:  call back for tls_dev_add.
->>>> + * Create a tcb entry for TP. Also add l2t entry for the connection.
->>>> And
->>>> + * generate keys & save those keys locally.
->>>> + * @netdev - net device.
->>>> + * @tls_cts - tls context.
->>>> + * @direction - TX/RX crypto direction
->>>> + * return: SUCCESS/FAILURE.
->>>> + */
->>>> +static int chcr_ktls_dev_add(struct net_device *netdev, struct sock
->>>> *sk,
->>>> +                 enum tls_offload_ctx_dir direction,
->>>> +                 struct tls_crypto_info *crypto_info,
->>>> +                 u32 start_offload_tcp_sn)
->>>> +{
->>>> +    struct tls_context *tls_ctx = tls_get_ctx(sk);
->>>> +    struct chcr_ktls_ofld_ctx_tx *tx_ctx;
->>>> +    struct chcr_ktls_info *tx_info;
->>>> +    struct dst_entry *dst;
->>>> +    struct adapter *adap;
->>>> +    struct port_info *pi;
->>>> +    struct neighbour *n;
->>>> +    u8 daaddr[16];
->>>> +    int ret = -1;
->>>> +
->>>> +    tx_ctx = chcr_get_ktls_tx_context(tls_ctx);
->>>> +
->>>> +    pi = netdev_priv(netdev);
->>>> +    adap = pi->adapter;
->>>> +    if (direction == TLS_OFFLOAD_CTX_DIR_RX) {
->>>> +        pr_err("not expecting for RX direction\n");
->>>> +        ret = -EINVAL;
->>>> +        goto out;
->>>> +    }
->>>> +    if (tx_ctx->chcr_info) {
->>>> +        ret = -EINVAL;
->>>> +        goto out;
->>>> +    }
->>>> +
->>>> +    tx_info = kvzalloc(sizeof(*tx_info), GFP_KERNEL);
->>>> +    if (!tx_info) {
->>>> +        ret = -ENOMEM;
->>>> +        goto out;
->>>> +    }
->>>> +
->>>> +    spin_lock_init(&tx_info->lock);
->>>> +
->>>> +    /* clear connection state */
->>>> +    spin_lock(&tx_info->lock);
->>>> +    tx_info->connection_state = KTLS_CONN_CLOSED;
->>>> +    spin_unlock(&tx_info->lock);
->>>> +
->>>> +    tx_info->sk = sk;
->>>> +    /* initialize tid and atid to -1, 0 is a also a valid id. */
->>>> +    tx_info->tid = -1;
->>>> +    tx_info->atid = -1;
->>>> +
->>>> +    tx_info->adap = adap;
->>>> +    tx_info->netdev = netdev;
->>>> +    tx_info->tx_chan = pi->tx_chan;
->>>> +    tx_info->smt_idx = pi->smt_idx;
->>>> +    tx_info->port_id = pi->port_id;
->>>> +
->>>> +    tx_info->rx_qid = chcr_get_first_rx_qid(adap);
->>>> +    if (unlikely(tx_info->rx_qid < 0))
->>>> +        goto out2;
->>>> +
->>>> +    tx_info->prev_seq = start_offload_tcp_sn;
->>>> +    tx_info->tcp_start_seq_number = start_offload_tcp_sn;
->>>> +
->>>> +    /* get peer ip */
->>>> +    if (sk->sk_family == AF_INET ||
->>>> +        (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
->>>> +         ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
->>>> +        memcpy(daaddr, &sk->sk_daddr, 4);
->>>> +    } else {
->>>> +        goto out2;
->>>> +    }
->>>> +
->>>> +    /* get the l2t index */
->>>> +    dst = sk_dst_get(sk);
->>>> +    if (!dst) {
->>>> +        pr_err("DST entry not found\n");
->>>> +        goto out2;
->>>> +    }
->>>> +    n = dst_neigh_lookup(dst, daaddr);
->>>> +    if (!n || !n->dev) {
->>>> +        pr_err("neighbour not found\n");
->>>> +        dst_release(dst);
->>>> +        goto out2;
->>>> +    }
->>>> +    tx_info->l2te  = cxgb4_l2t_get(adap->l2t, n, n->dev, 0);
->>> I see that you make an effort to obtain the the L2 tunnel, but did you
->>> test it? I would expect that offload would fail for such a connection
->>> as the KTLS code would not find the lower device with the offload
->>> capability..
->>>
->>> If this doesn't work, better remove it, until the stack supports such
->>> functionality. Then, you wouldn't need to retrospectively obtain these
->>> parameters. Instead, you could just implement the proper flow by
->>> working with the L2 tunnel.
->> This is not l2 tunnel related. This is L2 table index used by HW to decide,
->> based on destination MAC, which physical port to be used to send a
->> packet out.
-> Do you have a single netdev which represents two ports in some sort of bond?
-> Otherwise, why not just take the port from the netdev (e.g.
-> netdev-per-port).
-> Surely, there is no need to perform a neigh lookup to achieve this.
->
-T6 adapter uses offload engine to support inline-tls for TSO activity, 
-in TCP
-offload disabled manner. And offload engine needs L2T index to send the 
-packet
-out on a specific port, that's why it is must to perform neigh lookup.
+Without this patch in place a merged completion event on a queue with
+timestamping will cause a "spurious TX completion" error. This affects
+SFN8000-series adapters.
 
+Signed-off-by: Tom Zhao <tzhao@solarflare.com>
+---
+v2: apply to correct head
+v3: actually send the right patch this time
+---
+ drivers/net/ethernet/sfc/ef10.c       | 32 +++++++++++-----------
+ drivers/net/ethernet/sfc/efx.h        |  1 +
+ drivers/net/ethernet/sfc/net_driver.h |  3 ---
+ drivers/net/ethernet/sfc/tx.c         | 38 +++++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/tx_common.c  | 29 +++++++++++---------
+ drivers/net/ethernet/sfc/tx_common.h  |  6 +++++
+ 6 files changed, 78 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 52113b7529d6..3f16bd807c6e 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2853,11 +2853,24 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 	}
+ 
+ 	/* Transmit timestamps are only available for 8XXX series. They result
+-	 * in three events per packet. These occur in order, and are:
+-	 *  - the normal completion event
++	 * in up to three events per packet. These occur in order, and are:
++	 *  - the normal completion event (may be omitted)
+ 	 *  - the low part of the timestamp
+ 	 *  - the high part of the timestamp
+ 	 *
++	 * It's possible for multiple completion events to appear before the
++	 * corresponding timestamps. So we can for example get:
++	 *  COMP N
++	 *  COMP N+1
++	 *  TS_LO N
++	 *  TS_HI N
++	 *  TS_LO N+1
++	 *  TS_HI N+1
++	 *
++	 * In addition it's also possible for the adjacent completions to be
++	 * merged, so we may not see COMP N above. As such, the completion
++	 * events are not very useful here.
++	 *
+ 	 * Each part of the timestamp is itself split across two 16 bit
+ 	 * fields in the event.
+ 	 */
+@@ -2865,17 +2878,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 
+ 	switch (tx_ev_type) {
+ 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
+-		/* In case of Queue flush or FLR, we might have received
+-		 * the previous TX completion event but not the Timestamp
+-		 * events.
+-		 */
+-		if (tx_queue->completed_desc_ptr != tx_queue->ptr_mask)
+-			efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
+-
+-		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event,
+-						 ESF_DZ_TX_DESCR_INDX);
+-		tx_queue->completed_desc_ptr =
+-					tx_ev_desc_ptr & tx_queue->ptr_mask;
++		/* Ignore this event - see above. */
+ 		break;
+ 
+ 	case TX_TIMESTAMP_EVENT_TX_EV_TSTAMP_LO:
+@@ -2887,8 +2890,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 		ts_part = efx_ef10_extract_event_ts(event);
+ 		tx_queue->completed_timestamp_major = ts_part;
+ 
+-		efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
+-		tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
++		efx_xmit_done_single(tx_queue);
+ 		break;
+ 
+ 	default:
+diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
+index da54afaa3c44..66dcab140449 100644
+--- a/drivers/net/ethernet/sfc/efx.h
++++ b/drivers/net/ethernet/sfc/efx.h
+@@ -20,6 +20,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ 				struct net_device *net_dev);
+ netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
++void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
+ int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
+ 		 void *type_data);
+ extern unsigned int efx_piobuf_size;
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 392bd5b7017e..b836315bac87 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -208,8 +208,6 @@ struct efx_tx_buffer {
+  *	avoid cache-line ping-pong between the xmit path and the
+  *	completion path.
+  * @merge_events: Number of TX merged completion events
+- * @completed_desc_ptr: Most recent completed pointer - only used with
+- *      timestamping.
+  * @completed_timestamp_major: Top part of the most recent tx timestamp.
+  * @completed_timestamp_minor: Low part of the most recent tx timestamp.
+  * @insert_count: Current insert pointer
+@@ -269,7 +267,6 @@ struct efx_tx_queue {
+ 	unsigned int merge_events;
+ 	unsigned int bytes_compl;
+ 	unsigned int pkts_compl;
+-	unsigned int completed_desc_ptr;
+ 	u32 completed_timestamp_major;
+ 	u32 completed_timestamp_minor;
+ 
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 696a77c20cb7..19b58563cb78 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -534,6 +534,44 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ 	return efx_enqueue_skb(tx_queue, skb);
+ }
+ 
++void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
++{
++	unsigned int pkts_compl = 0, bytes_compl = 0;
++	unsigned int read_ptr;
++	bool finished = false;
++
++	read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
++
++	while (!finished) {
++		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
++
++		if (!efx_tx_buffer_in_use(buffer)) {
++			struct efx_nic *efx = tx_queue->efx;
++
++			netif_err(efx, hw, efx->net_dev,
++				  "TX queue %d spurious single TX completion\n",
++				  tx_queue->queue);
++			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
++			return;
++		}
++
++		/* Need to check the flag before dequeueing. */
++		if (buffer->flags & EFX_TX_BUF_SKB)
++			finished = true;
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++
++		++tx_queue->read_count;
++		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
++	}
++
++	tx_queue->pkts_compl += pkts_compl;
++	tx_queue->bytes_compl += bytes_compl;
++
++	EFX_WARN_ON_PARANOID(pkts_compl != 1);
++
++	efx_xmit_done_check_empty(tx_queue);
++}
++
+ void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
+ {
+ 	struct efx_nic *efx = tx_queue->efx;
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
+index b1571e9789d0..70876df1da69 100644
+--- a/drivers/net/ethernet/sfc/tx_common.c
++++ b/drivers/net/ethernet/sfc/tx_common.c
+@@ -80,7 +80,6 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->xmit_more_available = false;
+ 	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
+ 				  tx_queue->channel == efx_ptp_channel(efx));
+-	tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
+ 	tx_queue->completed_timestamp_major = 0;
+ 	tx_queue->completed_timestamp_minor = 0;
+ 
+@@ -210,10 +209,9 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
+ 	while (read_ptr != stop_index) {
+ 		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
+ 
+-		if (!(buffer->flags & EFX_TX_BUF_OPTION) &&
+-		    unlikely(buffer->len == 0)) {
++		if (!efx_tx_buffer_in_use(buffer)) {
+ 			netif_err(efx, tx_err, efx->net_dev,
+-				  "TX queue %d spurious TX completion id %x\n",
++				  "TX queue %d spurious TX completion id %d\n",
+ 				  tx_queue->queue, read_ptr);
+ 			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
+ 			return;
+@@ -226,6 +224,19 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
+ 	}
+ }
+ 
++void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
++{
++	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
++		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
++		if (tx_queue->read_count == tx_queue->old_write_count) {
++			/* Ensure that read_count is flushed. */
++			smp_mb();
++			tx_queue->empty_read_count =
++				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
++		}
++	}
++}
++
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ {
+ 	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
+@@ -256,15 +267,7 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
+ 			netif_tx_wake_queue(tx_queue->core_txq);
+ 	}
+ 
+-	/* Check whether the hardware queue is now empty */
+-	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
+-		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
+-		if (tx_queue->read_count == tx_queue->old_write_count) {
+-			smp_mb();
+-			tx_queue->empty_read_count =
+-				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
+-		}
+-	}
++	efx_xmit_done_check_empty(tx_queue);
+ }
+ 
+ /* Remove buffers put into a tx_queue for the current packet.
+diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
+index f92f1fe3a87f..99cf7ce2f36c 100644
+--- a/drivers/net/ethernet/sfc/tx_common.h
++++ b/drivers/net/ethernet/sfc/tx_common.h
+@@ -21,6 +21,12 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 			unsigned int *pkts_compl,
+ 			unsigned int *bytes_compl);
+ 
++static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
++{
++	return buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);
++}
++
++void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
+ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+ 
+ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+-- 
+2.18.1
 
