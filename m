@@ -2,76 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 501EA17A4D8
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:04:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D49E017A4EC
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 13:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbgCEMD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 07:03:58 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35705 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727206AbgCEMD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 07:03:58 -0500
-Received: by mail-wr1-f67.google.com with SMTP id r7so6712062wro.2
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 04:03:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=hT7S6vvpnxA0ApcPEejqGxLVzm717a4KSHt7eOw1Bck=;
-        b=GIH9MsCPmG16v2K7zrrevmV3g6eLk1wIcKUD9XnRWZuoOJXK1GkdfQGkFYZ928xMmM
-         Y3PnJAK/ssHCHqBUqfr96FgMu1N8MTdKO8DxCL5bgs/ODGHWiEnA4ZrWrxCmnB0Qk4kj
-         5csGyslb48TLPEaGgGdrIKegAW9qV+4WV2Iu0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=hT7S6vvpnxA0ApcPEejqGxLVzm717a4KSHt7eOw1Bck=;
-        b=oKtZzxfalgeIQvPXPPuLVhShHKFSYXDgNRIMrjGrzM5IbMMw167THiuZ4ZGfQz3uHd
-         PI+gOGM4h9MOW2giLx+DybGA2ofiL+Q5we9i0osMXlaIdjLubb0p9H7KlNqcKpDF5Pqa
-         +Df95kTYaaLPlbOV/us+C2PiOdPqgeB0oTfZpVtwrfAOFKeDA7Xt6TTNICUbfBgxqBAx
-         V/xgG2P/+Ip8r007Zcfvmp6FaNUn7SY5O7vbsM2gYAnVA+DvsUVEpMauTswAdYB3QnHP
-         im6hzlLztjRA1XlzOFrdOo8hdeBkoLjzPWzu7MF4jswFwPvAgV0FWmsQgZfhp70+K3Sv
-         WpAg==
-X-Gm-Message-State: ANhLgQ36sgXjxQQM9QaWhPvDI7I05oFOZ3upZcV7WBzm7wdCJqzn1zSB
-        7Fj8bc9JjDa/wPbK1EL6zS/MRg==
-X-Google-Smtp-Source: ADFU+vucLtTgYNewten9hKmRyZyvNiBAi0eWwE91eSAbKxv50uEY0RkR+AYp55iwZRNYjSqE2Bq4mg==
-X-Received: by 2002:a5d:5706:: with SMTP id a6mr9660460wrv.318.1583409836025;
-        Thu, 05 Mar 2020 04:03:56 -0800 (PST)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id b186sm9170588wmb.40.2020.03.05.04.03.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 04:03:54 -0800 (PST)
-References: <20200304101318.5225-1-lmb@cloudflare.com> <20200304101318.5225-3-lmb@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     john.fastabend@gmail.com, Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        kernel-team@cloudflare.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 02/12] skmsg: update saved hooks only once
-In-reply-to: <20200304101318.5225-3-lmb@cloudflare.com>
-Date:   Thu, 05 Mar 2020 13:03:53 +0100
-Message-ID: <87ftenypna.fsf@cloudflare.com>
+        id S1726973AbgCEMKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 07:10:17 -0500
+Received: from correo.us.es ([193.147.175.20]:56060 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726928AbgCEMKR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 07:10:17 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 61A0D18CE85
+        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 13:09:59 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 51145E1539
+        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 13:09:59 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4463FDA3AF; Thu,  5 Mar 2020 13:09:59 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 50EF6DA3A5;
+        Thu,  5 Mar 2020 13:09:57 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 05 Mar 2020 13:09:57 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 3458F42EF4E3;
+        Thu,  5 Mar 2020 13:09:57 +0100 (CET)
+Date:   Thu, 5 Mar 2020 13:10:12 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org,
+        syzbot+a2ff6fa45162a5ed4dd3@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: nf_tables: free flowtable hooks on hook
+ register error
+Message-ID: <20200305120931.poeox6r3rapcbujb@salvia>
+References: <20200302205850.29365-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200302205850.29365-1-fw@strlen.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 04, 2020 at 11:13 AM CET, Lorenz Bauer wrote:
-> Only update psock->saved_* if psock->sk_proto has not been initialized
-> yet. This allows us to get rid of tcp_bpf_reinit_sk_prot.
->
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+On Mon, Mar 02, 2020 at 09:58:50PM +0100, Florian Westphal wrote:
+> If hook registration fails, the hooks allocated via nft_netdev_hook_alloc
+> need to be freed.
+> 
+> We can't change the goto label to 'goto 5' -- while it does fix the memleak
+> it does cause a warning splat from the netfilter core (the hooks were not
+> registered).
+
+It seems test/shell crashes after this, looking. It works after
+reverting.
+
+> Fixes: 3f0465a9ef02 ("netfilter: nf_tables: dynamically allocate hooks per net_device in flowtables")
+> Reported-by: syzbot+a2ff6fa45162a5ed4dd3@syzkaller.appspotmail.com
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 > ---
-
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-
-[...]
+>  net/netfilter/nf_tables_api.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> index d1318bdf49ca..bb064aa4154b 100644
+> --- a/net/netfilter/nf_tables_api.c
+> +++ b/net/netfilter/nf_tables_api.c
+> @@ -6300,8 +6300,13 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
+>  		goto err4;
+>  
+>  	err = nft_register_flowtable_net_hooks(ctx.net, table, flowtable);
+> -	if (err < 0)
+> +	if (err < 0) {
+> +		list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
+> +			list_del_rcu(&hook->list);
+> +			kfree_rcu(hook, rcu);
+> +		}
+>  		goto err4;
+> +	}
+>  
+>  	err = nft_trans_flowtable_add(&ctx, NFT_MSG_NEWFLOWTABLE, flowtable);
+>  	if (err < 0)
+> -- 
+> 2.24.1
+> 
