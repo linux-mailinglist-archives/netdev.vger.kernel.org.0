@@ -2,140 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA08717AC51
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:19:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD3717AD26
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727973AbgCERTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:19:51 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:36941 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728078AbgCERTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 12:19:49 -0500
-Received: by mail-pj1-f65.google.com with SMTP id o2so2794433pjp.2
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 09:19:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7VTIIznQBmvnJ/8O+im4yptPfKhiIkM3KIhret3K2T4=;
-        b=GRm7PbStnoRYbF5qoP73UT4Z8n3AqdaejXALm2P3df5457oc/QzajC9XcEhGqwo+bt
-         rVFc4Smw9JaPC8fwVODncNBvezhTLQhunywA1FDvlNcUTIIRMKdScYssjRemHMgRhDfz
-         V2tETh/NFZqWA6oQykaSQQPcb3fuex8dr+2G+phX4/wNGCuTJglFEh1LxZKFDGlgryX2
-         NEpoGfH6rzAcuiZHYKYdmWmXVIhhH0ApvgPseH929moB8KCU5uNaXyjIzq57YErdpPoP
-         qNocahkK0nA+z4+ZlOcrPD5meQXSvCFk0NY0VReqSm0wTHPQlXM/IaD7ubT6x6NEo32s
-         rLDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7VTIIznQBmvnJ/8O+im4yptPfKhiIkM3KIhret3K2T4=;
-        b=G0JGj8ZfhAJGBmPqYaEmxoW+gMpZW1siKnmW31UoyWm2KrbtDj2dILKcKuVXIu9eUD
-         nZGXV4oZ6tC6dtNr1dNKvjEsrjaVnvkvw7UbSYP8H5Tp3Ij3ioRxRb7u7BID2MeSo2GB
-         VCC2O71tPquL5XwE5sV2OdoarkDBCpwCKMkCWOCnIEECZbpAGRKbVVMcxkBSWbZ3WcTN
-         NKTc43hFnD/Lpom0RVV3sPN6Hii/ZEiuDdI7ovTg+GnTF5dOe48DcFwppEchRQRUjAK7
-         uWKKf4PcXbQ0ot3WMA7z/1iahcvka5mrVnWfzKSANN8Bf9EWgBj5YBvcI7Mspk0LcIBj
-         0Few==
-X-Gm-Message-State: ANhLgQ16ABmGXS1l3sssjWpkR0W6vot9VjXH9rXuIISKpQJfUO2DqQCN
-        X1wG/eKX6lo+XOy5wFgzC00YgfOa
-X-Google-Smtp-Source: ADFU+vt2Xk3Ln0g88HWUzMF7abf9LO70vIh3bu6DMV13UwfAol5rwQlTh62/8rt7kGVW/IksdmCjBA==
-X-Received: by 2002:a17:90b:3581:: with SMTP id mm1mr9347194pjb.169.1583428787692;
-        Thu, 05 Mar 2020 09:19:47 -0800 (PST)
-Received: from [192.168.84.72] (8.100.247.35.bc.googleusercontent.com. [35.247.100.8])
-        by smtp.gmail.com with ESMTPSA id t71sm6956007pjb.41.2020.03.05.09.19.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Mar 2020 09:19:46 -0800 (PST)
-Subject: Re: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-References: <20200228.120150.302053489768447737.davem@davemloft.net>
- <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
- <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
- <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
- <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
- <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com>
- <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
- <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
- <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <91fafe40-7856-8b22-c279-55df5d06ca39@gmail.com>
-Date:   Thu, 5 Mar 2020 09:19:43 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727399AbgCERY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 12:24:56 -0500
+Received: from mx2.suse.de ([195.135.220.15]:57996 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725938AbgCERY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 12:24:56 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 66418ABBE;
+        Thu,  5 Mar 2020 17:24:54 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 8AF3DE037F; Thu,  5 Mar 2020 18:24:53 +0100 (CET)
+Date:   Thu, 5 Mar 2020 18:24:53 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Era Mayflower <mayflowerera@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] macsec: Netlink support of XPN cipher suites (IEEE
+ 802.1AEbw)
+Message-ID: <20200305172453.GB28693@unicorn.suse.cz>
+References: <20200305220108.18780-1-mayflowerera@gmail.com>
+ <20200305220108.18780-2-mayflowerera@gmail.com>
+ <20200305140241.GA28693@unicorn.suse.cz>
+ <CAMdQvKv9tSoSBfyOyhtctQ9D7aU2WUmuMUsoLn_WZ8whD=3AzA@mail.gmail.com>
+ <CAMdQvKuzaBuKGj1-HR6+r=FY4X9GhZPvEHwRt3BjErFiu1+bgw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMdQvKuzaBuKGj1-HR6+r=FY4X9GhZPvEHwRt3BjErFiu1+bgw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 05, 2020 at 11:53:29PM +0000, Era Mayflower wrote:
+> Do you think that inserting those new enum values after *_PAD would be
+> a good solution?
 
+Yes, new attribute identifiers should always be added as last so that
+you don't change existing values.
 
-On 3/5/20 9:00 AM, David Laight wrote:
-> From: Willem de Bruijn
->> Sent: 05 March 2020 16:07
-> ..
->> It seems do_csum is called because csum_partial_copy executes the
->> two operations independently:
->>
->> __wsum
->> csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
->> {
->>         memcpy(dst, src, len);
->>         return csum_partial(dst, len, sum);
->> }
-> 
-> And do_csum() is superbly horrid.
-> Not the least because it is 32bit on 64bit systems.
+Michal
 
-There are many versions, which one is discussed here ?
-
-At least the current one seems to be 64bit optimized.
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5777eaed566a1d63e344d3dd8f2b5e33be20643e
-
-
-> 
-> A better inner loop (even on 32bit) would be:
-> 	u64 result = 0; // better old 'sum' the caller wants to add in.
-> 	...
-> 	do {
-> 		result += *(u32 *)buff;
-> 		buff += 4;
-> 	} while (buff < end);
-> 
-> (That is as fast as the x86 'adc' loop on intel x86 cpus
-> prior to Haswell!)
-> Tweaking the above might cause gcc to generate code that
-> executes one iteration per clock on some superscaler cpus.
-> Adding alternate words to different registers may be
-> beneficial on cpus that can do two memory reads in 1 clock.
-> 
-> Then reduce from 64bits down to 16. Maybe with:
-> 	if (odd)
-> 		result <<= 8;
-> 	result = (u32)result + (result >> 32);
-> 	result32 = (u16)result + (result >> 16);
-> 	result32 = (u16)result32 + (result32 >> 16);
-> 	result32 = (u16)result32 + (result32 >> 16);
-> I think you need 4 reduces.
-> Modulo 0xffff might generate faster code, but the result domain
-> is then 0..0xfffe not 1..0xffff.
-> Which is actually better because it is correct when inverted.
-> 
-> If reducing with adds, it is best to initialise the csum to 1.
-> Then add 1 after inverting.
-> 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
+> On Thu, Mar 5, 2020 at 11:51 PM Era Mayflower <mayflowerera@gmail.com> wrote:
+> >
+> > Do you think that inserting those new enum values after *_PAD would be a good solution?
+> >
+> > On Thu, Mar 5, 2020 at 2:02 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> >>
+> >> On Thu, Mar 05, 2020 at 10:01:08PM +0000, Era Mayflower wrote:
+> >> > Netlink support of extended packet number cipher suites,
+> >> > allows adding and updating XPN macsec interfaces.
+> >> >
+> >> > Added support in:
+> >> >     * Creating interfaces with GCM-AES-XPN-128 and GCM-AES-XPN-256.
+> >> >     * Setting and getting packet numbers with 64bit of SAs.
+> >> >     * Settings and getting ssci of SCs.
+> >> >     * Settings and getting salt of SecYs.
+> >> >
+> >> > Depends on: macsec: Support XPN frame handling - IEEE 802.1AEbw.
+> >> >
+> >> > Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
+> >> > ---
+> >> [...]
+> >> > diff --git a/include/net/macsec.h b/include/net/macsec.h
+> >> > index a0b1d0b5c..3c7914ff1 100644
+> >> > --- a/include/net/macsec.h
+> >> > +++ b/include/net/macsec.h
+> >> > @@ -11,6 +11,9 @@
+> >> >  #include <uapi/linux/if_link.h>
+> >> >  #include <uapi/linux/if_macsec.h>
+> >> >
+> >> > +#define MACSEC_DEFAULT_PN_LEN 4
+> >> > +#define MACSEC_XPN_PN_LEN 8
+> >> > +
+> >> >  #define MACSEC_SALT_LEN 12
+> >> >
+> >> >  typedef u64 __bitwise sci_t;
+> >> > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> >> > index 024af2d1d..ee424d915 100644
+> >> > --- a/include/uapi/linux/if_link.h
+> >> > +++ b/include/uapi/linux/if_link.h
+> >> > @@ -462,6 +462,8 @@ enum {
+> >> >       IFLA_MACSEC_SCB,
+> >> >       IFLA_MACSEC_REPLAY_PROTECT,
+> >> >       IFLA_MACSEC_VALIDATION,
+> >> > +     IFLA_MACSEC_SSCI,
+> >> > +     IFLA_MACSEC_SALT,
+> >> >       IFLA_MACSEC_PAD,
+> >> >       __IFLA_MACSEC_MAX,
+> >> >  };
+> >>
+> >> Doesn't this break backword compatibility? You change the value of
+> >> IFLA_MACSEC_PAD; even if it's only used as padding, if an old client
+> >> uses it, new kernel will interpret it as IFLA_MACSEC_SSCI (an the same
+> >> holds for new client with old kernel).
+> >>
+> >> > diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
+> >> > index 1d63c43c3..c8fab9673 100644
+> >> > --- a/include/uapi/linux/if_macsec.h
+> >> > +++ b/include/uapi/linux/if_macsec.h
+> >> > @@ -25,6 +25,8 @@
+> >> >  /* cipher IDs as per IEEE802.1AEbn-2011 */
+> >> >  #define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
+> >> >  #define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
+> >> > +#define MACSEC_CIPHER_ID_GCM_AES_XPN_128 0x0080C20001000003ULL
+> >> > +#define MACSEC_CIPHER_ID_GCM_AES_XPN_256 0x0080C20001000004ULL
+> >> >
+> >> >  /* deprecated cipher ID for GCM-AES-128 */
+> >> >  #define MACSEC_DEFAULT_CIPHER_ID     0x0080020001000001ULL
+> >> > @@ -66,6 +68,8 @@ enum macsec_secy_attrs {
+> >> >       MACSEC_SECY_ATTR_INC_SCI,
+> >> >       MACSEC_SECY_ATTR_ES,
+> >> >       MACSEC_SECY_ATTR_SCB,
+> >> > +     MACSEC_SECY_ATTR_SSCI,
+> >> > +     MACSEC_SECY_ATTR_SALT,
+> >> >       MACSEC_SECY_ATTR_PAD,
+> >> >       __MACSEC_SECY_ATTR_END,
+> >> >       NUM_MACSEC_SECY_ATTR = __MACSEC_SECY_ATTR_END,
+> >> > @@ -78,6 +82,7 @@ enum macsec_rxsc_attrs {
+> >> >       MACSEC_RXSC_ATTR_ACTIVE,  /* config/dump, u8 0..1 */
+> >> >       MACSEC_RXSC_ATTR_SA_LIST, /* dump, nested */
+> >> >       MACSEC_RXSC_ATTR_STATS,   /* dump, nested, macsec_rxsc_stats_attr */
+> >> > +     MACSEC_RXSC_ATTR_SSCI,    /* config/dump, u32 */
+> >> >       MACSEC_RXSC_ATTR_PAD,
+> >> >       __MACSEC_RXSC_ATTR_END,
+> >> >       NUM_MACSEC_RXSC_ATTR = __MACSEC_RXSC_ATTR_END,
+> >>
+> >> The same problem with these two.
+> >>
+> >> I'm also a bit unsure about the change of type and length of
+> >> MACSEC_SA_ATTR_PN but I would have to get more familiar with the code to
+> >> see if it is really a problem.
+> >>
+> >> Michal
