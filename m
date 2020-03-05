@@ -2,306 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7405117A45D
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:39:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 168CD17A4A3
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 12:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbgCELiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 06:38:55 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:34302 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725816AbgCELiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:38:55 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 22ECFB00066;
-        Thu,  5 Mar 2020 11:38:53 +0000 (UTC)
-Received: from [10.17.20.221] (10.17.20.221) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 5 Mar 2020
- 11:38:48 +0000
-From:   Tom Zhao <tzhao@solarflare.com>
-Subject: [PATCH] sfc: complete the next packet when we receive a timestamp
-To:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>
-Message-ID: <b8de726f-d7f7-09f3-115a-96aac3cd4d40@solarflare.com>
-Date:   Thu, 5 Mar 2020 11:38:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727137AbgCELxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 06:53:33 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:47697 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726894AbgCELxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 06:53:33 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9p4F-0000CU-V3; Thu, 05 Mar 2020 12:53:31 +0100
+Received: from sha by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9p4F-0004n7-FD; Thu, 05 Mar 2020 12:53:31 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH] fsl/fman: Use random MAC address when none is given
+Date:   Thu,  5 Mar 2020 12:53:30 +0100
+Message-Id: <20200305115330.17433-1-s.hauer@pengutronix.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.221]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25270.003
-X-TM-AS-Result: No-6.063600-8.000000-10
-X-TMASE-MatchedRID: vFHe2GnEhBgqYYRg3clvBqo2fOuRT7aab1d/zpzApVqk3COeFIImbVOb
-        R+eKTMWbnbBGF6l7a+27hw59i5efeNvRJLD/GixsddPPQcdMrYUA+JHhu0IR5lNtD3nNFtZWE4L
-        eIK6WkgrxdUjf0kJGdKN80BVgAlECv5DRh1Wa7JacVWc2a+/ju0tc8DbogbSE31GU/N5W5BAsCQ
-        vYylvKZQ9TQMwVAjQIn4mHfGmnxWYykLs5bfkgx/SG/+sPtZVka01mhnn7t6QELMPQNzyJS391v
-        oLn76c1sIBS46yyb+COumRY2i9AcnbI+PVdeqUpCfEIlU0KzNjqobkz1A0A7VIxScKXZnK0TQFf
-        M0Uvf4yQAE+AoG3/Sml3bXr8XG4B7k0KvrVDNPAWGaCgD30Ogiv2BWU4g3/q7L2+zGEubN7fXaF
-        V6FjN5aNabD91Jzyk6VS/gXvOej6SsyjfsjrH/mpjhlm7EiBX3FYvKmZiVnOKhXiFxrK6/aLoSL
-        E/BAxZZ8LOwVGHbhs7pJ/8NT/FvG5u+NE9AtLecgDoZhYtavbyCvICuK46cp8TZJWHqTM8MFddv
-        +pLbreXzfAEylwN55GTpe1iiCJqb5ic6rRyh48LbigRnpKlKWxlRJiH4397PWDASTO5Q/SbS3Hx
-        9Xqk0M/PfTJlLqgP+Ll1G/hCWba/o109Z5iwJw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.063600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25270.003
-X-MDID: 1583408333-cB9JS--0b-5Y
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We now ignore the "completion" event when using tx queue timestamping,
-and only pay attention to the two (high and low) timestamp events. The
-NIC will send a pair of timestamp events for every packet transmitted.
-The current firmware may merge the completion events, and it is possible
-that future versions may reorder the completion and timestamp events.
-As such the completion event is not useful.
+There's no need to fail probing when no MAC address is given in the
+device tree, just use a random MAC address.
 
-Without this patch in place a merged completion event on a queue with
-timestamping will cause a "spurious TX completion" error. This affects
-SFN8000-series adapters.
-
-Signed-off-by: Tom Zhao <tzhao@solarflare.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
-v2: apply to correct head
-v3: actually send the right patch this time
----
- drivers/net/ethernet/sfc/ef10.c       | 32 +++++++++++-----------
- drivers/net/ethernet/sfc/efx.h        |  1 +
- drivers/net/ethernet/sfc/net_driver.h |  3 ---
- drivers/net/ethernet/sfc/tx.c         | 38 +++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/tx_common.c  | 29 +++++++++++---------
- drivers/net/ethernet/sfc/tx_common.h  |  6 +++++
- 6 files changed, 78 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c   | 13 +++++++++++--
+ drivers/net/ethernet/freescale/fman/fman_memac.c |  4 ----
+ drivers/net/ethernet/freescale/fman/mac.c        | 10 ++--------
+ 3 files changed, 13 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 52113b7529d6..3f16bd807c6e 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2853,11 +2853,24 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index fd93d542f497..18a7235af7c2 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -233,8 +233,17 @@ static int dpaa_netdev_init(struct net_device *net_dev,
+ 	net_dev->features |= net_dev->hw_features;
+ 	net_dev->vlan_features = net_dev->features;
  
- 	/* Transmit timestamps are only available for 8XXX series. They result
--	 * in three events per packet. These occur in order, and are:
--	 *  - the normal completion event
-+	 * in up to three events per packet. These occur in order, and are:
-+	 *  - the normal completion event (may be omitted)
- 	 *  - the low part of the timestamp
- 	 *  - the high part of the timestamp
- 	 *
-+	 * It's possible for multiple completion events to appear before the
-+	 * corresponding timestamps. So we can for example get:
-+	 *  COMP N
-+	 *  COMP N+1
-+	 *  TS_LO N
-+	 *  TS_HI N
-+	 *  TS_LO N+1
-+	 *  TS_HI N+1
-+	 *
-+	 * In addition it's also possible for the adjacent completions to be
-+	 * merged, so we may not see COMP N above. As such, the completion
-+	 * events are not very useful here.
-+	 *
- 	 * Each part of the timestamp is itself split across two 16 bit
- 	 * fields in the event.
- 	 */
-@@ -2865,17 +2878,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 
- 	switch (tx_ev_type) {
- 	case TX_TIMESTAMP_EVENT_TX_EV_COMPLETION:
--		/* In case of Queue flush or FLR, we might have received
--		 * the previous TX completion event but not the Timestamp
--		 * events.
--		 */
--		if (tx_queue->completed_desc_ptr != tx_queue->ptr_mask)
--			efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
--
--		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event,
--						 ESF_DZ_TX_DESCR_INDX);
--		tx_queue->completed_desc_ptr =
--					tx_ev_desc_ptr & tx_queue->ptr_mask;
-+		/* Ignore this event - see above. */
- 		break;
- 
- 	case TX_TIMESTAMP_EVENT_TX_EV_TSTAMP_LO:
-@@ -2887,8 +2890,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 		ts_part = efx_ef10_extract_event_ts(event);
- 		tx_queue->completed_timestamp_major = ts_part;
- 
--		efx_xmit_done(tx_queue, tx_queue->completed_desc_ptr);
--		tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
-+		efx_xmit_done_single(tx_queue);
- 		break;
- 
- 	default:
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
-index da54afaa3c44..66dcab140449 100644
---- a/drivers/net/ethernet/sfc/efx.h
-+++ b/drivers/net/ethernet/sfc/efx.h
-@@ -20,6 +20,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 				struct net_device *net_dev);
- netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
- void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-+void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
- int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
- 		 void *type_data);
- extern unsigned int efx_piobuf_size;
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 392bd5b7017e..b836315bac87 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -208,8 +208,6 @@ struct efx_tx_buffer {
-  *	avoid cache-line ping-pong between the xmit path and the
-  *	completion path.
-  * @merge_events: Number of TX merged completion events
-- * @completed_desc_ptr: Most recent completed pointer - only used with
-- *      timestamping.
-  * @completed_timestamp_major: Top part of the most recent tx timestamp.
-  * @completed_timestamp_minor: Low part of the most recent tx timestamp.
-  * @insert_count: Current insert pointer
-@@ -269,7 +267,6 @@ struct efx_tx_queue {
- 	unsigned int merge_events;
- 	unsigned int bytes_compl;
- 	unsigned int pkts_compl;
--	unsigned int completed_desc_ptr;
- 	u32 completed_timestamp_major;
- 	u32 completed_timestamp_minor;
- 
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-index 696a77c20cb7..19b58563cb78 100644
---- a/drivers/net/ethernet/sfc/tx.c
-+++ b/drivers/net/ethernet/sfc/tx.c
-@@ -534,6 +534,44 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 	return efx_enqueue_skb(tx_queue, skb);
- }
- 
-+void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
-+{
-+	unsigned int pkts_compl = 0, bytes_compl = 0;
-+	unsigned int read_ptr;
-+	bool finished = false;
-+
-+	read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
-+
-+	while (!finished) {
-+		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
-+
-+		if (!efx_tx_buffer_in_use(buffer)) {
-+			struct efx_nic *efx = tx_queue->efx;
-+
-+			netif_err(efx, hw, efx->net_dev,
-+				  "TX queue %d spurious single TX completion\n",
-+				  tx_queue->queue);
-+			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
-+			return;
-+		}
-+
-+		/* Need to check the flag before dequeueing. */
-+		if (buffer->flags & EFX_TX_BUF_SKB)
-+			finished = true;
-+		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
-+
-+		++tx_queue->read_count;
-+		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
+-	memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
+-	memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
++	if (is_valid_ether_addr(mac_addr)) {
++		dev_info(dev, "FMan MAC address: %pM\n", mac_addr);
++		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
++		memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
++	} else {
++		eth_hw_addr_random(net_dev);
++		dev_info(dev, "Using random MAC address: %pM\n",
++			 net_dev->dev_addr);
 +	}
 +
-+	tx_queue->pkts_compl += pkts_compl;
-+	tx_queue->bytes_compl += bytes_compl;
-+
-+	EFX_WARN_ON_PARANOID(pkts_compl != 1);
-+
-+	efx_xmit_done_check_empty(tx_queue);
-+}
-+
- void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
++	dev_info(dev, "FMan perm MAC address: %pM\n", net_dev->perm_addr);
+ 
+ 	net_dev->ethtool_ops = &dpaa_ethtool_ops;
+ 
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index e1901874c19f..9e2372688405 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -596,10 +596,6 @@ static void setup_sgmii_internal_phy_base_x(struct fman_mac *memac)
+ 
+ static int check_init_parameters(struct fman_mac *memac)
  {
- 	struct efx_nic *efx = tx_queue->efx;
-diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
-index b1571e9789d0..70876df1da69 100644
---- a/drivers/net/ethernet/sfc/tx_common.c
-+++ b/drivers/net/ethernet/sfc/tx_common.c
-@@ -80,7 +80,6 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
- 	tx_queue->xmit_more_available = false;
- 	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
- 				  tx_queue->channel == efx_ptp_channel(efx));
--	tx_queue->completed_desc_ptr = tx_queue->ptr_mask;
- 	tx_queue->completed_timestamp_major = 0;
- 	tx_queue->completed_timestamp_minor = 0;
- 
-@@ -210,10 +209,9 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
- 	while (read_ptr != stop_index) {
- 		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
- 
--		if (!(buffer->flags & EFX_TX_BUF_OPTION) &&
--		    unlikely(buffer->len == 0)) {
-+		if (!efx_tx_buffer_in_use(buffer)) {
- 			netif_err(efx, tx_err, efx->net_dev,
--				  "TX queue %d spurious TX completion id %x\n",
-+				  "TX queue %d spurious TX completion id %d\n",
- 				  tx_queue->queue, read_ptr);
- 			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
- 			return;
-@@ -226,6 +224,19 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
- 	}
- }
- 
-+void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
-+{
-+	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
-+		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
-+		if (tx_queue->read_count == tx_queue->old_write_count) {
-+			/* Ensure that read_count is flushed. */
-+			smp_mb();
-+			tx_queue->empty_read_count =
-+				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
-+		}
-+	}
-+}
-+
- void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- {
- 	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
-@@ -256,15 +267,7 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- 			netif_tx_wake_queue(tx_queue->core_txq);
- 	}
- 
--	/* Check whether the hardware queue is now empty */
--	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
--		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
--		if (tx_queue->read_count == tx_queue->old_write_count) {
--			smp_mb();
--			tx_queue->empty_read_count =
--				tx_queue->read_count | EFX_EMPTY_COUNT_VALID;
--		}
+-	if (memac->addr == 0) {
+-		pr_err("Ethernet MAC must have a valid MAC address\n");
+-		return -EINVAL;
 -	}
-+	efx_xmit_done_check_empty(tx_queue);
- }
+ 	if (!memac->exception_cb) {
+ 		pr_err("Uninitialized exception handler\n");
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 55f2122c3217..9de76bc4ebde 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -724,12 +724,8 @@ static int mac_probe(struct platform_device *_of_dev)
  
- /* Remove buffers put into a tx_queue for the current packet.
-diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
-index f92f1fe3a87f..99cf7ce2f36c 100644
---- a/drivers/net/ethernet/sfc/tx_common.h
-+++ b/drivers/net/ethernet/sfc/tx_common.h
-@@ -21,6 +21,12 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
- 			unsigned int *pkts_compl,
- 			unsigned int *bytes_compl);
+ 	/* Get the MAC address */
+ 	mac_addr = of_get_mac_address(mac_node);
+-	if (IS_ERR(mac_addr)) {
+-		dev_err(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
+-		err = -EINVAL;
+-		goto _return_of_get_parent;
+-	}
+-	ether_addr_copy(mac_dev->addr, mac_addr);
++	if (!IS_ERR(mac_addr))
++		ether_addr_copy(mac_dev->addr, mac_addr);
  
-+static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
-+{
-+	return buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);
-+}
-+
-+void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
- void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+ 	/* Get the port handles */
+ 	nph = of_count_phandle_with_args(mac_node, "fsl,fman-ports", NULL);
+@@ -855,8 +851,6 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	if (err < 0)
+ 		dev_err(dev, "fman_set_mac_active_pause() = %d\n", err);
  
- void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+-	dev_info(dev, "FMan MAC address: %pM\n", mac_dev->addr);
+-
+ 	priv->eth_dev = dpaa_eth_add_device(fman_id, mac_dev);
+ 	if (IS_ERR(priv->eth_dev)) {
+ 		dev_err(dev, "failed to add Ethernet platform device for MAC %d\n",
 -- 
-2.18.1
+2.25.1
 
