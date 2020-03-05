@@ -2,97 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E54E17AA21
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:05:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF0A17AA2B
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 17:07:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgCEQFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 11:05:46 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:34991 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726234AbgCEQFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:05:45 -0500
-Received: by mail-pj1-f68.google.com with SMTP id s8so2717076pjq.0
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 08:05:45 -0800 (PST)
+        id S1726485AbgCEQHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 11:07:24 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:35710 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726111AbgCEQHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 11:07:24 -0500
+Received: by mail-yw1-f68.google.com with SMTP id a132so6096055ywb.2
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 08:07:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=ww6wAKiVURPhmwKhj+Ta6VA6mxACgHsSc1wSJYYEuGs=;
-        b=bDp1/kWgumnl7GvOoaiK6O/DZMpE7Ifr9fNK0OguHIbDIZ9Zgcnaam0UMtkh3B+k09
-         ZpZ9s0NRhGrlRKhNKj3eJLxk8aBktRErqrkaz4WCP/xLQD1GDBg/HXlgSDryR1JwbSoh
-         CeCkHQ5kJ0EBRTlezhHGM07cZ0eX6EaChWMYmCt0hutYC8sYZHmt8Ta41IFoZECihXkp
-         tYft7KCEzWVruSZwKH1UfpH/St0cnPG3xfoByL5iqqjVGWCLFb0opQHK7lQOQbp8BncD
-         AFerYC5uVaPZoJrX+pTOXFCEe5OqdTQ2djM2Bzv3sJf5VXLo8ndMM1b/Uz6DscQK1xIZ
-         8MNg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RARwB1bFSQWTGdQ4jJkyYRMMXdh+Je2fLK+67Qxwq/k=;
+        b=fzXwFYRHnvpkCmhSoYWwE8SkOzdkUYg996ld06CkKHXSBoXFZp2NxKjnt/ECwp2zHg
+         bVu6v0Jay3sgQMA1peV0iSdXHVXbhVtkYU7+x5ZEWs/9InGvY+yAgpVqI4BT688Wo7he
+         vokQrLW5n+EFcqPdgBI/t59VYuk3kdV5qtw9Al+RB45M2ECzU1AeBWmgFNu/I9ZSPZl6
+         95UzoZn4VOMk8jxr5D9r3rBsPUOfU3w8X/Va+NElhWQFXQyD2GORL8RtG2DKTXR30h6n
+         mhTWhn05QNBHEJDnEmuUlHdTiyxqjDuok3MSTsFn2c6ai//53Jpt3X5BBtHA/VWoz8HE
+         UEPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ww6wAKiVURPhmwKhj+Ta6VA6mxACgHsSc1wSJYYEuGs=;
-        b=XR/Igo37VpkKFi8+8u5qtL++AcD5AUgq7ThbAOnZegwuuT3hF1Rl99rVzkZ6nK+fTf
-         L+1YjvIl/GvVHoXvqOayywlRMSEXdobi9Q0eEQw7Ufyg74Rc/E/ATbIVQwyFprkLpuKa
-         2r1J1maXfMovmdOvL+23fFwvStKcNid9JOUgjojAANCdHBTJe89IBrpatcgzJRx9K5ZX
-         Bsmrwqm3T8I2V7zerCBMf93bYNalxxD4pqbrPNpNrlWhsXjXJc54T3TGClTaTxieyifn
-         nvsIn1o9BIAVH3BUXPUG7h4r9HLXsPUWSwA1RHwj/f+Ep9fmg7S87IMimZ4gUE+DvfTs
-         OzUA==
-X-Gm-Message-State: ANhLgQ2gPSe9DYCs1yS0LF66096d1/3KqcwS2ajc2SjzWmeU3gvq9UAv
-        nCWs0U84CysTTVR2/3I5lzFD9uYQksA=
-X-Google-Smtp-Source: ADFU+vsQoZoWDJklBpQXguUCACZMpT6IpB/q9Ik2smzCmZaLMLf5giGWTe0W0dBS+8ap6DgzyIyWSg==
-X-Received: by 2002:a17:902:b68c:: with SMTP id c12mr8605258pls.160.1583424344910;
-        Thu, 05 Mar 2020 08:05:44 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id x6sm32139178pfi.83.2020.03.05.08.05.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 08:05:44 -0800 (PST)
-Date:   Thu, 5 Mar 2020 08:05:35 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     bugzilla-daemon@bugzilla.kernel.org, netdev@vger.kernel.org
-Subject: Re: [Bug 206761] New: escape codes in network interface names
- causes chaos
-Message-ID: <20200305080535.59ff59b0@hermes.lan>
-In-Reply-To: <bug-206761-100@https.bugzilla.kernel.org/>
-References: <bug-206761-100@https.bugzilla.kernel.org/>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RARwB1bFSQWTGdQ4jJkyYRMMXdh+Je2fLK+67Qxwq/k=;
+        b=MgiUkyzlHN1NyLs3ze9yfsUuOIwt5rib/JOS8/Z2bu7QiU3eTO3R+mC31owFdYRaaf
+         c0HQg70vYXOzZbYlunTK31+jORwm4baGmmRqcQAZxcu7o1WUbM5qSYnH/UfdHTP68m1v
+         KQpl3OdBaC/Qbvt37zSTmoWLbnxUITgdtCqaDyK5pxsTUvMhHPL7XVatsy1eiPF4+Xax
+         XQ4Cxt2PXWQK0oDSqQqL4tM0tjOIWjY6/1MTpu4VeoMifHWDzi+a8EcGo/zxUvf93ih6
+         KH/SwWO3YaCTowLhvi1UfcdqjXegDZ/iZAJY9qZ1ZNtm9YiWsbLxr8wD0xISIDq8yfT1
+         HAEQ==
+X-Gm-Message-State: ANhLgQ1o5dLzpRCbZaACBqkYIp+PhbxxJJcbacgxl73H+aQ6hXOSRv4s
+        Vd4gOKdVsitXvNmH9k14uqL8u1HR
+X-Google-Smtp-Source: ADFU+vv6iPWh8YYjm5BmnzLcqx871ZUxZZeawz/1ehtFW4k2Eb4d2RwTQCyTU8C3NnedyFqkrAqlVg==
+X-Received: by 2002:a25:aaab:: with SMTP id t40mr5899120ybi.453.1583424442109;
+        Thu, 05 Mar 2020 08:07:22 -0800 (PST)
+Received: from mail-yw1-f43.google.com (mail-yw1-f43.google.com. [209.85.161.43])
+        by smtp.gmail.com with ESMTPSA id g190sm11989646ywd.85.2020.03.05.08.07.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Mar 2020 08:07:21 -0800 (PST)
+Received: by mail-yw1-f43.google.com with SMTP id p124so2187173ywc.8
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 08:07:20 -0800 (PST)
+X-Received: by 2002:a81:f10a:: with SMTP id h10mr8713773ywm.109.1583424440323;
+ Thu, 05 Mar 2020 08:07:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+ <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com> <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+ <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com> <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
+In-Reply-To: <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 5 Mar 2020 11:06:42 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
+Message-ID: <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+To:     Yadu Kishore <kyk.segfault@gmail.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 05 Mar 2020 10:42:39 +0000
-bugzilla-daemon@bugzilla.kernel.org wrote:
+On Thu, Mar 5, 2020 at 1:33 AM Yadu Kishore <kyk.segfault@gmail.com> wrote:
+>
+> Hi all,
+>
+> Though there is scope to optimise the checksum code (from C to asm) for such
+> architectures, it is not the intent of this patchset.
+> The intent here is only to enable offloading checksum during GSO.
+>
+> The perf data I presented shows that ~7.4% of the CPU is spent doing checksum
+> in the GSO path for architectures where the checksum code is not implemented in
+> assembly (arm64).
+> If the network controller hardware supports checksumming, then I feel
+> that it is worthwhile to offload this even during GSO for such architectures
+> and save the 7.25% of the host cpu cycles.
 
-> https://bugzilla.kernel.org/show_bug.cgi?id=206761
-> 
->             Bug ID: 206761
->            Summary: escape codes in network interface names causes chaos
->            Product: Networking
->            Version: 2.5
->     Kernel Version: 5.6
->           Hardware: All
->                 OS: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: normal
->           Priority: P1
->          Component: Other
->           Assignee: stephen@networkplumber.org
->           Reporter: george.shuklin@gmail.com
->         Regression: No
-> 
-> netlink permits creation of interfaces with escape codes. Suck names can trick
-> root by drawing at random places in terminal.
-> 
-> 
-> Minimal proof of concept:
-> 
-> 
-> echo -e '\x1B[2J'|xargs -I I ip link add I type dummy
-> ip l
-> 
-> 
-> (rollback): echo -e '\x1B[2J'|xargs -I I ip link del I
-> 
+Yes, given the discussion I have no objections. The change to
+skb_segment in v2 look fine.
 
-My opinion is that this is not a problem that can be addressed without breaking kernel ABI.
+Thanks for sharing the in depth analysis, David. I expected that ~300
+cycles per memory access would always dwarf the arithmetic cost.
+Perhaps back of the envelope would be that 300/64 ~=5 cyc/B, on the
+order of the 2 cyc/B and hence the operation is not entirely
+insignificant.  Or more likely that memory access cost is simply
+markedly lower here if the data is still warm in a cache.
+
+It seems do_csum is called because csum_partial_copy executes the
+two operations independently:
+
+__wsum
+csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
+{
+        memcpy(dst, src, len);
+        return csum_partial(dst, len, sum);
+}
