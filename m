@@ -2,152 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2919F179EC6
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 05:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 791CD179ED0
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:02:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgCEEyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 23:54:47 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:34293 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbgCEEyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 23:54:47 -0500
-Received: by mail-ot1-f66.google.com with SMTP id j16so4481409otl.1
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 20:54:46 -0800 (PST)
+        id S1725897AbgCEFCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 00:02:17 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41656 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgCEFCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 00:02:17 -0500
+Received: by mail-pf1-f194.google.com with SMTP id z65so1650096pfz.8
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 21:02:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wxMB2pp+9PjI13jJjWt8ByuXtWLK+X9MK3SPC71Gnu4=;
-        b=tJ/6smOavDVAgu3Gdv6UPcaz/ASw6W4rh6d3f/b7iBjY6Foxfv6i1G0OlFGnI0h645
-         wA0vSFhrAVZuAr2PJDr9E4WHV/usr5bRjaixTFpn8JjPp3QzkHVa+tncWWsSfQ9gGU/O
-         6OCZybxu/Ly8SyivT03y5Svx2ipVvnyrSkVDGOiGek+CA3OhEXmERwV4mxW5DXyzwWmt
-         ODfNLKdcYqr5PNNI8tKVwTv4MkqptJjbpXUwR/rR/dN19neY/vhWLvyoY2YrNTsIPkvP
-         nKghJJEO1ErZxQXjl2DWtHTDR4Lk8Iahf874jvpX4hFCMpZlNuHHd8+wXH5Jn3IHb92E
-         JRsQ==
+        d=cs.washington.edu; s=goo201206;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YpOwyrb2WE/CDlzT3QThQwLnDNsGkooSRHNga96mtQc=;
+        b=D4mP+M6uKURXP9HP9xpBxfbWTwS2sXLCAH4XXiVTLLBY2AHKEG4zJCDy0WZMfc5Cdf
+         0vWrb8YgmglaHdbSRbvzwy0Ud+GY5kjFjJG5svoO6WbDsiVnX1N3h3+BPsGpiXZjFXIt
+         IjlL0igv8nG47EYU1nWRvSzj9kcDGs1Mwl6Xc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wxMB2pp+9PjI13jJjWt8ByuXtWLK+X9MK3SPC71Gnu4=;
-        b=aAeTOGbdSNLXK0imnELlZdu2+wt2AUfSialjFdAg6rwvWwxhonyVsQzGIz+jxnv9aQ
-         VqInNT84vhvi4P4lPFUzmBVTusE/wHr6TEzTizS+DmxWMnRRuVaTNZorug9zi7czQBs/
-         Xl5IyRE/l1IgrfqZJIu2eG9QRnowWEdh7GGujzT0M/7uWKUB3PxWzy8dWglJaj9AAYzj
-         jqCR63geB15Awvb/odMdkxF0U5WO8ptFWiwXLcOxlpBuFs8+JO2afZMzDMKG11LQSXXF
-         3jx9XNxcng93iGhxpWIYsh232cPCi9QB7VqLVJd+AYqEyCQyXQSrRhaXBZSA2b2yPbx4
-         3OGw==
-X-Gm-Message-State: ANhLgQ2bN6RVmn0Usbcjdj0CsxalNfpqx3QIMlEzDiltU8fL0kYhw5/Q
-        E6n/eEGjguanRKVQFWz+TwSRyvxmWZ8lJ6X2VC7HLw==
-X-Google-Smtp-Source: ADFU+vsA/fXuJ3IRHxsfbCJ4aVofj1cKFBMR9e3ak4P1jFEdSsgTVK8BlhVGbuvdGoUrb3G4k+2cTTJNUxh+RFfBW2k=
-X-Received: by 2002:a9d:6:: with SMTP id 6mr5250710ota.191.1583384085099; Wed,
- 04 Mar 2020 20:54:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YpOwyrb2WE/CDlzT3QThQwLnDNsGkooSRHNga96mtQc=;
+        b=aNMM2W6EZt+syDt5RruUU4fNzG0hcv4lrc2j16crpGek0EjwMK4Zp069wnTbCsUopj
+         JH06G/vkTzZHCXN7w0zKnMV9YldzS13j6tG5EV24wjwXrI2yVxDmh2vUjSOz77PEwNDu
+         w1ACtSfiu/c2SH1o5gKy6wxX7JC2Xbt4MQMJv/Rx5hBDJRlT4MMkBsIF8Hz19GG2fgdq
+         Dc65kIuRfjk+AJx60csimz25NxugnuMOwb3/e8WZtkvXgtkz19YxdjUeYcWd6j2BdK9P
+         9pYHHJ4AGkg/auXcxBoXYRl33rwTYUOhhYtlvX2cmTz5yGwmfeWHUVbScjLJAZZhUX7Q
+         Cytw==
+X-Gm-Message-State: ANhLgQ29AZngFEkWi+Ur2rqKx+a4uIbWEyYzvJsakV9LcCzgq5McSUTR
+        Nd52iH+yH45D/3UFFO4X/6kSnw==
+X-Google-Smtp-Source: ADFU+vtsPUj4UrzYUbkDsFFzdcapU3JttJFjuZrekealA4hSmKDIUgQOkMkXBsfF9VaQPKePqPog4A==
+X-Received: by 2002:a63:4a19:: with SMTP id x25mr5914511pga.167.1583384535762;
+        Wed, 04 Mar 2020 21:02:15 -0800 (PST)
+Received: from ryzen.cs.washington.edu ([2607:4000:200:11:e9fe:faad:3d84:58ea])
+        by smtp.gmail.com with ESMTPSA id y7sm17820466pfq.15.2020.03.04.21.02.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Mar 2020 21:02:14 -0800 (PST)
+From:   Luke Nelson <lukenels@cs.washington.edu>
+X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Luke Nelson <luke.r.nels@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: [PATCH bpf-next v5 0/4] eBPF JIT for RV32G
+Date:   Wed,  4 Mar 2020 21:02:03 -0800
+Message-Id: <20200305050207.4159-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200304233856.257891-1-shakeelb@google.com> <CANn89i+TiiLKsE7k4TyRqr03uNPW=UpkvpXL1LVWvTmhE_AUpA@mail.gmail.com>
- <CALvZod7MSXGsV6nDngWS+mS-5tfu0ww3aJyXQ8GV2hRkEEcYDg@mail.gmail.com> <CANn89iJF3vSNG=uw5=-Knu48dKpceqXyYLm8z6d7aDoxaGDgTw@mail.gmail.com>
-In-Reply-To: <CANn89iJF3vSNG=uw5=-Knu48dKpceqXyYLm8z6d7aDoxaGDgTw@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 4 Mar 2020 20:54:34 -0800
-Message-ID: <CALvZod7ksLOKkTLN9RZnALUYziCfO6vCtu1ivhWqG3RNUwVjXw@mail.gmail.com>
-Subject: Re: [PATCH v2] net: memcg: late association of sock to memcg
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Roman Gushchin <guro@fb.com>, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 4, 2020 at 8:38 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Mar 4, 2020 at 6:19 PM Shakeel Butt <shakeelb@google.com> wrote:
-> >
-> > On Wed, Mar 4, 2020 at 5:36 PM Eric Dumazet <edumazet@google.com> wrote:
-> > >
-> > > On Wed, Mar 4, 2020 at 3:39 PM Shakeel Butt <shakeelb@google.com> wrote:
-> > > >
-> > > > If a TCP socket is allocated in IRQ context or cloned from unassociated
-> > > > (i.e. not associated to a memcg) in IRQ context then it will remain
-> > > > unassociated for its whole life. Almost half of the TCPs created on the
-> > > > system are created in IRQ context, so, memory used by such sockets will
-> > > > not be accounted by the memcg.
-> > > >
-> > > > This issue is more widespread in cgroup v1 where network memory
-> > > > accounting is opt-in but it can happen in cgroup v2 if the source socket
-> > > > for the cloning was created in root memcg.
-> > > >
-> > > > To fix the issue, just do the late association of the unassociated
-> > > > sockets at accept() time in the process context and then force charge
-> > > > the memory buffer already reserved by the socket.
-> > > >
-> > > > Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> > > > ---
-> > > > Changes since v1:
-> > > > - added sk->sk_rmem_alloc to initial charging.
-> > > > - added synchronization to get memory usage and set sk_memcg race-free.
-> > > >
-> > > >  net/ipv4/inet_connection_sock.c | 19 +++++++++++++++++++
-> > > >  1 file changed, 19 insertions(+)
-> > > >
-> > > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > > index a4db79b1b643..7bcd657cd45e 100644
-> > > > --- a/net/ipv4/inet_connection_sock.c
-> > > > +++ b/net/ipv4/inet_connection_sock.c
-> > > > @@ -482,6 +482,25 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
-> > > >                 }
-> > > >                 spin_unlock_bh(&queue->fastopenq.lock);
-> > > >         }
-> > > > +
-> > > > +       if (mem_cgroup_sockets_enabled && !newsk->sk_memcg) {
-> > > > +               int amt;
-> > > > +
-> > > > +               /* atomically get the memory usage and set sk->sk_memcg. */
-> > > > +               lock_sock(newsk);
-> > > > +
-> > > > +               /* The sk has not been accepted yet, no need to look at
-> > > > +                * sk->sk_wmem_queued.
-> > > > +                */
-> > > > +               amt = sk_mem_pages(newsk->sk_forward_alloc +
-> > > > +                                  atomic_read(&sk->sk_rmem_alloc));
-> > > > +               mem_cgroup_sk_alloc(newsk);
-> > > > +
-> > > > +               release_sock(newsk);
-> > > > +
-> > > > +               if (newsk->sk_memcg)
-> > >
-> > > Most sockets in accept queue should have amt == 0, so maybe avoid
-> > > calling this thing only when amt == 0 ?
-> > >
-> >
-> > Thanks, will do in the next version. BTW I have tested with adding
-> > mdelay() here and running iperf3 and I did see non-zero amt.
-> >
-> > > Also  I would release_sock(newsk) after this, otherwise incoming
-> > > packets could mess with newsk->sk_forward_alloc
-> > >
-> >
-> > I think that is fine. Once sk->sk_memcg is set then
-> > mem_cgroup_charge_skmem() will be called for new incoming packets.
-> > Here we just need to call mem_cgroup_charge_skmem() with amt before
-> > sk->sk_memcg was set.
->
->
-> Unfortunately, as soon as release_sock(newsk) is done, incoming
-> packets can be fed to the socket,
-> and completely change memory usage of the socket.
->
-> For example, the whole queue might have been zapped, or collapsed, if
-> we receive a RST packet,
-> or if memory pressure asks us to prune the out of order queue.
->
-> So you might charge something, then never uncharge it, since at
-> close() time the socket will have zero bytes to uncharge.
->
+This series adds an eBPF JIT for 32-bit RISC-V (RV32G) to the kernel,
+adapted from the RV64 JIT and the 32-bit ARM JIT.
 
-Ok, thanks for the explanation. I will fix this in the next version.
+There are two main changes required for this to work compared to
+the RV64 JIT.
+
+First, eBPF registers are 64-bit, while RV32G registers are 32-bit.
+BPF registers either map directly to 2 RISC-V registers, or reside
+in stack scratch space and are saved and restored when used.
+
+Second, many 64-bit ALU operations do not trivially map to 32-bit
+operations. Operations that move bits between high and low words,
+such as ADD, LSH, MUL, and others must emulate the 64-bit behavior
+in terms of 32-bit instructions.
+
+Supported features:
+
+The RV32 JIT supports the same features and instructions as the
+RV64 JIT, with the following exceptions:
+
+- ALU64 DIV/MOD: Requires loops to implement on 32-bit hardware.
+
+- BPF_XADD | BPF_DW: There's no 8-byte atomic instruction in RV32.
+
+These features are also unsupported on other BPF JITs for 32-bit
+architectures.
+
+Testing:
+
+- lib/test_bpf.c
+test_bpf: Summary: 378 PASSED, 0 FAILED, [349/366 JIT'ed]
+test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
+
+The tests that are not JITed are all due to use of 64-bit div/mod
+or 64-bit xadd.
+
+- tools/testing/selftests/bpf/test_verifier.c
+Summary: 1415 PASSED, 122 SKIPPED, 43 FAILED
+
+Tested both with and without BPF JIT hardening.
+
+This is the same set of tests that pass using the BPF interpreter
+with the JIT disabled.
+
+Running the BPF kernel tests / selftests on riscv32 is non-trivial,
+to help others reproduce the test results I made a guide here:
+https://github.com/lukenels/meta-linux-utils/tree/master/rv32-linux
+
+Verification and synthesis:
+
+We developed the RV32 JIT using our automated verification tool,
+Serval. We have used Serval in the past to verify patches to the
+RV64 JIT. We also used Serval to superoptimize the resulting code
+through program synthesis.
+
+You can find the tool and a guide to the approach and results here:
+https://github.com/uw-unsat/serval-bpf/tree/rv32-jit-v5
+
+Thanks again for all the comments!
+
+Changelog:
+
+v4 -> v5:
+  * Factored common code (build_body, bpf_int_jit_compile, etc)
+    to bpf_jit_core.c (Björn Töpel).
+  * Moved RV32-specific changes to bpf_jit.h from patch 1 to patch 2
+    (Björn Töpel).
+  * Removed "_rv32_" from function names in JIT as it is
+    redundant (Björn Töpel).
+  * Added commit message to MAINTAINERS and made sure to keep
+    entries in order (Andy Shevchenko).
+
+v3 -> v4:
+  * Added more comments and cleaned up style nits (Björn Töpel).
+  * Factored common code in RV64 and RV32 JITs into a separate header
+    (Song Liu, Björn Töpel).
+  * Added an optimization in the BPF_ALU64 BPF_ADD BPF_X case.
+  * Updated MAINTAINERS and kernel documentation (Björn Töpel).
+
+v2 -> v3:
+  * Added support for far jumps / branches similar to RV64 JIT.
+  * Added support for tail calls.
+  * Cleaned up code with more optimizations and comments.
+  * Removed special zero-extension instruction from BPF_ALU64
+    case (Jiong Wang).
+
+v1 -> v2:
+  * Added support for far conditional branches.
+  * Added the zero-extension optimization (Jiong Wang).
+  * Added more optimizations for operations with an immediate operand.
+
+Luke Nelson (4):
+  riscv, bpf: factor common RISC-V JIT code
+  riscv, bpf: add RV32G eBPF JIT
+  bpf, doc: add BPF JIT for RV32G to BPF documentation
+  MAINTAINERS: add entry for RV32G BPF JIT
+
+ Documentation/admin-guide/sysctl/net.rst      |    3 +-
+ Documentation/networking/filter.txt           |    2 +-
+ MAINTAINERS                                   |   13 +-
+ arch/riscv/Kconfig                            |    2 +-
+ arch/riscv/net/Makefile                       |    9 +-
+ arch/riscv/net/bpf_jit.h                      |  514 +++++++
+ arch/riscv/net/bpf_jit_comp32.c               | 1310 +++++++++++++++++
+ .../net/{bpf_jit_comp.c => bpf_jit_comp64.c}  |  605 +-------
+ arch/riscv/net/bpf_jit_core.c                 |  166 +++
+ 9 files changed, 2018 insertions(+), 606 deletions(-)
+ create mode 100644 arch/riscv/net/bpf_jit.h
+ create mode 100644 arch/riscv/net/bpf_jit_comp32.c
+ rename arch/riscv/net/{bpf_jit_comp.c => bpf_jit_comp64.c} (69%)
+ create mode 100644 arch/riscv/net/bpf_jit_core.c
+
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: "Björn Töpel" <bjorn.topel@gmail.com>
+Cc: Luke Nelson <luke.r.nels@gmail.com>
+Cc: Xi Wang <xi.wang@gmail.com>
+Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+
+-- 
+2.20.1
+
