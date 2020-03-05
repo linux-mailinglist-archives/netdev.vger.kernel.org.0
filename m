@@ -2,166 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3792017AE07
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 19:25:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DF317AE67
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 19:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726092AbgCESZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 13:25:28 -0500
-Received: from gateway31.websitewelcome.com ([192.185.143.40]:45623 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726036AbgCESZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 13:25:28 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 1F3BD33794
-        for <netdev@vger.kernel.org>; Thu,  5 Mar 2020 12:25:27 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 9vBWj4qhvAGTX9vBXjCfBI; Thu, 05 Mar 2020 12:25:27 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=a5iVU75uWZ6vyAD02p5FM4/7Wejch4hFSQ3BEuRPCL0=; b=asNxu+HzH/Tl9y/sONdA1gcjS9
-        6qsxIAw3OGsWUgpkPz8hx0ZUTi4C5KhRDQwItmIM3bzwcqgnnML+iVoL2k4KaIDtwJaONg3PPDIrJ
-        cgAluWZH+ZkV5y/ZryS/qpNUjUrN3qP9LmURsdzqNAKbWeaiZfG/anD5KGlNLxISUJH/6QdXDl7BU
-        qwcSWPLYuiW7mOvyO8EMufVte8tuUM1ytHWWI1mqV0ATVAY7qIQS3lHnrWHTNgCloANzaSnIIavp2
-        ZdMnheKB/hGN1B84MXQIIr9xr0iuf5SDgFWB2K82tJgzrGOyDY2mI53E5uUkPQMO8HsuAI4fRTW5F
-        iltcq5BA==;
-Received: from [201.166.169.220] (port=26027 helo=[192.168.43.132])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1j9vBV-003PHS-MP; Thu, 05 Mar 2020 12:25:26 -0600
-To:     Kalle Valo <kvalo@codeaurora.org>, Joe Perches <joe@perches.com>
-Cc:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200305111216.GA24982@embeddedor>
- <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
- <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
- <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
- flexible-array member
-Message-ID: <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
-Date:   Thu, 5 Mar 2020 12:28:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726635AbgCESpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 13:45:15 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:44347 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbgCESpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 13:45:12 -0500
+Received: by mail-io1-f71.google.com with SMTP id q13so4685500iob.11
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 10:45:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Us+arUmf9LULLEoI/2RUiRYdXpjh+bbbhvxTGcbSIJI=;
+        b=XpHRTk/OyMzheP5TQu3yaxuf9dTNs4rnN5YXkeIcxCUXd3atCN4EiGIsNFtVjq05cW
+         oifXiBgpZXn3Qy9aZGiEmlIOrpmrNF1RHZIsZGifCl/zqtqa8XeQBjYhg5ICJ1MHw1yq
+         kGiiQSlr7vf/mvc/7nSi8r+WoOUJ+jPKkz8YTEnBt7qVxQHLDdm7lbKFLC+VMnb0uoeL
+         1LRHjigonxx6ngvLPRRDlCcbBq7WFrWQOhyQlTag7rV8hTEgSpbj08JxWJn/ZjsXLQP3
+         /GR4nSyXO4R50UQ1R+SpVKgSNLoFG+cOLHOy66f2griOaljg1jnWqawZVegoKWIgDZ6r
+         RPbw==
+X-Gm-Message-State: ANhLgQ1t9boHRhdWoO3e604cchi1dn0i0u1XwQ8Laj/fB8NzwjOxFd50
+        /fisGzpg8EYX3l6cLGczffgbB2PPcA9kS2783/cxkS9rDn3D
+X-Google-Smtp-Source: ADFU+vu+HBroAP8GhX4MgZZrEGf61yyeDI3yT6EXMomMaEI8pFEs2q62sNcHi5xcO3sBL5wVv+Omd3OdQPMp01s4UvTQ+s36wQBm
 MIME-Version: 1.0
-In-Reply-To: <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.166.169.220
-X-Source-L: No
-X-Exim-ID: 1j9vBV-003PHS-MP
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.43.132]) [201.166.169.220]:26027
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+X-Received: by 2002:a92:3c8d:: with SMTP id j13mr295375ilf.267.1583433910278;
+ Thu, 05 Mar 2020 10:45:10 -0800 (PST)
+Date:   Thu, 05 Mar 2020 10:45:10 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bf5ff105a01fef33@google.com>
+Subject: WARNING: ODEBUG bug in tcf_queue_work
+From:   syzbot <syzbot+9c2df9fd5e9445b74e01@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-On 3/5/20 10:10, Kalle Valo wrote:
-> Joe Perches <joe@perches.com> writes:
-> 
->> On Thu, 2020-03-05 at 16:50 +0200, Kalle Valo wrote:
->>> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
->> []
->>>>  drivers/net/wireless/zydas/zd1211rw/zd_usb.h | 8 ++++----
->>>>  1 file changed, 4 insertions(+), 4 deletions(-)
->>>
->>> "zd1211rw: " is enough, no need to have the filename in the title.
-> 
->>> But I asked this already in an earlier patch, who prefers this format?
->>> It already got opposition so I'm not sure what to do.
->>
->> I think it doesn't matter.
->>
->> Trivial inconsistencies in patch subject and word choice
->> don't have much overall impact.
-> 
-> I wrote in a confusing way, my question above was about the actual patch
-> and not the the title. For example, Jes didn't like this style change:
-> 
-> https://patchwork.kernel.org/patch/11402315/
-> 
+syzbot found the following crash on:
 
-It doesn't seem that that comment adds a lot to the conversation. The only
-thing that it says is literally "fix the compiler". By the way, more than
-a hundred patches have already been applied to linux-next[1] and he seems
-to be the only person that has commented such a thing. Qemu guys are adopting
-this format, too[2][3].
+HEAD commit:    63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10535e45e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9833e26bab355358
+dashboard link: https://syzkaller.appspot.com/bug?extid=9c2df9fd5e9445b74e01
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=168c4839e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10587419e00000
 
-On the other hand, the changelog text explains the reasons why we are
-implementing this change all across the kernel tree. :)
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+9c2df9fd5e9445b74e01@syzkaller.appspotmail.com
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=grep&q=flexible-array
-[2] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00019.html
-[3] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00020.html
+------------[ cut here ]------------
+ODEBUG: activate active (active state 1) object type: rcu_head hint: 0x0
+WARNING: CPU: 0 PID: 9599 at lib/debugobjects.c:485 debug_print_object+0x168/0x250 lib/debugobjects.c:485
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9599 Comm: syz-executor772 Not tainted 5.6.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x3e kernel/panic.c:582
+ report_bug+0x289/0x300 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:debug_print_object+0x168/0x250 lib/debugobjects.c:485
+Code: dd 00 e7 91 88 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b5 00 00 00 48 8b 14 dd 00 e7 91 88 48 c7 c7 60 dc 91 88 e8 07 6e 9f fd <0f> 0b 83 05 03 6c ff 06 01 48 83 c4 20 5b 41 5c 41 5d 41 5e 5d c3
+RSP: 0018:ffffc90005cd70b0 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815ebe46 RDI: fffff52000b9ae08
+RBP: ffffc90005cd70f0 R08: ffff888093472400 R09: fffffbfff16a3370
+R10: fffffbfff16a336f R11: ffffffff8b519b7f R12: 0000000000000001
+R13: ffffffff89bac220 R14: 0000000000000000 R15: 1ffff92000b9ae24
+ debug_object_activate+0x346/0x470 lib/debugobjects.c:652
+ debug_rcu_head_queue kernel/rcu/rcu.h:176 [inline]
+ __call_rcu kernel/rcu/tree.c:2597 [inline]
+ call_rcu+0x2f/0x700 kernel/rcu/tree.c:2683
+ queue_rcu_work+0x8a/0xa0 kernel/workqueue.c:1742
+ tcf_queue_work+0xd3/0x110 net/sched/cls_api.c:206
+ route4_change+0x19e8/0x2250 net/sched/cls_route.c:550
+ tc_new_tfilter+0xb82/0x2480 net/sched/cls_api.c:2103
+ rtnetlink_rcv_msg+0x824/0xaf0 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2478
+ rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5454
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:672
+ ____sys_sendmsg+0x753/0x880 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
+ __do_sys_sendmsg net/socket.c:2439 [inline]
+ __se_sys_sendmsg net/socket.c:2437 [inline]
+ __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x446709
+Code: e8 1c ba 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 ab 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fb9e0c67d98 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000006dbc68 RCX: 0000000000446709
+RDX: 0000000000000000 RSI: 0000000020000280 RDI: 0000000000000003
+RBP: 00000000006dbc60 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dbc6c
+R13: 0000000000000005 R14: 00a3a20740000000 R15: 0507002400000038
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-Thanks
---
-Gustavo
 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
