@@ -2,169 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3EA17ADBA
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 18:59:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A105E17ADE8
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 19:13:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbgCER7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 12:59:34 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35086 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgCER7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 12:59:33 -0500
-Received: by mail-qk1-f194.google.com with SMTP id 145so6191341qkl.2;
-        Thu, 05 Mar 2020 09:59:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yHsry5N2dnMyiEZPE+CiD2B+1Y5pPONnPCFPtUcNWlY=;
-        b=Lew8K2KRbDphQ3wYDH9AW27FrjcSeB879CvkpxHXH3obFqaT6d6ss66x0vDHumQCj7
-         4UxV+LDbbOj2Spnr+Dzf78z2qLTED9xbkYzv9weBiGIvytMBW5jEusf2/J33kYO1wka9
-         003kfksLdZMhpS9sbzLbD15bCgwT6YQIuVuAosDM+ynj0Xyu7oBXm/h0j6fjDHGr0so3
-         q68WT12p1rNiGY73W4Fcc2HxDu2vKgy7op8cMX8Yg4Dzh2Z8oZdLA+e7Nn+yAco9Ms8e
-         8rtkbH0D2eP4tQtK+u6vfoDn2/ERuaOvro6YnlPG8NLZCVxUhEWKE+wdofoQNIfPEojU
-         rvUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yHsry5N2dnMyiEZPE+CiD2B+1Y5pPONnPCFPtUcNWlY=;
-        b=ctdVpxZfOzgL+pH4PLalZrVbM8lMwbHxhgbvo+e6Gxe9FP5Rg7zD6KqEjKhzc29kdq
-         VAC94y58bN12mozIBIQ1tzESR/JUCBUZ2XdZwx5vC4PK/UcBHvtK5xXqFCflE5RsOCXs
-         x/i5Vxbxviorwzk72A9M58HIKSGvCwnwfnqiiai+5XQvlQotkIuMCCh/Z/Pl0JxVMRuW
-         VpyoPu30rnQYkyBfcsfS80W3/k7hGfadpiy0+phokn1lSzp6FYAHYeVd+6SmuIcXj9Eq
-         FC0zwMz/Xr+ZjzZlmXMBIF59lZp8xemyeHkLtYnTCaziFI7dghlJOxxOsdgpFmgYxw0V
-         AViQ==
-X-Gm-Message-State: ANhLgQ1Dd4WID6Jn9waUth7Iw4RZ+PEc1XvDtrTAj3fOPediYWBJT03e
-        SvGmTl8FScG9iD2vqeL/LG5//tFAXdxFZSE17go=
-X-Google-Smtp-Source: ADFU+vv+eEySiamfk3LVjyZxj7hT+/d7ennxxwp+eIJTjnqDQa4vtNof2oxNClUi1Ax+lT6SrUmdaF+qZPsP1Ufa46M=
-X-Received: by 2002:a05:620a:1345:: with SMTP id c5mr9166574qkl.182.1583431172026;
- Thu, 05 Mar 2020 09:59:32 -0800 (PST)
+        id S1726131AbgCESNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 13:13:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38682 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726036AbgCESNp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 13:13:45 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72AD3208C3;
+        Thu,  5 Mar 2020 18:13:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583432024;
+        bh=MmGDQGgUx19Dykruo0Cq7gbv2FwEMbYDwZcR4vu6+Os=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vz1BUssI0NEhzosLWpEr+RiciXDS6RcTrXWqtOuq2RPYzTY5rymONNq9lI4RGNtQM
+         qto0N2RD1cqfHfq11AylBRGbbdSC8LYtVCbmTlkuFXiujZ0jWnnYeyEM65z0ndIGxM
+         DzNHwvojzKghXagVnyIxRSnc0IgUCPnxWI6rUcBA=
+Date:   Thu, 5 Mar 2020 10:13:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+Message-ID: <20200305101342.01427a2a@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <87tv332hak.fsf@toke.dk>
+References: <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net>
+        <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com>
+        <87pndt4268.fsf@toke.dk>
+        <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
+        <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com>
+        <87k1413whq.fsf@toke.dk>
+        <20200304043643.nqd2kzvabkrzlolh@ast-mbp>
+        <20200304114000.56888dac@kicinski-fedora-PC1C0HJN>
+        <20200304204506.wli3enu5w25b35h7@ast-mbp>
+        <20200304132439.6abadbe3@kicinski-fedora-PC1C0HJN>
+        <20200305010706.dk7zedpyj5pb5jcv@ast-mbp>
+        <20200305001620.204c292e@cakuba.hsd1.ca.comcast.net>
+        <87tv332hak.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20200305220108.18780-1-mayflowerera@gmail.com>
- <20200305220108.18780-2-mayflowerera@gmail.com> <20200305140241.GA28693@unicorn.suse.cz>
- <CAMdQvKv9tSoSBfyOyhtctQ9D7aU2WUmuMUsoLn_WZ8whD=3AzA@mail.gmail.com>
- <CAMdQvKuzaBuKGj1-HR6+r=FY4X9GhZPvEHwRt3BjErFiu1+bgw@mail.gmail.com> <20200305172453.GB28693@unicorn.suse.cz>
-In-Reply-To: <20200305172453.GB28693@unicorn.suse.cz>
-From:   Era Mayflower <mayflowerera@gmail.com>
-Date:   Fri, 6 Mar 2020 02:59:14 +0000
-Message-ID: <CAMdQvKsAdFW_u0LQ8q4zy4mz9a7x0FESAeyvKRQWbcA7jDdjtw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 5, 2020 at 5:24 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> Yes, new attribute identifiers should always be added as last so that
-> you don't change existing values.
+On Thu, 05 Mar 2020 12:05:23 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > On Wed, 4 Mar 2020 17:07:08 -0800, Alexei Starovoitov wrote: =20
+> >> > Maybe also the thief should not have CAP_ADMIN in the first place?
+> >> > And ask a daemon to perform its actions..   =20
+> >>=20
+> >> a daemon idea keeps coming back in circles.
+> >> With FD-based kprobe/uprobe/tracepoint/fexit/fentry that problem is go=
+ne,
+> >> but xdp, tc, cgroup still don't have the owner concept.
+> >> Some people argued that these three need three separate daemons.
+> >> Especially since cgroups are mainly managed by systemd plus container
+> >> manager it's quite different from networking (xdp, tc) where something
+> >> like 'networkd' might makes sense.
+> >> But if you take this line of thought all the ways systemd should be th=
+at
+> >> single daemon to coordinate attaching to xdp, tc, cgroup because
+> >> in many cases cgroup and tc progs have to coordinate the work. =20
+> >
+> > The feature creep could happen, but Toke's proposal has a fairly simple
+> > feature set, which should be easy to cover by a stand alone daemon.
+> >
+> > Toke, I saw that in the library discussion there was no mention of=20
+> > a daemon, what makes a daemon solution unsuitable? =20
+>=20
+> Quoting from the last discussion[0]:
+>=20
+> > - Introducing a new, separate code base that we'll have to write, suppo=
+rt
+> >   and manage updates to.
+> >
+> > - Add a new dependency to using XDP (now you not only need the kernel
+> >   and libraries, you'll also need the daemon).
+> >
+> > - Have to duplicate or wrap functionality currently found in the kernel;
+> >   at least:
+> >  =20
+> >     - Keeping track of which XDP programs are loaded and attached to
+> >       each interface (as well as the "new state" of their attachment
+> >       order).
+> >
+> >     - Some kind of interface with the verifier; if an app does
+> >       xdpd_rpc_load(prog), how is the verifier result going to get back
+> >       to the caller?
+> >
+> > - Have to deal with state synchronisation issues (how does xdpd handle
+> >   kernel state changing from underneath it?).
+> >=20
+> > While these are issues that are (probably) all solvable, I think the
+> > cost of solving them is far higher than putting the support into the
+> > kernel. Which is why I think kernel support is the best solution :) =20
+>=20
+> The context was slightly different, since this was before we had
+> freplace support in the kernel. But apart from the point about the
+> verifier, I think the arguments still stand. In fact, now that we have
+> that, we don't even need userspace linking, so basically a daemon's only
+> task would be to arbitrate access to the XDP hook? In my book,
+> arbitrating access to resources is what the kernel is all about...
 
-Created a new patch: macsec: Backward compatibility bugfix of consts values
+You said that like the library doesn't arbitrate access and manage
+resources.. It does exactly the same work the daemon would do.
 
-On Thu, Mar 5, 2020 at 5:24 PM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Thu, Mar 05, 2020 at 11:53:29PM +0000, Era Mayflower wrote:
-> > Do you think that inserting those new enum values after *_PAD would be
-> > a good solution?
->
-> Yes, new attribute identifiers should always be added as last so that
-> you don't change existing values.
->
-> Michal
->
-> > On Thu, Mar 5, 2020 at 11:51 PM Era Mayflower <mayflowerera@gmail.com> wrote:
-> > >
-> > > Do you think that inserting those new enum values after *_PAD would be a good solution?
-> > >
-> > > On Thu, Mar 5, 2020 at 2:02 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > >>
-> > >> On Thu, Mar 05, 2020 at 10:01:08PM +0000, Era Mayflower wrote:
-> > >> > Netlink support of extended packet number cipher suites,
-> > >> > allows adding and updating XPN macsec interfaces.
-> > >> >
-> > >> > Added support in:
-> > >> >     * Creating interfaces with GCM-AES-XPN-128 and GCM-AES-XPN-256.
-> > >> >     * Setting and getting packet numbers with 64bit of SAs.
-> > >> >     * Settings and getting ssci of SCs.
-> > >> >     * Settings and getting salt of SecYs.
-> > >> >
-> > >> > Depends on: macsec: Support XPN frame handling - IEEE 802.1AEbw.
-> > >> >
-> > >> > Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
-> > >> > ---
-> > >> [...]
-> > >> > diff --git a/include/net/macsec.h b/include/net/macsec.h
-> > >> > index a0b1d0b5c..3c7914ff1 100644
-> > >> > --- a/include/net/macsec.h
-> > >> > +++ b/include/net/macsec.h
-> > >> > @@ -11,6 +11,9 @@
-> > >> >  #include <uapi/linux/if_link.h>
-> > >> >  #include <uapi/linux/if_macsec.h>
-> > >> >
-> > >> > +#define MACSEC_DEFAULT_PN_LEN 4
-> > >> > +#define MACSEC_XPN_PN_LEN 8
-> > >> > +
-> > >> >  #define MACSEC_SALT_LEN 12
-> > >> >
-> > >> >  typedef u64 __bitwise sci_t;
-> > >> > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> > >> > index 024af2d1d..ee424d915 100644
-> > >> > --- a/include/uapi/linux/if_link.h
-> > >> > +++ b/include/uapi/linux/if_link.h
-> > >> > @@ -462,6 +462,8 @@ enum {
-> > >> >       IFLA_MACSEC_SCB,
-> > >> >       IFLA_MACSEC_REPLAY_PROTECT,
-> > >> >       IFLA_MACSEC_VALIDATION,
-> > >> > +     IFLA_MACSEC_SSCI,
-> > >> > +     IFLA_MACSEC_SALT,
-> > >> >       IFLA_MACSEC_PAD,
-> > >> >       __IFLA_MACSEC_MAX,
-> > >> >  };
-> > >>
-> > >> Doesn't this break backword compatibility? You change the value of
-> > >> IFLA_MACSEC_PAD; even if it's only used as padding, if an old client
-> > >> uses it, new kernel will interpret it as IFLA_MACSEC_SSCI (an the same
-> > >> holds for new client with old kernel).
-> > >>
-> > >> > diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
-> > >> > index 1d63c43c3..c8fab9673 100644
-> > >> > --- a/include/uapi/linux/if_macsec.h
-> > >> > +++ b/include/uapi/linux/if_macsec.h
-> > >> > @@ -25,6 +25,8 @@
-> > >> >  /* cipher IDs as per IEEE802.1AEbn-2011 */
-> > >> >  #define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
-> > >> >  #define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
-> > >> > +#define MACSEC_CIPHER_ID_GCM_AES_XPN_128 0x0080C20001000003ULL
-> > >> > +#define MACSEC_CIPHER_ID_GCM_AES_XPN_256 0x0080C20001000004ULL
-> > >> >
-> > >> >  /* deprecated cipher ID for GCM-AES-128 */
-> > >> >  #define MACSEC_DEFAULT_CIPHER_ID     0x0080020001000001ULL
-> > >> > @@ -66,6 +68,8 @@ enum macsec_secy_attrs {
-> > >> >       MACSEC_SECY_ATTR_INC_SCI,
-> > >> >       MACSEC_SECY_ATTR_ES,
-> > >> >       MACSEC_SECY_ATTR_SCB,
-> > >> > +     MACSEC_SECY_ATTR_SSCI,
-> > >> > +     MACSEC_SECY_ATTR_SALT,
-> > >> >       MACSEC_SECY_ATTR_PAD,
-> > >> >       __MACSEC_SECY_ATTR_END,
-> > >> >       NUM_MACSEC_SECY_ATTR = __MACSEC_SECY_ATTR_END,
-> > >> > @@ -78,6 +82,7 @@ enum macsec_rxsc_attrs {
-> > >> >       MACSEC_RXSC_ATTR_ACTIVE,  /* config/dump, u8 0..1 */
-> > >> >       MACSEC_RXSC_ATTR_SA_LIST, /* dump, nested */
-> > >> >       MACSEC_RXSC_ATTR_STATS,   /* dump, nested, macsec_rxsc_stats_attr */
-> > >> > +     MACSEC_RXSC_ATTR_SSCI,    /* config/dump, u32 */
-> > >> >       MACSEC_RXSC_ATTR_PAD,
-> > >> >       __MACSEC_RXSC_ATTR_END,
-> > >> >       NUM_MACSEC_RXSC_ATTR = __MACSEC_RXSC_ATTR_END,
-> > >>
-> > >> The same problem with these two.
-> > >>
-> > >> I'm also a bit unsure about the change of type and length of
-> > >> MACSEC_SA_ATTR_PN but I would have to get more familiar with the code to
-> > >> see if it is really a problem.
-> > >>
-> > >> Michal
+Your prog chaining in the kernel proposal, now that would be a kernel
+mechanism, but that's not what we're discussing here.
+
+Daemon just trades off the complexity of making calls for the complexity
+of the system and serializing/de-serializing the state.
