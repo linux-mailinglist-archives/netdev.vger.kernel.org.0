@@ -2,222 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40A2B17B230
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:22:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BEAB17B253
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:42:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbgCEXWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 18:22:09 -0500
-Received: from ozlabs.org ([203.11.71.1]:43211 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726128AbgCEXWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 18:22:09 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48YRbd5SFrz9sNg;
-        Fri,  6 Mar 2020 10:22:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1583450526;
-        bh=PvR3xvSSafUOmuGnnxb06iTcgtURZdFSYRFughwx4Jc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=psMUlKTkLtxWgoN1IA50NGPWdGS3hB3HdMRoe5FDUpSOS1fIY6HWjZYAyHKKzxF3D
-         9NRhvJfHINFTJlf/SEKKty3sKJso2RH/4AMJez+pTVPVImvYfGyhM5YSyz8famnEvr
-         obKpExYXgAU0g+ek1XBiV2G8bTZ2+BgByr/cqdOD9Qy03CYWfR2c9/9m40GVsUpy+4
-         G4DuKxrduayZUIizWVcBReAfCIj4MaMf+v0ehJqTivyZRB3FXxbDAVqDQqXh7kOdtD
-         CSd8iwgoQ159AM0f1MOW29lgknQmmrVG4ayd2iMxg+hAo1r5LtulZwr0GCbpc4BGqW
-         xh62PJw55My3Q==
-Date:   Fri, 6 Mar 2020 10:21:58 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
+        id S1726209AbgCEXmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 18:42:36 -0500
+Received: from www62.your-server.de ([213.133.104.62]:34216 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbgCEXmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 18:42:36 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jA08N-000530-4M; Fri, 06 Mar 2020 00:42:31 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jA08M-000FUs-R2; Fri, 06 Mar 2020 00:42:30 +0100
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        PowerPC <linuxppc-dev@lists.ozlabs.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sourabh Jain <sourabhjain@linux.ibm.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: linux-next: manual merge of the net-next tree with the powerpc tree
-Message-ID: <20200306102158.0b88e0a0@canb.auug.org.au>
+        Kernel Team <kernel-team@fb.com>
+References: <87pndt4268.fsf@toke.dk>
+ <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
+ <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk>
+ <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk>
+ <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk>
+ <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
+ <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net>
+ <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net>
+Date:   Fri, 6 Mar 2020 00:42:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/MiD=6dX41diOlbdUFdeLJ7D";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25742/Thu Mar  5 15:10:18 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/MiD=6dX41diOlbdUFdeLJ7D
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 3/5/20 11:50 PM, Alexei Starovoitov wrote:
+> On Thu, Mar 05, 2020 at 11:34:18PM +0100, Daniel Borkmann wrote:
+>> On 3/5/20 5:34 PM, Alexei Starovoitov wrote:
+>>> On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
+>>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>>>> On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
+>> [...]
+>>>> Anyway, what I was trying to express:
+>>>>
+>>>>> Still that doesn't mean that pinned link is 'immutable'.
+>>>>
+>>>> I don't mean 'immutable' in the sense that it cannot be removed ever.
+>>>> Just that we may end up in a situation where an application can see a
+>>>> netdev with an XDP program attached, has the right privileges to modify
+>>>> it, but can't because it can't find the pinned bpf_link. Right? Or am I
+>>>> misunderstanding your proposal?
+>>>>
+>>>> Amending my example from before, this could happen by:
+>>>>
+>>>> 1. Someone attaches a program to eth0, and pins the bpf_link to
+>>>>      /sys/fs/bpf/myprog
+>>>>
+>>>> 2. eth0 is moved to a different namespace which mounts a new sysfs at
+>>>>      /sys
+>>>>
+>>>> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
+>>>>      xdp-loader can't get access to the original bpf_link; but the XDP
+>>>>      program is still attached to eth0.
+>>>
+>>> The key to decide is whether moving netdev across netns should be allowed
+>>> when xdp attached. I think it should be denied. Even when legacy xdp
+>>> program is attached, since it will confuse user space managing part.
+>>
+>> There are perfectly valid use cases where this is done already today (minus
+>> bpf_link), for example, consider an orchestrator that is setting up the BPF
+>> program on the device, moving to the newly created application pod during
+>> the CNI call in k8s, such that the new pod does not have the /sys/fs/bpf/
+>> mount instance and if unprivileged cannot remove the BPF prog from the dev
+>> either. We do something like this in case of ipvlan, meaning, we attach a
+>> rootlet prog that calls into single slot of a tail call map, move it to the
+>> application pod, and only out of Cilium's own pod and it's pod-local bpf fs
+>> instance we manage the pinned tail call map to update the main programs in
+>> that single slot w/o having to switch any netns later on.
+> 
+> Right. You mentioned this use case before, but I managed to forget about it.
+> Totally makes sense for prog to stay attached to netdev when it's moved.
+> I think pod manager would also prefer that pod is not able to replace
+> xdp prog from inside the container. It sounds to me that steps 1,2,3 above
+> is exactly the desired behavior. Otherwise what stops some application
+> that started in a pod to override it?
 
-Hi all,
+Generally, yes, and it shouldn't need to care nor see what is happening in
+/sys/fs/bpf/ from the orchestrator at least (or could potentially have its
+own private mount under /sys/fs/bpf/ or elsewhere). Ideally, the behavior
+should be that orchestrator does all the setup out of its own namespace,
+then moves everything over to the newly created target namespace and e.g.
+only if the pod has the capable(cap_sys_admin) permissions, it could mess
+around with anything attached there, or via similar model as done in [0]
+when there is a master device. Last time I looked, there is a down/up cycle
+on the dev upon netns migration and it flushes e.g. attached qdiscs afaik, so
+there are limitations that still need to be addressed. Not sure atm if same
+is happening to XDP right now. In this regards veth devices are a bit nicer
+to work with since everything can be attached on hostns ingress w/o needing
+to worry on the peer dev in the pod's netns.
 
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  fs/sysfs/group.c
-
-between commit:
-
-  9255782f7061 ("sysfs: Wrap __compat_only_sysfs_link_entry_to_kobj functio=
-n to change the symlink name")
-
-from the powerpc tree and commit:
-
-  303a42769c4c ("sysfs: add sysfs_group{s}_change_owner()")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc fs/sysfs/group.c
-index 1e2a096057bc,5afe0e7ff7cd..000000000000
---- a/fs/sysfs/group.c
-+++ b/fs/sysfs/group.c
-@@@ -478,4 -457,118 +479,118 @@@ int compat_only_sysfs_link_entry_to_kob
-  	kernfs_put(target);
-  	return PTR_ERR_OR_ZERO(link);
-  }
- -EXPORT_SYMBOL_GPL(__compat_only_sysfs_link_entry_to_kobj);
- +EXPORT_SYMBOL_GPL(compat_only_sysfs_link_entry_to_kobj);
-+=20
-+ static int sysfs_group_attrs_change_owner(struct kernfs_node *grp_kn,
-+ 					  const struct attribute_group *grp,
-+ 					  struct iattr *newattrs)
-+ {
-+ 	struct kernfs_node *kn;
-+ 	int error;
-+=20
-+ 	if (grp->attrs) {
-+ 		struct attribute *const *attr;
-+=20
-+ 		for (attr =3D grp->attrs; *attr; attr++) {
-+ 			kn =3D kernfs_find_and_get(grp_kn, (*attr)->name);
-+ 			if (!kn)
-+ 				return -ENOENT;
-+=20
-+ 			error =3D kernfs_setattr(kn, newattrs);
-+ 			kernfs_put(kn);
-+ 			if (error)
-+ 				return error;
-+ 		}
-+ 	}
-+=20
-+ 	if (grp->bin_attrs) {
-+ 		struct bin_attribute *const *bin_attr;
-+=20
-+ 		for (bin_attr =3D grp->bin_attrs; *bin_attr; bin_attr++) {
-+ 			kn =3D kernfs_find_and_get(grp_kn, (*bin_attr)->attr.name);
-+ 			if (!kn)
-+ 				return -ENOENT;
-+=20
-+ 			error =3D kernfs_setattr(kn, newattrs);
-+ 			kernfs_put(kn);
-+ 			if (error)
-+ 				return error;
-+ 		}
-+ 	}
-+=20
-+ 	return 0;
-+ }
-+=20
-+ /**
-+  * sysfs_group_change_owner - change owner of an attribute group.
-+  * @kobj:	The kobject containing the group.
-+  * @grp:	The attribute group.
-+  * @kuid:	new owner's kuid
-+  * @kgid:	new owner's kgid
-+  *
-+  * Returns 0 on success or error code on failure.
-+  */
-+ int sysfs_group_change_owner(struct kobject *kobj,
-+ 			     const struct attribute_group *grp, kuid_t kuid,
-+ 			     kgid_t kgid)
-+ {
-+ 	struct kernfs_node *grp_kn;
-+ 	int error;
-+ 	struct iattr newattrs =3D {
-+ 		.ia_valid =3D ATTR_UID | ATTR_GID,
-+ 		.ia_uid =3D kuid,
-+ 		.ia_gid =3D kgid,
-+ 	};
-+=20
-+ 	if (!kobj->state_in_sysfs)
-+ 		return -EINVAL;
-+=20
-+ 	if (grp->name) {
-+ 		grp_kn =3D kernfs_find_and_get(kobj->sd, grp->name);
-+ 	} else {
-+ 		kernfs_get(kobj->sd);
-+ 		grp_kn =3D kobj->sd;
-+ 	}
-+ 	if (!grp_kn)
-+ 		return -ENOENT;
-+=20
-+ 	error =3D kernfs_setattr(grp_kn, &newattrs);
-+ 	if (!error)
-+ 		error =3D sysfs_group_attrs_change_owner(grp_kn, grp, &newattrs);
-+=20
-+ 	kernfs_put(grp_kn);
-+=20
-+ 	return error;
-+ }
-+ EXPORT_SYMBOL_GPL(sysfs_group_change_owner);
-+=20
-+ /**
-+  * sysfs_groups_change_owner - change owner of a set of attribute groups.
-+  * @kobj:	The kobject containing the groups.
-+  * @groups:	The attribute groups.
-+  * @kuid:	new owner's kuid
-+  * @kgid:	new owner's kgid
-+  *
-+  * Returns 0 on success or error code on failure.
-+  */
-+ int sysfs_groups_change_owner(struct kobject *kobj,
-+ 			      const struct attribute_group **groups,
-+ 			      kuid_t kuid, kgid_t kgid)
-+ {
-+ 	int error =3D 0, i;
-+=20
-+ 	if (!kobj->state_in_sysfs)
-+ 		return -EINVAL;
-+=20
-+ 	if (!groups)
-+ 		return 0;
-+=20
-+ 	for (i =3D 0; groups[i]; i++) {
-+ 		error =3D sysfs_group_change_owner(kobj, groups[i], kuid, kgid);
-+ 		if (error)
-+ 			break;
-+ 	}
-+=20
-+ 	return error;
-+ }
-+ EXPORT_SYMBOL_GPL(sysfs_groups_change_owner);
-
---Sig_/MiD=6dX41diOlbdUFdeLJ7D
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5hiZYACgkQAVBC80lX
-0GwNjgf+NR8vXKVJAOj4wfPbS7Z86o+CKOI/QhegsGe9hQhSVkfAPt2iQ44y3B4c
-8zSfBQW5uYRwXALv7eiFKnIBw1rFg66smu7svvbEIFE/siwIMqGZJW0gOpVwIAF7
-qgO7qyQJlRa7G3+vZsA8VDA/1ti+juHCJHikLmzHRZOB6hF2QQTGLodXuD0ReJHQ
-D0seqE0uNkN5DO/5KifBic8SHGRMAv0P28MC2SH8Si/YmF4CwN4E9gp9fKsQ4vo5
-dBpZvDO345/zQO7p31mIV/exmvQZ68ttELulIYglGLY2d3c245eBf432lqT9EIIk
-SlGc8Nxd/I8v17zpel/hCzWN1KrnxQ==
-=ApLk
------END PGP SIGNATURE-----
-
---Sig_/MiD=6dX41diOlbdUFdeLJ7D--
+   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7cc9f7003a969d359f608ebb701d42cafe75b84a
