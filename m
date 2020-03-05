@@ -2,226 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3AD917A8E8
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71FE017A8F2
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbgCEPep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 10:34:45 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39094 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726917AbgCEPen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:43 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 5 Mar 2020 17:34:35 +0200
-Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsb010824;
-        Thu, 5 Mar 2020 17:34:35 +0200
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next ct-offload 13/13] net/mlx5e: CT: Support clear action
-Date:   Thu,  5 Mar 2020 17:34:28 +0200
-Message-Id: <1583422468-8456-14-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
-References: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
+        id S1726905AbgCEPfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 10:35:53 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41597 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbgCEPfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:35:52 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9sXP-0007nZ-L7; Thu, 05 Mar 2020 16:35:51 +0100
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1j9sXO-0004z3-BX; Thu, 05 Mar 2020 16:35:50 +0100
+Date:   Thu, 5 Mar 2020 16:35:50 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Madalin Bucur <madalin.bucur@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2] fsl/fman: Use random MAC address when none is given
+Message-ID: <20200305153550.GX3335@pengutronix.de>
+References: <20200305123414.5010-1-s.hauer@pengutronix.de>
+ <DB8PR04MB6985F8A2EB05F426F2CF8C0AECE20@DB8PR04MB6985.eurprd04.prod.outlook.com>
+ <20200305144809.GW3335@pengutronix.de>
+ <DB8PR04MB698558D9D5AB177E65D32B66ECE20@DB8PR04MB6985.eurprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB698558D9D5AB177E65D32B66ECE20@DB8PR04MB6985.eurprd04.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 16:33:40 up 14 days, 23:04, 45 users,  load average: 0.03, 0.09,
+ 0.10
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clear action, as with software, removes all ct metadata from
-the packet.
+On Thu, Mar 05, 2020 at 03:03:48PM +0000, Madalin Bucur wrote:
+> > -----Original Message-----
+> > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > Sent: Thursday, March 5, 2020 4:48 PM
+> > To: Madalin Bucur <madalin.bucur@nxp.com>
+> > Cc: netdev@vger.kernel.org
+> > Subject: Re: [PATCH v2] fsl/fman: Use random MAC address when none is
+> > given
+> > 
+> > On Thu, Mar 05, 2020 at 01:38:01PM +0000, Madalin Bucur wrote:
+> > > > -----Original Message-----
+> > > > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > > > Sent: Thursday, March 5, 2020 2:34 PM
+> > > > To: netdev@vger.kernel.org
+> > > > Cc: Madalin Bucur <madalin.bucur@nxp.com>; Sascha Hauer
+> > > > <s.hauer@pengutronix.de>
+> > > > Subject: [PATCH v2] fsl/fman: Use random MAC address when none is
+> > given
+> > > >
+> > > > There's no need to fail probing when no MAC address is given in the
+> > > > device tree, just use a random MAC address.
+> > > >
+> > > > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> > > > ---
+> > > >
+> > > > Changes since v1:
+> > > > - Remove printing of permanent MAC address
+> > > >
+> > > >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c   | 11 +++++++++--
+> > > >  drivers/net/ethernet/freescale/fman/fman_memac.c |  4 ----
+> > > >  drivers/net/ethernet/freescale/fman/mac.c        | 10 ++--------
+> > > >  3 files changed, 11 insertions(+), 14 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > > > b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > > > index fd93d542f497..fc117eab788d 100644
+> > > > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > > > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > > > @@ -233,8 +233,15 @@ static int dpaa_netdev_init(struct net_device
+> > > > *net_dev,
+> > > >  	net_dev->features |= net_dev->hw_features;
+> > > >  	net_dev->vlan_features = net_dev->features;
+> > > >
+> > > > -	memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
+> > > > -	memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
+> > > > +	if (is_valid_ether_addr(mac_addr)) {
+> > > > +		dev_info(dev, "FMan MAC address: %pM\n", mac_addr);
+> > > > +		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
+> > > > +		memcpy(net_dev->dev_addr, mac_addr, net_dev->addr_len);
+> > > > +	} else {
+> > > > +		eth_hw_addr_random(net_dev);
+> > > > +		dev_info(dev, "Using random MAC address: %pM\n",
+> > > > +			 net_dev->dev_addr);
+> > > > +	}
+> > >
+> > > To make the HW MAC aware of the new random address you set in the
+> > dpaa_eth,
+> > > you also need to call mac_dev->change_addr() after
+> > eth_hw_addr_random(), like
+> > > it's done in dpaa_set_mac_address():
+> > >
+> > >         err = mac_dev->change_addr(mac_dev->fman_mac,
+> > >                                    (enet_addr_t *)net_dev->dev_addr);
+> > >
+> > > This will write the new MAC address in the MAC HW registers.
+> > 
+> > Ok, I see.
+> > 
+> > So when I call mac_dev->change_addr() here in dpaa_netdev_init() it
+> > means I can remove all the code setting the MAC address in hardware
+> > before this point, right?
+> 
+> It's not an issue if you just write it here for the random address and leave
+> the previous functionality in place.
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 90 ++++++++++++++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |  7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 10 ++-
- 3 files changed, 95 insertions(+), 12 deletions(-)
+No, it's not. It's only that the code becomes rather useless once we
+overwrite the MAC address here anyway.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index ff54a41..479e44e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1025,12 +1025,79 @@ struct mlx5_ct_entry {
- 	return err;
- }
- 
-+static int
-+__mlx5_tc_ct_flow_offload_clear(struct mlx5e_priv *priv,
-+				struct mlx5e_tc_flow *flow,
-+				struct mlx5_flow_spec *orig_spec,
-+				struct mlx5_esw_flow_attr *attr,
-+				struct mlx5e_tc_mod_hdr_acts *mod_acts,
-+				struct mlx5_flow_handle **flow_rule)
-+{
-+	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
-+	struct mlx5_eswitch *esw = ct_priv->esw;
-+	struct mlx5_esw_flow_attr *pre_ct_attr;
-+	struct mlx5_modify_hdr *mod_hdr;
-+	struct mlx5_flow_handle *rule;
-+	struct mlx5_ct_flow *ct_flow;
-+	int err;
-+
-+	ct_flow = kzalloc(sizeof(*ct_flow), GFP_KERNEL);
-+	if (!ct_flow)
-+		return -ENOMEM;
-+
-+	/* Base esw attributes on original rule attribute */
-+	pre_ct_attr = &ct_flow->pre_ct_attr;
-+	memcpy(pre_ct_attr, attr, sizeof(*attr));
-+
-+	err = mlx5_tc_ct_entry_set_registers(ct_priv, mod_acts, 0, 0, 0, 0);
-+	if (err) {
-+		ct_dbg("Failed to set register for ct clear");
-+		goto err_set_registers;
-+	}
-+
-+	mod_hdr = mlx5_modify_header_alloc(esw->dev,
-+					   MLX5_FLOW_NAMESPACE_FDB,
-+					   mod_acts->num_actions,
-+					   mod_acts->actions);
-+	if (IS_ERR(mod_hdr)) {
-+		err = PTR_ERR(mod_hdr);
-+		ct_dbg("Failed to add create ct clear mod hdr");
-+		goto err_set_registers;
-+	}
-+
-+	dealloc_mod_hdr_actions(mod_acts);
-+	pre_ct_attr->modify_hdr = mod_hdr;
-+	pre_ct_attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+
-+	rule = mlx5_eswitch_add_offloaded_rule(esw, orig_spec, pre_ct_attr);
-+	if (IS_ERR(rule)) {
-+		err = PTR_ERR(rule);
-+		ct_dbg("Failed to add ct clear rule");
-+		goto err_insert;
-+	}
-+
-+	attr->ct_attr.ct_flow = ct_flow;
-+	ct_flow->pre_ct_rule = rule;
-+	*flow_rule = rule;
-+
-+	return 0;
-+
-+err_insert:
-+	mlx5_modify_header_dealloc(priv->mdev, mod_hdr);
-+err_set_registers:
-+	netdev_warn(priv->netdev,
-+		    "Failed to offload ct clear flow, err %d\n", err);
-+	return err;
-+}
-+
- struct mlx5_flow_handle *
- mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
- 			struct mlx5e_tc_flow *flow,
- 			struct mlx5_flow_spec *spec,
--			struct mlx5_esw_flow_attr *attr)
-+			struct mlx5_esw_flow_attr *attr,
-+			struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts)
- {
-+	bool clear_action = attr->ct_attr.ct_action & TCA_CT_ACT_CLEAR;
- 	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
- 	struct mlx5_flow_handle *rule;
- 	int err;
-@@ -1039,7 +1106,12 @@ struct mlx5_flow_handle *
- 		return ERR_PTR(-EOPNOTSUPP);
- 
- 	mutex_lock(&ct_priv->control_lock);
--	err = __mlx5_tc_ct_flow_offload(priv, flow, spec, attr, &rule);
-+	if (clear_action)
-+		err = __mlx5_tc_ct_flow_offload_clear(priv, flow, spec, attr,
-+						      mod_hdr_acts, &rule);
-+	else
-+		err = __mlx5_tc_ct_flow_offload(priv, flow, spec, attr,
-+						&rule);
- 	mutex_unlock(&ct_priv->control_lock);
- 	if (err)
- 		return ERR_PTR(err);
-@@ -1057,11 +1129,15 @@ struct mlx5_flow_handle *
- 	mlx5_eswitch_del_offloaded_rule(esw, ct_flow->pre_ct_rule,
- 					pre_ct_attr);
- 	mlx5_modify_header_dealloc(esw->dev, pre_ct_attr->modify_hdr);
--	mlx5_eswitch_del_offloaded_rule(esw, ct_flow->post_ct_rule,
--					&ct_flow->post_ct_attr);
--	mlx5_esw_chains_put_chain_mapping(esw, ct_flow->chain_mapping);
--	idr_remove(&ct_priv->fte_ids, ct_flow->fte_id);
--	mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
-+
-+	if (ct_flow->post_ct_rule) {
-+		mlx5_eswitch_del_offloaded_rule(esw, ct_flow->post_ct_rule,
-+						&ct_flow->post_ct_attr);
-+		mlx5_esw_chains_put_chain_mapping(esw, ct_flow->chain_mapping);
-+		idr_remove(&ct_priv->fte_ids, ct_flow->fte_id);
-+		mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
-+	}
-+
- 	kfree(ct_flow);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 464c865..6b2c893 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -9,6 +9,7 @@
- #include <net/tc_act/tc_ct.h>
- 
- struct mlx5_esw_flow_attr;
-+struct mlx5e_tc_mod_hdr_acts;
- struct mlx5_rep_uplink_priv;
- struct mlx5e_tc_flow;
- struct mlx5e_priv;
-@@ -97,7 +98,8 @@ struct mlx5_flow_handle *
- mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
- 			struct mlx5e_tc_flow *flow,
- 			struct mlx5_flow_spec *spec,
--			struct mlx5_esw_flow_attr *attr);
-+			struct mlx5_esw_flow_attr *attr,
-+			struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts);
- void
- mlx5_tc_ct_delete_flow(struct mlx5e_priv *priv,
- 		       struct mlx5e_tc_flow *flow,
-@@ -142,7 +144,8 @@ struct mlx5_flow_handle *
- mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
- 			struct mlx5e_tc_flow *flow,
- 			struct mlx5_flow_spec *spec,
--			struct mlx5_esw_flow_attr *attr)
-+			struct mlx5_esw_flow_attr *attr,
-+			struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts)
- {
- 	return ERR_PTR(-EOPNOTSUPP);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 1fe2293..e56cf93 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1151,11 +1151,15 @@ static int mlx5e_attach_encap(struct mlx5e_priv *priv,
- 			   struct mlx5_flow_spec *spec,
- 			   struct mlx5_esw_flow_attr *attr)
- {
-+	struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts;
- 	struct mlx5_flow_handle *rule;
--	struct mlx5e_tc_mod_hdr_acts;
- 
--	if (flow_flag_test(flow, CT))
--		return mlx5_tc_ct_flow_offload(flow->priv, flow, spec, attr);
-+	if (flow_flag_test(flow, CT)) {
-+		mod_hdr_acts = &attr->parse_attr->mod_hdr_acts;
-+
-+		return mlx5_tc_ct_flow_offload(flow->priv, flow, spec, attr,
-+					       mod_hdr_acts);
-+	}
- 
- 	rule = mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
- 	if (IS_ERR(rule))
+> Do you have a board to validate your changes?
+
+I have a LS1046a based board, yes.
+
+Sascha
+
 -- 
-1.8.3.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
