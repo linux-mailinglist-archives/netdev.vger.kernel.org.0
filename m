@@ -2,112 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ACB717A70F
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F49217A713
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 15:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbgCEOBs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 5 Mar 2020 09:01:48 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:33499 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726181AbgCEOBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 09:01:47 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-164-KJo5V8FzM7mDZwf714M0Bg-1; Thu, 05 Mar 2020 14:01:44 +0000
-X-MC-Unique: KJo5V8FzM7mDZwf714M0Bg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 5 Mar 2020 14:01:43 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 5 Mar 2020 14:01:43 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jere Leppanen' <jere.leppanen@nokia.com>,
-        Xin Long <lucien.xin@gmail.com>
-CC:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "michael.tuexen@lurchi.franken.de" <michael.tuexen@lurchi.franken.de>
-Subject: RE: [PATCH net] sctp: return a one-to-one type socket when doing
- peeloff
-Thread-Topic: [PATCH net] sctp: return a one-to-one type socket when doing
- peeloff
-Thread-Index: AQHV8kg53juXUxi3m0qbVfk5LNaAmag6CEpg
-Date:   Thu, 5 Mar 2020 14:01:43 +0000
-Message-ID: <8831b4dc929148f28cca658a4d7a11d9@AcuMS.aculab.com>
-References: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com>
- <HE1PR0702MB3610BB291019DD7F51DBC906ECE40@HE1PR0702MB3610.eurprd07.prod.outlook.com>
- <CADvbK_ewk7mGNr6T4smWeQ0TcW3q4yabKZwGX3dK=XcH7gv=KQ@mail.gmail.com>
- <alpine.LFD.2.21.2003041349400.19073@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net>
-In-Reply-To: <alpine.LFD.2.21.2003041349400.19073@sut4-server4-pub.sut-1.archcommon.nsn-rdnet.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726676AbgCEOCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 09:02:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:40752 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726211AbgCEOCp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 09:02:45 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 8B58AAB6D;
+        Thu,  5 Mar 2020 14:02:42 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id B009BE037F; Thu,  5 Mar 2020 15:02:41 +0100 (CET)
+Date:   Thu, 5 Mar 2020 15:02:41 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Era Mayflower <mayflowerera@gmail.com>, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] macsec: Netlink support of XPN cipher suites (IEEE
+ 802.1AEbw)
+Message-ID: <20200305140241.GA28693@unicorn.suse.cz>
+References: <20200305220108.18780-1-mayflowerera@gmail.com>
+ <20200305220108.18780-2-mayflowerera@gmail.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200305220108.18780-2-mayflowerera@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jere Leppanen
-> Sent: 04 March 2020 17:13
-> On Wed, 4 Mar 2020, Xin Long wrote:
+On Thu, Mar 05, 2020 at 10:01:08PM +0000, Era Mayflower wrote:
+> Netlink support of extended packet number cipher suites,
+> allows adding and updating XPN macsec interfaces.
 > 
-> > On Wed, Mar 4, 2020 at 2:38 AM Leppanen, Jere (Nokia - FI/Espoo)
-> > <jere.leppanen@nokia.com> wrote:
-> >>
-> >> On Mon, 2 Mar 2020, Xin Long wrote:
-> >>
-> >>> As it says in rfc6458#section-9.2:
-> >>>
-> >>>   The application uses the sctp_peeloff() call to branch off an
-> >>>   association into a separate socket.  (Note that the semantics are
-> >>>   somewhat changed from the traditional one-to-one style accept()
-> >>>   call.)  Note also that the new socket is a one-to-one style socket.
-> >>>   Thus, it will be confined to operations allowed for a one-to-one
-> >>>   style socket.
-> >>>
-> >>> Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
-> >>> on which some operations are not allowed, like shutdown, as Jere
-> >>> reported.
-> >>>
-> >>> This patch is to change it to return a one-to-one type socket instead.
-> >>
-> >> Thanks for looking into this. I like the patch, and it fixes my simple
-> >> test case.
-> >>
-> >> But with this patch, peeled-off sockets are created by copying from a
-> >> one-to-many socket to a one-to-one socket. Are you sure that that's
-> >> not going to cause any problems? Is it possible that there was a
-> >> reason why peeloff wasn't implemented this way in the first place?
-> > I'm not sure, it's been there since very beginning, and I couldn't find
-> > any changelog about it.
-> >
-> > I guess it was trying to differentiate peeled-off socket from TCP style
-> > sockets.
+> Added support in:
+>     * Creating interfaces with GCM-AES-XPN-128 and GCM-AES-XPN-256.
+>     * Setting and getting packet numbers with 64bit of SAs.
+>     * Settings and getting ssci of SCs.
+>     * Settings and getting salt of SecYs.
 > 
-> Well, that's probably the reason for UDP_HIGH_BANDWIDTH style. And maybe
-> there is legitimate need for that differentiation in some cases, but I
-> think inventing a special socket style is not the best way to handle it.
+> Depends on: macsec: Support XPN frame handling - IEEE 802.1AEbw.
 > 
-> But actually I meant why is a peeled-off socket created as SOCK_SEQPACKET
-> instead of SOCK_STREAM. It could be to avoid copying from SOCK_SEQPACKET
-> to SOCK_STREAM, but why would we need to avoid that?
+> Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
+> ---
+[...]
+> diff --git a/include/net/macsec.h b/include/net/macsec.h
+> index a0b1d0b5c..3c7914ff1 100644
+> --- a/include/net/macsec.h
+> +++ b/include/net/macsec.h
+> @@ -11,6 +11,9 @@
+>  #include <uapi/linux/if_link.h>
+>  #include <uapi/linux/if_macsec.h>
+>  
+> +#define MACSEC_DEFAULT_PN_LEN 4
+> +#define MACSEC_XPN_PN_LEN 8
+> +
+>  #define MACSEC_SALT_LEN 12
+>  
+>  typedef u64 __bitwise sci_t;
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 024af2d1d..ee424d915 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -462,6 +462,8 @@ enum {
+>  	IFLA_MACSEC_SCB,
+>  	IFLA_MACSEC_REPLAY_PROTECT,
+>  	IFLA_MACSEC_VALIDATION,
+> +	IFLA_MACSEC_SSCI,
+> +	IFLA_MACSEC_SALT,
+>  	IFLA_MACSEC_PAD,
+>  	__IFLA_MACSEC_MAX,
+>  };
 
-Because you don't want all the acks and retransmissions??
+Doesn't this break backword compatibility? You change the value of
+IFLA_MACSEC_PAD; even if it's only used as padding, if an old client
+uses it, new kernel will interpret it as IFLA_MACSEC_SSCI (an the same
+holds for new client with old kernel).
 
-	David
+> diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
+> index 1d63c43c3..c8fab9673 100644
+> --- a/include/uapi/linux/if_macsec.h
+> +++ b/include/uapi/linux/if_macsec.h
+> @@ -25,6 +25,8 @@
+>  /* cipher IDs as per IEEE802.1AEbn-2011 */
+>  #define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
+>  #define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
+> +#define MACSEC_CIPHER_ID_GCM_AES_XPN_128 0x0080C20001000003ULL
+> +#define MACSEC_CIPHER_ID_GCM_AES_XPN_256 0x0080C20001000004ULL
+>  
+>  /* deprecated cipher ID for GCM-AES-128 */
+>  #define MACSEC_DEFAULT_CIPHER_ID     0x0080020001000001ULL
+> @@ -66,6 +68,8 @@ enum macsec_secy_attrs {
+>  	MACSEC_SECY_ATTR_INC_SCI,
+>  	MACSEC_SECY_ATTR_ES,
+>  	MACSEC_SECY_ATTR_SCB,
+> +	MACSEC_SECY_ATTR_SSCI,
+> +	MACSEC_SECY_ATTR_SALT,
+>  	MACSEC_SECY_ATTR_PAD,
+>  	__MACSEC_SECY_ATTR_END,
+>  	NUM_MACSEC_SECY_ATTR = __MACSEC_SECY_ATTR_END,
+> @@ -78,6 +82,7 @@ enum macsec_rxsc_attrs {
+>  	MACSEC_RXSC_ATTR_ACTIVE,  /* config/dump, u8 0..1 */
+>  	MACSEC_RXSC_ATTR_SA_LIST, /* dump, nested */
+>  	MACSEC_RXSC_ATTR_STATS,   /* dump, nested, macsec_rxsc_stats_attr */
+> +	MACSEC_RXSC_ATTR_SSCI,    /* config/dump, u32 */
+>  	MACSEC_RXSC_ATTR_PAD,
+>  	__MACSEC_RXSC_ATTR_END,
+>  	NUM_MACSEC_RXSC_ATTR = __MACSEC_RXSC_ATTR_END,
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+The same problem with these two.
 
+I'm also a bit unsure about the change of type and length of
+MACSEC_SA_ATTR_PN but I would have to get more familiar with the code to
+see if it is really a problem.
+
+Michal
