@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F101C17AF2B
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 20:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCDCC17AF45
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 21:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725974AbgCETr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 14:47:29 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:55866 "EHLO
+        id S1726020AbgCEUA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 15:00:29 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56052 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725938AbgCETr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 14:47:29 -0500
+        with ESMTP id S1725938AbgCEUA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 15:00:28 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 32B9815BE447D;
-        Thu,  5 Mar 2020 11:47:28 -0800 (PST)
-Date:   Thu, 05 Mar 2020 11:47:25 -0800 (PST)
-Message-Id: <20200305.114725.1265986516045554303.davem@davemloft.net>
-To:     ap420073@gmail.com
-Cc:     kuba@kernel.org, subashab@codeaurora.org, stranche@codeaurora.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/3] net: rmnet: several code cleanup for
- rmnet module
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 483F0126B3972;
+        Thu,  5 Mar 2020 12:00:28 -0800 (PST)
+Date:   Thu, 05 Mar 2020 12:00:27 -0800 (PST)
+Message-Id: <20200305.120027.821059280923943275.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        syzkaller@googlegroups.com
+Subject: Re: [PATCH net] slip: make slhc_compress() more robust against
+ malicious packets
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200304232415.12205-1-ap420073@gmail.com>
-References: <20200304232415.12205-1-ap420073@gmail.com>
+In-Reply-To: <20200304235143.214557-1-edumazet@google.com>
+References: <20200304235143.214557-1-edumazet@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 05 Mar 2020 11:47:28 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 05 Mar 2020 12:00:28 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
-Date: Wed,  4 Mar 2020 23:24:15 +0000
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed,  4 Mar 2020 15:51:43 -0800
 
-> This patchset is to cleanup rmnet module code.
+> Before accessing various fields in IPV4 network header
+> and TCP header, make sure the packet :
 > 
-> 1. The first patch is to add module alias
-> rmnet module can not be loaded automatically because there is no
-> alias name.
+> - Has IP version 4 (ip->version == 4)
+> - Has not a silly network length (ip->ihl >= 5)
+> - Is big enough to hold network and transport headers
+> - Has not a silly TCP header size (th->doff >= sizeof(struct tcphdr) / 4)
 > 
-> 2. The second patch is to add extack error message code.
-> When rmnet netlink command fails, it doesn't print any error message.
-> So, users couldn't know the exact reason.
-> In order to tell the exact reason to the user, the extack error message
-> is used in this patch.
-> 
-> 3. The third patch is to use GFP_KERNEL instead of GFP_ATOMIC.
-> In the sleepable context, GFP_KERNEL can be used.
-> So, in this patch, GFP_KERNEL is used instead of GFP_ATOMIC.
-> 
-> Change log:
->  - v1->v2: change error message in the second patch.
+> syzbot reported :
+ ...
+> Fixes: b5451d783ade ("slip: Move the SLIP drivers")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
-Looks good, series applied, thanks.
+Applied and queued up for -stable, thanks.
