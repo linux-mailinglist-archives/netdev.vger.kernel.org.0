@@ -2,69 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9E5179E06
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 03:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ECF179E14
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 04:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725944AbgCECxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Mar 2020 21:53:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47934 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725776AbgCECxu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Mar 2020 21:53:50 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725953AbgCEDCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Mar 2020 22:02:13 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34510 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725810AbgCEDCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Mar 2020 22:02:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583377331;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XEOVbJdaYFn4+qqGun9jyaGeacVOn7m9fMHJ/ZdAsls=;
+        b=FBeQ8ahgRURBxdIN72YINx42ugBSKP4RVXdw8iueMEeLYmOgUJT1rXKggGzp5/dfYAV/d6
+        4Tq+NMhhKX71/g3hMOTevF9j2UH+v+qopdB/37yRbxhDuhKqqaZ0ZOjmYZXJ0LvkoM29X+
+        sLQ/SnRIOqdS5qTbkBJuwdB9lbi1ELw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-46-FzLP2esYM_GWbIRzFJf6Xg-1; Wed, 04 Mar 2020 22:02:10 -0500
+X-MC-Unique: FzLP2esYM_GWbIRzFJf6Xg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5337320838;
-        Thu,  5 Mar 2020 02:53:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583376829;
-        bh=b32YGkMstL0h2Pud8CEuaJAe5TmMOSaCGUBsnx3kKFw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lq5fIslUluZaEDYUpGyDOpmlVO2RvSo+QWBs0xXg4a+nhX2O3lKYq1K3cvwkMAdRU
-         28FqSTjBhTVl3Z8V7a9NIxcP+ZkbQlf0MB1pabdSZsABcHsVjrXOEBSOvFUeiBJipe
-         5zQRV/igrmQyHS1rzMUBWfn53tpIWS9J7yS91LRM=
-Date:   Wed, 4 Mar 2020 18:53:47 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     subashab@codeaurora.org
-Cc:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        stranche@codeaurora.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/3] net: rmnet: several code cleanup for
- rmnet module
-Message-ID: <20200304185347.797972fb@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <eb4fa65d10a8b1f81be44bcb4e3b6a43@codeaurora.org>
-References: <20200304232415.12205-1-ap420073@gmail.com>
- <eb4fa65d10a8b1f81be44bcb4e3b6a43@codeaurora.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 32BB4800D48;
+        Thu,  5 Mar 2020 03:02:07 +0000 (UTC)
+Received: from [10.72.13.242] (ovpn-13-242.pek2.redhat.com [10.72.13.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB2E360BE0;
+        Thu,  5 Mar 2020 03:01:44 +0000 (UTC)
+Subject: Re: [PATCH V5 3/5] vDPA: introduce vDPA bus
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        tiwei.bie@intel.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, lingshan.zhu@intel.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        kevin.tian@intel.com, stefanha@redhat.com, rdunlap@infradead.org,
+        hch@infradead.org, aadam@redhat.com, jiri@mellanox.com,
+        shahafs@mellanox.com, hanand@xilinx.com, mhabets@solarflare.com,
+        gdawar@xilinx.com, saugatm@xilinx.com, vmireyno@marvell.com
+References: <20200226060456.27275-1-jasowang@redhat.com>
+ <20200226060456.27275-4-jasowang@redhat.com>
+ <20200304192949.GR26318@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2842e634-bb92-a901-0a64-35a4dcde22da@redhat.com>
+Date:   Thu, 5 Mar 2020 11:01:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200304192949.GR26318@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 04 Mar 2020 16:43:58 -0700 subashab@codeaurora.org wrote:
-> On 2020-03-04 16:24, Taehee Yoo wrote:
-> > This patchset is to cleanup rmnet module code.
-> > 
-> > 1. The first patch is to add module alias
-> > rmnet module can not be loaded automatically because there is no
-> > alias name.
-> > 
-> > 2. The second patch is to add extack error message code.
-> > When rmnet netlink command fails, it doesn't print any error message.
-> > So, users couldn't know the exact reason.
-> > In order to tell the exact reason to the user, the extack error message
-> > is used in this patch.
-> > 
-> > 3. The third patch is to use GFP_KERNEL instead of GFP_ATOMIC.
-> > In the sleepable context, GFP_KERNEL can be used.
-> > So, in this patch, GFP_KERNEL is used instead of GFP_ATOMIC.
-> > 
-> > Change log:
-> >  - v1->v2: change error message in the second patch.
->
-> For the series:
-> 
-> Acked-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 
-LGTM as well, thanks!
+On 2020/3/5 =E4=B8=8A=E5=8D=883:29, Jason Gunthorpe wrote:
+> On Wed, Feb 26, 2020 at 02:04:54PM +0800, Jason Wang wrote:
+>> +struct vdpa_device *vdpa_alloc_device(struct device *parent,
+>> +				      struct device *dma_dev,
+>> +				      const struct vdpa_config_ops *config)
+>> +{
+>> +	struct vdpa_device *vdev;
+>> +	int err =3D -ENOMEM;
+>> +
+>> +	if (!parent || !dma_dev || !config)
+>> +		goto err;
+>> +
+>> +	vdev =3D kzalloc(sizeof(*vdev), GFP_KERNEL);
+>> +	if (!vdev)
+>> +		goto err;
+>> +
+>> +	err =3D ida_simple_get(&vdpa_index_ida, 0, 0, GFP_KERNEL);
+>> +	if (err < 0)
+>> +		goto err_ida;
+>> +
+>> +	vdev->dev.bus =3D &vdpa_bus;
+>> +	vdev->dev.parent =3D parent;
+>> +	vdev->dev.release =3D vdpa_release_dev;
+>> +
+>> +	device_initialize(&vdev->dev);
+>> +
+>> +	vdev->index =3D err;
+>> +	vdev->dma_dev =3D dma_dev;
+>> +	vdev->config =3D config;
+>> +
+>> +	dev_set_name(&vdev->dev, "vdpa%u", vdev->index);
+> Probably shouldn't ignore the error for dev_set_name ?
+>
+> err =3D dev_set_name()
+> if (err) {
+>     put_device(&vdev->dev);
+>     return ERR_PTR(err);
+> }
+>
+> Jason
+>
+
+Right, will fix.
+
+Thanks
+
