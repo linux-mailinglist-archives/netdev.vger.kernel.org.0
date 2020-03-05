@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B2F17A8EC
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:35:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E6717A8E5
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 16:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgCEPei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 10:34:38 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48312 "EHLO
+        id S1727002AbgCEPep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 10:34:45 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39093 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726440AbgCEPeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:37 -0500
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTP id S1726910AbgCEPem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 10:34:42 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 5 Mar 2020 17:34:35 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsW010824;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 025FYYsX010824;
         Thu, 5 Mar 2020 17:34:35 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next ct-offload 08/13] net/mlx5: E-Switch, Support getting chain mapping
-Date:   Thu,  5 Mar 2020 17:34:23 +0200
-Message-Id: <1583422468-8456-9-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next ct-offload 09/13] flow_offload: Add flow_match_ct to get rule ct match
+Date:   Thu,  5 Mar 2020 17:34:24 +0200
+Message-Id: <1583422468-8456-10-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
 References: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
@@ -36,61 +36,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we write chain register mapping on miss from the the last
-prio of a chain. It is used to restore the chain in software.
-
-To support re-using the chain register mapping from global tables (such
-as CT tuple table) misses, export the chain mapping.
+Add relevant getter for ct info dissector.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c   | 13 +++++++++++++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h   |  7 +++++++
- 2 files changed, 20 insertions(+)
+ include/net/flow_offload.h | 6 ++++++
+ net/core/flow_offload.c    | 7 +++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
-index bba0cec..889f942 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
-@@ -897,6 +897,19 @@ struct mlx5_flow_table *
- 	mlx5_esw_chains_cleanup(esw);
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 2ec2db1..1e7be56 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -68,6 +68,10 @@ struct flow_match_enc_opts {
+ 	struct flow_dissector_key_enc_opts *key, *mask;
+ };
+ 
++struct flow_match_ct {
++	struct flow_dissector_key_ct *key, *mask;
++};
++
+ struct flow_rule;
+ 
+ void flow_rule_match_meta(const struct flow_rule *rule,
+@@ -110,6 +114,8 @@ void flow_rule_match_enc_keyid(const struct flow_rule *rule,
+ 			       struct flow_match_enc_keyid *out);
+ void flow_rule_match_enc_opts(const struct flow_rule *rule,
+ 			      struct flow_match_enc_opts *out);
++void flow_rule_match_ct(const struct flow_rule *rule,
++			struct flow_match_ct *out);
+ 
+ enum flow_action_id {
+ 	FLOW_ACTION_ACCEPT		= 0,
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 45b6a59..39f1745 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -167,6 +167,13 @@ void flow_rule_match_enc_opts(const struct flow_rule *rule,
  }
+ EXPORT_SYMBOL(flow_rule_match_enc_opts);
  
-+int
-+mlx5_esw_chains_get_chain_mapping(struct mlx5_eswitch *esw, u32 chain,
-+				  u32 *chain_mapping)
++void flow_rule_match_ct(const struct flow_rule *rule,
++			struct flow_match_ct *out)
 +{
-+	return mapping_add(esw_chains_mapping(esw), &chain, chain_mapping);
++	FLOW_DISSECTOR_MATCH(rule, FLOW_DISSECTOR_KEY_CT, out);
 +}
++EXPORT_SYMBOL(flow_rule_match_ct);
 +
-+int
-+mlx5_esw_chains_put_chain_mapping(struct mlx5_eswitch *esw, u32 chain_mapping)
-+{
-+	return mapping_remove(esw_chains_mapping(esw), chain_mapping);
-+}
-+
- int mlx5_eswitch_get_chain_for_tag(struct mlx5_eswitch *esw, u32 tag,
- 				   u32 *chain)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
-index 01cbdf8..febfefb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
-@@ -29,6 +29,13 @@ struct mlx5_flow_table *
- mlx5_esw_chains_destroy_global_table(struct mlx5_eswitch *esw,
- 				     struct mlx5_flow_table *ft);
- 
-+int
-+mlx5_esw_chains_get_chain_mapping(struct mlx5_eswitch *esw, u32 chain,
-+				  u32 *chain_mapping);
-+int
-+mlx5_esw_chains_put_chain_mapping(struct mlx5_eswitch *esw,
-+				  u32 chain_mapping);
-+
- int mlx5_esw_chains_create(struct mlx5_eswitch *esw);
- void mlx5_esw_chains_destroy(struct mlx5_eswitch *esw);
- 
+ struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv))
 -- 
 1.8.3.1
 
