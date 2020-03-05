@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9CA179F1D
-	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:23:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7707F179F1B
+	for <lists+netdev@lfdr.de>; Thu,  5 Mar 2020 06:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbgCEFXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 00:23:37 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:45722 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726004AbgCEFXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 00:23:36 -0500
-Received: by mail-pg1-f195.google.com with SMTP id m15so2148852pgv.12
-        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 21:23:34 -0800 (PST)
+        id S1726067AbgCEFXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 00:23:36 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37687 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725991AbgCEFXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 00:23:35 -0500
+Received: by mail-pl1-f195.google.com with SMTP id b8so2108967plx.4
+        for <netdev@vger.kernel.org>; Wed, 04 Mar 2020 21:23:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=s5+2M55qCyjMNWRRfZa1qww5IAjEysQ2sF63nol+NPk=;
-        b=DkLmPL16mkXXWsgVO5Tg8AiuA3Y7UohKEKxfo0xBAv1GooPWROJThgG2fDFoVejXK4
-         lvYVgpkiY3NP4dgBALOR5ou/rHfYOus1lcqxiHC46mDPXynpPeVA2P6Dd4OtKFbqyfsD
-         F5H9MSf60Di516TuP/JKex9t3zy/ddLOllxdiQzcAwQTQesDZqwd3AvSYGeyMVK9HMW/
-         h1QxHjvvBMpZ7noXo/QZHi/HGx+zkuqEMIsCO+nezioOoPWqfm3ugqCXAXuAdUQeh5VU
-         izGiUgB2OVQC+AIDL8gC6Xpm88EOcvipMcT6Y1mNyS0+0f8hOtvkq0H5jlYg9LE78CNO
-         I3fA==
+        bh=61gZ4SQN/1tdeU8RQk3DcrIUxl3TSrJNCIjlf4zlDM0=;
+        b=c2rZWdIyjxSoFFNxGpSsDAFN/DmrQ9plnVo2DjzHabStkhK7qga4oPnp2yX+YdcpbG
+         EgiAdSFDLmicoc06LxQSFLwxMuyyXXTfUck9NhUHzxZrnpSwdJhIoct10vZjzkw140Qo
+         PIZNGOtX9OFf6sK1dJeEIhPX5h6TnHDJjhoUHuQpXU0IYxzNhCLjWCn79Ku4xc3vPxxH
+         ljcsT/6oA8rVsSI0u0p88FCMwBrVuRK7qDSRyZYR1nlP7vq07AJghI/wdULgfmCBdaXv
+         +c4PemCrRd0AUrnoKzLFFwVjmErys2+6L7DzkWC83OOIdsqt0Pp9shTukzp/tyJa0bLk
+         1PyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=s5+2M55qCyjMNWRRfZa1qww5IAjEysQ2sF63nol+NPk=;
-        b=sMx4jMfM8psbp2g6MqLkuxL0YPrYWGZUPxSDwlV3TQ4NOXn3ktREAsfqPH90Rz8+Zk
-         xwvwANBu43FL2jF+9EBY9DvjMcP0QkjGK7zyDvR4Q0ut5zU7jbCZRNdqMoZ97e5cDoDy
-         o2sLVH7a+n4Po7aaOqZHKJeWOPZzkM256uvffILX9JixZeLLfQ+V1ESjNRiRLTtRrrou
-         hHogoBdwghOyd9+i1ZNR+C3FpzNq4uZrQ4zqG1wzlWep/KokBJhZODFRsN2Ei6pB24oA
-         m0vu8OQSrcWdMScdi6wFg2k2CzwREYt3YYzafUnLY8QWYlUlCN5h6bpaSsPe4QSD8Ftu
-         cN4Q==
-X-Gm-Message-State: ANhLgQ24hiTs/YMXmRonN+qiR5XGSCZXkGx/UDFj+Y9QDmyCLJqoImqo
-        YJ3mjfqwpK0FBC+coi2QMZR32yjh07w=
-X-Google-Smtp-Source: ADFU+vtUq4b5rOBmzoLUcb/lsj6vaRNcMBzsuceXwbZN1fY4/L4DNkVaKF31iW54RXe3c0sTPYR7xw==
-X-Received: by 2002:aa7:875a:: with SMTP id g26mr6759732pfo.193.1583385813800;
-        Wed, 04 Mar 2020 21:23:33 -0800 (PST)
+        bh=61gZ4SQN/1tdeU8RQk3DcrIUxl3TSrJNCIjlf4zlDM0=;
+        b=pU7WIfW7o954P7oQphJ2zVEGUdBctAuDuwNGh9mHLBKEXxZHMjYU8pFsB/9KXwZiHA
+         TZp/1im9OXVycjAvm0S5F7zjDxd1Ku6dg8v6noaKd2Kvz8CCATpenfsrVu9AxExyLkbw
+         uSz3kdZsuDOmZmA25DLezEhJfpMkBEen3mWn9yfZzstQVClSacK8sT5qo7oPVSVbrptA
+         ibXq+MlXCnyje+PVfaQS5O1ZQ32T007jndIYYMMumdPlYaMXUrifkDK/3APRjrZxa4i6
+         F6P8bvAQHQ9+iLgYauaghugHUyXgsoRtORzt95rjAxnuAdvJzosu4MpVBF+nU+sgf6WZ
+         aKJA==
+X-Gm-Message-State: ANhLgQ0yfqdDLJvG2cjE0pGybu7hS3VwDlD/HN7JzIYdicxgWZlHCkm5
+        lSAp0ELTGLxgyYuM4EGeCSHu1aOZjMg=
+X-Google-Smtp-Source: ADFU+vtVAluaGxjTSAJjstPuTqpSzbevEOqlvy/blfv1Rbg0bJ01xM6jbjbICv9lb/jcFHzh13Yx5g==
+X-Received: by 2002:a17:90a:8c06:: with SMTP id a6mr6131838pjo.137.1583385814649;
+        Wed, 04 Mar 2020 21:23:34 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
         by smtp.gmail.com with ESMTPSA id h2sm29337759pgv.40.2020.03.04.21.23.33
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Mar 2020 21:23:33 -0800 (PST)
+        Wed, 04 Mar 2020 21:23:34 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v3 net-next 6/8] ionic: print pci bus lane info
-Date:   Wed,  4 Mar 2020 21:23:17 -0800
-Message-Id: <20200305052319.14682-7-snelson@pensando.io>
+Subject: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
+Date:   Wed,  4 Mar 2020 21:23:18 -0800
+Message-Id: <20200305052319.14682-8-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200305052319.14682-1-snelson@pensando.io>
 References: <20200305052319.14682-1-snelson@pensando.io>
@@ -57,27 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Print the PCI bus lane information so people can keep an
-eye out for poor configurations that might not support
-the advertised speed.
+Add support for an additional device id.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
+ drivers/net/ethernet/pensando/ionic/ionic.h         | 1 +
  drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ 2 files changed, 2 insertions(+)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index bb106a32f416..c8ff33da243a 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -18,6 +18,7 @@ struct ionic_lif;
+ 
+ #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
+ #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
++#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT	0x1004
+ 
+ #define DEVCMD_TIMEOUT  10
+ 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 554bafac1147..59b0091146e6 100644
+index 59b0091146e6..3dc985cae391 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -248,6 +248,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
- 
- 	pci_set_master(pdev);
-+	pcie_print_link_status(pdev);
- 
- 	err = ionic_map_bars(ionic);
- 	if (err)
+@@ -15,6 +15,7 @@
+ static const struct pci_device_id ionic_id_table[] = {
+ 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
+ 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
++	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT) },
+ 	{ 0, }	/* end of table */
+ };
+ MODULE_DEVICE_TABLE(pci, ionic_id_table);
 -- 
 2.17.1
 
