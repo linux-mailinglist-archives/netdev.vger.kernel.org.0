@@ -2,164 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B3517B98F
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 10:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F21A717BA24
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 11:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726079AbgCFJsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 04:48:30 -0500
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:41846 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbgCFJsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 04:48:30 -0500
-Received: by mail-vs1-f66.google.com with SMTP id k188so1115706vsc.8
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 01:48:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=G+R/Kw9MBvZAA4ZmBt+CPV0i9rR1O2+WxGJV4yGKEec=;
-        b=br3wfjaBnaxQ598o09JZc7Y4ttUGbhcpOpjKOLTzwNDrPovc5wMCIJBBLuyGeE7Ryl
-         PsKR929Lqa8Xe3ujHpmhOE2nuoRr1H0taoWu3SEWRD39J0iBD98dF1qUB9Pn+v3L8Gl4
-         OvbiZ/iwhmnhkXDVYH7m0vDKbZBwzmX1aY/bGG7eCkDQ0Y6f/4iozpTCdUjDKtcbPBfv
-         RaZyD0ydjBjkMewBIDcxLMfdpLJ2SayrOfta4iKbTkhDlbY6P002Lj0i6kqs2YikUaQl
-         bnOaALvZV/aIMOqMs3v68n2Z0koM6nxVYQNWl06ziCK71IaSL+nQt1fDabHCaQ0+5Uhw
-         lTaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=G+R/Kw9MBvZAA4ZmBt+CPV0i9rR1O2+WxGJV4yGKEec=;
-        b=VNBcT18rQ9yrrYShCzTBtVolNvWfAHVHOiUfVgCtap+fco3p1sP0fodi/idzNL8bWy
-         4yntXKFXRrwCCWa4l0tM6vyERduH24rfg0t9PnXC2sA1WIVErIfceK0cA4SNbxi/bsLs
-         VfGSpliUr3IfkcwWhX4RqIQUA5ESH33JsISM3coyXKkrJGzAjqO0zqVxHa3TEeqRdS9O
-         NYez3RBR7slmHZx7YeDCGwn8G70RH78+u1auzVjtAcyRX8lKLfPEGVGaJ+CzDb9QQkKd
-         96w4emQqUaOrS8QeiXy/PDhAumB35ReClwGNYbZYonu7nprppYtrKTWzaQV5vaURnsqB
-         4Kvw==
-X-Gm-Message-State: ANhLgQ179ij546MgJJ4ud6PqYUnvlV3m3CatNvM2I/dV1EArbA+e12OR
-        mhRfl5zJnPVC04e4BFjaQeZBMpX62eBgcwOEKpu9hg==
-X-Google-Smtp-Source: ADFU+vvHrTk8lyzdHIdoVAwHYeH0utOZrJ1gX8ilWx8/JxhEOkQXWobtrHTEXU1WDDROSonhrwvx/as9tRI4zM+pXdM=
-X-Received: by 2002:a67:df97:: with SMTP id x23mr1620541vsk.160.1583488107088;
- Fri, 06 Mar 2020 01:48:27 -0800 (PST)
+        id S1726307AbgCFKZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 05:25:08 -0500
+Received: from www62.your-server.de ([213.133.104.62]:35300 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbgCFKZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 05:25:08 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jAAAB-0006HL-0B; Fri, 06 Mar 2020 11:25:03 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jAAAA-000VG3-Me; Fri, 06 Mar 2020 11:25:02 +0100
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+References: <87pndt4268.fsf@toke.dk>
+ <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
+ <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk>
+ <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk>
+ <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk>
+ <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
+ <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net>
+ <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
+ <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net> <878skd3mw4.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
+Date:   Fri, 6 Mar 2020 11:25:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Received: by 2002:a9f:3b21:0:0:0:0:0 with HTTP; Fri, 6 Mar 2020 01:48:26 -0800 (PST)
-X-Originating-IP: [5.35.35.59]
-In-Reply-To: <20200305153515.4ce0ecf4@carbon>
-References: <1583158874-2751-1-git-send-email-kda@linux-powerpc.org> <20200305153515.4ce0ecf4@carbon>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Fri, 6 Mar 2020 12:48:26 +0300
-Message-ID: <CAOJe8K3AaGFAPYymu4FW4OhXnhnxQUhA18m4OLp_66EVj6LxEA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] xen-netfront: add basic XDP support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, jgross@suse.com,
-        ilias.apalodimas@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <878skd3mw4.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25742/Thu Mar  5 15:10:18 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> On Mon,  2 Mar 2020 17:21:14 +0300
-> Denis Kirjanov <kda@linux-powerpc.org> wrote:
->
->> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
->> index 482c6c8..db8a280 100644
->> --- a/drivers/net/xen-netfront.c
->> +++ b/drivers/net/xen-netfront.c
-> [...]
->> @@ -778,6 +782,40 @@ static int xennet_get_extras(struct netfront_queue
->> *queue,
->>  	return err;
->>  }
+On 3/6/20 9:31 AM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+>> On 3/5/20 11:50 PM, Alexei Starovoitov wrote:
+>>> On Thu, Mar 05, 2020 at 11:34:18PM +0100, Daniel Borkmann wrote:
+>>>> On 3/5/20 5:34 PM, Alexei Starovoitov wrote:
+>>>>> On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
+>>>>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>>>>>> On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
+>>>> [...]
+>>>>>> Anyway, what I was trying to express:
+>>>>>>
+>>>>>>> Still that doesn't mean that pinned link is 'immutable'.
+>>>>>>
+>>>>>> I don't mean 'immutable' in the sense that it cannot be removed ever.
+>>>>>> Just that we may end up in a situation where an application can see a
+>>>>>> netdev with an XDP program attached, has the right privileges to modify
+>>>>>> it, but can't because it can't find the pinned bpf_link. Right? Or am I
+>>>>>> misunderstanding your proposal?
+>>>>>>
+>>>>>> Amending my example from before, this could happen by:
+>>>>>>
+>>>>>> 1. Someone attaches a program to eth0, and pins the bpf_link to
+>>>>>>       /sys/fs/bpf/myprog
+>>>>>>
+>>>>>> 2. eth0 is moved to a different namespace which mounts a new sysfs at
+>>>>>>       /sys
+>>>>>>
+>>>>>> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
+>>>>>>       xdp-loader can't get access to the original bpf_link; but the XDP
+>>>>>>       program is still attached to eth0.
+>>>>>
+>>>>> The key to decide is whether moving netdev across netns should be allowed
+>>>>> when xdp attached. I think it should be denied. Even when legacy xdp
+>>>>> program is attached, since it will confuse user space managing part.
+>>>>
+>>>> There are perfectly valid use cases where this is done already today (minus
+>>>> bpf_link), for example, consider an orchestrator that is setting up the BPF
+>>>> program on the device, moving to the newly created application pod during
+>>>> the CNI call in k8s, such that the new pod does not have the /sys/fs/bpf/
+>>>> mount instance and if unprivileged cannot remove the BPF prog from the dev
+>>>> either. We do something like this in case of ipvlan, meaning, we attach a
+>>>> rootlet prog that calls into single slot of a tail call map, move it to the
+>>>> application pod, and only out of Cilium's own pod and it's pod-local bpf fs
+>>>> instance we manage the pinned tail call map to update the main programs in
+>>>> that single slot w/o having to switch any netns later on.
+>>>
+>>> Right. You mentioned this use case before, but I managed to forget about it.
+>>> Totally makes sense for prog to stay attached to netdev when it's moved.
+>>> I think pod manager would also prefer that pod is not able to replace
+>>> xdp prog from inside the container. It sounds to me that steps 1,2,3 above
+>>> is exactly the desired behavior. Otherwise what stops some application
+>>> that started in a pod to override it?
 >>
->> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
->> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
->> +		   struct xdp_buff *xdp)
->> +{
->> +	u32 len = rx->status;
->> +	u32 act = XDP_PASS;
->> +
->> +	xdp->data_hard_start = page_address(pdata);
->> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
->> +	xdp_set_data_meta_invalid(xdp);
->> +	xdp->data_end = xdp->data + len;
->> +	xdp->handle = 0;
->> +
->> +	act = bpf_prog_run_xdp(prog, xdp);
->> +	switch (act) {
->> +	case XDP_PASS:
->> +	case XDP_TX:
->> +	case XDP_DROP:
->> +		break;
->> +
->> +	case XDP_ABORTED:
->> +		trace_xdp_exception(queue->info->netdev, prog, act);
->> +		break;
->> +
->> +	default:
->> +		bpf_warn_invalid_xdp_action(act);
->> +	}
->> +
->> +	if (act != XDP_PASS && act != XDP_TX)
->> +		xdp->data_hard_start = NULL;
->> +
->> +	return act;
->> +}
->> +
->>  static int xennet_get_responses(struct netfront_queue *queue,
->>  				struct netfront_rx_info *rinfo, RING_IDX rp,
->>  				struct sk_buff_head *list)
->> @@ -792,6 +830,9 @@ static int xennet_get_responses(struct netfront_queue
->> *queue,
->>  	int slots = 1;
->>  	int err = 0;
->>  	unsigned long ret;
->> +	struct bpf_prog *xdp_prog;
->> +	struct xdp_buff xdp;
->> +	u32 verdict;
->>
->>  	if (rx->flags & XEN_NETRXF_extra_info) {
->>  		err = xennet_get_extras(queue, extras, rp);
->> @@ -827,6 +868,22 @@ static int xennet_get_responses(struct netfront_queue
->> *queue,
->>
->>  		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
->>
->> +		rcu_read_lock();
->> +		xdp_prog = rcu_dereference(queue->xdp_prog);
->> +		if (xdp_prog) {
->> +			/* currently only a single page contains data */
->> +			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags != 1);
->> +			verdict = xennet_run_xdp(queue,
->> +				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
->
-> This looks really weird, skb_shinfo(skb)->frags[0], you already have an
-> SKB and you are sending fragment-0 to the xennet_run_xdp() function.
->
-> XDP meant to run before an SKB is allocated...
+>> Generally, yes, and it shouldn't need to care nor see what is happening in
+>> /sys/fs/bpf/ from the orchestrator at least (or could potentially have its
+>> own private mount under /sys/fs/bpf/ or elsewhere). Ideally, the behavior
+>> should be that orchestrator does all the setup out of its own namespace,
+>> then moves everything over to the newly created target namespace and e.g.
+>> only if the pod has the capable(cap_sys_admin) permissions, it could mess
+>> around with anything attached there, or via similar model as done in [0]
+>> when there is a master device.
+> 
+> Yup, I can see how this can be a reasonable use case where you *would*
+> want the locking. However, my concern is that there should be a way for
+> an admin to recover from this (say, if it happens by mistake, or a
+> misbehaving application). Otherwise, I fear we'll end up with support
+> cases where the only answer is "try rebooting", which is obviously not
+> ideal.
 
-Agreed. But the xen networking works that data communicated using
-shared pages between backend and frontend parts.
-So xen-netfront just allocates skbs with attached pages to them and
-shares those pages with xen-netback
+I'm not quite sure I follow the concern, if you're an admin and have the right
+permissions, then you should be able to introspect and change settings like with
+anything else there is today.
 
->
->> +				       rx, xdp_prog, &xdp);
->> +
->> +			if (verdict != XDP_PASS && verdict != XDP_TX) {
->> +				err = -EINVAL;
->> +				goto next;
->> +			}
->> +
->> +		}
->> +		rcu_read_unlock();
->>  		__skb_queue_tail(list, skb);
->
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
->
+>> Last time I looked, there is a down/up cycle on the dev upon netns
+>> migration and it flushes e.g. attached qdiscs afaik, so there are
+>> limitations that still need to be addressed. Not sure atm if same is
+>> happening to XDP right now.
+> 
+> XDP programs will stay attached. devmaps (for redirect) have a notifier
+> that will remove devices when they move out of a namespace. Not sure if
+> there are any other issues with netns moves somewhere.
+> 
+>> In this regards veth devices are a bit nicer to work with since
+>> everything can be attached on hostns ingress w/o needing to worry on
+>> the peer dev in the pod's netns.
+> 
+> Presumably the XDP EGRESS hook that David Ahern is working on will make
+> this doable for XDP on veth as well?
+
+I'm not sure I see a use-case for XDP egress for Cilium yet, but maybe I'm still
+lacking a clear picture on why one should use it. We currently use various
+layers where we orchestrate our BPF programs from the agent. XDP/rx on the phys
+nic on the one end, BPF sock progs attached to cgroups on the other end of the
+spectrum. The processing in between on virtual devices is mainly tc/BPF-based
+since everything is skb based anyway and more flexible also with interaction
+with the rest of the stack. There is also not this pain of having to linearize
+all the skbs, but at least there's a path to tackle that.
+
+Thanks,
+Daniel
