@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E56D717BE70
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B89F17BE71
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbgCFN3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 08:29:12 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40464 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgCFN3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:29:11 -0500
-Received: by mail-wm1-f67.google.com with SMTP id e26so2362465wme.5
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:29:10 -0800 (PST)
+        id S1727414AbgCFN3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 08:29:14 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40907 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726674AbgCFN3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:29:14 -0500
+Received: by mail-wr1-f66.google.com with SMTP id p2so1555938wrw.7
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:29:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VU33TGmAHDRw9cxZMdyOnE87qrhlGEYqfNtmeKEMiFk=;
-        b=0jkz8v3eGwX7p0hagdU9dR3P+pgWQ945Rmbiz0+XAy/Ka6GtTxJfc9gVJCku7WLzMp
-         e6gQQQVgJXeKt7O6cX7t0aGDElFo2JQ3F3/9LilVHvj7AZrmp1nNnnLHnML96DBG3hZW
-         jbJGB7xxfElGqudRpvZ0FRVtVzY5N+TiMjEghZyqkYzP6ise4CpuE7KHQUaWSMDyjmKu
-         81J1ZJqJ8Sy9ellT6OFO6QS4dUam88D/O9OkamJ9v/Nzx6tOLW7DVDXLTIbbN5w0FmL9
-         teDudj9Fw2Ckdh8xYch5xR9FpGFWB4SjuZt+lPeed41HWFH5Aio/0Yha5puSJiYxBx7I
-         AaDA==
+        bh=4Rmi0sC4ZOb9CTz7dqsCHikMLwzkdKpWFb8GwbJ6WJU=;
+        b=wSkqq6iRxJJsfvND0+okV1YBCQ/cdppjLnTTFSK6Lx5huFzTKDYLFw7balED3KCMiP
+         nC2N7XznK6nXpgL6k2ARqRlzpgSdggXV+KKPCxJRoI7sb6GykNHZqvDZv2Ai4316YiC1
+         xYMALj6IizgBmuUmyZhouceFE4s/9OXUtC0f/uTC280zUp+tZfKS0E0VF40E3S2nm+4T
+         Zu6mLbXCDL1OLJtKf5068ete0bUH+T4SySqwq7Y0sk0v+QZoIhKFGfF643xiPIbxQgQh
+         hx0F9q4MN+ic1IHEQEmXhUen3L4kw/65pdRb/5Pe9Kp/pFRYvs0vZcozSzb8waUme1Pl
+         PIGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VU33TGmAHDRw9cxZMdyOnE87qrhlGEYqfNtmeKEMiFk=;
-        b=FP1mY/Or3jZaIBY9+iDghF/zYPQ3WRTe72Np254AHJnW+0M3S3m/bcK/XJqVWax9OR
-         vSbMmD0+89AdPp7qgKjLJY8BpivDm716h23Drga4DNnnBfzfV/CrqtDRjbAzh2iOd2nj
-         x9M9SjrYISG0cWO90YxK5Vp3mQBZUQ1xZnTQ+XL21DlVq+e6dScWKEDWALGavFSwzEaS
-         zpL/v/FkDqHTaZ7FT/DG426TiHHblSCiAqbRnQvFyOqM748sZUabG1oQ1KEFQMWnWMR6
-         8KshAosfrs8MIPJlFUZgrZNyd8jI6UHOylLo4xzIhKtXxCtC3++Y5tGVOe2NWrDu4yfA
-         aAJg==
-X-Gm-Message-State: ANhLgQ1U14Ru6FFdDgNYVI6un2+cRy3lcw+6jCO0Qd0wh4PcjUoIRGlI
-        6JpnvZKdm8K/qsO3c1K9ENWD7RjcrZQ=
-X-Google-Smtp-Source: ADFU+vuoPX0NHw12OU/r3Ye/j+NB7So/OLTqFNXPO1pKpwsRzyaSBRVdTyry7oYXQSd3Q1DKM+6wlg==
-X-Received: by 2002:a7b:c2a2:: with SMTP id c2mr3986760wmk.19.1583501349501;
-        Fri, 06 Mar 2020 05:29:09 -0800 (PST)
+        bh=4Rmi0sC4ZOb9CTz7dqsCHikMLwzkdKpWFb8GwbJ6WJU=;
+        b=i4EVoRvvI/N0QXGpyQtxVZC2Vy97n+O3/Q0BNWzXIMVBx/uKaj7nDwrdRTZRZnkTYZ
+         4qspct66i6FUYzW+/YrwLabxNpk1FpT/SnSKnMnFRv6dWZLbYjD//+8YRg0S7+jzdJfE
+         By9oLy8eAgjz6rVEGE4D3tHr9+VZ1t0hUOWKrQHdSGt8VcmWqZzmQ/M9/JGgrqNZwRaQ
+         fAI9bCY4zUHozki8q9Ostrqh3PN+TI1YiGEbF5CJ3PXfIZW6Y4OW+4+RET0f4YMlG6GO
+         ryggm65rFLqp+UGSngXfeNrVdDpE76sqUrKpK7Ou29r21/r+KhI2R4tgYeOXHFBhYYKc
+         WVJQ==
+X-Gm-Message-State: ANhLgQ24HEL7hHeGqT9Z1P3rEff51eC1jAlMYmMFqeBbH9vcF3uwuACj
+        Cx6zG94lqM3kySSfDutUUmbEnQVYVUE=
+X-Google-Smtp-Source: ADFU+vvUBTriJUzSoAhQ83O7kqUdIwc7EwdYs9zzcJzykocxU5kcGZKaISa8e/g82EZezrvVum7ndg==
+X-Received: by 2002:adf:9e8b:: with SMTP id a11mr3982811wrf.32.1583501350851;
+        Fri, 06 Mar 2020 05:29:10 -0800 (PST)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t14sm16919542wrp.63.2020.03.06.05.29.08
+        by smtp.gmail.com with ESMTPSA id y10sm12964973wma.26.2020.03.06.05.29.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 05:29:09 -0800 (PST)
+        Fri, 06 Mar 2020 05:29:10 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
@@ -53,9 +53,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
         alexandre.torgue@st.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v3 09/10] flow_offload: introduce "disabled" HW stats type and allow it in mlxsw
-Date:   Fri,  6 Mar 2020 14:28:55 +0100
-Message-Id: <20200306132856.6041-10-jiri@resnulli.us>
+Subject: [patch net-next v3 10/10] sched: act: allow user to specify type of HW stats for a filter
+Date:   Fri,  6 Mar 2020 14:28:56 +0100
+Message-Id: <20200306132856.6041-11-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200306132856.6041-1-jiri@resnulli.us>
 References: <20200306132856.6041-1-jiri@resnulli.us>
@@ -68,45 +68,208 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Introduce new type for disabled HW stats and allow the value in
-mlxsw offload.
+Currently, user who is adding an action expects HW to report stats,
+however it does not have exact expectations about the stats types.
+That is aligned with TCA_ACT_HW_STATS_TYPE_ANY.
+
+Allow user to specify the type of HW stats for an action and require it.
+
+Pass the information down to flow_offload layer.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v2->v3:
+- removed "mixed" bool init
 - moved to bitfield
+- removed "inline"
 v1->v2:
-- moved to action
+- moved the stats attr from cls_flower (filter) to any action
+- rebased on top of cookie offload changes
+- adjusted the patch description a bit
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c | 2 +-
- include/net/flow_offload.h                            | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ include/net/act_api.h        |  4 ++++
+ include/uapi/linux/pkt_cls.h | 22 ++++++++++++++++++++++
+ net/sched/act_api.c          | 36 ++++++++++++++++++++++++++++++++++++
+ net/sched/cls_api.c          |  7 +++++++
+ 4 files changed, 69 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 4bf3ac1cb20d..88aa554415df 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -36,7 +36,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
- 		if (err)
- 			return err;
--	} else {
-+	} else if (act->hw_stats_type != FLOW_ACTION_HW_STATS_TYPE_DISABLED) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
- 		return -EOPNOTSUPP;
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 71347a90a9d1..41337c7fc728 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -41,6 +41,7 @@ struct tc_action {
+ 	struct tc_cookie	__rcu *act_cookie;
+ 	struct tcf_chain	__rcu *goto_chain;
+ 	u32			tcfa_flags;
++	u8			hw_stats_type;
+ };
+ #define tcf_index	common.tcfa_index
+ #define tcf_refcnt	common.tcfa_refcnt
+@@ -52,6 +53,9 @@ struct tc_action {
+ #define tcf_rate_est	common.tcfa_rate_est
+ #define tcf_lock	common.tcfa_lock
+ 
++#define TCA_ACT_HW_STATS_TYPE_ANY (TCA_ACT_HW_STATS_TYPE_IMMEDIATE | \
++				   TCA_ACT_HW_STATS_TYPE_DELAYED)
++
+ /* Update lastuse only if needed, to avoid dirtying a cache line.
+  * We use a temp variable to avoid fetching jiffies twice.
+  */
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 449a63971451..81cc1a869588 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -17,6 +17,7 @@ enum {
+ 	TCA_ACT_PAD,
+ 	TCA_ACT_COOKIE,
+ 	TCA_ACT_FLAGS,
++	TCA_ACT_HW_STATS_TYPE,
+ 	__TCA_ACT_MAX
+ };
+ 
+@@ -24,6 +25,27 @@ enum {
+ 					 * actions stats.
+ 					 */
+ 
++/* tca HW stats type
++ * When user does not pass the attribute, he does not care.
++ * It is the same as if he would pass the attribute with
++ * all supported bits set.
++ * In case no bits are set, user is not interested in getting any HW statistics.
++ */
++#define TCA_ACT_HW_STATS_TYPE_IMMEDIATE (1 << 0) /* Means that in dump, user
++						  * gets the current HW stats
++						  * state from the device
++						  * queried at the dump time.
++						  */
++#define TCA_ACT_HW_STATS_TYPE_DELAYED (1 << 1) /* Means that in dump, user gets
++						* HW stats that might be out
++						* of date for some time, maybe
++						* couple of seconds. This is
++						* the case when driver polls
++						* stats updates periodically
++						* or when it gets async stats update
++						* from the device.
++						*/
++
+ #define TCA_ACT_MAX __TCA_ACT_MAX
+ #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
+ #define TCA_ACT_MAX_PRIO 32
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 8c466a712cda..aa7b737fed2e 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -185,6 +185,7 @@ static size_t tcf_action_shared_attrs_size(const struct tc_action *act)
+ 	return  nla_total_size(0) /* action number nested */
+ 		+ nla_total_size(IFNAMSIZ) /* TCA_ACT_KIND */
+ 		+ cookie_len /* TCA_ACT_COOKIE */
++		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_HW_STATS_TYPE */
+ 		+ nla_total_size(0) /* TCA_ACT_STATS nested */
+ 		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_FLAGS */
+ 		/* TCA_STATS_BASIC */
+@@ -788,6 +789,17 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
  	}
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index d597d500a5df..b700c570f7f1 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -159,6 +159,7 @@ enum flow_action_mangle_base {
- #define FLOW_ACTION_HW_STATS_TYPE_DELAYED BIT(1)
- #define FLOW_ACTION_HW_STATS_TYPE_ANY (FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE | \
- 				       FLOW_ACTION_HW_STATS_TYPE_DELAYED)
-+#define FLOW_ACTION_HW_STATS_TYPE_DISABLED 0
+ 	rcu_read_unlock();
  
- typedef void (*action_destr)(void *priv);
++	if (a->hw_stats_type != TCA_ACT_HW_STATS_TYPE_ANY) {
++		struct nla_bitfield32 hw_stats_type = {
++			a->hw_stats_type,
++			TCA_ACT_HW_STATS_TYPE_ANY,
++		};
++
++		if (nla_put(skb, TCA_ACT_HW_STATS_TYPE, sizeof(hw_stats_type),
++			    &hw_stats_type))
++			goto nla_put_failure;
++	}
++
+ 	if (a->tcfa_flags) {
+ 		struct nla_bitfield32 flags = { a->tcfa_flags,
+ 						a->tcfa_flags, };
+@@ -854,7 +866,23 @@ static struct tc_cookie *nla_memdup_cookie(struct nlattr **tb)
+ 	return c;
+ }
  
++static u8 tcf_action_hw_stats_type_get(struct nlattr *hw_stats_type_attr)
++{
++	struct nla_bitfield32 hw_stats_type_bf;
++
++	/* If the user did not pass the attr, that means he does
++	 * not care about the type. Return "any" in that case
++	 * which is setting on all supported types.
++	 */
++	if (!hw_stats_type_attr)
++		return TCA_ACT_HW_STATS_TYPE_ANY;
++	hw_stats_type_bf = nla_get_bitfield32(hw_stats_type_attr);
++	return hw_stats_type_bf.value;
++}
++
+ static const u32 tca_act_flags_allowed = TCA_ACT_FLAGS_NO_PERCPU_STATS;
++static const u32 tca_act_hw_stats_type_allowed = TCA_ACT_HW_STATS_TYPE_ANY;
++
+ static const struct nla_policy tcf_action_policy[TCA_ACT_MAX + 1] = {
+ 	[TCA_ACT_KIND]		= { .type = NLA_STRING },
+ 	[TCA_ACT_INDEX]		= { .type = NLA_U32 },
+@@ -863,6 +891,8 @@ static const struct nla_policy tcf_action_policy[TCA_ACT_MAX + 1] = {
+ 	[TCA_ACT_OPTIONS]	= { .type = NLA_NESTED },
+ 	[TCA_ACT_FLAGS]		= { .type = NLA_BITFIELD32,
+ 				    .validation_data = &tca_act_flags_allowed },
++	[TCA_ACT_HW_STATS_TYPE]	= { .type = NLA_BITFIELD32,
++				    .validation_data = &tca_act_hw_stats_type_allowed },
+ };
+ 
+ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+@@ -871,6 +901,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 				    bool rtnl_held,
+ 				    struct netlink_ext_ack *extack)
+ {
++	u8 hw_stats_type = TCA_ACT_HW_STATS_TYPE_ANY;
+ 	struct nla_bitfield32 flags = { 0, 0 };
+ 	struct tc_action *a;
+ 	struct tc_action_ops *a_o;
+@@ -903,6 +934,8 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 				goto err_out;
+ 			}
+ 		}
++		hw_stats_type =
++			tcf_action_hw_stats_type_get(tb[TCA_ACT_HW_STATS_TYPE]);
+ 		if (tb[TCA_ACT_FLAGS])
+ 			flags = nla_get_bitfield32(tb[TCA_ACT_FLAGS]);
+ 	} else {
+@@ -953,6 +986,9 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 	if (!name && tb[TCA_ACT_COOKIE])
+ 		tcf_set_action_cookie(&a->act_cookie, cookie);
+ 
++	if (!name)
++		a->hw_stats_type = hw_stats_type;
++
+ 	/* module count goes up only when brand new policy is created
+ 	 * if it exists and is only bound to in a_o->init() then
+ 	 * ACT_P_CREATED is not returned (a zero is).
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 4e766c5ab77a..e91448640a4f 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3464,6 +3464,10 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 	struct tc_action *act;
+ 	int i, j, k, err = 0;
+ 
++	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_ANY != FLOW_ACTION_HW_STATS_TYPE_ANY);
++	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_IMMEDIATE != FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE);
++	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_DELAYED != FLOW_ACTION_HW_STATS_TYPE_DELAYED);
++
+ 	if (!exts)
+ 		return 0;
+ 
+@@ -3476,6 +3480,9 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 		err = tcf_act_get_cookie(entry, act);
+ 		if (err)
+ 			goto err_out_locked;
++
++		entry->hw_stats_type = act->hw_stats_type;
++
+ 		if (is_tcf_gact_ok(act)) {
+ 			entry->id = FLOW_ACTION_ACCEPT;
+ 		} else if (is_tcf_gact_shot(act)) {
 -- 
 2.21.1
 
