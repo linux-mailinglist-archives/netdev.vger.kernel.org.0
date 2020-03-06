@@ -2,97 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB6F117C89E
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F4717C8A8
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 00:04:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbgCFW7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 17:59:18 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45407 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726194AbgCFW7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:59:17 -0500
-Received: by mail-wr1-f65.google.com with SMTP id v2so4163620wrp.12
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:59:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N+DMGlWCMv0Ipzx2fhL5HIAhrMhMw20ncP7sjYlFs0k=;
-        b=J7OzAuhhnEvZarTAQUumDQ1KT546m8oizxrIUm6kNOWjINWCbmj03lh4CSCYSTj09o
-         7T3CedXfVqRxdgtlOftJDB8LMcNp4Ymm9TNvIg9KBijwDDDZDDCPHfKX+89UncVU+Pai
-         vFiMhBupYfrZ+uOOA2766OV0ZFWklamE+D3HCdSUVvkXzvQ17I3ivif8EJk5ky9k/r6/
-         /K+Rp0dn0zh9ul2TA3EkprMDAEdyok7l//QibII8uwdYWYGguUsA7VlJxIow/rtg8/Li
-         hMLnWUwiNGZDe7ccRvHwu1uMPKxWVndbgS0SCj3mbLFpB1lRdTt8cMklhYW6BPPTLH2n
-         HbDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=N+DMGlWCMv0Ipzx2fhL5HIAhrMhMw20ncP7sjYlFs0k=;
-        b=ZaZGxzrJ30+97JhKMSplmgJLnV5/AkQlSrkzsyn/FhOd0CUQ2xlTD/mgjQaVy7u9xO
-         n/0lVF6VyckX7n0+m9K/SW2vPQZYXCso082/thX7lIep8ayyMzyZafIxzqNtpj49uST0
-         YhO59c47oBtv0UOlsS5TPmA6Dtsw3nKjFKxyvr1Mx6SAz1ut9mb1SgVAJe7PT9dEr8NL
-         fK6k1PkfiFTFHVu3e/SQZ2KLKqObQhjoLDrj3JQS7MFCrZM+slsuLTjMZFUxUveZIzN6
-         BsYfB1LFUHF7X6UUJxhGaTgNpOUf984LEAXe2b5MEhEZdowP5VjBWooIS3+iOC+y/rBk
-         RH8Q==
-X-Gm-Message-State: ANhLgQ0y/HG6j3/8RflLJxvY7En2FR+AE1cNY8+6wRqRHdLixo7ho6OH
-        d9ycKfp/hWlRo5RfSgAvHZXGBU2g
-X-Google-Smtp-Source: ADFU+vuaMCJ5GUV5CbScdtoct6+P4HfreABV1lLV3SXmTQEHmqG3xSrRqO8h/QeaUuyA1T34jDvtZw==
-X-Received: by 2002:adf:b19d:: with SMTP id q29mr6017910wra.211.1583535554961;
-        Fri, 06 Mar 2020 14:59:14 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:1447:bded:797c:45a5? (p200300EA8F2960001447BDED797C45A5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1447:bded:797c:45a5])
-        by smtp.googlemail.com with ESMTPSA id z11sm15191150wmd.47.2020.03.06.14.59.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2020 14:59:14 -0800 (PST)
-Subject: [PATCH net-next 4/4] r8169: remove now unneeded barrier in rtl_tx
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
-Message-ID: <855fccd1-86d4-7f02-b202-a7e0240e677e@gmail.com>
-Date:   Fri, 6 Mar 2020 23:58:50 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726359AbgCFXEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 18:04:30 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:54634 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbgCFXEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 18:04:30 -0500
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jAM0Y-0005gY-Ev; Sat, 07 Mar 2020 00:03:54 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id C92FA104088; Sat,  7 Mar 2020 00:03:52 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Anchal Agarwal <anchalag@amazon.com>, mingo@redhat.com,
+        bp@alien8.de, hpa@zytor.com, x86@kernel.org,
+        boris.ostrovsky@oracle.com, jgross@suse.com,
+        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
+        sstabellini@kernel.org, konrad.wilk@oracle.com,
+        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
+        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
+        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
+        anchalag@amazon.com, xen-devel@lists.xenproject.org,
+        vkuznets@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
+        fllinden@amaozn.com, benh@kernel.crashing.org
+Subject: Re: [RFC PATCH v3 07/12] genirq: Shutdown irq chips in suspend/resume during hibernation
+In-Reply-To: <e782c510916c8c05dc95ace151aba4eced207b31.1581721799.git.anchalag@amazon.com>
+Date:   Sat, 07 Mar 2020 00:03:52 +0100
+Message-ID: <87ftelaxwn.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until ae84bc187337 ("r8169: don't use bit LastFrag in tx descriptor
-after send") we used to access another bit in the descriptor, therefore
-it seems the barrier was needed. Since this commit DescOwn is the
-only bit we're interested in, so the barrier isn't needed any longer.
+Anchal Agarwal <anchalag@amazon.com> writes:
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 ------
- 1 file changed, 6 deletions(-)
+> There are no pm handlers for the legacy devices, so during tear down
+> stale event channel <> IRQ mapping may still remain in the image and
+> resume may fail. To avoid adding much code by implementing handlers for
+> legacy devices, add a new irq_chip flag IRQCHIP_SHUTDOWN_ON_SUSPEND which
+> when enabled on an irq-chip e.g xen-pirq, it will let core suspend/resume
+> irq code to shutdown and restart the active irqs. PM suspend/hibernation
+> code will rely on this.
+> Without this, in PM hibernation, information about the event channel
+> remains in hibernation image, but there is no guarantee that the same
+> event channel numbers are assigned to the devices when restoring the
+> system. This may cause conflict like the following and prevent some
+> devices from being restored correctly.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8a707d67c..181b35b78 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4397,12 +4397,6 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 		if (status & DescOwn)
- 			break;
- 
--		/* This barrier is needed to keep us from reading
--		 * any other fields out of the Tx descriptor until
--		 * we know the status of DescOwn
--		 */
--		dma_rmb();
--
- 		rtl8169_unmap_tx_skb(tp, entry);
- 
- 		if (skb) {
--- 
-2.25.1
+The above is just an agglomeration of words and acronyms and some of
+these sentences do not even make sense. Anyone who is not aware of event
+channels and whatever XENisms you talk about will be entirely
+confused. Changelogs really need to be understandable for mere mortals
+and there is no space restriction so acronyms can be written out.
 
+Something like this:
 
+  Many legacy device drivers do not implement power management (PM)
+  functions which means that interrupts requested by these drivers stay
+  in active state when the kernel is hibernated.
+
+  This does not matter on bare metal and on most hypervisors because the
+  interrupt is restored on resume without any noticable side effects as
+  it stays connected to the same physical or virtual interrupt line.
+
+  The XEN interrupt mechanism is different as it maintains a mapping
+  between the Linux interrupt number and a XEN event channel. If the
+  interrupt stays active on hibernation this mapping is preserved but
+  there is unfortunately no guarantee that on resume the same event
+  channels are reassigned to these devices. This can result in event
+  channel conflicts which prevent the affected devices from being
+  restored correctly.
+
+  One way to solve this would be to add the necessary power management
+  functions to all affected legacy device drivers, but that's a
+  questionable effort which does not provide any benefits on non-XEN
+  environments.
+
+  The least intrusive and most efficient solution is to provide a
+  mechanism which allows the core interrupt code to tear down these
+  interrupts on hibernation and bring them back up again on resume. This
+  allows the XEN event channel mechanism to assign an arbitrary event
+  channel on resume without affecting the functionality of these
+  devices.
+  
+  Fortunately all these device interrupts are handled by a dedicated XEN
+  interrupt chip so the chip can be marked that all interrupts connected
+  to it are handled this way. This is pretty much in line with the other
+  interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
+
+  Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
+  it the core interrupt suspend/resume paths.
+
+Hmm?
+
+> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+
+Not that I care much, but now that I've written both the patch and the
+changelog you might change that attribution slightly. For completeness
+sake:
+
+ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+Thanks,
+
+        tglx
