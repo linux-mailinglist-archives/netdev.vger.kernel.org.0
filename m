@@ -2,234 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 119CD17DC4F
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 10:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EED5617DC99
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 10:42:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgCIJWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 05:22:19 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:58822 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725796AbgCIJWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 05:22:18 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D4EEB40064;
-        Mon,  9 Mar 2020 09:22:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1583745738; bh=/Me148QZ8ckeM03vekb8lkVBetYzZbsMU8smEOfgd1c=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=IWc7ph/jNbtP1DgUeydQ6GrquurupV/oZ49Gq+HbHH/pDtuNrTfAYhWmJlz+6iNDb
-         Ka6vi/HZFWKE2CREezJgd9mNiyJvLejwBbdWQRUwd0tHXwLEKDIOGHkEj5GXkqpdrD
-         xqYQYQRgfmcfLYRnutzfmAX853qeowfns/MPeCbNaO5YCKihmvuijXGCDk7ysnKA/9
-         kQZcdkakOzhxeeG8hqmh1Lndn8jWpytF/NwF+5zmx8L9venqdZycfIqBe03Tw4h7EX
-         d4A4+7ZPB+pRVFTexKhhucgipWMgJIN2hCbsNCHhUVm9i23DncYh6Pl0h8b6n4GMPF
-         WpDe4w60wehDQ==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id B3267A0067;
-        Mon,  9 Mar 2020 09:22:14 +0000 (UTC)
-Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 9 Mar 2020 02:22:14 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Mon, 9 Mar 2020 02:22:13 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WPtYzB6+DjRo0BSq3GbhR3stNdTy5MZ4ZxJVrsm+30nOUx4t1nrpaDiVqd/Ko6mm+q6uggAYvovZ8tP54CNM8QZdylEMWurRZpgYPqzQbpjIaJEdKM8087THLmoRECKVlHbZfhbr9bjuY02340xOv1nMDZaUY12JTQan7X5ncfG4u9h5T79Cq6mpwEyLKa/dzdjKTZygANJ/b0iPBeVFxDYUtDB5d6n4f8hQTpLh6L4YybBblsXlW5ClxRlTxqP6CIDmVP/zl9c+kUxBrZQj3UbMFswHB3VWawT+LF7lNULTKL+ymV1sLCzFehbyW5rPlyibgjjPQCY933iuuLqULQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufpYa88ph5YLFZaLlT6DnjsHiR26YQXh7Uya4vuoMxU=;
- b=NiuHrRY411CuhYbVHDAQmPbcbOvAFJJci25Ys12B9g0Q+eE2QSJ1ip45RU2ILUXE7xSP0jdDQSd+++8GsKtRHBi9FNTaRJr/nHynhxvjoz2S+WFO/WT6sb9+HSxPJrz4+ZdKERw2Ap/EjcLOYqGfcfZkefyYhpKoosh8XBaf9Dp0VZeO3/cBINbNLqVom5ePyOX9jBzt3QMlyhgtSHO2ZV2DiU8SSoYrEGsQ0PFbqJ3UlQqPwWDwOmGZ4NrVnuqTFedhLX8AAhIdSXnNYjlbFAD6pOc/jW8S/w93hLmtKDTR5Ui6jG5grn7zeqK4w+Rmnk6tX/b0ev+jx9FXtSQqJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufpYa88ph5YLFZaLlT6DnjsHiR26YQXh7Uya4vuoMxU=;
- b=aXGrM3dnFLHLUzG29L3I7r0Xp7ZT/A/n/AJD2+hLNSnB5qwLNmCryz+Dp0j9S2iKmsz2iOSTBNZjrJACm5OGYIVlfkzzkeEdaM2FeBKnKNv5ZlMICf5iTp1yWel9zj0dc0rS53/KC5OeylyD6w1VftnlgNHh8FVOn7RLz7uPyX4=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (2603:10b6:408:6e::17)
- by BN8PR12MB3345.namprd12.prod.outlook.com (2603:10b6:408:64::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Mon, 9 Mar
- 2020 09:22:12 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa%7]) with mapi id 15.20.2793.013; Mon, 9 Mar 2020
- 09:22:12 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     "Chng, Jack Ping" <jack.ping.chng@linux.intel.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: Re:[RFC net-next] net: phy: Add basic support for Synopsys XPCS
- using a PHY driver
-Thread-Topic: Re:[RFC net-next] net: phy: Add basic support for Synopsys XPCS
- using a PHY driver
-Thread-Index: AQHVyhMHPh1TkUf6pU+JUVzLFdFzk6fomWeAgAAAjSCAAAp/gIAKvyCAgAAHGACAAANl4IAACl2AgBdyL2mANWk/gA==
-Date:   Mon, 9 Mar 2020 09:22:12 +0000
-Message-ID: <BN8PR12MB3266C896974574439AFEA0D6D3FE0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20200120113935.GC25745@shell.armlinux.org.uk>
- <e942b414-08bd-0305-9128-26666a7a5d5a@linux.intel.com>
- <99652f12-c7b4-756d-d169-4770cf1f0d96@linux.intel.com>
-In-Reply-To: <99652f12-c7b4-756d-d169-4770cf1f0d96@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0aa31fe2-0a6e-4220-b6b7-08d7c40b59e3
-x-ms-traffictypediagnostic: BN8PR12MB3345:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB3345C87DA9098A60453FD99AD3FE0@BN8PR12MB3345.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-forefront-prvs: 0337AFFE9A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(346002)(136003)(376002)(366004)(39860400002)(189003)(199004)(26005)(7696005)(8676002)(316002)(8936002)(33656002)(52536014)(6916009)(2906002)(5660300002)(81166006)(81156014)(6506007)(966005)(66446008)(66556008)(55016002)(76116006)(186003)(66946007)(4326008)(71200400001)(66476007)(4744005)(86362001)(478600001)(54906003)(64756008)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3345;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VdCtP0htTFl0NZgzvRg/R46vvJWp7ARa9r48b0md01hv9CcYn7wmwCKgw3opS8HAcT68UsoRJFnus8uq9EycupK0sn8eLiZoXJu2OsKg7q3Gb4oZXs3jI+fIoxqH7gY1BKXvGOMqSQjeVdRvzYDmgaBA0H4Yk7if7+LeKechEqwuLTRuaBY1J/r+gstXJ6cCIGZu1bvsNPWZqqX35FePmhuadCUQddp44kAMorXN2HvgXnBHoWi2/M3WTTBy2rLIvdaD16W15bjE9c4tQvjIY1QOQrPftQ/hkS/2U/E+QrAGXWM6q+1no9vynGMeqOpaq4F7C8PecZyJaBPsDhLtIeYO/qoNWfv/a/hGodfsZTq6Vbn8nqWzkbTxUHO3aqJHXIaMtbpvwCLtoZF7nf1487NGm9KvFemYOW2JQp9W4y33Jk8EuGdXGmLQMQzzMmmMK5XqixJbucSdoXRQ2mSsj6EinWRRgSShcBsG86oxkupK5/fx5iOCn9Bn+Sr2ucv0vCzY0gf3BD/wiODr8ShS/w==
-x-ms-exchange-antispam-messagedata: anUWSvVLw6FhZ6m6+ax3S5pgH9I4DJpyLu5LO7aQHUyTD1Tzx/MBmZtLkfC3S5vWAtaWbpwP1YJ11yUGx8wQfmipq2uF2Uwn04vv300BkcCneY9ZjwsGS1EjGF1G0Xt3pov5yZk0tL0h2QfcEJOOPw==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1726446AbgCIJmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 05:42:40 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:23657 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725942AbgCIJmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 05:42:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583746958;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EqIeFXSs2Zl2NDVKTxiSYgSso3t8lUiwADBPpfXPCPQ=;
+        b=IiInnG3Zhfd2QUjMnRX+wrIB04hpozeBS7qNW3tsh1TFJqHFp+ABePSWba51x4YUqMZXIJ
+        H76zCMK+7AL8YQRnr+s1QRI4ffwJPKLjNrzLqo8qXNcxxSOONh88oAV3kPMmMuWP0PR+gu
+        ZJFdq3LQcdSjAMY/g3Rl7CeNNXg4j2s=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-219-ehnx1jVNNAaQYPB4rQJ6DQ-1; Mon, 09 Mar 2020 05:42:37 -0400
+X-MC-Unique: ehnx1jVNNAaQYPB4rQJ6DQ-1
+Received: by mail-wr1-f69.google.com with SMTP id b11so2696740wru.21
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 02:42:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=EqIeFXSs2Zl2NDVKTxiSYgSso3t8lUiwADBPpfXPCPQ=;
+        b=SfSIjzu3syEz6yFh7BIoJlY3XI8CSRAiLAx08ueqbLcRBZg7pI6ZV/h6av8cLv6SMB
+         Fk2b0yHfC/Z6hmh3SEdyKAT04Q32XP1jT5pXP09P/e7qIHqNNK9F7Pb/VEXn9N/6yJht
+         rgeqZ4aVns1VymXyqIaDY+B2SskTkWtga4SREIsEGwCsxjj/t5u/ZWUjqNs2SbGIdvu5
+         0Q9KadlxW4H6T6XmPAjE3AEE6++PiLNmTq7O2EsFhraYMAQ4AD7J0XjKohCYnoeIV4Fy
+         Ty7PB2F7q/DzIcvNA0avPBo4xTcsa9YVFlFbeW2b5buN9WnBlaXDqQqjD04+veQ4zse4
+         MAbQ==
+X-Gm-Message-State: ANhLgQ3BUFBTsNmZK8PLaP/zrBVyynkJyw6klppPChhkeDZ5le/gclpS
+        3OEWjGnY76gXp/PluVRc3qgElXPinDCd5yz3KrVEqsNkEjk93xSgVf0F66XpEFz+LlJjwSjDvfE
+        3KFru0YvTyw8sxG8r
+X-Received: by 2002:a05:600c:2056:: with SMTP id p22mr18411961wmg.136.1583746956244;
+        Mon, 09 Mar 2020 02:42:36 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vtMUu8y0WNP43nmV5+Ur6NQjrwm+6xeymdFwjyvFUMBKDdL9vavWsyoYLn6bMKaRKvHNPLvYg==
+X-Received: by 2002:a05:600c:2056:: with SMTP id p22mr18411937wmg.136.1583746955903;
+        Mon, 09 Mar 2020 02:42:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id c11sm60362146wrp.51.2020.03.09.02.42.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 02:42:34 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9226218034F; Fri,  6 Mar 2020 11:42:31 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
+In-Reply-To: <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
+References: <87pndt4268.fsf@toke.dk> <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net> <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk> <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk> <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk> <20200305163444.6e3w3u3a5ufphwhp@ast-mbp> <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net> <20200305225027.nazs3gtlcw3gjjvn@ast-mbp> <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net> <878skd3mw4.fsf@toke.dk> <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 06 Mar 2020 11:42:31 +0100
+Message-ID: <871rq53gtk.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa31fe2-0a6e-4220-b6b7-08d7c40b59e3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2020 09:22:12.6885
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: q1DUBxJaGbUPfZ8h2xEg1ZOZzqxF5SjnA00sm3QDv8USX1HGmVs6leNacESNzIjn4Hvwb3WNsWfNF/oxK0jsgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3345
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chng, Jack Ping <jack.ping.chng@linux.intel.com>
-Date: Feb/04/2020, 09:41:35 (UTC+00:00)
+Daniel Borkmann <daniel@iogearbox.net> writes:
+
+> On 3/6/20 9:31 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>> On 3/5/20 11:50 PM, Alexei Starovoitov wrote:
+>>>> On Thu, Mar 05, 2020 at 11:34:18PM +0100, Daniel Borkmann wrote:
+>>>>> On 3/5/20 5:34 PM, Alexei Starovoitov wrote:
+>>>>>> On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke H=C3=B8iland-J=C3=B8r=
+gensen wrote:
+>>>>>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>>>>>>> On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke H=C3=B8iland-J=C3=
+=B8rgensen wrote:
+>>>>> [...]
+>>>>>>> Anyway, what I was trying to express:
+>>>>>>>
+>>>>>>>> Still that doesn't mean that pinned link is 'immutable'.
+>>>>>>>
+>>>>>>> I don't mean 'immutable' in the sense that it cannot be removed eve=
+r.
+>>>>>>> Just that we may end up in a situation where an application can see=
+ a
+>>>>>>> netdev with an XDP program attached, has the right privileges to mo=
+dify
+>>>>>>> it, but can't because it can't find the pinned bpf_link. Right? Or =
+am I
+>>>>>>> misunderstanding your proposal?
+>>>>>>>
+>>>>>>> Amending my example from before, this could happen by:
+>>>>>>>
+>>>>>>> 1. Someone attaches a program to eth0, and pins the bpf_link to
+>>>>>>>       /sys/fs/bpf/myprog
+>>>>>>>
+>>>>>>> 2. eth0 is moved to a different namespace which mounts a new sysfs =
+at
+>>>>>>>       /sys
+>>>>>>>
+>>>>>>> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessibl=
+e, so
+>>>>>>>       xdp-loader can't get access to the original bpf_link; but the=
+ XDP
+>>>>>>>       program is still attached to eth0.
+>>>>>>
+>>>>>> The key to decide is whether moving netdev across netns should be al=
+lowed
+>>>>>> when xdp attached. I think it should be denied. Even when legacy xdp
+>>>>>> program is attached, since it will confuse user space managing part.
+>>>>>
+>>>>> There are perfectly valid use cases where this is done already today =
+(minus
+>>>>> bpf_link), for example, consider an orchestrator that is setting up t=
+he BPF
+>>>>> program on the device, moving to the newly created application pod du=
+ring
+>>>>> the CNI call in k8s, such that the new pod does not have the /sys/fs/=
+bpf/
+>>>>> mount instance and if unprivileged cannot remove the BPF prog from th=
+e dev
+>>>>> either. We do something like this in case of ipvlan, meaning, we atta=
+ch a
+>>>>> rootlet prog that calls into single slot of a tail call map, move it =
+to the
+>>>>> application pod, and only out of Cilium's own pod and it's pod-local =
+bpf fs
+>>>>> instance we manage the pinned tail call map to update the main progra=
+ms in
+>>>>> that single slot w/o having to switch any netns later on.
+>>>>
+>>>> Right. You mentioned this use case before, but I managed to forget abo=
+ut it.
+>>>> Totally makes sense for prog to stay attached to netdev when it's move=
+d.
+>>>> I think pod manager would also prefer that pod is not able to replace
+>>>> xdp prog from inside the container. It sounds to me that steps 1,2,3 a=
+bove
+>>>> is exactly the desired behavior. Otherwise what stops some application
+>>>> that started in a pod to override it?
+>>>
+>>> Generally, yes, and it shouldn't need to care nor see what is happening=
+ in
+>>> /sys/fs/bpf/ from the orchestrator at least (or could potentially have =
+its
+>>> own private mount under /sys/fs/bpf/ or elsewhere). Ideally, the behavi=
+or
+>>> should be that orchestrator does all the setup out of its own namespace,
+>>> then moves everything over to the newly created target namespace and e.=
+g.
+>>> only if the pod has the capable(cap_sys_admin) permissions, it could me=
+ss
+>>> around with anything attached there, or via similar model as done in [0]
+>>> when there is a master device.
+>>=20
+>> Yup, I can see how this can be a reasonable use case where you *would*
+>> want the locking. However, my concern is that there should be a way for
+>> an admin to recover from this (say, if it happens by mistake, or a
+>> misbehaving application). Otherwise, I fear we'll end up with support
+>> cases where the only answer is "try rebooting", which is obviously not
+>> ideal.
+>
+> I'm not quite sure I follow the concern, if you're an admin and have
+> the right permissions, then you should be able to introspect and
+> change settings like with anything else there is today.
+
+Well, that's what I want to make sure of :)
+
+However, I don't think such introspection is possible today? Or at least
+there's no API exposed to do this, you'll have to go write drgn scripts
+or something. But I expect an admin will want a command like 'xdp unload
+eth0 --yes-i-really-really-mean-this', which would override any locking
+done by bpf_link. So how to implement that? It's not enough to learn
+'this bpf_link is pinned at links/id-123 on bpffs', you'll also need to
+learn on *which* bpffs, and where to find that mountpoint. So how do you
+do that?
+
+Whereas an API that says 'return the bpf_link currently attached to
+ifindex X' would sidestep this issue; but then, that is basically the
+netlink API we have already, except it doesn't have the bpf_link
+abstraction... So why do we need bpf_link?
+
+>>> Last time I looked, there is a down/up cycle on the dev upon netns
+>>> migration and it flushes e.g. attached qdiscs afaik, so there are
+>>> limitations that still need to be addressed. Not sure atm if same is
+>>> happening to XDP right now.
+>>=20
+>> XDP programs will stay attached. devmaps (for redirect) have a notifier
+>> that will remove devices when they move out of a namespace. Not sure if
+>> there are any other issues with netns moves somewhere.
+>>=20
+>>> In this regards veth devices are a bit nicer to work with since
+>>> everything can be attached on hostns ingress w/o needing to worry on
+>>> the peer dev in the pod's netns.
+>>=20
+>> Presumably the XDP EGRESS hook that David Ahern is working on will make
+>> this doable for XDP on veth as well?
+>
+> I'm not sure I see a use-case for XDP egress for Cilium yet, but maybe
+> I'm still lacking a clear picture on why one should use it. We
+> currently use various layers where we orchestrate our BPF programs
+> from the agent. XDP/rx on the phys nic on the one end, BPF sock progs
+> attached to cgroups on the other end of the spectrum. The processing
+> in between on virtual devices is mainly tc/BPF-based since everything
+> is skb based anyway and more flexible also with interaction with the
+> rest of the stack. There is also not this pain of having to linearize
+> all the skbs, but at least there's a path to tackle that.
+
+I agree that there's not really any reason to use XDP on veth as long as
+you'll end up with an skb eventually anyway. The only reason to do
+something different I can think of is if you have an application inside
+a container using AF_XDP, and you want to carry XDP frames all the way
+through to that without ever building an skb. Not really sure this is a
+good deployment model, but I kinda suspect that the NFV guys will want
+to do this eventually...
+
+-Toke
 
-> Currently our network SoC has something like this:
-> XGMAC-> XPCS -> Combo PHY -> PHY
->=20
-> In the xpcs driver probe(), get and calibrate the phy:
->=20
-> priv->phy =3D devm_phy_get(&pdev->dev, "phy");
-> if (IS_ERR(priv->phy)) {
->  =A0=A0=A0 dev_warn(dev, "No phy\n");
->  =A0=A0=A0 return PTR_ERR(priv->phy);
-> }
->=20
-> ret =3D phy_init(priv->phy);
-> if (ret)
->  =A0=A0=A0 return ret;
->=20
-> ret =3D phy_power_on(priv->phy);
-> if (ret) {
->  =A0=A0=A0 phy_exit(priv->phy);
->  =A0=A0=A0 return ret;
-> }
-> ret =3D phy_calibrate(priv->phy);
-> if (ret) {
->  =A0=A0=A0 phy_exit(priv->phy);
->  =A0=A0=A0 return ret;
-> }
->=20
-> xpcs driver needs to handle phy or phy_device depending on the phy?
-
-Apologies for the delayed answer.
-
-I think XPCS should be agnostic of PHY so this should be handled by stmmac=
-=20
-core and=20
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-PHYLINK.
-
-I submitted a new series: https://patchwork.ozlabs.org/project/netdev/list/=
-?series=3D163171
-
-Can you please test it ?
-
----
-Thanks,
-Jose Miguel Abreu
