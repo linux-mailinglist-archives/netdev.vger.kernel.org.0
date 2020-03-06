@@ -2,130 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B61A617BE7C
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D58B17BE75
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727181AbgCFNaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 08:30:18 -0500
-Received: from mail-il1-f194.google.com ([209.85.166.194]:37483 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbgCFNaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:30:17 -0500
-Received: by mail-il1-f194.google.com with SMTP id a6so2038617ilc.4
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:30:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Pg0E53f1mAa6g/1NYUXksaRgV81W69zTft5+Yoc7gDE=;
-        b=Kg8VgctwJ9sl2bTG3rzATydWCYvJWQCE+ermdWX2W6/tL1d4ooTTXJuxucMeR5HrSO
-         1VngudrsPSy6SvXBIf+Y/JC/ayTGHJ6fpURzkse7qM0P31kiOutuJ53gCTgm/4fdXO2/
-         ZK+7UJ0oJ/wyIe0y/TWHPMUsTI7K+WDqulCZDNtCBHys0966gt2n/kZXpPgrDhE1Gfvo
-         87Sp3W/lmVrl6Us1lh/ZORqWtpxOgMOSPZkKnPn6LSXxHmrLaIOR6aGQRitSaxpWzlV7
-         H9ejUcou5Kg7KhqSbUzlR6JhKfG+b3GJnyRWoC6D1Z6JI/nPhmrbV+jmjMERQGj372X0
-         Pt8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Pg0E53f1mAa6g/1NYUXksaRgV81W69zTft5+Yoc7gDE=;
-        b=d2tAeyNdjXq/qgpAthihZ9eRR6VM4WP9gpYFxpPKzzaQLqeNTXUZuC2eSer/M6ozD1
-         WXrM8yGbx/daM8XUaIA874qfE73Xi8teizwnQdJHVUq27lhRuw6Qj9ecNqs0b8MZVdLo
-         cDyQAzPAlccDoRhJNLet6b9cg+71WR4H89UId69pK7sbSjZckEYWgf+PWLbh0eNXfC4C
-         U06rySb/crLS9DdP32v2o9BkkAPsIumvQQtmjfq7H0qBshvEahG9feuD93pW5YSxoEWv
-         Ezcu1ro3m1jaXDhZpiNNXPEo9wpzuhVitLOfBZ22nQPNpCvRJqMKQsPSOEb0CLXypPcL
-         CPIQ==
-X-Gm-Message-State: ANhLgQ1jQnuNqcpTg5cSaeQK0kNI/xh4b8YnCw4v0PYkNcfr9JL8VRyX
-        YR53FA0Z5y9IBCnTEeyq4jvM+Q==
-X-Google-Smtp-Source: ADFU+vtF7Sgabzn4gBNF+Q1WL6hlfCT9H3OiBs3TKH16d/VuIJCgyEsSlOKmaSfuT4a7s2taCKtlBw==
-X-Received: by 2002:a92:d9c4:: with SMTP id n4mr3077709ilq.124.1583501415806;
-        Fri, 06 Mar 2020 05:30:15 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id x6sm7019573ilg.42.2020.03.06.05.30.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2020 05:30:15 -0800 (PST)
-Subject: Re: [PATCH v2 01/17] remoteproc: add IPA notification to q6v5 driver
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        David Miller <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>,
-        Evan Green <evgreen@google.com>,
-        Eric Caruso <ejcaruso@google.com>,
-        Susheel Yadav Yadagiri <syadagir@codeaurora.org>,
-        Chaitanya Pratapa <cpratapa@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Siddharth Gupta <sidgup@codeaurora.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200306042831.17827-1-elder@linaro.org>
- <20200306042831.17827-2-elder@linaro.org> <20200306114941.GO184088@unreal>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <5548579d-179d-b099-afa9-6b76e9fa5a89@linaro.org>
-Date:   Fri, 6 Mar 2020 07:29:23 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1726982AbgCFN3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 08:29:34 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:49402 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726956AbgCFN3e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 08:29:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=THBmUdYwPRAU7pfGzm8vcATV+y44rHXjYSfjuxYGB/M=; b=k7SJ/h/4pgZqmaQ/H0hEegc1Et
+        y0m5qYo+nMKRqYAHbX3KisJT7icfR3d29tDx40yDydllXYCXI964yTKTxFHd4OZRGuiK0lsbw/Ky5
+        WHsuecXs5R1DV5GkTdBZ5/eD1ERNDcNlhV04VvdCvSAXy5nN80MTbbZrfOoITEWab3So=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jAD2c-0004uM-BC; Fri, 06 Mar 2020 14:29:26 +0100
+Date:   Fri, 6 Mar 2020 14:29:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next 0/10] net: dsa: improve serdes integration
+Message-ID: <20200306132926.GA18310@lunn.ch>
+References: <20200305124139.GB25745@shell.armlinux.org.uk>
+ <20200305225407.GD25183@lunn.ch>
+ <20200305234557.GE25745@shell.armlinux.org.uk>
+ <20200306011310.GC2450@lunn.ch>
+ <20200306035720.GD2450@lunn.ch>
+ <20200306103934.GF25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200306114941.GO184088@unreal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200306103934.GF25745@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/6/20 5:49 AM, Leon Romanovsky wrote:
-> On Thu, Mar 05, 2020 at 10:28:15PM -0600, Alex Elder wrote:
->> Set up a subdev in the q6v5 modem remoteproc driver that generates
->> event notifications for the IPA driver to use for initialization and
->> recovery following a modem shutdown or crash.
-
-. . .
-
->> diff --git a/include/linux/remoteproc/qcom_q6v5_ipa_notify.h b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
->> new file mode 100644
->> index 000000000000..0820edc0ab7d
->> --- /dev/null
->> +++ b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
->> @@ -0,0 +1,82 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +
->> +/* Copyright (C) 2019 Linaro Ltd. */
->> +
->> +#ifndef __QCOM_Q6V5_IPA_NOTIFY_H__
->> +#define __QCOM_Q6V5_IPA_NOTIFY_H__
->> +
->> +#if IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY)
+> Unfortunately, that means that CPU and DSA ports without a fixed-link
+> spec will stay down because phylink won't call mac_link_up() - so we're
+> back to the poor integration of phylink for CPU and DSA ports problem.
+> Even if phylink /were/ to call mac_link_up() for that situation,
+> phylink has no information on the speed and duplex for such a port, so
+> speed and duplex would be nonsense.
 > 
-> Why don't you put this guard in the places where such include is called?
-> Or the best variant is to ensure that this include is compiled in only
-> in CONFIG_QCOM_Q6V5_IPA_NOTIFY flows.
-
-I did it this way so the no-op definitions resided in the same header
-file if the config option is not enabled.  And the no-ops were there
-so the calling code didn't have to use #ifdef.
-
-I have no objection to what you suggest.  I did a quick scan for other
-examples like this for guidance and found lots of examples of doing it
-the way I did.
-
-So I'm happy to change it, but would like an additional request to do
-so before I do that work.
-
-Thanks.
-
-					-Alex
-
-> That is more common way to guard internal header files.
+> That conversion is very problematical.
 > 
-> Thanks
+> I do have some patches that solve it by changing phylink, but it's
+> quite a hack - the problem is detecting the uninitialised state in
+> phylink_start(), which is really quite late.  You can find them in my
+> "zii" branch:
 > 
+> net: dsa: mv88e6xxx: split out SPEED_MAX setting
+> net: phylink/dsa: fix DSA and CPU links
+> 
+> So, I think we're back to... what do we do about the broken phylink
+> integration for CPU and DSA ports.
 
+Hi Russell
+
+Here is what i have been playing with:
+
+commit ea4c6b6ad0694a3cd857f504fb5e3a5887ffa062
+Author: Andrew Lunn <andrew@lunn.ch>
+Date:   Wed Feb 12 14:49:18 2020 -0600
+
+    net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed
+    
+    By default, DSA drivers should configure CPU and DSA ports to their
+    maximum speed. In many configurations this is sufficient to make the
+    link work.
+    
+    In some cases it is necessary to configure the link to run slower,
+    e.g. because of limitations of the SoC it is connected to. Or back to
+    back PHYs are used and the PHY needs to be driven in order to
+    establish link. In this case, phylink is used.
+    
+    Only instantiate phylink if it is required. If there is no PHY, or no
+    fixed link properties, phylink can upset a link which works in the
+    default configuration.
+    
+    Fixes: 0e27921816ad ("net: dsa: Use PHYLINK for the CPU/DSA ports")
+    Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 9b54e5a76297..dc4da4dc44f5 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -629,9 +629,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
+ int dsa_port_link_register_of(struct dsa_port *dp)
+ {
+        struct dsa_switch *ds = dp->ds;
++       struct device_node *phy_np;
+ 
+-       if (!ds->ops->adjust_link)
+-               return dsa_port_phylink_register(dp);
++       if (!ds->ops->adjust_link) {
++               phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
++               if (of_phy_is_fixed_link(dp->dn) || phy_np)
++                       return dsa_port_phylink_register(dp);
++               return 0;
++       }
+ 
+        dev_warn(ds->dev,
+                 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
+@@ -646,11 +651,12 @@ void dsa_port_link_unregister_of(struct dsa_port *dp)
+ {
+        struct dsa_switch *ds = dp->ds;
+ 
+-       if (!ds->ops->adjust_link) {
++       if (!ds->ops->adjust_link && dp->pl) {
+                rtnl_lock();
+                phylink_disconnect_phy(dp->pl);
+                rtnl_unlock();
+                phylink_destroy(dp->pl);
++               dp->pl = NULL;
+                return;
+        }
+ 
+
+If we go with this, we can assume we do know the speed, either from
+fixed-link, or the PHY when it established the link.
+
+There is maybe one use case not covered by my patch. A port might just
+have a phy-mode property, e.g. 'rgmii-id', but no fixed link. I took a
+quick look at the usual suspects in DT, and i didn't find an actual
+example of this. And i also need to look at the code pre-phylink
+integration to see if it was actually supported.
+
+	    Andrew
