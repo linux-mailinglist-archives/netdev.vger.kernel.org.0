@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A753E17B569
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 05:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4C817B5B1
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 05:31:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbgCFE2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 23:28:38 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:33584 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgCFE2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 23:28:37 -0500
-Received: by mail-yw1-f65.google.com with SMTP id j186so1128409ywe.0
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 20:28:36 -0800 (PST)
+        id S1727399AbgCFEac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 23:30:32 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:39554 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726974AbgCFE2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 23:28:40 -0500
+Received: by mail-yw1-f68.google.com with SMTP id x184so1086548ywd.6
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 20:28:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SBOHwsMv/HnuybNyOaAqPfh53GkcJWptiQX+bb5jgmg=;
-        b=C5AVNXNsDOIOYpkPwqGWLvSXZgrCG0N5pXWaKuNf+jfB/I+X0A4EhiYftdov4lZ8Nq
-         HwRocRXutIMpWGgdjpvXXL9H83ppclw7tcposUTB0onY8uFALG4YLJdKNsmjrPjoZK/S
-         ZRefxB7zE1AbFSCv17r7UKqYz4OlkRBWBDxWXjMM/BimTJgp5KcZ0qb4D6qmyxU5jEiG
-         p2gipPOXQpUu7vyWsnAWSn44sj6L8GkAE94H2gA5MWvSvJCZZskHt/ODHCtCkuYZXR2q
-         at8n4afogG9hKPNflA3fiMFfViiCSMc4gW7/Rzrq2qM+PeIGTG2hc6va7c4fax/uOG+1
-         KqbA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lsl9uUeVXVFev0pr72IiS4wSx+T+dt+j5N8Q5snoWc4=;
+        b=hpxLlEnqh3cBFo/xoDkNmA/6zyHRuaVTMieAIMgbR7/YU6RoRqp9ErFcWegiVlWSYT
+         gaSDvjjl2o7FmJpZ1OoeqIqivqROGdBrjsd8lLUrJtwKNQpmseLeEn7Yn9x0gQduKoae
+         g1dEC8sId362ONpMrYixof82EPoSW3SqlgJxRq5Y5iCeEM9Au7xuxP8oJV1Mx9u2JOkK
+         Pi0IcXyIgD7i5eYJiPVR4M10vJGAbE1v3JwqA6cx8J/kyX9K+DnlnTsffwAS/A9Unzy+
+         Rr11prIMbuTUMiNjgcRSdEFFUkIXvv7cDAyz8uGaKt99PDNOHt238m7g7fy87OW1VmJP
+         PYDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SBOHwsMv/HnuybNyOaAqPfh53GkcJWptiQX+bb5jgmg=;
-        b=QudWG8pqCuIEX6YFEurRi2V1f1BE8KeJ5Nsyv8ugnoWatc9DE4SnYZ9l/NWD1CWpZI
-         bYGnHq8DQcFTHXhu1mxpMdt3LER7QDYMq5JrUNHkukN4nDcI1PBLm5Puw/6e2phw4AdJ
-         VDKEYlx8K6loatNnz7Z1JdWiZYnmTc/YnMpf120Q7S1vGjPY7UkMXlNoG1G5+mKhuHgp
-         WDQ0aHyDhODMWnqHw1XmwnS+RYFDOiv1LhcNspdThtTQRtTc1yx/QoqCNKwcHjzZtewU
-         BapzGl2GNqLskLXeiXXFUMBICnmv5XV35K6GEXBM7jCMsExmSJdysEy0We0l4tT/b8JE
-         JUnQ==
-X-Gm-Message-State: ANhLgQ2UvkN0uBYB1VJ/er1wt+pH/uzeviEwXRbgSiZQz3YrPJQVHmJq
-        /Fv2vo0lBlN8SM9Tcrodq+3hFg==
-X-Google-Smtp-Source: ADFU+vu/+zbicS6mGfwIeKlASfFOshwP8HTQ4OoR5foKUaSrc8WIFtwNUclVpvWWScqtEnujz8ey3Q==
-X-Received: by 2002:a25:3496:: with SMTP id b144mr1793102yba.356.1583468916167;
-        Thu, 05 Mar 2020 20:28:36 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lsl9uUeVXVFev0pr72IiS4wSx+T+dt+j5N8Q5snoWc4=;
+        b=PQZJtPhKQYKNYUdPSj2vLjPX4NpN2Kl8gVsXdne1r5BdjyqFpdYLzWQYuJF7ImZbiZ
+         2dQxMvl8HYRUPhKeOaLlubz64ijjhvQv03Cms2osczB5tAtT/nLASB5tQiSzRFQnO8bm
+         nl8joQgwVcQ7VAwcgpuhs8lBcZepKyGYzzo5n9s1sUiPIWg9Cum/F6ZIBXnFwQDG9TF8
+         8+8UPaFPt0IqHa5oq7Jnlz8CdJYgDFDEV2xPbBYrZV23wx3oG8gSC26LKz8F0XWRKbSa
+         Vh/nspRXHo6DHawM4iFzKZdXVAkTH7jzF6Rt7RnnwoHXzRHjqDlRgUslSjRw0HOg7H3O
+         Fm+g==
+X-Gm-Message-State: ANhLgQ1Y1ecG1jDQkIxLP7UZdnnydw6NgZrNHt/LukToyUR3w62DH9cz
+        CNPpkW4VasNWLq2BaKzaS7KGB1IqZoM=
+X-Google-Smtp-Source: ADFU+vuRYxZOZPphsdvOnDb45ug/CKm8ATDPH49kPWOEMK/i/l1B0Dp71eC1VbLDKPxgRxBTLDrE3w==
+X-Received: by 2002:a25:3255:: with SMTP id y82mr1799048yby.208.1583468918320;
+        Thu, 05 Mar 2020 20:28:38 -0800 (PST)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id x2sm12581836ywa.32.2020.03.05.20.28.34
+        by smtp.gmail.com with ESMTPSA id x2sm12581836ywa.32.2020.03.05.20.28.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 20:28:35 -0800 (PST)
+        Thu, 05 Mar 2020 20:28:37 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
-To:     David Miller <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        David Miller <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Andy Gross <agross@kernel.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         Dan Williams <dcbw@redhat.com>,
         Evan Green <evgreen@google.com>,
@@ -57,16 +59,17 @@ Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
         Siddharth Gupta <sidgup@codeaurora.org>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/17] net: introduce Qualcomm IPA driver (UPDATED)
-Date:   Thu,  5 Mar 2020 22:28:14 -0600
-Message-Id: <20200306042831.17827-1-elder@linaro.org>
+Subject: [PATCH v2 01/17] remoteproc: add IPA notification to q6v5 driver
+Date:   Thu,  5 Mar 2020 22:28:15 -0600
+Message-Id: <20200306042831.17827-2-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200306042831.17827-1-elder@linaro.org>
+References: <20200306042831.17827-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -74,256 +77,328 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series presents the driver for the Qualcomm IP Accelerator (IPA).
+Set up a subdev in the q6v5 modem remoteproc driver that generates
+event notifications for the IPA driver to use for initialization and
+recovery following a modem shutdown or crash.
 
-This is version 2 of this updated series.  It includes the following
-small changes since the previous version:
-  - Now based on net-next instead of v5.6-rc
-  - Config option now named CONFIG_QCOM_IPA
-  - Some minor cleanup in the GSI code
-  - Small change to replenish logic
-  - No longer depends on remoteproc bug fixes
-What follows is the basically same explanation as was posted previously.
+A pair of new functions provides a way for the IPA driver to register
+and deregister a notification callback function that will be called
+whenever modem events (about to boot, running, about to shut down,
+etc.) occur.  A void pointer value (provided by the IPA driver at
+registration time) and an event type are supplied to the callback
+function.
 
-					-Alex
+One event, MODEM_REMOVING, is signaled whenever the q6v5 driver is
+about to remove the notification subdevice.  It requires the IPA
+driver de-register its callback.
 
-I have posted earlier versions of this code previously, but it has
-undergone quite a bit of development since the last time, so rather
-than calling it "version 3" I'm just treating it as a new series
-(indicating it's been updated in this message).  The fast/data path
-is the same as before.  But the driver now (nearly) supports a
-second platform, its transaction handling has been generalized
-and improved, and modem activities are now handled in a more
-unified way.
+This sub-device is only used by the modem subsystem (MSS) driver,
+so the code that adds the new subdev and allows registration and
+deregistration of the notifier is found in "qcom_q6v6_mss.c".
 
-This series is available (based on net-next in branch "ipa_updated-v2"
-in this git repository:
-  https://git.linaro.org/people/alex.elder/linux.git
-
-The branch depends on other one other small patch that I sent out
-for review earlier.
-  https://lore.kernel.org/lkml/20200306042302.17602-1-elder@linaro.org/
-
-
-I want to address some of the discussion that arose last time.
-
-First, there was the WWAN discussion.  Here's the history:
-  - This was last posted nine months ago.
-  - Reviewers at that time favored developing a new WWAN subsystem that
-    would be used for managing devices like this.  And the suggestion
-    was to not accept this driver until that could be developed.
-  - Along the way, Apple acquired much of Intel's modem business.
-    And as a result, the generic framework became less pressing.
-  - I did participate in the WWAN subsystem design however, and
-    although it went dormant for a while it's been resurrected:
-      https://lore.kernel.org/netdev/20200225100053.16385-1-johannes@sipsolutions.net/
-  - Unfortunately the proposed WWAN design was not an easy fit
-    with Qualcomm's integrated modem interfaces.  Given that
-    rmnet is a supported link type for in the upstream "iproute2"
-    package (more on this below), I have opted not to integrate
-    with any WWAN subsystem.
-
-So in summary, this driver does not integrate with a generic WWAN
-framework.  And I'd like it to be accepted upstream despite that.
-
-
-Next, Arnd Bergmann had some concerns about flow control.  (Note:
-some of my discussions with Arnd about this were offline.) The
-overall architecture here also involves the "rmnet" driver:
-  drivers/net/ethernet/qualcomm/rmnet
-
-The rmnet driver presents a network device for use.  It connects
-with another network device presented, by the IPA driver.  The
-rmnet driver wraps (and unwraps) packets transferred to (and from)
-the IPA driver with QMAP headers.
-
-   ---------------
-   | rmnet_data0 |    <-- "real" netdev
-   ---------------
-          ||       }- QMAP spoken here
-   --------------
-   | rmnet_ipa0 |     <-- also netdev, transporting QMAP packets
-   --------------
-          ||
-   --------------
-  ( IPA hardware )
-   --------------
-
-Arnd's concern was that the rmnet_data0 network device does not
-have the benefit of information about the state of the underlying
-IPA hardware in order to be effective in controlling TX flow.
-The feared result is over-buffering of TX packets (bufferbloat).
-I began working on some simple experiments to see whether (or how
-much) his concern was warranted.  But it turned out that completing
-these experiments was much more work than had been hoped.
-
-The rmnet driver is present in the upstream kernel.  There is also
-support for the rmnet link type in the upstream "ip" user space
-command in the "iproute2" package.  Changing the layering of rmnet
-over IPA likely involves deprecating the rmnet driver and its
-support in "iproute2".  I would really rather not go down that
-path.
-
-There is precedent for this sort of layering of network devices
-(L2TP, VLAN).  And any architecture like this would suffer the
-issues Arnd mentioned; the problem is not limited to rmnet and IPA.
-I do think this is a problem worth solving, but the prudent thing
-to do might be to try to solve it more generally.
-
-So to summarize on this issue, this driver does not attempt to
-change the way the rmnet and IPA drivers work together.  And even
-though I think Arnd's concerns warrant more investigation, I'd like
-this driver to to be accepted upstream without any change to this
-architecture.
-
-
-Finally, a more technical description for the series, and some
-acknowledgements to some people who contributed to it.
-
-The IPA is a component present in some Qualcomm SoCs that allows
-network functions such as aggregation, filtering, routing, and NAT
-to be performed without active involvement of the main application
-processor (AP).
-
-In this initial patch series these advanced features are not
-implemented.  The IPA driver simply provides a network interface
-that makes the modem's LTE network available in Linux.  This initial
-series supports only the Qualcomm SDM845 SoC.  The Qualcomm SC7180
-SoC is partially supported, and support for other platforms will
-follow.
-
-This code is derived from a driver developed by Qualcomm.  A version
-of the original source can be seen here:
-  https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree
-in the "drivers/platform/msm/ipa" directory.  Many were involved in
-developing this, but the following individuals deserve explicit
-acknowledgement for their substantial contributions:
-
-    Abhishek Choubey
-    Ady Abraham
-    Chaitanya Pratapa
-    David Arinzon
-    Ghanim Fodi
-    Gidon Studinski
-    Ravi Gummadidala
-    Shihuan Liu
-    Skylar Chang
-
-					-Alex
-
-Alex Elder (17):
-  remoteproc: add IPA notification to q6v5 driver
-  dt-bindings: soc: qcom: add IPA bindings
-  soc: qcom: ipa: main code
-  soc: qcom: ipa: configuration data
-  soc: qcom: ipa: clocking, interrupts, and memory
-  soc: qcom: ipa: GSI headers
-  soc: qcom: ipa: the generic software interface
-  soc: qcom: ipa: IPA interface to GSI
-  soc: qcom: ipa: GSI transactions
-  soc: qcom: ipa: IPA endpoints
-  soc: qcom: ipa: filter and routing tables
-  soc: qcom: ipa: immediate commands
-  soc: qcom: ipa: modem and microcontroller
-  soc: qcom: ipa: AP/modem communications
-  soc: qcom: ipa: support build of IPA code
-  MAINTAINERS: add entry for the Qualcomm IPA driver
-  arm64: dts: sdm845: add IPA information
-
- .../devicetree/bindings/net/qcom,ipa.yaml     |  192 ++
- MAINTAINERS                                   |    6 +
- arch/arm64/boot/dts/qcom/sdm845.dtsi          |   51 +
- drivers/net/Kconfig                           |    2 +
- drivers/net/Makefile                          |    1 +
- drivers/net/ipa/Kconfig                       |   19 +
- drivers/net/ipa/Makefile                      |   12 +
- drivers/net/ipa/gsi.c                         | 2055 +++++++++++++++++
- drivers/net/ipa/gsi.h                         |  257 +++
- drivers/net/ipa/gsi_private.h                 |  118 +
- drivers/net/ipa/gsi_reg.h                     |  417 ++++
- drivers/net/ipa/gsi_trans.c                   |  786 +++++++
- drivers/net/ipa/gsi_trans.h                   |  226 ++
- drivers/net/ipa/ipa.h                         |  148 ++
- drivers/net/ipa/ipa_clock.c                   |  313 +++
- drivers/net/ipa/ipa_clock.h                   |   53 +
- drivers/net/ipa/ipa_cmd.c                     |  680 ++++++
- drivers/net/ipa/ipa_cmd.h                     |  195 ++
- drivers/net/ipa/ipa_data-sc7180.c             |  307 +++
- drivers/net/ipa/ipa_data-sdm845.c             |  329 +++
- drivers/net/ipa/ipa_data.h                    |  280 +++
- drivers/net/ipa/ipa_endpoint.c                | 1707 ++++++++++++++
- drivers/net/ipa/ipa_endpoint.h                |  110 +
- drivers/net/ipa/ipa_gsi.c                     |   54 +
- drivers/net/ipa/ipa_gsi.h                     |   60 +
- drivers/net/ipa/ipa_interrupt.c               |  253 ++
- drivers/net/ipa/ipa_interrupt.h               |  117 +
- drivers/net/ipa/ipa_main.c                    |  954 ++++++++
- drivers/net/ipa/ipa_mem.c                     |  314 +++
- drivers/net/ipa/ipa_mem.h                     |   90 +
- drivers/net/ipa/ipa_modem.c                   |  383 +++
- drivers/net/ipa/ipa_modem.h                   |   31 +
- drivers/net/ipa/ipa_qmi.c                     |  538 +++++
- drivers/net/ipa/ipa_qmi.h                     |   41 +
- drivers/net/ipa/ipa_qmi_msg.c                 |  663 ++++++
- drivers/net/ipa/ipa_qmi_msg.h                 |  252 ++
- drivers/net/ipa/ipa_reg.c                     |   38 +
- drivers/net/ipa/ipa_reg.h                     |  476 ++++
- drivers/net/ipa/ipa_smp2p.c                   |  335 +++
- drivers/net/ipa/ipa_smp2p.h                   |   48 +
- drivers/net/ipa/ipa_table.c                   |  700 ++++++
- drivers/net/ipa/ipa_table.h                   |  103 +
- drivers/net/ipa/ipa_uc.c                      |  211 ++
- drivers/net/ipa/ipa_uc.h                      |   32 +
- drivers/net/ipa/ipa_version.h                 |   23 +
- drivers/remoteproc/Kconfig                    |    6 +
- drivers/remoteproc/Makefile                   |    1 +
- drivers/remoteproc/qcom_q6v5_ipa_notify.c     |   85 +
- drivers/remoteproc/qcom_q6v5_mss.c            |   38 +
- .../linux/remoteproc/qcom_q6v5_ipa_notify.h   |   82 +
- 50 files changed, 14192 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/qcom,ipa.yaml
- create mode 100644 drivers/net/ipa/Kconfig
- create mode 100644 drivers/net/ipa/Makefile
- create mode 100644 drivers/net/ipa/gsi.c
- create mode 100644 drivers/net/ipa/gsi.h
- create mode 100644 drivers/net/ipa/gsi_private.h
- create mode 100644 drivers/net/ipa/gsi_reg.h
- create mode 100644 drivers/net/ipa/gsi_trans.c
- create mode 100644 drivers/net/ipa/gsi_trans.h
- create mode 100644 drivers/net/ipa/ipa.h
- create mode 100644 drivers/net/ipa/ipa_clock.c
- create mode 100644 drivers/net/ipa/ipa_clock.h
- create mode 100644 drivers/net/ipa/ipa_cmd.c
- create mode 100644 drivers/net/ipa/ipa_cmd.h
- create mode 100644 drivers/net/ipa/ipa_data-sc7180.c
- create mode 100644 drivers/net/ipa/ipa_data-sdm845.c
- create mode 100644 drivers/net/ipa/ipa_data.h
- create mode 100644 drivers/net/ipa/ipa_endpoint.c
- create mode 100644 drivers/net/ipa/ipa_endpoint.h
- create mode 100644 drivers/net/ipa/ipa_gsi.c
- create mode 100644 drivers/net/ipa/ipa_gsi.h
- create mode 100644 drivers/net/ipa/ipa_interrupt.c
- create mode 100644 drivers/net/ipa/ipa_interrupt.h
- create mode 100644 drivers/net/ipa/ipa_main.c
- create mode 100644 drivers/net/ipa/ipa_mem.c
- create mode 100644 drivers/net/ipa/ipa_mem.h
- create mode 100644 drivers/net/ipa/ipa_modem.c
- create mode 100644 drivers/net/ipa/ipa_modem.h
- create mode 100644 drivers/net/ipa/ipa_qmi.c
- create mode 100644 drivers/net/ipa/ipa_qmi.h
- create mode 100644 drivers/net/ipa/ipa_qmi_msg.c
- create mode 100644 drivers/net/ipa/ipa_qmi_msg.h
- create mode 100644 drivers/net/ipa/ipa_reg.c
- create mode 100644 drivers/net/ipa/ipa_reg.h
- create mode 100644 drivers/net/ipa/ipa_smp2p.c
- create mode 100644 drivers/net/ipa/ipa_smp2p.h
- create mode 100644 drivers/net/ipa/ipa_table.c
- create mode 100644 drivers/net/ipa/ipa_table.h
- create mode 100644 drivers/net/ipa/ipa_uc.c
- create mode 100644 drivers/net/ipa/ipa_uc.h
- create mode 100644 drivers/net/ipa/ipa_version.h
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/remoteproc/Kconfig                    |  6 ++
+ drivers/remoteproc/Makefile                   |  1 +
+ drivers/remoteproc/qcom_q6v5_ipa_notify.c     | 85 +++++++++++++++++++
+ drivers/remoteproc/qcom_q6v5_mss.c            | 38 +++++++++
+ .../linux/remoteproc/qcom_q6v5_ipa_notify.h   | 82 ++++++++++++++++++
+ 5 files changed, 212 insertions(+)
  create mode 100644 drivers/remoteproc/qcom_q6v5_ipa_notify.c
  create mode 100644 include/linux/remoteproc/qcom_q6v5_ipa_notify.h
 
+diff --git a/drivers/remoteproc/Kconfig b/drivers/remoteproc/Kconfig
+index de3862c15fcc..56084635dd63 100644
+--- a/drivers/remoteproc/Kconfig
++++ b/drivers/remoteproc/Kconfig
+@@ -167,6 +167,12 @@ config QCOM_Q6V5_WCSS
+ 	  Say y here to support the Qualcomm Peripheral Image Loader for the
+ 	  Hexagon V5 based WCSS remote processors.
+ 
++config QCOM_Q6V5_IPA_NOTIFY
++	tristate
++	depends on QCOM_IPA
++	depends on QCOM_Q6V5_MSS
++	default QCOM_IPA
++
+ config QCOM_SYSMON
+ 	tristate "Qualcomm sysmon driver"
+ 	depends on RPMSG
+diff --git a/drivers/remoteproc/Makefile b/drivers/remoteproc/Makefile
+index e30a1b15fbac..0effd3825035 100644
+--- a/drivers/remoteproc/Makefile
++++ b/drivers/remoteproc/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_QCOM_Q6V5_ADSP)		+= qcom_q6v5_adsp.o
+ obj-$(CONFIG_QCOM_Q6V5_MSS)		+= qcom_q6v5_mss.o
+ obj-$(CONFIG_QCOM_Q6V5_PAS)		+= qcom_q6v5_pas.o
+ obj-$(CONFIG_QCOM_Q6V5_WCSS)		+= qcom_q6v5_wcss.o
++obj-$(CONFIG_QCOM_Q6V5_IPA_NOTIFY)	+= qcom_q6v5_ipa_notify.o
+ obj-$(CONFIG_QCOM_SYSMON)		+= qcom_sysmon.o
+ obj-$(CONFIG_QCOM_WCNSS_PIL)		+= qcom_wcnss_pil.o
+ qcom_wcnss_pil-y			+= qcom_wcnss.o
+diff --git a/drivers/remoteproc/qcom_q6v5_ipa_notify.c b/drivers/remoteproc/qcom_q6v5_ipa_notify.c
+new file mode 100644
+index 000000000000..e1c10a128bfd
+--- /dev/null
++++ b/drivers/remoteproc/qcom_q6v5_ipa_notify.c
+@@ -0,0 +1,85 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Qualcomm IPA notification subdev support
++ *
++ * Copyright (C) 2019 Linaro Ltd.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/remoteproc.h>
++#include <linux/remoteproc/qcom_q6v5_ipa_notify.h>
++
++static void
++ipa_notify_common(struct rproc_subdev *subdev, enum qcom_rproc_event event)
++{
++	struct qcom_rproc_ipa_notify *ipa_notify;
++	qcom_ipa_notify_t notify;
++
++	ipa_notify = container_of(subdev, struct qcom_rproc_ipa_notify, subdev);
++	notify = ipa_notify->notify;
++	if (notify)
++		notify(ipa_notify->data, event);
++}
++
++static int ipa_notify_prepare(struct rproc_subdev *subdev)
++{
++	ipa_notify_common(subdev, MODEM_STARTING);
++
++	return 0;
++}
++
++static int ipa_notify_start(struct rproc_subdev *subdev)
++{
++	ipa_notify_common(subdev, MODEM_RUNNING);
++
++	return 0;
++}
++
++static void ipa_notify_stop(struct rproc_subdev *subdev, bool crashed)
++
++{
++	ipa_notify_common(subdev, crashed ? MODEM_CRASHED : MODEM_STOPPING);
++}
++
++static void ipa_notify_unprepare(struct rproc_subdev *subdev)
++{
++	ipa_notify_common(subdev, MODEM_OFFLINE);
++}
++
++static void ipa_notify_removing(struct rproc_subdev *subdev)
++{
++	ipa_notify_common(subdev, MODEM_REMOVING);
++}
++
++/* Register the IPA notification subdevice with the Q6V5 MSS remoteproc */
++void qcom_add_ipa_notify_subdev(struct rproc *rproc,
++		struct qcom_rproc_ipa_notify *ipa_notify)
++{
++	ipa_notify->notify = NULL;
++	ipa_notify->data = NULL;
++	ipa_notify->subdev.prepare = ipa_notify_prepare;
++	ipa_notify->subdev.start = ipa_notify_start;
++	ipa_notify->subdev.stop = ipa_notify_stop;
++	ipa_notify->subdev.unprepare = ipa_notify_unprepare;
++
++	rproc_add_subdev(rproc, &ipa_notify->subdev);
++}
++EXPORT_SYMBOL_GPL(qcom_add_ipa_notify_subdev);
++
++/* Remove the IPA notification subdevice */
++void qcom_remove_ipa_notify_subdev(struct rproc *rproc,
++		struct qcom_rproc_ipa_notify *ipa_notify)
++{
++	struct rproc_subdev *subdev = &ipa_notify->subdev;
++
++	ipa_notify_removing(subdev);
++
++	rproc_remove_subdev(rproc, subdev);
++	ipa_notify->notify = NULL;	/* Make it obvious */
++}
++EXPORT_SYMBOL_GPL(qcom_remove_ipa_notify_subdev);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Qualcomm IPA notification remoteproc subdev");
+diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qcom_q6v5_mss.c
+index a1cc9cbe038f..f9ccce76e44b 100644
+--- a/drivers/remoteproc/qcom_q6v5_mss.c
++++ b/drivers/remoteproc/qcom_q6v5_mss.c
+@@ -22,6 +22,7 @@
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/remoteproc.h>
++#include "linux/remoteproc/qcom_q6v5_ipa_notify.h"
+ #include <linux/reset.h>
+ #include <linux/soc/qcom/mdt_loader.h>
+ #include <linux/iopoll.h>
+@@ -201,6 +202,7 @@ struct q6v5 {
+ 	struct qcom_rproc_glink glink_subdev;
+ 	struct qcom_rproc_subdev smd_subdev;
+ 	struct qcom_rproc_ssr ssr_subdev;
++	struct qcom_rproc_ipa_notify ipa_notify_subdev;
+ 	struct qcom_sysmon *sysmon;
+ 	bool need_mem_protection;
+ 	bool has_alt_reset;
+@@ -1540,6 +1542,39 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
+ 	return 0;
+ }
+ 
++#if IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY)
++
++/* Register IPA notification function */
++int qcom_register_ipa_notify(struct rproc *rproc, qcom_ipa_notify_t notify,
++			     void *data)
++{
++	struct qcom_rproc_ipa_notify *ipa_notify;
++	struct q6v5 *qproc = rproc->priv;
++
++	if (!notify)
++		return -EINVAL;
++
++	ipa_notify = &qproc->ipa_notify_subdev;
++	if (ipa_notify->notify)
++		return -EBUSY;
++
++	ipa_notify->notify = notify;
++	ipa_notify->data = data;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(qcom_register_ipa_notify);
++
++/* Deregister IPA notification function */
++void qcom_deregister_ipa_notify(struct rproc *rproc)
++{
++	struct q6v5 *qproc = rproc->priv;
++
++	qproc->ipa_notify_subdev.notify = NULL;
++}
++EXPORT_SYMBOL_GPL(qcom_deregister_ipa_notify);
++#endif /* !IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY) */
++
+ static int q6v5_probe(struct platform_device *pdev)
+ {
+ 	const struct rproc_hexagon_res *desc;
+@@ -1664,6 +1699,7 @@ static int q6v5_probe(struct platform_device *pdev)
+ 	qcom_add_glink_subdev(rproc, &qproc->glink_subdev);
+ 	qcom_add_smd_subdev(rproc, &qproc->smd_subdev);
+ 	qcom_add_ssr_subdev(rproc, &qproc->ssr_subdev, "mpss");
++	qcom_add_ipa_notify_subdev(rproc, &qproc->ipa_notify_subdev);
+ 	qproc->sysmon = qcom_add_sysmon_subdev(rproc, "modem", 0x12);
+ 	if (IS_ERR(qproc->sysmon)) {
+ 		ret = PTR_ERR(qproc->sysmon);
+@@ -1677,6 +1713,7 @@ static int q6v5_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ detach_proxy_pds:
++	qcom_remove_ipa_notify_subdev(qproc->rproc, &qproc->ipa_notify_subdev);
+ 	q6v5_pds_detach(qproc, qproc->proxy_pds, qproc->proxy_pd_count);
+ detach_active_pds:
+ 	q6v5_pds_detach(qproc, qproc->active_pds, qproc->active_pd_count);
+@@ -1693,6 +1730,7 @@ static int q6v5_remove(struct platform_device *pdev)
+ 	rproc_del(qproc->rproc);
+ 
+ 	qcom_remove_sysmon_subdev(qproc->sysmon);
++	qcom_remove_ipa_notify_subdev(qproc->rproc, &qproc->ipa_notify_subdev);
+ 	qcom_remove_glink_subdev(qproc->rproc, &qproc->glink_subdev);
+ 	qcom_remove_smd_subdev(qproc->rproc, &qproc->smd_subdev);
+ 	qcom_remove_ssr_subdev(qproc->rproc, &qproc->ssr_subdev);
+diff --git a/include/linux/remoteproc/qcom_q6v5_ipa_notify.h b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
+new file mode 100644
+index 000000000000..0820edc0ab7d
+--- /dev/null
++++ b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
+@@ -0,0 +1,82 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* Copyright (C) 2019 Linaro Ltd. */
++
++#ifndef __QCOM_Q6V5_IPA_NOTIFY_H__
++#define __QCOM_Q6V5_IPA_NOTIFY_H__
++
++#if IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY)
++
++#include <linux/remoteproc.h>
++
++enum qcom_rproc_event {
++	MODEM_STARTING	= 0,	/* Modem is about to be started */
++	MODEM_RUNNING	= 1,	/* Startup complete; modem is operational */
++	MODEM_STOPPING	= 2,	/* Modem is about to shut down */
++	MODEM_CRASHED	= 3,	/* Modem has crashed (implies stopping) */
++	MODEM_OFFLINE	= 4,	/* Modem is now offline */
++	MODEM_REMOVING	= 5,	/* Modem is about to be removed */
++};
++
++typedef void (*qcom_ipa_notify_t)(void *data, enum qcom_rproc_event event);
++
++struct qcom_rproc_ipa_notify {
++	struct rproc_subdev subdev;
++
++	qcom_ipa_notify_t notify;
++	void *data;
++};
++
++/**
++ * qcom_add_ipa_notify_subdev() - Register IPA notification subdevice
++ * @rproc:	rproc handle
++ * @ipa_notify:	IPA notification subdevice handle
++ *
++ * Register the @ipa_notify subdevice with the @rproc so modem events
++ * can be sent to IPA when they occur.
++ *
++ * This is defined in "qcom_q6v5_ipa_notify.c".
++ */
++void qcom_add_ipa_notify_subdev(struct rproc *rproc,
++		struct qcom_rproc_ipa_notify *ipa_notify);
++
++/**
++ * qcom_remove_ipa_notify_subdev() - Remove IPA SSR subdevice
++ * @rproc:	rproc handle
++ * @ipa_notify:	IPA notification subdevice handle
++ *
++ * This is defined in "qcom_q6v5_ipa_notify.c".
++ */
++void qcom_remove_ipa_notify_subdev(struct rproc *rproc,
++		struct qcom_rproc_ipa_notify *ipa_notify);
++
++/**
++ * qcom_register_ipa_notify() - Register IPA notification function
++ * @rproc:	Remote processor handle
++ * @notify:	Non-null IPA notification callback function pointer
++ * @data:	Data supplied to IPA notification callback function
++ *
++ * @Return: 0 if successful, or a negative error code otherwise
++ *
++ * This is defined in "qcom_q6v5_mss.c".
++ */
++int qcom_register_ipa_notify(struct rproc *rproc, qcom_ipa_notify_t notify,
++			     void *data);
++/**
++ * qcom_deregister_ipa_notify() - Deregister IPA notification function
++ * @rproc:	Remote processor handle
++ *
++ * This is defined in "qcom_q6v5_mss.c".
++ */
++void qcom_deregister_ipa_notify(struct rproc *rproc);
++
++#else /* !IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY) */
++
++struct qcom_rproc_ipa_notify { /* empty */ };
++
++#define qcom_add_ipa_notify_subdev(rproc, ipa_notify)		/* no-op */
++#define qcom_remove_ipa_notify_subdev(rproc, ipa_notify)	/* no-op */
++
++#endif /* !IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY) */
++
++#endif /* !__QCOM_Q6V5_IPA_NOTIFY_H__ */
 -- 
 2.20.1
+
