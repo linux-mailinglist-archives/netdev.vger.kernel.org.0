@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E4017C88E
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8271817C89B
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgCFWyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 17:54:04 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35575 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726194AbgCFWyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:54:03 -0500
-Received: by mail-wm1-f65.google.com with SMTP id m3so4044301wmi.0
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:54:02 -0800 (PST)
+        id S1726251AbgCFW7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 17:59:14 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42564 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbgCFW7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:59:13 -0500
+Received: by mail-wr1-f68.google.com with SMTP id v11so4170385wrm.9
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:59:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=oro0fIlAywUpDDnaaYh8TQQc6WsRQK8SqA63cQTs/ZU=;
-        b=Yn4jYN99e+DkrXW7u4mxtjY0qNsvncXwaxnSDF+kATMqLZPbeAFwFEiC00i+94Lro5
-         acVMF4iQS4oqcjicyAjvSUgxRPoj0TVdQEZ9vgdDBTjEEaZzO7dgkm9yAl/rKwZxjs1a
-         COpJYYpInmSa3oDKcOIoHrWlOtW6XlMbbvSk87TNshUenC/6h/xKFFfzDQGYvGtnB+v2
-         IfKbHDXUi4TGK5KH6r1SdQNx5//N+7Zo6DVa9aUVpsjJGkZbBAyucB+GN5WfYgCHsLO5
-         fWLZEmyjaTZwlQXABnir7MX2tLFonfBfM6iEEfHkZYuQgoMH82AEKpy5hcO6ZtFbDH4x
-         5ZGA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pvw0hXL8WaZ1fs8oj0rrpDhVpTtZCr7I8Chl+KEQDEk=;
+        b=n+r1xzpYbo90uXjrWGJZkFUVTc0Uq66bSkKwHsD7uNPiPe2TM+FlU6EPP3YAuJW4sU
+         fbnRTDvp4JawwRihATj6FmiNggdHt3Vw8zu5E0TmhRx0jH50nwc81Cc5lWOi+ZTYL7xQ
+         UaZiTStvFM89yWv60oC31bbJ1Mmk+Y8mPk8u7u+rAE711Dssu4EXN86qqXXNcemP9PF6
+         KRQWxj11fLl+JVxfFqIjNnQ4tvB2ahft50WKted6UOJV9lu+QArjaKgpWGV1Fw9ho6Dw
+         n5NADubailQmDDaxkAMudcX+xLg1U97GU3NxKhp4BMrlbkkpyg4NfUew4f98APCZM7W3
+         lORw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=oro0fIlAywUpDDnaaYh8TQQc6WsRQK8SqA63cQTs/ZU=;
-        b=He++ZAPRUKqnwBDpuX0LlQ3CftKXV6jeDVhiv9N81/HTy6DsETAa4/RCt0+pIS4Xiu
-         fMGvhrlBIUaW/m7R5t5GrFiCiX+vtBLZ/bYfWhN8kseZyqsr98h15rgBB7xKavZbMfey
-         zW1iH7kqVvSyPwfeFvLOxHMYEAmURiDWMawBdzSUGbzauYNKkKogEoWSw5yN89KftthF
-         2wxzGdc0ZnsKfe8zvQailm8Ap/4GGjFJRjrK63zjisHwinTg2N957idQxair65YgLbnl
-         0qUJmf+pkcOLDpAuPfr3aO3XMEXDlNjLh82QupuAT8g8wnvWrkaWdePr8Qw/Ptj05e8y
-         mrTQ==
-X-Gm-Message-State: ANhLgQ1XkOzlnoIQxZJJIpSaAzQeBHpSE9USTeO4ydkvor5C1cqLUsmq
-        /sh0vJNRNQ7duCoaWu8iQvsQtgxA
-X-Google-Smtp-Source: ADFU+vsaY4WD6Zdnmwo8vErMvnmMpMk9U231zs6NWpAU3KcuHXsLQRDGf2W27ND0f0kZYauprAgkGw==
-X-Received: by 2002:a1c:9915:: with SMTP id b21mr5920300wme.24.1583535241392;
-        Fri, 06 Mar 2020 14:54:01 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pvw0hXL8WaZ1fs8oj0rrpDhVpTtZCr7I8Chl+KEQDEk=;
+        b=PLjGTBRHiElsgx8aY7eApUtU87yuM6jXkplSakFr4SgUdvOHDT7Mzr4vrQXi4LLHf6
+         EybWosQR5EkTYZ9R0u/Z59d/H/eJR8Y4YzQTcijugBv7wo8+y2S53o9hQJ2pjR4NzkcK
+         P7vgTrA84pM607n/GHugeXKsDfMdRNrYxvKmXn6rrjVMc1t90npwy4qHy9QfJnuIEGzz
+         YcUm6SQ61SAe0LxZNyhn0p6ie4vtTECEdJ7OIX49dtA7hcQB4/ydxydMwiwYRAZIE4UY
+         RqI4lDMlxOZiUsCSs7jCSgOup1SdVUlxsee+oaMlSW6gjsEdEkz7vBQGMwoI3ZwkAkos
+         x5rg==
+X-Gm-Message-State: ANhLgQ1hDWaxBpMV0HwqqmxcZ6t8UoavOYjTpf25zv2z8S6g78hKOk6g
+        tPrV8Lxg990iu+2oGQ4qbfTNBX5w
+X-Google-Smtp-Source: ADFU+vuYel+woegYY4mANgX9Pz/XlNnSMWYXmOdbFKNNerCFCWRfPSQOXags6J0Wdw5Ukk61PnIfPw==
+X-Received: by 2002:adf:fe89:: with SMTP id l9mr5934427wrr.373.1583535551866;
+        Fri, 06 Mar 2020 14:59:11 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f29:6000:1447:bded:797c:45a5? (p200300EA8F2960001447BDED797C45A5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1447:bded:797c:45a5])
-        by smtp.googlemail.com with ESMTPSA id e7sm30840439wrt.70.2020.03.06.14.54.00
+        by smtp.googlemail.com with ESMTPSA id n14sm6639412wrs.97.2020.03.06.14.59.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2020 14:54:00 -0800 (PST)
+        Fri, 06 Mar 2020 14:59:11 -0800 (PST)
+Subject: [PATCH net-next 1/4] r8169: convert while to for loop in rtl_tx
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/4] r8169: series with improvements to rtl_tx
-Message-ID: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
-Date:   Fri, 6 Mar 2020 23:53:43 +0100
+References: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
+Message-ID: <9d9d812a-5d21-42de-04e8-adbae25ef194@gmail.com>
+Date:   Fri, 6 Mar 2020 23:54:47 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,17 +65,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series includes few improvements to rtl_tx().
+Slightly improve the code by converting this while to a for loop.
 
-Heiner Kallweit (4):
-  r8169: convert while to for loop in rtl_tx
-  r8169: ensure tx_skb is fully reset after calling rtl8169_unmap_tx_skb
-  r8169: simplify usage of rtl8169_unmap_tx_skb
-  r8169: remove now unneeded barrier in rtl_tx
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- drivers/net/ethernet/realtek/r8169_main.c | 46 ++++++++---------------
- 1 file changed, 16 insertions(+), 30 deletions(-)
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 4495a3cf9..c0999efa0 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4392,9 +4392,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 
+ 	dirty_tx = tp->dirty_tx;
+ 	smp_rmb();
+-	tx_left = tp->cur_tx - dirty_tx;
+ 
+-	while (tx_left > 0) {
++	for (tx_left = tp->cur_tx - dirty_tx; tx_left > 0; tx_left--) {
+ 		unsigned int entry = dirty_tx % NUM_TX_DESC;
+ 		struct ring_info *tx_skb = tp->tx_skb + entry;
+ 		u32 status;
+@@ -4418,7 +4417,6 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 			tx_skb->skb = NULL;
+ 		}
+ 		dirty_tx++;
+-		tx_left--;
+ 	}
+ 
+ 	if (tp->dirty_tx != dirty_tx) {
 -- 
 2.25.1
+
 
