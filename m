@@ -2,416 +2,460 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B61FD17C38B
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C47C17C38C
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbgCFRE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:04:58 -0500
-Received: from mx2.suse.de ([195.135.220.15]:43568 "EHLO mx2.suse.de"
+        id S1727146AbgCFRFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 12:05:04 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43624 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726300AbgCFRE6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 12:04:58 -0500
+        id S1726300AbgCFRFE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 12:05:04 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 4E7A0AE09;
-        Fri,  6 Mar 2020 17:04:55 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 55EA4B35E;
+        Fri,  6 Mar 2020 17:05:00 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id F39D9E00E7; Fri,  6 Mar 2020 18:04:54 +0100 (CET)
-Message-Id: <7a12613b34e20cb12456aa57811dde2456aa8cb9.1583513281.git.mkubecek@suse.cz>
+        id 05DC5E00E7; Fri,  6 Mar 2020 18:05:00 +0100 (CET)
+Message-Id: <b86b20c73a375a195542f16435b7e7bcfbc0569d.1583513281.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583513281.git.mkubecek@suse.cz>
 References: <cover.1583513281.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v3 11/25] netlink: add notification monitor
+Subject: [PATCH ethtool v3 12/25] move shared code into a common file
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri,  6 Mar 2020 18:04:54 +0100 (CET)
+Date:   Fri,  6 Mar 2020 18:05:00 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With 'ethtool --monitor [ --all | opt ] [dev]', let ethtool listen to
-netlink notification and display them in a format similar to output of
-related "get" commands.
-
-With --all or without option, show all types of notifications. If a device
-name is specified, show only notifications for that device, if no device
-name or "*" is passed, show notifications for all devices.
+Move code which is going to be shared between ioctl and netlink
+implementation into a common file common.c and declarations into header
+file common.h.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am       |   1 +
- ethtool.8.in      |  21 +++++
- ethtool.c         |  14 ++++
- netlink/extapi.h  |   8 ++
- netlink/monitor.c | 197 ++++++++++++++++++++++++++++++++++++++++++++++
- netlink/netlink.h |  11 +++
- netlink/strset.c  |   2 +
- 7 files changed, 254 insertions(+)
- create mode 100644 netlink/monitor.c
+ Makefile.am |   2 +-
+ common.c    | 145 +++++++++++++++++++++++++++++++++++++++++++++++++
+ common.h    |  26 +++++++++
+ ethtool.c   | 151 +++-------------------------------------------------
+ 4 files changed, 179 insertions(+), 145 deletions(-)
+ create mode 100644 common.c
+ create mode 100644 common.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 70ded2ec8bc3..2985ce533ed3 100644
+index 2985ce533ed3..e6abd3f79cd7 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -28,6 +28,7 @@ ethtool_SOURCES += \
- 		  netlink/netlink.c netlink/netlink.h netlink/extapi.h \
- 		  netlink/msgbuff.c netlink/msgbuff.h netlink/nlsock.c \
- 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
-+		  netlink/monitor.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 680cad9fbb8f..28e4f75eee8d 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -133,6 +133,13 @@ ethtool \- query or control network driver and hardware settings
- .BN --debug
- .I args
- .HP
-+.B ethtool \-\-monitor
-+[
-+.I command
-+] [
-+.I devname
-+]
-+.HP
- .B ethtool \-a|\-\-show\-pause
- .I devname
- .HP
-@@ -1244,6 +1251,20 @@ If queue_mask is not set, the sub command will be applied to all queues.
- Sub command to apply. The supported sub commands include --show-coalesce and
- --coalesce.
- .RE
-+.TP
-+.B \-\-monitor
-+Listens to netlink notification and displays them.
-+.RS 4
-+.TP
-+.I command
-+If argument matching a command is used, ethtool only shows notifications of
-+this type. Without such argument or with --all, all notification types are
-+shown.
-+.TP
-+.I devname
-+If a device name is used as argument, only notification for this device are
-+shown. Default is to show notifications for all devices.
-+.RE
- .SH BUGS
- Not supported (in part or whole) on all network drivers.
- .SH AUTHOR
-diff --git a/ethtool.c b/ethtool.c
-index 5d1ef537f692..97eaa58a3090 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5664,6 +5664,7 @@ static int show_usage(struct cmd_context *ctx maybe_unused)
- 		if (args[i].xhelp)
- 			fputs(args[i].xhelp, stdout);
- 	}
-+	nl_monitor_usage();
+@@ -7,7 +7,7 @@ EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
  
- 	return 0;
- }
-@@ -5909,6 +5910,19 @@ int main(int argc, char **argp)
- 		argp += 2;
- 		argc -= 2;
- 	}
-+#ifdef ETHTOOL_ENABLE_NETLINK
-+	if (*argp && !strcmp(*argp, "--monitor")) {
-+		if (netlink_init(&ctx)) {
-+			fprintf(stderr,
-+				"Option --monitor is only available with netlink.\n");
-+			return 1;
-+		} else {
-+			ctx.argp = ++argp;
-+			ctx.argc = --argc;
-+			return nl_monitor(&ctx);
-+		}
-+	}
-+#endif
- 
- 	/* First argument must be either a valid option or a device
- 	 * name to get settings for (which we don't expect to begin
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 898dc6cfee71..1d5b68226af4 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -15,6 +15,10 @@ struct nl_context;
- int netlink_init(struct cmd_context *ctx);
- void netlink_done(struct cmd_context *ctx);
- 
-+int nl_monitor(struct cmd_context *ctx);
-+
-+void nl_monitor_usage(void);
-+
- #else /* ETHTOOL_ENABLE_NETLINK */
- 
- static inline int netlink_init(struct cmd_context *ctx maybe_unused)
-@@ -26,6 +30,10 @@ static inline void netlink_done(struct cmd_context *ctx maybe_unused)
- {
- }
- 
-+static inline void nl_monitor_usage(void)
-+{
-+}
-+
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
- #endif /* ETHTOOL_EXTAPI_H__ */
-diff --git a/netlink/monitor.c b/netlink/monitor.c
+ sbin_PROGRAMS = ethtool
+ ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
+-		  uapi/linux/net_tstamp.h rxclass.c
++		  uapi/linux/net_tstamp.h rxclass.c common.c common.h
+ if ETHTOOL_ENABLE_PRETTY_DUMP
+ ethtool_SOURCES += \
+ 		  amd8111e.c de2104x.c dsa.c e100.c e1000.c et131x.c igb.c	\
+diff --git a/common.c b/common.c
 new file mode 100644
-index 000000000000..300fd5bc2e51
+index 000000000000..f9c41a32d3a3
 --- /dev/null
-+++ b/netlink/monitor.c
-@@ -0,0 +1,197 @@
++++ b/common.c
+@@ -0,0 +1,145 @@
 +/*
-+ * monitor.c - netlink notification monitor
++ * common.h - common code header
 + *
-+ * Implementation of "ethtool --monitor" for watching netlink notifications.
++ * Data and functions shared by ioctl and netlink implementation.
 + */
 +
-+#include <errno.h>
++#include "internal.h"
++#include "common.h"
 +
-+#include "../internal.h"
-+#include "netlink.h"
-+#include "nlsock.h"
-+#include "strset.h"
-+
-+static struct {
-+	uint8_t		cmd;
-+	mnl_cb_t	cb;
-+} monitor_callbacks[] = {
++#ifndef HAVE_NETIF_MSG
++enum {
++	NETIF_MSG_DRV		= 0x0001,
++	NETIF_MSG_PROBE		= 0x0002,
++	NETIF_MSG_LINK		= 0x0004,
++	NETIF_MSG_TIMER		= 0x0008,
++	NETIF_MSG_IFDOWN	= 0x0010,
++	NETIF_MSG_IFUP		= 0x0020,
++	NETIF_MSG_RX_ERR	= 0x0040,
++	NETIF_MSG_TX_ERR	= 0x0080,
++	NETIF_MSG_TX_QUEUED	= 0x0100,
++	NETIF_MSG_INTR		= 0x0200,
++	NETIF_MSG_TX_DONE	= 0x0400,
++	NETIF_MSG_RX_STATUS	= 0x0800,
++	NETIF_MSG_PKTDATA	= 0x1000,
++	NETIF_MSG_HW		= 0x2000,
++	NETIF_MSG_WOL		= 0x4000,
 +};
++#endif
 +
-+static void clear_filter(struct nl_context *nlctx)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < CMDMASK_WORDS; i++)
-+		nlctx->filter_cmds[i] = 0;
-+}
-+
-+static bool test_filter_cmd(const struct nl_context *nlctx, unsigned int cmd)
-+{
-+	return nlctx->filter_cmds[cmd / 32] & (1U << (cmd % 32));
-+}
-+
-+static void set_filter_cmd(struct nl_context *nlctx, unsigned int cmd)
-+{
-+	nlctx->filter_cmds[cmd / 32] |= (1U << (cmd % 32));
-+}
-+
-+static void set_filter_all(struct nl_context *nlctx)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(monitor_callbacks); i++)
-+		set_filter_cmd(nlctx, monitor_callbacks[i].cmd);
-+}
-+
-+static int monitor_any_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct genlmsghdr *ghdr = (const struct genlmsghdr *)(nlhdr + 1);
-+	struct nl_context *nlctx = data;
-+	unsigned int i;
-+
-+	if (!test_filter_cmd(nlctx, ghdr->cmd))
-+		return MNL_CB_OK;
-+
-+	for (i = 0; i < MNL_ARRAY_SIZE(monitor_callbacks); i++)
-+		if (monitor_callbacks[i].cmd == ghdr->cmd)
-+			return monitor_callbacks[i].cb(nlhdr, data);
-+
-+	return MNL_CB_OK;
-+}
-+
-+struct monitor_option {
-+	const char	*pattern;
-+	uint8_t		cmd;
-+	uint32_t	info_mask;
++const struct flag_info flags_msglvl[] = {
++	{ "drv",	NETIF_MSG_DRV },
++	{ "probe",	NETIF_MSG_PROBE },
++	{ "link",	NETIF_MSG_LINK },
++	{ "timer",	NETIF_MSG_TIMER },
++	{ "ifdown",	NETIF_MSG_IFDOWN },
++	{ "ifup",	NETIF_MSG_IFUP },
++	{ "rx_err",	NETIF_MSG_RX_ERR },
++	{ "tx_err",	NETIF_MSG_TX_ERR },
++	{ "tx_queued",	NETIF_MSG_TX_QUEUED },
++	{ "intr",	NETIF_MSG_INTR },
++	{ "tx_done",	NETIF_MSG_TX_DONE },
++	{ "rx_status",	NETIF_MSG_RX_STATUS },
++	{ "pktdata",	NETIF_MSG_PKTDATA },
++	{ "hw",		NETIF_MSG_HW },
++	{ "wol",	NETIF_MSG_WOL },
++	{}
 +};
++const unsigned int n_flags_msglvl = ARRAY_SIZE(flags_msglvl) - 1;
 +
-+static struct monitor_option monitor_opts[] = {
-+	{
-+		.pattern	= "|--all",
-+		.cmd		= 0,
-+	},
-+};
-+
-+static bool pattern_match(const char *s, const char *pattern)
++void print_flags(const struct flag_info *info, unsigned int n_info, u32 value)
 +{
-+	const char *opt = pattern;
-+	const char *next;
-+	int slen = strlen(s);
-+	int optlen;
++	const char *sep = "";
 +
-+	do {
-+		next = opt;
-+		while (*next && *next != '|')
-+			next++;
-+		optlen = next - opt;
-+		if (slen == optlen && !strncmp(s, opt, optlen))
-+			return true;
-+
-+		opt = next;
-+		if (*opt == '|')
-+			opt++;
-+	} while (*opt);
-+
-+	return false;
-+}
-+
-+static int parse_monitor(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	char **argp = ctx->argp;
-+	int argc = ctx->argc;
-+	const char *opt = "";
-+	bool opt_found;
-+	unsigned int i;
-+
-+	if (*argp && argp[0][0] == '-') {
-+		opt = *argp;
-+		argp++;
-+		argc--;
-+	}
-+	opt_found = false;
-+	clear_filter(nlctx);
-+	for (i = 0; i < MNL_ARRAY_SIZE(monitor_opts); i++) {
-+		if (pattern_match(opt, monitor_opts[i].pattern)) {
-+			unsigned int cmd = monitor_opts[i].cmd;
-+
-+			if (!cmd)
-+				set_filter_all(nlctx);
-+			else
-+				set_filter_cmd(nlctx, cmd);
-+			opt_found = true;
++	while (n_info) {
++		if (value & info->value) {
++			printf("%s%s", sep, info->name);
++			sep = " ";
++			value &= ~info->value;
 +		}
-+	}
-+	if (!opt_found) {
-+		fprintf(stderr, "monitoring for option '%s' not supported\n",
-+			*argp);
-+		return -1;
++		++info;
++		--n_info;
 +	}
 +
-+	if (*argp && strcmp(*argp, WILDCARD_DEVNAME))
-+		ctx->devname = *argp;
++	/* Print any unrecognised flags in hex */
++	if (value)
++		printf("%s%#x", sep, value);
++}
++
++static char *unparse_wolopts(int wolopts)
++{
++	static char buf[16];
++	char *p = buf;
++
++	memset(buf, 0, sizeof(buf));
++
++	if (wolopts) {
++		if (wolopts & WAKE_PHY)
++			*p++ = 'p';
++		if (wolopts & WAKE_UCAST)
++			*p++ = 'u';
++		if (wolopts & WAKE_MCAST)
++			*p++ = 'm';
++		if (wolopts & WAKE_BCAST)
++			*p++ = 'b';
++		if (wolopts & WAKE_ARP)
++			*p++ = 'a';
++		if (wolopts & WAKE_MAGIC)
++			*p++ = 'g';
++		if (wolopts & WAKE_MAGICSECURE)
++			*p++ = 's';
++		if (wolopts & WAKE_FILTER)
++			*p++ = 'f';
++	} else {
++		*p = 'd';
++	}
++
++	return buf;
++}
++
++int dump_wol(struct ethtool_wolinfo *wol)
++{
++	fprintf(stdout, "	Supports Wake-on: %s\n",
++		unparse_wolopts(wol->supported));
++	fprintf(stdout, "	Wake-on: %s\n",
++		unparse_wolopts(wol->wolopts));
++	if (wol->supported & WAKE_MAGICSECURE) {
++		int i;
++		int delim = 0;
++
++		fprintf(stdout, "        SecureOn password: ");
++		for (i = 0; i < SOPASS_MAX; i++) {
++			fprintf(stdout, "%s%02x", delim ? ":" : "",
++				wol->sopass[i]);
++			delim = 1;
++		}
++		fprintf(stdout, "\n");
++	}
++
 +	return 0;
 +}
 +
-+int nl_monitor(struct cmd_context *ctx)
++void dump_mdix(u8 mdix, u8 mdix_ctrl)
 +{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	uint32_t grpid = nlctx->ethnl_mongrp;
-+	bool is_dev;
-+	int ret;
-+
-+	if (!grpid) {
-+		fprintf(stderr, "multicast group 'monitor' not found\n");
-+		return -EOPNOTSUPP;
++	fprintf(stdout, "	MDI-X: ");
++	if (mdix_ctrl == ETH_TP_MDI) {
++		fprintf(stdout, "off (forced)\n");
++	} else if (mdix_ctrl == ETH_TP_MDI_X) {
++		fprintf(stdout, "on (forced)\n");
++	} else {
++		switch (mdix) {
++		case ETH_TP_MDI:
++			fprintf(stdout, "off");
++			break;
++		case ETH_TP_MDI_X:
++			fprintf(stdout, "on");
++			break;
++		default:
++			fprintf(stdout, "Unknown");
++			break;
++		}
++		if (mdix_ctrl == ETH_TP_MDI_AUTO)
++			fprintf(stdout, " (auto)");
++		fprintf(stdout, "\n");
 +	}
-+	if (parse_monitor(ctx) < 0)
-+		return 1;
-+	is_dev = ctx->devname && strcmp(ctx->devname, WILDCARD_DEVNAME);
-+
-+	ret = preload_global_strings(nlsk);
-+	if (ret < 0)
-+		return ret;
-+	ret = mnl_socket_setsockopt(nlsk->sk, NETLINK_ADD_MEMBERSHIP,
-+				    &grpid, sizeof(grpid));
-+	if (ret < 0)
-+		return ret;
-+	if (is_dev) {
-+		ret = preload_perdev_strings(nlsk, ctx->devname);
-+		if (ret < 0)
-+			goto out_strings;
-+	}
-+
-+	nlctx->filter_devname = ctx->devname;
-+	nlctx->is_monitor = true;
-+	nlsk->port = 0;
-+	nlsk->seq = 0;
-+
-+	fputs("listening...\n", stdout);
-+	fflush(stdout);
-+	ret = nlsock_process_reply(nlsk, monitor_any_cb, nlctx);
-+
-+out_strings:
-+	cleanup_all_strings();
-+	return ret;
 +}
+diff --git a/common.h b/common.h
+new file mode 100644
+index 000000000000..3a680114a7c2
+--- /dev/null
++++ b/common.h
+@@ -0,0 +1,26 @@
++/*
++ * common.h - common code header
++ *
++ * Declarations for data and functions shared by ioctl and netlink code.
++ */
 +
-+void nl_monitor_usage(void)
-+{
-+	unsigned int i;
-+	const char *p;
++#ifndef ETHTOOL_COMMON_H__
++#define ETHTOOL_COMMON_H__
 +
-+	fputs("        ethtool --monitor               Show kernel notifications\n",
-+	      stdout);
-+	fputs("                ( [ --all ]", stdout);
-+	for (i = 1; i < MNL_ARRAY_SIZE(monitor_opts); i++) {
-+		fputs("\n                  | ", stdout);
-+		for (p = monitor_opts[i].pattern; *p; p++)
-+			if (*p == '|')
-+				fputs(" | ", stdout);
-+			else
-+				fputc(*p, stdout);
-+	}
-+	fputs(" )\n", stdout);
-+	fputs("                [ DEVNAME | * ]\n", stdout);
-+}
-diff --git a/netlink/netlink.h b/netlink/netlink.h
-index 04ad7bcd347c..be44f9c16f19 100644
---- a/netlink/netlink.h
-+++ b/netlink/netlink.h
-@@ -14,6 +14,7 @@
- #include "nlsock.h"
++#include "internal.h"
++
++#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
++
++struct flag_info {
++	const char *name;
++	u32 value;
++};
++
++extern const struct flag_info flags_msglvl[];
++extern const unsigned int n_flags_msglvl;
++
++void print_flags(const struct flag_info *info, unsigned int n_info, u32 value);
++int dump_wol(struct ethtool_wolinfo *wol);
++void dump_mdix(u8 mdix, u8 mdix_ctrl);
++
++#endif /* ETHTOOL_COMMON_H__ */
+diff --git a/ethtool.c b/ethtool.c
+index 97eaa58a3090..c2b7cc8c0502 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -48,32 +48,13 @@
+ #include <linux/sockios.h>
+ #include <linux/netlink.h>
  
- #define WILDCARD_DEVNAME "*"
-+#define CMDMASK_WORDS DIV_ROUND_UP(__ETHTOOL_MSG_KERNEL_CNT, 32)
++#include "common.h"
+ #include "netlink/extapi.h"
  
- struct nl_context {
- 	struct cmd_context	*ctx;
-@@ -26,6 +27,9 @@ struct nl_context {
- 	uint32_t		ethnl_mongrp;
- 	struct nl_socket	*ethnl_socket;
- 	struct nl_socket	*ethnl2_socket;
-+	bool			is_monitor;
-+	uint32_t		filter_cmds[CMDMASK_WORDS];
-+	const char		*filter_devname;
+ #ifndef MAX_ADDR_LEN
+ #define MAX_ADDR_LEN	32
+ #endif
+ 
+-#ifndef HAVE_NETIF_MSG
+-enum {
+-	NETIF_MSG_DRV		= 0x0001,
+-	NETIF_MSG_PROBE		= 0x0002,
+-	NETIF_MSG_LINK		= 0x0004,
+-	NETIF_MSG_TIMER		= 0x0008,
+-	NETIF_MSG_IFDOWN	= 0x0010,
+-	NETIF_MSG_IFUP		= 0x0020,
+-	NETIF_MSG_RX_ERR	= 0x0040,
+-	NETIF_MSG_TX_ERR	= 0x0080,
+-	NETIF_MSG_TX_QUEUED	= 0x0100,
+-	NETIF_MSG_INTR		= 0x0200,
+-	NETIF_MSG_TX_DONE	= 0x0400,
+-	NETIF_MSG_RX_STATUS	= 0x0800,
+-	NETIF_MSG_PKTDATA	= 0x1000,
+-	NETIF_MSG_HW		= 0x2000,
+-	NETIF_MSG_WOL		= 0x4000,
+-};
+-#endif
+-
+ #ifndef NETLINK_GENERIC
+ #define NETLINK_GENERIC	16
+ #endif
+@@ -121,29 +102,6 @@ struct cmdline_info {
+ 	void *seen_val;
  };
  
- struct attr_tb_info {
-@@ -48,6 +52,13 @@ static inline void copy_devname(char *dst, const char *src)
- 	dst[ALTIFNAMSIZ - 1] = '\0';
+-struct flag_info {
+-	const char *name;
+-	u32 value;
+-};
+-
+-static const struct flag_info flags_msglvl[] = {
+-	{ "drv",	NETIF_MSG_DRV },
+-	{ "probe",	NETIF_MSG_PROBE },
+-	{ "link",	NETIF_MSG_LINK },
+-	{ "timer",	NETIF_MSG_TIMER },
+-	{ "ifdown",	NETIF_MSG_IFDOWN },
+-	{ "ifup",	NETIF_MSG_IFUP },
+-	{ "rx_err",	NETIF_MSG_RX_ERR },
+-	{ "tx_err",	NETIF_MSG_TX_ERR },
+-	{ "tx_queued",	NETIF_MSG_TX_QUEUED },
+-	{ "intr",	NETIF_MSG_INTR },
+-	{ "tx_done",	NETIF_MSG_TX_DONE },
+-	{ "rx_status",	NETIF_MSG_RX_STATUS },
+-	{ "pktdata",	NETIF_MSG_PKTDATA },
+-	{ "hw",		NETIF_MSG_HW },
+-	{ "wol",	NETIF_MSG_WOL },
+-};
+-
+ struct off_flag_def {
+ 	const char *short_name;
+ 	const char *long_name;
+@@ -426,26 +384,6 @@ static void flag_to_cmdline_info(const char *name, u32 value,
+ 	cli->seen_val = mask;
  }
  
-+static inline bool dev_ok(const struct nl_context *nlctx)
-+{
-+	return !nlctx->filter_devname ||
-+	       (nlctx->devname &&
-+		!strcmp(nlctx->devname, nlctx->filter_devname));
-+}
-+
- static inline int netlink_init_ethnl2_socket(struct nl_context *nlctx)
+-static void
+-print_flags(const struct flag_info *info, unsigned int n_info, u32 value)
+-{
+-	const char *sep = "";
+-
+-	while (n_info) {
+-		if (value & info->value) {
+-			printf("%s%s", sep, info->name);
+-			sep = " ";
+-			value &= ~info->value;
+-		}
+-		++info;
+-		--n_info;
+-	}
+-
+-	/* Print any unrecognised flags in hex */
+-	if (value)
+-		printf("%s%#x", sep, value);
+-}
+-
+ static int rxflow_str_to_type(const char *str)
  {
- 	if (nlctx->ethnl2_socket)
-diff --git a/netlink/strset.c b/netlink/strset.c
-index bc468ae5a88e..75f0327bbe43 100644
---- a/netlink/strset.c
-+++ b/netlink/strset.c
-@@ -149,6 +149,8 @@ static int strset_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 			return MNL_CB_OK;
- 		nlctx->devname = devname;
- 	}
-+	if (ifindex && !dev_ok(nlctx))
-+		return MNL_CB_OK;
+ 	int flow_type = 0;
+@@ -904,31 +842,9 @@ dump_link_usettings(const struct ethtool_link_usettings *link_usettings)
+ 		(link_usettings->base.autoneg == AUTONEG_DISABLE) ?
+ 		"off" : "on");
  
- 	if (ifindex) {
- 		struct perdev_strings *perdev;
+-	if (link_usettings->base.port == PORT_TP) {
+-		fprintf(stdout, "	MDI-X: ");
+-		if (link_usettings->base.eth_tp_mdix_ctrl == ETH_TP_MDI) {
+-			fprintf(stdout, "off (forced)\n");
+-		} else if (link_usettings->base.eth_tp_mdix_ctrl
+-			   == ETH_TP_MDI_X) {
+-			fprintf(stdout, "on (forced)\n");
+-		} else {
+-			switch (link_usettings->base.eth_tp_mdix) {
+-			case ETH_TP_MDI:
+-				fprintf(stdout, "off");
+-				break;
+-			case ETH_TP_MDI_X:
+-				fprintf(stdout, "on");
+-				break;
+-			default:
+-				fprintf(stdout, "Unknown");
+-				break;
+-			}
+-			if (link_usettings->base.eth_tp_mdix_ctrl
+-			    == ETH_TP_MDI_AUTO)
+-				fprintf(stdout, " (auto)");
+-			fprintf(stdout, "\n");
+-		}
+-	}
++	if (link_usettings->base.port == PORT_TP)
++		dump_mdix(link_usettings->base.eth_tp_mdix,
++			  link_usettings->base.eth_tp_mdix_ctrl);
+ 
+ 	return 0;
+ }
+@@ -1000,58 +916,6 @@ static int parse_wolopts(char *optstr, u32 *data)
+ 	return 0;
+ }
+ 
+-static char *unparse_wolopts(int wolopts)
+-{
+-	static char buf[16];
+-	char *p = buf;
+-
+-	memset(buf, 0, sizeof(buf));
+-
+-	if (wolopts) {
+-		if (wolopts & WAKE_PHY)
+-			*p++ = 'p';
+-		if (wolopts & WAKE_UCAST)
+-			*p++ = 'u';
+-		if (wolopts & WAKE_MCAST)
+-			*p++ = 'm';
+-		if (wolopts & WAKE_BCAST)
+-			*p++ = 'b';
+-		if (wolopts & WAKE_ARP)
+-			*p++ = 'a';
+-		if (wolopts & WAKE_MAGIC)
+-			*p++ = 'g';
+-		if (wolopts & WAKE_MAGICSECURE)
+-			*p++ = 's';
+-		if (wolopts & WAKE_FILTER)
+-			*p++ = 'f';
+-	} else {
+-		*p = 'd';
+-	}
+-
+-	return buf;
+-}
+-
+-static int dump_wol(struct ethtool_wolinfo *wol)
+-{
+-	fprintf(stdout, "	Supports Wake-on: %s\n",
+-		unparse_wolopts(wol->supported));
+-	fprintf(stdout, "	Wake-on: %s\n",
+-		unparse_wolopts(wol->wolopts));
+-	if (wol->supported & WAKE_MAGICSECURE) {
+-		int i;
+-		int delim = 0;
+-
+-		fprintf(stdout, "        SecureOn password: ");
+-		for (i = 0; i < SOPASS_MAX; i++) {
+-			fprintf(stdout, "%s%02x", delim?":":"", wol->sopass[i]);
+-			delim = 1;
+-		}
+-		fprintf(stdout, "\n");
+-	}
+-
+-	return 0;
+-}
+-
+ static int parse_rxfhashopts(char *optstr, u32 *data)
+ {
+ 	*data = 0;
+@@ -2839,8 +2703,7 @@ static int do_gset(struct cmd_context *ctx)
+ 		fprintf(stdout, "	Current message level: 0x%08x (%d)\n"
+ 			"			       ",
+ 			edata.data, edata.data);
+-		print_flags(flags_msglvl, ARRAY_SIZE(flags_msglvl),
+-			    edata.data);
++		print_flags(flags_msglvl, n_flags_msglvl, edata.data);
+ 		fprintf(stdout, "\n");
+ 		allfail = 0;
+ 	} else if (errno != EOPNOTSUPP) {
+@@ -2886,13 +2749,13 @@ static int do_sset(struct cmd_context *ctx)
+ 	int msglvl_changed = 0;
+ 	u32 msglvl_wanted = 0;
+ 	u32 msglvl_mask = 0;
+-	struct cmdline_info cmdline_msglvl[ARRAY_SIZE(flags_msglvl)];
++	struct cmdline_info cmdline_msglvl[n_flags_msglvl];
+ 	int argc = ctx->argc;
+ 	char **argp = ctx->argp;
+ 	int i;
+ 	int err = 0;
+ 
+-	for (i = 0; i < ARRAY_SIZE(flags_msglvl); i++)
++	for (i = 0; i < n_flags_msglvl; i++)
+ 		flag_to_cmdline_info(flags_msglvl[i].name,
+ 				     flags_msglvl[i].value,
+ 				     &msglvl_wanted, &msglvl_mask,
 -- 
 2.25.1
 
