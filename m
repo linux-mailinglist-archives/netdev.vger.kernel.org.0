@@ -2,391 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B146E17C398
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6DF17C3A0
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbgCFRFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:05:48 -0500
-Received: from mx2.suse.de ([195.135.220.15]:43872 "EHLO mx2.suse.de"
+        id S1727250AbgCFRFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 12:05:54 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43910 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726397AbgCFRFr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 12:05:47 -0500
+        id S1726397AbgCFRFx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 12:05:53 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id A6803B2C8;
-        Fri,  6 Mar 2020 17:05:45 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 546A1B374;
+        Fri,  6 Mar 2020 17:05:51 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 40BC0E00E7; Fri,  6 Mar 2020 18:05:45 +0100 (CET)
-Message-Id: <7f846090c02592c5a8628b7ec699c3876b186889.1583513281.git.mkubecek@suse.cz>
+        id 47149E00E7; Fri,  6 Mar 2020 18:05:50 +0100 (CET)
+Message-Id: <0d2a147aa6373af3d586eed4eb54a56a4b2aa8f5.1583513281.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583513281.git.mkubecek@suse.cz>
 References: <cover.1583513281.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v3 21/25] netlink: support for pretty printing netlink
- messages
+Subject: [PATCH ethtool v3 22/25] netlink: message format description for
+ ethtool netlink
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri,  6 Mar 2020 18:05:45 +0100 (CET)
+Date:   Fri,  6 Mar 2020 18:05:50 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To improve message reporting and debugging, add support for displaying
-netlink messages in human readable form, e.g.
-
-    # ethtool --debug 0x10 -s eth0 msglvl drv on foo on probe off
-    netlink error: bit name not found
-    offending message and attribute:
-        ETHTOOL_MSG_DEBUG_SET
-            ETHTOOL_A_DEBUG_HEADER
-                ETHTOOL_A_HEADER_DEV_NAME = "eth0"
-            ETHTOOL_A_DEBUG_MSGMASK
-                ETHTOOL_A_BITSET_BITS
-                    ETHTOOL_A_BITSET_BITS_BIT
-                        ETHTOOL_A_BITSET_BIT_NAME = "drv"
-                        ETHTOOL_A_BITSET_BIT_VALUE = true
-                    ETHTOOL_A_BITSET_BITS_BIT
-    ===>                ETHTOOL_A_BITSET_BIT_NAME = "foo"
-                        ETHTOOL_A_BITSET_BIT_VALUE = true
-                    ETHTOOL_A_BITSET_BITS_BIT
-                        ETHTOOL_A_BITSET_BIT_NAME = "probe"
-
-This commit only adds support for parsing and displaying a message and
-(optionally) highlighting an attribute on given offset (for extack error
-reporting). To actually use it, one also needs message descriptions, i.e.
-mapping of netlink attribute types to their symbolic names and payload
-formats (depending on context).
+Add description of ethtool netlink message formats to be used for pretty
+printing infrastructure. These arrays map (numeric) attribute types to
+their symbolic names and format of their payload so that attributes can be
+displayed in human friendly form.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am         |   2 +-
- netlink/prettymsg.c | 193 ++++++++++++++++++++++++++++++++++++++++++++
- netlink/prettymsg.h | 102 +++++++++++++++++++++++
- 3 files changed, 296 insertions(+), 1 deletion(-)
- create mode 100644 netlink/prettymsg.c
- create mode 100644 netlink/prettymsg.h
+ Makefile.am            |   1 +
+ netlink/desc-ethtool.c | 139 +++++++++++++++++++++++++++++++++++++++++
+ netlink/prettymsg.h    |   7 +++
+ 3 files changed, 147 insertions(+)
+ create mode 100644 netlink/desc-ethtool.c
 
 diff --git a/Makefile.am b/Makefile.am
-index 11acdab1a65e..d745471e53b1 100644
+index d745471e53b1..5654b273a0a0 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -30,7 +30,7 @@ ethtool_SOURCES += \
- 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
+@@ -31,6 +31,7 @@ ethtool_SOURCES += \
  		  netlink/monitor.c netlink/bitset.c netlink/bitset.h \
  		  netlink/settings.c netlink/parser.c netlink/parser.h \
--		  netlink/permaddr.c \
-+		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
+ 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
++		  netlink/desc-ethtool.c \
  		  uapi/linux/ethtool_netlink.h \
  		  uapi/linux/netlink.h uapi/linux/genetlink.h \
  		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/netlink/prettymsg.c b/netlink/prettymsg.c
+diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
 new file mode 100644
-index 000000000000..74fe6f2db7ed
+index 000000000000..76c6f13e4648
 --- /dev/null
-+++ b/netlink/prettymsg.c
-@@ -0,0 +1,193 @@
++++ b/netlink/desc-ethtool.c
+@@ -0,0 +1,139 @@
 +/*
-+ * prettymsg.c - human readable message dump
++ * desc-ethtool.c - ethtool netlink format descriptions
 + *
-+ * Support for pretty print of an ethtool netlink message
++ * Descriptions of ethtool netlink messages and attributes for pretty print.
 + */
 +
-+#include <stdio.h>
-+#include <string.h>
-+#include <errno.h>
-+#include <stdint.h>
-+#include <limits.h>
-+#include <linux/genetlink.h>
-+#include <linux/rtnetlink.h>
-+#include <linux/if_link.h>
-+#include <libmnl/libmnl.h>
++#include <linux/ethtool_netlink.h>
 +
++#include "../internal.h"
 +#include "prettymsg.h"
 +
-+#define __INDENT 4
-+#define __DUMP_LINE 16
-+#define __DUMP_BLOCK 4
++static const struct pretty_nla_desc __header_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_HEADER_UNSPEC),
++	NLATTR_DESC_U32(ETHTOOL_A_HEADER_DEV_INDEX),
++	NLATTR_DESC_STRING(ETHTOOL_A_HEADER_DEV_NAME),
++	NLATTR_DESC_X32(ETHTOOL_A_HEADER_FLAGS),
++};
 +
-+static void __print_binary_short(uint8_t *adata, unsigned int alen)
-+{
-+	unsigned int i;
++static const struct pretty_nla_desc __bitset_bit_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_BITSET_BIT_UNSPEC),
++	NLATTR_DESC_U32(ETHTOOL_A_BITSET_BIT_INDEX),
++	NLATTR_DESC_STRING(ETHTOOL_A_BITSET_BIT_NAME),
++	NLATTR_DESC_FLAG(ETHTOOL_A_BITSET_BIT_VALUE),
++};
 +
-+	if (!alen)
-+		return;
-+	printf("%02x", adata[0]);
-+	for (i = 1; i < alen; i++)
-+		printf("%c%02x", (i % __DUMP_BLOCK) ? ':' : ' ',  adata[i]);
-+}
++static const struct pretty_nla_desc __bitset_bits_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_BITSET_BITS_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_BITSET_BITS_BIT, bitset_bit),
++};
 +
-+static void __print_binary_long(uint8_t *adata, unsigned int alen,
-+				unsigned int level)
-+{
-+	unsigned int i;
++static const struct pretty_nla_desc __bitset_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_BITSET_UNSPEC),
++	NLATTR_DESC_FLAG(ETHTOOL_A_BITSET_NOMASK),
++	NLATTR_DESC_U32(ETHTOOL_A_BITSET_SIZE),
++	NLATTR_DESC_NESTED(ETHTOOL_A_BITSET_BITS, bitset_bits),
++	NLATTR_DESC_BINARY(ETHTOOL_A_BITSET_VALUE),
++	NLATTR_DESC_BINARY(ETHTOOL_A_BITSET_MASK),
++};
 +
-+	for (i = 0; i < alen; i++) {
-+		if (i % __DUMP_LINE == 0)
-+			printf("\n%*s", __INDENT * (level + 2), "");
-+		else if (i % __DUMP_BLOCK == 0)
-+			printf("  ");
-+		else
-+			putchar(' ');
-+		printf("%02x", adata[i]);
-+	}
-+}
++static const struct pretty_nla_desc __string_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_STRING_UNSPEC),
++	NLATTR_DESC_U32(ETHTOOL_A_STRING_INDEX),
++	NLATTR_DESC_STRING(ETHTOOL_A_STRING_VALUE),
++};
 +
-+static int pretty_print_attr(const struct nlattr *attr,
-+			     const struct pretty_nla_desc *desc,
-+			     unsigned int ndesc, unsigned int level,
-+			     int err_offset, bool in_array)
-+{
-+	unsigned int alen = mnl_attr_get_payload_len(attr);
-+	unsigned int atype = mnl_attr_get_type(attr);
-+	unsigned int desc_idx = in_array ? 0 : atype;
-+	void *adata = mnl_attr_get_payload(attr);
-+	const struct pretty_nla_desc *adesc;
-+	const char *prefix = "    ";
-+	bool nested;
++static const struct pretty_nla_desc __strings_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_STRINGS_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_STRINGS_STRING, string),
++};
 +
-+	adesc = (desc && desc_idx < ndesc) ? &desc[desc_idx] : NULL;
-+	nested = (adesc && (adesc->format == NLA_NESTED ||
-+			    adesc->format == NLA_ARRAY)) ||
-+		 (attr->nla_type & NLA_F_NESTED);
-+	if (err_offset >= 0 &&
-+	    err_offset < (nested ? NLA_HDRLEN : attr->nla_len)) {
-+		prefix = "===>";
-+		if (err_offset)
-+			fprintf(stderr,
-+				"ethtool: bad_attr inside an attribute (offset %d)\n",
-+				err_offset);
-+	}
-+	if (adesc && adesc->name && !in_array)
-+		printf("%s%*s%s", prefix, level * __INDENT, "", adesc->name);
-+	else
-+		printf("%s%*s[%u]", prefix, level * __INDENT, "", atype);
++static const struct pretty_nla_desc __stringset_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_STRINGSET_UNSPEC),
++	NLATTR_DESC_U32(ETHTOOL_A_STRINGSET_ID),
++	NLATTR_DESC_U32(ETHTOOL_A_STRINGSET_COUNT),
++	NLATTR_DESC_NESTED(ETHTOOL_A_STRINGSET_STRINGS, strings),
++};
 +
-+	if (nested) {
-+		struct nlattr *child;
-+		int ret = 0;
++static const struct pretty_nla_desc __stringsets_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_STRINGSETS_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_STRINGSETS_STRINGSET, stringset),
++};
 +
-+		putchar('\n');
-+		mnl_attr_for_each_nested(child, attr) {
-+			bool array = adesc && adesc->format == NLA_ARRAY;
-+			unsigned int child_off;
++static const struct pretty_nla_desc __strset_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_STRSET_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_STRSET_HEADER, header),
++	NLATTR_DESC_NESTED(ETHTOOL_A_STRSET_STRINGSETS, stringsets),
++	NLATTR_DESC_FLAG(ETHTOOL_A_STRSET_COUNTS_ONLY),
++};
 +
-+			child_off = (const char *)child - (const char *)attr;
-+			ret = pretty_print_attr(child,
-+						adesc ? adesc->children : NULL,
-+						adesc ? adesc->n_children : 0,
-+						level + 1,
-+						err_offset - child_off, array);
-+			if (ret < 0)
-+				break;
-+		}
++static const struct pretty_nla_desc __linkinfo_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_LINKINFO_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_LINKINFO_HEADER, header),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKINFO_PORT),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKINFO_PHYADDR),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKINFO_TP_MDIX),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKINFO_TP_MDIX_CTRL),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKINFO_TRANSCEIVER),
++};
 +
-+		return ret;
-+	}
++static const struct pretty_nla_desc __linkmodes_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_LINKMODES_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_LINKMODES_HEADER, header),
++	NLATTR_DESC_BOOL(ETHTOOL_A_LINKMODES_AUTONEG),
++	NLATTR_DESC_NESTED(ETHTOOL_A_LINKMODES_OURS, bitset),
++	NLATTR_DESC_NESTED(ETHTOOL_A_LINKMODES_PEER, bitset),
++	NLATTR_DESC_U32(ETHTOOL_A_LINKMODES_SPEED),
++	NLATTR_DESC_U8(ETHTOOL_A_LINKMODES_DUPLEX),
++};
 +
-+	printf(" = ");
-+	switch(adesc ? adesc->format : NLA_BINARY) {
-+	case NLA_U8:
-+		printf("%u", mnl_attr_get_u8(attr));
-+		break;
-+	case NLA_U16:
-+		printf("%u", mnl_attr_get_u16(attr));
-+		break;
-+	case NLA_U32:
-+		printf("%u", mnl_attr_get_u32(attr));
-+		break;
-+	case NLA_X8:
-+		printf("0x%02x", mnl_attr_get_u8(attr));
-+		break;
-+	case NLA_X16:
-+		printf("0x%04x", mnl_attr_get_u16(attr));
-+		break;
-+	case NLA_X32:
-+		printf("0x%08x", mnl_attr_get_u32(attr));
-+		break;
-+	case NLA_S8:
-+		printf("%d", (int)mnl_attr_get_u8(attr));
-+		break;
-+	case NLA_S16:
-+		printf("%d", (int)mnl_attr_get_u16(attr));
-+		break;
-+	case NLA_S32:
-+		printf("%d", (int)mnl_attr_get_u32(attr));
-+		break;
-+	case NLA_STRING:
-+		printf("\"%.*s\"", alen, (const char *)adata);
-+		break;
-+	case NLA_FLAG:
-+		printf("true");
-+		break;
-+	case NLA_BOOL:
-+		printf("%s", mnl_attr_get_u8(attr) ? "on" : "off");
-+		break;
-+	default:
-+		if (alen <= __DUMP_LINE)
-+			__print_binary_short(adata, alen);
-+		else
-+			__print_binary_long(adata, alen, level);
-+	}
-+	putchar('\n');
++static const struct pretty_nla_desc __linkstate_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_LINKSTATE_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_LINKSTATE_HEADER, header),
++	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
++};
 +
-+	return 0;
-+}
++static const struct pretty_nla_desc __debug_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_DEBUG_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_DEBUG_HEADER, header),
++	NLATTR_DESC_NESTED(ETHTOOL_A_DEBUG_MSGMASK, bitset),
++};
 +
-+static int pretty_print_nlmsg(const struct nlmsghdr *nlhdr,
-+			      unsigned int payload_offset,
-+			      const struct pretty_nla_desc *desc,
-+			      unsigned int ndesc, unsigned int err_offset)
-+{
-+	const struct nlattr *attr;
-+	int attr_offset;
-+	int ret;
++static const struct pretty_nla_desc __wol_desc[] = {
++	NLATTR_DESC_INVALID(ETHTOOL_A_WOL_UNSPEC),
++	NLATTR_DESC_NESTED(ETHTOOL_A_WOL_HEADER, header),
++	NLATTR_DESC_NESTED(ETHTOOL_A_WOL_MODES, bitset),
++	NLATTR_DESC_BINARY(ETHTOOL_A_WOL_SOPASS),
++};
 +
-+	mnl_attr_for_each(attr, nlhdr, payload_offset) {
-+		attr_offset = (const char *)attr - (const char *)nlhdr;
-+		ret = pretty_print_attr(attr, desc, ndesc, 1,
-+					err_offset - attr_offset, false);
-+		if (ret < 0)
-+			return ret;
-+	}
++const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
++	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
++	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
++	NLMSG_DESC(ETHTOOL_MSG_LINKINFO_GET, linkinfo),
++	NLMSG_DESC(ETHTOOL_MSG_LINKINFO_SET, linkinfo),
++	NLMSG_DESC(ETHTOOL_MSG_LINKMODES_GET, linkmodes),
++	NLMSG_DESC(ETHTOOL_MSG_LINKMODES_SET, linkmodes),
++	NLMSG_DESC(ETHTOOL_MSG_LINKSTATE_GET, linkstate),
++	NLMSG_DESC(ETHTOOL_MSG_DEBUG_GET, debug),
++	NLMSG_DESC(ETHTOOL_MSG_DEBUG_SET, debug),
++	NLMSG_DESC(ETHTOOL_MSG_WOL_GET, wol),
++	NLMSG_DESC(ETHTOOL_MSG_WOL_SET, wol),
++};
 +
-+	return 0;
-+}
++const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
 +
-+int pretty_print_genlmsg(const struct nlmsghdr *nlhdr,
-+			 const struct pretty_nlmsg_desc *desc,
-+			 unsigned int ndesc, unsigned int err_offset)
-+{
-+	const struct pretty_nlmsg_desc *msg_desc;
-+	const struct genlmsghdr *genlhdr;
++const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
++	NLMSG_DESC_INVALID(ETHTOOL_MSG_KERNEL_NONE),
++	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET_REPLY, strset),
++	NLMSG_DESC(ETHTOOL_MSG_LINKINFO_GET_REPLY, linkinfo),
++	NLMSG_DESC(ETHTOOL_MSG_LINKINFO_NTF, linkinfo),
++	NLMSG_DESC(ETHTOOL_MSG_LINKMODES_GET_REPLY, linkmodes),
++	NLMSG_DESC(ETHTOOL_MSG_LINKMODES_NTF, linkmodes),
++	NLMSG_DESC(ETHTOOL_MSG_LINKSTATE_GET_REPLY, linkstate),
++	NLMSG_DESC(ETHTOOL_MSG_DEBUG_GET_REPLY, debug),
++	NLMSG_DESC(ETHTOOL_MSG_DEBUG_NTF, debug),
++	NLMSG_DESC(ETHTOOL_MSG_WOL_GET_REPLY, wol),
++	NLMSG_DESC(ETHTOOL_MSG_WOL_NTF, wol),
++};
 +
-+	if (mnl_nlmsg_get_payload_len(nlhdr) < GENL_HDRLEN) {
-+		fprintf(stderr, "ethtool: message too short (%u bytes)\n",
-+			nlhdr->nlmsg_len);
-+		return -EINVAL;
-+	}
-+	genlhdr = mnl_nlmsg_get_payload(nlhdr);
-+	msg_desc = (desc && genlhdr->cmd < ndesc) ? &desc[genlhdr->cmd] : NULL;
-+	if (msg_desc && msg_desc->name)
-+		printf("    %s\n", msg_desc->name);
-+	else
-+		printf("    [%u]\n", genlhdr->cmd);
-+
-+	return pretty_print_nlmsg(nlhdr, GENL_HDRLEN,
-+				  msg_desc ? msg_desc->attrs : NULL,
-+				  msg_desc ? msg_desc->n_attrs : 0, err_offset);
-+}
++const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
 diff --git a/netlink/prettymsg.h b/netlink/prettymsg.h
-new file mode 100644
-index 000000000000..68ec275a22f6
---- /dev/null
+index 68ec275a22f6..9d8ca77fd42c 100644
+--- a/netlink/prettymsg.h
 +++ b/netlink/prettymsg.h
-@@ -0,0 +1,102 @@
-+/*
-+ * prettymsg.h - human readable message dump
-+ *
-+ * Support for pretty print of an ethtool netlink message
-+ */
+@@ -99,4 +99,11 @@ int pretty_print_genlmsg(const struct nlmsghdr *nlhdr,
+ 			 const struct pretty_nlmsg_desc *desc,
+ 			 unsigned int ndesc, unsigned int err_offset);
+ 
++/* message descriptions */
 +
-+#ifndef ETHTOOL_NETLINK_PRETTYMSG_H__
-+#define ETHTOOL_NETLINK_PRETTYMSG_H__
++extern const struct pretty_nlmsg_desc ethnl_umsg_desc[];
++extern const unsigned int ethnl_umsg_n_desc;
++extern const struct pretty_nlmsg_desc ethnl_kmsg_desc[];
++extern const unsigned int ethnl_kmsg_n_desc;
 +
-+#include <linux/netlink.h>
-+
-+/* data structures for message format descriptions */
-+
-+enum pretty_nla_format {
-+	NLA_INVALID,
-+	NLA_BINARY,
-+	NLA_U8,
-+	NLA_U16,
-+	NLA_U32,
-+	NLA_X8,
-+	NLA_X16,
-+	NLA_X32,
-+	NLA_S8,
-+	NLA_S16,
-+	NLA_S32,
-+	NLA_STRING,
-+	NLA_FLAG,
-+	NLA_BOOL,
-+	NLA_NESTED,
-+	NLA_ARRAY,
-+};
-+
-+struct pretty_nla_desc {
-+	enum pretty_nla_format		format;
-+	const char			*name;
-+	const struct pretty_nla_desc	*children;
-+	unsigned int			n_children;
-+};
-+
-+struct pretty_nlmsg_desc {
-+	const char			*name;
-+	const struct pretty_nla_desc	*attrs;
-+	unsigned int			n_attrs;
-+};
-+
-+/* helper macros for message format descriptions */
-+
-+#define NLATTR_DESC(_name, _fmt) \
-+	[_name] = { \
-+		.format = _fmt, \
-+		.name = #_name, \
-+	}
-+
-+#define NLATTR_DESC_INVALID(_name)	NLATTR_DESC(_name, NLA_INVALID)
-+#define NLATTR_DESC_U8(_name)		NLATTR_DESC(_name, NLA_U8)
-+#define NLATTR_DESC_U16(_name)		NLATTR_DESC(_name, NLA_U16)
-+#define NLATTR_DESC_U32(_name)		NLATTR_DESC(_name, NLA_U32)
-+#define NLATTR_DESC_X8(_name)		NLATTR_DESC(_name, NLA_X8)
-+#define NLATTR_DESC_X16(_name)		NLATTR_DESC(_name, NLA_X16)
-+#define NLATTR_DESC_X32(_name)		NLATTR_DESC(_name, NLA_X32)
-+#define NLATTR_DESC_S8(_name)		NLATTR_DESC(_name, NLA_U8)
-+#define NLATTR_DESC_S16(_name)		NLATTR_DESC(_name, NLA_U16)
-+#define NLATTR_DESC_S32(_name)		NLATTR_DESC(_name, NLA_U32)
-+#define NLATTR_DESC_STRING(_name)	NLATTR_DESC(_name, NLA_STRING)
-+#define NLATTR_DESC_FLAG(_name)		NLATTR_DESC(_name, NLA_FLAG)
-+#define NLATTR_DESC_BOOL(_name)		NLATTR_DESC(_name, NLA_BOOL)
-+#define NLATTR_DESC_BINARY(_name)	NLATTR_DESC(_name, NLA_BINARY)
-+
-+#define NLATTR_DESC_NESTED(_name, _children_desc) \
-+	[_name] = { \
-+		.format = NLA_NESTED, \
-+		.name = #_name, \
-+		.children = __ ## _children_desc ## _desc, \
-+		.n_children = ARRAY_SIZE(__ ## _children_desc ## _desc), \
-+	}
-+#define NLATTR_DESC_NESTED_NODESC(_name) NLATTR_DESC(_name, NLA_NESTED)
-+#define NLATTR_DESC_ARRAY(_name, _children_desc) \
-+	[_name] = { \
-+		.format = NLA_ARRAY, \
-+		.name = #_name, \
-+		.children = __ ## _children_desc ## _desc, \
-+		.n_children = 1, \
-+	}
-+
-+#define NLMSG_DESC(_name, _attrs) \
-+	[_name] = { \
-+		.name = #_name, \
-+		.attrs = __ ## _attrs ## _desc, \
-+		.n_attrs = ARRAY_SIZE(__ ## _attrs ## _desc), \
-+	}
-+
-+#define NLMSG_DESC_INVALID(_name) \
-+	[_name] = { \
-+		.name = #_name, \
-+	}
-+
-+/* function to pretty print a genetlink message */
-+int pretty_print_genlmsg(const struct nlmsghdr *nlhdr,
-+			 const struct pretty_nlmsg_desc *desc,
-+			 unsigned int ndesc, unsigned int err_offset);
-+
-+#endif /* ETHTOOL_NETLINK_PRETTYMSG_H__ */
+ #endif /* ETHTOOL_NETLINK_PRETTYMSG_H__ */
 -- 
 2.25.1
 
