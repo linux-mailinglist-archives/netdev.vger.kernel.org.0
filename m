@@ -2,194 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6988817B69C
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 07:17:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F61017B6A5
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 07:18:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725951AbgCFGQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 01:16:49 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51100 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbgCFGQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 01:16:48 -0500
-Received: by mail-wm1-f68.google.com with SMTP id a5so1054612wmb.0
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 22:16:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZsyFni4ZSCxbVjVzRoR+tOHD8Z76Ke5hUpHbmgLlVgQ=;
-        b=MheA55DjWCmo1kTHuFfzMgJz2rrAwXKsXBfgvqxvkd0aK74f5AXD1zBPj5UuTbF8sF
-         nI1s/cYfOq5BXXOwfnFZNtphm1iPzoRuCHUkq1/b7Ck8F9CcPpzIf8NiGUuPE27iFwGO
-         Zd07yQBs3R2e+A5bPi84UNTfGFzF376GyRLn6x9sw9H9/qjbZmWgnblpQgKBEPPhRdnu
-         zgM34S1QaiObL5Oi46Wl3dvHA/cKYU8mFqHgTujpd9+KWbaCeeQD2JL5yRzesI6xv7jf
-         sWAp8Kp7XwGL5jlWFr7uaI2T5LuTlWn3kAF+HCcMoko4Y4AGMosP1f6LyVODbVCjojyy
-         ZGDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZsyFni4ZSCxbVjVzRoR+tOHD8Z76Ke5hUpHbmgLlVgQ=;
-        b=H6tPnqpU/5RD+O4hZU/MNNSozeWjzbylyfmhAACNS4autk8iE/oXZA7VASwQE+HqZe
-         4DMsZcuHf4S0Kdq9EXJYqvhhiZFNw/mqrK3liuORcjR80cc9a190SJPOV3Eo/3nsZlZA
-         tiEkw1W1ZayFUQx3jvVslHZl4hqp4DrCI13dRwN1TnFnFl9Zuakp6Zz6ddmYw14XxOKE
-         iAwx1v30xdeseXzrWwASMxCsn9t6aUyXQUKhgka3m/3+TRJpb2PPuOHI3FQ8OY0EvPja
-         et3P2ZvpPfA1S4F5F8kUSJsmdZ5sg5Z12kEPcJpeJjyudENZpbLM6XCdp3kDsmsX1TG5
-         RFYg==
-X-Gm-Message-State: ANhLgQ2RBfAyWBKsfo/JEw48R4Rl9+tfROzUqZzj7U8V0i+xsOhB3ROv
-        Op0h754blRA2HDeoK1X3jGShl1mRbeI=
-X-Google-Smtp-Source: ADFU+vsw24VzpPfjhF/Qr7npCrQR42yQfOQ1fBikDtFgldIi9gssRABaIqjRY/mCfiOFTvzIcbGWxg==
-X-Received: by 2002:a05:600c:224e:: with SMTP id a14mr2036497wmm.58.1583475406659;
-        Thu, 05 Mar 2020 22:16:46 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a7sm11552803wmj.12.2020.03.05.22.16.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 22:16:45 -0800 (PST)
-Date:   Fri, 6 Mar 2020 07:16:44 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, linyunsheng@huawei.com,
-        lihong.yang@intel.com, kuba@kernel.org
-Subject: Re: [RFC PATCH v2 14/22] devlink: implement DEVLINK_CMD_REGION_NEW
-Message-ID: <20200306061644.GA2260@nanopsycho.orion>
-References: <20200214232223.3442651-1-jacob.e.keller@intel.com>
- <20200214232223.3442651-15-jacob.e.keller@intel.com>
- <20200302174106.GC2168@nanopsycho>
- <6f0023d0-a151-87f0-db3a-df01b7e6c045@intel.com>
- <20200303093043.GB2178@nanopsycho>
- <861a914b-1e3c-fdb6-a452-96a0b5a5c2c0@intel.com>
- <20200304115818.GA4558@nanopsycho>
- <7bd8a09e-0e6f-afd3-f6a1-3a52d93d2720@intel.com>
- <20200305064103.GA7305@nanopsycho.orion>
- <3c593821-2123-9756-fc53-7c61fece015a@intel.com>
+        id S1726094AbgCFGS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 01:18:27 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:38996 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725869AbgCFGS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 01:18:27 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 3289ACFFA47CA2E10DB1;
+        Fri,  6 Mar 2020 14:18:22 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Fri, 6 Mar 2020
+ 14:18:12 +0800
+Subject: Re: [PATCH net-next 1/9] net: hns3: fix some mixed type assignment
+To:     "shenjian (K)" <shenjian15@huawei.com>, <davem@davemloft.net>
+CC:     <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <kuba@kernel.org>
+References: <1583463438-60953-1-git-send-email-tanhuazhong@huawei.com>
+ <1583463438-60953-2-git-send-email-tanhuazhong@huawei.com>
+ <03bf7b86-6674-163a-5df2-1840966de960@huawei.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <3a4a0a49-1cdf-9d30-de15-1a5c6d6892cb@huawei.com>
+Date:   Fri, 6 Mar 2020 14:18:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3c593821-2123-9756-fc53-7c61fece015a@intel.com>
+In-Reply-To: <03bf7b86-6674-163a-5df2-1840966de960@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 05, 2020 at 11:33:17PM CET, jacob.e.keller@intel.com wrote:
->
->
->On 3/4/2020 10:41 PM, Jiri Pirko wrote:
->> Wed, Mar 04, 2020 at 06:43:02PM CET, jacob.e.keller@intel.com wrote:
->>>
->>>
->>> On 3/4/2020 3:58 AM, Jiri Pirko wrote:
->>>> Tue, Mar 03, 2020 at 06:51:37PM CET, jacob.e.keller@intel.com wrote:
->>>>>
->>>>> Hm. The flow here was about supporting both with and without snapshot
->>>>> IDs. That will be gone in the next revision and should make the code clear.
->>>>>
->>>>> The IDs are stored in the IDR with either a NULL, or a pointer to a
->>>>> refcount of the number of snapshots currently using them.
->>>>>
->>>>> On devlink_region_snapshot_create, the id must have been allocated by
->>>>> the devlink_region_snapshot_id_get ahead of time by the driver.
->>>>>
->>>>> When devlink_region_snapshot_id_get is called, a NULL is inserted into
->>>>> the IDR at a suitable ID number (i.e. one that does not yet have a
->>>>> refcount).
->>>>>
->>>>> On devlink_region_snapshot_new, the callback for the new command, the ID
->>>>> must be specified by userspace.
->>>>>
->>>>> Both cases, the ID is confirmed to not be in use for that region by
->>>>> looping over all snapshots and checking to see if one can be found that
->>>>> has the ID.
->>>>>
->>>>> In __devlink_region_snapshot_create, the IDR is checked to see if it is
->>>>> already used. If so, the refcount is incremented. If there is no
->>>>> refcount (i.e. the IDR returns NULL), a new refcount is created, set to
->>>>> 1, and inserted.
->>>>>
->>>>> The basic idea is the refcount is "how many snapshots are actually using
->>>>> this ID". Use of devlink_region_snapshot_id_get can "pre-allocate" an ID
->>>>> value so that future calls to devlink_region_id_get won't re-use the
->>>>> same ID number even if no snapshot with that ID has yet been created.
->>>>>
->>>>> The refcount isn't actually incremented until the snapshot is created
->>>>> with that ID.
->>>>>
->>>>> Userspace never uses devlink_region_snapshot_id_get now, since it always
->>>>> requires an ID to be chosen.
->>>>>
->>>>> On snapshot delete, the id refcount is reduced, and when it hits zero
->>>>> the ID is released from the IDR. This way, IDs can be re-used as long as
->>>>> no remaining snapshots on any region point to them.
->>>>>
->>>>> This system enables userspace to simply treat snapshot ids as unique to
->>>>> each region, and to provide their own values on the command line. It
->>>>> also preserves the behavior that devlink_region_snapshot_id_get will
->>>>> never select an ID that is used by any region on that devlink, so that
->>>>> the id can be safely used for multiple snapshots triggered at the same time.
->>>>>
->>>>> This will hopefully be more clear in the next revision.
->>>>
->>>> Okay, I see. The code is a bit harder to follow.
->>>>
->>>
->>> I'm open to suggestions for better alternatives, or ways to improve code
->>> legibility.
->>>
->>> I want to preserve the following properties:
->>>
->>> * devlink_region_snapshot_id_get must choose IDs globally for the whole
->>> devlink, so that the ID can safely be re-used across multiple regions.
->>>
->>> * IDs must be reusable once all snapshots associated with the IDs have
->>> been removed
->>>
->>> * the new DEVLINK_CMD_REGION_NEW must allow userspace to select IDs
->>>
->>> * selecting IDs via DEVLINK_CMD_REGION_NEW should not really require the
->>> user to check more than the current interested snapshot
->>>
->>> * userspace should be able to re-use the same ID across multiple regions
->>> just like devlink_region_snapshot_id_get and driver triggered snapshots
->> 
->> Nope. I believe this is not desired. The point of having the same id for
->> the multiple regions is that the driver can obtain multiple region
->> snapshots during single FW event. For user, that it not the case.
->> For user, it would be 2 separate snapshots in 2 separate times. They
->> should not have the same ID.
->> 
->
->So users would have to pick an ID that's unique across all regions. Ok.
->
->I think we still need a reference count of how many snapshots are using
->an ID (so that it can be released once all region snapshots using that
->ID are destroyed).
->
->We basically add this complexity even in cases where regions are totally
->independent and never taken together.
->
->One alternative would be to instead create some sort of grouping system,
->but that has even more complication.
->
->Ok. So I think we still need to track IDs using something like the IDR
->with a reference count or similar structure.
-
-I agree.
-
->
->Using only an IDA doesn't give us the ability to release previously used
->IDs. Because on snapshot delete it has no idea whether another region
->used that ID, so it can't remove it.
->
->Maybe something like IDR with a refcount.. but we'd really like
->something that can exist for some time with a refcount of zero. That's
->what I basically used the NULL trick for in this version.
->
->We can first check if the IDR has the ID when responding to
->DEVLINK_CMD_REGION_NEW, and bail if so. That would enforce that users
->must specify IDs which are unused by any region on the device.
-
-Yes, that I believe is the correct behaviour.
 
 
->
->Thanks,
->Jake
+On 2020/3/6 11:39, shenjian (K) wrote:
+> 
+> 
+> 在 2020/3/6 10:57, Huazhong Tan 写道:
+>> From: Guojia Liao <liaoguojia@huawei.com>
+>>
+>> This patch cleans up some incorrect type in assignment reported by sparse
+>> and compiler.
+>> The warning as below:
+>> - warning : restricted __le16 degrades to integer
+>> - warning : cast from restricted __le32
+>> - warning : cast from restricted __be32
+>> - warning : cast from restricted __be16
+>> and "mixed operation".
+>>
+>> Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> should add fixes id.
+
+This is just a cleanup.
+
+>> ---
+>>   .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 23 
+>> ++++++++++++----------
+>>   .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  3 ++-
+>>   2 files changed, 15 insertions(+), 11 deletions(-)
+>>
+>> diff --git 
+>> a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c 
+>> b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+>> index 6295cf9..5b4045c 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+>> @@ -87,7 +87,7 @@ static int hclge_dbg_get_dfx_bd_num(struct hclge_dev 
+>> *hdev, int offset)
+>>       entries_per_desc = ARRAY_SIZE(desc[0].data);
+>>       index = offset % entries_per_desc;
+>> -    return (int)desc[offset / entries_per_desc].data[index];
+>> +    return le32_to_cpu(desc[offset / entries_per_desc].data[index]);
+>>   }
+>>   static int hclge_dbg_cmd_send(struct hclge_dev *hdev,
+>> @@ -583,7 +583,7 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev 
+>> *hdev,
+>>       ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+>>       if (ret)
+>>           goto err_tm_map_cmd_send;
+>> -    qset_id = nq_to_qs_map->qset_id & 0x3FF;
+>> +    qset_id = le16_to_cpu(nq_to_qs_map->qset_id) & 0x3FF;
+>>       cmd = HCLGE_OPC_TM_QS_TO_PRI_LINK;
+>>       map = (struct hclge_qs_to_pri_link_cmd *)desc.data;
+>> @@ -623,7 +623,8 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev 
+>> *hdev,
+>>           if (ret)
+>>               goto err_tm_map_cmd_send;
+>> -        qset_maping[group_id] = bp_to_qs_map_cmd->qs_bit_map;
+>> +        qset_maping[group_id] =
+>> +            le32_to_cpu(bp_to_qs_map_cmd->qs_bit_map);
+>>       }
+>>       dev_info(&hdev->pdev->dev, "index | tm bp qset maping:\n");
+>> @@ -826,6 +827,7 @@ static void hclge_dbg_dump_mng_table(struct 
+>> hclge_dev *hdev)
+>>       struct hclge_mac_ethertype_idx_rd_cmd *req0;
+>>       char printf_buf[HCLGE_DBG_BUF_LEN];
+>>       struct hclge_desc desc;
+>> +    u32 msg_egress_port;
+>>       int ret, i;
+>>       dev_info(&hdev->pdev->dev, "mng tab:\n");
+>> @@ -867,20 +869,21 @@ static void hclge_dbg_dump_mng_table(struct 
+>> hclge_dev *hdev)
+>>                HCLGE_DBG_BUF_LEN - strlen(printf_buf),
+>>                "%x   |%04x |%x   |%04x|%x   |%02x   |%02x   |",
+>>                !!(req0->flags & HCLGE_DBG_MNG_MAC_MASK_B),
+>> -             req0->ethter_type,
+>> +             le16_to_cpu(req0->ethter_type),
+>>                !!(req0->flags & HCLGE_DBG_MNG_ETHER_MASK_B),
+>> -             req0->vlan_tag & HCLGE_DBG_MNG_VLAN_TAG,
+>> +             le16_to_cpu(req0->vlan_tag) & HCLGE_DBG_MNG_VLAN_TAG,
+>>                !!(req0->flags & HCLGE_DBG_MNG_VLAN_MASK_B),
+>>                req0->i_port_bitmap, req0->i_port_direction);
+>> +        msg_egress_port = le16_to_cpu(req0->egress_port);
+>>           snprintf(printf_buf + strlen(printf_buf),
+>>                HCLGE_DBG_BUF_LEN - strlen(printf_buf),
+>>                "%d     |%d    |%02d   |%04d|%x\n",
+>> -             !!(req0->egress_port & HCLGE_DBG_MNG_E_TYPE_B),
+>> -             req0->egress_port & HCLGE_DBG_MNG_PF_ID,
+>> -             (req0->egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
+>> -             req0->egress_queue,
+>> -             !!(req0->egress_port & HCLGE_DBG_MNG_DROP_B));
+>> +             !!(msg_egress_port & HCLGE_DBG_MNG_E_TYPE_B),
+>> +             msg_egress_port & HCLGE_DBG_MNG_PF_ID,
+>> +             (msg_egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
+>> +             le16_to_cpu(req0->egress_queue),
+>> +             !!(msg_egress_port & HCLGE_DBG_MNG_DROP_B));
+> 
+> msg_egress_port is unsigned, but print format is "%d" ?
+
+should use '%x' instead.
+Thanks.
+
+>>           dev_info(&hdev->pdev->dev, "%s", printf_buf);
+>>       }
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c 
+>> b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> index 89d3523..e64027c 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>> @@ -10252,8 +10252,9 @@ static int hclge_dfx_reg_fetch_data(struct 
+>> hclge_desc *desc_src, int bd_num,
+>>   static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
+>>   {
+>>       u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
+>> -    int data_len_per_desc, data_len, bd_num, i;
+>> +    int data_len_per_desc, bd_num, i;
+>>       int bd_num_list[BD_LIST_MAX_NUM];
+>> +    u32 data_len;
+>>       int ret;
+>>       ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, 
+>> dfx_reg_type_num);
+> 
+> 
+> 
+> .
+> 
+
