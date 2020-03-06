@@ -2,98 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED5217C483
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:34:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A6117C514
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 19:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726185AbgCFReT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:34:19 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45754 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbgCFReS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 12:34:18 -0500
-Received: by mail-qk1-f193.google.com with SMTP id z12so3019946qkg.12
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 09:34:18 -0800 (PST)
+        id S1726579AbgCFSJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 13:09:30 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:42448 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgCFSJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 13:09:29 -0500
+Received: by mail-qv1-f67.google.com with SMTP id e7so1348538qvy.9;
+        Fri, 06 Mar 2020 10:09:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j9iXnTXkoGFhQUol/W+rdWLl/5ChlK9yt0cmxdRBJ3c=;
-        b=Xh/fN/i5kGVcaw/0azSplxmG8yxkacb+P9xpOnwDuZCr1P3fV2uNpvEPPn0H9SoZG4
-         ao+Z9EUl06XfzOpzdv7RpAAJ0wosszU8ASQtvuZM2k+2aZ4FMyRpGdvSsb4gfD9yicFS
-         q2QNFLiPdlVZla0bFhUo9APW6bFs+FSvyeNrbGlgNMbDnIGRlyR1KWiN8xj813cUP8xD
-         hithzXtUwbJYRxTt1u6L7BjUoFzcGRissfTIqiN1OsKr3/YFnrSk4A2W1xGyr6uaroZk
-         OrurUWobG/fRF5N9pMbZO0thIMP2n9JpQUJVTK/LX42hCpNfCZ7nUsTqkWm6OGtNraHQ
-         zDPw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XqmnoWxGYhvRpRQvm/LkWgDTT6TYNcRDSo11h7efasM=;
+        b=RpP2n3g+oikJ67LYVOGABCmUvu+JMh7r+aEY0xbxhxemGd53Wo+//7CpgWvarUCiQm
+         PgV7dvZhAMg5i4pkon7sZ9xubxNej2S0WzWVfq06UGeOhgftiOspWXkecyFezhLn8ndV
+         E8J9lUTeWdMq+Jjr4PwVhyWveo5KVQVA1ZDd/Xr43XwaGKIn9DP9N2OUPW+aasz7J8Rr
+         N2kOFgCz6DI7mFeADjfvpYi6wIhAr+njoP6N09kBzpicq2rW7BxTZLRKXNhOXL+F8zpn
+         41HXfGs0lesR9ZXPsbQI/YbFYK/kebCjiq6xFsVoyIPl4RPTS65nijRS2xD8WtOXEs7h
+         UbjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j9iXnTXkoGFhQUol/W+rdWLl/5ChlK9yt0cmxdRBJ3c=;
-        b=aU5qBvIBjTeVn3FAgCydHzcW/Mi0GMis8Oy8Rx+DzlO8igC4GTZ2AICtH6FxLh6Igh
-         3DBrD+bo2dG6BOaOM5nV8KJCEKOZN8wxRKqCRWMwOXisMOa4j78ukGUwS/O9FG9/GZSx
-         KhVoN4d62dFdyFusXTg0jMhbDw4M9PQbzf5Dv3ZbvcsxrGG5NzvvW7DFruANLgdlrNIM
-         b0WJSx/knFxLPcTsQVBgF+u4puI4e8WEcBC9hNRfITJoADe/hHvxvh1ciEvlZd3ygK+a
-         +UpR2ONnETUXmA+q7tfZhC1Oy9fn2n7P7m3lUz1UT6lDeckZHhg/nBqT0VW5R+XjLZ8v
-         LyeQ==
-X-Gm-Message-State: ANhLgQ2v05LpUSVjanP/9IsLPjMc6kdXP6EQnP2yYsKf7Op05pp0Qr26
-        Up5LSnknLyl4bkk7u4IgRZYs7yhd2izUx3Jv+k+a8A==
-X-Google-Smtp-Source: ADFU+vuK25acNQDMR/FrwH8IkK14YR6EkiTNaDdtt/wnFZxnOyPoNNt8JWSN/fCUgW6hb35+vemPuzC/LB/f8HDfLHo=
-X-Received: by 2002:a37:ef14:: with SMTP id j20mr2795259qkk.43.1583516057510;
- Fri, 06 Mar 2020 09:34:17 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XqmnoWxGYhvRpRQvm/LkWgDTT6TYNcRDSo11h7efasM=;
+        b=hg9ZKyLiu/+TMjIp2SFE+2jtVqQLTSravY6R78C/8nIfiuG4+ybttsX5Fmaru2esiv
+         7+aJL56g0NAljI/vgLjOdTcHknSiZq22/lnLBLfXist1daLbqvZinUN0cThMkHqBCce4
+         KgCfVBpTVpkFAM1iyEe0Qep9w5De2CBN1XSCcMMo2JxnS2XrwamdfbMgPBMbBhReQsUp
+         5RA7v0dZF9cHvYJH9wf6vn8z+BtQxcZvxYybD1mbLOPJcQZOgsaCy619CL7V8sAy2e1J
+         5UJN9Mwd93OpjeWzSevnyj3K3sccxYOBNOgdIYw0mRL3LW4muaMHSU0zW7nJyrOrOY6S
+         ZQ9w==
+X-Gm-Message-State: ANhLgQ32CbI6wF74DhR+a6fW9rmz3as0sHwqq4P6Waq0O1eepuDkhk0/
+        AfFKWsY7aAgdxRHLYX6hXvQ=
+X-Google-Smtp-Source: ADFU+vup7KypBKRBv7m2JZA0QvDEfgywgHPVN6UHaoh8ChEB+3PGgMrS8fTZUHpBYX35kragrSEcJg==
+X-Received: by 2002:a05:6214:18f4:: with SMTP id ep20mr3995379qvb.76.1583518168967;
+        Fri, 06 Mar 2020 10:09:28 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:3900:366a:948b:9628? ([2601:282:803:7700:3900:366a:948b:9628])
+        by smtp.googlemail.com with ESMTPSA id g3sm2513184qke.89.2020.03.06.10.09.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2020 10:09:28 -0800 (PST)
+Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
+ abstraction
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+References: <87pndt4268.fsf@toke.dk>
+ <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
+ <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk>
+ <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk>
+ <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk>
+ <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
+ <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net>
+ <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
+ <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net> <878skd3mw4.fsf@toke.dk>
+ <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <38347de1-2564-0184-e126-218a5f2a4b95@gmail.com>
+Date:   Fri, 6 Mar 2020 11:09:26 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <767580d8-1c93-907b-609c-4c1c049b7c42@pengutronix.de>
- <20200226.202326.295871777946911500.davem@davemloft.net> <d6d9368d-b468-3946-ac63-abedf6758154@hartkopp.net>
- <20200302.111249.471862054833131096.davem@davemloft.net> <03ff979e-a621-c9a3-9be3-13677c147f91@pengutronix.de>
-In-Reply-To: <03ff979e-a621-c9a3-9be3-13677c147f91@pengutronix.de>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 6 Mar 2020 18:34:05 +0100
-Message-ID: <CACT4Y+brat=HBcptYy_=13ny40TuM=Y2XNUXja_zH4Z1Mwen4w@mail.gmail.com>
-Subject: Re: [PATCH] bonding: do not enslave CAN devices
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     David Miller <davem@davemloft.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        syzbot <syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com>,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 6, 2020 at 3:12 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 3/2/20 8:12 PM, David Miller wrote:
-> > From: Oliver Hartkopp <socketcan@hartkopp.net>
-> > Date: Mon, 2 Mar 2020 09:45:41 +0100
-> >
-> >> I don't know yet whether it makes sense to have CAN bonding/team
-> >> devices. But if so we would need some more investigation. For now
-> >> disabling CAN interfaces for bonding/team devices seems to be
-> >> reasonable.
-> >
-> > Every single interesting device that falls into a special use case
-> > like CAN is going to be tempted to add a similar check.
-> >
-> > I don't want to set this precedence.
-> >
-> > Check that the devices you get passed are actually CAN devices, it's
-> > easy, just compare the netdev_ops and make sure they equal the CAN
-> > ones.
->
-> Sorry, I'm not really sure how to implement this check.
->
-> Should I maintain a list of all netdev_ops of all the CAN devices (=
-> whitelist) and the compare against that list? Having a global list of
-> pointers to network devices remind me of the old days of kernel-2.4.
+On 3/6/20 3:25 AM, Daniel Borkmann wrote:
+>>
+>> Presumably the XDP EGRESS hook that David Ahern is working on will make
+>> this doable for XDP on veth as well?
+> 
+> I'm not sure I see a use-case for XDP egress for Cilium yet, but maybe
+> I'm still
+> lacking a clear picture on why one should use it. We currently use various
+> layers where we orchestrate our BPF programs from the agent. XDP/rx on
+> the phys
+> nic on the one end, BPF sock progs attached to cgroups on the other end
+> of the
+> spectrum. The processing in between on virtual devices is mainly
+> tc/BPF-based
+> since everything is skb based anyway and more flexible also with
+> interaction
+> with the rest of the stack. There is also not this pain of having to
+> linearize
+> all the skbs, but at least there's a path to tackle that.
+> 
 
-I think Dave means something like this:
 
-$ grep "netdev_ops == " drivers/net/*/*.c net/*/*.c
-drivers/net/hyperv/netvsc_drv.c: if (event_dev->netdev_ops == &device_ops)
-drivers/net/ppp/ppp_generic.c: if (dev->netdev_ops == &ppp_netdev_ops)
-net/dsa/slave.c: return dev->netdev_ops == &dsa_slave_netdev_ops;
-net/openvswitch/vport-internal_dev.c: return netdev->netdev_ops ==
-&internal_dev_netdev_ops;
+{ veth-host } <----> { veth-container }
+
+If you are currently putting an XDP program on veth-container, it is run
+on the "Rx" of the packet from the host. That program is visible to the
+container, but is managed by the host.
+
+With XDP Tx you can put the same program on veth-host.
+
+For containers, sure, maybe you don't care since you control all aspects
+of the networking devices. For VMs, the host does not have access to or
+control of the "other end" in the guest. Putting a program on the tap's
+"Tx" side allows host managed, per-VM programs.
