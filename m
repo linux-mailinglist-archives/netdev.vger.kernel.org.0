@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4210817C7DD
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 22:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E4017C88E
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgCFV22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 16:28:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45056 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726162AbgCFV22 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 16:28:28 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C25FE206D7;
-        Fri,  6 Mar 2020 21:28:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583530108;
-        bh=O2etK/SY8vfFXaEqDy/bIMBEAzjmTE2D2rT0cjeLSjg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qlXxo4vTvWDKcOGgknZgNGTobUzFFW0Nqi6pvUdNPDfGtPrP1gfozJIq7fVYIFFyW
-         uAOG53nQ1zogpBxTfxWdpss31OB7iw68ZkDoQzMRaT3srZ/ZHRSSi1mJWc50ssUepy
-         q09BXDKmZalnJZeTKx2GqkrZsaP3fVBtP/Kukfsw=
-Date:   Fri, 6 Mar 2020 13:28:25 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
-Message-ID: <20200306132825.2568127a@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <5ac3562b-47b1-a684-c7f2-61da1a233859@pensando.io>
-References: <20200305052319.14682-1-snelson@pensando.io>
-        <20200305052319.14682-8-snelson@pensando.io>
-        <20200305140322.2dc86db0@kicinski-fedora-PC1C0HJN>
-        <d9df0828-91d6-9089-e1b4-d82c6479d44c@pensando.io>
-        <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
-        <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
-        <20200306102009.0817bb06@kicinski-fedora-PC1C0HJN>
-        <5ac3562b-47b1-a684-c7f2-61da1a233859@pensando.io>
+        id S1726251AbgCFWyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 17:54:04 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35575 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgCFWyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:54:03 -0500
+Received: by mail-wm1-f65.google.com with SMTP id m3so4044301wmi.0
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:54:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=oro0fIlAywUpDDnaaYh8TQQc6WsRQK8SqA63cQTs/ZU=;
+        b=Yn4jYN99e+DkrXW7u4mxtjY0qNsvncXwaxnSDF+kATMqLZPbeAFwFEiC00i+94Lro5
+         acVMF4iQS4oqcjicyAjvSUgxRPoj0TVdQEZ9vgdDBTjEEaZzO7dgkm9yAl/rKwZxjs1a
+         COpJYYpInmSa3oDKcOIoHrWlOtW6XlMbbvSk87TNshUenC/6h/xKFFfzDQGYvGtnB+v2
+         IfKbHDXUi4TGK5KH6r1SdQNx5//N+7Zo6DVa9aUVpsjJGkZbBAyucB+GN5WfYgCHsLO5
+         fWLZEmyjaTZwlQXABnir7MX2tLFonfBfM6iEEfHkZYuQgoMH82AEKpy5hcO6ZtFbDH4x
+         5ZGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=oro0fIlAywUpDDnaaYh8TQQc6WsRQK8SqA63cQTs/ZU=;
+        b=He++ZAPRUKqnwBDpuX0LlQ3CftKXV6jeDVhiv9N81/HTy6DsETAa4/RCt0+pIS4Xiu
+         fMGvhrlBIUaW/m7R5t5GrFiCiX+vtBLZ/bYfWhN8kseZyqsr98h15rgBB7xKavZbMfey
+         zW1iH7kqVvSyPwfeFvLOxHMYEAmURiDWMawBdzSUGbzauYNKkKogEoWSw5yN89KftthF
+         2wxzGdc0ZnsKfe8zvQailm8Ap/4GGjFJRjrK63zjisHwinTg2N957idQxair65YgLbnl
+         0qUJmf+pkcOLDpAuPfr3aO3XMEXDlNjLh82QupuAT8g8wnvWrkaWdePr8Qw/Ptj05e8y
+         mrTQ==
+X-Gm-Message-State: ANhLgQ1XkOzlnoIQxZJJIpSaAzQeBHpSE9USTeO4ydkvor5C1cqLUsmq
+        /sh0vJNRNQ7duCoaWu8iQvsQtgxA
+X-Google-Smtp-Source: ADFU+vsaY4WD6Zdnmwo8vErMvnmMpMk9U231zs6NWpAU3KcuHXsLQRDGf2W27ND0f0kZYauprAgkGw==
+X-Received: by 2002:a1c:9915:: with SMTP id b21mr5920300wme.24.1583535241392;
+        Fri, 06 Mar 2020 14:54:01 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:1447:bded:797c:45a5? (p200300EA8F2960001447BDED797C45A5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1447:bded:797c:45a5])
+        by smtp.googlemail.com with ESMTPSA id e7sm30840439wrt.70.2020.03.06.14.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2020 14:54:00 -0800 (PST)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/4] r8169: series with improvements to rtl_tx
+Message-ID: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
+Date:   Fri, 6 Mar 2020 23:53:43 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 6 Mar 2020 12:32:51 -0800 Shannon Nelson wrote:
-> >> However, this device id does exist on some of the DSC configurations,
-> >> and I'd prefer to explicitly acknowledge its existence in the driver a=
-nd
-> >> perhaps keep better control over it, whether or not it gets used by our
-> >> 3rd party tool, rather than leave it as some obscure port for someone =
-to
-> >> "discover". =20
-> > I understand, but disagree. Your driver can certainly bind to that
-> > management device but it has to be for the internal use of the kernel.
-> > You shouldn't just expose that FW interface right out to user space as
-> > a netdev. =20
->=20
-> So for now the driver should simply capture and configure the PCI=20
-> device, but stop at that point and not setup a netdev.=C2=A0 This would l=
-eave=20
-> the device available for devlink commands.
->=20
-> If that sounds reasonable to you, I'll add it and respin the patchset.
+This series includes few improvements to rtl_tx().
 
-I presume the driver currently creates a devlink instance per PCI
-function? (Given we have no real infrastructure in place to combine
-them.) It still feels a little strange to have a devlink instance that
-doesn't represent any entity user would care about, but a communication
-channel. It'd be better if other functions made use of the
-communication channel behind the scene. That said AFAIU driver with just
-a devlink instance won't allow passing arbitrary commands, so that would
-indeed address my biggest concern.
+Heiner Kallweit (4):
+  r8169: convert while to for loop in rtl_tx
+  r8169: ensure tx_skb is fully reset after calling rtl8169_unmap_tx_skb
+  r8169: simplify usage of rtl8169_unmap_tx_skb
+  r8169: remove now unneeded barrier in rtl_tx
 
-What operations would that devlink instance expose?
+ drivers/net/ethernet/realtek/r8169_main.c | 46 ++++++++---------------
+ 1 file changed, 16 insertions(+), 30 deletions(-)
+
+-- 
+2.25.1
+
