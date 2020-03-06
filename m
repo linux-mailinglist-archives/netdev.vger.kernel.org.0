@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6612917C89D
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC28E17C89A
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:57:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgCFW7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 17:59:17 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:34978 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbgCFW7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:59:15 -0500
-Received: by mail-wm1-f67.google.com with SMTP id m3so4052605wmi.0
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:59:14 -0800 (PST)
+        id S1726498AbgCFW5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 17:57:33 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38024 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726171AbgCFW5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:57:32 -0500
+Received: by mail-pf1-f194.google.com with SMTP id g21so1809895pfb.5
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:57:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RynB79HgR7sTc4vLsv876vhUdcIwfUiJRUs3uVF7U/U=;
-        b=bBNu6u5Vj/WX2J4M9Bq1ETM5rOzg+KHbXQNIBrSEoG4iYmfoT8GMSjtU1lW6aL316g
-         oaUXHAx+6aRByAeBgXg2PjqACgnXGEiy25CrpvSpA6kAaScIJUHc9JfaRbo696qdADd+
-         oaqMgqmGVQe1pvMLzR0tAYr9dSDva0wag3vfptk9vA0dhGYIEqHGOThCuO3whlrcPGIm
-         BfDUPnWwhviOpxzXTaQugTkEi3J4UMMaKxETQ923PgMhM03lSi5nd5bXnQd3HoM40kCt
-         +EiQCusK6A3f2g6NBIwbHYtuudW9a+nXCSsrCxBXwH1WbBHaZxKZN0g7z0tsOWyscb5j
-         q9Eg==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=H8PEBuN12OFR6vza26a2YTZGgmcC3T+qMA5Ba5HaJew=;
+        b=DwXWz2qz13knqaGjpq2Zh7pa/p5CWNz50ayGugdAXy22e3HQ/pGWWGen3CyomXmJRU
+         msNwG2F/uOn3CpZnI/6EBgNbMkrkNhKtPHc8bofYqSfXzBXBF2Y00Cy97qHes/R7LVox
+         0l+YcPndZLwDw+GcldZkSIvKGAAuBIpRc/Nh1OPc284Rilemg4jzgKkrsnmBfEPF5+zr
+         uJovMYT4FZGlOVi6fbREE2oJtXPHfG1PyfCMUrV6h21DkTu6pzT6KLOs4JdIir3Je5mk
+         UllaslL1XUqK2YIKMNpvgyafLSfO3xnzMz5cCh7Fj8kx8t/H3aDdX+q8pHkgaIZDrii3
+         x1tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RynB79HgR7sTc4vLsv876vhUdcIwfUiJRUs3uVF7U/U=;
-        b=ndLB7p41PL8haTNDUwwquuuuxXtZ+F+XYAZiNgfZKOfzQrSBJYboS2aBquzETQ/Kni
-         scau13lCzqpQYfuLjfxzXLeGJYcUJt6tt7MaRGdswqjGcnT8AruoyU6MdTywqgthhAOL
-         p5FdPeDNt9fi4eSMwxdeQqSTqa4VyXsi/dnhfJtFhZinOhFlPNgdG3WbK+b171CLFonT
-         ugh6LrENq2ha1aaPjBq9RSevPYZ88HLdSdZgBmXeNVaj4lvNv+CjszEQ8lgbdgC4uXw8
-         EBg/UGzisx3JV0JbAQmPdOrf1V4fjaioYQN3iZpq9sQYUCNqU9X/+/OnNtQF7oaIzY8i
-         cdfQ==
-X-Gm-Message-State: ANhLgQ2GiOSdLvBub0M7gCNXOBZdfmjD58OfzMjXGiIj4WZZaZMklvie
-        F11jgvX85b3Ytjfj8hYpiklDIk+F
-X-Google-Smtp-Source: ADFU+vusyw2Opi5BIhWCzwcKLSk1UFpoewS/k3XB+si03IFM/R4n2m7agvg+jlwKiEjp3DPxuh3phw==
-X-Received: by 2002:a1c:1b13:: with SMTP id b19mr6530718wmb.91.1583535553974;
-        Fri, 06 Mar 2020 14:59:13 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f29:6000:1447:bded:797c:45a5? (p200300EA8F2960001447BDED797C45A5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1447:bded:797c:45a5])
-        by smtp.googlemail.com with ESMTPSA id i67sm28499494wri.50.2020.03.06.14.59.13
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=H8PEBuN12OFR6vza26a2YTZGgmcC3T+qMA5Ba5HaJew=;
+        b=c34rn9iPS7tHhK4ML/itmFOP7oEaKc0OwcVwgBShCmGh3jimcsydB8doKQZsRKc83t
+         x4adgRE2A6S5RH++Zwm30M/Er74oT7RMnBJzo7fhUtdleXKoRpztoKCQz3ZlgvfbS7vO
+         eZqEH3t3uUDwp4M9r7HHBOjr8VzUIPW5v7jWwW80SDMX97dGBN7m++MECcMlO+sQBnU+
+         3gVjUk/7wKQqCgRCls1cSlA9z/eoULLxSu2C6nvE2p5h3PA2AiwHLQ0Wg3qo9Vp+q/US
+         7xDsRYNm/utROJmmiPqsB4rIcsjyZE0ZkrUdK6JyC1LU4preJDXoVpNX+7r+rmjYDsBp
+         FtBA==
+X-Gm-Message-State: ANhLgQ3zaZRZJczTIss/xxax8lgc9UdY45ZLv3MiO8MSdT7vDUq+4Nds
+        Vh92jjhBK5YuAqFRO/yHVWKORV5WN0I=
+X-Google-Smtp-Source: ADFU+vveSNBxjoora2J+vCjSbv7ZcTgNRGh0PW+Y2uIGjp/WvfH6NmO/3uMRJFBE5oxD8aSPngj31Q==
+X-Received: by 2002:a63:1459:: with SMTP id 25mr5562079pgu.427.1583535451253;
+        Fri, 06 Mar 2020 14:57:31 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id 7sm10312181pjm.35.2020.03.06.14.57.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2020 14:59:13 -0800 (PST)
-Subject: [PATCH net-next 3/4] r8169: simplify usage of rtl8169_unmap_tx_skb
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
-Message-ID: <f062e106-1cdf-8cdc-e2a7-fa165cdecb44@gmail.com>
-Date:   Fri, 6 Mar 2020 23:56:38 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        Fri, 06 Mar 2020 14:57:30 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Jiri Pirko <jiri@resnulli.us>
+References: <20200305052319.14682-1-snelson@pensando.io>
+ <20200305052319.14682-8-snelson@pensando.io>
+ <20200305140322.2dc86db0@kicinski-fedora-PC1C0HJN>
+ <d9df0828-91d6-9089-e1b4-d82c6479d44c@pensando.io>
+ <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
+ <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
+ <20200306102009.0817bb06@kicinski-fedora-PC1C0HJN>
+ <5ac3562b-47b1-a684-c7f2-61da1a233859@pensando.io>
+ <20200306132825.2568127a@kicinski-fedora-PC1C0HJN>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <b9351a60-3722-5b5c-a521-219a9e43ecfb@pensando.io>
+Date:   Fri, 6 Mar 2020 14:57:29 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200306132825.2568127a@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the parameters taken by rtl8169_unmap_tx_skb, this makes
-usage of this function easier to read and understand.
+On 3/6/20 1:28 PM, Jakub Kicinski wrote:
+> On Fri, 6 Mar 2020 12:32:51 -0800 Shannon Nelson wrote:
+>>>> However, this device id does exist on some of the DSC configurations,
+>>>> and I'd prefer to explicitly acknowledge its existence in the driver and
+>>>> perhaps keep better control over it, whether or not it gets used by our
+>>>> 3rd party tool, rather than leave it as some obscure port for someone to
+>>>> "discover".
+>>> I understand, but disagree. Your driver can certainly bind to that
+>>> management device but it has to be for the internal use of the kernel.
+>>> You shouldn't just expose that FW interface right out to user space as
+>>> a netdev.
+>> So for now the driver should simply capture and configure the PCI
+>> device, but stop at that point and not setup a netdev.  This would leave
+>> the device available for devlink commands.
+>>
+>> If that sounds reasonable to you, I'll add it and respin the patchset.
+> I presume the driver currently creates a devlink instance per PCI
+> function? (Given we have no real infrastructure in place to combine
+> them.) It still feels a little strange to have a devlink instance that
+> doesn't represent any entity user would care about, but a communication
+> channel. It'd be better if other functions made use of the
+> communication channel behind the scene. That said AFAIU driver with just
+> a devlink instance won't allow passing arbitrary commands, so that would
+> indeed address my biggest concern.
+>
+> What operations would that devlink instance expose?
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+Being as this is still a new idea for us and we aren't up to speed yet 
+on what all devlink offers, I don't have a good answer at the moment.  
+For now, nothing more than already exposed, which is simple device info.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 359f029a7..8a707d67c 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3970,12 +3970,13 @@ static int rtl8169_init_ring(struct rtl8169_private *tp)
- 	return rtl8169_rx_fill(tp);
- }
- 
--static void rtl8169_unmap_tx_skb(struct device *d, struct ring_info *tx_skb,
--				 struct TxDesc *desc)
-+static void rtl8169_unmap_tx_skb(struct rtl8169_private *tp, unsigned int entry)
- {
--	unsigned int len = tx_skb->len;
-+	struct ring_info *tx_skb = tp->tx_skb + entry;
-+	struct TxDesc *desc = tp->TxDescArray + entry;
- 
--	dma_unmap_single(d, le64_to_cpu(desc->addr), len, DMA_TO_DEVICE);
-+	dma_unmap_single(tp_to_dev(tp), le64_to_cpu(desc->addr), tx_skb->len,
-+			 DMA_TO_DEVICE);
- 	memset(desc, 0, sizeof(*desc));
- 	memset(tx_skb, 0, sizeof(*tx_skb));
- }
-@@ -3993,8 +3994,7 @@ static void rtl8169_tx_clear_range(struct rtl8169_private *tp, u32 start,
- 		if (len) {
- 			struct sk_buff *skb = tx_skb->skb;
- 
--			rtl8169_unmap_tx_skb(tp_to_dev(tp), tx_skb,
--					     tp->TxDescArray + entry);
-+			rtl8169_unmap_tx_skb(tp, entry);
- 			if (skb)
- 				dev_consume_skb_any(skb);
- 		}
-@@ -4303,7 +4303,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- 
- err_dma_1:
--	rtl8169_unmap_tx_skb(d, tp->tx_skb + entry, txd);
-+	rtl8169_unmap_tx_skb(tp, entry);
- err_dma_0:
- 	dev_kfree_skb_any(skb);
- 	dev->stats.tx_dropped++;
-@@ -4390,8 +4390,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 
- 	for (tx_left = tp->cur_tx - dirty_tx; tx_left > 0; tx_left--) {
- 		unsigned int entry = dirty_tx % NUM_TX_DESC;
--		struct ring_info *tx_skb = tp->tx_skb + entry;
--		struct sk_buff *skb = tx_skb->skb;
-+		struct sk_buff *skb = tp->tx_skb[entry].skb;
- 		u32 status;
- 
- 		status = le32_to_cpu(tp->TxDescArray[entry].opts1);
-@@ -4404,8 +4403,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 		 */
- 		dma_rmb();
- 
--		rtl8169_unmap_tx_skb(tp_to_dev(tp), tx_skb,
--				     tp->TxDescArray + entry);
-+		rtl8169_unmap_tx_skb(tp, entry);
-+
- 		if (skb) {
- 			pkts_compl++;
- 			bytes_compl += skb->len;
--- 
-2.25.1
-
+sln
 
