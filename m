@@ -2,135 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 447F417B7A3
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 08:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB7117B805
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 09:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725923AbgCFHnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 02:43:47 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33205 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725853AbgCFHnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 02:43:47 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n7so716710pfn.0
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 23:43:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=verVD0oCaesK+RURCxs2/EO8m2SOOOgaQIvuULLM3wU=;
-        b=HEzGmREnYtC381rd4rJDjBUFk/x7sLQpzRPxF42M6gcyA7ycEgo4yAXEaSVIZhZGTr
-         z7yriXL9Y+xjlWHbxf+50SLHoSYBnQi7xVE9iAs9WjZvafveU5+ZYgcyJYYCn8wV9pfY
-         LRw9yx738dGORTsuXlLWeemgd2Bx5cf2TVRD4SPrEzxoYNqmgEZWyquazE1oWXhy5qJW
-         cHqeRMMohQ0HmwDSBfX71MbFqkQ8vtvPv+LR7vjd6/6jbTnNaTvUKchgTiwx8vQ38T1/
-         92XTvOH/wpyYXzF7Vp/xhJvhx4/YqGKgb9XQYcE5UzFt1go7MSH0yAxfPEMsZB/M3rBT
-         lgog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=verVD0oCaesK+RURCxs2/EO8m2SOOOgaQIvuULLM3wU=;
-        b=bbXE/YVqBb5RWQCMqDfMI4JeYaDp7LqIazffW8twGFROwA0mFWDc+SUK1WGKgGFmED
-         xnMz88CfuxkOwlUVGNqksgzBpSCM/YU7w9Oe457pJ15czKawSI3wgvPluMiND1rbxkmU
-         lgXcJwSFIBpqF/eiX1bXwO7bCFZITnb5hyV3S1hjpE4BUFeRD8eJ6fVDFkShDrtJw7MI
-         G81nq3POpQl86Wa2owOgn7dzgonMdQuK14UiIMh1Ttf+4n/ND9UBIjMp7Gp1L/om3bUX
-         KQJU7K+0OnMae5kx+fbt5Zb+5dPBOYdOsOFF7jnZUw+ZEHKoW00Z50X8RfzxtbycLYAR
-         S+xA==
-X-Gm-Message-State: ANhLgQ2axw505N+DU3E3qn77Y6jXy/3VMSfLakSXChhbeTlBTLH/+FhD
-        MDd47ta+5VmqlErJZSCUleMT0QzGI7s=
-X-Google-Smtp-Source: ADFU+vtpe6faK5YbwxUyr/xIkE52F5sTS5wdbCyuA2Mj49M3SqkRIgpDVKSEYkakEiAN9hWMZYB6pA==
-X-Received: by 2002:a63:2c50:: with SMTP id s77mr2043234pgs.182.1583480626225;
-        Thu, 05 Mar 2020 23:43:46 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id cm2sm8700867pjb.23.2020.03.05.23.43.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Mar 2020 23:43:45 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200305052319.14682-1-snelson@pensando.io>
- <20200305052319.14682-8-snelson@pensando.io>
- <20200305140322.2dc86db0@kicinski-fedora-PC1C0HJN>
- <d9df0828-91d6-9089-e1b4-d82c6479d44c@pensando.io>
- <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
-Date:   Thu, 5 Mar 2020 23:43:44 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1726047AbgCFIEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 03:04:08 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:44877 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725908AbgCFIEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 03:04:08 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jA7xe-0002l8-Hd; Fri, 06 Mar 2020 09:03:58 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jA7xb-0002Qd-0b; Fri, 06 Mar 2020 09:03:55 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v1] ARM: dts: imx6q-marsboard: properly define rgmii PHY
+Date:   Fri,  6 Mar 2020 09:03:53 +0100
+Message-Id: <20200306080353.9284-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/20 5:18 PM, Jakub Kicinski wrote:
-> On Thu, 5 Mar 2020 16:41:48 -0800 Shannon Nelson wrote:
->> On 3/5/20 2:03 PM, Jakub Kicinski wrote:
->>> On Wed,  4 Mar 2020 21:23:18 -0800 Shannon Nelson wrote:
->>>> Add support for an additional device id.
->>>>
->>>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->>> I have thought about this for a while and I wanted to ask you to say
->>> a bit more about the use of the management device.
->>>
->>> Obviously this is not just "additional device id" in the traditional
->>> sense where device IDs differentiate HW SKUs or revisions. This is the
->>> same exact hardware, just a different local feature (as proven by the
->>> fact that you make 0 functional changes).
->>>
->>> In the past we (I?) rejected such extensions upstream from Netronome and
->>> Cavium, because there were no clear use cases which can't be solved by
->>> extending standard kernel APIs. Do you have any?
->> Do you by chance have any references handy to such past discussions?
->> I'd be interested in reading them to see what similarities and
->> differences we have.
-> Here you go:
->
-> https://lore.kernel.org/netdev/20170718115827.7bd737f2@cakuba.netronome.com/
+The Atheros AR8035 PHY can be autodetected but can't use interrupt
+support provided on this board. Define MDIO bus and the PHY node to make
+it work properly.
 
-Interesting - thanks.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/imx6q-marsboard.dts | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
->
->> The network device we present is only a portion of the DSC's functions.
->> The device configuration and management for the various services is
->> handled in userspace programs on the OS running inside the device.
->> These are accessed through a secured REST API, typically through the
->> external management ethernet port.  In addition to our centralized
->> management user interface, we have a command line tool for managing the
->> device configuration using that same REST interface.
-> We try to encourage vendors to create common interfaces, as you'd
-> understand that command line tool is raising red flags.
->
-> Admittedly most vendors have some form of command line tool which can
-> poke directly into registers, anyway, but IMHO we should avoid any
-> precedents of merging driver patches with explicit goal of enabling
-> such tools.
-
-Yes, and if we were just writing registers, that would make sense. When 
-I can get to it I do intend to try expand our use of the devlink 
-interfaces where it will work for us.
-
-However, this device id does exist on some of the DSC configurations, 
-and I'd prefer to explicitly acknowledge its existence in the driver and 
-perhaps keep better control over it, whether or not it gets used by our 
-3rd party tool, rather than leave it as some obscure port for someone to 
-"discover".
-
-sln
-
->
->> In some configurations we make it possible to open a network connection
->> into the device through the host PCI, just as if you were to connect
->> through the external mgmt port.  This is the PCI deviceid that
->> corresponds to that port, and allows use of the command line tool on the
->> host.
->>
->> The host network driver doesn't have access to the device management
->> commands, it only can configure the NIC portion for what it needs for
->> passing network packets.
+diff --git a/arch/arm/boot/dts/imx6q-marsboard.dts b/arch/arm/boot/dts/imx6q-marsboard.dts
+index 84b30bd6908f..019488aaa30b 100644
+--- a/arch/arm/boot/dts/imx6q-marsboard.dts
++++ b/arch/arm/boot/dts/imx6q-marsboard.dts
+@@ -111,8 +111,23 @@ &fec {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii-id";
+-	phy-reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Atheros AR8035 PHY */
++		rgmii_phy: ethernet-phy@4 {
++			reg = <4>;
++
++			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
++
++			reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <1000>;
++		};
++	};
+ };
+ 
+ &hdmi {
+-- 
+2.25.1
 
