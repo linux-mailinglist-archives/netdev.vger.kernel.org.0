@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A7F17B573
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 05:31:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E19F17B575
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 05:31:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbgCFE2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 23:28:47 -0500
-Received: from mail-yw1-f45.google.com ([209.85.161.45]:40118 "EHLO
-        mail-yw1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727075AbgCFE2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 23:28:46 -0500
-Received: by mail-yw1-f45.google.com with SMTP id t192so1078531ywe.7
-        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 20:28:45 -0800 (PST)
+        id S1727181AbgCFE2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 23:28:50 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:33823 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727121AbgCFE2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 23:28:48 -0500
+Received: by mail-yw1-f66.google.com with SMTP id o186so1120035ywc.1
+        for <netdev@vger.kernel.org>; Thu, 05 Mar 2020 20:28:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N0JA1jVQWs/bwF31BbpAQ6qu/wg1v384KBX/XRnY+Z4=;
-        b=xO0RpVWtch6tIXp3X6iCWCWU+KbOHqGlc2C4iBb8rokhRw9xHbsTerdPQe0CKgmRfQ
-         /4dCe8IU0qEbE7WDPFwjErFVHt6swQdFlbO6xqHqn/3ZeoKCl1b50A0fm3ENGtFIt/zq
-         6zgBeyHiSTBjD2S0r/r1aipcqqOL9q9PjxDjEhz+kCfXNPVMV9FkFuZdhTcWkxeNKCaE
-         n4n4LBtKFsSwFDL0kUOePwMK6jJmGzwp2tpSJ8pNIc5o4iXBpfJ65vnGiB0nYd0O1SoS
-         APgIzfRBtwEFovc+LIodRE8pLwL1gr1rSx5aDG43/I54QqDTf0iC+1FVHFoOE63yO4g8
-         CpLQ==
+        bh=7mle7p02Xb0qr6DjqG1KSSYes6DlokB48ZSET+PHFhE=;
+        b=TdanpPhT+qlPFJnI0iMEEp9pF+ZNddg0CT6rgFTSQpPwx6djx3XnBS66TNJpKLUbk8
+         ehT4A5gesLG557sqh0lojU1Wgq6+04tyBRzqm2LnSOOwYEwJIGKb9xSCfa/kG9dgFoLz
+         is6bEpEtvKd6ROmmtCyK/Y4i9u3yvTdcBP3ptD4bcQfBSa1GFAHPsrOs2coml8rIzGOf
+         NjKbobezXxIY/6rNrOsha5j7Z8U3/C0g5WNIdkiogKwGOTBKikatzi/xKfqAglLqUmot
+         8y6ac+ewa0LsVj4nO1boGgED3HKGVHe4IEYK2reYAnb3Pyh0fLylzhKAQ9RUt1Zi0YNb
+         RQ8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N0JA1jVQWs/bwF31BbpAQ6qu/wg1v384KBX/XRnY+Z4=;
-        b=ZH9vye3Njy1d3c35w7QYm9nNikoJMQA3f3FuKtPfsAMQa+15LKRyZN/b8ZrwDsc0jV
-         yaKB12OTFPveqphhgW9/hAZbHusHzKh0Kz36x19IAm8juq2hbKiEF5D8eQXm+A3eFJ2q
-         DUskVQ/PSs2CgiJllKMVncEsWdaxfjyZhgaCYZFQZAEwaxl8JUAs6G/kSPmNrYnTaAOx
-         U5ON8+jPoTjTQeOfwSdt4NpO+xWd4VhO+9/4vDA4eNX82TX5vYbdO9d/k14ReKu13Gug
-         rX9QtKqEwMQko66LoWKvYLg+3/x6fIQj3dLNGqzaB6Ll4C2Zc9HNZWlx+wMbygk4b7hi
-         rI0Q==
-X-Gm-Message-State: ANhLgQ3UQcG1yyYfgisMnYEN5sw6mc4Qm3tg1W5AZiVQVlcxRVkiyKTF
-        lvwxn8Q+yagItcewPVIz2XC1Tw==
-X-Google-Smtp-Source: ADFU+vsyyNdTm79BfplES1w/946vYOYy9cJTj9ucKbY1+cIieyzI83eheQxf5acQUJlwf1koQqhydw==
-X-Received: by 2002:a0d:fc42:: with SMTP id m63mr2185804ywf.48.1583468924240;
-        Thu, 05 Mar 2020 20:28:44 -0800 (PST)
+        bh=7mle7p02Xb0qr6DjqG1KSSYes6DlokB48ZSET+PHFhE=;
+        b=QHLKAL9/g3dKXDior5PhcLHioWEsvw3s+15RFET9DowJieR6RUZRKBnMrTYeqwmDYU
+         XITKtiy9MhRClBPm+DbEWWFpl3Qz9TrIQY04MFR1FOhmCoX4ajDV82dy0YXj4NYw0zlY
+         1PkOm/qTT0S4sKCRUmGqV7AQnQ9c/4T+gS8qhnFklueUCeN/eax8tMciVxrt7QDO20+u
+         NqNTGKeyjx3CnufAFGDBedPrqPRudcDkoZSbhbK6BesvH+mZ6EqmlrHfbqJeO+EbEudM
+         CjBcXrN+brCivPp1osJXq3daAhEf8+hm8eW1E993QLfJis9F+pDu1Ck4tN0Q2oGOMIM1
+         3isQ==
+X-Gm-Message-State: ANhLgQ1Hl1p1lMnb/Lhnqav35mSFHyVQxIK/ukcUBzdceXr43unLEFhY
+        RM79/8sio42ec+JNcciUe4uTQQ==
+X-Google-Smtp-Source: ADFU+vsuU/4ohIEs97WdK0Rz2jwHrzfbRahHqRbwEQOTVEOh/6GBUXqxtE/dtS5bD0y4xZqg7b6snQ==
+X-Received: by 2002:a25:2f43:: with SMTP id v64mr1958946ybv.71.1583468926179;
+        Thu, 05 Mar 2020 20:28:46 -0800 (PST)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id x2sm12581836ywa.32.2020.03.05.20.28.42
+        by smtp.gmail.com with ESMTPSA id x2sm12581836ywa.32.2020.03.05.20.28.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2020 20:28:43 -0800 (PST)
+        Thu, 05 Mar 2020 20:28:45 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     David Miller <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>
 Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -63,9 +63,9 @@ Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 04/17] soc: qcom: ipa: configuration data
-Date:   Thu,  5 Mar 2020 22:28:18 -0600
-Message-Id: <20200306042831.17827-5-elder@linaro.org>
+Subject: [PATCH v2 05/17] soc: qcom: ipa: clocking, interrupts, and memory
+Date:   Thu,  5 Mar 2020 22:28:19 -0600
+Message-Id: <20200306042831.17827-6-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200306042831.17827-1-elder@linaro.org>
 References: <20200306042831.17827-1-elder@linaro.org>
@@ -76,956 +76,1222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch defines configuration data that is used to specify some
-of the details of IPA hardware supported by the driver.  It is built
-as Device Tree match data, discovered at boot time.  The driver
-supports the Qualcomm SDM845 SoC.  Data for the Qualcomm SC7180 is
-also defined here, but it is not yet completely supported.
+This patch incorporates three source files (and their headers).  They're
+grouped into one patch mainly for the purpose of making the number and
+size of patches in this series somewhat reasonable.
+
+  - "ipa_clock.c" and "ipa_clock.h" implement clocking for the IPA device.
+    The IPA has a single core clock managed by the common clock framework.
+    In addition, the IPA has three buses whose bandwidth is managed by the
+    Linux interconnect framework.  At this time the core clock and all
+    three buses are either on or off; we don't yet do any more fine-grained
+    management than that.  The core clock and interconnects are enabled
+    and disabled as a unit, using a unified clock-like abstraction,
+    ipa_clock_get()/ipa_clock_put().
+
+  - "ipa_interrupt.c" and "ipa_interrupt.h" implement IPA interrupts.
+    There are two hardware IRQs used by the IPA driver (the other is
+    the GSI interrupt, described in a separate patch).  Several types
+    of interrupt are handled by the IPA IRQ handler; these are not part
+    of data/fast path.
+
+  - The IPA has a region of local memory that is accessible by the AP
+    (and modem).  Within that region are areas with certain defined
+    purposes.  "ipa_mem.c" and "ipa_mem.h" define those regions, and
+    implement their initialization.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_data-sc7180.c | 307 ++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_data-sdm845.c | 329 ++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_data.h        | 280 +++++++++++++++++++++++++
- 3 files changed, 916 insertions(+)
- create mode 100644 drivers/net/ipa/ipa_data-sc7180.c
- create mode 100644 drivers/net/ipa/ipa_data-sdm845.c
- create mode 100644 drivers/net/ipa/ipa_data.h
+ drivers/net/ipa/ipa_clock.c     | 313 +++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_clock.h     |  53 ++++++
+ drivers/net/ipa/ipa_interrupt.c | 253 +++++++++++++++++++++++++
+ drivers/net/ipa/ipa_interrupt.h | 117 ++++++++++++
+ drivers/net/ipa/ipa_mem.c       | 314 ++++++++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_mem.h       |  90 +++++++++
+ 6 files changed, 1140 insertions(+)
+ create mode 100644 drivers/net/ipa/ipa_clock.c
+ create mode 100644 drivers/net/ipa/ipa_clock.h
+ create mode 100644 drivers/net/ipa/ipa_interrupt.c
+ create mode 100644 drivers/net/ipa/ipa_interrupt.h
+ create mode 100644 drivers/net/ipa/ipa_mem.c
+ create mode 100644 drivers/net/ipa/ipa_mem.h
 
-diff --git a/drivers/net/ipa/ipa_data-sc7180.c b/drivers/net/ipa/ipa_data-sc7180.c
+diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
 new file mode 100644
-index 000000000000..042b5fc3c135
+index 000000000000..374491ea11cf
 --- /dev/null
-+++ b/drivers/net/ipa/ipa_data-sc7180.c
-@@ -0,0 +1,307 @@
++++ b/drivers/net/ipa/ipa_clock.c
+@@ -0,0 +1,313 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
-+/* Copyright (C) 2019-2020 Linaro Ltd. */
-+
-+#include <linux/log2.h>
-+
-+#include "gsi.h"
-+#include "ipa_data.h"
-+#include "ipa_endpoint.h"
-+#include "ipa_mem.h"
-+
-+/* Endpoint configuration for the SC7180 SoC. */
-+static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
-+	[IPA_ENDPOINT_AP_COMMAND_TX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 1,
-+		.endpoint_id	= 6,
-+		.toward_ipa	= true,
-+		.channel = {
-+			.tre_count	= 256,
-+			.event_count	= 256,
-+			.tlv_count	= 20,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_DMA_ONLY,
-+			.config = {
-+				.dma_mode	= true,
-+				.dma_endpoint	= IPA_ENDPOINT_AP_LAN_RX,
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_LAN_RX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 2,
-+		.endpoint_id	= 8,
-+		.toward_ipa	= false,
-+		.channel = {
-+			.tre_count	= 256,
-+			.event_count	= 256,
-+			.tlv_count	= 6,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_INVALID,
-+			.config = {
-+				.aggregation	= true,
-+				.status_enable	= true,
-+				.rx = {
-+					.pad_align	= ilog2(sizeof(u32)),
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_MODEM_TX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 0,
-+		.endpoint_id	= 1,
-+		.toward_ipa	= true,
-+		.channel = {
-+			.tre_count	= 512,
-+			.event_count	= 512,
-+			.tlv_count	= 8,
-+		},
-+		.endpoint = {
-+			.filter_support	= true,
-+			.seq_type	=
-+				IPA_SEQ_PKT_PROCESS_NO_DEC_NO_UCP_DMAP,
-+			.config = {
-+				.checksum	= true,
-+				.qmap		= true,
-+				.status_enable	= true,
-+				.tx = {
-+					.status_endpoint =
-+						IPA_ENDPOINT_MODEM_AP_RX,
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_MODEM_RX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 3,
-+		.endpoint_id	= 9,
-+		.toward_ipa	= false,
-+		.channel = {
-+			.tre_count	= 256,
-+			.event_count	= 256,
-+			.tlv_count	= 6,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_INVALID,
-+			.config = {
-+				.checksum	= true,
-+				.qmap		= true,
-+				.aggregation	= true,
-+				.rx = {
-+					.aggr_close_eof	= true,
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_MODEM_COMMAND_TX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 1,
-+		.endpoint_id	= 5,
-+		.toward_ipa	= true,
-+	},
-+	[IPA_ENDPOINT_MODEM_LAN_RX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 3,
-+		.endpoint_id	= 13,
-+		.toward_ipa	= false,
-+	},
-+	[IPA_ENDPOINT_MODEM_AP_TX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 0,
-+		.endpoint_id	= 4,
-+		.toward_ipa	= true,
-+		.endpoint = {
-+			.filter_support	= true,
-+		},
-+	},
-+	[IPA_ENDPOINT_MODEM_AP_RX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 2,
-+		.endpoint_id	= 10,
-+		.toward_ipa	= false,
-+	},
-+};
-+
-+/* For the SC7180, resource groups are allocated this way:
-+ *   group 0:	UL_DL
++/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2020 Linaro Ltd.
 + */
-+static const struct ipa_resource_src ipa_resource_src[] = {
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS,
-+		.limits[0] = {
-+			.min = 3,
-+			.max = 63,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
-+		.limits[0] = {
-+			.min = 3,
-+			.max = 3,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
-+		.limits[0] = {
-+			.min = 10,
-+			.max = 10,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
-+		.limits[0] = {
-+			.min = 1,
-+			.max = 1,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
-+		.limits[0] = {
-+			.min = 5,
-+			.max = 5,
-+		},
-+	},
++
++#include <linux/atomic.h>
++#include <linux/mutex.h>
++#include <linux/clk.h>
++#include <linux/device.h>
++#include <linux/interconnect.h>
++
++#include "ipa.h"
++#include "ipa_clock.h"
++#include "ipa_modem.h"
++
++/**
++ * DOC: IPA Clocking
++ *
++ * The "IPA Clock" manages both the IPA core clock and the interconnects
++ * (buses) the IPA depends on as a single logical entity.  A reference count
++ * is incremented by "get" operations and decremented by "put" operations.
++ * Transitions of that count from 0 to 1 result in the clock and interconnects
++ * being enabled, and transitions of the count from 1 to 0 cause them to be
++ * disabled.  We currently operate the core clock at a fixed clock rate, and
++ * all buses at a fixed average and peak bandwidth.  As more advanced IPA
++ * features are enabled, we can make better use of clock and bus scaling.
++ *
++ * An IPA clock reference must be held for any access to IPA hardware.
++ */
++
++#define	IPA_CORE_CLOCK_RATE		(75UL * 1000 * 1000)	/* Hz */
++
++/* Interconnect path bandwidths (each times 1000 bytes per second) */
++#define IPA_MEMORY_AVG			(80 * 1000)	/* 80 MBps */
++#define IPA_MEMORY_PEAK			(600 * 1000)
++
++#define IPA_IMEM_AVG			(80 * 1000)
++#define IPA_IMEM_PEAK			(350 * 1000)
++
++#define IPA_CONFIG_AVG			(40 * 1000)
++#define IPA_CONFIG_PEAK			(40 * 1000)
++
++/**
++ * struct ipa_clock - IPA clocking information
++ * @count:		Clocking reference count
++ * @mutex;		Protects clock enable/disable
++ * @core:		IPA core clock
++ * @memory_path:	Memory interconnect
++ * @imem_path:		Internal memory interconnect
++ * @config_path:	Configuration space interconnect
++ */
++struct ipa_clock {
++	atomic_t count;
++	struct mutex mutex; /* protects clock enable/disable */
++	struct clk *core;
++	struct icc_path *memory_path;
++	struct icc_path *imem_path;
++	struct icc_path *config_path;
 +};
 +
-+static const struct ipa_resource_dst ipa_resource_dst[] = {
-+	{
-+		.type = IPA_RESOURCE_TYPE_DST_DATA_SECTORS,
-+		.limits[0] = {
-+			.min = 3,
-+			.max = 3,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_DST_DPS_DMARS,
-+		.limits[0] = {
-+			.min = 1,
-+			.max = 63,
-+		},
-+	},
-+};
++static struct icc_path *
++ipa_interconnect_init_one(struct device *dev, const char *name)
++{
++	struct icc_path *path;
 +
-+/* Resource configuration for the SC7180 SoC. */
-+static const struct ipa_resource_data ipa_resource_data = {
-+	.resource_src_count	= ARRAY_SIZE(ipa_resource_src),
-+	.resource_src		= ipa_resource_src,
-+	.resource_dst_count	= ARRAY_SIZE(ipa_resource_dst),
-+	.resource_dst		= ipa_resource_dst,
-+};
++	path = of_icc_get(dev, name);
++	if (IS_ERR(path))
++		dev_err(dev, "error %ld getting memory interconnect\n",
++			PTR_ERR(path));
 +
-+/* IPA-resident memory region configuration for the SC7180 SoC. */
-+static const struct ipa_mem ipa_mem_data[] = {
-+	[IPA_MEM_UC_SHARED] = {
-+		.offset		= 0x0000,
-+		.size		= 0x0080,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_UC_INFO] = {
-+		.offset		= 0x0080,
-+		.size		= 0x0200,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_FILTER_HASHED] = {
-+		.offset		= 0x0288,
-+		.size		= 0,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_FILTER] = {
-+		.offset		= 0x0290,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_FILTER_HASHED] = {
-+		.offset		= 0x0310,
-+		.size		= 0,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_FILTER] = {
-+		.offset		= 0x0318,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_ROUTE_HASHED] = {
-+		.offset		= 0x0398,
-+		.size		= 0,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_ROUTE] = {
-+		.offset		= 0x03a0,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_ROUTE_HASHED] = {
-+		.offset		= 0x0420,
-+		.size		= 0,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_ROUTE] = {
-+		.offset		= 0x0428,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_MODEM_HEADER] = {
-+		.offset		= 0x04a8,
-+		.size		= 0x0140,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_AP_HEADER] = {
-+		.offset		= 0x05e8,
-+		.size		= 0x0000,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_MODEM_PROC_CTX] = {
-+		.offset		= 0x05f0,
-+		.size		= 0x0200,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_AP_PROC_CTX] = {
-+		.offset		= 0x07f0,
-+		.size		= 0x0200,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_PDN_CONFIG] = {
-+		.offset		= 0x09f8,
-+		.size		= 0x0050,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_STATS_QUOTA] = {
-+		.offset		= 0x0a50,
-+		.size		= 0x0060,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_STATS_TETHERING] = {
-+		.offset		= 0x0ab0,
-+		.size		= 0x0140,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_STATS_DROP] = {
-+		.offset		= 0x0bf0,
-+		.size		= 0,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_MODEM] = {
-+		.offset		= 0x0bf0,
-+		.size		= 0x140c,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_UC_EVENT_RING] = {
-+		.offset		= 0x2000,
-+		.size		= 0,
-+		.canary_count	= 1,
-+	},
-+};
++	return path;
++}
 +
-+/* Configuration data for the SC7180 SoC. */
-+const struct ipa_data ipa_data_sc7180 = {
-+	.version	= IPA_VERSION_4_2,
-+	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
-+	.endpoint_data	= ipa_gsi_endpoint_data,
-+	.resource_data	= &ipa_resource_data,
-+	.mem_count	= ARRAY_SIZE(ipa_mem_data),
-+	.mem_data	= ipa_mem_data,
-+};
-diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
++/* Initialize interconnects required for IPA operation */
++static int ipa_interconnect_init(struct ipa_clock *clock, struct device *dev)
++{
++	struct icc_path *path;
++
++	path = ipa_interconnect_init_one(dev, "memory");
++	if (IS_ERR(path))
++		goto err_return;
++	clock->memory_path = path;
++
++	path = ipa_interconnect_init_one(dev, "imem");
++	if (IS_ERR(path))
++		goto err_memory_path_put;
++	clock->imem_path = path;
++
++	path = ipa_interconnect_init_one(dev, "config");
++	if (IS_ERR(path))
++		goto err_imem_path_put;
++	clock->config_path = path;
++
++	return 0;
++
++err_imem_path_put:
++	icc_put(clock->imem_path);
++err_memory_path_put:
++	icc_put(clock->memory_path);
++err_return:
++	return PTR_ERR(path);
++}
++
++/* Inverse of ipa_interconnect_init() */
++static void ipa_interconnect_exit(struct ipa_clock *clock)
++{
++	icc_put(clock->config_path);
++	icc_put(clock->imem_path);
++	icc_put(clock->memory_path);
++}
++
++/* Currently we only use one bandwidth level, so just "enable" interconnects */
++static int ipa_interconnect_enable(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++	int ret;
++
++	ret = icc_set_bw(clock->memory_path, IPA_MEMORY_AVG, IPA_MEMORY_PEAK);
++	if (ret)
++		return ret;
++
++	ret = icc_set_bw(clock->imem_path, IPA_IMEM_AVG, IPA_IMEM_PEAK);
++	if (ret)
++		goto err_memory_path_disable;
++
++	ret = icc_set_bw(clock->config_path, IPA_CONFIG_AVG, IPA_CONFIG_PEAK);
++	if (ret)
++		goto err_imem_path_disable;
++
++	return 0;
++
++err_imem_path_disable:
++	(void)icc_set_bw(clock->imem_path, 0, 0);
++err_memory_path_disable:
++	(void)icc_set_bw(clock->memory_path, 0, 0);
++
++	return ret;
++}
++
++/* To disable an interconnect, we just its bandwidth to 0 */
++static int ipa_interconnect_disable(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++	int ret;
++
++	ret = icc_set_bw(clock->memory_path, 0, 0);
++	if (ret)
++		return ret;
++
++	ret = icc_set_bw(clock->imem_path, 0, 0);
++	if (ret)
++		goto err_memory_path_reenable;
++
++	ret = icc_set_bw(clock->config_path, 0, 0);
++	if (ret)
++		goto err_imem_path_reenable;
++
++	return 0;
++
++err_imem_path_reenable:
++	(void)icc_set_bw(clock->imem_path, IPA_IMEM_AVG, IPA_IMEM_PEAK);
++err_memory_path_reenable:
++	(void)icc_set_bw(clock->memory_path, IPA_MEMORY_AVG, IPA_MEMORY_PEAK);
++
++	return ret;
++}
++
++/* Turn on IPA clocks, including interconnects */
++static int ipa_clock_enable(struct ipa *ipa)
++{
++	int ret;
++
++	ret = ipa_interconnect_enable(ipa);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(ipa->clock->core);
++	if (ret)
++		ipa_interconnect_disable(ipa);
++
++	return ret;
++}
++
++/* Inverse of ipa_clock_enable() */
++static void ipa_clock_disable(struct ipa *ipa)
++{
++	clk_disable_unprepare(ipa->clock->core);
++	(void)ipa_interconnect_disable(ipa);
++}
++
++/* Get an IPA clock reference, but only if the reference count is
++ * already non-zero.  Returns true if the additional reference was
++ * added successfully, or false otherwise.
++ */
++bool ipa_clock_get_additional(struct ipa *ipa)
++{
++	return !!atomic_inc_not_zero(&ipa->clock->count);
++}
++
++/* Get an IPA clock reference.  If the reference count is non-zero, it is
++ * incremented and return is immediate.  Otherwise it is checked again
++ * under protection of the mutex, and if appropriate the clock (and
++ * interconnects) are enabled suspended endpoints (if any) are resumed
++ * before returning.
++ *
++ * Incrementing the reference count is intentionally deferred until
++ * after the clock is running and endpoints are resumed.
++ */
++void ipa_clock_get(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++	int ret;
++
++	/* If the clock is running, just bump the reference count */
++	if (ipa_clock_get_additional(ipa))
++		return;
++
++	/* Otherwise get the mutex and check again */
++	mutex_lock(&clock->mutex);
++
++	/* A reference might have been added before we got the mutex. */
++	if (ipa_clock_get_additional(ipa))
++		goto out_mutex_unlock;
++
++	ret = ipa_clock_enable(ipa);
++	if (ret) {
++		dev_err(&ipa->pdev->dev, "error %d enabling IPA clock\n", ret);
++		goto out_mutex_unlock;
++	}
++
++	ipa_endpoint_resume(ipa);
++
++	atomic_inc(&clock->count);
++
++out_mutex_unlock:
++	mutex_unlock(&clock->mutex);
++}
++
++/* Attempt to remove an IPA clock reference.  If this represents the last
++ * reference, suspend endpoints and disable the clock (and interconnects)
++ * under protection of a mutex.
++ */
++void ipa_clock_put(struct ipa *ipa)
++{
++	struct ipa_clock *clock = ipa->clock;
++
++	/* If this is not the last reference there's nothing more to do */
++	if (!atomic_dec_and_mutex_lock(&clock->count, &clock->mutex))
++		return;
++
++	ipa_endpoint_suspend(ipa);
++
++	ipa_clock_disable(ipa);
++
++	mutex_unlock(&clock->mutex);
++}
++
++/* Initialize IPA clocking */
++struct ipa_clock *ipa_clock_init(struct device *dev)
++{
++	struct ipa_clock *clock;
++	struct clk *clk;
++	int ret;
++
++	clk = clk_get(dev, "core");
++	if (IS_ERR(clk)) {
++		dev_err(dev, "error %ld getting core clock\n", PTR_ERR(clk));
++		return ERR_CAST(clk);
++	}
++
++	ret = clk_set_rate(clk, IPA_CORE_CLOCK_RATE);
++	if (ret) {
++		dev_err(dev, "error %d setting core clock rate to %lu\n",
++			ret, IPA_CORE_CLOCK_RATE);
++		goto err_clk_put;
++	}
++
++	clock = kzalloc(sizeof(*clock), GFP_KERNEL);
++	if (!clock) {
++		ret = -ENOMEM;
++		goto err_clk_put;
++	}
++	clock->core = clk;
++
++	ret = ipa_interconnect_init(clock, dev);
++	if (ret)
++		goto err_kfree;
++
++	mutex_init(&clock->mutex);
++	atomic_set(&clock->count, 0);
++
++	return clock;
++
++err_kfree:
++	kfree(clock);
++err_clk_put:
++	clk_put(clk);
++
++	return ERR_PTR(ret);
++}
++
++/* Inverse of ipa_clock_init() */
++void ipa_clock_exit(struct ipa_clock *clock)
++{
++	struct clk *clk = clock->core;
++
++	WARN_ON(atomic_read(&clock->count) != 0);
++	mutex_destroy(&clock->mutex);
++	ipa_interconnect_exit(clock);
++	kfree(clock);
++	clk_put(clk);
++}
+diff --git a/drivers/net/ipa/ipa_clock.h b/drivers/net/ipa/ipa_clock.h
 new file mode 100644
-index 000000000000..0d9c36e1e806
+index 000000000000..bc52b35e6bb2
 --- /dev/null
-+++ b/drivers/net/ipa/ipa_data-sdm845.c
-@@ -0,0 +1,329 @@
++++ b/drivers/net/ipa/ipa_clock.h
+@@ -0,0 +1,53 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2020 Linaro Ltd.
++ */
++#ifndef _IPA_CLOCK_H_
++#define _IPA_CLOCK_H_
++
++struct device;
++
++struct ipa;
++
++/**
++ * ipa_clock_init() - Initialize IPA clocking
++ * @dev:	IPA device
++ *
++ * @Return:	A pointer to an ipa_clock structure, or a pointer-coded error
++ */
++struct ipa_clock *ipa_clock_init(struct device *dev);
++
++/**
++ * ipa_clock_exit() - Inverse of ipa_clock_init()
++ * @clock:	IPA clock pointer
++ */
++void ipa_clock_exit(struct ipa_clock *clock);
++
++/**
++ * ipa_clock_get() - Get an IPA clock reference
++ * @ipa:	IPA pointer
++ *
++ * This call blocks if this is the first reference.
++ */
++void ipa_clock_get(struct ipa *ipa);
++
++/**
++ * ipa_clock_get_additional() - Get an IPA clock reference if not first
++ * @ipa:	IPA pointer
++ *
++ * This returns immediately, and only takes a reference if not the first
++ */
++bool ipa_clock_get_additional(struct ipa *ipa);
++
++/**
++ * ipa_clock_put() - Drop an IPA clock reference
++ * @ipa:	IPA pointer
++ *
++ * This drops a clock reference.  If the last reference is being dropped,
++ * the clock is stopped and RX endpoints are suspended.  This call will
++ * not block unless the last reference is dropped.
++ */
++void ipa_clock_put(struct ipa *ipa);
++
++#endif /* _IPA_CLOCK_H_ */
+diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
+new file mode 100644
+index 000000000000..90353987c45f
+--- /dev/null
++++ b/drivers/net/ipa/ipa_interrupt.c
+@@ -0,0 +1,253 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2020 Linaro Ltd.
++ */
++
++/* DOC: IPA Interrupts
++ *
++ * The IPA has an interrupt line distinct from the interrupt used by the GSI
++ * code.  Whereas GSI interrupts are generally related to channel events (like
++ * transfer completions), IPA interrupts are related to other events related
++ * to the IPA.  Some of the IPA interrupts come from a microcontroller
++ * embedded in the IPA.  Each IPA interrupt type can be both masked and
++ * acknowledged independent of the others.
++ *
++ * Two of the IPA interrupts are initiated by the microcontroller.  A third
++ * can be generated to signal the need for a wakeup/resume when an IPA
++ * endpoint has been suspended.  There are other IPA events, but at this
++ * time only these three are supported.
++ */
++
++#include <linux/types.h>
++#include <linux/interrupt.h>
++
++#include "ipa.h"
++#include "ipa_clock.h"
++#include "ipa_reg.h"
++#include "ipa_endpoint.h"
++#include "ipa_interrupt.h"
++
++/**
++ * struct ipa_interrupt - IPA interrupt information
++ * @ipa:		IPA pointer
++ * @irq:		Linux IRQ number used for IPA interrupts
++ * @enabled:		Mask indicating which interrupts are enabled
++ * @handler:		Array of handlers indexed by IPA interrupt ID
++ */
++struct ipa_interrupt {
++	struct ipa *ipa;
++	u32 irq;
++	u32 enabled;
++	ipa_irq_handler_t handler[IPA_IRQ_COUNT];
++};
++
++/* Returns true if the interrupt type is associated with the microcontroller */
++static bool ipa_interrupt_uc(struct ipa_interrupt *interrupt, u32 irq_id)
++{
++	return irq_id == IPA_IRQ_UC_0 || irq_id == IPA_IRQ_UC_1;
++}
++
++/* Process a particular interrupt type that has been received */
++static void ipa_interrupt_process(struct ipa_interrupt *interrupt, u32 irq_id)
++{
++	bool uc_irq = ipa_interrupt_uc(interrupt, irq_id);
++	struct ipa *ipa = interrupt->ipa;
++	u32 mask = BIT(irq_id);
++
++	/* For microcontroller interrupts, clear the interrupt right away,
++	 * "to avoid clearing unhandled interrupts."
++	 */
++	if (uc_irq)
++		iowrite32(mask, ipa->reg_virt + IPA_REG_IRQ_CLR_OFFSET);
++
++	if (irq_id < IPA_IRQ_COUNT && interrupt->handler[irq_id])
++		interrupt->handler[irq_id](interrupt->ipa, irq_id);
++
++	/* Clearing the SUSPEND_TX interrupt also clears the register
++	 * that tells us which suspended endpoint(s) caused the interrupt,
++	 * so defer clearing until after the handler has been called.
++	 */
++	if (!uc_irq)
++		iowrite32(mask, ipa->reg_virt + IPA_REG_IRQ_CLR_OFFSET);
++}
++
++/* Process all IPA interrupt types that have been signaled */
++static void ipa_interrupt_process_all(struct ipa_interrupt *interrupt)
++{
++	struct ipa *ipa = interrupt->ipa;
++	u32 enabled = interrupt->enabled;
++	u32 mask;
++
++	/* The status register indicates which conditions are present,
++	 * including conditions whose interrupt is not enabled.  Handle
++	 * only the enabled ones.
++	 */
++	mask = ioread32(ipa->reg_virt + IPA_REG_IRQ_STTS_OFFSET);
++	while ((mask &= enabled)) {
++		do {
++			u32 irq_id = __ffs(mask);
++
++			mask ^= BIT(irq_id);
++
++			ipa_interrupt_process(interrupt, irq_id);
++		} while (mask);
++		mask = ioread32(ipa->reg_virt + IPA_REG_IRQ_STTS_OFFSET);
++	}
++}
++
++/* Threaded part of the IPA IRQ handler */
++static irqreturn_t ipa_isr_thread(int irq, void *dev_id)
++{
++	struct ipa_interrupt *interrupt = dev_id;
++
++	ipa_clock_get(interrupt->ipa);
++
++	ipa_interrupt_process_all(interrupt);
++
++	ipa_clock_put(interrupt->ipa);
++
++	return IRQ_HANDLED;
++}
++
++/* Hard part (i.e., "real" IRQ handler) of the IRQ handler */
++static irqreturn_t ipa_isr(int irq, void *dev_id)
++{
++	struct ipa_interrupt *interrupt = dev_id;
++	struct ipa *ipa = interrupt->ipa;
++	u32 mask;
++
++	mask = ioread32(ipa->reg_virt + IPA_REG_IRQ_STTS_OFFSET);
++	if (mask & interrupt->enabled)
++		return IRQ_WAKE_THREAD;
++
++	/* Nothing in the mask was supposed to cause an interrupt */
++	iowrite32(mask, ipa->reg_virt + IPA_REG_IRQ_CLR_OFFSET);
++
++	dev_err(&ipa->pdev->dev, "%s: unexpected interrupt, mask 0x%08x\n",
++		__func__, mask);
++
++	return IRQ_HANDLED;
++}
++
++/* Common function used to enable/disable TX_SUSPEND for an endpoint */
++static void ipa_interrupt_suspend_control(struct ipa_interrupt *interrupt,
++					  u32 endpoint_id, bool enable)
++{
++	struct ipa *ipa = interrupt->ipa;
++	u32 mask = BIT(endpoint_id);
++	u32 val;
++
++	/* assert(mask & ipa->available); */
++	val = ioread32(ipa->reg_virt + IPA_REG_SUSPEND_IRQ_EN_OFFSET);
++	if (enable)
++		val |= mask;
++	else
++		val &= ~mask;
++	iowrite32(val, ipa->reg_virt + IPA_REG_SUSPEND_IRQ_EN_OFFSET);
++}
++
++/* Enable TX_SUSPEND for an endpoint */
++void
++ipa_interrupt_suspend_enable(struct ipa_interrupt *interrupt, u32 endpoint_id)
++{
++	ipa_interrupt_suspend_control(interrupt, endpoint_id, true);
++}
++
++/* Disable TX_SUSPEND for an endpoint */
++void
++ipa_interrupt_suspend_disable(struct ipa_interrupt *interrupt, u32 endpoint_id)
++{
++	ipa_interrupt_suspend_control(interrupt, endpoint_id, false);
++}
++
++/* Clear the suspend interrupt for all endpoints that signaled it */
++void ipa_interrupt_suspend_clear_all(struct ipa_interrupt *interrupt)
++{
++	struct ipa *ipa = interrupt->ipa;
++	u32 val;
++
++	val = ioread32(ipa->reg_virt + IPA_REG_IRQ_SUSPEND_INFO_OFFSET);
++	iowrite32(val, ipa->reg_virt + IPA_REG_SUSPEND_IRQ_CLR_OFFSET);
++}
++
++/* Simulate arrival of an IPA TX_SUSPEND interrupt */
++void ipa_interrupt_simulate_suspend(struct ipa_interrupt *interrupt)
++{
++	ipa_interrupt_process(interrupt, IPA_IRQ_TX_SUSPEND);
++}
++
++/* Add a handler for an IPA interrupt */
++void ipa_interrupt_add(struct ipa_interrupt *interrupt,
++		       enum ipa_irq_id ipa_irq, ipa_irq_handler_t handler)
++{
++	struct ipa *ipa = interrupt->ipa;
++
++	/* assert(ipa_irq < IPA_IRQ_COUNT); */
++	interrupt->handler[ipa_irq] = handler;
++
++	/* Update the IPA interrupt mask to enable it */
++	interrupt->enabled |= BIT(ipa_irq);
++	iowrite32(interrupt->enabled, ipa->reg_virt + IPA_REG_IRQ_EN_OFFSET);
++}
++
++/* Remove the handler for an IPA interrupt type */
++void
++ipa_interrupt_remove(struct ipa_interrupt *interrupt, enum ipa_irq_id ipa_irq)
++{
++	struct ipa *ipa = interrupt->ipa;
++
++	/* assert(ipa_irq < IPA_IRQ_COUNT); */
++	/* Update the IPA interrupt mask to disable it */
++	interrupt->enabled &= ~BIT(ipa_irq);
++	iowrite32(interrupt->enabled, ipa->reg_virt + IPA_REG_IRQ_EN_OFFSET);
++
++	interrupt->handler[ipa_irq] = NULL;
++}
++
++/* Set up the IPA interrupt framework */
++struct ipa_interrupt *ipa_interrupt_setup(struct ipa *ipa)
++{
++	struct device *dev = &ipa->pdev->dev;
++	struct ipa_interrupt *interrupt;
++	unsigned int irq;
++	int ret;
++
++	ret = platform_get_irq_byname(ipa->pdev, "ipa");
++	if (ret <= 0) {
++		dev_err(dev, "DT error %d getting \"ipa\" IRQ property\n",
++			ret);
++		return ERR_PTR(ret ? : -EINVAL);
++	}
++	irq = ret;
++
++	interrupt = kzalloc(sizeof(*interrupt), GFP_KERNEL);
++	if (!interrupt)
++		return ERR_PTR(-ENOMEM);
++	interrupt->ipa = ipa;
++	interrupt->irq = irq;
++
++	/* Start with all IPA interrupts disabled */
++	iowrite32(0, ipa->reg_virt + IPA_REG_IRQ_EN_OFFSET);
++
++	ret = request_threaded_irq(irq, ipa_isr, ipa_isr_thread, IRQF_ONESHOT,
++				   "ipa", interrupt);
++	if (ret) {
++		dev_err(dev, "error %d requesting \"ipa\" IRQ\n", ret);
++		goto err_kfree;
++	}
++
++	return interrupt;
++
++err_kfree:
++	kfree(interrupt);
++
++	return ERR_PTR(ret);
++}
++
++/* Tear down the IPA interrupt framework */
++void ipa_interrupt_teardown(struct ipa_interrupt *interrupt)
++{
++	free_irq(interrupt->irq, interrupt);
++	kfree(interrupt);
++}
+diff --git a/drivers/net/ipa/ipa_interrupt.h b/drivers/net/ipa/ipa_interrupt.h
+new file mode 100644
+index 000000000000..d4f4c1c9f0b1
+--- /dev/null
++++ b/drivers/net/ipa/ipa_interrupt.h
+@@ -0,0 +1,117 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
++ * Copyright (C) 2018-2020 Linaro Ltd.
++ */
++#ifndef _IPA_INTERRUPT_H_
++#define _IPA_INTERRUPT_H_
++
++#include <linux/types.h>
++#include <linux/bits.h>
++
++struct ipa;
++struct ipa_interrupt;
++
++/**
++ * enum ipa_irq_id - IPA interrupt type
++ * @IPA_IRQ_UC_0:	Microcontroller event interrupt
++ * @IPA_IRQ_UC_1:	Microcontroller response interrupt
++ * @IPA_IRQ_TX_SUSPEND:	Data ready interrupt
++ *
++ * The data ready interrupt is signaled if data has arrived that is destined
++ * for an AP RX endpoint whose underlying GSI channel is suspended/stopped.
++ */
++enum ipa_irq_id {
++	IPA_IRQ_UC_0		= 2,
++	IPA_IRQ_UC_1		= 3,
++	IPA_IRQ_TX_SUSPEND	= 14,
++	IPA_IRQ_COUNT,		/* Number of interrupt types (not an index) */
++};
++
++/**
++ * typedef ipa_irq_handler_t - IPA interrupt handler function type
++ * @ipa:	IPA pointer
++ * @irq_id:	interrupt type
++ *
++ * Callback function registered by ipa_interrupt_add() to handle a specific
++ * IPA interrupt type
++ */
++typedef void (*ipa_irq_handler_t)(struct ipa *ipa, enum ipa_irq_id irq_id);
++
++/**
++ * ipa_interrupt_add() - Register a handler for an IPA interrupt type
++ * @irq_id:	IPA interrupt type
++ * @handler:	Handler function for the interrupt
++ *
++ * Add a handler for an IPA interrupt and enable it.  IPA interrupt
++ * handlers are run in threaded interrupt context, so are allowed to
++ * block.
++ */
++void ipa_interrupt_add(struct ipa_interrupt *interrupt, enum ipa_irq_id irq_id,
++		       ipa_irq_handler_t handler);
++
++/**
++ * ipa_interrupt_remove() - Remove the handler for an IPA interrupt type
++ * @interrupt:	IPA interrupt structure
++ * @irq_id:	IPA interrupt type
++ *
++ * Remove an IPA interrupt handler and disable it.
++ */
++void ipa_interrupt_remove(struct ipa_interrupt *interrupt,
++			  enum ipa_irq_id irq_id);
++
++/**
++ * ipa_interrupt_suspend_enable - Enable TX_SUSPEND for an endpoint
++ * @interrupt:		IPA interrupt structure
++ * @endpoint_id:	Endpoint whose interrupt should be enabled
++ *
++ * Note:  The "TX" in the name is from the perspective of the IPA hardware.
++ * A TX_SUSPEND interrupt arrives on an AP RX enpoint when packet data can't
++ * be delivered to the endpoint because it is suspended (or its underlying
++ * channel is stopped).
++ */
++void ipa_interrupt_suspend_enable(struct ipa_interrupt *interrupt,
++				  u32 endpoint_id);
++
++/**
++ * ipa_interrupt_suspend_disable - Disable TX_SUSPEND for an endpoint
++ * @interrupt:		IPA interrupt structure
++ * @endpoint_id:	Endpoint whose interrupt should be disabled
++ */
++void ipa_interrupt_suspend_disable(struct ipa_interrupt *interrupt,
++				   u32 endpoint_id);
++
++/**
++ * ipa_interrupt_suspend_clear_all - clear all suspend interrupts
++ * @interrupt:	IPA interrupt structure
++ *
++ * Clear the TX_SUSPEND interrupt for all endpoints that signaled it.
++ */
++void ipa_interrupt_suspend_clear_all(struct ipa_interrupt *interrupt);
++
++/**
++ * ipa_interrupt_simulate_suspend() - Simulate TX_SUSPEND IPA interrupt
++ * @interrupt:	IPA interrupt structure
++ *
++ * This calls the TX_SUSPEND interrupt handler, as if such an interrupt
++ * had been signaled.  This is needed to work around a hardware quirk
++ * that occurs if aggregation is active on an endpoint when its underlying
++ * channel is suspended.
++ */
++void ipa_interrupt_simulate_suspend(struct ipa_interrupt *interrupt);
++
++/**
++ * ipa_interrupt_setup() - Set up the IPA interrupt framework
++ * @ipa:	IPA pointer
++ *
++ * @Return:	Pointer to IPA SMP2P info, or a pointer-coded error
++ */
++struct ipa_interrupt *ipa_interrupt_setup(struct ipa *ipa);
++
++/**
++ * ipa_interrupt_teardown() - Tear down the IPA interrupt framework
++ * @interrupt:	IPA interrupt structure
++ */
++void ipa_interrupt_teardown(struct ipa_interrupt *interrupt);
++
++#endif /* _IPA_INTERRUPT_H_ */
+diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
+new file mode 100644
+index 000000000000..42d2c29d9f0c
+--- /dev/null
++++ b/drivers/net/ipa/ipa_mem.c
+@@ -0,0 +1,314 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
 + * Copyright (C) 2019-2020 Linaro Ltd.
 + */
 +
-+#include <linux/log2.h>
++#include <linux/types.h>
++#include <linux/bitfield.h>
++#include <linux/bug.h>
++#include <linux/dma-mapping.h>
++#include <linux/io.h>
 +
-+#include "gsi.h"
-+#include "ipa_data.h"
-+#include "ipa_endpoint.h"
++#include "ipa.h"
++#include "ipa_reg.h"
++#include "ipa_cmd.h"
 +#include "ipa_mem.h"
++#include "ipa_data.h"
++#include "ipa_table.h"
++#include "gsi_trans.h"
 +
-+/* Endpoint configuration for the SDM845 SoC. */
-+static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
-+	[IPA_ENDPOINT_AP_COMMAND_TX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 4,
-+		.endpoint_id	= 5,
-+		.toward_ipa	= true,
-+		.channel = {
-+			.tre_count	= 512,
-+			.event_count	= 256,
-+			.tlv_count	= 20,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_DMA_ONLY,
-+			.config = {
-+				.dma_mode	= true,
-+				.dma_endpoint	= IPA_ENDPOINT_AP_LAN_RX,
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_LAN_RX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 5,
-+		.endpoint_id	= 9,
-+		.toward_ipa	= false,
-+		.channel = {
-+			.tre_count	= 256,
-+			.event_count	= 256,
-+			.tlv_count	= 8,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_INVALID,
-+			.config = {
-+				.checksum	= true,
-+				.aggregation	= true,
-+				.status_enable	= true,
-+				.rx = {
-+					.pad_align	= ilog2(sizeof(u32)),
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_MODEM_TX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 3,
-+		.endpoint_id	= 2,
-+		.toward_ipa	= true,
-+		.channel = {
-+			.tre_count	= 512,
-+			.event_count	= 512,
-+			.tlv_count	= 16,
-+		},
-+		.endpoint = {
-+			.filter_support	= true,
-+			.seq_type	=
-+				IPA_SEQ_2ND_PKT_PROCESS_PASS_NO_DEC_UCP,
-+			.config = {
-+				.checksum	= true,
-+				.qmap		= true,
-+				.status_enable	= true,
-+				.tx = {
-+					.status_endpoint =
-+						IPA_ENDPOINT_MODEM_AP_RX,
-+					.delay	= true,
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_AP_MODEM_RX] = {
-+		.ee_id		= GSI_EE_AP,
-+		.channel_id	= 6,
-+		.endpoint_id	= 10,
-+		.toward_ipa	= false,
-+		.channel = {
-+			.tre_count	= 256,
-+			.event_count	= 256,
-+			.tlv_count	= 8,
-+		},
-+		.endpoint = {
-+			.seq_type	= IPA_SEQ_INVALID,
-+			.config = {
-+				.checksum	= true,
-+				.qmap		= true,
-+				.aggregation	= true,
-+				.rx = {
-+					.aggr_close_eof	= true,
-+				},
-+			},
-+		},
-+	},
-+	[IPA_ENDPOINT_MODEM_COMMAND_TX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 1,
-+		.endpoint_id	= 4,
-+		.toward_ipa	= true,
-+	},
-+	[IPA_ENDPOINT_MODEM_LAN_TX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 0,
-+		.endpoint_id	= 3,
-+		.toward_ipa	= true,
-+		.endpoint = {
-+			.filter_support	= true,
-+		},
-+	},
-+	[IPA_ENDPOINT_MODEM_LAN_RX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 3,
-+		.endpoint_id	= 13,
-+		.toward_ipa	= false,
-+	},
-+	[IPA_ENDPOINT_MODEM_AP_TX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 4,
-+		.endpoint_id	= 6,
-+		.toward_ipa	= true,
-+		.endpoint = {
-+			.filter_support	= true,
-+		},
-+	},
-+	[IPA_ENDPOINT_MODEM_AP_RX] = {
-+		.ee_id		= GSI_EE_MODEM,
-+		.channel_id	= 2,
-+		.endpoint_id	= 12,
-+		.toward_ipa	= false,
-+	},
-+};
++/* "Canary" value placed between memory regions to detect overflow */
++#define IPA_MEM_CANARY_VAL		cpu_to_le32(0xdeadbeef)
 +
-+/* For the SDM845, resource groups are allocated this way:
-+ *   group 0:	LWA_DL
-+ *   group 1:	UL_DL
++/* Add an immediate command to a transaction that zeroes a memory region */
++static void
++ipa_mem_zero_region_add(struct gsi_trans *trans, const struct ipa_mem *mem)
++{
++	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
++	dma_addr_t addr = ipa->zero_addr;
++
++	if (!mem->size)
++		return;
++
++	ipa_cmd_dma_shared_mem_add(trans, mem->offset, mem->size, addr, true);
++}
++
++/**
++ * ipa_mem_setup() - Set up IPA AP and modem shared memory areas
++ *
++ * Set up the shared memory regions in IPA local memory.  This involves
++ * zero-filling memory regions, and in the case of header memory, telling
++ * the IPA where it's located.
++ *
++ * This function performs the initial setup of this memory.  If the modem
++ * crashes, its regions are re-zeroed in ipa_mem_zero_modem().
++ *
++ * The AP informs the modem where its portions of memory are located
++ * in a QMI exchange that occurs at modem startup.
++ *
++ * @Return:	0 if successful, or a negative error code
 + */
-+static const struct ipa_resource_src ipa_resource_src[] = {
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS,
-+		.limits[0] = {
-+			.min = 1,
-+			.max = 63,
-+		},
-+		.limits[1] = {
-+			.min = 1,
-+			.max = 63,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
-+		.limits[0] = {
-+			.min = 10,
-+			.max = 10,
-+		},
-+		.limits[1] = {
-+			.min = 10,
-+			.max = 10,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
-+		.limits[0] = {
-+			.min = 12,
-+			.max = 12,
-+		},
-+		.limits[1] = {
-+			.min = 14,
-+			.max = 14,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
-+		.limits[0] = {
-+			.min = 0,
-+			.max = 63,
-+		},
-+		.limits[1] = {
-+			.min = 0,
-+			.max = 63,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
-+		.limits[0] = {
-+			.min = 14,
-+			.max = 14,
-+		},
-+		.limits[1] = {
-+			.min = 20,
-+			.max = 20,
-+		},
-+	},
-+};
++int ipa_mem_setup(struct ipa *ipa)
++{
++	dma_addr_t addr = ipa->zero_addr;
++	struct gsi_trans *trans;
++	u32 offset;
++	u16 size;
 +
-+static const struct ipa_resource_dst ipa_resource_dst[] = {
-+	{
-+		.type = IPA_RESOURCE_TYPE_DST_DATA_SECTORS,
-+		.limits[0] = {
-+			.min = 4,
-+			.max = 4,
-+		},
-+		.limits[1] = {
-+			.min = 4,
-+			.max = 4,
-+		},
-+	},
-+	{
-+		.type = IPA_RESOURCE_TYPE_DST_DPS_DMARS,
-+		.limits[0] = {
-+			.min = 2,
-+			.max = 63,
-+		},
-+		.limits[1] = {
-+			.min = 1,
-+			.max = 63,
-+		},
-+	},
-+};
++	/* Get a transaction to define the header memory region and to zero
++	 * the processing context and modem memory regions.
++	 */
++	trans = ipa_cmd_trans_alloc(ipa, 4);
++	if (!trans) {
++		dev_err(&ipa->pdev->dev, "no transaction for memory setup\n");
++		return -EBUSY;
++	}
 +
-+/* Resource configuration for the SDM845 SoC. */
-+static const struct ipa_resource_data ipa_resource_data = {
-+	.resource_src_count	= ARRAY_SIZE(ipa_resource_src),
-+	.resource_src		= ipa_resource_src,
-+	.resource_dst_count	= ARRAY_SIZE(ipa_resource_dst),
-+	.resource_dst		= ipa_resource_dst,
-+};
++	/* Initialize IPA-local header memory.  The modem and AP header
++	 * regions are contiguous, and initialized together.
++	 */
++	offset = ipa->mem[IPA_MEM_MODEM_HEADER].offset;
++	size = ipa->mem[IPA_MEM_MODEM_HEADER].size;
++	size += ipa->mem[IPA_MEM_AP_HEADER].size;
 +
-+/* IPA-resident memory region configuration for the SDM845 SoC. */
-+static const struct ipa_mem ipa_mem_data[] = {
-+	[IPA_MEM_UC_SHARED] = {
-+		.offset		= 0x0000,
-+		.size		= 0x0080,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_UC_INFO] = {
-+		.offset		= 0x0080,
-+		.size		= 0x0200,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_V4_FILTER_HASHED] = {
-+		.offset		= 0x0288,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_FILTER] = {
-+		.offset		= 0x0308,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_FILTER_HASHED] = {
-+		.offset		= 0x0388,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_FILTER] = {
-+		.offset		= 0x0408,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_ROUTE_HASHED] = {
-+		.offset		= 0x0488,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V4_ROUTE] = {
-+		.offset		= 0x0508,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_ROUTE_HASHED] = {
-+		.offset		= 0x0588,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_V6_ROUTE] = {
-+		.offset		= 0x0608,
-+		.size		= 0x0078,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_MODEM_HEADER] = {
-+		.offset		= 0x0688,
-+		.size		= 0x0140,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_AP_HEADER] = {
-+		.offset		= 0x07c8,
-+		.size		= 0x0000,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_MODEM_PROC_CTX] = {
-+		.offset		= 0x07d0,
-+		.size		= 0x0200,
-+		.canary_count	= 2,
-+	},
-+	[IPA_MEM_AP_PROC_CTX] = {
-+		.offset		= 0x09d0,
-+		.size		= 0x0200,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_MODEM] = {
-+		.offset		= 0x0bd8,
-+		.size		= 0x1024,
-+		.canary_count	= 0,
-+	},
-+	[IPA_MEM_UC_EVENT_RING] = {
-+		.offset		= 0x1c00,
-+		.size		= 0x0400,
-+		.canary_count	= 1,
-+	},
-+};
++	ipa_cmd_hdr_init_local_add(trans, offset, size, addr);
 +
-+/* Configuration data for the SDM845 SoC. */
-+const struct ipa_data ipa_data_sdm845 = {
-+	.version	= IPA_VERSION_3_5_1,
-+	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
-+	.endpoint_data	= ipa_gsi_endpoint_data,
-+	.resource_data	= &ipa_resource_data,
-+	.mem_count	= ARRAY_SIZE(ipa_mem_data),
-+	.mem_data	= ipa_mem_data,
-+};
-diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_MODEM_PROC_CTX]);
++
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_AP_PROC_CTX]);
++
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_MODEM]);
++
++	gsi_trans_commit_wait(trans);
++
++	/* Tell the hardware where the processing context area is located */
++	iowrite32(ipa->mem_offset + offset,
++		  ipa->reg_virt + IPA_REG_LOCAL_PKT_PROC_CNTXT_BASE_OFFSET);
++
++	return 0;
++}
++
++void ipa_mem_teardown(struct ipa *ipa)
++{
++	/* Nothing to do */
++}
++
++#ifdef IPA_VALIDATE
++
++static bool ipa_mem_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
++{
++	const struct ipa_mem *mem = &ipa->mem[mem_id];
++	struct device *dev = &ipa->pdev->dev;
++	u16 size_multiple;
++
++	/* Other than modem memory, sizes must be a multiple of 8 */
++	size_multiple = mem_id == IPA_MEM_MODEM ? 4 : 8;
++	if (mem->size % size_multiple)
++		dev_err(dev, "region %u size not a multiple of %u bytes\n",
++			mem_id, size_multiple);
++	else if (mem->offset % 8)
++		dev_err(dev, "region %u offset not 8-byte aligned\n", mem_id);
++	else if (mem->offset < mem->canary_count * sizeof(__le32))
++		dev_err(dev, "region %u offset too small for %hu canaries\n",
++			mem_id, mem->canary_count);
++	else if (mem->offset + mem->size > ipa->mem_size)
++		dev_err(dev, "region %u ends beyond memory limit (0x%08x)\n",
++			mem_id, ipa->mem_size);
++	else
++		return true;
++
++	return false;
++}
++
++#else /* !IPA_VALIDATE */
++
++static bool ipa_mem_valid(struct ipa *ipa, enum ipa_mem_id mem_id)
++{
++	return true;
++}
++
++#endif /*! IPA_VALIDATE */
++
++/**
++ * ipa_mem_config() - Configure IPA shared memory
++ *
++ * @Return:	0 if successful, or a negative error code
++ */
++int ipa_mem_config(struct ipa *ipa)
++{
++	struct device *dev = &ipa->pdev->dev;
++	enum ipa_mem_id mem_id;
++	dma_addr_t addr;
++	u32 mem_size;
++	void *virt;
++	u32 val;
++
++	/* Check the advertised location and size of the shared memory area */
++	val = ioread32(ipa->reg_virt + IPA_REG_SHARED_MEM_SIZE_OFFSET);
++
++	/* The fields in the register are in 8 byte units */
++	ipa->mem_offset = 8 * u32_get_bits(val, SHARED_MEM_BADDR_FMASK);
++	/* Make sure the end is within the region's mapped space */
++	mem_size = 8 * u32_get_bits(val, SHARED_MEM_SIZE_FMASK);
++
++	/* If the sizes don't match, issue a warning */
++	if (ipa->mem_offset + mem_size > ipa->mem_size) {
++		dev_warn(dev, "ignoring larger reported memory size: 0x%08x\n",
++			mem_size);
++	} else if (ipa->mem_offset + mem_size < ipa->mem_size) {
++		dev_warn(dev, "limiting IPA memory size to 0x%08x\n",
++			 mem_size);
++		ipa->mem_size = mem_size;
++	}
++
++	/* Prealloc DMA memory for zeroing regions */
++	virt = dma_alloc_coherent(dev, IPA_MEM_MAX, &addr, GFP_KERNEL);
++	if (!virt)
++		return -ENOMEM;
++	ipa->zero_addr = addr;
++	ipa->zero_virt = virt;
++	ipa->zero_size = IPA_MEM_MAX;
++
++	/* Verify each defined memory region is valid, and if indicated
++	 * for the region, write "canary" values in the space prior to
++	 * the region's base address.
++	 */
++	for (mem_id = 0; mem_id < IPA_MEM_COUNT; mem_id++) {
++		const struct ipa_mem *mem = &ipa->mem[mem_id];
++		u16 canary_count;
++		__le32 *canary;
++
++		/* Validate all regions (even undefined ones) */
++		if (!ipa_mem_valid(ipa, mem_id))
++			goto err_dma_free;
++
++		/* Skip over undefined regions */
++		if (!mem->offset && !mem->size)
++			continue;
++
++		canary_count = mem->canary_count;
++		if (!canary_count)
++			continue;
++
++		/* Write canary values in the space before the region */
++		canary = ipa->mem_virt + ipa->mem_offset + mem->offset;
++		do
++			*--canary = IPA_MEM_CANARY_VAL;
++		while (--canary_count);
++	}
++
++	/* Make sure filter and route table memory regions are valid */
++	if (!ipa_table_valid(ipa))
++		goto err_dma_free;
++
++	/* Validate memory-related properties relevant to immediate commands */
++	if (!ipa_cmd_data_valid(ipa))
++		goto err_dma_free;
++
++	/* Verify the microcontroller ring alignment (0 is OK too) */
++	if (ipa->mem[IPA_MEM_UC_EVENT_RING].offset % 1024) {
++		dev_err(dev, "microcontroller ring not 1024-byte aligned\n");
++		goto err_dma_free;
++	}
++
++	return 0;
++
++err_dma_free:
++	dma_free_coherent(dev, IPA_MEM_MAX, ipa->zero_virt, ipa->zero_addr);
++
++	return -EINVAL;
++}
++
++/* Inverse of ipa_mem_config() */
++void ipa_mem_deconfig(struct ipa *ipa)
++{
++	struct device *dev = &ipa->pdev->dev;
++
++	dma_free_coherent(dev, ipa->zero_size, ipa->zero_virt, ipa->zero_addr);
++	ipa->zero_size = 0;
++	ipa->zero_virt = NULL;
++	ipa->zero_addr = 0;
++}
++
++/**
++ * ipa_mem_zero_modem() - Zero IPA-local memory regions owned by the modem
++ *
++ * Zero regions of IPA-local memory used by the modem.  These are configured
++ * (and initially zeroed) by ipa_mem_setup(), but if the modem crashes and
++ * restarts via SSR we need to re-initialize them.  A QMI message tells the
++ * modem where to find regions of IPA local memory it needs to know about
++ * (these included).
++ */
++int ipa_mem_zero_modem(struct ipa *ipa)
++{
++	struct gsi_trans *trans;
++
++	/* Get a transaction to zero the modem memory, modem header,
++	 * and modem processing context regions.
++	 */
++	trans = ipa_cmd_trans_alloc(ipa, 3);
++	if (!trans) {
++		dev_err(&ipa->pdev->dev,
++			"no transaction to zero modem memory\n");
++		return -EBUSY;
++	}
++
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_MODEM_HEADER]);
++
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_MODEM_PROC_CTX]);
++
++	ipa_mem_zero_region_add(trans, &ipa->mem[IPA_MEM_MODEM]);
++
++	gsi_trans_commit_wait(trans);
++
++	return 0;
++}
++
++/* Perform memory region-related initialization */
++int ipa_mem_init(struct ipa *ipa, u32 count, const struct ipa_mem *mem)
++{
++	struct device *dev = &ipa->pdev->dev;
++	struct resource *res;
++	int ret;
++
++	if (count > IPA_MEM_COUNT) {
++		dev_err(dev, "to many memory regions (%u > %u)\n",
++			count, IPA_MEM_COUNT);
++		return -EINVAL;
++	}
++
++	ret = dma_set_mask_and_coherent(&ipa->pdev->dev, DMA_BIT_MASK(64));
++	if (ret) {
++		dev_err(dev, "error %d setting DMA mask\n", ret);
++		return ret;
++	}
++
++	res = platform_get_resource_byname(ipa->pdev, IORESOURCE_MEM,
++					   "ipa-shared");
++	if (!res) {
++		dev_err(dev,
++			"DT error getting \"ipa-shared\" memory property\n");
++		return -ENODEV;
++	}
++
++	ipa->mem_virt = memremap(res->start, resource_size(res), MEMREMAP_WC);
++	if (!ipa->mem_virt) {
++		dev_err(dev, "unable to remap \"ipa-shared\" memory\n");
++		return -ENOMEM;
++	}
++
++	ipa->mem_addr = res->start;
++	ipa->mem_size = resource_size(res);
++
++	/* The ipa->mem[] array is indexed by enum ipa_mem_id values */
++	ipa->mem = mem;
++
++	return 0;
++}
++
++/* Inverse of ipa_mem_init() */
++void ipa_mem_exit(struct ipa *ipa)
++{
++	memunmap(ipa->mem_virt);
++}
+diff --git a/drivers/net/ipa/ipa_mem.h b/drivers/net/ipa/ipa_mem.h
 new file mode 100644
-index 000000000000..7110de2de817
+index 000000000000..065cb499ebe5
 --- /dev/null
-+++ b/drivers/net/ipa/ipa_data.h
-@@ -0,0 +1,280 @@
++++ b/drivers/net/ipa/ipa_mem.h
+@@ -0,0 +1,90 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +
 +/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
 + * Copyright (C) 2019-2020 Linaro Ltd.
 + */
-+#ifndef _IPA_DATA_H_
-+#define _IPA_DATA_H_
++#ifndef _IPA_MEM_H_
++#define _IPA_MEM_H_
 +
-+#include <linux/types.h>
-+
-+#include "ipa_version.h"
-+#include "ipa_endpoint.h"
-+#include "ipa_mem.h"
++struct ipa;
 +
 +/**
-+ * DOC: IPA/GSI Configuration Data
++ * DOC: IPA Local Memory
 + *
-+ * Boot-time configuration data is used to define the configuration of the
-+ * IPA and GSI resources to use for a given platform.  This data is supplied
-+ * via the Device Tree match table, associated with a particular compatible
-+ * string.  The data defines information about resources, endpoints, and
-+ * channels.
++ * The IPA has a block of shared memory, divided into regions used for
++ * specific purposes.
 + *
-+ * Resources are data structures used internally by the IPA hardware.  The
-+ * configuration data defines the number (or limits of the number) of various
-+ * types of these resources.
++ * The regions within the shared block are bounded by an offset (relative to
++ * the "ipa-shared" memory range) and size found in the IPA_SHARED_MEM_SIZE
++ * register.
 + *
-+ * Endpoint configuration data defines properties of both IPA endpoints and
-+ * GSI channels.  A channel is a GSI construct, and represents a single
-+ * communication path between the IPA and a particular execution environment
-+ * (EE), such as the AP or Modem.  Each EE has a set of channels associated
-+ * with it, and each channel has an ID unique for that EE.  For the most part
-+ * the only GSI channels of concern to this driver belong to the AP
++ * Each region is optionally preceded by one or more 32-bit "canary" values.
++ * These are meant to detect out-of-range writes (if they become corrupted).
++ * A given region (such as a filter or routing table) has the same number
++ * of canaries for all IPA hardware versions.  Still, the number used is
++ * defined in the config data, allowing for generic handling of regions.
 + *
-+ * An endpoint is an IPA construct representing a single channel anywhere
-+ * in the system.  An IPA endpoint ID maps directly to an (EE, channel_id)
-+ * pair.  Generally, this driver is concerned with only endpoints associated
-+ * with the AP, however this will change when support for routing (etc.) is
-+ * added.  IPA endpoint and GSI channel configuration data are defined
-+ * together, establishing the endpoint_id->(EE, channel_id) mapping.
-+ *
-+ * Endpoint configuration data consists of three parts:  properties that
-+ * are common to IPA and GSI (EE ID, channel ID, endpoint ID, and direction);
-+ * properties associated with the GSI channel; and properties associated with
-+ * the IPA endpoint.
++ * The set of memory regions is defined in configuration data.  They are
++ * subject to these constraints:
++ * - a zero offset and zero size represents and undefined region
++ * - a region's offset is defined to be *past* all "canary" values
++ * - offset must be large enough to account for all canaries
++ * - a region's size may be zero, but may still have canaries
++ * - all offsets must be 8-byte aligned
++ * - most sizes must be a multiple of 8
++ * - modem memory size must be a multiple of 4
++ * - the microcontroller ring offset must be a multiple of 1024
 + */
 +
-+/* The maximum value returned by ipa_resource_group_count() */
-+#define IPA_RESOURCE_GROUP_COUNT	4
++/* The maximum allowed size for any memory region */
++#define IPA_MEM_MAX	(2 * PAGE_SIZE)
 +
-+/** enum ipa_resource_type_src - source resource types */
-+/**
-+ * struct gsi_channel_data - GSI channel configuration data
-+ * @tre_count:		number of TREs in the channel ring
-+ * @event_count:	number of slots in the associated event ring
-+ * @tlv_count:		number of entries in channel's TLV FIFO
-+ *
-+ * A GSI channel is a unidirectional means of transferring data to or
-+ * from (and through) the IPA.  A GSI channel has a ring buffer made
-+ * up of "transfer elements" (TREs) that specify individual data transfers
-+ * or IPA immediate commands.  TREs are filled by the AP, and control
-+ * is passed to IPA hardware by writing the last written element
-+ * into a doorbell register.
-+ *
-+ * When data transfer commands have completed the GSI generates an
-+ * event (a structure of data) and optionally signals the AP with
-+ * an interrupt.  Event structures are implemented by another ring
-+ * buffer, directed toward the AP from the IPA.
-+ *
-+ * The input to a GSI channel is a FIFO of type/length/value (TLV)
-+ * elements, and the size of this FIFO limits the number of TREs
-+ * that can be included in a single transaction.
-+ */
-+struct gsi_channel_data {
-+	u16 tre_count;
-+	u16 event_count;
-+	u8 tlv_count;
++/* IPA-resident memory region ids */
++enum ipa_mem_id {
++	IPA_MEM_UC_SHARED,		/* 0 canaries */
++	IPA_MEM_UC_INFO,		/* 0 canaries */
++	IPA_MEM_V4_FILTER_HASHED,	/* 2 canaries */
++	IPA_MEM_V4_FILTER,		/* 2 canaries */
++	IPA_MEM_V6_FILTER_HASHED,	/* 2 canaries */
++	IPA_MEM_V6_FILTER,		/* 2 canaries */
++	IPA_MEM_V4_ROUTE_HASHED,	/* 2 canaries */
++	IPA_MEM_V4_ROUTE,		/* 2 canaries */
++	IPA_MEM_V6_ROUTE_HASHED,	/* 2 canaries */
++	IPA_MEM_V6_ROUTE,		/* 2 canaries */
++	IPA_MEM_MODEM_HEADER,		/* 2 canaries */
++	IPA_MEM_AP_HEADER,		/* 0 canaries */
++	IPA_MEM_MODEM_PROC_CTX,		/* 2 canaries */
++	IPA_MEM_AP_PROC_CTX,		/* 0 canaries */
++	IPA_MEM_PDN_CONFIG,		/* 2 canaries (IPA v4.0 and above) */
++	IPA_MEM_STATS_QUOTA,		/* 2 canaries (IPA v4.0 and above) */
++	IPA_MEM_STATS_TETHERING,	/* 0 canaries (IPA v4.0 and above) */
++	IPA_MEM_STATS_DROP,		/* 0 canaries (IPA v4.0 and above) */
++	IPA_MEM_MODEM,			/* 0 canaries */
++	IPA_MEM_UC_EVENT_RING,		/* 1 canary */
++	IPA_MEM_COUNT,			/* Number of regions (not an index) */
 +};
 +
 +/**
-+ * struct ipa_endpoint_tx_data - configuration data for TX endpoints
-+ * @status_endpoint:	endpoint to which status elements are sent
-+ * @delay:		whether endpoint starts in delay mode
-+ *
-+ * Delay mode prevents a TX endpoint from transmitting anything, even if
-+ * commands have been presented to the hardware.  Once the endpoint exits
-+ * delay mode, queued transfer commands are sent.
-+ *
-+ * The @status_endpoint is only valid if the endpoint's @status_enable
-+ * flag is set.
-+ */
-+struct ipa_endpoint_tx_data {
-+	enum ipa_endpoint_name status_endpoint;
-+	bool delay;
-+};
-+
-+/**
-+ * struct ipa_endpoint_rx_data - configuration data for RX endpoints
-+ * @pad_align:	power-of-2 boundary to which packet payload is aligned
-+ * @aggr_close_eof: whether aggregation closes on end-of-frame
-+ *
-+ * With each packet it transfers, the IPA hardware can perform certain
-+ * transformations of its packet data.  One of these is adding pad bytes
-+ * to the end of the packet data so the result ends on a power-of-2 boundary.
-+ *
-+ * It is also able to aggregate multiple packets into a single receive buffer.
-+ * Aggregation is "open" while a buffer is being filled, and "closes" when
-+ * certain criteria are met.  One of those criteria is the sender indicating
-+ * a "frame" consisting of several transfers has ended.
-+ */
-+struct ipa_endpoint_rx_data {
-+	u32 pad_align;
-+	bool aggr_close_eof;
-+};
-+
-+/**
-+ * struct ipa_endpoint_config_data - IPA endpoint hardware configuration
-+ * @checksum:		whether checksum offload is enabled
-+ * @qmap:		whether endpoint uses QMAP protocol
-+ * @aggregation:	whether endpoint supports aggregation
-+ * @status_enable:	whether endpoint uses status elements
-+ * @dma_mode:		whether endpoint operates in DMA mode
-+ * @dma_endpoint:	peer endpoint, if operating in DMA mode
-+ * @tx:			TX-specific endpoint information (see above)
-+ * @rx:			RX-specific endpoint information (see above)
-+ */
-+struct ipa_endpoint_config_data {
-+	bool checksum;
-+	bool qmap;
-+	bool aggregation;
-+	bool status_enable;
-+	bool dma_mode;
-+	enum ipa_endpoint_name dma_endpoint;
-+	union {
-+		struct ipa_endpoint_tx_data tx;
-+		struct ipa_endpoint_rx_data rx;
-+	};
-+};
-+
-+/**
-+ * struct ipa_endpoint_data - IPA endpoint configuration data
-+ * @filter_support:	whether endpoint supports filtering
-+ * @seq_type:		hardware sequencer type used for endpoint
-+ * @config:		hardware configuration (see above)
-+ *
-+ * Not all endpoints support the IPA filtering capability.  A filter table
-+ * defines the filters to apply for those endpoints that support it.  The
-+ * AP is responsible for initializing this table, and it must include entries
-+ * for non-AP endpoints.  For this reason we define *all* endpoints used
-+ * in the system, and indicate whether they support filtering.
-+ *
-+ * The remaining endpoint configuration data applies only to AP endpoints.
-+ * The IPA hardware is implemented by sequencers, and the AP must program
-+ * the type(s) of these sequencers at initialization time.  The remaining
-+ * endpoint configuration data is defined above.
-+ */
-+struct ipa_endpoint_data {
-+	bool filter_support;
-+	/* The next two are specified only for AP endpoints */
-+	enum ipa_seq_type seq_type;
-+	struct ipa_endpoint_config_data config;
-+};
-+
-+/**
-+ * struct ipa_gsi_endpoint_data - GSI channel/IPA endpoint data
-+ * ee:		GSI execution environment ID
-+ * channel_id:	GSI channel ID
-+ * endpoint_id:	IPA endpoint ID
-+ * toward_ipa:	direction of data transfer
-+ * gsi:		GSI channel configuration data (see above)
-+ * ipa:		IPA endpoint configuration data (see above)
-+ */
-+struct ipa_gsi_endpoint_data {
-+	u8 ee_id;		/* enum gsi_ee_id */
-+	u8 channel_id;
-+	u8 endpoint_id;
-+	bool toward_ipa;
-+
-+	struct gsi_channel_data channel;
-+	struct ipa_endpoint_data endpoint;
-+};
-+
-+/** enum ipa_resource_type_src - source resource types */
-+enum ipa_resource_type_src {
-+	IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS,
-+	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
-+	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
-+	IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
-+	IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
-+};
-+
-+/** enum ipa_resource_type_dst - destination resource types */
-+enum ipa_resource_type_dst {
-+	IPA_RESOURCE_TYPE_DST_DATA_SECTORS,
-+	IPA_RESOURCE_TYPE_DST_DPS_DMARS,
-+};
-+
-+/**
-+ * struct ipa_resource_limits - minimum and maximum resource counts
-+ * @min:	minimum number of resources of a given type
-+ * @max:	maximum number of resources of a given type
-+ */
-+struct ipa_resource_limits {
-+	u32 min;
-+	u32 max;
-+};
-+
-+/**
-+ * struct ipa_resource_src - source endpoint group resource usage
-+ * @type:	source group resource type
-+ * @limits:	array of limits to use for each resource group
-+ */
-+struct ipa_resource_src {
-+	enum ipa_resource_type_src type;
-+	struct ipa_resource_limits limits[IPA_RESOURCE_GROUP_COUNT];
-+};
-+
-+/**
-+ * struct ipa_resource_dst - destination endpoint group resource usage
-+ * @type:	destination group resource type
-+ * @limits:	array of limits to use for each resource group
-+ */
-+struct ipa_resource_dst {
-+	enum ipa_resource_type_dst type;
-+	struct ipa_resource_limits limits[IPA_RESOURCE_GROUP_COUNT];
-+};
-+
-+/**
-+ * struct ipa_resource_data - IPA resource configuration data
-+ * @resource_src_count:	number of entries in the resource_src array
-+ * @resource_src:	source endpoint group resources
-+ * @resource_dst_count:	number of entries in the resource_dst array
-+ * @resource_dst:	destination endpoint group resources
-+ *
-+ * In order to manage quality of service between endpoints, certain resources
-+ * required for operation are allocated to groups of endpoints.  Generally
-+ * this information is invisible to the AP, but the AP is responsible for
-+ * programming it at initialization time, so we specify it here.
-+ */
-+struct ipa_resource_data {
-+	u32 resource_src_count;
-+	const struct ipa_resource_src *resource_src;
-+	u32 resource_dst_count;
-+	const struct ipa_resource_dst *resource_dst;
-+};
-+
-+/**
-+ * struct ipa_mem - IPA-local memory region description
++ * struct ipa_mem - IPA local memory region description
 + * @offset:		offset in IPA memory space to base of the region
 + * @size:		size in bytes base of the region
-+ * @canary_count:	number of 32-bit "canary" values that precede region
++ * @canary_count	# 32-bit "canary" values that precede region
 + */
-+struct ipa_mem_data {
++struct ipa_mem {
 +	u32 offset;
 +	u16 size;
 +	u16 canary_count;
 +};
 +
-+/**
-+ * struct ipa_data - combined IPA/GSI configuration data
-+ * @version:		IPA hardware version
-+ * @endpoint_count:	number of entries in endpoint_data array
-+ * @endpoint_data:	IPA endpoint/GSI channel data
-+ * @resource_data:	IPA resource configuration data
-+ * @mem_count:		number of entries in mem_data array
-+ * @mem_data:		IPA-local shared memory region data
-+ */
-+struct ipa_data {
-+	enum ipa_version version;
-+	u32 endpoint_count;	/* # entries in endpoint_data[] */
-+	const struct ipa_gsi_endpoint_data *endpoint_data;
-+	const struct ipa_resource_data *resource_data;
-+	u32 mem_count;		/* # entries in mem_data[] */
-+	const struct ipa_mem *mem_data;
-+};
++int ipa_mem_config(struct ipa *ipa);
++void ipa_mem_deconfig(struct ipa *ipa);
 +
-+extern const struct ipa_data ipa_data_sdm845;
-+extern const struct ipa_data ipa_data_sc7180;
++int ipa_mem_setup(struct ipa *ipa);
++void ipa_mem_teardown(struct ipa *ipa);
 +
-+#endif /* _IPA_DATA_H_ */
++int ipa_mem_zero_modem(struct ipa *ipa);
++
++int ipa_mem_init(struct ipa *ipa, u32 count, const struct ipa_mem *mem);
++void ipa_mem_exit(struct ipa *ipa);
++
++#endif /* _IPA_MEM_H_ */
 -- 
 2.20.1
 
