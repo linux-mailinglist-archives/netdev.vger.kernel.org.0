@@ -2,501 +2,416 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0652817C38A
+	by mail.lfdr.de (Postfix) with ESMTP id B61FD17C38B
 	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgCFREz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:04:55 -0500
-Received: from mx2.suse.de ([195.135.220.15]:43518 "EHLO mx2.suse.de"
+        id S1727138AbgCFRE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 12:04:58 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43568 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726738AbgCFREy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 12:04:54 -0500
+        id S1726300AbgCFRE6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 12:04:58 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 49658B324;
-        Fri,  6 Mar 2020 17:04:50 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 4E7A0AE09;
+        Fri,  6 Mar 2020 17:04:55 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id ED3EBE00E7; Fri,  6 Mar 2020 18:04:49 +0100 (CET)
-Message-Id: <0967c9bf176b0f4e14f941a0e9c9ef32d54d899f.1583513281.git.mkubecek@suse.cz>
+        id F39D9E00E7; Fri,  6 Mar 2020 18:04:54 +0100 (CET)
+Message-Id: <7a12613b34e20cb12456aa57811dde2456aa8cb9.1583513281.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583513281.git.mkubecek@suse.cz>
 References: <cover.1583513281.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v3 10/25] netlink: add support for string sets
+Subject: [PATCH ethtool v3 11/25] netlink: add notification monitor
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri,  6 Mar 2020 18:04:49 +0100 (CET)
+Date:   Fri,  6 Mar 2020 18:04:54 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add infrastructure for querying kernel for string sets (analog to ioctl
-commands ETHTOOL_GSSET_INFO and ETHTOOL_GSTRINGS), caching the results and
-making them available to netlink code.
+With 'ethtool --monitor [ --all | opt ] [dev]', let ethtool listen to
+netlink notification and display them in a format similar to output of
+related "get" commands.
 
-There are two types of string sets: global (not related to a device) and
-per device (each device has its set of string sets). Per device string sets
-are stored in a linked list (one entry for each device) for now.
-
-String sets can be either preloaded completely on start using
-preload_global_strings() and preload_perdev_strings() or requested by one
-when there is a need for them. In the latter case (preferred, in particular
-for one shot operation mode), second netlink socket is used to request the
-string set contents.
+With --all or without option, show all types of notifications. If a device
+name is specified, show only notifications for that device, if no device
+name or "*" is passed, show notifications for all devices.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Makefile.am       |   2 +-
- netlink/netlink.c |  53 +++++++++
- netlink/netlink.h |   9 ++
- netlink/strset.c  | 295 ++++++++++++++++++++++++++++++++++++++++++++++
- netlink/strset.h  |  25 ++++
- 5 files changed, 383 insertions(+), 1 deletion(-)
- create mode 100644 netlink/strset.c
- create mode 100644 netlink/strset.h
+ Makefile.am       |   1 +
+ ethtool.8.in      |  21 +++++
+ ethtool.c         |  14 ++++
+ netlink/extapi.h  |   8 ++
+ netlink/monitor.c | 197 ++++++++++++++++++++++++++++++++++++++++++++++
+ netlink/netlink.h |  11 +++
+ netlink/strset.c  |   2 +
+ 7 files changed, 254 insertions(+)
+ create mode 100644 netlink/monitor.c
 
 diff --git a/Makefile.am b/Makefile.am
-index c51193ac92fd..70ded2ec8bc3 100644
+index 70ded2ec8bc3..2985ce533ed3 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -27,7 +27,7 @@ if ETHTOOL_ENABLE_NETLINK
- ethtool_SOURCES += \
+@@ -28,6 +28,7 @@ ethtool_SOURCES += \
  		  netlink/netlink.c netlink/netlink.h netlink/extapi.h \
  		  netlink/msgbuff.c netlink/msgbuff.h netlink/nlsock.c \
--		  netlink/nlsock.h \
-+		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
+ 		  netlink/nlsock.h netlink/strset.c netlink/strset.h \
++		  netlink/monitor.c \
  		  uapi/linux/ethtool_netlink.h \
  		  uapi/linux/netlink.h uapi/linux/genetlink.h \
  		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/netlink/netlink.c b/netlink/netlink.c
-index 7cd7bef6eac9..60f7912181df 100644
---- a/netlink/netlink.c
-+++ b/netlink/netlink.c
-@@ -11,6 +11,7 @@
- #include "extapi.h"
- #include "msgbuff.h"
- #include "nlsock.h"
-+#include "strset.h"
+diff --git a/ethtool.8.in b/ethtool.8.in
+index 680cad9fbb8f..28e4f75eee8d 100644
+--- a/ethtool.8.in
++++ b/ethtool.8.in
+@@ -133,6 +133,13 @@ ethtool \- query or control network driver and hardware settings
+ .BN --debug
+ .I args
+ .HP
++.B ethtool \-\-monitor
++[
++.I command
++] [
++.I devname
++]
++.HP
+ .B ethtool \-a|\-\-show\-pause
+ .I devname
+ .HP
+@@ -1244,6 +1251,20 @@ If queue_mask is not set, the sub command will be applied to all queues.
+ Sub command to apply. The supported sub commands include --show-coalesce and
+ --coalesce.
+ .RE
++.TP
++.B \-\-monitor
++Listens to netlink notification and displays them.
++.RS 4
++.TP
++.I command
++If argument matching a command is used, ethtool only shows notifications of
++this type. Without such argument or with --all, all notification types are
++shown.
++.TP
++.I devname
++If a device name is used as argument, only notification for this device are
++shown. Default is to show notifications for all devices.
++.RE
+ .SH BUGS
+ Not supported (in part or whole) on all network drivers.
+ .SH AUTHOR
+diff --git a/ethtool.c b/ethtool.c
+index 5d1ef537f692..97eaa58a3090 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5664,6 +5664,7 @@ static int show_usage(struct cmd_context *ctx maybe_unused)
+ 		if (args[i].xhelp)
+ 			fputs(args[i].xhelp, stdout);
+ 	}
++	nl_monitor_usage();
  
- /* Used as reply callback for requests where no reply is expected (e.g. most
-  * "set" type commands)
-@@ -40,6 +41,57 @@ int attr_cb(const struct nlattr *attr, void *data)
- 	return MNL_CB_OK;
+ 	return 0;
  }
- 
-+/* misc helpers */
-+
-+const char *get_dev_name(const struct nlattr *nest)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_HEADER_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	int ret;
-+
-+	if (!nest)
-+		return NULL;
-+	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
-+	if (ret < 0 || !tb[ETHTOOL_A_HEADER_DEV_NAME])
-+		return "(none)";
-+	return mnl_attr_get_str(tb[ETHTOOL_A_HEADER_DEV_NAME]);
-+}
-+
-+int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_HEADER_MAX + 1] = {};
-+	const struct nlattr *index_attr;
-+	const struct nlattr *name_attr;
-+	DECLARE_ATTR_TB_INFO(tb);
-+	int ret;
-+
-+	if (ifindex)
-+		*ifindex = 0;
-+	if (ifname)
-+		memset(ifname, '\0', ALTIFNAMSIZ);
-+
-+	if (!nest)
-+		return -EFAULT;
-+	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
-+	index_attr = tb[ETHTOOL_A_HEADER_DEV_INDEX];
-+	name_attr = tb[ETHTOOL_A_HEADER_DEV_NAME];
-+	if (ret < 0 || (ifindex && !index_attr) || (ifname && !name_attr))
-+		return -EFAULT;
-+
-+	if (ifindex)
-+		*ifindex = mnl_attr_get_u32(index_attr);
-+	if (ifname) {
-+		strncpy(ifname, mnl_attr_get_str(name_attr), ALTIFNAMSIZ);
-+		if (ifname[ALTIFNAMSIZ - 1]) {
-+			ifname[ALTIFNAMSIZ - 1] = '\0';
-+			fprintf(stderr, "kernel device name too long: '%s'\n",
-+				mnl_attr_get_str(name_attr));
-+			return -EFAULT;
+@@ -5909,6 +5910,19 @@ int main(int argc, char **argp)
+ 		argp += 2;
+ 		argc -= 2;
+ 	}
++#ifdef ETHTOOL_ENABLE_NETLINK
++	if (*argp && !strcmp(*argp, "--monitor")) {
++		if (netlink_init(&ctx)) {
++			fprintf(stderr,
++				"Option --monitor is only available with netlink.\n");
++			return 1;
++		} else {
++			ctx.argp = ++argp;
++			ctx.argc = --argc;
++			return nl_monitor(&ctx);
 +		}
 +	}
++#endif
+ 
+ 	/* First argument must be either a valid option or a device
+ 	 * name to get settings for (which we don't expect to begin
+diff --git a/netlink/extapi.h b/netlink/extapi.h
+index 898dc6cfee71..1d5b68226af4 100644
+--- a/netlink/extapi.h
++++ b/netlink/extapi.h
+@@ -15,6 +15,10 @@ struct nl_context;
+ int netlink_init(struct cmd_context *ctx);
+ void netlink_done(struct cmd_context *ctx);
+ 
++int nl_monitor(struct cmd_context *ctx);
++
++void nl_monitor_usage(void);
++
+ #else /* ETHTOOL_ENABLE_NETLINK */
+ 
+ static inline int netlink_init(struct cmd_context *ctx maybe_unused)
+@@ -26,6 +30,10 @@ static inline void netlink_done(struct cmd_context *ctx maybe_unused)
+ {
+ }
+ 
++static inline void nl_monitor_usage(void)
++{
++}
++
+ #endif /* ETHTOOL_ENABLE_NETLINK */
+ 
+ #endif /* ETHTOOL_EXTAPI_H__ */
+diff --git a/netlink/monitor.c b/netlink/monitor.c
+new file mode 100644
+index 000000000000..300fd5bc2e51
+--- /dev/null
++++ b/netlink/monitor.c
+@@ -0,0 +1,197 @@
++/*
++ * monitor.c - netlink notification monitor
++ *
++ * Implementation of "ethtool --monitor" for watching netlink notifications.
++ */
++
++#include <errno.h>
++
++#include "../internal.h"
++#include "netlink.h"
++#include "nlsock.h"
++#include "strset.h"
++
++static struct {
++	uint8_t		cmd;
++	mnl_cb_t	cb;
++} monitor_callbacks[] = {
++};
++
++static void clear_filter(struct nl_context *nlctx)
++{
++	unsigned int i;
++
++	for (i = 0; i < CMDMASK_WORDS; i++)
++		nlctx->filter_cmds[i] = 0;
++}
++
++static bool test_filter_cmd(const struct nl_context *nlctx, unsigned int cmd)
++{
++	return nlctx->filter_cmds[cmd / 32] & (1U << (cmd % 32));
++}
++
++static void set_filter_cmd(struct nl_context *nlctx, unsigned int cmd)
++{
++	nlctx->filter_cmds[cmd / 32] |= (1U << (cmd % 32));
++}
++
++static void set_filter_all(struct nl_context *nlctx)
++{
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(monitor_callbacks); i++)
++		set_filter_cmd(nlctx, monitor_callbacks[i].cmd);
++}
++
++static int monitor_any_cb(const struct nlmsghdr *nlhdr, void *data)
++{
++	const struct genlmsghdr *ghdr = (const struct genlmsghdr *)(nlhdr + 1);
++	struct nl_context *nlctx = data;
++	unsigned int i;
++
++	if (!test_filter_cmd(nlctx, ghdr->cmd))
++		return MNL_CB_OK;
++
++	for (i = 0; i < MNL_ARRAY_SIZE(monitor_callbacks); i++)
++		if (monitor_callbacks[i].cmd == ghdr->cmd)
++			return monitor_callbacks[i].cb(nlhdr, data);
++
++	return MNL_CB_OK;
++}
++
++struct monitor_option {
++	const char	*pattern;
++	uint8_t		cmd;
++	uint32_t	info_mask;
++};
++
++static struct monitor_option monitor_opts[] = {
++	{
++		.pattern	= "|--all",
++		.cmd		= 0,
++	},
++};
++
++static bool pattern_match(const char *s, const char *pattern)
++{
++	const char *opt = pattern;
++	const char *next;
++	int slen = strlen(s);
++	int optlen;
++
++	do {
++		next = opt;
++		while (*next && *next != '|')
++			next++;
++		optlen = next - opt;
++		if (slen == optlen && !strncmp(s, opt, optlen))
++			return true;
++
++		opt = next;
++		if (*opt == '|')
++			opt++;
++	} while (*opt);
++
++	return false;
++}
++
++static int parse_monitor(struct cmd_context *ctx)
++{
++	struct nl_context *nlctx = ctx->nlctx;
++	char **argp = ctx->argp;
++	int argc = ctx->argc;
++	const char *opt = "";
++	bool opt_found;
++	unsigned int i;
++
++	if (*argp && argp[0][0] == '-') {
++		opt = *argp;
++		argp++;
++		argc--;
++	}
++	opt_found = false;
++	clear_filter(nlctx);
++	for (i = 0; i < MNL_ARRAY_SIZE(monitor_opts); i++) {
++		if (pattern_match(opt, monitor_opts[i].pattern)) {
++			unsigned int cmd = monitor_opts[i].cmd;
++
++			if (!cmd)
++				set_filter_all(nlctx);
++			else
++				set_filter_cmd(nlctx, cmd);
++			opt_found = true;
++		}
++	}
++	if (!opt_found) {
++		fprintf(stderr, "monitoring for option '%s' not supported\n",
++			*argp);
++		return -1;
++	}
++
++	if (*argp && strcmp(*argp, WILDCARD_DEVNAME))
++		ctx->devname = *argp;
 +	return 0;
 +}
 +
- /* initialization */
- 
- struct fam_info {
-@@ -153,4 +205,5 @@ void netlink_done(struct cmd_context *ctx)
- 
- 	free(ctx->nlctx);
- 	ctx->nlctx = NULL;
++int nl_monitor(struct cmd_context *ctx)
++{
++	struct nl_context *nlctx = ctx->nlctx;
++	struct nl_socket *nlsk = nlctx->ethnl_socket;
++	uint32_t grpid = nlctx->ethnl_mongrp;
++	bool is_dev;
++	int ret;
++
++	if (!grpid) {
++		fprintf(stderr, "multicast group 'monitor' not found\n");
++		return -EOPNOTSUPP;
++	}
++	if (parse_monitor(ctx) < 0)
++		return 1;
++	is_dev = ctx->devname && strcmp(ctx->devname, WILDCARD_DEVNAME);
++
++	ret = preload_global_strings(nlsk);
++	if (ret < 0)
++		return ret;
++	ret = mnl_socket_setsockopt(nlsk->sk, NETLINK_ADD_MEMBERSHIP,
++				    &grpid, sizeof(grpid));
++	if (ret < 0)
++		return ret;
++	if (is_dev) {
++		ret = preload_perdev_strings(nlsk, ctx->devname);
++		if (ret < 0)
++			goto out_strings;
++	}
++
++	nlctx->filter_devname = ctx->devname;
++	nlctx->is_monitor = true;
++	nlsk->port = 0;
++	nlsk->seq = 0;
++
++	fputs("listening...\n", stdout);
++	fflush(stdout);
++	ret = nlsock_process_reply(nlsk, monitor_any_cb, nlctx);
++
++out_strings:
 +	cleanup_all_strings();
- }
++	return ret;
++}
++
++void nl_monitor_usage(void)
++{
++	unsigned int i;
++	const char *p;
++
++	fputs("        ethtool --monitor               Show kernel notifications\n",
++	      stdout);
++	fputs("                ( [ --all ]", stdout);
++	for (i = 1; i < MNL_ARRAY_SIZE(monitor_opts); i++) {
++		fputs("\n                  | ", stdout);
++		for (p = monitor_opts[i].pattern; *p; p++)
++			if (*p == '|')
++				fputs(" | ", stdout);
++			else
++				fputc(*p, stdout);
++	}
++	fputs(" )\n", stdout);
++	fputs("                [ DEVNAME | * ]\n", stdout);
++}
 diff --git a/netlink/netlink.h b/netlink/netlink.h
-index 9ba03b05163f..04ad7bcd347c 100644
+index 04ad7bcd347c..be44f9c16f19 100644
 --- a/netlink/netlink.h
 +++ b/netlink/netlink.h
-@@ -39,6 +39,15 @@ struct attr_tb_info {
- int nomsg_reply_cb(const struct nlmsghdr *nlhdr, void *data);
- int attr_cb(const struct nlattr *attr, void *data);
+@@ -14,6 +14,7 @@
+ #include "nlsock.h"
  
-+const char *get_dev_name(const struct nlattr *nest);
-+int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname);
-+
-+static inline void copy_devname(char *dst, const char *src)
+ #define WILDCARD_DEVNAME "*"
++#define CMDMASK_WORDS DIV_ROUND_UP(__ETHTOOL_MSG_KERNEL_CNT, 32)
+ 
+ struct nl_context {
+ 	struct cmd_context	*ctx;
+@@ -26,6 +27,9 @@ struct nl_context {
+ 	uint32_t		ethnl_mongrp;
+ 	struct nl_socket	*ethnl_socket;
+ 	struct nl_socket	*ethnl2_socket;
++	bool			is_monitor;
++	uint32_t		filter_cmds[CMDMASK_WORDS];
++	const char		*filter_devname;
+ };
+ 
+ struct attr_tb_info {
+@@ -48,6 +52,13 @@ static inline void copy_devname(char *dst, const char *src)
+ 	dst[ALTIFNAMSIZ - 1] = '\0';
+ }
+ 
++static inline bool dev_ok(const struct nl_context *nlctx)
 +{
-+	strncpy(dst, src, ALTIFNAMSIZ);
-+	dst[ALTIFNAMSIZ - 1] = '\0';
++	return !nlctx->filter_devname ||
++	       (nlctx->devname &&
++		!strcmp(nlctx->devname, nlctx->filter_devname));
 +}
 +
  static inline int netlink_init_ethnl2_socket(struct nl_context *nlctx)
  {
  	if (nlctx->ethnl2_socket)
 diff --git a/netlink/strset.c b/netlink/strset.c
-new file mode 100644
-index 000000000000..bc468ae5a88e
---- /dev/null
+index bc468ae5a88e..75f0327bbe43 100644
+--- a/netlink/strset.c
 +++ b/netlink/strset.c
-@@ -0,0 +1,295 @@
-+/*
-+ * strset.c - string set handling
-+ *
-+ * Implementation of local cache of ethtool string sets.
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+
-+#include "../internal.h"
-+#include "netlink.h"
-+#include "nlsock.h"
-+#include "msgbuff.h"
-+
-+struct stringset {
-+	const char		**strings;
-+	void			*raw_data;
-+	unsigned int		count;
-+	bool			loaded;
-+};
-+
-+struct perdev_strings {
-+	int			ifindex;
-+	char			devname[ALTIFNAMSIZ];
-+	struct stringset	strings[ETH_SS_COUNT];
-+	struct perdev_strings	*next;
-+};
-+
-+/* universal string sets */
-+static struct stringset global_strings[ETH_SS_COUNT];
-+/* linked list of string sets related to network devices */
-+static struct perdev_strings *device_strings;
-+
-+static void drop_stringset(struct stringset *set)
-+{
-+	if (!set)
-+		return;
-+
-+	free(set->strings);
-+	free(set->raw_data);
-+	memset(set, 0, sizeof(*set));
-+}
-+
-+static int import_stringset(struct stringset *dest, const struct nlattr *nest)
-+{
-+	const struct nlattr *tb_stringset[ETHTOOL_A_STRINGSET_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb_stringset);
-+	const struct nlattr *string;
-+	unsigned int size;
-+	unsigned int count;
-+	unsigned int idx;
-+	int ret;
-+
-+	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_stringset_info);
-+	if (ret < 0)
-+		return ret;
-+	if (!tb_stringset[ETHTOOL_A_STRINGSET_ID] ||
-+	    !tb_stringset[ETHTOOL_A_STRINGSET_COUNT] ||
-+	    !tb_stringset[ETHTOOL_A_STRINGSET_STRINGS])
-+		return -EFAULT;
-+	idx = mnl_attr_get_u32(tb_stringset[ETHTOOL_A_STRINGSET_ID]);
-+	if (idx >= ETH_SS_COUNT)
-+		return 0;
-+	if (dest[idx].loaded)
-+		drop_stringset(&dest[idx]);
-+	dest[idx].loaded = true;
-+	count = mnl_attr_get_u32(tb_stringset[ETHTOOL_A_STRINGSET_COUNT]);
-+	if (count == 0)
-+		return 0;
-+
-+	size = mnl_attr_get_len(tb_stringset[ETHTOOL_A_STRINGSET_STRINGS]);
-+	ret = -ENOMEM;
-+	dest[idx].raw_data = malloc(size);
-+	if (!dest[idx].raw_data)
-+		goto err;
-+	memcpy(dest[idx].raw_data, tb_stringset[ETHTOOL_A_STRINGSET_STRINGS],
-+	       size);
-+	dest[idx].strings = calloc(count, sizeof(dest[idx].strings[0]));
-+	if (!dest[idx].strings)
-+		goto err;
-+	dest[idx].count = count;
-+
-+	nest = dest[idx].raw_data;
-+	mnl_attr_for_each_nested(string, nest) {
-+		const struct nlattr *tb[ETHTOOL_A_STRING_MAX + 1] = {};
-+		DECLARE_ATTR_TB_INFO(tb);
-+		unsigned int i;
-+
-+		if (mnl_attr_get_type(string) != ETHTOOL_A_STRINGS_STRING)
-+			continue;
-+		ret = mnl_attr_parse_nested(string, attr_cb, &tb_info);
-+		if (ret < 0)
-+			goto err;
-+		ret = -EFAULT;
-+		if (!tb[ETHTOOL_A_STRING_INDEX] || !tb[ETHTOOL_A_STRING_VALUE])
-+			goto err;
-+
-+		i = mnl_attr_get_u32(tb[ETHTOOL_A_STRING_INDEX]);
-+		if (i >= count)
-+			goto err;
-+		dest[idx].strings[i] =
-+			mnl_attr_get_payload(tb[ETHTOOL_A_STRING_VALUE]);
-+	}
-+
-+	return 0;
-+err:
-+	drop_stringset(&dest[idx]);
-+	return ret;
-+}
-+
-+static struct perdev_strings *get_perdev_by_ifindex(int ifindex)
-+{
-+	struct perdev_strings *perdev = device_strings;
-+
-+	while (perdev && perdev->ifindex != ifindex)
-+		perdev = perdev->next;
-+	if (perdev)
-+		return perdev;
-+
-+	/* not found, allocate and insert into list */
-+	perdev = calloc(sizeof(*perdev), 1);
-+	if (!perdev)
-+		return NULL;
-+	perdev->ifindex = ifindex;
-+	perdev->next = device_strings;
-+	device_strings = perdev;
-+
-+	return perdev;
-+}
-+
-+static int strset_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_STRSET_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	char devname[ALTIFNAMSIZ] = "";
-+	struct stringset *dest;
-+	struct nlattr *attr;
-+	int ifindex = 0;
-+	int ret;
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+	if (tb[ETHTOOL_A_STRSET_HEADER]) {
-+		ret = get_dev_info(tb[ETHTOOL_A_STRSET_HEADER], &ifindex,
-+				   devname);
-+		if (ret < 0)
-+			return MNL_CB_OK;
-+		nlctx->devname = devname;
-+	}
-+
-+	if (ifindex) {
-+		struct perdev_strings *perdev;
-+
-+		perdev = get_perdev_by_ifindex(ifindex);
-+		if (!perdev)
-+			return MNL_CB_OK;
-+		copy_devname(perdev->devname, devname);
-+		dest = perdev->strings;
-+	} else {
-+		dest = global_strings;
-+	}
-+
-+	if (!tb[ETHTOOL_A_STRSET_STRINGSETS])
+@@ -149,6 +149,8 @@ static int strset_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 			return MNL_CB_OK;
+ 		nlctx->devname = devname;
+ 	}
++	if (ifindex && !dev_ok(nlctx))
 +		return MNL_CB_OK;
-+	mnl_attr_for_each_nested(attr, tb[ETHTOOL_A_STRSET_STRINGSETS]) {
-+		if (mnl_attr_get_type(attr) ==
-+		    ETHTOOL_A_STRINGSETS_STRINGSET)
-+			import_stringset(dest, attr);
-+	}
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int fill_stringset_id(struct nl_msg_buff *msgbuff, unsigned int type)
-+{
-+	struct nlattr *nest_sets;
-+	struct nlattr *nest_set;
-+
-+	nest_sets = ethnla_nest_start(msgbuff, ETHTOOL_A_STRSET_STRINGSETS);
-+	if (!nest_sets)
-+		return -EMSGSIZE;
-+	nest_set = ethnla_nest_start(msgbuff, ETHTOOL_A_STRINGSETS_STRINGSET);
-+	if (!nest_set)
-+		goto err;
-+	if (ethnla_put_u32(msgbuff, ETHTOOL_A_STRINGSET_ID, type))
-+		goto err;
-+	ethnla_nest_end(msgbuff, nest_set);
-+	ethnla_nest_end(msgbuff, nest_sets);
-+	return 0;
-+
-+err:
-+	ethnla_nest_cancel(msgbuff, nest_sets);
-+	return -EMSGSIZE;
-+}
-+
-+static int stringset_load_request(struct nl_socket *nlsk, const char *devname,
-+				  int type, bool is_dump)
-+{
-+	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
-+	int ret;
-+
-+	ret = msg_init(nlsk->nlctx, msgbuff, ETHTOOL_MSG_STRSET_GET,
-+		       NLM_F_REQUEST | NLM_F_ACK | (is_dump ? NLM_F_DUMP : 0));
-+	if (ret < 0)
-+		return ret;
-+	if (ethnla_fill_header(msgbuff, ETHTOOL_A_STRSET_HEADER, devname, 0))
-+		return -EMSGSIZE;
-+	if (type >= 0) {
-+		ret = fill_stringset_id(msgbuff, type);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	ret = nlsock_send_get_request(nlsk, strset_reply_cb);
-+	return ret;
-+}
-+
-+/* interface */
-+
-+const struct stringset *global_stringset(unsigned int type,
-+					 struct nl_socket *nlsk)
-+{
-+	int ret;
-+
-+	if (type >= ETH_SS_COUNT)
-+		return NULL;
-+	if (global_strings[type].loaded)
-+		return &global_strings[type];
-+	ret = stringset_load_request(nlsk, NULL, type, false);
-+	return ret < 0 ? NULL : &global_strings[type];
-+}
-+
-+const struct stringset *perdev_stringset(const char *devname, unsigned int type,
-+					 struct nl_socket *nlsk)
-+{
-+	const struct perdev_strings *p;
-+	int ret;
-+
-+	if (type >= ETH_SS_COUNT)
-+		return NULL;
-+	for (p = device_strings; p; p = p->next)
-+		if (!strcmp(p->devname, devname))
-+			return &p->strings[type];
-+
-+	ret = stringset_load_request(nlsk, devname, type, false);
-+	if (ret < 0)
-+		return NULL;
-+	for (p = device_strings; p; p = p->next)
-+		if (!strcmp(p->devname, devname))
-+			return &p->strings[type];
-+
-+	return NULL;
-+}
-+
-+unsigned int get_count(const struct stringset *set)
-+{
-+	return set->count;
-+}
-+
-+const char *get_string(const struct stringset *set, unsigned int idx)
-+{
-+	if (!set || idx >= set->count)
-+		return NULL;
-+	return set->strings[idx];
-+}
-+
-+int preload_global_strings(struct nl_socket *nlsk)
-+{
-+	return stringset_load_request(nlsk, NULL, -1, false);
-+}
-+
-+int preload_perdev_strings(struct nl_socket *nlsk, const char *dev)
-+{
-+	return stringset_load_request(nlsk, dev, -1, !dev);
-+}
-+
-+void cleanup_all_strings(void)
-+{
-+	struct perdev_strings *perdev;
-+	unsigned int i;
-+
-+	for (i = 0; i < ETH_SS_COUNT; i++)
-+		drop_stringset(&global_strings[i]);
-+
-+	perdev = device_strings;
-+	while (perdev) {
-+		device_strings = perdev->next;
-+		for (i = 0; i < ETH_SS_COUNT; i++)
-+			drop_stringset(&perdev->strings[i]);
-+		free(perdev);
-+		perdev = device_strings;
-+	}
-+}
-diff --git a/netlink/strset.h b/netlink/strset.h
-new file mode 100644
-index 000000000000..72a4a3929244
---- /dev/null
-+++ b/netlink/strset.h
-@@ -0,0 +1,25 @@
-+/*
-+ * strset.h - string set handling
-+ *
-+ * Interface for local cache of ethtool string sets.
-+ */
-+
-+#ifndef ETHTOOL_NETLINK_STRSET_H__
-+#define ETHTOOL_NETLINK_STRSET_H__
-+
-+struct nl_socket;
-+struct stringset;
-+
-+const struct stringset *global_stringset(unsigned int type,
-+					 struct nl_socket *nlsk);
-+const struct stringset *perdev_stringset(const char *dev, unsigned int type,
-+					 struct nl_socket *nlsk);
-+
-+unsigned int get_count(const struct stringset *set);
-+const char *get_string(const struct stringset *set, unsigned int idx);
-+
-+int preload_global_strings(struct nl_socket *nlsk);
-+int preload_perdev_strings(struct nl_socket *nlsk, const char *dev);
-+void cleanup_all_strings(void);
-+
-+#endif /* ETHTOOL_NETLINK_STRSET_H__ */
+ 
+ 	if (ifindex) {
+ 		struct perdev_strings *perdev;
 -- 
 2.25.1
 
