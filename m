@@ -2,92 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B2817C2B7
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 17:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 933B417C2BF
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 17:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgCFQQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 11:16:51 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37678 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbgCFQQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 11:16:51 -0500
-Received: by mail-ed1-f66.google.com with SMTP id m9so3161639edl.4
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 08:16:50 -0800 (PST)
+        id S1726798AbgCFQSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 11:18:15 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:40555 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgCFQSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 11:18:15 -0500
+Received: by mail-qk1-f195.google.com with SMTP id m2so2794269qka.7;
+        Fri, 06 Mar 2020 08:18:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6Dap1kc1qiXmbZugAe2o1JqyM0eTLYcQXaxHWvf2Qr8=;
-        b=crvnJ2PSX5ggVaj+80DEgKsvarhTWwcMoI+N7ZC5iu8gm2lV6mIINrQdAKkUSe645q
-         1A2xLnhM0rYLSZRRM2vByGfv63PoXMgHNYyhTgF1jbk+RuOJrth+rt/+v80+RSjGfyHO
-         DD8cIT6XcoScNsZQmP5AQQsacUKtJx2aYvwgTjvLgbnNtvn7QwUKRN/dwaINYiGV+9Kk
-         J1fpu+16yIcHcAQZ7OcqxYX/kloQGwVenvXWj4yUBgm3MgW8xHCS6C6vZjNi0OKMpxvM
-         QWkLvsNLaC1rvdhDH8ZUF17KFvM8zrIKBG/2is6vx7BkNW0RgcJz/j/HUk51elSuHYUQ
-         BF6g==
+        bh=Wyxwn/uIvwvwuo/CHU7Bo2juetQK83mXPdvKd8qe8K8=;
+        b=GlOQ0NIqwiOm7KiuNnvyD7fTW2tuSulcPgG3SsZbeGr9bylPN9ZDoKIwHHWa8Cnjyt
+         Hm+hbJ+vmOAc/7hnqvl+SrIwLGggNzLO1IbLM6JamAKKoEqcArY5RR7y/G5xK2UdPt09
+         RkpKX0RXkF87e/3QSKgXdGqw7ZOlrtCcSjdGdI9vkJAGCzZxoIDh/Ct71cxCtZvcxQyX
+         cDI6dK+lDS+yn6B5kz+4rNx0x/VzQuAy1PvN9sGEiFlb72ofLgceUCyvqIrI/Yv7FFbo
+         7r2gdVHyq2XRWAcNP1kFuBMYOtwwsLKPwciQCaH5sRKyuuokEv/sU+XtTcc/Gj/+eVaB
+         wkkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6Dap1kc1qiXmbZugAe2o1JqyM0eTLYcQXaxHWvf2Qr8=;
-        b=GfLtYWChsHMz8u3rc//L/pFuokh0ULPpbm9H7YhbRzZ7YlpBN9EwduSad9rf0CGZ7F
-         cLYnfwNtgFkoTZAJcBeU/jg5qZC4NUI0gQG1513QfleozFcvfRm5za+rXBdRJyKguupb
-         /HKTOSET6SMUhNbZa6Hnwtj2EvD8+f2BbpR80yuv4QbO6epmKleieXbgoMiPmJ5cobKK
-         IncimZHsGz3rxgHCLtgFNUo9jYzsw35EqaAedcJ2OG+jGxuXhB9vMCecUu1H4ssp9Uls
-         9YDgqD5TN1ApbaKURjvZQ6ygBDaCBagU2E+qrsEI95Fu/x4QZ7/ycxRw66+c0Ius9Zj3
-         gw9w==
-X-Gm-Message-State: ANhLgQ2ujfTmQfXyPnu1Z5z3JmRK35tPEr2GEOj2DeW9DH9yJhsN+Fvn
-        wijhU+6SrBad5UZrd3fJccK25U0JnsEw4xDKBlVGow==
-X-Google-Smtp-Source: ADFU+vtEBorqMGpAvx/lz0TjI8aL/1bRpAFzeQnJglZFtVSKM2Ic7kyQA+cbQPzHfBniT9bOq7NfEsXupa/zAnOu+Bg=
-X-Received: by 2002:a17:906:15c2:: with SMTP id l2mr3568358ejd.302.1583511409398;
- Fri, 06 Mar 2020 08:16:49 -0800 (PST)
+        bh=Wyxwn/uIvwvwuo/CHU7Bo2juetQK83mXPdvKd8qe8K8=;
+        b=Tz1nEZF6D2rL1cLQUMOEVGZJN4cu9+rM9TYeYU3g3VNoNsEV4lGgKtC0JsZ8oSP9e/
+         FMAP7CTv8tnXIJ2jxu0UXoz5P8AXNz68wJscbBLrYCJHjlPzleJuECtLkXCKdfCqMpvY
+         2abHhuDjazKvJP3ONDVswbXWUax2O8SDmlKbb+TDxpkLKC7zYOEp6EracFj0UGMj9Ip2
+         7FMvKSomR5s+7YJawLhUMZd9obn5auLuzhEheASFY4oQMQBgULrsOmUhFxyCgNhtNCfI
+         gCMGsjJP4hiu0KvOBwcI6tYNMl+qg9dLbmm+BX6Ct/e3UFoP5ZThRuKkLqWP5iMAQXCP
+         1m2Q==
+X-Gm-Message-State: ANhLgQ2kG49ZHcOriZnld/YE+BpTrS1HIml2xopSLvT1FBB/n0WuUd27
+        sMrZF0yC7r4rYGLx3UaKf4hOqI6C6TSZpxpHL/E=
+X-Google-Smtp-Source: ADFU+vvKiiWABJ3Vloba0QXY19bkGGVHSjFtCJH0c8cNpcKXPBZWAlxkVBdq4sU2A5urbWQaO3xSUUe5T0M4KjXbKio=
+X-Received: by 2002:ae9:ef06:: with SMTP id d6mr3743182qkg.442.1583511492528;
+ Fri, 06 Mar 2020 08:18:12 -0800 (PST)
 MIME-Version: 1.0
-References: <158323601793.2048441.8715862429080864020.stgit@firesoul>
- <20200303184350.66uzruobalf3y76f@ast-mbp> <5e62750bd8c9f_17502acca07205b42a@john-XPS-13-9370.notmuch>
-In-Reply-To: <5e62750bd8c9f_17502acca07205b42a@john-XPS-13-9370.notmuch>
-From:   Luigi Rizzo <lrizzo@google.com>
-Date:   Fri, 6 Mar 2020 17:16:38 +0100
-Message-ID: <CAMOZA0LzKZczQBcGFO8q44QJ1=6rv-61nruqxRK4k05-gFWaGw@mail.gmail.com>
-Subject: Re: [bpf-next PATCH] xdp: accept that XDP headroom isn't always equal XDP_PACKET_HEADROOM
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf@vger.kernel.org, gamemann@gflclan.com,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
+References: <20200220151327.4823-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20200220151327.4823-1-manivannan.sadhasivam@linaro.org>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Fri, 6 Mar 2020 17:18:01 +0100
+Message-ID: <CAGRyCJGMxMO-8b3QniJP0XVgTT4zxSd=pm_O=4T5N3f3H3aM2w@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] Migrate QRTR Nameservice to Kernel
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvalo@codeaurora.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 6, 2020 at 5:06 PM John Fastabend <john.fastabend@gmail.com> wrote:
+Hello Mani,
+
+Il giorno gio 20 feb 2020 alle ore 16:15 Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> ha scritto:
 >
-> Alexei Starovoitov wrote:
-> > On Tue, Mar 03, 2020 at 12:46:58PM +0100, Jesper Dangaard Brouer wrote:
-...
-> > > Tested on ixgbe with xdp_rxq_info --skb-mode and --action XDP_DROP:
-> > > - Before: 4,816,430 pps
-> > > - After : 7,749,678 pps
-> > > (Note that ixgbe in native mode XDP_DROP 14,704,539 pps)
-> > >
+> Hello,
 >
-> But why do we care about generic-XDP performance? Seems users should
-> just use XDP proper on ixgbe and i40e its supported.
+> This patchset migrates the Qualcomm IPC Router (QRTR) Nameservice from userspace
+> to kernel under net/qrtr.
+>
 
-I think the point was to show the performance benefit of skipping the
-normalization (admittedly for a specific workload, tinygrams;
-my other patch to control xdpgeneric_linearize covered a different range
-of packet sizes).
+I saw those and the MHI driver related patches, thanks for doing them.
 
-On a side note I think it would be more useful to report times in ns/pkt,
-as they can be applied to other drivers too. Specifically here I would
-have written:
+Are you going to submit also the controller and device (uci, netdev)
+drivers for SDX55 modem?
 
-  Before: average 207 ns/pkt (1s / 4.816 Mpps)
-  After:  average 129 ns/pkt (1s / 7.750 Mpps)
+Thanks,
+Daniele
 
-cheers
-luigi
+> The userspace implementation of it can be found here:
+> https://github.com/andersson/qrtr/blob/master/src/ns.c
+>
+> This change is required for enabling the WiFi functionality of some Qualcomm
+> WLAN devices using ATH11K without any dependency on a userspace daemon. Since
+> the QRTR NS is not usually packed in most of the distros, users need to clone,
+> build and install it to get the WiFi working. It will become a hassle when the
+> user doesn't have any other source of network connectivity.
+>
+> The original userspace code is published under BSD3 license. For migrating it
+> to Linux kernel, I have adapted Dual BSD/GPL license.
+>
+> This patchset has been verified on Dragonboard410c and Intel NUC with QCA6390
+> WLAN device.
+>
+> Thanks,
+> Mani
+>
+> Changes in v2:
+>
+> * Sorted the local variables in reverse XMAS tree order
+>
+> Manivannan Sadhasivam (2):
+>   net: qrtr: Migrate nameservice to kernel from userspace
+>   net: qrtr: Fix the local node ID as 1
+>
+>  net/qrtr/Makefile |   2 +-
+>  net/qrtr/ns.c     | 751 ++++++++++++++++++++++++++++++++++++++++++++++
+>  net/qrtr/qrtr.c   |  51 +---
+>  net/qrtr/qrtr.h   |   4 +
+>  4 files changed, 767 insertions(+), 41 deletions(-)
+>  create mode 100644 net/qrtr/ns.c
+>
+> --
+> 2.17.1
+>
