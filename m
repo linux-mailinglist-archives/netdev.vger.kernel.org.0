@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D6417B4BC
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 03:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79FBB17B4C0
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 03:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbgCFC6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 21:58:00 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:38132 "EHLO huawei.com"
+        id S1727291AbgCFC6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 21:58:44 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:38176 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726359AbgCFC6A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726533AbgCFC6A (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 5 Mar 2020 21:58:00 -0500
 Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 41952F406C4A834F125E;
+        by Forcepoint Email with ESMTP id 4BE296EFDB17F3167F68;
         Fri,  6 Mar 2020 10:57:58 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Guojia Liao <liaoguojia@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 1/9] net: hns3: fix some mixed type assignment
-Date:   Fri, 6 Mar 2020 10:57:10 +0800
-Message-ID: <1583463438-60953-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 2/9] net: hns3: rename macro HCLGE_MAX_NCL_CONFIG_LENGTH
+Date:   Fri, 6 Mar 2020 10:57:11 +0800
+Message-ID: <1583463438-60953-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1583463438-60953-1-git-send-email-tanhuazhong@huawei.com>
 References: <1583463438-60953-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,108 +39,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-This patch cleans up some incorrect type in assignment reported by sparse
-and compiler.
-The warning as below:
-- warning : restricted __le16 degrades to integer
-- warning : cast from restricted __le32
-- warning : cast from restricted __be32
-- warning : cast from restricted __be16
-and "mixed operation".
+The name of macro HCLGE_MAX_NCL_CONFIG_LENGTH is inaccurate,
+this patch renames it to HCLGE_NCL_CONFIG_LENGTH_IN_EACH_CMD.
 
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 23 ++++++++++++----------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  3 ++-
- 2 files changed, 15 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 6295cf9..5b4045c 100644
+index 5b4045c..5814f36 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -87,7 +87,7 @@ static int hclge_dbg_get_dfx_bd_num(struct hclge_dev *hdev, int offset)
- 
- 	entries_per_desc = ARRAY_SIZE(desc[0].data);
- 	index = offset % entries_per_desc;
--	return (int)desc[offset / entries_per_desc].data[index];
-+	return le32_to_cpu(desc[offset / entries_per_desc].data[index]);
- }
- 
- static int hclge_dbg_cmd_send(struct hclge_dev *hdev,
-@@ -583,7 +583,7 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev *hdev,
- 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
- 	if (ret)
- 		goto err_tm_map_cmd_send;
--	qset_id = nq_to_qs_map->qset_id & 0x3FF;
-+	qset_id = le16_to_cpu(nq_to_qs_map->qset_id) & 0x3FF;
- 
- 	cmd = HCLGE_OPC_TM_QS_TO_PRI_LINK;
- 	map = (struct hclge_qs_to_pri_link_cmd *)desc.data;
-@@ -623,7 +623,8 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev *hdev,
- 		if (ret)
- 			goto err_tm_map_cmd_send;
- 
--		qset_maping[group_id] = bp_to_qs_map_cmd->qs_bit_map;
-+		qset_maping[group_id] =
-+			le32_to_cpu(bp_to_qs_map_cmd->qs_bit_map);
- 	}
- 
- 	dev_info(&hdev->pdev->dev, "index | tm bp qset maping:\n");
-@@ -826,6 +827,7 @@ static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
- 	struct hclge_mac_ethertype_idx_rd_cmd *req0;
- 	char printf_buf[HCLGE_DBG_BUF_LEN];
- 	struct hclge_desc desc;
-+	u32 msg_egress_port;
- 	int ret, i;
- 
- 	dev_info(&hdev->pdev->dev, "mng tab:\n");
-@@ -867,20 +869,21 @@ static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
- 			 HCLGE_DBG_BUF_LEN - strlen(printf_buf),
- 			 "%x   |%04x |%x   |%04x|%x   |%02x   |%02x   |",
- 			 !!(req0->flags & HCLGE_DBG_MNG_MAC_MASK_B),
--			 req0->ethter_type,
-+			 le16_to_cpu(req0->ethter_type),
- 			 !!(req0->flags & HCLGE_DBG_MNG_ETHER_MASK_B),
--			 req0->vlan_tag & HCLGE_DBG_MNG_VLAN_TAG,
-+			 le16_to_cpu(req0->vlan_tag) & HCLGE_DBG_MNG_VLAN_TAG,
- 			 !!(req0->flags & HCLGE_DBG_MNG_VLAN_MASK_B),
- 			 req0->i_port_bitmap, req0->i_port_direction);
- 
-+		msg_egress_port = le16_to_cpu(req0->egress_port);
- 		snprintf(printf_buf + strlen(printf_buf),
- 			 HCLGE_DBG_BUF_LEN - strlen(printf_buf),
- 			 "%d     |%d    |%02d   |%04d|%x\n",
--			 !!(req0->egress_port & HCLGE_DBG_MNG_E_TYPE_B),
--			 req0->egress_port & HCLGE_DBG_MNG_PF_ID,
--			 (req0->egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
--			 req0->egress_queue,
--			 !!(req0->egress_port & HCLGE_DBG_MNG_DROP_B));
-+			 !!(msg_egress_port & HCLGE_DBG_MNG_E_TYPE_B),
-+			 msg_egress_port & HCLGE_DBG_MNG_PF_ID,
-+			 (msg_egress_port >> 3) & HCLGE_DBG_MNG_VF_ID,
-+			 le16_to_cpu(req0->egress_queue),
-+			 !!(msg_egress_port & HCLGE_DBG_MNG_DROP_B));
- 
- 		dev_info(&hdev->pdev->dev, "%s", printf_buf);
- 	}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 89d3523..e64027c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10252,8 +10252,9 @@ static int hclge_dfx_reg_fetch_data(struct hclge_desc *desc_src, int bd_num,
- static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
+@@ -1137,7 +1137,7 @@ static void hclge_dbg_dump_ncl_config(struct hclge_dev *hdev,
+ 				      const char *cmd_buf)
  {
- 	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
--	int data_len_per_desc, data_len, bd_num, i;
-+	int data_len_per_desc, bd_num, i;
- 	int bd_num_list[BD_LIST_MAX_NUM];
-+	u32 data_len;
- 	int ret;
+ #define HCLGE_MAX_NCL_CONFIG_OFFSET	4096
+-#define HCLGE_MAX_NCL_CONFIG_LENGTH	(20 + 24 * 4)
++#define HCLGE_NCL_CONFIG_LENGTH_IN_EACH_CMD	(20 + 24 * 4)
  
- 	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
+ 	struct hclge_desc desc[HCLGE_CMD_NCL_CONFIG_BD_NUM];
+ 	int bd_num = HCLGE_CMD_NCL_CONFIG_BD_NUM;
+@@ -1161,8 +1161,8 @@ static void hclge_dbg_dump_ncl_config(struct hclge_dev *hdev,
+ 
+ 	while (length > 0) {
+ 		data0 = offset;
+-		if (length >= HCLGE_MAX_NCL_CONFIG_LENGTH)
+-			data0 |= HCLGE_MAX_NCL_CONFIG_LENGTH << 16;
++		if (length >= HCLGE_NCL_CONFIG_LENGTH_IN_EACH_CMD)
++			data0 |= HCLGE_NCL_CONFIG_LENGTH_IN_EACH_CMD << 16;
+ 		else
+ 			data0 |= length << 16;
+ 		ret = hclge_dbg_cmd_send(hdev, desc, data0, bd_num,
 -- 
 2.7.4
 
