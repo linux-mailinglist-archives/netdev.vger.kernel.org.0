@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B78017C1A6
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 16:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B9617C1C0
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 16:28:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbgCFPZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 10:25:44 -0500
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:44578 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725922AbgCFPZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 10:25:43 -0500
-Received: by mail-pg1-f172.google.com with SMTP id n24so1215549pgk.11;
-        Fri, 06 Mar 2020 07:25:42 -0800 (PST)
+        id S1726498AbgCFP20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 10:28:26 -0500
+Received: from mail-pf1-f181.google.com ([209.85.210.181]:39182 "EHLO
+        mail-pf1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgCFP2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 10:28:25 -0500
+Received: by mail-pf1-f181.google.com with SMTP id w65so726371pfb.6;
+        Fri, 06 Mar 2020 07:28:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=U0f7F5SJ5+QRDlAY1wTE5bYTykTqGGdr3VIDJvfMX9U=;
-        b=td1xiA8vNOG/zx1dA/9Svjes7a/vUU/L+C1MrQ9paZNHbMmIIvzK1CIUffxUlR/N9m
-         vuMRkdgTtceI34WKAhyQZThOH+j+GpOuGjSEav3MctVCUkHWiUG9Vx4xGNE+C0C/9IRb
-         bjgFi/EnuLcnhuVAhOZqP/3mzS8h/JPgM1r5bAxkuIJJpt5OrZWHUMFQwhuwMictEsnR
-         D1lrKqjdBm8PuCu0KsrZf+t4/rw/2fXSfI077UtQXy2i3m0kxngHOEs5bqXkvuy/uHD5
-         A1WfuMCosqPUMkNRcY64tfLmO3vTkwzNa3KI6A7G8UvHXv7tpd6Y9FR7vOFVgrSV+BDD
-         u2qg==
+        bh=lglEGZYxW0hnEoW7mMQ/XbMDpHsIajsIGt2QbD7jk2k=;
+        b=K+7c4w9+HrFBk71MUJPg0LLWA/2wI4m2pOIVzyI9/31q7uzLnAU2iPQL4knA8jzV1Q
+         m+oFn6iQ6SC5/ifO8tZFSimQUVb6j337CGXWkU4C1FSYs3+qvn3aI8Vz6P1msjMhNXTH
+         ysJ7l3cHR72d85MYG7dCkRwUfHiuGCgxaBpp+zQ4qE8okeNQENvTd4qCLH+LL9aNhr6Y
+         i6C3LuvJNrb1O7TZmTTZPC6O5URrFqM9dm1tz6n3VCOZ+0D3exTJxWymxi++LX0FOJPB
+         SagGJbEWXb6q6AOJfjedyBCUA5bFMwJ2gElmwyAlGbrEZTF/pqTDcolrAey9/9AIzQwF
+         3tSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=U0f7F5SJ5+QRDlAY1wTE5bYTykTqGGdr3VIDJvfMX9U=;
-        b=SYBxsXW4+OskEd1ab4gwux/83pPCEa8rRHDttz0lXwxgUYnnFRCjDgYg0akvr9STRU
-         xEVRWRegxS7a1/eCNMg2ATeB9wvWB18waK2kSeOu0GfbYchLYCyTb0FZuylfzNhqP/Tw
-         qixgrtI5QKSurIVeYJOJf+LaYFoBCBlpcxM2YzMnpjvOnAT91AzUHQtrcYsDZvh1KIci
-         skj8/FlCj6KrIpSNMWnVwFZz7wjLx0KFZFA2eZP/g39IAgYbIUnbz5FgVhNOfbx4rsU5
-         oDAzLEz78vB+laVGUQbwl9pdVIY0giPoUkhTSZV7BIfAOWJPc+N4Htji5Gzu41fxoeNU
-         2RgA==
-X-Gm-Message-State: ANhLgQ3FM2WvDGnDfPJDdZnOYx9MMfCAcVdgDQLNNhwABG7VdIQOhipo
-        HULrhddpANfwC+GLQlpoo/s=
-X-Google-Smtp-Source: ADFU+vvFswTWSOFzoCgpKWpMnxUox1t9/PId67LHlatzi8Z2lX+XDaSQ7Z/XqGooyrLO0Zbwo0Iq1Q==
-X-Received: by 2002:a63:1459:: with SMTP id 25mr3941888pgu.427.1583508341870;
-        Fri, 06 Mar 2020 07:25:41 -0800 (PST)
+        bh=lglEGZYxW0hnEoW7mMQ/XbMDpHsIajsIGt2QbD7jk2k=;
+        b=XKy//16iCWhL08F1LYGHieiRBlJTSSAIvhJfhyiJedBS1r+RXTBQa+SgcHBbtcrfnX
+         Z8qPBAZXZa0iHvUnopAOSmYaXnXbflI91RNwLGcUpQ5xRGbPB84BR05rwU4XtKl+ZXoZ
+         XGl/2sWEIIBSb170KIfRIDrFaLwq9Im9w9rDRyRqeZs+T3HHeCRlGgW4uzMT0QXih8A7
+         FeaUqX+kCfsXHEHadhy2fbZ+hjC4T3Ux0/d8DF5GxnRyHusw+Wfzr49A485Udc7PAeCq
+         Ow28XPpy9U35L522zVfHCsBsG+dqpYSttU+35yuUVKeyu4V1tXF45sG1/4JQvFdf6gi4
+         WCBQ==
+X-Gm-Message-State: ANhLgQ1TAvFKbUg/6bckIuabMdNamIbxtD4p9j6Ld5L1XwnA5qDQQZDx
+        VWo70s1FdkyPiz/tHpZQd6Y=
+X-Google-Smtp-Source: ADFU+vsmC0lDqEQ8bINdVR06tUjHm7Rt47588Xh45rCmrBMOx+lIGIJdZ0qf4dAMq5pTRmQlJW5C+Q==
+X-Received: by 2002:a63:8f17:: with SMTP id n23mr4054843pgd.161.1583508504559;
+        Fri, 06 Mar 2020 07:28:24 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id q187sm35905013pfq.185.2020.03.06.07.25.37
+        by smtp.gmail.com with ESMTPSA id l4sm9861543pje.27.2020.03.06.07.28.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 07:25:40 -0800 (PST)
-Date:   Fri, 06 Mar 2020 07:25:32 -0800
+        Fri, 06 Mar 2020 07:28:23 -0800 (PST)
+Date:   Fri, 06 Mar 2020 07:28:15 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
 Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <5e626b6c364eb_17502acca07205b427@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200304101318.5225-4-lmb@cloudflare.com>
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <5e626c0fa6eee_17502acca07205b448@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200304101318.5225-6-lmb@cloudflare.com>
 References: <20200304101318.5225-1-lmb@cloudflare.com>
- <20200304101318.5225-4-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf-next v3 03/12] bpf: tcp: move assertions into
- tcp_bpf_get_proto
+ <20200304101318.5225-6-lmb@cloudflare.com>
+Subject: RE: [PATCH bpf-next v3 05/12] bpf: sockmap: move generic sockmap
+ hooks from BPF TCP
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -74,69 +74,21 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenz Bauer wrote:
-> We need to ensure that sk->sk_prot uses certain callbacks, so that
-> code that directly calls e.g. tcp_sendmsg in certain corner cases
-> works. To avoid spurious asserts, we must to do this only if
-> sk_psock_update_proto has not yet been called. The same invariants
-> apply for tcp_bpf_check_v6_needs_rebuild, so move the call as well.
+> The init, close and unhash handlers from TCP sockmap are generic,
+> and can be reused by UDP sockmap. Move the helpers into the sockmap code
+> base and expose them. This requires tcp_bpf_get_proto and tcp_bpf_clone to
+> be conditional on BPF_STREAM_PARSER.
 > 
-> Doing so allows us to merge tcp_bpf_init and tcp_bpf_reinit.
+> The moved functions are unmodified, except that sk_psock_unlink is
+> renamed to sock_map_unlink to better match its behaviour.
 > 
 > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-
-Small nit if you update it just carry the acks through.
+> ---
+>  include/linux/bpf.h   |   4 +-
+>  include/linux/skmsg.h |  28 -----------
+>  include/net/tcp.h     |  15 +++---
+>  net/core/sock_map.c   | 106 ++++++++++++++++++++++++++++++++++++++++--
+>  net/ipv4/tcp_bpf.c    |  84 ++-------------------------------
+>  5 files changed, 118 insertions(+), 119 deletions(-)
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
- 
->  	skb_verdict = READ_ONCE(progs->skb_verdict);
-> @@ -191,18 +191,14 @@ static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
->  			ret = -ENOMEM;
->  			goto out_progs;
->  		}
-> -		sk_psock_is_new = true;
->  	}
->  
->  	if (msg_parser)
->  		psock_set_prog(&psock->progs.msg_parser, msg_parser);
-> -	if (sk_psock_is_new) {
-> -		ret = tcp_bpf_init(sk);
-> -		if (ret < 0)
-> -			goto out_drop;
-> -	} else {
-> -		tcp_bpf_reinit(sk);
-> -	}
-> +
-> +	ret = tcp_bpf_init(sk);
-> +	if (ret < 0)
-> +		goto out_drop;
->  
->  	write_lock_bh(&sk->sk_callback_lock);
->  	if (skb_progs && !psock->parser.enabled) {
-> @@ -239,12 +235,9 @@ static int sock_map_link_no_progs(struct bpf_map *map, struct sock *sk)
->  	if (IS_ERR(psock))
->  		return PTR_ERR(psock);
->  
-> -	if (psock) {
-> -		tcp_bpf_reinit(sk);
-> -		return 0;
-> -	}
-> +	if (!psock)
-> +		psock = sk_psock_init(sk, map->numa_node);
->  
-> -	psock = sk_psock_init(sk, map->numa_node);
->  	if (!psock)
->  		return -ENOMEM;
-
-also small nit this reads,
-
- if (!psock)
-    psock = ...
- if (!psock)
-    return -ENOMEM
-
-how about,
-
- if (!psock) {
-   psock = ...
-   if (!psock) return -ENOMEM;
- }
