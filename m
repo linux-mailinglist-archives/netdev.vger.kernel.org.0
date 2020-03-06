@@ -2,157 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F21A717BA24
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 11:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB9B17BA27
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 11:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbgCFKZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 05:25:08 -0500
-Received: from www62.your-server.de ([213.133.104.62]:35300 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbgCFKZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 05:25:08 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jAAAB-0006HL-0B; Fri, 06 Mar 2020 11:25:03 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jAAAA-000VG3-Me; Fri, 06 Mar 2020 11:25:02 +0100
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel
- abstraction
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-References: <87pndt4268.fsf@toke.dk>
- <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net>
- <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk>
- <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <87h7z44l3z.fsf@toke.dk>
- <20200304154757.3tydkiteg3vekyth@ast-mbp> <874kv33x60.fsf@toke.dk>
- <20200305163444.6e3w3u3a5ufphwhp@ast-mbp>
- <473a3e8a-03ea-636c-f054-3c960bf0fdbd@iogearbox.net>
- <20200305225027.nazs3gtlcw3gjjvn@ast-mbp>
- <7b674384-1131-59d4-ee2f-5a17824c1eca@iogearbox.net> <878skd3mw4.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <374e23b6-572a-8dac-88cb-855069535917@iogearbox.net>
-Date:   Fri, 6 Mar 2020 11:25:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726397AbgCFK0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 05:26:43 -0500
+Received: from mail-wm1-f42.google.com ([209.85.128.42]:38735 "EHLO
+        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726231AbgCFK0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 05:26:43 -0500
+Received: by mail-wm1-f42.google.com with SMTP id u9so1771842wml.3
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 02:26:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1TkTXlrqCFBt1ZCBFTNizoJKac/Tis9Rlqb217tQR3c=;
+        b=C15mMDDHadZyGow7pvWTAH5pAfFmytLPx4n7eV57T4jdpwAp7t8F8x3pZ40ScywI/K
+         cquKL4Im3JHJcIfDzi6BYTQMBIp4Nd5Y954+CKCA+0Dz2YoWz+vqBxZe5evbsboZIG4C
+         Km4a5RleZ7eX4QPZ8x/oK6mBK1PfKS/3Ak4SA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1TkTXlrqCFBt1ZCBFTNizoJKac/Tis9Rlqb217tQR3c=;
+        b=NEDW3eN6w9rYDDegT0KxQ4vf0fLiVttUFvUd9CDgzWsKRuCACNDdrTQmaRRBZdXMSh
+         bx7G4xBJmmeH4/i++70O/h4TJREuBxCMZHdGQKKFrlNRU6NPDdfbjyJZs9sv9XSTQ9Y4
+         FZwFIWbi/vF6+Yn7oGu4PNuuQAe8X3n30xsSowgl9Sx1bPHZ2xlyfqbCodKcyjUfLNzw
+         t5UDNnwvlz4cU9YJKJfzi7zPs6ZgTV61Cm9Zy5NaZH5xbIWAv7VuQd52IFyKmCCTd953
+         O4sNWX0dksmKYxfHkPRhbPN+N7qMj2RNy+5h/LEhb+ZAiDzLNuz1C1SMRblMZdq4qShu
+         gqsA==
+X-Gm-Message-State: ANhLgQ1r++RXiaMjnK+GSTzii9G1FMtLihFTNZuPJ1CUkteomQxOlrbO
+        EHWfZwWeEHBwQ2Ga5028X+URaw==
+X-Google-Smtp-Source: ADFU+vt1tUvyLCtmdeVcHSF24DEToOTgTGyEt0Dv6iOwSMTBxZfgSSvG9xANcOqRRX3AZyoCRD28mg==
+X-Received: by 2002:a1c:f610:: with SMTP id w16mr3261404wmc.136.1583490401318;
+        Fri, 06 Mar 2020 02:26:41 -0800 (PST)
+Received: from [10.230.41.113] ([192.19.215.251])
+        by smtp.gmail.com with ESMTPSA id v8sm13988795wma.28.2020.03.06.02.26.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2020 02:26:40 -0800 (PST)
+Subject: Re: [PATCH][next] brcmfmac: Replace zero-length array with
+ flexible-array member
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200225020804.GA9428@embeddedor>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <170f7087-1f70-941e-9e6c-749eaf3978fe@broadcom.com>
+Date:   Fri, 6 Mar 2020 11:26:39 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <878skd3mw4.fsf@toke.dk>
+In-Reply-To: <20200225020804.GA9428@embeddedor>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25742/Thu Mar  5 15:10:18 2020)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/6/20 9:31 AM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 3/5/20 11:50 PM, Alexei Starovoitov wrote:
->>> On Thu, Mar 05, 2020 at 11:34:18PM +0100, Daniel Borkmann wrote:
->>>> On 3/5/20 5:34 PM, Alexei Starovoitov wrote:
->>>>> On Thu, Mar 05, 2020 at 11:37:11AM +0100, Toke Høiland-Jørgensen wrote:
->>>>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>>>>>> On Wed, Mar 04, 2020 at 08:47:44AM +0100, Toke Høiland-Jørgensen wrote:
->>>> [...]
->>>>>> Anyway, what I was trying to express:
->>>>>>
->>>>>>> Still that doesn't mean that pinned link is 'immutable'.
->>>>>>
->>>>>> I don't mean 'immutable' in the sense that it cannot be removed ever.
->>>>>> Just that we may end up in a situation where an application can see a
->>>>>> netdev with an XDP program attached, has the right privileges to modify
->>>>>> it, but can't because it can't find the pinned bpf_link. Right? Or am I
->>>>>> misunderstanding your proposal?
->>>>>>
->>>>>> Amending my example from before, this could happen by:
->>>>>>
->>>>>> 1. Someone attaches a program to eth0, and pins the bpf_link to
->>>>>>       /sys/fs/bpf/myprog
->>>>>>
->>>>>> 2. eth0 is moved to a different namespace which mounts a new sysfs at
->>>>>>       /sys
->>>>>>
->>>>>> 3. Inside that namespace, /sys/fs/bpf/myprog is no longer accessible, so
->>>>>>       xdp-loader can't get access to the original bpf_link; but the XDP
->>>>>>       program is still attached to eth0.
->>>>>
->>>>> The key to decide is whether moving netdev across netns should be allowed
->>>>> when xdp attached. I think it should be denied. Even when legacy xdp
->>>>> program is attached, since it will confuse user space managing part.
->>>>
->>>> There are perfectly valid use cases where this is done already today (minus
->>>> bpf_link), for example, consider an orchestrator that is setting up the BPF
->>>> program on the device, moving to the newly created application pod during
->>>> the CNI call in k8s, such that the new pod does not have the /sys/fs/bpf/
->>>> mount instance and if unprivileged cannot remove the BPF prog from the dev
->>>> either. We do something like this in case of ipvlan, meaning, we attach a
->>>> rootlet prog that calls into single slot of a tail call map, move it to the
->>>> application pod, and only out of Cilium's own pod and it's pod-local bpf fs
->>>> instance we manage the pinned tail call map to update the main programs in
->>>> that single slot w/o having to switch any netns later on.
->>>
->>> Right. You mentioned this use case before, but I managed to forget about it.
->>> Totally makes sense for prog to stay attached to netdev when it's moved.
->>> I think pod manager would also prefer that pod is not able to replace
->>> xdp prog from inside the container. It sounds to me that steps 1,2,3 above
->>> is exactly the desired behavior. Otherwise what stops some application
->>> that started in a pod to override it?
->>
->> Generally, yes, and it shouldn't need to care nor see what is happening in
->> /sys/fs/bpf/ from the orchestrator at least (or could potentially have its
->> own private mount under /sys/fs/bpf/ or elsewhere). Ideally, the behavior
->> should be that orchestrator does all the setup out of its own namespace,
->> then moves everything over to the newly created target namespace and e.g.
->> only if the pod has the capable(cap_sys_admin) permissions, it could mess
->> around with anything attached there, or via similar model as done in [0]
->> when there is a master device.
-> 
-> Yup, I can see how this can be a reasonable use case where you *would*
-> want the locking. However, my concern is that there should be a way for
-> an admin to recover from this (say, if it happens by mistake, or a
-> misbehaving application). Otherwise, I fear we'll end up with support
-> cases where the only answer is "try rebooting", which is obviously not
-> ideal.
 
-I'm not quite sure I follow the concern, if you're an admin and have the right
-permissions, then you should be able to introspect and change settings like with
-anything else there is today.
 
->> Last time I looked, there is a down/up cycle on the dev upon netns
->> migration and it flushes e.g. attached qdiscs afaik, so there are
->> limitations that still need to be addressed. Not sure atm if same is
->> happening to XDP right now.
-> 
-> XDP programs will stay attached. devmaps (for redirect) have a notifier
-> that will remove devices when they move out of a namespace. Not sure if
-> there are any other issues with netns moves somewhere.
-> 
->> In this regards veth devices are a bit nicer to work with since
->> everything can be attached on hostns ingress w/o needing to worry on
->> the peer dev in the pod's netns.
-> 
-> Presumably the XDP EGRESS hook that David Ahern is working on will make
-> this doable for XDP on veth as well?
+On 2/25/2020 3:08 AM, Gustavo A. R. Silva wrote:
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
 
-I'm not sure I see a use-case for XDP egress for Cilium yet, but maybe I'm still
-lacking a clear picture on why one should use it. We currently use various
-layers where we orchestrate our BPF programs from the agent. XDP/rx on the phys
-nic on the one end, BPF sock progs attached to cgroups on the other end of the
-spectrum. The processing in between on virtual devices is mainly tc/BPF-based
-since everything is skb based anyway and more flexible also with interaction
-with the rest of the stack. There is also not this pain of having to linearize
-all the skbs, but at least there's a path to tackle that.
+[...]
 
-Thanks,
-Daniel
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h | 2 +-
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/fweh.c     | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
