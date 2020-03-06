@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 518B517C1CC
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 16:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71F5517C1DB
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 16:31:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbgCFP3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 10:29:31 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41563 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbgCFP3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 10:29:30 -0500
-Received: by mail-pg1-f193.google.com with SMTP id b1so1228091pgm.8;
-        Fri, 06 Mar 2020 07:29:29 -0800 (PST)
+        id S1727181AbgCFPbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 10:31:23 -0500
+Received: from mail-pj1-f48.google.com ([209.85.216.48]:53700 "EHLO
+        mail-pj1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726259AbgCFPbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 10:31:23 -0500
+Received: by mail-pj1-f48.google.com with SMTP id cx7so1198988pjb.3;
+        Fri, 06 Mar 2020 07:31:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=UmltvUS81tbIumWX3xGTWP1jdQyhyXf9smX/ZD9oma8=;
-        b=I6guR87axLmn3FfIaT47Xsrqq+ZPGWKuczGyzwal0Njw4274I+g/9/ZK3B4SUgM9F8
-         KRJ7nuuzryB0YxS2xOo7sJsw5W8uEkeQAEjWk32LRU1nH5faBij+qVnamVLZ08+9cBPU
-         kyFpOHfAzmhhS5C54eTSoSwjdDQGpNVevAuLjId8r4mhqpjUlccTWSAKTs1fLgM79n3u
-         yCpu1izZv2nAZnnKysDL1GFwkomk3juFwO3DVGWBjHGJrwtfTOZDwxnVfH/7vOjpOD9s
-         whPMKG+Ml5gybm+zqXIcRfy2tVBw4Sb0Vcr+yEI/H/NBBVekZ9Tq491L+rKwF2+LXN5r
-         YNDg==
+        bh=VVTONCjty9yQikB9/1FIuVouvZO5dACbDh+vLUoJC3Q=;
+        b=fQgitdoCgLtWN3M8nTQPvrjKfQ2wgyWaZ/UhG1bSccHTykkV0UFPL+WlHRk94+n+9H
+         w48DARnGYTmkc57RzGjGwk4S8OdlbGtHfbKwnvzDim1mYmFpoh41RUuIt6WV2IfzzA9U
+         ROTGXHlZ4fLpRzUz5EPjydrJYTyfVtnboRm0k2lHClgR/u/9E6TaUslA9nbTYdf7cKeQ
+         7tbqa2zMMb3rJPXCPTDdXZlfdm1BQInL0DGmsHEltFAGlUik7l9BGs/sxqwU6A37cBPy
+         cAj3QioktAs9KyxGvCZSBIStNRLrTcu8sbFTawZ5q+Em2N4q2y0+N7CvVS00Y9rupbSY
+         6yCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=UmltvUS81tbIumWX3xGTWP1jdQyhyXf9smX/ZD9oma8=;
-        b=Y5AVvvpxQo4JvFWZqPffgtyUHjHF3PAFcvRMe2/e9pBHgtxlvnh0Ljt3wuagQeczaN
-         ZBNVvnm2mtBYFOshNVTYznCafk7TmKo9txTRwXFyFSvnfHsmMYQp1R+is+OT8e4vC6Hi
-         xkonYFdNrpxkNxGuB4KKdypK7s6k5+wUV8jsqz0YRQn7GSUM6Qf6vlAuW6l//Byw+LMe
-         /vlDcFM3ygJmXhuF4qZfwJufv/07vUadm6bYD0UcHyjZCg63rH+LZO4qh10FTfaZWlnF
-         062wjXHqhCzPTUea9AZXho9YGzE6g5vTQ82oHroDuhEeNBdWEQobFcJ4aBZlIsmUMKbe
-         dJNw==
-X-Gm-Message-State: ANhLgQ0z3Grprir+12ka2NC3GtLocO7M9afg2Lw+2P5DWmC74BnYc0ke
-        Uq11roL+wVDM6J4SWPU+VGw=
-X-Google-Smtp-Source: ADFU+vtNAQvM9mvw1j0YD7Oq2MQHqOoY5Ki8nvrqeuryXuYLyINM6b6ff3XpXncoeoy0RT/9ngSUrQ==
-X-Received: by 2002:a63:ce0a:: with SMTP id y10mr3765889pgf.44.1583508569030;
-        Fri, 06 Mar 2020 07:29:29 -0800 (PST)
+        bh=VVTONCjty9yQikB9/1FIuVouvZO5dACbDh+vLUoJC3Q=;
+        b=PDyEEgxcVviBN1Q23Lb04VMxiYW+hcuTEprFcxZm6JV/CDddEDQr5+AwwY6t1MpVs8
+         t1kWMWGaiTJIpf9aQnHukwTQ7zGdOfqnBXWKHcXK55Bs/jF/r1CBV8Tv7++ym4gpOESH
+         /XVx5nQKoTC6tDBq0ijoAGNhhZBpke1O7trq0hAXwF8HY2PbTXmBRCdek4XwNKOb47ak
+         7/ZGpRtc5m0FFVX3I28qk9wsuwUUrOyDIea4wCGTpPxQfv/3HaHqAl2LPztawfreFqk9
+         bxKJZLjTzAnid0sRHLw9kCtJ7hPWJbFRmV049mI1ssvcmcnqDtWtvMQIpooiv9Jw6xGJ
+         BLXg==
+X-Gm-Message-State: ANhLgQ2v3g8LJT6XcJUnrf0kTkvDHnKZJ9hZgO/poEPQefHmtiCLSYmf
+        J8pTYFosu8qcx7t667aAC4M=
+X-Google-Smtp-Source: ADFU+vta5drdjzqt7eYRNQPq2e1/++f24DY0V9eNOdAoiPlV/tXlFr2vClkyp5ANNT2OhhGRMn1EbQ==
+X-Received: by 2002:a17:90a:2466:: with SMTP id h93mr4132885pje.177.1583508682021;
+        Fri, 06 Mar 2020 07:31:22 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id f4sm698041pfn.116.2020.03.06.07.29.26
+        by smtp.gmail.com with ESMTPSA id d22sm10407517pja.14.2020.03.06.07.31.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 07:29:28 -0800 (PST)
-Date:   Fri, 06 Mar 2020 07:29:20 -0800
+        Fri, 06 Mar 2020 07:31:21 -0800 (PST)
+Date:   Fri, 06 Mar 2020 07:31:12 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -55,12 +55,11 @@ To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <5e626c50bb947_17502acca07205b47@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200304101318.5225-7-lmb@cloudflare.com>
+Message-ID: <5e626cc0c86c1_17502acca07205b461@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200304101318.5225-9-lmb@cloudflare.com>
 References: <20200304101318.5225-1-lmb@cloudflare.com>
- <20200304101318.5225-7-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf-next v3 06/12] bpf: sockmap: simplify
- sock_map_init_proto
+ <20200304101318.5225-9-lmb@cloudflare.com>
+Subject: RE: [PATCH bpf-next v3 08/12] bpf: sockmap: add UDP support
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -71,14 +70,13 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenz Bauer wrote:
-> We can take advantage of the fact that both callers of
-> sock_map_init_proto are holding a RCU read lock, and
-> have verified that psock is valid.
+> Allow adding hashed UDP sockets to sockmaps.
 > 
 > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
->  net/core/sock_map.c | 19 ++++---------------
->  1 file changed, 4 insertions(+), 15 deletions(-)
+>  net/core/sock_map.c | 37 +++++++++++++++++++++++++++++++++----
+>  1 file changed, 33 insertions(+), 4 deletions(-)
 > 
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
