@@ -2,55 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDEE17B32D
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 01:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F037017B36D
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 02:06:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbgCFAzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 19:55:23 -0500
-Received: from mga06.intel.com ([134.134.136.31]:15940 "EHLO mga06.intel.com"
+        id S1726317AbgCFBGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 20:06:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726128AbgCFAzX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 19:55:23 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 16:55:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,520,1574150400"; 
-   d="scan'208";a="413722639"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
-  by orsmga005.jf.intel.com with ESMTP; 05 Mar 2020 16:55:21 -0800
-Subject: Re: [PATCH net-next iproute2 1/2] Update devlink kernel header
-To:     David Ahern <dsahern@gmail.com>, Parav Pandit <parav@mellanox.com>,
-        netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org, jiri@mellanox.com
-References: <20200304040626.26320-1-parav@mellanox.com>
- <20200304040626.26320-2-parav@mellanox.com>
- <bfef88f7-c888-04b0-7d7d-dc1bb184d168@intel.com>
- <3281568c-72d3-2c02-adc3-4e3008cdf4ec@gmail.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <1517e035-8be1-d66b-92cb-727abdc36cd7@intel.com>
-Date:   Thu, 5 Mar 2020 16:55:21 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726243AbgCFBGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 20:06:48 -0500
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 93F1E2073D;
+        Fri,  6 Mar 2020 01:06:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583456807;
+        bh=aURKFQvIjafRMU6Gm9pVZS/vH2n9loe7wUOjvdcmpyE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nZh9xR/GftMO+mns/iZyIOCijIKiV5pzhuM8uhqpdqNMC0UUIetUleJVhk9rH3zNV
+         tDem9k+/iCMlcptF6njn8k/0dxNSKdQVYGfSV5bbW94TEGe6ZiksF8h4/sWgjRVmRU
+         1+v8Gf/HcPBmIfo/WUOwPUqjSAdXOEFyOZU/agVo=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com,
+        linux-um@lists.infradead.org, dledford@redhat.com, jgg@ziepe.ca,
+        leon@kernel.org, linux-rdma@vger.kernel.org, edumazet@google.com,
+        jasowang@redhat.com, mkubecek@suse.cz, hayeswang@realtek.com,
+        doshir@vmware.com, pv-drivers@vmware.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, gregkh@linuxfoundation.org,
+        merez@codeaurora.org, kvalo@codeaurora.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/7] ethtool: consolidate irq coalescing - other drivers
+Date:   Thu,  5 Mar 2020 17:05:55 -0800
+Message-Id: <20200306010602.1620354-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <3281568c-72d3-2c02-adc3-4e3008cdf4ec@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/2020 4:43 PM, David Ahern wrote:
-> On 3/5/20 5:42 PM, Jacob Keller wrote:
->> This hunk doesn't seem relevant to the patch and isn't mentioned in the
->> subject or description.
-> 
-> it was a sync of the header file. I drop those changes and do full uapi
-> sync for iproute2 and then apply patches.
-> 
+Hi!
 
-Makes sense. Thanks for the explanation.
+Convert more drivers following the groundwork laid in a recent
+patch set [1]. The aim of the effort is to consolidate irq
+coalescing parameter validation in the core.
+
+This set converts all the drivers outside of drivers/net/ethernet.
+
+Only vmxnet3 them was checking unsupported parameters.
+
+The aim is to merge this via the net-next tree so we can
+convert all drivers and make the checking mandatory.
+
+[1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
+
+Jakub Kicinski (7):
+  um: reject unsupported coalescing params
+  RDMA/ipoib: reject unsupported coalescing params
+  tun: reject unsupported coalescing params
+  r8152: reject unsupported coalescing params
+  vmxnet3: let core reject the unsupported coalescing parameters
+  staging: qlge: reject unsupported coalescing params
+  wil6210: reject unsupported coalescing params
+
+ arch/um/drivers/vector_kern.c                |  1 +
+ drivers/infiniband/ulp/ipoib/ipoib_ethtool.c |  2 ++
+ drivers/net/tun.c                            |  1 +
+ drivers/net/usb/r8152.c                      |  1 +
+ drivers/net/vmxnet3/vmxnet3_ethtool.c        | 24 +++-----------------
+ drivers/net/wireless/ath/wil6210/ethtool.c   |  1 +
+ drivers/staging/qlge/qlge_ethtool.c          |  2 ++
+ 7 files changed, 11 insertions(+), 21 deletions(-)
+
+-- 
+2.24.1
+
