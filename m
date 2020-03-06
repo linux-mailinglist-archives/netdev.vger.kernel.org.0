@@ -2,107 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC28E17C89A
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB6F117C89E
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 23:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbgCFW5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 17:57:33 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38024 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726171AbgCFW5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:57:32 -0500
-Received: by mail-pf1-f194.google.com with SMTP id g21so1809895pfb.5
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:57:32 -0800 (PST)
+        id S1726846AbgCFW7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 17:59:18 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45407 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgCFW7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 17:59:17 -0500
+Received: by mail-wr1-f65.google.com with SMTP id v2so4163620wrp.12
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 14:59:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=H8PEBuN12OFR6vza26a2YTZGgmcC3T+qMA5Ba5HaJew=;
-        b=DwXWz2qz13knqaGjpq2Zh7pa/p5CWNz50ayGugdAXy22e3HQ/pGWWGen3CyomXmJRU
-         msNwG2F/uOn3CpZnI/6EBgNbMkrkNhKtPHc8bofYqSfXzBXBF2Y00Cy97qHes/R7LVox
-         0l+YcPndZLwDw+GcldZkSIvKGAAuBIpRc/Nh1OPc284Rilemg4jzgKkrsnmBfEPF5+zr
-         uJovMYT4FZGlOVi6fbREE2oJtXPHfG1PyfCMUrV6h21DkTu6pzT6KLOs4JdIir3Je5mk
-         UllaslL1XUqK2YIKMNpvgyafLSfO3xnzMz5cCh7Fj8kx8t/H3aDdX+q8pHkgaIZDrii3
-         x1tQ==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N+DMGlWCMv0Ipzx2fhL5HIAhrMhMw20ncP7sjYlFs0k=;
+        b=J7OzAuhhnEvZarTAQUumDQ1KT546m8oizxrIUm6kNOWjINWCbmj03lh4CSCYSTj09o
+         7T3CedXfVqRxdgtlOftJDB8LMcNp4Ymm9TNvIg9KBijwDDDZDDCPHfKX+89UncVU+Pai
+         vFiMhBupYfrZ+uOOA2766OV0ZFWklamE+D3HCdSUVvkXzvQ17I3ivif8EJk5ky9k/r6/
+         /K+Rp0dn0zh9ul2TA3EkprMDAEdyok7l//QibII8uwdYWYGguUsA7VlJxIow/rtg8/Li
+         hMLnWUwiNGZDe7ccRvHwu1uMPKxWVndbgS0SCj3mbLFpB1lRdTt8cMklhYW6BPPTLH2n
+         HbDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=H8PEBuN12OFR6vza26a2YTZGgmcC3T+qMA5Ba5HaJew=;
-        b=c34rn9iPS7tHhK4ML/itmFOP7oEaKc0OwcVwgBShCmGh3jimcsydB8doKQZsRKc83t
-         x4adgRE2A6S5RH++Zwm30M/Er74oT7RMnBJzo7fhUtdleXKoRpztoKCQz3ZlgvfbS7vO
-         eZqEH3t3uUDwp4M9r7HHBOjr8VzUIPW5v7jWwW80SDMX97dGBN7m++MECcMlO+sQBnU+
-         3gVjUk/7wKQqCgRCls1cSlA9z/eoULLxSu2C6nvE2p5h3PA2AiwHLQ0Wg3qo9Vp+q/US
-         7xDsRYNm/utROJmmiPqsB4rIcsjyZE0ZkrUdK6JyC1LU4preJDXoVpNX+7r+rmjYDsBp
-         FtBA==
-X-Gm-Message-State: ANhLgQ3zaZRZJczTIss/xxax8lgc9UdY45ZLv3MiO8MSdT7vDUq+4Nds
-        Vh92jjhBK5YuAqFRO/yHVWKORV5WN0I=
-X-Google-Smtp-Source: ADFU+vveSNBxjoora2J+vCjSbv7ZcTgNRGh0PW+Y2uIGjp/WvfH6NmO/3uMRJFBE5oxD8aSPngj31Q==
-X-Received: by 2002:a63:1459:: with SMTP id 25mr5562079pgu.427.1583535451253;
-        Fri, 06 Mar 2020 14:57:31 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id 7sm10312181pjm.35.2020.03.06.14.57.30
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N+DMGlWCMv0Ipzx2fhL5HIAhrMhMw20ncP7sjYlFs0k=;
+        b=ZaZGxzrJ30+97JhKMSplmgJLnV5/AkQlSrkzsyn/FhOd0CUQ2xlTD/mgjQaVy7u9xO
+         n/0lVF6VyckX7n0+m9K/SW2vPQZYXCso082/thX7lIep8ayyMzyZafIxzqNtpj49uST0
+         YhO59c47oBtv0UOlsS5TPmA6Dtsw3nKjFKxyvr1Mx6SAz1ut9mb1SgVAJe7PT9dEr8NL
+         fK6k1PkfiFTFHVu3e/SQZ2KLKqObQhjoLDrj3JQS7MFCrZM+slsuLTjMZFUxUveZIzN6
+         BsYfB1LFUHF7X6UUJxhGaTgNpOUf984LEAXe2b5MEhEZdowP5VjBWooIS3+iOC+y/rBk
+         RH8Q==
+X-Gm-Message-State: ANhLgQ0y/HG6j3/8RflLJxvY7En2FR+AE1cNY8+6wRqRHdLixo7ho6OH
+        d9ycKfp/hWlRo5RfSgAvHZXGBU2g
+X-Google-Smtp-Source: ADFU+vuaMCJ5GUV5CbScdtoct6+P4HfreABV1lLV3SXmTQEHmqG3xSrRqO8h/QeaUuyA1T34jDvtZw==
+X-Received: by 2002:adf:b19d:: with SMTP id q29mr6017910wra.211.1583535554961;
+        Fri, 06 Mar 2020 14:59:14 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f29:6000:1447:bded:797c:45a5? (p200300EA8F2960001447BDED797C45A5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1447:bded:797c:45a5])
+        by smtp.googlemail.com with ESMTPSA id z11sm15191150wmd.47.2020.03.06.14.59.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2020 14:57:30 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20200305052319.14682-1-snelson@pensando.io>
- <20200305052319.14682-8-snelson@pensando.io>
- <20200305140322.2dc86db0@kicinski-fedora-PC1C0HJN>
- <d9df0828-91d6-9089-e1b4-d82c6479d44c@pensando.io>
- <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
- <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
- <20200306102009.0817bb06@kicinski-fedora-PC1C0HJN>
- <5ac3562b-47b1-a684-c7f2-61da1a233859@pensando.io>
- <20200306132825.2568127a@kicinski-fedora-PC1C0HJN>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <b9351a60-3722-5b5c-a521-219a9e43ecfb@pensando.io>
-Date:   Fri, 6 Mar 2020 14:57:29 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        Fri, 06 Mar 2020 14:59:14 -0800 (PST)
+Subject: [PATCH net-next 4/4] r8169: remove now unneeded barrier in rtl_tx
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
+Message-ID: <855fccd1-86d4-7f02-b202-a7e0240e677e@gmail.com>
+Date:   Fri, 6 Mar 2020 23:58:50 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200306132825.2568127a@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <de8e697e-dd20-cbae-4d2d-b1e8994ba65d@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/6/20 1:28 PM, Jakub Kicinski wrote:
-> On Fri, 6 Mar 2020 12:32:51 -0800 Shannon Nelson wrote:
->>>> However, this device id does exist on some of the DSC configurations,
->>>> and I'd prefer to explicitly acknowledge its existence in the driver and
->>>> perhaps keep better control over it, whether or not it gets used by our
->>>> 3rd party tool, rather than leave it as some obscure port for someone to
->>>> "discover".
->>> I understand, but disagree. Your driver can certainly bind to that
->>> management device but it has to be for the internal use of the kernel.
->>> You shouldn't just expose that FW interface right out to user space as
->>> a netdev.
->> So for now the driver should simply capture and configure the PCI
->> device, but stop at that point and not setup a netdev.  This would leave
->> the device available for devlink commands.
->>
->> If that sounds reasonable to you, I'll add it and respin the patchset.
-> I presume the driver currently creates a devlink instance per PCI
-> function? (Given we have no real infrastructure in place to combine
-> them.) It still feels a little strange to have a devlink instance that
-> doesn't represent any entity user would care about, but a communication
-> channel. It'd be better if other functions made use of the
-> communication channel behind the scene. That said AFAIU driver with just
-> a devlink instance won't allow passing arbitrary commands, so that would
-> indeed address my biggest concern.
->
-> What operations would that devlink instance expose?
+Until ae84bc187337 ("r8169: don't use bit LastFrag in tx descriptor
+after send") we used to access another bit in the descriptor, therefore
+it seems the barrier was needed. Since this commit DescOwn is the
+only bit we're interested in, so the barrier isn't needed any longer.
 
-Being as this is still a new idea for us and we aren't up to speed yet 
-on what all devlink offers, I don't have a good answer at the moment.  
-For now, nothing more than already exposed, which is simple device info.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-sln
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 8a707d67c..181b35b78 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4397,12 +4397,6 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 		if (status & DescOwn)
+ 			break;
+ 
+-		/* This barrier is needed to keep us from reading
+-		 * any other fields out of the Tx descriptor until
+-		 * we know the status of DescOwn
+-		 */
+-		dma_rmb();
+-
+ 		rtl8169_unmap_tx_skb(tp, entry);
+ 
+ 		if (skb) {
+-- 
+2.25.1
+
 
