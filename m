@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB11A17C0FE
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 15:55:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F93317C105
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 15:57:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbgCFOzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 09:55:50 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:38880 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726565AbgCFOzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 09:55:49 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id DABE7A4006C;
-        Fri,  6 Mar 2020 14:55:47 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 6 Mar 2020
- 14:55:41 +0000
-Subject: Re: [PATCH net-next ct-offload 02/13] net/sched: act_ct: Instantiate
- flow table entry actions
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "Oz Shlomo" <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1583422468-8456-1-git-send-email-paulb@mellanox.com>
- <1583422468-8456-3-git-send-email-paulb@mellanox.com>
- <ce72a853-a416-4162-5ffb-c719c98fb7cc@solarflare.com>
- <8f58e2b3-c1f6-4c75-6662-8f356f3b4838@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <640d8d41-83e3-af9d-9e7e-f8b8f5c6fb68@solarflare.com>
-Date:   Fri, 6 Mar 2020 14:55:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <8f58e2b3-c1f6-4c75-6662-8f356f3b4838@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25272.003
-X-TM-AS-Result: No-6.434500-8.000000-10
-X-TMASE-MatchedRID: VfovoVrt/obmLzc6AOD8DfHkpkyUphL9+IfriO3cV8RPvOpmjDN2ko+u
-        WEAswmyPuLWqdf+LclurtvmvUFOgI2szdxlvNr+EIwk7p1qp3JYLBPYMfuIybu1VpmGiDxtcPDA
-        DfLdL5BoH/+DcPzl6RwNqjJbFP+t9c0aJdp1qXtMkO5bN+/P8x8GcvcBoab2jB/eejAjH+qTiKq
-        oPfA0a+r8ArwL1o8wVTpkdQ6COBA05fJEi9zRcQ6MY62qeQBkLGIMg4+U4kbWs1p4mti9RCGJtB
-        O3fjIWiBJCwWhIJtW5Rb64jT6Ref6+/EguYor8cgxsfzkNRlfLdB/CxWTRRu4as+d5/8j56pKlg
-        vc30rR1RzVNAPjpmdfeSGQecRj43lg/PPEN5Oe9nIxZyJs78kg==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.434500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25272.003
-X-MDID: 1583506548-ilK59XuVPwNx
+        id S1727052AbgCFO5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 09:57:06 -0500
+Received: from mail-pf1-f173.google.com ([209.85.210.173]:37561 "EHLO
+        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgCFO5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 09:57:06 -0500
+Received: by mail-pf1-f173.google.com with SMTP id p14so1239103pfn.4;
+        Fri, 06 Mar 2020 06:57:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=HN/E5Tzk+girdr99QZwMRVL6lrNmL6Zp+J2fG5Cj+3k=;
+        b=ZZJl1bR3mrcnaxL3ree8YW9dF2J+ItB2o9Jl9MI+gPGS72mSaONTdhu4Fc9JOF0A0m
+         l5LgnnLCw/AXwPGRRAvTzotWYV9M0Dau6pmdQNhlfGtP1PCxmWxBwRpATq+sEY52RJSb
+         +5aU8YUpZMcKnFNumLlZOvXnuzUCRPMXSPY1P/Hoha3+SlB6SBD8ewL05JB47mtJXrbA
+         ZCt3E2vvFxyeUPVh5/5NTxEEeCXHebnLUHQK5fVyI6vCEcekoWr8FXdrFDXd4LL50WEk
+         TYpkgnu8DOM8esTuuwZwKDrlB7ybdPZriAMJCJ7tXOx6mSV0/ozkf0c2vKjx+9K3EGzO
+         H6Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=HN/E5Tzk+girdr99QZwMRVL6lrNmL6Zp+J2fG5Cj+3k=;
+        b=rI9v4dqKB0vkBK+oXa3kmv8ccqQE8fixlvbtcSpe1YB130gkpsxaXSmdseIy84VQMO
+         RqaXBfKj8ewLaz1wA9toHprKuH5EFk4NDae/c0RhSRNjOcPy5cn+vfATyYFsUVJxMNxj
+         gIkoQNBtk5SYhyRpkUBbCWelKUiUzsbJtfV1wtIkFY7Rq8tABigqPZqAbNOQTAb7ruK5
+         05T9dVPCtcbknQPopU7fJmNNSp65eEvWjw23U+UkkMcuJNWgnZJDPs49ubVKFwKqTSNj
+         9y75E72IfAL6u/iU2qDpu9WSrbdxQ7eGa2shiiep+5NX9oN02ESyTmKbgOND3x2J5Tzg
+         AONw==
+X-Gm-Message-State: ANhLgQ3rFgvgQ/7+Bflqor+locvSXzmC0RZZZU+IHt9fD49cg0by6EFy
+        A01vE+EdwrJMTth47xZZGEg=
+X-Google-Smtp-Source: ADFU+vsPFVmIpZRc3w2qNCFY2kJ81l3YLGJKsMVnjUcch/ZRlX58gTATWaB5boorNEsecw1muyyxVQ==
+X-Received: by 2002:a62:1dc6:: with SMTP id d189mr4283745pfd.153.1583506624666;
+        Fri, 06 Mar 2020 06:57:04 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id d24sm37968572pfq.75.2020.03.06.06.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Mar 2020 06:57:03 -0800 (PST)
+Date:   Fri, 06 Mar 2020 06:56:55 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>, john.fastabend@gmail.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <5e6264b766635_17502acca07205b46@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200304101318.5225-2-lmb@cloudflare.com>
+References: <20200304101318.5225-1-lmb@cloudflare.com>
+ <20200304101318.5225-2-lmb@cloudflare.com>
+Subject: RE: [PATCH bpf-next v3 01/12] bpf: sockmap: only check ULP for TCP
+ sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/03/2020 13:22, Paul Blakey wrote:
-> On 06/03/2020 13:35, Edward Cree wrote:
->> I'm not quite sure what the zone is doing in the action.  Surely it's
->>  a property of the match.  Or does this set a ct_zone for a potential
->>  *second* conntrack lookup?
-> this is part of the metadata that driver should mark the with, as it can be matched against in following hardware tables/rules. consider this set of offloaded rules:
-<snip>
-So, normally I'd expect to use different chains for the different zones.
-But I can see that in theory you might want to have some rules shared by
- both, hence being able to put them in the same chain is useful.
+Lorenz Bauer wrote:
+> The sock maj code checks that a socket does not have an active upper
+> layer protocol before inserting it into the map. This requires casting
+> via inet_csk, which isn't valid for UDP sockets.
+> 
+> Guard checks for ULP by checking inet_sk(sk)->is_icsk first.
+> 
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-Assuming an idealised model of the hardware, with three stages:
-* "left-hand rule" - in chain 0, match -trk, action "ct and goto chain"
-* "conntrack lookup" - match 5-tuple, return NATted 5-tuple + some flags
-* "right-hand rule" - in chain !=0, match +trk(±others), many actions
-The zone is set by the left-hand rule, it's a (semi-)implicit input to
- the conntrack lookup, and it can be an explicit match field of the
- right-hand rule (as it is in your example).
-But from a logical perspective, the conntrack lookup isn't *producing*
- the zone as an output, it's just forwarding on the zone that was fed to
- it by the left-hand rule.
-So, the conntrack entry, which already has the zone in its
- struct flow_match (. struct flow_match_ct .key->ct_zone), doesn't need
- to specify the zone *again* in the action.  If the driver needs to
- supply that piece of information a second time in the action metadata
- for the conntrack action, that's a hardware-specific implementation
- detail.
-Or so it seems to me, anyway.
-
--ed
+Acked-by: John Fastabend <john.fastabend@gmail.com>
