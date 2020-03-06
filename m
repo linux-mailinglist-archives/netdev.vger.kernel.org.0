@@ -2,159 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 289E417C32E
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 17:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D237A17C33C
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 17:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgCFQko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 11:40:44 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38273 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbgCFQko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 11:40:44 -0500
-Received: by mail-wr1-f65.google.com with SMTP id t11so3135603wrw.5;
-        Fri, 06 Mar 2020 08:40:42 -0800 (PST)
+        id S1726875AbgCFQpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 11:45:34 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51886 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbgCFQpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 11:45:33 -0500
+Received: by mail-wm1-f65.google.com with SMTP id a132so3205136wme.1
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 08:45:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XjHnSwyS0af+P6Jfh8Jzg4HPNo9WQiL8yOX1s0HApbQ=;
-        b=CbSaDyS3tlGIXzJPDGmj9+AIlYyU7Yowmve6GEk50xA6VmLmZxHH5HW67z5v9akxJN
-         nGmqQ1FAjSNx511yM1rus1wIj4/+IgiLa4jFXAq3t+VnZPbcJi2ejnaUkV6b5SKW6kyN
-         hzxB5IKSXIbWozwe8M041xvmZrKHB1s6eVUpG+MsHaDJ0Spfb05SAOeiwB8cKCN/Pn2e
-         fPhbdTuB2mYwsxcsDnol2mJBRBqcYUpJIndkM4bjmdNdbvdjzaAKHs5iHbBERWAoQ6Ed
-         IPbTM3kZsKjUscXO0/PBVdGu+tjOfbi+/lP9+Wz2T8EPTasDaTPRevA4VXyeTR6nXrpn
-         tWDQ==
+        d=gssi.it; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=f1jAW4H0IkyKSlaWbqUdo9Y0iTzcaoXCOSrb76HWcpQ=;
+        b=BJDdwnnYch4uEI3annx6gE5gXjIKB2h3hwun3QMq+KmyoRKQnNVr4g17Tm1+EVYLWq
+         LqCbzsyBcfGUAVFns1KZYBUituYiC7liaV56CvjkmkNvnqM9Hk/Y0bZKzyS2ab0zDHOf
+         QuipMUnVO9T2ih77VBp9jgZFzhkraGo1fIq9Exx9CEA7qkNaUbLE6YPDz7UFD5fo+5Gk
+         s80+5yIpfR6kjoZVYP0w1VhKMgG/Mx+JOZanzOqVQRrNmkCkdis5oPBU6BxBCBoOY8hG
+         1z60Ycdr+hutG/1PoLWTg1HTPNLBO2P/E5lTuKh4o+9nbwwsS+kYCZa0py5xLYhJtvUr
+         K6yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=XjHnSwyS0af+P6Jfh8Jzg4HPNo9WQiL8yOX1s0HApbQ=;
-        b=HEHMBh0UYUlIFvTZojR6CHwOCMsQjOW+cbPCURX6XjucphBnqC8TznvHR9u9vAiZRG
-         +DT/3acVEwKjw7IiIS/DZtKHuU52z8qr2dS1lfADxTBainjTXzJnTn+pZwEdKmlqySrX
-         fqyWOY9+empd3EfgapmgA3tl5Kct0ML55a5VcRv3axKm1U+P18wMVYQ8N5HLwuB7bNv/
-         p8uG+fxfzrRdfnqZPIB0gRePPqL7j5n5RPauGjRsJ6Y8UPyOJaoESaxkR6Kk40E5sTtG
-         0rvADhpMlC7IHbRanrkDgq0avIxpY4vZ0u/e7Uf7/0/4Uso5rS1AMMiX0qGEBCHcanYD
-         1HNA==
-X-Gm-Message-State: ANhLgQ3tlARANZPWXha64Il9qcWpSTGzfJV6ejQHYCYCBJIQFsED7k/J
-        Y8vI4DEpdIrCVoupn8QAm8Y=
-X-Google-Smtp-Source: ADFU+vtU+an94UKd4UPfywLnbr+VHC0wDCwOSaA/3LsprBBI1hOWapF4bBHrYJWtYeuKNmQC60ln8A==
-X-Received: by 2002:adf:8162:: with SMTP id 89mr882490wrm.45.1583512841997;
-        Fri, 06 Mar 2020 08:40:41 -0800 (PST)
-Received: from localhost.localdomain ([2a02:810d:1b40:644:c890:7487:7d:ef6f])
-        by smtp.gmail.com with ESMTPSA id c11sm48946421wrp.51.2020.03.06.08.40.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 08:40:41 -0800 (PST)
-From:   Markus Fuchs <mklntf@gmail.com>
-To:     mklntf@gmail.com
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: platform: Fix misleading interrupt error msg
-Date:   Fri,  6 Mar 2020 17:38:48 +0100
-Message-Id: <20200306163848.5910-1-mklntf@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=f1jAW4H0IkyKSlaWbqUdo9Y0iTzcaoXCOSrb76HWcpQ=;
+        b=Mq9ZLHpRXPK6AcTJLQtHRCoxU934TAfWwFMEwVzTmvCFDMoXQVVttNXKkFs9C6wkGW
+         Q4WnVgyyBONB7X2wd9dXDHoTGGQ/stfb66StA+gNwNqcp4bWet+RSTdsxrgd+swkhcol
+         pnGZAsev6XBRaFGOj4i+QbRXfLXt6kfg+9CQea2vOYAw4Hoiev9LDpp0IpIw73UbtJIX
+         nrTthRVqWAHdevr8SWuuxGHwHp1OO+EYvyKXXAj5ARmXKIgT33msIdlb/WRpT+GXndqm
+         ZPjv1gA02sGm/Gv0QTXdrY+mj9GC9vR06iUeCXVSYKaTTGCC98wt5QweizuSehwFyzX5
+         CE3w==
+X-Gm-Message-State: ANhLgQ3BM/15fe5DrYo49RPOXo5uq3eXsnRifbXDfYj5KWmrOszvi1ks
+        78zYT6jkdvaJMbW5O+j0WlnR8Q==
+X-Google-Smtp-Source: ADFU+vvwgXTS/gGW17pEFyLijL3F59giKG9Rig9EHIsVd2K3b7BxzgGLv34Rt3qkFPlCnjz43GNffQ==
+X-Received: by 2002:a1c:9d43:: with SMTP id g64mr4727921wme.62.1583513128994;
+        Fri, 06 Mar 2020 08:45:28 -0800 (PST)
+Received: from [192.168.1.125] (dynamic-adsl-78-14-145-244.clienti.tiscali.it. [78.14.145.244])
+        by smtp.gmail.com with ESMTPSA id t18sm41756wml.17.2020.03.06.08.45.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2020 08:45:28 -0800 (PST)
+Subject: Re: [net-next 1/2] Perform IPv4 FIB lookup in a predefined FIB table
+To:     David Ahern <dsahern@gmail.com>,
+        Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dav.lebrun@gmail.com,
+        andrea.mayer@uniroma2.it, paolo.lungaroni@cnit.it,
+        hiroki.shirokura@linecorp.com
+References: <20200213010932.11817-1-carmine.scarpitta@uniroma2.it>
+ <20200213010932.11817-2-carmine.scarpitta@uniroma2.it>
+ <7302c1f7-b6d1-90b7-5df1-3e5e0ba98f53@gmail.com>
+ <20200219005007.23d724b7f717ef89ad3d75e5@uniroma2.it>
+ <cd18410f-7065-ebea-74c5-4c016a3f1436@gmail.com>
+ <20200219034924.272d991505ee68d95566ff8d@uniroma2.it>
+ <a39867b0-c40f-e588-6cf9-1524581bb145@gmail.com>
+From:   Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
+Message-ID: <4ed5aff3-43e8-0138-1848-22a3a1176e46@gssi.it>
+Date:   Fri, 6 Mar 2020 17:45:26 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <a39867b0-c40f-e588-6cf9-1524581bb145@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not every stmmac based platform makes use of the eth_wake_irq or eth_lpi
-interrupts. Use the platform_get_irq_byname_optional variant for these
-interrupts, so no error message is displayed, if they can't be found.
-Rather print an information to hint something might be wrong to assist
-debugging on platforms which use these interrupts.
+Hi David,
 
-Signed-off-by: Markus Fuchs <mklntf@gmail.com>
----
-On my cyclone V socfpga platform I get error messages after updating to
-Linux Kernel 5.4.24
+Thanks for the pointers for the VRF with MPLS.
 
-Starting kernel ...
+We have been looking at this for the last weeks also watched your videos 
+on the VRF and l3mdev implementation at the different netdev conferences.
 
-Deasserting all peripheral resets
-[    1.206363] socfpga-dwmac ff700000.ethernet: IRQ eth_wake_irq not found
-[    1.213023] socfpga-dwmac ff700000.ethernet: IRQ eth_lpi not found
+However, in the SRv6 we don’t really need a VRF device. The SRv6 
+functions (the already supported ones as well as the End.DT4 submitted 
+here) resides in the IPv6 FIB table.
 
-These interrupts don't matter for my platform and many other stmmac based
-ones, as we can see by grepping for 'macirq'.
+The way it works is as follows:
+1) create a table for the tenant
+$ echo 100 tenant1 >> /etc/iproute2/rt_tables
 
-socfpga.dtsi:                   interrupt-names = "macirq";
-socfpga.dtsi:                   interrupt-names = "macirq";
-sun7i-a20.dtsi:                 interrupt-names = "macirq";
-spear600.dtsi:                  interrupt-names = "macirq", "eth_wake_irq";
-artpec6.dtsi:                   interrupt-names = "macirq", "eth_lpi";
-rk322x.dtsi:                    interrupt-names = "macirq";
-sun9i-a80.dtsi:                 interrupt-names = "macirq";
-spear1310.dtsi:                 interrupt-names = "macirq";
-spear1310.dtsi:                 interrupt-names = "macirq";
-spear1310.dtsi:                 interrupt-names = "macirq";
-spear1310.dtsi:                 interrupt-names = "macirq";
-stih407-family.dtsi:            interrupt-names = "macirq", "eth_wake_irq";
-stm32f429.dtsi:                 interrupt-names = "macirq";
-sun6i-a31.dtsi:                 interrupt-names = "macirq";
-meson.dtsi:                     interrupt-names = "macirq";
-rk3288.dtsi:                    interrupt-names = "macirq", "eth_wake_irq";
-sun8i-r40.dtsi:                 interrupt-names = "macirq";
-sunxi-h3-h5.dtsi:               interrupt-names = "macirq";
-spear3xx.dtsi:                  interrupt-names = "macirq", "eth_wake_irq";
-lpc18xx.dtsi:                   interrupt-names = "macirq";
-stm32h743.dtsi:                 interrupt-names = "macirq";
-socfpga_arria10.dtsi:           interrupt-names = "macirq";
-socfpga_arria10.dtsi:           interrupt-names = "macirq";
-socfpga_arria10.dtsi:           interrupt-names = "macirq";
-rv1108.dtsi:                    interrupt-names = "macirq", "eth_wake_irq";
-spear13xx.dtsi:                 interrupt-names = "macirq", "eth_wake_irq";
-stm32mp151.dtsi:                interrupt-names = "macirq";
-ox820.dtsi:                     interrupt-names = "macirq", "eth_wake_irq";
-sun8i-a83t.dtsi:                interrupt-names = "macirq";
+You instantiate an SRv6 End.DT4 function at the Egress PE to decapsulate 
+the SRv6 encapsulation and lookup the inner packet in the tenant1 table. 
+The example iproute2 command to do so is as below.
 
-So, in my opinion, the error messages are missleading. I believe
-the right way to handle this would require more changes though. Some
-kind of configuration information, telling which interrupts are required
-by the platform and than conditionally call platform_get_irq_byname().
-This would print an error message, if something is wrong, on the right
-platforms and nothing at all on the others.
+$ ip -6 route add A::B encap seg6local action End.DT4 table tenant1 dev 
+enp0s8
 
-.../net/ethernet/stmicro/stmmac/stmmac_platform.c  | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+This installs an IPv6 FIB entry as shown below.
+$ ip -6 r
+a::b  encap seg6local action End.DT4 table 100 dev enp0s8 metric 1024 
+pref medium
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index d10ac54bf385..13fafd905db8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -663,16 +663,22 @@ int stmmac_get_platform_resources(struct platform_device *pdev,
- 	 * In case the wake up interrupt is not passed from the platform
- 	 * so the driver will continue to use the mac irq (ndev->irq)
- 	 */
--	stmmac_res->wol_irq = platform_get_irq_byname(pdev, "eth_wake_irq");
-+	stmmac_res->wol_irq =
-+		platform_get_irq_byname_optional(pdev, "eth_wake_irq");
- 	if (stmmac_res->wol_irq < 0) {
- 		if (stmmac_res->wol_irq == -EPROBE_DEFER)
- 			return -EPROBE_DEFER;
-+		dev_info(&pdev->dev, "IRQ eth_wake_irq not found\n");
- 		stmmac_res->wol_irq = stmmac_res->irq;
- 	}
- 
--	stmmac_res->lpi_irq = platform_get_irq_byname(pdev, "eth_lpi");
--	if (stmmac_res->lpi_irq == -EPROBE_DEFER)
--		return -EPROBE_DEFER;
-+	stmmac_res->lpi_irq =
-+		platform_get_irq_byname_optional(pdev, "eth_lpi");
-+	if (stmmac_res->lpi_irq < 0) {
-+		if (stmmac_res->lpi_irq == -EPROBE_DEFER)
-+			return -EPROBE_DEFER;
-+		dev_info(&pdev->dev, "IRQ eth_lpi not found\n");
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	stmmac_res->addr = devm_ioremap_resource(&pdev->dev, res);
--- 
-2.25.1
+Then the BGP routing daemon at the Egress PE is used to advertise this 
+VPN service. The BGP sub-TLV to support SRv6 IPv4 L3VPN is defined in [2].
 
+The SRv6 BGP extensions to support IPv4/IPv6 L3VPN are now merged in in 
+FRRouting/frr [3][4][5][6].
+
+There is also a pull request for the CLI to configure SRv6-locator on 
+zebra [7].
+
+The BGP daemon at the Ingress PE receives the BGP update and installs an 
+a FIB entry that this bound to SRv6 encapsulation.
+
+$ ip r
+30.0.0.0/24  encap seg6 mode encap segs 1 [ a::b ] dev enp0s9
+
+Traffic destined to that tenant will get encapsulated at the ingress 
+node and forwarded to the egress node on the IPv6 fabric.
+
+The encapsulation is in the form of outer IPv6 header that has the 
+destination address equal to the VPN service A::B instantiated at the 
+Egress PE.
+
+When the packet arrives at the Egress PE, the destination address 
+matches the FIB entry associated with the End.DT4 function which does 
+the decapsulation and the lookup inside the tenant table associated with 
+it (tenant1).
+
+Everything I explained is in the Linux kernel since a while. End.DT4 was 
+missing and this the reason we submitted this patch.
+
+In this multi-tenant DC fabric we leverage the IPv6 forwarding. No need 
+for MPLS dataplane in the fabric.
+
+We can submit a v2 of patch addressing your comments on the "tbl_known" 
+flag.
+
+Thanks,
+Ahmed
+
+[1] https://segment-routing.org/index.php/Implementation/AdvancedConf
+[2] https://tools.ietf.org/html/draft-ietf-bess-srv6-services-02
+[3] 
+https://github.com/FRRouting/frr/commit/7f1ace03c78ca57c7f8b5df5796c66fddb47e5fe
+[4] 
+https://github.com/FRRouting/frr/commit/e496b4203055c50806dc7193b9762304261c4bbd
+[5] 
+https://github.com/FRRouting/frr/commit/63d02478b557011b8606668f1e3c2edbf263794d
+[6] 
+https://github.com/FRRouting/frr/commit/c6ca155d73585b1ca383facd74e9973c281f1f93
+[7] https://github.com/FRRouting/frr/pull/5865
+
+
+On 19/02/2020 05:29, David Ahern wrote:
+> On 2/18/20 7:49 PM, Carmine Scarpitta wrote:
+>> Hi David,
+>> Thanks for the reply.
+>>
+>> The problem is not related to the table lookup. Calling fib_table_lookup and then rt_dst_alloc from seg6_local.c is good.
+>>
+> 
+> you did not answer my question. Why do all of the existing policy
+> options (mark, L3 domains, uid) to direct the lookup to the table of
+> interest not work for this use case?
+> 
+> What you want is not unique. There are many ways to make it happen.
+> Bleeding policy details to route.c and adding a flag that is always
+> present and checked even when not needed (e.g.,
+> CONFIG_IP_MULTIPLE_TABLES is disabled) is not the right way to do it.
+> 
