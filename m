@@ -2,62 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C86FE17B27F
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 00:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4DCB17B2DB
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 01:26:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgCEX4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 18:56:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42842 "EHLO mail.kernel.org"
+        id S1726440AbgCFA0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Mar 2020 19:26:15 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:45690 "EHLO fornost.hmeau.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726173AbgCEX4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Mar 2020 18:56:43 -0500
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 26DCF2073D;
-        Thu,  5 Mar 2020 23:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583452603;
-        bh=LnZPnIcg2Bei0ORc7wXCE5ofjYdWk5BjNIhdhXIXl8w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bTvdpO7K3mfuuQmAo3yo7Ez8QeAVZCaS3sgeKChrH89o2PKmpWAAuNF1LZajDykSQ
-         oFsCGmZAPLXpRLt/Koe2iyO2TaEVSDS2OLqD7SCL2/OYkcCx361IYS+ROL3CBbzlkx
-         WpbyRp1qugeufhqvYKWin3X/GHmH85ucWiyVlt/c=
-Date:   Thu, 5 Mar 2020 15:56:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [pull request][net 0/5] Mellanox, mlx5 fixes 2020-03-05
-Message-ID: <20200305155641.0392c073@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200305231739.227618-1-saeedm@mellanox.com>
-References: <20200305231739.227618-1-saeedm@mellanox.com>
+        id S1726128AbgCFA0P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Mar 2020 19:26:15 -0500
+Received: from gwarestrin.me.apana.org.au ([192.168.0.7] helo=gwarestrin.arnor.me.apana.org.au)
+        by fornost.hmeau.com with smtp (Exim 4.89 #2 (Debian))
+        id 1jA0oT-0004UE-Tz; Fri, 06 Mar 2020 11:26:03 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 06 Mar 2020 11:26:01 +1100
+Date:   Fri, 6 Mar 2020 11:26:01 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
+Cc:     netdev@vger.kernel.org, Thomas Graf <tgraf@suug.ch>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rhashtable: Document the right function parameters
+Message-ID: <20200306002601.GA647@gondor.apana.org.au>
+References: <20200305160516.10396-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200305160516.10396-1-j.neuschaefer@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  5 Mar 2020 15:17:34 -0800 Saeed Mahameed wrote:
-> Hi Dave,
+On Thu, Mar 05, 2020 at 05:05:16PM +0100, Jonathan Neuschäfer wrote:
+> rhashtable_lookup_get_insert_key doesn't have a parameter `data`. It
+> does have a parameter `key`, however.
 > 
-> This series introduces some fixes to mlx5 driver.
-> 
-> Please pull and let me know if there is any problem.
-> 
-> For -stable v5.3
->  ('net/mlx5e: kTLS, Fix wrong value in record tracker enum')
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-Back porting dead code feels kinda weird :S
-
-> For -stable v5.4
->  ('net/mlx5: DR, Fix postsend actions write length')
-> 
-> For -stable v5.5
->  ('net/mlx5e: kTLS, Fix TCP seq off-by-1 issue in TX resync flow')
->  ('net/mlx5e: Fix endianness handling in pedit mask')
-
-I can only trust your testing on the pedit change :)
-
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
