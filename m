@@ -2,105 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A03ED17C525
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 19:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0C117C546
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 19:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgCFSPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 13:15:25 -0500
-Received: from correo.us.es ([193.147.175.20]:40752 "EHLO mail.us.es"
+        id S1726781AbgCFSUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 13:20:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726910AbgCFSPY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 13:15:24 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E173F15AEA2
-        for <netdev@vger.kernel.org>; Fri,  6 Mar 2020 19:15:06 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D29BFDA38F
-        for <netdev@vger.kernel.org>; Fri,  6 Mar 2020 19:15:06 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C82AADA7B6; Fri,  6 Mar 2020 19:15:06 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EB01CDA3A9;
-        Fri,  6 Mar 2020 19:15:04 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 06 Mar 2020 19:15:04 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id C6BBE4301DE0;
-        Fri,  6 Mar 2020 19:15:04 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 11/11] netfilter: nft_chain_nat: inet family is missing module ownership
-Date:   Fri,  6 Mar 2020 19:15:13 +0100
-Message-Id: <20200306181513.656594-12-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200306181513.656594-1-pablo@netfilter.org>
-References: <20200306181513.656594-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726533AbgCFSUM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 13:20:12 -0500
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8FB8520674;
+        Fri,  6 Mar 2020 18:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583518811;
+        bh=RKMDi1YpwfKc4hbqZzkAeUer29pu5e93WN+MMh0gUeI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rGsyDKd2ap32aL7Rx5stRMgfBCAw49fhiARHuxAjUKBKc+Q0W3HJKyVxx+YSEUREP
+         3oqK4OVPdNNacVgICy/otVNJ0IphI+AUMruipIwnMdQr/06zpofgBFRdq/d/pH38ny
+         gvkTxgikBewPC4sA0HdyW7L7RKpU1Qya1wQhkPGs=
+Date:   Fri, 6 Mar 2020 10:20:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v3 net-next 7/8] ionic: add support for device id 0x1004
+Message-ID: <20200306102009.0817bb06@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
+References: <20200305052319.14682-1-snelson@pensando.io>
+        <20200305052319.14682-8-snelson@pensando.io>
+        <20200305140322.2dc86db0@kicinski-fedora-PC1C0HJN>
+        <d9df0828-91d6-9089-e1b4-d82c6479d44c@pensando.io>
+        <20200305171834.6c52b5e9@kicinski-fedora-PC1C0HJN>
+        <3b85a630-8387-2dc6-2f8c-8543102d8572@pensando.io>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set owner to THIS_MODULE, otherwise the nft_chain_nat module might be
-removed while there are still inet/nat chains in place.
+On Thu, 5 Mar 2020 23:43:44 -0800 Shannon Nelson wrote:
+> Yes, and if we were just writing registers, that would make sense. When 
+> I can get to it I do intend to try expand our use of the devlink 
+> interfaces where it will work for us.
 
-[  117.942096] BUG: unable to handle page fault for address: ffffffffa0d5e040
-[  117.942101] #PF: supervisor read access in kernel mode
-[  117.942103] #PF: error_code(0x0000) - not-present page
-[  117.942106] PGD 200c067 P4D 200c067 PUD 200d063 PMD 3dc909067 PTE 0
-[  117.942113] Oops: 0000 [#1] PREEMPT SMP PTI
-[  117.942118] CPU: 3 PID: 27 Comm: kworker/3:0 Not tainted 5.6.0-rc3+ #348
-[  117.942133] Workqueue: events nf_tables_trans_destroy_work [nf_tables]
-[  117.942145] RIP: 0010:nf_tables_chain_destroy.isra.0+0x94/0x15a [nf_tables]
-[  117.942149] Code: f6 45 54 01 0f 84 d1 00 00 00 80 3b 05 74 44 48 8b 75 e8 48 c7 c7 72 be de a0 e8 56 e6 2d e0 48 8b 45 e8 48 c7 c7 7f be de a0 <48> 8b 30 e8 43 e6 2d e0 48 8b 45 e8 48 8b 40 10 48 85 c0 74 5b 8b
-[  117.942152] RSP: 0018:ffffc9000015be10 EFLAGS: 00010292
-[  117.942155] RAX: ffffffffa0d5e040 RBX: ffff88840be87fc2 RCX: 0000000000000007
-[  117.942158] RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffffffffa0debe7f
-[  117.942160] RBP: ffff888403b54b50 R08: 0000000000001482 R09: 0000000000000004
-[  117.942162] R10: 0000000000000000 R11: 0000000000000001 R12: ffff8883eda7e540
-[  117.942164] R13: dead000000000122 R14: dead000000000100 R15: ffff888403b3db80
-[  117.942167] FS:  0000000000000000(0000) GS:ffff88840e4c0000(0000) knlGS:0000000000000000
-[  117.942169] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  117.942172] CR2: ffffffffa0d5e040 CR3: 00000003e4c52002 CR4: 00000000001606e0
-[  117.942174] Call Trace:
-[  117.942188]  nf_tables_trans_destroy_work.cold+0xd/0x12 [nf_tables]
-[  117.942196]  process_one_work+0x1d6/0x3b0
-[  117.942200]  worker_thread+0x45/0x3c0
-[  117.942203]  ? process_one_work+0x3b0/0x3b0
-[  117.942210]  kthread+0x112/0x130
-[  117.942214]  ? kthread_create_worker_on_cpu+0x40/0x40
-[  117.942221]  ret_from_fork+0x35/0x40
+Yes, please do that.
 
-nf_tables_chain_destroy() crashes on module_put() because the module is
-gone.
+> However, this device id does exist on some of the DSC configurations, 
+> and I'd prefer to explicitly acknowledge its existence in the driver and 
+> perhaps keep better control over it, whether or not it gets used by our 
+> 3rd party tool, rather than leave it as some obscure port for someone to 
+> "discover".
 
-Fixes: d164385ec572 ("netfilter: nat: add inet family nat support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_chain_nat.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/netfilter/nft_chain_nat.c b/net/netfilter/nft_chain_nat.c
-index ff9ac8ae0031..eac4a901233f 100644
---- a/net/netfilter/nft_chain_nat.c
-+++ b/net/netfilter/nft_chain_nat.c
-@@ -89,6 +89,7 @@ static const struct nft_chain_type nft_chain_nat_inet = {
- 	.name		= "nat",
- 	.type		= NFT_CHAIN_T_NAT,
- 	.family		= NFPROTO_INET,
-+	.owner		= THIS_MODULE,
- 	.hook_mask	= (1 << NF_INET_PRE_ROUTING) |
- 			  (1 << NF_INET_LOCAL_IN) |
- 			  (1 << NF_INET_LOCAL_OUT) |
--- 
-2.11.0
-
+I understand, but disagree. Your driver can certainly bind to that
+management device but it has to be for the internal use of the kernel.
+You shouldn't just expose that FW interface right out to user space as 
+a netdev.
