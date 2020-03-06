@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E092B17BE68
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFEAF17BE69
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbgCFN3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 08:29:02 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34211 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgCFN3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:29:01 -0500
-Received: by mail-wr1-f67.google.com with SMTP id z15so2387976wrl.1
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:29:00 -0800 (PST)
+        id S1727359AbgCFN3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 08:29:05 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38148 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727206AbgCFN3E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:29:04 -0500
+Received: by mail-wm1-f66.google.com with SMTP id u9so2377188wml.3
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:29:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lycBKI84VMyP9zCQGJ187EcaOsc3LOmwAgIixJQgN6I=;
-        b=erdj4lQJhMoQhMgxRbdnzTHBTRoyCAxUvl16bwOd+wpscUy6WzqDThFRHXm8vBtR8A
-         jUt2xHLCoMp6kG33EoBKo0DnKB5Ry+Gq4/TDIvpKB8vzgkTVVk92gHJc4dyh47dLfN0P
-         lWGPqEEy+a9zEiMFTLtL3z9noW8aNfBjQMkdyF45Ge08ny4EYa9ftGw41FR9yBGv5RZc
-         Y0uMga6Ay2uzNWWAY+tQAAQLBCSuMr9GXbzdr2sS8zZl3kXRvGLWM9RGuIOi2ugRpaZX
-         BIUAc1L57hv5frBpaH7BVBKrG0dn7bLR2jd3vNAgGTBBDWolH1u8cgGXPdURpN043VQG
-         W4yw==
+        bh=1lfpj1EwcBbTiXEN786RWS/gOCid52b6tEJP/P6YAPE=;
+        b=ZDEmNtSQdQFqWL56R1t47iP6yiRSBIgJ4m1e03b1D7+Fdweu/LXlyB8jaIPY2Z/bPI
+         rA7+OhsCx2R9HzxQK3s0GSslNOvj4f14GrBBPfktVu1+NEudC+fEFY1zbjlEtW3fOLZ3
+         DXupSY1jAJRzqpphOje1zdIU2jnV5C7AIlv0yFKfzXFA0qvU5RA+oryyYBhIwiUAgTrX
+         xVZA5ntJZLhZTvkM44UX3D6dJq3LPZfSRi0VRsudSQYrREwqbwGbV/hAxyfz760ZKlHD
+         aAj7nBjSevUJZA/Ug1344knYlb1JktYxlb0c9/4tI4hFkAUJLsauj0g17BfRqjbRBnM9
+         n68Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lycBKI84VMyP9zCQGJ187EcaOsc3LOmwAgIixJQgN6I=;
-        b=hJoRGiI7VmJn2J7aqxPG6mXneLWqMLewrFVbLYQ64MdKAGcaCEUNkRpAN1oI4lGufx
-         YaBgXfZcJ8oFNM+E4596j5zUb//fq92TakTVTzMT54hFGVQNbODNQr4ExLiiaCuivtQ/
-         VN3n6R4FjfL3v6iHlNMwImL4pXlRh/8bTW9FlN9bk0Fzyuz1pNcTjhYLzTkECRyY3ocU
-         kKUu0EgHitGONoHEia4nwHNcdKA6ru3rEKiVG3U6ooj8ZRWg8UV/hOuwYl+F1Vk/cdy8
-         liBIe8XiPMBgrKmi+2SAzReoPUbkCePJ6sdJQRJQzriDw6VMs3OFmwCp9i+euqTeViHk
-         3/UQ==
-X-Gm-Message-State: ANhLgQ2yc1m1f0qlfnd5wU3Yb4Qo3ytl++Ukd0/R692h4Inur3vVWv9f
-        W1/zqy+blsqjSednklMveNMnhQGf+N4=
-X-Google-Smtp-Source: ADFU+vvDEnXdXf5M2H+LFBtfJyxCKsxAgV9UBz5H77SCbHZwkOvinpueEm046F4cGlEgzVY3sx7Pag==
-X-Received: by 2002:a5d:6284:: with SMTP id k4mr4227971wru.398.1583501339505;
-        Fri, 06 Mar 2020 05:28:59 -0800 (PST)
+        bh=1lfpj1EwcBbTiXEN786RWS/gOCid52b6tEJP/P6YAPE=;
+        b=OId636wDTw49dw183fGiFEbAaTZzUSxXpD5wl2tBMGR6mxunEZzG1VVF42RtFo4qXR
+         E+b/VKpU2LJxehqbwz1qYjky0NusHDLWphdXE/SaO2QpgK32Z6uLY0P57UtqrMzlRQNJ
+         FYR08qEtaAZA0vsoUaLnbvnX8qY/LpI4WLPdMIQ9Sxg/VUpwF9wZ87NZ9TUEJ78EYkgf
+         AbklYIw7CzNZoic5O66UW7uksa6QgcYqt8fU+x736HECiYNnwXkSRwGNDd+wMBefzbDe
+         +SGdZMCtu0uN4j3taaTWV9C2xSYK4LsBvGQ5lhoDBbeVU/Sm9UdYAzar7E1sbhUr/azv
+         GjAA==
+X-Gm-Message-State: ANhLgQ2jcSMKU6Tl37o/8JXgqHBJFVNEpffvUMuA/ZvJeW3+yTDT7zio
+        oULrInBE+G3FaVdDa4k2m29G1V3Yz+s=
+X-Google-Smtp-Source: ADFU+vsJD/JjHRdjyzJ/aUuzKUv9pOabv6+rCAJXtRMBkIKoh5CeM9jfgcQhAAw3WvWMbgQtdfpBig==
+X-Received: by 2002:a7b:c305:: with SMTP id k5mr4211532wmj.189.1583501340798;
+        Fri, 06 Mar 2020 05:29:00 -0800 (PST)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f127sm14032809wma.4.2020.03.06.05.28.58
+        by smtp.gmail.com with ESMTPSA id k2sm17570555wrn.57.2020.03.06.05.29.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 05:28:59 -0800 (PST)
+        Fri, 06 Mar 2020 05:29:00 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
@@ -53,9 +53,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
         alexandre.torgue@st.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v3 01/10] flow_offload: Introduce offload of HW stats type
-Date:   Fri,  6 Mar 2020 14:28:47 +0100
-Message-Id: <20200306132856.6041-2-jiri@resnulli.us>
+Subject: [patch net-next v3 02/10] ocelot_flower: use flow_offload_has_one_action() helper
+Date:   Fri,  6 Mar 2020 14:28:48 +0100
+Message-Id: <20200306132856.6041-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200306132856.6041-1-jiri@resnulli.us>
 References: <20200306132856.6041-1-jiri@resnulli.us>
@@ -68,43 +68,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Initially, pass "ANY" (struct is zeroed) to the drivers as that is the
-current implicit value coming down to flow_offload. Add a bool
-indicating that entries have mixed HW stats type.
+Instead of directly checking number of action entries, use
+flow_offload_has_one_action() helper.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v2->v3:
-- moved to bitfield
-- removed "mixed" bool
 v1->v2:
-- moved to actions
-- add mixed bool
+- new patch
 ---
- include/net/flow_offload.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mscc/ocelot_flower.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index cd3510ac66b0..3afd270eb135 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -154,6 +154,8 @@ enum flow_action_mangle_base {
- 	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
- };
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 8993dadf063c..8986f209e981 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -14,7 +14,7 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
+ 	const struct flow_action_entry *a;
+ 	int i;
  
-+#define FLOW_ACTION_HW_STATS_TYPE_ANY 0
-+
- typedef void (*action_destr)(void *priv);
+-	if (f->rule->action.num_entries != 1)
++	if (!flow_offload_has_one_action(&f->rule->action))
+ 		return -EOPNOTSUPP;
  
- struct flow_action_cookie {
-@@ -168,6 +170,7 @@ void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
- 
- struct flow_action_entry {
- 	enum flow_action_id		id;
-+	u8 hw_stats_type;
- 	action_destr			destructor;
- 	void				*destructor_priv;
- 	union {
+ 	flow_action_for_each(i, a, &f->rule->action) {
 -- 
 2.21.1
 
