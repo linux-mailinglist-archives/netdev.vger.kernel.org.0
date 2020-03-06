@@ -2,56 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF60217B427
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 03:08:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6989217B45C
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 03:20:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbgCFCI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Mar 2020 21:08:26 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:58762 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbgCFCI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 21:08:26 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7FCE11581B2D3;
-        Thu,  5 Mar 2020 18:08:25 -0800 (PST)
-Date:   Thu, 05 Mar 2020 18:08:23 -0800 (PST)
-Message-Id: <20200305.180823.1274906337509861200.davem@davemloft.net>
-To:     sfr@canb.auug.org.au
-Cc:     sameo@linux.intel.com, linux-next@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        johannes@sipsolutions.net
-Subject: Re: linux-next: the nfc-next tree seems to be old
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200306104825.068268eb@canb.auug.org.au>
-References: <20200130105538.7b07b150@canb.auug.org.au>
-        <20200306104825.068268eb@canb.auug.org.au>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 05 Mar 2020 18:08:25 -0800 (PST)
+        id S1726565AbgCFCUC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 5 Mar 2020 21:20:02 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:35793 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgCFCUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Mar 2020 21:20:02 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID 0262Joaw024576, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTEXMB06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id 0262Joaw024576
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 6 Mar 2020 10:19:50 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 6 Mar 2020 10:19:50 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
+ RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
+ 15.01.1779.005; Fri, 6 Mar 2020 10:19:50 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 4/7] r8152: reject unsupported coalescing params
+Thread-Topic: [PATCH net-next 4/7] r8152: reject unsupported coalescing params
+Thread-Index: AQHV81OGKoKGuBe19UiZmoGvvFI9rag608lQ
+Date:   Fri, 6 Mar 2020 02:19:50 +0000
+Message-ID: <1056f557dea84ef08aa7a0ac2fd21fef@realtek.com>
+References: <20200306010602.1620354-1-kuba@kernel.org>
+ <20200306010602.1620354-5-kuba@kernel.org>
+In-Reply-To: <20200306010602.1620354-5-kuba@kernel.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Fri, 6 Mar 2020 10:48:25 +1100
-
-> On Thu, 30 Jan 2020 10:55:38 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>
->> Hi Samuel,
->> 
->> I noticed that the nfc-next tree has not changed since June 2018 and
->> has been orphaned in May 2019, so am wondering if the commits in it are
->> still relevant or should I just remove the tree from linux-next.
+Jakub Kicinski [mailto:kuba@kernel.org]
+> Sent: Friday, March 06, 2020 9:06 AM
+[...]
+> Subject: [PATCH net-next 4/7] r8152: reject unsupported coalescing params
 > 
-> Since I have had no response, I will remove it tomorrow.
+> Set ethtool_ops->supported_coalesce_params to let
+> the core reject unsupported coalescing parameters.
+> 
+> This driver did not previously reject unsupported parameters.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
 
-We've been integrating NFC patches directly into my networking tree for
-a while now, so this is indeed the thing to do.
+Acked-by: Hayes Wang <hayeswang@realtek.com>
 
-Thanks.
+Best Regards,
+Hayes
+
