@@ -2,274 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B89F17BE71
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B61A617BE7C
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 14:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbgCFN3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 08:29:14 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40907 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgCFN3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:29:14 -0500
-Received: by mail-wr1-f66.google.com with SMTP id p2so1555938wrw.7
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:29:11 -0800 (PST)
+        id S1727181AbgCFNaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 08:30:18 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:37483 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727059AbgCFNaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 08:30:17 -0500
+Received: by mail-il1-f194.google.com with SMTP id a6so2038617ilc.4
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 05:30:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4Rmi0sC4ZOb9CTz7dqsCHikMLwzkdKpWFb8GwbJ6WJU=;
-        b=wSkqq6iRxJJsfvND0+okV1YBCQ/cdppjLnTTFSK6Lx5huFzTKDYLFw7balED3KCMiP
-         nC2N7XznK6nXpgL6k2ARqRlzpgSdggXV+KKPCxJRoI7sb6GykNHZqvDZv2Ai4316YiC1
-         xYMALj6IizgBmuUmyZhouceFE4s/9OXUtC0f/uTC280zUp+tZfKS0E0VF40E3S2nm+4T
-         Zu6mLbXCDL1OLJtKf5068ete0bUH+T4SySqwq7Y0sk0v+QZoIhKFGfF643xiPIbxQgQh
-         hx0F9q4MN+ic1IHEQEmXhUen3L4kw/65pdRb/5Pe9Kp/pFRYvs0vZcozSzb8waUme1Pl
-         PIGQ==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Pg0E53f1mAa6g/1NYUXksaRgV81W69zTft5+Yoc7gDE=;
+        b=Kg8VgctwJ9sl2bTG3rzATydWCYvJWQCE+ermdWX2W6/tL1d4ooTTXJuxucMeR5HrSO
+         1VngudrsPSy6SvXBIf+Y/JC/ayTGHJ6fpURzkse7qM0P31kiOutuJ53gCTgm/4fdXO2/
+         ZK+7UJ0oJ/wyIe0y/TWHPMUsTI7K+WDqulCZDNtCBHys0966gt2n/kZXpPgrDhE1Gfvo
+         87Sp3W/lmVrl6Us1lh/ZORqWtpxOgMOSPZkKnPn6LSXxHmrLaIOR6aGQRitSaxpWzlV7
+         H9ejUcou5Kg7KhqSbUzlR6JhKfG+b3GJnyRWoC6D1Z6JI/nPhmrbV+jmjMERQGj372X0
+         Pt8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4Rmi0sC4ZOb9CTz7dqsCHikMLwzkdKpWFb8GwbJ6WJU=;
-        b=i4EVoRvvI/N0QXGpyQtxVZC2Vy97n+O3/Q0BNWzXIMVBx/uKaj7nDwrdRTZRZnkTYZ
-         4qspct66i6FUYzW+/YrwLabxNpk1FpT/SnSKnMnFRv6dWZLbYjD//+8YRg0S7+jzdJfE
-         By9oLy8eAgjz6rVEGE4D3tHr9+VZ1t0hUOWKrQHdSGt8VcmWqZzmQ/M9/JGgrqNZwRaQ
-         fAI9bCY4zUHozki8q9Ostrqh3PN+TI1YiGEbF5CJ3PXfIZW6Y4OW+4+RET0f4YMlG6GO
-         ryggm65rFLqp+UGSngXfeNrVdDpE76sqUrKpK7Ou29r21/r+KhI2R4tgYeOXHFBhYYKc
-         WVJQ==
-X-Gm-Message-State: ANhLgQ24HEL7hHeGqT9Z1P3rEff51eC1jAlMYmMFqeBbH9vcF3uwuACj
-        Cx6zG94lqM3kySSfDutUUmbEnQVYVUE=
-X-Google-Smtp-Source: ADFU+vvUBTriJUzSoAhQ83O7kqUdIwc7EwdYs9zzcJzykocxU5kcGZKaISa8e/g82EZezrvVum7ndg==
-X-Received: by 2002:adf:9e8b:: with SMTP id a11mr3982811wrf.32.1583501350851;
-        Fri, 06 Mar 2020 05:29:10 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id y10sm12964973wma.26.2020.03.06.05.29.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 05:29:10 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v3 10/10] sched: act: allow user to specify type of HW stats for a filter
-Date:   Fri,  6 Mar 2020 14:28:56 +0100
-Message-Id: <20200306132856.6041-11-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200306132856.6041-1-jiri@resnulli.us>
-References: <20200306132856.6041-1-jiri@resnulli.us>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Pg0E53f1mAa6g/1NYUXksaRgV81W69zTft5+Yoc7gDE=;
+        b=d2tAeyNdjXq/qgpAthihZ9eRR6VM4WP9gpYFxpPKzzaQLqeNTXUZuC2eSer/M6ozD1
+         WXrM8yGbx/daM8XUaIA874qfE73Xi8teizwnQdJHVUq27lhRuw6Qj9ecNqs0b8MZVdLo
+         cDyQAzPAlccDoRhJNLet6b9cg+71WR4H89UId69pK7sbSjZckEYWgf+PWLbh0eNXfC4C
+         U06rySb/crLS9DdP32v2o9BkkAPsIumvQQtmjfq7H0qBshvEahG9feuD93pW5YSxoEWv
+         Ezcu1ro3m1jaXDhZpiNNXPEo9wpzuhVitLOfBZ22nQPNpCvRJqMKQsPSOEb0CLXypPcL
+         CPIQ==
+X-Gm-Message-State: ANhLgQ1jQnuNqcpTg5cSaeQK0kNI/xh4b8YnCw4v0PYkNcfr9JL8VRyX
+        YR53FA0Z5y9IBCnTEeyq4jvM+Q==
+X-Google-Smtp-Source: ADFU+vtF7Sgabzn4gBNF+Q1WL6hlfCT9H3OiBs3TKH16d/VuIJCgyEsSlOKmaSfuT4a7s2taCKtlBw==
+X-Received: by 2002:a92:d9c4:: with SMTP id n4mr3077709ilq.124.1583501415806;
+        Fri, 06 Mar 2020 05:30:15 -0800 (PST)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id x6sm7019573ilg.42.2020.03.06.05.30.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2020 05:30:15 -0800 (PST)
+Subject: Re: [PATCH v2 01/17] remoteproc: add IPA notification to q6v5 driver
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        David Miller <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Dan Williams <dcbw@redhat.com>,
+        Evan Green <evgreen@google.com>,
+        Eric Caruso <ejcaruso@google.com>,
+        Susheel Yadav Yadagiri <syadagir@codeaurora.org>,
+        Chaitanya Pratapa <cpratapa@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200306042831.17827-1-elder@linaro.org>
+ <20200306042831.17827-2-elder@linaro.org> <20200306114941.GO184088@unreal>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <5548579d-179d-b099-afa9-6b76e9fa5a89@linaro.org>
+Date:   Fri, 6 Mar 2020 07:29:23 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200306114941.GO184088@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On 3/6/20 5:49 AM, Leon Romanovsky wrote:
+> On Thu, Mar 05, 2020 at 10:28:15PM -0600, Alex Elder wrote:
+>> Set up a subdev in the q6v5 modem remoteproc driver that generates
+>> event notifications for the IPA driver to use for initialization and
+>> recovery following a modem shutdown or crash.
 
-Currently, user who is adding an action expects HW to report stats,
-however it does not have exact expectations about the stats types.
-That is aligned with TCA_ACT_HW_STATS_TYPE_ANY.
+. . .
 
-Allow user to specify the type of HW stats for an action and require it.
+>> diff --git a/include/linux/remoteproc/qcom_q6v5_ipa_notify.h b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
+>> new file mode 100644
+>> index 000000000000..0820edc0ab7d
+>> --- /dev/null
+>> +++ b/include/linux/remoteproc/qcom_q6v5_ipa_notify.h
+>> @@ -0,0 +1,82 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +
+>> +/* Copyright (C) 2019 Linaro Ltd. */
+>> +
+>> +#ifndef __QCOM_Q6V5_IPA_NOTIFY_H__
+>> +#define __QCOM_Q6V5_IPA_NOTIFY_H__
+>> +
+>> +#if IS_ENABLED(CONFIG_QCOM_Q6V5_IPA_NOTIFY)
+> 
+> Why don't you put this guard in the places where such include is called?
+> Or the best variant is to ensure that this include is compiled in only
+> in CONFIG_QCOM_Q6V5_IPA_NOTIFY flows.
 
-Pass the information down to flow_offload layer.
+I did it this way so the no-op definitions resided in the same header
+file if the config option is not enabled.  And the no-ops were there
+so the calling code didn't have to use #ifdef.
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v2->v3:
-- removed "mixed" bool init
-- moved to bitfield
-- removed "inline"
-v1->v2:
-- moved the stats attr from cls_flower (filter) to any action
-- rebased on top of cookie offload changes
-- adjusted the patch description a bit
----
- include/net/act_api.h        |  4 ++++
- include/uapi/linux/pkt_cls.h | 22 ++++++++++++++++++++++
- net/sched/act_api.c          | 36 ++++++++++++++++++++++++++++++++++++
- net/sched/cls_api.c          |  7 +++++++
- 4 files changed, 69 insertions(+)
+I have no objection to what you suggest.  I did a quick scan for other
+examples like this for guidance and found lots of examples of doing it
+the way I did.
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 71347a90a9d1..41337c7fc728 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -41,6 +41,7 @@ struct tc_action {
- 	struct tc_cookie	__rcu *act_cookie;
- 	struct tcf_chain	__rcu *goto_chain;
- 	u32			tcfa_flags;
-+	u8			hw_stats_type;
- };
- #define tcf_index	common.tcfa_index
- #define tcf_refcnt	common.tcfa_refcnt
-@@ -52,6 +53,9 @@ struct tc_action {
- #define tcf_rate_est	common.tcfa_rate_est
- #define tcf_lock	common.tcfa_lock
- 
-+#define TCA_ACT_HW_STATS_TYPE_ANY (TCA_ACT_HW_STATS_TYPE_IMMEDIATE | \
-+				   TCA_ACT_HW_STATS_TYPE_DELAYED)
-+
- /* Update lastuse only if needed, to avoid dirtying a cache line.
-  * We use a temp variable to avoid fetching jiffies twice.
-  */
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 449a63971451..81cc1a869588 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -17,6 +17,7 @@ enum {
- 	TCA_ACT_PAD,
- 	TCA_ACT_COOKIE,
- 	TCA_ACT_FLAGS,
-+	TCA_ACT_HW_STATS_TYPE,
- 	__TCA_ACT_MAX
- };
- 
-@@ -24,6 +25,27 @@ enum {
- 					 * actions stats.
- 					 */
- 
-+/* tca HW stats type
-+ * When user does not pass the attribute, he does not care.
-+ * It is the same as if he would pass the attribute with
-+ * all supported bits set.
-+ * In case no bits are set, user is not interested in getting any HW statistics.
-+ */
-+#define TCA_ACT_HW_STATS_TYPE_IMMEDIATE (1 << 0) /* Means that in dump, user
-+						  * gets the current HW stats
-+						  * state from the device
-+						  * queried at the dump time.
-+						  */
-+#define TCA_ACT_HW_STATS_TYPE_DELAYED (1 << 1) /* Means that in dump, user gets
-+						* HW stats that might be out
-+						* of date for some time, maybe
-+						* couple of seconds. This is
-+						* the case when driver polls
-+						* stats updates periodically
-+						* or when it gets async stats update
-+						* from the device.
-+						*/
-+
- #define TCA_ACT_MAX __TCA_ACT_MAX
- #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
- #define TCA_ACT_MAX_PRIO 32
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 8c466a712cda..aa7b737fed2e 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -185,6 +185,7 @@ static size_t tcf_action_shared_attrs_size(const struct tc_action *act)
- 	return  nla_total_size(0) /* action number nested */
- 		+ nla_total_size(IFNAMSIZ) /* TCA_ACT_KIND */
- 		+ cookie_len /* TCA_ACT_COOKIE */
-+		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_HW_STATS_TYPE */
- 		+ nla_total_size(0) /* TCA_ACT_STATS nested */
- 		+ nla_total_size(sizeof(struct nla_bitfield32)) /* TCA_ACT_FLAGS */
- 		/* TCA_STATS_BASIC */
-@@ -788,6 +789,17 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	}
- 	rcu_read_unlock();
- 
-+	if (a->hw_stats_type != TCA_ACT_HW_STATS_TYPE_ANY) {
-+		struct nla_bitfield32 hw_stats_type = {
-+			a->hw_stats_type,
-+			TCA_ACT_HW_STATS_TYPE_ANY,
-+		};
-+
-+		if (nla_put(skb, TCA_ACT_HW_STATS_TYPE, sizeof(hw_stats_type),
-+			    &hw_stats_type))
-+			goto nla_put_failure;
-+	}
-+
- 	if (a->tcfa_flags) {
- 		struct nla_bitfield32 flags = { a->tcfa_flags,
- 						a->tcfa_flags, };
-@@ -854,7 +866,23 @@ static struct tc_cookie *nla_memdup_cookie(struct nlattr **tb)
- 	return c;
- }
- 
-+static u8 tcf_action_hw_stats_type_get(struct nlattr *hw_stats_type_attr)
-+{
-+	struct nla_bitfield32 hw_stats_type_bf;
-+
-+	/* If the user did not pass the attr, that means he does
-+	 * not care about the type. Return "any" in that case
-+	 * which is setting on all supported types.
-+	 */
-+	if (!hw_stats_type_attr)
-+		return TCA_ACT_HW_STATS_TYPE_ANY;
-+	hw_stats_type_bf = nla_get_bitfield32(hw_stats_type_attr);
-+	return hw_stats_type_bf.value;
-+}
-+
- static const u32 tca_act_flags_allowed = TCA_ACT_FLAGS_NO_PERCPU_STATS;
-+static const u32 tca_act_hw_stats_type_allowed = TCA_ACT_HW_STATS_TYPE_ANY;
-+
- static const struct nla_policy tcf_action_policy[TCA_ACT_MAX + 1] = {
- 	[TCA_ACT_KIND]		= { .type = NLA_STRING },
- 	[TCA_ACT_INDEX]		= { .type = NLA_U32 },
-@@ -863,6 +891,8 @@ static const struct nla_policy tcf_action_policy[TCA_ACT_MAX + 1] = {
- 	[TCA_ACT_OPTIONS]	= { .type = NLA_NESTED },
- 	[TCA_ACT_FLAGS]		= { .type = NLA_BITFIELD32,
- 				    .validation_data = &tca_act_flags_allowed },
-+	[TCA_ACT_HW_STATS_TYPE]	= { .type = NLA_BITFIELD32,
-+				    .validation_data = &tca_act_hw_stats_type_allowed },
- };
- 
- struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
-@@ -871,6 +901,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 				    bool rtnl_held,
- 				    struct netlink_ext_ack *extack)
- {
-+	u8 hw_stats_type = TCA_ACT_HW_STATS_TYPE_ANY;
- 	struct nla_bitfield32 flags = { 0, 0 };
- 	struct tc_action *a;
- 	struct tc_action_ops *a_o;
-@@ -903,6 +934,8 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 				goto err_out;
- 			}
- 		}
-+		hw_stats_type =
-+			tcf_action_hw_stats_type_get(tb[TCA_ACT_HW_STATS_TYPE]);
- 		if (tb[TCA_ACT_FLAGS])
- 			flags = nla_get_bitfield32(tb[TCA_ACT_FLAGS]);
- 	} else {
-@@ -953,6 +986,9 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 	if (!name && tb[TCA_ACT_COOKIE])
- 		tcf_set_action_cookie(&a->act_cookie, cookie);
- 
-+	if (!name)
-+		a->hw_stats_type = hw_stats_type;
-+
- 	/* module count goes up only when brand new policy is created
- 	 * if it exists and is only bound to in a_o->init() then
- 	 * ACT_P_CREATED is not returned (a zero is).
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 4e766c5ab77a..e91448640a4f 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3464,6 +3464,10 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 	struct tc_action *act;
- 	int i, j, k, err = 0;
- 
-+	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_ANY != FLOW_ACTION_HW_STATS_TYPE_ANY);
-+	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_IMMEDIATE != FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE);
-+	BUILD_BUG_ON(TCA_ACT_HW_STATS_TYPE_DELAYED != FLOW_ACTION_HW_STATS_TYPE_DELAYED);
-+
- 	if (!exts)
- 		return 0;
- 
-@@ -3476,6 +3480,9 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 		err = tcf_act_get_cookie(entry, act);
- 		if (err)
- 			goto err_out_locked;
-+
-+		entry->hw_stats_type = act->hw_stats_type;
-+
- 		if (is_tcf_gact_ok(act)) {
- 			entry->id = FLOW_ACTION_ACCEPT;
- 		} else if (is_tcf_gact_shot(act)) {
--- 
-2.21.1
+So I'm happy to change it, but would like an additional request to do
+so before I do that work.
+
+Thanks.
+
+					-Alex
+
+> That is more common way to guard internal header files.
+> 
+> Thanks
+> 
 
