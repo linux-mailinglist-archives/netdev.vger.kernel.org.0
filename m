@@ -2,169 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C3117C374
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:04:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5AC717C377
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbgCFREF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:04:05 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42864 "EHLO mx2.suse.de"
+        id S1726956AbgCFREH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 12:04:07 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42886 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725873AbgCFREF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 12:04:05 -0500
+        id S1725873AbgCFREG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 12:04:06 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 48AC8AEF8;
-        Fri,  6 Mar 2020 17:04:02 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 0DE19B0F2;
+        Fri,  6 Mar 2020 17:04:05 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id B0673E00E7; Fri,  6 Mar 2020 18:03:59 +0100 (CET)
-Message-Id: <cover.1583513281.git.mkubecek@suse.cz>
+        id B5A19E00E7; Fri,  6 Mar 2020 18:04:04 +0100 (CET)
+Message-Id: <20527076df2743a1d640031b65cd2992222e383e.1583513281.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1583513281.git.mkubecek@suse.cz>
+References: <cover.1583513281.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v3 00/25] initial netlink interface implementation for
- 5.6 release
+Subject: [PATCH ethtool v3 01/25] move UAPI header copies to a separate
+ directory
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri,  6 Mar 2020 18:03:59 +0100 (CET)
+Date:   Fri,  6 Mar 2020 18:04:04 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds initial support for ethtool netlink interface provided by
-kernel since 5.6-rc1. The traditional ioctl interface is still supported
-for compatibility with older kernels. The netlink interface and message
-formats are documented in Documentation/networking/ethtool-netlink.rst file
-in kernel source tree.
+The upcoming netlink series is going to add more local copies of kernel
+UAPI header files and some of them are going to include others. Keeping
+them in the main directory under modified name would require modifying
+those includes as well which would be impractical.
 
-Netlink interface is preferred but ethtool falls back to ioctl if netlink
-interface is not available (i.e. the "ethtool" genetlink family is not
-registered). It also falls back if a particular command is not implemented
-in netlink (kernel returns -EOPNOTSUPP). This allows new ethtool versions
-to work with older kernel versions while support for ethool commands is
-added in steps.
+Create a subdirectory uapi and move the UAPI headers there to allow
+including them in the usual way.
 
-The series aims to touch existing ioctl code as little as possible in the
-first phase to minimize the risk of introducing regressions. It is also
-possible to build ethtool without netlink support if --disable-netlink is
-passed to configure script. The most visible changes to existing code are
+v3:
+  - use top_srcdir to fix build in a separate directory
+  - Makefile.am: no need to touch test_*_CFLAGS
 
-  - UAPI header copies are moved to uapi/ under original names
-  - some variables and functions which are going to be shared with netlink
-    code are moved from ethtool.c to common.c and common.h
-  - args[] array in ethtool.c was rewritten to use named initializers
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ Makefile.am                                  | 5 +++--
+ internal.h                                   | 4 ++--
+ ethtool-copy.h => uapi/linux/ethtool.h       | 0
+ net_tstamp-copy.h => uapi/linux/net_tstamp.h | 0
+ 4 files changed, 5 insertions(+), 4 deletions(-)
+ rename ethtool-copy.h => uapi/linux/ethtool.h (100%)
+ rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (100%)
 
-Except for changes to main(), all netlink specific code is in a separate
-directory netlink/ and is divided into multiple files.
-
-Changes in v3:
-- fix build in a separate directory
-- drop unnecessary changes to Makefile.am
-
-Changes in v2:
-- add support for permanent hardware addres ("ethtool -P", patch 20)
-- add support for pretty printing of netlink messages (patches 21-25)
-- make output of "ethtool <dev>" closer to ioctl implementation
-- load ETH_SS_MSG_CLASSES string set only if needed (patch 15)
-- two more kernel uapi header copies (patch 5)
-- support for rtnetlink socket and requests (needed for "ethtool -P")
-- some kerneldoc style comments
-
-Michal Kubecek (25):
-  move UAPI header copies to a separate directory
-  update UAPI header copies
-  add --debug option to control debugging messages
-  use named initializers in command line option list
-  netlink: add netlink related UAPI header files
-  netlink: introduce the netlink interface
-  netlink: message buffer and composition helpers
-  netlink: netlink socket wrapper and helpers
-  netlink: initialize ethtool netlink socket
-  netlink: add support for string sets
-  netlink: add notification monitor
-  move shared code into a common file
-  netlink: add bitset helpers
-  netlink: partial netlink handler for gset (no option)
-  netlink: support getting wake-on-lan and debugging settings
-  netlink: add basic command line parsing helpers
-  netlink: add bitset command line parser handlers
-  netlink: add netlink handler for sset (-s)
-  netlink: support tests with netlink enabled
-  netlink: add handler for permaddr (-P)
-  netlink: support for pretty printing netlink messages
-  netlink: message format description for ethtool netlink
-  netlink: message format descriptions for genetlink control
-  netlink: message format descriptions for rtnetlink
-  netlink: use pretty printing for ethtool netlink messages
-
- Makefile.am                                  |   22 +-
- common.c                                     |  145 +++
- common.h                                     |   26 +
- configure.ac                                 |   14 +-
- ethtool.8.in                                 |   48 +-
- ethtool.c                                    |  819 ++++++++------
- internal.h                                   |   31 +-
- netlink/bitset.c                             |  218 ++++
- netlink/bitset.h                             |   26 +
- netlink/desc-ethtool.c                       |  139 +++
- netlink/desc-genlctrl.c                      |   56 +
- netlink/desc-rtnl.c                          |   96 ++
- netlink/extapi.h                             |   46 +
- netlink/monitor.c                            |  229 ++++
- netlink/msgbuff.c                            |  255 +++++
- netlink/msgbuff.h                            |  117 ++
- netlink/netlink.c                            |  216 ++++
- netlink/netlink.h                            |   87 ++
- netlink/nlsock.c                             |  405 +++++++
- netlink/nlsock.h                             |   45 +
- netlink/parser.c                             | 1058 ++++++++++++++++++
- netlink/parser.h                             |  144 +++
- netlink/permaddr.c                           |  114 ++
- netlink/prettymsg.c                          |  237 ++++
- netlink/prettymsg.h                          |  118 ++
- netlink/settings.c                           |  955 ++++++++++++++++
- netlink/strset.c                             |  297 +++++
- netlink/strset.h                             |   25 +
- test-cmdline.c                               |   29 +-
- test-features.c                              |   11 +
- ethtool-copy.h => uapi/linux/ethtool.h       |   17 +
- uapi/linux/ethtool_netlink.h                 |  237 ++++
- uapi/linux/genetlink.h                       |   89 ++
- uapi/linux/if_link.h                         | 1051 +++++++++++++++++
- net_tstamp-copy.h => uapi/linux/net_tstamp.h |   27 +
- uapi/linux/netlink.h                         |  248 ++++
- uapi/linux/rtnetlink.h                       |  777 +++++++++++++
- 37 files changed, 8096 insertions(+), 378 deletions(-)
- create mode 100644 common.c
- create mode 100644 common.h
- create mode 100644 netlink/bitset.c
- create mode 100644 netlink/bitset.h
- create mode 100644 netlink/desc-ethtool.c
- create mode 100644 netlink/desc-genlctrl.c
- create mode 100644 netlink/desc-rtnl.c
- create mode 100644 netlink/extapi.h
- create mode 100644 netlink/monitor.c
- create mode 100644 netlink/msgbuff.c
- create mode 100644 netlink/msgbuff.h
- create mode 100644 netlink/netlink.c
- create mode 100644 netlink/netlink.h
- create mode 100644 netlink/nlsock.c
- create mode 100644 netlink/nlsock.h
- create mode 100644 netlink/parser.c
- create mode 100644 netlink/parser.h
- create mode 100644 netlink/permaddr.c
- create mode 100644 netlink/prettymsg.c
- create mode 100644 netlink/prettymsg.h
- create mode 100644 netlink/settings.c
- create mode 100644 netlink/strset.c
- create mode 100644 netlink/strset.h
- rename ethtool-copy.h => uapi/linux/ethtool.h (99%)
- create mode 100644 uapi/linux/ethtool_netlink.h
- create mode 100644 uapi/linux/genetlink.h
- create mode 100644 uapi/linux/if_link.h
- rename net_tstamp-copy.h => uapi/linux/net_tstamp.h (84%)
- create mode 100644 uapi/linux/netlink.h
- create mode 100644 uapi/linux/rtnetlink.h
-
+diff --git a/Makefile.am b/Makefile.am
+index 3af4d4c2b5da..e6d6e4ccda9e 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,12 +1,13 @@
+ AM_CFLAGS = -Wall
++AM_CPPFLAGS = -I$(top_srcdir)/uapi
+ LDADD = -lm
+ 
+ man_MANS = ethtool.8
+ EXTRA_DIST = LICENSE ethtool.8 ethtool.spec.in aclocal.m4 ChangeLog autogen.sh
+ 
+ sbin_PROGRAMS = ethtool
+-ethtool_SOURCES = ethtool.c ethtool-copy.h internal.h net_tstamp-copy.h \
+-		  rxclass.c
++ethtool_SOURCES = ethtool.c uapi/linux/ethtool.h internal.h \
++		  uapi/linux/net_tstamp.h rxclass.c
+ if ETHTOOL_ENABLE_PRETTY_DUMP
+ ethtool_SOURCES += \
+ 		  amd8111e.c de2104x.c dsa.c e100.c e1000.c et131x.c igb.c	\
+diff --git a/internal.h b/internal.h
+index ff52c6e7660c..527245633338 100644
+--- a/internal.h
++++ b/internal.h
+@@ -44,8 +44,8 @@ typedef int32_t s32;
+ #define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+ #endif
+ 
+-#include "ethtool-copy.h"
+-#include "net_tstamp-copy.h"
++#include <linux/ethtool.h>
++#include <linux/net_tstamp.h>
+ 
+ #if __BYTE_ORDER == __BIG_ENDIAN
+ static inline u16 cpu_to_be16(u16 value)
+diff --git a/ethtool-copy.h b/uapi/linux/ethtool.h
+similarity index 100%
+rename from ethtool-copy.h
+rename to uapi/linux/ethtool.h
+diff --git a/net_tstamp-copy.h b/uapi/linux/net_tstamp.h
+similarity index 100%
+rename from net_tstamp-copy.h
+rename to uapi/linux/net_tstamp.h
 -- 
 2.25.1
 
