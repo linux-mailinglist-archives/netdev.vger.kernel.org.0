@@ -2,346 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C116817C394
-	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A9C17C395
+	for <lists+netdev@lfdr.de>; Fri,  6 Mar 2020 18:05:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727212AbgCFRFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 12:05:33 -0500
-Received: from mx2.suse.de ([195.135.220.15]:43810 "EHLO mx2.suse.de"
+        id S1727225AbgCFRFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 12:05:37 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43836 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726397AbgCFRFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Mar 2020 12:05:33 -0500
+        id S1726397AbgCFRFh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Mar 2020 12:05:37 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 7C5E9B15D;
-        Fri,  6 Mar 2020 17:05:30 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 83325B1CB;
+        Fri,  6 Mar 2020 17:05:35 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 2D886E00E7; Fri,  6 Mar 2020 18:05:30 +0100 (CET)
-Message-Id: <148c6fb218b83db9d0e973fb5684b4e3408a5f0a.1583513281.git.mkubecek@suse.cz>
+        id 33DFBE00E7; Fri,  6 Mar 2020 18:05:35 +0100 (CET)
+Message-Id: <ed5aca1c9e1f3d626ef8594ed660c4f5171b588e.1583513281.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1583513281.git.mkubecek@suse.cz>
 References: <cover.1583513281.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool v3 18/25] netlink: add netlink handler for sset (-s)
+Subject: [PATCH ethtool v3 19/25] netlink: support tests with netlink enabled
 To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri,  6 Mar 2020 18:05:30 +0100 (CET)
+Date:   Fri,  6 Mar 2020 18:05:35 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement "ethtool -s <dev>" subcommand using netlink interface request
-ETHTOOL_MSG_LINKINFO_SET, ETHTOOL_MSG_LINKMODES_SET, ETHTOOL_MSG_WOL_SET
-and ETHTOOL_MSG_DEBUG_SET.
+As there is no netlink implementation of features (-k / -K) yet, we only
+need to take care of test-cmdline. With this patch, the full test suite
+succeeds with both --enable-netlink and --disable-netlink.
 
-Parser grouping with PARSER_GROUP_MSG group style is used to create
-multiple request messages from one set of attributes which can be in
-arbitrary order.
+There are two differences between results with netlink enabled and
+disabled:
+
+1. The netlink interface allows network device names up to 127 characters
+(ALTIFNAMSIZ - 1). While alternative names can be used to identify a device
+with ioctl, fixed structure does not allow passing names longer than 15
+characters (IFNAMSIZ - 1).
+
+2. Failure with deprecated 'xcvr' parameter for -s / --change is done in
+slightly different way so that netlink code will have it interpreted as
+a parser failure while ioctl code as (fake) request failure. Another
+difference is that no kernel with ethtool netlink support can possibly
+allow changing transceiver using ethtool request.
+
+The command line tests affected by these differences have expected return
+code depending on ETHTOOL_ENABLE_NETLINK.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- ethtool.8.in       |  15 ++--
- ethtool.c          |   9 ++-
- netlink/extapi.h   |   2 +
- netlink/settings.c | 193 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 210 insertions(+), 9 deletions(-)
+ netlink/netlink.c |  7 +++++++
+ netlink/nlsock.c  |  2 ++
+ test-cmdline.c    | 29 ++++++++++++++++++++++++++---
+ test-features.c   | 11 +++++++++++
+ 4 files changed, 46 insertions(+), 3 deletions(-)
 
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 28e4f75eee8d..ba85cfe4f413 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -242,16 +242,21 @@ ethtool \- query or control network driver and hardware settings
- .I devname
- .BN speed
- .B2 duplex half full
--.B4 port tp aui bnc mii fibre
-+.B4 port tp aui bnc mii fibre da
- .B3 mdix auto on off
- .B2 autoneg on off
--.BN advertise
-+.RB [ advertise \ \fIN\fP[\fB/\fP\fIM\fP]
-+|
-+.BI advertise \ mode
-+.A1 on off
-+.RB ...]
- .BN phyad
- .B2 xcvr internal external
--.RB [ wol \ \*(WO]
-+.RB [ wol \ \fIN\fP[\fB/\fP\fIM\fP]
-+.RB | \ wol \ \*(WO]
- .RB [ sopass \ \*(MA]
- .RB [ msglvl
--.IR N \ |
-+.IR N\fP[/\fIM\fP] \ |
- .BI msglvl \ type
- .A1 on off
- .RB ...]
-@@ -638,7 +643,7 @@ with just the device name as an argument will show you the supported device spee
- .A2 duplex half full
- Sets full or half duplex mode.
- .TP
--.A4 port tp aui bnc mii fibre
-+.A4 port tp aui bnc mii fibre da
- Selects device port.
- .TP
- .A3 mdix auto on off
-diff --git a/ethtool.c b/ethtool.c
-index a69233bd73fc..baa6458bb486 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5166,18 +5166,19 @@ static const struct option args[] = {
- 	{
- 		.opts	= "-s|--change",
- 		.func	= do_sset,
-+		.nlfunc	= nl_sset,
- 		.help	= "Change generic options",
- 		.xhelp	= "		[ speed %d ]\n"
- 			  "		[ duplex half|full ]\n"
--			  "		[ port tp|aui|bnc|mii|fibre ]\n"
-+			  "		[ port tp|aui|bnc|mii|fibre|da ]\n"
- 			  "		[ mdix auto|on|off ]\n"
- 			  "		[ autoneg on|off ]\n"
--			  "		[ advertise %x ]\n"
-+			  "		[ advertise %x[/%x] | mode on|off ... [--] ]\n"
- 			  "		[ phyad %d ]\n"
- 			  "		[ xcvr internal|external ]\n"
--			  "		[ wol p|u|m|b|a|g|s|f|d... ]\n"
-+			  "		[ wol %d[/%d] | p|u|m|b|a|g|s|f|d... ]\n"
- 			  "		[ sopass %x:%x:%x:%x:%x:%x ]\n"
--			  "		[ msglvl %d | msglvl type on|off ... ]\n"
-+			  "		[ msglvl %d[/%d] | type on|off ... [--] ]\n"
- 	},
- 	{
- 		.opts	= "-a|--show-pause",
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 8608ea7f51f5..612002e8228b 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -16,6 +16,7 @@ int netlink_init(struct cmd_context *ctx);
- void netlink_done(struct cmd_context *ctx);
- 
- int nl_gset(struct cmd_context *ctx);
-+int nl_sset(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
-@@ -36,6 +37,7 @@ static inline void nl_monitor_usage(void)
+diff --git a/netlink/netlink.c b/netlink/netlink.c
+index 60f7912181df..39f406387233 100644
+--- a/netlink/netlink.c
++++ b/netlink/netlink.c
+@@ -143,6 +143,12 @@ static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	return MNL_CB_OK;
  }
  
- #define nl_gset			NULL
-+#define nl_sset			NULL
++#ifdef TEST_ETHTOOL
++static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
++{
++	return 0;
++}
++#else
+ static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
+ {
+ 	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
+@@ -165,6 +171,7 @@ out:
+ 	nlsk->nlctx->suppress_nlerr = 0;
+ 	return ret;
+ }
++#endif
  
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 1e43d742245c..c8a911d718b9 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -13,6 +13,7 @@
- #include "netlink.h"
- #include "strset.h"
- #include "bitset.h"
-+#include "parser.h"
- 
- /* GET_SETTINGS */
- 
-@@ -760,3 +761,195 @@ int nl_gset(struct cmd_context *ctx)
- 
+ int netlink_init(struct cmd_context *ctx)
+ {
+diff --git a/netlink/nlsock.c b/netlink/nlsock.c
+index d5fa668f508d..4366c52ce390 100644
+--- a/netlink/nlsock.c
++++ b/netlink/nlsock.c
+@@ -261,6 +261,7 @@ int nlsock_prep_get_request(struct nl_socket *nlsk, unsigned int nlcmd,
  	return 0;
  }
+ 
++#ifndef TEST_ETHTOOL
+ /**
+  * nlsock_sendmsg() - send a netlink message to kernel
+  * @nlsk:    netlink socket
+@@ -277,6 +278,7 @@ ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
+ 	debug_msg(nlsk, msgbuff->buff, nlhdr->nlmsg_len, true);
+ 	return mnl_socket_sendto(nlsk->sk, nlhdr, nlhdr->nlmsg_len);
+ }
++#endif
+ 
+ /**
+  * nlsock_send_get_request() - send request and process reply
+diff --git a/test-cmdline.c b/test-cmdline.c
+index b76e2c3e640b..a6c0bd1efc2d 100644
+--- a/test-cmdline.c
++++ b/test-cmdline.c
+@@ -12,6 +12,12 @@
+ #define TEST_NO_WRAPPERS
+ #include "internal.h"
+ 
++#ifdef ETHTOOL_ENABLE_NETLINK
++#define IS_NL 1
++#else
++#define IS_NL 0
++#endif
 +
-+/* SET_SETTINGS */
+ static struct test_case {
+ 	int rc;
+ 	const char *args;
+@@ -19,7 +25,10 @@ static struct test_case {
+ 	{ 1, "" },
+ 	{ 0, "devname" },
+ 	{ 0, "15_char_devname" },
+-	{ 1, "16_char_devname!" },
++	/* netlink interface allows names up to 127 characters */
++	{ !IS_NL, "16_char_devname!" },
++	{ !IS_NL, "127_char_devname0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde" },
++	{ 1, "128_char_devname0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+ 	/* Argument parsing for -s is specialised */
+ 	{ 0, "-s devname" },
+ 	{ 0, "--change devname speed 100 duplex half mdix auto" },
+@@ -55,7 +64,8 @@ static struct test_case {
+ 	{ 0, "-s devname phyad 1" },
+ 	{ 1, "--change devname phyad foo" },
+ 	{ 1, "-s devname phyad" },
+-	{ 0, "--change devname xcvr external" },
++	/* Deprecated 'xcvr' detected by netlink parser */
++	{ IS_NL, "--change devname xcvr external" },
+ 	{ 1, "-s devname xcvr foo" },
+ 	{ 1, "--change devname xcvr" },
+ 	{ 0, "-s devname wol p" },
+@@ -69,7 +79,9 @@ static struct test_case {
+ 	{ 0, "-s devname msglvl hw on rx_status off" },
+ 	{ 1, "--change devname msglvl hw foo" },
+ 	{ 1, "-s devname msglvl hw" },
+-	{ 0, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 xcvr external wol p sopass 01:23:45:67:89:ab msglvl 1" },
++	{ 0, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 wol p sopass 01:23:45:67:89:ab msglvl 1" },
++	/* Deprecated 'xcvr' detected by netlink parser */
++	{ IS_NL, "--change devname speed 100 duplex half port tp autoneg on advertise 0x1 phyad 1 xcvr external wol p sopass 01:23:45:67:89:ab msglvl 1" },
+ 	{ 1, "-s devname foo" },
+ 	{ 1, "-s" },
+ 	{ 0, "-a devname" },
+@@ -294,6 +306,17 @@ int send_ioctl(struct cmd_context *ctx, void *cmd)
+ 	test_exit(0);
+ }
+ 
++#ifdef ETHTOOL_ENABLE_NETLINK
++struct nl_socket;
++struct nl_msg_buff;
 +
-+enum {
-+	WAKE_PHY_BIT		= 0,
-+	WAKE_UCAST_BIT		= 1,
-+	WAKE_MCAST_BIT		= 2,
-+	WAKE_BCAST_BIT		= 3,
-+	WAKE_ARP_BIT		= 4,
-+	WAKE_MAGIC_BIT		= 5,
-+	WAKE_MAGICSECURE_BIT	= 6,
-+	WAKE_FILTER_BIT		= 7,
-+};
-+
-+#define WAKE_ALL (WAKE_PHY | WAKE_UCAST | WAKE_MCAST | WAKE_BCAST | WAKE_ARP | \
-+		  WAKE_MAGIC | WAKE_MAGICSECURE)
-+
-+static const struct lookup_entry_u8 port_values[] = {
-+	{ .arg = "tp",		.val = PORT_TP },
-+	{ .arg = "aui",		.val = PORT_AUI },
-+	{ .arg = "mii",		.val = PORT_MII },
-+	{ .arg = "fibre",	.val = PORT_FIBRE },
-+	{ .arg = "bnc",		.val = PORT_BNC },
-+	{ .arg = "da",		.val = PORT_DA },
-+	{}
-+};
-+
-+static const struct lookup_entry_u8 mdix_values[] = {
-+	{ .arg = "auto",	.val = ETH_TP_MDI_AUTO },
-+	{ .arg = "on",		.val = ETH_TP_MDI_X },
-+	{ .arg = "off",		.val = ETH_TP_MDI },
-+	{}
-+};
-+
-+static const struct error_parser_data xcvr_parser_data = {
-+	.err_msg	= "deprecated parameter '%s' not supported by kernel\n",
-+	.ret_val	= -EINVAL,
-+	.extra_args	= 1,
-+};
-+
-+static const struct lookup_entry_u8 autoneg_values[] = {
-+	{ .arg = "off",		.val = AUTONEG_DISABLE },
-+	{ .arg = "on",		.val = AUTONEG_ENABLE },
-+	{}
-+};
-+
-+static const struct bitset_parser_data advertise_parser_data = {
-+	.no_mask	= false,
-+	.force_hex	= true,
-+};
-+
-+static const struct lookup_entry_u32 duplex_values[] = {
-+	{ .arg = "half",	.val = DUPLEX_HALF },
-+	{ .arg = "full",	.val = DUPLEX_FULL },
-+	{}
-+};
-+
-+char wol_bit_chars[WOL_MODE_COUNT] = {
-+	[WAKE_PHY_BIT]		= 'p',
-+	[WAKE_UCAST_BIT]	= 'u',
-+	[WAKE_MCAST_BIT]	= 'm',
-+	[WAKE_BCAST_BIT]	= 'b',
-+	[WAKE_ARP_BIT]		= 'a',
-+	[WAKE_MAGIC_BIT]	= 'g',
-+	[WAKE_MAGICSECURE_BIT]	= 's',
-+	[WAKE_FILTER_BIT]	= 'f',
-+};
-+
-+const struct char_bitset_parser_data wol_parser_data = {
-+	.bit_chars	= wol_bit_chars,
-+	.nbits		= WOL_MODE_COUNT,
-+	.reset_char	= 'd',
-+};
-+
-+const struct byte_str_parser_data sopass_parser_data = {
-+	.min_len	= 6,
-+	.max_len	= 6,
-+	.delim		= ':',
-+};
-+
-+static const struct bitset_parser_data msglvl_parser_data = {
-+	.no_mask	= false,
-+	.force_hex	= false,
-+};
-+
-+static const struct param_parser sset_params[] = {
-+	{
-+		.arg		= "port",
-+		.group		= ETHTOOL_MSG_LINKINFO_SET,
-+		.type		= ETHTOOL_A_LINKINFO_PORT,
-+		.handler	= nl_parse_lookup_u8,
-+		.handler_data	= port_values,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "mdix",
-+		.group		= ETHTOOL_MSG_LINKINFO_SET,
-+		.type		= ETHTOOL_A_LINKINFO_TP_MDIX_CTRL,
-+		.handler	= nl_parse_lookup_u8,
-+		.handler_data	= mdix_values,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "phyad",
-+		.group		= ETHTOOL_MSG_LINKINFO_SET,
-+		.type		= ETHTOOL_A_LINKINFO_PHYADDR,
-+		.handler	= nl_parse_direct_u8,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "xcvr",
-+		.group		= ETHTOOL_MSG_LINKINFO_SET,
-+		.handler	= nl_parse_error,
-+		.handler_data	= &xcvr_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "autoneg",
-+		.group		= ETHTOOL_MSG_LINKMODES_SET,
-+		.type		= ETHTOOL_A_LINKMODES_AUTONEG,
-+		.handler	= nl_parse_lookup_u8,
-+		.handler_data	= autoneg_values,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "advertise",
-+		.group		= ETHTOOL_MSG_LINKMODES_SET,
-+		.type		= ETHTOOL_A_LINKMODES_OURS,
-+		.handler	= nl_parse_bitset,
-+		.handler_data	= &advertise_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "speed",
-+		.group		= ETHTOOL_MSG_LINKMODES_SET,
-+		.type		= ETHTOOL_A_LINKMODES_SPEED,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "duplex",
-+		.group		= ETHTOOL_MSG_LINKMODES_SET,
-+		.type		= ETHTOOL_A_LINKMODES_DUPLEX,
-+		.handler	= nl_parse_lookup_u8,
-+		.handler_data	= duplex_values,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "wol",
-+		.group		= ETHTOOL_MSG_WOL_SET,
-+		.type		= ETHTOOL_A_WOL_MODES,
-+		.handler	= nl_parse_char_bitset,
-+		.handler_data	= &wol_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "sopass",
-+		.group		= ETHTOOL_MSG_WOL_SET,
-+		.type		= ETHTOOL_A_WOL_SOPASS,
-+		.handler	= nl_parse_byte_str,
-+		.handler_data	= &sopass_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "msglvl",
-+		.group		= ETHTOOL_MSG_DEBUG_SET,
-+		.type		= ETHTOOL_A_DEBUG_MSGMASK,
-+		.handler	= nl_parse_bitset,
-+		.handler_data	= &msglvl_parser_data,
-+		.min_argc	= 1,
-+	},
-+	{}
-+};
-+
-+int nl_sset(struct cmd_context *ctx)
++ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
 +{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	int ret;
-+
-+	nlctx->cmd = "-s";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
-+
-+	ret = nl_parser(nlctx, sset_params, NULL, PARSER_GROUP_MSG);
-+	if (ret < 0)
-+		return 1;
-+
-+	if (ret == 0)
-+		return 0;
-+	return nlctx->exit_code ?: 75;
++	/* If we get this far then parsing succeeded */
++	test_exit(0);
 +}
++#endif
++
+ int main(void)
+ {
+ 	struct test_case *tc;
+diff --git a/test-features.c b/test-features.c
+index 6ebb364803a2..b9f80f073d1f 100644
+--- a/test-features.c
++++ b/test-features.c
+@@ -511,6 +511,17 @@ int send_ioctl(struct cmd_context *ctx, void *cmd)
+ 	return rc;
+ }
+ 
++#ifdef ETHTOOL_ENABLE_NETLINK
++struct nl_socket;
++struct nl_msg_buff;
++
++ssize_t nlsock_sendmsg(struct nl_socket *nlsk, struct nl_msg_buff *altbuff)
++{
++	/* Should not be called with test-features */
++	exit(1);
++}
++#endif
++
+ int main(void)
+ {
+ 	const struct test_case *tc;
 -- 
 2.25.1
 
