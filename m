@@ -2,153 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3398C17CC93
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 08:04:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC23017CD1A
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 10:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725954AbgCGG7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 01:59:53 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46604 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgCGG7w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 01:59:52 -0500
-Received: by mail-wr1-f65.google.com with SMTP id n15so4831842wrw.13
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 22:59:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=d1bQGX7SgFQbdhDhkWqLNJ1ISsK91fLwSPoqMk087SU=;
-        b=o1HSBrqXi9TtRL/6MHIz+TkZNbweDucZzgY6eRtpStxz+LiEI3HHIp/zAULg8NDT71
-         6zyAG/D58CTRHhxKYTBr/SCN7fZR6H//WT5NoYNid06saH6OQVAbhAEuZxplSmJ8DEpP
-         Z6JxiH7B4UU2QZ62owpqnW8F6OFtzVBXGuaJQXDzfon5ecnm/SAlqm5GW2Jh78ysAY/b
-         8/xxP0dQjI8iEvQwRGVGQF7v0oHopYvWZDVFrk6Im+tJbya23NZn6OMtwZrcwU0IobOi
-         Jc0We1PGXlz0Kzv8pf8uaL/Bm/FlvAr0DQ1MWk7v4eyxrrbwRq1UqXnwXOdiCM/NxpF7
-         k03Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=d1bQGX7SgFQbdhDhkWqLNJ1ISsK91fLwSPoqMk087SU=;
-        b=eO9fBldLppCXTP4uNZLlFg9Pv1XIwGRhUjGfIHPNHqL83YEv1rOIaArPIVPiwdFpsr
-         DOpW2RhHFkjRrNXk2MHuLD99D9sk1yFydhRlxojG3dOWg/2D06sSsYU+NmnLG6Ata5oI
-         KkPwmEuLGQiUFe3Mi2etvDcY2xG7bInjda/a5LQk2/boDPvYhhSfRmOklMPTIWDrqK7Y
-         iFJIcgLuLlNo1TaLsbDnAVF5GxOMkbn/4iBgpZwS9T+RLqU7CDOTrGgP2Scn74VsxvqW
-         qK79U7D3W7PoVeBOfIugmFhbl0/kttcDoZ0zbWss1a8le3YBAWNpxiIcaSSVWEamScZ2
-         UOhQ==
-X-Gm-Message-State: ANhLgQ0xtcngcPbgDJzN6nDjYJJr7/kzYZxshoojnORe1TXNzYgs99fY
-        st9rYjqidPeQtCZ42wRngHQDGA==
-X-Google-Smtp-Source: ADFU+vvkVOBe9d8zvthkUGiwahNCGpmZ4sM2TaVPAhkQSvujhiLgiujROBJacMEmjs5BDszY7wh1jw==
-X-Received: by 2002:a5d:658c:: with SMTP id q12mr8717879wru.57.1583564389206;
-        Fri, 06 Mar 2020 22:59:49 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id c72sm10771103wme.35.2020.03.06.22.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 22:59:48 -0800 (PST)
-Date:   Sat, 7 Mar 2020 07:59:48 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
-        jeffrey.t.kirsher@intel.com, idosch@mellanox.com,
-        aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v3 03/10] flow_offload: check for basic action
- hw stats type
-Message-ID: <20200307065948.GB2210@nanopsycho.orion>
-References: <20200306132856.6041-1-jiri@resnulli.us>
- <20200306132856.6041-4-jiri@resnulli.us>
- <20200306112851.2dc630e7@kicinski-fedora-PC1C0HJN>
+        id S1726072AbgCGJHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 04:07:54 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:42994 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbgCGJHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 04:07:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=vQ0/BJOMshU2+y9nWoPsIwqFrdMLf/hu29jqZXdPM4Y=; b=LXnF/bS2CzAIeh6/8ySFa94MB
+        HbnO4XS4CFGcOhO0h+PWHQaDZsTX6622taeD2xsxs6+NsUqa8rMA0ebW0tH1De8cRz/pka/i+KCZr
+        /LMm01A2dcfMpxLASUWAUM9N2YMV7P+yB4296bGIaUa6vY2A9fimSB9TNDX5OA/DzMXH+qbNRq8s2
+        vVIsV8rLsqrTDdMzr3DUr5JUv+RghY57hkw67ZE5Z/DFGir6y6wYUL8cTtq3rC4AtQ5EwuWUxrAYN
+        NU3YROj37D5Q/S/Nkv/aYQ1hhViqTo9n+thaS8modL1jLH6N7qyDWd21KLOzc5g/luPnd0jSLHGt9
+        ST/zjr6iA==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:49792)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jAVQv-0001zo-30; Sat, 07 Mar 2020 09:07:45 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jAVQr-0001Ic-3z; Sat, 07 Mar 2020 09:07:41 +0000
+Date:   Sat, 7 Mar 2020 09:07:41 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        antoine.tenart@bootlin.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/3] net: phy: marvell10g: add mdix control
+Message-ID: <20200307090740.GH25745@shell.armlinux.org.uk>
+References: <20200303180747.GT25745@shell.armlinux.org.uk>
+ <E1j9By6-0003pB-UH@rmk-PC.armlinux.org.uk>
+ <20200303195352.GC1092@lunn.ch>
+ <20200303.160614.1176351857930966618.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200306112851.2dc630e7@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200303.160614.1176351857930966618.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Mar 06, 2020 at 08:28:51PM CET, kuba@kernel.org wrote:
->On Fri,  6 Mar 2020 14:28:49 +0100 Jiri Pirko wrote:
->> @@ -251,6 +252,66 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
->>  	return action->num_entries == 1;
->>  }
->>  
->> +static inline bool
->> +flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
->> +				       struct netlink_ext_ack *extack)
->> +{
->> +	const struct flow_action_entry *action_entry;
->> +	u8 uninitialized_var(last_hw_stats_type);
->
->Perhaps just initialize before the loop to action 0 and start loop 
->from 1?
+On Tue, Mar 03, 2020 at 04:06:14PM -0800, David Miller wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+> Date: Tue, 3 Mar 2020 20:53:52 +0100
+> 
+> > It would be nice to have Antoine test this before it get merged, but:
+> > 
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> Ok, I'll give Antoine a chance to test it out.
 
-Hmm, will check.
+Hi David,
 
+Antoine has now tested it - do I need to resubmit now?
 
->
->> +	int i;
->> +
->> +	if (flow_offload_has_one_action(action))
->> +		return true;
->> +
->> +	for (i = 0; i < action->num_entries; i++) {
->> +		action_entry = &action->entries[0];
->
->s/0/i/ ?
+Thanks.
 
-Right, missed this.
-
-
->
->> +		if (i && action_entry->hw_stats_type != last_hw_stats_type) {
->> +			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
->> +			return false;
->> +		}
->> +		last_hw_stats_type = action_entry->hw_stats_type;
->> +	}
->> +	return true;
->> +}
->> +
->> +static inline const struct flow_action_entry *
->> +flow_action_first_entry_get(const struct flow_action *action)
->> +{
->> +	WARN_ON(!flow_action_has_entries(action));
->> +	return &action->entries[0];
->> +}
->> +
->> +static inline bool
->> +flow_action_hw_stats_types_check(const struct flow_action *action,
->> +				 struct netlink_ext_ack *extack,
->> +				 u8 allowed_hw_stats_type)
->> +{
->> +	const struct flow_action_entry *action_entry;
->> +
->> +	if (!flow_action_has_entries(action))
->> +		return true;
->> +	if (!flow_action_mixed_hw_stats_types_check(action, extack))
->> +		return false;
->> +	action_entry = flow_action_first_entry_get(action);
->> +	if (!allowed_hw_stats_type &&
->> +	    action_entry->hw_stats_type != FLOW_ACTION_HW_STATS_TYPE_ANY) {
->> +		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
->> +		return false;
->> +	} else if (allowed_hw_stats_type &&
->> +		   action_entry->hw_stats_type != allowed_hw_stats_type) {
->
->Should this be an logical 'and' if we're doing it the bitfield way?
-
-No. I driver passes allowed_hw_stats_type != 0, means that allowed_hw_stats_type
-should be checked against action_entry->hw_stats_type.
-With bitfield, this is a bit awkward, I didn't figure out to do it
-better though.
-
->
->> +		NL_SET_ERR_MSG_MOD(extack, "Driver does not support selected HW stats type");
->> +		return false;
->> +	}
->> +	return true;
->> +}
->
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
