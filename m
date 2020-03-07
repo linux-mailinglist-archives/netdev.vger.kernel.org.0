@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A163017CDDE
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 12:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 354D917CDDC
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 12:40:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgCGLkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 06:40:47 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39690 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgCGLke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 06:40:34 -0500
-Received: by mail-wm1-f68.google.com with SMTP id f7so655878wml.4
-        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 03:40:33 -0800 (PST)
+        id S1726327AbgCGLkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 06:40:42 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33022 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726300AbgCGLkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 06:40:37 -0500
+Received: by mail-wr1-f66.google.com with SMTP id a25so1572729wrd.0
+        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 03:40:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZV1OAjtFuFntGAAt75OOGrGInSNGoLqWj92PEA7sZXE=;
-        b=d5N2ZSOnrP0LnZVuTGwASi0mIFi5CxAr2oBobRn0srV9ET4zbSPi2K9H0Qc2sZMily
-         dkBiU32uHCIvGGrTuIMSr678Q0V4H1HWF0sToz1OiplHDe2iu/+s+VpHo+QTJNrFVrWm
-         3olY1XTKwehGu0K8na0+fckWTLe1/l9WLMsvxwv54kmgCXQnyoV5nWNHfygnab2QsRCp
-         /bLr+E74yTOW7S0xfKmsLIVl5cpD4guy/6LZ9h7+iJibxAZx5rLdhltMpU2f4fJYxJr2
-         /Tz+pnsaXbAbVsLNuhirI+QgZYDccx9ojewL/GG5uD/mmXJYbhODp9hPZSx1UCqO9M65
-         oLqA==
+        bh=XC3MOYrsHIJz6yAyoMDyFHWk/L6tyCnnjSyXPN5344c=;
+        b=CYoKAK58podyOo0zWuAuZZabDNKiZjjT33Zqqqwf7JZmQS6r9t7IMZ+L5/b+WPVJ04
+         5nB9KyuQeFlAVKZYgg+c2dE0p9plA5SmuIMKFAu7EdjjADtN543aG7UiRe+JMH+weUAh
+         gX9LQYIsQ7E6T9zUfh1QhkYJYwI3Pr46fgCqFd2PhLpfjuU1imKny63veuzcYm1bamVQ
+         dJQ3u+lSrP7BlIw6a5YuSR1xu1Ofal1Y2qyOcm6PeDA6bxqMInXjkKNUheDEYOaN4r2R
+         0ZvMeTQy4d3zScUqiP+qmcDFGnirXeY0Q4haONFJ25prHqo2ouDj1tvxcn+QDLc/9Y1o
+         TJ2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZV1OAjtFuFntGAAt75OOGrGInSNGoLqWj92PEA7sZXE=;
-        b=NUfC8TW3dISy6IwfSwZDcIhqKS4vD6P+IkRItHCFepmbAhSBvVM5lFFabvV51XT1TD
-         L6KQUZyZXlyhgKwBJY6Z+nvH9XNFZCKGjGZA/y2CD65w91DRiVMLgNP0L0WLrxGRoipl
-         MlByuSlyNvVtJTQCYKYnW9mCYI6ogVZYkWjwUo2tUh9FIpkkpcnEYMpnwPPsiDnsxSL5
-         9aFekkJiOeVSsRY7vB4ggglxyAYHDLfPu/ozkWIk6YmfLVOKeh+WMmrfMHQer6Rm2600
-         d1w1Ul5UOcjn6HXmDLv0mLywPGYdTFZy9TkCstUKGHAw/4rizSlkU94kqsMhLjsPlOXQ
-         JRvg==
-X-Gm-Message-State: ANhLgQ3Lf3U+0B1YtbJPQuJHL/FDFlQhevTaK/OvxvtovHgKfG0yu5uJ
-        IeLr+tfR8DqyqlvYBPa3oPwU1exS2ZA=
-X-Google-Smtp-Source: ADFU+vsMihhcjHbyf79C3QEjJ3tsHSS97pf7jhi2QqbrZX/IjrT/hZC+aWScIQj/6LRC4yAmb/vPig==
-X-Received: by 2002:a1c:e0d6:: with SMTP id x205mr8969620wmg.29.1583581232549;
-        Sat, 07 Mar 2020 03:40:32 -0800 (PST)
+        bh=XC3MOYrsHIJz6yAyoMDyFHWk/L6tyCnnjSyXPN5344c=;
+        b=EhGstn4lE9R/ZOIHgYCNm0Nk0tRuiwMYhhQWonuQE0KR35JbUlI6Eb5WT54Fb5HlyH
+         QI8EzI+rY4qEdXNXVok9KYUvefr43eUAO2dOQN76r2i2OoukrohOfU64gCcb3RfiGQc8
+         GlhC3D3vexqxSMjIzVG3Fy7wE1xFvQgSNd6EbFI/4oFpQ6pcNQZ0gFHok6Z+TAvPbIwR
+         dsxGfFScHbjOhawVdutOghCc8Yg49fp04z8AuyUIlOnNBSE0Dfd6hByf5LVbyq8pa29X
+         g0Th7jlzZlq6jzx58Nn6hW0PAf1hvKSENyf2/FCDcfs3GiE4ZlHuBR1/0Hv7WAqWdXee
+         PewQ==
+X-Gm-Message-State: ANhLgQ3/6XlaF03DJBwMqaRJREk7bO6jRprmGHCXr5yPnhqrxvcsQU9/
+        wRew3ppj+7CYfkAhQj6gWRt8vpRJme0=
+X-Google-Smtp-Source: ADFU+vvnli8U8ik69j0A6riDIo7w79xL/WbZ2oUEYuFTwfNVGxxjEwEo0kIwJ9OncJeOK+kboUBTSw==
+X-Received: by 2002:a05:6000:149:: with SMTP id r9mr8879049wrx.147.1583581233694;
+        Sat, 07 Mar 2020 03:40:33 -0800 (PST)
 Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id q16sm37784516wrj.73.2020.03.07.03.40.31
+        by smtp.gmail.com with ESMTPSA id w81sm3019765wmg.19.2020.03.07.03.40.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2020 03:40:32 -0800 (PST)
+        Sat, 07 Mar 2020 03:40:33 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
@@ -53,9 +53,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, saeedm@mellanox.com,
         alexandre.torgue@st.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next v4 07/10] flow_offload: introduce "delayed" HW stats type and allow it in mlx5
-Date:   Sat,  7 Mar 2020 12:40:17 +0100
-Message-Id: <20200307114020.8664-8-jiri@resnulli.us>
+Subject: [patch net-next v4 08/10] mlxsw: spectrum_acl: Ask device for rule stats only if counter was created
+Date:   Sat,  7 Mar 2020 12:40:18 +0100
+Message-Id: <20200307114020.8664-9-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200307114020.8664-1-jiri@resnulli.us>
 References: <20200307114020.8664-1-jiri@resnulli.us>
@@ -68,61 +68,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Introduce new type for delayed HW stats and allow the value in
-mlx5 offload.
+Set a flag in case rule counter was created. Only query the device for
+stats of a rule, which has the valid counter assigned.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
 v2->v3:
-- converted to newly introduced flow_action_hw_stats_types_check()
-- moved to bitfield
+- init current values to 0 in case of disabled counters.
 v1->v2:
-- moved to action
-- fixed c&p error in patch description
+- new patch
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 6 ++++--
- include/net/flow_offload.h                      | 4 +++-
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  3 ++-
+ .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 26 ++++++++++++-------
+ 2 files changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index cfe393cb4026..cdc63dd59867 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2878,7 +2878,8 @@ static int parse_tc_nic_actions(struct mlx5e_priv *priv,
- 	if (!flow_action_has_entries(flow_action))
- 		return -EINVAL;
- 
--	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
-+	if (!flow_action_hw_stats_types_check(flow_action, extack,
-+					      FLOW_ACTION_HW_STATS_TYPE_DELAYED))
- 		return -EOPNOTSUPP;
- 
- 	attr->flow_tag = MLX5_FS_DEFAULT_FLOW_TAG;
-@@ -3333,7 +3334,8 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 	if (!flow_action_has_entries(flow_action))
- 		return -EINVAL;
- 
--	if (!flow_action_basic_hw_stats_types_check(flow_action, extack))
-+	if (!flow_action_hw_stats_types_check(flow_action, extack,
-+					      FLOW_ACTION_HW_STATS_TYPE_DELAYED))
- 		return -EOPNOTSUPP;
- 
- 	flow_action_for_each(i, act, flow_action) {
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 6580c58b368f..1b6500f0fbca 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -156,7 +156,9 @@ enum flow_action_mangle_base {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index ff61cad74bb0..81801c6fb941 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -641,7 +641,8 @@ struct mlxsw_sp_acl_rule_info {
+ 	struct mlxsw_afa_block *act_block;
+ 	u8 action_created:1,
+ 	   ingress_bind_blocker:1,
+-	   egress_bind_blocker:1;
++	   egress_bind_blocker:1,
++	   counter_valid:1;
+ 	unsigned int counter_index;
  };
  
- #define FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE BIT(0)
--#define FLOW_ACTION_HW_STATS_TYPE_ANY FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE
-+#define FLOW_ACTION_HW_STATS_TYPE_DELAYED BIT(1)
-+#define FLOW_ACTION_HW_STATS_TYPE_ANY (FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE | \
-+				       FLOW_ACTION_HW_STATS_TYPE_DELAYED)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+index 36b264798f04..6f8d5005ff36 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+@@ -642,8 +642,14 @@ int mlxsw_sp_acl_rulei_act_count(struct mlxsw_sp *mlxsw_sp,
+ 				 struct mlxsw_sp_acl_rule_info *rulei,
+ 				 struct netlink_ext_ack *extack)
+ {
+-	return mlxsw_afa_block_append_counter(rulei->act_block,
+-					      &rulei->counter_index, extack);
++	int err;
++
++	err = mlxsw_afa_block_append_counter(rulei->act_block,
++					     &rulei->counter_index, extack);
++	if (err)
++		return err;
++	rulei->counter_valid = true;
++	return 0;
+ }
  
- typedef void (*action_destr)(void *priv);
+ int mlxsw_sp_acl_rulei_act_fid_set(struct mlxsw_sp *mlxsw_sp,
+@@ -857,16 +863,18 @@ int mlxsw_sp_acl_rule_get_stats(struct mlxsw_sp *mlxsw_sp,
  
+ {
+ 	struct mlxsw_sp_acl_rule_info *rulei;
+-	u64 current_packets;
+-	u64 current_bytes;
++	u64 current_packets = 0;
++	u64 current_bytes = 0;
+ 	int err;
+ 
+ 	rulei = mlxsw_sp_acl_rule_rulei(rule);
+-	err = mlxsw_sp_flow_counter_get(mlxsw_sp, rulei->counter_index,
+-					&current_packets, &current_bytes);
+-	if (err)
+-		return err;
+-
++	if (rulei->counter_valid) {
++		err = mlxsw_sp_flow_counter_get(mlxsw_sp, rulei->counter_index,
++						&current_packets,
++						&current_bytes);
++		if (err)
++			return err;
++	}
+ 	*packets = current_packets - rule->last_packets;
+ 	*bytes = current_bytes - rule->last_bytes;
+ 	*last_use = rule->last_used;
 -- 
 2.21.1
 
