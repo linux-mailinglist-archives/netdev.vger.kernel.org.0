@@ -2,141 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FDC17C8F6
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 00:49:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D960717C96C
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 01:10:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbgCFXs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 18:48:27 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:52722 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727336AbgCFXsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 18:48:08 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 026Nm5FQ025282;
-        Fri, 6 Mar 2020 17:48:05 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1583538485;
-        bh=7kAZPkW2zkK8WQa0s6tWSn3wI6eYVbYeeQFroc6aG9s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=S7zfcaRo15sO+mgotBPv2sqBpqdDxpUFhcF3L2Miuhs5IzoMBEH2rvYeW4TZ0Q1jF
-         KZ6mCPMU8iaMMEdK0cNugogFNscptfTP5NQ1GA9H27ka083ifBDduS+46y3NIIyvC8
-         RWyE1Yl0aSbTW8FMDafwDnSGgzzo8RumsTMoA3sQ=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 026Nm5pb082285
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 Mar 2020 17:48:05 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 6 Mar
- 2020 17:48:05 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 6 Mar 2020 17:48:05 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 026Nm3kr028430;
-        Fri, 6 Mar 2020 17:48:04 -0600
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>, Tero Kristo <t-kristo@ti.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Roger Quadros <rogerq@ti.com>,
-        <devicetree@vger.kernel.org>
-CC:     Murali Karicheri <m-karicheri2@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v2 9/9] arm64: dts: ti: k3-j721e-common-proc-board: add mcu cpsw nuss pinmux and phy defs
-Date:   Sat, 7 Mar 2020 01:47:34 +0200
-Message-ID: <20200306234734.15014-10-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200306234734.15014-1-grygorii.strashko@ti.com>
-References: <20200306234734.15014-1-grygorii.strashko@ti.com>
+        id S1726766AbgCGAKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 19:10:38 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33124 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgCGAKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 19:10:38 -0500
+Received: by mail-pl1-f195.google.com with SMTP id ay11so1528478plb.0;
+        Fri, 06 Mar 2020 16:10:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=SjrcOFxpufht/8OfMzLi8EQcwzvSyJ9VwN1nXbsalBw=;
+        b=ZFCG7tkr4L7i6JCFMOi8u0GcXRp2RoBbzQn14R4y8ZQrkyipXea0a1vEuXzDskaJdX
+         VUhdDThYzDHWumtVayM1yANOZca0ISfPFyrVxpNfNHS5LPMmLVT5uOQ6WXSxUAQbrjg5
+         K/b4YkB10Dvfy6e572lRM0h7BNUZ4wrieEKntpoWJs3VSm8V3nbqpanvhSj4YAPvEtjl
+         kXbkXe9nfvXAK9g41x8ysiqC0Uxc4CL5WqsSD1zoCqatGvkapxnsFBNuw2IesFWBgihK
+         ZtEz8gOB0BHsyRiCU3rHjAfMynNQDgdXOc0YUxPaXct5KtRsOjvgoLt8f+ni4ndNKNdL
+         d+uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=SjrcOFxpufht/8OfMzLi8EQcwzvSyJ9VwN1nXbsalBw=;
+        b=SebigpStW3+6KJs+vdGJdPB04W+sEOxxhmpGhNqvKfZS7CjLic0vUiTN1NkxxBmfsF
+         Jwppdg04QCFwET16Yqr+rcMXDd+yXzJz/vSCl6OTAWqHl9eBhAj+VJpD30ZWS6w3+wB9
+         xAP1fgNjCLZba6MkEtcMa0DvXbp1Ka4T/Mfx1+LwKU7a40q91zSW/4j1tKvi9N4lts3f
+         cTrIlujaHJk6K2ztNMWAiDb16UL/Jb61OWRW6H5naMCLBbgz5NYnDylvvCsswnXRb9Be
+         6F0sWyN3S8Pg8S0MFU14HO011ACJXSB3BR/9niE0ICxgaZIS3O7Id0mgIDY4yxLNqCOs
+         rdYA==
+X-Gm-Message-State: ANhLgQ0hNLANuIIaweSTCzF0sfXhTDO6nUpDqtvNbEyM7xXzTQR47pwd
+        KuJuKB7lg28WpVtbzP1DbzUkIYk4
+X-Google-Smtp-Source: ADFU+vtWidJID8I4AMN8H/u6xZOR5GN5Bp3Ulv6f+GvvcL9rT2vXVO8JTWxZGSiJqqPeJl4Kg8tibw==
+X-Received: by 2002:a17:90b:11d0:: with SMTP id gv16mr5725334pjb.183.1583539836841;
+        Fri, 06 Mar 2020 16:10:36 -0800 (PST)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id t126sm3052707pfd.54.2020.03.06.16.10.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Mar 2020 16:10:35 -0800 (PST)
+Subject: [RFC bpf PATCH 0/4] rfc for 32-bit subreg verifier tracking
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     yhs@fb.com, alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Sat, 07 Mar 2020 00:10:23 +0000
+Message-ID: <158353965971.3451.14666851223845760316.stgit@ubuntu3-kvm2>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TI J721E EVM base board has TI DP83867 PHY connected to external CPSW
-NUSS Port 1 in rgmii-rxid mode.
+This series adds 32-bit subreg bounds support to the verifier. This is the
+fallout from trying to apply patch 3/4 to fix return value refinement.
+With the fix it turned out some code code that _should_ pass the
+verifier no longer worked. The root cause of this (see patch 4/4 for
+detailed trace) was improper tracking of the 32-bit subreg values. So
+that even if a program zero'd the upper 32-bits we wouldn't actually
+psas the program.
 
-Hence, add pinmux and Ethernet PHY configuration for TI j721e SoC MCU
-Gigabit Ethernet two ports Switch subsystem (CPSW NUSS).
+I tried various other half-measures before I decided it was best to
+do proper 32-bit bounds tracking. Each time I tried to "hack" the
+result I wanted in the interest of minimal code changes I ended up
+with something that was both ugly and usually only matched a small
+subset of patterns. Also, in general I'm against pattern matching
+special cases because it ends up buggy/broken usually as soon as
+we get code in the wild that doesn't do the exact thing we pattern
+matched.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+So end result is u32_{min|max}_value, s32_{min|max}_value,
+and var32_off bounds tracking. See patch 2/4 for the details and a few
+questions we should address in the RFC while I write up some more
+test cases.
+
+After this series we can do some nice cleanup in *next branch. For
+example, add proper types for int return values so we can be more
+precise. And flush out some additional logic in the ALU ops to
+track rsh, lsh, arsh better.
+
+Please, take a look at patch 2 for a couple design questions.
+
+RFC because, needs a bit more review on my part, a couple cleanup
+lines still in 2/4, still need to run test_progs all the way
+through I missed a bunch due to missing kernel config options, and
+want to write a couple verifier tests to catch the subtle cases.
+
+I thought it would be best to get some early/quick review feedback
+while I work on the tests. It does pass test_verifier though in
+current state.
+
+Thanks,
+John
+
 ---
- .../dts/ti/k3-j721e-common-proc-board.dts     | 43 +++++++++++++++++++
- 1 file changed, 43 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index 7a5c3d4adadd..98e5e17e3ff7 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -8,6 +8,7 @@
- #include "k3-j721e-som-p0.dtsi"
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/net/ti-dp83867.h>
- 
- / {
- 	chosen {
-@@ -128,6 +129,30 @@
- 			J721E_WKUP_IOPAD(0x38, PIN_INPUT, 0) /* (A23) MCU_OSPI1_LBCLKO */
- 		>;
- 	};
-+
-+	mcu_cpsw_pins_default: mcu_cpsw_pins_default {
-+		pinctrl-single,pins = <
-+			J721E_WKUP_IOPAD(0x0058, PIN_OUTPUT, 0) /* MCU_RGMII1_TX_CTL */
-+			J721E_WKUP_IOPAD(0x005c, PIN_INPUT, 0) /* MCU_RGMII1_RX_CTL */
-+			J721E_WKUP_IOPAD(0x0060, PIN_OUTPUT, 0) /* MCU_RGMII1_TD3 */
-+			J721E_WKUP_IOPAD(0x0064, PIN_OUTPUT, 0) /* MCU_RGMII1_TD2 */
-+			J721E_WKUP_IOPAD(0x0068, PIN_OUTPUT, 0) /* MCU_RGMII1_TD1 */
-+			J721E_WKUP_IOPAD(0x006c, PIN_OUTPUT, 0) /* MCU_RGMII1_TD0 */
-+			J721E_WKUP_IOPAD(0x0078, PIN_INPUT, 0) /* MCU_RGMII1_RD3 */
-+			J721E_WKUP_IOPAD(0x007c, PIN_INPUT, 0) /* MCU_RGMII1_RD2 */
-+			J721E_WKUP_IOPAD(0x0080, PIN_INPUT, 0) /* MCU_RGMII1_RD1 */
-+			J721E_WKUP_IOPAD(0x0084, PIN_INPUT, 0) /* MCU_RGMII1_RD0 */
-+			J721E_WKUP_IOPAD(0x0070, PIN_INPUT, 0) /* MCU_RGMII1_TXC */
-+			J721E_WKUP_IOPAD(0x0074, PIN_INPUT, 0) /* MCU_RGMII1_RXC */
-+		>;
-+	};
-+
-+	mcu_mdio_pins_default: mcu_mdio1_pins_default {
-+		pinctrl-single,pins = <
-+			J721E_WKUP_IOPAD(0x008c, PIN_OUTPUT, 0) /* MCU_MDIO0_MDC */
-+			J721E_WKUP_IOPAD(0x0088, PIN_INPUT, 0) /* MCU_MDIO0_MDIO */
-+		>;
-+	};
- };
- 
- &wkup_uart0 {
-@@ -429,3 +454,21 @@
- 		#gpio-cells = <2>;
- 	};
- };
-+
-+&mcu_cpsw {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mcu_cpsw_pins_default &mcu_mdio_pins_default>;
-+};
-+
-+&davinci_mdio {
-+	phy0: ethernet-phy@0 {
-+		reg = <0>;
-+		ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
-+		ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
-+	};
-+};
-+
-+&cpsw_port1 {
-+	phy-mode = "rgmii-rxid";
-+	phy-handle = <&phy0>;
-+};
--- 
-2.17.1
+John Fastabend (4):
+      bpf: verifer, refactor adjust_scalar_min_max_vals
+      bpf: verifier, do explicit u32 bounds tracking
+      bpf: verifier, do_refine_retval_range may clamp umin to 0 incorrectly
+      bpf: selftests, bpf_get_stack return value add <0
 
+
+ tools/testing/selftests/bpf/test_verifier.c        |    2 +-
+ .../testing/selftests/bpf/verifier/bpf_get_stack.c |    3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+--
+Signature
