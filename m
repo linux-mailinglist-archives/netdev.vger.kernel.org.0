@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 506F017CA12
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 02:04:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73DDB17CA13
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 02:05:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbgCGBET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Mar 2020 20:04:19 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33413 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726733AbgCGBET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 20:04:19 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n7so1943838pfn.0
-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 17:04:18 -0800 (PST)
+        id S1726866AbgCGBEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Mar 2020 20:04:21 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:41472 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726733AbgCGBEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Mar 2020 20:04:20 -0500
+Received: by mail-pl1-f195.google.com with SMTP id t14so1554147plr.8
+        for <netdev@vger.kernel.org>; Fri, 06 Mar 2020 17:04:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0gypjuYKS7HohaEOg7+s1YFRfeYJ42Vyad0SvROHo7w=;
-        b=s0CSEjf0FP3FBkjdB2t3JGLxp+4+3I1oMcp+0UzQnf/IQWbbh333/ivj8STMkHwrG1
-         fTQT3lDkkNCccaeYjZUttOkKUZxnR2buYlRjeW6kCwDbur9/bBeMUznHrWy+w0MmiyIa
-         LFZ89IEGFqZAmMR8OeL6LH63raaY3AxXxjGBm1/kNOnw25R3VSc0oMmFf78hsKZQ2IJE
-         psFjG/M9edXWWaF4Yucqya799cMl0/8rPGczPZA30eOeM6htvhYch4iDm7WxZpmM07+C
-         4vLM4gTItmCrykW9GcXfBrp2NcNPAk0PjvQ26sKsoUBi5q9FLd3a+ivrBWcumjBeSz7D
-         J/Yg==
+        bh=rc6jNvp/c23UvoUnFO2kVN5wxgcAoTsXXqLWvToQMSg=;
+        b=z6OsC8DlGcudmcvIswv3rlDogtgOLKf/DfPmofT2dWMIsk96LxDcfrLnfC/8Lm3tNt
+         Pf3dMYtK6ub4m/XDPdP9rTsULBaScQMjOujXdh9ohOhEVm5Ix4x/3JHtjvOhFLRRWLJz
+         xVzpKe1aE5m07zjRJeyzibsBj7p07+K/ccklRcizy2Q/MXqgvCFY60jHgFBjIvQlSSoe
+         +6KRRse5YC3yM1dkANT4awCFQQ7GKpz2Y7u7zTQHcsxdyxBxyAVAYKEZB85fF3wwvd9x
+         IUE7Lu4DHpm3Mw08IXT3wJQ0A69l2nRqJWTyBNc2XI71ZekXeRzahVGKn2Iu0Xh29+ai
+         fozQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0gypjuYKS7HohaEOg7+s1YFRfeYJ42Vyad0SvROHo7w=;
-        b=rYUPfMdxxy/y05V0aAi/1UjRJUp0V8Nl2e/pH8A/tdpDAR8mvh9n1fgH84NTn4quQR
-         6Ej5zDTom9VMF8xjiJJap4trEgeEyulrjpOqKKuBgDTrfZTQP6ry0KddS77IuQoM59k2
-         wZK/X34h4V7TMcCF6FL9wsEi1iPsxlNQvQvfPycRh6k5E+CQYXX/6iGn7oLcLG3j2Em3
-         3H+Hz6BVfNbctUxIbfxNM6M+DR43jHycv6Y6LJIgaJ2I4XZfP1ba3viTaem26q5v+O5c
-         t8tGymE8HQXB3cgzttP6KgC3faTxCjwWw7qAf79BX4mxtmvSoOx/CZh5nE+6UL+Vk1cv
-         dz7A==
-X-Gm-Message-State: ANhLgQ3RaVEARvPxpgmK5SlYGWEBihPy17kILL+9ZQJordK5n97fa/Mc
-        hVCBQ1JMJH3ql311jybrnaDsdfIMzMA=
-X-Google-Smtp-Source: ADFU+vvinw58NCE+kfA6bwp/jFg6oRThGsjJnIbYW+iFfsaCapClteryDMU1u3wS2yXtOYeRMKgsMQ==
-X-Received: by 2002:a63:af52:: with SMTP id s18mr5890775pgo.281.1583543058204;
-        Fri, 06 Mar 2020 17:04:18 -0800 (PST)
+        bh=rc6jNvp/c23UvoUnFO2kVN5wxgcAoTsXXqLWvToQMSg=;
+        b=J+PN55hwOb+P2EDoePef9hZDUubO8QEvOAsv5DbXiJRcFzzmKZjVOMSmi0d2HyOMci
+         74w+rCcCP6wcIYS/rPSMi7tHUHl8YhxNnZD4VpZSzzBz4v1sYAO1SASAU9SMSXuW+nmQ
+         HfXegy8tPJEFMEOkR+TBX7U1mV81FBrrnUJxYzglosgkJOm9KIe6RwgMOIKc5OMy3QSq
+         H1y7W2QoQLtZP54ZaWRbguFIEco7PyvIUPlT3D3IYo+7QvNmpstHMN94ZjBrwifM6fNT
+         dByPs4XljXMoZXH+SqfGS7snBT6+u7TtvoZOalENwcakZsTvIyBv6mHf7ZNVseeKGPv5
+         84wA==
+X-Gm-Message-State: ANhLgQ1PRqzUdPT7J1VJWnjuIEJSoBr/8vi5wgtknqM0J9Sl4AkQNVNY
+        NiC48fd0Efk2RBB7tyUAzNe92pBAQhg=
+X-Google-Smtp-Source: ADFU+vsawjtSJSGdEE6k6J2PVuKXoRcJXM25kGAVq6xRDnWH2kLx8XMWm6LnRSjdar7IIvy4n+DR/A==
+X-Received: by 2002:a17:90a:b10d:: with SMTP id z13mr6553809pjq.132.1583543059191;
+        Fri, 06 Mar 2020 17:04:19 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id o66sm23224949pfb.93.2020.03.06.17.04.16
+        by smtp.gmail.com with ESMTPSA id o66sm23224949pfb.93.2020.03.06.17.04.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 06 Mar 2020 17:04:17 -0800 (PST)
+        Fri, 06 Mar 2020 17:04:18 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v4 net-next 1/8] ionic: keep ionic dev on lif init fail
-Date:   Fri,  6 Mar 2020 17:04:01 -0800
-Message-Id: <20200307010408.65704-2-snelson@pensando.io>
+Subject: [PATCH v4 net-next 2/8] ionic: remove pragma packed
+Date:   Fri,  6 Mar 2020 17:04:02 -0800
+Message-Id: <20200307010408.65704-3-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200307010408.65704-1-snelson@pensando.io>
 References: <20200307010408.65704-1-snelson@pensando.io>
@@ -57,76 +57,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the basic ionic interface works but the lif creation fails,
-don't fail the probe.  This will allow us to use the driver to
-help inspect the hw/fw/pci interface for debugging purposes.
+Replace the misguided "#pragma packed" with tags on each
+struct/union definition that actually needs it.  This is safer
+and more efficient on the various compilers and architectures.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../ethernet/pensando/ionic/ionic_bus_pci.c   | 21 ++++++++++++++-----
- .../net/ethernet/pensando/ionic/ionic_lif.c   |  3 +++
- 2 files changed, 19 insertions(+), 5 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 38 +++++++++----------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 448d7b23b2f7..0ac6acbc5f31 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -37,6 +37,9 @@ int ionic_bus_alloc_irq_vectors(struct ionic *ionic, unsigned int nintrs)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+index ce07c2931a72..e5e98067fba4 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+@@ -4,8 +4,6 @@
+ #ifndef _IONIC_IF_H_
+ #define _IONIC_IF_H_
  
- void ionic_bus_free_irq_vectors(struct ionic *ionic)
- {
-+	if (!ionic->nintrs)
-+		return;
-+
- 	pci_free_irq_vectors(ionic->pdev);
- }
+-#pragma pack(push, 1)
+-
+ #define IONIC_DEV_INFO_SIGNATURE		0x44455649      /* 'DEVI' */
+ #define IONIC_DEV_INFO_VERSION			1
+ #define IONIC_IFNAMSIZ				16
+@@ -366,7 +364,7 @@ union ionic_lif_config {
+ 		u8     rsvd2[2];
+ 		__le64 features;
+ 		__le32 queue_count[IONIC_QTYPE_MAX];
+-	};
++	} __packed;
+ 	__le32 words[64];
+ };
  
-@@ -346,6 +349,11 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	ionic_reset(ionic);
- err_out_teardown:
- 	ionic_dev_teardown(ionic);
-+	/* Don't fail the probe for these errors, keep
-+	 * the hw interface around for inspection
-+	 */
-+	return 0;
-+
- err_out_unmap_bars:
- 	ionic_unmap_bars(ionic);
- 	pci_release_regions(pdev);
-@@ -369,11 +377,14 @@ static void ionic_remove(struct pci_dev *pdev)
- 	if (!ionic)
- 		return;
+@@ -417,7 +415,7 @@ union ionic_lif_identity {
+ 			__le32 max_frame_size;
+ 			u8 rsvd2[106];
+ 			union ionic_lif_config config;
+-		} eth;
++		} __packed eth;
  
--	ionic_devlink_unregister(ionic);
--	ionic_lifs_unregister(ionic);
--	ionic_lifs_deinit(ionic);
--	ionic_lifs_free(ionic);
--	ionic_bus_free_irq_vectors(ionic);
-+	if (ionic->master_lif) {
-+		ionic_devlink_unregister(ionic);
-+		ionic_lifs_unregister(ionic);
-+		ionic_lifs_deinit(ionic);
-+		ionic_lifs_free(ionic);
-+		ionic_bus_free_irq_vectors(ionic);
-+	}
-+
- 	ionic_port_reset(ionic);
- 	ionic_reset(ionic);
- 	ionic_dev_teardown(ionic);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 191271f6260d..1b7e18fe83db 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2408,6 +2408,9 @@ void ionic_lifs_unregister(struct ionic *ionic)
- 	 * current model, so don't bother searching the
- 	 * ionic->lif for candidates to unregister
- 	 */
-+	if (!ionic->master_lif)
-+		return;
-+
- 	cancel_work_sync(&ionic->master_lif->deferred.work);
- 	cancel_work_sync(&ionic->master_lif->tx_timeout_work);
- 	if (ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
+ 		struct {
+ 			u8 version;
+@@ -439,8 +437,8 @@ union ionic_lif_identity {
+ 			struct ionic_lif_logical_qtype rq_qtype;
+ 			struct ionic_lif_logical_qtype cq_qtype;
+ 			struct ionic_lif_logical_qtype eq_qtype;
+-		} rdma;
+-	};
++		} __packed rdma;
++	} __packed;
+ 	__le32 words[512];
+ };
+ 
+@@ -526,7 +524,7 @@ struct ionic_q_init_cmd {
+ 	__le64 sg_ring_base;
+ 	__le32 eq_index;
+ 	u8     rsvd2[16];
+-};
++} __packed;
+ 
+ /**
+  * struct ionic_q_init_comp - Queue init command completion
+@@ -1095,7 +1093,7 @@ struct ionic_port_status {
+ 	u8     status;
+ 	u8     rsvd[51];
+ 	struct ionic_xcvr_status  xcvr;
+-};
++} __packed;
+ 
+ /**
+  * struct ionic_port_identify_cmd - Port identify command
+@@ -1251,7 +1249,7 @@ struct ionic_port_getattr_comp {
+ 		u8      pause_type;
+ 		u8      loopback_mode;
+ 		u8      rsvd2[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -1319,7 +1317,7 @@ struct ionic_dev_setattr_cmd {
+ 		char    name[IONIC_IFNAMSIZ];
+ 		__le64  features;
+ 		u8      rsvd2[60];
+-	};
++	} __packed;
+ };
+ 
+ /**
+@@ -1334,7 +1332,7 @@ struct ionic_dev_setattr_comp {
+ 	union {
+ 		__le64  features;
+ 		u8      rsvd2[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -1361,7 +1359,7 @@ struct ionic_dev_getattr_comp {
+ 	union {
+ 		__le64  features;
+ 		u8      rsvd2[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -1426,7 +1424,7 @@ struct ionic_lif_setattr_cmd {
+ 		} rss;
+ 		u8	stats_ctl;
+ 		u8      rsvd[60];
+-	};
++	} __packed;
+ };
+ 
+ /**
+@@ -1444,7 +1442,7 @@ struct ionic_lif_setattr_comp {
+ 	union {
+ 		__le64  features;
+ 		u8      rsvd2[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -1483,7 +1481,7 @@ struct ionic_lif_getattr_comp {
+ 		u8      mac[6];
+ 		__le64  features;
+ 		u8      rsvd2[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -1688,7 +1686,7 @@ struct ionic_vf_setattr_cmd {
+ 		u8     linkstate;
+ 		__le64 stats_pa;
+ 		u8     pad[60];
+-	};
++	} __packed;
+ };
+ 
+ struct ionic_vf_setattr_comp {
+@@ -1726,7 +1724,7 @@ struct ionic_vf_getattr_comp {
+ 		u8     linkstate;
+ 		__le64 stats_pa;
+ 		u8     pad[11];
+-	};
++	} __packed;
+ 	u8     color;
+ };
+ 
+@@ -2471,7 +2469,7 @@ union ionic_dev_cmd_regs {
+ 		union ionic_dev_cmd_comp    comp;
+ 		u8                    rsvd[48];
+ 		u32                   data[478];
+-	};
++	} __packed;
+ 	u32 words[512];
+ };
+ 
+@@ -2484,7 +2482,7 @@ union ionic_dev_regs {
+ 	struct {
+ 		union ionic_dev_info_regs info;
+ 		union ionic_dev_cmd_regs  devcmd;
+-	};
++	} __packed;
+ 	__le32 words[1024];
+ };
+ 
+@@ -2574,6 +2572,4 @@ struct ionic_identity {
+ 	union ionic_qos_identity qos;
+ };
+ 
+-#pragma pack(pop)
+-
+ #endif /* _IONIC_IF_H_ */
 -- 
 2.17.1
 
