@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA5217CEC0
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 15:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2A017CEC6
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 15:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbgCGOga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 09:36:30 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:41811 "EHLO
+        id S1726477AbgCGOgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 09:36:46 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:42683 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbgCGOga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 09:36:30 -0500
+        with ESMTP id S1726402AbgCGOgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 09:36:44 -0500
 Received: from redhouse-blr-asicdesigners-com.blr.asicdesigners.com (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 027Ea9mw031095;
-        Sat, 7 Mar 2020 06:36:20 -0800
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 027Ea9mx031095;
+        Sat, 7 Mar 2020 06:36:24 -0800
 From:   Rohit Maheshwari <rohitm@chelsio.com>
 To:     borisp@mellanox.com, netdev@vger.kernel.org, davem@davemloft.net
 Cc:     herbert@gondor.apana.org.au, kuba@kernel.org, secdev@chelsio.com,
         varun@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net-next v4 2/6] cxgb4/chcr: Save tx keys and handle HW response
-Date:   Sat,  7 Mar 2020 20:06:04 +0530
-Message-Id: <20200307143608.13109-3-rohitm@chelsio.com>
+Subject: [PATCH net-next v4 3/6] cxgb4/chcr: complete record tx handling
+Date:   Sat,  7 Mar 2020 20:06:05 +0530
+Message-Id: <20200307143608.13109-4-rohitm@chelsio.com>
 X-Mailer: git-send-email 2.18.1
 In-Reply-To: <20200307143608.13109-1-rohitm@chelsio.com>
 References: <20200307143608.13109-1-rohitm@chelsio.com>
@@ -29,632 +29,877 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As part of this patch generated and saved crypto keys, handled HW
-response of act_open_req and set_tcb_req. Defined connection state
-update.
+Added tx handling in this patch. This includes handling of segments
+contain single complete record.
 
 v1->v2:
-- optimized tcb update using control queue.
-- state machine handling when earlier states received.
+- chcr_write_cpl_set_tcb_ulp is added in this patch.
 
-v2->v3:
-- Added one empty line after function declaration.
+v3->v4:
+- mss calculation logic.
+- replaced kfree_skb with dev_kfree_skb_any.
+- corrected error message reported by kbuild test robot <lkp@intel.com>
 
 Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- drivers/crypto/chelsio/chcr_common.h        |  64 +++++
- drivers/crypto/chelsio/chcr_core.c          |  20 +-
- drivers/crypto/chelsio/chcr_core.h          |   2 +
- drivers/crypto/chelsio/chcr_ktls.c          | 246 ++++++++++++++++++++
- drivers/crypto/chelsio/chcr_ktls.h          |  15 ++
- drivers/net/ethernet/chelsio/cxgb4/l2t.c    |  11 +
- drivers/net/ethernet/chelsio/cxgb4/l2t.h    |   1 +
- drivers/net/ethernet/chelsio/cxgb4/t4_msg.h |   8 +
- drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h |  37 ++-
- 9 files changed, 391 insertions(+), 13 deletions(-)
+ drivers/crypto/chelsio/chcr_common.h        |  36 ++
+ drivers/crypto/chelsio/chcr_core.c          |  18 +-
+ drivers/crypto/chelsio/chcr_core.h          |   1 +
+ drivers/crypto/chelsio/chcr_ktls.c          | 577 ++++++++++++++++++++
+ drivers/crypto/chelsio/chcr_ktls.h          |  13 +
+ drivers/net/ethernet/chelsio/cxgb4/sge.c    |   5 +
+ drivers/net/ethernet/chelsio/cxgb4/t4_msg.h |  20 +
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h |  20 +
+ 8 files changed, 686 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/crypto/chelsio/chcr_common.h b/drivers/crypto/chelsio/chcr_common.h
-index c0b9a8806c23..852f64322326 100644
+index 852f64322326..f4ccea68df6f 100644
 --- a/drivers/crypto/chelsio/chcr_common.h
 +++ b/drivers/crypto/chelsio/chcr_common.h
-@@ -6,6 +6,10 @@
+@@ -9,6 +9,11 @@
+ #define CHCR_MAX_SALT                      4
+ #define CHCR_KEYCTX_MAC_KEY_SIZE_128       0
+ #define CHCR_KEYCTX_CIPHER_KEY_SIZE_128    0
++#define CHCR_SCMD_CIPHER_MODE_AES_GCM      2
++#define CHCR_CPL_TX_SEC_PDU_LEN_64BIT      2
++#define CHCR_SCMD_SEQ_NO_CTRL_64BIT        3
++#define CHCR_SCMD_PROTO_VERSION_TLS        0
++#define CHCR_SCMD_AUTH_MODE_GHASH          4
  
- #include "cxgb4.h"
- 
-+#define CHCR_MAX_SALT                      4
-+#define CHCR_KEYCTX_MAC_KEY_SIZE_128       0
-+#define CHCR_KEYCTX_CIPHER_KEY_SIZE_128    0
-+
  enum chcr_state {
  	CHCR_INIT = 0,
- 	CHCR_ATTACH,
-@@ -28,5 +32,65 @@ struct uld_ctx {
- 	struct chcr_dev dev;
- };
- 
-+struct ktls_key_ctx {
-+	__be32 ctx_hdr;
-+	u8 salt[CHCR_MAX_SALT];
-+	__be64 iv_to_auth;
-+	unsigned char key[TLS_CIPHER_AES_GCM_128_KEY_SIZE +
-+			  TLS_CIPHER_AES_GCM_256_TAG_SIZE];
-+};
+@@ -93,4 +98,35 @@ static inline void *chcr_copy_to_txd(const void *src, const struct sge_txq *q,
+ 	}
+ 	return p;
+ }
 +
-+/* Crypto key context */
-+#define KEY_CONTEXT_CTX_LEN_S           24
-+#define KEY_CONTEXT_CTX_LEN_V(x)        ((x) << KEY_CONTEXT_CTX_LEN_S)
-+
-+#define KEY_CONTEXT_SALT_PRESENT_S      10
-+#define KEY_CONTEXT_SALT_PRESENT_V(x)   ((x) << KEY_CONTEXT_SALT_PRESENT_S)
-+#define KEY_CONTEXT_SALT_PRESENT_F      KEY_CONTEXT_SALT_PRESENT_V(1U)
-+
-+#define KEY_CONTEXT_VALID_S     0
-+#define KEY_CONTEXT_VALID_V(x)  ((x) << KEY_CONTEXT_VALID_S)
-+#define KEY_CONTEXT_VALID_F     KEY_CONTEXT_VALID_V(1U)
-+
-+#define KEY_CONTEXT_CK_SIZE_S           6
-+#define KEY_CONTEXT_CK_SIZE_V(x)        ((x) << KEY_CONTEXT_CK_SIZE_S)
-+
-+#define KEY_CONTEXT_MK_SIZE_S           2
-+#define KEY_CONTEXT_MK_SIZE_V(x)        ((x) << KEY_CONTEXT_MK_SIZE_S)
-+
-+#define KEY_CONTEXT_OPAD_PRESENT_S      11
-+#define KEY_CONTEXT_OPAD_PRESENT_V(x)   ((x) << KEY_CONTEXT_OPAD_PRESENT_S)
-+#define KEY_CONTEXT_OPAD_PRESENT_F      KEY_CONTEXT_OPAD_PRESENT_V(1U)
-+
-+#define FILL_KEY_CTX_HDR(ck_size, mk_size, ctx_len) \
-+		htonl(KEY_CONTEXT_MK_SIZE_V(mk_size) | \
-+		      KEY_CONTEXT_CK_SIZE_V(ck_size) | \
-+		      KEY_CONTEXT_VALID_F | \
-+		      KEY_CONTEXT_SALT_PRESENT_F | \
-+		      KEY_CONTEXT_CTX_LEN_V((ctx_len)))
-+
- struct uld_ctx *assign_chcr_device(void);
-+
-+static inline void *chcr_copy_to_txd(const void *src, const struct sge_txq *q,
-+				     void *pos, int length)
++static inline unsigned int chcr_txq_avail(const struct sge_txq *q)
 +{
-+	int left = (void *)q->stat - pos;
-+	u64 *p;
++	return q->size - 1 - q->in_use;
++}
 +
-+	if (likely(length <= left)) {
-+		memcpy(pos, src, length);
-+		pos += length;
-+	} else {
-+		memcpy(pos, src, left);
-+		memcpy(q->desc, src + left, length - left);
-+		pos = (void *)q->desc + (length - left);
-+	}
-+	/* 0-pad to multiple of 16 */
-+	p = PTR_ALIGN(pos, 8);
-+	if ((uintptr_t)p & 8) {
-+		*p = 0;
-+		return p + 1;
-+	}
-+	return p;
++static inline void chcr_txq_advance(struct sge_txq *q, unsigned int n)
++{
++	q->in_use += n;
++	q->pidx += n;
++	if (q->pidx >= q->size)
++		q->pidx -= q->size;
++}
++
++static inline void chcr_eth_txq_stop(struct sge_eth_txq *q)
++{
++	netif_tx_stop_queue(q->txq);
++	q->q.stops++;
++}
++
++static inline unsigned int chcr_sgl_len(unsigned int n)
++{
++	n--;
++	return (3 * n) / 2 + (n & 1) + 2;
++}
++
++static inline unsigned int chcr_flits_to_desc(unsigned int n)
++{
++	WARN_ON(n > SGE_MAX_WR_LEN / 8);
++	return DIV_ROUND_UP(n, 8);
 +}
  #endif /* __CHCR_COMMON_H__ */
 diff --git a/drivers/crypto/chelsio/chcr_core.c b/drivers/crypto/chelsio/chcr_core.c
-index 16e16aa86808..a52ce6fc9858 100644
+index a52ce6fc9858..0015810214a9 100644
 --- a/drivers/crypto/chelsio/chcr_core.c
 +++ b/drivers/crypto/chelsio/chcr_core.c
-@@ -28,13 +28,17 @@
- 
- static struct chcr_driver_data drv_data;
- 
--typedef int (*chcr_handler_func)(struct chcr_dev *dev, unsigned char *input);
--static int cpl_fw6_pld_handler(struct chcr_dev *dev, unsigned char *input);
-+typedef int (*chcr_handler_func)(struct adapter *adap, unsigned char *input);
-+static int cpl_fw6_pld_handler(struct adapter *adap, unsigned char *input);
- static void *chcr_uld_add(const struct cxgb4_lld_info *lld);
- static int chcr_uld_state_change(void *handle, enum cxgb4_state state);
- 
- static chcr_handler_func work_handlers[NUM_CPL_CMDS] = {
- 	[CPL_FW6_PLD] = cpl_fw6_pld_handler,
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+	[CPL_ACT_OPEN_RPL] = chcr_ktls_cpl_act_open_rpl,
-+	[CPL_SET_TCB_RPL] = chcr_ktls_cpl_set_tcb_rpl,
-+#endif
+@@ -49,9 +49,9 @@ static struct cxgb4_uld_info chcr_uld_info = {
+ 	.add = chcr_uld_add,
+ 	.state_change = chcr_uld_state_change,
+ 	.rx_handler = chcr_uld_rx_handler,
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
++#if defined(CONFIG_CHELSIO_IPSEC_INLINE) || defined(CONFIG_CHELSIO_TLS_DEVICE)
+ 	.tx_handler = chcr_uld_tx_handler,
+-#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
++#endif /* CONFIG_CHELSIO_IPSEC_INLINE || CONFIG_CHELSIO_TLS_DEVICE */
  };
  
- static struct cxgb4_uld_info chcr_uld_info = {
-@@ -150,14 +154,13 @@ static int chcr_dev_move(struct uld_ctx *u_ctx)
+ static void detach_work_fn(struct work_struct *work)
+@@ -237,12 +237,22 @@ int chcr_uld_rx_handler(void *handle, const __be64 *rsp,
  	return 0;
  }
  
--static int cpl_fw6_pld_handler(struct chcr_dev *dev,
-+static int cpl_fw6_pld_handler(struct adapter *adap,
- 			       unsigned char *input)
+-#ifdef CONFIG_CHELSIO_IPSEC_INLINE
++#if defined(CONFIG_CHELSIO_IPSEC_INLINE) || defined(CONFIG_CHELSIO_TLS_DEVICE)
+ int chcr_uld_tx_handler(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct crypto_async_request *req;
- 	struct cpl_fw6_pld *fw6_pld;
- 	u32 ack_err_status = 0;
- 	int error_status = 0;
--	struct adapter *adap = padap(dev);
- 
- 	fw6_pld = (struct cpl_fw6_pld *)input;
- 	req = (struct crypto_async_request *)(uintptr_t)be64_to_cpu(
-@@ -219,17 +222,18 @@ int chcr_uld_rx_handler(void *handle, const __be64 *rsp,
- {
- 	struct uld_ctx *u_ctx = (struct uld_ctx *)handle;
- 	struct chcr_dev *dev = &u_ctx->dev;
-+	struct adapter *adap = padap(dev);
- 	const struct cpl_fw6_pld *rpl = (struct cpl_fw6_pld *)rsp;
- 
--	if (rpl->opcode != CPL_FW6_PLD) {
--		pr_err("Unsupported opcode\n");
-+	if (!work_handlers[rpl->opcode]) {
-+		pr_err("Unsupported opcode %d received\n", rpl->opcode);
- 		return 0;
- 	}
- 
- 	if (!pgl)
--		work_handlers[rpl->opcode](dev, (unsigned char *)&rsp[1]);
-+		work_handlers[rpl->opcode](adap, (unsigned char *)&rsp[1]);
- 	else
--		work_handlers[rpl->opcode](dev, pgl->va);
-+		work_handlers[rpl->opcode](adap, pgl->va);
- 	return 0;
++	/* In case if skb's decrypted bit is set, it's nic tls packet, else it's
++	 * ipsec packet.
++	 */
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++	if (skb->decrypted)
++		return chcr_ktls_xmit(skb, dev);
++#endif
++#ifdef CONFIG_CHELSIO_IPSEC_INLINE
+ 	return chcr_ipsec_xmit(skb, dev);
++#endif
++	return 0;
  }
+-#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
++#endif /* CONFIG_CHELSIO_IPSEC_INLINE || CONFIG_CHELSIO_TLS_DEVICE */
  
+ static void chcr_detach_device(struct uld_ctx *u_ctx)
+ {
 diff --git a/drivers/crypto/chelsio/chcr_core.h b/drivers/crypto/chelsio/chcr_core.h
-index 48e3ddfdd9e2..2dcbd188290a 100644
+index 2dcbd188290a..b5b371b8d343 100644
 --- a/drivers/crypto/chelsio/chcr_core.h
 +++ b/drivers/crypto/chelsio/chcr_core.h
-@@ -225,5 +225,7 @@ void chcr_add_xfrmops(const struct cxgb4_lld_info *lld);
- #ifdef CONFIG_CHELSIO_TLS_DEVICE
- void chcr_enable_ktls(struct adapter *adap);
+@@ -227,5 +227,6 @@ void chcr_enable_ktls(struct adapter *adap);
  void chcr_disable_ktls(struct adapter *adap);
-+int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input);
-+int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input);
+ int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input);
+ int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input);
++int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev);
  #endif
  #endif /* __CHCR_CORE_H__ */
 diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
-index f1c361a83929..f945b93a1bf0 100644
+index f945b93a1bf0..62ffcef13402 100644
 --- a/drivers/crypto/chelsio/chcr_ktls.c
 +++ b/drivers/crypto/chelsio/chcr_ktls.c
-@@ -4,6 +4,143 @@
- #ifdef CONFIG_CHELSIO_TLS_DEVICE
- #include "chcr_ktls.h"
+@@ -39,6 +39,22 @@ static int chcr_ktls_save_keys(struct chcr_ktls_info *tx_info,
+ 		salt = info_128_gcm->salt;
+ 		tx_info->record_no = *(u64 *)info_128_gcm->rec_seq;
  
-+static int chcr_init_tcb_fields(struct chcr_ktls_info *tx_info);
++		/* The SCMD fields used when encrypting a full TLS
++		 * record. Its a one time calculation till the
++		 * connection exists.
++		 */
++		tx_info->scmd0_seqno_numivs =
++			SCMD_SEQ_NO_CTRL_V(CHCR_SCMD_SEQ_NO_CTRL_64BIT) |
++			SCMD_CIPH_AUTH_SEQ_CTRL_F |
++			SCMD_PROTO_VERSION_V(CHCR_SCMD_PROTO_VERSION_TLS) |
++			SCMD_CIPH_MODE_V(CHCR_SCMD_CIPHER_MODE_AES_GCM) |
++			SCMD_AUTH_MODE_V(CHCR_SCMD_AUTH_MODE_GHASH) |
++			SCMD_IV_SIZE_V(TLS_CIPHER_AES_GCM_128_IV_SIZE >> 1) |
++			SCMD_NUM_IVS_V(1);
++
++		/* keys will be sent inline. */
++		tx_info->scmd0_ivgen_hdrlen = SCMD_KEY_CTX_INLINE_F;
++
+ 		break;
+ 
+ 	default:
+@@ -373,6 +389,7 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
+ 
+ 	tx_info->adap = adap;
+ 	tx_info->netdev = netdev;
++	tx_info->first_qset = pi->first_qset;
+ 	tx_info->tx_chan = pi->tx_chan;
+ 	tx_info->smt_idx = pi->smt_idx;
+ 	tx_info->port_id = pi->port_id;
+@@ -572,4 +589,564 @@ int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input)
+ 	chcr_ktls_update_connection_state(tx_info, KTLS_CONN_SET_TCB_RPL);
+ 	return 0;
+ }
++
 +/*
-+ * chcr_ktls_save_keys: calculate and save crypto keys.
++ * chcr_write_cpl_set_tcb_ulp: update tcb values.
++ * TCB is responsible to create tcp headers, so all the related values
++ * should be correctly updated.
 + * @tx_info - driver specific tls info.
-+ * @crypto_info - tls crypto information.
-+ * @direction - TX/RX direction.
-+ * return - SUCCESS/FAILURE.
++ * @q - tx queue on which packet is going out.
++ * @tid - TCB identifier.
++ * @pos - current index where should we start writing.
++ * @word - TCB word.
++ * @mask - TCB word related mask.
++ * @val - TCB word related value.
++ * @reply - set 1 if looking for TP response.
++ * return - next position to write.
 + */
-+static int chcr_ktls_save_keys(struct chcr_ktls_info *tx_info,
-+			       struct tls_crypto_info *crypto_info,
-+			       enum tls_offload_ctx_dir direction)
++static void *chcr_write_cpl_set_tcb_ulp(struct chcr_ktls_info *tx_info,
++					struct sge_eth_txq *q, u32 tid,
++					void *pos, u16 word, u64 mask,
++					u64 val, u32 reply)
 +{
-+	int ck_size, key_ctx_size, mac_key_size, keylen, ghash_size, ret;
-+	unsigned char ghash_h[TLS_CIPHER_AES_GCM_256_TAG_SIZE];
-+	struct tls12_crypto_info_aes_gcm_128 *info_128_gcm;
-+	struct ktls_key_ctx *kctx = &tx_info->key_ctx;
-+	struct crypto_cipher *cipher;
-+	unsigned char *key, *salt;
++	struct cpl_set_tcb_field_core *cpl;
++	struct ulptx_idata *idata;
++	struct ulp_txpkt *txpkt;
++	void *save_pos = NULL;
++	u8 buf[48] = {0};
++	int left;
 +
-+	switch (crypto_info->cipher_type) {
-+	case TLS_CIPHER_AES_GCM_128:
-+		info_128_gcm =
-+			(struct tls12_crypto_info_aes_gcm_128 *)crypto_info;
-+		keylen = TLS_CIPHER_AES_GCM_128_KEY_SIZE;
-+		ck_size = CHCR_KEYCTX_CIPHER_KEY_SIZE_128;
-+		tx_info->salt_size = TLS_CIPHER_AES_GCM_128_SALT_SIZE;
-+		mac_key_size = CHCR_KEYCTX_MAC_KEY_SIZE_128;
-+		tx_info->iv_size = TLS_CIPHER_AES_GCM_128_IV_SIZE;
-+		tx_info->iv = be64_to_cpu(*(__be64 *)info_128_gcm->iv);
-+
-+		ghash_size = TLS_CIPHER_AES_GCM_128_TAG_SIZE;
-+		key = info_128_gcm->key;
-+		salt = info_128_gcm->salt;
-+		tx_info->record_no = *(u64 *)info_128_gcm->rec_seq;
-+
-+		break;
-+
-+	default:
-+		pr_err("GCM: cipher type 0x%x not supported\n",
-+		       crypto_info->cipher_type);
-+		ret = -EINVAL;
-+		goto out;
++	left = (void *)q->q.stat - pos;
++	if (unlikely(left < CHCR_SET_TCB_FIELD_LEN)) {
++		if (!left) {
++			pos = q->q.desc;
++		} else {
++			save_pos = pos;
++			pos = buf;
++		}
 +	}
++	/* ULP_TXPKT */
++	txpkt = pos;
++	txpkt->cmd_dest = htonl(ULPTX_CMD_V(ULP_TX_PKT) | ULP_TXPKT_DEST_V(0));
++	txpkt->len = htonl(DIV_ROUND_UP(CHCR_SET_TCB_FIELD_LEN, 16));
 +
-+	key_ctx_size = CHCR_KTLS_KEY_CTX_LEN +
-+		       roundup(keylen, 16) + ghash_size;
-+	/* Calculate the H = CIPH(K, 0 repeated 16 times).
-+	 * It will go in key context
-+	 */
-+	cipher = crypto_alloc_cipher("aes", 0, 0);
-+	if (IS_ERR(cipher)) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
++	/* ULPTX_IDATA sub-command */
++	idata = (struct ulptx_idata *)(txpkt + 1);
++	idata->cmd_more = htonl(ULPTX_CMD_V(ULP_TX_SC_IMM));
++	idata->len = htonl(sizeof(*cpl));
++	pos = idata + 1;
 +
-+	ret = crypto_cipher_setkey(cipher, key, keylen);
-+	if (ret)
-+		goto out1;
++	cpl = pos;
++	/* CPL_SET_TCB_FIELD */
++	OPCODE_TID(cpl) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, tid));
++	cpl->reply_ctrl = htons(QUEUENO_V(tx_info->rx_qid) |
++			NO_REPLY_V(!reply));
++	cpl->word_cookie = htons(TCB_WORD_V(word));
++	cpl->mask = cpu_to_be64(mask);
++	cpl->val = cpu_to_be64(val);
 +
-+	memset(ghash_h, 0, ghash_size);
-+	crypto_cipher_encrypt_one(cipher, ghash_h, ghash_h);
++	/* ULPTX_NOOP */
++	idata = (struct ulptx_idata *)(cpl + 1);
++	idata->cmd_more = htonl(ULPTX_CMD_V(ULP_TX_SC_NOOP));
++	idata->len = htonl(0);
 +
-+	/* fill the Key context */
-+	if (direction == TLS_OFFLOAD_CTX_DIR_TX) {
-+		kctx->ctx_hdr = FILL_KEY_CTX_HDR(ck_size,
-+						 mac_key_size,
-+						 key_ctx_size >> 4);
++	if (save_pos) {
++		pos = chcr_copy_to_txd(buf, &q->q, save_pos,
++				       CHCR_SET_TCB_FIELD_LEN);
 +	} else {
-+		ret = -EINVAL;
-+		goto out1;
++		/* check again if we are at the end of the queue */
++		if (left == CHCR_SET_TCB_FIELD_LEN)
++			pos = q->q.desc;
++		else
++			pos = idata + 1;
 +	}
 +
-+	memcpy(kctx->salt, salt, tx_info->salt_size);
-+	memcpy(kctx->key, key, keylen);
-+	memcpy(kctx->key + keylen, ghash_h, ghash_size);
-+	tx_info->key_ctx_len = key_ctx_size;
-+
-+out1:
-+	crypto_free_cipher(cipher);
-+out:
-+	return ret;
++	return pos;
 +}
 +
-+static int chcr_ktls_update_connection_state(struct chcr_ktls_info *tx_info,
-+					     int new_state)
++/*
++ * chcr_ktls_xmit_tcb_cpls: update tcb entry so that TP will create the header
++ * with updated values like tcp seq, ack, window etc.
++ * @tx_info - driver specific tls info.
++ * @q - TX queue.
++ * @tcp_seq
++ * @tcp_ack
++ * @tcp_win
++ * return: NETDEV_TX_BUSY/NET_TX_OK.
++ */
++static int chcr_ktls_xmit_tcb_cpls(struct chcr_ktls_info *tx_info,
++				   struct sge_eth_txq *q, u64 tcp_seq,
++				   u64 tcp_ack, u64 tcp_win)
 +{
++	bool first_wr = ((tx_info->prev_ack == 0) && (tx_info->prev_win == 0));
++	u32 len, cpl = 0, ndesc, wr_len;
++	struct fw_ulptx_wr *wr;
++	int credits;
++	void *pos;
++
++	wr_len = sizeof(*wr);
++	/* there can be max 4 cpls, check if we have enough credits */
++	len = wr_len + 4 * roundup(CHCR_SET_TCB_FIELD_LEN, 16);
++	ndesc = DIV_ROUND_UP(len, 64);
++
++	credits = chcr_txq_avail(&q->q) - ndesc;
++	if (unlikely(credits < 0)) {
++		chcr_eth_txq_stop(q);
++		return NETDEV_TX_BUSY;
++	}
++
++	pos = &q->q.desc[q->q.pidx];
++	/* make space for WR, we'll fill it later when we know all the cpls
++	 * being sent out and have complete length.
++	 */
++	wr = pos;
++	pos += wr_len;
++	/* update tx_max if its a re-transmit or the first wr */
++	if (first_wr || tcp_seq != tx_info->prev_seq) {
++		pos = chcr_write_cpl_set_tcb_ulp(tx_info, q, tx_info->tid, pos,
++						 TCB_TX_MAX_W,
++						 TCB_TX_MAX_V(TCB_TX_MAX_M),
++						 TCB_TX_MAX_V(tcp_seq), 0);
++		cpl++;
++	}
++	/* reset snd una if it's a re-transmit pkt */
++	if (tcp_seq != tx_info->prev_seq) {
++		/* reset snd_una */
++		pos = chcr_write_cpl_set_tcb_ulp(tx_info, q, tx_info->tid, pos,
++						 TCB_SND_UNA_RAW_W,
++						 TCB_SND_UNA_RAW_V
++						 (TCB_SND_UNA_RAW_M),
++						 TCB_SND_UNA_RAW_V(0), 0);
++		cpl++;
++	}
++	/* update ack */
++	if (first_wr || tx_info->prev_ack != tcp_ack) {
++		pos = chcr_write_cpl_set_tcb_ulp(tx_info, q, tx_info->tid, pos,
++						 TCB_RCV_NXT_W,
++						 TCB_RCV_NXT_V(TCB_RCV_NXT_M),
++						 TCB_RCV_NXT_V(tcp_ack), 0);
++		tx_info->prev_ack = tcp_ack;
++		cpl++;
++	}
++	/* update receive window */
++	if (first_wr || tx_info->prev_win != tcp_win) {
++		pos = chcr_write_cpl_set_tcb_ulp(tx_info, q, tx_info->tid, pos,
++						 TCB_RCV_WND_W,
++						 TCB_RCV_WND_V(TCB_RCV_WND_M),
++						 TCB_RCV_WND_V(tcp_win), 0);
++		tx_info->prev_win = tcp_win;
++		cpl++;
++	}
++
++	if (cpl) {
++		/* get the actual length */
++		len = wr_len + cpl * roundup(CHCR_SET_TCB_FIELD_LEN, 16);
++		/* ULPTX wr */
++		wr->op_to_compl = htonl(FW_WR_OP_V(FW_ULPTX_WR));
++		wr->cookie = 0;
++		/* fill len in wr field */
++		wr->flowid_len16 = htonl(FW_WR_LEN16_V(DIV_ROUND_UP(len, 16)));
++
++		ndesc = DIV_ROUND_UP(len, 64);
++		chcr_txq_advance(&q->q, ndesc);
++		cxgb4_ring_tx_db(tx_info->adap, &q->q, ndesc);
++	}
++	return 0;
++}
++
++/*
++ * chcr_ktls_skb_copy
++ * @nskb - new skb where the frags to be added.
++ * @skb - old skb from which frags will be copied.
++ */
++static void chcr_ktls_skb_copy(struct sk_buff *skb, struct sk_buff *nskb)
++{
++	int i;
++
++	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
++		skb_shinfo(nskb)->frags[i] = skb_shinfo(skb)->frags[i];
++		__skb_frag_ref(&skb_shinfo(nskb)->frags[i]);
++	}
++
++	skb_shinfo(nskb)->nr_frags = skb_shinfo(skb)->nr_frags;
++	nskb->len += skb->data_len;
++	nskb->data_len = skb->data_len;
++	nskb->truesize += skb->data_len;
++}
++
++/*
++ * chcr_ktls_get_tx_flits
++ * returns number of flits to be sent out, it includes key context length, WR
++ * size and skb fragments.
++ */
++static unsigned int
++chcr_ktls_get_tx_flits(const struct sk_buff *skb, unsigned int key_ctx_len)
++{
++	return chcr_sgl_len(skb_shinfo(skb)->nr_frags) +
++	       DIV_ROUND_UP(key_ctx_len + CHCR_KTLS_WR_SIZE, 8);
++}
++
++/*
++ * chcr_ktls_xmit_wr_complete: This sends out the complete record. If an skb
++ * received has partial end part of the record, send out the complete record, so
++ * that crypto block will be able to generate TAG/HASH.
++ * @skb - segment which has complete or partial end part.
++ * @tx_info - driver specific tls info.
++ * @q - TX queue.
++ * @tcp_seq
++ * @tcp_push - tcp push bit.
++ * @mss - segment size.
++ * return: NETDEV_TX_BUSY/NET_TX_OK.
++ */
++static int chcr_ktls_xmit_wr_complete(struct sk_buff *skb,
++				      struct chcr_ktls_info *tx_info,
++				      struct sge_eth_txq *q, u32 tcp_seq,
++				      bool tcp_push, u32 mss)
++{
++	u32 len16, wr_mid = 0, flits = 0, ndesc, cipher_start;
++	struct adapter *adap = tx_info->adap;
++	int credits, left, last_desc;
++	struct tx_sw_desc *sgl_sdesc;
++	struct cpl_tx_data *tx_data;
++	struct cpl_tx_sec_pdu *cpl;
++	struct ulptx_idata *idata;
++	struct ulp_txpkt *ulptx;
++	struct fw_ulptx_wr *wr;
++	void *pos;
++	u64 *end;
++
++	/* get the number of flits required */
++	flits = chcr_ktls_get_tx_flits(skb, tx_info->key_ctx_len);
++	/* number of descriptors */
++	ndesc = chcr_flits_to_desc(flits);
++	/* check if enough credits available */
++	credits = chcr_txq_avail(&q->q) - ndesc;
++	if (unlikely(credits < 0)) {
++		chcr_eth_txq_stop(q);
++		return NETDEV_TX_BUSY;
++	}
++
++	if (unlikely(credits < ETHTXQ_STOP_THRES)) {
++		/* Credits are below the threshold vaues, stop the queue after
++		 * injecting the Work Request for this packet.
++		 */
++		chcr_eth_txq_stop(q);
++		wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
++	}
++
++	last_desc = q->q.pidx + ndesc - 1;
++	if (last_desc >= q->q.size)
++		last_desc -= q->q.size;
++	sgl_sdesc = &q->q.sdesc[last_desc];
++
++	if (unlikely(cxgb4_map_skb(adap->pdev_dev, skb, sgl_sdesc->addr) < 0)) {
++		memset(sgl_sdesc->addr, 0, sizeof(sgl_sdesc->addr));
++		q->mapping_err++;
++		return NETDEV_TX_BUSY;
++	}
++
++	pos = &q->q.desc[q->q.pidx];
++	end = (u64 *)pos + flits;
++	/* FW_ULPTX_WR */
++	wr = pos;
++	/* WR will need len16 */
++	len16 = DIV_ROUND_UP(flits, 2);
++	wr->op_to_compl = htonl(FW_WR_OP_V(FW_ULPTX_WR));
++	wr->flowid_len16 = htonl(wr_mid | FW_WR_LEN16_V(len16));
++	wr->cookie = 0;
++	pos += sizeof(*wr);
++	/* ULP_TXPKT */
++	ulptx = pos;
++	ulptx->cmd_dest = htonl(ULPTX_CMD_V(ULP_TX_PKT) |
++				ULP_TXPKT_CHANNELID_V(tx_info->port_id) |
++				ULP_TXPKT_FID_V(q->q.cntxt_id) |
++				ULP_TXPKT_RO_F);
++	ulptx->len = htonl(len16 - 1);
++	/* ULPTX_IDATA sub-command */
++	idata = (struct ulptx_idata *)(ulptx + 1);
++	idata->cmd_more = htonl(ULPTX_CMD_V(ULP_TX_SC_IMM) | ULP_TX_SC_MORE_F);
++	/* idata length will include cpl_tx_sec_pdu + key context size +
++	 * cpl_tx_data header.
++	 */
++	idata->len = htonl(sizeof(*cpl) + tx_info->key_ctx_len +
++			   sizeof(*tx_data));
++	/* SEC CPL */
++	cpl = (struct cpl_tx_sec_pdu *)(idata + 1);
++	cpl->op_ivinsrtofst =
++		htonl(CPL_TX_SEC_PDU_OPCODE_V(CPL_TX_SEC_PDU) |
++		      CPL_TX_SEC_PDU_CPLLEN_V(CHCR_CPL_TX_SEC_PDU_LEN_64BIT) |
++		      CPL_TX_SEC_PDU_PLACEHOLDER_V(1) |
++		      CPL_TX_SEC_PDU_IVINSRTOFST_V(TLS_HEADER_SIZE + 1));
++	cpl->pldlen = htonl(skb->data_len);
++
++	/* encryption should start after tls header size + iv size */
++	cipher_start = TLS_HEADER_SIZE + tx_info->iv_size + 1;
++
++	cpl->aadstart_cipherstop_hi =
++		htonl(CPL_TX_SEC_PDU_AADSTART_V(1) |
++		      CPL_TX_SEC_PDU_AADSTOP_V(TLS_HEADER_SIZE) |
++		      CPL_TX_SEC_PDU_CIPHERSTART_V(cipher_start));
++
++	/* authentication will also start after tls header + iv size */
++	cpl->cipherstop_lo_authinsert =
++	htonl(CPL_TX_SEC_PDU_AUTHSTART_V(cipher_start) |
++	      CPL_TX_SEC_PDU_AUTHSTOP_V(TLS_CIPHER_AES_GCM_128_TAG_SIZE) |
++	      CPL_TX_SEC_PDU_AUTHINSERT_V(TLS_CIPHER_AES_GCM_128_TAG_SIZE));
++
++	/* These two flits are actually a CPL_TLS_TX_SCMD_FMT. */
++	cpl->seqno_numivs = htonl(tx_info->scmd0_seqno_numivs);
++	cpl->ivgen_hdrlen = htonl(tx_info->scmd0_ivgen_hdrlen);
++	cpl->scmd1 = cpu_to_be64(tx_info->record_no);
++
++	pos = cpl + 1;
++	/* check if space left to fill the keys */
++	left = (void *)q->q.stat - pos;
++	if (!left) {
++		left = (void *)end - (void *)q->q.stat;
++		pos = q->q.desc;
++		end = pos + left;
++	}
++
++	pos = chcr_copy_to_txd(&tx_info->key_ctx, &q->q, pos,
++			       tx_info->key_ctx_len);
++	left = (void *)q->q.stat - pos;
++
++	if (!left) {
++		left = (void *)end - (void *)q->q.stat;
++		pos = q->q.desc;
++		end = pos + left;
++	}
++	/* CPL_TX_DATA */
++	tx_data = (void *)pos;
++	OPCODE_TID(tx_data) = htonl(MK_OPCODE_TID(CPL_TX_DATA, tx_info->tid));
++	tx_data->len = htonl(TX_DATA_MSS_V(mss) | TX_LENGTH_V(skb->data_len));
++
++	tx_data->rsvd = htonl(tcp_seq);
++
++	tx_data->flags = htonl(TX_BYPASS_F);
++	if (tcp_push)
++		tx_data->flags |= htonl(TX_PUSH_F | TX_SHOVE_F);
++
++	/* check left again, it might go beyond queue limit */
++	pos = tx_data + 1;
++	left = (void *)q->q.stat - pos;
++
++	/* check the position again */
++	if (!left) {
++		left = (void *)end - (void *)q->q.stat;
++		pos = q->q.desc;
++		end = pos + left;
++	}
++
++	/* send the complete packet except the header */
++	cxgb4_write_sgl(skb, &q->q, pos, end, skb->len - skb->data_len,
++			sgl_sdesc->addr);
++	sgl_sdesc->skb = skb;
++
++	chcr_txq_advance(&q->q, ndesc);
++	cxgb4_ring_tx_db(adap, &q->q, ndesc);
++
++	return 0;
++}
++
++/*
++ * chcr_end_part_handler: This handler will handle the record which
++ * is complete or if record's end part is received. T6 adapter has a issue that
++ * it can't send out TAG with partial record so if its an end part then we have
++ * to send TAG as well and for which we need to fetch the complete record and
++ * send it to crypto module.
++ * @tx_info - driver specific tls info.
++ * @skb - skb contains partial record.
++ * @record - complete record of 16K size.
++ * @tcp_seq
++ * @mss - segment size in which TP needs to chop a packet.
++ * @tcp_push_no_fin - tcp push if fin is not set.
++ * @q - TX queue.
++ * @tls_end_offset - offset from end of the record.
++ * @last wr : check if this is the last part of the skb going out.
++ * return: NETDEV_TX_OK/NETDEV_TX_BUSY.
++ */
++static int chcr_end_part_handler(struct chcr_ktls_info *tx_info,
++				 struct sk_buff *skb,
++				 struct tls_record_info *record,
++				 u32 tcp_seq, int mss, bool tcp_push_no_fin,
++				 struct sge_eth_txq *q,
++				 u32 tls_end_offset, bool last_wr)
++{
++	struct sk_buff *nskb = NULL;
++	/* check if it is a complete record */
++	if (tls_end_offset == record->len) {
++		nskb = skb;
++	} else {
++		/* handle it in next patch */
++		goto out;
++	}
++
++	if (chcr_ktls_xmit_wr_complete(nskb, tx_info, q, tcp_seq,
++				       (last_wr && tcp_push_no_fin),
++				       mss)) {
++		goto out;
++	}
++	return 0;
++out:
++	if (nskb)
++		dev_kfree_skb_any(nskb);
++	return NETDEV_TX_BUSY;
++}
++
++/* nic tls TX handler */
++int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
++{
++	struct chcr_ktls_ofld_ctx_tx *tx_ctx;
++	struct tcphdr *th = tcp_hdr(skb);
++	int data_len, qidx, ret = 0, mss;
++	struct tls_record_info *record;
++	struct chcr_ktls_info *tx_info;
++	u32 tls_end_offset, tcp_seq;
++	struct tls_context *tls_ctx;
++	struct sk_buff *local_skb;
++	int new_connection_state;
++	struct sge_eth_txq *q;
++	struct adapter *adap;
 +	unsigned long flags;
 +
-+	/* This function can be called from both rx (interrupt context) and tx
-+	 * queue contexts.
-+	 */
-+	spin_lock_irqsave(&tx_info->lock, flags);
-+	switch (tx_info->connection_state) {
-+	case KTLS_CONN_CLOSED:
-+		tx_info->connection_state = new_state;
-+		break;
++	tcp_seq = ntohl(th->seq);
 +
-+	case KTLS_CONN_ACT_OPEN_REQ:
-+		/* only go forward if state is greater than current state. */
-+		if (new_state <= tx_info->connection_state)
-+			break;
-+		/* update to the next state and also initialize TCB */
-+		tx_info->connection_state = new_state;
-+		/* FALLTHRU */
-+	case KTLS_CONN_ACT_OPEN_RPL:
-+		/* if we are stuck in this state, means tcb init might not
-+		 * received by HW, try sending it again.
-+		 */
-+		if (!chcr_init_tcb_fields(tx_info))
-+			tx_info->connection_state = KTLS_CONN_SET_TCB_REQ;
-+		break;
++	mss = skb_is_gso(skb) ? skb_shinfo(skb)->gso_size : skb->data_len;
 +
-+	case KTLS_CONN_SET_TCB_REQ:
-+		/* only go forward if state is greater than current state. */
-+		if (new_state <= tx_info->connection_state)
-+			break;
-+		/* update to the next state and check if l2t_state is valid  */
-+		tx_info->connection_state = new_state;
-+		/* FALLTHRU */
-+	case KTLS_CONN_SET_TCB_RPL:
-+		/* Check if l2t state is valid, then move to ready state. */
-+		if (cxgb4_check_l2t_valid(tx_info->l2te))
-+			tx_info->connection_state = KTLS_CONN_TX_READY;
-+		break;
-+
-+	case KTLS_CONN_TX_READY:
-+		/* nothing to be done here */
-+		break;
-+
-+	default:
-+		pr_err("unknown KTLS connection state\n");
-+		break;
-+	}
-+	spin_unlock_irqrestore(&tx_info->lock, flags);
-+
-+	return tx_info->connection_state;
-+}
- /*
-  * chcr_ktls_act_open_req: creates TCB entry for ipv4 connection.
-  * @sk - tcp socket.
-@@ -91,8 +228,12 @@ static int chcr_setup_connection(struct sock *sk,
- 			ret = 0;
- 		else
- 			cxgb4_free_atid(t, atid);
++	/* check if we haven't set it for ktls offload */
++	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
 +		goto out;
- 	}
- 
-+	/* update the connection state */
-+	chcr_ktls_update_connection_state(tx_info, KTLS_CONN_ACT_OPEN_REQ);
-+out:
- 	return ret;
- }
- 
-@@ -243,6 +384,11 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 	tx_info->prev_seq = start_offload_tcp_sn;
- 	tx_info->tcp_start_seq_number = start_offload_tcp_sn;
- 
-+	/* save crypto keys */
-+	ret = chcr_ktls_save_keys(tx_info, crypto_info, direction);
-+	if (ret < 0)
-+		goto out2;
 +
- 	/* get peer ip */
- 	if (sk->sk_family == AF_INET ||
- 	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
-@@ -326,4 +472,104 @@ void chcr_disable_ktls(struct adapter *adap)
- 		netdev->tlsdev_ops = NULL;
- 	}
- }
++	tls_ctx = tls_get_ctx(skb->sk);
++	if (unlikely(tls_ctx->netdev != dev))
++		goto out;
 +
-+/*
-+ * chcr_init_tcb_fields:  Initialize tcb fields to handle TCP seq number
-+ *			  handling.
-+ * @tx_info - driver specific tls info.
-+ * return: NET_TX_OK/NET_XMIT_DROP
-+ */
-+static int chcr_init_tcb_fields(struct chcr_ktls_info *tx_info)
-+{
-+	int  ret = 0;
++	tx_ctx = chcr_get_ktls_tx_context(tls_ctx);
++	tx_info = tx_ctx->chcr_info;
 +
-+	/* set tcb in offload and bypass */
-+	ret =
-+	chcr_set_tcb_field(tx_info, TCB_T_FLAGS_W,
-+			   TCB_T_FLAGS_V(TF_CORE_BYPASS_F | TF_NON_OFFLOAD_F),
-+			   TCB_T_FLAGS_V(TF_CORE_BYPASS_F), 1);
-+	if (ret)
-+		return ret;
-+	/* reset snd_una and snd_next fields in tcb */
-+	ret = chcr_set_tcb_field(tx_info, TCB_SND_UNA_RAW_W,
-+				 TCB_SND_NXT_RAW_V(TCB_SND_NXT_RAW_M) |
-+				 TCB_SND_UNA_RAW_V(TCB_SND_UNA_RAW_M),
-+				 0, 1);
-+	if (ret)
-+		return ret;
++	if (unlikely(!tx_info))
++		goto out;
 +
-+	/* reset send max */
-+	ret = chcr_set_tcb_field(tx_info, TCB_SND_MAX_RAW_W,
-+				 TCB_SND_MAX_RAW_V(TCB_SND_MAX_RAW_M),
-+				 0, 1);
-+	if (ret)
-+		return ret;
-+
-+	/* update l2t index and request for tp reply to confirm tcb is
-+	 * initialised to handle tx traffic.
++	/* check the connection state, we don't need to pass new connection
++	 * state, state machine will check and update the new state if it is
++	 * stuck due to responses not received from HW.
++	 * Start the tx handling only if state is KTLS_CONN_TX_READY.
 +	 */
-+	ret = chcr_set_tcb_field(tx_info, TCB_L2T_IX_W,
-+				 TCB_L2T_IX_V(TCB_L2T_IX_M),
-+				 TCB_L2T_IX_V(tx_info->l2te->idx), 0);
-+	return ret;
-+}
++	new_connection_state = chcr_ktls_update_connection_state(tx_info, 0);
++	if (new_connection_state != KTLS_CONN_TX_READY)
++		goto out;
 +
-+/*
-+ * chcr_ktls_cpl_act_open_rpl: connection reply received from TP.
-+ */
-+int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input)
-+{
-+	const struct cpl_act_open_rpl *p = (void *)input;
-+	struct chcr_ktls_info *tx_info = NULL;
-+	unsigned int atid, tid, status;
-+	struct tid_info *t;
++	/* don't touch the original skb, make a new skb to extract each records
++	 * and send them separately.
++	 */
++	local_skb = alloc_skb(0, GFP_KERNEL);
 +
-+	tid = GET_TID(p);
-+	status = AOPEN_STATUS_G(ntohl(p->atid_status));
-+	atid = TID_TID_G(AOPEN_ATID_G(ntohl(p->atid_status)));
++	if (unlikely(!local_skb))
++		return NETDEV_TX_BUSY;
 +
-+	t = &adap->tids;
-+	tx_info = lookup_atid(t, atid);
-+
-+	if (!tx_info || tx_info->atid != atid) {
-+		pr_err("tx_info or atid is not correct\n");
-+		return -1;
++	adap = tx_info->adap;
++	qidx = skb->queue_mapping;
++	q = &adap->sge.ethtxq[qidx + tx_info->first_qset];
++	cxgb4_reclaim_completed_tx(adap, &q->q, true);
++	/* update tcb */
++	ret = chcr_ktls_xmit_tcb_cpls(tx_info, q, ntohl(th->seq),
++				      ntohl(th->ack_seq),
++				      ntohs(th->window));
++	if (ret) {
++		dev_kfree_skb_any(local_skb);
++		return NETDEV_TX_BUSY;
 +	}
 +
-+	if (!status) {
-+		tx_info->tid = tid;
-+		cxgb4_insert_tid(t, tx_info, tx_info->tid, tx_info->ip_family);
++	/* copy skb contents into local skb */
++	chcr_ktls_skb_copy(skb, local_skb);
 +
-+		cxgb4_free_atid(t, atid);
-+		tx_info->atid = -1;
-+		/* update the connection state */
-+		chcr_ktls_update_connection_state(tx_info,
-+						  KTLS_CONN_ACT_OPEN_RPL);
-+	}
-+	return 0;
-+}
++	/* go through the skb and send only one record at a time. */
++	data_len = skb->data_len;
++	/* TCP segments can be in received from host either complete or partial.
++	 * chcr_end_part_handler will handle cases if complete record or end
++	 * part of the record is received. Incase of partial end part of record,
++	 * we will send the complete record again.
++	 */
++	do {
++		int i;
 +
-+/*
-+ * chcr_ktls_cpl_set_tcb_rpl: TCB reply received from TP.
-+ */
-+int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input)
-+{
-+	const struct cpl_set_tcb_rpl *p = (void *)input;
-+	struct chcr_ktls_info *tx_info = NULL;
-+	struct tid_info *t;
-+	u32 tid, status;
++		cxgb4_reclaim_completed_tx(adap, &q->q, true);
++		/* lock taken */
++		spin_lock_irqsave(&tx_ctx->base.lock, flags);
++		/* fetch the tls record */
++		record = tls_get_record(&tx_ctx->base, tcp_seq,
++					&tx_info->record_no);
++		/* By the time packet reached to us, ACK is received, and record
++		 * won't be found in that case, handle it gracefully.
++		 */
++		if (unlikely(!record)) {
++			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
++			goto out;
++		}
 +
-+	tid = GET_TID(p);
-+	status = p->status;
++		if (unlikely(tls_record_is_start_marker(record))) {
++			spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
++			goto out;
++		}
 +
-+	t = &adap->tids;
-+	tx_info = lookup_tid(t, tid);
-+	if (!tx_info || tx_info->tid != tid) {
-+		pr_err("tx_info or atid is not correct\n");
-+		return -1;
-+	}
-+	/* update the connection state */
-+	chcr_ktls_update_connection_state(tx_info, KTLS_CONN_SET_TCB_RPL);
-+	return 0;
++		/* increase page reference count of the record, so that there
++		 * won't be any chance of page free in middle if in case stack
++		 * receives ACK and try to delete the record.
++		 */
++		for (i = 0; i < record->num_frags; i++)
++			__skb_frag_ref(&record->frags[i]);
++		/* lock cleared */
++		spin_unlock_irqrestore(&tx_ctx->base.lock, flags);
++
++		tls_end_offset = record->end_seq - tcp_seq;
++
++		pr_debug("seq 0x%x, end_seq 0x%x prev_seq 0x%x, datalen 0x%x\n",
++			 tcp_seq, record->end_seq, tx_info->prev_seq, data_len);
++		/* if a tls record is finishing in this SKB */
++		if (tls_end_offset <= data_len) {
++			struct sk_buff *nskb = NULL;
++
++			if (tls_end_offset < data_len) {
++				/* handle it later */
++				goto clear_ref;
++			} else {
++				/* its the only record in this skb, directly
++				 * point it.
++				 */
++				nskb = local_skb;
++			}
++			ret = chcr_end_part_handler(tx_info, nskb, record,
++						    tcp_seq, mss,
++						    (!th->fin && th->psh), q,
++						    tls_end_offset,
++						    (nskb == local_skb));
++
++			if (ret && nskb != local_skb)
++				dev_kfree_skb_any(local_skb);
++
++			data_len -= tls_end_offset;
++			/* tcp_seq increment is required to handle next record.
++			 */
++			tcp_seq += tls_end_offset;
++		}
++clear_ref:
++		/* clear the frag ref count which increased locally before */
++		for (i = 0; i < record->num_frags; i++) {
++			/* clear the frag ref count */
++			__skb_frag_unref(&record->frags[i]);
++		}
++
++		if (ret)
++			goto out;
++
++		WARN_ON(data_len < 0);
++
++	} while (data_len > 0);
++
++	tx_info->prev_seq = ntohl(th->seq) + skb->data_len;
++out:
++	dev_kfree_skb_any(skb);
++	return NETDEV_TX_OK;
 +}
  #endif /* CONFIG_CHELSIO_TLS_DEVICE */
 diff --git a/drivers/crypto/chelsio/chcr_ktls.h b/drivers/crypto/chelsio/chcr_ktls.h
-index f7b993c73424..15e79bdfb13c 100644
+index 15e79bdfb13c..df54b210324d 100644
 --- a/drivers/crypto/chelsio/chcr_ktls.h
 +++ b/drivers/crypto/chelsio/chcr_ktls.h
-@@ -13,21 +13,34 @@
- #include "chcr_common.h"
- 
+@@ -15,6 +15,13 @@
  #define CHCR_TCB_STATE_CLOSED	0
-+#define CHCR_KTLS_KEY_CTX_LEN	16
-+#define CHCR_SET_TCB_FIELD_LEN	sizeof(struct cpl_set_tcb_field)
+ #define CHCR_KTLS_KEY_CTX_LEN	16
+ #define CHCR_SET_TCB_FIELD_LEN	sizeof(struct cpl_set_tcb_field)
++#define CHCR_PLAIN_TX_DATA_LEN	(sizeof(struct fw_ulptx_wr) +\
++				 sizeof(struct ulp_txpkt) +\
++				 sizeof(struct ulptx_idata) +\
++				 sizeof(struct cpl_tx_data))
++
++#define CHCR_KTLS_WR_SIZE	(CHCR_PLAIN_TX_DATA_LEN +\
++				 sizeof(struct cpl_tx_sec_pdu))
  
  enum chcr_ktls_conn_state {
  	KTLS_CONN_CLOSED,
-+	KTLS_CONN_ACT_OPEN_REQ,
-+	KTLS_CONN_ACT_OPEN_RPL,
-+	KTLS_CONN_SET_TCB_REQ,
-+	KTLS_CONN_SET_TCB_RPL,
-+	KTLS_CONN_TX_READY,
- };
- 
- struct chcr_ktls_info {
- 	struct sock *sk;
- 	spinlock_t lock; /* state machine lock */
-+	struct ktls_key_ctx key_ctx;
- 	struct adapter *adap;
- 	struct l2t_entry *l2te;
- 	struct net_device *netdev;
-+	u64 iv;
-+	u64 record_no;
- 	int tid;
- 	int atid;
+@@ -39,14 +46,19 @@ struct chcr_ktls_info {
  	int rx_qid;
-+	u32 iv_size;
+ 	u32 iv_size;
  	u32 prev_seq;
-+	u32 salt_size;
-+	u32 key_ctx_len;
++	u32 prev_ack;
+ 	u32 salt_size;
+ 	u32 key_ctx_len;
++	u32 scmd0_seqno_numivs;
++	u32 scmd0_ivgen_hdrlen;
  	u32 tcp_start_seq_number;
  	enum chcr_ktls_conn_state connection_state;
++	u16 prev_win;
  	u8 tx_chan;
-@@ -63,5 +76,7 @@ static inline int chcr_get_first_rx_qid(struct adapter *adap)
- 
- void chcr_enable_ktls(struct adapter *adap);
- void chcr_disable_ktls(struct adapter *adap);
-+int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input);
-+int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input);
- #endif /* CONFIG_CHELSIO_TLS_DEVICE */
- #endif /* __CHCR_KTLS_H__ */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/l2t.c b/drivers/net/ethernet/chelsio/cxgb4/l2t.c
-index 12c3354172cd..72b37a66c7d8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/l2t.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/l2t.c
-@@ -700,6 +700,17 @@ static char l2e_state(const struct l2t_entry *e)
- 	}
- }
- 
-+bool cxgb4_check_l2t_valid(struct l2t_entry *e)
-+{
-+	bool valid;
-+
-+	spin_lock(&e->lock);
-+	valid = (e->state == L2T_STATE_VALID);
-+	spin_unlock(&e->lock);
-+	return valid;
-+}
-+EXPORT_SYMBOL(cxgb4_check_l2t_valid);
-+
- static int l2t_seq_show(struct seq_file *seq, void *v)
- {
- 	if (v == SEQ_START_TOKEN)
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/l2t.h b/drivers/net/ethernet/chelsio/cxgb4/l2t.h
-index 79665bd8f881..340fecb28a13 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/l2t.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/l2t.h
-@@ -122,6 +122,7 @@ struct l2t_entry *t4_l2t_alloc_switching(struct adapter *adap, u16 vlan,
- 					 u8 port, u8 *dmac);
- struct l2t_data *t4_init_l2t(unsigned int l2t_start, unsigned int l2t_end);
- void do_l2t_write_rpl(struct adapter *p, const struct cpl_l2t_write_rpl *rpl);
-+bool cxgb4_check_l2t_valid(struct l2t_entry *e);
- 
- extern const struct file_operations t4_l2t_fops;
- #endif  /* __CXGB4_L2T_H */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-index 7d874f03d6c5..af29badf81d9 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
-@@ -705,6 +705,14 @@ struct cpl_set_tcb_field {
- 	__be64 val;
+ 	u8 smt_idx;
+ 	u8 port_id;
+ 	u8 ip_family;
++	u8 first_qset;
  };
  
-+struct cpl_set_tcb_field_core {
-+	union opcode_tid ot;
-+	__be16 reply_ctrl;
-+	__be16 word_cookie;
-+	__be64 mask;
-+	__be64 val;
-+};
+ struct chcr_ktls_ofld_ctx_tx {
+@@ -78,5 +90,6 @@ void chcr_enable_ktls(struct adapter *adap);
+ void chcr_disable_ktls(struct adapter *adap);
+ int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input);
+ int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input);
++int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev);
+ #endif /* CONFIG_CHELSIO_TLS_DEVICE */
+ #endif /* __CHCR_KTLS_H__ */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index 97cda501e7e8..a412b641e52c 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -1412,6 +1412,11 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		return adap->uld[CXGB4_ULD_CRYPTO].tx_handler(skb, dev);
+ #endif /* CHELSIO_IPSEC_INLINE */
+ 
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++	if (skb->decrypted)
++		return adap->uld[CXGB4_ULD_CRYPTO].tx_handler(skb, dev);
++#endif /* CHELSIO_TLS_DEVICE */
 +
- /* cpl_set_tcb_field.word_cookie fields */
- #define TCB_WORD_S	0
- #define TCB_WORD_V(x)	((x) << TCB_WORD_S)
+ 	qidx = skb_get_queue_mapping(skb);
+ 	if (ptp_enabled) {
+ 		spin_lock(&adap->ptp_lock);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
+index af29badf81d9..fed5f93bf620 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_msg.h
+@@ -47,6 +47,7 @@ enum {
+ 	CPL_CLOSE_LISTSRV_REQ = 0x9,
+ 	CPL_ABORT_REQ         = 0xA,
+ 	CPL_ABORT_RPL         = 0xB,
++	CPL_TX_DATA           = 0xC,
+ 	CPL_RX_DATA_ACK       = 0xD,
+ 	CPL_TX_PKT            = 0xE,
+ 	CPL_L2T_WRITE_REQ     = 0x12,
+@@ -1470,6 +1471,16 @@ struct cpl_tx_data {
+ #define TX_FORCE_S	13
+ #define TX_FORCE_V(x)	((x) << TX_FORCE_S)
+ 
++#define TX_DATA_MSS_S    16
++#define TX_DATA_MSS_M    0xFFFF
++#define TX_DATA_MSS_V(x) ((x) << TX_DATA_MSS_S)
++#define TX_DATA_MSS_G(x) (((x) >> TX_DATA_MSS_S) & TX_DATA_MSS_M)
++
++#define TX_LENGTH_S    0
++#define TX_LENGTH_M    0xFFFF
++#define TX_LENGTH_V(x) ((x) << TX_LENGTH_S)
++#define TX_LENGTH_G(x) (((x) >> TX_LENGTH_S) & TX_LENGTH_M)
++
+ #define T6_TX_FORCE_S		20
+ #define T6_TX_FORCE_V(x)	((x) << T6_TX_FORCE_S)
+ #define T6_TX_FORCE_F		T6_TX_FORCE_V(1U)
+@@ -1479,6 +1490,15 @@ struct cpl_tx_data {
+ 
+ #define TX_SHOVE_S    14
+ #define TX_SHOVE_V(x) ((x) << TX_SHOVE_S)
++#define TX_SHOVE_F    TX_SHOVE_V(1U)
++
++#define TX_BYPASS_S    21
++#define TX_BYPASS_V(x) ((x) << TX_BYPASS_S)
++#define TX_BYPASS_F    TX_BYPASS_V(1U)
++
++#define TX_PUSH_S    22
++#define TX_PUSH_V(x) ((x) << TX_PUSH_S)
++#define TX_PUSH_F    TX_PUSH_V(1U)
+ 
+ #define TX_ULP_MODE_S    10
+ #define TX_ULP_MODE_M    0x7
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-index 1df93a35dfa0..fc93389148c8 100644
+index fc93389148c8..50232e063f49 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
 +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-@@ -35,6 +35,11 @@
- #ifndef __T4_TCB_H
- #define __T4_TCB_H
- 
-+#define TCB_L2T_IX_W		0
-+#define TCB_L2T_IX_S		12
-+#define TCB_L2T_IX_M		0xfffULL
-+#define TCB_L2T_IX_V(x)		((x) << TCB_L2T_IX_S)
-+
- #define TCB_SMAC_SEL_W		0
- #define TCB_SMAC_SEL_S		24
- #define TCB_SMAC_SEL_M		0xffULL
-@@ -45,11 +50,6 @@
- #define TCB_T_FLAGS_M		0xffffffffffffffffULL
- #define TCB_T_FLAGS_V(x)	((__u64)(x) << TCB_T_FLAGS_S)
- 
--#define TCB_RQ_START_W		30
--#define TCB_RQ_START_S		0
--#define TCB_RQ_START_M		0x3ffffffULL
--#define TCB_RQ_START_V(x)	((x) << TCB_RQ_START_S)
--
- #define TF_CCTRL_ECE_S		60
- #define TF_CCTRL_CWR_S		61
- #define TF_CCTRL_RFR_S		62
-@@ -75,12 +75,39 @@
+@@ -74,6 +74,16 @@
+ #define TCB_RTT_TS_RECENT_AGE_M		0xffffffffULL
  #define TCB_RTT_TS_RECENT_AGE_V(x)	((x) << TCB_RTT_TS_RECENT_AGE_S)
  
++#define TCB_T_RTSEQ_RECENT_W    7
++#define TCB_T_RTSEQ_RECENT_S    0
++#define TCB_T_RTSEQ_RECENT_M    0xffffffffULL
++#define TCB_T_RTSEQ_RECENT_V(x) ((x) << TCB_T_RTSEQ_RECENT_S)
++
++#define TCB_TX_MAX_W		9
++#define TCB_TX_MAX_S		0
++#define TCB_TX_MAX_M		0xffffffffULL
++#define TCB_TX_MAX_V(x)		((x) << TCB_TX_MAX_S)
++
  #define TCB_SND_UNA_RAW_W	10
-+#define TCB_SND_UNA_RAW_S	0
-+#define TCB_SND_UNA_RAW_M	0xfffffffULL
-+#define TCB_SND_UNA_RAW_V(x)	((x) << TCB_SND_UNA_RAW_S)
+ #define TCB_SND_UNA_RAW_S	0
+ #define TCB_SND_UNA_RAW_M	0xfffffffULL
+@@ -89,6 +99,16 @@
+ #define TCB_SND_MAX_RAW_M	0xfffffffULL
+ #define TCB_SND_MAX_RAW_V(x)	((x) << TCB_SND_MAX_RAW_S)
+ 
++#define TCB_RCV_NXT_W		16
++#define TCB_RCV_NXT_S		10
++#define TCB_RCV_NXT_M		0xffffffffULL
++#define TCB_RCV_NXT_V(x)	((x) << TCB_RCV_NXT_S)
 +
-+#define TCB_SND_NXT_RAW_W	10
-+#define TCB_SND_NXT_RAW_S	28
-+#define TCB_SND_NXT_RAW_M	0xfffffffULL
-+#define TCB_SND_NXT_RAW_V(x)	((x) << TCB_SND_NXT_RAW_S)
-+
-+#define TCB_SND_MAX_RAW_W	11
-+#define TCB_SND_MAX_RAW_S	24
-+#define TCB_SND_MAX_RAW_M	0xfffffffULL
-+#define TCB_SND_MAX_RAW_V(x)	((x) << TCB_SND_MAX_RAW_S)
++#define TCB_RCV_WND_W		17
++#define TCB_RCV_WND_S		10
++#define TCB_RCV_WND_M		0xffffffULL
++#define TCB_RCV_WND_V(x)	((x) << TCB_RCV_WND_S)
 +
  #define TCB_RX_FRAG2_PTR_RAW_W	27
  #define TCB_RX_FRAG3_LEN_RAW_W	29
  #define TCB_RX_FRAG3_START_IDX_OFFSET_RAW_W	30
- #define TCB_PDU_HDR_LEN_W	31
- 
-+#define TCB_RQ_START_W		30
-+#define TCB_RQ_START_S		0
-+#define TCB_RQ_START_M		0x3ffffffULL
-+#define TCB_RQ_START_V(x)	((x) << TCB_RQ_START_S)
-+
- #define TF_RX_PDU_OUT_S		49
- #define TF_RX_PDU_OUT_V(x)	((__u64)(x) << TF_RX_PDU_OUT_S)
- 
-+#define TF_CORE_BYPASS_S	63
-+#define TF_CORE_BYPASS_V(x)	((__u64)(x) << TF_CORE_BYPASS_S)
-+#define TF_CORE_BYPASS_F	TF_CORE_BYPASS_V(1)
-+
-+#define TF_NON_OFFLOAD_S	1
-+#define TF_NON_OFFLOAD_V(x)	((x) << TF_NON_OFFLOAD_S)
-+#define TF_NON_OFFLOAD_F	TF_NON_OFFLOAD_V(1)
-+
- #endif /* __T4_TCB_H */
 -- 
 2.18.1
 
