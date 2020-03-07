@@ -2,132 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CCD17CF79
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 18:35:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C6D17CFF5
+	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 21:13:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726269AbgCGRfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 12:35:05 -0500
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:42448 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726138AbgCGRfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 12:35:04 -0500
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 5ED85401BE;
-        Sat,  7 Mar 2020 17:35:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1583602503; bh=oCzPvbHQiibVBfhs90+opD7H0lY7frDyHGkEf/KJLQA=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=LNHgkSBREIXy7eJ4VL76D7NIanx5b1vx/BxU+FglxEc7nWl/yb1bhyWX9WrgxsQO2
-         gWd0Jb38IVVRAVvseECJrl2PkQLDWL9vNS8uPqELKZXMlW1WDHfJC2uYjoMkumT2nk
-         PM3QS5O4gqz0vPF6k0vbkVnwjb0sjw2pu7/6Kywz4qNbvYeSJRfJwevm1m8SpZrRGu
-         FwwPwVWts4RtKkokUUJyLFQ+H5ArhtizWCe3zDKwJOub1Q+eO4vLvEdis8fhg6i2vG
-         evRnmBMofLW3nbWjalh8NmyylvSv4XNNB/Pk9djLXPk7QvRg/hocI8eiz/PgOk7nmi
-         3PstlXlu5e4gw==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 57137A00CB;
-        Sat,  7 Mar 2020 17:34:51 +0000 (UTC)
-Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Sat, 7 Mar 2020 09:34:30 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Sat, 7 Mar 2020 09:34:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oQBdYKc1wqL6oqEe327xRxu1JuMD9hiLftQdWtZTD+jjssu+SSb6EXWI/zfeTPXTbHHBDmuNlRouueJsCbNMXVHVU8/04uNV4Ap8698her1cld8owOlEfJehh3Dgc6EILXrLaRDgRbtZxuyf3zeJSVUVn7bDyZwUGDxpJzFC7VYbwAon8bqW55YmyiSVD71tpJdZJF/qU7H0i1nClOgsnj2HjRoiI0ZOI2hY1cPlSzlLtZ8KVxG7nlWVXX2POwtfCdwvp5ZBwu7YhcuHn8Uj5y3oZAAAE5Ag/0Hnq/5DAajIFuKIR09E+NX4bM/XbK1Um9aUE32u6hYfM6qxWw65lA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5/W8eKsNb9a4Oqz+ep2wzWObcnF6HhwhTGKWuQubUxg=;
- b=g4l/xZDYU17c+LpTmnYmpd3+drNefR2UXCya5lmoxxq1DcwLYXfeTztFBUUL2O0MuHidxnB3zx2IycPYkIh+6ug23R+PiG9iGqn711XdaA/ylk2eC/j1Ofggk4qTb3sQ5vUrQj5WSAfTOZDz490hLsXfBTh4m2FDsnecHdHxBt0CIxL7pJ4VXpWTN3M9z4Otzj7UURjJ48HAeUuG5qgbFBQhm5gb0zy9KTUdunUJ6cQ2hS9KYpTtqwrFuk26FDHLy70o/VJn7JopAgaT8h/Zsb972c9opoVy7fJ1ymaUS5uVZi6Mj+X14WLbzn2meQZeqPueg1TJJ2ULkp/rvCjwaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
+        id S1726206AbgCGUNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 15:13:01 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44569 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbgCGUNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 15:13:01 -0500
+Received: by mail-pl1-f193.google.com with SMTP id d9so2304986plo.11
+        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 12:13:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5/W8eKsNb9a4Oqz+ep2wzWObcnF6HhwhTGKWuQubUxg=;
- b=GAvfUkL5g8z6Jqzw53ytI134gLATwd4TcTL1ISef5inaKnc1uWULRuCfZQlG+u4mbBfVyX5JQrmbFaUARAo8Co7w3LVUStPypBIcfFD8eag9D7gxmKjgt/Si8mXkNQ+MNPW6QURGYGg8bZAWvAL+OkUMKuAeXNXNixkB0qbVvxA=
-Received: from BYAPR12MB3269.namprd12.prod.outlook.com (2603:10b6:a03:12f::27)
- by BYAPR12MB3528.namprd12.prod.outlook.com (2603:10b6:a03:138::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2772.14; Sat, 7 Mar
- 2020 17:34:28 +0000
-Received: from BYAPR12MB3269.namprd12.prod.outlook.com
- ([fe80::c1a5:b1b8:1df4:ac6]) by BYAPR12MB3269.namprd12.prod.outlook.com
- ([fe80::c1a5:b1b8:1df4:ac6%4]) with mapi id 15.20.2793.013; Sat, 7 Mar 2020
- 17:34:28 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Remi Pommarel <repk@triplefau.lt>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=iBPaM44o8XMBlLlvWTgmt2MEAFrzz16P6fSmwhjZIjU=;
+        b=uQMqyQvLKIUk3URpfma5RBfXIfza6Cs1EiAW3iPlF8ZwWdwpWOVvGmkBFnotqQZM9m
+         XZoWDqVJrSSVHg2tBWUENVJB/4iIVxU9qtP2RxlkB0Sae6Ui/THTB85rQacc4Yf/asBG
+         9wr2RyvBlPwVP0p6jffFMf0pzRaf1j0hHTb35qGsZEbrxluCq2iYKHKSGyZ61XRE9rvZ
+         5IeKtGwfIfw6b0qFxRdSku6Kn3kEU72LkmGrfcqMiYmfDzoAG0z3JLXb/7IQTIoCSeis
+         wwH9o35cGOBxs6Wl/eMZIH8RscJ0j4U99Ut9mZv+EDo/VPqET8sxNXpGKDk3Uw8PzPFg
+         j47w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iBPaM44o8XMBlLlvWTgmt2MEAFrzz16P6fSmwhjZIjU=;
+        b=EtfeCtvZJ/QqHCVmI+vuLIRPLzhtYQRoEJyBQNuegXXCFhxSps9q/4Y5fzeTC30AFR
+         Guw8mldEr+YNSgZb12vXsGTz0TRe7jrUtGhk6mX7ABddEQjkh9FXKDiVMmkPjgGp19ZR
+         /97t5wYUXAD3vaMknbLAkU959Wir7xm5ug4U/vA+TZ+yChv4ihf6vAM49ddV6EqerKBm
+         2XTidCYfS8FXOVjNHSNIG+MSl9KeExEnopkCns7K+R9ZAseP8YhPn4z4IeJC6VxjhNKs
+         uh2WsW3env6A032sDrBhUDtekinhwWA88ASOwcdrqVzTGyqbX+1T1aOaj+MBMQlE6FoH
+         AgzA==
+X-Gm-Message-State: ANhLgQ1dDCnQpoLtmtMvBxXVgJhKWpeKhT4dkT11Kl++1Z4nUtQQ+aTV
+        rYvI3cQ504NBmgpj5YUmc/4=
+X-Google-Smtp-Source: ADFU+vvkCZWDHDMvOp9CeX69aaS4VJMRwA3TgupsknuIzZHluO1sr+gXPT3JcRT49521Iz7tuRY8EQ==
+X-Received: by 2002:a17:90a:254d:: with SMTP id j71mr9965542pje.169.1583611980187;
+        Sat, 07 Mar 2020 12:13:00 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id u66sm3726794pfb.107.2020.03.07.12.12.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Mar 2020 12:12:59 -0800 (PST)
+Subject: Re: [PATCH net-next v6 1/3] net/sched: act_ct: Create nf flow table
+ per zone
+To:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-amlogic@lists.infradead.org" 
-        <linux-amlogic@lists.infradead.org>
-Subject: RE: [PATCH] net: stmmac: dwmac1000: Disable ACS if enhanced descs are
- not used
-Thread-Topic: [PATCH] net: stmmac: dwmac1000: Disable ACS if enhanced descs
- are not used
-Thread-Index: AQHV8+yif3wDvAksFEuoTmQ+i9o34Kg9ZUDA
-Date:   Sat, 7 Mar 2020 17:34:28 +0000
-Message-ID: <BYAPR12MB326999F850BD9BDD037D87CAD3E00@BYAPR12MB3269.namprd12.prod.outlook.com>
-References: <20200306193036.18414-1-repk@triplefau.lt>
-In-Reply-To: <20200306193036.18414-1-repk@triplefau.lt>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [188.251.70.5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 367ca161-d6e5-48dc-ff2d-08d7c2bdc9bc
-x-ms-traffictypediagnostic: BYAPR12MB3528:
-x-microsoft-antispam-prvs: <BYAPR12MB3528A4E25EDF96D8750DD6B5D3E00@BYAPR12MB3528.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2887;
-x-forefront-prvs: 03355EE97E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(39850400004)(396003)(366004)(376002)(346002)(199004)(189003)(186003)(26005)(8936002)(110136005)(52536014)(33656002)(316002)(54906003)(7696005)(478600001)(2906002)(81166006)(71200400001)(4326008)(64756008)(9686003)(55016002)(81156014)(66556008)(66446008)(66946007)(6506007)(5660300002)(66476007)(76116006)(8676002)(86362001)(4744005);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR12MB3528;H:BYAPR12MB3269.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dh/xbBBkmT5HjTmkCdr2hRfSgT4/O31WTJrqBjavRm7vJFH5I297+4kV6ZlVzz1INEWkJNQ6S47Za8CMPLLPFQ23te/gEBY7FC5+grh7pnojSbKZaPyucuANqBhArQKgAOlu0RSdobig8TlaASu3qsyvXicPskQCQwJoY//+JcF8+znmYSRqnzfewpzR3QlmKUrErvlSj+A0cp9X/hGCB8vNOUUZRPSbmg1HiT1Xd+u6kBuQalNH0qsIiLPIddizb27dZTe/0mmyd9XvmB2kKOOuwGnFkaLAgfiYQm4MagbxbHw3T929LlxCjj0UKv7+FGwO//PgOpkH7BjCUn79bIXhX4+KEvKG5dOkLBE1ktP5Ieubrph2G+pfY10bunay+jqzwpJQPqbNgphDpiKLVfAVQpF06RVcP+QQJN63fQS2DSa5p9QoIDdLfmxAfNKY
-x-ms-exchange-antispam-messagedata: oJWUNgcFUE7ay5NcyFaIrbwbu0hEeZch8e8OUmdyC/+l3KA2DctdPZnkjLAYgyXoxWX0+hS8pGB5o5sPf5lcdVL7fAcKcURTBslQZI7r4i/R4jaB8ClhEoSFivMvnWg/SWH/Z0sAPOFB2f+jRLMZKQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1583251072-10396-1-git-send-email-paulb@mellanox.com>
+ <1583251072-10396-2-git-send-email-paulb@mellanox.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c0c033e8-63ed-a33c-2e1b-afbedcb476ea@gmail.com>
+Date:   Sat, 7 Mar 2020 12:12:57 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 367ca161-d6e5-48dc-ff2d-08d7c2bdc9bc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2020 17:34:28.2800
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Y8QQahBsdvmVgOzDmSu04Szh4e7E3oHwUx+m6iMq3wati5cMWe7DCe4VF2uXNDcz/YRsxswxBQqAcwID0fP2xQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3528
-X-OriginatorOrg: synopsys.com
+In-Reply-To: <1583251072-10396-2-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Remi Pommarel <repk@triplefau.lt>
-Date: Mar/06/2020, 19:30:36 (UTC+00:00)
 
->  	void __iomem *ioaddr =3D hw->pcsr;
-> +	struct stmmac_priv *priv =3D netdev_priv(dev);
->  	u32 value =3D readl(ioaddr + GMAC_CONTROL);
->  	int mtu =3D dev->mtu;
 
-Please use reverse Christmas tree order and also provide a Fixes tag.
+On 3/3/20 7:57 AM, Paul Blakey wrote:
+> Use the NF flow tables infrastructure for CT offload.
+> 
+> Create a nf flow table per zone.
+> 
+> Next patches will add FT entries to this table, and do
+> the software offload.
+> 
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+>   v4->v5:
+>     Added reviewed by Jiri, thanks!
+>   v3->v4:
+>     Alloc GFP_ATOMIC
+>   v2->v3:
+>     Ditch re-locking to alloc, and use atomic allocation
+>   v1->v2:
+>     Use spin_lock_bh instead of spin_lock, and unlock for alloc (as it can sleep)
+>     Free ft on last tc act instance instead of last instance + last offloaded tuple,
+>     this removes cleanup cb and netfilter patches, and is simpler
+>     Removed accidental mlx5/core/en_tc.c change
+>     Removed reviewed by Jiri - patch changed
+> 
+>  include/net/tc_act/tc_ct.h |   2 +
+>  net/sched/Kconfig          |   2 +-
+>  net/sched/act_ct.c         | 134 ++++++++++++++++++++++++++++++++++++++++++++-
+>  3 files changed, 136 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+> index a8b1564..cf3492e 100644
+> --- a/include/net/tc_act/tc_ct.h
+> +++ b/include/net/tc_act/tc_ct.h
+> @@ -25,6 +25,8 @@ struct tcf_ct_params {
+>  	u16 ct_action;
+>  
+>  	struct rcu_head rcu;
+> +
+> +	struct tcf_ct_flow_table *ct_ft;
+>  };
+>  
+>  struct tcf_ct {
+> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+> index edde0e5..bfbefb7 100644
+> --- a/net/sched/Kconfig
+> +++ b/net/sched/Kconfig
+> @@ -972,7 +972,7 @@ config NET_ACT_TUNNEL_KEY
+>  
+>  config NET_ACT_CT
+>  	tristate "connection tracking tc action"
+> -	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT
+> +	depends on NET_CLS_ACT && NF_CONNTRACK && NF_NAT && NF_FLOW_TABLE
+>  	help
+>  	  Say Y here to allow sending the packets to conntrack module.
+>  
+> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> index f685c0d..3321087 100644
+> --- a/net/sched/act_ct.c
+> +++ b/net/sched/act_ct.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/pkt_cls.h>
+>  #include <linux/ip.h>
+>  #include <linux/ipv6.h>
+> +#include <linux/rhashtable.h>
+>  #include <net/netlink.h>
+>  #include <net/pkt_sched.h>
+>  #include <net/pkt_cls.h>
+> @@ -24,6 +25,7 @@
+>  #include <uapi/linux/tc_act/tc_ct.h>
+>  #include <net/tc_act/tc_ct.h>
+>  
+> +#include <net/netfilter/nf_flow_table.h>
+>  #include <net/netfilter/nf_conntrack.h>
+>  #include <net/netfilter/nf_conntrack_core.h>
+>  #include <net/netfilter/nf_conntrack_zones.h>
+> @@ -31,6 +33,108 @@
+>  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+>  #include <uapi/linux/netfilter/nf_nat.h>
+>  
+> +static struct workqueue_struct *act_ct_wq;
+> +static struct rhashtable zones_ht;
+> +static DEFINE_SPINLOCK(zones_lock);
+> +
+> +struct tcf_ct_flow_table {
+> +	struct rhash_head node; /* In zones tables */
+> +
+> +	struct rcu_work rwork;
+> +	struct nf_flowtable nf_ft;
+> +	u16 zone;
+> +	u32 ref;
+> +
+> +	bool dying;
+> +};
+> +
+> +static const struct rhashtable_params zones_params = {
+> +	.head_offset = offsetof(struct tcf_ct_flow_table, node),
+> +	.key_offset = offsetof(struct tcf_ct_flow_table, zone),
+> +	.key_len = sizeof_field(struct tcf_ct_flow_table, zone),
+> +	.automatic_shrinking = true,
+> +};
+> +
+> +static struct nf_flowtable_type flowtable_ct = {
+> +	.owner		= THIS_MODULE,
+> +};
+> +
+> +static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft;
+> +	int err = -ENOMEM;
+> +
+> +	spin_lock_bh(&zones_lock);
+> +	ct_ft = rhashtable_lookup_fast(&zones_ht, &params->zone, zones_params);
+> +	if (ct_ft)
+> +		goto take_ref;
+> +
+> +	ct_ft = kzalloc(sizeof(*ct_ft), GFP_ATOMIC);
+> +	if (!ct_ft)
+> +		goto err_alloc;
+> +
+> +	ct_ft->zone = params->zone;
+> +	err = rhashtable_insert_fast(&zones_ht, &ct_ft->node, zones_params);
+> +	if (err)
+> +		goto err_insert;
+> +
+> +	ct_ft->nf_ft.type = &flowtable_ct;
+> +	err = nf_flow_table_init(&ct_ft->nf_ft);
 
----
-Thanks,
-Jose Miguel Abreu
+This call is going to allocate a rhashtable (GFP_KERNEL allocations that might sleep)
+
+Since you still hold zones_lock spinlock, a splat should occur.
+
+"BUG: sleeping function called from invalid context in  ..."
+
+DEBUG_ATOMIC_SLEEP=y is your friend.
+
+And it is always a good thing to make sure a patch does not trigger a lockdep splat
+
+CONFIG_PROVE_LOCKING=y
+
+
+> +	if (err)
+> +		goto err_init;
+> +
+> +	__module_get(THIS_MODULE);
+> +take_ref:
+> +	params->ct_ft = ct_ft;
+> +	ct_ft->ref++;
+> +	spin_unlock_bh(&zones_lock);
+> +
+> +	return 0;
+> +
+> +err_init:
+> +	rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+> +err_insert:
+> +	kfree(ct_ft);
+> +err_alloc:
+> +	spin_unlock_bh(&zones_lock);
+> +	return err;
+> +}
+> +
+> +static void tcf_ct_flow_table_cleanup_work(struct work_struct *work)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft;
+> +
+> +	ct_ft = container_of(to_rcu_work(work), struct tcf_ct_flow_table,
+> +			     rwork);
+> +	nf_flow_table_free(&ct_ft->nf_ft);
+> +	kfree(ct_ft);
+> +
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
+> +{
+> +	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
+> +
+> +	spin_lock_bh(&zones_lock);
+> +	if (--params->ct_ft->ref == 0) {
+> +		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+> +		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
+> +		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
+> +	}
+> +	spin_unlock_bh(&zones_lock);
+> +}
+> +
+> +static int tcf_ct_flow_tables_init(void)
+> +{
+> +	return rhashtable_init(&zones_ht, &zones_params);
+> +}
+> +
+> +static void tcf_ct_flow_tables_uninit(void)
+> +{
+> +	rhashtable_destroy(&zones_ht);
+> +}
+> +
+>  static struct tc_action_ops act_ct_ops;
+>  static unsigned int ct_net_id;
+>  
+> @@ -207,6 +311,8 @@ static void tcf_ct_params_free(struct rcu_head *head)
+>  	struct tcf_ct_params *params = container_of(head,
+>  						    struct tcf_ct_params, rcu);
+>  
+> +	tcf_ct_flow_table_put(params);
+> +
+>  	if (params->tmpl)
+>  		nf_conntrack_put(&params->tmpl->ct_general);
+>  	kfree(params);
+> @@ -730,6 +836,10 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+>  	if (err)
+>  		goto cleanup;
+>  
+> +	err = tcf_ct_flow_table_get(params);
+> +	if (err)
+> +		goto cleanup;
+> +
+>  	spin_lock_bh(&c->tcf_lock);
+>  	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+>  	params = rcu_replace_pointer(c->params, params,
+> @@ -974,12 +1084,34 @@ static void __net_exit ct_exit_net(struct list_head *net_list)
+>  
+>  static int __init ct_init_module(void)
+>  {
+> -	return tcf_register_action(&act_ct_ops, &ct_net_ops);
+> +	int err;
+> +
+> +	act_ct_wq = alloc_ordered_workqueue("act_ct_workqueue", 0);
+> +	if (!act_ct_wq)
+> +		return -ENOMEM;
+> +
+> +	err = tcf_ct_flow_tables_init();
+> +	if (err)
+> +		goto err_tbl_init;
+> +
+> +	err = tcf_register_action(&act_ct_ops, &ct_net_ops);
+> +	if (err)
+> +		goto err_register;
+> +
+> +	return 0;
+> +
+> +err_tbl_init:
+> +	destroy_workqueue(act_ct_wq);
+> +err_register:
+> +	tcf_ct_flow_tables_uninit();
+> +	return err;
+>  }
+>  
+>  static void __exit ct_cleanup_module(void)
+>  {
+>  	tcf_unregister_action(&act_ct_ops, &ct_net_ops);
+> +	tcf_ct_flow_tables_uninit();
+> +	destroy_workqueue(act_ct_wq);
+>  }
+>  
+>  module_init(ct_init_module);
+> 
