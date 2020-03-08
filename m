@@ -2,192 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 535D417D1B7
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 06:33:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B699217D1FD
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 07:05:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbgCHFdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 00:33:15 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:31190 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725775AbgCHFdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 00:33:15 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0285WOaP008199;
-        Sat, 7 Mar 2020 21:32:24 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=pfpt0818;
- bh=axcSiAurOmgpk6xOgVU5CnMXA0eIErwtCYrlNtJt6H0=;
- b=xjb2sFGCLyuhBtKUfSDF+EDCsnYQEU3XFMtQlMA7+rJl4IIL8FBjq/sE+gCz150ZWfmS
- awQQHPR6t5GT908YoPtoYg2wMLIwsnNxx4/2W8BIceKVnNnX3xpUBt4BLZZ/t1WbvBDE
- 381kD0F7SPQJnK2nTxa60GeE9Pq3mtjMQCzX2Hjz8iPjAZi34Hkx2unuIUpE8uV7TErB
- EPktM+n5oghJaMo4QpoPq/DJpnklj8Q+5LY3FXycqQe/Hja+y5KM/jA2V2tV0oEUqhi3
- ojop15wKr8B9KKWp3835LmcfwI0rW9DkBXIhPJJAHHlIy3QGjz5XvDttiuAjeCVuzgbv WQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2ym9uwb2mq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 07 Mar 2020 21:32:24 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 7 Mar
- 2020 21:32:23 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.175)
- by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Sat, 7 Mar 2020 21:32:23 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LiidvnfpI6M1XUbZnDuUfCGZ9sgEN1T7LwQfR0d8RnZ7lun4iPq1d0+RdAgXRdXDp0rBEc5HtAxcMVBgDy0SEJJM3tLGJON9UXnc1xkxAiCMJaxgtbax8F4lgvIx3TECBvGQV2ZRq4OIUVELGCgSOo3W6bnv5dEJjUqDgJRX2dn+FpPA7MQ34Oa7Ewndopbl7pkYdRRuKTZcWZMO7oaz6xACeQ6oGDoijJw0YHiPBZzfIKuH+TfUk9KwBMyjUTnVFiX+y0gfkCGaxavjnAGe9lBNhWjLTxooZSablIZTLhpH8Ow9HwAlCDL5xbj9ZEXpUhPO9I9FByGhOZZvf0QmXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=axcSiAurOmgpk6xOgVU5CnMXA0eIErwtCYrlNtJt6H0=;
- b=CvygJgZGgguKF+5sfIAY2LCJqX4C+01xMqxICAi5scWraRbbAYmKegVMUdjzHBiTKVIaJ5S5+a2U+iUEaNlCTuGPXiFwuz3rBYx+9JCqW0QpoLBceLsBofx1R33Flb/2g3IHwAqyJw6Hhk7jtOt+N5GCHjSvzn0iL8DnEtSxEeGNC6d71hhjiq71BxjqJrxwXDVU7ifjUvhZJ03iI3WdzMzKgBN68EbQKeoKd03W6tDNn+l4yrcMEAfsbqExsYK0MyQki8nqNN/DH3Or5QDEaZAURmeXf07xkbkX7LyUWC9D9pQ7x2LCPGYJe3lps2te8OiDPGPAg0guhlOUTzkziA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S1726096AbgCHGFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 01:05:24 -0500
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:35659 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbgCHGFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 01:05:24 -0500
+Received: by mail-pg1-f202.google.com with SMTP id w8so4223857pgr.2
+        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 22:05:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=axcSiAurOmgpk6xOgVU5CnMXA0eIErwtCYrlNtJt6H0=;
- b=FiTgfSZ4FXFtYUI3p1fWeWKd5/imAaY5ihxxEE5SfaqRu2IkDhTUoS4cbRmygKnPQ+XKd6NZj29r9Oedif7+m6ZsSaGKGdIpYE5qssMu8ECiYRceNbVzUpYBKA3ppEMzthLrIX/zspXU6WMLaO9T1DGrYpnfrIV1F6hxpQhDJgA=
-Received: from BYAPR18MB2535.namprd18.prod.outlook.com (2603:10b6:a03:137::17)
- by BYAPR18MB2951.namprd18.prod.outlook.com (2603:10b6:a03:10c::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Sun, 8 Mar
- 2020 05:32:20 +0000
-Received: from BYAPR18MB2535.namprd18.prod.outlook.com
- ([fe80::8cd1:1741:8d2d:1c23]) by BYAPR18MB2535.namprd18.prod.outlook.com
- ([fe80::8cd1:1741:8d2d:1c23%7]) with mapi id 15.20.2793.013; Sun, 8 Mar 2020
- 05:32:19 +0000
-From:   Alex Belits <abelits@marvell.com>
-To:     "frederic@kernel.org" <frederic@kernel.org>
-CC:     "mingo@kernel.org" <mingo@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Prasun Kapoor" <pkapoor@marvell.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "will@kernel.org" <will@kernel.org>
-Subject: Re: [EXT] Re: [PATCH 03/12] task_isolation: userspace hard isolation
- from kernel
-Thread-Topic: [EXT] Re: [PATCH 03/12] task_isolation: userspace hard isolation
- from kernel
-Thread-Index: AQHV8j73SZ7gA0FMRkuOSCw4mVFsAKg6VJCAgAPczwA=
-Date:   Sun, 8 Mar 2020 05:32:19 +0000
-Message-ID: <92135de5e710c3fddb7256259a759b20460e9052.camel@marvell.com>
-References: <4473787e1b6bc3cc226067e8d122092a678b63de.camel@marvell.com>
-         <36d84b8dd168a38e6a56549dedc15dd6ebf8c09e.camel@marvell.com>
-         <20200305183313.GA29033@lenoir>
-In-Reply-To: <20200305183313.GA29033@lenoir>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [199.233.58.128]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 253cc83d-d1a9-4c6d-c5c4-08d7c322124c
-x-ms-traffictypediagnostic: BYAPR18MB2951:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR18MB2951F7FDB3A9AD62857A0B71BCE10@BYAPR18MB2951.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 03361FCC43
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(366004)(39840400004)(189003)(199004)(478600001)(316002)(54906003)(2906002)(71200400001)(81166006)(8936002)(81156014)(8676002)(6506007)(186003)(5660300002)(6916009)(6512007)(26005)(91956017)(66946007)(66556008)(64756008)(66476007)(66446008)(36756003)(86362001)(7416002)(6486002)(76116006)(2616005)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR18MB2951;H:BYAPR18MB2535.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SjOGt74X9REYppB6qEEpPHVGIYrh9EqWV42wirpiiJ2i5Rfb+uW3CiTXME7HgImEpXNsHmreXeS+CHCmu9rj9DpcPncwPQ4W4NuOzsBaR0N1HUdqFL80q1hrSMUnNyDvn2268DUJi42sOLg8fPscxFZmPGctz8duhiEb1x+3tu0VPFoNBLzF/25PpF4A3nYszgjAJNi4YzVyEntnw4lqnLDFmomdy/STjVMUyUo1aD2Z+00qSJ8tac3jzWQEqIFGZmbzK2IOUo/WEAd24A/6/k44Jmvu8jvAz4HKFhv/QqSNNMNsrE1kLZllxUgAZKKb2vz49vE24pvAZzIClEC+UswoE4jtr/h9dadlBFT6CHgaZBJxBQ6YImag/zjF7/mfYw6N4CLMABbv9W1aImfZFk6+Y42lyP2/D/QizfPtgxkuXXFIFTBg94LnVPdm3adz
-x-ms-exchange-antispam-messagedata: p+99BpVoiiu1zjgKN9iO34+GPQlI2/UwhDadIL/aqJuoxJjJ19amGTisGEjql4XlxURHCBuNOpNMgQR2x4IeY5WLU2rWXCMaa7bZvGtQ+LP+eILPGrWFAJiZ/CVv4oRt/rWUmG1N9a1PIXenFuh/6w==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <128976CACCE956469B6E5F7E2D72E66E@namprd18.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 253cc83d-d1a9-4c6d-c5c4-08d7c322124c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2020 05:32:19.7191
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 61Bhl4P8mRmKHmG0w2Sh7RQNwx/+LoBndYHSjVEODIUXl7xaqMrQBxl+pZXJrZqKlP9upyY7wVMYJl9KBexCjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2951
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-08_01:2020-03-06,2020-03-08 signatures=0
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=wgJx1jCZAeH15eHuj5hqq4KMY6uh1EQG3oOhk3epjw8=;
+        b=cpdXRwyq342FoFwwQpmJ2A62khqxfFXXircuMnwGJup4LO7Ptbmj/Rbh75hpUl8Hzd
+         baqfHEB3Vqre+IYiBqIZwys1gaNMF5U6nz4duM0ecqCwFmBOSG1p8p2NvMJHDf83Re65
+         d6kyb3j7nKCv6P2MRwnT6ZtbP0kbn8VdQsxc8ROp80Kj+oT/bOh5vY3Qfl8dmnsJxIlF
+         HEoH1n6o8Awb/6GWQbL2mGMv41Cae7Mz1SoMbo6adDOvW9wjxRuGkTVOD6VO3TGuw6rK
+         Imz8OOhPWvQpURaRX9x5U/h3r37PdoiZzLzOjdScoSEa3+IVhQuoROJewQl2Q8nbI04R
+         JrnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=wgJx1jCZAeH15eHuj5hqq4KMY6uh1EQG3oOhk3epjw8=;
+        b=t3tRI53ohmPvfXcYk+aYTDCJxBfwh/j4r8qGr+AQAT99q4GD/MQEBaYVohRKbaW3rm
+         1zlzpq1xHBbGZY2CithGhsfjvj9Ouw6m6QzeU69lVAmI2FAV0Czb2Uk3wa29OjiHzfgS
+         ds7hTnPTgdkKtweRtjIgcYkCct8TbijbltL8iwfvbl/iOZWKsfxtns4KlMTeHvjkJOnC
+         66agIu/PeOO4va1cDwdUTV0QuiYUqdrwRGKQcRuUUrHkhoAsXLHeLE54Q1SaDIX/Lq77
+         ggOxFIjuZPJOdmJi1S8LN6IDuPsPGIQ/sp9UCX8Rzrl50R0BL6y0oYZCuzNTWJ/TRvUF
+         fHZA==
+X-Gm-Message-State: ANhLgQ3aVhHDSSKS1GQlpca7z2StCiKllSq4stBiQiLMsx4Em35BS9+n
+        0Xr9CokamAouI3ItV3hgW07brNqgjU8zSw==
+X-Google-Smtp-Source: ADFU+vsCku6UEVyBjFA+u38OPY6+02t4dI86c16Tj2URFJlBLA1cbuOsX9+PmkEQ75K+dmaqRn+0ASP4ff8Xyg==
+X-Received: by 2002:a17:90a:9409:: with SMTP id r9mr12003153pjo.39.1583647521758;
+ Sat, 07 Mar 2020 22:05:21 -0800 (PST)
+Date:   Sat,  7 Mar 2020 22:05:14 -0800
+Message-Id: <20200308060514.149512-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
+Subject: [PATCH net] gre: fix uninit-value in __iptunnel_pull_header
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTAzLTA1IGF0IDE5OjMzICswMTAwLCBGcmVkZXJpYyBXZWlzYmVja2VyIHdy
-b3RlOg0KPiBPbiBXZWQsIE1hciAwNCwgMjAyMCBhdCAwNDowNzoxMlBNICswMDAwLCBBbGV4IEJl
-bGl0cyB3cm90ZToNCj4gPiANCj4gDQo+IEhpIEFsZXcsDQo+IA0KPiBJJ20gZ2xhZCB0aGlzIHBh
-dGNoc2V0IGlzIGJlaW5nIHJlc3VyZWN0ZWQuDQo+IFJlYWRpbmcgdGhhdCBjaGFuZ2Vsb2csIEkg
-bGlrZSB0aGUgZ2VuZXJhbCBpZGVhIGFuZCB0aGUgZGlyZWN0aW9uLg0KPiBUaGUgZGlmZiBpcyBh
-IGJpdCBzY2FyeSB0aG91Z2ggYnV0IEknbGwgY2hlY2sgdGhlIHBhdGNoZXMgaW4gZGV0YWlsDQo+
-IGluIHRoZSB1cGNvbWluZyBkYXlzLg0KPiANCg0KSSBtYWRlIHNvbWUgdXBkYXRlcyAtLSBhZGRl
-ZCBtaXNzaW5nIGNvZGUgZm9yIGFybSBhbmQgeDg2LCByZXN0b3JlZA0Kc2lnbi1vZmYgbGluZXMg
-YW5kIHVwZGF0ZWQgY29tbWl0IG1lc3NhZ2VzLg0KDQpUaGlzIGlzIHRoZSByZXN1bHQgb2Ygc29t
-ZSB3b3JrIHRoYXQgbW9zdGx5IGhhcHBlbmVkIG9uIGVhcmxpZXINCnZlcnNpb25zIGFuZCBoYWQg
-dG8gZGVhbCB3aXRoIHRoZSBmYWN0IHRoYXQgdGltZXJzIGFuZCBob3VzZWtlZXBpbmcNCndvcmsg
-b2Z0ZW4gYXBwZWFyZWQgb24gYWxsIENQVXMsIHNvIHNvbWUgc29sdXRpb25zIG1heSBsb29rIGxp
-a2UgYW4NCm92ZXJraWxsLiBOZXZlcnRoZWxlc3MgaXQgd2FzIHZlcnkgaGVscGZ1bCBmb3IgZmlu
-ZGluZyB0aGUgc291cmNlcyBvZg0KdW5leHBlY3RlZCBkaXN0dXJiYW5jZXMuDQoNCkFsc28gb3Jp
-Z2luYWxseSBzb21lIG9mIHRoZSByYWNlIGNvbmRpdGlvbnMgYW5kIHBvdGVudGlhbCBkZWxheWVk
-IHdvcmsNCmF0IHRoZSB0aW1lIHdoZW4gYSB0YXNrIGlzIGVudGVyaW5nIGlzb2xhdGVkIHN0YXRl
-IHdlcmUgY29uc2lkZXJlZA0KdW5hdm9pZGFibGUuIFNvIHRoZSBwYXJ0IGluIGtlcm5lbCB3YXMg
-Zm9jdXNlZCBvbiBjb3JyZWN0bmVzcyBvZg0KaGFuZGxpbmcgdGhvc2UgY29uZGl0aW9ucywgd2hp
-bGUgZGV0ZWN0aW9uIGFuZCBkZWFsaW5nIHdpdGggdGhlaXINCmNvbnNlcXVlbmNlcyB3YXMgZG9u
-ZSBpbiB1c2Vyc3BhY2UgKGluIGxpYnRtYykuIE5vdyBpdCBsb29rcyBsaWtlIHRoZXJlDQptYXkg
-YmUgbXVjaCBmZXdlciBzdWNoIHNpdHVhdGlvbnMsIGhvd2V2ZXIgSSBhbSBzdGlsbCBub3QgdmVy
-eSB0aHJpbGxlZA0Kd2l0aCB0aGUgaWRlYSBvZiBjb21wbGljYXRpbmcgdGhlIGtlcm5lbCBtb3Jl
-IHRoYW4gd2UgaGF2ZSB0by4NCkVzcGVjaWFsbHkgd2hlbiBpdCBjb21lcyB0byBjb2RlIHRoYXQg
-aXMgcmVsZXZhbnQgb25seSBvdmVyIGZldyBzZWNvbmRzDQp3aGVuIHRoZSB0YXNrIGlzIHN0YXJ0
-aW5nIGFuZCBlbnRlcmluZyBpc29sYXRlZCBtb2RlLiBTbyBJIGhhdmUgdG8NCmFkbWl0IHRoYXQg
-c29tZSBzb2x1dGlvbnMgbG9vayBsaWtlICJtb3JlIEVJTlRSIHRoYW4gRUlOVFIiLCBhbmQgSQ0K
-c3RpbGwgbGlrZSB0aGVtIG1vcmUgdGhhbiBtYWtpbmcga2VybmVsIHNpZGUgb2YgZW50ZXJpbmcv
-ZXhpdGluZw0KaXNvbGF0aW9uIGV2ZW4gbW9yZSBjb21wbGV4IHRoYW4gaXQgaXMgbm93Lg0KDQpJ
-IG1heSBiZSB3cm9uZywgYW5kIHRoZXJlIG1heSBiZSBzb21lIG1vcmUgZWxlZ2FudCBzb2x1dGlv
-biwgaG93ZXZlciBJDQpkb24ndCBzZWUgaXQgbm93LiBVc2Vyc3BhY2UtYXNzaXN0ZWQgaXNvbGF0
-aW9uIGVudGVyaW5nL2V4aXRpbmcNCnByb2NlZHVyZSB3b3JrZWQgdmVyeSB3ZWxsIGluIGEgc3lz
-dGVtIHdpdGggYSBodWdlIG51bWJlciBvZiBjb3JlcywNCnRocmVhZHMsIGRyaXZlcnMgd2l0aCB1
-bnVzdWFsIGZlYXR1cmVzLCBldGMuLCBzbyBhdCB2ZXJ5IGxlYXN0IHdlIGhhdmUNCnNvbWUgdXNh
-YmxlIHJlZmVyZW5jZSBwb2ludC4NCg0KPiA+IEluIGEgbnVtYmVyIG9mIGNhc2VzIHdlIGNhbiB0
-ZWxsIG9uIGEgcmVtb3RlIGNwdSB0aGF0IHdlIGFyZQ0KPiA+IGdvaW5nIHRvIGJlIGludGVycnVw
-dGluZyB0aGUgY3B1LCBlLmcuIHZpYSBhbiBJUEkgb3IgYSBUTEIgZmx1c2guDQo+ID4gSW4gdGhh
-dCBjYXNlIHdlIGdlbmVyYXRlIHRoZSBkaWFnbm9zdGljIChhbmQgb3B0aW9uYWwgc3RhY2sgZHVt
-cCkNCj4gPiBvbiB0aGUgcmVtb3RlIGNvcmUgdG8gYmUgYWJsZSB0byBkZWxpdmVyIGJldHRlciBk
-aWFnbm9zdGljcy4NCj4gPiBJZiB0aGUgaW50ZXJydXB0IGlzIG5vdCBzb21ldGhpbmcgY2F1Z2h0
-IGJ5IExpbnV4IChlLmcuIGENCj4gPiBoeXBlcnZpc29yIGludGVycnVwdCkgd2UgY2FuIGFsc28g
-cmVxdWVzdCBhIHJlc2NoZWR1bGUgSVBJIHRvDQo+ID4gYmUgc2VudCB0byB0aGUgcmVtb3RlIGNv
-cmUgc28gaXQgY2FuIGJlIHN1cmUgdG8gZ2VuZXJhdGUgYQ0KPiA+IHNpZ25hbCB0byBub3RpZnkg
-dGhlIHByb2Nlc3MuDQo+IA0KPiBJJ20gd29uZGVyaW5nIGlmIGl0J3Mgd2lzZSB0byBydW4gdGhh
-dCBvbiBhIGd1ZXN0IGF0IGFsbCA6LSkNCj4gT3Igd2Ugc2hvdWxkIGNvbnNpZGVyIGFueSBndWVz
-dCBleGl0IHRvIHRoZSBob3N0IGFzIGENCj4gZGlzdHVyYmFuY2UsIHdlIHdvdWxkIHRoZW4gbmVl
-ZCBzb21lIHNvcnQgb2YgcGFyYXZpcnQNCj4gZHJpdmVyIHRvIG5vdGlmeSB0aGF0LCBldGMuLi4g
-VGhhdCBkb2Vzbid0IHNvdW5kIGFwcGVhbGluZy4NCg0KV2h5IG5vdD8gSSBhbSBub3QgYSBiaWcg
-ZmFuIG9mIHZpcnR1YWxpemF0aW9uLCBob3dldmVyIHBlb3BsZSBzZWVtIHRvDQp1c2UgaXQgZm9y
-IGFsbCBraW5kcyBvZiBwdXJwb3NlcyBub3csIGFuZCB3ZSBvbmx5IGhhdmUgdG8gcHJvcGFnYXRl
-IChvcg0KcmVqZWN0KSBpc29sYXRpb24gcmVxdWVzdHMgZnJvbSBndWVzdCB0byBob3N0IChhcyBs
-b25nIGFzIHJlc291cmNlIGFuZA0KcGVybWlzc2lvbnMgcG9saWN5IGFsbG93IHRoYXQpLiBGb3Ig
-S1ZNIGl0IHdvdWxkIGJlIGxpdGVyYWxseQ0KcmVwbGljYXRpbmcgZ3Vlc3QgdGFzayBpc29sYXRp
-b24gc3RhdGUgb24gdGhlIGhvc3QsIGFuZCBhcyBsb25nIGFzIENQVQ0KY29yZSBpcyBpc29sYXRl
-ZCwgZG9lcyBpdCByZWFsbHkgbWF0dGVyIGlmIHRoZSB0YXNrIHdhcyBjcmVhdGVkIHdpdGgNCnR3
-byBsYXllcnMgb2YgdmlydHVhbGl6YXRpb24gaW5zdGVhZCBvZiBvbmU/DQoNCkZvciBpc29sYXRp
-b24gdG8gbWFrZSBzZW5zZSwgaXQncyBzdGlsbCBjb2RlIHJ1bm5pbmcgb24gYSBDUFUgd2l0aA0K
-Zml4ZWQgYWRkcmVzcyBtYXBwaW5nLiBJZiB0aGlzIGlzIHN0aWxsIHRoZSBjYXNlLCB2aXJ0dWFs
-aXphdGlvbiBvbmx5DQpkZXRlcm1pbmVzIHdoYXQgY2FuIGJlIGluIHRoYXQgc3BhY2UsIG5vdCBo
-b3cgaXQgYmVoYXZlcy4gSWYgdGhpcyBpcw0Kbm90IHRoZSBjYXNlLCBhbmQgdGFzayBjYXVzZXMg
-a2VybmVsIGNvZGUgdG8gcnVuLCBiZSBpdCBndWVzdCBvciBob3N0DQprZXJuZWwsIHRoZW4gc29t
-ZXRoaW5nIGlzIHdyb25nLCBhbmQgaXNvbGF0aW9uIGlzIGJyb2tlbi4gTm90IHZlcnkNCmRpZmZl
-cmVudCBmcm9tIGJlaGF2aW9yIHdpdGhvdXQgdmlydHVhbGl6YXRpb24uDQoNClRoaXMgd291bGQg
-YmUgdmVyeSBiYWQgZm9yIGVhcmx5IGRheXMgb2YgdmlydHVhbGl6YXRpb24gd2hlbiB2ZXJ5DQps
-aXR0bGUgY291bGQgYmUgZG9uZSBieSBhIGd1ZXN0IHdpdGhvdXQgaG9zdCBtZXNzaW5nIHdpdGgg
-aXQuIE5vdywgd2hlbg0KcGllY2VzIG9mIGhhcmR3YXJlIGNhbiBiZSAocmVsYXRpdmVseSkgc2Fm
-ZWx5IGdpdmVuIHRvIHRoZSBndWVzdA0KdXNlcnNwYWNlIHRvIHdvcmsgb24sIHdlIGNhbiBqdXN0
-IGFzIHdlbGwgbGV0IGl0IHJ1biBpc29sYXRlZC4NCg0KPiANCj4gVGhhbmtzLg0KDQpUaGFua3Mh
-DQoNCi0tIA0KQWxleA0K
+syzbot found an interesting case of the kernel reading
+an uninit-value [1]
+
+Problem is in the handling of ETH_P_WCCP in gre_parse_header()
+
+We look at the byte following GRE options to eventually decide
+if the options are four bytes longer.
+
+Use skb_header_pointer() to not pull bytes if we found
+that no more bytes were needed.
+
+All callers of gre_parse_header() are properly using pskb_may_pull()
+anyway before proceeding to next header.
+
+[1]
+BUG: KMSAN: uninit-value in pskb_may_pull include/linux/skbuff.h:2303 [inline]
+BUG: KMSAN: uninit-value in __iptunnel_pull_header+0x30c/0xbd0 net/ipv4/ip_tunnel_core.c:94
+CPU: 1 PID: 11784 Comm: syz-executor940 Not tainted 5.6.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ pskb_may_pull include/linux/skbuff.h:2303 [inline]
+ __iptunnel_pull_header+0x30c/0xbd0 net/ipv4/ip_tunnel_core.c:94
+ iptunnel_pull_header include/net/ip_tunnels.h:411 [inline]
+ gre_rcv+0x15e/0x19c0 net/ipv6/ip6_gre.c:606
+ ip6_protocol_deliver_rcu+0x181b/0x22c0 net/ipv6/ip6_input.c:432
+ ip6_input_finish net/ipv6/ip6_input.c:473 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ip6_input net/ipv6/ip6_input.c:482 [inline]
+ ip6_mc_input+0xdf2/0x1460 net/ipv6/ip6_input.c:576
+ dst_input include/net/dst.h:442 [inline]
+ ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ipv6_rcv+0x683/0x710 net/ipv6/ip6_input.c:306
+ __netif_receive_skb_one_core net/core/dev.c:5198 [inline]
+ __netif_receive_skb net/core/dev.c:5312 [inline]
+ netif_receive_skb_internal net/core/dev.c:5402 [inline]
+ netif_receive_skb+0x66b/0xf20 net/core/dev.c:5461
+ tun_rx_batched include/linux/skbuff.h:4321 [inline]
+ tun_get_user+0x6aef/0x6f60 drivers/net/tun.c:1997
+ tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write fs/read_write.c:620 [inline]
+ __ia32_sys_write+0xdb/0x120 fs/read_write.c:620
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+RIP: 0023:0xf7f62d99
+Code: 90 e8 0b 00 00 00 f3 90 0f ae e8 eb f9 8d 74 26 00 89 3c 24 c3 90 90 90 90 90 90 90 90 90 90 90 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000fffedb2c EFLAGS: 00000217 ORIG_RAX: 0000000000000004
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020002580
+RDX: 0000000000000fca RSI: 0000000000000036 RDI: 0000000000000004
+RBP: 0000000000008914 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
+ slab_alloc_node mm/slub.c:2793 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4401
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1051 [inline]
+ alloc_skb_with_frags+0x18c/0xa70 net/core/skbuff.c:5766
+ sock_alloc_send_pskb+0xada/0xc60 net/core/sock.c:2242
+ tun_alloc_skb drivers/net/tun.c:1529 [inline]
+ tun_get_user+0x10ae/0x6f60 drivers/net/tun.c:1843
+ tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write fs/read_write.c:620 [inline]
+ __ia32_sys_write+0xdb/0x120 fs/read_write.c:620
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+
+Fixes: 95f5c64c3c13 ("gre: Move utility functions to common headers")
+Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv4/gre_demux.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/gre_demux.c b/net/ipv4/gre_demux.c
+index 5fd6e8ed02b5d5c201ff8dc8cf31db3994fcdcf7..66fdbfe5447cdb93e06fe85d94646a6806401e98 100644
+--- a/net/ipv4/gre_demux.c
++++ b/net/ipv4/gre_demux.c
+@@ -56,7 +56,9 @@ int gre_del_protocol(const struct gre_protocol *proto, u8 version)
+ }
+ EXPORT_SYMBOL_GPL(gre_del_protocol);
+ 
+-/* Fills in tpi and returns header length to be pulled. */
++/* Fills in tpi and returns header length to be pulled.
++ * Note that caller must use pskb_may_pull() before pulling GRE header.
++ */
+ int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+ 		     bool *csum_err, __be16 proto, int nhs)
+ {
+@@ -110,8 +112,14 @@ int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+ 	 * - When dealing with WCCPv2, Skip extra 4 bytes in GRE header
+ 	 */
+ 	if (greh->flags == 0 && tpi->proto == htons(ETH_P_WCCP)) {
++		u8 _val, *val;
++
++		val = skb_header_pointer(skb, nhs + hdr_len,
++					 sizeof(_val), &_val);
++		if (!val)
++			return -EINVAL;
+ 		tpi->proto = proto;
+-		if ((*(u8 *)options & 0xF0) != 0x40)
++		if ((*val & 0xF0) != 0x40)
+ 			hdr_len += 4;
+ 	}
+ 	tpi->hdr_len = hdr_len;
+-- 
+2.25.1.481.gfbce0eb801-goog
+
