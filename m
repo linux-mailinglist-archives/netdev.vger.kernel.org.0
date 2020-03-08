@@ -2,127 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 764D317D468
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 16:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834C717D471
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 16:32:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgCHP0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 11:26:31 -0400
-Received: from canardo.mork.no ([148.122.252.1]:53115 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726271AbgCHP0a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Mar 2020 11:26:30 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 028FQM2j015815
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sun, 8 Mar 2020 16:26:22 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1583681182; bh=ScndAKvQHtkoAKJHKcvCgojYNjZdn3MZ2jAOKVkeCi8=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=DAa3yPISwfc5HFbHxC4Eqrr99/KfNjwMIpo46lz5BuhenW6xjgocpIO6VT8ZQVpGk
-         eIzuHguRgLLTVA7sHrWpgaKgTccjU5C1ad+b3pGQs6G5D5I1vlainOvt+g0fThSEkM
-         azEPJVSsnNKZu7GwEMoSCCiLJKbn5hidZQjuBcxg=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1jAxor-0000VM-QV; Sun, 08 Mar 2020 16:26:21 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Paul Gildea <paul.gildea@gmail.com>
-Cc:     "davem\@davemloft.net" <davem@davemloft.net>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the ring buffer used by the xHCI controller.
-Organization: m
-References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
-Date:   Sun, 08 Mar 2020 16:26:21 +0100
-In-Reply-To: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
-        (Paul Gildea's message of "Wed, 4 Mar 2020 14:20:28 +0000")
-Message-ID: <87wo7una02.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1726292AbgCHPcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 11:32:03 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46906 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbgCHPcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 11:32:03 -0400
+Received: by mail-lf1-f66.google.com with SMTP id v6so5552183lfo.13
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 08:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=mfT1xq5uSMlc8Zc1INJ6fV3EAAi551FP5BskvvH5WrI=;
+        b=Fji3qMUh0jXU6YLFoQX4pGmcVpwxxr454YPn6uEAu9uRba8Qp7iuCN9O9KFV88f8bu
+         al3uecWrs93dekg7U9BXT61HXsuK4An9GG0KtkE/qm2iC9fPz5Qdd4IjrWDuOEcRohqi
+         N1x/VJraC/YecPk05mwCoIFu1rIyONX/y0OIa2YGIRnzq5HEVTAKItidhLJS+MXhBgXq
+         d4vm5kHyNKSrk3lfE/ay50VJYkNQW19YR2+hvIUkJcURkhqaUf/xYUotCJUdn/BVedxE
+         frJ3E7fpMNaoQG5ZEJbtEd4BryocirAiTljGjh/ZKTstXJl8hmJYF9SwJSP4YgA4USh3
+         OK5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=mfT1xq5uSMlc8Zc1INJ6fV3EAAi551FP5BskvvH5WrI=;
+        b=qOm/4AczvLS6zEprCjLi5BadVOtEjVJdyOxSKenruXswzL6ExXU3MfFGOX6ffHfwl3
+         ZJFySa+texLMOrVvscjB6g/bSu9sjI0oantymX9os7/vRuAXo2Pof+l0YzNJ5hDPa48d
+         NKmgudz5fWksEJmCtwq1uIaMzO7WvHsDQ6WgmOQ6VgkbZLyMyAoF6o7/fRnzfJRzY+al
+         ZzKKJYAqjNOxEAr4K128WTwTtg90jhHtWrmrJVGYyy4dfeQHehLxVOe4UAbULB0IP/EL
+         9i7OHCQS353j3Y4QrartSR9HvPIGNoiRC0qm012uDSFxBTDg1SC4pOGD5VWLqQ3VhzYq
+         svUA==
+X-Gm-Message-State: ANhLgQ0+YhUCvgKN6jVaXAqLK5DK4FUUa4bVvSAbIgZ62ljESf0yz5Mt
+        TmhUBqUYPWQGhhD4h4tctlYQ+nMTjPgr1QMekkM=
+X-Google-Smtp-Source: ADFU+vsNUcjUSlSLybhl1Gvsffm0ZO7z/5Adc6w5xNhQU4ig6A7WDwkiz4khpgVM3gecZy42mv4Vk1QBfNWfAweqe5c=
+X-Received: by 2002:a05:6512:3f5:: with SMTP id n21mr7175937lfq.198.1583681520105;
+ Sun, 08 Mar 2020 08:32:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.1 at canardo
-X-Virus-Status: Clean
+Reply-To: markjoseph0100@gmail.com
+Received: by 2002:a05:6512:4cc:0:0:0:0 with HTTP; Sun, 8 Mar 2020 08:31:59
+ -0700 (PDT)
+From:   "Mr. Mark Joseph" <markjoseph01000@gmail.com>
+Date:   Sun, 8 Mar 2020 08:31:59 -0700
+X-Google-Sender-Auth: 75T5T9ZrjA5PMFU2gKAIIOVsPrw
+Message-ID: <CAKFBy-a20qdKTid2RQ_7tOLV9aqBeGt0QH1YyJeLx=wraGO9iw@mail.gmail.com>
+Subject: Dear Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Gildea <paul.gildea@gmail.com> writes:
+Dear Friend,
 
-> When MTU of modem is set to less than 1500 and a packet larger than MTU
-> arrives in Linux from a modem, it is discarded with -EOVERFLOW error
-> (Babble error). This is seen on USB3.0 and USB2.0 busses. This is
-> essentially because the MRU (Max Receive Size) is not a separate entity to
-> the MTU (Max Transmit Size) and the received packets can be larger than
-> those transmitted. Following the babble error there were an endless supply
-> of zero-length URBs which are rejected with -EPROTO (increasing the rx
-> input error counter each time). This is only seen on USB3.0. These contin=
-ue
-> to come ad infinitum until the modem is shutdown, rendering the modem
-> unusable. There is a bug in the core USB handling code in Linux that
-> doesn't deal well with network MTUs smaller than 1500 bytes. By default t=
-he
-> dev->hard_mtu (the "real" MTU) is in lockstep with dev->rx_urb_size
-> (essentially an MRU), and it's the latter that is causing trouble. This h=
-as
-> nothing to do with the modems; the issue can be reproduced by getting a
-> USB-Ethernet dongle, setting the MTU to 1430, and pinging with size great=
-er
-> than 1406.
->
-> Signed-off-by: Paul Gildea <Paul.Gildea@gmail.com>
-> ---
-> drivers/net/usb/qmi_wwan.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> index 5754bb6..545c772 100644
-> --- a/drivers/net/usb/qmi_wwan.c
-> +++ b/drivers/net/usb/qmi_wwan.c
-> @@ -815,6 +815,13 @@ static int qmi_wwan_bind(struct usbnet *dev, struct
-> usb_interface *intf)
->     }
->     dev->net->netdev_ops =3D &qmi_wwan_netdev_ops;
->     dev->net->sysfs_groups[0] =3D &qmi_wwan_sysfs_attr_group;
-> +    /* LTE Networks don't always respect their own MTU on receive side;
-> +    * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets from
-> +    * far-end network. Make receive buffer large enough to accommodate
-> +    * them, and add four bytes so MTU does not equal MRU on network
-> +    * with 1500 MTU otherwise usbnet_change_mtu() will change both.
-> +    */
-> +   dev->rx_urb_size =3D ETH_DATA_LEN + 4;
->  err:
->     return status;
->  }
-> --
-> 1.9.1
+I am Mr. Mark Joseph a banker in Ouagadougou, Burkina Faso .I
+Discovered the sum of seven million, two hundred thousand dollars
+(usd7.2) belonging to a deceased customer of this bank the fund has
+been lying in a suspense account without anybody coming to put claim
+over the money since the account late owner from Lebanese who was
+involved in terrorist attacks in month of January 15th 2016.
 
+Therefore, I am soliciting for your assistance to come forward as the
+next of kin. I have agreed that 40% of this money will be for you as
+the beneficiary respect of the provision of your account and service
+rendered, 60% will be for me. Then immediately the money transferred
+to your account from this bank, I will proceed to your country for the
+sharing of the fund. If you think you are capable and will be
+committed to making this deal successes reply me back for more details
+to confirm your interest.
 
-This is fine as a first step towards saner buffer handling in qmi_wwan.
-If real world devices use asymmetric MTUs, then we should just deal with
-that.
-
-So I was going to add my ack.  But the patch does not apply:
-
-
- bjorn@miraculix:/usr/local/src/git/linux$ git am /tmp/l
- Applying: net: usb: qmi_wwan: Fix for packets being rejected in the ring b=
-uffer used by the xHCI controller.
- error: corrupt patch at line 10
-
-and checkpatch says why:
-
- bjorn@miraculix:/usr/local/src/git/linux$ scripts/checkpatch.pl /tmp/l
- ERROR: patch seems to be corrupt (line wrapped?)
- #34: FILE: drivers/net/usb/qmi_wwan.c:814:
- usb_interface *intf)
-
-
-Could you fix up and resend? You might have to use a different email
-client.  See
-https://www.kernel.org/doc/html/latest/process/email-clients.html#email-cli=
-ents
-
-
-Bj=C3=B8rn
+Yours faithful,
+Mr. Mark Joseph
