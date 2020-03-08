@@ -2,72 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 247BC17D3CE
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 14:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 641F817D3F1
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 14:45:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726297AbgCHNKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 09:10:35 -0400
-Received: from sonic301-21.consmr.mail.ir2.yahoo.com ([77.238.176.98]:36912
-        "EHLO sonic301-21.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726267AbgCHNKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 09:10:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1583673030; bh=pa1o5VRYWWG3WgDVzwpWeoz/bqhPAQKm9h7htHGAd9k=; h=Date:From:Reply-To:Subject:References:From:Subject; b=k0EH3Gz/Rv1FJTf1mR//gq2lXEv1abVkNPkzlVxCVllw9cSeLd4fMT6VFT48j7hcglebooqbEjIxTS7pTV+etXTyA8IGImrtj50LfxExUwb2Qht9D9QKDDcdv4BRZbqIO9MK+plUt6qleeU5DE4AjyE/Pv6ja0wXtz9Khk3g//RnRmcm0bqMQERVGF60c2NfQcMaO0tu+jM0WB7+dyNKYHcO8s/v9zSYS4gqBf3osRAjXthfRpry2PwqIrnt9wEp1ESVRUOx+hdO8rxFamhPPF5T/n2LBohk7oTXLy7UjNRKrCDSylBqWyrQcILMmLYFaR9mWyHFvEHsgGoW0L7EgQ==
-X-YMail-OSG: 5bnor3AVM1kDE7V.sTDuQ_nMuO0bdxJHNkrMl4WBmxLSjER3q2lHQkZRPdAGuFz
- 0UpJBTQJSY6SRvKaZ3eoyKvReMbh0RD9_gS88bJbKbhbgoshnzGCWwkNe_NPMuwRhyBUyrhTXzX5
- 5cXVUi_BAK9YnRXujLBCrbjvAGvtStASjytQcUGleIHoKfN6wSr7uajfziKce6xPZgiLF3888JpQ
- S01O9H8LbhObRFv760SfrrqHWmgvIuIb5DS29Ykwm36_EzToCGHvge0VrA.q9k6FBRRluVaj785z
- 639gfyp_A26fu086F9iodsAJfSKkeTgqiquk2LHgpxm_Xjhp2mnBFxyRt.KR42VOSq1O1Gxhhpqc
- zB0bhUZPFk19t.paEHmqv2mmhK4FrJVKaBdQXV9vL8x0lRNUK3OsE2xXi71pc2HaOWCPgOvBZRsf
- 8CRd_GOHf7GcnAenHvZa6AX39_ZXQPleJ5vleQK6rrCHhbwEYuNH2Fj6fv0VAl0fNJ0N3B3_mYDY
- m1PsdBDflEvHSAq3dFYHfcIFe.ETCVKgjiG9Q9wglRweikPozIoOd0ZrqQMXUfYpBjL4ZtMIO_ZQ
- FJb.9KYmewYSiRTfN30qmwdOYDLBoL0D7LrZbelan30VodfVAolhWFPmeZZhgdTsbsfOixJfbEtA
- nZ0w4Pc1zDSYBK4Ssty_q4Bo2uAffGJNJRHkbQEu9ADfBGAVPB_eGyg4X2yUbJUQQwpAupTesuBD
- AbB_hxPdkXBF2Cu7q4B7w3PzDemZk8UYhAEPQfdjR7J6_lgPk8.HWfND_CnNdNKLIGXujFiPSg3C
- QgYQdXHNjnFgXFoCpAa9i1faWvnlcFgpwgDmsCsJ.tZdJmYqqOXMvSiJLBCosoH56sADYFPZ21sA
- aL3HZGbBRGQbjAqPqWigcT.7K6AGJXQQiASekdlSB_ZA6yhFPNnIS366PwiwHAYZkqlLs2H7zBKS
- A1H0fp5f_7eMRDrmIfugqmkQGLKG6pbWmL5LXaxKfunR63LIjVSKPjCSlm6wLEwEBtzu7ikeReGL
- je.kBggpAgTgLC9Eo4jqXXPJh7x3k4yhs0dRLTfL4hruwal8Q2ju8k.hEmVdcblqhaYwx9sCSi4g
- nQr6NovKQ3DzdIFApR.Tjxsc334rDLV_EcRxiBgYp3w47xZOBkFDFy4FtFL_g9A2GcQ34RIoliyW
- iUmZzA5WgrjoH6ZLh1soZp0lrNVM2dnLOE5kDgYzmCJ5BlzHXil058m9UGO8qH6oSvWOoVjMzH0T
- Jhgq.yckEKgNF.y4mfYrFAnSqynDjSFFitNoI7JDNVRuJvEBWvU9jZOXWrzk7j_ajNcfxl5EL
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ir2.yahoo.com with HTTP; Sun, 8 Mar 2020 13:10:30 +0000
-Date:   Sun, 8 Mar 2020 13:10:28 +0000 (UTC)
-From:   "D.H.L REJOY" <mrsrajoysmrsrajoyshassain@gmail.com>
-Reply-To: rejoy_hassain_2020@mail.ru
-Message-ID: <928353996.9446837.1583673028201@mail.yahoo.com>
-Subject: CONNECTION HERE IN MY COUNTRY.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1726346AbgCHNpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 09:45:46 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:52177 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbgCHNpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 09:45:46 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id E1A92CED1A;
+        Sun,  8 Mar 2020 14:55:11 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH v2] bluetooth/rfcomm: fix ODEBUG bug in rfcomm_dev_ioctl
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <1583660727-9227-1-git-send-email-hqjagain@gmail.com>
+Date:   Sun, 8 Mar 2020 14:45:43 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hdanton@sina.com
 Content-Transfer-Encoding: 7bit
-References: <928353996.9446837.1583673028201.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15302 YMailNodin Mozilla/5.0 (Windows NT 5.1; rv:52.0) Gecko/20100101 Firefox/52.0
-To:     unlisted-recipients:; (no To-header on input)
+Message-Id: <09FF395C-AA3B-461B-A825-E8683C9A97D5@holtmann.org>
+References: <1583660727-9227-1-git-send-email-hqjagain@gmail.com>
+To:     Qiujun Huang <hqjagain@gmail.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATTENTION: DEAR BENEFICIARY CONGRATULATIONS TO YOU DEAR GOOD DAY I AM SORRY IF YOU RECEIVED THIS LETTER IN YOUR SPAM OR JUNK MAIL IT IS DUE TO A RECENT CONNECTION HERE IN MY COUNTRY.
+Hi Qiujun,
 
-DEAR FRIEND.
+> Needn't call 'rfcomm_dlc_put' here, because 'rfcomm_dlc_exists' didn't
+> increase dlc->refcnt.
+> 
+> Reported-by: syzbot+4496e82090657320efc6@syzkaller.appspotmail.com
+> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+> Suggested-by: Hillf Danton <hdanton@sina.com>
+> ---
+> net/bluetooth/rfcomm/tty.c | 4 +---
+> 1 file changed, 1 insertion(+), 3 deletions(-)
 
-YOU MAY BE WONDERING WHYI CONTACT YOU BUT SOMEONE LUCKY HAS TO BE CHOSEN WHICH IS YOU. I WANT YOU TO HANDLE THIS BUSINESS TRASACTION WITH ME IF CHANCE YOU TO DO INTERNATION BUSINESS I GO YOUR CONTACT FROM A RELIABLE WEB DIRECTORY.
+patch has been applied to bluetooth-next tree.
 
-I RECEIVE YOUR CONTENT OF YOUR EMAIL FROM THIS DHL MASTER CARD OFFICES FUND OF $10.5 USD MILLION AFTER THE BOARD OF DIRECTORS MEETINGS, THE UNITED NATIONS GOVERNMENT HAVE DECIDED TO ISSUE YOU YOUR (ATM) VALUED AT 10.5 MILLION UNITED STATES DOLLAR.THIS IS TO BRING TO YOUR NOTICE THAT YOUR VALUED SUM OF 10.5 MILLION DOLLAR HAS BEING TODAY CREDITED INTO (ATM) MASTER CARD AND HAS BEEN HANDLE TO THE FOREIGN REMITTANCE DEPARTMENT TO SEND IT TO YOU TODAY IN YOUR FAVOR.
+Regards
 
-WITH YOUR (ATM) YOU WILL HAVE ACCESS TO MAKE DAILY WITHDRAWALS OF $5000,00 UNITED STATE DOLLARS DAILIES AS ALREADY PROGRAMMED UNTIL YOU WITHDRAW YOUR TOTAL SUM IN YOUR (ATM) CARD WHICH HAS REGISTERED IN OUR SYSTEM FOR PAYMENT RECORD, AS SOON AS WE RECEIVE YOUR INFORMATIONS AND YOUR HOME ADDRESS OF YOUR COUNTRY AS ALREADY PROGRAMMED, WE WILL SEND YOUR (ATM) CARD THROUGH DHL COURIER SERVICE, WE HAVE RECEIVED A SIGNAL FROM THE SWISS WORLD BANK TO INFECT YOUR TRANSFER TO YOU WITHIN ONE WEEK,
+Marcel
 
-WE HAVE JUST FINISHED OUR ANNUAL GENERAL MEETING WITH THE CENTRAL BANK OF AMERICA (BOA). AT THE END OF THE BOARD OF DIRECTORS MEETING TODAY, WE HAVE CONCLUDED TO IMMEDIATELY ISSUE YOU AS SOON AS POSSIBLE,
-
-AND YOUR VALUE SUM HAS BEEN CREDITED INTO YOUR (ATM) VISA CARD
-ACCOUNT. WHICH YOU WILL USE TO WITHDRAW YOUR FUND IN ANY PART OF THE WORLD, WE HAVE ISSUED AND CREDITED YOUR (ATM) CARD IN YOUR NAME TODAY,
-
-YOUR (ATM) WILL BE INSURE BY THE INSURANCE COMPANY AND SEND TO YOU
-THROUGH ANY AVAILABLE COURIER COMPANY OF OUR CHOICE.
-
-ONCE AGAIN CONGRATULATIONS TO YOU,
-
-DIRECTOR DHL SERVICE,
-THANKS,
-SINCERELY.
-MRS. RAJOYS HASSAIN,
