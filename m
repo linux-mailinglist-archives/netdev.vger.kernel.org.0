@@ -2,81 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E4917D3F3
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 14:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E05917D420
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 15:11:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbgCHNrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 09:47:33 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:36880 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgCHNrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 09:47:33 -0400
-Received: by mail-pj1-f66.google.com with SMTP id ca13so1019276pjb.2
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 06:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=cNVD2N0obEwSlOAC8sFMMehN28ZU8w7EF74gN92j0Ig=;
-        b=MV8bCU+0782yvkstkKB2NdP0T6w2laiK85Jzy9ZudSAdFcCx4NCVA7RO1sCVnRg7v+
-         COHhyf0UGP0MsmzYzqDj9HKilcZCbw/6RVr1f1jCNE4Yn1iJSc3GNQx30Vni9DRySn6s
-         6Bj4YjgFHRc5Z6iGRLwdU3s/+TW7lr3SM9Mxn5DzzL3byPvrPxZUX0GHbs5KobrDjy7J
-         pwzVIQRyLVNRMKD1H/DggX0xpivKbZe28ZJMQT9d60lAQWlgYz8eG/CjpglZdsIA9w1C
-         mbOxDae14RiVZxaeob/Fs8mKvA8HS/6dSRElDsd/F1AIvOqiK9GRKvHmmz6o99f5e9ss
-         0AzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=cNVD2N0obEwSlOAC8sFMMehN28ZU8w7EF74gN92j0Ig=;
-        b=gIKOSYRRMJ6I8JtY35CSU9uzNCCCG0bpDjhQBlmAToRsyoiAiQXIgCnvmI0z8N5bti
-         GladDUfeKx67+deSp92mI6oUM0gALd3j+jGWfQGZ2bvm829y+8wfRIr6UwE6ZUdo34gk
-         4ZhHuiiOcmm3t2/KFpKjOWFswoMxkVYFga+BoJYkTWSUCfxAS/H+hvxNVTUg0044Z4cX
-         OnJokMBMrY39C4zhe7gDhf36Dc7eQFVU0VYNc0TESegoN0WqHUGP/8RjN3p23qis4A2K
-         goZJhiZwKXKMEzG4Fw3eIc63SsPL4vvpmDPkguSi2ab64n4gTfjWnvHugEhJj4Xpb5RR
-         t7Uw==
-X-Gm-Message-State: ANhLgQ02ouTEXDgYzz8Y1SDI9o8B0oAqFtUK0zHW4dJDvfdlNy4vPks4
-        jjN+WBjSk5g+nWzIjygy85g=
-X-Google-Smtp-Source: ADFU+vtWe70P/1VGzrN1LHkMGtd4Vj2g+kmYREjAWdXFcVOPPWLpHGSpE63fKI6Uv3GbgOHpJ9GVMg==
-X-Received: by 2002:a17:90a:ac05:: with SMTP id o5mr14341354pjq.143.1583675251316;
-        Sun, 08 Mar 2020 06:47:31 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id md20sm1661910pjb.15.2020.03.08.06.47.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Mar 2020 06:47:30 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, subashab@codeaurora.org,
-        stranche@codeaurora.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next] net: rmnet: set NETIF_F_LLTX flag
-Date:   Sun,  8 Mar 2020 13:47:06 +0000
-Message-Id: <20200308134706.18727-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726549AbgCHOLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 10:11:31 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38838 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726289AbgCHOLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 10:11:08 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 8 Mar 2020 16:11:03 +0200
+Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 028EB3Cs032146;
+        Sun, 8 Mar 2020 16:11:03 +0200
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: [PATCH net-next ct-offload v2 00/13] Introduce connection tracking offload
+Date:   Sun,  8 Mar 2020 16:10:49 +0200
+Message-Id: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rmnet_vnd_setup(), which is the callback of ->ndo_start_xmit() is
-allowed to call concurrently because it uses RCU protected data.
-So, it doesn't need tx lock.
+Background
+----------
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c | 2 ++
- 1 file changed, 2 insertions(+)
+The connection tracking action provides the ability to associate connection state to a packet.
+The connection state may be used for stateful packet processing such as stateful firewalls
+and NAT operations.
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-index d7c52e398e4a..d58b51d277f1 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-@@ -212,6 +212,8 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
- 	rmnet_dev->needs_free_netdev = true;
- 	rmnet_dev->ethtool_ops = &rmnet_ethtool_ops;
- 
-+	rmnet_dev->features |= NETIF_F_LLTX;
-+
- 	/* This perm addr will be used as interface identifier by IPv6 */
- 	rmnet_dev->addr_assign_type = NET_ADDR_RANDOM;
- 	eth_random_addr(rmnet_dev->perm_addr);
+Connection tracking in TC SW
+----------------------------
+
+The CT state may be matched only after the CT action is performed.
+As such, CT use cases are commonly implemented using multiple chains.
+Consider the following TC filters, as an example:
+1. tc filter add dev ens1f0_0 ingress prio 1 chain 0 proto ip flower \
+    src_mac 24:8a:07:a5:28:01 ct_state -trk \
+    action ct \
+    pipe action goto chain 2
+       
+2. tc filter add dev ens1f0_0 ingress prio 1 chain 2 proto ip flower \
+    ct_state +trk+new \
+    action ct commit \
+    pipe action tunnel_key set \
+        src_ip 0.0.0.0 \
+        dst_ip 7.7.7.8 \
+        id 98 \
+        dst_port 4789 \
+    action mirred egress redirect dev vxlan0
+       
+3. tc filter add dev ens1f0_0 ingress prio 1 chain 2 proto ip flower \
+    ct_state +trk+est \
+    action tunnel_key set \
+        src_ip 0.0.0.0 \
+        dst_ip 7.7.7.8 \
+        id 98 \
+        dst_port 4789 \
+    action mirred egress redirect dev vxlan0
+       
+Filter #1 (chain 0) decides, after initial packet classification, to send the packet to the
+connection tracking module (ct action).
+Once the ct_state is initialized by the CT action the packet processing continues on chain 2.
+
+Chain 2 classifies the packet based on the ct_state.
+Filter #2 matches on the +trk+new CT state while filter #3 matches on the +trk+est ct_state.
+
+MLX5 Connection tracking HW offload - MLX5 driver patches
+------------------------------
+
+The MLX5 hardware model aligns with the software model by realizing a multi-table
+architecture. In SW the TC CT action sets the CT state on the skb. Similarly,
+HW sets the CT state on a HW register. Driver gets this CT state while offloading
+a tuple with a new ct_metadata action that provides it.
+
+Matches on ct_state are translated to HW register matches.
+    
+TC filter with CT action broken to two rules, a pre_ct rule, and a post_ct rule.
+pre_ct rule:
+   Inserted on the corrosponding tc chain table, matches on original tc match, with
+   actions: any pre ct actions, set fte_id, set zone, and goto the ct table.
+   The fte_id is a register mapping uniquely identifying this filter.
+post_ct_rule:
+   Inserted in a post_ct table, matches on the fte_id register mapping, with
+   actions: counter + any post ct actions (this is usally 'goto chain X')
+
+post_ct table is a table that all the tuples inserted to the ct table goto, so
+if there is a tuple hit, packet will continue from ct table to post_ct table,
+after being marked with the CT state (mark/label..)
+
+This design ensures that the rule's actions and counters will be executed only after a CT hit.
+HW misses will continue processing in SW from the last chain ID that was processed in hardware.
+
+The following illustrates the HW model:
+
++-------------------+      +--------------------+    +--------------+
++ pre_ct (tc chain) +----->+ CT (nat or no nat) +--->+ post_ct      +----->
++ original match    +   |  + tuple + zone match + |  + fte_id match +  |
++-------------------+   |  +--------------------+ |  +--------------+  |
+                        v                         v                    v
+                     set chain miss mapping    set mark             original
+                     set fte_id                set label            filter
+                     set zone                  set established      actions
+                     set tunnel_id             do nat (if needed)
+                     do decap
+
+To fill CT table, driver registers a CB for flow offload events, for each new
+flow table that is passed to it from offloading ct actions. Once a flow offload
+event is triggered on this CB, offload this flow to the hardware CT table.
+
+Established events offload
+--------------------------
+
+Currently, act_ct maintains an FT instance per ct zone. Flow table entries
+are created, per ct connection, when connections enter an established
+state and deleted otherwise. Once an entry is created, the FT assumes
+ownership of the entries, and manages their aging. FT is used for software
+offload of conntrack. FT entries associate 5-tuples with an action list.
+
+The act_ct changes in this patchset:
+Populate the action list with a (new) ct_metadata action, providing the
+connection's ct state (zone,mark and label), and mangle actions if NAT
+is configured.
+
+Pass the action's flow table instance as ct action entry parameter,
+so  when the action is offloaded, the driver may register a callback on
+it's block to receive FT flow offload add/del/stats events.
+
+Netilter changes
+--------------------------
+The netfilter changes export the relevant bits, and add the relevant CBs
+to support the above.
+
+Paul Blakey (13):
+  netfilter: flowtable: Add API for registering to flow table events
+  net/sched: act_ct: Instantiate flow table entry actions
+  net/sched: act_ct: Support restoring conntrack info on skbs
+  net/sched: act_ct: Support refreshing the flow table entries
+  net/sched: act_ct: Enable hardware offload of flow table entires
+  net/mlx5: E-Switch, Introduce global tables
+  net/mlx5: E-Switch, Add support for offloading rules with no in_port
+  net/mlx5: E-Switch, Support getting chain mapping
+  flow_offload: Add flow_match_ct to get rule ct match
+  net/mlx5e: CT: Introduce connection tracking
+  net/mlx5e: CT: Offload established flows
+  net/mlx5e: CT: Handle misses after executing CT action
+  net/mlx5e: CT: Support clear action
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   10 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |    1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 1334 ++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |  171 +++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |    3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  121 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |    9 +
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |    5 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   26 +-
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   43 +
+ .../mellanox/mlx5/core/eswitch_offloads_chains.h   |   13 +
+ include/net/flow_offload.h                         |   13 +
+ include/net/netfilter/nf_flow_table.h              |   32 +
+ include/net/tc_act/tc_ct.h                         |   17 +
+ net/core/flow_offload.c                            |    7 +
+ net/netfilter/nf_flow_table_core.c                 |   60 +
+ net/netfilter/nf_flow_table_ip.c                   |   15 +-
+ net/netfilter/nf_flow_table_offload.c              |   27 +-
+ net/sched/act_ct.c                                 |  226 ++++
+ net/sched/cls_api.c                                |    1 +
+ 20 files changed, 2074 insertions(+), 60 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+
 -- 
-2.17.1
+1.8.3.1
 
