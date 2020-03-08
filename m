@@ -2,161 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F5F17D5E0
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 20:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3F417D5FD
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 20:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgCHTfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 15:35:13 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:34936 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726322AbgCHTfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 15:35:13 -0400
-Received: by mail-il1-f200.google.com with SMTP id h18so5964220ilc.2
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 12:35:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=USf8eI6Wdkyc+LQps75FiL8cu4kVeYj/e5bvhNKIsNE=;
-        b=NF3OZ5ve+ie1evMha8mlKojghfxtbuc5VziYLUkPlxItR1ErS3ozxUvt33COkof9LZ
-         25cCKGhqLua1bpTXfDG6mcTYaLDv32WLAU07L1J3SHfLVw9qvutdJlvxUsl20N5PXHqZ
-         MsmW0jbCbbBITSpxpStEHqhmr/KFHXwsc7eeKFZRwDuR7XEcpSotkQz88LrOsWQpnRfE
-         fCa31DaIRE7AKfHSJ6dX9TL0vsHuoFxP9nbnmpVXSy+/zsL1vHF5J2IuQ+mK3dWykheq
-         NdNVFrdC331L68/5Iaul/xC6dEHGf0RoaMuN/skpawdejk3+QRy0kA7CRiNSX0JKpGSC
-         DzkA==
-X-Gm-Message-State: ANhLgQ2z06Fa5UIk6J+Nw8LAAOM2YhSbeesqfQCRawe0JRmamqqmV9uQ
-        jyj2dhZbAkNokF7EPaI+f8YE9XJP1M5m71gOHGXuWdAiVRpK
-X-Google-Smtp-Source: ADFU+vsOKxwbKePeK6GT73C8F2pLyHRC/1xx/KDJ/1Vu1y7/kUrttE8KXLP0hPwdBuN1h7DDVpj4NwF7FWcMp41dWpBFIKZyK0wS
+        id S1726347AbgCHT7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 15:59:36 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:17096 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726336AbgCHT7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 15:59:36 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 028JwfvN026461
+        for <netdev@vger.kernel.org>; Sun, 8 Mar 2020 15:59:35 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ym8n6bh71-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 15:59:35 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Sun, 8 Mar 2020 19:59:33 -0000
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Sun, 8 Mar 2020 19:59:31 -0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 028JxTSF46137590
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 8 Mar 2020 19:59:29 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CBB9EA405B;
+        Sun,  8 Mar 2020 19:59:29 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 653AFA4054;
+        Sun,  8 Mar 2020 19:59:29 +0000 (GMT)
+Received: from [9.145.159.148] (unknown [9.145.159.148])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sun,  8 Mar 2020 19:59:29 +0000 (GMT)
+Subject: Re: [PATCH net] net/smc: cancel event worker during device removal
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
+        raspl@linux.ibm.com, ubraun@linux.ibm.com
+References: <20200306134518.84416-1-kgraul@linux.ibm.com>
+ <20200308150107.GC11496@unreal>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Date:   Sun, 8 Mar 2020 20:59:33 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:ee12:: with SMTP id i18mr8572276ioh.125.1583696112273;
- Sun, 08 Mar 2020 12:35:12 -0700 (PDT)
-Date:   Sun, 08 Mar 2020 12:35:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000034513e05a05cfc23@google.com>
-Subject: KASAN: invalid-free in tcf_exts_destroy
-From:   syzbot <syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200308150107.GC11496@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20030819-4275-0000-0000-000003A988A4
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20030819-4276-0000-0000-000038BE9D75
+Message-Id: <0b5d992d-2447-1606-f8ce-73801643160a@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-08_07:2020-03-06,2020-03-08 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0 spamscore=0
+ phishscore=0 bulkscore=0 malwarescore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003080150
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 08/03/2020 16:01, Leon Romanovsky wrote:
+> On Fri, Mar 06, 2020 at 02:45:18PM +0100, Karsten Graul wrote:
+>> During IB device removal, cancel the event worker before the device
+>> structure is freed. In the worker, check if the device is being
+>> terminated and do not proceed with the event work in that case.
+>>
+>> Fixes: a4cf0443c414 ("smc: introduce SMC as an IB-client")
+>> Reported-by: syzbot+b297c6825752e7a07272@syzkaller.appspotmail.com
+>> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+>> Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
+>> ---
+>>  net/smc/smc_ib.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+>> index d6ba186f67e2..5e4e64a9aa4b 100644
+>> --- a/net/smc/smc_ib.c
+>> +++ b/net/smc/smc_ib.c
+>> @@ -240,6 +240,9 @@ static void smc_ib_port_event_work(struct work_struct *work)
+>>  		work, struct smc_ib_device, port_event_work);
+>>  	u8 port_idx;
+>>
+>> +	if (list_empty(&smcibdev->list))
+>> +		return;
+>> +
+> 
+> How can it be true if you are not holding "smc_ib_devices.lock" during
+> execution of smc_ib_port_event_work()?
+> 
 
-syzbot found the following crash on:
+It is true when smc_ib_remove_dev() runs before the work actually started.
+Other than that its only a shortcut to return earlier, when the item is 
+removed from the list after the check then the processing just takes a 
+little bit longer...its still save.
 
-HEAD commit:    c2003765 Merge tag 'io_uring-5.6-2020-03-07' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10cd2ae3e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4527d1e2fb19fd5c
-dashboard link: https://syzkaller.appspot.com/bug?extid=dcc34d54d68ef7d2d53d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1561b01de00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15aad2f9e00000
+>>  	for_each_set_bit(port_idx, &smcibdev->port_event_mask, SMC_MAX_PORTS) {
+>>  		smc_ib_remember_port_attr(smcibdev, port_idx + 1);
+>>  		clear_bit(port_idx, &smcibdev->port_event_mask);
+>> @@ -582,6 +585,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
+>>  	smc_smcr_terminate_all(smcibdev);
+>>  	smc_ib_cleanup_per_ibdev(smcibdev);
+>>  	ib_unregister_event_handler(&smcibdev->event_handler);
+>> +	cancel_work_sync(&smcibdev->port_event_work);
+>>  	kfree(smcibdev);
+>>  }
+>>
+>> --
+>> 2.17.1
+>>
 
-The bug was bisected to:
+-- 
+Karsten
 
-commit 599be01ee567b61f4471ee8078870847d0a11e8e
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon Feb 3 05:14:35 2020 +0000
+(I'm a dude)
 
-    net_sched: fix an OOB access in cls_tcindex
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a275fde00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=12a275fde00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14a275fde00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com
-Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
-
-IPVS: ftp: loaded support on port[0] = 21
-==================================================================
-BUG: KASAN: double-free or invalid-free in tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
-
-CPU: 1 PID: 9507 Comm: syz-executor467 Not tainted 5.6.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
- kasan_report_invalid_free+0x61/0xa0 mm/kasan/report.c:468
- __kasan_slab_free+0x129/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
- tcf_exts_change+0xf4/0x150 net/sched/cls_api.c:3059
- tcindex_set_parms+0xed8/0x1a00 net/sched/cls_tcindex.c:456
- tcindex_change+0x203/0x2e0 net/sched/cls_tcindex.c:518
- tc_new_tfilter+0xa59/0x20b0 net/sched/cls_api.c:2103
- rtnetlink_rcv_msg+0x810/0xad0 net/core/rtnetlink.c:5427
- netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
- do_syscall_32_irqs_on arch/x86/entry/common.c:337 [inline]
- do_fast_syscall_32+0x270/0xe8f arch/x86/entry/common.c:408
- entry_SYSENTER_compat+0x70/0x7f arch/x86/entry/entry_64_compat.S:139
-
-Allocated by task 1:
- save_stack+0x1b/0x80 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:515 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:488
- kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
- kmalloc include/linux/slab.h:555 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- __class_register+0x46/0x450 drivers/base/class.c:160
- spi_transport_init+0xf0/0x132 drivers/scsi/scsi_transport_spi.c:1609
- do_one_initcall+0x10a/0x7d0 init/main.c:1152
- do_initcall_level init/main.c:1225 [inline]
- do_initcalls init/main.c:1241 [inline]
- do_basic_setup init/main.c:1261 [inline]
- kernel_init_freeable+0x501/0x5ae init/main.c:1445
- kernel_init+0xd/0x1bb init/main.c:1352
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff8880a12d5000
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 152 bytes inside of
- 1024-byte region [ffff8880a12d5000, ffff8880a12d5400)
-The buggy address belongs to the page:
-page:ffffea000284b540 refcount:1 mapcount:0 mapping:ffff8880aa000c40 index:0x0
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea000285c288 ffffea000284b588 ffff8880aa000c40
-raw: 0000000000000000 ffff8880a12d5000 0000000100000002 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a12d4f80: 00 fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff8880a12d5000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880a12d5080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                            ^
- ffff8880a12d5100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880a12d5180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
