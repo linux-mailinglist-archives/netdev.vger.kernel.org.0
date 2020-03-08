@@ -2,321 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CED4017D57E
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 19:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D40E317D5C2
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 20:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726322AbgCHSXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 14:23:01 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:62228 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbgCHSXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 14:23:00 -0400
+        id S1726354AbgCHTH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 15:07:58 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33242 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgCHTH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 15:07:58 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d22so5559532qtn.0;
+        Sun, 08 Mar 2020 12:07:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1583691778; x=1615227778;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=3mkSj8vWIuyo8kfcrz+ekAJnprGunmVLQ96tqiCY5kg=;
-  b=hnfDE98I2tXrvT5lTLJfWZNbDcwuhhmzsWuRmrcjDW1x/CThQg/zveql
-   4m01HCswldAN491Mar3HiQMtmRHeZzTe/CCpiZvrGX+U1CTWFf5Hr/Glv
-   RkCuE/i6TU3tsv6pC6WZsmMgaZFQK8Q8mpG1TsgAhIPDAywsMKMy0R9Qc
-   g=;
-IronPort-SDR: VdBV4vV6PFb7oZuG8FMHsAOOwzD8RirkDrFgr8PfTNUra1fAB9qmGQF+OFiBPCK7sIFWy9zJuH
- E0YbCNBECsQA==
-X-IronPort-AV: E=Sophos;i="5.70,530,1574121600"; 
-   d="scan'208";a="31289646"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Mar 2020 18:22:57 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 3785DA21EC;
-        Sun,  8 Mar 2020 18:22:54 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 8 Mar 2020 18:22:54 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.100) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 8 Mar 2020 18:22:50 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kuniyu@amazon.co.jp>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
-        <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
-        <osa-contribution-log@amazon.com>, <yoshfuji@linux-ipv6.org>
-Subject: [PATCH v4 net-next 5/5] selftests: net: Add SO_REUSEADDR test to check if 4-tuples are fully utilized.
-Date:   Mon, 9 Mar 2020 03:21:26 +0900
-Message-ID: <20200308182126.92852-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20200308181615.90135-1-kuniyu@amazon.co.jp>
-References: <20200308181615.90135-1-kuniyu@amazon.co.jp>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=q9gIS4U5Axb2UV/TlkmoKYkwkraygD1wbePWfXVPOcw=;
+        b=TXKCEnlyU80n3IUULzxYxQ2QaUidkrNMG/2yUohwmHP1jwU6PTB0LHc5q4Zl3UHH9z
+         QX7NilsZjqIK0N/bUVHtKQG/GmA20luiyPSe0MWh9cfPjS0702OICJQCHhKPe0aHL88C
+         IzJDs6BqN/SiyMYk5F+3JdV+GZ2DiWtcgmKQErxNJ/27daMjFZ9BtJbM6hs0ug5UgGxV
+         9qcCRsIzI4k2umhRSrZOIjMSzQpy8w2ukAZBxqYb+1H0X+7qNODMxTVR4ah2TjETANVr
+         WOKvssAWJVwWvRzNsRmX3+IswTN4jqW+Tp1vTUnED9Gavt8stfaSz1TRgFXf4uCtDVMH
+         Ip5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=q9gIS4U5Axb2UV/TlkmoKYkwkraygD1wbePWfXVPOcw=;
+        b=Sw0cA4cIJaH9wk11r5nlOu/qUC5nOA5W15KaMPxpvnflKWJYoDAoRRnf2p3sab0U2J
+         3V+OxOnfS/KKffwpJd1GRu+RlsRfeRUGmy5FUgVfqixvOuPUJWhvZak4IcenfJtnGq2i
+         kpAQooHW1M9wmrRyoysYYhat0P4XBWibhhhWz2vCBklOuu/sLY9P5Xb747tTLa7oBcIL
+         4cXHuc8Pdvrp/qO2wTKQJAn+nkZVa85T4W/nekyacuiY4b3TF7Ej4RmmIsFCpqk9TZKV
+         AWDfxLZbO2e+UdNcWuUBcxmXO4Bq0+Wi5yt51Sgo5y7mFrMeDGShsbJ1VBlNW4jZ6m10
+         KT1w==
+X-Gm-Message-State: ANhLgQ16OS8pRY2NeI5TmectKonLny+cWwZ45S6M8Lk036B7F45WdxVK
+        cEdV9m73kS9AupGR1GAx2EpiNJ5cQQRshAq20UM=
+X-Google-Smtp-Source: ADFU+vsOimvYnlJjSAb5ewq/pe6fyi+A4Mpsw3y4Aue/tx3nJ9/UVmpbzyx/MsAJ8RLOIQMsslyv/pKarL3MxmoRH1I=
+X-Received: by 2002:ac8:4d1c:: with SMTP id w28mr12051926qtv.48.1583694476930;
+ Sun, 08 Mar 2020 12:07:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.100]
-X-ClientProxiedBy: EX13D22UWC002.ant.amazon.com (10.43.162.29) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
+ <87wo7una02.fsf@miraculix.mork.no>
+In-Reply-To: <87wo7una02.fsf@miraculix.mork.no>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Sun, 8 Mar 2020 20:07:46 +0100
+Message-ID: <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
+Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the
+ ring buffer used by the xHCI controller.
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     Paul Gildea <paul.gildea@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds a test to check if we can fully utilize 4-tuples for
-connect() when all ephemeral ports are exhausted.
+Hi Bj=C3=B8rn and Paul,
 
-The test program changes the local port range to use only one port and binds
-two sockets with or without SO_REUSEADDR and SO_REUSEPORT, and with the same
-EUID or with different EUIDs, then do listen().
+Il giorno dom 8 mar 2020 alle ore 16:28 Bj=C3=B8rn Mork <bjorn@mork.no> ha =
+scritto:
+>
+> Paul Gildea <paul.gildea@gmail.com> writes:
+>
+> > When MTU of modem is set to less than 1500 and a packet larger than MTU
+> > arrives in Linux from a modem, it is discarded with -EOVERFLOW error
+> > (Babble error). This is seen on USB3.0 and USB2.0 busses. This is
+> > essentially because the MRU (Max Receive Size) is not a separate entity=
+ to
+> > the MTU (Max Transmit Size) and the received packets can be larger than
+> > those transmitted. Following the babble error there were an endless sup=
+ply
+> > of zero-length URBs which are rejected with -EPROTO (increasing the rx
+> > input error counter each time). This is only seen on USB3.0. These cont=
+inue
+> > to come ad infinitum until the modem is shutdown, rendering the modem
+> > unusable. There is a bug in the core USB handling code in Linux that
+> > doesn't deal well with network MTUs smaller than 1500 bytes. By default=
+ the
+> > dev->hard_mtu (the "real" MTU) is in lockstep with dev->rx_urb_size
+> > (essentially an MRU), and it's the latter that is causing trouble. This=
+ has
+> > nothing to do with the modems; the issue can be reproduced by getting a
+> > USB-Ethernet dongle, setting the MTU to 1430, and pinging with size gre=
+ater
+> > than 1406.
+> >
+> > Signed-off-by: Paul Gildea <Paul.Gildea@gmail.com>
+> > ---
+> > drivers/net/usb/qmi_wwan.c | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> > index 5754bb6..545c772 100644
+> > --- a/drivers/net/usb/qmi_wwan.c
+> > +++ b/drivers/net/usb/qmi_wwan.c
+> > @@ -815,6 +815,13 @@ static int qmi_wwan_bind(struct usbnet *dev, struc=
+t
+> > usb_interface *intf)
+> >     }
+> >     dev->net->netdev_ops =3D &qmi_wwan_netdev_ops;
+> >     dev->net->sysfs_groups[0] =3D &qmi_wwan_sysfs_attr_group;
+> > +    /* LTE Networks don't always respect their own MTU on receive side=
+;
+> > +    * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets fro=
+m
+> > +    * far-end network. Make receive buffer large enough to accommodate
+> > +    * them, and add four bytes so MTU does not equal MRU on network
+> > +    * with 1500 MTU otherwise usbnet_change_mtu() will change both.
+> > +    */
+> > +   dev->rx_urb_size =3D ETH_DATA_LEN + 4;
 
-We should be able to bind only one socket having both SO_REUSEADDR and
-SO_REUSEPORT per EUID, which restriction is to prevent unintentional
-listen().
+Isn't this going to break the change MTU workaround for dl data
+aggregation when using qmap?
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/Makefile          |   2 +
- .../selftests/net/reuseaddr_ports_exhausted.c | 162 ++++++++++++++++++
- .../net/reuseaddr_ports_exhausted.sh          |  35 ++++
- 4 files changed, 200 insertions(+)
- create mode 100644 tools/testing/selftests/net/reuseaddr_ports_exhausted.c
- create mode 100755 tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
+Regards,
+Daniele
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index ecc52d4c034d..91f9aea853b1 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -23,3 +23,4 @@ so_txtime
- tcp_fastopen_backup_key
- nettest
- fin_ack_lat
-+reuseaddr_ports_exhausted
-\ No newline at end of file
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index b5694196430a..ded1aa394880 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -12,6 +12,7 @@ TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_a
- TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
- TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh traceroute.sh
- TEST_PROGS += fin_ack_lat.sh
-+TEST_PROGS += reuseaddr_ports_exhausted.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-@@ -22,6 +23,7 @@ TEST_GEN_FILES += tcp_fastopen_backup_key
- TEST_GEN_FILES += fin_ack_lat
- TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
- TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
-+TEST_GEN_FILES += reuseaddr_ports_exhausted
- 
- KSFT_KHDR_INSTALL := 1
- include ../lib.mk
-diff --git a/tools/testing/selftests/net/reuseaddr_ports_exhausted.c b/tools/testing/selftests/net/reuseaddr_ports_exhausted.c
-new file mode 100644
-index 000000000000..7b01b7c2ec10
---- /dev/null
-+++ b/tools/testing/selftests/net/reuseaddr_ports_exhausted.c
-@@ -0,0 +1,162 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Check if we can fully utilize 4-tuples for connect().
-+ *
-+ * Rules to bind sockets to the same port when all ephemeral ports are
-+ * exhausted.
-+ *
-+ *   1. if there are TCP_LISTEN sockets on the port, fail to bind.
-+ *   2. if there are sockets without SO_REUSEADDR, fail to bind.
-+ *   3. if SO_REUSEADDR is disabled, fail to bind.
-+ *   4. if SO_REUSEADDR is enabled and SO_REUSEPORT is disabled,
-+ *        succeed to bind.
-+ *   5. if SO_REUSEADDR and SO_REUSEPORT are enabled and
-+ *        there is no socket having the both options and the same EUID,
-+ *        succeed to bind.
-+ *   6. fail to bind.
-+ *
-+ * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-+ */
-+#include <arpa/inet.h>
-+#include <netinet/in.h>
-+#include <sys/socket.h>
-+#include <sys/types.h>
-+#include <unistd.h>
-+#include "../kselftest_harness.h"
-+
-+struct reuse_opts {
-+	int reuseaddr[2];
-+	int reuseport[2];
-+};
-+
-+struct reuse_opts unreusable_opts[12] = {
-+	{0, 0, 0, 0},
-+	{0, 0, 0, 1},
-+	{0, 0, 1, 0},
-+	{0, 0, 1, 1},
-+	{0, 1, 0, 0},
-+	{0, 1, 0, 1},
-+	{0, 1, 1, 0},
-+	{0, 1, 1, 1},
-+	{1, 0, 0, 0},
-+	{1, 0, 0, 1},
-+	{1, 0, 1, 0},
-+	{1, 0, 1, 1},
-+};
-+
-+struct reuse_opts reusable_opts[4] = {
-+	{1, 1, 0, 0},
-+	{1, 1, 0, 1},
-+	{1, 1, 1, 0},
-+	{1, 1, 1, 1},
-+};
-+
-+int bind_port(struct __test_metadata *_metadata, int reuseaddr, int reuseport)
-+{
-+	struct sockaddr_in local_addr;
-+	int len = sizeof(local_addr);
-+	int fd, ret;
-+
-+	fd = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_NE(-1, fd) TH_LOG("failed to open socket.");
-+
-+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(int));
-+	ASSERT_EQ(0, ret) TH_LOG("failed to setsockopt: SO_REUSEADDR.");
-+
-+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(int));
-+	ASSERT_EQ(0, ret) TH_LOG("failed to setsockopt: SO_REUSEPORT.");
-+
-+	local_addr.sin_family = AF_INET;
-+	local_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-+	local_addr.sin_port = 0;
-+
-+	if (bind(fd, (struct sockaddr *)&local_addr, len) == -1) {
-+		close(fd);
-+		return -1;
-+	}
-+
-+	return fd;
-+}
-+
-+TEST(reuseaddr_ports_exhausted_unreusable)
-+{
-+	struct reuse_opts *opts;
-+	int i, j, fd[2];
-+
-+	for (i = 0; i < 12; i++) {
-+		opts = &unreusable_opts[i];
-+
-+		for (j = 0; j < 2; j++)
-+			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
-+
-+		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
-+		EXPECT_EQ(-1, fd[1]) TH_LOG("should fail to bind.");
-+
-+		for (j = 0; j < 2; j++)
-+			if (fd[j] != -1)
-+				close(fd[j]);
-+	}
-+}
-+
-+TEST(reuseaddr_ports_exhausted_reusable_same_euid)
-+{
-+	struct reuse_opts *opts;
-+	int i, j, fd[2];
-+
-+	for (i = 0; i < 4; i++) {
-+		opts = &reusable_opts[i];
-+
-+		for (j = 0; j < 2; j++)
-+			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
-+
-+		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
-+
-+		if (opts->reuseport[0] && opts->reuseport[1]) {
-+			EXPECT_EQ(-1, fd[1]) TH_LOG("should fail to bind because both sockets succeed to be listened.");
-+		} else {
-+			EXPECT_NE(-1, fd[1]) TH_LOG("should succeed to bind to connect to different destinations.");
-+		}
-+
-+		for (j = 0; j < 2; j++)
-+			if (fd[j] != -1)
-+				close(fd[j]);
-+	}
-+}
-+
-+TEST(reuseaddr_ports_exhausted_reusable_different_euid)
-+{
-+	struct reuse_opts *opts;
-+	int i, j, ret, fd[2];
-+	uid_t euid[2] = {10, 20};
-+
-+	for (i = 0; i < 4; i++) {
-+		opts = &reusable_opts[i];
-+
-+		for (j = 0; j < 2; j++) {
-+			ret = seteuid(euid[j]);
-+			ASSERT_EQ(0, ret) TH_LOG("failed to seteuid: %d.", euid[j]);
-+
-+			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
-+
-+			ret = seteuid(0);
-+			ASSERT_EQ(0, ret) TH_LOG("failed to seteuid: 0.");
-+		}
-+
-+		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
-+		EXPECT_NE(-1, fd[1]) TH_LOG("should succeed to bind because one socket can be bound in each euid.");
-+
-+		if (fd[1] != -1) {
-+			ret = listen(fd[0], 5);
-+			ASSERT_EQ(0, ret) TH_LOG("failed to listen.");
-+
-+			ret = listen(fd[1], 5);
-+			EXPECT_EQ(-1, ret) TH_LOG("should fail to listen because only one uid reserves the port in TCP_LISTEN.");
-+		}
-+
-+		for (j = 0; j < 2; j++)
-+			if (fd[j] != -1)
-+				close(fd[j]);
-+	}
-+}
-+
-+TEST_HARNESS_MAIN
-diff --git a/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh b/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
-new file mode 100755
-index 000000000000..20e3a2913d06
---- /dev/null
-+++ b/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
-@@ -0,0 +1,35 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Run tests when all ephemeral ports are exhausted.
-+#
-+# Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-+
-+set +x
-+set -e
-+
-+readonly NETNS="ns-$(mktemp -u XXXXXX)"
-+
-+setup() {
-+	ip netns add "${NETNS}"
-+	ip -netns "${NETNS}" link set lo up
-+	ip netns exec "${NETNS}" \
-+		sysctl -w net.ipv4.ip_local_port_range="32768 32768" \
-+		> /dev/null 2>&1
-+	ip netns exec "${NETNS}" \
-+		sysctl -w net.ipv4.ip_autobind_reuse=1 > /dev/null 2>&1
-+}
-+
-+cleanup() {
-+	ip netns del "${NETNS}"
-+}
-+
-+trap cleanup EXIT
-+setup
-+
-+do_test() {
-+	ip netns exec "${NETNS}" ./reuseaddr_ports_exhausted
-+}
-+
-+do_test
-+echo "tests done"
--- 
-2.17.2 (Apple Git-113)
-
+> >  err:
+> >     return status;
+> >  }
+> > --
+> > 1.9.1
+>
+>
+> This is fine as a first step towards saner buffer handling in qmi_wwan.
+> If real world devices use asymmetric MTUs, then we should just deal with
+> that.
+>
+> So I was going to add my ack.  But the patch does not apply:
+>
+>
+>  bjorn@miraculix:/usr/local/src/git/linux$ git am /tmp/l
+>  Applying: net: usb: qmi_wwan: Fix for packets being rejected in the ring=
+ buffer used by the xHCI controller.
+>  error: corrupt patch at line 10
+>
+> and checkpatch says why:
+>
+>  bjorn@miraculix:/usr/local/src/git/linux$ scripts/checkpatch.pl /tmp/l
+>  ERROR: patch seems to be corrupt (line wrapped?)
+>  #34: FILE: drivers/net/usb/qmi_wwan.c:814:
+>  usb_interface *intf)
+>
+>
+> Could you fix up and resend? You might have to use a different email
+> client.  See
+> https://www.kernel.org/doc/html/latest/process/email-clients.html#email-c=
+lients
+>
+>
+> Bj=C3=B8rn
