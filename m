@@ -2,194 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA7F17D63F
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 22:24:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F405817D653
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 22:27:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbgCHVYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 17:24:00 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39516 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726523AbgCHVX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 17:23:57 -0400
-Received: by mail-pg1-f195.google.com with SMTP id s2so3778334pgv.6
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 14:23:56 -0700 (PDT)
+        id S1726359AbgCHV1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 17:27:55 -0400
+Received: from mail-pj1-f74.google.com ([209.85.216.74]:37326 "EHLO
+        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbgCHV1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 17:27:55 -0400
+Received: by mail-pj1-f74.google.com with SMTP id d9so649876pjs.2
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 14:27:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7IXTL5Wmi6zHebO7YXtizBnQaWklYcKumiFOEII320M=;
-        b=UjEYkTs2VZPBh87df/QUiPqkfDdGEiR8zd3UNoXzVKKcpNfosjh/+mFo+DHY7z9/Xd
-         qPoikHqOyJPT33cpN5LlT6aWcPKzaXOvM7CAF3EQ5qP0HdSRHjPhLgyRNDNTV3vwETSW
-         s8jAOyr+6oAcObpxUnQM7yt+BSyEIPEkwFhss=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=nWZdwlBIgJFhBX2PY2QRYxPF53NaS+esnsUOXD9Yob0=;
+        b=NTcP7dah6LTCmpZ8OhPdPQ5R3A3nByZXhoJhThGrp/LV+7ElGqgBo+bEVW0MPioWoh
+         8lV3QJexfD3e5uYlVGx7CT6BHCLHms/X7JJCU/6HmycBuYGi6ecChJnef3eo3ik9lodL
+         P+l8Fj68eqYeDQWA5wYoas+SPK/ZcBIXf6r0SLzyS7uFzzgWxfYFF74MyMcdXy1Bp1QF
+         j4JNQqP4kAdesxFAvP9l9I8UY6U56uMQUT9sNfuWMRvhUFdq6IH4uyoNcpmyU6AIuTpi
+         XxWzcrFf36tYYMr789wsD4tu+xs/oGNIbeUngN0N2GawDbg/5Basfx4IJqiAjUo/icdE
+         U1lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7IXTL5Wmi6zHebO7YXtizBnQaWklYcKumiFOEII320M=;
-        b=ciQf/92iJ3i263BDMup/yJ5jMaoXeuuP3yexez1YB6bq4poN94z11hDqpWPegg0nCI
-         /AesZ6eOcJUzc5JWi8nboH8VRpa+RxZusak72YE2Se6LQYv4uogAMXDtKWEKPaAvz6+M
-         om5sEBBE/dd7wLxshrSTiH7esDto8CzaZy5U+3BJ9d5Du+Q5Y66eU0t7bi7pf3I47MTO
-         mnBqv7FWrLNM2WGVC7jAi+Z3HwU/lnbRRPZL0mWhERCnBSj9Id/qiODjXv5SUF8zbSP3
-         gcQS3snNsY6uzEuqdYrrWp+xi0soa8Pi67wpTn8k/tYrW7fYowcf2+kTqgpFuI93hm/7
-         Gu3g==
-X-Gm-Message-State: ANhLgQ3rnWxVOgJQ/mmd92cqU1egAR7mVvbOMVmk83vk2jI+KKlS5pgr
-        lpu0dLta9/kJc6drvcdMCyrwkQ==
-X-Google-Smtp-Source: ADFU+vsFTYtMUZMYAj7TfwyJ3OV44DTEhX06bnh246mFuKY7ODP2EQH4iqrq65PEpCOwyoCGAUTmEg==
-X-Received: by 2002:a63:7311:: with SMTP id o17mr13071410pgc.377.1583702636376;
-        Sun, 08 Mar 2020 14:23:56 -0700 (PDT)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id k1sm39509228pgt.70.2020.03.08.14.23.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Mar 2020 14:23:55 -0700 (PDT)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com, alainm@chromium.org
-Cc:     linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC PATCH v5 5/5] Bluetooth: Add mgmt op set_wake_capable
-Date:   Sun,  8 Mar 2020 14:23:34 -0700
-Message-Id: <20200308142005.RFC.v5.5.I797e2f4cb824299043e771f3ab9cef86ee09f4db@changeid>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=nWZdwlBIgJFhBX2PY2QRYxPF53NaS+esnsUOXD9Yob0=;
+        b=nFJcgYi7LaRdWfd9QhSDlkBeKq3iGQxCVFRanTkk8BrPj8epGuZgCGjAwwnnw2Uwk6
+         KllV1MxYGxkVLPLyKdIE/fu678y6tMEkfUI8L3woNQtHie7fTa8nINql6wRyoxo60+6s
+         e6lWrZqGaa6Ma4Dn2D+yW+9+LIDIJgCN5OrIjM7btNL8ws/StRIG5QVoeYW2Ofi93RaX
+         Ic7+4XpByPFRxVkpZqni1aduaJsm8OE06+R6f8y0Vufo6SWILzRQK4164qWNMG6ynG3b
+         bVYAQdIwgCZMHGE9oGAKw69c8sph+A6QDePL4GuMBCPu4AVyJriBnJc2Ka5rqB7UugHw
+         XYLA==
+X-Gm-Message-State: ANhLgQ3YX33WDTNMz0VHE/G4X3x676nkz0LLZPgAf5ioJ/KpPUrjsROh
+        gSJXCq6eoKH4/SsEqNcSGnOUrkLL/spxNg==
+X-Google-Smtp-Source: ADFU+vu1TBqOq0TMXpLSeOc60wZR2WnOD36Inqem1c2wlwPRoDeGODVxwqe58ZShWJZDh+v63XqKoOavfpGYDg==
+X-Received: by 2002:a65:668c:: with SMTP id b12mr13541209pgw.14.1583702872220;
+ Sun, 08 Mar 2020 14:27:52 -0700 (PDT)
+Date:   Sun,  8 Mar 2020 14:27:48 -0700
+Message-Id: <20200308212748.107539-1-edumazet@google.com>
+Mime-Version: 1.0
 X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-In-Reply-To: <20200308212334.213841-1-abhishekpandit@chromium.org>
-References: <20200308212334.213841-1-abhishekpandit@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH net-next] net/sched: act_ct: fix lockdep splat in tcf_ct_flow_table_get
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the system is suspended, only some connected Bluetooth devices
-cause user input that should wake the system (mostly HID devices). Add
-a list to keep track of devices that can wake the system and add
-a management API to let userspace tell the kernel whether a device is
-wake capable or not. For LE devices, the wakeable property is added to
-the connection parameter and can only be modified after calling
-add_device.
+Convert zones_lock spinlock to zones_mutex mutex,
+and struct (tcf_ct_flow_table)->ref to a refcount,
+so that control path can use regular GFP_KERNEL allocations
+from standard process context. This is more robust
+in case of memory pressure.
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+The refcount is needed because tcf_ct_flow_table_put() can
+be called from RCU callback, thus in BH context.
+
+The issue was spotted by syzbot, as rhashtable_init()
+was called with a spinlock held, which is bad since GFP_KERNEL
+allocations can sleep.
+
+Note to developers : Please make sure your patches are tested
+with CONFIG_DEBUG_ATOMIC_SLEEP=y
+
+BUG: sleeping function called from invalid context at mm/slab.h:565
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 9582, name: syz-executor610
+2 locks held by syz-executor610/9582:
+ #0: ffffffff8a34eb80 (rtnl_mutex){+.+.}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8a34eb80 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5437
+ #1: ffffffff8a3961b8 (zones_lock){+...}, at: spin_lock_bh include/linux/spinlock.h:343 [inline]
+ #1: ffffffff8a3961b8 (zones_lock){+...}, at: tcf_ct_flow_table_get+0xa3/0x1700 net/sched/act_ct.c:67
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 0 PID: 9582 Comm: syz-executor610 Not tainted 5.6.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ ___might_sleep.cold+0x1f4/0x23d kernel/sched/core.c:6798
+ slab_pre_alloc_hook mm/slab.h:565 [inline]
+ slab_alloc_node mm/slab.c:3227 [inline]
+ kmem_cache_alloc_node_trace+0x272/0x790 mm/slab.c:3593
+ __do_kmalloc_node mm/slab.c:3615 [inline]
+ __kmalloc_node+0x38/0x60 mm/slab.c:3623
+ kmalloc_node include/linux/slab.h:578 [inline]
+ kvmalloc_node+0x61/0xf0 mm/util.c:574
+ kvmalloc include/linux/mm.h:645 [inline]
+ kvzalloc include/linux/mm.h:653 [inline]
+ bucket_table_alloc+0x8b/0x480 lib/rhashtable.c:175
+ rhashtable_init+0x3d2/0x750 lib/rhashtable.c:1054
+ nf_flow_table_init+0x16d/0x310 net/netfilter/nf_flow_table_core.c:498
+ tcf_ct_flow_table_get+0xe33/0x1700 net/sched/act_ct.c:82
+ tcf_ct_init+0xba4/0x18a6 net/sched/act_ct.c:1050
+ tcf_action_init_1+0x697/0xa20 net/sched/act_api.c:945
+ tcf_action_init+0x1e9/0x2f0 net/sched/act_api.c:1001
+ tcf_action_add+0xdb/0x370 net/sched/act_api.c:1411
+ tc_ctl_action+0x366/0x456 net/sched/act_api.c:1466
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+ do_syscall_64+0xf6/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4403d9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd719af218 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004403d9
+RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000005 R09: 00000000004002c8
+R10: 0000000000000008 R11: 00000000000
+
+Fixes: c34b961a2492 ("net/sched: act_ct: Create nf flow table per zone")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paul Blakey <paulb@mellanox.com>
+Cc: Jiri Pirko <jiri@mellanox.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
+ net/sched/act_ct.c | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
-Changes in v5:
-* Wakeable entries moved to other commits
-* Patch moved to end of series
-
-Changes in v4: None
-Changes in v3:
-* Added wakeable property to le_conn_param
-* Use wakeable list for BR/EDR and wakeable property for LE
-
-Changes in v2: None
-
- include/net/bluetooth/mgmt.h |  7 +++++
- net/bluetooth/mgmt.c         | 51 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 58 insertions(+)
-
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index f41cd87550dc..17bbdcbeb67e 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -674,6 +674,13 @@ struct mgmt_cp_set_blocked_keys {
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 23eba61f0f819212a3522c3c63b938d0b8d997e2..3d9e678d7d5336f1746035745b091bea0dcb5fdd 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -35,15 +35,15 @@
  
- #define MGMT_OP_SET_WIDEBAND_SPEECH	0x0047
+ static struct workqueue_struct *act_ct_wq;
+ static struct rhashtable zones_ht;
+-static DEFINE_SPINLOCK(zones_lock);
++static DEFINE_MUTEX(zones_mutex);
  
-+#define MGMT_OP_SET_WAKE_CAPABLE	0x0048
-+#define MGMT_SET_WAKE_CAPABLE_SIZE	8
-+struct mgmt_cp_set_wake_capable {
-+	struct mgmt_addr_info addr;
-+	u8 wake_capable;
-+} __packed;
-+
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 047aea280c84..ab9685e87b84 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -108,6 +108,7 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_SET_APPEARANCE,
- 	MGMT_OP_SET_BLOCKED_KEYS,
- 	MGMT_OP_SET_WIDEBAND_SPEECH,
-+	MGMT_OP_SET_WAKE_CAPABLE,
+ struct tcf_ct_flow_table {
+ 	struct rhash_head node; /* In zones tables */
+ 
+ 	struct rcu_work rwork;
+ 	struct nf_flowtable nf_ft;
++	refcount_t ref;
+ 	u16 zone;
+-	u32 ref;
+ 
+ 	bool dying;
  };
+@@ -64,14 +64,15 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 	struct tcf_ct_flow_table *ct_ft;
+ 	int err = -ENOMEM;
  
- static const u16 mgmt_events[] = {
-@@ -4768,6 +4769,48 @@ static int set_fast_connectable(struct sock *sk, struct hci_dev *hdev,
+-	spin_lock_bh(&zones_lock);
++	mutex_lock(&zones_mutex);
+ 	ct_ft = rhashtable_lookup_fast(&zones_ht, &params->zone, zones_params);
+-	if (ct_ft)
+-		goto take_ref;
++	if (ct_ft && refcount_inc_not_zero(&ct_ft->ref))
++		goto out_unlock;
+ 
+-	ct_ft = kzalloc(sizeof(*ct_ft), GFP_ATOMIC);
++	ct_ft = kzalloc(sizeof(*ct_ft), GFP_KERNEL);
+ 	if (!ct_ft)
+ 		goto err_alloc;
++	refcount_set(&ct_ft->ref, 1);
+ 
+ 	ct_ft->zone = params->zone;
+ 	err = rhashtable_insert_fast(&zones_ht, &ct_ft->node, zones_params);
+@@ -84,10 +85,9 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 		goto err_init;
+ 
+ 	__module_get(THIS_MODULE);
+-take_ref:
++out_unlock:
+ 	params->ct_ft = ct_ft;
+-	ct_ft->ref++;
+-	spin_unlock_bh(&zones_lock);
++	mutex_unlock(&zones_mutex);
+ 
+ 	return 0;
+ 
+@@ -96,7 +96,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ err_insert:
+ 	kfree(ct_ft);
+ err_alloc:
+-	spin_unlock_bh(&zones_lock);
++	mutex_unlock(&zones_mutex);
  	return err;
  }
  
-+static int set_wake_capable(struct sock *sk, struct hci_dev *hdev, void *data,
-+			    u16 len)
-+{
-+	struct mgmt_cp_set_wake_capable *cp = data;
-+	struct hci_conn_params *params;
-+	int err;
-+	u8 status = MGMT_STATUS_FAILED;
-+	u8 addr_type = cp->addr.type == BDADDR_BREDR ?
-+			       cp->addr.type :
-+			       le_addr_type(cp->addr.type);
-+
-+	bt_dev_dbg(hdev, "Set wake capable %pMR (type 0x%x) = 0x%x\n",
-+		   &cp->addr.bdaddr, addr_type, cp->wake_capable);
-+
-+	if (cp->addr.type == BDADDR_BREDR) {
-+		if (cp->wake_capable)
-+			err = hci_bdaddr_list_add(&hdev->wakeable,
-+						  &cp->addr.bdaddr, addr_type);
-+		else
-+			err = hci_bdaddr_list_del(&hdev->wakeable,
-+						  &cp->addr.bdaddr, addr_type);
-+
-+		if (!err || err == -EEXIST || err == -ENOENT)
-+			status = MGMT_STATUS_SUCCESS;
-+
-+		goto done;
-+	}
-+
-+	/* Add wakeable param to le connection parameters */
-+	params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr, addr_type);
-+	if (params) {
-+		params->wakeable = cp->wake_capable;
-+		status = MGMT_STATUS_SUCCESS;
-+	}
-+
-+done:
-+	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_WAKE_CAPABLE, status,
-+				cp, sizeof(*cp));
-+
-+	return err;
-+}
-+
- static void set_bredr_complete(struct hci_dev *hdev, u8 status, u16 opcode)
+@@ -116,13 +116,11 @@ static void tcf_ct_flow_table_put(struct tcf_ct_params *params)
  {
- 	struct mgmt_pending_cmd *cmd;
-@@ -5896,6 +5939,13 @@ static int remove_device(struct sock *sk, struct hci_dev *hdev,
- 			err = hci_bdaddr_list_del(&hdev->whitelist,
- 						  &cp->addr.bdaddr,
- 						  cp->addr.type);
-+
-+			/* Don't check result since it either succeeds or device
-+			 * wasn't there (not wakeable or invalid params as
-+			 * covered by deleting from whitelist).
-+			 */
-+			hci_bdaddr_list_del(&hdev->wakeable, &cp->addr.bdaddr,
-+					    cp->addr.type);
- 			if (err) {
- 				err = mgmt_cmd_complete(sk, hdev->id,
- 							MGMT_OP_REMOVE_DEVICE,
-@@ -7096,6 +7146,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ set_wideband_speech,	   MGMT_SETTING_SIZE },
-+	{ set_wake_capable,	   MGMT_SET_WAKE_CAPABLE_SIZE },
- };
+ 	struct tcf_ct_flow_table *ct_ft = params->ct_ft;
  
- void mgmt_index_added(struct hci_dev *hdev)
+-	spin_lock_bh(&zones_lock);
+-	if (--params->ct_ft->ref == 0) {
++	if (refcount_dec_and_test(&params->ct_ft->ref)) {
+ 		rhashtable_remove_fast(&zones_ht, &ct_ft->node, zones_params);
+ 		INIT_RCU_WORK(&ct_ft->rwork, tcf_ct_flow_table_cleanup_work);
+ 		queue_rcu_work(act_ct_wq, &ct_ft->rwork);
+ 	}
+-	spin_unlock_bh(&zones_lock);
+ }
+ 
+ static void tcf_ct_flow_table_add(struct tcf_ct_flow_table *ct_ft,
 -- 
 2.25.1.481.gfbce0eb801-goog
 
