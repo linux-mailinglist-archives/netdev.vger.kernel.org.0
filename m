@@ -2,157 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D40E317D5C2
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 20:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E5E17D5CC
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 20:14:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbgCHTH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 15:07:58 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33242 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgCHTH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 15:07:58 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d22so5559532qtn.0;
-        Sun, 08 Mar 2020 12:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=q9gIS4U5Axb2UV/TlkmoKYkwkraygD1wbePWfXVPOcw=;
-        b=TXKCEnlyU80n3IUULzxYxQ2QaUidkrNMG/2yUohwmHP1jwU6PTB0LHc5q4Zl3UHH9z
-         QX7NilsZjqIK0N/bUVHtKQG/GmA20luiyPSe0MWh9cfPjS0702OICJQCHhKPe0aHL88C
-         IzJDs6BqN/SiyMYk5F+3JdV+GZ2DiWtcgmKQErxNJ/27daMjFZ9BtJbM6hs0ug5UgGxV
-         9qcCRsIzI4k2umhRSrZOIjMSzQpy8w2ukAZBxqYb+1H0X+7qNODMxTVR4ah2TjETANVr
-         WOKvssAWJVwWvRzNsRmX3+IswTN4jqW+Tp1vTUnED9Gavt8stfaSz1TRgFXf4uCtDVMH
-         Ip5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=q9gIS4U5Axb2UV/TlkmoKYkwkraygD1wbePWfXVPOcw=;
-        b=Sw0cA4cIJaH9wk11r5nlOu/qUC5nOA5W15KaMPxpvnflKWJYoDAoRRnf2p3sab0U2J
-         3V+OxOnfS/KKffwpJd1GRu+RlsRfeRUGmy5FUgVfqixvOuPUJWhvZak4IcenfJtnGq2i
-         kpAQooHW1M9wmrRyoysYYhat0P4XBWibhhhWz2vCBklOuu/sLY9P5Xb747tTLa7oBcIL
-         4cXHuc8Pdvrp/qO2wTKQJAn+nkZVa85T4W/nekyacuiY4b3TF7Ej4RmmIsFCpqk9TZKV
-         AWDfxLZbO2e+UdNcWuUBcxmXO4Bq0+Wi5yt51Sgo5y7mFrMeDGShsbJ1VBlNW4jZ6m10
-         KT1w==
-X-Gm-Message-State: ANhLgQ16OS8pRY2NeI5TmectKonLny+cWwZ45S6M8Lk036B7F45WdxVK
-        cEdV9m73kS9AupGR1GAx2EpiNJ5cQQRshAq20UM=
-X-Google-Smtp-Source: ADFU+vsOimvYnlJjSAb5ewq/pe6fyi+A4Mpsw3y4Aue/tx3nJ9/UVmpbzyx/MsAJ8RLOIQMsslyv/pKarL3MxmoRH1I=
-X-Received: by 2002:ac8:4d1c:: with SMTP id w28mr12051926qtv.48.1583694476930;
- Sun, 08 Mar 2020 12:07:56 -0700 (PDT)
+        id S1726346AbgCHTOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 15:14:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726292AbgCHTOr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Mar 2020 15:14:47 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9029B206D5;
+        Sun,  8 Mar 2020 19:14:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583694886;
+        bh=9qdy5RIOWebOniyIfKswarc6hNqqoEAjbTJFvBPRDGA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KybbOW2yu4lzLxdriSYezxxCBz0EqEKTL3kseV827LvPmiJ5nwUwFZCFTJRQGq8Px
+         LvSox0dvlkW4utxfuXjg5IFU/S4qdj4chiD4gteFzVEPhSc9uOZSQe3dlC9j4v8Jle
+         1ai+BgShmOlsT1kZY2WW0UPvDlKGbdyBYQbeZFhs=
+Date:   Sun, 8 Mar 2020 19:14:41 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "Christopher S. Hall" <christopher.s.hall@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        "maintainer\:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+        jacob.e.keller@intel.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sean V Kelley <sean.v.kelley@intel.com>
+Subject: Re: [Intel PMC TGPIO Driver 0/5] Add support for Intel PMC Time
+ GPIO Driver with PHC interface changes to support additional H/W Features
+Message-ID: <20200308191441.1eed786e@archlinux>
+In-Reply-To: <87wo81cvho.fsf@nanos.tec.linutronix.de>
+References: <20191211214852.26317-1-christopher.s.hall@intel.com>
+        <87eevf4hnq.fsf@nanos.tec.linutronix.de>
+        <20200224224059.GC1508@skl-build>
+        <87mu95ne3q.fsf@nanos.tec.linutronix.de>
+        <CACRpkdadbWvsnyrH_+sRha2C0fJU0EFEO9UyO7wHybZT-R1jzA@mail.gmail.com>
+        <87wo81cvho.fsf@nanos.tec.linutronix.de>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
- <87wo7una02.fsf@miraculix.mork.no>
-In-Reply-To: <87wo7una02.fsf@miraculix.mork.no>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Sun, 8 Mar 2020 20:07:46 +0100
-Message-ID: <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
-Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the
- ring buffer used by the xHCI controller.
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     Paul Gildea <paul.gildea@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bj=C3=B8rn and Paul,
+On Tue, 03 Mar 2020 16:24:03 +0100
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-Il giorno dom 8 mar 2020 alle ore 16:28 Bj=C3=B8rn Mork <bjorn@mork.no> ha =
-scritto:
->
-> Paul Gildea <paul.gildea@gmail.com> writes:
->
-> > When MTU of modem is set to less than 1500 and a packet larger than MTU
-> > arrives in Linux from a modem, it is discarded with -EOVERFLOW error
-> > (Babble error). This is seen on USB3.0 and USB2.0 busses. This is
-> > essentially because the MRU (Max Receive Size) is not a separate entity=
- to
-> > the MTU (Max Transmit Size) and the received packets can be larger than
-> > those transmitted. Following the babble error there were an endless sup=
-ply
-> > of zero-length URBs which are rejected with -EPROTO (increasing the rx
-> > input error counter each time). This is only seen on USB3.0. These cont=
-inue
-> > to come ad infinitum until the modem is shutdown, rendering the modem
-> > unusable. There is a bug in the core USB handling code in Linux that
-> > doesn't deal well with network MTUs smaller than 1500 bytes. By default=
- the
-> > dev->hard_mtu (the "real" MTU) is in lockstep with dev->rx_urb_size
-> > (essentially an MRU), and it's the latter that is causing trouble. This=
- has
-> > nothing to do with the modems; the issue can be reproduced by getting a
-> > USB-Ethernet dongle, setting the MTU to 1430, and pinging with size gre=
-ater
-> > than 1406.
+> Linus Walleij <linus.walleij@linaro.org> writes:
+> > On Thu, Feb 27, 2020 at 12:06 AM Thomas Gleixner <tglx@linutronix.de> wrote:  
+> >> "Christopher S. Hall" <christopher.s.hall@intel.com> writes:  
+> > IIO has a config file in sysfs that lets them select the source of the
+> > timestamp like so (drivers/iio/industrialio-core.c):
 > >
-> > Signed-off-by: Paul Gildea <Paul.Gildea@gmail.com>
-> > ---
-> > drivers/net/usb/qmi_wwan.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
+> > s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+> > {
+> >         struct timespec64 tp;
 > >
-> > diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> > index 5754bb6..545c772 100644
-> > --- a/drivers/net/usb/qmi_wwan.c
-> > +++ b/drivers/net/usb/qmi_wwan.c
-> > @@ -815,6 +815,13 @@ static int qmi_wwan_bind(struct usbnet *dev, struc=
-t
-> > usb_interface *intf)
-> >     }
-> >     dev->net->netdev_ops =3D &qmi_wwan_netdev_ops;
-> >     dev->net->sysfs_groups[0] =3D &qmi_wwan_sysfs_attr_group;
-> > +    /* LTE Networks don't always respect their own MTU on receive side=
-;
-> > +    * e.g. AT&T pushes 1430 MTU but still allows 1500 byte packets fro=
-m
-> > +    * far-end network. Make receive buffer large enough to accommodate
-> > +    * them, and add four bytes so MTU does not equal MRU on network
-> > +    * with 1500 MTU otherwise usbnet_change_mtu() will change both.
-> > +    */
-> > +   dev->rx_urb_size =3D ETH_DATA_LEN + 4;
+> >         switch (iio_device_get_clock(indio_dev)) {
+> >         case CLOCK_REALTIME:
+> >                 return ktime_get_real_ns();
+> >         case CLOCK_MONOTONIC:
+> >                 return ktime_get_ns();
+> >         case CLOCK_MONOTONIC_RAW:
+> >                 return ktime_get_raw_ns();
+> >         case CLOCK_REALTIME_COARSE:
+> >                 return ktime_to_ns(ktime_get_coarse_real());
+> >         case CLOCK_MONOTONIC_COARSE:
+> >                 ktime_get_coarse_ts64(&tp);
+> >                 return timespec64_to_ns(&tp);
+> >         case CLOCK_BOOTTIME:
+> >                 return ktime_get_boottime_ns();
+> >         case CLOCK_TAI:
+> >                 return ktime_get_clocktai_ns();
+> >         default:
+> >                 BUG();
+> >         }
+> > }  
+> 
+> That's a nice example of overengineering :)
 
-Isn't this going to break the change MTU workaround for dl data
-aggregation when using qmap?
+Yeah.  There was some ugly history behind that including some 'ancient'
+stupidity from me :(  I certainly don't recommend anyone copies it.
 
-Regards,
-Daniele
+We may have overcompensated for having an odd default by allowing
+lots of other odd choices.
 
-> >  err:
-> >     return status;
-> >  }
-> > --
-> > 1.9.1
->
->
-> This is fine as a first step towards saner buffer handling in qmi_wwan.
-> If real world devices use asymmetric MTUs, then we should just deal with
-> that.
->
-> So I was going to add my ack.  But the patch does not apply:
->
->
->  bjorn@miraculix:/usr/local/src/git/linux$ git am /tmp/l
->  Applying: net: usb: qmi_wwan: Fix for packets being rejected in the ring=
- buffer used by the xHCI controller.
->  error: corrupt patch at line 10
->
-> and checkpatch says why:
->
->  bjorn@miraculix:/usr/local/src/git/linux$ scripts/checkpatch.pl /tmp/l
->  ERROR: patch seems to be corrupt (line wrapped?)
->  #34: FILE: drivers/net/usb/qmi_wwan.c:814:
->  usb_interface *intf)
->
->
-> Could you fix up and resend? You might have to use a different email
-> client.  See
-> https://www.kernel.org/doc/html/latest/process/email-clients.html#email-c=
-lients
->
->
-> Bj=C3=B8rn
+> 
+> > After discussion with Arnd we concluded the only timestamp that
+> > makes sense is ktime_get_ns(). So in GPIO we just use that, all the
+> > userspace I can think of certainly prefers monotonic time.
+> > (If tglx does not agree with that I stand corrected to whatever
+> > he says, I suppose.)  
+> 
+> In general, CLOCK_MONOTONIC is what makes most sense.
+> 
+> The only other interesting clock which makes sense from an application
+> POV is CLOCK_TAI which is becoming more popular in terms of network wide
+> time coordination and TSN.
+> 
+> CLOCK_REALTIME is a pain to deal with due to leap seconds, daylight
+> savings etc.
+> 
+> > Anyway in GPIO we could also make it configurable for users who
+> > know what they are doing.
+> >
+> > HW timestamps would be something more elaborate and
+> > nice CLOCK_HW_SPECIFIC or so. Some of the IIO sensors also
+> > have that, we just don't expose it as of now.  
+> 
+> HW timestamps are just more accurate than the software timestamps which
+> we have now and from a portability and interface POV they should just be
+> converted converted / mapped to clock MONOTONIC or clock TAI. So your
+> existing interface (maybe extended to TAI in the future) is just
+> working, but more accurate.
+> 
+> Exposing the HW timestamp itself based on some random and potentially
+> unknown clock might still be useful for some specialized applications,
+> but that want's to be through a distinct interface so there is no chance
+> to confuse it with something generally useful.
+
+Agreed, though it would be nice to actually have some hardware
+that supports sane synchronization between a hardware timestamp and
+sensible clocks in the system.   In IIO we have some nasty filtering in
+some drivers to attempt to align hardware timestamps and deal with
+jitter in interrupt handling.
+
+Good luck (or maybe you do have a rare sane system!)
+
+Jonathan
+
+> 
+> Thanks,
+> 
+>         tglx
+
