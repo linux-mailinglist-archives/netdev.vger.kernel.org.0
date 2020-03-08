@@ -2,149 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0637117D571
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 19:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CED4017D57E
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 19:23:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbgCHSRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 14:17:17 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:31932 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbgCHSRQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 14:17:16 -0400
+        id S1726322AbgCHSXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 14:23:01 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:62228 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbgCHSXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 14:23:00 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1583691435; x=1615227435;
+  s=amazon201209; t=1583691778; x=1615227778;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=OMEnmSSZnmM2u7GXwZalQVshE+wRsrbBLaq/oSO6ttg=;
-  b=EGEX93fCzAFvmCy9n9fUhFuKvqUM4f+L9VLEfuRHzjHkrmA6zT5eofpm
-   uIUQI45F4aVBU2N34NhsLTiFLHWNUGWYwyux6lL65TpcgHMzKTXimR9DS
-   +MXcJ+1ievqvbB4rb8AIGP2x6scpmEY3WfTGbyfPV5reAkVxxv6XYLh9I
-   I=;
-IronPort-SDR: XamU0VKYoQYnYNRFF4AFfYRDau4edstCPcgl/H++D6M22Xf9xkKp8rojg8dZFRhmpcgbVbzbQS
- lDORHoHCiCYw==
+  bh=3mkSj8vWIuyo8kfcrz+ekAJnprGunmVLQ96tqiCY5kg=;
+  b=hnfDE98I2tXrvT5lTLJfWZNbDcwuhhmzsWuRmrcjDW1x/CThQg/zveql
+   4m01HCswldAN491Mar3HiQMtmRHeZzTe/CCpiZvrGX+U1CTWFf5Hr/Glv
+   RkCuE/i6TU3tsv6pC6WZsmMgaZFQK8Q8mpG1TsgAhIPDAywsMKMy0R9Qc
+   g=;
+IronPort-SDR: VdBV4vV6PFb7oZuG8FMHsAOOwzD8RirkDrFgr8PfTNUra1fAB9qmGQF+OFiBPCK7sIFWy9zJuH
+ E0YbCNBECsQA==
 X-IronPort-AV: E=Sophos;i="5.70,530,1574121600"; 
-   d="scan'208";a="29901658"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 08 Mar 2020 18:17:14 +0000
+   d="scan'208";a="31289646"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Mar 2020 18:22:57 +0000
 Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com (Postfix) with ESMTPS id 5FEC7A2753;
-        Sun,  8 Mar 2020 18:17:12 +0000 (UTC)
+        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 3785DA21EC;
+        Sun,  8 Mar 2020 18:22:54 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 8 Mar 2020 18:17:11 +0000
+ id 15.0.1367.3; Sun, 8 Mar 2020 18:22:54 +0000
 Received: from 38f9d3582de7.ant.amazon.com (10.43.160.100) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 8 Mar 2020 18:17:07 +0000
+ id 15.0.1497.2; Sun, 8 Mar 2020 18:22:50 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <edumazet@google.com>
-CC:     <kuniyu@amazon.co.jp>, <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>
-Subject: [PATCH v4 net-next 4/5] net: Add net.ipv4.ip_autobind_reuse option.
-Date:   Mon, 9 Mar 2020 03:16:14 +0900
-Message-ID: <20200308181615.90135-5-kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
+        <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
+        <osa-contribution-log@amazon.com>, <yoshfuji@linux-ipv6.org>
+Subject: [PATCH v4 net-next 5/5] selftests: net: Add SO_REUSEADDR test to check if 4-tuples are fully utilized.
+Date:   Mon, 9 Mar 2020 03:21:26 +0900
+Message-ID: <20200308182126.92852-1-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 In-Reply-To: <20200308181615.90135-1-kuniyu@amazon.co.jp>
 References: <20200308181615.90135-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.43.160.100]
-X-ClientProxiedBy: EX13D22UWC001.ant.amazon.com (10.43.162.192) To
+X-ClientProxiedBy: EX13D22UWC002.ant.amazon.com (10.43.162.29) To
  EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The two commits("tcp: bind(addr, 0) remove the SO_REUSEADDR restriction
-when ephemeral ports are exhausted" and "tcp: Forbid to automatically bind
-more than one sockets haveing SO_REUSEADDR and SO_REUSEPORT per EUID")
-introduced the new feature to reuse ports with SO_REUSEADDR when all
-ephemeral pors are exhausted. They allow connect() and listen() to share
-ports in the following way.
+This commit adds a test to check if we can fully utilize 4-tuples for
+connect() when all ephemeral ports are exhausted.
 
-  1. setsockopt(sk1, SO_REUSEADDR)
-  2. setsockopt(sk2, SO_REUSEADDR)
-  3. bind(sk1, saddr, 0)
-  4. bind(sk2, saddr, 0)
-  5. connect(sk1, daddr)
-  6. listen(sk2)
+The test program changes the local port range to use only one port and binds
+two sockets with or without SO_REUSEADDR and SO_REUSEPORT, and with the same
+EUID or with different EUIDs, then do listen().
 
-In this situation, new socket cannot be bound to the port, but sharing
-port between connect() and listen() may break some applications. The
-ip_autobind_reuse option is false (0) by default and disables the feature.
-If it is set true, we can fully utilize the 4-tuples.
+We should be able to bind only one socket having both SO_REUSEADDR and
+SO_REUSEPORT per EUID, which restriction is to prevent unintentional
+listen().
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- Documentation/networking/ip-sysctl.txt | 7 +++++++
- include/net/netns/ipv4.h               | 1 +
- net/ipv4/inet_connection_sock.c        | 2 +-
- net/ipv4/sysctl_net_ipv4.c             | 7 +++++++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/Makefile          |   2 +
+ .../selftests/net/reuseaddr_ports_exhausted.c | 162 ++++++++++++++++++
+ .../net/reuseaddr_ports_exhausted.sh          |  35 ++++
+ 4 files changed, 200 insertions(+)
+ create mode 100644 tools/testing/selftests/net/reuseaddr_ports_exhausted.c
+ create mode 100755 tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 5f53faff4e25..9506a67a33c4 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -958,6 +958,13 @@ ip_nonlocal_bind - BOOLEAN
- 	which can be quite useful - but may break some applications.
- 	Default: 0
+diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+index ecc52d4c034d..91f9aea853b1 100644
+--- a/tools/testing/selftests/net/.gitignore
++++ b/tools/testing/selftests/net/.gitignore
+@@ -23,3 +23,4 @@ so_txtime
+ tcp_fastopen_backup_key
+ nettest
+ fin_ack_lat
++reuseaddr_ports_exhausted
+\ No newline at end of file
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index b5694196430a..ded1aa394880 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -12,6 +12,7 @@ TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_a
+ TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
+ TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh traceroute.sh
+ TEST_PROGS += fin_ack_lat.sh
++TEST_PROGS += reuseaddr_ports_exhausted.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+@@ -22,6 +23,7 @@ TEST_GEN_FILES += tcp_fastopen_backup_key
+ TEST_GEN_FILES += fin_ack_lat
+ TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
+ TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
++TEST_GEN_FILES += reuseaddr_ports_exhausted
  
-+ip_autobind_reuse - BOOLEAN
-+	By default, bind() does not select the ports automatically even if
-+	the new socket and all sockets bound to the port have SO_REUSEADDR.
-+	ip_autobind_reuse allows bind() to reuse the port and this is useful
-+	when you use bind()+connect(), but may break some applications.
-+	Default: 0
+ KSFT_KHDR_INSTALL := 1
+ include ../lib.mk
+diff --git a/tools/testing/selftests/net/reuseaddr_ports_exhausted.c b/tools/testing/selftests/net/reuseaddr_ports_exhausted.c
+new file mode 100644
+index 000000000000..7b01b7c2ec10
+--- /dev/null
++++ b/tools/testing/selftests/net/reuseaddr_ports_exhausted.c
+@@ -0,0 +1,162 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Check if we can fully utilize 4-tuples for connect().
++ *
++ * Rules to bind sockets to the same port when all ephemeral ports are
++ * exhausted.
++ *
++ *   1. if there are TCP_LISTEN sockets on the port, fail to bind.
++ *   2. if there are sockets without SO_REUSEADDR, fail to bind.
++ *   3. if SO_REUSEADDR is disabled, fail to bind.
++ *   4. if SO_REUSEADDR is enabled and SO_REUSEPORT is disabled,
++ *        succeed to bind.
++ *   5. if SO_REUSEADDR and SO_REUSEPORT are enabled and
++ *        there is no socket having the both options and the same EUID,
++ *        succeed to bind.
++ *   6. fail to bind.
++ *
++ * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
++ */
++#include <arpa/inet.h>
++#include <netinet/in.h>
++#include <sys/socket.h>
++#include <sys/types.h>
++#include <unistd.h>
++#include "../kselftest_harness.h"
 +
- ip_dynaddr - BOOLEAN
- 	If set non-zero, enables support for dynamic addresses.
- 	If set to a non-zero value larger than 1, a kernel log
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 08b98414d94e..154b8f01499b 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -101,6 +101,7 @@ struct netns_ipv4 {
- 	int sysctl_ip_fwd_use_pmtu;
- 	int sysctl_ip_fwd_update_priority;
- 	int sysctl_ip_nonlocal_bind;
-+	int sysctl_ip_autobind_reuse;
- 	/* Shall we try to damage output packets if routing dev changes? */
- 	int sysctl_ip_dynaddr;
- 	int sysctl_ip_early_demux;
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index d27ed5fe7147..3b4f81790e3e 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -246,7 +246,7 @@ inet_csk_find_open_port(struct sock *sk, struct inet_bind_bucket **tb_ret, int *
- 		goto other_half_scan;
- 	}
- 
--	if (!relax) {
-+	if (net->ipv4.sysctl_ip_autobind_reuse && !relax) {
- 		/* We still have a chance to connect to different destinations */
- 		relax = true;
- 		goto ports_exhausted;
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 9684af02e0a5..3b191764718b 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -775,6 +775,13 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec
- 	},
-+	{
-+		.procname	= "ip_autobind_reuse",
-+		.data		= &init_net.ipv4.sysctl_ip_autobind_reuse,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec
-+	},
- 	{
- 		.procname	= "fwmark_reflect",
- 		.data		= &init_net.ipv4.sysctl_fwmark_reflect,
++struct reuse_opts {
++	int reuseaddr[2];
++	int reuseport[2];
++};
++
++struct reuse_opts unreusable_opts[12] = {
++	{0, 0, 0, 0},
++	{0, 0, 0, 1},
++	{0, 0, 1, 0},
++	{0, 0, 1, 1},
++	{0, 1, 0, 0},
++	{0, 1, 0, 1},
++	{0, 1, 1, 0},
++	{0, 1, 1, 1},
++	{1, 0, 0, 0},
++	{1, 0, 0, 1},
++	{1, 0, 1, 0},
++	{1, 0, 1, 1},
++};
++
++struct reuse_opts reusable_opts[4] = {
++	{1, 1, 0, 0},
++	{1, 1, 0, 1},
++	{1, 1, 1, 0},
++	{1, 1, 1, 1},
++};
++
++int bind_port(struct __test_metadata *_metadata, int reuseaddr, int reuseport)
++{
++	struct sockaddr_in local_addr;
++	int len = sizeof(local_addr);
++	int fd, ret;
++
++	fd = socket(AF_INET, SOCK_STREAM, 0);
++	ASSERT_NE(-1, fd) TH_LOG("failed to open socket.");
++
++	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(int));
++	ASSERT_EQ(0, ret) TH_LOG("failed to setsockopt: SO_REUSEADDR.");
++
++	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(int));
++	ASSERT_EQ(0, ret) TH_LOG("failed to setsockopt: SO_REUSEPORT.");
++
++	local_addr.sin_family = AF_INET;
++	local_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
++	local_addr.sin_port = 0;
++
++	if (bind(fd, (struct sockaddr *)&local_addr, len) == -1) {
++		close(fd);
++		return -1;
++	}
++
++	return fd;
++}
++
++TEST(reuseaddr_ports_exhausted_unreusable)
++{
++	struct reuse_opts *opts;
++	int i, j, fd[2];
++
++	for (i = 0; i < 12; i++) {
++		opts = &unreusable_opts[i];
++
++		for (j = 0; j < 2; j++)
++			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
++
++		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
++		EXPECT_EQ(-1, fd[1]) TH_LOG("should fail to bind.");
++
++		for (j = 0; j < 2; j++)
++			if (fd[j] != -1)
++				close(fd[j]);
++	}
++}
++
++TEST(reuseaddr_ports_exhausted_reusable_same_euid)
++{
++	struct reuse_opts *opts;
++	int i, j, fd[2];
++
++	for (i = 0; i < 4; i++) {
++		opts = &reusable_opts[i];
++
++		for (j = 0; j < 2; j++)
++			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
++
++		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
++
++		if (opts->reuseport[0] && opts->reuseport[1]) {
++			EXPECT_EQ(-1, fd[1]) TH_LOG("should fail to bind because both sockets succeed to be listened.");
++		} else {
++			EXPECT_NE(-1, fd[1]) TH_LOG("should succeed to bind to connect to different destinations.");
++		}
++
++		for (j = 0; j < 2; j++)
++			if (fd[j] != -1)
++				close(fd[j]);
++	}
++}
++
++TEST(reuseaddr_ports_exhausted_reusable_different_euid)
++{
++	struct reuse_opts *opts;
++	int i, j, ret, fd[2];
++	uid_t euid[2] = {10, 20};
++
++	for (i = 0; i < 4; i++) {
++		opts = &reusable_opts[i];
++
++		for (j = 0; j < 2; j++) {
++			ret = seteuid(euid[j]);
++			ASSERT_EQ(0, ret) TH_LOG("failed to seteuid: %d.", euid[j]);
++
++			fd[j] = bind_port(_metadata, opts->reuseaddr[j], opts->reuseport[j]);
++
++			ret = seteuid(0);
++			ASSERT_EQ(0, ret) TH_LOG("failed to seteuid: 0.");
++		}
++
++		ASSERT_NE(-1, fd[0]) TH_LOG("failed to bind.");
++		EXPECT_NE(-1, fd[1]) TH_LOG("should succeed to bind because one socket can be bound in each euid.");
++
++		if (fd[1] != -1) {
++			ret = listen(fd[0], 5);
++			ASSERT_EQ(0, ret) TH_LOG("failed to listen.");
++
++			ret = listen(fd[1], 5);
++			EXPECT_EQ(-1, ret) TH_LOG("should fail to listen because only one uid reserves the port in TCP_LISTEN.");
++		}
++
++		for (j = 0; j < 2; j++)
++			if (fd[j] != -1)
++				close(fd[j]);
++	}
++}
++
++TEST_HARNESS_MAIN
+diff --git a/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh b/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
+new file mode 100755
+index 000000000000..20e3a2913d06
+--- /dev/null
++++ b/tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
+@@ -0,0 +1,35 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Run tests when all ephemeral ports are exhausted.
++#
++# Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
++
++set +x
++set -e
++
++readonly NETNS="ns-$(mktemp -u XXXXXX)"
++
++setup() {
++	ip netns add "${NETNS}"
++	ip -netns "${NETNS}" link set lo up
++	ip netns exec "${NETNS}" \
++		sysctl -w net.ipv4.ip_local_port_range="32768 32768" \
++		> /dev/null 2>&1
++	ip netns exec "${NETNS}" \
++		sysctl -w net.ipv4.ip_autobind_reuse=1 > /dev/null 2>&1
++}
++
++cleanup() {
++	ip netns del "${NETNS}"
++}
++
++trap cleanup EXIT
++setup
++
++do_test() {
++	ip netns exec "${NETNS}" ./reuseaddr_ports_exhausted
++}
++
++do_test
++echo "tests done"
 -- 
 2.17.2 (Apple Git-113)
 
