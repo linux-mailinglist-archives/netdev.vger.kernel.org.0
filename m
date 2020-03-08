@@ -2,96 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB0217D03F
-	for <lists+netdev@lfdr.de>; Sat,  7 Mar 2020 22:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1B717D0C2
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 01:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgCGVVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 16:21:30 -0500
-Received: from mail-eopbgr30061.outbound.protection.outlook.com ([40.107.3.61]:10400
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726180AbgCGVV3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 7 Mar 2020 16:21:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H+GV+95H7XyXQ0Pk51laXHOlrwEA6c4MhSOsy9VoHKhgB0njBphSa6gXtuMlt6596ZtBjE+6p9zS5pBaP4nXL325hwYYrI2IKTCKecRKw7IYvp+1ZDbSp5HO3YzQrUUfSJi7BIZ20Aub66FlK1tbePeIPA+ZPdtbKLU1M/f1g2g6Ukd+lhfeBRm2PLmUWiTgw9vG4Y58t7Qnx9Qef3EiuSGOvpbrpLAIboZ9803ypJlo+AT27MkeGNfdX2SnOrqqR14FKsk6sxwVXfWfLn4hDFoqu6dRcnCt16MVVXcd4RINnVKv55Rs8TDmdIrBb2WXTy2YZ3cvIIedAO5RF+mGIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Je/WasDkYyQXVOdk926lcllr0f7/oR83br8p7eUgdoc=;
- b=TeksVRA1IQeRhsfgvitmo9of0pxHmIb7SZGRV5xrM8TabNdCtd2bUbZEkGxskBrMY5J4qwSeSy+cDIlwa7+lvi3AyzplIJlYkOvNN3yDXOluTR01KIALJjMIQUz691XKnYrepPXVRClG0Yt8+9vhXd4SNlaun1M6qoDy8fjUmz7wE1D1KVdB9HkfOjs+OGWxTGG6nFSD/AqAp/EVlfG2WcaLG/+5q9p3BmOPZ76/E6E69ectzPJE4DEFjMcvBoUcTMHQGPfZEUlpnwLYvOYeHgoEdyYrlhqi82gtFLW8tRlZmmiVRIvhBQlfilithaaIs6YOEJBr2gbN8ixAKXnjbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Je/WasDkYyQXVOdk926lcllr0f7/oR83br8p7eUgdoc=;
- b=AFbshuxRXoae1izNTRUC1HlGRPNNsbRMidZprRHoLZQi5R65S2HVwc2REudvOdzUdxehSihix0I1+EmB/QG1lFQ+PwNNowCSvT/b7ikXZJSbA0HlqU2gNOI2c8U4DOnW9IE9JepdQG3xD9yIGdU/n+6rtdynl4NJa0GIIrhrfSY=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3407.eurprd05.prod.outlook.com (10.170.238.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.16; Sat, 7 Mar 2020 21:21:27 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2772.019; Sat, 7 Mar 2020
- 21:21:26 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Leon Romanovsky <leonro@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next 0/4] Mellanox, mlx5 next updates 2020-03-02
-Thread-Topic: [PATCH mlx5-next 0/4] Mellanox, mlx5 next updates 2020-03-02
-Thread-Index: AQHV8PDgKu7ZlYRuZUOtB8wbWM79Uag9qtMA
-Date:   Sat, 7 Mar 2020 21:21:26 +0000
-Message-ID: <8ea865ad4c19e3013a2b67980d113ae0e8db07be.camel@mellanox.com>
-References: <20200303001522.54067-1-saeedm@mellanox.com>
-In-Reply-To: <20200303001522.54067-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 4b27e4b7-60db-4bc2-10b5-08d7c2dd7ef4
-x-ms-traffictypediagnostic: VI1PR05MB3407:|VI1PR05MB3407:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3407554F0B0AE4F2186E401EBEE00@VI1PR05MB3407.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 03355EE97E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39850400004)(396003)(366004)(136003)(376002)(199004)(189003)(6506007)(4326008)(450100002)(36756003)(54906003)(4744005)(26005)(8676002)(81166006)(6862004)(81156014)(186003)(8936002)(6636002)(6486002)(478600001)(2616005)(71200400001)(2906002)(66556008)(66446008)(64756008)(86362001)(66476007)(76116006)(5660300002)(316002)(91956017)(37006003)(15650500001)(66946007)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3407;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2sa/FVcR7TTOjtq1Nyiyvy74S5pQt8Mck1royvt8Uz5U6RgHq8+cLfH4+lFonm5uTt0zSJggHqdyZ6XKJdeyd5XH/EZTag/wvMPb3PE00WA53uVvnZEqdduirZVn/K2qc7x8nUY1ybJaWh5gUpRfOMfp3FdYOf5DGES5CTK/YRuyBIC+fBwRHKBLza3rxbUEDrqFc5+FhNmXQlsI4xqEW/P7xxpwB0N6ln+Mvnfvtw/3whaCGmmymnlYvgeT6wgusK+YFLAOBWw1M9PMVRtCLCciSvfqsYe6wue/75IKR6Kj0oKK/05srjetIuvJ7JFX5WYIxttCYLO22rxCQXzT0SkpvlbTWDlhxWhhXh2a01UUcso7lVny9MTwBSUKRT5XRTgDZCEuCkZFfZMBKGrGlcLGTmT7nvzwRBpvS+5Uk9kKjTVwnxIJv9FDcZw4UPgd
-x-ms-exchange-antispam-messagedata: c8DX2lv5EQRNoXdADKZIB3hh8Gf39f81LyBBNq0E8Zo26g/mYRHcuBfNyO27wxa2Bo6afckfCBegX4M/tHl0dXcn8mWuYWbCkE6m5kJxBmJVtTnfUm2oauy8KV0eAThAzCnC6zXSGXT4U7sdwWSQtg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8FBAEC794CA2C0449458E049AAF1BDE2@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726307AbgCHAwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 19:52:14 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42963 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbgCHAwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 19:52:14 -0500
+Received: by mail-qt1-f193.google.com with SMTP id r6so4562467qtt.9
+        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 16:52:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=tBAJTB+QQyFklXC2hcIupA7kPP8px1zjy8Uy0IHVv/E=;
+        b=HTr5OvAt/bKQheeWqoJgYFd3n045e2/0WqAmcma3RClKDIlRK/lV7b0IZ4k9ou0k1L
+         WXMCyL70MeztkjchRVwfRzi58i31SqHUgUJnxixNQO/0xN6fcZUVVm2uiYG9U2M8I+M/
+         uLeuR3xg0Ye3v6Tgxxs+hwmzwQbRKU2JQGCZidq5aP9TYVXkohhXZTPVXkZorRx9RaLA
+         G7qwEBRjhO7nq4huTLfmctwH6UHM8QeCihw1MeML17ngW31Yvkvwid0UJALG9cYS2f97
+         9chVHi0Ury97G8K3sVaWkt6jJCK4T3ll0oiy5mJcl4wTqPpcHl61gtxkOqGFZQz8zDZ0
+         0xPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tBAJTB+QQyFklXC2hcIupA7kPP8px1zjy8Uy0IHVv/E=;
+        b=Cr6PCzEMtnbztzmLjutTgvPNnizWhpdEHyg77NYaH1I55x94rY3OIlt2fej7enutgk
+         17aOmsJvua9cDM4RSWTJF+jF+BlNvgVjTDXJ+aeFrwb7HRpyB4DmLOG9GFQzZGYcVUsZ
+         KELjOTq1siG3150cwCmEt1Kw5KPOb7sesvAyPDuO8JB2V5dQjFSt8fD1X0Wx+ot5ZzHM
+         VzesqW9Ao1007OOm3AUmEiuMUiX4+MdVAb3majqVLhQsM+8lfp8+Onz4nqh4aggQHFAh
+         vMK3FuD18DdbXKsi5FGA6j26oiU8N0pqZLT6quosHx4c04aHDD318Fitx+SMRFHAWw3j
+         p5FQ==
+X-Gm-Message-State: ANhLgQ3F/BqAJKbN1vMH3xW4tthuJxjPwUfofsqJ3bVix/R9RDAwGDHZ
+        qD9iaxu2/96aHMTgq30N6aeZlMZi
+X-Google-Smtp-Source: ADFU+vvVXxriPT/Gu9tdTf/04WgbYUZy29mEOO8tLgsUGODHtlnQP9ZMoguqVygSw6b6H34f4zMgcQ==
+X-Received: by 2002:ac8:7695:: with SMTP id g21mr9035517qtr.152.1583628733111;
+        Sat, 07 Mar 2020 16:52:13 -0800 (PST)
+Received: from ?IPv6:2601:282:803:7700:54d7:a956:162c:3e8? ([2601:282:803:7700:54d7:a956:162c:3e8])
+        by smtp.googlemail.com with ESMTPSA id y10sm412055qtf.77.2020.03.07.16.52.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Mar 2020 16:52:12 -0800 (PST)
+Subject: Re: IPv6 regression introduced by commit
+ 3b6761d18bc11f2af2a6fc494e9026d39593f22c
+To:     Alarig Le Lay <alarig@swordarmor.fr>, netdev@vger.kernel.org,
+        jack@basilfillan.uk, Vincent Bernat <bernat@debian.org>
+References: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
+Date:   Sat, 7 Mar 2020 17:52:10 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b27e4b7-60db-4bc2-10b5-08d7c2dd7ef4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2020 21:21:26.6251
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bEraeIJOw7NRNXzXd/x416E420r4uWaPDP6xdBeBeOUOQoWwXaoYxUcp+4op0H2JcKwMfohSausgVlTE18wLLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3407
+In-Reply-To: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTAzLTAyIGF0IDE2OjE1IC0wODAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
-Cj4gQWRkaW5nIHNvbWUgSFcgYml0cyBhbmQgZGVmaW5pdGlvbnMgdG8gbWx4NS1uZXh0IHNoYXJl
-ZCBicmFuY2ggZm9yDQo+IHVwY29taW5nIG1seDUgZmVhdHVyZXMuIA0KPiBOb3RoaW5nIG1ham9y
-LCBmb3IgbW9yZSBpbmZvIHBsZWFzZSBzZWUgaW5kaXZpZHVhbCBjb21taXQgbWVzc2FnZXMuDQo+
-IA0KPiBJbiBjYXNlIG9mIG5vIG9iamVjdGlvbiwgdGhlIHBhdGNoZXMgd2lsbCBiZSBhcHBsaWVk
-IHRvIG1seDUtbmV4dCBhbmQNCj4gc2VudCBpbiBhIGZ1dHVyZSBwdWxsIHJlcXVlc3QgdG8gbmV0
-LW5leHQgYW5kL29yIHJkbWEtbmV4dCB3aXRoIHRoZQ0KPiByZXNwZWN0aXZlIHVwY29taW5nIGZl
-YXR1cmVzLg0KDQoNCkFwcGxpZWQgdG8gbWx4NS1uZXh0DQoNCnRoYW5rcyENCg0K
+On 3/5/20 1:17 AM, Alarig Le Lay wrote:
+> Hi,
+> 
+> On the bird users ML, we discussed a bug we’re facing when having a
+> full table: from time to time all the IPv6 traffic is dropped (and all
+> neighbors are invalidated), after a while it comes back again, then wait
+> a few minutes and it’s dropped again, and so on.
+
+Kernel version?
+
+you are monitoring neighbor states with 'ip monitor' or something else?
+
+
+> 
+> Basil Fillan determined that it comes from the commit
+> 3b6761d18bc11f2af2a6fc494e9026d39593f22c.
+> 
+
+
+...
+
+> We've also experienced this after upgrading a few routers to Debian Buster.
+> With a kernel bisect we found that a bug was introduced in the following
+> commit:
+> 
+> 3b6761d18bc11f2af2a6fc494e9026d39593f22c
+> 
+> This bug was still present in master as of a few weeks ago.
+> 
+> It appears entries are added to the IPv6 route cache which aren't visible from
+> "ip -6 route show cache", but are causing the route cache garbage collection
+> system to trigger extremely often (every packet?) once it exceeds the value of
+> net.ipv6.route.max_size. Our original symptom was extreme forwarding jitter
+> caused within the ip6_dst_gc function (identified by some spelunking with
+> systemtap & perf) worsening as the size of the cache increased. This was due
+> to our max_size sysctl inadvertently being set to 1 million. Reducing this
+> value to the default 4096 broke IPv6 forwarding entirely on our test system
+> under affected kernels. Our documentation had this sysctl marked as the
+> maximum number of IPv6 routes, so it looks like the use changed at some point.
+> 
+> We've rolled our routers back to kernel 4.9 (with the sysctl set to 4096) for
+> now, which fixed our immediate issue.
+> 
+> You can reproduce this by adding more than 4096 (default value of the sysctl)
+> routes to the kernel and running "ip route get" for each of them. Once the
+> route cache is filled, the error "RTNETLINK answers: Network is unreachable"
+> will be received for each subsequent "ip route get" incantation, and v6
+> connectivity will be interrupted.
+> 
+
+The above does not reproduce for me on 5.6 or 4.19, and I would have
+been really surprised if it had, so I have to question the git bisect
+result.
+
+There is no limit on fib entries, and the number of FIB entries has no
+impact on the sysctl in question, net.ipv6.route.max_size. That sysctl
+limits the number of dst_entry instances. When the threshold is exceeded
+(and the gc_thesh for ipv6 defaults to 1024), each new alloc attempts to
+free one via gc. There are many legitimate reasons for why 4k entries
+have been created - mtu exceptions, redirects, per-cpu caching, vrfs, ...
+
+In 4.9 FIB entries are created as an rt6_info which is a v6 wrapper
+around dst_entry. That changed in 4.15 or 4.16 - I forget which now, and
+the commit you reference above is part of the refactoring to make IPv6
+more like IPv4 with a different, smaller data structure for fib entries.
+A lot of other changes have also gone into IPv6 between 4.9 and top of
+tree, and at this point the whole gc thing can probably go away for v6
+like it was removed for ipv4.
+
+Try the 5.4 LTS and see if you still hit a problem.
