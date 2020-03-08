@@ -2,83 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C867017D0C6
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 02:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D9417D0C7
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 02:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgCHBPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Mar 2020 20:15:49 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43589 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbgCHBPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 20:15:49 -0500
-Received: by mail-pl1-f195.google.com with SMTP id f8so2504726plt.10
-        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 17:15:49 -0800 (PST)
+        id S1726281AbgCHBSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Mar 2020 20:18:02 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46726 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726180AbgCHBSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Mar 2020 20:18:02 -0500
+Received: by mail-lj1-f194.google.com with SMTP id h18so6257527ljl.13
+        for <netdev@vger.kernel.org>; Sat, 07 Mar 2020 17:18:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=O3vxefhTmXOP9j1Qu3cFiTCJtsUPwf3j5ArMZf7EzZ0=;
-        b=PxMAh0KKik/VEutoJ6/sv67ZUMgDZYvC+SgDTWbh+q+0Aohc9nthngcuCak972ci9W
-         pq01SHKIqMXXQoaP+MN+uKgedyPosZl50/obcgNI+4EmuDl1tMdLy8fYq/kwGeZopdOc
-         1Gd1JUp2UIizyJBytT9R5KYbMveiXs5Iz9thXaWpuWfK0v6+Vq6Cn0NP8U+N19ooT5lh
-         WYqJ0W1Wp7kw0n5UV8Zqitnx86ldQunCE2LFrCyqhOMvNO0I0pSjcFQDM0cLmq64mg+o
-         8fey2l6ZZ53Yk9y1fqFiPjCLK+dHIRz/0xzaQ8qFVbMiZ0WGHG+3CSv43kYUMLKB4P9N
-         e83w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=7uOiCL4ANWWX06g1URmXNQLbBgiN4b27Ac4cNkVqWDQ=;
+        b=FnCGpsCgGHFb9dzyXzY0wGoml0JdOWxKEDgF+JNprtbHSFEVyQdDGsffV5lQ3/97Ni
+         pn7e3rswfTKkHdyoMrNOJeWpspVU4sg9lyJybfJUNTQPcu/381Ii+AS5CjmeuUJmeApp
+         iZUzrMtXYzrrDHN7H7dhrJIWE4uPI95Q6IsUaiPvHVMXpCgy3ZEH9bdqvDnGyqwVbFy2
+         YWwls6JEVkQtFUJ8zC7CMZJUUcPiE6IK688xGwc6FLShHme97j1sd8MxWzyrdPUGpnUv
+         52o2+LPtPcCi3Y0wezQfxjYA1AVnL9hg0RVja25XiH8vF72fAxy3+7BarOrvTFKixjPh
+         6ZVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=O3vxefhTmXOP9j1Qu3cFiTCJtsUPwf3j5ArMZf7EzZ0=;
-        b=rxUnxrQmehpEoeIwfS8SZ6nh0K0SFCEPVSf7JmcNbTWZc0iGMdct1rhAoB7PvCrssr
-         09d/2TDDQjFx2USLzaAq9B7KiNqTHHZNab2a6LgkYGVGFK3ZVK7rDpk7K8VZvUoqDdQ9
-         ew5kKVQy9cW/c8KTRYC/S9CCxkDpI5Rj9nCknA80eZMNSRs6ZRRIXc9uKqPMy0t/+F52
-         cP5NrGv1J4K/f+Rb6yB4mdiyvzduxtUqq//6AKD2miq9fEAzz8OhnWse3klfCOL7sDGA
-         +TJzIuv4SzA9R/pj6Bnn2HVB1vGE/MjsB2+HcYSKvKzrNUIlXAVC/4YA6+I6X6yEZCpD
-         hSiQ==
-X-Gm-Message-State: ANhLgQ2bDn5YMWL986SVpIR0Hf7B8gwkOktsFm+LpSkVV72KoifcgoXH
-        higCfM5gjvTuWcbe+V3IBt0=
-X-Google-Smtp-Source: ADFU+vvXt9o0Ehi1R9o3pXLkDjQ7QMj7OtX8mWIoXc/xApQF8gu0KEieouvd730AVgVA+JqqVbbvfA==
-X-Received: by 2002:a17:90a:30c3:: with SMTP id h61mr10931832pjb.50.1583630148313;
-        Sat, 07 Mar 2020 17:15:48 -0800 (PST)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id n9sm36793760pfq.160.2020.03.07.17.15.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2020 17:15:47 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=7uOiCL4ANWWX06g1URmXNQLbBgiN4b27Ac4cNkVqWDQ=;
+        b=dZaUz2OS/saEZO/hPrvYpNqniVVuSBj48VE3F50ffB+VoI3bud4hEtqJZPkfH128GL
+         38VEeQdKAZ8b0qvQLThKb9O7vL0g+zKbrRIvXMJuCnd2yFvYAL5w95WylnNlsk12LIgm
+         QGncyIJSG6UBpSSO53b/ODK1Xa8hO0aXrw/y9t6Nl3uV/nridMB71msDl90Xhr36il/T
+         zLUT4HiSwJC9b7yldK53FZdd9rFt9KGhLCpDiy9KlQkyTDDUhjH1L9xYZ1v0DFCFHWSd
+         MnapZ49RwFJytGeiBPpeZexjwuNjNqRB1wvdE32SYbLe2kPtnlsddb0ag9vwefivfz8W
+         Df5w==
+X-Gm-Message-State: ANhLgQ2/8PM3ZxI8gRNKva0wIT6oC1C9MdSm4qS6TJhxQmw9kDf3+WN7
+        AtkxuoscT2w4SBBq3sipp+ocIwD+4W/CSUmdzC0=
+X-Google-Smtp-Source: ADFU+vt6oTYWTw7lpqbIn/P18Rv3CxILpMnUKKHhDXo6YyQGlcHb02gLWhjPeb+ciBG5wxub5XfWjCtj9UobaTsSutE=
+X-Received: by 2002:a2e:9252:: with SMTP id v18mr6086957ljg.114.1583630280482;
+ Sat, 07 Mar 2020 17:18:00 -0800 (PST)
+MIME-Version: 1.0
+References: <20200308011510.6129-1-ap420073@gmail.com>
+In-Reply-To: <20200308011510.6129-1-ap420073@gmail.com>
 From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org,
-        martinvarghesenokia@gmail.com, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next 0/3] bareudp: several code cleanup for rmnet module
-Date:   Sun,  8 Mar 2020 01:15:10 +0000
-Message-Id: <20200308011510.6129-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Date:   Sun, 8 Mar 2020 10:17:49 +0900
+Message-ID: <CAMArcTVBoBbc4ioQxHN4AkhoC0vi=X41dxt+tSVZfqfUWxPEWw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/3] bareudp: several code cleanup for rmnet module
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        martinvarghesenokia@gmail.com, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset is to cleanup bareudp module code.
+On Sun, 8 Mar 2020 at 10:15, Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> This patchset is to cleanup bareudp module code.
+>
+> 1. The first patch is to add module alias
+> In the current bareudp code, there is no module alias.
+> So, RTNL couldn't load bareudp module automatically.
+>
+> 2. The second patch is to add extack message.
+> The extack error message is useful for noticing specific errors
+> when command is failed.
+>
+> 3. The third patch is to remove unnecessary udp_encap_enable().
+> In the bareudp_socket_create(), udp_encap_enable() is called.
+> But, the it's already called in the setup_udp_tunnel_sock().
+> So, it could be removed.
+>
+> Taehee Yoo (3):
+>   bareudp: add module alias
+>   bareudp: print error message when command fails
+>   bareudp: remove unnecessary udp_encap_enable() in
+>     bareudp_socket_create()
+>
+>  drivers/net/bareudp.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>
+> --
+> 2.17.1
+>
 
-1. The first patch is to add module alias
-In the current bareudp code, there is no module alias.
-So, RTNL couldn't load bareudp module automatically.
+I'm sorry,
+This headline is wrong.
+I will send again
 
-2. The second patch is to add extack message.
-The extack error message is useful for noticing specific errors
-when command is failed.
-
-3. The third patch is to remove unnecessary udp_encap_enable().
-In the bareudp_socket_create(), udp_encap_enable() is called.
-But, the it's already called in the setup_udp_tunnel_sock().
-So, it could be removed.
-
-Taehee Yoo (3):
-  bareudp: add module alias
-  bareudp: print error message when command fails
-  bareudp: remove unnecessary udp_encap_enable() in
-    bareudp_socket_create()
-
- drivers/net/bareudp.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
--- 
-2.17.1
-
+Thank you
+Taehee Yoo
