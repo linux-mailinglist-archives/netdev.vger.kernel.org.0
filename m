@@ -2,87 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 187C717D2EB
-	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 10:46:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3EC17D393
+	for <lists+netdev@lfdr.de>; Sun,  8 Mar 2020 12:05:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726289AbgCHJpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 05:45:34 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38601 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgCHJpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 05:45:34 -0400
-Received: by mail-pf1-f194.google.com with SMTP id g21so3450512pfb.5;
-        Sun, 08 Mar 2020 01:45:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Aa3m98s9W+HyU21/D2jhm/INGzeeIBZDLFGCZvKBfcU=;
-        b=pyG+FlBv7lYcHJarifLHdqmmA3EAcTTZ8kEiWPuX4e5UjydOV62NqD8p7Auzjn++IQ
-         Zmw4HwiKpZXFLGN72DnNdD7+Z0aSZJjxtMpxrJf11JYVDMHawypylnLm7MqAxiS8XMyv
-         w3SXuc8AlFyta+5nT6cGIBw+qn82l6JMdhlA6rJba5o0ZVSJ5EXPG/uc3m1HOnJ6qrCw
-         +TF0InMXdexqNnyJo6OrFinG1QilocWba3vzEKLNdj/RVgDyulWne5RhFtm0Em2tVRMO
-         06bdF21YoJuc+tI41/sgCcHR0nRss7cTZSY988HxC+68YDe/w0eIkK+89aR3zgk/rHxs
-         odSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Aa3m98s9W+HyU21/D2jhm/INGzeeIBZDLFGCZvKBfcU=;
-        b=CentyL2VlbyrOaoYdbW+HjYqz+3mvYIw0n0Pas+le+nFXrIbvBoCGg0r5VeyYYyOFj
-         qinK6kK3Z04zOpKdF9Da8OBrT88dgH00Cv5/BXmPOOvIdouieThHorfgrfBAopXF5hWa
-         3kAZSrJNr9l4K4oW2zRpWzgCXcX4eASRj7yUQULoSEpuKoKzbnftLWMlnzF0BA21dxMM
-         UNM+jETJi/piNUD7NRuVYrUqiQhdnlMKGElH0huOW8nf1hXbxAjVtUEo8uyzrmYMAKcE
-         nopStmrMydzkEVjrZgfw7Bosypx95+I8mHQKjSJghU9AAn5y2TyQsnvFyxJBh7tYUxeA
-         rA7g==
-X-Gm-Message-State: ANhLgQ0sj5I7ILEYLrm25kV2HmoW6HjpoV99yFzlTosBaoEYOsUL7rzi
-        tK0/5gyFrntwU53FkNuRQMrJ7eVD
-X-Google-Smtp-Source: ADFU+vuvewk+1/JlAdwXumnrwoaepCNypYxB34T4DKSXS6+fKtAtZqd6m42WcSY85xX+QiZk7AHESw==
-X-Received: by 2002:a63:f74a:: with SMTP id f10mr11164849pgk.360.1583660733303;
-        Sun, 08 Mar 2020 01:45:33 -0800 (PST)
-Received: from VM_0_35_centos.localdomain ([150.109.62.251])
-        by smtp.gmail.com with ESMTPSA id n22sm1343627pjq.36.2020.03.08.01.45.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 08 Mar 2020 01:45:32 -0800 (PST)
-From:   Qiujun Huang <hqjagain@gmail.com>
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hdanton@sina.com,
-        Qiujun Huang <hqjagain@gmail.com>
-Subject: [PATCH v2] bluetooth/rfcomm: fix ODEBUG bug in rfcomm_dev_ioctl
-Date:   Sun,  8 Mar 2020 17:45:27 +0800
-Message-Id: <1583660727-9227-1-git-send-email-hqjagain@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726314AbgCHLFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 07:05:17 -0400
+Received: from edrik.securmail.fr ([45.91.125.3]:31671 "EHLO
+        edrik.securmail.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726271AbgCHLFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 07:05:16 -0400
+X-Greylist: delayed 410 seconds by postgrey-1.27 at vger.kernel.org; Sun, 08 Mar 2020 07:05:16 EDT
+Received: by edrik.securmail.fr (Postfix, from userid 58)
+        id 4DB8EB0E6E; Sun,  8 Mar 2020 11:58:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
+        s=swordarmor; t=1583665105;
+        bh=lbRvxeTm9MsNfoD1aEkwWZ8Yj6RXq18nNGVupPf9GBg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=i9ftrOkrSym0njVyecsQTFhBNxFoEswP3wPTWSDVZulN+JqB8YQL7ibbxx/U6vEe9
+         R8rbiHpVopAEaEVzWbaWePTAzE6qjDzkcALB99z17cCivsW3KZbQPf/36TMUF/CTL+
+         +XYb9y30+/uWJDa1KcGxFRXXcgUCeE3xVGyj/5WQ=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on edrik.securmail.fr
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.0 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU autolearn=unavailable
+        autolearn_force=no version=3.4.2
+Received: from mew.swordarmor.fr (mew.swordarmor.fr [IPv6:2a00:5884:102:1::4])
+        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: alarig@swordarmor.fr)
+        by edrik.securmail.fr (Postfix) with ESMTPSA id CA039B0E50;
+        Sun,  8 Mar 2020 11:57:50 +0100 (CET)
+Authentication-Results: edrik.securmail.fr/CA039B0E50; dmarc=none (p=none dis=none) header.from=swordarmor.fr
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
+        s=swordarmor; t=1583665071;
+        bh=lbRvxeTm9MsNfoD1aEkwWZ8Yj6RXq18nNGVupPf9GBg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=HWmJztSDCYcunfVcuW/CmXNYG+r4++307sd+c0YOrNftq3oN7WIE60OPZVqm3TvGI
+         MyyNdcsMVFM9JMR6cbdpt7bTZXoGbC7If9jr2dPId6eDynG6Qn/wVaI8lhPLb6WOIW
+         QXpWbUFZY6SEVcFhxOVCuFLfNGxuD7e/WB3Q4A4I=
+Date:   Sun, 8 Mar 2020 11:57:42 +0100
+From:   Alarig Le Lay <alarig@swordarmor.fr>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, jack@basilfillan.uk,
+        Vincent Bernat <bernat@debian.org>
+Subject: Re: IPv6 regression introduced by commit
+ 3b6761d18bc11f2af2a6fc494e9026d39593f22c
+Message-ID: <20200308105729.72pbglywnahbl7hs@mew.swordarmor.fr>
+References: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
+ <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Needn't call 'rfcomm_dlc_put' here, because 'rfcomm_dlc_exists' didn't
-increase dlc->refcnt.
+On sam.  7 mars 17:52:10 2020, David Ahern wrote:
+> On 3/5/20 1:17 AM, Alarig Le Lay wrote:
+> Kernel version?
 
-Reported-by: syzbot+4496e82090657320efc6@syzkaller.appspotmail.com
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
-Suggested-by: Hillf Danton <hdanton@sina.com>
----
- net/bluetooth/rfcomm/tty.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+I’ve seen this from 4.19 on my experience, it works at least until 4.15.
 
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 0c7d31c..a585849 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -413,10 +413,8 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
- 		dlc = rfcomm_dlc_exists(&req.src, &req.dst, req.channel);
- 		if (IS_ERR(dlc))
- 			return PTR_ERR(dlc);
--		else if (dlc) {
--			rfcomm_dlc_put(dlc);
-+		if (dlc)
- 			return -EBUSY;
--		}
- 		dlc = rfcomm_dlc_alloc(GFP_KERNEL);
- 		if (!dlc)
- 			return -ENOMEM;
+> you are monitoring neighbor states with 'ip monitor' or something else?
+
+Yes, 'ip -ts monitor neigh' to be exact.
+
+> The above does not reproduce for me on 5.6 or 4.19, and I would have
+> been really surprised if it had, so I have to question the git bisect
+> result.
+
+My personal experience is that, while routing is activated (and having a
+full-view, I don’t have any soft router without it), the neighbors are
+flapping, thus causing a blackhole.
+It doesn’t happen with a limit traffic processing. The limit is around
+20 Mbps from what I can see.
+
+> There is no limit on fib entries, and the number of FIB entries has no
+> impact on the sysctl in question, net.ipv6.route.max_size. That sysctl
+> limits the number of dst_entry instances. When the threshold is exceeded
+> (and the gc_thesh for ipv6 defaults to 1024), each new alloc attempts to
+> free one via gc. There are many legitimate reasons for why 4k entries
+> have been created - mtu exceptions, redirects, per-cpu caching, vrfs, ...
+
+I also tried to find a sysctl to ignore the MTU exceptions, as a router
+it’s not my problem at all: if the packet is fragmentable, I will do it,
+otherwise I will drop it. The MTU negotiation is on the duty of the ends.
+I’m not taking the MSS clamping in account as it’s done with iptables
+and the mangle table is empty (but CONFIG_IP_NF_MANGLE is enabled).
+
+> In 4.9 FIB entries are created as an rt6_info which is a v6 wrapper
+> around dst_entry. That changed in 4.15 or 4.16 - I forget which now, and
+> the commit you reference above is part of the refactoring to make IPv6
+> more like IPv4 with a different, smaller data structure for fib entries.
+> A lot of other changes have also gone into IPv6 between 4.9 and top of
+> tree, and at this point the whole gc thing can probably go away for v6
+> like it was removed for ipv4.
+
+As it works on 4.15 (the kernel shipped with proxomox 5), I would say
+that it has been introduced in 4.16. But I didn’t checked each version
+myself.
+
+> Try the 5.4 LTS and see if you still hit a problem.
+
+I have the problem with 5.3 (proxmox 6), so unless FIB handling has been
+changed since then, I doubt that it will works, but I will try on
+Monday.
+
+Regards,
 -- 
-1.8.3.1
-
+Alarig
