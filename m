@@ -2,176 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE7017E9C9
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 21:16:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 102D817E9CD
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 21:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbgCIUQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 16:16:18 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51316 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbgCIUQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 16:16:17 -0400
-Received: by mail-wm1-f67.google.com with SMTP id a132so936673wme.1
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 13:16:15 -0700 (PDT)
+        id S1726551AbgCIUQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 16:16:59 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:36805 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbgCIUQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 16:16:59 -0400
+Received: by mail-pf1-f201.google.com with SMTP id h125so1273541pfg.3
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 13:16:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=FD0mDEpsea8VECEMnvUDPdGgQcj6vPwqMx54ti64lQQ=;
-        b=qFFnpyRRF2vQq72WJn4NwTirj1K1GvInoyyykv5B6fSn/6kmse7iSW+SII5Db9Ilp4
-         yEWttcO6h4pw3kRG6HD8lz2LSAx9derIzKjIMcekpRu3Q8xQwRugulxLWoZrYyPjGvZp
-         tW/EYLvjoTUziZ/Vx+GGLsB1XzzLO0kpgnFVpPHCVNvSPU15/yWpzEa8UmH5YbNtjQh0
-         1+5nxu9n6VU8VNsA7NW0nMHpHOYKSEDDJtVTQ2FWz8fKLe9Tl56MiHjmlZ8/Ukgfbf7e
-         VzHOxLgkbI3ICgz+YTW7C9i0+QMUoyFK/b2eHKtCUjajqwCeg8JpyfPfioDEA8zA42S2
-         0EAw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=E6Lnq3XcqpdoJp7F69G18Srf2jjiIOlEf8Q/17M5TaA=;
+        b=U7h2f6ti/VR4KuORMy6/ZIiK4xOAOmQk8VAeHLIsffC7OrfUTXioT3ao2JE15JwUNL
+         63iE5FGsC/vPgact9RZzY0b4uMacfRs22rURAJ8Td1bOo5RHPLYJA8Suq6AZNwEqU4lv
+         t6tLnH4w4bFXRtzBuYuuBULGYJMAJzlvi4AA7A6GkOSGtFOsQcWYZhy1XUBiTHX1M6ky
+         w6FNA32JIFSDEu+iB2vmCad99mV3YDnM+rszf+RAeC43Cjey9DZTMjEeEEhsWYJshO0Q
+         ie6FSN9Ystg6WAez/0He+lFGTkV0GCgWh42L964gGDYngAbI3WvlVo5rsDBo/gpzYn+a
+         q0LQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FD0mDEpsea8VECEMnvUDPdGgQcj6vPwqMx54ti64lQQ=;
-        b=mdZX3SL7TwnW2DUOZkVPY/046LpGoFGQ9BaFEUqiNBXA7eQbRep+n56BIv327Y72sR
-         z1F7gCQ2fhjGU/eI+PG861MA+QQbUUN7VtQsp/w6swo3Sa0BRF6hjiqV4YAsCtmc4rwT
-         sjbtZwUcaos+wjCvQGHLiicajugl7AS16jirB6fNPyQOcxbBCZwQFAb/pQqz9/mB+DUc
-         f5ld4m1j/qwj7LzjuAjZtAV6AHKBsOdW2JBohQ3k1fk6SRt+SIrSgyh5fapc9C8hDNdj
-         J1u0iQnxDjTSn56Ybko2kt8UZZPDpD/qUUdi87QG6EJskE/7+pSUumalH9X948SFuB84
-         5CVQ==
-X-Gm-Message-State: ANhLgQ0SqyaBr49u21Q3caP4YZpcaaiJ3UetV14aVVLMF5QwkPqcYTTk
-        0hNrrzw9gRb72jAjJqzYBNM=
-X-Google-Smtp-Source: ADFU+vu3MfoOqUM3JMJd5xQDhpRM5WU/S6z1gGf3OI4Gzr/BRzOX93FUWv1IlZYYQMwQZGGb75CrDg==
-X-Received: by 2002:a7b:c92e:: with SMTP id h14mr977019wml.90.1583784975297;
-        Mon, 09 Mar 2020 13:16:15 -0700 (PDT)
-Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id o10sm15842689wru.38.2020.03.09.13.16.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 13:16:14 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
-        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
-Subject: [PATCH net] net: mscc: ocelot: properly account for VLAN header length when setting MRU
-Date:   Mon,  9 Mar 2020 22:16:08 +0200
-Message-Id: <20200309201608.14420-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=E6Lnq3XcqpdoJp7F69G18Srf2jjiIOlEf8Q/17M5TaA=;
+        b=A9ETmR0vUOKdWVEvBjgoApEcpCLtyQ3NdkHkoDrEMzJXQNyTncY1EdBfhboGOobmGu
+         0fUDZGck3eR0sqkwXDTJQMc2EHn/gvnECkkp3ayY1Twp2Ce7Znoavq7rrAugX887EKgP
+         jFF55Dh8vaUdADzUCRdo6tbgb+tQxXGkjK7fEE9483LwJIzsxHclJ3z3BMtM+lt0w+jc
+         mg8w55jgL0YozYTP8Rs29eOpCSFsosE0g7BnsZfmjQ3VqsZRb0CWfBtdNaeoomShO15O
+         AWfWuFwH8yrCAcOHdO25I98WO+m8Coqoulzu0/vqoovPBCsg/8xJx/uckH/LPamKOE+a
+         SY2g==
+X-Gm-Message-State: ANhLgQ2Bfqw15fpEpX/WVQL/oibJSxrZCHmyOMKh5IbJoApiHA3aTFCe
+        L5hjkYTsnV/1N0QDNspVat0B1g1Xrn+q
+X-Google-Smtp-Source: ADFU+vs2cfUGkuBYsJmTTxVjulW9jQ+h6sRiM+Q0/yIB3EBrhP4YnoIU2W9vgkquVzzZb2CFbcvg/rg+cags
+X-Received: by 2002:a17:90a:f496:: with SMTP id bx22mr1082677pjb.115.1583785016488;
+ Mon, 09 Mar 2020 13:16:56 -0700 (PDT)
+Date:   Mon,  9 Mar 2020 13:16:40 -0700
+Message-Id: <20200309201640.84244-1-ysseung@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
+Subject: [PATCH net-next] tcp: add bytes not sent to SCM_TIMESTAMPING_OPT_STATS
+From:   Yousuk Seung <ysseung@google.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Yousuk Seung <ysseung@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Add TCP_NLA_BYTES_NOTSENT to SCM_TIMESTAMPING_OPT_STATS that reports
+bytes in the write queue but not sent. This is the same metric as
+what is exported with tcp_info.tcpi_notsent_bytes.
 
-What the driver writes into MAC_MAXLEN_CFG does not actually represent
-VLAN_ETH_FRAME_LEN but instead ETH_FRAME_LEN + ETH_FCS_LEN. Yes they are
-numerically equal, but the difference is important, as the switch treats
-VLAN-tagged traffic specially and knows to increase the maximum accepted
-frame size automatically. So it is always wrong to account for VLAN in
-the MAC_MAXLEN_CFG register.
-
-Unconditionally increase the maximum allowed frame size for
-double-tagged traffic. Accounting for the additional length does not
-mean that the other VLAN membership checks aren't performed, so there's
-no harm done.
-
-Also, stop abusing the MTU name for configuring the MRU. There is no
-support for configuring the MRU on an interface at the moment.
-
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Fixes: fa914e9c4d94 ("net: mscc: ocelot: create a helper for changing the port MTU")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Yousuk Seung <ysseung@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 28 +++++++++++++++++-----------
- include/soc/mscc/ocelot_dev.h      |  2 +-
- 2 files changed, 18 insertions(+), 12 deletions(-)
+ include/uapi/linux/tcp.h | 1 +
+ net/ipv4/tcp.c           | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index cd4dd885f038..6e4cca34a04f 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2188,24 +2188,29 @@ static int ocelot_init_timestamp(struct ocelot *ocelot)
- 	return 0;
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 1a7fc856e2371..f2acb25663334 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -312,6 +312,7 @@ enum {
+ 	TCP_NLA_REORD_SEEN,	/* reordering events seen */
+ 	TCP_NLA_SRTT,		/* smoothed RTT in usecs */
+ 	TCP_NLA_TIMEOUT_REHASH, /* Timeout-triggered rehash attempts */
++	TCP_NLA_BYTES_NOTSENT,	/* Bytes in write queue not yet sent */
+ };
+ 
+ /* for TCP_MD5SIG socket option */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 48aa457a95161..b7134f76f8405 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3344,6 +3344,7 @@ static size_t tcp_opt_stats_get_size(void)
+ 		nla_total_size(sizeof(u32)) + /* TCP_NLA_REORD_SEEN */
+ 		nla_total_size(sizeof(u32)) + /* TCP_NLA_SRTT */
+ 		nla_total_size(sizeof(u16)) + /* TCP_NLA_TIMEOUT_REHASH */
++		nla_total_size(sizeof(u32)) + /* TCP_NLA_BYTES_NOTSENT */
+ 		0;
  }
  
--static void ocelot_port_set_mtu(struct ocelot *ocelot, int port, size_t mtu)
-+/* Configure the maximum SDU (L2 payload) on RX to the value specified in @sdu.
-+ * The length of VLAN tags is accounted for automatically via DEV_MAC_TAGS_CFG.
-+ */
-+static void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+	int maxlen = sdu + ETH_HLEN + ETH_FCS_LEN;
- 	int atop_wm;
+@@ -3399,6 +3400,8 @@ struct sk_buff *tcp_get_timestamping_opt_stats(const struct sock *sk)
+ 	nla_put_u32(stats, TCP_NLA_REORD_SEEN, tp->reord_seen);
+ 	nla_put_u32(stats, TCP_NLA_SRTT, tp->srtt_us >> 3);
+ 	nla_put_u16(stats, TCP_NLA_TIMEOUT_REHASH, tp->timeout_rehash);
++	nla_put_u32(stats, TCP_NLA_BYTES_NOTSENT,
++		    max_t(int, 0, tp->write_seq - tp->snd_nxt));
  
--	ocelot_port_writel(ocelot_port, mtu, DEV_MAC_MAXLEN_CFG);
-+	ocelot_port_writel(ocelot_port, maxlen, DEV_MAC_MAXLEN_CFG);
- 
- 	/* Set Pause WM hysteresis
--	 * 152 = 6 * mtu / OCELOT_BUFFER_CELL_SZ
--	 * 101 = 4 * mtu / OCELOT_BUFFER_CELL_SZ
-+	 * 152 = 6 * maxlen / OCELOT_BUFFER_CELL_SZ
-+	 * 101 = 4 * maxlen / OCELOT_BUFFER_CELL_SZ
- 	 */
- 	ocelot_write_rix(ocelot, SYS_PAUSE_CFG_PAUSE_ENA |
- 			 SYS_PAUSE_CFG_PAUSE_STOP(101) |
- 			 SYS_PAUSE_CFG_PAUSE_START(152), SYS_PAUSE_CFG, port);
- 
- 	/* Tail dropping watermark */
--	atop_wm = (ocelot->shared_queue_sz - 9 * mtu) / OCELOT_BUFFER_CELL_SZ;
--	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * mtu),
-+	atop_wm = (ocelot->shared_queue_sz - 9 * maxlen) /
-+		   OCELOT_BUFFER_CELL_SZ;
-+	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * maxlen),
- 			 SYS_ATOP, port);
- 	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
+ 	return stats;
  }
-@@ -2234,9 +2239,10 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
- 			   DEV_MAC_HDX_CFG);
- 
- 	/* Set Max Length and maximum tags allowed */
--	ocelot_port_set_mtu(ocelot, port, VLAN_ETH_FRAME_LEN);
-+	ocelot_port_set_maxlen(ocelot, port, ETH_DATA_LEN);
- 	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
- 			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
-+			   DEV_MAC_TAGS_CFG_VLAN_DBL_AWR_ENA |
- 			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
- 			   DEV_MAC_TAGS_CFG);
- 
-@@ -2329,18 +2335,18 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
- 			 ANA_PORT_PORT_CFG, cpu);
- 
- 	if (npi >= 0 && npi < ocelot->num_phys_ports) {
--		int mtu = VLAN_ETH_FRAME_LEN + OCELOT_TAG_LEN;
-+		int sdu = ETH_DATA_LEN + OCELOT_TAG_LEN;
- 
- 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
- 			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(npi),
- 			     QSYS_EXT_CPU_CFG);
- 
- 		if (injection == OCELOT_TAG_PREFIX_SHORT)
--			mtu += OCELOT_SHORT_PREFIX_LEN;
-+			sdu += OCELOT_SHORT_PREFIX_LEN;
- 		else if (injection == OCELOT_TAG_PREFIX_LONG)
--			mtu += OCELOT_LONG_PREFIX_LEN;
-+			sdu += OCELOT_LONG_PREFIX_LEN;
- 
--		ocelot_port_set_mtu(ocelot, npi, mtu);
-+		ocelot_port_set_maxlen(ocelot, npi, sdu);
- 
- 		/* Enable NPI port */
- 		ocelot_write_rix(ocelot,
-diff --git a/include/soc/mscc/ocelot_dev.h b/include/soc/mscc/ocelot_dev.h
-index 0a50d53bbd3f..7c08437061fc 100644
---- a/include/soc/mscc/ocelot_dev.h
-+++ b/include/soc/mscc/ocelot_dev.h
-@@ -74,7 +74,7 @@
- #define DEV_MAC_TAGS_CFG_TAG_ID_M                         GENMASK(31, 16)
- #define DEV_MAC_TAGS_CFG_TAG_ID_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
- #define DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA                 BIT(2)
--#define DEV_MAC_TAGS_CFG_PB_ENA                           BIT(1)
-+#define DEV_MAC_TAGS_CFG_VLAN_DBL_AWR_ENA                 BIT(1)
- #define DEV_MAC_TAGS_CFG_VLAN_AWR_ENA                     BIT(0)
- 
- #define DEV_MAC_ADV_CHK_CFG                               0x2c
 -- 
-2.17.1
+2.25.1.481.gfbce0eb801-goog
 
