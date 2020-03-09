@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A23D17DF7A
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:04:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A0717DFA7
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbgCIME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 08:04:57 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43707 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbgCIME5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:04:57 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v9so10727490wrf.10
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:04:55 -0700 (PDT)
+        id S1726426AbgCIMRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 08:17:02 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36915 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbgCIMRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:17:01 -0400
+Received: by mail-wr1-f66.google.com with SMTP id 6so10803729wre.4
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:17:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zEiM7K8u2KvOZM51+eTlZdAqX7p3eS4IMtHf8PmMNY8=;
-        b=wnSWOV+1On/vn4PM51npvbaYlvfCP+TSaaWhhSlElLSjxc9knrW/ue6xJJMBLkX/Ly
-         pWxSj6WyzV/4DAgt1aiMQWyWNkOGrptVqPDFSgQZCHXdwGGXWE7D87sI/nty4zvmxhC6
-         HonY1e+5g8p5aCE2ZJx9D0KLPuMIoYWkmCMYYv8QsInhIb6kb4vbURbtEfFB+JJqGnRG
-         FS/VUlWmufJIDuVeo4a0pN5TvkHqX0AkZNvgsAnxtGa4DzA7modIw7ilaH+e/y+JH74s
-         q8EOQp/cBgrWyFp9qYvX1Pq37k8XYgd7KE6PahfnZ/vwigPWSy40g+uK8SDDZnhYPSfx
-         7rmA==
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hccbbk3rEsStEi8oqAndvplJQwACjWuWTuN0V+AtyJA=;
+        b=gHo4aWVw4YonUPb9Jm8nGiECCApB+h3IqncoEGm8rs46YH0TF5I7nINtYhfB0Xrz2G
+         8KtBnVhNG7CgM5vGt7vlAtpiwpXawzv09HfpPZqNb243Aa/PZNwsMKs/80BGnhM5WNlW
+         EpfikZTtZ2i95cI0mrkw0lez4Rb/yM6SRAGzY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zEiM7K8u2KvOZM51+eTlZdAqX7p3eS4IMtHf8PmMNY8=;
-        b=QFK89AfgCju/RoXI94ElbqevuAVmNQaWCkPc305vBKpPWgZ3FgeJS3WH8c0eZy2XIM
-         V2IYriL1dWMD48kBMm5i07slkbtWJ0XBu1macmu8hgUTQqTOG1ueC33FDe4mpARfeCCO
-         Uc3tslPbJ7xrWibPaGbLpu+AEjX6AV4dsxoKzDN7n3LcO7Ab9BLI5vSRknRBmTXTvPpN
-         sp8eVheSVmx/ZqGL97lp9fTjbaokW5vI5zMFnHLSVzVGfEoWd3EbTqvPGGmsbty+xTIE
-         KoZIyoEals2Hl8j1S0lL1elol/C+rrGMNOXlIz6yYpbW0R6W3Q1wSTrGc/4A345F6pS7
-         FJJg==
-X-Gm-Message-State: ANhLgQ20VCP8Ng1BFR+m9WiTdrEo2B+O4/GRdNtBguuJPIaiNHsOV9Xh
-        KB6NtyB9YrOeRS+ghJbQ9wST4g==
-X-Google-Smtp-Source: ADFU+vtZXJ789zCyBw4uevYqZIcIVL1l5YE/2X2c6sWS3v135MF3BGBupoPAHhkB072H0KflY8l4og==
-X-Received: by 2002:adf:eacf:: with SMTP id o15mr7845413wrn.319.1583755495135;
-        Mon, 09 Mar 2020 05:04:55 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a7sm5935690wrn.25.2020.03.09.05.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 05:04:54 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 13:04:53 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "vishal@chelsio.com" <vishal@chelsio.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "ecree@solarflare.com" <ecree@solarflare.com>,
-        "mlxsw@mellanox.com" <mlxsw@mellanox.com>
-Subject: Re: [patch net-next v4 03/10] flow_offload: check for basic action
- hw stats type
-Message-ID: <20200309120453.GB13968@nanopsycho.orion>
-References: <20200307114020.8664-1-jiri@resnulli.us>
- <20200307114020.8664-4-jiri@resnulli.us>
- <BN8PR12MB3266F1691CDDA4352EFC2684D3FE0@BN8PR12MB3266.namprd12.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hccbbk3rEsStEi8oqAndvplJQwACjWuWTuN0V+AtyJA=;
+        b=Nbow8utkhiPZeewhQSl0N6jf45MvHZrC79RAKWymv4FZs/8Y5L5o3zb2SwV/1NZG3o
+         PRM65oVWMwNJs1+Xgmq3U6hBfmoOrM+SGNjDaueg0E/GkYEgkSR+QumjTsY5fQdGy77s
+         dwVSHkbbs7GLwshQQ/BehlLsxKIJ3aTleRTGdXfLajR8poF8DzsBuXWzJeHJR26T4jT+
+         5Sg3L6hEc+Dj7L41S08tc+eU30lkgDopaMc9Ce0cS+C78o6wRIZhYnALJ75BQfjpBpsb
+         mTwJ5liaZrNUCKCWsI7bqd0z73/m85V77QVAmXqwXwXsh1AGtsiPTgnwuYlDJ0hXnJb8
+         sdpw==
+X-Gm-Message-State: ANhLgQ2weFRzog/9lrNw+ljT2ZClbPH56Q49Y09tsfVBDsa4xFpgXYO/
+        1k9iiSsK5G/kqV6RYTokp7HnPjzh1bUyBzOEJV+gOg==
+X-Google-Smtp-Source: ADFU+vuAXG/aX8jX/kPPz6aoNYGJ1+NJpf+OiCHInlOQPBbJySPzM/DA10DHkzw5AZ2HUaZyj7RqEcatQGjlsHifRiI=
+X-Received: by 2002:a5d:6881:: with SMTP id h1mr20181195wru.236.1583756220247;
+ Mon, 09 Mar 2020 05:17:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB3266F1691CDDA4352EFC2684D3FE0@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20200307205916.15646-1-sharpd@cumulusnetworks.com> <b36df09f-2e15-063e-4b58-1b864bed8751@gmail.com>
+In-Reply-To: <b36df09f-2e15-063e-4b58-1b864bed8751@gmail.com>
+From:   Donald Sharp <sharpd@cumulusnetworks.com>
+Date:   Mon, 9 Mar 2020 08:16:49 -0400
+Message-ID: <CAK989ycxqKU0wYZdfNsMKVOtS_ENg+jhuYu5np7Hd-NdKLo4AQ@mail.gmail.com>
+Subject: Re: [PATCH] ip link: Prevent duplication of table id for vrf tables
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Stephen Worley <sworley@cumulusnetworks.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Mar 09, 2020 at 11:23:41AM CET, Jose.Abreu@synopsys.com wrote:
->From: Jiri Pirko <jiri@resnulli.us>
->Date: Mar/07/2020, 11:40:13 (UTC+00:00)
->
->> Introduce flow_action_basic_hw_stats_types_check() helper and use it
->> in drivers. That sanitizes the drivers which do not have support
->> for action HW stats types.
->
->Next time please cc driver maintainers because this broke L3/L4 selftests 
->for stmmac.
+David -
 
-How exactly? This should not have any change for the existing users.
+I'm more than a bit confused about this stance.  I've been repeatedly
+told by the likes of you, Roopa, and Nikolay that we cannot modify the
+kernel behavior.  I get that, so that leaves me with user space
+responses.  I went this route because not allowing the end user to
+make this mistake would have saved us a stupid amount of time from
+having to debug/understand/rectify ( rinse repeat for every incident
+).  A warning wouldn't have saved us here since this was all automated
+and a warning won't generate any actionable return codes from using
+`ip link add...`.  If the argument is that other people are doing it
+wrong too, point me at them and I'll submit patches there too.  In
+other words a user management problem that the kernel/iproute2 hog
+ties me from being actually able to stop mistakes when they happen is
+an interesting response.
+
+Part of this is that the routing stack considers vrf completely
+independent and we don't have duplicate labels to identify the same
+table( nor can I think of a good use case where this would be even
+advisable and if you can please let me know as that I want to
+understand this ).  We have a set of actions we perform when we
+receive routing data from the kernel and if we don't act on the right
+vrf we've broken routing.  This routing data sent over the netlink bus
+is the tableid, if we can't stop users from making mistakes, can we
+modify the netlink code actually send us disambiguous data then and
+include the label as well as part of the route update?
+
+thanks!
+
+donald
 
 
+On Sun, Mar 8, 2020 at 10:22 PM David Ahern <dsahern@gmail.com> wrote:
 >
->Not to worry, I already have a patch to send :)
+> On 3/7/20 1:59 PM, Donald Sharp wrote:
+> > Creation of different vrf's with duplicate table id's creates
+> > a situation where two different routing entities believe
+> > they have exclusive access to a particular table.  This
+> > leads to situations where different routing processes
+> > clash for control of a route due to inadvertent table
+> > id overlap.  Prevent end user from making this mistake
+> > on accident.
 >
->---
->Thanks,
->Jose Miguel Abreu
+> I get the pain, but it is a user management problem and ip is but one
+> tool. I think at most ip warns the user about the table duplication; it
+> can't fail the create.
