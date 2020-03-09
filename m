@@ -2,139 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 320EB17E720
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1909517E73E
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:33:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbgCISaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 14:30:04 -0400
-Received: from foss.arm.com ([217.140.110.172]:56132 "EHLO foss.arm.com"
+        id S1727381AbgCISdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 14:33:31 -0400
+Received: from correo.us.es ([193.147.175.20]:33388 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727334AbgCISaE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 14:30:04 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8606C1FB;
-        Mon,  9 Mar 2020 11:30:03 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 42EEA3F67D;
-        Mon,  9 Mar 2020 11:30:02 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 18:29:59 +0000
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Cc:     Michal Simek <michal.simek@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
-        rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v2 04/14] net: axienet: Fix DMA descriptor cleanup path
-Message-ID: <20200309182959.080fa773@donnerap.cambridge.arm.com>
-In-Reply-To: <20200309181851.190164-5-andre.przywara@arm.com>
-References: <20200309181851.190164-1-andre.przywara@arm.com>
-        <20200309181851.190164-5-andre.przywara@arm.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        id S1727334AbgCISda (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 14:33:30 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 607054A7069
+        for <netdev@vger.kernel.org>; Mon,  9 Mar 2020 19:33:08 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 527D2DA3AE
+        for <netdev@vger.kernel.org>; Mon,  9 Mar 2020 19:33:08 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 473F3DA38D; Mon,  9 Mar 2020 19:33:08 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6E3A8DA3A9;
+        Mon,  9 Mar 2020 19:33:06 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 09 Mar 2020 19:33:06 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4FB1042EE38E;
+        Mon,  9 Mar 2020 19:33:06 +0100 (CET)
+Date:   Mon, 9 Mar 2020 19:33:25 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next] flow_offload: use flow_action_for_each in
+ flow_action_mixed_hw_stats_types_check()
+Message-ID: <20200309183325.yw2c4swbwv7xqlm2@salvia>
+References: <20200309174447.6352-1-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200309174447.6352-1-jiri@resnulli.us>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 Mar 2020 18:18:41 +0000
-Andre Przywara <andre.przywara@arm.com> wrote:
-
-Hi Radhey,
-
-you looked at this patch before, it was [PATCH 03/14] back then.
-You ended up saying "Looks fine then.", but I didn't dare to convert this into a "Reviewed-by:" tag.
-Just a hint that I didn't change anything, that might simplify the review.
-
-Cheers,
-Andre
-
-> When axienet_dma_bd_init() bails out during the initialisation process,
-> it might do so with parts of the structure already allocated and
-> initialised, while other parts have not been touched yet. Before
-> returning in this case, we call axienet_dma_bd_release(), which does not
-> take care of this corner case.
-> This is most obvious by the first loop happily dereferencing
-> lp->rx_bd_v, which we actually check to be non NULL *afterwards*.
+On Mon, Mar 09, 2020 at 06:44:47PM +0100, Jiri Pirko wrote:
+> Instead of manually iterating over entries, use flow_action_for_each
+> helper. Move the helper and wrap it to fit to 80 cols on the way.
 > 
-> Make sure we only unmap or free already allocated structures, by:
-> - directly returning with -ENOMEM if nothing has been allocated at all
-> - checking for lp->rx_bd_v to be non-NULL *before* using it
-> - only unmapping allocated DMA RX regions
-> 
-> This avoids NULL pointer dereferences when initialisation fails.
-> 
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> Signed-off-by: Jiri Pirko <jiri@resnulli.us>
 > ---
->  .../net/ethernet/xilinx/xilinx_axienet_main.c | 43 ++++++++++++-------
->  1 file changed, 28 insertions(+), 15 deletions(-)
+>  include/net/flow_offload.h | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index 64f73533cabe..9903205d57ec 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -160,24 +160,37 @@ static void axienet_dma_bd_release(struct net_device *ndev)
->  	int i;
->  	struct axienet_local *lp = netdev_priv(ndev);
->  
-> +	/* If we end up here, tx_bd_v must have been DMA allocated. */
-> +	dma_free_coherent(ndev->dev.parent,
-> +			  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> +			  lp->tx_bd_v,
-> +			  lp->tx_bd_p);
-> +
-> +	if (!lp->rx_bd_v)
-> +		return;
-> +
->  	for (i = 0; i < lp->rx_bd_num; i++) {
-> -		dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
-> -				 lp->max_frm_size, DMA_FROM_DEVICE);
-> +		/* A NULL skb means this descriptor has not been initialised
-> +		 * at all.
-> +		 */
-> +		if (!lp->rx_bd_v[i].skb)
-> +			break;
-> +
->  		dev_kfree_skb(lp->rx_bd_v[i].skb);
-> -	}
->  
-> -	if (lp->rx_bd_v) {
-> -		dma_free_coherent(ndev->dev.parent,
-> -				  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> -				  lp->rx_bd_v,
-> -				  lp->rx_bd_p);
-> -	}
-> -	if (lp->tx_bd_v) {
-> -		dma_free_coherent(ndev->dev.parent,
-> -				  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> -				  lp->tx_bd_v,
-> -				  lp->tx_bd_p);
-> +		/* For each descriptor, we programmed cntrl with the (non-zero)
-> +		 * descriptor size, after it had been successfully allocated.
-> +		 * So a non-zero value in there means we need to unmap it.
-> +		 */
-> +		if (lp->rx_bd_v[i].cntrl)
-> +			dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
-> +					 lp->max_frm_size, DMA_FROM_DEVICE);
->  	}
-> +
-> +	dma_free_coherent(ndev->dev.parent,
-> +			  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> +			  lp->rx_bd_v,
-> +			  lp->rx_bd_p);
+> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> index 64807aa03cee..7b7bd9215156 100644
+> --- a/include/net/flow_offload.h
+> +++ b/include/net/flow_offload.h
+> @@ -256,6 +256,11 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
+>  	return action->num_entries == 1;
 >  }
 >  
->  /**
-> @@ -207,7 +220,7 @@ static int axienet_dma_bd_init(struct net_device *ndev)
->  					 sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
->  					 &lp->tx_bd_p, GFP_KERNEL);
->  	if (!lp->tx_bd_v)
-> -		goto out;
-> +		return -ENOMEM;
+> +#define flow_action_for_each(__i, __act, __actions)			\
+> +        for (__i = 0, __act = &(__actions)->entries[0];			\
+> +	     __i < (__actions)->num_entries;				\
+> +	     __act = &(__actions)->entries[++__i])
+> +
+>  static inline bool
+>  flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+>  				       struct netlink_ext_ack *extack)
+> @@ -267,7 +272,7 @@ flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+>  	if (flow_offload_has_one_action(action))
+>  		return true;
 >  
->  	lp->rx_bd_v = dma_alloc_coherent(ndev->dev.parent,
->  					 sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
+> -	for (i = 0; i < action->num_entries; i++) {
+> +	flow_action_for_each(i, action_entry, action) {
+>  		action_entry = &action->entries[i];
+                ^^^
 
+action_entry is set twice, right? One from flow_action_for_each() and
+again here. You can probably remove this line too.
