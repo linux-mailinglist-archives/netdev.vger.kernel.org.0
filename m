@@ -2,98 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7BB17EB26
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 22:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52E2A17EB4C
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 22:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgCIV0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 17:26:01 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:51764 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726118AbgCIV0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 17:26:01 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1726954AbgCIVgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 17:36:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726872AbgCIVgd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 17:36:33 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A4A4AA40058;
-        Mon,  9 Mar 2020 21:25:59 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
- 21:25:53 +0000
-Subject: Re: [PATCH net-next ct-offload v2 05/13] net/sched: act_ct: Enable
- hardware offload of flow table entires
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "Oz Shlomo" <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
- <1583676662-15180-6-git-send-email-paulb@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <62d6cfde-5749-b2d6-ee04-d0a49b566d1a@solarflare.com>
-Date:   Mon, 9 Mar 2020 21:25:49 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        by mail.kernel.org (Postfix) with ESMTPSA id EC77624649;
+        Mon,  9 Mar 2020 21:36:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583789792;
+        bh=SdWtHnMAwBNnf4keZ7lmm+B5l2JSIfY6JcxS+mLFFco=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZP+D641yB/RbUbAEV/InmiMOGnk/uQrptpkg44eNb4CkVI2/EO7IaKMYbvdYrfASp
+         A+bAP+oZebkMoG+bTxdVKNj5fW7BeiPkDIetytB23GJQn8k9H/J1iPJQ2QBBy6cWCo
+         5KvfI0c2g+t8uUabvj6g1y9JuXPE7c6071JeAsso=
+Date:   Mon, 9 Mar 2020 14:36:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <pablo@netfilter.org>,
+        <mlxsw@mellanox.com>
+Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200309143630.2f83476f@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+        <20200307114020.8664-2-jiri@resnulli.us>
+        <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
 MIME-Version: 1.0
-In-Reply-To: <1583676662-15180-6-git-send-email-paulb@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-TM-AS-Result: No-5.231000-8.000000-10
-X-TMASE-MatchedRID: VPleTT1nwdTmLzc6AOD8DfHkpkyUphL9eouvej40T4gqAZlo5C3Li2/B
-        wZI7pijP+LMvZ1fdJAgcYnFbzUCEUwXjSpVHn22DgmAd4Attpn/pVMb1xnESMhQTXyPPP3faQBz
-        oPKhLasiPqQJ9fQR1znxCC5IJNss3qF4dEohoxMx1e7Xbb6Im2jQAl7cHmp8GI0YrtQLsSUxGIz
-        SvkOhmQGlJBRQEXrYxX7bicKxRIU23sNbcHjySQd0H8LFZNFG7CKFCmhdu5cWNqhoF92IKWU/kN
-        u4T8aEz7AvQYx+PufncKPedX3ozj+C8TF8M2Y23HgVd2XfOA+n1hX1AKaF8PCMPv9eybtILQ8Po
-        myr6J5lYcqTGA0A88Q/QLt7G/oc63pgQ4q/O6wuOSonfQdQNip6oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.231000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-MDID: 1583789160-m-atnUvUeR9p
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/03/2020 14:10, Paul Blakey wrote:
-> Pass the zone's flow table instance on the flow action to the drivers.
-> Thus, allowing drivers to register FT add/del/stats callbacks.
->
-> Finally, enable hardware offload on the flow table instance.
->
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> ---
-> <snip>
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 84d5abf..d52185d 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -292,6 +292,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
->  		goto err_insert;
->  
->  	ct_ft->nf_ft.type = &flowtable_ct;
-> +	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD;
->  	err = nf_flow_table_init(&ct_ft->nf_ft);
->  	if (err)
->  		goto err_init;
-> @@ -299,6 +300,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
->  	__module_get(THIS_MODULE);
->  take_ref:
->  	params->ct_ft = ct_ft;
-> +	params->nf_ft = &ct_ft->nf_ft;
->  	ct_ft->ref++;
->  	spin_unlock_bh(&zones_lock);
-This doesn't seem to apply to net-next (34a568a244be); the label after
- the __module_get() is 'out_unlock', not 'take_ref'.  Is there a missing
- prerequisite patch?  Or am I just failing to drive 'git am' correctly?
+On Mon, 9 Mar 2020 16:52:16 +0000 Edward Cree wrote:
+> On 07/03/2020 11:40, Jiri Pirko wrote:
+> > From: Jiri Pirko <jiri@mellanox.com>
+> >
+> > Initially, pass "ANY" (struct is zeroed) to the drivers as that is the
+> > current implicit value coming down to flow_offload. Add a bool
+> > indicating that entries have mixed HW stats type.
+> >
+> > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> > ---
+> > v3->v4:
+> > - fixed member alignment
+> > v2->v3:
+> > - moved to bitfield
+> > - removed "mixed" bool
+> > v1->v2:
+> > - moved to actions
+> > - add mixed bool
+> > ---
+> >  include/net/flow_offload.h | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> > index cd3510ac66b0..93d17f37e980 100644
+> > --- a/include/net/flow_offload.h
+> > +++ b/include/net/flow_offload.h
+> > @@ -154,6 +154,8 @@ enum flow_action_mangle_base {
+> >  	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
+> >  };
+> > =20
+> > +#define FLOW_ACTION_HW_STATS_TYPE_ANY 0 =20
+> I'm not quite sure why switching to a bit fieldapproach means these
+> =C2=A0haveto become #defines rather than enums...
 
--ed
+Perhaps having enum defining the values could be argued...
+
+> > +
+> >  typedef void (*action_destr)(void *priv);
+> > =20
+> >  struct flow_action_cookie {
+> > @@ -168,6 +170,7 @@ void flow_action_cookie_destroy(struct flow_action_=
+cookie *cookie);
+> > =20
+> >  struct flow_action_entry {
+> >  	enum flow_action_id		id;
+> > +	u8				hw_stats_type; =20
+> ... causing this to become a u8with nothing obviously preventing
+> =C2=A0a HW_STATS_TYPE bigger than 255 getting defined.
+> An enum type seems safer.
+
+...but using the type for fields which are very likely to contain
+values from outside of the enumeration seems confusing, IMHO.
+
+Driver author can understandably try to simply handle all the values=20
+in a switch statement and be unpleasantly surprised.
