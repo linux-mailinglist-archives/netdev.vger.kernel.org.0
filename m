@@ -2,259 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBB017E8B7
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 20:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E273917E8FE
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 20:46:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgCITgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 15:36:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32984 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725992AbgCITgV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 15:36:21 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 45EAF2465A;
-        Mon,  9 Mar 2020 19:36:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583782580;
-        bh=Q/Y8XhuVS8zV0t8K+w7GOL7XmCYXcjEqC5LXm81Ug0I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wA10nR8ux8Vp3EKnyUgW6pGIWE22tSfpPpMB6XIIaGnSn6bro1BIr8WBipP5NmJSs
-         IZK3OlycwPDU7+ecw1VROEbWe61AfYtEdiecWm6r2hY8v0Dzuh0FBW3BgnqK53QGRM
-         YYahJYXTRIylzGAqDJy1vTAnxN3L7rwFk/5imxKM=
-Date:   Mon, 9 Mar 2020 12:36:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Tero Kristo <t-kristo@ti.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Roger Quadros <rogerq@ti.com>,
-        <devicetree@vger.kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 5/9] net: ethernet: ti: introduce
- am65x/j721e gigabit eth subsystem driver
-Message-ID: <20200309123618.5e9bfd30@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <76009b01-2f02-41e8-aea2-16dd1cbddd93@ti.com>
-References: <20200306234734.15014-1-grygorii.strashko@ti.com>
-        <20200306234734.15014-6-grygorii.strashko@ti.com>
-        <20200306172027.18d88fb0@kicinski-fedora-PC1C0HJN>
-        <76009b01-2f02-41e8-aea2-16dd1cbddd93@ti.com>
+        id S1726269AbgCITqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 15:46:04 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41650 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725992AbgCITqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 15:46:04 -0400
+Received: by mail-wr1-f67.google.com with SMTP id v4so12773613wrs.8;
+        Mon, 09 Mar 2020 12:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iajNcMb4nFgTefMlkzyM3GBBDaX3XCUGHAbLXHtEp2U=;
+        b=eykaXS3nftIiU9qNCirUdhPCrcNIhvFrQbpnPPAsZheXslenyhMJYcL/p7YNzItkYa
+         niw8YKg6tcBNIhWpF2k5Im9/X/dusD24zMhnuTtuYtsiN4bG/1nPncxOpnllynv0HBDI
+         PZ0ldb+BeHB/CwCzdP88UWNtnH/IJbO1v8fXNxK4ZEhgaarlKWjXhMjjtTr1NkbiCZVw
+         hT8kIDT8i62M2dJfjJqJE7Kpp1SVLQ14WMCxfHfPZeNj1eyfC3vDcobrlv/Zv6Sq5wKW
+         bepZZucQBKFazyoqtHc+o2YE48mc5GJXaBmA+ZeqyE/pDfmXcY53qiW2agvEZ9wC8lMi
+         ySlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iajNcMb4nFgTefMlkzyM3GBBDaX3XCUGHAbLXHtEp2U=;
+        b=eYmIzUxpqBcg6vfdS5WY9O4rs14jaA8RicdO10pG2rNLwDduHlUFdfNPFcHt8XtDaF
+         XWC52ux6/kYsKxs44+p4m/+s+7kkTcHjdG+eSCEzpbsdA2OqHDT4gAqS3/irRR+3shaR
+         BX2Te8a2fzsMKJvO9rbpp7bhnZGN/SL3XzkogI4I+wE0L4aPFs3/5+zaDMW210z2NEMB
+         RO3zXckr0YDnqrt1BW8huCclN9e08PgtJQWZGkysAKCOjdFmznODfRJgRh0F1+eTfEE4
+         faJcaeEpkarMeC4sfxGxznJYunLtuQIV/zLtNCr/JIQ4qOeEL3dlTkEbR0erU9681+Cr
+         vDjA==
+X-Gm-Message-State: ANhLgQ38RG1KbvYt8LQ+EhdVp0NcWfsw90YvJXSxDR9EjKIy0/k5uBy6
+        gf0rQU9G0HbB+/22fGdkhcs=
+X-Google-Smtp-Source: ADFU+vtnoXo6Xy24Dkg/rmQG4Yt8eKB/a3nJC6l9sq0UV/OaeUWNujMEYL2S1jU6t+e0DAVmbctySg==
+X-Received: by 2002:adf:f7c1:: with SMTP id a1mr22442883wrq.299.1583783161378;
+        Mon, 09 Mar 2020 12:46:01 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:fd18:ac88:8412:f02? (p200300EA8F296000FD18AC8884120F02.dip0.t-ipconnect.de. [2003:ea:8f29:6000:fd18:ac88:8412:f02])
+        by smtp.googlemail.com with ESMTPSA id k133sm785404wma.11.2020.03.09.12.45.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Mar 2020 12:46:00 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] net: phy: tja11xx: add TJA1102 support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>
+References: <20200309074044.21399-1-o.rempel@pengutronix.de>
+ <20200309074044.21399-2-o.rempel@pengutronix.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <ec2361a9-1b7b-b939-a2a2-fac4d1146731@gmail.com>
+Date:   Mon, 9 Mar 2020 20:45:50 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200309074044.21399-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 7 Mar 2020 07:19:17 +0200 Grygorii Strashko wrote:
-> Hi Jakub,
+On 09.03.2020 08:40, Oleksij Rempel wrote:
+> TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
+> PHY 0 can be identified by PHY ID. PHY 1 has no PHY ID and can be
+> configured in device tree by setting compatible = "ethernet-phy-id0180.dc81".
 > 
-> Thank you for your review.
+> PHY 1 has less supported registers and functionality. For current driver
+> it will affect only the HWMON support.
 > 
-> On 07/03/2020 03:20, Jakub Kicinski wrote:
-> >> +static void am65_cpsw_get_drvinfo(struct net_device *ndev,
-> >> +				  struct ethtool_drvinfo *info)
-> >> +{
-> >> +	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
-> >> +
-> >> +	strlcpy(info->driver, dev_driver_string(common->dev),
-> >> +		sizeof(info->driver));
-> >> +	strlcpy(info->version, AM65_CPSW_DRV_VER, sizeof(info->version));  
-> > 
-> > Please remove the driver version, use of driver versions is being deprecated upstream.  
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/nxp-tja11xx.c | 102 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 102 insertions(+)
 > 
-> Hm. I can remove it np. But how do I or anybody else can know that it's deprecated
-> 
->   * @get_drvinfo: Report driver/device information.  Should only set the
->   *	@driver, @version, @fw_version and @bus_info fields.  If not
->   *	implemented, the @driver and @bus_info fields will be filled in
->   *	according to the netdev's parent device.
-> 
->   * struct ethtool_drvinfo - general driver and device information
-> ..
->   * @version: Driver version string; may be an empty string
-> 
-> It seems not marked as deprecated.
+> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+> index b705d0bd798b..f79c9aa051ed 100644
+> --- a/drivers/net/phy/nxp-tja11xx.c
+> +++ b/drivers/net/phy/nxp-tja11xx.c
+> @@ -15,6 +15,7 @@
+>  #define PHY_ID_MASK			0xfffffff0
+>  #define PHY_ID_TJA1100			0x0180dc40
+>  #define PHY_ID_TJA1101			0x0180dd00
+> +#define PHY_ID_TJA1102			0x0180dc80
+>  
+>  #define MII_ECTRL			17
+>  #define MII_ECTRL_LINK_CONTROL		BIT(15)
+> @@ -40,6 +41,10 @@
+>  #define MII_INTSRC_TEMP_ERR		BIT(1)
+>  #define MII_INTSRC_UV_ERR		BIT(3)
+>  
+> +#define MII_INTEN			22
+> +#define MII_INTEN_LINK_FAIL		BIT(10)
+> +#define MII_INTEN_LINK_UP		BIT(9)
+> +
+>  #define MII_COMMSTAT			23
+>  #define MII_COMMSTAT_LINK_UP		BIT(15)
+>  
+> @@ -190,6 +195,7 @@ static int tja11xx_config_init(struct phy_device *phydev)
+>  			return ret;
+>  		break;
+>  	case PHY_ID_TJA1101:
+> +	case PHY_ID_TJA1102:
+>  		ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
+>  		if (ret)
+>  			return ret;
+> @@ -354,6 +360,66 @@ static int tja11xx_probe(struct phy_device *phydev)
+>  	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
+>  }
+>  
+> +static int tja1102_match_phy_device(struct phy_device *phydev, bool port0)
+> +{
+> +	int ret;
+> +
+> +	if ((phydev->phy_id & PHY_ID_MASK) != PHY_ID_TJA1102)
 
-Thanks, it's _being_ deprecated, by which I mean we are slowly removing
-the use, and will mark it as deprecated afterwards. I take your point
-that we should have started with marking..
+For port 1 you rely on DT forcing the appropriate phy_id
+(else it would be 0 and port 1 wouldn't be matched).
+This is worth a describing comment.
 
-> >> +	psdata = cppi5_hdesc_get_psdata(desc_rx);
-> >> +	csum_info = psdata[2];
-> >> +	dev_dbg(dev, "%s rx csum_info:%#x\n", __func__, csum_info);
-> >> +
-> >> +	dma_unmap_single(dev, buf_dma, buf_dma_len, DMA_FROM_DEVICE);
-> >> +
-> >> +	k3_udma_desc_pool_free(rx_chn->desc_pool, desc_rx);
-> >> +
-> >> +	if (unlikely(!netif_running(skb->dev))) {  
-> > 
-> > This is strange, does am65_cpsw_nuss_ndo_slave_stop() not stop RX?  
-> 
-> Net core will set __LINK_STATE_START = 0 before calling .ndo_stop() and there could some time gap
-> between clearing __LINK_STATE_START and actually disabling RX.
-> if NAPI is in progress it will just allow to complete current NAPI cycle by discarding unwanted packets
-> and without statistic update.
+> +		return 0;
+> +
+> +	ret = phy_read(phydev, MII_PHYSID2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* TJA1102 Port 1 has phyid 0 and doesn't support temperature
+> +	 * and undervoltage alarms.
+> +	 */
+> +	if (port0)
+> +		return ret ? 1 : 0;
+> +
+> +	return !ret;
+> +}
+> +
+> +static int tja1102_p0_match_phy_device(struct phy_device *phydev)
+> +{
+> +	return tja1102_match_phy_device(phydev, true);
+> +}
+> +
+> +static int tja1102_p1_match_phy_device(struct phy_device *phydev)
+> +{
+> +	return tja1102_match_phy_device(phydev, false);
+> +}
+> +
+> +static int tja11xx_ack_interrupt(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read(phydev, MII_INTSRC);
+> +
+> +	return (ret < 0) ? ret : 0;
+> +}
+> +
+> +static int tja11xx_config_intr(struct phy_device *phydev)
+> +{
+> +	int value;
+> +	int ret;
+> +
+> +	value = phy_read(phydev, MII_INTEN);
+> +	if (value < 0)
+> +		return value;
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+> +		value |= MII_INTEN_LINK_FAIL;
+> +		value |= MII_INTEN_LINK_UP;
+> +
 
-That's fine, let the core discard those packets if it wants to.
-Disabling the interface while the traffic is flowing is a rare
-occurrence, it's a waste of cycles to check for every packet.
+This may leave unwanted interrupt sources active. Why not
+simply setting a fixed value like in the else clause?
 
-> >> +		dev_kfree_skb_any(skb);
-> >> +		return 0;
-> >> +	}
-> >> +
-> >> +	new_skb = netdev_alloc_skb_ip_align(ndev, AM65_CPSW_MAX_PACKET_SIZE);
-> >> +	if (new_skb) {
-> >> +		skb_put(skb, pkt_len);
-> >> +		skb->protocol = eth_type_trans(skb, ndev);
-> >> +		am65_cpsw_nuss_rx_csum(skb, csum_info);
-> >> +		napi_gro_receive(&common->napi_rx, skb);
-> >> +
-> >> +		ndev_priv = netdev_priv(ndev);
-> >> +		stats = this_cpu_ptr(ndev_priv->stats);
-> >> +
-> >> +		u64_stats_update_begin(&stats->syncp);
-> >> +		stats->rx_packets++;
-> >> +		stats->rx_bytes += pkt_len;
-> >> +		u64_stats_update_end(&stats->syncp);
-> >> +		kmemleak_not_leak(new_skb);
-> >> +	} else {
-> >> +		ndev->stats.rx_dropped++;
-> >> +		new_skb = skb;
-> >> +	}  
-> >   
-> >> +static int am65_cpsw_nuss_tx_poll(struct napi_struct *napi_tx, int budget)
-> >> +{
-> >> +	struct am65_cpsw_tx_chn *tx_chn = am65_cpsw_napi_to_tx_chn(napi_tx);
-> >> +	int num_tx;
-> >> +
-> >> +	num_tx = am65_cpsw_nuss_tx_compl_packets(tx_chn->common, tx_chn->id,
-> >> +						 budget);
-> >> +	if (num_tx < budget) {  
-> > 
-> > The budget is for RX, you can just complete all TX on a NAPI poll.  
-> 
-> Then TX will block RX. Right? this is soft IRQs which are executed one by one.
+> +		ret = phy_write(phydev, MII_INTEN, value);
+> +	}
+> +	else
 
-If anything completing all TX frames makes it more likely RX will have
-another memory to allocate from. AFAIK live lock by TX completions is
-unheard of.
-> >> +	tx_chn = &common->tx_chns[q_idx];
-> >> +	netif_txq = netdev_get_tx_queue(ndev, q_idx);
-> >> +
-> >> +	/* Map the linear buffer */
-> >> +	buf_dma = dma_map_single(dev, skb->data, pkt_len,
-> >> +				 DMA_TO_DEVICE);
-> >> +	if (unlikely(dma_mapping_error(dev, buf_dma))) {
-> >> +		dev_err(dev, "Failed to map tx skb buffer\n");  
-> > 
-> > You probably don't want to print errors when memory gets depleted.
-> > Counter is enough  
-> 
-> Could you please help me understand what is the relation between "memory depletion"
-> and dma_mapping_error()?
+Kernel style:
+Closing brace and else belong to one line. And the else clause
+needs braces too. checkpatch.pl should complain here.
 
-I don't know your platform, so the comment may not be accurate, but
-usually DMA mappings fail if the device has some memory addressing
-constraints, and all memory which can satisfy those is used. Or the
-memory situation is extremely dire and IOMMU driver can't allocate
-meta data.
+> +		ret = phy_write(phydev, MII_INTEN, 0);
+> +
+> +	return ret;
+> +}
+> +
+>  static struct phy_driver tja11xx_driver[] = {
+>  	{
+>  		PHY_ID_MATCH_MODEL(PHY_ID_TJA1100),
+> @@ -385,6 +451,41 @@ static struct phy_driver tja11xx_driver[] = {
+>  		.get_sset_count = tja11xx_get_sset_count,
+>  		.get_strings	= tja11xx_get_strings,
+>  		.get_stats	= tja11xx_get_stats,
+> +	}, {
+> +		.name		= "NXP TJA1102 Port 0",
+> +		.features       = PHY_BASIC_T1_FEATURES,
+> +		.probe		= tja11xx_probe,
+> +		.soft_reset	= tja11xx_soft_reset,
+> +		.config_init	= tja11xx_config_init,
+> +		.read_status	= tja11xx_read_status,
+> +		.match_phy_device = tja1102_p0_match_phy_device,
+> +		.suspend	= genphy_suspend,
+> +		.resume		= genphy_resume,
+> +		.set_loopback   = genphy_loopback,
+> +		/* Statistics */
+> +		.get_sset_count = tja11xx_get_sset_count,
+> +		.get_strings	= tja11xx_get_strings,
+> +		.get_stats	= tja11xx_get_stats,
+> +		.ack_interrupt	= tja11xx_ack_interrupt,
+> +		.config_intr	= tja11xx_config_intr,
+> +
+> +	}, {
+> +		.name		= "NXP TJA1102 Port 1",
+> +		.features       = PHY_BASIC_T1_FEATURES,
+> +		/* currently no probe for Port 1 is need */
+> +		.soft_reset	= tja11xx_soft_reset,
+> +		.config_init	= tja11xx_config_init,
+> +		.read_status	= tja11xx_read_status,
+> +		.match_phy_device = tja1102_p1_match_phy_device,
+> +		.suspend	= genphy_suspend,
+> +		.resume		= genphy_resume,
+> +		.set_loopback   = genphy_loopback,
+> +		/* Statistics */
+> +		.get_sset_count = tja11xx_get_sset_count,
+> +		.get_strings	= tja11xx_get_strings,
+> +		.get_stats	= tja11xx_get_stats,
+> +		.ack_interrupt	= tja11xx_ack_interrupt,
+> +		.config_intr	= tja11xx_config_intr,
+>  	}
+>  };
+>  
+> @@ -393,6 +494,7 @@ module_phy_driver(tja11xx_driver);
+>  static struct mdio_device_id __maybe_unused tja11xx_tbl[] = {
+>  	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1100) },
+>  	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1101) },
+> +	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
+>  	{ }
+>  };
+>  
+> 
 
-> >> +		ret = -EINVAL;  
-> > 
-> > EINVAL is not a valid netdev_tx_t..  
-> 
-> Considering dev_xmit_complete() - this part was always "black magic" to me :(
-> Will fix.
-> 
-> >> +		ndev->stats.tx_errors++;
-> >> +		goto drop_stop_q;  
-> > 
-> > Why stop queue on memory mapping error? What will re-enable it?  
-> 
-> it will not. I'm considering it as critical - no recovery.
-
-Oh, I see. If you're sure this can never happen (tm) on your platfrom
-I'd throw in a WARN_ON_ONCE() in this path so users know what's going
-on. That said it doesn't seem too hard to recover from, so normal error
-handling would be best.
-
-> >> +	}
-> >> +
-> >> +	first_desc = k3_udma_desc_pool_alloc(tx_chn->desc_pool);
-> >> +	if (!first_desc) {
-> >> +		dev_dbg(dev, "Failed to allocate descriptor\n");  
-> > 
-> > ret not set  
-> 
-> It will return NETDEV_TX_BUSY in this  case - below.
->
-> >> +		dma_unmap_single(dev, buf_dma, pkt_len, DMA_TO_DEVICE);
-> >> +		goto drop_stop_q_busy;
-> >> +	}  
-
-> >> +		}
-> >> +	}
-> >> +
-> >> +err:
-> >> +	return ret;
-> >> +}  
-> >   
-> >> +	/* register devres action here, so dev will be disabled
-> >> +	 * at right moment. The dev will be enabled in .remove() callback
-> >> +	 * unconditionally.
-> >> +	 */
-> >> +	ret = devm_add_action_or_reset(dev, am65_cpsw_pm_runtime_free, dev);
-> >> +	if (ret) {
-> >> +		dev_err(dev, "failed to add pm put reset action %d", ret);
-> >> +		return ret;
-> >> +	}  
-> > 
-> > Could you explain why you need this? Why can't remove disable PM?
-> > 
-> > In general looks to me like this driver abuses devm_ infra in ways
-> > which make it more complex than it needs to be :(  
-> 
-> Sry, can't agree here. This allows me to keep release sequence in sane way and get
-> rid of mostly all goto for fail cases (which are constant source of errors for complex
-> initialization sequences) by using standard framework.
-
-As a reviewer I can tell you with absolute certainty that using devm
-anywhere but in the probe function makes the driver a lot harder to
-review.
-
-IMHO the API to remove registered callbacks should be avoided like 
-the plague.
-
-> Regarding PM runtime
->   -  many Linux core framework provide devm_ APIs this and other
-> drivers are happy to use them.
->   - but, there is the problem: DD release sequence is
-> 
-> 	drv->remove(dev);
-> 
-> 	devres_release_all(dev);
-> 
-> and there is no devm_ API for PM runtime. So, if some initialization step is done with devm_ API and
-> It depends on device to be active - no way to solve it in .remove() callback easily.
-> For example, devm_of_platform_populate().
-> 
-> With above code I ensure that:
-> 
-> drv->remove(dev);
->   |- pm_runtime_get()
-> 
-> devres_release_all(dev);
->   |- devm_of_platform_populate_release()
->   |- pm_runtime_put()
->   |- pm_runtime_disable()
-
-Add devm_pm_* helpers for PM then?  That'd the preferred solution
-upstream.
