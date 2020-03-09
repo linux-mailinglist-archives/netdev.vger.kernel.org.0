@@ -2,127 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFB917E28C
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 15:29:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0655217E379
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgCIO3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 10:29:12 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:49386 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgCIO3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 10:29:11 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 029ESbNs038839;
-        Mon, 9 Mar 2020 09:28:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1583764118;
-        bh=PK9HkNhFkjhSgbGPGf8aZjBq6q1NmO8OJkQ0UtLLUrY=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=SAn3421TiO84EvcU9BpsikWSA7JcG9TeTbS74dJ9CuUaj/W4qCxM8fB1bLvYwzywm
-         IZI88wB5cUFyHKslgUJH4OPJ2CNLN+wQQYzklbnNR3RrJTP3/Sd/ftkFhxU0EArGqX
-         tGaKORIcLhVvGK4/hxqc3NAglL8E/IP3Jvk8WNy8=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 029ESbBw082094;
-        Mon, 9 Mar 2020 09:28:37 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 9 Mar
- 2020 09:28:37 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 9 Mar 2020 09:28:37 -0500
-Received: from [10.24.69.157] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 029ESXq0049548;
-        Mon, 9 Mar 2020 09:28:34 -0500
-Subject: Re: [PATCH v2 1/3] dt-bindings: m_can: Add Documentation for
- transceiver regulator
-From:   Faiz Abbas <faiz_abbas@ti.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <broonie@kernel.org>, <lgirdwood@gmail.com>,
-        <catalin.marinas@arm.com>, <mark.rutland@arm.com>,
-        <wg@grandegger.com>, <sriram.dash@samsung.com>, <dmurphy@ti.com>
-References: <20200217142836.23702-1-faiz_abbas@ti.com>
- <20200217142836.23702-2-faiz_abbas@ti.com> <20200219203529.GA21085@bogus>
- <a987bcd7-ca1c-dfda-72f3-cd2004a87ea5@ti.com>
- <20b86553-9b98-1a9d-3757-54174aa67c62@pengutronix.de>
- <72e4b1f4-e7f1-cccd-6327-0c8ab6f9f9a7@ti.com>
- <679bdfd3-5325-b903-de5f-1beb5b577d73@ti.com>
-Message-ID: <8400282d-8003-549b-3560-5b55b318e57a@ti.com>
-Date:   Mon, 9 Mar 2020 20:00:23 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727026AbgCIPXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 11:23:18 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53928 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbgCIPXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:23:17 -0400
+Received: by mail-wm1-f65.google.com with SMTP id g134so10405594wme.3;
+        Mon, 09 Mar 2020 08:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ve80bvQpmKNJ+h2omwraZB9P4ugFSfvavWFO8c8fRu0=;
+        b=ZXiqV1ek4RHVvW3AO8Lpds8Ra66k1BSfGZ0EmZXquaYdOIQXVmQVpIz+nJillyOJ1b
+         ODlUWeUeCXhS4S1JOb2ttzFCkV9XKXdjLBUcmBdO94O5wwvFwvEWeaSvYS2+piaoIjPS
+         /GJZLchXEc51KPnlwE8M5NGkJiQSO/K1lORWiDTD+tvkfoKMsFXMKHOLZfBaJ0v/1+HY
+         iZcLztOAdk3o2P6b0PpAYSGJ+i0pOwdGELa+5+TcgigHpqz4Tizat3C2oouhO+lWdgmR
+         NJ4p+MZ+q+yJtYaaF9ZfLla+vPffzFri/f2jo+5584uXaMbeZJZlER/eA2MzGU3wBQgF
+         eA/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ve80bvQpmKNJ+h2omwraZB9P4ugFSfvavWFO8c8fRu0=;
+        b=kGp48o3yTJiy4/D43eEUJh3q435zKe4XdciebRDSlym/TfYD5oyx30qV7da+0OPGig
+         GQv9h5a8exB8cEqE9FPZwgpflsITbuBN8GvdTh3wg17wPnockpXCyY956dRNonvGS2Wj
+         lGDuvBOP3wrE3rPYEHmfoqaART2UeaKuVgyFur5hHT21UnooHzAXA0lym/WCrBRv1xmY
+         MArGJ46qg5IKPbKlAhqKQd5U/a2yAymTvFrNjgDYjk1TARoBjFxhtsNvHUq4N4uD6Vl+
+         g2QW57vxJf6mR9Mkf9qzbC9NeSOezgUfrPF/xyv7YhRS+QkGF9C3e0GfnjR+uYTZ/N7F
+         ODdg==
+X-Gm-Message-State: ANhLgQ0jRh6tU8Sn42q0plT52maZeAfIpOxAdCrXr0IkkaxPYjfmldFn
+        DgUiAlPyKBSdL3Vt8Zoiv6c=
+X-Google-Smtp-Source: ADFU+vuCCpLKjE1CVcv5XtRb6odrFJpcsbO+MU1F2xdoU086rwZGkiduSYGI1UIEfKUGV1VjqfzJqA==
+X-Received: by 2002:a1c:740a:: with SMTP id p10mr20500194wmc.65.1583767396281;
+        Mon, 09 Mar 2020 08:23:16 -0700 (PDT)
+Received: from localhost.localdomain (178.43.54.24.ipv4.supernova.orange.pl. [178.43.54.24])
+        by smtp.gmail.com with ESMTPSA id a5sm12052400wrm.40.2020.03.09.08.23.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 Mar 2020 08:23:15 -0700 (PDT)
+From:   Dominik 'disconnect3d' Czarnota <dominik.b.czarnota@gmail.com>
+Cc:     dominik.b.czarnota@gmail.com, Byungho An <bh74.an@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Fix off by one in samsung driver strncpy size arg
+Date:   Mon,  9 Mar 2020 16:22:50 +0100
+Message-Id: <20200309152250.5686-1-dominik.b.czarnota@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <679bdfd3-5325-b903-de5f-1beb5b577d73@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+From: disconnect3d <dominik.b.czarnota@gmail.com>
 
-On 02/03/20 1:46 pm, Faiz Abbas wrote:
-> Marc,
-> 
-> On 26/02/20 2:40 pm, Faiz Abbas wrote:
->> Hi Marc,
->>
->> On 21/02/20 2:01 pm, Marc Kleine-Budde wrote:
->>> On 2/21/20 9:31 AM, Faiz Abbas wrote:
->>>> Hi Rob,
->>>>
->>>> On 20/02/20 2:05 am, Rob Herring wrote:
->>>>> On Mon, Feb 17, 2020 at 07:58:34PM +0530, Faiz Abbas wrote:
->>>>>> Some CAN transceivers have a standby line that needs to be asserted
->>>>>> before they can be used. Model this GPIO lines as an optional
->>>>>> fixed-regulator node. Document bindings for the same.
->>>>>>
->>>>>> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
->>>>>> ---
->>>>>>  Documentation/devicetree/bindings/net/can/m_can.txt | 3 +++
->>>>>>  1 file changed, 3 insertions(+)
->>>>>
->>>>> This has moved to DT schema in my tree, so please adjust it and resend.
->>>>
->>>> Ok.
->>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/net/can/m_can.txt b/Documentation/devicetree/bindings/net/can/m_can.txt
->>>>>> index ed614383af9c..f17e2a5207dc 100644
->>>>>> --- a/Documentation/devicetree/bindings/net/can/m_can.txt
->>>>>> +++ b/Documentation/devicetree/bindings/net/can/m_can.txt
->>>>>> @@ -48,6 +48,9 @@ Optional Subnode:
->>>>>>  			  that can be used for CAN/CAN-FD modes. See
->>>>>>  			  Documentation/devicetree/bindings/net/can/can-transceiver.txt
->>>>>>  			  for details.
->>>>>> +
->>>>>> +- xceiver-supply: Regulator that powers the CAN transceiver.
->>>>>
->>>>> The supply for a transceiver should go in the transceiver node.
->>>>>
->>>>
->>>> Marc, while I have you here, do you agree with this?
->>>
->>> I'll look into the details later today.
->>>
->>
->> Sure. Be sure to take another look at my attempt to use the transceiver
->> with a phy driver some time ago.
->>
->> https://lore.kernel.org/patchwork/patch/1006238/
->>
-> 
-> Do you have any comments?
-> 
+This patch fixes an off-by-one error in strncpy size argument in
+drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c. The issue is that in:
 
-Gentle ping.
+        strncmp(opt, "eee_timer:", 6)
 
-Thanks,
-Faiz
+the passed string literal: "eee_timer:" has 10 bytes (without the NULL
+byte) and the passed size argument is 6. As a result, the logic will
+also accept other, malformed strings, e.g. "eee_tiXXX:".
+
+This bug doesn't seem to have any security impact since its present in
+module's cmdline parsing code.
+
+Signed-off-by: disconnect3d <dominik.b.czarnota@gmail.com>
+---
+
+Notes:
+    I can't test this patch, so if someone can, please, do so.
+    
+    The bug could also be fixed by changing the size argument to
+    `sizeof("string literal")-1` or by using kernel's `strstarts` function that
+    uses `strlen` under the hood [1]
+    
+    There are also more cases like this in kernel sources which I
+    reported/will report soon.
+    
+    This bug has been found by running a massive grep-like search using
+    Google's BigQuery on GitHub repositories data. I am also going to work
+    on a CodeQL/Semmle query to be able to find more sophisticated cases
+    like this that can't be found via grepping.
+    
+    [1] https://elixir.bootlin.com/linux/latest/source/include/linux/string.h#L226
+
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+index c705743d69f7..2cc8184b7e6b 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2277,7 +2277,7 @@ static int __init sxgbe_cmdline_opt(char *str)
+ 	if (!str || !*str)
+ 		return -EINVAL;
+ 	while ((opt = strsep(&str, ",")) != NULL) {
+-		if (!strncmp(opt, "eee_timer:", 6)) {
++		if (!strncmp(opt, "eee_timer:", 10)) {
+ 			if (kstrtoint(opt + 10, 0, &eee_timer))
+ 				goto err;
+ 		}
+-- 
+2.25.1
+
