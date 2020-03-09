@@ -2,143 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EADD17E91F
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 20:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE7017E9C9
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 21:16:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbgCITtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 15:49:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27136 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726096AbgCITtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 15:49:32 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 029JcG5Y028438
-        for <netdev@vger.kernel.org>; Mon, 9 Mar 2020 12:49:31 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ynu7jrbvj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 12:49:31 -0700
-Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 9 Mar 2020 12:49:30 -0700
-Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id 0F8822E432EC0; Mon,  9 Mar 2020 12:49:29 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <brouer@redhat.com>, <ilias.apalodimas@linaro.org>
-CC:     <kernel-team@fb.com>
-Smtp-Origin-Cluster: vll1c12
-Subject: [PATCH] page_pool: use irqsave/irqrestore to protect ring access.
-Date:   Mon, 9 Mar 2020 12:49:29 -0700
-Message-ID: <20200309194929.3889255-1-jonathan.lemon@gmail.com>
+        id S1726415AbgCIUQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 16:16:18 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51316 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725992AbgCIUQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 16:16:17 -0400
+Received: by mail-wm1-f67.google.com with SMTP id a132so936673wme.1
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 13:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FD0mDEpsea8VECEMnvUDPdGgQcj6vPwqMx54ti64lQQ=;
+        b=qFFnpyRRF2vQq72WJn4NwTirj1K1GvInoyyykv5B6fSn/6kmse7iSW+SII5Db9Ilp4
+         yEWttcO6h4pw3kRG6HD8lz2LSAx9derIzKjIMcekpRu3Q8xQwRugulxLWoZrYyPjGvZp
+         tW/EYLvjoTUziZ/Vx+GGLsB1XzzLO0kpgnFVpPHCVNvSPU15/yWpzEa8UmH5YbNtjQh0
+         1+5nxu9n6VU8VNsA7NW0nMHpHOYKSEDDJtVTQ2FWz8fKLe9Tl56MiHjmlZ8/Ukgfbf7e
+         VzHOxLgkbI3ICgz+YTW7C9i0+QMUoyFK/b2eHKtCUjajqwCeg8JpyfPfioDEA8zA42S2
+         0EAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FD0mDEpsea8VECEMnvUDPdGgQcj6vPwqMx54ti64lQQ=;
+        b=mdZX3SL7TwnW2DUOZkVPY/046LpGoFGQ9BaFEUqiNBXA7eQbRep+n56BIv327Y72sR
+         z1F7gCQ2fhjGU/eI+PG861MA+QQbUUN7VtQsp/w6swo3Sa0BRF6hjiqV4YAsCtmc4rwT
+         sjbtZwUcaos+wjCvQGHLiicajugl7AS16jirB6fNPyQOcxbBCZwQFAb/pQqz9/mB+DUc
+         f5ld4m1j/qwj7LzjuAjZtAV6AHKBsOdW2JBohQ3k1fk6SRt+SIrSgyh5fapc9C8hDNdj
+         J1u0iQnxDjTSn56Ybko2kt8UZZPDpD/qUUdi87QG6EJskE/7+pSUumalH9X948SFuB84
+         5CVQ==
+X-Gm-Message-State: ANhLgQ0SqyaBr49u21Q3caP4YZpcaaiJ3UetV14aVVLMF5QwkPqcYTTk
+        0hNrrzw9gRb72jAjJqzYBNM=
+X-Google-Smtp-Source: ADFU+vu3MfoOqUM3JMJd5xQDhpRM5WU/S6z1gGf3OI4Gzr/BRzOX93FUWv1IlZYYQMwQZGGb75CrDg==
+X-Received: by 2002:a7b:c92e:: with SMTP id h14mr977019wml.90.1583784975297;
+        Mon, 09 Mar 2020 13:16:15 -0700 (PDT)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id o10sm15842689wru.38.2020.03.09.13.16.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 13:16:14 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
+Subject: [PATCH net] net: mscc: ocelot: properly account for VLAN header length when setting MRU
+Date:   Mon,  9 Mar 2020 22:16:08 +0200
+Message-Id: <20200309201608.14420-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-09_09:2020-03-09,2020-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=931 priorityscore=1501 impostorscore=0
- clxscore=1034 adultscore=0 phishscore=0 mlxscore=0 malwarescore=0
- bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003090121
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netpoll may be called from IRQ context, which may access the
-page pool ring.  The current _bh variants do not provide sufficient
-protection, so use irqsave/restore instead.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Error observed on a modified mlx4 driver, but the code path exists
-for any driver which calls page_pool_recycle from napi poll.
+What the driver writes into MAC_MAXLEN_CFG does not actually represent
+VLAN_ETH_FRAME_LEN but instead ETH_FRAME_LEN + ETH_FCS_LEN. Yes they are
+numerically equal, but the difference is important, as the switch treats
+VLAN-tagged traffic specially and knows to increase the maximum accepted
+frame size automatically. So it is always wrong to account for VLAN in
+the MAC_MAXLEN_CFG register.
 
-WARNING: CPU: 34 PID: 550248 at /ro/source/kernel/softirq.c:161 __local_bh_enable_ip+0x35/0x50
+Unconditionally increase the maximum allowed frame size for
+double-tagged traffic. Accounting for the additional length does not
+mean that the other VLAN membership checks aren't performed, so there's
+no harm done.
 
-    __page_pool_finish_recycle+0x14f/0x180
-    mlx4_en_recycle_tx_desc+0x44/0x50
-    mlx4_en_process_tx_cq+0x19f/0x440
-    mlx4_en_poll_rx_cq+0xd4/0xf0
-    netpoll_poll_dev+0xc2/0x190
-    netpoll_send_skb_on_dev+0xf5/0x230
-    netpoll_send_udp+0x2b3/0x3cd
-    write_ext_msg+0x1be/0x1d0
-    console_unlock+0x22e/0x500
-    vprintk_emit+0x23a/0x360
-    printk+0x48/0x4a
-    hpet_rtc_interrupt.cold.17+0xe/0x1a
-    __handle_irq_event_percpu+0x43/0x180
-    handle_irq_event_percpu+0x20/0x60
-    handle_irq_event+0x2a/0x47
-    handle_edge_irq+0x8e/0x190
-    handle_irq+0xbf/0x100
-    do_IRQ+0x41/0xc0
-    common_interrupt+0xf/0xf
-    </IRQ>
+Also, stop abusing the MTU name for configuring the MRU. There is no
+support for configuring the MRU on an interface at the moment.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
+Fixes: fa914e9c4d94 ("net: mscc: ocelot: create a helper for changing the port MTU")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/core/page_pool.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 28 +++++++++++++++++-----------
+ include/soc/mscc/ocelot_dev.h      |  2 +-
+ 2 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 626db912fce4..df9804e85a40 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -102,6 +102,7 @@ noinline
- static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- {
- 	struct ptr_ring *r = &pool->ring;
-+	unsigned long flags;
- 	struct page *page;
- 	int pref_nid; /* preferred NUMA node */
- 
-@@ -120,7 +121,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- #endif
- 
- 	/* Slower-path: Get pages from locked ring queue */
--	spin_lock(&r->consumer_lock);
-+	spin_lock_irqsave(&r->consumer_lock, flags);
- 
- 	/* Refill alloc array, but only if NUMA match */
- 	do {
-@@ -146,7 +147,7 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- 	if (likely(pool->alloc.count > 0))
- 		page = pool->alloc.cache[--pool->alloc.count];
- 
--	spin_unlock(&r->consumer_lock);
-+	spin_unlock_irqrestore(&r->consumer_lock, flags);
- 	return page;
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index cd4dd885f038..6e4cca34a04f 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2188,24 +2188,29 @@ static int ocelot_init_timestamp(struct ocelot *ocelot)
+ 	return 0;
  }
  
-@@ -321,11 +322,8 @@ static void page_pool_return_page(struct page_pool *pool, struct page *page)
- static bool page_pool_recycle_in_ring(struct page_pool *pool, struct page *page)
+-static void ocelot_port_set_mtu(struct ocelot *ocelot, int port, size_t mtu)
++/* Configure the maximum SDU (L2 payload) on RX to the value specified in @sdu.
++ * The length of VLAN tags is accounted for automatically via DEV_MAC_TAGS_CFG.
++ */
++static void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
  {
- 	int ret;
--	/* BH protection not needed if current is serving softirq */
--	if (in_serving_softirq())
--		ret = ptr_ring_produce(&pool->ring, page);
--	else
--		ret = ptr_ring_produce_bh(&pool->ring, page);
-+
-+	ret = ptr_ring_produce_any(&pool->ring, page);
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	int maxlen = sdu + ETH_HLEN + ETH_FCS_LEN;
+ 	int atop_wm;
  
- 	return (ret == 0) ? true : false;
+-	ocelot_port_writel(ocelot_port, mtu, DEV_MAC_MAXLEN_CFG);
++	ocelot_port_writel(ocelot_port, maxlen, DEV_MAC_MAXLEN_CFG);
+ 
+ 	/* Set Pause WM hysteresis
+-	 * 152 = 6 * mtu / OCELOT_BUFFER_CELL_SZ
+-	 * 101 = 4 * mtu / OCELOT_BUFFER_CELL_SZ
++	 * 152 = 6 * maxlen / OCELOT_BUFFER_CELL_SZ
++	 * 101 = 4 * maxlen / OCELOT_BUFFER_CELL_SZ
+ 	 */
+ 	ocelot_write_rix(ocelot, SYS_PAUSE_CFG_PAUSE_ENA |
+ 			 SYS_PAUSE_CFG_PAUSE_STOP(101) |
+ 			 SYS_PAUSE_CFG_PAUSE_START(152), SYS_PAUSE_CFG, port);
+ 
+ 	/* Tail dropping watermark */
+-	atop_wm = (ocelot->shared_queue_sz - 9 * mtu) / OCELOT_BUFFER_CELL_SZ;
+-	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * mtu),
++	atop_wm = (ocelot->shared_queue_sz - 9 * maxlen) /
++		   OCELOT_BUFFER_CELL_SZ;
++	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * maxlen),
+ 			 SYS_ATOP, port);
+ 	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
  }
-@@ -411,7 +409,7 @@ static void page_pool_empty_ring(struct page_pool *pool)
- 	struct page *page;
+@@ -2234,9 +2239,10 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
+ 			   DEV_MAC_HDX_CFG);
  
- 	/* Empty recycle ring */
--	while ((page = ptr_ring_consume_bh(&pool->ring))) {
-+	while ((page = ptr_ring_consume_any(&pool->ring))) {
- 		/* Verify the refcnt invariant of cached pages */
- 		if (!(page_ref_count(page) == 1))
- 			pr_crit("%s() page_pool refcnt %d violation\n",
+ 	/* Set Max Length and maximum tags allowed */
+-	ocelot_port_set_mtu(ocelot, port, VLAN_ETH_FRAME_LEN);
++	ocelot_port_set_maxlen(ocelot, port, ETH_DATA_LEN);
+ 	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
+ 			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
++			   DEV_MAC_TAGS_CFG_VLAN_DBL_AWR_ENA |
+ 			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
+ 			   DEV_MAC_TAGS_CFG);
+ 
+@@ -2329,18 +2335,18 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
+ 			 ANA_PORT_PORT_CFG, cpu);
+ 
+ 	if (npi >= 0 && npi < ocelot->num_phys_ports) {
+-		int mtu = VLAN_ETH_FRAME_LEN + OCELOT_TAG_LEN;
++		int sdu = ETH_DATA_LEN + OCELOT_TAG_LEN;
+ 
+ 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
+ 			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(npi),
+ 			     QSYS_EXT_CPU_CFG);
+ 
+ 		if (injection == OCELOT_TAG_PREFIX_SHORT)
+-			mtu += OCELOT_SHORT_PREFIX_LEN;
++			sdu += OCELOT_SHORT_PREFIX_LEN;
+ 		else if (injection == OCELOT_TAG_PREFIX_LONG)
+-			mtu += OCELOT_LONG_PREFIX_LEN;
++			sdu += OCELOT_LONG_PREFIX_LEN;
+ 
+-		ocelot_port_set_mtu(ocelot, npi, mtu);
++		ocelot_port_set_maxlen(ocelot, npi, sdu);
+ 
+ 		/* Enable NPI port */
+ 		ocelot_write_rix(ocelot,
+diff --git a/include/soc/mscc/ocelot_dev.h b/include/soc/mscc/ocelot_dev.h
+index 0a50d53bbd3f..7c08437061fc 100644
+--- a/include/soc/mscc/ocelot_dev.h
++++ b/include/soc/mscc/ocelot_dev.h
+@@ -74,7 +74,7 @@
+ #define DEV_MAC_TAGS_CFG_TAG_ID_M                         GENMASK(31, 16)
+ #define DEV_MAC_TAGS_CFG_TAG_ID_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
+ #define DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA                 BIT(2)
+-#define DEV_MAC_TAGS_CFG_PB_ENA                           BIT(1)
++#define DEV_MAC_TAGS_CFG_VLAN_DBL_AWR_ENA                 BIT(1)
+ #define DEV_MAC_TAGS_CFG_VLAN_AWR_ENA                     BIT(0)
+ 
+ #define DEV_MAC_ADV_CHK_CFG                               0x2c
 -- 
 2.17.1
 
