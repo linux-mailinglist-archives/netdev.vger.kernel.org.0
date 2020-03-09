@@ -2,119 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 466F217DD74
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:26:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E73017DDD3
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbgCIK0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 06:26:03 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:45269 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbgCIK0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:26:02 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1jBFbi-00061G-Q2; Mon, 09 Mar 2020 11:25:58 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00] (unknown [IPv6:2a03:f580:87bc:d400:124:7ee3:e89c:2c00])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id BD53D4C951D;
-        Mon,  9 Mar 2020 10:25:55 +0000 (UTC)
-Subject: Re: [PATCH] bonding: do not enslave CAN devices
-To:     David Miller <davem@davemloft.net>
-Cc:     socketcan@hartkopp.net, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org,
-        syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com,
-        dvyukov@google.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, stable@vger.kernel.org
-References: <d6d9368d-b468-3946-ac63-abedf6758154@hartkopp.net>
- <20200302.111249.471862054833131096.davem@davemloft.net>
- <03ff979e-a621-c9a3-9be3-13677c147f91@pengutronix.de>
- <20200306.211320.1410615421373955488.davem@davemloft.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <d69b4a32-5d3e-d100-78d3-d713b97eb2ff@pengutronix.de>
-Date:   Mon, 9 Mar 2020 11:25:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726466AbgCIKoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 06:44:02 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:39810 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbgCIKoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:44:02 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w65so4098024pfb.6;
+        Mon, 09 Mar 2020 03:44:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c8Bp+nPwovSicihOby87B5XLTMrdw3sYjYxEEbv5wt8=;
+        b=slEGYIg59gh6ysTpgSZttggAxcCpjbi50lHHcbsbIvU2DKukrc3Q01mNHaf73uKUHZ
+         FLMlK1HQrX9d49sNjBYmr9ojzqBg50RXrzUiV46ls92cKW3m4Uga03vcJWYzEeGZPfl+
+         djqkwwCJ3/bWcEQi358FTnDB79G9mezvU5/ebwKPn9h7YRa7qxM7HGoip1Un+3+J8TGt
+         v5k07WOj7xS+V+jfX8mNVBfggRglrlkx7WsDUL1nqFb9Tc40jr4v9+7LqB6UEv1b0Lc/
+         o/sbT+7hqJWfAbS8Q0Y44pW7UbokiWk6cnykKsTGCvzC+j4weI9X7KTgdAxa+WnVlQnR
+         509A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c8Bp+nPwovSicihOby87B5XLTMrdw3sYjYxEEbv5wt8=;
+        b=R0uf4tOLOYsff7fdETvbEh2/+/ANaIUV205UFGTEiVlxC8pVWsVryxh/+czM5K6mGp
+         13hdfMCSB/P6NtaHPJG9QcGBXNEJxuMkr9zpKXzepxgRNypQM3lgWiZYqkyxGIlYy1cF
+         xOsgUAys8iIyk03Q8xoSi4/GPmgr/tdZPc3jTS9+HyiWLsK/5AiDr+K6MT+r0r0fU9Mg
+         y5eSdRxpWmW7DQInZwFXqJy9njXEtcguP3gRfO26EQshB6CsqWFVp9/k6H3SYLxyXQ+0
+         CS9yIfIsLpKZRG8+d214Ug2YMTPeQayi7Ufur9YWFtIkM25YvZ6q1jtExntJpCiEUdT5
+         LybQ==
+X-Gm-Message-State: ANhLgQ10FrGWWHnN325cco6ZqpJZe3Hzl4BQjVsBCDGUzt4dUmZA+XfL
+        qMoeu2EDtAZ/R7KbjsjF4Rw=
+X-Google-Smtp-Source: ADFU+vtRFX96zmPBwSppbimg+E/3Q+27jc5AiBLwDOEZdexKbH3UdJJl5iZcxnooBzPcmb+JPQQZtQ==
+X-Received: by 2002:a63:b34d:: with SMTP id x13mr15895811pgt.317.1583750640989;
+        Mon, 09 Mar 2020 03:44:00 -0700 (PDT)
+Received: from masabert (i118-21-156-233.s30.a048.ap.plala.or.jp. [118.21.156.233])
+        by smtp.gmail.com with ESMTPSA id t17sm44323051pgn.94.2020.03.09.03.44.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 03:44:00 -0700 (PDT)
+Received: by masabert (Postfix, from userid 1000)
+        id BF2902360374; Mon,  9 Mar 2020 19:43:58 +0900 (JST)
+From:   Masanari Iida <standby24x7@gmail.com>
+To:     linux-kernel@vger.kernel.org, davem@davemloft.net, corbet@lwn.net,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] linux-next: DOC: RDS: Fix a typo in rds.txt
+Date:   Mon,  9 Mar 2020 19:43:56 +0900
+Message-Id: <20200309104356.56267-1-standby24x7@gmail.com>
+X-Mailer: git-send-email 2.26.0.rc0
 MIME-Version: 1.0
-In-Reply-To: <20200306.211320.1410615421373955488.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/7/20 6:13 AM, David Miller wrote:
-> From: Marc Kleine-Budde <mkl@pengutronix.de>
-> Date: Fri, 6 Mar 2020 15:12:48 +0100
-> 
->> On 3/2/20 8:12 PM, David Miller wrote:
->>> From: Oliver Hartkopp <socketcan@hartkopp.net>
->>> Date: Mon, 2 Mar 2020 09:45:41 +0100
->>>
->>>> I don't know yet whether it makes sense to have CAN bonding/team
->>>> devices. But if so we would need some more investigation. For now
->>>> disabling CAN interfaces for bonding/team devices seems to be
->>>> reasonable.
->>>
->>> Every single interesting device that falls into a special use case
->>> like CAN is going to be tempted to add a similar check.
->>>
->>> I don't want to set this precedence.
->>>
->>> Check that the devices you get passed are actually CAN devices, it's
->>> easy, just compare the netdev_ops and make sure they equal the CAN
->>> ones.
->>
->> Sorry, I'm not really sure how to implement this check.
-> 
-> Like this:
-> 
-> if (netdev->ops != &can_netdev_ops)
-> 	return;
+This patch fix a spelling typo in rds.txt
 
-There is no single can_netdev_ops. The netdev_ops are per CAN-network
-driver. But the ml_priv is used in the generic CAN code.
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+---
+ Documentation/networking/rds.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-regards,
-Marc
-
+diff --git a/Documentation/networking/rds.txt b/Documentation/networking/rds.txt
+index f2a0147c933d..eec61694e894 100644
+--- a/Documentation/networking/rds.txt
++++ b/Documentation/networking/rds.txt
+@@ -159,7 +159,7 @@ Socket Interface
+ 	set SO_RDS_TRANSPORT on a socket for which the transport has
+ 	been previously attached explicitly (by SO_RDS_TRANSPORT) or
+ 	implicitly (via bind(2)) will return an error of EOPNOTSUPP.
+-	An attempt to set SO_RDS_TRANSPPORT to RDS_TRANS_NONE will
++	An attempt to set SO_RDS_TRANSPORT to RDS_TRANS_NONE will
+ 	always return EINVAL.
+ 
+ RDMA for RDS
 -- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+2.26.0.rc0
+
