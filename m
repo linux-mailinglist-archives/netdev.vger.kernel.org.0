@@ -2,133 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A495B17E5CD
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:34:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9746417E5DB
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:36:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbgCIReP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 13:34:15 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41757 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727254AbgCIReO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:34:14 -0400
-Received: by mail-wr1-f67.google.com with SMTP id v4so12317553wrs.8
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 10:34:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=7BtSXHM6bpU1ghUOCtb/9O0kKQoQV+A7kwwzPyBvR7A=;
-        b=pAOe+dghcG8JdcyczZy0gpO4ONc1lY1Eio03T5lD6EBtq6JF7aqUQmfr34xwAQqWtF
-         OdEp2lWJF32nk6jF/s6gI0XyLHypt/OgTNzyYOfcG/lctoQOv9gJNOVWVYBtswzfWSIB
-         w7EhphtTO7umGgz2LPWKWRg2gZXuByE/7XgLh6H6vtrcO7ElchxQ5aZrQGWqZ2eu670c
-         /8fmEEryvjMVSenpJls7jZJpD43WS8fyeXTpxhrMJpKFd+Oxg03g/ZFzHBy2cxN1igzq
-         AcPNEWW5TDUoioOtkZq70fpzMrTH9jt0W94f3nylG0a316JbRAh1bc/g7QX74xxn+y6f
-         TWPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=7BtSXHM6bpU1ghUOCtb/9O0kKQoQV+A7kwwzPyBvR7A=;
-        b=NJZMS2MjeIaxwKxnP4wRu+6F/1nYVrzu89TrV+wt4Znj8o9tBGcLFUDQgCmeIVI8Iu
-         CJ9j3SXEk3xQXPG0JiyAUTu2hMRODmHigSVEQEXunH5oJKshK0Ez2ccJoMyIz55bzzAc
-         j6Db79T9gylnUld6R7U3GHK0geOnyXECdQ6PjmScF4F4ogWptMeLPCQvzALQAKJy90xk
-         54WS7q5E1v9+xzfC3ci1AMJcVG6uPHcWeHtrpUJLKpA+adsjzCnz9OdwaQgMUiM2GWSo
-         UbdXBlweRp6UMCPnVBPJJoMJE9Jdvlhg/TtlB+IpdHynyJUq6H7j33NTm+jAj3VRIFFk
-         aUJw==
-X-Gm-Message-State: ANhLgQ1j+0eeuTXGTdgB7HXSvsDrnV/5bLS0erqIuNAUbUagDX9y2GLm
-        jIFhtot/nBFhkAu1yilskbpncQ==
-X-Google-Smtp-Source: ADFU+vueOleS5BAq9Hiusjixd7LKBfXDpzJPq2Z9Ek4Aimatb/U2VGZsTpCxhGjVBBYn9GGq6plCpw==
-X-Received: by 2002:adf:f105:: with SMTP id r5mr21989971wro.314.1583775253377;
-        Mon, 09 Mar 2020 10:34:13 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id a5sm1217800wrw.62.2020.03.09.10.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 10:34:12 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 18:34:12 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
-        vishal@chelsio.com, jeffrey.t.kirsher@intel.com,
-        idosch@mellanox.com, aelior@marvell.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, pablo@netfilter.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200309173412.GF13968@nanopsycho.orion>
-References: <20200307114020.8664-1-jiri@resnulli.us>
- <20200307114020.8664-2-jiri@resnulli.us>
- <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+        id S1727386AbgCIRgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 13:36:50 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:42682 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727257AbgCIRgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:36:49 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 281564C005C;
+        Mon,  9 Mar 2020 17:36:47 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
+ 17:36:32 +0000
+Subject: Re: [PATCH net-next ct-offload v2 02/13] net/sched: act_ct:
+ Instantiate flow table entry actions
+To:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "David Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
+ <1583676662-15180-3-git-send-email-paulb@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <5dde483c-be42-644c-30b5-add308b4f69d@solarflare.com>
+Date:   Mon, 9 Mar 2020 17:36:30 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <1583676662-15180-3-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-TM-AS-Result: No-14.701400-8.000000-10
+X-TMASE-MatchedRID: ZFzIhWOuIzvmLzc6AOD8DfHkpkyUphL9B4bXdj887A8Lt1T6w2Ze0t5Q
+        ZVAH5Zt2YWTnOnMH547fbYqgOvx6nZ6CKaYYGfNGR0BY8wG7yRA1TzP60UkdHQpCjqVELlwVAUq
+        wO9pSIT2auV0m1Pa00e4UL2DTQdBzCQZYBny/onOHZXNSWjgdUweCHewokHM/27KSseGDg92Ind
+        s1RGmDCxy68x3kzf05foaZKm4m1WlRq+qIQYdPyehsg0dmQfnGUPO4Up/w0pNGMe+tDjQ3FpGrd
+        WQJt2T1WOtcAGFuzQRuL3ESIrARl1U97fGGL+q3PwKTD1v8YV5MkOX0Uoduuc9essRvi1FZ1DQW
+        12L1ci4A9xn3PN8twldXfmY1NScsEs+RG1oouyUMOWxRtywg+ts4MOUU/wa2e1OjQ/WyxP7JpL/
+        lo1j1HrHCuW/KSMCa/9nQZVP1z1QVlVZBrluia/KUR83BvqItoiKTb964zHVHZg0gWH5yUXd7bc
+        i/LVuNp+Ew/5yfsGghbV0QbOOjh4YU3uv70YCLuoibJpHRrFngt7TT//Roak2v0JV0JaVRo8WMk
+        QWv6iWhMIDkR/KfwI2j49Ftap9EOwBXM346/+yT5lm5kqPo4N3dw45mFb3g0vA6SHFyW0y2sbQo
+        9yWnz0ZKy8Qhz1VF
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--14.701400-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-MDID: 1583775408-reE0RjNAsDP9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Mar 09, 2020 at 05:52:16PM CET, ecree@solarflare.com wrote:
->On 07/03/2020 11:40, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->>
->> Initially, pass "ANY" (struct is zeroed) to the drivers as that is the
->> current implicit value coming down to flow_offload. Add a bool
->> indicating that entries have mixed HW stats type.
->>
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->> v3->v4:
->> - fixed member alignment
->> v2->v3:
->> - moved to bitfield
->> - removed "mixed" bool
->> v1->v2:
->> - moved to actions
->> - add mixed bool
->> ---
->>  include/net/flow_offload.h | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> index cd3510ac66b0..93d17f37e980 100644
->> --- a/include/net/flow_offload.h
->> +++ b/include/net/flow_offload.h
->> @@ -154,6 +154,8 @@ enum flow_action_mangle_base {
->>  	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
->>  };
->>  
->> +#define FLOW_ACTION_HW_STATS_TYPE_ANY 0
->I'm not quite sure why switching to a bit fieldapproach means these
-> haveto become #defines rather than enums...
+On 08/03/2020 14:10, Paul Blakey wrote:
+> NF flow table API associate 5-tuple rule with an action list by calling
+> the flow table type action() CB to fill the rule's actions.
 >
->> +
->>  typedef void (*action_destr)(void *priv);
->>  
->>  struct flow_action_cookie {
->> @@ -168,6 +170,7 @@ void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
->>  
->>  struct flow_action_entry {
->>  	enum flow_action_id		id;
->> +	u8				hw_stats_type;
->... causing this to become a u8with nothing obviously preventing
-> a HW_STATS_TYPE bigger than 255 getting defined.
-
-I don't follow.
-
-
->An enum type seems safer.
-
-Well, it's is a bitfield, how do you envision to implement it. Have enum
-value for every combination? I don't get it.
-
-
+> In action CB of act_ct, populate the ct offload entry actions with a new
+> ct_metadata action. Initialize the ct_metadata with the ct mark, label and
+> zone information. If ct nat was performed, then also append the relevant
+> packet mangle actions (e.g. ipv4/ipv6/tcp/udp header rewrites).
 >
->-ed
+> Drivers that offload the ft entries may match on the 5-tuple and perform
+> the action list.
 >
->>  	action_destr			destructor;
->>  	void				*destructor_priv;
->>  	union {
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+> Changelog:
+>    v1->v2:
+>      Remove zone from metadata
+>      Add add mangle helper func (removes the unneccasry () and correct the mask there)
+>      Remove "abuse" of ? operator and use switch case
+>      Check protocol and ports in relevant function and return err
+>      On error restore action entries (on the topic, validaiting num of action isn't available)
+>      Add comment expalining nat
+>      Remove Inlinie from tcf_ct_flow_table_flow_action_get_next
+>      Refactor tcf_ct_flow_table_add_action_nat_ipv6 with helper
+>      On nats, allow both src and dst mangles
 >
+>  include/net/flow_offload.h            |   5 +
+>  include/net/netfilter/nf_flow_table.h |  23 ++++
+>  net/netfilter/nf_flow_table_offload.c |  23 ----
+>  net/sched/act_ct.c                    | 208 ++++++++++++++++++++++++++++++++++
+>  4 files changed, 236 insertions(+), 23 deletions(-)
+>
+> <snip>
+> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> index 23eba61..d57e7969 100644
+> --- a/net/sched/act_ct.c
+> +++ b/net/sched/act_ct.c
+> @@ -55,7 +55,215 @@ struct tcf_ct_flow_table {
+>  	.automatic_shrinking = true,
+>  };
+>  
+> +static struct flow_action_entry *
+> +tcf_ct_flow_table_flow_action_get_next(struct flow_action *flow_action)
+> +{
+> +	int i = flow_action->num_entries++;
+> +
+> +	return &flow_action->entries[i];
+> +}
+> +
+> +static void tcf_ct_add_mangle_action(struct flow_action *action,
+> +				     enum flow_action_mangle_base htype,
+> +				     u32 offset,
+> +				     u32 mask,
+> +				     u32 val)
+> +{
+> +	struct flow_action_entry *entry;
+> +
+> +	entry = tcf_ct_flow_table_flow_action_get_next(action);
+> +	entry->id = FLOW_ACTION_MANGLE;
+> +	entry->mangle.htype = htype;
+> +	entry->mangle.mask = ~mask;
+> +	entry->mangle.offset = offset;
+> +	entry->mangle.val = val;
+> +}
+> +
+> +static void
+> +tcf_ct_flow_table_add_action_nat_ipv4(const struct nf_conntrack_tuple *tuple,
+> +				      struct nf_conntrack_tuple target,
+> +				      struct flow_action *action)
+> +{
+> +	if (memcmp(&target.src.u3, &tuple->src.u3, sizeof(target.src.u3)))
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
+> +					 offsetof(struct iphdr, saddr),
+> +					 0xFFFFFF,
+Why is this mask only 24 bits?
+
+> +					 be32_to_cpu(target.src.u3.ip));
+> +	if (memcmp(&target.dst.u3, &tuple->dst.u3, sizeof(target.dst.u3)))
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
+> +					 offsetof(struct iphdr, daddr),
+> +					 0xFFFFFF,
+> +					 be32_to_cpu(target.dst.u3.ip));
+> +}
+> +
+> +static void
+> +tcf_ct_add_ipv6_addr_mangle_action(struct flow_action *action,
+> +				   union nf_inet_addr *addr,
+> +				   u32 offset)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < sizeof(struct in6_addr) / sizeof(u32); i++)
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP6,
+> +					 i * sizeof(u32) + offset,
+> +					 0xFFFFFF, be32_to_cpu(addr->ip6[i]));
+Again, looks like this is meant to be 0xffffffff.
+
+> +}
+> +
+> +static void
+> +tcf_ct_flow_table_add_action_nat_ipv6(const struct nf_conntrack_tuple *tuple,
+> +				      struct nf_conntrack_tuple target,
+> +				      struct flow_action *action)
+> +{
+> +	if (memcmp(&target.src.u3, &tuple->src.u3, sizeof(target.src.u3)))
+> +		tcf_ct_add_ipv6_addr_mangle_action(action, &target.src.u3,
+> +						   offsetof(struct ipv6hdr,
+> +							    saddr));
+> +	if (memcmp(&target.dst.u3, &tuple->dst.u3, sizeof(target.dst.u3)))
+> +		tcf_ct_add_ipv6_addr_mangle_action(action, &target.dst.u3,
+> +						   offsetof(struct ipv6hdr,
+> +							    daddr));
+> +}
+> +
+> +static void
+> +tcf_ct_flow_table_add_action_nat_tcp(const struct nf_conntrack_tuple *tuple,
+> +				     struct nf_conntrack_tuple target,
+> +				     struct flow_action *action)
+> +{
+> +	__be16 target_src = target.src.u.tcp.port;
+> +	__be16 target_dst = target.dst.u.tcp.port;
+> +
+> +	if (target_src != tuple->src.u.tcp.port)
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
+> +					 offsetof(struct tcphdr, source),
+> +					 0xFFFF, htons(target_src));
+htons() on a __be16 is wrong â€” did you run this through sparse?
+(htons takes a u16 and returns a __be16: "host to network short".)
+Either ntohs() or, canonically, be16_to_cpu().
+
+> +	if (target_dst != tuple->dst.u.tcp.port)
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
+> +					 offsetof(struct tcphdr, dest),
+> +					 0xFFFF, htons(target_dst));
+> +}
+> +
+> +static void
+> +tcf_ct_flow_table_add_action_nat_udp(const struct nf_conntrack_tuple *tuple,
+> +				     struct nf_conntrack_tuple target,
+> +				     struct flow_action *action)
+> +{
+> +	__be16 target_src = target.src.u.udp.port;
+> +	__be16 target_dst = target.dst.u.udp.port;
+> +
+> +	if (target_src != tuple->src.u.udp.port)
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
+> +					 offsetof(struct udphdr, source),
+> +					 0xFFFF, htons(target_src));
+> +	if (target_dst != tuple->dst.u.udp.port)
+> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
+> +					 offsetof(struct udphdr, dest),
+> +					 0xFFFF, htons(target_dst));
+> +}
+> +
+> +static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
+> +					      enum ip_conntrack_dir dir,
+> +					      struct flow_action *action)
+> +{
+> +	struct nf_conn_labels *ct_labels;
+> +	struct flow_action_entry *entry;
+> +	u32 *act_ct_labels;
+> +
+> +	entry = tcf_ct_flow_table_flow_action_get_next(action);
+> +	entry->id = FLOW_ACTION_CT_METADATA;
+> +#if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
+> +	entry->ct_metadata.mark = ct->mark;
+> +#endif
+> +
+> +	act_ct_labels = entry->ct_metadata.labels;
+> +	ct_labels = nf_ct_labels_find(ct);
+> +	if (ct_labels)
+> +		memcpy(act_ct_labels, ct_labels->bits, NF_CT_LABELS_MAX_SIZE);
+> +	else
+> +		memset(act_ct_labels, 0, NF_CT_LABELS_MAX_SIZE);
+> +}
+> +
+> +static int tcf_ct_flow_table_add_action_nat(struct net *net,
+> +					    struct nf_conn *ct,
+> +					    enum ip_conntrack_dir dir,
+> +					    struct flow_action *action)
+> +{
+> +	const struct nf_conntrack_tuple *tuple = &ct->tuplehash[dir].tuple;
+> +	struct nf_conntrack_tuple target;
+> +
+> +	nf_ct_invert_tuple(&target, &ct->tuplehash[!dir].tuple);
+> +
+> +	/* The following helper functions check if the inverted reverse tuple
+> +	 * is different then the current dir tuple - meaning nat for ports
+> +	 * and/or ip is needed, and add the relevant mangle actions.
+> +	 */
+Probably better to put this comment above the helpers, ratherthan the
+Â calls to them, so that people reading the source linearly see the comment
+Â before the memcmp()s.
+
+-ed
+> +
+> +	switch (tuple->src.l3num) {
+> +	case NFPROTO_IPV4:
+> +		tcf_ct_flow_table_add_action_nat_ipv4(tuple, target,
+> +						      action);
+> +		break;
+> +	case NFPROTO_IPV6:
+> +		tcf_ct_flow_table_add_action_nat_ipv6(tuple, target,
+> +						      action);
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	switch (nf_ct_protonum(ct)) {
+> +	case IPPROTO_TCP:
+> +		tcf_ct_flow_table_add_action_nat_tcp(tuple, target, action);
+> +		break;
+> +	case IPPROTO_UDP:
+> +		tcf_ct_flow_table_add_action_nat_udp(tuple, target, action);
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int tcf_ct_flow_table_fill_actions(struct net *net,
+> +					  const struct flow_offload *flow,
+> +					  enum flow_offload_tuple_dir tdir,
+> +					  struct nf_flow_rule *flow_rule)
+> +{
+> +	struct flow_action *action = &flow_rule->rule->action;
+> +	int num_entries = action->num_entries;
+> +	struct nf_conn *ct = flow->ct;
+> +	enum ip_conntrack_dir dir;
+> +	int i, err;
+> +
+> +	switch (tdir) {
+> +	case FLOW_OFFLOAD_DIR_ORIGINAL:
+> +		dir = IP_CT_DIR_ORIGINAL;
+> +		break;
+> +	case FLOW_OFFLOAD_DIR_REPLY:
+> +		dir = IP_CT_DIR_REPLY;
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	err = tcf_ct_flow_table_add_action_nat(net, ct, dir, action);
+> +	if (err)
+> +		goto err_nat;
+> +
+> +	tcf_ct_flow_table_add_action_meta(ct, dir, action);
+> +	return 0;
+> +
+> +err_nat:
+> +	/* Clear filled actions */
+> +	for (i = num_entries; i < action->num_entries; i++)
+> +		memset(&action->entries[i], 0, sizeof(action->entries[i]));
+> +	action->num_entries = num_entries;
+> +
+> +	return err;
+> +}
+> +
+>  static struct nf_flowtable_type flowtable_ct = {
+> +	.action		= tcf_ct_flow_table_fill_actions,
+>  	.owner		= THIS_MODULE,
+>  };
+>  
+
