@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B82E17DF76
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A23D17DF7A
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:04:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbgCIMCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 08:02:48 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35425 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbgCIMCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:02:48 -0400
-Received: by mail-ed1-f66.google.com with SMTP id a20so5757528edj.2
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:02:47 -0700 (PDT)
+        id S1726465AbgCIME5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 08:04:57 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:43707 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbgCIME5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:04:57 -0400
+Received: by mail-wr1-f68.google.com with SMTP id v9so10727490wrf.10
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=wAXZGMSjoijy/QP9ViAqi1UYH5oCWChzX0al4oQEe2I=;
-        b=QO3rVkjKMzytHe/KlOMrQ3vB8x4XaDtvo1yoq+4oVo99Ui6QkXHdPA36ToG2C49zOn
-         II8LFYHKlr6TFsZG/0Y3Jpi6he6BZX1xQfIErAHKhUlsIMSqrgYFaVbT+tk5bcDyYIYg
-         JHkLBl6SjGHkNhm0dJlOaXkuWcabAbGzL2wkfV/p1vNg9jonoqYe9uVahk3hhW/OuhpQ
-         oSYhKdCn/C710UMmh2rnr2xXb2Fp8S+8FQ55HLjlXyjiDVPg4HIAt0Iw80yZo/dMkubh
-         5Hr6f3om3ye4OmJmE4W6ZWYf/GZ8Oh+ScFaeIiJ82mtgaOMqD29A+HP+C1XKE0eVH/P+
-         w/rg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zEiM7K8u2KvOZM51+eTlZdAqX7p3eS4IMtHf8PmMNY8=;
+        b=wnSWOV+1On/vn4PM51npvbaYlvfCP+TSaaWhhSlElLSjxc9knrW/ue6xJJMBLkX/Ly
+         pWxSj6WyzV/4DAgt1aiMQWyWNkOGrptVqPDFSgQZCHXdwGGXWE7D87sI/nty4zvmxhC6
+         HonY1e+5g8p5aCE2ZJx9D0KLPuMIoYWkmCMYYv8QsInhIb6kb4vbURbtEfFB+JJqGnRG
+         FS/VUlWmufJIDuVeo4a0pN5TvkHqX0AkZNvgsAnxtGa4DzA7modIw7ilaH+e/y+JH74s
+         q8EOQp/cBgrWyFp9qYvX1Pq37k8XYgd7KE6PahfnZ/vwigPWSy40g+uK8SDDZnhYPSfx
+         7rmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=wAXZGMSjoijy/QP9ViAqi1UYH5oCWChzX0al4oQEe2I=;
-        b=iRtOnX76M29vlW2NYcsDSxcpAJgjUVBMBN73gTTORxjEwhXyOLWZ5mVCR9rIUe8Mgq
-         tV57XeB9qHzlv225X7/4WgtCDAuGcMwCCfsy2objV/FzAcHvynW6qHfvJuIuKYqHIxjl
-         +A9xlfWq4KsdxcnSC1a8K7VN8LYpolS9V949tOEvrWSaWqqGlJD4sAIcqou6W+HWMaUw
-         kxJtDDaDAIp/IdGUW6rTjAuRv4/tSQGOUIZmY8tKzBL9AXWv+YGH4gcyI5Loxzrw9xf0
-         mgB+IkzgXll0T5fh/G7g1/7ZpJ7JA7qDXLlPpOyI9no2bBwXkJmabaB+XUZJjYb9H6RM
-         Ljaw==
-X-Gm-Message-State: ANhLgQ2/mVlfmB6q5IZsD5nblCCENA9tSxn3AreZlpdrnLkSCLDxLwgM
-        Umul3tLkGb/oa/Te2sYL2eyNNI2bNCvL9CALaeY=
-X-Google-Smtp-Source: ADFU+vv8Qun0NQ9C+Sct8X1klMtnBr99ELv+mohrakbEwv5UbZbfHK1WKXvN5kmCJxwXwWn+KEmCO6YckSHIuEfwIDA=
-X-Received: by 2002:a50:af46:: with SMTP id g64mr16796379edd.265.1583755366734;
- Mon, 09 Mar 2020 05:02:46 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zEiM7K8u2KvOZM51+eTlZdAqX7p3eS4IMtHf8PmMNY8=;
+        b=QFK89AfgCju/RoXI94ElbqevuAVmNQaWCkPc305vBKpPWgZ3FgeJS3WH8c0eZy2XIM
+         V2IYriL1dWMD48kBMm5i07slkbtWJ0XBu1macmu8hgUTQqTOG1ueC33FDe4mpARfeCCO
+         Uc3tslPbJ7xrWibPaGbLpu+AEjX6AV4dsxoKzDN7n3LcO7Ab9BLI5vSRknRBmTXTvPpN
+         sp8eVheSVmx/ZqGL97lp9fTjbaokW5vI5zMFnHLSVzVGfEoWd3EbTqvPGGmsbty+xTIE
+         KoZIyoEals2Hl8j1S0lL1elol/C+rrGMNOXlIz6yYpbW0R6W3Q1wSTrGc/4A345F6pS7
+         FJJg==
+X-Gm-Message-State: ANhLgQ20VCP8Ng1BFR+m9WiTdrEo2B+O4/GRdNtBguuJPIaiNHsOV9Xh
+        KB6NtyB9YrOeRS+ghJbQ9wST4g==
+X-Google-Smtp-Source: ADFU+vtZXJ789zCyBw4uevYqZIcIVL1l5YE/2X2c6sWS3v135MF3BGBupoPAHhkB072H0KflY8l4og==
+X-Received: by 2002:adf:eacf:: with SMTP id o15mr7845413wrn.319.1583755495135;
+        Mon, 09 Mar 2020 05:04:55 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id a7sm5935690wrn.25.2020.03.09.05.04.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 05:04:54 -0700 (PDT)
+Date:   Mon, 9 Mar 2020 13:04:53 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        "mlxsw@mellanox.com" <mlxsw@mellanox.com>
+Subject: Re: [patch net-next v4 03/10] flow_offload: check for basic action
+ hw stats type
+Message-ID: <20200309120453.GB13968@nanopsycho.orion>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+ <20200307114020.8664-4-jiri@resnulli.us>
+ <BN8PR12MB3266F1691CDDA4352EFC2684D3FE0@BN8PR12MB3266.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:a17:906:748d:0:0:0:0 with HTTP; Mon, 9 Mar 2020 05:02:46
- -0700 (PDT)
-Reply-To: joybrown7192@gmail.com
-From:   DR OKWU JOSEPH NNANNAOFFICE <drnnannaokwujoseph1942@gmail.com>
-Date:   Mon, 9 Mar 2020 13:02:46 +0100
-Message-ID: <CAATm4HjQoW-diqJa6d6iLDDzJH5x5_3gvwS5GGZNmW1GhnJLCQ@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN8PR12MB3266F1691CDDA4352EFC2684D3FE0@BN8PR12MB3266.namprd12.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Estimado propietario del correo electr=C3=B3nico / beneficiario del fondo,
+Mon, Mar 09, 2020 at 11:23:41AM CET, Jose.Abreu@synopsys.com wrote:
+>From: Jiri Pirko <jiri@resnulli.us>
+>Date: Mar/07/2020, 11:40:13 (UTC+00:00)
+>
+>> Introduce flow_action_basic_hw_stats_types_check() helper and use it
+>> in drivers. That sanitizes the drivers which do not have support
+>> for action HW stats types.
+>
+>Next time please cc driver maintainers because this broke L3/L4 selftests 
+>for stmmac.
 
-Le envi=C3=A9 esta carta hace un mes, pero no supe nada de usted, no estoy
-seguro de si la recibi=C3=B3, y es por eso que la repito. Primero, soy la
-Sra. Kristalina Georgieva, Gerente actual Directora y Presidenta del
-Fondo Monetario Internacional.
+How exactly? This should not have any change for the existing users.
 
-De hecho, hemos revisado todos los obst=C3=A1culos y problemas que rodearon
-su transacci=C3=B3n incompleta y su incapacidad para cumplir con los cargos
-de transferencia recaudados, en su contra, por las opciones de
-transferencia anteriores, visite nuestro sitio para su confirmaci=C3=B3n 38
-=C2=B0 53=E2=80=B256 =E2=80=B3 N 77 =C2=B0 2 =E2=80=B239 =E2=80=B3 W Nosotr=
-os, la Junta de Directores, el Banco
-Mundial y el Fondo Monetario Internacional (FMI) Washington, DC, en
-conjunto con el Departamento del Tesoro de los Estados Unidos y
-algunas otras agencias de investigaci=C3=B3n relevantes aqu=C3=AD en los Es=
-tados
-Unidos de Am=C3=A9rica. Ha ordenado nuestro pago en el extranjero
-Remittance Unit, United Bank of Africa, Lome Togo, para emitirle una
-tarjeta VISA, donde se cargar=C3=A1 su fondo de $ 1.500.000.00, para un
-mayor retiro de su fondo.
 
-Durante el curso de nuestra investigaci=C3=B3n, descubrimos con
-consternaci=C3=B3n que su pago ha sido retrasado innecesariamente por
-funcionarios corruptos del Banco que intentan desviar sus fondos a sus
-cuentas privadas. Y hoy le notificamos que su fondo ha sido acreditado
-en la tarjeta VISA por UBA Bank y tambi=C3=A9n listo para ser entregado,
-ahora comun=C3=ADquese con la secretaria de UBA Bank que se llama
-Mrs.JoyBrown, env=C3=ADe un correo electr=C3=B3nico a joybrown7192@gmail.co=
-m,
-env=C3=ADele la siguiente informaci=C3=B3n para la entrega de su tarjeta VI=
-SA
-ATM acreditada a su direcci=C3=B3n.
-
-Su nombre completo =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Su pa=C3=ADs de origen =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-Su direcci=C3=B3n de casa =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Direcci=C3=B3n de correo electr=C3=B3nico =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Su n=C3=BAmero de tel=C3=A9fono =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Sinceramente, Sra. Kristalina Georgieva
+>
+>Not to worry, I already have a patch to send :)
+>
+>---
+>Thanks,
+>Jose Miguel Abreu
