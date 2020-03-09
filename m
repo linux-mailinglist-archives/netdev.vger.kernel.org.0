@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3F7117D892
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 05:23:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 452F517D893
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 05:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726165AbgCIEW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 00:22:58 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:53972 "EHLO
+        id S1726071AbgCIE01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 00:26:27 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53990 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbgCIEW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 00:22:58 -0400
+        with ESMTP id S1725811AbgCIE01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 00:26:27 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 53584158B582F;
-        Sun,  8 Mar 2020 21:22:57 -0700 (PDT)
-Date:   Sun, 08 Mar 2020 21:22:56 -0700 (PDT)
-Message-Id: <20200308.212256.639211299362051258.davem@davemloft.net>
-To:     ap420073@gmail.com
-Cc:     kuba@kernel.org, martinvarghesenokia@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] bareudp: several code cleanup for bareudp
- module
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E5E97158B5848;
+        Sun,  8 Mar 2020 21:26:26 -0700 (PDT)
+Date:   Sun, 08 Mar 2020 21:26:26 -0700 (PDT)
+Message-Id: <20200308.212626.1535278286897905339.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        syzkaller@googlegroups.com
+Subject: Re: [PATCH net] gre: fix uninit-value in __iptunnel_pull_header
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200308011849.6672-1-ap420073@gmail.com>
-References: <20200308011849.6672-1-ap420073@gmail.com>
+In-Reply-To: <20200308060514.149512-1-edumazet@google.com>
+References: <20200308060514.149512-1-edumazet@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 08 Mar 2020 21:22:57 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 08 Mar 2020 21:26:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
-Date: Sun,  8 Mar 2020 01:18:49 +0000
+From: Eric Dumazet <edumazet@google.com>
+Date: Sat,  7 Mar 2020 22:05:14 -0800
 
-> This patchset is to cleanup bareudp module code.
+> syzbot found an interesting case of the kernel reading
+> an uninit-value [1]
 > 
-> 1. The first patch is to add module alias
-> In the current bareudp code, there is no module alias.
-> So, RTNL couldn't load bareudp module automatically.
+> Problem is in the handling of ETH_P_WCCP in gre_parse_header()
 > 
-> 2. The second patch is to add extack message.
-> The extack error message is useful for noticing specific errors
-> when command is failed.
+> We look at the byte following GRE options to eventually decide
+> if the options are four bytes longer.
 > 
-> 3. The third patch is to remove unnecessary udp_encap_enable().
-> In the bareudp_socket_create(), udp_encap_enable() is called.
-> But, the it's already called in the setup_udp_tunnel_sock().
-> So, it could be removed.
+> Use skb_header_pointer() to not pull bytes if we found
+> that no more bytes were needed.
+> 
+> All callers of gre_parse_header() are properly using pskb_may_pull()
+> anyway before proceeding to next header.
+> 
+> [1]
+ ...
+> Fixes: 95f5c64c3c13 ("gre: Move utility functions to common headers")
+> Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
-Series applied, thanks.
+Applied and queued up for -stable, thanks.
