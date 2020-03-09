@@ -2,110 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4DB17DA2F
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 09:04:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94AC017DA46
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 09:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbgCIIEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 04:04:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59026 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725796AbgCIIEp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 04:04:45 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E930520728;
-        Mon,  9 Mar 2020 08:04:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583741084;
-        bh=tzvQUC46xoDI45wBhSfB1RJ1Bxin/b6pFZjKVMf4d5Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xlOscqSOrA0RwAdBvfAHoW2tIuDl3DgQvcky525g7NO14EPt562/aknLdji474CAA
-         CRVKER3Qc3Sw4OtkA/89oc9sNFprgb2b5vdfoBhrg2S/IULB86bRzsWsjwH/OS6G1J
-         9UpckB7JCtI10misclNl85Fsk4vweuJlBVYoPZBs=
-Date:   Mon, 9 Mar 2020 10:04:39 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
-        raspl@linux.ibm.com, ubraun@linux.ibm.com
-Subject: Re: [PATCH net] net/smc: cancel event worker during device removal
-Message-ID: <20200309080439.GJ11496@unreal>
-References: <20200306134518.84416-1-kgraul@linux.ibm.com>
- <20200308150107.GC11496@unreal>
- <0b5d992d-2447-1606-f8ce-73801643160a@linux.ibm.com>
+        id S1726505AbgCIIIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 04:08:37 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58662 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726071AbgCIIIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 04:08:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583741315;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=T8KT/+n14Cn5HelmWM4TG6Zo6L21o7FLn2E43AQONUI=;
+        b=I7sjVMFrQyszBieK7l81PBbXu3hkzHcGu1wuxeWxaxy9mt8RSC0xHZHxIpqw6fCdX+kdjD
+        LJZeHKJOz3OCKFK+WvKMsJJkcgBYPptT+LM8wEl1p8plGMF4Dxb8a7S9QVfzUbhds9JWPM
+        eFNtJt5Hel2J2my9omQ3Hwovm7F6RS4=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-143-irExr1-wPKOvRuDqFtp5Zw-1; Mon, 09 Mar 2020 04:08:33 -0400
+X-MC-Unique: irExr1-wPKOvRuDqFtp5Zw-1
+Received: by mail-qt1-f200.google.com with SMTP id i25so6280502qtm.17
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 01:08:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=T8KT/+n14Cn5HelmWM4TG6Zo6L21o7FLn2E43AQONUI=;
+        b=naRbz8w5ze+5aIlm4SbtUQ9DLep6TvCPBqN+xIy3j8mhCjaS0pm504ljujQnb00VR0
+         hN46VEnIa0dFVBkeUqW0OC7pK0zsejspOsVMnol1qPWLrsL9sZm1CzqkUcxnErgD6Mmr
+         DQDVi3JWvwg2zTaIpa8AJV25yQKCDADODO9XwaR4jL1kheXY4cT0UAPpICLpBFr3BnHk
+         W3ySZ3aalgLUIMwTf0Wx+pTXS9WfXOPipQAlGgb4AvjMEIzmzluVMglIsWA3PFWZvvZ4
+         NYc4ug1nB3ZYOeWttsezOyrxfVMIEm09BC6W3XEZpZXSi7TFW5ePm5Kk5ceJn7gmkUIx
+         V/IQ==
+X-Gm-Message-State: ANhLgQ2qVh0KoOekwUlIG7w4kS9DjA0rIhwLBgNsiUJvXdreimyBrH/B
+        Xp06jZtNR+cYGUEVl5puPiLvLbGSQl6/U6++lRTTUWp9+Jl/RS7mN8fHNjaN9JFnGrUTPWt2koQ
+        w6LJ1MEhTTUfo2b6B
+X-Received: by 2002:a0c:c244:: with SMTP id w4mr13815578qvh.104.1583741311602;
+        Mon, 09 Mar 2020 01:08:31 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vsDCYFx3tgEt/18zqy2Hj0onYaUrEMtYoBKu3yJ+l1tw+IzBr80xlV0fKvKv/QcwEaRhnxGPw==
+X-Received: by 2002:a0c:c244:: with SMTP id w4mr13815565qvh.104.1583741311386;
+        Mon, 09 Mar 2020 01:08:31 -0700 (PDT)
+Received: from redhat.com (bzq-79-178-2-19.red.bezeqint.net. [79.178.2.19])
+        by smtp.gmail.com with ESMTPSA id k11sm21885175qti.68.2020.03.09.01.08.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 01:08:30 -0700 (PDT)
+Date:   Mon, 9 Mar 2020 04:08:25 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        axboe@kernel.dk, jasowang@redhat.com, mst@redhat.com,
+        natechancellor@gmail.com, pasic@linux.ibm.com, s-anna@ti.com
+Subject: [GIT PULL] virtio: fixes
+Message-ID: <20200309040825-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0b5d992d-2447-1606-f8ce-73801643160a@linux.ibm.com>
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 08:59:33PM +0100, Karsten Graul wrote:
-> On 08/03/2020 16:01, Leon Romanovsky wrote:
-> > On Fri, Mar 06, 2020 at 02:45:18PM +0100, Karsten Graul wrote:
-> >> During IB device removal, cancel the event worker before the device
-> >> structure is freed. In the worker, check if the device is being
-> >> terminated and do not proceed with the event work in that case.
-> >>
-> >> Fixes: a4cf0443c414 ("smc: introduce SMC as an IB-client")
-> >> Reported-by: syzbot+b297c6825752e7a07272@syzkaller.appspotmail.com
-> >> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-> >> Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
-> >> ---
-> >>  net/smc/smc_ib.c | 4 ++++
-> >>  1 file changed, 4 insertions(+)
-> >>
-> >> diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-> >> index d6ba186f67e2..5e4e64a9aa4b 100644
-> >> --- a/net/smc/smc_ib.c
-> >> +++ b/net/smc/smc_ib.c
-> >> @@ -240,6 +240,9 @@ static void smc_ib_port_event_work(struct work_struct *work)
-> >>  		work, struct smc_ib_device, port_event_work);
-> >>  	u8 port_idx;
-> >>
-> >> +	if (list_empty(&smcibdev->list))
-> >> +		return;
-> >> +
-> >
-> > How can it be true if you are not holding "smc_ib_devices.lock" during
-> > execution of smc_ib_port_event_work()?
-> >
->
-> It is true when smc_ib_remove_dev() runs before the work actually started.
-> Other than that its only a shortcut to return earlier, when the item is
-> removed from the list after the check then the processing just takes a
-> little bit longer...its still save.
+The following changes since commit 98d54f81e36ba3bf92172791eba5ca5bd813989b:
 
-The check itself maybe safe, but it can't fix syzkaller bug reported above.
-As you said, the smc_ib_remove_dev() can be called immediately after
-your list_empty() check and we return to original behavior.
+  Linux 5.6-rc4 (2020-03-01 16:38:46 -0600)
 
-The correct design will be to ensure that smc_ib_port_event_work() is
-executed only smcibdev->list is not empty.
+are available in the Git repository at:
 
-Thanks
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
->
-> >>  	for_each_set_bit(port_idx, &smcibdev->port_event_mask, SMC_MAX_PORTS) {
-> >>  		smc_ib_remember_port_attr(smcibdev, port_idx + 1);
-> >>  		clear_bit(port_idx, &smcibdev->port_event_mask);
-> >> @@ -582,6 +585,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
-> >>  	smc_smcr_terminate_all(smcibdev);
-> >>  	smc_ib_cleanup_per_ibdev(smcibdev);
-> >>  	ib_unregister_event_handler(&smcibdev->event_handler);
-> >> +	cancel_work_sync(&smcibdev->port_event_work);
-> >>  	kfree(smcibdev);
-> >>  }
-> >>
-> >> --
-> >> 2.17.1
-> >>
->
-> --
-> Karsten
->
-> (I'm a dude)
->
+for you to fetch changes up to 6ae4edab2fbf86ec92fbf0a8f0c60b857d90d50f:
+
+  virtio_balloon: Adjust label in virtballoon_probe (2020-03-08 05:35:24 -0400)
+
+----------------------------------------------------------------
+virtio: fixes
+
+Some bug fixes all over the place.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Halil Pasic (2):
+      virtio-blk: fix hw_queue stopped on arbitrary error
+      virtio-blk: improve virtqueue error to BLK_STS
+
+Nathan Chancellor (1):
+      virtio_balloon: Adjust label in virtballoon_probe
+
+Suman Anna (1):
+      virtio_ring: Fix mem leak with vring_new_virtqueue()
+
+ drivers/block/virtio_blk.c      | 17 ++++++++++++-----
+ drivers/virtio/virtio_balloon.c |  2 +-
+ drivers/virtio/virtio_ring.c    |  4 ++--
+ 3 files changed, 15 insertions(+), 8 deletions(-)
+
