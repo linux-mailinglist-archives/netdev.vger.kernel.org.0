@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1046617EBA5
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589D417EBC3
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbgCIWDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 18:03:32 -0400
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:35218 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbgCIWDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 18:03:30 -0400
-Received: by mail-vk1-f195.google.com with SMTP id a1so1686667vko.2
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 15:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4ClLEMAmgetJxXdQd0ir1n4N2JLLEEwIIgLb8pYjrFs=;
-        b=Z5y/6JA/8On9tHJd+eVK0csGW+/rNGuWN845725WoqTZLD5d3CyhFTE9ZvVR+ERVnH
-         b70y1+eqAS722ITwHeAL/CsYUimbosf4OI99T8iv2wAylro4niBrKNK3E2nLKysT+38C
-         X2nBlufhZKksqXwuJEMVn4oJhwmWZfJKjgHEo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ClLEMAmgetJxXdQd0ir1n4N2JLLEEwIIgLb8pYjrFs=;
-        b=lkw12orJRiJeh1b8xRwBEtqSIrtEG/SdECGwk8RtsYD2ZE8vRnZNppNxHenb00GO8s
-         EPTxu7HRA+jB1FSriNcbrRD9QbWmWjOPoYBUtG9HOGt5QNrQhEpgSFA04gh7gQsk+l0O
-         ut/xvaf9tX47Kc3o4CNUgVb3rd/CxLw7KlQhyAo09J+MecvTjnHIX6J0VXBL/wuxdw4E
-         tI86W3sXx1/P+KeTgp5fASCVKCBX3IQQ7F0Ynu9O9qrEw2oXUPX6klVaYpjTamgolo1X
-         duyeNAFqID8GWgPUjoVx4qpq8QFxGywVMg3NFYFArcapFp1Xn1iSEn7wguSsruc3wmE3
-         2bjQ==
-X-Gm-Message-State: ANhLgQ3IJ3VER0BkOWM8tQtesao+pUF099VMTujdNmoh8srNdp3b3WKI
-        /DyeVakGJ1S5mm4HtKDR3ACXBXAJW+N31sNn7qF0AQ==
-X-Google-Smtp-Source: ADFU+vtRSC56yqPhVngdmy5IhfrdvXYu5SgRvQSPpj+QTOGWNC2znS7px/H3He40jNCpzYG6qWjfKVwuR94d0+1QX/c=
-X-Received: by 2002:a1f:99d6:: with SMTP id b205mr10459024vke.88.1583791409656;
- Mon, 09 Mar 2020 15:03:29 -0700 (PDT)
+        id S1727268AbgCIWM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 18:12:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726937AbgCIWM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 18:12:58 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F2EC2465A;
+        Mon,  9 Mar 2020 22:12:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583791977;
+        bh=JnNUYNf7la5refBm6BR5X6hhXSWx806urFsEgdcdFxg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=buHZ00zfavJZ3SF7EAXpdnicu9FpeeMZ1qLd5XNC4b8+zTBV7lrmmyFIYa+/7ly/S
+         yEZk8+1zMNHXECQ/VAb4LeTnrXwJRu7FmN2zmFylj6jfU4VTHnMkf9p4o+VZZMkj7Z
+         RELX+oiJRhQXgvkgS3asMTkCPt/Ppm45pr3WM7sA=
+Date:   Mon, 9 Mar 2020 15:12:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        petrm@mellanox.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 3/6] net: sched: RED: Introduce an ECN
+ tail-dropping mode
+Message-ID: <20200309151255.29bb3a4b@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200309183503.173802-4-idosch@idosch.org>
+References: <20200309183503.173802-1-idosch@idosch.org>
+        <20200309183503.173802-4-idosch@idosch.org>
 MIME-Version: 1.0
-References: <20200308212334.213841-1-abhishekpandit@chromium.org>
- <20200308142005.RFC.v5.1.I62f17edc39370044c75ad43a55a7382b4b8a5ceb@changeid> <A815D112-7B0B-47A2-9CD5-C0D2E2115F19@holtmann.org>
-In-Reply-To: <A815D112-7B0B-47A2-9CD5-C0D2E2115F19@holtmann.org>
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Date:   Mon, 9 Mar 2020 15:03:19 -0700
-Message-ID: <CANFp7mWJ06OHYit-sL7hvJhCNuYNmaH0N1DCww2wzReyi27Ygg@mail.gmail.com>
-Subject: Re: [RFC PATCH v5 1/5] Bluetooth: Handle PM_SUSPEND_PREPARE and PM_POST_SUSPEND
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Alain Michaud <alainm@chromium.org>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No -- the kernel test robot is complaining about Patch v3 which has a
-known problem (not taking into powered state into account). That was
-fixed in v4.
+On Mon,  9 Mar 2020 20:35:00 +0200 Ido Schimmel wrote:
+> diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+> index f9839d68b811..d72db7643a37 100644
+> --- a/net/sched/sch_red.c
+> +++ b/net/sched/sch_red.c
+> @@ -44,7 +44,8 @@ struct red_sched_data {
+>  	struct Qdisc		*qdisc;
+>  };
+>  
+> -#define RED_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
+> +#define RED_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | \
+> +			     TC_RED_ADAPTATIVE | TC_RED_TAILDROP)
+>  
+>  static inline int red_use_ecn(struct red_sched_data *q)
+>  {
+> @@ -56,6 +57,11 @@ static inline int red_use_harddrop(struct red_sched_data *q)
+>  	return q->flags & TC_RED_HARDDROP;
+>  }
+>  
+> +static inline int red_use_taildrop(struct red_sched_data *q)
 
-Thanks,
-Abhishek
+Please don't do static inlines in C code, even if the neighboring code
+does.
 
-On Mon, Mar 9, 2020 at 2:39 PM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Abhishek,
->
-> > Register for PM_SUSPEND_PREPARE and PM_POST_SUSPEND to make sure the
-> > Bluetooth controller is prepared correctly for suspend/resume. Implement
-> > the registration, scheduling and task handling portions only in this
-> > patch.
->
-> is the kernel test robot bug report that just has been posted still valid?
->
-> Regards
->
-> Marcel
->
+> +{
+> +	return q->flags & TC_RED_TAILDROP;
+> +}
+> +
+>  static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>  		       struct sk_buff **to_free)
+>  {
+> @@ -76,23 +82,36 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>  
+>  	case RED_PROB_MARK:
+>  		qdisc_qstats_overlimit(sch);
+> -		if (!red_use_ecn(q) || !INET_ECN_set_ce(skb)) {
+> +		if (!red_use_ecn(q)) {
+>  			q->stats.prob_drop++;
+>  			goto congestion_drop;
+>  		}
+>  
+> -		q->stats.prob_mark++;
+> +		if (INET_ECN_set_ce(skb)) {
+> +			q->stats.prob_mark++;
+> +		} else if (red_use_taildrop(q)) {
+
+This condition is inverted, no?
+
+If user requested taildrop the packet should be queued.
+
+> +			q->stats.prob_drop++;
+> +			goto congestion_drop;
+> +		}
+> +
+> +		/* Non-ECT packet in ECN taildrop mode: queue it. */
+>  		break;
+>  
+>  	case RED_HARD_MARK:
+>  		qdisc_qstats_overlimit(sch);
+> -		if (red_use_harddrop(q) || !red_use_ecn(q) ||
+> -		    !INET_ECN_set_ce(skb)) {
+> +		if (red_use_harddrop(q) || !red_use_ecn(q)) {
+> +			q->stats.forced_drop++;
+> +			goto congestion_drop;
+> +		}
+> +
+> +		if (INET_ECN_set_ce(skb)) {
+> +			q->stats.forced_mark++;
+> +		} else if (!red_use_taildrop(q)) {
+
+This one looks correct.
+
+>  			q->stats.forced_drop++;
+>  			goto congestion_drop;
+>  		}
+>  
+> -		q->stats.forced_mark++;
+> +		/* Non-ECT packet in ECN taildrop mode: queue it. */
+>  		break;
+>  	}
+>  
