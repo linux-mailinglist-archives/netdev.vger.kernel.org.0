@@ -2,102 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6257117E3F1
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D69317E411
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:54:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726866AbgCIPvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 11:51:03 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:37089 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbgCIPvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:51:03 -0400
-Received: by mail-yw1-f65.google.com with SMTP id i1so6329666ywf.4
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:51:02 -0700 (PDT)
+        id S1727061AbgCIPyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 11:54:05 -0400
+Received: from mail-io1-f41.google.com ([209.85.166.41]:39057 "EHLO
+        mail-io1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726758AbgCIPyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:54:05 -0400
+Received: by mail-io1-f41.google.com with SMTP id f21so5456264iol.6
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:54:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=J5H4Mtth232NqBlIZT4m6T+vzyRxMtyCSk83lnva1Ls=;
-        b=q2U/9ZPtgkWrIiN4DbWxmzjMtGsunPEb1o/plq/47o+NC9msRctwgw3sNT6sGuXAvs
-         SQxwCJ5ZtZwhNAHSeAO7X5Di2dfiOAxLUeEs9+YWphnz21dF1RmBodcr2Ooi/jDjFRBC
-         R8/bQa2bkG0FLQMV6fy0ro1NuVZxkugRrKVAkU5gysemc8YJtPXRpddbBNsRb+Au2o94
-         87JOnmaPJtlplm7IQB+zNXXRgzE05Vu48xTrZko71zSScazT/WZY0tWZrtBdxdEfr7DY
-         tnLcw7pLZaOTxhfGTXO9FjcuymyB6q3T8A7+oXVycHcvXdR4hxUazfNPPRlWpxL8EQUo
-         IwqQ==
+        bh=vL8ZN+MMMNaCIekqum8LNYiK8VJ2YU5ya1NwO5tzhaY=;
+        b=aCRRXbIcoGSv4Jl1pX8VYEC6FMXePUQUDauzTmhwCE22eZtEEr0S6dZj9ErggVMpYM
+         rmyyqFTCKA8LoGOaLVonRQV2eVXGhbMuw17wJo/gMfIWEifSUKNkKbecNZ+QhGN+rHJ7
+         ywelQf/O/5B+JSA0JAlrO/5SyfywNjInrKxBmw0J5fmYSUFMVHZHHrzuomsHJakFt3yR
+         SdPOMTwiVtx2Gjb0rGeA4Cpf6O78Dis5CyN2TFUWLq3sheaHuSUOa+5tWD8cThjZorQ/
+         kjtjdSSPnZFUiOyk4ABFjKR0M0S3R87HBa2pzEp3YhpZoAYeKWEgeZ/WtO8cDmikk/6v
+         dFsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=J5H4Mtth232NqBlIZT4m6T+vzyRxMtyCSk83lnva1Ls=;
-        b=fDRwE1wIAGeVPV+bL49ncBmxTsFmM4s8TM+x4RcQjcxNq8Yy516BZhafI1YPwb2edI
-         Baz26yo9Po5/lOjWbVHVY0S7xrCycfqHQwU1jNTKgwW/xnLeAh7aau5yJxowqevNXyVT
-         ywdaDVsbiWObYiUuW542enjwjxWjvP/fL3uhMADVJcN/eRNUdbiaUJt0NoFJtz3xkO8w
-         UWxf0ltNJxvxVVj8yMkScJWENmkfV+Jl+ckItahs+ETTkt+zUaP00r5XJYuTy3PNE3+0
-         3j3jJQOI1bAR9QuRVlkK4nxA/Ekjm1Aw2G/3n43/IP9d3DcaYqsFT56tvFfK1Jgd5/K/
-         1P0w==
-X-Gm-Message-State: ANhLgQ1i2pvLLFKSO+EmGbBSFkhUOl0Yi1BcuoMPfMyiLTHjhC33sSrC
-        vfUo2F854oBkCLUkK/s849Z7T3L2
-X-Google-Smtp-Source: ADFU+vufWQARFscCixteF71bfgPjNup+0JSMF6zhQ8+FFneGL+xcAEKDJXtR42ZjQ9567O3cFHhgsw==
-X-Received: by 2002:a5b:50d:: with SMTP id o13mr16583573ybp.366.1583769062031;
-        Mon, 09 Mar 2020 08:51:02 -0700 (PDT)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id l68sm2100198ywg.23.2020.03.09.08.51.00
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Mar 2020 08:51:01 -0700 (PDT)
-Received: by mail-yw1-f49.google.com with SMTP id c15so5973250ywn.7
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:51:00 -0700 (PDT)
-X-Received: by 2002:a81:f10a:: with SMTP id h10mr17393255ywm.109.1583769060462;
- Mon, 09 Mar 2020 08:51:00 -0700 (PDT)
+        bh=vL8ZN+MMMNaCIekqum8LNYiK8VJ2YU5ya1NwO5tzhaY=;
+        b=ReOYx5azYPBgK+98NfyFe7UYMSgvR/7y0P1Biwnbe4Jm4K71g81lBMm6q0XBfKfIVs
+         XUTwDB10iQt05X3PqDVXA2RfGLbSqbsXYqUxdv1eVlkWckK3/vudJZRN8W6i8+B2DbKU
+         nYD+oA0OEsVmoXJ8HWJh8qqVV9/J/BRAKNEXokrJgMNd9Ox5xRrYatrb+6/wPnm6C02/
+         ruMx6bAC/gWDbXROWJssTDGDKSx12FzwiuBti5haaVGKJT1koU140y36GxcVYa8Hst7n
+         I1mRnA6T8xGFKZn6w1HF7zi9TAmZm0GRstC3376Q3wLsZDOhlywA306YVx0XLtHQhLOG
+         o+qg==
+X-Gm-Message-State: ANhLgQ3kvJZ46IxcXW1SePri6fO+PqQc/G2jwQHQxeWJK2Eu4O99UYgs
+        jsavqrkh1b6HF/huI3dXQI8IkzmtCXAsnAQYvN8191ll
+X-Google-Smtp-Source: ADFU+vtKqYBlrZmdt5jNHpQsDTTklpHnwTqHL8iB3AGukMrL1qg0Fd1PT59m6Ij+pdAP1Yz4LvC5tlAnfKrnFPOS8u4=
+X-Received: by 2002:a6b:7d04:: with SMTP id c4mr13943218ioq.5.1583769244373;
+ Mon, 09 Mar 2020 08:54:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com> <CA+FuTSfTac=Ut43nFJdB_z605Y-NO7En8AqKT3X8q8=SjFHe6Q@mail.gmail.com>
-In-Reply-To: <CA+FuTSfTac=Ut43nFJdB_z605Y-NO7En8AqKT3X8q8=SjFHe6Q@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 9 Mar 2020 11:50:23 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc9gdNO1O1HxOz+j-KVhL_+24LyQjb_gB0tF6uH++ykGg@mail.gmail.com>
-Message-ID: <CA+FuTSc9gdNO1O1HxOz+j-KVhL_+24LyQjb_gB0tF6uH++ykGg@mail.gmail.com>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>
+References: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
+ <1441d64c-c334-8c54-39e8-7a06a530089d@gmail.com>
+In-Reply-To: <1441d64c-c334-8c54-39e8-7a06a530089d@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 9 Mar 2020 08:53:53 -0700
+Message-ID: <CAKgT0UcbycqgrfviqUmvS9S7+F6q-gMzrz-KKQuEb77ruZZLRQ@mail.gmail.com>
+Subject: Re: route: an issue caused by local and main table's merge
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>, mmhatre@redhat.com,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 9, 2020 at 11:42 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
+On Sun, Mar 8, 2020 at 7:31 PM David Ahern <dsahern@gmail.com> wrote:
 >
-> On Mon, Mar 9, 2020 at 11:34 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > From: Willem de Bruijn <willemb@google.com>
-> >
-> > In one error case, tpacket_rcv drops packets after incrementing the
-> > ring producer index.
-> >
-> > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > thus the reader is stalled for an iteration of the ring, causing out
-> > of order arrival.
-> >
-> > The only such error path is when virtio_net_hdr_from_skb fails due
-> > to encountering an unknown GSO type.
-> >
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> [ This got lost in the backlog ]
 >
+> On 3/2/20 1:38 AM, Xin Long wrote:
+> > Hi, David A.
+> >
+> > Mithil reported an issue, which can be reproduced by:
+> >
+> >   # ip link  add dummy0 type dummy
+> >   # ip link  set dummy0 up
+> >   # ip route add to broadcast 192.168.122.1 dev dummy0 <--- broadcast
+> >   # ip route add 192.168.122.1 dev dummy0   <--- unicast
+> >   # ip route add 1.1.1.1 via 192.168.122.1  <--- [A]
+> >   Error: Nexthop has invalid gateway.
+> >   # ip rule  add from 2.2.2.2
+> >   # ip route add 1.1.1.1 via 192.168.122.1  <--- [B]
+> >
+> > cmd [A] failed , as in fib_check_nh_v4_gw():
+> >
+> >     if (table)
+> >             tbl = fib_get_table(net, table);
+> >
+> >     if (tbl)
+> >             err = fib_table_lookup_2(tbl, &fl4, &res,
+> >                                    FIB_LOOKUP_IGNORE_LINKSTATE |
+> >                                    FIB_LOOKUP_NOREF);
+> >
+> >     if (res.type != RTN_UNICAST && res.type != RTN_LOCAL) { <--- [a]
+> >             NL_SET_ERR_MSG(extack, "Nexthop has invalid gateway");
+> >             goto out;  <--[a]
+> >     }
+> >
+> > It gets the route for '192.168.122.1' from the merged (main/local)
+> > table, and the broadcast one returns, and it fails the check [a].
+> >
+> > But the same cmd [B] will work after one rule is added, by which
+> > main table and local table get separated, it gets the route from
+> > the main table (the same table for this route), and the unicast
+> > one returns, and it will pass the check [a].
+> >
+> > Any idea on how to fix this, and keep it consistent before and
+> > after a rule added?
+> >
 >
-> Fixes: bfd5f4a3d605 ("packet: Add GSO/csum offload support.")
+> I do not have any suggestions off the top of my head.
 >
-> I forgot to add the Fixes tag, sorry. This goes back to the
-> introduction of GSO support for virtio_net.
+> Adding Alex who as I recall did the table merge.
 
-The problem of blinding receivers to certain packet types goes back to
-that commit.
+As far as the table merge it is undone as soon as any rules are added
+or deleted. From that point on it will not re-merge the table. So if
+you are using rules you are going to need to modify the rules first
+and then add routes as this will guarantee the table is consistent as
+any further rule modifications will not re-merge the table.
 
-But the specific issue of ring out of order arrival is added later,
-when vnet_hdr support is extended to tpacket_rcv:
+Also, is it really a valid configuration to have the same address
+configured as both a broadcast and unicast address? I couldn't find
+anything that said it wasn't, but at the same time I haven't found
+anything saying it is an acceptable practice to configure an IP
+address as both a broadcast and unicast destination. Everything I saw
+seemed to imply that a subnet should be at least a /30 to guarantee a
+pair of IPs and support for broadcast addresses with all 1's and 0 for
+the host identifier. As such 192.168.122.1 would never really be a
+valid broadcast address since it implies a /31 subnet mask.
 
-Fixes: 58d19b19cd99 ("packet: vnet_hdr support for tpacket_rcv")
+- Alex
