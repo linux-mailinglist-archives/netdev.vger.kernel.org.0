@@ -2,508 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F83617DDE2
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:47:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2B417DE2E
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 12:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726632AbgCIKrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 06:47:23 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:52168 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbgCIKrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:47:22 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a132so9262166wme.1;
-        Mon, 09 Mar 2020 03:47:19 -0700 (PDT)
+        id S1726739AbgCILG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 07:06:29 -0400
+Received: from mail-eopbgr130088.outbound.protection.outlook.com ([40.107.13.88]:62763
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726248AbgCILG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 07:06:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KY2uQj+AIXGJjTRA3RVuj6EKiu2xA6wX70C/Ijnr6il+WbjpY8rUmSA9yQzaQ7MdovzgCHtjNIC+PznZnWuuKEqUcV23U+FT7c3/b3motapR5m8Rf99Lv0yM+/6Po9XfSSGEchgZXI9vV/1n8C/6MeLFi54Xheo8bNnOYU1kdUmOaFgBO8SodI/AjcRe6h+VZjn1C+8hHsGCL8+1VMo4+s2rAm95exB6kVUiY3DdaTNNQSdEXIzdmPaI+Vh6edHcFN85+sDMQ9/hVKcsDDiHBaU1lxDCioOC88UO/tIPnApwBhzp/jukOVRosGwQMWlawioZWn+5hrEwMDX4gRpbCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E5uPaM7OrOj1Rty4N8wjCHI0yBnjwO7nBS3yH0BXB4s=;
+ b=OXDmP8uKLNT31uCZpnINwUQvp6CGUiR7ZaC3FszQ1QtErIByVLEi+UFYdbFkFNAAtgVRHYWaScIDqf31dBu/dyN6yzH50iy901fo6g8pOlU8XxYIrMkimIvebFrW0gVbp8pv7yoJo9HPeUC3TXttoGakIoeU2+byAJ1NTd3wkw70RBtlojzYgRV2uz6z3D8zVlAQBEf33FnnnGNXOQIZTv0GNsoF65BjN0BiUfpv+ETzlISwSWscornvE7EQoW3IV83CWRYN2l+3KNMTXrxYZ8HqZx14x0E3MdpJnmpWl0U6lvDimtBD3JsPHuo+tZuGvASN5W2Vk3GMRFZhFDci3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nextfour.com; dmarc=pass action=none header.from=nextfour.com;
+ dkim=pass header.d=nextfour.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XtqwjtmIf5AMvyLCxCN/pVItL3RVcnj/RQC1FQSPa4I=;
-        b=q2v4uwUjs1KUcXxjpJxtH/Gb/uTzZsD2ZyeOAwxnefn5v6d0qPuAqSfU/VRW+jp5/t
-         vtn5a7KAX+SFdRiSuRuV47liWdVzNfVsVgKrRoxrmvv1cTKkq4S7h5UqlcHVUX1+DSp5
-         hsNY7HhuAix+JMcjjppwccTIGFzattUptQxTyKj7cUDzXwXh/Wj+bLinQaScxk62rEDy
-         n3bBY5zdTKAxj47i1Fev3vGB8gpdH8QJn7hWGuUDZc790iYBmXxDEHdjkLtOmbAXGSSC
-         YyRG4JVn1LGSiU3eZnrxalOvPFcR6MKsQE96XyYXDN+Gff1VG49M2l3tuBci+ENN4mWv
-         x5mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XtqwjtmIf5AMvyLCxCN/pVItL3RVcnj/RQC1FQSPa4I=;
-        b=H3Lp+/ZsZP69xXhgeXu3/NqzHulnu/OtEE8QufQHgKPo7dMzmGzunn6OTCB6cUdjWv
-         C1ZToA9x0b4M/teKtYcUC7ubZQ7GDsGe2XbbhZARUk3Eh9BoDWtjVC1SGGkmZqLELNFH
-         4gkh7EPC8cLPmIeGB5fhTPXQgl/K3rHxJmu7T0FO/p5bwuKE0/HAOl49/VbdZcuXzYzw
-         gGpCYCJA8IKC1aw2ov5mfQ5/QUzOuolkgyWfrCVriBK2Is3/H1tor+puqfFvDt8ikjh2
-         v5HAWEfvEkA7fytkBcXq0MhopyxmNQ+XFkdD8Az+WcUKKuowPZ9luXun7CLk3DRl2KDN
-         nJXg==
-X-Gm-Message-State: ANhLgQ09y2zqsej7H5SCDCfDwYToTx3/M2TPn9U9CAAOVlkpJqhE/EmJ
-        CfDUftlK+v0It8A+aSDpHTM=
-X-Google-Smtp-Source: ADFU+vusYsZ9wyob6B6waM55bwKBKG06WPWL9J+O+skvBUPXpXHhO+gR+HAbfNNU6YQMVIQWYLR8hA==
-X-Received: by 2002:a1c:6605:: with SMTP id a5mr14740484wmc.32.1583750838843;
-        Mon, 09 Mar 2020 03:47:18 -0700 (PDT)
-Received: from localhost (hosting85.skyberate.net. [185.87.248.81])
-        by smtp.gmail.com with ESMTPSA id t1sm14412099wrq.36.2020.03.09.03.47.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 03:47:18 -0700 (PDT)
-From:   Era Mayflower <mayflowerera@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Era Mayflower <mayflowerera@gmail.com>
-Subject: [PATCH v3 2/2] macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)
-Date:   Mon,  9 Mar 2020 19:47:02 +0000
-Message-Id: <20200309194702.117050-2-mayflowerera@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200309194702.117050-1-mayflowerera@gmail.com>
-References: <20200309194702.117050-1-mayflowerera@gmail.com>
+ d=NextfourGroupOy.onmicrosoft.com;
+ s=selector2-NextfourGroupOy-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E5uPaM7OrOj1Rty4N8wjCHI0yBnjwO7nBS3yH0BXB4s=;
+ b=Ez103lELIBgFV6dSSM0rs/0G3j4XjDxsf2mW9B8J1jkQeweLNo15yOlfW9mGEpWMhi3yFcaNmVx7Nvi9jICnZccLNUzCqtU6dv+JrtJi+2+t2/wpPuXce9rOBOkcEEsh6qp2ywzniy018g3O0k99VgjebQglxhOZn6TWM7E4ATs=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=mika.penttila@nextfour.com; 
+Received: from VI1PR03MB3775.eurprd03.prod.outlook.com (52.134.21.155) by
+ VI1PR03MB4590.eurprd03.prod.outlook.com (20.177.52.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.15; Mon, 9 Mar 2020 11:06:23 +0000
+Received: from VI1PR03MB3775.eurprd03.prod.outlook.com
+ ([fe80::ed88:2188:604c:bfcc]) by VI1PR03MB3775.eurprd03.prod.outlook.com
+ ([fe80::ed88:2188:604c:bfcc%7]) with mapi id 15.20.2793.013; Mon, 9 Mar 2020
+ 11:06:23 +0000
+Subject: Re: [PATCH ipsec] esp: remove the skb from the chain when it's
+ enqueued in cryptd_wq
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+References: <2f86c9d7c39cfad21fdb353a183b12651fc5efe9.1583311902.git.lucien.xin@gmail.com>
+ <37097209-97cd-f275-cbe2-6c83f5580b80@nextfour.com>
+ <CADvbK_dqRXr3D1WgLDXqiBhpyw+QGRrvwugqDhOMr_kpQVi3QA@mail.gmail.com>
+From:   =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+X-Pep-Version: 2.0
+Message-ID: <bb90ae9e-9d8f-e860-5d82-dbd06081905c@nextfour.com>
+Date:   Mon, 9 Mar 2020 13:06:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+In-Reply-To: <CADvbK_dqRXr3D1WgLDXqiBhpyw+QGRrvwugqDhOMr_kpQVi3QA@mail.gmail.com>
+Content-Type: multipart/mixed;
+ boundary="------------123A24450A02DFD5970F628D"
+Content-Language: en-US
+X-ClientProxiedBy: HE1PR0902CA0046.eurprd09.prod.outlook.com
+ (2603:10a6:7:15::35) To VI1PR03MB3775.eurprd03.prod.outlook.com
+ (2603:10a6:803:2b::27)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.10.10.144] (194.157.170.35) by HE1PR0902CA0046.eurprd09.prod.outlook.com (2603:10a6:7:15::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Mon, 9 Mar 2020 11:06:22 +0000
+X-Pep-Version: 2.0
+X-Originating-IP: [194.157.170.35]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0fd5bf8d-424d-4248-1640-08d7c419e743
+X-MS-TrafficTypeDiagnostic: VI1PR03MB4590:
+X-Microsoft-Antispam-PRVS: <VI1PR03MB45909C57EFE73570DD2B532183FE0@VI1PR03MB4590.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0337AFFE9A
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(376002)(136003)(396003)(346002)(366004)(39830400003)(199004)(189003)(2906002)(81156014)(235185007)(956004)(31696002)(6486002)(81166006)(8676002)(54906003)(86362001)(508600001)(16526019)(52116002)(53546011)(8936002)(33964004)(16576012)(186003)(4326008)(21480400003)(36756003)(26005)(66556008)(2616005)(316002)(6916009)(66946007)(66476007)(66616009)(5660300002)(31686004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR03MB4590;H:VI1PR03MB3775.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: nextfour.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YoXCf9jtqjitdk0HECW7V+JmhcjC/umdGorKjURw8aMEoCsl5wq3OnBGQkuTRGK/VT94how57EK8+YCIsyOmjtKKdv/Bq3kMxUzaZem14wsOVZjFlDoGPssz1WP3k5a6AN9woqf3AbbXvmqp+noWhi7/ZJRutNjYlfYGxMQb8uvYZOisL1Bfamkw0nQ68w3+gb6dsgsEvUbwOoZL1mtD2bpY4VO6uhz7u1Ti1o2kmQEdVDHZCFJtO4xr5/qPlGXzOnaFk6AMZ0OyFYyRvWET9Iy1skLiQwHjSXpKAUpCHQ3l+lnW7XmpYQbDnZWUtY6tAR2JAuSJsjDX66NOj/6B3gbuajHeQGiG1rwLDkla4pmOMkoKRn+9CbSzJCDT14B/nhEFAXAetLCRls0eDo61vE8R2AHMIe5VVPAtRsw9ERyH6Qt15XGHcn22W2jiIvnx
+X-MS-Exchange-AntiSpam-MessageData: yD2f8I71QtyEmvLhHVnpXfpYqs8rQVwWRRhaHA3VLKSLEvZHdq7GwvByV1rpCxGmaAs09iabZWUH6aivKNFeQG66RDOZkB4MdCQjzPcnrgbqkOX0AtdGXFxMzWgr0e5Bz2iPzA2hD/8/Nb9zDN2zUw==
+X-OriginatorOrg: nextfour.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fd5bf8d-424d-4248-1640-08d7c419e743
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2020 11:06:23.0893
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 972e95c2-9290-4a02-8705-4014700ea294
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TlufS0cTs8b4+NngQpeN+Ucj9GR6HyMjLnVwh3MeK8BCnFVwEsW0ztE7TNzQLGNve0sguURkFpaD1m/doSv87Lnl4dd8xzkKgscmETGWyXs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB4590
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netlink support of extended packet number cipher suites,
-allows adding and updating XPN macsec interfaces.
+--------------123A24450A02DFD5970F628D
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Added support in:
-    * Creating interfaces with GCM-AES-XPN-128 and GCM-AES-XPN-256 suites.
-    * Setting and getting 64bit packet numbers with of SAs.
-    * Setting (only on SA creation) and getting ssci of SAs.
-    * Setting salt when installing a SAK.
 
-Added 2 cipher suite identifiers according to 802.1AE-2018 table 14-1:
-    * MACSEC_CIPHER_ID_GCM_AES_XPN_128
-    * MACSEC_CIPHER_ID_GCM_AES_XPN_256
 
-In addition, added 2 new netlink attribute types:
-    * MACSEC_SA_ATTR_SSCI
-    * MACSEC_SA_ATTR_SALT
+On 9.3.2020 12.50, Xin Long wrote:
+> On Mon, Mar 9, 2020 at 6:07 PM Mika Penttil=C3=A4 <mika.penttila@nextfour=
+.com> wrote:
+>>
+>> Hi!
+>>
+>> On 4.3.2020 10.51, Xin Long wrote:
+>>> Xiumei found a panic in esp offload:
+>>>
+>>>   BUG: unable to handle kernel NULL pointer dereference at 000000000000=
+0020
+>>>   RIP: 0010:esp_output_done+0x101/0x160 [esp4]
+>>>   Call Trace:
+>>>    ? esp_output+0x180/0x180 [esp4]
+>>>    cryptd_aead_crypt+0x4c/0x90
+>>>    cryptd_queue_worker+0x6e/0xa0
+>>>    process_one_work+0x1a7/0x3b0
+>>>    worker_thread+0x30/0x390
+>>>    ? create_worker+0x1a0/0x1a0
+>>>    kthread+0x112/0x130
+>>>    ? kthread_flush_work_fn+0x10/0x10
+>>>    ret_from_fork+0x35/0x40
+>>>
+>>> It was caused by that skb secpath is used in esp_output_done() after it=
+'s
+>>> been released elsewhere.
+>>>
+>>> The tx path for esp offload is:
+>>>
+>>>   __dev_queue_xmit()->
+>>>     validate_xmit_skb_list()->
+>>>       validate_xmit_xfrm()->
+>>>         esp_xmit()->
+>>>           esp_output_tail()->
+>>>             aead_request_set_callback(esp_output_done) <--[1]
+>>>             crypto_aead_encrypt()  <--[2]
+>>>
+>>> In [1], .callback is set, and in [2] it will trigger the worker schedul=
+e,
+>>> later on a kernel thread will call .callback(esp_output_done), as the c=
+all
+>>> trace shows.
+>>>
+>>> But in validate_xmit_xfrm():
+>>>
+>>>   skb_list_walk_safe(skb, skb2, nskb) {
+>>>     ...
+>>>     err =3D x->type_offload->xmit(x, skb2, esp_features);  [esp_xmit]
+>>>     ...
+>>>   }
+>>>
+>>> When the err is -EINPROGRESS, which means this skb2 will be enqueued an=
+d
+>>> later gets encrypted and sent out by .callback later in a kernel thread=
+,
+>>> skb2 should be removed fromt skb chain. Otherwise, it will get processe=
+d
+>>> again outside validate_xmit_xfrm(), which could release skb secpath, an=
+d
+>>> cause the panic above.
+>>>
+>>> This patch is to remove the skb from the chain when it's enqueued in
+>>> cryptd_wq. While at it, remove the unnecessary 'if (!skb)' check.
+>>>
+>>> Fixes: 3dca3f38cfb8 ("xfrm: Separate ESP handling from segmentation for=
+ GRO packets.")
+>>> Reported-by: Xiumei Mu <xmu@redhat.com>
+>>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>>> ---
+>>>  net/xfrm/xfrm_device.c | 8 ++++----
+>>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+>>> index 3231ec6..e2db468 100644
+>>> --- a/net/xfrm/xfrm_device.c
+>>> +++ b/net/xfrm/xfrm_device.c
+>>> @@ -78,8 +78,8 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *sk=
+b, netdev_features_t featur
+>>>       int err;
+>>>       unsigned long flags;
+>>>       struct xfrm_state *x;
+>>> -     struct sk_buff *skb2, *nskb;
+>>>       struct softnet_data *sd;
+>>> +     struct sk_buff *skb2, *nskb, *pskb =3D NULL;
+>>>       netdev_features_t esp_features =3D features;
+>>>       struct xfrm_offload *xo =3D xfrm_offload(skb);
+>>>       struct sec_path *sp;
+>>> @@ -168,14 +168,14 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff=
+ *skb, netdev_features_t featur
+>>>               } else {
+>>>                       if (skb =3D=3D skb2)
+>>>                               skb =3D nskb;
+>>> -
+>>> -                     if (!skb)
+>>> -                             return NULL;
+>>> +                     else
+>>> +                             pskb->next =3D nskb;
+>> pskb can be NULL on the first round?
+> On the 1st round, skb =3D=3D skb2.
 
-Depends on: macsec: Support XPN frame handling - IEEE 802.1AEbw.
+Yes, I misread the patch, thanks.
 
-Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
----
- drivers/net/macsec.c           | 161 ++++++++++++++++++++++++++++++---
- include/net/macsec.h           |   3 +
- include/uapi/linux/if_macsec.h |   8 +-
- 3 files changed, 157 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index de9578daa..7083ee157 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -240,11 +240,13 @@ static struct macsec_cb *macsec_skb_cb(struct sk_buff *skb)
- #define MACSEC_PORT_ES (htons(0x0001))
- #define MACSEC_PORT_SCB (0x0000)
- #define MACSEC_UNDEF_SCI ((__force sci_t)0xffffffffffffffffULL)
-+#define MACSEC_UNDEF_SSCI ((__force ssci_t)0xffffffff)
- 
- #define MACSEC_GCM_AES_128_SAK_LEN 16
- #define MACSEC_GCM_AES_256_SAK_LEN 32
- 
- #define DEFAULT_SAK_LEN MACSEC_GCM_AES_128_SAK_LEN
-+#define DEFAULT_XPN false
- #define DEFAULT_SEND_SCI true
- #define DEFAULT_ENCRYPT false
- #define DEFAULT_ENCODING_SA 0
-@@ -1306,6 +1308,7 @@ static int init_rx_sa(struct macsec_rx_sa *rx_sa, char *sak, int key_len,
- 		return PTR_ERR(rx_sa->key.tfm);
- 	}
- 
-+	rx_sa->ssci = MACSEC_UNDEF_SSCI;
- 	rx_sa->active = false;
- 	rx_sa->next_pn = 1;
- 	refcount_set(&rx_sa->refcnt, 1);
-@@ -1404,6 +1407,7 @@ static int init_tx_sa(struct macsec_tx_sa *tx_sa, char *sak, int key_len,
- 		return PTR_ERR(tx_sa->key.tfm);
- 	}
- 
-+	tx_sa->ssci = MACSEC_UNDEF_SSCI;
- 	tx_sa->active = false;
- 	refcount_set(&tx_sa->refcnt, 1);
- 	spin_lock_init(&tx_sa->lock);
-@@ -1447,6 +1451,16 @@ static int nla_put_sci(struct sk_buff *skb, int attrtype, sci_t value,
- 	return nla_put_u64_64bit(skb, attrtype, (__force u64)value, padattr);
- }
- 
-+static ssci_t nla_get_ssci(const struct nlattr *nla)
-+{
-+	return (__force ssci_t)nla_get_u32(nla);
-+}
-+
-+static int nla_put_ssci(struct sk_buff *skb, int attrtype, ssci_t value)
-+{
-+	return nla_put_u32(skb, attrtype, (__force u64)value);
-+}
-+
- static struct macsec_tx_sa *get_txsa_from_nl(struct net *net,
- 					     struct nlattr **attrs,
- 					     struct nlattr **tb_sa,
-@@ -1562,11 +1576,14 @@ static const struct nla_policy macsec_genl_rxsc_policy[NUM_MACSEC_RXSC_ATTR] = {
- static const struct nla_policy macsec_genl_sa_policy[NUM_MACSEC_SA_ATTR] = {
- 	[MACSEC_SA_ATTR_AN] = { .type = NLA_U8 },
- 	[MACSEC_SA_ATTR_ACTIVE] = { .type = NLA_U8 },
--	[MACSEC_SA_ATTR_PN] = { .type = NLA_U32 },
-+	[MACSEC_SA_ATTR_PN] = { .type = NLA_MIN_LEN, .len = 4 },
- 	[MACSEC_SA_ATTR_KEYID] = { .type = NLA_BINARY,
- 				   .len = MACSEC_KEYID_LEN, },
- 	[MACSEC_SA_ATTR_KEY] = { .type = NLA_BINARY,
- 				 .len = MACSEC_MAX_KEY_LEN, },
-+	[MACSEC_SA_ATTR_SSCI] = { .type = NLA_U32 },
-+	[MACSEC_SA_ATTR_SALT] = { .type = NLA_BINARY,
-+				  .len = MACSEC_SALT_LEN, },
- };
- 
- static const struct nla_policy macsec_genl_offload_policy[NUM_MACSEC_OFFLOAD_ATTR] = {
-@@ -1639,7 +1656,8 @@ static bool validate_add_rxsa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
- 
--	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (attrs[MACSEC_SA_ATTR_PN] &&
-+	    *(u64 *)nla_data(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
- 
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -1661,6 +1679,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_rx_sc *rx_sc;
- 	struct macsec_rx_sa *rx_sa;
- 	unsigned char assoc_num;
-+	int pn_len;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
- 	int err;
-@@ -1693,6 +1712,29 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
- 	}
- 
-+	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
-+	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
-+		pr_notice("macsec: nl: add_rxsa: bad pn length: %d != %d\n",
-+			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+		rtnl_unlock();
-+		return -EINVAL;
-+	}
-+
-+	if (secy->xpn) {
-+		if (!tb_sa[MACSEC_SA_ATTR_SSCI] || !tb_sa[MACSEC_SA_ATTR_SALT]) {
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+
-+		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
-+			pr_notice("macsec: nl: add_rxsa: bad salt length: %d != %d\n",
-+				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
-+				  MACSEC_SA_ATTR_SALT);
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+	}
-+
- 	rx_sa = rtnl_dereference(rx_sc->sa[assoc_num]);
- 	if (rx_sa) {
- 		rtnl_unlock();
-@@ -1715,7 +1757,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
- 		spin_lock_bh(&rx_sa->lock);
--		rx_sa->next_pn_halves.lower = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
-+		rx_sa->next_pn = nla_get_u64(tb_sa[MACSEC_SA_ATTR_PN]);
- 		spin_unlock_bh(&rx_sa->lock);
- 	}
- 
-@@ -1745,6 +1787,12 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
-+	if (secy->xpn) {
-+		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
- 	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(rx_sc->sa[assoc_num], rx_sa);
- 
-@@ -1869,6 +1917,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_tx_sc *tx_sc;
- 	struct macsec_tx_sa *tx_sa;
- 	unsigned char assoc_num;
-+	int pn_len;
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
- 	bool was_operational;
- 	int err;
-@@ -1901,6 +1950,29 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
- 	}
- 
-+	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
-+	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
-+		pr_notice("macsec: nl: add_txsa: bad pn length: %d != %d\n",
-+			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+		rtnl_unlock();
-+		return -EINVAL;
-+	}
-+
-+	if (secy->xpn) {
-+		if (!tb_sa[MACSEC_SA_ATTR_SSCI] || !tb_sa[MACSEC_SA_ATTR_SALT]) {
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+
-+		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
-+			pr_notice("macsec: nl: add_txsa: bad salt length: %d != %d\n",
-+				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
-+				  MACSEC_SA_ATTR_SALT);
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+	}
-+
- 	tx_sa = rtnl_dereference(tx_sc->sa[assoc_num]);
- 	if (tx_sa) {
- 		rtnl_unlock();
-@@ -1922,7 +1994,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	spin_lock_bh(&tx_sa->lock);
--	tx_sa->next_pn_halves.lower = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
-+	tx_sa->next_pn = nla_get_u64(tb_sa[MACSEC_SA_ATTR_PN]);
- 	spin_unlock_bh(&tx_sa->lock);
- 
- 	if (tb_sa[MACSEC_SA_ATTR_ACTIVE])
-@@ -1953,6 +2025,12 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
-+	if (secy->xpn) {
-+		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
- 	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(tx_sc->sa[assoc_num], tx_sa);
- 
-@@ -2159,7 +2237,9 @@ static bool validate_upd_sa(struct nlattr **attrs)
- {
- 	if (!attrs[MACSEC_SA_ATTR_AN] ||
- 	    attrs[MACSEC_SA_ATTR_KEY] ||
--	    attrs[MACSEC_SA_ATTR_KEYID])
-+	    attrs[MACSEC_SA_ATTR_KEYID] ||
-+	    attrs[MACSEC_SA_ATTR_SSCI] ||
-+	    attrs[MACSEC_SA_ATTR_SALT])
- 		return false;
- 
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
-@@ -2209,9 +2289,19 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
-+		int pn_len;
-+
-+		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
-+		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
-+			pr_notice("macsec: nl: upd_txsa: bad pn length: %d != %d\n",
-+				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+
- 		spin_lock_bh(&tx_sa->lock);
- 		prev_pn = tx_sa->next_pn_halves;
--		tx_sa->next_pn_halves.lower = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
-+		tx_sa->next_pn = nla_get_u64(tb_sa[MACSEC_SA_ATTR_PN]);
- 		spin_unlock_bh(&tx_sa->lock);
- 	}
- 
-@@ -2295,9 +2385,19 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
-+		int pn_len;
-+
-+		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
-+		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
-+			pr_notice("macsec: nl: upd_rxsa: bad pn length: %d != %d\n",
-+				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
-+
- 		spin_lock_bh(&rx_sa->lock);
- 		prev_pn = rx_sa->next_pn_halves;
--		rx_sa->next_pn_halves.lower = nla_get_u32(tb_sa[MACSEC_SA_ATTR_PN]);
-+		rx_sa->next_pn = nla_get_u64(tb_sa[MACSEC_SA_ATTR_PN]);
- 		spin_unlock_bh(&rx_sa->lock);
- 	}
- 
-@@ -2744,10 +2844,10 @@ static int nla_put_secy(struct macsec_secy *secy, struct sk_buff *skb)
- 
- 	switch (secy->key_len) {
- 	case MACSEC_GCM_AES_128_SAK_LEN:
--		csid = MACSEC_DEFAULT_CIPHER_ID;
-+		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
- 		break;
- 	case MACSEC_GCM_AES_256_SAK_LEN:
--		csid = MACSEC_CIPHER_ID_GCM_AES_256;
-+		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_256 : MACSEC_CIPHER_ID_GCM_AES_256;
- 		break;
- 	default:
- 		goto cancel;
-@@ -2838,6 +2938,8 @@ dump_secy(struct macsec_secy *secy, struct net_device *dev,
- 	for (i = 0, j = 1; i < MACSEC_NUM_AN; i++) {
- 		struct macsec_tx_sa *tx_sa = rtnl_dereference(tx_sc->sa[i]);
- 		struct nlattr *txsa_nest;
-+		u64 pn;
-+		int pn_len;
- 
- 		if (!tx_sa)
- 			continue;
-@@ -2848,9 +2950,18 @@ dump_secy(struct macsec_secy *secy, struct net_device *dev,
- 			goto nla_put_failure;
- 		}
- 
-+		if (secy->xpn) {
-+			pn = tx_sa->next_pn;
-+			pn_len = MACSEC_XPN_PN_LEN;
-+		} else {
-+			pn = tx_sa->next_pn_halves.lower;
-+			pn_len = MACSEC_DEFAULT_PN_LEN;
-+		}
-+
- 		if (nla_put_u8(skb, MACSEC_SA_ATTR_AN, i) ||
--		    nla_put_u32(skb, MACSEC_SA_ATTR_PN, tx_sa->next_pn_halves.lower) ||
-+		    nla_put(skb, MACSEC_SA_ATTR_PN, pn_len, &pn) ||
- 		    nla_put(skb, MACSEC_SA_ATTR_KEYID, MACSEC_KEYID_LEN, tx_sa->key.id) ||
-+		    (secy->xpn && nla_put_ssci(skb, MACSEC_SA_ATTR_SSCI, tx_sa->ssci)) ||
- 		    nla_put_u8(skb, MACSEC_SA_ATTR_ACTIVE, tx_sa->active)) {
- 			nla_nest_cancel(skb, txsa_nest);
- 			nla_nest_cancel(skb, txsa_list);
-@@ -2923,6 +3034,8 @@ dump_secy(struct macsec_secy *secy, struct net_device *dev,
- 		for (i = 0, k = 1; i < MACSEC_NUM_AN; i++) {
- 			struct macsec_rx_sa *rx_sa = rtnl_dereference(rx_sc->sa[i]);
- 			struct nlattr *rxsa_nest;
-+			u64 pn;
-+			int pn_len;
- 
- 			if (!rx_sa)
- 				continue;
-@@ -2952,9 +3065,18 @@ dump_secy(struct macsec_secy *secy, struct net_device *dev,
- 			}
- 			nla_nest_end(skb, attr);
- 
-+			if (secy->xpn) {
-+				pn = rx_sa->next_pn;
-+				pn_len = MACSEC_XPN_PN_LEN;
-+			} else {
-+				pn = rx_sa->next_pn_halves.lower;
-+				pn_len = MACSEC_DEFAULT_PN_LEN;
-+			}
-+
- 			if (nla_put_u8(skb, MACSEC_SA_ATTR_AN, i) ||
--			    nla_put_u32(skb, MACSEC_SA_ATTR_PN, rx_sa->next_pn_halves.lower) ||
-+			    nla_put(skb, MACSEC_SA_ATTR_PN, pn_len, &pn) ||
- 			    nla_put(skb, MACSEC_SA_ATTR_KEYID, MACSEC_KEYID_LEN, rx_sa->key.id) ||
-+			    (secy->xpn && nla_put_ssci(skb, MACSEC_SA_ATTR_SSCI, rx_sa->ssci)) ||
- 			    nla_put_u8(skb, MACSEC_SA_ATTR_ACTIVE, rx_sa->active)) {
- 				nla_nest_cancel(skb, rxsa_nest);
- 				nla_nest_cancel(skb, rxsc_nest);
-@@ -3483,9 +3605,19 @@ static int macsec_changelink_common(struct net_device *dev,
- 		case MACSEC_CIPHER_ID_GCM_AES_128:
- 		case MACSEC_DEFAULT_CIPHER_ID:
- 			secy->key_len = MACSEC_GCM_AES_128_SAK_LEN;
-+			secy->xpn = false;
- 			break;
- 		case MACSEC_CIPHER_ID_GCM_AES_256:
- 			secy->key_len = MACSEC_GCM_AES_256_SAK_LEN;
-+			secy->xpn = false;
-+			break;
-+		case MACSEC_CIPHER_ID_GCM_AES_XPN_128:
-+			secy->key_len = MACSEC_GCM_AES_128_SAK_LEN;
-+			secy->xpn = true;
-+			break;
-+		case MACSEC_CIPHER_ID_GCM_AES_XPN_256:
-+			secy->key_len = MACSEC_GCM_AES_256_SAK_LEN;
-+			secy->xpn = true;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -3680,6 +3812,7 @@ static int macsec_add_dev(struct net_device *dev, sci_t sci, u8 icv_len)
- 	secy->validate_frames = MACSEC_VALIDATE_DEFAULT;
- 	secy->protect_frames = true;
- 	secy->replay_protect = false;
-+	secy->xpn = DEFAULT_XPN;
- 
- 	secy->sci = sci;
- 	secy->tx_sc.active = true;
-@@ -3809,6 +3942,8 @@ static int macsec_validate_attr(struct nlattr *tb[], struct nlattr *data[],
- 	switch (csid) {
- 	case MACSEC_CIPHER_ID_GCM_AES_128:
- 	case MACSEC_CIPHER_ID_GCM_AES_256:
-+	case MACSEC_CIPHER_ID_GCM_AES_XPN_128:
-+	case MACSEC_CIPHER_ID_GCM_AES_XPN_256:
- 	case MACSEC_DEFAULT_CIPHER_ID:
- 		if (icv_len < MACSEC_MIN_ICV_LEN ||
- 		    icv_len > MACSEC_STD_ICV_LEN)
-@@ -3882,10 +4017,10 @@ static int macsec_fill_info(struct sk_buff *skb,
- 
- 	switch (secy->key_len) {
- 	case MACSEC_GCM_AES_128_SAK_LEN:
--		csid = MACSEC_DEFAULT_CIPHER_ID;
-+		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_128 : MACSEC_DEFAULT_CIPHER_ID;
- 		break;
- 	case MACSEC_GCM_AES_256_SAK_LEN:
--		csid = MACSEC_CIPHER_ID_GCM_AES_256;
-+		csid = secy->xpn ? MACSEC_CIPHER_ID_GCM_AES_XPN_256 : MACSEC_CIPHER_ID_GCM_AES_256;
- 		break;
- 	default:
- 		goto nla_put_failure;
-diff --git a/include/net/macsec.h b/include/net/macsec.h
-index 43cd54e17..2e4780dbf 100644
---- a/include/net/macsec.h
-+++ b/include/net/macsec.h
-@@ -11,6 +11,9 @@
- #include <uapi/linux/if_link.h>
- #include <uapi/linux/if_macsec.h>
- 
-+#define MACSEC_DEFAULT_PN_LEN 4
-+#define MACSEC_XPN_PN_LEN 8
-+
- #define MACSEC_SALT_LEN 12
- #define MACSEC_NUM_AN 4 /* 2 bits for the association number */
- 
-diff --git a/include/uapi/linux/if_macsec.h b/include/uapi/linux/if_macsec.h
-index 1d63c43c3..3af2aa069 100644
---- a/include/uapi/linux/if_macsec.h
-+++ b/include/uapi/linux/if_macsec.h
-@@ -22,9 +22,11 @@
- 
- #define MACSEC_KEYID_LEN 16
- 
--/* cipher IDs as per IEEE802.1AEbn-2011 */
-+/* cipher IDs as per IEEE802.1AE-2018 (Table 14-1) */
- #define MACSEC_CIPHER_ID_GCM_AES_128 0x0080C20001000001ULL
- #define MACSEC_CIPHER_ID_GCM_AES_256 0x0080C20001000002ULL
-+#define MACSEC_CIPHER_ID_GCM_AES_XPN_128 0x0080C20001000003ULL
-+#define MACSEC_CIPHER_ID_GCM_AES_XPN_256 0x0080C20001000004ULL
- 
- /* deprecated cipher ID for GCM-AES-128 */
- #define MACSEC_DEFAULT_CIPHER_ID     0x0080020001000001ULL
-@@ -88,11 +90,13 @@ enum macsec_sa_attrs {
- 	MACSEC_SA_ATTR_UNSPEC,
- 	MACSEC_SA_ATTR_AN,     /* config/dump, u8 0..3 */
- 	MACSEC_SA_ATTR_ACTIVE, /* config/dump, u8 0..1 */
--	MACSEC_SA_ATTR_PN,     /* config/dump, u32 */
-+	MACSEC_SA_ATTR_PN,     /* config/dump, u32/u64 (u64 if XPN) */
- 	MACSEC_SA_ATTR_KEY,    /* config, data */
- 	MACSEC_SA_ATTR_KEYID,  /* config/dump, 128-bit */
- 	MACSEC_SA_ATTR_STATS,  /* dump, nested, macsec_sa_stats_attr */
- 	MACSEC_SA_ATTR_PAD,
-+	MACSEC_SA_ATTR_SSCI,   /* config/dump, u32 - XPN only */
-+	MACSEC_SA_ATTR_SALT,   /* config, 96-bit - XPN only */
- 	__MACSEC_SA_ATTR_END,
- 	NUM_MACSEC_SA_ATTR = __MACSEC_SA_ATTR_END,
- 	MACSEC_SA_ATTR_MAX = __MACSEC_SA_ATTR_END - 1,
--- 
-2.20.1
+>
+>>
+>>
+>>>                       continue;
+>>>               }
+>>>
+>>>               skb_push(skb2, skb2->data - skb_mac_header(skb2));
+>>> +             pskb =3D skb2;
+>>>       }
+>>>
+>>>       return skb;
 
+
+--------------123A24450A02DFD5970F628D
+Content-Type: application/pgp-keys;
+ name="pEpkey.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="pEpkey.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+Fq/REmUeraUWcYydE+B+4Xt5yIF/V/Zwm0o=3D
+=3DZ2VJ
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------123A24450A02DFD5970F628D--
