@@ -2,86 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D76217E69B
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:16:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041C017E6DE
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727366AbgCISQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 14:16:34 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:59970 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726467AbgCISQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 14:16:34 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D1EBFA80083;
-        Mon,  9 Mar 2020 18:16:32 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
- 18:16:27 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net] sfc: detach from cb_page in efx_copy_channel()
-To:     <davem@davemloft.net>
-CC:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>
-Message-ID: <d0c0595d-899b-0701-11cc-d9298c97df74@solarflare.com>
-Date:   Mon, 9 Mar 2020 18:16:24 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-TM-AS-Result: No-7.672500-8.000000-10
-X-TMASE-MatchedRID: /FVAr71QmeX0nMCL2lyVdmFdfLBMkul8Ww/S0HB7eoP2u2oLJUFmGHpn
-        GiDiSyyD/TQDVXu6aPir/+Gm/JK2uuDocHyqS9Hwt0cS/uxH87BXjjsM2/Dfxo40w42pEhFTVZ5
-        6bK8gODu0UC2dwBOZS1l+rJjPLsuB9IKRKjO372G7B1QwzOcQD9ST/TZ3TTpFB2QWi8BF5SiKW8
-        BvXyLiE0Etwoxd3OQtSjLlYugtawpNfs8n85Te8oMbH85DUZXy3QfwsVk0UbtuRXh7bFKB7qgmh
-        VwN4qJ9EeuMYmVgYB4ZGSyXYrM4vcHTVmt9wiG5aAZk0sEcY14=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.672500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-MDID: 1583777793-Uu7R6B-voHd8
+        id S1727364AbgCISTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 14:19:04 -0400
+Received: from foss.arm.com ([217.140.110.172]:55612 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726437AbgCISTE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 14:19:04 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F32031FB;
+        Mon,  9 Mar 2020 11:19:02 -0700 (PDT)
+Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.25])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A35A23F67D;
+        Mon,  9 Mar 2020 11:19:01 -0700 (PDT)
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Robert Hancock <hancock@sedsystems.ca>, netdev@vger.kernel.org,
+        rmk+kernel@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v2 00/14] net: axienet: Update error handling and add 64-bit DMA support
+Date:   Mon,  9 Mar 2020 18:18:37 +0000
+Message-Id: <20200309181851.190164-1-andre.przywara@arm.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's a resource, not a parameter, so we can't copy it into the new
- channel's TX queues, otherwise aliasing will lead to resource-
- management bugs if the channel is subsequently torn down without
- being initialised.
+Hi,
 
-Before the Fixes:-tagged commit there was a similar bug with
- tsoh_page, but I'm not sure it's worth doing another fix for such
- old kernels.
+this is an update to the axienet improvement/64-bit support series.
+Compared to v1 I fixed the issues mentioned in the reviews, removed
+the hackish and wrong SGMII fix (there is now a much better solution
+by Russell), and reworked the 64-bit DMA detection. We get away without
+a DT property now: the MSB registers are autodetected, and the full
+64 bit DMA mask is used when they are available.
+Also I fixed two additional existing bugs/issues in the driver.
 
-Fixes: e9117e5099ea ("sfc: Firmware-Assisted TSO version 2")
-Suggested-by: Derek Shute <Derek.Shute@stratus.com>
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
-The Fixes: is in v4.10, so this will want to go to stable for
- 4.14 and later.  Note that the recent refactoring has moved the
- code; in the stable trees efx_copy_channel() will be in efx.c
- rather than efx_channels.c.
+This series is based on net-next as of today (e2f5cb7280f8), which
+includes Russell's fixes [1].
 
- drivers/net/ethernet/sfc/efx_channels.c | 1 +
- 1 file changed, 1 insertion(+)
+A git branch is available at:
+http://www.linux-arm.org/git?p=linux-ap.git;a=shortlog;h=refs/heads/axienet/v2
+git://linux-arm.org/linux-ap.git branch axienet/v2
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index aeb5e8aa2f2a..73d4e39b5b16 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -583,6 +583,7 @@ struct efx_channel *efx_copy_channel(const struct efx_channel *old_channel)
- 		if (tx_queue->channel)
- 			tx_queue->channel = channel;
- 		tx_queue->buffer = NULL;
-+		tx_queue->cb_page = NULL;
- 		memset(&tx_queue->txd, 0, sizeof(tx_queue->txd));
- 	}
- 
+Thanks,
+Andre
+
+[1] https://lore.kernel.org/netdev/E1j6trA-0003GY-N1@rmk-PC.armlinux.org.uk/
+
+Changelog v1 .. v2:
+- Add Reviewed-by: tags from Radhey
+- Extend kerndoc documentation
+- Convert DMA error handler tasklet to work queue
+- log DMA mapping errors
+- mark DMA mapping error checks as unlikely (in "hot" paths)
+- return NETDEV_TX_OK on TX DMA mapping error (increasing TX drop counter)
+- Request eth IRQ as an optional IRQ
+- Remove no longer needed MDIO IRQ register names
+- Drop DT propery check for address width, assume full 64 bit
+
+===============
+This series updates the Xilinx Axienet driver to work on our board
+here. One big issue was broken SGMII support, which Russell fixed already
+(in net-next).
+While debugging and understanding the driver, I found several problems
+in the error handling and cleanup paths, which patches 2-7 address.
+Patch 8 removes a annoying error message, patch 9 paves the way for newer
+revisions of the IP. The next patch adds mii-tool support, just for good
+measure.
+
+The next four patches add support for 64-bit DMA. This is an integration
+option on newer IP revisions (>= v7.1), and expects MSB bits in formerly
+reserved registers. Without writing to those MSB registers, the state
+machine won't trigger, so it's mandatory to access them, even if they
+are zero. Patches 11 and 12 prepare the code by adding accessors, to
+wrap this properly and keep it working on older IP revisions.
+Patch 13 enables access to the MSB registers, by trying to write a
+non-zero value to them and checking if that sticks. Older IP revisions
+always read those registers as zero.
+Patch 14 then adjusts the DMA mask, based on the autodetected MSB
+feature. It uses the full 64 bits in this case, the rest of the system
+(actual physical addresses in use) should provide a natural limit if the
+chip has connected fewer address lines. If not, the parent DT node can
+use a dma-range property.
+
+The Xilinx PG138 and PG021 documents (in versions 7.1 in both cases)
+were used for this series.
+
+Andre Przywara (14):
+  net: xilinx: temac: Relax Kconfig dependencies
+  net: axienet: Convert DMA error handler to a work queue
+  net: axienet: Propagate failure of DMA descriptor setup
+  net: axienet: Fix DMA descriptor cleanup path
+  net: axienet: Improve DMA error handling
+  net: axienet: Factor out TX descriptor chain cleanup
+  net: axienet: Check for DMA mapping errors
+  net: axienet: Mark eth_irq as optional
+  net: axienet: Drop MDIO interrupt registers from ethtools dump
+  net: axienet: Add mii-tool support
+  net: axienet: Wrap DMA pointer writes to prepare for 64 bit
+  net: axienet: Upgrade descriptors to hold 64-bit addresses
+  net: axienet: Autodetect 64-bit DMA capability
+  net: axienet: Allow DMA to beyond 4GB
+
+ drivers/net/ethernet/xilinx/Kconfig           |   1 -
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  19 +-
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 378 +++++++++++++-----
+ 3 files changed, 284 insertions(+), 114 deletions(-)
+
+-- 
+2.17.1
+
