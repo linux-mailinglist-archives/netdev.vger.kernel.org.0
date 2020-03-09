@@ -2,86 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C702D17EC36
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:40:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF8017EC37
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgCIWkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 18:40:17 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49628 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726656AbgCIWkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 18:40:16 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 53FA4B00064;
-        Mon,  9 Mar 2020 22:40:15 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
- 22:40:08 +0000
-Subject: Re: [PATCH net-next ct-offload v2 05/13] net/sched: act_ct: Enable
- hardware offload of flow table entires
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Paul Blakey <paulb@mellanox.com>
-CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        id S1727233AbgCIWkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 18:40:19 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40688 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726656AbgCIWkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 18:40:18 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m2so10958416qka.7
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 15:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qmG0HdA9RQDeW3xbv0dzsyDRiAImEmqalHR9xDHSVbg=;
+        b=oya7aVnqZVvr9HAQDQIQ/RxOMdQaVp9D/sc9EUqPRDFMUTYawDZjSIZTsWm7ah44V3
+         zT5sUh87X2Ml3FGehmihanCvBjU8YVczufn/8UWhY2ELYuei+wvFG9h31pYWrss4fgnS
+         OImopwWazcHiMDPW+2AjaZToLx8vbVwJyGQeGePZWVxcubal8pvs5f0XAo62Ef35iHox
+         wYnabLQdN7x3jZCLvYnED6/X1fffP2jhisLmQ9+dqABRhpzJtXyfamjXPTmP7FTXq3FT
+         pTrvWD4l0BqAkzLp9W9Eq1qqiCDT1AqTEiInupBICLP+bfOLLO6w3V6LyctcThvDSNxi
+         lUOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qmG0HdA9RQDeW3xbv0dzsyDRiAImEmqalHR9xDHSVbg=;
+        b=O2oUPaPOsEFejBfLtVVEh0ztwZrtK6a9+PVCx3+4tQrRGDet47QKrAAbByNqpiC/fj
+         jNSoCxxwRYINFeUXSQ1aiR8gJHDzWG0J7xrOn3v4W9VL7NPACLKYq9Lzf98a2Iu2na3c
+         x5rNBP+eKUjwvOkGCwiIM7ky4iAKFWvzpfXHBKS/MIqgr3MZsFsAx57gspN+YMDgNhcu
+         0rqnwstTPyFrnniCg4nQs90hCT97MoGkrDEPS6A6T+dZpdOHUNpo/pO5eBMc2i4KTr/U
+         83laORs06wouid3kMZfdPRE2KMDQ3acWItl0/i8JbUmRNteHhuuKPmNqh5yWJZFSeSCR
+         R17A==
+X-Gm-Message-State: ANhLgQ0zITRI4Y0AISFYzNA0WUOmRDg6UgRl3f5bBE7i3LdpxIevmM5V
+        rP0QV/6k1Zl/zXvNNDT5JdM=
+X-Google-Smtp-Source: ADFU+vvod7/pnHz/hqc62ibDt2yQQ2d0BWHPbNIk6bFR3f8eCsdsJL8P/+0KywEYX5kqfxb0Uz5fIw==
+X-Received: by 2002:a37:98c7:: with SMTP id a190mr17345089qke.498.1583793616958;
+        Mon, 09 Mar 2020 15:40:16 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.176.158])
+        by smtp.gmail.com with ESMTPSA id t1sm21026673qtr.94.2020.03.09.15.40.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 15:40:15 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 20CCFC314F; Mon,  9 Mar 2020 19:40:13 -0300 (-03)
+Date:   Mon, 9 Mar 2020 19:40:13 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
         Oz Shlomo <ozsh@mellanox.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Vlad Buslov <vladbu@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: Re: [PATCH net-next ct-offload v2 06/13] net/mlx5: E-Switch,
+ Introduce global tables
+Message-ID: <20200309224013.GK2546@localhost.localdomain>
 References: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
- <1583676662-15180-6-git-send-email-paulb@mellanox.com>
- <62d6cfde-5749-b2d6-ee04-d0a49b566d1a@solarflare.com>
- <20200309221953.GJ2546@localhost.localdomain>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <a6817bc6-17bf-ee29-4910-9c287bbc6646@solarflare.com>
-Date:   Mon, 9 Mar 2020 22:40:05 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ <1583676662-15180-7-git-send-email-paulb@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200309221953.GJ2546@localhost.localdomain>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-TM-AS-Result: No-5.696800-8.000000-10
-X-TMASE-MatchedRID: scwq2vQP8OEf2uG5NUkiu/ZvT2zYoYOwC/ExpXrHizw/hcT28SJs8qDS
-        FbNSvOcncSBIJeE8AJSr/+Gm/JK2uueiDxJcK5MJY1bQMCMvmn6MeFePU0tuMOFjQ62VhP8bS8X
-        QUmo7QNh1C0eA/+ELkI0pfouzkP9TlML+266Ikxokp7iSXiinhC/6pa9YxNkxvPwQoyIZS6c0Vl
-        Fe0MnlXqPcX3xJIWl8vZOz5ptwyPpD/MGHLum03p4CIKY/Hg3AcmfM3DjaQLHZs3HUcS/scCq2r
-        l3dzGQ1LKRDQhtaB1iTBPEehRpVL5LZaKBQPBJ0/quB0ltwFDbcebm8SUe7c8C+ksT6a9fy
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.696800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-MDID: 1583793616-Tg3RTdCX9RTF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1583676662-15180-7-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/03/2020 22:19, Marcelo Ricardo Leitner wrote:
-> On Mon, Mar 09, 2020 at 09:25:49PM +0000, Edward Cree wrote:
->> This doesn't seem to apply to net-next (34a568a244be); the label after
->>  the __module_get() is 'out_unlock', not 'take_ref'.  Is there a missing
->>  prerequisite patch?  Or am I just failing to drive 'git am' correctly?
-> That's a mid-air collision with Eric's
-> [PATCH net-next] net/sched: act_ct: fix lockdep splat in tcf_ct_flow_table_get
-> That went in in between v1 and v2 here.
->
->   Marcelo
-Thanks.
-Unfortunately, although going back to that commit's parentmakes this
- patch apply, #6 still doesn't, and I don't particularly feel like
- playing whack-a-mole.  Paul, could you either specify the base from
- which you generated this series, or stick the branch somewhere that
- can be pulled from, please?  I'd like to build it so that I can
- start experimenting with driver code to interface with it.
+On Sun, Mar 08, 2020 at 04:10:55PM +0200, Paul Blakey wrote:
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+> @@ -149,7 +149,12 @@ struct mlx5_flow_handle *
+>  	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST) {
+>  		struct mlx5_flow_table *ft;
+>  
+> -		if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) {
+> +		if (attr->dest_ft) {
+> +			flow_act.flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+> +			dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+> +			dest[i].ft = attr->dest_ft;
+> +			i++;
+> +		} else if (attr->flags & MLX5_ESW_ATTR_FLAG_SLOW_PATH) {
+>  			flow_act.flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+>  			dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+>  			dest[i].ft = mlx5_esw_chains_get_tc_end_ft(esw);
+> @@ -202,8 +207,11 @@ struct mlx5_flow_handle *
+>  	if (flow_act.action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
+>  		flow_act.modify_hdr = attr->modify_hdr;
+>  
+> -	fdb = mlx5_esw_chains_get_table(esw, attr->chain, attr->prio,
+> -					!!split);
+> +	if (attr->chain || attr->prio)
+> +		fdb = mlx5_esw_chains_get_table(esw, attr->chain, attr->prio,
+> +						!!split);
+> +	else
+> +		fdb = attr->fdb;
 
-TiA,
--ed
+I'm not sure how these/mlx5 patches are supposed to propagate to
+net-next, but AFAICT here it conflicts with 
+96e326878fa5 ("net/mlx5e: Eswitch, Use per vport tables for mirroring")
+
+>  	if (IS_ERR(fdb)) {
+>  		rule = ERR_CAST(fdb);
+>  		goto err_esw_get;
