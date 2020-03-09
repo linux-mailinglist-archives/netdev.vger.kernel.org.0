@@ -2,83 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4028D17E413
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD9C517E50A
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 17:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbgCIPyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 11:54:12 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40791 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgCIPyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:54:12 -0400
-Received: by mail-wr1-f66.google.com with SMTP id p2so11064740wrw.7
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:54:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iQAdBVPJl3sgSUDhzx9b8VhMSwPP8EHy78vnHlVTGNw=;
-        b=VJe/4FZTvYT1YeaQCkNZpA8Z4KNusg4hX0oQHsT6y7O4u9tkBe+TYIpa1s67EGe4Ep
-         gZq8Va4E/cJ/dcdGkrs7rozG3MkU7YS+4Di4oLZNDMURiG7ymlXXWrlp1oE0kzWFIKwZ
-         4uLH7V8k90pNACCYQS/l3iKO+mat5nqLb6BBXGsCmkSz+HRlevGVA2xmvgFEUn8GfvRb
-         cqE12S9KPpCeLsalJLY2mN3Au8sf3WY9BGqgfEmAxqQPz9+3gyCVHkh2TFn/gXky3wNA
-         xV4Tu6sGQHZDhu1wWUSblDF1e0J6fp68XmPgX6SbJC/Q/jKoKN7sZZYy5WHXhkvs5r0T
-         +7AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iQAdBVPJl3sgSUDhzx9b8VhMSwPP8EHy78vnHlVTGNw=;
-        b=SPQd8gHO2XumwQrSgBqRYM3Z5sNPqqySLcKKUgW87azCbQq+uCWTjqoU8PrHKg7CCM
-         88PCcFs4IOeiUhNoCE2d8VoHIucDaDeoelIgOmIGO91BTQ9ppEGIXpsbI1gXIcf6Gi+h
-         gE6hXHTt9hrz65Pynu8LLx3oEsGg4yJ9m6nGgs+lEl/vmcnOx5T4O6JT89o/zqoLUnCz
-         OXSYdH8IBghwknDdy6Y3KJpofma0u2NnzD3a6oyo+pM1zp7gBSvWnKtAnAWicfAe0ZZ2
-         rwFVWQLiEClDBC5bhTYM/F7GS1vSyZPtPSrbNgsqed1czaxsCwucVI1rpjPXxVrnrz8h
-         qmDw==
-X-Gm-Message-State: ANhLgQ0y3WBXMs4wE8gRSqIsu3xRyiKHffwld67fE9sODk/Ue4g6mOfd
-        PBq9c5JSXswxdmdu5gHrlsYL5Q==
-X-Google-Smtp-Source: ADFU+vvKW3PN4Qph3Q0WAmMIEoNzFNsA8KmBDCnKTR/+5SZUPIjAFwOXB6dbUiQnI/baBFgUNjujbA==
-X-Received: by 2002:adf:e447:: with SMTP id t7mr976356wrm.374.1583769250548;
-        Mon, 09 Mar 2020 08:54:10 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id n13sm25870406wmd.21.2020.03.09.08.54.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 08:54:10 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 16:54:09 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        mlxsw@mellanox.com
-Subject: Re: [patch iproute2/net-next] tc: m_action: introduce support for hw
+        id S1727250AbgCIQwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 12:52:32 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:41648 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727132AbgCIQwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 12:52:32 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4F82818006D;
+        Mon,  9 Mar 2020 16:52:29 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
+ 16:52:20 +0000
+Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
  stats type
-Message-ID: <20200309155409.GD13968@nanopsycho.orion>
-References: <20200309152743.32599-1-jiri@resnulli.us>
- <39815e7d-7dd5-c5b4-54b7-90f6852a3d08@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <saeedm@mellanox.com>,
+        <leon@kernel.org>, <michael.chan@broadcom.com>,
+        <vishal@chelsio.com>, <jeffrey.t.kirsher@intel.com>,
+        <idosch@mellanox.com>, <aelior@marvell.com>,
+        <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>,
+        <pablo@netfilter.org>, <mlxsw@mellanox.com>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+ <20200307114020.8664-2-jiri@resnulli.us>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+Date:   Mon, 9 Mar 2020 16:52:16 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <39815e7d-7dd5-c5b4-54b7-90f6852a3d08@gmail.com>
+In-Reply-To: <20200307114020.8664-2-jiri@resnulli.us>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-TM-AS-Result: No-9.307200-8.000000-10
+X-TMASE-MatchedRID: VPleTT1nwdTmLzc6AOD8DfHkpkyUphL9eouvej40T4iRoQLwUmtov7oY
+        /8zM5lCggH71Hvwg6bRM7g1j0AuHEWJZXQNDzktSbBMSu4v05tOrcyxAHgzswryRVeaM8Kzf9di
+        MilcQBqvfNm9SJCTV2xit2OqfFZiNYL8QSGy41Gr1MIl9eZdLb2lYsa84w2hT1y0aXF5eX+hdr3
+        7dknN8wruwuIYnhcFSX7bicKxRIU23sNbcHjySQd0H8LFZNFG7hqz53n/yPnoNLhfDCqPJyISvF
+        V+S5t+vxHJR8AzkOBJr6iCOdZDf/boOfFLgUu3n
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.307200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-MDID: 1583772751-ryyUxHO2owGQ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Mar 09, 2020 at 04:38:39PM CET, dsahern@gmail.com wrote:
->On 3/9/20 9:27 AM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> introduce support for per-action hw stats type config.
+On 07/03/2020 11:40, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
 >
->You need to add more here - explaining what this feature is and giving
->an example.
-
-Sent v2.
-
+> Initially, pass "ANY" (struct is zeroed) to the drivers as that is the
+> current implicit value coming down to flow_offload. Add a bool
+> indicating that entries have mixed HW stats type.
 >
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->>  include/uapi/linux/pkt_cls.h | 22 +++++++++++++
->>  man/man8/tc-actions.8        | 31 ++++++++++++++++++
->>  tc/m_action.c                | 61 ++++++++++++++++++++++++++++++++++++
->>  3 files changed, 114 insertions(+)
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+> v3->v4:
+> - fixed member alignment
+> v2->v3:
+> - moved to bitfield
+> - removed "mixed" bool
+> v1->v2:
+> - moved to actions
+> - add mixed bool
+> ---
+>  include/net/flow_offload.h | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> index cd3510ac66b0..93d17f37e980 100644
+> --- a/include/net/flow_offload.h
+> +++ b/include/net/flow_offload.h
+> @@ -154,6 +154,8 @@ enum flow_action_mangle_base {
+>  	FLOW_ACT_MANGLE_HDR_TYPE_UDP,
+>  };
+>  
+> +#define FLOW_ACTION_HW_STATS_TYPE_ANY 0
+I'm not quite sure why switching to a bit fieldapproach means these
+ haveto become #defines rather than enums...
+
+> +
+>  typedef void (*action_destr)(void *priv);
+>  
+>  struct flow_action_cookie {
+> @@ -168,6 +170,7 @@ void flow_action_cookie_destroy(struct flow_action_cookie *cookie);
+>  
+>  struct flow_action_entry {
+>  	enum flow_action_id		id;
+> +	u8				hw_stats_type;
+... causing this to become a u8with nothing obviously preventing
+ a HW_STATS_TYPE bigger than 255 getting defined.
+An enum type seems safer.
+
+-ed
+
+>  	action_destr			destructor;
+>  	void				*destructor_priv;
+>  	union {
+
