@@ -2,86 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB6D417E0B2
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB95A17E0CE
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 14:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgCIM5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 08:57:50 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:37751 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbgCIM5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:57:49 -0400
-Received: by mail-qt1-f195.google.com with SMTP id l20so5199897qtp.4
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=miMLkBCmq91TU9yIA6m0qBL/sLuRcI7EOPQvuCnK0ME=;
-        b=PND02V6c5mkNsAkLk07pOXpP9XvnX4Sdm+ABzlZ1nv0JPQ/kAsdlU0JofrwLRESoPH
-         CJSDhAOJfPNqAeooa7Z4BlQjtvBloG7P9L7W4NK7c3icW41EFX4lohMbM/6TEwtXZQi1
-         SolkrNZGusb9a+Qt2Lk0k+QzLeMnnkBC61PKKgbKW/zug4QUS1Fg00KOrX5Lo2odMTeT
-         3wGJmYZFTq12k2X4iAQMIM9Ca5WBn2xilTCI9Bu8nVxSp+u6jQo2iw0/cjMLoQf0Jt1K
-         /OZGS+ljIeMI1n3j/DJkgTkS7k5+x5pgW+36xpoiPA+zcoZ/w9XChkMf/9rhpcITFlSE
-         l7Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=miMLkBCmq91TU9yIA6m0qBL/sLuRcI7EOPQvuCnK0ME=;
-        b=XteQ6BOabEjdLAiOOHcmCwpg3lT7PGjy1iYdNranxdOekP5Lfgx5XRsCfbOIvba0Iy
-         wCyW0bD80CVjGenJg6vw1c0NCBsSNFmUMC31AV0E6a+NEopysZ7Qo1HwcqaOM0jSne3g
-         k+KY4oea2qIorEPDIt5FULLLN0shFWZ+W2HayH2/jtBim5doPJL21fcfOS/H4PkDzlxV
-         maV186A0tMQ/XnbZ0a5kdvQZkE0DKcDfX4MTiNOsoj9mlBJWhW5HnCGj6cQhNGSHshXZ
-         kwVA9tRytDYb03o9Yg03IdgWfZ2ASH3h8Zf3npChY0GFvKGQRAZShPf6yS5lAc3uYHrs
-         DmRQ==
-X-Gm-Message-State: ANhLgQ2CEk2zJil/plgGZviQfAK33xVK9pCYdjox6itpsKxaXZaPlmQk
-        T07ziBX8cP1UX6aEgcqe1laZvQ==
-X-Google-Smtp-Source: ADFU+vu6bvfxesOU9AguoQQ2yTyNVmKJCW8oR4oSVQnin4fkXmnK8mlGS93WLKLIinDLJYbIQny60Q==
-X-Received: by 2002:ac8:4659:: with SMTP id f25mr14091414qto.273.1583758668881;
-        Mon, 09 Mar 2020 05:57:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id x22sm870587qki.54.2020.03.09.05.57.48
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 09 Mar 2020 05:57:48 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jBHyd-00087L-Pc; Mon, 09 Mar 2020 09:57:47 -0300
-Date:   Mon, 9 Mar 2020 09:57:47 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     syzbot <syzbot+3fbea977bd382a4e6140@syzkaller.appspotmail.com>
-Cc:     bmt@zurich.ibm.com, dledford@redhat.com,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: possible deadlock in siw_create_listen
-Message-ID: <20200309125747.GP31668@ziepe.ca>
-References: <000000000000161ee805a039a49e@google.com>
- <000000000000002a8c05a0600814@google.com>
+        id S1726487AbgCINKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 09:10:16 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41009 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbgCINKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 09:10:16 -0400
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jBIAe-00079r-HJ; Mon, 09 Mar 2020 14:10:12 +0100
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jBIAc-00053v-5z; Mon, 09 Mar 2020 14:10:10 +0100
+Date:   Mon, 9 Mar 2020 14:10:10 +0100
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 2/3] fsl/fman: tolerate missing MAC address
+ in device tree
+Message-ID: <20200309131010.GM3335@pengutronix.de>
+References: <1583428138-12733-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1583428138-12733-3-git-send-email-madalin.bucur@oss.nxp.com>
+ <20200309064635.GB3335@pengutronix.de>
+ <DB8PR04MB6985A0B6A4811DCD5C7B8A6AECFE0@DB8PR04MB6985.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <000000000000002a8c05a0600814@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <DB8PR04MB6985A0B6A4811DCD5C7B8A6AECFE0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:02:26 up 18 days, 20:32, 49 users,  load average: 0.41, 0.30,
+ 0.19
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 04:13:15PM -0700, syzbot wrote:
-> syzbot has found a reproducer for the following crash on:
+On Mon, Mar 09, 2020 at 10:17:36AM +0000, Madalin Bucur (OSS) wrote:
+> > -----Original Message-----
+> > From: Sascha Hauer <s.hauer@pengutronix.de>
+> > Sent: Monday, March 9, 2020 8:47 AM
+> > To: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>
+> > Cc: davem@davemloft.net; netdev@vger.kernel.org
+> > Subject: Re: [PATCH net-next v3 2/3] fsl/fman: tolerate missing MAC
+> > address in device tree
+> > 
+> > On Thu, Mar 05, 2020 at 07:08:57PM +0200, Madalin Bucur wrote:
+> > > Allow the initialization of the MAC to be performed even if the
+> > > device tree does not provide a valid MAC address. Later a random
+> > > MAC address should be assigned by the Ethernet driver.
+> > >
+> > > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> > > Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> > > ---
+> > >  drivers/net/ethernet/freescale/fman/fman_dtsec.c | 10 ++++------
+> > >  drivers/net/ethernet/freescale/fman/fman_memac.c | 10 ++++------
+> > >  drivers/net/ethernet/freescale/fman/fman_tgec.c  | 10 ++++------
+> > >  drivers/net/ethernet/freescale/fman/mac.c        | 13 ++++++-------
+> > >  4 files changed, 18 insertions(+), 25 deletions(-)
+> > >
+> <snip>
+> > >  	/* Get the MAC address */
+> > >  	mac_addr = of_get_mac_address(mac_node);
+> > > -	if (IS_ERR(mac_addr)) {
+> > > -		dev_err(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
+> > > -		err = -EINVAL;
+> > > -		goto _return_of_get_parent;
+> > > -	}
+> > > -	ether_addr_copy(mac_dev->addr, mac_addr);
+> > > +	if (IS_ERR(mac_addr))
+> > > +		dev_warn(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
+> > 
+> > Why this warning? There's nothing wrong with not providing the MAC in
+> > the device tree.
+> > 
+> > Sascha
 > 
-> HEAD commit:    425c075d Merge branch 'tun-debug'
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1531a0b1e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=598678fc6e800071
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3fbea977bd382a4e6140
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e3df31e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=163d0439e00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+3fbea977bd382a4e6140@syzkaller.appspotmail.com
+> Actually, there is, most likely it's the result of misconfiguration so one
+> must be made aware of it.
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-next
+In my case it's not, that's why I wanted to allow random MACs in the
+first place ;)
 
-Jason
+On our hardware the MAC addresses are stored in some flash in a special
+format. There's no need to port parsing of that format into the
+bootloader, the existing userspace code does that well and sets the
+desired MAC addresses, but only if the devices do not fail during probe
+due to the lack of valid MAC addresses.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
