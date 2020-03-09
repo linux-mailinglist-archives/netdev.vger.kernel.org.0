@@ -2,106 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AF6117E5F0
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90CC017E5F5
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgCIRoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 13:44:54 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:56134 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbgCIRox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:44:53 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 6so442915wmi.5
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 10:44:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bk3B15wUtiDLARdP73Erc3+882jZVxE5x6sxzBChR+U=;
-        b=cmTIv7tekQb1JLluCtXKE8DF2+ql9jIPi2REpgNG6NWDqzM3kHfiALBGUFipuMqMOI
-         n0e72lWgHhEqzDQdkOPt4lkOBNzsPmEMR6UICsuPs0fTnQJb6CXvdQTEJQgAEeyRJSEj
-         Dtx8ihkxH1CrjfDZofm6X4O/Q2eIPkOKRbiNB9YMJzx8tyUo2zrXOrPLIJ5Hm6VBzQD8
-         961htRtC37eLo4v5F0zKTpjsGtbrQ7Ss8fHhLUnX15nyc9Qes57l0qpk78dZmRJ375NX
-         J/4e4IZNiu2+OmKCFiDgyw45MPW5A0sc0WK4tr9Y5WlYhMxqYS8iXtA0aqdVCtGHW0F9
-         DLwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bk3B15wUtiDLARdP73Erc3+882jZVxE5x6sxzBChR+U=;
-        b=PogpcgGdlg8odw2q+FV5anhIZOkzeV4yqs/H6VsICPNF32QS091tTInHuHqap3c3C6
-         Xcv9zSfTFlgdXebx551BMAu3XnMjl+2/2YRoW9QAAxyQVip0/6Efzux3ZAuc/bvY8edL
-         9oCiQcoUasNNGipBKCxLTuO0ZtbqU9nVwPBOkOTm+lfyvw2LJo8AeiGY/Ik6rNIFAWvk
-         VFLP6RKVLQnX18brqWszYOlykfcCLrJnwP5iBiYdH7omEBpjYiDL8MIW9bXI15sjMv8U
-         jl9W/bM/LzxFNLPzmt3AXo1oDJ9jhroe2VgQKMLIC59iNGmcH/ji8V2IX/pgeo54wVak
-         A7hQ==
-X-Gm-Message-State: ANhLgQ0MF2CNYIJMtAAMXbbeS4yvmtU4pGfSY+GllvTpOhTvm/25A3nd
-        ilMw3wkbK5yOvoUxIEys363jlB2hpJ8=
-X-Google-Smtp-Source: ADFU+vua2yKRrpm3s5HODFDpyQDJYCYyRsAZXvdjp0FihHFCc31zZxUGcpBSWkqLpl9gMhmeoOVp3g==
-X-Received: by 2002:a1c:6541:: with SMTP id z62mr385681wmb.21.1583775889541;
-        Mon, 09 Mar 2020 10:44:49 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f2sm2414686wrv.48.2020.03.09.10.44.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 10:44:48 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        ecree@solarflare.com, mlxsw@mellanox.com
-Subject: [patch net-next] flow_offload: use flow_action_for_each in flow_action_mixed_hw_stats_types_check()
-Date:   Mon,  9 Mar 2020 18:44:47 +0100
-Message-Id: <20200309174447.6352-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
+        id S1726133AbgCIRrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 13:47:11 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:59366 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726096AbgCIRrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:47:11 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E731458005A;
+        Mon,  9 Mar 2020 17:47:09 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
+ 17:47:01 +0000
+Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
+ stats type
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <pablo@netfilter.org>,
+        <mlxsw@mellanox.com>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+ <20200307114020.8664-2-jiri@resnulli.us>
+ <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+ <20200309173412.GF13968@nanopsycho.orion>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <28ec0ed4-38b6-bb27-d769-5bf9d1d4f09c@solarflare.com>
+Date:   Mon, 9 Mar 2020 17:46:57 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <20200309173412.GF13968@nanopsycho.orion>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-TM-AS-Result: No-2.322600-8.000000-10
+X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9hhy6s2hQl4SmsJrgXrmYK12v
+        ft2Sc3zC1V2t9BS+kTGq8GB8/0VLshPXzMq0J6v++Fq9Vk/m1Nr17lqbebntfclgi/vLS272Cto
+        21bgORlh94sx2jukY5BxtvLYB7XTZZ5vCKrIOHHE3X0+M8lqGUj2SB1qSnBxNQzcrLK1tq+ejxY
+        yRBa/qJfkvV+z371TK5MIx11wv+COujVRFkkVsm9vLamDgern+xb05EzyCl9pBBcV/jfKoLkhUd
+        c2GZ+yk3+7fgXRWYBbE6L66514Xd4UJZCtuXB+0jfgKRvTCaV+Wp1fntiL+6oVyAlz5A0zC7xsm
+        i8libwVi6nHReNJA8sM4VWYqoYnhs+fe0WifpQo=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.322600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-MDID: 1583776031-Kju5QkZcsZnF
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of manually iterating over entries, use flow_action_for_each
-helper. Move the helper and wrap it to fit to 80 cols on the way.
+On 09/03/2020 17:34, Jiri Pirko wrote:
+> Mon, Mar 09, 2020 at 05:52:16PM CET, ecree@solarflare.com wrote:
+>> An enum type seems safer.
+> Well, it's is a bitfield, how do you envision to implement it. Have enum
+> value for every combination? I don't get it.
+enum flow_action_stats_type {
+    FLOW_ACTION_HW_STATS_TYPE_DISABLED=0,
+    FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE=BIT(0),
+    FLOW_ACTION_HW_STATS_TYPE_DELAYED=BIT(1),
+    FLOW_ACTION_HW_STATS_TYPE_ANY=(FLOW_ACTION_HW_STATS_TYPE_IMMEDIATE |
+                                   FLOW_ACTION_HW_STATS_TYPE_DELAYED),
+};
 
-Signed-off-by: Jiri Pirko <jiri@resnulli.us>
----
- include/net/flow_offload.h | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+It's not a requirement of the language for every value used withan
+ enumeration to be a defined enumerator value, so if someone ends up
+ putting (FLOW_ACTION_HW_STATS_TYPE_FOO | FLOW_ACTION_HW_STATS_TYPE_BAR)
+ into (say) a driver that supports only FOO and BAR, that will work
+ just fine.  I don't see what problem you expect to occur here.
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 64807aa03cee..7b7bd9215156 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -256,6 +256,11 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
- 	return action->num_entries == 1;
- }
- 
-+#define flow_action_for_each(__i, __act, __actions)			\
-+        for (__i = 0, __act = &(__actions)->entries[0];			\
-+	     __i < (__actions)->num_entries;				\
-+	     __act = &(__actions)->entries[++__i])
-+
- static inline bool
- flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
- 				       struct netlink_ext_ack *extack)
-@@ -267,7 +272,7 @@ flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
- 	if (flow_offload_has_one_action(action))
- 		return true;
- 
--	for (i = 0; i < action->num_entries; i++) {
-+	flow_action_for_each(i, action_entry, action) {
- 		action_entry = &action->entries[i];
- 		if (i && action_entry->hw_stats_type != last_hw_stats_type) {
- 			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
-@@ -316,9 +321,6 @@ flow_action_basic_hw_stats_types_check(const struct flow_action *action,
- 	return flow_action_hw_stats_types_check(action, extack, 0);
- }
- 
--#define flow_action_for_each(__i, __act, __actions)			\
--        for (__i = 0, __act = &(__actions)->entries[0]; __i < (__actions)->num_entries; __act = &(__actions)->entries[++__i])
--
- struct flow_rule {
- 	struct flow_match	match;
- 	struct flow_action	action;
--- 
-2.21.1
-
+-ed
