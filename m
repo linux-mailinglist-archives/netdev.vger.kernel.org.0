@@ -2,113 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A8F17D82E
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:38:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36DB917D835
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgCICiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 22:38:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49420 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726363AbgCICip (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Mar 2020 22:38:45 -0400
-Received: from localhost (lfbn-ncy-1-985-231.w90-101.abo.wanadoo.fr [90.101.63.231])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1967920675;
-        Mon,  9 Mar 2020 02:38:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583721524;
-        bh=NYBnKnoFGHiKr8KFP5sPc644yQ3JlTxiVZ/OVEyT5kM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZoL5T7WMQ1L5KDgXAkmHsFCSmrpvYGWHDYhIsPfh2SNqKbDbBJXqmI6gsl5tz1+dm
-         rw33KSreeT0C31iozs1WGnkwVbboEvSWzW+nxTJD+plXMvbYqDnFHtbF+7B3dMOJhA
-         79dptiGbAhG3DT5Ia1hzMdbu9qL/+NGDRkGikkIk=
-Date:   Mon, 9 Mar 2020 03:38:42 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Alex Belits <abelits@marvell.com>
-Cc:     "mingo@kernel.org" <mingo@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "will@kernel.org" <will@kernel.org>
-Subject: Re: [EXT] Re: [PATCH 08/12] task_isolation: don't interrupt CPUs
- with tick_nohz_full_kick_cpu()
-Message-ID: <20200309023841.GC9615@lenoir>
-References: <4473787e1b6bc3cc226067e8d122092a678b63de.camel@marvell.com>
- <d7ce01e57d4a35b126e1cb96a63109eaa9781cb6.camel@marvell.com>
- <20200306160341.GE8590@lenoir>
- <646a22fd24e8dfeb1eb3101ae7be2b88e91dbfa3.camel@marvell.com>
+        id S1726841AbgCICtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 22:49:06 -0400
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:38379 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726810AbgCICtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 22:49:06 -0400
+Received: by mail-qv1-f65.google.com with SMTP id p60so1714274qva.5
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 19:49:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aumzn3JCsVacS0kLF1lF7fhe5Q2GmsWbctVm5BMWdcI=;
+        b=Tjsq41XlR5M0VDyKxIvh6farkcRbiXA+lhyOiW94qFhwNrrvZ32k+2WAz9Y3xBitvg
+         fQWE+aEtE6eXuMQvXtxtrRGOHsoHxPfTqgC7c524OCOBighJwEtAnI2QCcls3BxRNlLw
+         cO4hlpI4MJh5jcU036m8zKLm9DBqkO1Hhy+ZevadI7vAC8kQwvV4R08BGUvh334NdEvB
+         7wpgnOEXv72KJnlioDj2zpVRMlKSBTqEnXrnIpQfRTV8EiFFQcu5gmwMoc9CcvrealeY
+         N04kCj6l1lIJEy9+N2Zdn+enhr5c85AK3f7pRMKNlQOwfgusgm77Lzlpt1EJAbKrh8aw
+         w1gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aumzn3JCsVacS0kLF1lF7fhe5Q2GmsWbctVm5BMWdcI=;
+        b=Mz+klLcHJBZM6LH/2iXAB2AU565gMKQpH4N+KFpnmrTeyQy5JnOAvpoImS208Za/oj
+         zil1SiXHFjl7iCYZXzU2o7PgYNhis1pjL0lB8nBEq8WPShjzvkCxWHZhB8BBkhIo4qQu
+         U6knIcMJl19c/mCUR41yOFTJibWtu/RaSP5aUancaYW62xbMCfRAFd25ghPil4xgckoa
+         RwWHJuVijJcwBS16t87uRL3eVPh6MyAAiXc4tMwANbcDh+kGoT82l7kaSqPWN4XwHgpu
+         teHff+SUESe95QTsBYvWX5hnmq5YzfUXI5Yw4wmh7jpxZFH9x3akOb23l+QftWQX7ijY
+         PRaA==
+X-Gm-Message-State: ANhLgQ3vZn/ZooglaDwq8QSWcPvBhxBifDZFK5QdI2kCKNCw8qCJbruC
+        3AqSztJByBnUEB+abE3Ao0A=
+X-Google-Smtp-Source: ADFU+vtht6UINHvM6WHHeVfuD+gq4gH3Z8OgwnLo3cqAuLWT0RfLr0Lfmbq9hupFCC2L8VGzoPSP0w==
+X-Received: by 2002:a05:6214:6f0:: with SMTP id bk16mr12942810qvb.23.1583722145257;
+        Sun, 08 Mar 2020 19:49:05 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:54d7:a956:162c:3e8? ([2601:282:803:7700:54d7:a956:162c:3e8])
+        by smtp.googlemail.com with ESMTPSA id c191sm6850915qkg.49.2020.03.08.19.49.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Mar 2020 19:49:04 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] tc: pie: change maximum integer value of
+ tc_pie_xstats->prob
+To:     Leslie Monis <lesliemonis@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>
+References: <20200305162540.4363-1-lesliemonis@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <37e346e2-beb6-5fcd-6b24-9cb1f001f273@gmail.com>
+Date:   Sun, 8 Mar 2020 20:49:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <646a22fd24e8dfeb1eb3101ae7be2b88e91dbfa3.camel@marvell.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200305162540.4363-1-lesliemonis@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 07:28:22AM +0000, Alex Belits wrote:
-> On Fri, 2020-03-06 at 17:03 +0100, Frederic Weisbecker wrote:
-> > On Wed, Mar 04, 2020 at 04:12:40PM +0000, Alex Belits wrote:
-> > > From: Yuri Norov <ynorov@marvell.com>
-> > > 
-> > > For nohz_full CPUs the desirable behavior is to receive interrupts
-> > > generated by tick_nohz_full_kick_cpu(). But for hard isolation it's
-> > > obviously not desirable because it breaks isolation.
-> > > 
-> > > This patch adds check for it.
-> > > 
-> > > Signed-off-by: Alex Belits <abelits@marvell.com>
-> > > ---
-> > >  kernel/time/tick-sched.c | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-> > > index 1d4dec9d3ee7..fe4503ba1316 100644
-> > > --- a/kernel/time/tick-sched.c
-> > > +++ b/kernel/time/tick-sched.c
-> > > @@ -20,6 +20,7 @@
-> > >  #include <linux/sched/clock.h>
-> > >  #include <linux/sched/stat.h>
-> > >  #include <linux/sched/nohz.h>
-> > > +#include <linux/isolation.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/irq_work.h>
-> > >  #include <linux/posix-timers.h>
-> > > @@ -262,7 +263,7 @@ static void tick_nohz_full_kick(void)
-> > >   */
-> > >  void tick_nohz_full_kick_cpu(int cpu)
-> > >  {
-> > > -	if (!tick_nohz_full_cpu(cpu))
-> > > +	if (!tick_nohz_full_cpu(cpu) || task_isolation_on_cpu(cpu))
-> > >  		return;
-> > 
-> > I fear you can't do that. A nohz full CPU is kicked for a reason.
-> > As for the other cases, you need to fix the callers.
-> > 
-> > In the general case, randomly ignoring an interrupt is a correctness
-> > issue.
+On 3/5/20 9:25 AM, Leslie Monis wrote:
+> Kernel commit 105e808c1da2 ("pie: remove pie_vars->accu_prob_overflows"),
+> changes the maximum value of tc_pie_xstats->prob from (2^64 - 1) to
+> (2^56 - 1).
 > 
-> Not ignoring, just delaying until we are back from userspace. We know
-> that everything was done on this CPU when we successfully entered
-> userspace in isolated mode -- otherwise we would be kicked out. We
-> restart timers when we are back in kernel again on cleanup, so things
-> will be back to normal at that point. Between those moments we can just
-> as well remain in userspace and forget about the timers until we are
-> back in kernel.
+> Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+> Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
+> Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
+> ---
+>  tc/q_pie.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
 
-Well, if another CPU requests the tick on our isolated CPU, we can't ignore
-it. This can be a posix cpu timer belonging to our process, a timer bound
-to our CPU or tasks added to our CPU that require the scheduler tick.
-Denying any of that can crash the kernel randomly.
+applied to iproute2-next. Thanks
 
-The only thing we can do is to simply avoid these situations. But those
-are requirements anyway if you want to run a task undisturbed.
+
