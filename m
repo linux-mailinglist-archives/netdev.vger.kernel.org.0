@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 281F617D9C2
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 08:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D93AD17D9FA
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 08:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbgCIHXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 03:23:00 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36403 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbgCIHXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 03:23:00 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s5so5734045wrg.3
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 00:22:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=VQgRiL13w2lnC5yZKNcbg2HiB3UGZa2RAJWpzb90ZSA=;
-        b=obusKeNmIYc3ZuVJoWTs4cPu0AfRolYRyfWwwmI1FCz6K2HuXZSTN7NQXcZ6rqaFoF
-         eRUBJgSi4rqPpH07aT/zQ+c3mOfkJP5ZdxtNfnFbEQqr4/IPm3wGnXFleXYYEUht8sfs
-         0F+0m1MB/Dxa50MC3iJ+2euPIkSD4m/fBPoR1zYTWDZk+HZm94jYiR8HNiCqI9ihoIhC
-         WYnbWdEMnLcAtu01tn3DDWdjf561uKF1HAWH2zRNB/WHNQ0s6g3P0+hW1M9M3hMwY4uX
-         eACQD/tCgdniE7iOQHx+j9dZYw2ZhnkpG+r7g/fcGzsno4hZorcZ4bKyjbUJVnym5FKh
-         X5AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=VQgRiL13w2lnC5yZKNcbg2HiB3UGZa2RAJWpzb90ZSA=;
-        b=hRO0qVuVjExEYS9/dtWCMxrjiiYBFk4vMxwlgRmh87qhQP91Cfc5CsrnNlFEakBYAS
-         v3w0aTDXNUuvYAWhIkl462lv9/PjTYrfs66KKtuXD7fnFERFyiZN9v5hJtom9pn5upSZ
-         lnXQQQSE3qKFz+v+1WibiKNarEVlCLwmAKArYYnye1ZLNMytJcFAUp2ETKGA5Icy4uSs
-         ZxI4fQt0tC4mRyZMpAgKjHfOyT9NXzZVYrtTdJP4+BtwgTiQzkrn41YNWHlu++8P2D8W
-         cExW2pyjtkOqfAHiFjRSffrk2tDXNB1Y9jkrv2DuObFaD3WAgmQedeeRu/nGNfJx+SwR
-         bY6g==
-X-Gm-Message-State: ANhLgQ0AFeilOn2Hag6cTO+4eIopxG18/JtuG6++vUFD6QuahzrWqJu0
-        dB7NLDqPLmW0rx4wivecZvXPK8hKdiKEyzaur98=
-X-Google-Smtp-Source: ADFU+vtWLNjDE8qRu0TUVg86M3PGErLB2g6m9ValKLRHKCY8uYQ56pm1EcxPlV4THxBUoLjXn/xRl+Xx2ZZcS/TWIPg=
-X-Received: by 2002:a5d:5681:: with SMTP id f1mr7103945wrv.137.1583738578649;
- Mon, 09 Mar 2020 00:22:58 -0700 (PDT)
+        id S1726501AbgCIHlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 03:41:04 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57809 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726027AbgCIHkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 03:40:52 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jBD1r-00047a-VO; Mon, 09 Mar 2020 08:40:47 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jBD1q-0006MK-L7; Mon, 09 Mar 2020 08:40:46 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>
+Subject: [PATCH v2 0/2] add TJA1102 support
+Date:   Mon,  9 Mar 2020 08:40:42 +0100
+Message-Id: <20200309074044.21399-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:adf:db4e:0:0:0:0:0 with HTTP; Mon, 9 Mar 2020 00:22:55 -0700 (PDT)
-Reply-To: LishaHaman225@gmail.com
-From:   "Mrs. Lisha Haman" <mohamadimustafa267@gmail.com>
-Date:   Mon, 9 Mar 2020 07:22:55 +0000
-Message-ID: <CAOybtirmrJ9jUD+Y8MoCEgNawCFFY+NwqJg3kWteD4jfgpkEZQ@mail.gmail.com>
-Subject: Good day
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear
-my name is Lisha Haman, How are you today hope all is well with you,
-Please I will need your urgent attention regarding this important discussion
-Kindly write me back here: LishaHaman225@gmail.com  for more details.
-Thanks,
-Lisha Haman
+changes v2:
+- use .match_phy_device
+- add irq support
+- add add delayed registration for PHY1
+
+Oleksij Rempel (2):
+  net: phy: tja11xx: add TJA1102 support
+  net: phy: tja11xx: add delayed registration of TJA1102 PHY1
+
+ drivers/net/phy/nxp-tja11xx.c | 216 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 210 insertions(+), 6 deletions(-)
+
+-- 
+2.25.1
+
