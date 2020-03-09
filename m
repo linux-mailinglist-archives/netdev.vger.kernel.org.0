@@ -2,117 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D2217DCFE
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DE817DD3C
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbgCIKMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 06:12:00 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:37842 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbgCIKL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:11:59 -0400
-Received: by mail-ot1-f67.google.com with SMTP id b3so8978492otp.4
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 03:11:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=c/mZkIa4u1GFEY/oYjmFc+FR8PHQ8RKEpzXuSA50f5s=;
-        b=c9RC0OYZuwrRTpUuSXOq1XeegbPbNemvsRd+f8JeB8FH/Bgn25E1wSRNRpL6UkcLDT
-         V397z11lkei5ZCm7CgOuH9p4+9gNXo2oukb52jHZFWZioTklSjfceXKM6VBHFQ9R10GM
-         SfeperbmNHYrNmH4tFJLhOvZSncMeSK6dimckCFOKCdyqkHKgdR6D2rP0xjuQuvwdxHY
-         VcjbL0E8OTusVkZx/VZ7SubYumkHs9nhYTXE963GexdWLUtmkxPrDMGkBpMVtAMh3KCh
-         a3nVet/0D5uwMo3tL71DXzyCd4p05QiBN28P2KSzh9ymNp8b+PEWeKOi8XLJeKlYS9zE
-         AYYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=c/mZkIa4u1GFEY/oYjmFc+FR8PHQ8RKEpzXuSA50f5s=;
-        b=B016CTXJ8wHCYHEe8g0ymeP9LkVHsPOSQeuc4qd+rmsBlknAkZvjy7L6KfGLGyMwms
-         8lfEZLezGEJydZc/ZmiOn4loI0rm/5F6ztAZzwT66IsZ1XPIHUbY2Etf+SFES2bnN+/T
-         OXEixV12W1Tk4tw0HPqHbzjsJmNRi++BqY6TR8LvR0yUZY+tDjta0u0dRCc3rBYS/e+d
-         X5Akjym1yKE00YwlU10SmE0AasF5kFnWR28fszTco6nhmOh7ZpOcOTVAw0gOlKxscFDG
-         X8+Q842L0KYc4g+8bzuQMGYmuGRl2rmO+yMrS8sQJ9OT/Ks0j6T7xUW2o8BfAZMbU9Iu
-         IbOA==
-X-Gm-Message-State: ANhLgQ0NBJbQnCuSTrADh3cvCZBBrK68ZO5BGqaaMUE5rPQkVQ+N2Otk
-        YK/rgEADjjhncLbR2tHbwaxGHuBa9J+S6gaLG88=
-X-Google-Smtp-Source: ADFU+vu7k3RViXYvN7wdtxv+r7oyXI74hMh9S+L4dtFhDHa0Jmc6w59ZcLNfRMMOXYy/I8kfvRiKyCihxiFJIaAPxvg=
-X-Received: by 2002:a9d:49:: with SMTP id 67mr9740759ota.163.1583748718191;
- Mon, 09 Mar 2020 03:11:58 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ac9:7acd:0:0:0:0:0 with HTTP; Mon, 9 Mar 2020 03:11:57 -0700 (PDT)
-From:   john philips <philipsjohn698@gmail.com>
-Date:   Mon, 9 Mar 2020 03:11:57 -0700
-Message-ID: <CACgJ9nahY3namYHs+tN5HaxV0-uNTQ4ZUg+Cqqf0yE1GjyaLhQ@mail.gmail.com>
-Subject: good
-To:     undisclosed-recipients:;
+        id S1726477AbgCIKRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 06:17:11 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37902 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725796AbgCIKRK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 06:17:10 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 067AFAAC7;
+        Mon,  9 Mar 2020 10:17:07 +0000 (UTC)
+Message-ID: <1583749022.17100.5.camel@suse.com>
+Subject: Re: [PATCH] cdc_ncm: Implement the 32-bit version of NCM Transfer
+ Block
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Alexander Bersenev <bay@hackerdom.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Enrico Weigelt <info@metux.net>,
+        Allison Randal <allison@lohutok.net>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 09 Mar 2020 11:17:02 +0100
+In-Reply-To: <20200305203318.8980-1-bay@hackerdom.ru>
+References: <20200305203318.8980-1-bay@hackerdom.ru>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MTE1Mi81MDAwDQoqINCS0L3QuNC80LDQvdC40LU6INCx0LXQvdC10YTQuNGG0LjQsNGAICoNCg0K
-KiDQodC+0L7QsdGJ0LjRgtC1LCDRh9GC0L4g0LzRiyDQv9C+0LvRg9GH0LjQu9C4INGD0YLQstC1
-0YDQttC00LXQvdC90YvQuSDRhNCw0LnQuyDQvtC/0LvQsNGC0Ysg0L7RgiBGRURFUkFMDQrQnNCY
-0J3QmNCh0KLQldCg0KHQotCS0J4g0KTQmNCd0JDQndCh0J7QkiDRgdC+0LLQvNC10YHRgtC90L4g
-0YEg0JzQtdC20LTRg9C90LDRgNC+0LTQvdGL0Lwg0LLQsNC70Y7RgtC90YvQvCDRhNC+0L3QtNC+
-0LwgKNCc0JLQpCkNCtC60L7QvNC/0LXQvdGB0LDRhtC40Y8g0LbQtdGA0YLQstCw0Lwg0LzQvtGI
-0LXQvdC90LjRh9C10YHRgtCy0LAg0Lgg0LLQsNGIINCw0LTRgNC10YEg0Y3Qu9C10LrRgtGA0L7Q
-vdC90L7QuSDQv9C+0YfRgtGLINCy0YXQvtC00LjRgiDQsiDRgdC/0LjRgdC+0LoNCtC20LXRgNGC
-0LLRiy4gKg0KDQoqINCvINC/0LjRiNGDLCDRh9GC0L7QsdGLINGB0L7QvtCx0YnQuNGC0Ywg0LLQ
-sNC8LCDRh9GC0L4g0LzRiyDQsdGD0LTQtdC8INC+0YLQv9GA0LDQstC70Y/RgtGMINCy0LDQvCAk
-IDUwMDAuMDBVU0QNCtC10LbQtdC00L3QtdCy0L3QviDRgQ0K0L3QsNGIINC+0YTQuNGBINC30LTQ
-tdGB0YwsINGC0LDQuiDQutCw0Log0LzRiyDQv9C+0LvRg9GH0LjQu9C4INC80LDQvdC00LDRgiDQ
-vdCwINC/0LXRgNC10LTQsNGH0YMg0LLQsNGI0LXQs9C+INC/0L7Qu9C90L7Qs9C+DQrQutC+0LzQ
-v9C10L3RgdCw0YbQuNC+0L3QvdGL0Lkg0L/Qu9Cw0YLQtdC2INCyINGA0LDQt9C80LXRgNC1IDgw
-MCAwMDAg0LTQvtC70LvQsNGA0L7QsiDQodCo0JAg0JzQtdC20LTRg9C90LDRgNC+0LTQvdGL0LwN
-CtCy0LDQu9GO0YLQvdGL0Lwg0YTQvtC90LTQvtC8DQoo0JzQktCkKSDQuCDQpNC10LTQtdGA0LDQ
-u9GM0L3QvtC1INC80LjQvdC40YHRgtC10YDRgdGC0LLQviDRhNC40L3QsNC90YHQvtCyLiDQktCw
-0Ygg0LvQuNGH0L3Ri9C5INC40LTQtdC90YLQuNGE0LjQutCw0YbQuNC+0L3QvdGL0Lkg0L3QvtC8
-0LXRgA0K0L/RgNC10LTQvtGB0YLQsNCy0LvQtdC90L4g0LrQvtC80LDQvdC00L7QuSBJLk0uRiBD
-UFAwOTIwVEcuICoNCg0KKiDQktC+0YIg0LjQvdGE0L7RgNC80LDRhtC40Y8g0L7QsSDQvtC/0LvQ
-sNGC0LUsINC60L7RgtC+0YDRg9GOINC80Ysg0LHRg9C00LXQvCDQuNGB0L/QvtC70YzQt9C+0LLQ
-sNGC0Ywg0LTQu9GPINC/0LXRgNC10YHRi9C70LrQuCDQstCw0YjQtdCz0L4NCtC10LbQtdC00L3Q
-tdCy0L3Ri9C5INC/0LXRgNC10LLQvtC0LiAqDQoNCiog0JjQvNGPINC+0YLQv9GA0LDQstC40YLQ
-tdC70Y86INCh0LjQvdGC0LjRjyDQmNC00LXQvSAqDQoqINCS0L7Qv9GA0L7RgTog0J7Qv9C70LDR
-gtCwICoNCiog0J7RgtCy0LXRgjog0JTQsCAqDQoqINCh0YPQvNC80LA6IDUgMDAwLDAwINC00L7Q
-u9C70LDRgNC+0LIg0KHQqNCQICoNCiog0JPQvtGA0L7QtDog0JvQvtC80LUgKg0KKiDQodGC0YDQ
-sNC90LA6INCi0L7Qs9C+ICoNCg0KKiDQn9Cg0JjQnNCV0KfQkNCd0JjQlTogTVRDTiDQsdGD0LTQ
-tdGCINC+0YLQv9GA0LDQstC70LXQvSDQstCw0Lwg0L/QvtGB0LvQtSDQstCw0YjQtdCz0L4g0L7R
-gtCy0LXRgtCwINC4INC/0L7QtNGC0LLQtdGA0LbQtNC10L3QuNGPDQrQmNC90YTQvtGA0LzQsNGG
-0LjRjyDQviDQstCw0YjQtdC8INC/0L7Qu9GD0YfQsNGC0LXQu9C1LCDRh9GC0L7QsdGLINC40LfQ
-sdC10LbQsNGC0Ywg0L3QtdC/0YDQsNCy0LjQu9GM0L3QvtC5INC/0LXRgNC10LTQsNGH0LguICoN
-Cg0KKiDQnNGLINC20LTQtdC8INCy0LDRiNC10LPQviDRgdGA0L7Rh9C90L7Qs9C+INC+0YLQstC1
-0YLQsCDQv9C+INGN0YLQvtC80YMg0LDQtNGA0LXRgdGDDQoobWlzc2N5bnRoaWFlZGVuNTZAZ21h
-aWwuY29tIDxtaXNzY3ludGhpYWVkZW41NkBnbWFpbC5jb20+KSwg0YfRgtC+0LHRiyDQv9C+0LfQ
-stC+0LvQuNGC0Ywg0L3QsNC8DQrQv9GA0L7QtNC+0LvQttC40YLRjCDQvtC/0LvQsNGC0YMuICoN
-Cg0KKtCY0YHQutGA0LXQvdC90LUg0LLQsNGILCoNCg0KKtCg0YPQutC+0LLQvtC00LjRgtC10LvR
-jCDRhNC40LvQuNCw0LvQsDoqDQoqINCc0LjRgdGBINCh0LjQvdGC0LjRjyDQmNC00LXQvSAqDQoq
-IFZuaW1hbml5ZTogYmVuZWZpdHNpYXIgKg0KDQoqIFNvb2JzaGNoaXRlLCBjaHRvIG15IHBvbHVj
-aGlsaSB1dHZlcnpoZGVubnl5IGZheWwgb3BsYXR5IG90IEZFREVSQUwNCk1JTklTVEVSU1RWTyBG
-SU5BTlNPViBzb3ZtZXN0bm8gcyBNZXpoZHVuYXJvZG55bSB2YWx5dXRueW0gZm9uZG9tIChNVkYp
-DQprb21wZW5zYXRzaXlhIHpoZXJ0dmFtIG1vc2hlbm5pY2hlc3R2YSBpIHZhc2ggYWRyZXMgZWxl
-a3Ryb25ub3kgcG9jaHR5DQp2a2hvZGl0IHYgc3Bpc29rDQp6aGVydHZ5LiAqDQoNCiogWUEgcGlz
-aHUsIGNodG9ieSBzb29ic2hjaGl0JyB2YW0sIGNodG8gbXkgYnVkZW0gb3RwcmF2bHlhdCcgdmFt
-ICQNCjUwMDAuMDBVU0QgeWV6aGVkbmV2bm8gcw0KbmFzaCBvZmlzIHpkZXMnLCB0YWsga2FrIG15
-IHBvbHVjaGlsaSBtYW5kYXQgbmEgcGVyZWRhY2h1IHZhc2hlZ28gcG9sbm9nbw0Ka29tcGVuc2F0
-c2lvbm55eSBwbGF0ZXpoIHYgcmF6bWVyZSA4MDAgMDAwIGRvbGxhcm92IFNTSEENCk1lemhkdW5h
-cm9kbnltIHZhbHl1dG55bSBmb25kb20NCihNVkYpIGkgRmVkZXJhbCdub3llIG1pbmlzdGVyc3R2
-byBmaW5hbnNvdi4gVmFzaCBsaWNobnl5DQppZGVudGlmaWthdHNpb25ueXkgbm9tZXINCnByZWRv
-c3Rhdmxlbm8ga29tYW5kb3kgSS5NLkYgQ1BQMDkyMFRHLiAqDQoNCiogVm90IGluZm9ybWF0c2l5
-YSBvYiBvcGxhdGUsIGtvdG9ydXl1IG15IGJ1ZGVtIGlzcG9sJ3pvdmF0JyBkbHlhDQpwZXJlc3ls
-a2kgdmFzaGVnbw0KeWV6aGVkbmV2bnl5IHBlcmV2b2QuICoNCg0KKiBJbXlhIG90cHJhdml0ZWx5
-YTogU2ludGl5YSBJZGVuICoNCiogVm9wcm9zOiBPcGxhdGEgKg0KKiBPdHZldDogRGEgKg0KKiBT
-dW1tYTogNSAwMDAsMDAgZG9sbGFyb3YgU1NIQSAqDQoqIEdvcm9kOiBMb21lICoNCiogU3RyYW5h
-OiBUb2dvICoNCg0KKiBQUklNRUNIQU5JWWU6IE1UQ04gYnVkZXQgb3RwcmF2bGVuIHZhbSBwb3Ns
-ZSB2YXNoZWdvIG90dmV0YSBpIHBvZHR2ZXJ6aGRlbml5YQ0KSW5mb3JtYXRzaXlhIG8gdmFzaGVt
-IHBvbHVjaGF0ZWxlLCBjaHRvYnkgaXpiZXpoYXQnIG5lcHJhdmlsJ25veSBwZXJlZGFjaGkuICoN
-Cg0KKiBNeSB6aGRlbSB2YXNoZWdvIHNyb2Nobm9nbyBvdHZldGEgcG8gZXRvbXUgYWRyZXN1DQoo
-bWlzc2N5bnRoaWFlZGVuNTZAZ21haWwuY29tIDxtaXNzY3ludGhpYWVkZW41NkBnbWFpbC5jb20+
-KSwgY2h0b2J5DQpwb3p2b2xpdCcgbmFtDQpwcm9kb2x6aGl0JyBvcGxhdHUuICoNCg0KKklza3Jl
-bm5lIHZhc2gsKg0KDQoqUnVrb3ZvZGl0ZWwnIGZpbGlhbGE6Kg0KKiBNaXNzIFNpbnRpeWEgSWRl
-biAqDQpBZmZpY2hlciBwbHVzDQpFbnZveWVyIGRlcyBjb21tZW50YWlyZXMNCkhpc3RvcmlxdWUN
-CkVucmVnaXN0csOpDQpDb21tdW5hdXTDqQ0K
+Am Freitag, den 06.03.2020, 01:33 +0500 schrieb Alexander Bersenev:
+> The NCM specification defines two formats of transfer blocks: with 16-bit
+> fields (NTB-16) and with 32-bit fields (NTB-32). Currently only NTB-16 is
+> implemented.
+> 
+> This patch adds the support of NTB-32. The motivation behind this is that
+> some devices such as E5785 or E5885 from the current generation of Huawei
+> LTE routers do not support NTB-16. The previous generations of Huawei
+> devices are also use NTB-32 by default.
+> 
+> Also this patch enables NTB-32 by default for Huawei devices
+
+Hi,
+
+do you really see no other option but to make the choice with yet
+anothet flag? The rest of the code looks good to me.
+
+	Regards
+		Oliver
+
