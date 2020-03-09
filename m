@@ -2,152 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9197817D821
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC9E17D824
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbgCIC2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 22:28:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46504 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726363AbgCIC2c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Mar 2020 22:28:32 -0400
-Received: from localhost (lfbn-ncy-1-985-231.w90-101.abo.wanadoo.fr [90.101.63.231])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CD74B20637;
-        Mon,  9 Mar 2020 02:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583720912;
-        bh=5Klv9i0gcwrEZVuZa+BIxD+FYTa6nxm4aw60GyHS0xI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hNSdzBDok5iJiJMWz5xJCqDSs2Kiw1Njm5O8MpOv68dsn0lXzL9Ly20CTyKNErqdj
-         ire7Go761k+v5N+w7FDOgFMhXBJtxuKpw9trPEUy8Lq3o7H7uYTnOFSuJiYhlpLkhu
-         zER5t9sviw+3mq1MeCu+MgQmxwblkqzSxeEpCk8E=
-Date:   Mon, 9 Mar 2020 03:28:30 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Alex Belits <abelits@marvell.com>
-Cc:     "mingo@kernel.org" <mingo@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "will@kernel.org" <will@kernel.org>
-Subject: Re: [EXT] Re: [PATCH 11/12] task_isolation: kick_all_cpus_sync:
- don't kick isolated cpus
-Message-ID: <20200309022829.GB9615@lenoir>
-References: <4473787e1b6bc3cc226067e8d122092a678b63de.camel@marvell.com>
- <dfa5e0e9f34e6ff0ef048c81bc70496354f31300.camel@marvell.com>
- <20200306153446.GC8590@lenoir>
- <7e0ce8988f4811e7453859e22654d2618557d9ab.camel@marvell.com>
+        id S1726758AbgCICaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 22:30:00 -0400
+Received: from mail-io1-f47.google.com ([209.85.166.47]:44356 "EHLO
+        mail-io1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbgCICaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 22:30:00 -0400
+Received: by mail-io1-f47.google.com with SMTP id u17so7620843iog.11
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 19:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=7DQRECc8TM2EAT9+nMuiuoeX7R4GOauaaGkJwe+FUE0=;
+        b=ooBhPFMkVyoDV6UHLUXoefZEC+66Cq+Rv3XdHh2QHy2Q1w27K/QOv5t3OyeX0Xd0lv
+         aoCSWFZKUJZsFiPKo1YMH9sHp0aUn6tyb1QxJqfck4sxTkYoxGt9RKUiu8nBby0DOtho
+         eDuV1my0c/3+9X1egqgnPuXrytSS46zZSxYrYd2sUKA9zQUu5UK0OIdT7OyCI+7Q1Ckh
+         hoWFUl+y/+O/I64+CFUumOSeU3QxFYs1GBf2k4HkAOt+8RALEPmUeSBZTFLpe+ppbDbK
+         zYTMhQYr5rq6G5LoMkpzXxFwROGCMw+D6oW6Dnz2dg376pdyN32W8viwAB/9tR8oljWY
+         XKgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7DQRECc8TM2EAT9+nMuiuoeX7R4GOauaaGkJwe+FUE0=;
+        b=ENwhp6hyh4q0RGMidU8AtUzPjkVvIPmQASiB8Ad3ZpxXA8hKgoUJYMzScyFDJ/CRQr
+         SQ2mYyU4F56gVK+VyLXEGz6dOpmVslWUYg2ZAkKPYSSbGpmOEPklS3Ji4EqhsNiheQq0
+         vzzO7d0U83lUeYAaRV/Fq+eTrGcVleKAA+hiV5qIJma4QeqtIe5bI9YzsY6hpOWD44Ph
+         p3b/ow9AJ3eFUbprHzuEzdZUq72vg4w7H0f4rgp+m2z3FcorOYcO4BeUdZMvYvn7qaoq
+         raToYxxe8UDqKuN83p6Bf6iAqBza1WUal0HuvjmrIDAKoqyowiIxShSr1etUW9t525/I
+         tTKw==
+X-Gm-Message-State: ANhLgQ3YRsz/6z3NyC1QQZsVtsCHVJuosd1p2pBE0qpVZy4StsytYJQs
+        +zoGICryMDEr2HBrAKV10Wo=
+X-Google-Smtp-Source: ADFU+vudIIY26gmY92abmdTNU1HcDPT/YaWvtdb7aKa3uvTR7AVwD+Ec9QLXU/qWl8IKdRd2oD9Arg==
+X-Received: by 2002:a5d:9f07:: with SMTP id q7mr11811161iot.42.1583720998052;
+        Sun, 08 Mar 2020 19:29:58 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:54d7:a956:162c:3e8? ([2601:282:803:7700:54d7:a956:162c:3e8])
+        by smtp.googlemail.com with ESMTPSA id l18sm12143570ild.51.2020.03.08.19.29.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Mar 2020 19:29:57 -0700 (PDT)
+Subject: Re: route: an issue caused by local and main table's merge
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>, mmhatre@redhat.com,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>
+References: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1441d64c-c334-8c54-39e8-7a06a530089d@gmail.com>
+Date:   Sun, 8 Mar 2020 20:29:56 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7e0ce8988f4811e7453859e22654d2618557d9ab.camel@marvell.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 06:48:43AM +0000, Alex Belits wrote:
-> On Fri, 2020-03-06 at 16:34 +0100, Frederic Weisbecker wrote:
-> > On Wed, Mar 04, 2020 at 04:15:24PM +0000, Alex Belits wrote:
-> > > From: Yuri Norov <ynorov@marvell.com>
-> > > 
-> > > Make sure that kick_all_cpus_sync() does not call CPUs that are
-> > > running
-> > > isolated tasks.
-> > > 
-> > > Signed-off-by: Alex Belits <abelits@marvell.com>
-> > > ---
-> > >  kernel/smp.c | 14 +++++++++++++-
-> > >  1 file changed, 13 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/kernel/smp.c b/kernel/smp.c
-> > > index 3a8bcbdd4ce6..d9b4b2fedfed 100644
-> > > --- a/kernel/smp.c
-> > > +++ b/kernel/smp.c
-> > > @@ -731,9 +731,21 @@ static void do_nothing(void *unused)
-> > >   */
-> > >  void kick_all_cpus_sync(void)
-> > >  {
-> > > +	struct cpumask mask;
-> > > +
-> > >  	/* Make sure the change is visible before we kick the cpus */
-> > >  	smp_mb();
-> > > -	smp_call_function(do_nothing, NULL, 1);
-> > > +
-> > > +	preempt_disable();
-> > > +#ifdef CONFIG_TASK_ISOLATION
-> > > +	cpumask_clear(&mask);
-> > > +	task_isolation_cpumask(&mask);
-> > > +	cpumask_complement(&mask, &mask);
-> > > +#else
-> > > +	cpumask_setall(&mask);
-> > > +#endif
-> > > +	smp_call_function_many(&mask, do_nothing, NULL, 1);
-> > > +	preempt_enable();
-> > >  }
-> > 
-> > That looks very dangerous, the callers of kick_all_cpus_sync() want
-> > to
-> > sync all CPUs for a reason. You will rather need to fix the callers.
+[ This got lost in the backlog ]
+
+On 3/2/20 1:38 AM, Xin Long wrote:
+> Hi, David A.
 > 
-> All callers of this use this function to synchronize IPIs and icache,
-> and they have no idea if there is anything special about the state of
-> CPUs. If a task is isolated, this call would not be necessary because
-> the task is in userspace, and it would have to enter kernel for any of
-> that to become relevant but then it will have to switch from userspace
-> to kernel. At worst it is returning to userspace after entering
-> isolation or back in kernel running cleanup after isolation is broken
-> but before tsk_thread_flags_cache is updated. There will be nothing to
-> run on the same CPU because we have just left isolation, so task will
-> either exit or go back to userspace.
+> Mithil reported an issue, which can be reproduced by:
 > 
-> Is there any reason for a race at that point?
-
-
-I can imagine several races:
-
-1) The isolated task has set the cpumask but hasn't exited the kernel
-yet. If it still runs kernel code while kick_all_cpus_sync() has completed,
-we fail.
-
-2) The isolated task is running do_exit() but the caller of kick_all_cpus_sync()
-still sees the target as part of the isolated mask.
-
-3) The isolated task has just set the isolated cpumask and entered userspace
-but the caller still don't see the new value in the isolated cpumask, so it sends
-the IPI to the isolated CPU.
-
-Besides, any caller of kick_all_cpus_sync() is in its right to expect that
-everything preceding the call to that function is visible to all CPUs
-after that call. If you spare that IPI to an isolated CPU, what ensures
-it will see what it is supposed to once it calls do_exit() or prctl()?
-
-Is there a way we could fix the callers instead? For example synchronize_rcu()
-could be a replacement (it handles very well nohz_full CPUs), provided the
-callsites can sleep. It seems to be the case for __do_tune_cpucache() at least.
-
-flush_icache_range() is scarier I have to admit, doesn't look like it can
-sleep.
-
-
-> > Thanks.
-> > 
-> > >  EXPORT_SYMBOL_GPL(kick_all_cpus_sync);
-> > >  
-> > > -- 
-> > > 2.20.1
-> > > 
+>   # ip link  add dummy0 type dummy
+>   # ip link  set dummy0 up
+>   # ip route add to broadcast 192.168.122.1 dev dummy0 <--- broadcast
+>   # ip route add 192.168.122.1 dev dummy0   <--- unicast
+>   # ip route add 1.1.1.1 via 192.168.122.1  <--- [A]
+>   Error: Nexthop has invalid gateway.
+>   # ip rule  add from 2.2.2.2
+>   # ip route add 1.1.1.1 via 192.168.122.1  <--- [B]
 > 
-> -- 
-> Alex
+> cmd [A] failed , as in fib_check_nh_v4_gw():
+> 
+>     if (table)
+>             tbl = fib_get_table(net, table);
+> 
+>     if (tbl)
+>             err = fib_table_lookup_2(tbl, &fl4, &res,
+>                                    FIB_LOOKUP_IGNORE_LINKSTATE |
+>                                    FIB_LOOKUP_NOREF);
+> 
+>     if (res.type != RTN_UNICAST && res.type != RTN_LOCAL) { <--- [a]
+>             NL_SET_ERR_MSG(extack, "Nexthop has invalid gateway");
+>             goto out;  <--[a]
+>     }
+> 
+> It gets the route for '192.168.122.1' from the merged (main/local)
+> table, and the broadcast one returns, and it fails the check [a].
+> 
+> But the same cmd [B] will work after one rule is added, by which
+> main table and local table get separated, it gets the route from
+> the main table (the same table for this route), and the unicast
+> one returns, and it will pass the check [a].
+> 
+> Any idea on how to fix this, and keep it consistent before and
+> after a rule added?
+> 
+
+I do not have any suggestions off the top of my head.
+
+Adding Alex who as I recall did the table merge.
