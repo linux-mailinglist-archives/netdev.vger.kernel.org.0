@@ -2,336 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9746417E5DB
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF1617E5DF
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbgCIRgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 13:36:50 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:42682 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727257AbgCIRgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:36:49 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 281564C005C;
-        Mon,  9 Mar 2020 17:36:47 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
- 17:36:32 +0000
-Subject: Re: [PATCH net-next ct-offload v2 02/13] net/sched: act_ct:
- Instantiate flow table entry actions
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "David Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
- <1583676662-15180-3-git-send-email-paulb@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <5dde483c-be42-644c-30b5-add308b4f69d@solarflare.com>
-Date:   Mon, 9 Mar 2020 17:36:30 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727359AbgCIRh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 13:37:57 -0400
+Received: from mga18.intel.com ([134.134.136.126]:29746 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727254AbgCIRh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 13:37:57 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Mar 2020 10:37:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,534,1574150400"; 
+   d="scan'208";a="414882336"
+Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
+  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2020 10:37:56 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        aaron.f.brown@intel.com, sasha.neftin@intel.com,
+        Michael Schmidt <michael.schmidt@eti.uni-siegen.de>
+Subject: [PATCH net v1] taprio: Fix sending packets without dequeueing them
+Date:   Mon,  9 Mar 2020 10:39:53 -0700
+Message-Id: <20200309173953.2822360-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <1583676662-15180-3-git-send-email-paulb@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-TM-AS-Result: No-14.701400-8.000000-10
-X-TMASE-MatchedRID: ZFzIhWOuIzvmLzc6AOD8DfHkpkyUphL9B4bXdj887A8Lt1T6w2Ze0t5Q
-        ZVAH5Zt2YWTnOnMH547fbYqgOvx6nZ6CKaYYGfNGR0BY8wG7yRA1TzP60UkdHQpCjqVELlwVAUq
-        wO9pSIT2auV0m1Pa00e4UL2DTQdBzCQZYBny/onOHZXNSWjgdUweCHewokHM/27KSseGDg92Ind
-        s1RGmDCxy68x3kzf05foaZKm4m1WlRq+qIQYdPyehsg0dmQfnGUPO4Up/w0pNGMe+tDjQ3FpGrd
-        WQJt2T1WOtcAGFuzQRuL3ESIrARl1U97fGGL+q3PwKTD1v8YV5MkOX0Uoduuc9essRvi1FZ1DQW
-        12L1ci4A9xn3PN8twldXfmY1NScsEs+RG1oouyUMOWxRtywg+ts4MOUU/wa2e1OjQ/WyxP7JpL/
-        lo1j1HrHCuW/KSMCa/9nQZVP1z1QVlVZBrluia/KUR83BvqItoiKTb964zHVHZg0gWH5yUXd7bc
-        i/LVuNp+Ew/5yfsGghbV0QbOOjh4YU3uv70YCLuoibJpHRrFngt7TT//Roak2v0JV0JaVRo8WMk
-        QWv6iWhMIDkR/KfwI2j49Ftap9EOwBXM346/+yT5lm5kqPo4N3dw45mFb3g0vA6SHFyW0y2sbQo
-        9yWnz0ZKy8Qhz1VF
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--14.701400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
-X-MDID: 1583775408-reE0RjNAsDP9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/03/2020 14:10, Paul Blakey wrote:
-> NF flow table API associate 5-tuple rule with an action list by calling
-> the flow table type action() CB to fill the rule's actions.
->
-> In action CB of act_ct, populate the ct offload entry actions with a new
-> ct_metadata action. Initialize the ct_metadata with the ct mark, label and
-> zone information. If ct nat was performed, then also append the relevant
-> packet mangle actions (e.g. ipv4/ipv6/tcp/udp header rewrites).
->
-> Drivers that offload the ft entries may match on the 5-tuple and perform
-> the action list.
->
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> ---
-> Changelog:
->    v1->v2:
->      Remove zone from metadata
->      Add add mangle helper func (removes the unneccasry () and correct the mask there)
->      Remove "abuse" of ? operator and use switch case
->      Check protocol and ports in relevant function and return err
->      On error restore action entries (on the topic, validaiting num of action isn't available)
->      Add comment expalining nat
->      Remove Inlinie from tcf_ct_flow_table_flow_action_get_next
->      Refactor tcf_ct_flow_table_add_action_nat_ipv6 with helper
->      On nats, allow both src and dst mangles
->
->  include/net/flow_offload.h            |   5 +
->  include/net/netfilter/nf_flow_table.h |  23 ++++
->  net/netfilter/nf_flow_table_offload.c |  23 ----
->  net/sched/act_ct.c                    | 208 ++++++++++++++++++++++++++++++++++
->  4 files changed, 236 insertions(+), 23 deletions(-)
->
-> <snip>
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 23eba61..d57e7969 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -55,7 +55,215 @@ struct tcf_ct_flow_table {
->  	.automatic_shrinking = true,
->  };
->  
-> +static struct flow_action_entry *
-> +tcf_ct_flow_table_flow_action_get_next(struct flow_action *flow_action)
-> +{
-> +	int i = flow_action->num_entries++;
-> +
-> +	return &flow_action->entries[i];
-> +}
-> +
-> +static void tcf_ct_add_mangle_action(struct flow_action *action,
-> +				     enum flow_action_mangle_base htype,
-> +				     u32 offset,
-> +				     u32 mask,
-> +				     u32 val)
-> +{
-> +	struct flow_action_entry *entry;
-> +
-> +	entry = tcf_ct_flow_table_flow_action_get_next(action);
-> +	entry->id = FLOW_ACTION_MANGLE;
-> +	entry->mangle.htype = htype;
-> +	entry->mangle.mask = ~mask;
-> +	entry->mangle.offset = offset;
-> +	entry->mangle.val = val;
-> +}
-> +
-> +static void
-> +tcf_ct_flow_table_add_action_nat_ipv4(const struct nf_conntrack_tuple *tuple,
-> +				      struct nf_conntrack_tuple target,
-> +				      struct flow_action *action)
-> +{
-> +	if (memcmp(&target.src.u3, &tuple->src.u3, sizeof(target.src.u3)))
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
-> +					 offsetof(struct iphdr, saddr),
-> +					 0xFFFFFF,
-Why is this mask only 24 bits?
+There was a bug that was causing packets to be sent to the driver
+without first calling dequeue() on the "child" qdisc. And the KASAN
+report below shows that sending a packet without calling dequeue()
+leads to bad results.
 
-> +					 be32_to_cpu(target.src.u3.ip));
-> +	if (memcmp(&target.dst.u3, &tuple->dst.u3, sizeof(target.dst.u3)))
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP4,
-> +					 offsetof(struct iphdr, daddr),
-> +					 0xFFFFFF,
-> +					 be32_to_cpu(target.dst.u3.ip));
-> +}
-> +
-> +static void
-> +tcf_ct_add_ipv6_addr_mangle_action(struct flow_action *action,
-> +				   union nf_inet_addr *addr,
-> +				   u32 offset)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < sizeof(struct in6_addr) / sizeof(u32); i++)
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_IP6,
-> +					 i * sizeof(u32) + offset,
-> +					 0xFFFFFF, be32_to_cpu(addr->ip6[i]));
-Again, looks like this is meant to be 0xffffffff.
+The problem is that when checking the last qdisc "child" we do not set
+the returned skb to NULL, which can cause it to be sent to the driver,
+and so after the skb is sent, it may be freed, and in some situations a
+reference to it may still be in the child qdisc, because it was never
+dequeued.
 
-> +}
-> +
-> +static void
-> +tcf_ct_flow_table_add_action_nat_ipv6(const struct nf_conntrack_tuple *tuple,
-> +				      struct nf_conntrack_tuple target,
-> +				      struct flow_action *action)
-> +{
-> +	if (memcmp(&target.src.u3, &tuple->src.u3, sizeof(target.src.u3)))
-> +		tcf_ct_add_ipv6_addr_mangle_action(action, &target.src.u3,
-> +						   offsetof(struct ipv6hdr,
-> +							    saddr));
-> +	if (memcmp(&target.dst.u3, &tuple->dst.u3, sizeof(target.dst.u3)))
-> +		tcf_ct_add_ipv6_addr_mangle_action(action, &target.dst.u3,
-> +						   offsetof(struct ipv6hdr,
-> +							    daddr));
-> +}
-> +
-> +static void
-> +tcf_ct_flow_table_add_action_nat_tcp(const struct nf_conntrack_tuple *tuple,
-> +				     struct nf_conntrack_tuple target,
-> +				     struct flow_action *action)
-> +{
-> +	__be16 target_src = target.src.u.tcp.port;
-> +	__be16 target_dst = target.dst.u.tcp.port;
-> +
-> +	if (target_src != tuple->src.u.tcp.port)
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
-> +					 offsetof(struct tcphdr, source),
-> +					 0xFFFF, htons(target_src));
-htons() on a __be16 is wrong — did you run this through sparse?
-(htons takes a u16 and returns a __be16: "host to network short".)
-Either ntohs() or, canonically, be16_to_cpu().
+The crash log looks like this:
 
-> +	if (target_dst != tuple->dst.u.tcp.port)
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
-> +					 offsetof(struct tcphdr, dest),
-> +					 0xFFFF, htons(target_dst));
-> +}
-> +
-> +static void
-> +tcf_ct_flow_table_add_action_nat_udp(const struct nf_conntrack_tuple *tuple,
-> +				     struct nf_conntrack_tuple target,
-> +				     struct flow_action *action)
-> +{
-> +	__be16 target_src = target.src.u.udp.port;
-> +	__be16 target_dst = target.dst.u.udp.port;
-> +
-> +	if (target_src != tuple->src.u.udp.port)
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
-> +					 offsetof(struct udphdr, source),
-> +					 0xFFFF, htons(target_src));
-> +	if (target_dst != tuple->dst.u.udp.port)
-> +		tcf_ct_add_mangle_action(action, FLOW_ACT_MANGLE_HDR_TYPE_TCP,
-> +					 offsetof(struct udphdr, dest),
-> +					 0xFFFF, htons(target_dst));
-> +}
-> +
-> +static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
-> +					      enum ip_conntrack_dir dir,
-> +					      struct flow_action *action)
-> +{
-> +	struct nf_conn_labels *ct_labels;
-> +	struct flow_action_entry *entry;
-> +	u32 *act_ct_labels;
-> +
-> +	entry = tcf_ct_flow_table_flow_action_get_next(action);
-> +	entry->id = FLOW_ACTION_CT_METADATA;
-> +#if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
-> +	entry->ct_metadata.mark = ct->mark;
-> +#endif
-> +
-> +	act_ct_labels = entry->ct_metadata.labels;
-> +	ct_labels = nf_ct_labels_find(ct);
-> +	if (ct_labels)
-> +		memcpy(act_ct_labels, ct_labels->bits, NF_CT_LABELS_MAX_SIZE);
-> +	else
-> +		memset(act_ct_labels, 0, NF_CT_LABELS_MAX_SIZE);
-> +}
-> +
-> +static int tcf_ct_flow_table_add_action_nat(struct net *net,
-> +					    struct nf_conn *ct,
-> +					    enum ip_conntrack_dir dir,
-> +					    struct flow_action *action)
-> +{
-> +	const struct nf_conntrack_tuple *tuple = &ct->tuplehash[dir].tuple;
-> +	struct nf_conntrack_tuple target;
-> +
-> +	nf_ct_invert_tuple(&target, &ct->tuplehash[!dir].tuple);
-> +
-> +	/* The following helper functions check if the inverted reverse tuple
-> +	 * is different then the current dir tuple - meaning nat for ports
-> +	 * and/or ip is needed, and add the relevant mangle actions.
-> +	 */
-Probably better to put this comment above the helpers, ratherthan the
- calls to them, so that people reading the source linearly see the comment
- before the memcmp()s.
+[   19.937538] ==================================================================
+[   19.938300] BUG: KASAN: use-after-free in taprio_dequeue_soft+0x620/0x780
+[   19.938968] Read of size 4 at addr ffff8881128628cc by task swapper/1/0
+[   19.939612]
+[   19.939772] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc3+ #97
+[   19.940397] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qe4
+[   19.941523] Call Trace:
+[   19.941774]  <IRQ>
+[   19.941985]  dump_stack+0x97/0xe0
+[   19.942323]  print_address_description.constprop.0+0x3b/0x60
+[   19.942884]  ? taprio_dequeue_soft+0x620/0x780
+[   19.943325]  ? taprio_dequeue_soft+0x620/0x780
+[   19.943767]  __kasan_report.cold+0x1a/0x32
+[   19.944173]  ? taprio_dequeue_soft+0x620/0x780
+[   19.944612]  kasan_report+0xe/0x20
+[   19.944954]  taprio_dequeue_soft+0x620/0x780
+[   19.945380]  __qdisc_run+0x164/0x18d0
+[   19.945749]  net_tx_action+0x2c4/0x730
+[   19.946124]  __do_softirq+0x268/0x7bc
+[   19.946491]  irq_exit+0x17d/0x1b0
+[   19.946824]  smp_apic_timer_interrupt+0xeb/0x380
+[   19.947280]  apic_timer_interrupt+0xf/0x20
+[   19.947687]  </IRQ>
+[   19.947912] RIP: 0010:default_idle+0x2d/0x2d0
+[   19.948345] Code: 00 00 41 56 41 55 65 44 8b 2d 3f 8d 7c 7c 41 54 55 53 0f 1f 44 00 00 e8 b1 b2 c5 fd e9 07 00 3
+[   19.950166] RSP: 0018:ffff88811a3efda0 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
+[   19.950909] RAX: 0000000080000000 RBX: ffff88811a3a9600 RCX: ffffffff8385327e
+[   19.951608] RDX: 1ffff110234752c0 RSI: 0000000000000000 RDI: ffffffff8385262f
+[   19.952309] RBP: ffffed10234752c0 R08: 0000000000000001 R09: ffffed10234752c1
+[   19.953009] R10: ffffed10234752c0 R11: ffff88811a3a9607 R12: 0000000000000001
+[   19.953709] R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000000
+[   19.954408]  ? default_idle_call+0x2e/0x70
+[   19.954816]  ? default_idle+0x1f/0x2d0
+[   19.955192]  default_idle_call+0x5e/0x70
+[   19.955584]  do_idle+0x3d4/0x500
+[   19.955909]  ? arch_cpu_idle_exit+0x40/0x40
+[   19.956325]  ? _raw_spin_unlock_irqrestore+0x23/0x30
+[   19.956829]  ? trace_hardirqs_on+0x30/0x160
+[   19.957242]  cpu_startup_entry+0x19/0x20
+[   19.957633]  start_secondary+0x2a6/0x380
+[   19.958026]  ? set_cpu_sibling_map+0x18b0/0x18b0
+[   19.958486]  secondary_startup_64+0xa4/0xb0
+[   19.958921]
+[   19.959078] Allocated by task 33:
+[   19.959412]  save_stack+0x1b/0x80
+[   19.959747]  __kasan_kmalloc.constprop.0+0xc2/0xd0
+[   19.960222]  kmem_cache_alloc+0xe4/0x230
+[   19.960617]  __alloc_skb+0x91/0x510
+[   19.960967]  ndisc_alloc_skb+0x133/0x330
+[   19.961358]  ndisc_send_ns+0x134/0x810
+[   19.961735]  addrconf_dad_work+0xad5/0xf80
+[   19.962144]  process_one_work+0x78e/0x13a0
+[   19.962551]  worker_thread+0x8f/0xfa0
+[   19.962919]  kthread+0x2ba/0x3b0
+[   19.963242]  ret_from_fork+0x3a/0x50
+[   19.963596]
+[   19.963753] Freed by task 33:
+[   19.964055]  save_stack+0x1b/0x80
+[   19.964386]  __kasan_slab_free+0x12f/0x180
+[   19.964830]  kmem_cache_free+0x80/0x290
+[   19.965231]  ip6_mc_input+0x38a/0x4d0
+[   19.965617]  ipv6_rcv+0x1a4/0x1d0
+[   19.965948]  __netif_receive_skb_one_core+0xf2/0x180
+[   19.966437]  netif_receive_skb+0x8c/0x3c0
+[   19.966846]  br_handle_frame_finish+0x779/0x1310
+[   19.967302]  br_handle_frame+0x42a/0x830
+[   19.967694]  __netif_receive_skb_core+0xf0e/0x2a90
+[   19.968167]  __netif_receive_skb_one_core+0x96/0x180
+[   19.968658]  process_backlog+0x198/0x650
+[   19.969047]  net_rx_action+0x2fa/0xaa0
+[   19.969420]  __do_softirq+0x268/0x7bc
+[   19.969785]
+[   19.969940] The buggy address belongs to the object at ffff888112862840
+[   19.969940]  which belongs to the cache skbuff_head_cache of size 224
+[   19.971202] The buggy address is located 140 bytes inside of
+[   19.971202]  224-byte region [ffff888112862840, ffff888112862920)
+[   19.972344] The buggy address belongs to the page:
+[   19.972820] page:ffffea00044a1800 refcount:1 mapcount:0 mapping:ffff88811a2bd1c0 index:0xffff8881128625c0 compo0
+[   19.973930] flags: 0x8000000000010200(slab|head)
+[   19.974388] raw: 8000000000010200 ffff88811a2ed650 ffff88811a2ed650 ffff88811a2bd1c0
+[   19.975151] raw: ffff8881128625c0 0000000000190013 00000001ffffffff 0000000000000000
+[   19.975915] page dumped because: kasan: bad access detected
+[   19.976461] page_owner tracks the page as allocated
+[   19.976946] page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NO)
+[   19.978332]  prep_new_page+0x24b/0x330
+[   19.978707]  get_page_from_freelist+0x2057/0x2c90
+[   19.979170]  __alloc_pages_nodemask+0x218/0x590
+[   19.979619]  new_slab+0x9d/0x300
+[   19.979948]  ___slab_alloc.constprop.0+0x2f9/0x6f0
+[   19.980421]  __slab_alloc.constprop.0+0x30/0x60
+[   19.980870]  kmem_cache_alloc+0x201/0x230
+[   19.981269]  __alloc_skb+0x91/0x510
+[   19.981620]  alloc_skb_with_frags+0x78/0x4a0
+[   19.982043]  sock_alloc_send_pskb+0x5eb/0x750
+[   19.982476]  unix_stream_sendmsg+0x399/0x7f0
+[   19.982904]  sock_sendmsg+0xe2/0x110
+[   19.983262]  ____sys_sendmsg+0x4de/0x6d0
+[   19.983660]  ___sys_sendmsg+0xe4/0x160
+[   19.984032]  __sys_sendmsg+0xab/0x130
+[   19.984396]  do_syscall_64+0xe7/0xae0
+[   19.984761] page last free stack trace:
+[   19.985142]  __free_pages_ok+0x432/0xbc0
+[   19.985533]  qlist_free_all+0x56/0xc0
+[   19.985907]  quarantine_reduce+0x149/0x170
+[   19.986315]  __kasan_kmalloc.constprop.0+0x9e/0xd0
+[   19.986791]  kmem_cache_alloc+0xe4/0x230
+[   19.987182]  prepare_creds+0x24/0x440
+[   19.987548]  do_faccessat+0x80/0x590
+[   19.987906]  do_syscall_64+0xe7/0xae0
+[   19.988276]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[   19.988775]
+[   19.988930] Memory state around the buggy address:
+[   19.989402]  ffff888112862780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[   19.990111]  ffff888112862800: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+[   19.990822] >ffff888112862880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[   19.991529]                                               ^
+[   19.992081]  ffff888112862900: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
+[   19.992796]  ffff888112862980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 
--ed
-> +
-> +	switch (tuple->src.l3num) {
-> +	case NFPROTO_IPV4:
-> +		tcf_ct_flow_table_add_action_nat_ipv4(tuple, target,
-> +						      action);
-> +		break;
-> +	case NFPROTO_IPV6:
-> +		tcf_ct_flow_table_add_action_nat_ipv6(tuple, target,
-> +						      action);
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	switch (nf_ct_protonum(ct)) {
-> +	case IPPROTO_TCP:
-> +		tcf_ct_flow_table_add_action_nat_tcp(tuple, target, action);
-> +		break;
-> +	case IPPROTO_UDP:
-> +		tcf_ct_flow_table_add_action_nat_udp(tuple, target, action);
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int tcf_ct_flow_table_fill_actions(struct net *net,
-> +					  const struct flow_offload *flow,
-> +					  enum flow_offload_tuple_dir tdir,
-> +					  struct nf_flow_rule *flow_rule)
-> +{
-> +	struct flow_action *action = &flow_rule->rule->action;
-> +	int num_entries = action->num_entries;
-> +	struct nf_conn *ct = flow->ct;
-> +	enum ip_conntrack_dir dir;
-> +	int i, err;
-> +
-> +	switch (tdir) {
-> +	case FLOW_OFFLOAD_DIR_ORIGINAL:
-> +		dir = IP_CT_DIR_ORIGINAL;
-> +		break;
-> +	case FLOW_OFFLOAD_DIR_REPLY:
-> +		dir = IP_CT_DIR_REPLY;
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	err = tcf_ct_flow_table_add_action_nat(net, ct, dir, action);
-> +	if (err)
-> +		goto err_nat;
-> +
-> +	tcf_ct_flow_table_add_action_meta(ct, dir, action);
-> +	return 0;
-> +
-> +err_nat:
-> +	/* Clear filled actions */
-> +	for (i = num_entries; i < action->num_entries; i++)
-> +		memset(&action->entries[i], 0, sizeof(action->entries[i]));
-> +	action->num_entries = num_entries;
-> +
-> +	return err;
-> +}
-> +
->  static struct nf_flowtable_type flowtable_ct = {
-> +	.action		= tcf_ct_flow_table_fill_actions,
->  	.owner		= THIS_MODULE,
->  };
->  
+Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
+Reported-by: Michael Schmidt <michael.schmidt@eti.uni-siegen.de>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+
+One open question is why I can only reproduce this crash when using
+the igc driver or when using veth interfaces. I can't reproduce this
+using igb, which is the reason that this bug was hidden for so long.
+
+
+ net/sched/sch_taprio.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index ee717e05372b..b1eb12d33b9a 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -564,8 +564,10 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ 		prio = skb->priority;
+ 		tc = netdev_get_prio_tc_map(dev, prio);
+ 
+-		if (!(gate_mask & BIT(tc)))
++		if (!(gate_mask & BIT(tc))) {
++			skb = NULL;
+ 			continue;
++		}
+ 
+ 		len = qdisc_pkt_len(skb);
+ 		guard = ktime_add_ns(taprio_get_time(q),
+@@ -575,13 +577,17 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ 		 * guard band ...
+ 		 */
+ 		if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
+-		    ktime_after(guard, entry->close_time))
++		    ktime_after(guard, entry->close_time)) {
++			skb = NULL;
+ 			continue;
++		}
+ 
+ 		/* ... and no budget. */
+ 		if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
+-		    atomic_sub_return(len, &entry->budget) < 0)
++		    atomic_sub_return(len, &entry->budget) < 0) {
++			skb = NULL;
+ 			continue;
++		}
+ 
+ 		skb = child->ops->dequeue(child);
+ 		if (unlikely(!skb))
+-- 
+2.25.1
 
