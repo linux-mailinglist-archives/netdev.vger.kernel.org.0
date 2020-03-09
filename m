@@ -2,140 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C11417DE00
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04D8C17DDE3
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 11:48:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgCIKzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 06:55:16 -0400
-Received: from edrik.securmail.fr ([45.91.125.3]:30019 "EHLO
-        edrik.securmail.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbgCIKzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:55:16 -0400
-X-Greylist: delayed 385 seconds by postgrey-1.27 at vger.kernel.org; Mon, 09 Mar 2020 06:55:16 EDT
-Received: by edrik.securmail.fr (Postfix, from userid 58)
-        id 2105CB0E73; Mon,  9 Mar 2020 11:48:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583750930;
-        bh=Hyq12REpSpK2B3QWJlrzz7d5lEQcrvGRpkB/+KJZMeQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=UEi3bb0yTSLGrDRyoR6FmcuB6oy+cMVH5+vYBlS2COmEs4JtdjfUgf74f3dxLCIt+
-         vP3250USBBOyf6P47W5AjUZir+lFcJWQXyd7Z4GqRU95JjmvxnWKvs4jRdD7MfPTuS
-         qG1+BALwug7HhPytxr3jMmA2Q7TqljzJ0V+xZbdA=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on edrik.securmail.fr
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU autolearn=unavailable
-        autolearn_force=no version=3.4.2
-Received: from mew.swordarmor.fr (mew.swordarmor.fr [IPv6:2a00:5884:102:1::4])
-        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: alarig@swordarmor.fr)
-        by edrik.securmail.fr (Postfix) with ESMTPSA id 84AFBB0E6C;
-        Mon,  9 Mar 2020 11:47:36 +0100 (CET)
-Authentication-Results: edrik.securmail.fr/84AFBB0E6C; dmarc=none (p=none dis=none) header.from=swordarmor.fr
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583750856;
-        bh=Hyq12REpSpK2B3QWJlrzz7d5lEQcrvGRpkB/+KJZMeQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=GWu1tcCXWb2kqwhOTJyUZRMGYSNi6aA5S96v4Cs2sTRSu9/otR/DC+Y4Ebr4We6s9
-         fvOAqiT6TiS6pxlF5r3erDsO64H97svpIjkw1cCJbLxVkB3KfQJY+qpoz1VUDTUI3s
-         xBo12KC8H99Xkrj6pe0irv3Af4J7lxcvO8FAW1PY=
-Date:   Mon, 9 Mar 2020 11:47:31 +0100
-From:   Alarig Le Lay <alarig@swordarmor.fr>
-To:     Fabian =?utf-8?Q?Gr=C3=BCnbichler?= <f.gruenbichler@proxmox.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Vincent Bernat <bernat@debian.org>, jack@basilfillan.uk,
-        netdev@vger.kernel.org
-Subject: Re: IPv6 regression introduced by commit
- 3b6761d18bc11f2af2a6fc494e9026d39593f22c
-Message-ID: <20200309104731.uiqadwdk6ux3sy65@mew.swordarmor.fr>
-References: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
- <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
- <20200308105729.72pbglywnahbl7hs@mew.swordarmor.fr>
- <27457094-b62a-f029-e259-f7a274fee49d@gmail.com>
- <1583744251.2qt66u32rz.astroid@nora.none>
+        id S1726514AbgCIKsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 06:48:10 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34743 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbgCIKsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 06:48:10 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z15so10435019wrl.1
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 03:48:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=QDtfNY0PtHAEuqCxAZYt1IpZOfYRa1Dm9r/IK3jLViM=;
+        b=h6RCjfKOW6CQrHIT4su6O5wA/EVLqBCvaJhdE/bZFIZ91dOgWvfrm+AiAorgjwTfiZ
+         YqH2UGwJ1HNsYBnyllUsOl5PHSe8b4TOw0qh03foPQ1OemQqlMq9ePpkPQtpvAsf8ekK
+         nVW0G2akAF17plOBwHmZ+Hy7wbRmbOGCo0U4Z9I343jdT1ui/fwYceeFQAnBIZqetiGV
+         FH4v7wi0Ci8d3xn5LF8QVZFwVz+foLiP6kcU89fd9U4sPNVmJI1F7irUhwgROfnPWLrc
+         tJNGciW9CsqppS4RaGVJgpyQUe6LjMFWZWraGGcBj5ARHZ8ewOY5A5UoYz59QwvQlfy4
+         +aqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=QDtfNY0PtHAEuqCxAZYt1IpZOfYRa1Dm9r/IK3jLViM=;
+        b=eu4nnxfZ/AK/vplr0/FPhnKS3LhsfQv0pmxL/GvycDE1Zt9pu309GoDymhCbR2AL3m
+         QIF4zn3awwaLuvSZsDkmiI6O098RiUc2Y4NZoLqsDOZPgDTbyrin62BgTor7A/z+kErs
+         ytKkNGOZKZFk+o866r2PVTWpzcio6zHgIY5emt1tocYDSrljkuj5yxSgj3QVhqzO0IpP
+         pEE6ilpZAA4vqOPCQNwaKcWOqB6Z+Rsr+4/rPe6owwTWhKanmo9f29NA/aJyEn8RcaRr
+         XldnV5PWYGXBIUEhDJxZUtzbXFCfEOIWTjMsveX4GYTUGd0c9iiK7zrHrr1ZdGpC13uL
+         QxBw==
+X-Gm-Message-State: ANhLgQ1pVCXKU3wo7g3YMYmkss3auvk+qOeoeAChl9lIVzindFhycz5r
+        pn4mPOof1XdLqRT411DJf4Ld/VDmLzsmVzpvg0pF7dnJ
+X-Google-Smtp-Source: ADFU+vvcduqVWXImN9jCW1idt2snqnIKeRknJUJz1NgOzwWw9QagldgBcOZ0kpGC3ay/HvP5eTBWotdb8M90V7hmRRo=
+X-Received: by 2002:adf:9d8b:: with SMTP id p11mr10480648wre.270.1583750888344;
+ Mon, 09 Mar 2020 03:48:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1583744251.2qt66u32rz.astroid@nora.none>
+References: <2f86c9d7c39cfad21fdb353a183b12651fc5efe9.1583311902.git.lucien.xin@gmail.com>
+ <37097209-97cd-f275-cbe2-6c83f5580b80@nextfour.com>
+In-Reply-To: <37097209-97cd-f275-cbe2-6c83f5580b80@nextfour.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 9 Mar 2020 18:50:19 +0800
+Message-ID: <CADvbK_dqRXr3D1WgLDXqiBhpyw+QGRrvwugqDhOMr_kpQVi3QA@mail.gmail.com>
+Subject: Re: [PATCH ipsec] esp: remove the skb from the chain when it's
+ enqueued in cryptd_wq
+To:     =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On lun.  9 mars 09:59:30 2020, Fabian Grünbichler wrote:
-> On March 9, 2020 3:15 am, David Ahern wrote:
-> > On 3/8/20 4:57 AM, Alarig Le Lay wrote:
-> >> On sam.  7 mars 17:52:10 2020, David Ahern wrote:
-> >> I have the problem with 5.3 (proxmox 6), so unless FIB handling has been
-> >> changed since then, I doubt that it will works, but I will try on
-> >> Monday.
-> >> 
-> > 
-> > a fair amount of changes went in through 5.4 including improvements to
-> > neighbor handling. 5.4 (I think) also had changes around dumping the
-> > route cache.
-> 
-> FWIW, there is a 5.4-based kernel preview package available in the 
-> pvetest repository for Proxmox VE 6.x:
-> 
-> http://download.proxmox.com/debian/pve/dists/buster/pvetest/binary-amd64/pve-kernel-5.4.22-1-pve_5.4.22-1_amd64.deb
+On Mon, Mar 9, 2020 at 6:07 PM Mika Penttil=C3=A4 <mika.penttila@nextfour.c=
+om> wrote:
+>
+>
+> Hi!
+>
+> On 4.3.2020 10.51, Xin Long wrote:
+> > Xiumei found a panic in esp offload:
+> >
+> >   BUG: unable to handle kernel NULL pointer dereference at 000000000000=
+0020
+> >   RIP: 0010:esp_output_done+0x101/0x160 [esp4]
+> >   Call Trace:
+> >    ? esp_output+0x180/0x180 [esp4]
+> >    cryptd_aead_crypt+0x4c/0x90
+> >    cryptd_queue_worker+0x6e/0xa0
+> >    process_one_work+0x1a7/0x3b0
+> >    worker_thread+0x30/0x390
+> >    ? create_worker+0x1a0/0x1a0
+> >    kthread+0x112/0x130
+> >    ? kthread_flush_work_fn+0x10/0x10
+> >    ret_from_fork+0x35/0x40
+> >
+> > It was caused by that skb secpath is used in esp_output_done() after it=
+'s
+> > been released elsewhere.
+> >
+> > The tx path for esp offload is:
+> >
+> >   __dev_queue_xmit()->
+> >     validate_xmit_skb_list()->
+> >       validate_xmit_xfrm()->
+> >         esp_xmit()->
+> >           esp_output_tail()->
+> >             aead_request_set_callback(esp_output_done) <--[1]
+> >             crypto_aead_encrypt()  <--[2]
+> >
+> > In [1], .callback is set, and in [2] it will trigger the worker schedul=
+e,
+> > later on a kernel thread will call .callback(esp_output_done), as the c=
+all
+> > trace shows.
+> >
+> > But in validate_xmit_xfrm():
+> >
+> >   skb_list_walk_safe(skb, skb2, nskb) {
+> >     ...
+> >     err =3D x->type_offload->xmit(x, skb2, esp_features);  [esp_xmit]
+> >     ...
+> >   }
+> >
+> > When the err is -EINPROGRESS, which means this skb2 will be enqueued an=
+d
+> > later gets encrypted and sent out by .callback later in a kernel thread=
+,
+> > skb2 should be removed fromt skb chain. Otherwise, it will get processe=
+d
+> > again outside validate_xmit_xfrm(), which could release skb secpath, an=
+d
+> > cause the panic above.
+> >
+> > This patch is to remove the skb from the chain when it's enqueued in
+> > cryptd_wq. While at it, remove the unnecessary 'if (!skb)' check.
+> >
+> > Fixes: 3dca3f38cfb8 ("xfrm: Separate ESP handling from segmentation for=
+ GRO packets.")
+> > Reported-by: Xiumei Mu <xmu@redhat.com>
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  net/xfrm/xfrm_device.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+> > index 3231ec6..e2db468 100644
+> > --- a/net/xfrm/xfrm_device.c
+> > +++ b/net/xfrm/xfrm_device.c
+> > @@ -78,8 +78,8 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *sk=
+b, netdev_features_t featur
+> >       int err;
+> >       unsigned long flags;
+> >       struct xfrm_state *x;
+> > -     struct sk_buff *skb2, *nskb;
+> >       struct softnet_data *sd;
+> > +     struct sk_buff *skb2, *nskb, *pskb =3D NULL;
+> >       netdev_features_t esp_features =3D features;
+> >       struct xfrm_offload *xo =3D xfrm_offload(skb);
+> >       struct sec_path *sp;
+> > @@ -168,14 +168,14 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff=
+ *skb, netdev_features_t featur
+> >               } else {
+> >                       if (skb =3D=3D skb2)
+> >                               skb =3D nskb;
+> > -
+> > -                     if (!skb)
+> > -                             return NULL;
+> > +                     else
+> > +                             pskb->next =3D nskb;
+>
+> pskb can be NULL on the first round?
+On the 1st round, skb =3D=3D skb2.
 
-Thanks for the kernel!
-
-I’m still having some issues with 5.4:
-root@hv03:~# ip -6 -ts monitor neigh | grep -P 'INCOMPLETE|FAILED'
-[2020-03-09T11:35:51.276329] 2a00:5884:0:6::2 dev vmbr12  router FAILED
-[2020-03-09T11:36:03.308359] fe80::5287:89ff:fef0:ce81 dev vmbr12  router FAILED
-[2020-03-09T11:36:21.996250] 2a00:5884:0:6::1 dev vmbr12  router FAILED
-[2020-03-09T11:36:32.524389] 2a00:5884:0:6::1 dev vmbr12  router FAILED
-[2020-03-09T11:36:34.800303] 2a00:5884:0:6::2 dev vmbr12  router FAILED
-[2020-03-09T11:36:36.588333] 2a00:5884:0:6::1 dev vmbr12  router FAILED
-[2020-03-09T11:36:41.196351] 2a00:5884:0:6::1 dev vmbr12  router FAILED
-
-And BGP sessions are flapping as well:
-root@hv03:~# birdc6 sh pr | grep bgp
-ibgp_asbr01_ipv6 BGP      master   up     11:40:28    Established
-ibgp_asbr02_ipv6 BGP      master   up     11:41:09    Established
-root@hv03:~# ps -o lstart -p $(pgrep bird6)
-                 STARTED
-Mon Mar  9 11:14:44 2020
-
-
-You don’t build linux-perf? I can only find it on the debian repo but
-not on the proxmox one nor
-http://download.proxmox.com/debian/pve/dists/buster/pvetest/binary-amd64/
-
-root@hv03:~# apt search linux-perf
-Sorting... Done
-Full Text Search... Done
-linux-perf/stable 4.19+105+deb10u3 all
-  Performance analysis tools for Linux (meta-package)
-
-linux-perf-4.19/stable 4.19.98-1 amd64
-  Performance analysis tools for Linux 4.19
-
-root@hv03:~# apt policy linux-perf/stable
-N: Unable to locate package linux-perf/stable
-root@hv03:~# apt policy linux-perf
-linux-perf:
-  Installed: (none)
-  Candidate: 4.19+105+deb10u3
-  Version table:
-     4.19+105+deb10u3 500
-        500 http://mirror.grifon.fr/debian buster/main amd64 Packages
-root@hv03:~# apt policy linux-perf-4.19
-linux-perf-4.19:
-  Installed: (none)
-  Candidate: 4.19.98-1
-  Version table:
-     4.19.98-1 500
-        500 http://mirror.grifon.fr/debian buster/main amd64 Packages
-     4.19.67-2+deb10u2 500
-        500 http://mirror.grifon.fr/debian-security buster/updates/main amd64 Packages
-root@hv03:~#
-
-Regards,
--- 
-Alarig
+>
+>
+>
+> >                       continue;
+> >               }
+> >
+> >               skb_push(skb2, skb2->data - skb_mac_header(skb2));
+> > +             pskb =3D skb2;
+> >       }
+> >
+> >       return skb;
+>
